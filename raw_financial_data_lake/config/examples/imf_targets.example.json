@@ -1,0 +1,22 @@
+{
+  "imf": {
+    "targets": [
+      {
+        "name": "replace_with_dataset_slice_name",
+        "dataset": "IFS",
+        "url": "https://portal.api.imf.org/your/sdmx/or/json/url/from/swagger",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/sdmx/dataset={dataset}/snapshot_date={snapshot_date}/replace_with_name.json"
+      },
+      {
+        "name": "replace_with_xml_slice_name",
+        "dataset": "BOP",
+        "url": "https://portal.api.imf.org/your/sdmx/xml/url/from/swagger",
+        "params": {},
+        "object_type": "xml",
+        "relative_path": "imf/sdmx/dataset={dataset}/snapshot_date={snapshot_date}/replace_with_name.xml"
+      }
+    ]
+  }
+}

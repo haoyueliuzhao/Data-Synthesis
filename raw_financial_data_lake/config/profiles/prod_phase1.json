@@ -1,0 +1,1517 @@
+{
+  "storage_root": "./data/fin_raw",
+  "metadata_db": "./data/metadata.sqlite3",
+  "sec": {
+    "user_agent": "RawFinancialDataLake/0.1 contact@example.com",
+    "sample_companies": [
+      {
+        "ticker": "AAPL",
+        "sec_ticker": "AAPL",
+        "cik": "320193",
+        "name": "Apple Inc."
+      },
+      {
+        "ticker": "MSFT",
+        "sec_ticker": "MSFT",
+        "cik": "789019",
+        "name": "MICROSOFT CORP"
+      },
+      {
+        "ticker": "NVDA",
+        "sec_ticker": "NVDA",
+        "cik": "1045810",
+        "name": "NVIDIA CORP"
+      },
+      {
+        "ticker": "AMZN",
+        "sec_ticker": "AMZN",
+        "cik": "1018724",
+        "name": "AMAZON COM INC"
+      },
+      {
+        "ticker": "GOOGL",
+        "sec_ticker": "GOOGL",
+        "cik": "1652044",
+        "name": "Alphabet Inc."
+      },
+      {
+        "ticker": "META",
+        "sec_ticker": "META",
+        "cik": "1326801",
+        "name": "Meta Platforms, Inc."
+      },
+      {
+        "ticker": "AVGO",
+        "sec_ticker": "AVGO",
+        "cik": "1730168",
+        "name": "Broadcom Inc."
+      },
+      {
+        "ticker": "TSLA",
+        "sec_ticker": "TSLA",
+        "cik": "1318605",
+        "name": "Tesla, Inc."
+      },
+      {
+        "ticker": "JPM",
+        "sec_ticker": "JPM",
+        "cik": "19617",
+        "name": "JPMORGAN CHASE & CO"
+      },
+      {
+        "ticker": "LLY",
+        "sec_ticker": "LLY",
+        "cik": "59478",
+        "name": "ELI LILLY & Co"
+      },
+      {
+        "ticker": "V",
+        "sec_ticker": "V",
+        "cik": "1403161",
+        "name": "VISA INC."
+      },
+      {
+        "ticker": "UNH",
+        "sec_ticker": "UNH",
+        "cik": "731766",
+        "name": "UNITEDHEALTH GROUP INC"
+      },
+      {
+        "ticker": "XOM",
+        "sec_ticker": "XOM",
+        "cik": "34088",
+        "name": "EXXON MOBIL CORP"
+      },
+      {
+        "ticker": "MA",
+        "sec_ticker": "MA",
+        "cik": "1141391",
+        "name": "Mastercard Inc"
+      },
+      {
+        "ticker": "COST",
+        "sec_ticker": "COST",
+        "cik": "909832",
+        "name": "COSTCO WHOLESALE CORP /NEW"
+      },
+      {
+        "ticker": "WMT",
+        "sec_ticker": "WMT",
+        "cik": "104169",
+        "name": "Walmart Inc."
+      },
+      {
+        "ticker": "PG",
+        "sec_ticker": "PG",
+        "cik": "80424",
+        "name": "PROCTER & GAMBLE Co"
+      },
+      {
+        "ticker": "JNJ",
+        "sec_ticker": "JNJ",
+        "cik": "200406",
+        "name": "JOHNSON & JOHNSON"
+      },
+      {
+        "ticker": "HD",
+        "sec_ticker": "HD",
+        "cik": "354950",
+        "name": "HOME DEPOT, INC."
+      },
+      {
+        "ticker": "ABBV",
+        "sec_ticker": "ABBV",
+        "cik": "1551152",
+        "name": "AbbVie Inc."
+      },
+      {
+        "ticker": "BAC",
+        "sec_ticker": "BAC",
+        "cik": "70858",
+        "name": "BANK OF AMERICA CORP /DE/"
+      },
+      {
+        "ticker": "KO",
+        "sec_ticker": "KO",
+        "cik": "21344",
+        "name": "COCA COLA CO"
+      },
+      {
+        "ticker": "NFLX",
+        "sec_ticker": "NFLX",
+        "cik": "1065280",
+        "name": "NETFLIX INC"
+      },
+      {
+        "ticker": "ORCL",
+        "sec_ticker": "ORCL",
+        "cik": "1341439",
+        "name": "ORACLE CORP"
+      },
+      {
+        "ticker": "CRM",
+        "sec_ticker": "CRM",
+        "cik": "1108524",
+        "name": "Salesforce, Inc."
+      },
+      {
+        "ticker": "AMD",
+        "sec_ticker": "AMD",
+        "cik": "2488",
+        "name": "ADVANCED MICRO DEVICES INC"
+      },
+      {
+        "ticker": "PEP",
+        "sec_ticker": "PEP",
+        "cik": "77476",
+        "name": "PEPSICO INC"
+      },
+      {
+        "ticker": "CVX",
+        "sec_ticker": "CVX",
+        "cik": "93410",
+        "name": "CHEVRON CORP"
+      },
+      {
+        "ticker": "TMO",
+        "sec_ticker": "TMO",
+        "cik": "97745",
+        "name": "THERMO FISHER SCIENTIFIC INC."
+      },
+      {
+        "ticker": "MRK",
+        "sec_ticker": "MRK",
+        "cik": "310158",
+        "name": "Merck & Co., Inc."
+      },
+      {
+        "ticker": "ACN",
+        "sec_ticker": "ACN",
+        "cik": "1467373",
+        "name": "Accenture plc"
+      },
+      {
+        "ticker": "ADBE",
+        "sec_ticker": "ADBE",
+        "cik": "796343",
+        "name": "ADOBE INC."
+      },
+      {
+        "ticker": "MCD",
+        "sec_ticker": "MCD",
+        "cik": "63908",
+        "name": "MCDONALDS CORP"
+      },
+      {
+        "ticker": "CSCO",
+        "sec_ticker": "CSCO",
+        "cik": "858877",
+        "name": "CISCO SYSTEMS, INC."
+      },
+      {
+        "ticker": "WFC",
+        "sec_ticker": "WFC",
+        "cik": "72971",
+        "name": "WELLS FARGO & COMPANY/MN"
+      },
+      {
+        "ticker": "IBM",
+        "sec_ticker": "IBM",
+        "cik": "51143",
+        "name": "INTERNATIONAL BUSINESS MACHINES CORP"
+      },
+      {
+        "ticker": "GE",
+        "sec_ticker": "GE",
+        "cik": "40545",
+        "name": "GENERAL ELECTRIC CO"
+      },
+      {
+        "ticker": "ABT",
+        "sec_ticker": "ABT",
+        "cik": "1800",
+        "name": "ABBOTT LABORATORIES"
+      },
+      {
+        "ticker": "LIN",
+        "sec_ticker": "LIN",
+        "cik": "1707925",
+        "name": "LINDE PLC"
+      },
+      {
+        "ticker": "CAT",
+        "sec_ticker": "CAT",
+        "cik": "18230",
+        "name": "CATERPILLAR INC"
+      },
+      {
+        "ticker": "QCOM",
+        "sec_ticker": "QCOM",
+        "cik": "804328",
+        "name": "QUALCOMM INC/DE"
+      },
+      {
+        "ticker": "VZ",
+        "sec_ticker": "VZ",
+        "cik": "732712",
+        "name": "VERIZON COMMUNICATIONS INC"
+      },
+      {
+        "ticker": "INTU",
+        "sec_ticker": "INTU",
+        "cik": "896878",
+        "name": "INTUIT INC."
+      },
+      {
+        "ticker": "AMAT",
+        "sec_ticker": "AMAT",
+        "cik": "6951",
+        "name": "APPLIED MATERIALS INC /DE"
+      },
+      {
+        "ticker": "DHR",
+        "sec_ticker": "DHR",
+        "cik": "313616",
+        "name": "DANAHER CORP /DE/"
+      },
+      {
+        "ticker": "NOW",
+        "sec_ticker": "NOW",
+        "cik": "1373715",
+        "name": "ServiceNow, Inc."
+      },
+      {
+        "ticker": "TXN",
+        "sec_ticker": "TXN",
+        "cik": "97476",
+        "name": "TEXAS INSTRUMENTS INC"
+      },
+      {
+        "ticker": "PM",
+        "sec_ticker": "PM",
+        "cik": "1413329",
+        "name": "Philip Morris International Inc."
+      },
+      {
+        "ticker": "DIS",
+        "sec_ticker": "DIS",
+        "cik": "1744489",
+        "name": "Walt Disney Co"
+      },
+      {
+        "ticker": "ISRG",
+        "sec_ticker": "ISRG",
+        "cik": "1035267",
+        "name": "INTUITIVE SURGICAL INC"
+      },
+      {
+        "ticker": "UBER",
+        "sec_ticker": "UBER",
+        "cik": "1543151",
+        "name": "Uber Technologies, Inc"
+      },
+      {
+        "ticker": "PFE",
+        "sec_ticker": "PFE",
+        "cik": "78003",
+        "name": "PFIZER INC"
+      },
+      {
+        "ticker": "SPGI",
+        "sec_ticker": "SPGI",
+        "cik": "64040",
+        "name": "S&P Global Inc."
+      },
+      {
+        "ticker": "NEE",
+        "sec_ticker": "NEE",
+        "cik": "753308",
+        "name": "NEXTERA ENERGY INC"
+      },
+      {
+        "ticker": "RTX",
+        "sec_ticker": "RTX",
+        "cik": "101829",
+        "name": "RTX Corp"
+      },
+      {
+        "ticker": "GS",
+        "sec_ticker": "GS",
+        "cik": "886982",
+        "name": "GOLDMAN SACHS GROUP INC"
+      },
+      {
+        "ticker": "LOW",
+        "sec_ticker": "LOW",
+        "cik": "60667",
+        "name": "LOWES COMPANIES INC"
+      },
+      {
+        "ticker": "BKNG",
+        "sec_ticker": "BKNG",
+        "cik": "1075531",
+        "name": "Booking Holdings Inc."
+      },
+      {
+        "ticker": "T",
+        "sec_ticker": "T",
+        "cik": "732717",
+        "name": "AT&T INC."
+      },
+      {
+        "ticker": "UNP",
+        "sec_ticker": "UNP",
+        "cik": "100885",
+        "name": "UNION PACIFIC CORP"
+      },
+      {
+        "ticker": "HON",
+        "sec_ticker": "HON",
+        "cik": "773840",
+        "name": "HONEYWELL INTERNATIONAL INC"
+      },
+      {
+        "ticker": "AXP",
+        "sec_ticker": "AXP",
+        "cik": "4962",
+        "name": "AMERICAN EXPRESS CO"
+      },
+      {
+        "ticker": "BLK",
+        "sec_ticker": "BLK",
+        "cik": "2012383",
+        "name": "BlackRock, Inc."
+      },
+      {
+        "ticker": "PGR",
+        "sec_ticker": "PGR",
+        "cik": "80661",
+        "name": "PROGRESSIVE CORP/OH/"
+      },
+      {
+        "ticker": "SYK",
+        "sec_ticker": "SYK",
+        "cik": "310764",
+        "name": "STRYKER CORP"
+      },
+      {
+        "ticker": "ETN",
+        "sec_ticker": "ETN",
+        "cik": "1551182",
+        "name": "Eaton Corp plc"
+      },
+      {
+        "ticker": "TJX",
+        "sec_ticker": "TJX",
+        "cik": "109198",
+        "name": "TJX COMPANIES INC /DE/"
+      },
+      {
+        "ticker": "ELV",
+        "sec_ticker": "ELV",
+        "cik": "1156039",
+        "name": "Elevance Health, Inc."
+      },
+      {
+        "ticker": "LMT",
+        "sec_ticker": "LMT",
+        "cik": "936468",
+        "name": "LOCKHEED MARTIN CORP"
+      },
+      {
+        "ticker": "MS",
+        "sec_ticker": "MS",
+        "cik": "895421",
+        "name": "MORGAN STANLEY"
+      },
+      {
+        "ticker": "C",
+        "sec_ticker": "C",
+        "cik": "831001",
+        "name": "CITIGROUP INC"
+      },
+      {
+        "ticker": "MDT",
+        "sec_ticker": "MDT",
+        "cik": "1613103",
+        "name": "Medtronic plc"
+      },
+      {
+        "ticker": "VRTX",
+        "sec_ticker": "VRTX",
+        "cik": "875320",
+        "name": "VERTEX PHARMACEUTICALS INC / MA"
+      },
+      {
+        "ticker": "REGN",
+        "sec_ticker": "REGN",
+        "cik": "872589",
+        "name": "REGENERON PHARMACEUTICALS, INC."
+      },
+      {
+        "ticker": "CB",
+        "sec_ticker": "CB",
+        "cik": "896159",
+        "name": "Chubb Ltd"
+      },
+      {
+        "ticker": "BSX",
+        "sec_ticker": "BSX",
+        "cik": "885725",
+        "name": "BOSTON SCIENTIFIC CORP"
+      },
+      {
+        "ticker": "ADI",
+        "sec_ticker": "ADI",
+        "cik": "6281",
+        "name": "ANALOG DEVICES INC"
+      },
+      {
+        "ticker": "MU",
+        "sec_ticker": "MU",
+        "cik": "723125",
+        "name": "MICRON TECHNOLOGY INC"
+      },
+      {
+        "ticker": "PANW",
+        "sec_ticker": "PANW",
+        "cik": "1327567",
+        "name": "Palo Alto Networks Inc"
+      },
+      {
+        "ticker": "SCHW",
+        "sec_ticker": "SCHW",
+        "cik": "316709",
+        "name": "SCHWAB CHARLES CORP"
+      },
+      {
+        "ticker": "DE",
+        "sec_ticker": "DE",
+        "cik": "315189",
+        "name": "DEERE & CO"
+      },
+      {
+        "ticker": "ADP",
+        "sec_ticker": "ADP",
+        "cik": "8670",
+        "name": "AUTOMATIC DATA PROCESSING INC"
+      },
+      {
+        "ticker": "KLAC",
+        "sec_ticker": "KLAC",
+        "cik": "319201",
+        "name": "KLA CORP"
+      },
+      {
+        "ticker": "GILD",
+        "sec_ticker": "GILD",
+        "cik": "882095",
+        "name": "GILEAD SCIENCES, INC."
+      },
+      {
+        "ticker": "COP",
+        "sec_ticker": "COP",
+        "cik": "1163165",
+        "name": "CONOCOPHILLIPS"
+      },
+      {
+        "ticker": "AMGN",
+        "sec_ticker": "AMGN",
+        "cik": "318154",
+        "name": "AMGEN INC"
+      },
+      {
+        "ticker": "PLD",
+        "sec_ticker": "PLD",
+        "cik": "1045609",
+        "name": "Prologis, Inc."
+      },
+      {
+        "ticker": "BA",
+        "sec_ticker": "BA",
+        "cik": "12927",
+        "name": "BOEING CO"
+      },
+      {
+        "ticker": "UPS",
+        "sec_ticker": "UPS",
+        "cik": "1090727",
+        "name": "UNITED PARCEL SERVICE INC"
+      },
+      {
+        "ticker": "SO",
+        "sec_ticker": "SO",
+        "cik": "92122",
+        "name": "SOUTHERN CO"
+      },
+      {
+        "ticker": "NKE",
+        "sec_ticker": "NKE",
+        "cik": "320187",
+        "name": "NIKE, Inc."
+      },
+      {
+        "ticker": "SBUX",
+        "sec_ticker": "SBUX",
+        "cik": "829224",
+        "name": "STARBUCKS CORP"
+      },
+      {
+        "ticker": "ICE",
+        "sec_ticker": "ICE",
+        "cik": "1571949",
+        "name": "Intercontinental Exchange, Inc."
+      },
+      {
+        "ticker": "MO",
+        "sec_ticker": "MO",
+        "cik": "764180",
+        "name": "ALTRIA GROUP, INC."
+      },
+      {
+        "ticker": "DUK",
+        "sec_ticker": "DUK",
+        "cik": "1326160",
+        "name": "Duke Energy CORP"
+      },
+      {
+        "ticker": "BMY",
+        "sec_ticker": "BMY",
+        "cik": "14272",
+        "name": "BRISTOL MYERS SQUIBB CO"
+      },
+      {
+        "ticker": "CI",
+        "sec_ticker": "CI",
+        "cik": "1739940",
+        "name": "Cigna Group"
+      },
+      {
+        "ticker": "MDLZ",
+        "sec_ticker": "MDLZ",
+        "cik": "1103982",
+        "name": "Mondelez International, Inc."
+      },
+      {
+        "ticker": "HCA",
+        "sec_ticker": "HCA",
+        "cik": "860730",
+        "name": "HCA Healthcare, Inc."
+      },
+      {
+        "ticker": "SHW",
+        "sec_ticker": "SHW",
+        "cik": "89800",
+        "name": "SHERWIN WILLIAMS CO"
+      }
+    ],
+    "bulk_datasets": [
+      {
+        "name": "companyfacts",
+        "source_id": "sec_companyfacts",
+        "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+        "object_type": "zip",
+        "relative_path": "sec/companyfacts/snapshot_date={snapshot_date}/companyfacts.zip"
+      },
+      {
+        "name": "submissions",
+        "source_id": "sec_submissions",
+        "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/submissions.zip",
+        "object_type": "zip",
+        "relative_path": "sec/submissions/snapshot_date={snapshot_date}/submissions.zip"
+      }
+    ],
+    "filing_companies": [
+      {
+        "ticker": "AAPL",
+        "sec_ticker": "AAPL",
+        "cik": "320193",
+        "name": "Apple Inc."
+      },
+      {
+        "ticker": "MSFT",
+        "sec_ticker": "MSFT",
+        "cik": "789019",
+        "name": "MICROSOFT CORP"
+      },
+      {
+        "ticker": "NVDA",
+        "sec_ticker": "NVDA",
+        "cik": "1045810",
+        "name": "NVIDIA CORP"
+      },
+      {
+        "ticker": "AMZN",
+        "sec_ticker": "AMZN",
+        "cik": "1018724",
+        "name": "AMAZON COM INC"
+      },
+      {
+        "ticker": "GOOGL",
+        "sec_ticker": "GOOGL",
+        "cik": "1652044",
+        "name": "Alphabet Inc."
+      },
+      {
+        "ticker": "META",
+        "sec_ticker": "META",
+        "cik": "1326801",
+        "name": "Meta Platforms, Inc."
+      },
+      {
+        "ticker": "AVGO",
+        "sec_ticker": "AVGO",
+        "cik": "1730168",
+        "name": "Broadcom Inc."
+      },
+      {
+        "ticker": "TSLA",
+        "sec_ticker": "TSLA",
+        "cik": "1318605",
+        "name": "Tesla, Inc."
+      },
+      {
+        "ticker": "JPM",
+        "sec_ticker": "JPM",
+        "cik": "19617",
+        "name": "JPMORGAN CHASE & CO"
+      },
+      {
+        "ticker": "LLY",
+        "sec_ticker": "LLY",
+        "cik": "59478",
+        "name": "ELI LILLY & Co"
+      },
+      {
+        "ticker": "V",
+        "sec_ticker": "V",
+        "cik": "1403161",
+        "name": "VISA INC."
+      },
+      {
+        "ticker": "UNH",
+        "sec_ticker": "UNH",
+        "cik": "731766",
+        "name": "UNITEDHEALTH GROUP INC"
+      },
+      {
+        "ticker": "XOM",
+        "sec_ticker": "XOM",
+        "cik": "34088",
+        "name": "EXXON MOBIL CORP"
+      },
+      {
+        "ticker": "MA",
+        "sec_ticker": "MA",
+        "cik": "1141391",
+        "name": "Mastercard Inc"
+      },
+      {
+        "ticker": "COST",
+        "sec_ticker": "COST",
+        "cik": "909832",
+        "name": "COSTCO WHOLESALE CORP /NEW"
+      },
+      {
+        "ticker": "WMT",
+        "sec_ticker": "WMT",
+        "cik": "104169",
+        "name": "Walmart Inc."
+      },
+      {
+        "ticker": "PG",
+        "sec_ticker": "PG",
+        "cik": "80424",
+        "name": "PROCTER & GAMBLE Co"
+      },
+      {
+        "ticker": "JNJ",
+        "sec_ticker": "JNJ",
+        "cik": "200406",
+        "name": "JOHNSON & JOHNSON"
+      },
+      {
+        "ticker": "HD",
+        "sec_ticker": "HD",
+        "cik": "354950",
+        "name": "HOME DEPOT, INC."
+      },
+      {
+        "ticker": "ABBV",
+        "sec_ticker": "ABBV",
+        "cik": "1551152",
+        "name": "AbbVie Inc."
+      },
+      {
+        "ticker": "BAC",
+        "sec_ticker": "BAC",
+        "cik": "70858",
+        "name": "BANK OF AMERICA CORP /DE/"
+      },
+      {
+        "ticker": "KO",
+        "sec_ticker": "KO",
+        "cik": "21344",
+        "name": "COCA COLA CO"
+      },
+      {
+        "ticker": "NFLX",
+        "sec_ticker": "NFLX",
+        "cik": "1065280",
+        "name": "NETFLIX INC"
+      },
+      {
+        "ticker": "ORCL",
+        "sec_ticker": "ORCL",
+        "cik": "1341439",
+        "name": "ORACLE CORP"
+      },
+      {
+        "ticker": "CRM",
+        "sec_ticker": "CRM",
+        "cik": "1108524",
+        "name": "Salesforce, Inc."
+      },
+      {
+        "ticker": "AMD",
+        "sec_ticker": "AMD",
+        "cik": "2488",
+        "name": "ADVANCED MICRO DEVICES INC"
+      },
+      {
+        "ticker": "PEP",
+        "sec_ticker": "PEP",
+        "cik": "77476",
+        "name": "PEPSICO INC"
+      },
+      {
+        "ticker": "CVX",
+        "sec_ticker": "CVX",
+        "cik": "93410",
+        "name": "CHEVRON CORP"
+      },
+      {
+        "ticker": "TMO",
+        "sec_ticker": "TMO",
+        "cik": "97745",
+        "name": "THERMO FISHER SCIENTIFIC INC."
+      },
+      {
+        "ticker": "MRK",
+        "sec_ticker": "MRK",
+        "cik": "310158",
+        "name": "Merck & Co., Inc."
+      },
+      {
+        "ticker": "ACN",
+        "sec_ticker": "ACN",
+        "cik": "1467373",
+        "name": "Accenture plc"
+      },
+      {
+        "ticker": "ADBE",
+        "sec_ticker": "ADBE",
+        "cik": "796343",
+        "name": "ADOBE INC."
+      },
+      {
+        "ticker": "MCD",
+        "sec_ticker": "MCD",
+        "cik": "63908",
+        "name": "MCDONALDS CORP"
+      },
+      {
+        "ticker": "CSCO",
+        "sec_ticker": "CSCO",
+        "cik": "858877",
+        "name": "CISCO SYSTEMS, INC."
+      },
+      {
+        "ticker": "WFC",
+        "sec_ticker": "WFC",
+        "cik": "72971",
+        "name": "WELLS FARGO & COMPANY/MN"
+      },
+      {
+        "ticker": "IBM",
+        "sec_ticker": "IBM",
+        "cik": "51143",
+        "name": "INTERNATIONAL BUSINESS MACHINES CORP"
+      },
+      {
+        "ticker": "GE",
+        "sec_ticker": "GE",
+        "cik": "40545",
+        "name": "GENERAL ELECTRIC CO"
+      },
+      {
+        "ticker": "ABT",
+        "sec_ticker": "ABT",
+        "cik": "1800",
+        "name": "ABBOTT LABORATORIES"
+      },
+      {
+        "ticker": "LIN",
+        "sec_ticker": "LIN",
+        "cik": "1707925",
+        "name": "LINDE PLC"
+      },
+      {
+        "ticker": "CAT",
+        "sec_ticker": "CAT",
+        "cik": "18230",
+        "name": "CATERPILLAR INC"
+      },
+      {
+        "ticker": "QCOM",
+        "sec_ticker": "QCOM",
+        "cik": "804328",
+        "name": "QUALCOMM INC/DE"
+      },
+      {
+        "ticker": "VZ",
+        "sec_ticker": "VZ",
+        "cik": "732712",
+        "name": "VERIZON COMMUNICATIONS INC"
+      },
+      {
+        "ticker": "INTU",
+        "sec_ticker": "INTU",
+        "cik": "896878",
+        "name": "INTUIT INC."
+      },
+      {
+        "ticker": "AMAT",
+        "sec_ticker": "AMAT",
+        "cik": "6951",
+        "name": "APPLIED MATERIALS INC /DE"
+      },
+      {
+        "ticker": "DHR",
+        "sec_ticker": "DHR",
+        "cik": "313616",
+        "name": "DANAHER CORP /DE/"
+      },
+      {
+        "ticker": "NOW",
+        "sec_ticker": "NOW",
+        "cik": "1373715",
+        "name": "ServiceNow, Inc."
+      },
+      {
+        "ticker": "TXN",
+        "sec_ticker": "TXN",
+        "cik": "97476",
+        "name": "TEXAS INSTRUMENTS INC"
+      },
+      {
+        "ticker": "PM",
+        "sec_ticker": "PM",
+        "cik": "1413329",
+        "name": "Philip Morris International Inc."
+      },
+      {
+        "ticker": "DIS",
+        "sec_ticker": "DIS",
+        "cik": "1744489",
+        "name": "Walt Disney Co"
+      },
+      {
+        "ticker": "ISRG",
+        "sec_ticker": "ISRG",
+        "cik": "1035267",
+        "name": "INTUITIVE SURGICAL INC"
+      },
+      {
+        "ticker": "UBER",
+        "sec_ticker": "UBER",
+        "cik": "1543151",
+        "name": "Uber Technologies, Inc"
+      },
+      {
+        "ticker": "PFE",
+        "sec_ticker": "PFE",
+        "cik": "78003",
+        "name": "PFIZER INC"
+      },
+      {
+        "ticker": "SPGI",
+        "sec_ticker": "SPGI",
+        "cik": "64040",
+        "name": "S&P Global Inc."
+      },
+      {
+        "ticker": "NEE",
+        "sec_ticker": "NEE",
+        "cik": "753308",
+        "name": "NEXTERA ENERGY INC"
+      },
+      {
+        "ticker": "RTX",
+        "sec_ticker": "RTX",
+        "cik": "101829",
+        "name": "RTX Corp"
+      },
+      {
+        "ticker": "GS",
+        "sec_ticker": "GS",
+        "cik": "886982",
+        "name": "GOLDMAN SACHS GROUP INC"
+      },
+      {
+        "ticker": "LOW",
+        "sec_ticker": "LOW",
+        "cik": "60667",
+        "name": "LOWES COMPANIES INC"
+      },
+      {
+        "ticker": "BKNG",
+        "sec_ticker": "BKNG",
+        "cik": "1075531",
+        "name": "Booking Holdings Inc."
+      },
+      {
+        "ticker": "T",
+        "sec_ticker": "T",
+        "cik": "732717",
+        "name": "AT&T INC."
+      },
+      {
+        "ticker": "UNP",
+        "sec_ticker": "UNP",
+        "cik": "100885",
+        "name": "UNION PACIFIC CORP"
+      },
+      {
+        "ticker": "HON",
+        "sec_ticker": "HON",
+        "cik": "773840",
+        "name": "HONEYWELL INTERNATIONAL INC"
+      },
+      {
+        "ticker": "AXP",
+        "sec_ticker": "AXP",
+        "cik": "4962",
+        "name": "AMERICAN EXPRESS CO"
+      },
+      {
+        "ticker": "BLK",
+        "sec_ticker": "BLK",
+        "cik": "2012383",
+        "name": "BlackRock, Inc."
+      },
+      {
+        "ticker": "PGR",
+        "sec_ticker": "PGR",
+        "cik": "80661",
+        "name": "PROGRESSIVE CORP/OH/"
+      },
+      {
+        "ticker": "SYK",
+        "sec_ticker": "SYK",
+        "cik": "310764",
+        "name": "STRYKER CORP"
+      },
+      {
+        "ticker": "ETN",
+        "sec_ticker": "ETN",
+        "cik": "1551182",
+        "name": "Eaton Corp plc"
+      },
+      {
+        "ticker": "TJX",
+        "sec_ticker": "TJX",
+        "cik": "109198",
+        "name": "TJX COMPANIES INC /DE/"
+      },
+      {
+        "ticker": "ELV",
+        "sec_ticker": "ELV",
+        "cik": "1156039",
+        "name": "Elevance Health, Inc."
+      },
+      {
+        "ticker": "LMT",
+        "sec_ticker": "LMT",
+        "cik": "936468",
+        "name": "LOCKHEED MARTIN CORP"
+      },
+      {
+        "ticker": "MS",
+        "sec_ticker": "MS",
+        "cik": "895421",
+        "name": "MORGAN STANLEY"
+      },
+      {
+        "ticker": "C",
+        "sec_ticker": "C",
+        "cik": "831001",
+        "name": "CITIGROUP INC"
+      },
+      {
+        "ticker": "MDT",
+        "sec_ticker": "MDT",
+        "cik": "1613103",
+        "name": "Medtronic plc"
+      },
+      {
+        "ticker": "VRTX",
+        "sec_ticker": "VRTX",
+        "cik": "875320",
+        "name": "VERTEX PHARMACEUTICALS INC / MA"
+      },
+      {
+        "ticker": "REGN",
+        "sec_ticker": "REGN",
+        "cik": "872589",
+        "name": "REGENERON PHARMACEUTICALS, INC."
+      },
+      {
+        "ticker": "CB",
+        "sec_ticker": "CB",
+        "cik": "896159",
+        "name": "Chubb Ltd"
+      },
+      {
+        "ticker": "BSX",
+        "sec_ticker": "BSX",
+        "cik": "885725",
+        "name": "BOSTON SCIENTIFIC CORP"
+      },
+      {
+        "ticker": "ADI",
+        "sec_ticker": "ADI",
+        "cik": "6281",
+        "name": "ANALOG DEVICES INC"
+      },
+      {
+        "ticker": "MU",
+        "sec_ticker": "MU",
+        "cik": "723125",
+        "name": "MICRON TECHNOLOGY INC"
+      },
+      {
+        "ticker": "PANW",
+        "sec_ticker": "PANW",
+        "cik": "1327567",
+        "name": "Palo Alto Networks Inc"
+      },
+      {
+        "ticker": "SCHW",
+        "sec_ticker": "SCHW",
+        "cik": "316709",
+        "name": "SCHWAB CHARLES CORP"
+      },
+      {
+        "ticker": "DE",
+        "sec_ticker": "DE",
+        "cik": "315189",
+        "name": "DEERE & CO"
+      },
+      {
+        "ticker": "ADP",
+        "sec_ticker": "ADP",
+        "cik": "8670",
+        "name": "AUTOMATIC DATA PROCESSING INC"
+      },
+      {
+        "ticker": "KLAC",
+        "sec_ticker": "KLAC",
+        "cik": "319201",
+        "name": "KLA CORP"
+      },
+      {
+        "ticker": "GILD",
+        "sec_ticker": "GILD",
+        "cik": "882095",
+        "name": "GILEAD SCIENCES, INC."
+      },
+      {
+        "ticker": "COP",
+        "sec_ticker": "COP",
+        "cik": "1163165",
+        "name": "CONOCOPHILLIPS"
+      },
+      {
+        "ticker": "AMGN",
+        "sec_ticker": "AMGN",
+        "cik": "318154",
+        "name": "AMGEN INC"
+      },
+      {
+        "ticker": "PLD",
+        "sec_ticker": "PLD",
+        "cik": "1045609",
+        "name": "Prologis, Inc."
+      },
+      {
+        "ticker": "BA",
+        "sec_ticker": "BA",
+        "cik": "12927",
+        "name": "BOEING CO"
+      },
+      {
+        "ticker": "UPS",
+        "sec_ticker": "UPS",
+        "cik": "1090727",
+        "name": "UNITED PARCEL SERVICE INC"
+      },
+      {
+        "ticker": "SO",
+        "sec_ticker": "SO",
+        "cik": "92122",
+        "name": "SOUTHERN CO"
+      },
+      {
+        "ticker": "NKE",
+        "sec_ticker": "NKE",
+        "cik": "320187",
+        "name": "NIKE, Inc."
+      },
+      {
+        "ticker": "SBUX",
+        "sec_ticker": "SBUX",
+        "cik": "829224",
+        "name": "STARBUCKS CORP"
+      },
+      {
+        "ticker": "ICE",
+        "sec_ticker": "ICE",
+        "cik": "1571949",
+        "name": "Intercontinental Exchange, Inc."
+      },
+      {
+        "ticker": "MO",
+        "sec_ticker": "MO",
+        "cik": "764180",
+        "name": "ALTRIA GROUP, INC."
+      },
+      {
+        "ticker": "DUK",
+        "sec_ticker": "DUK",
+        "cik": "1326160",
+        "name": "Duke Energy CORP"
+      },
+      {
+        "ticker": "BMY",
+        "sec_ticker": "BMY",
+        "cik": "14272",
+        "name": "BRISTOL MYERS SQUIBB CO"
+      },
+      {
+        "ticker": "CI",
+        "sec_ticker": "CI",
+        "cik": "1739940",
+        "name": "Cigna Group"
+      },
+      {
+        "ticker": "MDLZ",
+        "sec_ticker": "MDLZ",
+        "cik": "1103982",
+        "name": "Mondelez International, Inc."
+      },
+      {
+        "ticker": "HCA",
+        "sec_ticker": "HCA",
+        "cik": "860730",
+        "name": "HCA Healthcare, Inc."
+      },
+      {
+        "ticker": "SHW",
+        "sec_ticker": "SHW",
+        "cik": "89800",
+        "name": "SHERWIN WILLIAMS CO"
+      }
+    ],
+    "filing_forms": [
+      "10-K",
+      "10-Q",
+      "8-K"
+    ],
+    "filing_limit_per_company": 3
+  },
+  "fred": {
+    "base_url": "https://api.stlouisfed.org/fred",
+    "series_ids": [
+      "GDP",
+      "GDPC1",
+      "A191RL1Q225SBEA",
+      "GNP",
+      "PCE",
+      "PCEPI",
+      "PCEPILFE",
+      "CPIAUCSL",
+      "CPILFESL",
+      "PPIACO",
+      "UNRATE",
+      "PAYEMS",
+      "CIVPART",
+      "EMRATIO",
+      "ICSA",
+      "JTSJOL",
+      "CES0500000003",
+      "AWHMAN",
+      "FEDFUNDS",
+      "DFF",
+      "DGS1MO",
+      "DGS3MO",
+      "DGS2",
+      "DGS5",
+      "DGS10",
+      "DGS30",
+      "T10Y2Y",
+      "T10Y3M",
+      "MORTGAGE30US",
+      "AAA",
+      "BAA",
+      "INDPRO",
+      "TCU",
+      "HOUST",
+      "PERMIT",
+      "HSN1F",
+      "EXHOSLUSM495S",
+      "RSAFS",
+      "UMCSENT",
+      "DSPIC96",
+      "PSAVERT",
+      "M2SL",
+      "BOGMBASE",
+      "TOTLL",
+      "BUSLOANS",
+      "REALLN",
+      "DEXUSEU",
+      "DEXJPUS",
+      "DEXCHUS",
+      "DTWEXBGS"
+    ],
+    "include_metadata": true,
+    "include_release": true,
+    "include_vintages": true
+  },
+  "worldbank": {
+    "base_url": "https://api.worldbank.org/v2",
+    "countries": [
+      "USA",
+      "CHN",
+      "JPN",
+      "DEU",
+      "GBR",
+      "FRA",
+      "IND",
+      "ITA",
+      "CAN",
+      "BRA",
+      "KOR",
+      "AUS",
+      "ESP",
+      "MEX",
+      "IDN",
+      "NLD",
+      "SAU",
+      "TUR",
+      "CHE",
+      "SWE"
+    ],
+    "indicators": [
+      "NY.GDP.MKTP.CD",
+      "NY.GDP.MKTP.KD.ZG",
+      "NY.GDP.PCAP.CD",
+      "SP.POP.TOTL",
+      "FP.CPI.TOTL.ZG",
+      "NE.EXP.GNFS.CD",
+      "NE.IMP.GNFS.CD",
+      "BN.CAB.XOKA.CD",
+      "BX.KLT.DINV.CD.WD",
+      "DT.DOD.DECT.CD",
+      "GC.XPN.TOTL.GD.ZS",
+      "GC.TAX.TOTL.GD.ZS",
+      "SL.UEM.TOTL.ZS",
+      "SL.TLF.CACT.ZS",
+      "FR.INR.RINR",
+      "PA.NUS.FCRF",
+      "FM.LBL.BMNY.GD.ZS",
+      "FS.AST.PRVT.GD.ZS",
+      "NE.CON.GOVT.ZS",
+      "NE.GDI.TOTL.ZS"
+    ],
+    "date_range": "1995:2025",
+    "include_country_metadata": true,
+    "include_indicator_metadata": true
+  },
+  "metadata_backend": {
+    "type": "postgres",
+    "dsn_env": "DATABASE_URL",
+    "postgres_schema": "./sql/postgres_schema.sql",
+    "dsn": "postgresql:///finraw"
+  },
+  "export": {
+    "jsonl_dir": "./data/exports/jsonl",
+    "parquet_dir": "./data/exports/parquet"
+  },
+  "imf": {
+    "targets": [
+      {
+        "name": "weo_ngdpd_current_usd_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/NGDPD",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=NGDPD/snapshot_date={snapshot_date}/weo_ngdpd_current_usd_gdp.json"
+      },
+      {
+        "name": "weo_real_gdp_growth",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=NGDP_RPCH/snapshot_date={snapshot_date}/weo_real_gdp_growth.json"
+      },
+      {
+        "name": "weo_gdp_per_capita_current_usd",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/NGDPDPC",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=NGDPDPC/snapshot_date={snapshot_date}/weo_gdp_per_capita_current_usd.json"
+      },
+      {
+        "name": "weo_inflation_average_consumer_prices",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/PCPIPCH",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=PCPIPCH/snapshot_date={snapshot_date}/weo_inflation_average_consumer_prices.json"
+      },
+      {
+        "name": "weo_unemployment_rate",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/LUR",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=LUR/snapshot_date={snapshot_date}/weo_unemployment_rate.json"
+      },
+      {
+        "name": "weo_current_account_balance_usd",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/BCA",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=BCA/snapshot_date={snapshot_date}/weo_current_account_balance_usd.json"
+      },
+      {
+        "name": "weo_current_account_balance_pct_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/BCA_NGDPD",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=BCA_NGDPD/snapshot_date={snapshot_date}/weo_current_account_balance_pct_gdp.json"
+      },
+      {
+        "name": "weo_general_government_gross_debt_pct_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/GGXWDG_NGDP",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=GGXWDG_NGDP/snapshot_date={snapshot_date}/weo_general_government_gross_debt_pct_gdp.json"
+      },
+      {
+        "name": "weo_general_government_net_lending_pct_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/GGXCNL_NGDP",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=GGXCNL_NGDP/snapshot_date={snapshot_date}/weo_general_government_net_lending_pct_gdp.json"
+      },
+      {
+        "name": "weo_share_of_world_gdp_ppp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/PPPSH",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=PPPSH/snapshot_date={snapshot_date}/weo_share_of_world_gdp_ppp.json"
+      }
+    ],
+    "note": "Add SDMX 2.1/3.0 target URLs here. Connector stores raw JSON/XML responses."
+  },
+  "cninfo": {
+    "start_date": "2023-01-01",
+    "end_date": "2025-12-31",
+    "categories": [
+      "annual",
+      "semiannual",
+      "q1",
+      "q3"
+    ],
+    "max_pages": 2,
+    "page_size": 30,
+    "selection_policy": {
+      "market": "CN_A_SHARE",
+      "initial_scope": "Start with large/liquid A-share companies and expand sector by sector.",
+      "include": [
+        "annual",
+        "semiannual",
+        "q1",
+        "q3"
+      ],
+      "exclude_title_keywords": [
+        "摘要",
+        "英文",
+        "取消",
+        "已取消"
+      ],
+      "keep_revision_versions": true
+    },
+    "stock_pool": [
+      {
+        "stock_code": "000001",
+        "selector": "000001,gssz0000001",
+        "company_name": "平安银行",
+        "market": "SZSE"
+      }
+    ]
+  },
+  "storage_policy": {
+    "backend": "local_filesystem",
+    "storage_root": "./data/fin_raw",
+    "storage_budget_bytes": 322122547200,
+    "minimum_free_bytes": 536870912000,
+    "migration_targets": [
+      "minio",
+      "s3",
+      "nas"
+    ]
+  },
+  "quality_gates": {
+    "raise_on_failure": true,
+    "max_failed_objects": 0,
+    "max_warning_objects": 20,
+    "min_raw_objects_by_source": {
+      "sec_companyfacts": 100,
+      "sec_submissions": 100,
+      "fred_observations": 200,
+      "worldbank_indicators": 440,
+      "imf_sdmx": 10
+    },
+    "min_raw_records_by_type": {
+      "fred_observations:fred_observation": 5000,
+      "worldbank_indicators:wb_observation": 4000
+    }
+  },
+  "run_policy": {
+    "resume_strategy": "rerun_same_config; duplicate raw objects are skipped by source_id + original_url + content_sha256",
+    "recommended_order": [
+      "init-db",
+      "seed-sources",
+      "ingest sec-sample",
+      "ingest sec-filings",
+      "ingest fred",
+      "ingest worldbank",
+      "ingest imf",
+      "discover-cninfo-batch",
+      "ingest cninfo",
+      "validate",
+      "enforce-quality"
+    ],
+    "do_not_run_sec_bulk_by_default": true
+  }
+}

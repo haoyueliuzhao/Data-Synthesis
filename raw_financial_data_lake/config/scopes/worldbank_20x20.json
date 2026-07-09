@@ -1,0 +1,51 @@
+{
+  "worldbank": {
+    "countries": [
+      "USA",
+      "CHN",
+      "JPN",
+      "DEU",
+      "GBR",
+      "FRA",
+      "IND",
+      "ITA",
+      "CAN",
+      "BRA",
+      "KOR",
+      "AUS",
+      "ESP",
+      "MEX",
+      "IDN",
+      "NLD",
+      "SAU",
+      "TUR",
+      "CHE",
+      "SWE"
+    ],
+    "indicators": [
+      "NY.GDP.MKTP.CD",
+      "NY.GDP.MKTP.KD.ZG",
+      "NY.GDP.PCAP.CD",
+      "SP.POP.TOTL",
+      "FP.CPI.TOTL.ZG",
+      "NE.EXP.GNFS.CD",
+      "NE.IMP.GNFS.CD",
+      "BN.CAB.XOKA.CD",
+      "BX.KLT.DINV.CD.WD",
+      "DT.DOD.DECT.CD",
+      "GC.XPN.TOTL.GD.ZS",
+      "GC.TAX.TOTL.GD.ZS",
+      "SL.UEM.TOTL.ZS",
+      "SL.TLF.CACT.ZS",
+      "FR.INR.RINR",
+      "PA.NUS.FCRF",
+      "FM.LBL.BMNY.GD.ZS",
+      "FS.AST.PRVT.GD.ZS",
+      "NE.CON.GOVT.ZS",
+      "NE.GDI.TOTL.ZS"
+    ],
+    "date_range": "1995:2025",
+    "include_country_metadata": true,
+    "include_indicator_metadata": true
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "storage_root": "./data/test_fin_raw",
+  "metadata_db": "./data/test_metadata.sqlite3",
+  "sec": {
+    "user_agent": "RawFinancialDataLake/0.1 contact@example.com",
+    "sample_companies": [
+      {
+        "ticker": "AAPL",
+        "cik": "320193",
+        "name": "Apple Inc."
+      },
+      {
+        "ticker": "MSFT",
+        "cik": "789019",
+        "name": "Microsoft Corporation"
+      },
+      {
+        "ticker": "TSLA",
+        "cik": "1318605",
+        "name": "Tesla, Inc."
+      }
+    ],
+    "bulk_datasets": [],
+    "filing_companies": [
+      {
+        "ticker": "AAPL",
+        "cik": "320193",
+        "name": "Apple Inc."
+      }
+    ],
+    "filing_forms": [
+      "10-K"
+    ],
+    "filing_limit_per_company": 1
+  },
+  "fred": {
+    "base_url": "https://api.stlouisfed.org/fred",
+    "series_ids": [
+      "GDP",
+      "UNRATE"
+    ],
+    "include_metadata": true,
+    "include_release": true,
+    "include_vintages": true
+  },
+  "worldbank": {
+    "base_url": "https://api.worldbank.org/v2",
+    "countries": [
+      "USA",
+      "CHN"
+    ],
+    "indicators": [
+      "NY.GDP.MKTP.CD",
+      "SP.POP.TOTL"
+    ],
+    "date_range": "2020:2024",
+    "include_country_metadata": true,
+    "include_indicator_metadata": true
+  },
+  "metadata_backend": {
+    "type": "sqlite",
+    "postgres_schema": "./sql/postgres_schema.sql"
+  },
+  "export": {
+    "jsonl_dir": "./data/test_exports/jsonl",
+    "parquet_dir": "./data/test_exports/parquet"
+  },
+  "imf": {
+    "targets": []
+  },
+  "cninfo": {
+    "announcements": []
+  },
+  "storage_policy": {
+    "backend": "local_filesystem",
+    "storage_root": "./data/test_fin_raw",
+    "storage_budget_bytes": 322122547200,
+    "minimum_free_bytes": 536870912000,
+    "migration_targets": [
+      "minio",
+      "s3",
+      "nas"
+    ]
+  },
+  "quality_gates": {
+    "raise_on_failure": true,
+    "max_failed_objects": 0,
+    "max_warning_objects": 5,
+    "min_raw_objects_by_source": {},
+    "min_raw_records_by_type": {}
+  }
+}

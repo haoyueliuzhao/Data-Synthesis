@@ -1,0 +1,86 @@
+{
+  "imf": {
+    "targets": [
+      {
+        "name": "weo_ngdpd_current_usd_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/NGDPD",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=NGDPD/snapshot_date={snapshot_date}/weo_ngdpd_current_usd_gdp.json"
+      },
+      {
+        "name": "weo_real_gdp_growth",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=NGDP_RPCH/snapshot_date={snapshot_date}/weo_real_gdp_growth.json"
+      },
+      {
+        "name": "weo_gdp_per_capita_current_usd",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/NGDPDPC",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=NGDPDPC/snapshot_date={snapshot_date}/weo_gdp_per_capita_current_usd.json"
+      },
+      {
+        "name": "weo_inflation_average_consumer_prices",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/PCPIPCH",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=PCPIPCH/snapshot_date={snapshot_date}/weo_inflation_average_consumer_prices.json"
+      },
+      {
+        "name": "weo_unemployment_rate",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/LUR",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=LUR/snapshot_date={snapshot_date}/weo_unemployment_rate.json"
+      },
+      {
+        "name": "weo_current_account_balance_usd",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/BCA",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=BCA/snapshot_date={snapshot_date}/weo_current_account_balance_usd.json"
+      },
+      {
+        "name": "weo_current_account_balance_pct_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/BCA_NGDPD",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=BCA_NGDPD/snapshot_date={snapshot_date}/weo_current_account_balance_pct_gdp.json"
+      },
+      {
+        "name": "weo_general_government_gross_debt_pct_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/GGXWDG_NGDP",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=GGXWDG_NGDP/snapshot_date={snapshot_date}/weo_general_government_gross_debt_pct_gdp.json"
+      },
+      {
+        "name": "weo_general_government_net_lending_pct_gdp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/GGXCNL_NGDP",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=GGXCNL_NGDP/snapshot_date={snapshot_date}/weo_general_government_net_lending_pct_gdp.json"
+      },
+      {
+        "name": "weo_share_of_world_gdp_ppp",
+        "dataset": "IMF_DataMapper_WEO",
+        "url": "https://www.imf.org/external/datamapper/api/v1/PPPSH",
+        "params": {},
+        "object_type": "json",
+        "relative_path": "imf/datamapper/dataset=WEO/indicator=PPPSH/snapshot_date={snapshot_date}/weo_share_of_world_gdp_ppp.json"
+      }
+    ]
+  }
+}

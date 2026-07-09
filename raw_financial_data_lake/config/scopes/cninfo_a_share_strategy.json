@@ -1,0 +1,24 @@
+{
+  "cninfo": {
+    "start_date": "2023-01-01",
+    "end_date": "2025-12-31",
+    "categories": ["annual", "semiannual", "q1", "q3"],
+    "max_pages": 2,
+    "page_size": 30,
+    "selection_policy": {
+      "market": "CN_A_SHARE",
+      "initial_scope": "Start with large/liquid A-share companies and expand sector by sector.",
+      "include": ["annual", "semiannual", "q1", "q3"],
+      "exclude_title_keywords": ["摘要", "英文", "取消", "已取消"],
+      "keep_revision_versions": true
+    },
+    "stock_pool": [
+      {
+        "stock_code": "000001",
+        "selector": "000001,gssz0000001",
+        "company_name": "平安银行",
+        "market": "SZSE"
+      }
+    ]
+  }
+}

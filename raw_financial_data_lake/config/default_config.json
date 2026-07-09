@@ -1,0 +1,138 @@
+{
+  "storage_root": "./data/fin_raw",
+  "metadata_db": "./data/metadata.sqlite3",
+  "sec": {
+    "user_agent": "RawFinancialDataLake/0.1 contact@example.com",
+    "sample_companies": [
+      {
+        "ticker": "AAPL",
+        "cik": "320193",
+        "name": "Apple Inc."
+      },
+      {
+        "ticker": "MSFT",
+        "cik": "789019",
+        "name": "Microsoft Corporation"
+      },
+      {
+        "ticker": "TSLA",
+        "cik": "1318605",
+        "name": "Tesla, Inc."
+      }
+    ],
+    "bulk_datasets": [
+      {
+        "name": "companyfacts",
+        "source_id": "sec_companyfacts",
+        "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+        "object_type": "zip",
+        "relative_path": "sec/companyfacts/snapshot_date={snapshot_date}/companyfacts.zip"
+      },
+      {
+        "name": "submissions",
+        "source_id": "sec_submissions",
+        "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/submissions.zip",
+        "object_type": "zip",
+        "relative_path": "sec/submissions/snapshot_date={snapshot_date}/submissions.zip"
+      }
+    ],
+    "filing_companies": [
+      {
+        "ticker": "AAPL",
+        "cik": "320193",
+        "name": "Apple Inc."
+      },
+      {
+        "ticker": "MSFT",
+        "cik": "789019",
+        "name": "Microsoft Corporation"
+      },
+      {
+        "ticker": "TSLA",
+        "cik": "1318605",
+        "name": "Tesla, Inc."
+      }
+    ],
+    "filing_forms": [
+      "10-K",
+      "10-Q",
+      "8-K"
+    ],
+    "filing_limit_per_company": 3
+  },
+  "fred": {
+    "base_url": "https://api.stlouisfed.org/fred",
+    "series_ids": [
+      "GDP",
+      "CPIAUCSL",
+      "PPIACO",
+      "UNRATE",
+      "FEDFUNDS",
+      "DGS10",
+      "INDPRO",
+      "RSAFS",
+      "DEXUSEU",
+      "DEXCHUS"
+    ],
+    "include_metadata": true,
+    "include_release": true,
+    "include_vintages": true
+  },
+  "worldbank": {
+    "base_url": "https://api.worldbank.org/v2",
+    "countries": [
+      "USA",
+      "CHN",
+      "JPN",
+      "DEU",
+      "GBR"
+    ],
+    "indicators": [
+      "NY.GDP.MKTP.CD",
+      "NY.GDP.MKTP.KD.ZG",
+      "SP.POP.TOTL",
+      "FP.CPI.TOTL.ZG",
+      "NE.EXP.GNFS.CD",
+      "NE.IMP.GNFS.CD",
+      "BX.KLT.DINV.CD.WD",
+      "BN.CAB.XOKA.CD"
+    ],
+    "date_range": "1990:2025",
+    "include_country_metadata": true,
+    "include_indicator_metadata": true
+  },
+  "metadata_backend": {
+    "type": "sqlite",
+    "postgres_schema": "./sql/postgres_schema.sql"
+  },
+  "export": {
+    "jsonl_dir": "./data/exports/jsonl",
+    "parquet_dir": "./data/exports/parquet"
+  },
+  "imf": {
+    "targets": [],
+    "note": "Add SDMX 2.1/3.0 target URLs here. Connector stores raw JSON/XML responses."
+  },
+  "cninfo": {
+    "announcements": [],
+    "note": "Add direct CNInfo PDF announcement URLs here. Connector stores raw PDFs and metadata."
+  },
+  "storage_policy": {
+    "backend": "local_filesystem",
+    "storage_root": "./data/fin_raw",
+    "storage_budget_bytes": 322122547200,
+    "minimum_free_bytes": 536870912000,
+    "migration_targets": [
+      "minio",
+      "s3",
+      "nas"
+    ]
+  },
+  "quality_gates": {
+    "raise_on_failure": true,
+    "max_failed_objects": 0,
+    "max_warning_objects": 5,
+    "min_raw_objects_by_source": {},
+    "min_raw_records_by_type": {}
+  }
+}
