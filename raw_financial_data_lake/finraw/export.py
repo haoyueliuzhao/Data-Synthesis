@@ -22,6 +22,11 @@ EXPORT_TABLES = [
     "standardized_facts",
     "fact_quality_checks",
     "derived_facts",
+    "source_metric_definitions",
+    "time_series_frequency_map",
+    "document_text_chunks",
+    "raw_extracted_tables",
+    "candidate_facts",
 ]
 
 

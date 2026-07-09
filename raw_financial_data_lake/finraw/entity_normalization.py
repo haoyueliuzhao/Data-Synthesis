@@ -29,6 +29,11 @@ CURATED_ENTITY_ALIASES = {
 
 def refresh_entity_normalization(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
     entities, aliases, diagnostics = build_entity_normalization(db, config)
+    for table in ["candidate_facts", "derived_facts", "fact_quality_checks", "standardized_facts", "atomic_facts"]:
+        try:
+            db.execute(f"DELETE FROM {table}")
+        except Exception:
+            pass
     db.execute("DELETE FROM entity_alias_map")
     db.execute("DELETE FROM canonical_entities")
     for entity in entities:
@@ -101,6 +106,7 @@ def build_entity_normalization(db: DBProtocol, config: dict[str, Any]) -> tuple[
     _add_sec_companies(entity_by_id, alias_by_id, source_entities, raw_records, config)
     _add_cninfo_companies(entity_by_id, alias_by_id, source_entities, raw_records, config)
     _add_worldbank_countries(entity_by_id, alias_by_id, source_entities)
+    _add_imf_countries(entity_by_id, alias_by_id, raw_records)
     _add_fred_entities(entity_by_id, alias_by_id, source_entities)
     _add_diagnostics(diagnostics, source_entities, entity_by_id)
 
@@ -298,6 +304,106 @@ def _add_worldbank_countries(
             _add_alias(alias_by_id, entity_id, "worldbank_indicators", iso3, country_name, alias, 0.97)
 
 
+def _add_imf_countries(
+    entity_by_id: dict[str, dict[str, Any]],
+    alias_by_id: dict[str, dict[str, Any]],
+    raw_records: list[dict[str, Any]],
+) -> None:
+    country_codes: set[str] = set()
+    region_codes: set[str] = set()
+    for record in raw_records:
+        if record.get("record_type") != "imf_sdmx_response":
+            continue
+        payload = _json_value(record.get("record_json"))
+        if not isinstance(payload, dict):
+            continue
+        storage_uri = payload.get("storage_uri")
+        if not storage_uri:
+            continue
+        try:
+            data = json.loads(Path(storage_uri).read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        values = data.get("values") if isinstance(data, dict) else None
+        if not isinstance(values, dict):
+            continue
+        for indicator_values in values.values():
+            if not isinstance(indicator_values, dict):
+                continue
+            for code in indicator_values.keys():
+                code = _upper(code)
+                if not code:
+                    continue
+                if len(code) == 3 and code.isalpha():
+                    country_codes.add(code)
+                elif code.replace("_", "").isalnum():
+                    region_codes.add(code)
+    for iso3 in sorted(country_codes):
+        entity_id = f"{iso3}_COUNTRY"
+        existing = entity_by_id.get(entity_id)
+        country_name = existing.get("canonical_name") if existing else _country_name(iso3)
+        _upsert_entity(entity_by_id, {
+            "entity_id": entity_id,
+            "canonical_name": country_name,
+            "entity_type": "country",
+            "market": "Global",
+            "country": iso3,
+            "exchange": None,
+            "ticker": None,
+            "cik": None,
+            "isin": None,
+            "currency": None,
+            "fiscal_year_end": None,
+            "industry": existing.get("industry") if existing else None,
+        })
+        for alias in [iso3, country_name]:
+            _add_alias(alias_by_id, entity_id, "imf_sdmx", iso3, country_name, alias, 0.9)
+
+    for code in sorted(region_codes):
+        entity_id = f"{code}_REGION"
+        region_name = IMF_REGION_NAMES.get(code, code)
+        _upsert_entity(entity_by_id, {
+            "entity_id": entity_id,
+            "canonical_name": region_name,
+            "entity_type": "region",
+            "market": "Global",
+            "country": None,
+            "exchange": None,
+            "ticker": None,
+            "cik": None,
+            "isin": None,
+            "currency": None,
+            "fiscal_year_end": None,
+            "industry": "IMF aggregate",
+        })
+        for alias in [code, region_name]:
+            _add_alias(alias_by_id, entity_id, "imf_sdmx", code, region_name, alias, 0.86)
+
+
+IMF_REGION_NAMES = {
+    "ADVEC": "Advanced economies",
+    "AS5": "ASEAN-5",
+    "DA": "Emerging and developing Asia",
+    "OEMDC": "Emerging market and developing economies",
+    "EURO": "Euro area",
+    "EU": "European Union",
+    "WE": "World output group, advanced Europe",
+    "MECA": "Middle East and Central Asia",
+    "WEOWORLD": "World",
+}
+
+
+def _country_name(iso3: str) -> str:
+    try:
+        import pycountry
+        country = pycountry.countries.get(alpha_3=iso3)
+        if country:
+            return country.name
+    except Exception:
+        pass
+    return iso3
+
+
 def _add_fred_entities(
     entity_by_id: dict[str, dict[str, Any]],
     alias_by_id: dict[str, dict[str, Any]],
@@ -369,7 +475,7 @@ def _add_diagnostics(diagnostics: dict[str, Any], source_entities: list[dict[str
                 "reason": "no high-confidence canonical entity rule yet",
             })
     diagnostics["notes"].append("World Bank indicator metadata and most FRED macro series are metrics, not canonical entities in this layer.")
-    diagnostics["notes"].append("IMF raw responses are not observation-expanded yet, so no IMF canonical entities are generated in this pass.")
+    diagnostics["notes"].append("IMF DataMapper country codes are mapped to canonical country entities; countries missing from World Bank metadata use ISO3 fallback names until an ISO metadata enrichment pass is added.")
 
 
 def _upsert_entity(entity_by_id: dict[str, dict[str, Any]], entity: dict[str, Any]) -> None:

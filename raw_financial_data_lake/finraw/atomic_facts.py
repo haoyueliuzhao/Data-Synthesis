@@ -32,11 +32,15 @@ def refresh_atomic_facts(db: DBProtocol, config: dict[str, Any], output_dir: str
         "metric_counts": Counter(),
         "skipped_counts": Counter(),
         "notes": [
-            "Atomic facts are extracted only from structured raw records: SEC companyfacts XBRL JSON, FRED observations, and World Bank observations.",
-            "PDF/HTML filing facts are intentionally excluded until a parse-and-verify layer exists.",
+            "Atomic facts are extracted from structured raw records: SEC companyfacts XBRL JSON, FRED observations, World Bank observations, and IMF DataMapper/WEO JSON.",
+            "SEC filing HTML and CNInfo PDF records are represented as document availability facts only; numeric table extraction is intentionally excluded until a parse-and-verify layer exists.",
         ],
     }
-    db.execute("DELETE FROM atomic_facts")
+    for table in ["derived_facts", "fact_quality_checks", "standardized_facts", "atomic_facts"]:
+        try:
+            db.execute(f"DELETE FROM {table}")
+        except Exception:
+            pass
     batch: list[dict[str, Any]] = []
     for fact in _iter_atomic_facts(db, context, report):
         batch.append(fact)
@@ -127,9 +131,9 @@ def _iter_atomic_facts(db: DBProtocol, context: dict[str, Any], report: dict[str
         SELECT raw_record_id, raw_object_id, source_id, record_type, record_key,
                record_json, entity_hint, metric_hint, period_hint
         FROM raw_records
-        WHERE record_type IN (?, ?, ?)
+        WHERE record_type IN (?, ?, ?, ?, ?)
         """,
-        ("sec_companyfacts_json", "fred_observation", "wb_observation"),
+        ("sec_companyfacts_json", "fred_observation", "wb_observation", "imf_sdmx_response", "sec_filing_document"),
     )
     for row in rows:
         record = dict(row)
@@ -144,6 +148,13 @@ def _iter_atomic_facts(db: DBProtocol, context: dict[str, Any], report: dict[str
             fact = _extract_worldbank_observation(record, context, report)
             if fact:
                 yield fact
+        elif record_type == "imf_sdmx_response":
+            yield from _extract_imf_datamapper(record, context, report)
+        elif record_type == "sec_filing_document":
+            fact = _extract_sec_filing_document(record, context, report)
+            if fact:
+                yield fact
+    yield from _iter_cninfo_document_facts(db, context, report)
 
 
 def _extract_sec_companyfacts(record: dict[str, Any], context: dict[str, Any], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
@@ -309,14 +320,237 @@ def _extract_worldbank_observation(record: dict[str, Any], context: dict[str, An
     return fact
 
 
-def _lookup_entity(context: dict[str, Any], source_id: str, source_code: Any, alias: Any) -> str | None:
-    source_map = context["entity_aliases"].get(source_id, {})
-    for key in [source_code, alias]:
-        if key is None:
+IMF_UNIT_BY_CONCEPT = {
+    "weo_ngdpd_current_usd_gdp": ("billion USD", "USD"),
+    "weo_current_account_balance_usd": ("billion USD", "USD"),
+    "weo_gdp_per_capita_current_usd": ("USD_per_person", "USD"),
+    "weo_real_gdp_growth": ("percent", None),
+    "weo_inflation_average_consumer_prices": ("percent", None),
+    "weo_unemployment_rate": ("percent", None),
+    "weo_current_account_balance_pct_gdp": ("percent", None),
+    "weo_general_government_gross_debt_pct_gdp": ("percent", None),
+    "weo_general_government_net_lending_pct_gdp": ("percent", None),
+    "weo_share_of_world_gdp_ppp": ("percent", None),
+}
+
+SEC_DOCUMENT_METRIC_BY_FORM = {
+    "10-K": "sec_filing_10k",
+    "10-Q": "sec_filing_10q",
+    "8-K": "sec_filing_8k",
+}
+
+CNINFO_DOCUMENT_METRIC_BY_REPORT_TYPE = {
+    "annual": "cninfo_annual_report",
+    "semiannual": "cninfo_semiannual_report",
+    "q1": "cninfo_q1_report",
+    "q3": "cninfo_q3_report",
+}
+
+
+def _extract_imf_datamapper(record: dict[str, Any], context: dict[str, Any], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
+    concept = record.get("metric_hint") or record.get("record_key")
+    mapped = context["metric_aliases"].get("imf_sdmx", {}).get(concept)
+    if not mapped:
+        report["skipped_counts"]["imf_missing_metric"] += 1
+        return
+    metric_id, confidence = mapped
+    metadata = _json_value(record.get("record_json"))
+    if not isinstance(metadata, dict):
+        report["skipped_counts"]["imf_invalid_record_json"] += 1
+        return
+    storage_uri = metadata.get("storage_uri")
+    if not storage_uri:
+        report["skipped_counts"]["imf_missing_storage_uri"] += 1
+        return
+    try:
+        payload = json.loads(Path(storage_uri).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        report["skipped_counts"]["imf_unreadable_json"] += 1
+        return
+    values = payload.get("values") if isinstance(payload, dict) else None
+    if not isinstance(values, dict):
+        report["skipped_counts"]["imf_missing_values"] += 1
+        return
+    indicator_values = next((item for item in values.values() if isinstance(item, dict)), None)
+    if not isinstance(indicator_values, dict):
+        report["skipped_counts"]["imf_missing_indicator_values"] += 1
+        return
+    unit, currency = IMF_UNIT_BY_CONCEPT.get(concept, (context["metrics"].get(metric_id, {}).get("default_unit"), context["metrics"].get(metric_id, {}).get("default_currency")))
+    for country_code, observations in indicator_values.items():
+        entity_id = _lookup_entity(context, "imf_sdmx", country_code, country_code)
+        if not entity_id:
+            report["skipped_counts"]["imf_missing_entity"] += 1
             continue
-        value = source_map.get(str(key))
-        if value:
-            return value
+        if not isinstance(observations, dict):
+            continue
+        for year_text, raw_value in observations.items():
+            value = _decimal_or_none(raw_value)
+            year = _int_or_none(year_text)
+            if value is None or year is None:
+                report["skipped_counts"]["imf_missing_value"] += 1
+                continue
+            period_start = f"{year:04d}-01-01"
+            period_end = f"{year:04d}-12-31"
+            fact = _fact(
+                entity_id=entity_id,
+                metric_id=metric_id,
+                value=value,
+                unit=unit,
+                currency=currency,
+                period_start=period_start,
+                period_end=period_end,
+                fiscal_year=year,
+                fiscal_quarter=None,
+                as_of_date=None,
+                report_date=period_end,
+                source_id="imf_sdmx",
+                raw_object_id=record.get("raw_object_id"),
+                source_field_name=concept,
+                source_page_or_table=None,
+                extraction_method="api_datamapper",
+                confidence_score=confidence,
+                verification_status="single_source",
+                tolerance=None,
+                notes=_compact_notes({"country": country_code, "concept": concept, "dataset": metadata.get("dataset")}),
+                stable_parts=[record.get("raw_record_id"), country_code, concept, year, raw_value],
+            )
+            _count_fact(report, fact)
+            yield fact
+
+
+def _extract_sec_filing_document(record: dict[str, Any], context: dict[str, Any], report: dict[str, Any]) -> dict[str, Any] | None:
+    payload = _json_value(record.get("record_json"))
+    if not isinstance(payload, dict):
+        report["skipped_counts"]["sec_filing_invalid_json"] += 1
+        return None
+    form = payload.get("form") or record.get("metric_hint")
+    metric_id = SEC_DOCUMENT_METRIC_BY_FORM.get(str(form))
+    if not metric_id:
+        report["skipped_counts"]["sec_filing_unmapped_form"] += 1
+        return None
+    cik = _cik10(payload.get("cik"))
+    entity_id = _lookup_entity(context, "sec_filings", cik, payload.get("ticker"))
+    if not entity_id:
+        report["skipped_counts"]["sec_filing_missing_entity"] += 1
+        return None
+    period_end = _date_or_none(payload.get("reportDate") or payload.get("filingDate") or record.get("period_hint"))
+    filing_date = _date_or_none(payload.get("filingDate"))
+    year = _int_or_none(period_end or filing_date)
+    fact = _fact(
+        entity_id=entity_id,
+        metric_id=metric_id,
+        value=Decimal("1"),
+        unit="document",
+        currency=None,
+        period_start=None,
+        period_end=period_end,
+        fiscal_year=year,
+        fiscal_quarter=None,
+        as_of_date=filing_date,
+        report_date=period_end,
+        source_id="sec_filings",
+        raw_object_id=record.get("raw_object_id"),
+        source_field_name=str(form),
+        source_page_or_table=None,
+        extraction_method="document_metadata",
+        confidence_score=1.0,
+        verification_status="single_source",
+        tolerance=None,
+        notes=_compact_notes({"accessionNumber": payload.get("accessionNumber"), "primaryDocument": payload.get("primaryDocument"), "document_url": payload.get("document_url")}),
+        stable_parts=[record.get("raw_record_id"), cik, form, payload.get("accessionNumber"), payload.get("primaryDocument")],
+    )
+    _count_fact(report, fact)
+    return fact
+
+
+def _iter_cninfo_document_facts(db: DBProtocol, context: dict[str, Any], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
+    rows = db.fetchall(
+        """
+        SELECT raw_record_id, raw_object_id, source_id, record_type, record_key,
+               record_json, entity_hint, metric_hint, period_hint
+        FROM raw_records
+        WHERE record_type = ?
+        """,
+        ("cninfo_pdf_announcement",),
+    )
+    for row in rows:
+        fact = _extract_cninfo_document(dict(row), context, report)
+        if fact:
+            yield fact
+
+
+def _extract_cninfo_document(record: dict[str, Any], context: dict[str, Any], report: dict[str, Any]) -> dict[str, Any] | None:
+    payload = _json_value(record.get("record_json"))
+    if not isinstance(payload, dict):
+        report["skipped_counts"]["cninfo_invalid_json"] += 1
+        return None
+    report_type = payload.get("report_type") or record.get("metric_hint")
+    metric_id = CNINFO_DOCUMENT_METRIC_BY_REPORT_TYPE.get(str(report_type))
+    if not metric_id:
+        report["skipped_counts"]["cninfo_unmapped_report_type"] += 1
+        return None
+    stock_code = payload.get("stock_code") or record.get("entity_hint")
+    entity_id = _lookup_entity(context, "cninfo_announcements", stock_code, payload.get("company_name"))
+    if not entity_id:
+        report["skipped_counts"]["cninfo_missing_entity"] += 1
+        return None
+    year = _int_or_none(payload.get("year") or record.get("period_hint"))
+    period_end, fiscal_quarter = _cninfo_period(year, str(report_type))
+    publish_date = _date_or_none(payload.get("publish_date"))
+    fact = _fact(
+        entity_id=entity_id,
+        metric_id=metric_id,
+        value=Decimal("1"),
+        unit="document",
+        currency=None,
+        period_start=None,
+        period_end=period_end,
+        fiscal_year=year,
+        fiscal_quarter=fiscal_quarter,
+        as_of_date=publish_date,
+        report_date=period_end,
+        source_id="cninfo_announcements",
+        raw_object_id=record.get("raw_object_id"),
+        source_field_name=str(report_type),
+        source_page_or_table=None,
+        extraction_method="document_metadata",
+        confidence_score=1.0,
+        verification_status="single_source",
+        tolerance=None,
+        notes=_compact_notes({"announcement_id": payload.get("announcement_id"), "title": payload.get("title"), "storage_uri": payload.get("storage_uri")}),
+        stable_parts=[record.get("raw_record_id"), stock_code, report_type, payload.get("announcement_id"), payload.get("filename")],
+    )
+    _count_fact(report, fact)
+    return fact
+
+
+def _cninfo_period(year: int | None, report_type: str) -> tuple[str | None, str | None]:
+    if not year:
+        return None, None
+    if report_type == "annual":
+        return f"{year:04d}-12-31", "FY"
+    if report_type == "semiannual":
+        return f"{year:04d}-06-30", "Q2"
+    if report_type == "q1":
+        return f"{year:04d}-03-31", "Q1"
+    if report_type == "q3":
+        return f"{year:04d}-09-30", "Q3"
+    return f"{year:04d}-12-31", None
+
+
+def _lookup_entity(context: dict[str, Any], source_id: str, source_code: Any, alias: Any) -> str | None:
+    fallback_sources = {
+        "sec_filings": ["sec_filings", "sec_submissions", "sec_companyfacts"],
+        "imf_sdmx": ["imf_sdmx", "worldbank_indicators"],
+    }.get(source_id, [source_id])
+    for candidate_source in fallback_sources:
+        source_map = context["entity_aliases"].get(candidate_source, {})
+        for key in [source_code, alias]:
+            if key is None:
+                continue
+            value = source_map.get(str(key))
+            if value:
+                return value
     return None
 
 

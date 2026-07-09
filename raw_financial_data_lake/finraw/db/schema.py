@@ -214,6 +214,91 @@ CREATE TABLE IF NOT EXISTS derived_facts (
 CREATE INDEX IF NOT EXISTS idx_derived_facts_type ON derived_facts(derived_type);
 CREATE INDEX IF NOT EXISTS idx_derived_facts_status ON derived_facts(verification_status);
 
+CREATE TABLE IF NOT EXISTS source_metric_definitions (
+    definition_id       TEXT PRIMARY KEY,
+    source_id           TEXT REFERENCES source_registry(source_id),
+    metric_id           TEXT REFERENCES metrics(metric_id),
+    raw_concept_name    TEXT,
+    definition_text     TEXT,
+    unit_rule           TEXT,
+    frequency           TEXT,
+    vintage_policy      TEXT,
+    is_forecast         INTEGER,
+    comparable_to_metric_id TEXT,
+    comparability_level TEXT,
+    notes               TEXT,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_source_metric_definitions_source_metric ON source_metric_definitions(source_id, metric_id);
+CREATE INDEX IF NOT EXISTS idx_source_metric_definitions_concept ON source_metric_definitions(raw_concept_name);
+
+CREATE TABLE IF NOT EXISTS time_series_frequency_map (
+    frequency_id        TEXT PRIMARY KEY,
+    source_id           TEXT REFERENCES source_registry(source_id),
+    metric_id           TEXT REFERENCES metrics(metric_id),
+    series_id           TEXT,
+    frequency           TEXT,
+    seasonal_adjustment TEXT,
+    period_type         TEXT,
+    annualization_rule  TEXT,
+    source_units        TEXT,
+    notes               TEXT,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_time_series_frequency_source_series ON time_series_frequency_map(source_id, series_id);
+CREATE INDEX IF NOT EXISTS idx_time_series_frequency_metric ON time_series_frequency_map(metric_id);
+
+CREATE TABLE IF NOT EXISTS document_text_chunks (
+    chunk_id            TEXT PRIMARY KEY,
+    raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
+    source_id           TEXT REFERENCES source_registry(source_id),
+    page_number         INTEGER,
+    section_title       TEXT,
+    text                TEXT,
+    char_start          INTEGER,
+    char_end            INTEGER,
+    extraction_method   TEXT,
+    confidence_score    REAL,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_document_text_chunks_raw_object ON document_text_chunks(raw_object_id);
+CREATE INDEX IF NOT EXISTS idx_document_text_chunks_source ON document_text_chunks(source_id);
+
+CREATE TABLE IF NOT EXISTS raw_extracted_tables (
+    table_id            TEXT PRIMARY KEY,
+    raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
+    source_id           TEXT REFERENCES source_registry(source_id),
+    page_number         INTEGER,
+    table_index         INTEGER,
+    raw_table_json      TEXT,
+    extraction_method   TEXT,
+    confidence_score    REAL,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_raw_extracted_tables_raw_object ON raw_extracted_tables(raw_object_id);
+
+CREATE TABLE IF NOT EXISTS candidate_facts (
+    candidate_id        TEXT PRIMARY KEY,
+    raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
+    table_id            TEXT REFERENCES raw_extracted_tables(table_id),
+    entity_id           TEXT REFERENCES canonical_entities(entity_id),
+    metric_hint         TEXT,
+    value               TEXT,
+    unit                TEXT,
+    period_hint         TEXT,
+    evidence_text       TEXT,
+    confidence_score    REAL,
+    review_status      TEXT,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_candidate_facts_raw_object ON candidate_facts(raw_object_id);
+CREATE INDEX IF NOT EXISTS idx_candidate_facts_review ON candidate_facts(review_status);
+
 CREATE TABLE IF NOT EXISTS atomic_facts (
     fact_id             TEXT PRIMARY KEY,
     entity_id           TEXT REFERENCES canonical_entities(entity_id),

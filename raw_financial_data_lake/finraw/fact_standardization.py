@@ -56,8 +56,8 @@ def refresh_fact_standardization(db: DBProtocol, config: dict[str, Any], output_
         "unit_counts": Counter(),
         "notes": [
             "Monetary facts are normalized to million currency units where possible; original atomic_facts remain unchanged.",
-            "Time basis is inferred from metric period_type and source; PDF/HTML facts are not included yet.",
-            "cross_verified requires matching normalized values from more than one source; otherwise valid facts remain single_source.",
+            "Time basis is inferred from metric period_type and source; document facts are preserved as document_presence facts, not numeric financial extractions.",
+            "cross_verified requires matching normalized values from more than one source; macro source differences beyond tolerance are marked source_definition_mismatch when source definitions likely differ.",
         ],
     }
 
@@ -166,6 +166,9 @@ def _standardize_one(fact: dict[str, Any], metric: dict[str, Any]) -> Standardiz
         "conflict_group_id": None,
         "confidence_score": fact.get("confidence_score"),
         "notes": _merge_notes(fact.get("notes"), {"raw_unit": fact.get("unit"), "raw_currency": fact.get("currency")}),
+        "_source_field_name": fact.get("source_field_name"),
+        "_metric_category": metric.get("metric_category"),
+        "_extraction_method": fact.get("extraction_method"),
     }
     return StandardizedRow(row=row, checks=checks)
 
@@ -182,8 +185,14 @@ def _normalize_unit(value: Decimal | None, fact: dict[str, Any], metric: dict[st
             return value * Decimal("100"), "percent", None, "ratio_to_percent"
         return value, "percent", None, "percent"
 
+    if unit_l == "document":
+        return value, "document", None, "document_presence"
+
     if _is_per_share_unit(unit, metric):
         return value, _per_share_unit(unit, currency), currency, "reported"
+
+    if _is_per_person_unit(unit, metric):
+        return value, _per_person_unit(unit, currency), currency, "reported"
 
     monetary_currency = _currency_from_unit(unit) or currency
     if monetary_currency:
@@ -251,11 +260,13 @@ def _detect_conflicts_and_cross_verification(groups: dict[tuple[Any, ...], list[
         tolerance = _tolerance(values)
         conflict_group_id = "conflict_" + hashlib.sha1("|".join(str(part) for part in key).encode("utf-8")).hexdigest()[:16]
         if abs(max_v - min_v) > tolerance:
+            status, check_type, severity = _difference_status(valid_rows, values)
             for row in valid_rows:
                 flags = list(row.get("validation_flags") or [])
-                flags.append({"check_type": "conflict", "severity": "error", "message": f"conflicting normalized values in group {conflict_group_id}"})
-                updates.append({"fact_id": row["fact_id"], "verification_status": "conflict", "validation_flags": flags, "conflict_group_id": conflict_group_id})
-                checks.append(_check(row, "conflict", "failed", "error", f"conflict group {conflict_group_id}: min={min_v}, max={max_v}"))
+                message = f"{check_type} in group {conflict_group_id}: min={min_v}, max={max_v}"
+                flags.append({"check_type": check_type, "severity": severity, "message": message})
+                updates.append({"fact_id": row["fact_id"], "verification_status": status, "validation_flags": flags, "conflict_group_id": conflict_group_id})
+                checks.append(_check(row, check_type, "warning" if severity == "warning" else "failed", severity, message))
         elif len(sources) > 1:
             for row in valid_rows:
                 if row["verification_status"] == "single_source":
@@ -308,10 +319,23 @@ def _apply_status_updates(db: DBProtocol, updates: list[dict[str, Any]], batch_s
 
 
 def _conflict_key(row: dict[str, Any]) -> tuple[Any, ...]:
+    source_concept_scope = None
+    if row.get("source_id") == "sec_companyfacts" and row.get("_metric_category") == "financial_statement":
+        source_concept_scope = row.get("_source_field_name")
     return (
         row.get("entity_id"), row.get("metric_id"), row.get("period_start"), row.get("period_end"),
         row.get("fiscal_year"), row.get("fiscal_quarter"), row.get("normalized_unit"), row.get("normalized_currency"),
+        source_concept_scope,
     )
+
+
+def _difference_status(rows: list[dict[str, Any]], values: list[Decimal]) -> tuple[str, str, str]:
+    sources = {row.get("source_id") for row in rows}
+    categories = {row.get("_metric_category") for row in rows}
+    cross_macro_sources = len(sources) > 1 and sources & {"imf_sdmx", "worldbank_indicators", "fred_observations"} and categories <= {"macro", "market", None}
+    if cross_macro_sources:
+        return "source_definition_mismatch", "source_definition_mismatch", "warning"
+    return "conflict", "conflict", "error"
 
 
 def _check(fact: dict[str, Any], check_type: str, status: str, severity: str, message: str) -> dict[str, Any]:
@@ -330,9 +354,19 @@ def _is_per_share_unit(unit: str, metric: dict[str, Any]) -> bool:
     return "share" in text or metric.get("default_unit") == "per_share"
 
 
+def _is_per_person_unit(unit: str, metric: dict[str, Any]) -> bool:
+    text = f"{unit} {metric.get('default_unit') or ''}".lower()
+    return "per_person" in text or "per person" in text or "per capita" in text
+
+
 def _per_share_unit(unit: str, currency: Any) -> str:
     cur = currency or _currency_from_unit(unit) or "currency"
     return f"{cur}_per_share"
+
+
+def _per_person_unit(unit: str, currency: Any) -> str:
+    cur = currency or _currency_from_unit(unit) or "currency"
+    return f"{cur}_per_person"
 
 
 def _currency_from_unit(unit: Any) -> str | None:
@@ -361,8 +395,10 @@ def _time_basis(fact: dict[str, Any], metric: dict[str, Any]) -> str:
         return "fiscal_period" if period_type == "period_flow" else "fiscal_point_in_time"
     if source == "fred_observations":
         return "observation_date"
-    if source == "worldbank_indicators":
+    if source in {"worldbank_indicators", "imf_sdmx"}:
         return "calendar_year"
+    if source in {"sec_filings", "cninfo_announcements"}:
+        return "document_period"
     return "source_period"
 
 

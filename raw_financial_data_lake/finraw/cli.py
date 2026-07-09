@@ -15,11 +15,13 @@ from finraw.connectors.sec_sample import SecCompanyJsonConnector
 from finraw.connectors.worldbank import WorldBankConnector
 from finraw.coverage import build_data_coverage_report, refresh_data_coverage_report, write_coverage_outputs
 from finraw.derived_facts import refresh_derived_facts
+from finraw.document_extraction import refresh_document_extraction
 from finraw.db.client import create_metadata_db
 from finraw.entity_normalization import refresh_entity_normalization
 from finraw.export import export_jsonl, export_parquet
 from finraw.fact_standardization import refresh_fact_standardization
 from finraw.metric_ontology import refresh_metric_ontology
+from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
 from finraw.storage import RawObjectStore
 from finraw.validation import quality_report, validate_raw_objects
@@ -80,6 +82,15 @@ def build_parser() -> argparse.ArgumentParser:
     derived_facts = sub.add_parser("refresh-derived-facts", help="Build derived_facts from standardized_facts.")
     derived_facts.add_argument("--output-dir", default="data/audit", help="Directory for derived facts report files.")
     derived_facts.add_argument("--batch-size", type=int, default=5000, help="Batch size for derived_facts inserts.")
+
+    source_defs = sub.add_parser("refresh-source-definitions", help="Build source_metric_definitions crosswalk metadata.")
+    source_defs.add_argument("--output-dir", default="data/audit", help="Directory for source definition report files.")
+
+    frequency_map = sub.add_parser("refresh-frequency-map", help="Build time_series_frequency_map for FRED and other series sources.")
+    frequency_map.add_argument("--output-dir", default="data/audit", help="Directory for frequency map report files.")
+
+    doc_extract = sub.add_parser("refresh-document-extraction", help="Build document text chunks, table placeholders, and candidate document facts.")
+    doc_extract.add_argument("--output-dir", default="data/audit", help="Directory for document extraction report files.")
 
     sub.add_parser("enforce-quality", help="Enforce configured quality gates and storage budget.")
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
@@ -174,6 +185,15 @@ def main() -> None:
         elif args.command == "refresh-derived-facts":
             report = refresh_derived_facts(db, config, output_dir=args.output_dir, batch_size=args.batch_size)
             print(json.dumps({"status": "refreshed", "derived_count": report["derived_count"], "derived_type_counts": report["derived_type_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "refresh-source-definitions":
+            report = refresh_source_metric_definitions(db, config, output_dir=args.output_dir)
+            print(json.dumps({"status": "refreshed", "definition_count": report["definition_count"], "source_counts": report["source_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "refresh-frequency-map":
+            report = refresh_time_series_frequency_map(db, config, output_dir=args.output_dir)
+            print(json.dumps({"status": "refreshed", "frequency_count": report["frequency_count"], "frequency_counts": report["frequency_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "refresh-document-extraction":
+            report = refresh_document_extraction(db, config, output_dir=args.output_dir)
+            print(json.dumps({"status": "refreshed", "chunk_count": report["chunk_count"], "candidate_count": report["candidate_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
         elif args.command == "enforce-quality":
             try:
                 result = enforce_quality_gates(db, config)
