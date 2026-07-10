@@ -52,7 +52,7 @@ Layer 3: fact_validation
   source definitions / frequency map / comparability fields / fact_quality_checks / graph_ready gates / conflict support
 
 Layer 4: qa_ready
-  derived_facts today; KG and QA artifacts later; consumes graph_ready standardized facts only
+  derived_facts / kg_builds / kg_nodes / kg_edges / kg_quality_checks; consumes graph_ready standardized facts only
 ```
 
 Print the machine-readable manifest:
@@ -111,6 +111,9 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 # Layer 4: qa_ready
 # Consumes standardized_facts where graph_ready = 1.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-derived-facts --output-dir data/audit/qa_ready
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-kg --output-dir data/audit/kg
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-quality-report --output-dir data/audit/kg
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-kg-jsonl data/kg_exports/jsonl
 ```
 
 `candidate_facts` are reviewable document-derived candidates. They are not accepted facts and are not promoted into `atomic_facts` without explicit validation. Fact quality gates report candidate state counts and fail if any active candidate is marked `qa_eligible` or `kg_eligible`.
@@ -118,6 +121,8 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 `standardized_facts` carry `source_definition_id`, `frequency`, `seasonal_adjustment`, `vintage_policy`, `is_forecast`, and `comparability_level`. They also carry two verification group IDs: `raw_equivalence_group_id` for strict same-source/concept duplicate checks, and `semantic_equivalence_group_id` for cross-source entity/metric/period/unit/currency comparison. `conflict_group_id` is kept as a compatibility pointer to the group that produced a conflict or source-definition mismatch. A shared `metric_id` is not enough for cross-source verification; facts with matching values but incompatible source definitions are marked `source_definition_mismatch`, not `cross_verified`.
 
 `derived_facts` now carry explicit QA scope metadata: `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. Ranking and share facts should be phrased with that scope, for example "among the configured SEC 100-company universe" or "among the configured World Bank 20-country universe". Do not turn these facts into open-ended questions such as "among all companies" unless the scope actually says that.
+
+`build-kg` creates a versioned property graph inside PostgreSQL/SQLite before any Neo4j export. KG nodes include Entity, Security, Metric, SourceDefinition, Fact, DerivedFact, TimePeriod, DataSource, RawObject, SourceDocument, and EntitySet. It only consumes active graph-ready standardized facts and active validated derived facts; `candidate_facts` remain excluded.
 
 ## Layered Exports
 

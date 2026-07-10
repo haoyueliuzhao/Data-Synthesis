@@ -23,6 +23,7 @@ from finraw.export import export_jsonl, export_layer_jsonl, export_layer_parquet
 from finraw.layers import LAYER_TABLES, layer_manifest
 from finraw.fact_quality import enforce_fact_quality_gates
 from finraw.fact_standardization import refresh_fact_standardization
+from finraw.kg_builder import build_kg, export_kg_jsonl, kg_quality_report
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
@@ -108,6 +109,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     enforce_fact_quality = sub.add_parser("enforce-fact-quality", help="Enforce fact-level quality gates and mark graph-ready standardized facts.")
     enforce_fact_quality.add_argument("--output-dir", default="data/audit/fact_validation", help="Directory for fact quality report files.")
+
+    build_kg_parser = sub.add_parser("build-kg", help="Build a versioned property graph from graph-ready facts and derived facts.")
+    build_kg_parser.add_argument("--output-dir", default="data/audit/kg", help="Directory for KG build and quality reports.")
+    build_kg_parser.add_argument("--batch-size", type=int, default=20000, help="Batch size for kg_nodes and kg_edges inserts.")
+
+    kg_quality = sub.add_parser("kg-quality-report", help="Write and print KG quality checks for the active or selected KG build.")
+    kg_quality.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to the active KG build.")
+    kg_quality.add_argument("--output-dir", default="data/audit/kg", help="Directory for KG quality report files.")
+
+    kg_export = sub.add_parser("export-kg-jsonl", help="Export active or selected KG nodes and edges to JSONL.")
+    kg_export.add_argument("output_dir")
+    kg_export.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to the active KG build.")
 
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
     return parser
@@ -236,6 +249,15 @@ def main() -> None:
                 print(json.dumps({"fact_quality_gate_status": "failed", "error": str(exc)}, ensure_ascii=False, indent=2))
                 raise SystemExit(1)
             print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True, default=str))
+        elif args.command == "build-kg":
+            report = build_kg(db, config, output_dir=args.output_dir, batch_size=args.batch_size)
+            print(json.dumps({"status": "built", "kg_build_id": report.get("kg_build_id"), "input_fact_build_id": report.get("input_fact_build_id"), "input_qa_build_id": report.get("input_qa_build_id"), "node_count": report.get("node_count"), "edge_count": report.get("edge_count"), "kg_quality_gate_status": report.get("quality", {}).get("kg_quality_gate_status"), "kg_quality_gate_failures": report.get("quality", {}).get("kg_quality_gate_failures"), "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "kg-quality-report":
+            report = kg_quality_report(db, kg_build_id=args.kg_build_id, output_dir=args.output_dir)
+            print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, default=str))
+        elif args.command == "export-kg-jsonl":
+            paths = export_kg_jsonl(db, args.output_dir, kg_build_id=args.kg_build_id)
+            print(json.dumps([str(path) for path in paths], ensure_ascii=False, indent=2))
         elif args.command == "validate":
             passed, failed = validate_raw_objects(db)
             print(f"Validation completed: passed={passed}, failed={failed}")

@@ -32,6 +32,10 @@ EXPORT_TABLES = [
     "document_text_chunks",
     "raw_extracted_tables",
     "candidate_facts",
+    "kg_builds",
+    "kg_nodes",
+    "kg_edges",
+    "kg_quality_checks",
 ]
 
 

@@ -549,3 +549,59 @@ CREATE TABLE IF NOT EXISTS pipeline_builds (
     notes               TEXT
 );
 
+CREATE TABLE IF NOT EXISTS kg_builds (
+    kg_build_id          TEXT PRIMARY KEY,
+    input_fact_build_id  TEXT,
+    input_qa_build_id    TEXT,
+    status               TEXT,
+    started_at           TEXT,
+    completed_at         TEXT,
+    node_count           INTEGER,
+    edge_count           INTEGER,
+    quality_status       TEXT,
+    notes                TEXT,
+    is_active            INTEGER DEFAULT 1,
+    superseded_by        TEXT
+);
+CREATE TABLE IF NOT EXISTS kg_nodes (
+    node_id              TEXT PRIMARY KEY,
+    stable_node_id       TEXT,
+    kg_build_id          TEXT REFERENCES kg_builds(kg_build_id),
+    node_type            TEXT NOT NULL,
+    source_table         TEXT,
+    source_pk            TEXT,
+    properties_json      TEXT,
+    is_active            INTEGER DEFAULT 1,
+    superseded_by        TEXT,
+    created_at           TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type ON kg_nodes(kg_build_id, node_type);
+CREATE INDEX IF NOT EXISTS idx_kg_nodes_stable ON kg_nodes(stable_node_id);
+CREATE TABLE IF NOT EXISTS kg_edges (
+    edge_id              TEXT PRIMARY KEY,
+    stable_edge_id       TEXT,
+    kg_build_id          TEXT REFERENCES kg_builds(kg_build_id),
+    src_node_id          TEXT NOT NULL,
+    dst_node_id          TEXT NOT NULL,
+    relation_type        TEXT NOT NULL,
+    source_table         TEXT,
+    source_pk            TEXT,
+    properties_json      TEXT,
+    is_active            INTEGER DEFAULT 1,
+    superseded_by        TEXT,
+    created_at           TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_kg_edges_build_type ON kg_edges(kg_build_id, relation_type);
+CREATE INDEX IF NOT EXISTS idx_kg_edges_src ON kg_edges(src_node_id);
+CREATE INDEX IF NOT EXISTS idx_kg_edges_dst ON kg_edges(dst_node_id);
+CREATE INDEX IF NOT EXISTS idx_kg_edges_stable ON kg_edges(stable_edge_id);
+CREATE TABLE IF NOT EXISTS kg_quality_checks (
+    check_id             TEXT PRIMARY KEY,
+    kg_build_id          TEXT REFERENCES kg_builds(kg_build_id),
+    check_type           TEXT,
+    status               TEXT,
+    severity             TEXT,
+    message              TEXT,
+    created_at           TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_kg_quality_checks_build ON kg_quality_checks(kg_build_id, status, severity);

@@ -66,6 +66,12 @@ Purpose: prepare graph-ready facts for complex questions, KG construction, and Q
 Tables:
 
 - `derived_facts`
+- `kg_builds`
+- `kg_nodes`
+- `kg_edges`
+- `kg_quality_checks`
+
+KG is first represented as an auditable property graph in the metadata database. It consumes only graph-ready standardized facts, active validated derived facts, source documents, raw objects, source definitions, canonical entities/securities, metrics, and source registry rows. `candidate_facts` are explicitly excluded until a future promotion workflow creates accepted atomic facts.
 
 `derived_facts` must preserve the semantic scope of the calculation. Every row carries `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. This is especially important for ranking/share facts: a ranking over the configured SEC 100-company universe is not the same as a ranking over the S&P 500, Nasdaq 100, all listed companies, or a World Bank income group.
 
@@ -152,3 +158,7 @@ KG and QA artifacts should bind to a specific build, for example `qa_ready_20260
 - Ranking and share derived facts must expose their scope explicitly; QA generation should include that scope in the question wording.
 - Every graph-ready standardized fact must have a `source_definition_id`; same `metric_id` alone is not sufficient comparability evidence.
 - Source definition mismatch is not a data corruption signal; it means values are comparable only with extra source-definition context.
+
+## KG Quality Gates
+
+`build-kg` writes `kg_builds`, `kg_nodes`, `kg_edges`, and `kg_quality_checks`. The KG gate verifies that fact node count matches graph-ready facts, no candidate facts leak into the graph, fact nodes have Entity/Metric/Time/DataSource/RawObject/SourceDefinition edges, derived facts have `DERIVED_FROM` edges, and ranking/share-style derived facts retain an explicit scope. JSONL export is available through `export-kg-jsonl`.

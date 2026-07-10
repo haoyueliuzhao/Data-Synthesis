@@ -34,6 +34,10 @@ LAYER_TABLES: dict[str, list[str]] = {
     ],
     "qa_ready": [
         "derived_facts",
+        "kg_builds",
+        "kg_nodes",
+        "kg_edges",
+        "kg_quality_checks",
     ],
 }
 
@@ -63,6 +67,9 @@ LAYER_COMMANDS: dict[str, list[str]] = {
     ],
     "qa_ready": [
         "refresh-derived-facts",
+        "build-kg",
+        "kg-quality-report",
+        "export-kg-jsonl",
     ],
 }
 
@@ -90,7 +97,7 @@ LAYER_DESCRIPTIONS: dict[str, str] = {
     "raw_lake": "Original source material and provenance only; no canonical financial claims are created here.",
     "fact_build": "Canonical entities, metric ontology, atomic facts, standardized facts, and document candidates built from raw records.",
     "fact_validation": "Quality checks, source-definition crosswalks, frequency metadata, fact-level graph_ready gates, conflict and comparability support.",
-    "qa_ready": "Derived facts and future KG/QA artifacts that consume graph-ready standardized facts.",
+    "qa_ready": "Derived facts, KG artifacts, and future QA outputs that consume graph-ready standardized facts.",
 }
 
 

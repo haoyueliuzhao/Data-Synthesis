@@ -28,7 +28,11 @@
   "qa_ready": {
     "default_export_dir": "data/layered_exports/qa_ready/",
     "tables": [
-      "derived_facts"
+      "derived_facts",
+      "kg_builds",
+      "kg_nodes",
+      "kg_edges",
+      "kg_quality_checks"
     ]
   },
   "raw_lake": {
