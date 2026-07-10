@@ -8,15 +8,21 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from finraw.builds import deactivate_active_rows, finish_build, start_build, versioned_id
 from finraw.db.client import DBProtocol
 
 TEXT_OBJECT_TYPES = {"html", "htm", "txt"}
 DOCUMENT_SOURCES = {"sec_filings", "cninfo_announcements"}
+CANDIDATE_STATE_PARSED = "parsed"
+CANDIDATE_STATE_MATCHED_TO_METRIC = "matched_to_metric"
+CANDIDATE_PROMOTION_STATUS_NOT_PROMOTED = "not_promoted"
+CANDIDATE_PROMOTION_STATUS_NOT_PROMOTABLE = "not_promotable"
 
 
 def refresh_document_extraction(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
+    build_id = start_build(db, layer="fact_build", command="refresh-document-extraction", prefix="document_extraction")
     for table in ["candidate_facts", "raw_extracted_tables", "document_text_chunks"]:
-        db.execute(f"DELETE FROM {table}")
+        deactivate_active_rows(db, table, build_id)
     objects = [dict(row) for row in db.fetchall(
         """
         SELECT raw_object_id, source_id, object_type, storage_uri, original_url, request_params,
@@ -31,18 +37,25 @@ def refresh_document_extraction(db: DBProtocol, config: dict[str, Any], output_d
     alias_map = _entity_alias_map(db)
     metric_alias_map = _metric_alias_map(db)
     report = {
+        "build_id": build_id,
         "object_count": len(objects),
         "chunk_count": 0,
         "table_placeholder_count": 0,
         "extracted_table_count": 0,
         "candidate_count": 0,
         "inline_xbrl_candidate_count": 0,
+        "candidate_state_counts": Counter(),
+        "promotion_status_counts": Counter(),
+        "candidate_qa_eligible_count": 0,
+        "candidate_kg_eligible_count": 0,
         "source_counts": Counter(),
         "notes": [
             "HTML/TXT filing documents are chunked as text evidence for later retrieval and QA evidence grounding.",
             "SEC HTML tables and inline XBRL numeric tags are extracted into raw_extracted_tables/candidate_facts, not promoted directly to atomic_facts.",
             "PDF documents currently receive metadata chunks only because no local PDF text/table parser is installed; numeric table extraction is not promoted to atomic_facts.",
             "raw_extracted_tables placeholder rows remain for documents where table extraction was not available.",
+            "candidate_facts follow a promotion state machine: parsed -> matched_to_metric -> evidence_verified -> cross_checked -> promoted_to_atomic_fact.",
+            "This command only creates parsed/matched_to_metric candidates with qa_eligible=0 and kg_eligible=0; promotion to atomic_facts must be handled by a future explicit parse-verify-promote workflow.",
         ],
     }
     for obj in objects:
@@ -53,29 +66,59 @@ def refresh_document_extraction(db: DBProtocol, config: dict[str, Any], output_d
             metadata = {}
         chunks = _chunks_for_object(obj, metadata)
         for chunk in chunks:
+            chunk = _with_document_build(chunk, build_id, "chunk_id", "stable_chunk_id")
             db.execute(
                 """
                 INSERT INTO document_text_chunks (
-                    chunk_id, raw_object_id, source_id, page_number, section_title, text,
+                    chunk_id, stable_chunk_id, build_id, is_active, superseded_by,
+                    raw_object_id, source_id, page_number, section_title, text,
                     char_start, char_end, extraction_method, confidence_score
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (chunk_id) DO UPDATE SET
+                    stable_chunk_id=excluded.stable_chunk_id,
+                    build_id=excluded.build_id,
+                    is_active=1,
+                    superseded_by=NULL,
+                    raw_object_id=excluded.raw_object_id,
+                    source_id=excluded.source_id,
+                    page_number=excluded.page_number,
+                    section_title=excluded.section_title,
+                    text=excluded.text,
+                    char_start=excluded.char_start,
+                    char_end=excluded.char_end,
+                    extraction_method=excluded.extraction_method,
+                    confidence_score=excluded.confidence_score
                 """,
-                [chunk[k] for k in ["chunk_id", "raw_object_id", "source_id", "page_number", "section_title", "text", "char_start", "char_end", "extraction_method", "confidence_score"]],
+                [chunk[k] for k in ["chunk_id", "stable_chunk_id", "build_id", "is_active", "superseded_by", "raw_object_id", "source_id", "page_number", "section_title", "text", "char_start", "char_end", "extraction_method", "confidence_score"]],
             )
             report["chunk_count"] += 1
         tables = _tables_for_object(obj)
         if not tables:
             tables = [_table_placeholder(obj)]
+        tables = [_with_document_build(table, build_id, "table_id", "stable_table_id") for table in tables]
         first_table_id = tables[0]["table_id"]
         for table in tables:
             db.execute(
                 """
                 INSERT INTO raw_extracted_tables (
-                    table_id, raw_object_id, source_id, page_number, table_index,
+                    table_id, stable_table_id, build_id, is_active, superseded_by,
+                    raw_object_id, source_id, page_number, table_index,
                     raw_table_json, extraction_method, confidence_score
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (table_id) DO UPDATE SET
+                    stable_table_id=excluded.stable_table_id,
+                    build_id=excluded.build_id,
+                    is_active=1,
+                    superseded_by=NULL,
+                    raw_object_id=excluded.raw_object_id,
+                    source_id=excluded.source_id,
+                    page_number=excluded.page_number,
+                    table_index=excluded.table_index,
+                    raw_table_json=excluded.raw_table_json,
+                    extraction_method=excluded.extraction_method,
+                    confidence_score=excluded.confidence_score
                 """,
-                [table["table_id"], table["raw_object_id"], table["source_id"], table["page_number"], table["table_index"], json.dumps(table["raw_table_json"], ensure_ascii=False, sort_keys=True), table["extraction_method"], table["confidence_score"]],
+                [table["table_id"], table["stable_table_id"], table["build_id"], table["is_active"], table["superseded_by"], table["raw_object_id"], table["source_id"], table["page_number"], table["table_index"], json.dumps(table["raw_table_json"], ensure_ascii=False, sort_keys=True), table["extraction_method"], table["confidence_score"]],
             )
             if table["extraction_method"] == "not_run":
                 report["table_placeholder_count"] += 1
@@ -89,32 +132,81 @@ def refresh_document_extraction(db: DBProtocol, config: dict[str, Any], output_d
         candidates.extend(inline_candidates)
         report["inline_xbrl_candidate_count"] += len(inline_candidates)
         for candidate in candidates:
+            candidate = _with_document_build(candidate, build_id, "candidate_id", "stable_candidate_id")
             db.execute(
                 """
                 INSERT INTO candidate_facts (
-                    candidate_id, raw_object_id, table_id, entity_id, metric_hint, value,
-                    unit, period_hint, evidence_text, confidence_score, review_status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    candidate_id, stable_candidate_id, build_id, is_active, superseded_by,
+                    raw_object_id, table_id, entity_id, metric_hint, value,
+                    unit, period_hint, evidence_text, confidence_score, review_status,
+                    candidate_state, state_reason, matched_metric_id, evidence_status,
+                    cross_check_status, promotion_status, promoted_fact_id, qa_eligible, kg_eligible
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (candidate_id) DO UPDATE SET
+                    stable_candidate_id=excluded.stable_candidate_id,
+                    build_id=excluded.build_id,
+                    is_active=1,
+                    superseded_by=NULL,
+                    raw_object_id=excluded.raw_object_id,
+                    table_id=excluded.table_id,
+                    entity_id=excluded.entity_id,
+                    metric_hint=excluded.metric_hint,
+                    value=excluded.value,
+                    unit=excluded.unit,
+                    period_hint=excluded.period_hint,
+                    evidence_text=excluded.evidence_text,
+                    confidence_score=excluded.confidence_score,
+                    review_status=excluded.review_status,
+                    candidate_state=excluded.candidate_state,
+                    state_reason=excluded.state_reason,
+                    matched_metric_id=excluded.matched_metric_id,
+                    evidence_status=excluded.evidence_status,
+                    cross_check_status=excluded.cross_check_status,
+                    promotion_status=excluded.promotion_status,
+                    promoted_fact_id=excluded.promoted_fact_id,
+                    qa_eligible=excluded.qa_eligible,
+                    kg_eligible=excluded.kg_eligible
                 """,
-                [candidate[k] for k in ["candidate_id", "raw_object_id", "table_id", "entity_id", "metric_hint", "value", "unit", "period_hint", "evidence_text", "confidence_score", "review_status"]],
+                [candidate[k] for k in ["candidate_id", "stable_candidate_id", "build_id", "is_active", "superseded_by", "raw_object_id", "table_id", "entity_id", "metric_hint", "value", "unit", "period_hint", "evidence_text", "confidence_score", "review_status", "candidate_state", "state_reason", "matched_metric_id", "evidence_status", "cross_check_status", "promotion_status", "promoted_fact_id", "qa_eligible", "kg_eligible"]],
             )
             report["candidate_count"] += 1
+            report["candidate_state_counts"][candidate.get("candidate_state") or "missing"] += 1
+            report["promotion_status_counts"][candidate.get("promotion_status") or "missing"] += 1
+            report["candidate_qa_eligible_count"] += int(candidate.get("qa_eligible") or 0)
+            report["candidate_kg_eligible_count"] += int(candidate.get("kg_eligible") or 0)
         report["source_counts"][source_id] += 1
     final_report = {
+        "build_id": build_id,
         "object_count": report["object_count"],
         "chunk_count": report["chunk_count"],
         "table_placeholder_count": report["table_placeholder_count"],
         "extracted_table_count": report["extracted_table_count"],
         "candidate_count": report["candidate_count"],
         "inline_xbrl_candidate_count": report["inline_xbrl_candidate_count"],
+        "candidate_state_counts": dict(sorted(report["candidate_state_counts"].items())),
+        "promotion_status_counts": dict(sorted(report["promotion_status_counts"].items())),
+        "candidate_qa_eligible_count": report["candidate_qa_eligible_count"],
+        "candidate_kg_eligible_count": report["candidate_kg_eligible_count"],
         "source_counts": dict(sorted(report["source_counts"].items())),
         "notes": report["notes"],
     }
     if output_dir:
         paths = write_document_extraction_report(final_report, output_dir)
         final_report["written_files"] = [str(path) for path in paths]
+    finish_build(db, build_id, "success", f"candidate_count={report['candidate_count']}; chunk_count={report['chunk_count']}")
     return final_report
 
+
+
+def _with_document_build(row: dict[str, Any], build_id: str, id_key: str, stable_key: str) -> dict[str, Any]:
+    stable_id = row[id_key]
+    out = dict(row)
+    out[stable_key] = stable_id
+    out[id_key] = versioned_id(stable_id, build_id)
+    out["build_id"] = build_id
+    out["is_active"] = 1
+    out["superseded_by"] = None
+    return out
 
 def _chunks_for_object(obj: dict[str, Any], metadata: dict[str, Any]) -> list[dict[str, Any]]:
     object_type = str(obj.get("object_type") or "").lower()
@@ -255,6 +347,15 @@ def _inline_xbrl_candidates(
             "evidence_text": evidence,
             "confidence_score": 0.86,
             "review_status": "inline_xbrl_candidate",
+            "candidate_state": CANDIDATE_STATE_MATCHED_TO_METRIC,
+            "state_reason": "Inline XBRL numeric tag matched to metric ontology alias; evidence has not been independently verified or cross-checked.",
+            "matched_metric_id": metric_id,
+            "evidence_status": "unverified",
+            "cross_check_status": "not_run",
+            "promotion_status": CANDIDATE_PROMOTION_STATUS_NOT_PROMOTED,
+            "promoted_fact_id": None,
+            "qa_eligible": 0,
+            "kg_eligible": 0,
         })
         if len(candidates) >= 300:
             break
@@ -338,7 +439,8 @@ def _numeric_text(value: str) -> str | None:
 
 def _metric_alias_map(db: DBProtocol) -> dict[str, str]:
     mapping = {}
-    for row in db.fetchall("SELECT raw_concept_name, metric_id FROM metric_alias_map WHERE source_id = 'sec_companyfacts'"):
+    for row in db.fetchall("SELECT raw_concept_name, metric_id FROM metric_alias_map WHERE source_id = 'sec_companyfacts' AND COALESCE(is_active, 1) = 1"):
+        row = dict(row)
         concept = row.get("raw_concept_name")
         metric_id = row.get("metric_id")
         if concept and metric_id:
@@ -395,12 +497,22 @@ def _candidate_for_document(obj: dict[str, Any], record: dict[str, Any], metadat
         "evidence_text": str(evidence or "")[:2000],
         "confidence_score": 0.72,
         "review_status": "document_metadata_only",
+        "candidate_state": CANDIDATE_STATE_PARSED,
+        "state_reason": "Document metadata evidence only; not a numeric fact and not promotable without a separate document index workflow.",
+        "matched_metric_id": None,
+        "evidence_status": "metadata_only",
+        "cross_check_status": "not_run",
+        "promotion_status": CANDIDATE_PROMOTION_STATUS_NOT_PROMOTABLE,
+        "promoted_fact_id": None,
+        "qa_eligible": 0,
+        "kg_eligible": 0,
     }
 
 
 def _entity_alias_map(db: DBProtocol) -> dict[tuple[str, str], str]:
     mapping = {}
-    for row in db.fetchall("SELECT source_id, source_code, alias, entity_id FROM entity_alias_map"):
+    for row in db.fetchall("SELECT source_id, source_code, alias, entity_id FROM entity_alias_map WHERE COALESCE(is_active, 1) = 1"):
+        row = dict(row)
         source_id = row.get("source_id")
         entity_id = row.get("entity_id")
         for key in [row.get("source_code"), row.get("alias")]:
@@ -434,7 +546,13 @@ def write_document_extraction_report(report: dict[str, Any], output_dir: str) ->
     json_path = out / "document_extraction_report.json"
     md_path = out / "document_extraction_report.md"
     json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
-    lines = ["# Document Extraction Report", "", f"Objects: {report['object_count']}", f"Chunks: {report['chunk_count']}", f"Extracted tables: {report.get('extracted_table_count', 0)}", f"Table placeholders: {report['table_placeholder_count']}", f"Candidates: {report['candidate_count']}", f"Inline XBRL candidates: {report.get('inline_xbrl_candidate_count', 0)}", "", "## Sources", ""]
+    lines = ["# Document Extraction Report", "", f"Objects: {report['object_count']}", f"Chunks: {report['chunk_count']}", f"Extracted tables: {report.get('extracted_table_count', 0)}", f"Table placeholders: {report['table_placeholder_count']}", f"Candidates: {report['candidate_count']}", f"Inline XBRL candidates: {report.get('inline_xbrl_candidate_count', 0)}", f"Candidate QA eligible: {report.get('candidate_qa_eligible_count', 0)}", f"Candidate KG eligible: {report.get('candidate_kg_eligible_count', 0)}", "", "## Candidate States", ""]
+    for key, value in report.get("candidate_state_counts", {}).items():
+        lines.append(f"- {key}: {value}")
+    lines.extend(["", "## Promotion Status", ""])
+    for key, value in report.get("promotion_status_counts", {}).items():
+        lines.append(f"- {key}: {value}")
+    lines.extend(["", "## Sources", ""])
     for key, value in report.get("source_counts", {}).items():
         lines.append(f"- {key}: {value}")
     lines.extend(["", "## Notes", ""])

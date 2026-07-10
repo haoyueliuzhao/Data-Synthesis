@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import uuid
 from typing import Any
 
-from finraw.connectors.base import RawSourceConnector
+from finraw.connectors.base import RawSourceConnector, stable_raw_record_id
 from finraw.http import get_url
 
 
@@ -78,7 +77,7 @@ class SecCompanyJsonConnector(RawSourceConnector):
                     payload = resp.json()
                     self.db.insert_raw_records([
                         {
-                            "raw_record_id": f"rawrec_{source_id}_{cik10}_{uuid.uuid4().hex[:8]}",
+                            "raw_record_id": stable_raw_record_id(source_id, obj["raw_object_id"], source_config["record_type"], cik10),
                             "raw_object_id": obj["raw_object_id"],
                             "source_id": source_id,
                             "record_key": cik10,

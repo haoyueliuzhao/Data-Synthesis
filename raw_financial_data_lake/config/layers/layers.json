@@ -1,0 +1,46 @@
+{
+  "fact_build": {
+    "default_export_dir": "data/layered_exports/fact_build/",
+    "tables": [
+      "canonical_entities",
+      "entity_alias_map",
+      "source_series_entity_map",
+      "entity_relationships",
+      "canonical_securities",
+      "metrics",
+      "metric_alias_map",
+      "atomic_facts",
+      "standardized_facts",
+      "source_documents",
+      "document_text_chunks",
+      "raw_extracted_tables",
+      "candidate_facts"
+    ]
+  },
+  "fact_validation": {
+    "default_export_dir": "data/layered_exports/fact_validation/",
+    "tables": [
+      "source_metric_definitions",
+      "time_series_frequency_map",
+      "fact_quality_checks"
+    ]
+  },
+  "qa_ready": {
+    "default_export_dir": "data/layered_exports/qa_ready/",
+    "tables": [
+      "derived_facts"
+    ]
+  },
+  "raw_lake": {
+    "default_export_dir": "data/layered_exports/raw_lake/",
+    "tables": [
+      "source_registry",
+      "ingestion_jobs",
+      "raw_objects",
+      "raw_records",
+      "source_entities",
+      "raw_dataset_snapshots",
+      "data_coverage_report"
+    ]
+  }
+}

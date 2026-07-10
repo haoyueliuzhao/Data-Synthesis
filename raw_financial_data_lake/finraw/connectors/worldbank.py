@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import json
-import uuid
 from typing import Any
 
-from finraw.connectors.base import RawSourceConnector
+from finraw.connectors.base import RawSourceConnector, stable_raw_record_id
 from finraw.http import get_url
 
 
@@ -138,7 +137,7 @@ class WorldBankConnector(RawSourceConnector):
     @staticmethod
     def _record(obj: dict[str, Any], key: str, record_type: str, payload: Any, entity: str | None, metric: str | None, period: str | None) -> dict[str, Any]:
         return {
-            "raw_record_id": f"rawrec_{record_type}_{key}_{uuid.uuid4().hex[:8]}",
+            "raw_record_id": stable_raw_record_id("worldbank_indicators", obj["raw_object_id"], record_type, key),
             "raw_object_id": obj["raw_object_id"],
             "source_id": "worldbank_indicators",
             "record_key": key,

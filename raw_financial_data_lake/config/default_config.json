@@ -134,5 +134,26 @@
     "max_warning_objects": 5,
     "min_raw_objects_by_source": {},
     "min_raw_records_by_type": {}
+  },
+  "fact_quality_gates": {
+    "raise_on_failure": true,
+    "max_missing_entity_count": 0,
+    "max_missing_metric_count": 0,
+    "max_missing_period_end_count": 0,
+    "max_missing_source_count": 0,
+    "max_null_value_count": 0,
+    "max_document_fact_count": 0,
+    "max_rejected_ratio": 0.001,
+    "max_conflict_ratio": 0.01,
+    "min_graph_ready_count": 1,
+    "min_graph_ready_ratio": 0.9,
+    "min_cross_verified_ratio": 0.0,
+    "max_single_source_ratio": 1.0,
+    "critical_metrics": [
+      "revenue",
+      "total_assets",
+      "net_income"
+    ],
+    "min_years_per_company_critical_metric": 0
   }
 }

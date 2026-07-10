@@ -7,6 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from finraw.builds import deactivate_active_rows, finish_build, start_build
 from finraw.db.client import DBProtocol
 
 Metric = dict[str, Any]
@@ -239,8 +240,9 @@ SEC_METRICS: list[dict[str, Any]] = [
         "revision_risk": "medium",
         "ambiguity_notes": "Do not confuse non-current long-term debt with total debt.",
         "concepts": ["us-gaap:LongTermDebtNoncurrent", "us-gaap:LongTermDebtAndFinanceLeaseObligationsNoncurrent"],
-        "raw_names": ["Long-term debt", "Current portion of long-term debt"],
-        "confidence": 0.78,
+        "raw_names": ["Long-term debt", "Long-term debt, noncurrent", "Non-current long-term debt"],
+        "related_terms": ["Current portion of long-term debt", "Long-term debt, current", "Current maturities of long-term debt", "Total debt"],
+        "confidence": 0.86,
     },
     {
         "metric_id": "net_cash_provided_by_used_in_operating_activities",
@@ -483,7 +485,8 @@ SEC_METRICS.extend([
         "revision_risk": "medium",
         "ambiguity_notes": "Current maturities; keep separate from non-current long-term debt.",
         "concepts": ["us-gaap:LongTermDebtCurrent"],
-        "raw_names": ["Long-term debt, current"],
+        "raw_names": ["Long-term debt, current", "Current portion of long-term debt", "Current maturities of long-term debt"],
+        "related_terms": ["Long-term debt", "Long-term debt, noncurrent", "Total debt"],
         "confidence": 0.98,
     },
 ])
@@ -655,22 +658,33 @@ DOCUMENT_METRICS = [
 
 
 def refresh_metric_ontology(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
+    build_id = start_build(db, layer="fact_build", command="refresh-metrics", prefix="metric_ontology")
     metrics, aliases, diagnostics = build_metric_ontology(db, config)
-    for table in ["derived_facts", "fact_quality_checks", "standardized_facts", "atomic_facts"]:
-        try:
-            db.execute(f"DELETE FROM {table}")
-        except Exception:
-            pass
-    db.execute("DELETE FROM metric_alias_map")
-    db.execute("DELETE FROM metrics")
+    deactivate_active_rows(db, "metric_alias_map", build_id)
+    deactivate_active_rows(db, "metrics", build_id)
     for metric in metrics:
         db.execute(
             """
             INSERT INTO metrics (
                 metric_id, canonical_name, metric_category, statement_type, period_type,
                 default_unit, default_currency, accounting_standard, aggregation_rule,
-                revision_risk, ambiguity_notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                revision_risk, ambiguity_notes, build_id, is_active, superseded_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (metric_id) DO UPDATE SET
+                canonical_name=excluded.canonical_name,
+                metric_category=excluded.metric_category,
+                statement_type=excluded.statement_type,
+                period_type=excluded.period_type,
+                default_unit=excluded.default_unit,
+                default_currency=excluded.default_currency,
+                accounting_standard=excluded.accounting_standard,
+                aggregation_rule=excluded.aggregation_rule,
+                revision_risk=excluded.revision_risk,
+                ambiguity_notes=excluded.ambiguity_notes,
+                build_id=excluded.build_id,
+                is_active=1,
+                superseded_by=NULL,
+                updated_at=CURRENT_TIMESTAMP
             """,
             [
                 metric.get("metric_id"),
@@ -684,14 +698,26 @@ def refresh_metric_ontology(db: DBProtocol, config: dict[str, Any], output_dir: 
                 metric.get("aggregation_rule"),
                 metric.get("revision_risk"),
                 metric.get("ambiguity_notes"),
+                build_id,
+                1,
+                None,
             ],
         )
     for alias in aliases:
         db.execute(
             """
             INSERT INTO metric_alias_map (
-                alias_id, metric_id, source_id, raw_field_name, raw_concept_name, confidence_score
-            ) VALUES (?, ?, ?, ?, ?, ?)
+                alias_id, metric_id, source_id, raw_field_name, raw_concept_name, confidence_score, build_id, is_active, superseded_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (alias_id) DO UPDATE SET
+                metric_id=excluded.metric_id,
+                source_id=excluded.source_id,
+                raw_field_name=excluded.raw_field_name,
+                raw_concept_name=excluded.raw_concept_name,
+                confidence_score=excluded.confidence_score,
+                build_id=excluded.build_id,
+                is_active=1,
+                superseded_by=NULL
             """,
             [
                 alias.get("alias_id"),
@@ -700,9 +726,13 @@ def refresh_metric_ontology(db: DBProtocol, config: dict[str, Any], output_dir: 
                 alias.get("raw_field_name"),
                 alias.get("raw_concept_name"),
                 alias.get("confidence_score"),
+                build_id,
+                1,
+                None,
             ],
         )
     report = {
+        "build_id": build_id,
         "metric_count": len(metrics),
         "alias_count": len(aliases),
         "metric_category_counts": dict(sorted(Counter(metric.get("metric_category") or "unknown" for metric in metrics).items())),
@@ -710,10 +740,12 @@ def refresh_metric_ontology(db: DBProtocol, config: dict[str, Any], output_dir: 
         "diagnostics": diagnostics,
         "sample_metrics": metrics[:30],
         "sample_aliases": aliases[:40],
+        "related_terms": diagnostics.get("related_terms", {}),
     }
     if output_dir:
         paths = write_metric_ontology_report(report, output_dir)
         report["written_files"] = [str(path) for path in paths]
+    finish_build(db, build_id, "success", f"metric_count={len(metrics)}; alias_count={len(aliases)}")
     return report
 
 
@@ -728,13 +760,17 @@ def build_metric_ontology(db: DBProtocol, config: dict[str, Any]) -> tuple[list[
         "unmapped_worldbank_indicators": [],
         "unmapped_imf_targets": [],
         "notes": [
-            "Metric ontology maps raw field/concept names to canonical metrics but does not extract standardized facts yet.",
+            "Metric ontology maps strict raw field/concept aliases to canonical metrics but does not extract standardized facts yet.",
             "Fiscal/calendar period, units, currency, GAAP/non-GAAP, and revision vintage must remain attached during fact extraction.",
+            "related_terms are intentionally not inserted into metric_alias_map; they are hints for review and prompt/template caution only.",
         ],
+        "related_terms": {},
     }
 
     for spec in SEC_METRICS:
         _add_metric(metrics, _metric_from_spec(spec))
+        if spec.get("related_terms"):
+            diagnostics["related_terms"][spec["metric_id"]] = list(spec.get("related_terms", []))
         for raw_name in spec.get("raw_names", []):
             _add_alias(aliases, spec["metric_id"], None, raw_name, None, 0.8)
         for concept in spec.get("concepts", []):

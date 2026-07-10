@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import uuid
 from typing import Any
 
-from finraw.connectors.base import RawSourceConnector
+from finraw.connectors.base import RawSourceConnector, stable_raw_record_id
 from finraw.http import get_url
 
 
@@ -52,7 +51,7 @@ class ImfSdmxConnector(RawSourceConnector):
                 if validation_status in {"passed", "warning"}:
                     self.db.insert_raw_records([
                         {
-                            "raw_record_id": f"rawrec_imf_{dataset}_{uuid.uuid4().hex[:8]}",
+                            "raw_record_id": stable_raw_record_id(self.source_id, obj["raw_object_id"], "imf_sdmx_response", target.get("name") or dataset),
                             "raw_object_id": obj["raw_object_id"],
                             "source_id": self.source_id,
                             "record_key": target.get("name") or dataset,

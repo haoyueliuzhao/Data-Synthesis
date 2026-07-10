@@ -6,11 +6,13 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from finraw.builds import deactivate_active_rows, finish_build, start_build
 from finraw.db.client import DBProtocol
 
 
 def refresh_source_metric_definitions(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
-    db.execute("DELETE FROM source_metric_definitions")
+    build_id = start_build(db, layer="fact_validation", command="refresh-source-definitions", prefix="source_definitions")
+    deactivate_active_rows(db, "source_metric_definitions", build_id)
     rows = [dict(row) for row in db.fetchall(
         """
         SELECT mam.source_id, mam.metric_id, mam.raw_field_name, mam.raw_concept_name,
@@ -18,15 +20,19 @@ def refresh_source_metric_definitions(db: DBProtocol, config: dict[str, Any], ou
                m.revision_risk, m.ambiguity_notes
         FROM metric_alias_map mam
         LEFT JOIN metrics m ON m.metric_id = mam.metric_id
+        WHERE COALESCE(mam.is_active, 1) = 1
+          AND COALESCE(m.is_active, 1) = 1
         """
     )]
+    source_metadata = _source_metadata_context(db)
     inserted = 0
     source_counts = Counter()
     seen_definition_ids: set[str] = set()
     for row in rows:
         if not row.get("source_id"):
             continue
-        definition = _definition_row(row)
+        concept = row.get("raw_concept_name") or row.get("raw_field_name") or row.get("metric_id")
+        definition = _definition_row(row, source_metadata.get((row.get("source_id"), concept), {}))
         if definition["definition_id"] in seen_definition_ids:
             continue
         seen_definition_ids.add(definition["definition_id"])
@@ -35,19 +41,36 @@ def refresh_source_metric_definitions(db: DBProtocol, config: dict[str, Any], ou
             INSERT INTO source_metric_definitions (
                 definition_id, source_id, metric_id, raw_concept_name, definition_text,
                 unit_rule, frequency, vintage_policy, is_forecast, comparable_to_metric_id,
-                comparability_level, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                comparability_level, notes, build_id, is_active, superseded_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (definition_id) DO UPDATE SET
+                source_id=excluded.source_id,
+                metric_id=excluded.metric_id,
+                raw_concept_name=excluded.raw_concept_name,
+                definition_text=excluded.definition_text,
+                unit_rule=excluded.unit_rule,
+                frequency=excluded.frequency,
+                vintage_policy=excluded.vintage_policy,
+                is_forecast=excluded.is_forecast,
+                comparable_to_metric_id=excluded.comparable_to_metric_id,
+                comparability_level=excluded.comparability_level,
+                notes=excluded.notes,
+                build_id=excluded.build_id,
+                is_active=1,
+                superseded_by=NULL
             """,
             [
                 definition.get("definition_id"), definition.get("source_id"), definition.get("metric_id"),
                 definition.get("raw_concept_name"), definition.get("definition_text"), definition.get("unit_rule"),
                 definition.get("frequency"), definition.get("vintage_policy"), definition.get("is_forecast"),
                 definition.get("comparable_to_metric_id"), definition.get("comparability_level"), definition.get("notes"),
+                build_id, 1, None,
             ],
         )
         inserted += 1
         source_counts[definition["source_id"]] += 1
     report = {
+        "build_id": build_id,
         "definition_count": inserted,
         "source_counts": dict(sorted(source_counts.items(), key=lambda item: str(item[0]))),
         "notes": [
@@ -59,13 +82,15 @@ def refresh_source_metric_definitions(db: DBProtocol, config: dict[str, Any], ou
     if output_dir:
         paths = write_source_definition_report(report, output_dir)
         report["written_files"] = [str(path) for path in paths]
+    finish_build(db, build_id, "success", f"definition_count={inserted}")
     return report
 
 
 def refresh_time_series_frequency_map(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
-    db.execute("DELETE FROM time_series_frequency_map")
+    build_id = start_build(db, layer="fact_validation", command="refresh-frequency-map", prefix="frequency_map")
+    deactivate_active_rows(db, "time_series_frequency_map", build_id)
     source_entities = [dict(row) for row in db.fetchall("SELECT source_code, source_name, raw_metadata FROM source_entities WHERE source_id = 'fred_observations'")]
-    aliases = {row["raw_concept_name"]: row["metric_id"] for row in db.fetchall("SELECT raw_concept_name, metric_id FROM metric_alias_map WHERE source_id = 'fred_observations'")}
+    aliases = {row["raw_concept_name"]: row["metric_id"] for row in db.fetchall("SELECT raw_concept_name, metric_id FROM metric_alias_map WHERE source_id = 'fred_observations' AND COALESCE(is_active, 1) = 1")}
     inserted = 0
     frequency_counts = Counter()
     for row in source_entities:
@@ -95,14 +120,28 @@ def refresh_time_series_frequency_map(db: DBProtocol, config: dict[str, Any], ou
             """
             INSERT INTO time_series_frequency_map (
                 frequency_id, source_id, metric_id, series_id, frequency, seasonal_adjustment,
-                period_type, annualization_rule, source_units, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                period_type, annualization_rule, source_units, notes, build_id, is_active, superseded_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (frequency_id) DO UPDATE SET
+                source_id=excluded.source_id,
+                metric_id=excluded.metric_id,
+                series_id=excluded.series_id,
+                frequency=excluded.frequency,
+                seasonal_adjustment=excluded.seasonal_adjustment,
+                period_type=excluded.period_type,
+                annualization_rule=excluded.annualization_rule,
+                source_units=excluded.source_units,
+                notes=excluded.notes,
+                build_id=excluded.build_id,
+                is_active=1,
+                superseded_by=NULL
             """,
-            [item[k] for k in ["frequency_id", "source_id", "metric_id", "series_id", "frequency", "seasonal_adjustment", "period_type", "annualization_rule", "source_units", "notes"]],
+            [item[k] for k in ["frequency_id", "source_id", "metric_id", "series_id", "frequency", "seasonal_adjustment", "period_type", "annualization_rule", "source_units", "notes"]] + [build_id, 1, None],
         )
         inserted += 1
         frequency_counts[frequency or "unknown"] += 1
     report = {
+        "build_id": build_id,
         "frequency_count": inserted,
         "frequency_counts": dict(sorted(frequency_counts.items())),
         "notes": [
@@ -113,25 +152,45 @@ def refresh_time_series_frequency_map(db: DBProtocol, config: dict[str, Any], ou
     if output_dir:
         paths = write_frequency_report(report, output_dir)
         report["written_files"] = [str(path) for path in paths]
+    finish_build(db, build_id, "success", f"frequency_count={inserted}")
     return report
 
 
-def _definition_row(row: dict[str, Any]) -> dict[str, Any]:
+def _source_metadata_context(db: DBProtocol) -> dict[tuple[str | None, str | None], dict[str, Any]]:
+    try:
+        rows = db.fetchall("SELECT source_id, source_code, raw_metadata FROM source_entities")
+    except Exception:
+        return {}
+    context = {}
+    for row in rows:
+        item = dict(row)
+        metadata = _json_value(item.get("raw_metadata"))
+        if isinstance(metadata, dict):
+            context[(item.get("source_id"), item.get("source_code"))] = metadata
+    return context
+
+
+def _definition_row(row: dict[str, Any], metadata: dict[str, Any] | None = None) -> dict[str, Any]:
     source_id = row.get("source_id")
     concept = row.get("raw_concept_name") or row.get("raw_field_name") or row.get("metric_id")
-    policy = _source_policy(source_id)
+    metadata = metadata or {}
+    policy = _source_policy(source_id, metadata)
     notes = {
         "canonical_name": row.get("canonical_name"),
         "revision_risk": row.get("revision_risk"),
         "ambiguity_notes": row.get("ambiguity_notes"),
         "alias_confidence": row.get("confidence_score"),
+        "source_title": metadata.get("title") or metadata.get("name"),
+        "source_units": metadata.get("units") or metadata.get("unit"),
+        "source_frequency": metadata.get("frequency") or metadata.get("frequency_short"),
+        "source_seasonal_adjustment": metadata.get("seasonal_adjustment") or metadata.get("seasonal_adjustment_short"),
     }
     return {
         "definition_id": _id("sdef", source_id, row.get("metric_id"), concept),
         "source_id": source_id,
         "metric_id": row.get("metric_id"),
         "raw_concept_name": concept,
-        "definition_text": _definition_text(row),
+        "definition_text": _definition_text(row, metadata),
         "unit_rule": _unit_rule(source_id, row),
         "frequency": policy["frequency"],
         "vintage_policy": policy["vintage_policy"],
@@ -142,23 +201,26 @@ def _definition_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _source_policy(source_id: str | None) -> dict[str, Any]:
+def _source_policy(source_id: str | None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    metadata = metadata or {}
     if source_id == "imf_sdmx":
-        return {"frequency": "annual", "vintage_policy": "WEO release; future years are forecasts", "is_forecast": True, "comparability_level": "definition_level"}
+        return {"frequency": "annual", "vintage_policy": "IMF release; future years may be forecasts", "is_forecast": True, "comparability_level": "definition_level"}
     if source_id == "worldbank_indicators":
         return {"frequency": "annual", "vintage_policy": "World Bank latest available revision", "is_forecast": False, "comparability_level": "definition_level"}
     if source_id == "fred_observations":
-        return {"frequency": "series_metadata", "vintage_policy": "FRED realtime_start/realtime_end retained when available", "is_forecast": False, "comparability_level": "series_level"}
+        return {"frequency": _normalise_frequency(metadata.get("frequency") or metadata.get("frequency_short")) or "series_metadata", "vintage_policy": "FRED realtime_start/realtime_end retained when available", "is_forecast": False, "comparability_level": "series_level"}
     if source_id == "sec_companyfacts":
-        return {"frequency": "filing_period", "vintage_policy": "SEC filed date and accession retained", "is_forecast": False, "comparability_level": "xbrl_concept_level"}
+        return {"frequency": "filing_period", "vintage_policy": "SEC filed date and accession retained; amendments/restatements selected upstream", "is_forecast": False, "comparability_level": "xbrl_concept_level"}
     return {"frequency": None, "vintage_policy": None, "is_forecast": False, "comparability_level": "source_metadata_only"}
 
 
-def _definition_text(row: dict[str, Any]) -> str:
+def _definition_text(row: dict[str, Any], metadata: dict[str, Any] | None = None) -> str:
     source_id = row.get("source_id")
     concept = row.get("raw_concept_name") or row.get("raw_field_name")
     metric = row.get("canonical_name") or row.get("metric_id")
-    return f"{source_id}:{concept} mapped to canonical metric {metric}."
+    title = (metadata or {}).get("title") or (metadata or {}).get("name")
+    suffix = f" Source title: {title}." if title else ""
+    return f"{source_id}:{concept} mapped to canonical metric {metric}.{suffix}"
 
 
 def _unit_rule(source_id: str | None, row: dict[str, Any]) -> str | None:

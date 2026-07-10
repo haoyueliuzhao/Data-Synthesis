@@ -4,6 +4,7 @@ import argparse
 import json
 
 from finraw.atomic_facts import refresh_atomic_facts
+from finraw.builds import mark_running_builds_failed
 from finraw.cninfo_discovery import discover_cninfo_announcements, discover_cninfo_from_strategy, write_cninfo_config
 from finraw.config import load_config
 from finraw.connectors.cninfo import CninfoConnector
@@ -18,7 +19,9 @@ from finraw.derived_facts import refresh_derived_facts
 from finraw.document_extraction import refresh_document_extraction
 from finraw.db.client import create_metadata_db
 from finraw.entity_normalization import refresh_entity_normalization
-from finraw.export import export_jsonl, export_parquet
+from finraw.export import export_jsonl, export_layer_jsonl, export_layer_parquet, export_parquet
+from finraw.layers import LAYER_TABLES, layer_manifest
+from finraw.fact_quality import enforce_fact_quality_gates
 from finraw.fact_standardization import refresh_fact_standardization
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
@@ -32,6 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", help="Path to config JSON.", default=None)
     sub = parser.add_subparsers(dest="command", required=True)
 
+    sub.add_parser("layers", help="Print logical data layers, tables, commands, and output directories as JSON.")
     sub.add_parser("init-db", help="Create metadata database schema.")
     sub.add_parser("seed-sources", help="Insert source registry seed rows.")
 
@@ -44,6 +48,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     export_parquet_parser = sub.add_parser("export-parquet", help="Export metadata tables to Parquet if pyarrow is installed.")
     export_parquet_parser.add_argument("output_dir")
+
+    export_layer_jsonl_parser = sub.add_parser("export-layer-jsonl", help="Export one logical layer to JSONL.")
+    export_layer_jsonl_parser.add_argument("layer", choices=sorted(LAYER_TABLES))
+    export_layer_jsonl_parser.add_argument("output_dir")
+
+    export_layer_parquet_parser = sub.add_parser("export-layer-parquet", help="Export one logical layer to Parquet if pyarrow is installed.")
+    export_layer_parquet_parser.add_argument("layer", choices=sorted(LAYER_TABLES))
+    export_layer_parquet_parser.add_argument("output_dir")
 
     discover_cninfo = sub.add_parser("discover-cninfo", help="Discover CNInfo announcement PDF URLs and write a config fragment.")
     discover_cninfo.add_argument("--stock", required=True, help="CNInfo stock selector, e.g. 000001 or 000001,gssz0000001")
@@ -92,7 +104,11 @@ def build_parser() -> argparse.ArgumentParser:
     doc_extract = sub.add_parser("refresh-document-extraction", help="Build document text chunks, table placeholders, and candidate document facts.")
     doc_extract.add_argument("--output-dir", default="data/audit", help="Directory for document extraction report files.")
 
-    sub.add_parser("enforce-quality", help="Enforce configured quality gates and storage budget.")
+    sub.add_parser("enforce-quality", help="Enforce configured raw object quality gates and storage budget.")
+
+    enforce_fact_quality = sub.add_parser("enforce-fact-quality", help="Enforce fact-level quality gates and mark graph-ready standardized facts.")
+    enforce_fact_quality.add_argument("--output-dir", default="data/audit/fact_validation", help="Directory for fact quality report files.")
+
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
     return parser
 
@@ -104,7 +120,9 @@ def main() -> None:
     store = RawObjectStore(config["storage_root"])
 
     try:
-        if args.command == "init-db":
+        if args.command == "layers":
+            print(json.dumps(layer_manifest(), ensure_ascii=False, indent=2, sort_keys=True))
+        elif args.command == "init-db":
             db.init_schema()
             print(f"Initialized metadata DB: {config['metadata_db']}")
         elif args.command == "seed-sources":
@@ -142,6 +160,16 @@ def main() -> None:
                 print(str(exc))
             else:
                 print(json.dumps([str(path) for path in paths], ensure_ascii=False, indent=2))
+        elif args.command == "export-layer-jsonl":
+            paths = export_layer_jsonl(db, args.layer, args.output_dir)
+            print(json.dumps([str(path) for path in paths], ensure_ascii=False, indent=2))
+        elif args.command == "export-layer-parquet":
+            try:
+                paths = export_layer_parquet(db, args.layer, args.output_dir)
+            except RuntimeError as exc:
+                print(str(exc))
+            else:
+                print(json.dumps([str(path) for path in paths], ensure_ascii=False, indent=2))
         elif args.command == "discover-cninfo":
             announcements = discover_cninfo_announcements(
                 stock=args.stock,
@@ -172,19 +200,19 @@ def main() -> None:
             print(json.dumps({"status": "refreshed", "row_count": len(report["data_coverage_report"]), "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
         elif args.command == "refresh-entities":
             report = refresh_entity_normalization(db, config, output_dir=args.output_dir)
-            print(json.dumps({"status": "refreshed", "canonical_entity_count": report["canonical_entity_count"], "alias_count": report["alias_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
+            print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "canonical_entity_count": report["canonical_entity_count"], "alias_count": report["alias_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
         elif args.command == "refresh-metrics":
             report = refresh_metric_ontology(db, config, output_dir=args.output_dir)
-            print(json.dumps({"status": "refreshed", "metric_count": report["metric_count"], "alias_count": report["alias_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
+            print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "metric_count": report["metric_count"], "alias_count": report["alias_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
         elif args.command == "refresh-atomic-facts":
             report = refresh_atomic_facts(db, config, output_dir=args.output_dir, batch_size=args.batch_size)
-            print(json.dumps({"status": "refreshed", "inserted_count": report["inserted_count"], "source_counts": report["source_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
+            print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "inserted_count": report["inserted_count"], "source_document_count": report.get("source_document_count"), "source_counts": report["source_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
         elif args.command == "standardize-facts":
             report = refresh_fact_standardization(db, config, output_dir=args.output_dir, batch_size=args.batch_size)
-            print(json.dumps({"status": "standardized", "standardized_count": report["standardized_count"], "verification_counts": report["verification_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+            print(json.dumps({"status": "standardized", "build_id": report.get("build_id"), "input_build_id": report.get("input_build_id"), "standardized_count": report["standardized_count"], "verification_counts": report["verification_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
         elif args.command == "refresh-derived-facts":
             report = refresh_derived_facts(db, config, output_dir=args.output_dir, batch_size=args.batch_size)
-            print(json.dumps({"status": "refreshed", "derived_count": report["derived_count"], "derived_type_counts": report["derived_type_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+            print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "input_build_id": report.get("input_build_id"), "derived_count": report["derived_count"], "derived_type_counts": report["derived_type_counts"], "scope_type_counts": report.get("scope_type_counts"), "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
         elif args.command == "refresh-source-definitions":
             report = refresh_source_metric_definitions(db, config, output_dir=args.output_dir)
             print(json.dumps({"status": "refreshed", "definition_count": report["definition_count"], "source_counts": report["source_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
@@ -193,7 +221,7 @@ def main() -> None:
             print(json.dumps({"status": "refreshed", "frequency_count": report["frequency_count"], "frequency_counts": report["frequency_counts"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
         elif args.command == "refresh-document-extraction":
             report = refresh_document_extraction(db, config, output_dir=args.output_dir)
-            print(json.dumps({"status": "refreshed", "chunk_count": report["chunk_count"], "candidate_count": report["candidate_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+            print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "chunk_count": report["chunk_count"], "candidate_count": report["candidate_count"], "candidate_state_counts": report.get("candidate_state_counts"), "promotion_status_counts": report.get("promotion_status_counts"), "candidate_qa_eligible_count": report.get("candidate_qa_eligible_count"), "candidate_kg_eligible_count": report.get("candidate_kg_eligible_count"), "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
         elif args.command == "enforce-quality":
             try:
                 result = enforce_quality_gates(db, config)
@@ -201,9 +229,22 @@ def main() -> None:
                 print(json.dumps({"quality_gate_status": "failed", "error": str(exc)}, ensure_ascii=False, indent=2))
                 raise SystemExit(1)
             print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True, default=str))
+        elif args.command == "enforce-fact-quality":
+            try:
+                result = enforce_fact_quality_gates(db, config, output_dir=args.output_dir)
+            except QualityGateError as exc:
+                print(json.dumps({"fact_quality_gate_status": "failed", "error": str(exc)}, ensure_ascii=False, indent=2))
+                raise SystemExit(1)
+            print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True, default=str))
         elif args.command == "validate":
             passed, failed = validate_raw_objects(db)
             print(f"Validation completed: passed={passed}, failed={failed}")
+    except Exception as exc:
+        try:
+            mark_running_builds_failed(db, str(exc))
+        except Exception:
+            pass
+        raise
     finally:
         db.close()
 

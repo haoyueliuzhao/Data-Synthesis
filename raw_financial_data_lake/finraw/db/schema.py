@@ -94,6 +94,9 @@ CREATE TABLE IF NOT EXISTS metrics (
     aggregation_rule    TEXT,
     revision_risk       TEXT,
     ambiguity_notes     TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
@@ -108,6 +111,9 @@ CREATE TABLE IF NOT EXISTS metric_alias_map (
     raw_field_name      TEXT,
     raw_concept_name    TEXT,
     confidence_score    REAL,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -128,6 +134,9 @@ CREATE TABLE IF NOT EXISTS canonical_entities (
     currency            TEXT,
     fiscal_year_end     TEXT,
     industry            TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
@@ -144,6 +153,9 @@ CREATE TABLE IF NOT EXISTS entity_alias_map (
     source_name         TEXT,
     alias               TEXT,
     confidence_score    REAL,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -151,8 +163,86 @@ CREATE INDEX IF NOT EXISTS idx_entity_alias_map_entity_id ON entity_alias_map(en
 CREATE INDEX IF NOT EXISTS idx_entity_alias_map_source_code ON entity_alias_map(source_id, source_code);
 CREATE INDEX IF NOT EXISTS idx_entity_alias_map_alias ON entity_alias_map(alias);
 
+CREATE TABLE IF NOT EXISTS canonical_securities (
+    security_id         TEXT PRIMARY KEY,
+    company_entity_id  TEXT REFERENCES canonical_entities(entity_id),
+    canonical_name     TEXT NOT NULL,
+    security_type      TEXT,
+    market             TEXT,
+    country            TEXT,
+    exchange           TEXT,
+    ticker             TEXT,
+    composite_ticker   TEXT,
+    figi               TEXT,
+    isin               TEXT,
+    cusip              TEXT,
+    currency           TEXT,
+    is_primary_listing INTEGER DEFAULT 1,
+    listing_status     TEXT,
+    valid_from         TEXT,
+    valid_to           TEXT,
+    build_id           TEXT,
+    is_active          INTEGER DEFAULT 1,
+    superseded_by      TEXT,
+    created_at         TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_canonical_securities_company ON canonical_securities(company_entity_id);
+CREATE INDEX IF NOT EXISTS idx_canonical_securities_ticker_exchange ON canonical_securities(ticker, exchange);
+
+CREATE TABLE IF NOT EXISTS entity_relationships (
+    relationship_id    TEXT PRIMARY KEY,
+    subject_entity_id  TEXT REFERENCES canonical_entities(entity_id),
+    relationship_type  TEXT NOT NULL,
+    object_id          TEXT,
+    object_type        TEXT,
+    object_entity_id   TEXT REFERENCES canonical_entities(entity_id),
+    source_id          TEXT REFERENCES source_registry(source_id),
+    source_code        TEXT,
+    confidence_score   REAL,
+    valid_from         TEXT,
+    valid_to           TEXT,
+    notes              TEXT,
+    build_id           TEXT,
+    is_active          INTEGER DEFAULT 1,
+    superseded_by      TEXT,
+    created_at         TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_entity_relationships_subject ON entity_relationships(subject_entity_id, relationship_type);
+CREATE INDEX IF NOT EXISTS idx_entity_relationships_object ON entity_relationships(object_id, object_type);
+CREATE INDEX IF NOT EXISTS idx_entity_relationships_object_entity ON entity_relationships(object_entity_id);
+
+CREATE TABLE IF NOT EXISTS source_series_entity_map (
+    series_map_id      TEXT PRIMARY KEY,
+    source_id          TEXT REFERENCES source_registry(source_id),
+    series_id          TEXT,
+    series_entity_id   TEXT REFERENCES canonical_entities(entity_id),
+    metric_id          TEXT REFERENCES metrics(metric_id),
+    applies_to_entity_id TEXT REFERENCES canonical_entities(entity_id),
+    instrument_entity_id TEXT REFERENCES canonical_entities(entity_id),
+    frequency          TEXT,
+    source_units       TEXT,
+    seasonal_adjustment TEXT,
+    notes              TEXT,
+    build_id           TEXT,
+    is_active          INTEGER DEFAULT 1,
+    superseded_by      TEXT,
+    created_at         TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_source_series_entity_map_source_series ON source_series_entity_map(source_id, series_id);
+CREATE INDEX IF NOT EXISTS idx_source_series_entity_map_metric ON source_series_entity_map(metric_id);
+CREATE INDEX IF NOT EXISTS idx_source_series_entity_map_target ON source_series_entity_map(applies_to_entity_id, instrument_entity_id);
+
 CREATE TABLE IF NOT EXISTS standardized_facts (
     fact_id             TEXT PRIMARY KEY REFERENCES atomic_facts(fact_id),
+    stable_fact_id      TEXT,
+    build_id            TEXT,
+    raw_snapshot_id     TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     entity_id           TEXT REFERENCES canonical_entities(entity_id),
     metric_id           TEXT REFERENCES metrics(metric_id),
     normalized_value    REAL,
@@ -166,13 +256,23 @@ CREATE TABLE IF NOT EXISTS standardized_facts (
     fiscal_quarter      TEXT,
     time_basis          TEXT,
     metric_period_type  TEXT,
+    source_definition_id TEXT REFERENCES source_metric_definitions(definition_id),
+    frequency           TEXT,
+    seasonal_adjustment TEXT,
+    vintage_policy      TEXT,
+    is_forecast         INTEGER,
+    comparability_level TEXT,
     as_of_date          TEXT,
     report_date         TEXT,
     source_id           TEXT REFERENCES source_registry(source_id),
     raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
     verification_status TEXT,
+    graph_ready          INTEGER DEFAULT 0,
+    graph_ready_reason   TEXT,
     validation_flags    TEXT,
     conflict_group_id   TEXT,
+    raw_equivalence_group_id TEXT,
+    semantic_equivalence_group_id TEXT,
     confidence_score    REAL,
     notes               TEXT,
     updated_at          TEXT DEFAULT CURRENT_TIMESTAMP
@@ -181,10 +281,18 @@ CREATE TABLE IF NOT EXISTS standardized_facts (
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_entity_metric ON standardized_facts(entity_id, metric_id);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_period_end ON standardized_facts(period_end);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_verification ON standardized_facts(verification_status);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_graph_ready ON standardized_facts(graph_ready);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_source_definition ON standardized_facts(source_definition_id);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_comparability ON standardized_facts(comparability_level);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_raw_equivalence ON standardized_facts(raw_equivalence_group_id);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_semantic_equivalence ON standardized_facts(semantic_equivalence_group_id);
 
 CREATE TABLE IF NOT EXISTS fact_quality_checks (
     check_id            TEXT PRIMARY KEY,
     fact_id             TEXT REFERENCES atomic_facts(fact_id),
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     check_type          TEXT,
     status              TEXT,
     severity            TEXT,
@@ -197,11 +305,21 @@ CREATE INDEX IF NOT EXISTS idx_fact_quality_checks_type_status ON fact_quality_c
 
 CREATE TABLE IF NOT EXISTS derived_facts (
     derived_id          TEXT PRIMARY KEY,
+    stable_derived_id   TEXT,
+    build_id            TEXT,
+    input_build_id      TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     derived_type        TEXT,
     input_fact_ids      TEXT,
     entity_scope        TEXT,
     metric_scope        TEXT,
     time_scope          TEXT,
+    scope_type          TEXT,
+    scope_id            TEXT,
+    scope_definition    TEXT,
+    scope_entity_ids    TEXT,
+    scope_source        TEXT,
     calculation_code    TEXT,
     output_value        REAL,
     output_table        TEXT,
@@ -227,6 +345,9 @@ CREATE TABLE IF NOT EXISTS source_metric_definitions (
     comparable_to_metric_id TEXT,
     comparability_level TEXT,
     notes               TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -244,6 +365,9 @@ CREATE TABLE IF NOT EXISTS time_series_frequency_map (
     annualization_rule  TEXT,
     source_units        TEXT,
     notes               TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -252,6 +376,10 @@ CREATE INDEX IF NOT EXISTS idx_time_series_frequency_metric ON time_series_frequ
 
 CREATE TABLE IF NOT EXISTS document_text_chunks (
     chunk_id            TEXT PRIMARY KEY,
+    stable_chunk_id     TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
     source_id           TEXT REFERENCES source_registry(source_id),
     page_number         INTEGER,
@@ -269,6 +397,10 @@ CREATE INDEX IF NOT EXISTS idx_document_text_chunks_source ON document_text_chun
 
 CREATE TABLE IF NOT EXISTS raw_extracted_tables (
     table_id            TEXT PRIMARY KEY,
+    stable_table_id     TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
     source_id           TEXT REFERENCES source_registry(source_id),
     page_number         INTEGER,
@@ -283,6 +415,10 @@ CREATE INDEX IF NOT EXISTS idx_raw_extracted_tables_raw_object ON raw_extracted_
 
 CREATE TABLE IF NOT EXISTS candidate_facts (
     candidate_id        TEXT PRIMARY KEY,
+    stable_candidate_id TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
     table_id            TEXT REFERENCES raw_extracted_tables(table_id),
     entity_id           TEXT REFERENCES canonical_entities(entity_id),
@@ -293,14 +429,56 @@ CREATE TABLE IF NOT EXISTS candidate_facts (
     evidence_text       TEXT,
     confidence_score    REAL,
     review_status      TEXT,
+    candidate_state     TEXT,
+    state_reason        TEXT,
+    matched_metric_id   TEXT,
+    evidence_status     TEXT,
+    cross_check_status  TEXT,
+    promotion_status    TEXT,
+    promoted_fact_id    TEXT REFERENCES atomic_facts(fact_id),
+    qa_eligible         INTEGER DEFAULT 0,
+    kg_eligible         INTEGER DEFAULT 0,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_candidate_facts_raw_object ON candidate_facts(raw_object_id);
 CREATE INDEX IF NOT EXISTS idx_candidate_facts_review ON candidate_facts(review_status);
+CREATE INDEX IF NOT EXISTS idx_candidate_facts_state ON candidate_facts(candidate_state, promotion_status);
+CREATE INDEX IF NOT EXISTS idx_candidate_facts_eligibility ON candidate_facts(qa_eligible, kg_eligible);
+
+
+CREATE TABLE IF NOT EXISTS source_documents (
+    document_id         TEXT PRIMARY KEY,
+    stable_document_id  TEXT,
+    build_id            TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
+    entity_id           TEXT REFERENCES canonical_entities(entity_id),
+    source_id           TEXT REFERENCES source_registry(source_id),
+    form_type           TEXT,
+    report_type         TEXT,
+    period_end          TEXT,
+    filing_date         TEXT,
+    storage_uri         TEXT,
+    original_url        TEXT,
+    raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
+    document_status     TEXT,
+    notes               TEXT,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_source_documents_entity ON source_documents(entity_id);
+CREATE INDEX IF NOT EXISTS idx_source_documents_source ON source_documents(source_id, form_type, report_type);
+CREATE INDEX IF NOT EXISTS idx_source_documents_period ON source_documents(period_end, filing_date);
+CREATE INDEX IF NOT EXISTS idx_source_documents_raw_object ON source_documents(raw_object_id);
 
 CREATE TABLE IF NOT EXISTS atomic_facts (
     fact_id             TEXT PRIMARY KEY,
+    stable_fact_id      TEXT,
+    build_id            TEXT,
+    raw_snapshot_id     TEXT,
+    is_active           INTEGER DEFAULT 1,
+    superseded_by       TEXT,
     entity_id           TEXT REFERENCES canonical_entities(entity_id),
     metric_id           TEXT REFERENCES metrics(metric_id),
     value               REAL,
@@ -354,6 +532,18 @@ CREATE TABLE IF NOT EXISTS raw_dataset_snapshots (
     manifest_uri        TEXT,
     checksum_uri        TEXT,
     created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS pipeline_builds (
+    build_id            TEXT PRIMARY KEY,
+    layer               TEXT,
+    command             TEXT,
+    raw_snapshot_id     TEXT,
+    input_build_id      TEXT,
+    status              TEXT,
+    started_at          TEXT,
+    completed_at        TEXT,
+    notes               TEXT
 );
 """
 

@@ -19,7 +19,9 @@ class DBProtocol(Protocol):
     def fetchone(self, sql: str, params: Iterable[Any] = ()) -> Any | None: ...
     def insert_job(self, job: dict[str, Any]) -> None: ...
     def update_job(self, job_id: str, **fields: Any) -> None: ...
-    def find_raw_object(self, source_id: str, original_url: str, content_sha256: str) -> Any | None: ...
+    def find_raw_object(self, source_id: str, original_url: str, content_sha256: str, include_statuses: tuple[str, ...] | None = ("passed",)) -> Any | None: ...
+    def find_existing_passed_object(self, source_id: str, original_url: str, content_sha256: str) -> Any | None: ...
+    def find_any_existing_object(self, source_id: str, original_url: str, content_sha256: str) -> Any | None: ...
     def insert_raw_object(self, obj: dict[str, Any]) -> None: ...
     def insert_raw_records(self, records: list[dict[str, Any]]) -> None: ...
     def upsert_source_entity(self, **kwargs: Any) -> None: ...
@@ -29,6 +31,7 @@ class DBProtocol(Protocol):
     def insert_fact_quality_checks(self, checks: list[dict[str, Any]]) -> None: ...
     def insert_standardized_facts(self, facts: list[dict[str, Any]]) -> None: ...
     def update_standardized_fact_statuses(self, updates: list[dict[str, Any]], only_flags: bool = False) -> None: ...
+    def update_standardized_graph_ready(self, updates: list[dict[str, Any]]) -> None: ...
     def insert_derived_facts(self, facts: list[dict[str, Any]]) -> None: ...
 
 
@@ -68,8 +71,12 @@ class MetadataDB:
         self.conn.commit()
 
     def execute(self, sql: str, params: Iterable[Any] = ()) -> None:
-        self.conn.execute(sql, tuple(params))
-        self.conn.commit()
+        try:
+            self.conn.execute(sql, tuple(params))
+            self.conn.commit()
+        except Exception:
+            self.conn.rollback()
+            raise
 
     def fetchall(self, sql: str, params: Iterable[Any] = ()) -> list[sqlite3.Row]:
         return list(self.conn.execute(sql, tuple(params)).fetchall())
@@ -100,11 +107,27 @@ class MetadataDB:
         self.conn.execute(f"UPDATE ingestion_jobs SET {', '.join(assignments)} WHERE job_id = ?", values)
         self.conn.commit()
 
-    def find_raw_object(self, source_id: str, original_url: str, content_sha256: str) -> sqlite3.Row | None:
-        return self.fetchone(
-            "SELECT * FROM raw_objects WHERE source_id = ? AND original_url = ? AND content_sha256 = ? AND validation_status = ?",
-            (source_id, original_url, content_sha256, "passed"),
-        )
+    def find_raw_object(
+        self,
+        source_id: str,
+        original_url: str,
+        content_sha256: str,
+        include_statuses: tuple[str, ...] | None = ("passed",),
+    ) -> sqlite3.Row | None:
+        sql = "SELECT * FROM raw_objects WHERE source_id = ? AND original_url = ? AND content_sha256 = ?"
+        params: list[Any] = [source_id, original_url, content_sha256]
+        if include_statuses is not None:
+            if not include_statuses:
+                return None
+            sql += f" AND validation_status IN ({','.join('?' for _ in include_statuses)})"
+            params.extend(include_statuses)
+        return self.fetchone(sql, params)
+
+    def find_existing_passed_object(self, source_id: str, original_url: str, content_sha256: str) -> sqlite3.Row | None:
+        return self.find_raw_object(source_id, original_url, content_sha256, include_statuses=("passed",))
+
+    def find_any_existing_object(self, source_id: str, original_url: str, content_sha256: str) -> sqlite3.Row | None:
+        return self.find_raw_object(source_id, original_url, content_sha256, include_statuses=None)
 
     def insert_raw_object(self, obj: dict[str, Any]) -> None:
         columns = [
@@ -140,8 +163,8 @@ class MetadataDB:
     def insert_atomic_facts(self, facts: list[dict[str, Any]]) -> None:
         if not facts:
             return
-        columns = ["fact_id", "entity_id", "metric_id", "value", "value_type", "unit", "currency", "period_start", "period_end", "fiscal_year", "fiscal_quarter", "as_of_date", "report_date", "source_id", "raw_object_id", "source_field_name", "source_page_or_table", "extraction_method", "confidence_score", "verification_status", "tolerance", "notes"]
-        values = [[row.get(col) for col in columns] for row in facts]
+        columns = ["fact_id", "stable_fact_id", "build_id", "raw_snapshot_id", "is_active", "superseded_by", "entity_id", "metric_id", "value", "value_type", "unit", "currency", "period_start", "period_end", "fiscal_year", "fiscal_quarter", "as_of_date", "report_date", "source_id", "raw_object_id", "source_field_name", "source_page_or_table", "extraction_method", "confidence_score", "verification_status", "tolerance", "notes"]
+        values = [[_row_value(row, col) for col in columns] for row in facts]
         self.conn.executemany(
             f"INSERT OR REPLACE INTO atomic_facts ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
@@ -152,8 +175,8 @@ class MetadataDB:
     def insert_standardized_facts(self, facts: list[dict[str, Any]]) -> None:
         if not facts:
             return
-        columns = ["fact_id", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "as_of_date", "report_date", "source_id", "raw_object_id", "verification_status", "validation_flags", "conflict_group_id", "confidence_score", "notes"]
-        values = [[self._json(row.get(col)) if col == "validation_flags" else row.get(col) for col in columns] for row in facts]
+        columns = ["fact_id", "stable_fact_id", "build_id", "raw_snapshot_id", "is_active", "superseded_by", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "as_of_date", "report_date", "source_id", "raw_object_id", "verification_status", "validation_flags", "conflict_group_id", "raw_equivalence_group_id", "semantic_equivalence_group_id", "confidence_score", "notes"]
+        values = [[self._json(_row_value(row, col)) if col == "validation_flags" else _row_value(row, col) for col in columns] for row in facts]
         self.conn.executemany(
             f"INSERT OR REPLACE INTO standardized_facts ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
@@ -163,8 +186,8 @@ class MetadataDB:
     def insert_fact_quality_checks(self, checks: list[dict[str, Any]]) -> None:
         if not checks:
             return
-        columns = ["check_id", "fact_id", "check_type", "status", "severity", "message"]
-        values = [[row.get(col) for col in columns] for row in checks]
+        columns = ["check_id", "fact_id", "build_id", "is_active", "superseded_by", "check_type", "status", "severity", "message"]
+        values = [[_row_value(row, col) for col in columns] for row in checks]
         self.conn.executemany(
             f"INSERT OR REPLACE INTO fact_quality_checks ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
@@ -196,8 +219,10 @@ class MetadataDB:
             SET verification_status = (
                 SELECT verification_status FROM standardized_facts
                 WHERE standardized_facts.fact_id = atomic_facts.fact_id
+                  AND COALESCE(standardized_facts.is_active, 1) = 1
             )
-            WHERE fact_id IN (SELECT fact_id FROM standardized_facts)
+            WHERE COALESCE(is_active, 1) = 1
+              AND fact_id IN (SELECT fact_id FROM standardized_facts WHERE COALESCE(is_active, 1) = 1)
             """
         )
         self.conn.commit()
@@ -205,9 +230,9 @@ class MetadataDB:
     def insert_derived_facts(self, facts: list[dict[str, Any]]) -> None:
         if not facts:
             return
-        columns = ["derived_id", "derived_type", "input_fact_ids", "entity_scope", "metric_scope", "time_scope", "calculation_code", "output_value", "output_table", "unit", "tolerance", "verification_status"]
-        json_columns = {"input_fact_ids", "entity_scope", "metric_scope", "time_scope", "output_table"}
-        values = [[self._json(row.get(col)) if col in json_columns else row.get(col) for col in columns] for row in facts]
+        columns = ["derived_id", "stable_derived_id", "build_id", "input_build_id", "is_active", "superseded_by", "derived_type", "input_fact_ids", "entity_scope", "metric_scope", "time_scope", "scope_type", "scope_id", "scope_definition", "scope_entity_ids", "scope_source", "calculation_code", "output_value", "output_table", "unit", "tolerance", "verification_status"]
+        json_columns = {"input_fact_ids", "entity_scope", "metric_scope", "time_scope", "scope_entity_ids", "output_table"}
+        values = [[self._json(_row_value(row, col)) if col in json_columns else _row_value(row, col) for col in columns] for row in facts]
         self.conn.executemany(
             f"INSERT OR REPLACE INTO derived_facts ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
@@ -283,9 +308,13 @@ class PostgresMetadataDB:
         self.conn.commit()
 
     def execute(self, sql: str, params: Iterable[Any] = ()) -> None:
-        with self.conn.cursor() as cur:
-            cur.execute(self._sql(sql), tuple(params))
-        self.conn.commit()
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(self._sql(sql), tuple(params))
+            self.conn.commit()
+        except Exception:
+            self.conn.rollback()
+            raise
 
     def fetchall(self, sql: str, params: Iterable[Any] = ()) -> list[Any]:
         with self.conn.cursor() as cur:
@@ -319,8 +348,27 @@ class PostgresMetadataDB:
             cur.execute(f"UPDATE ingestion_jobs SET {', '.join(assignments)} WHERE job_id = %s", values)
         self.conn.commit()
 
-    def find_raw_object(self, source_id: str, original_url: str, content_sha256: str) -> Any | None:
-        return self.fetchone("SELECT * FROM raw_objects WHERE source_id = ? AND original_url = ? AND content_sha256 = ?", (source_id, original_url, content_sha256))
+    def find_raw_object(
+        self,
+        source_id: str,
+        original_url: str,
+        content_sha256: str,
+        include_statuses: tuple[str, ...] | None = ("passed",),
+    ) -> Any | None:
+        sql = "SELECT * FROM raw_objects WHERE source_id = ? AND original_url = ? AND content_sha256 = ?"
+        params: list[Any] = [source_id, original_url, content_sha256]
+        if include_statuses is not None:
+            if not include_statuses:
+                return None
+            sql += f" AND validation_status IN ({','.join('?' for _ in include_statuses)})"
+            params.extend(include_statuses)
+        return self.fetchone(sql, params)
+
+    def find_existing_passed_object(self, source_id: str, original_url: str, content_sha256: str) -> Any | None:
+        return self.find_raw_object(source_id, original_url, content_sha256, include_statuses=("passed",))
+
+    def find_any_existing_object(self, source_id: str, original_url: str, content_sha256: str) -> Any | None:
+        return self.find_raw_object(source_id, original_url, content_sha256, include_statuses=None)
 
     def insert_raw_object(self, obj: dict[str, Any]) -> None:
         from psycopg.types.json import Jsonb
@@ -348,10 +396,10 @@ class PostgresMetadataDB:
     def insert_atomic_facts(self, facts: list[dict[str, Any]]) -> None:
         if not facts:
             return
-        columns = ["fact_id", "entity_id", "metric_id", "value", "value_type", "unit", "currency", "period_start", "period_end", "fiscal_year", "fiscal_quarter", "as_of_date", "report_date", "source_id", "raw_object_id", "source_field_name", "source_page_or_table", "extraction_method", "confidence_score", "verification_status", "tolerance", "notes"]
+        columns = ["fact_id", "stable_fact_id", "build_id", "raw_snapshot_id", "is_active", "superseded_by", "entity_id", "metric_id", "value", "value_type", "unit", "currency", "period_start", "period_end", "fiscal_year", "fiscal_quarter", "as_of_date", "report_date", "source_id", "raw_object_id", "source_field_name", "source_page_or_table", "extraction_method", "confidence_score", "verification_status", "tolerance", "notes"]
         updates = ", ".join([f"{col}=EXCLUDED.{col}" for col in columns if col != "fact_id"])
         sql = f"INSERT INTO atomic_facts ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (fact_id) DO UPDATE SET {updates}"
-        values = [[row.get(col) for col in columns] for row in facts]
+        values = [[_row_value(row, col) for col in columns] for row in facts]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
         self.conn.commit()
@@ -361,10 +409,10 @@ class PostgresMetadataDB:
         if not facts:
             return
         from psycopg.types.json import Jsonb
-        columns = ["fact_id", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "as_of_date", "report_date", "source_id", "raw_object_id", "verification_status", "validation_flags", "conflict_group_id", "confidence_score", "notes"]
+        columns = ["fact_id", "stable_fact_id", "build_id", "raw_snapshot_id", "is_active", "superseded_by", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "as_of_date", "report_date", "source_id", "raw_object_id", "verification_status", "validation_flags", "conflict_group_id", "raw_equivalence_group_id", "semantic_equivalence_group_id", "confidence_score", "notes"]
         updates = ", ".join([f"{col}=EXCLUDED.{col}" for col in columns if col != "fact_id"])
         sql = f"INSERT INTO standardized_facts ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (fact_id) DO UPDATE SET {updates}"
-        values = [[Jsonb(row.get(col) or []) if col == "validation_flags" else row.get(col) for col in columns] for row in facts]
+        values = [[Jsonb(_row_value(row, col) or []) if col == "validation_flags" else _row_value(row, col) for col in columns] for row in facts]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
         self.conn.commit()
@@ -372,10 +420,10 @@ class PostgresMetadataDB:
     def insert_fact_quality_checks(self, checks: list[dict[str, Any]]) -> None:
         if not checks:
             return
-        columns = ["check_id", "fact_id", "check_type", "status", "severity", "message"]
+        columns = ["check_id", "fact_id", "build_id", "is_active", "superseded_by", "check_type", "status", "severity", "message"]
         updates = ", ".join([f"{col}=EXCLUDED.{col}" for col in columns if col != "check_id"])
         sql = f"INSERT INTO fact_quality_checks ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (check_id) DO UPDATE SET {updates}"
-        values = [[row.get(col) for col in columns] for row in checks]
+        values = [[_row_value(row, col) for col in columns] for row in checks]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
         self.conn.commit()
@@ -400,6 +448,14 @@ class PostgresMetadataDB:
                 )
         self.conn.commit()
 
+    def update_standardized_graph_ready(self, updates: list[dict[str, Any]]) -> None:
+        if not updates:
+            return
+        values = [(row.get("graph_ready"), row.get("graph_ready_reason"), row.get("fact_id")) for row in updates]
+        with self.conn.cursor() as cur:
+            cur.executemany("UPDATE standardized_facts SET graph_ready = %s, graph_ready_reason = %s WHERE fact_id = %s", values)
+        self.conn.commit()
+
     def sync_atomic_fact_verification_status(self) -> None:
         with self.conn.cursor() as cur:
             cur.execute(
@@ -408,6 +464,8 @@ class PostgresMetadataDB:
                 SET verification_status = sf.verification_status
                 FROM standardized_facts sf
                 WHERE sf.fact_id = af.fact_id
+                  AND COALESCE(sf.is_active, 1) = 1
+                  AND COALESCE(af.is_active, 1) = 1
                 """
             )
         self.conn.commit()
@@ -416,11 +474,11 @@ class PostgresMetadataDB:
         if not facts:
             return
         from psycopg.types.json import Jsonb
-        columns = ["derived_id", "derived_type", "input_fact_ids", "entity_scope", "metric_scope", "time_scope", "calculation_code", "output_value", "output_table", "unit", "tolerance", "verification_status"]
-        json_columns = {"input_fact_ids", "entity_scope", "metric_scope", "time_scope", "output_table"}
+        columns = ["derived_id", "stable_derived_id", "build_id", "input_build_id", "is_active", "superseded_by", "derived_type", "input_fact_ids", "entity_scope", "metric_scope", "time_scope", "scope_type", "scope_id", "scope_definition", "scope_entity_ids", "scope_source", "calculation_code", "output_value", "output_table", "unit", "tolerance", "verification_status"]
+        json_columns = {"input_fact_ids", "entity_scope", "metric_scope", "time_scope", "scope_entity_ids", "output_table"}
         updates = ", ".join([f"{col}=EXCLUDED.{col}" for col in columns if col != "derived_id"])
         sql = f"INSERT INTO derived_facts ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (derived_id) DO UPDATE SET {updates}"
-        values = [[Jsonb(row.get(col) or ([] if col in {'input_fact_ids', 'output_table'} else {})) if col in json_columns else row.get(col) for col in columns] for row in facts]
+        values = [[Jsonb(_row_value(row, col) if _row_value(row, col) is not None else ([] if col in {'input_fact_ids', 'output_table', 'scope_entity_ids'} else {})) if col in json_columns else _row_value(row, col) for col in columns] for row in facts]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
         self.conn.commit()
@@ -469,3 +527,9 @@ def create_metadata_db(config: dict[str, Any]) -> DBProtocol:
         schema_path = config.get("metadata_backend", {}).get("postgres_schema", "sql/postgres_schema.sql")
         return PostgresMetadataDB(dsn, schema_path=schema_path)
     return MetadataDB(config["metadata_db"])
+
+
+def _row_value(row: dict[str, Any], column: str) -> Any:
+    if column == "is_active":
+        return row.get(column, 1)
+    return row.get(column)

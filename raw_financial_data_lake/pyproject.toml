@@ -4,8 +4,27 @@ version = "0.1.0"
 description = "Traceable raw financial data lake for SEC, FRED, and World Bank data."
 requires-python = ">=3.10"
 dependencies = [
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.2.0",
+    "pandas>=2.2.0",
+    "pydantic>=2.7.0",
     "pyarrow>=16.0.0",
-    "psycopg[binary]>=3.2.0"
+    "psycopg[binary]>=3.2.0",
+    "python-dateutil>=2.9.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.10.0",
+    "pyright>=1.1.370",
+    "pytest>=8.2.0",
+    "ruff>=0.5.0"
+]
+pdf = [
+    "camelot-py[cv]>=0.11.0",
+    "pdfplumber>=0.11.0",
+    "pymupdf>=1.24.0",
+    "tabula-py>=2.9.0"
 ]
 
 [project.scripts]

@@ -79,7 +79,7 @@ class RawSourceConnector(ABC):
         effective_original_url = self._canonical_original_url(original_url, request_params)
         content_hash = sha256_bytes(content)
         if not self.dry_run:
-            existing = self.db.find_raw_object(source_id, effective_original_url, content_hash)
+            existing = self.db.find_existing_passed_object(source_id, effective_original_url, content_hash)
             if existing:
                 raw_object = dict(existing)
                 raw_object["duplicate_status"] = "duplicate_existing"
@@ -159,3 +159,19 @@ class RawSourceConnector(ABC):
     @staticmethod
     def json_bytes(payload: Any) -> bytes:
         return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
+
+def stable_raw_record_id(source_id: str, raw_object_id: str, record_type: str, record_key: Any) -> str:
+    payload = json.dumps(
+        {
+            "source_id": source_id,
+            "raw_object_id": raw_object_id,
+            "record_type": record_type,
+            "record_key": record_key,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        default=str,
+    )
+    digest = hashlib.sha1(payload.encode("utf-8")).hexdigest()[:24]
+    return f"rawrec_{digest}"
+

@@ -1,40 +1,145 @@
-# Raw Financial Data Lake
+# Raw Financial Data Lake + Fact Build Pipeline
 
-This project builds a traceable raw financial data lake for SEC, FRED, and
-World Bank data. It stores original files/API responses on disk and records
-metadata, checksums, jobs, source registry rows, raw records, and snapshots in
-SQLite. The schema is intentionally close to the proposed PostgreSQL design so
-it can be migrated later.
+This repository started as a traceable **Raw Financial Data Lake** for SEC, FRED, World Bank, IMF, and CNInfo data. It now also contains downstream fact-building, validation, derived-fact, and document-candidate tooling.
 
-## Quick Start
-
-```bash
-cd "/root/Data Synthesis/raw_financial_data_lake"
-python -m finraw.cli init-db
-python -m finraw.cli seed-sources
-python -m finraw.cli ingest all --dry-run
-```
-
-Run real ingestion:
-
-```bash
-python -m finraw.cli ingest sec-bulk
-FRED_API_KEY=your_key python -m finraw.cli ingest fred
-python -m finraw.cli ingest worldbank
-```
-
-Default outputs:
+The important boundary is:
 
 ```text
-./data/metadata.sqlite3
-./data/fin_raw/
+raw_lake keeps original source material.
+fact_build / fact_validation / qa_ready consume raw_lake outputs but must not mutate raw source material.
 ```
 
 
+
+
+
+## Source Documents
+
+Document availability is stored in `source_documents`, not `atomic_facts`. SEC filing HTML/TXT and CNInfo PDF records are indexed with entity, source, form/report type, period end, filing date, raw object, storage URI, original URL, and status. `atomic_facts` should contain accepted numeric or string facts only. Document-derived numeric evidence remains in `candidate_facts` until explicitly validated and promoted.
+
+`candidate_facts` are governed by an explicit state machine: `parsed -> matched_to_metric -> evidence_verified -> cross_checked -> promoted_to_atomic_fact`. The current document extraction command only creates `parsed` or `matched_to_metric` candidates and sets `qa_eligible = 0` and `kg_eligible = 0`. Candidate rows must not feed KG or QA directly; a future promote command has to verify evidence, cross-check values, and create accepted `atomic_facts`.
+
+## SEC XBRL Fact Selection
+
+SEC `companyfacts` values are treated as candidates before becoming atomic facts. The extractor groups candidates by entity, metric, unit, period, fiscal period, and duration, then chooses a canonical candidate using SEC-specific priority: annual facts prefer 10-K/20-F/40-F over 10-Q, quarter facts prefer 10-Q, matching calendar frames are preferred, suitable annual/quarter durations are preferred, and later filed dates break ties. Amended forms are retained only when they win their group and are marked in notes.
+
+For period-flow quarterly data, YTD durations are labeled such as `Q2_YTD` or `Q3_YTD`; derived quarterly calculations only consume true `Q1`-`Q4` single-period rows.
+
+## Deterministic Record And Fact IDs
+
+Raw records and stable facts must be reproducible across reruns. Connectors use `stable_raw_record_id(source_id, raw_object_id, record_type, record_key)` instead of UUIDs. Atomic `stable_fact_id` values are derived from source business keys such as entity, metric, accession number, concept, unit, period, realtime window, and value. They must not depend on `raw_record_id`, job IDs, or build IDs.
+
+Build-scoped row IDs may include `build_id`, but stable IDs are the reproducibility anchor for deduplication, derived facts, KG, and QA references.
+
+## Build Versioning
+
+Downstream refresh commands now use build versioning instead of destructive rebuilds. A run writes to `pipeline_builds`, marks old active rows inactive, and inserts new rows with `build_id`, `is_active`, and `superseded_by`. Atomic facts keep a `stable_fact_id`; the row-level `fact_id` is versioned as `stable_fact_id__build_id`. Derived facts and document candidate facts follow the same pattern with stable IDs plus build-scoped IDs.
+
+This means KG and QA outputs can bind to a stable build version while newer refreshes continue to run.
+
+## Logical Layers
+
+The code can live in one repo, but tables, commands, reports, and exports are logically separated into four layers. See [Layered Architecture](docs/layered_architecture.md).
+
+```text
+Layer 1: raw_lake
+  source_registry / ingestion_jobs / raw_objects / raw_records / snapshots
+
+Layer 2: fact_build
+  canonical_entities / metrics / source_documents / atomic_facts / standardized_facts / document candidates
+
+Layer 3: fact_validation
+  source definitions / frequency map / comparability fields / fact_quality_checks / graph_ready gates / conflict support
+
+Layer 4: qa_ready
+  derived_facts today; KG and QA artifacts later; consumes graph_ready standardized facts only
+```
+
+Print the machine-readable manifest:
+
+```bash
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json layers
+```
+
+## Quick Start: Raw Lake Only
+
+```bash
+cd "/workspace/Data Synthesis/raw_financial_data_lake"
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json init-db
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json seed-sources
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json ingest all --dry-run
+```
+
+Run real ingestion selectively:
+
+```bash
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json ingest sec-bulk
+FRED_API_KEY=your_key python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json ingest fred
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json ingest worldbank
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json ingest imf
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json ingest cninfo
+```
+
+Raw lake outputs:
+
+```text
+data/fin_raw/
+PostgreSQL metadata tables: source_registry, ingestion_jobs, raw_objects, raw_records, source_entities, raw_dataset_snapshots
+```
+
+## Build Downstream Layers
+
+After raw ingestion, run downstream layers explicitly:
+
+```bash
+# Layer 2: fact_build
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-entities --output-dir data/audit/fact_build
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-metrics --output-dir data/audit/fact_build
+
+# Layer 3 metadata used by standardize-facts
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-source-definitions --output-dir data/audit/fact_validation
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-frequency-map --output-dir data/audit/fact_validation
+
+# Layer 2 facts carrying Layer 3 definition/comparability metadata
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-atomic-facts --output-dir data/audit/fact_build
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json standardize-facts --output-dir data/audit/fact_build
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-document-extraction --output-dir data/audit/fact_build
+
+# Layer 3 quality gate
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json enforce-fact-quality --output-dir data/audit/fact_validation
+
+# Layer 4: qa_ready
+# Consumes standardized_facts where graph_ready = 1.
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json refresh-derived-facts --output-dir data/audit/qa_ready
+```
+
+`candidate_facts` are reviewable document-derived candidates. They are not accepted facts and are not promoted into `atomic_facts` without explicit validation. Fact quality gates report candidate state counts and fail if any active candidate is marked `qa_eligible` or `kg_eligible`.
+
+`standardized_facts` carry `source_definition_id`, `frequency`, `seasonal_adjustment`, `vintage_policy`, `is_forecast`, and `comparability_level`. They also carry two verification group IDs: `raw_equivalence_group_id` for strict same-source/concept duplicate checks, and `semantic_equivalence_group_id` for cross-source entity/metric/period/unit/currency comparison. `conflict_group_id` is kept as a compatibility pointer to the group that produced a conflict or source-definition mismatch. A shared `metric_id` is not enough for cross-source verification; facts with matching values but incompatible source definitions are marked `source_definition_mismatch`, not `cross_verified`.
+
+`derived_facts` now carry explicit QA scope metadata: `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. Ranking and share facts should be phrased with that scope, for example "among the configured SEC 100-company universe" or "among the configured World Bank 20-country universe". Do not turn these facts into open-ended questions such as "among all companies" unless the scope actually says that.
+
+## Layered Exports
+
+Full exports remain available:
+
+```bash
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-jsonl data/prod_exports/jsonl
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-parquet data/prod_exports/parquet
+```
+
+Prefer layer exports when handing data to downstream consumers:
+
+```bash
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl raw_lake data/layered_exports/raw_lake/jsonl
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl fact_build data/layered_exports/fact_build/jsonl
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl fact_validation data/layered_exports/fact_validation/jsonl
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl qa_ready data/layered_exports/qa_ready/jsonl
+```
 
 ## FRED API Key
 
-FRED ingestion reads the API key from `FRED_API_KEY` first, then from the ignored local secrets file `config/local_secrets.json`:
+FRED ingestion reads the API key from `FRED_API_KEY` first, then from ignored local secrets in `config/local_secrets.json`:
 
 ```json
 {
@@ -44,152 +149,33 @@ FRED ingestion reads the API key from `FRED_API_KEY` first, then from the ignore
 }
 ```
 
-Do not put API keys in `default_config.json` or `test_config.json`.
-
-## Real Sample Test
-
-Use the bounded test config to fetch a small real dataset without downloading SEC bulk ZIP files:
-
-```bash
-python -m finraw.cli --config config/test_config.json ingest test --dry-run
-python -m finraw.cli --config config/test_config.json ingest test
-python -m finraw.cli --config config/test_config.json validate
-```
-
-The `test` source fetches SEC company-level JSON for AAPL, MSFT, and TSLA plus World Bank GDP and population data for USA and CHN. Outputs go to:
-
-```text
-./data/test_metadata.sqlite3
-./data/test_fin_raw/
-```
-
-## Commands
-
-```bash
-python -m finraw.cli init-db
-python -m finraw.cli seed-sources
-python -m finraw.cli ingest sec-bulk [--dry-run]
-python -m finraw.cli ingest fred [--dry-run]
-python -m finraw.cli ingest worldbank [--dry-run]
-python -m finraw.cli ingest all [--dry-run]
-python -m finraw.cli validate
-```
-
-## Design
-
-The raw lake keeps original source material, not normalized facts:
-
-```text
-source_registry -> ingestion_jobs -> raw_objects -> raw_records -> snapshots
-```
-
-Every saved object has:
-
-- source id
-- original URL
-- request params
-- retrieval time
-- content SHA-256
-- size
-- storage URI
-- validation status
-
-This lets later fact extraction and QA generation trace every answer back to
-the original official source.
-
-
-## Expanded Capabilities
-
-Implemented beyond the initial skeleton:
-
-- PostgreSQL migration DDL: `sql/postgres_schema.sql`
-- JSONL export: `python -m finraw.cli export-jsonl data/exports/jsonl`
-- Optional Parquet export: `python -m finraw.cli export-parquet data/exports/parquet`
-- SEC filing primary document ingestion: `python -m finraw.cli ingest sec-filings`
-- FRED series metadata, release, observations, and vintage dates
-- World Bank country metadata, indicator metadata, paginated observations
-- Configurable IMF raw SDMX/JSON/XML ingestion: `python -m finraw.cli ingest imf`
-- Configurable CNInfo PDF ingestion: `python -m finraw.cli ingest cninfo`
-- Source entity upserts for SEC, FRED, World Bank, and CNInfo
-- Duplicate detection by `(source_id, original_url, content_sha256)`
-- Snapshot IDs include a run-specific suffix to preserve same-day repeated runs
-- Quality report: `python -m finraw.cli quality-report`
-
-Small real end-to-end test:
-
-```bash
-python -m finraw.cli --config config/test_config.json ingest test --dry-run
-python -m finraw.cli --config config/test_config.json ingest test
-python -m finraw.cli --config config/test_config.json validate
-python -m finraw.cli --config config/test_config.json quality-report
-python -m finraw.cli --config config/test_config.json export-jsonl data/test_exports/jsonl
-```
-
-## Configuring IMF and CNInfo Targets
-
-IMF does not have a single fixed default slice for this project. The official IMF API page says data is available through SDMX 2.1 and SDMX 3.0 APIs and points users to the IMF swagger page for endpoint exploration. Pick the dataset/slice in the IMF swagger portal, then place the raw URL in an `imf.targets` config. See `config/examples/imf_targets.example.json`.
-
-CNInfo PDF URLs can now be discovered instead of hand-written:
-
-```bash
-python -m finraw.cli discover-cninfo \
-  --stock "000001" \
-  --start-date 2023-01-01 \
-  --end-date 2024-12-31 \
-  --category annual \
-  --output config/cninfo_announcements.generated.json
-
-python -m finraw.cli --config config/cninfo_announcements.generated.json ingest cninfo
-```
-
-The generated config has this shape:
-
-```json
-{
-  "cninfo": {
-    "announcements": [
-      {
-        "stock_code": "000001",
-        "company_name": "...",
-        "year": "2023",
-        "report_type": "annual",
-        "url": "https://static.cninfo.com.cn/...pdf"
-      }
-    ]
-  }
-}
-```
+Do not put API keys in committed config files.
 
 ## Phase 1 Scale Profiles
 
-Prepared profiles and scope files for the previously discussed MVP scale:
-
 ```text
-config/profiles/dev.json          local SQLite, smaller development run
-config/profiles/test.json         bounded verified test run
-config/profiles/prod_phase1.json  PostgreSQL metadata, Phase 1 scale run
+config/profiles/dev.json
+config/profiles/test.json
+config/profiles/prod_phase1.json
+config/profiles/prod_phase1_with_cninfo_generated.json
 
-config/scopes/sec_us_100.json                  SEC 100-company CIK list
-config/scopes/fred_50.json                     FRED 50-series list
-config/scopes/worldbank_20x20.json             World Bank 20 countries x 20 indicators
-config/scopes/imf_datamapper_weo_targets.json  IMF WEO/DataMapper targets
-config/scopes/cninfo_a_share_strategy.json     CNInfo discovery strategy
+config/scopes/sec_us_100.json
+config/scopes/fred_50.json
+config/scopes/worldbank_20x20.json
+config/scopes/imf_datamapper_weo_targets.json
+config/scopes/cninfo_a_share_strategy.json
+config/layers/layers.json
 ```
 
-Production PostgreSQL profile expects `DATABASE_URL`:
+Production PostgreSQL profile expects `DATABASE_URL` or an explicit `metadata_backend.dsn`.
 
-```bash
-DATABASE_URL="postgresql://user:password@host:5432/finraw" \
-  python -m finraw.cli --config config/profiles/prod_phase1.json init-db
-```
+## Invariants
 
-Runbook: `docs/phase1_runbook.md`.
-Storage budget: `docs/storage_budget.md`.
+- Raw objects and raw records preserve source material and provenance.
+- Rebuilding entity, metric, fact, validation, or derived layers must not modify raw source files.
+- Candidate facts from documents remain candidates until explicitly validated.
+- Derived facts should consume standardized facts with acceptable validation states only.
+- Source definition mismatch is a comparability signal, not raw data corruption.
 
-Quality gates:
-
-```bash
-python -m finraw.cli --config config/test_config.json enforce-quality
-```
-
-Resume strategy: rerun the same command with the same config. Existing objects are skipped by `(source_id, canonical original_url including request params, content_sha256)`. Raw object IDs are derived from that same key to avoid collisions when different API requests return identical content.
+Runbook: [docs/phase1_runbook.md](docs/phase1_runbook.md).
+Storage budget: [docs/storage_budget.md](docs/storage_budget.md).
