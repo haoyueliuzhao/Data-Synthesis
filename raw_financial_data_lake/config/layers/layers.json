@@ -47,5 +47,16 @@
       "raw_dataset_snapshots",
       "data_coverage_report"
     ]
+  },
+  "qa_build": {
+    "default_export_dir": "data/qa_exports/",
+    "tables": [
+      "qa_builds",
+      "qa_templates",
+      "qa_candidates",
+      "qa_samples",
+      "qa_evidence_paths",
+      "qa_quality_checks"
+    ]
   }
 }

@@ -39,7 +39,7 @@ This means KG and QA outputs can bind to a stable build version while newer refr
 
 ## Logical Layers
 
-The code can live in one repo, but tables, commands, reports, and exports are logically separated into four layers. See [Layered Architecture](docs/layered_architecture.md).
+The code can live in one repo, but tables, commands, reports, and exports are logically separated into five layers. See [Layered Architecture](docs/layered_architecture.md).
 
 ```text
 Layer 1: raw_lake
@@ -53,6 +53,9 @@ Layer 3: fact_validation
 
 Layer 4: qa_ready
   derived_facts / kg_builds / kg_nodes / kg_edges / kg_quality_checks / kg_archives; consumes graph_ready standardized facts only
+
+Layer 5: qa_build
+  qa_builds / qa_templates / qa_candidates / qa_samples / qa_evidence_paths / qa_quality_checks
 ```
 
 Print the machine-readable manifest:
@@ -123,7 +126,15 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 # Dry-run first; execute archives to Parquet/ZSTD and purges only after checksum verification.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive --execute --purge --vacuum
+
+# Layer 5: deterministic QA build pinned to a validated KG version
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-qa --kg-build-id kg_20260711_062123_bc4b4394 --output-dir data/audit/qa_build
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-qa-jsonl --qa-build-id qa_build_20260711_114902_79dafb27 --output-dir data/qa_exports
 ```
+
+`build-qa` executes candidate construction, deterministic canonical question/answer generation, independent Decimal recomputation, KG evidence-path validation, semantic-group splitting, and build activation. LLM paraphrasing is disabled by default and never computes answers. Only `qa_samples.validation_status = 'passed'` rows are split or exported.
+
+The production QA build `qa_build_20260711_114902_79dafb27` is pinned to KG V3 `kg_20260711_062123_bc4b4394`. It contains 71,180 deduplicated canonical samples; 65,319 passed all gates and were exported to Benchmark, SFT, and Trace Seed JSONL. Rejected rows remain queryable for audit and do not enter exports.
 
 `candidate_facts` are reviewable document-derived candidates. They are not accepted facts and are not promoted into `atomic_facts` without explicit validation. Fact quality gates report candidate state counts and fail if any active candidate is marked `qa_eligible` or `kg_eligible`.
 
@@ -153,6 +164,7 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl fact_build data/layered_exports/fact_build/jsonl
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl fact_validation data/layered_exports/fact_validation/jsonl
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl qa_ready data/layered_exports/qa_ready/jsonl
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-layer-jsonl qa_build data/layered_exports/qa_build/jsonl
 ```
 
 ## FRED API Key

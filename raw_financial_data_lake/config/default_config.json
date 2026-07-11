@@ -188,5 +188,41 @@
         "annual": 5
       }
     }
+  },
+  "qa": {
+    "quotas": {
+      "single_fact_financial": 20000,
+      "single_fact_macro": 10000,
+      "single_fact_fred": 5000
+    },
+    "derived_quotas": {
+      "difference": 9000,
+      "yoy_growth": 9000,
+      "qoq_growth": 7000,
+      "ratio": 5000,
+      "share": 3000,
+      "multi_year_argmax": 3000,
+      "multi_year_argmin": 3000,
+      "industry_ranking": 1600,
+      "industry_argmax": 1200,
+      "industry_argmin": 1200,
+      "ranking": 150,
+      "argmax": 150,
+      "argmin": 150,
+      "rolling_max": 50,
+      "rolling_min": 50,
+      "macro_time_series_argmax": 33,
+      "macro_time_series_argmin": 33,
+      "time_series_argmax": 17,
+      "time_series_argmin": 17,
+      "multi_condition_screening": 100,
+      "long_window_return": 10
+    },
+    "language": "en",
+    "paraphrase": {
+      "enabled": false,
+      "max_per_group": 0
+    },
+    "split_policy": "semantic_group_then_entity_time_task"
   }
 }

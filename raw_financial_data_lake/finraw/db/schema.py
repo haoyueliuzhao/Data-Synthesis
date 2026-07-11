@@ -630,6 +630,122 @@ CREATE TABLE IF NOT EXISTS kg_archives (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_kg_archives_build ON kg_archives(kg_build_id);
 CREATE INDEX IF NOT EXISTS idx_kg_archives_status ON kg_archives(status, created_at);
+-- Layer 5: deterministic QA build
+CREATE TABLE IF NOT EXISTS qa_builds (
+            qa_build_id TEXT PRIMARY KEY,
+            kg_build_id TEXT NOT NULL,
+            graph_schema_version TEXT NOT NULL,
+            fact_build_id TEXT,
+            derived_build_id TEXT,
+            entity_build_id TEXT,
+            metric_build_id TEXT,
+            source_definition_build_id TEXT,
+            document_build_id TEXT,
+            config_hash TEXT,
+            status TEXT NOT NULL,
+            started_at TEXT,
+            completed_at TEXT,
+            candidate_count BIGINT DEFAULT 0,
+            passed_count BIGINT DEFAULT 0,
+            sample_count BIGINT DEFAULT 0,
+            quality_status TEXT,
+            is_active INTEGER DEFAULT 0,
+            superseded_by TEXT,
+            notes TEXT
+        );
+CREATE TABLE IF NOT EXISTS qa_templates (
+            template_id TEXT PRIMARY KEY,
+            task_family TEXT NOT NULL,
+            source_type TEXT,
+            entity_type TEXT,
+            metric_category TEXT,
+            period_type TEXT,
+            language TEXT NOT NULL,
+            template_text TEXT NOT NULL,
+            required_slots TEXT NOT NULL,
+            answer_type TEXT NOT NULL,
+            difficulty_base TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1
+        );
+CREATE TABLE IF NOT EXISTS qa_candidates (
+            candidate_id TEXT PRIMARY KEY,
+            stable_candidate_id TEXT NOT NULL,
+            qa_build_id TEXT NOT NULL,
+            task_family TEXT NOT NULL,
+            task_subtype TEXT NOT NULL,
+            difficulty TEXT NOT NULL,
+            entity_ids TEXT NOT NULL,
+            metric_ids TEXT NOT NULL,
+            time_scope TEXT NOT NULL,
+            entity_scope TEXT NOT NULL,
+            source_fact_ids TEXT NOT NULL,
+            source_derived_ids TEXT NOT NULL,
+            source_document_ids TEXT NOT NULL,
+            raw_object_ids TEXT NOT NULL,
+            canonical_semantics TEXT NOT NULL,
+            answer_payload TEXT NOT NULL,
+            kg_path TEXT NOT NULL,
+            eligibility_status TEXT NOT NULL,
+            rejection_reasons TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS qa_samples (
+            qa_id TEXT PRIMARY KEY,
+            stable_qa_id TEXT NOT NULL,
+            qa_group_id TEXT NOT NULL,
+            semantic_cluster_id TEXT NOT NULL,
+            qa_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            task_family TEXT NOT NULL,
+            task_subtype TEXT NOT NULL,
+            difficulty TEXT NOT NULL,
+            language TEXT NOT NULL,
+            question TEXT NOT NULL,
+            canonical_question TEXT NOT NULL,
+            answer_type TEXT NOT NULL,
+            answer_value TEXT NOT NULL,
+            answer_text TEXT NOT NULL,
+            unit TEXT,
+            currency TEXT,
+            rubric TEXT NOT NULL,
+            source_metadata TEXT NOT NULL,
+            generation_method TEXT NOT NULL,
+            validation_status TEXT NOT NULL,
+            split TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS qa_evidence_paths (
+            path_id TEXT PRIMARY KEY,
+            qa_id TEXT NOT NULL,
+            path_type TEXT NOT NULL,
+            ordered_node_ids TEXT NOT NULL,
+            ordered_edge_ids TEXT NOT NULL,
+            source_fact_ids TEXT NOT NULL,
+            source_derived_ids TEXT NOT NULL,
+            raw_object_ids TEXT NOT NULL,
+            source_document_ids TEXT NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_quality_checks (
+            check_id TEXT PRIMARY KEY,
+            qa_id TEXT NOT NULL,
+            qa_build_id TEXT NOT NULL,
+            check_name TEXT NOT NULL,
+            check_status TEXT NOT NULL,
+            observed_value TEXT,
+            expected_value TEXT,
+            message TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE INDEX IF NOT EXISTS idx_kg_edges_build_rel_src ON kg_edges(kg_build_id, relation_type, src_node_id);
+CREATE INDEX IF NOT EXISTS idx_kg_edges_build_rel_dst ON kg_edges(kg_build_id, relation_type, dst_node_id);
+CREATE INDEX IF NOT EXISTS idx_qa_builds_kg_status ON qa_builds(kg_build_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_candidates_task_status ON qa_candidates(qa_build_id, task_subtype, eligibility_status);
+CREATE INDEX IF NOT EXISTS idx_qa_candidates_stable ON qa_candidates(stable_candidate_id);
+CREATE INDEX IF NOT EXISTS idx_qa_samples_build_status ON qa_samples(qa_build_id, validation_status);
+CREATE INDEX IF NOT EXISTS idx_qa_samples_group_split ON qa_samples(qa_group_id, split);
+CREATE INDEX IF NOT EXISTS idx_qa_samples_cluster ON qa_samples(semantic_cluster_id);
+CREATE INDEX IF NOT EXISTS idx_qa_evidence_qa ON qa_evidence_paths(qa_id);
+CREATE INDEX IF NOT EXISTS idx_qa_quality_build_status ON qa_quality_checks(qa_build_id, check_status);
 """
 
 SOURCE_REGISTRY_SEED = [

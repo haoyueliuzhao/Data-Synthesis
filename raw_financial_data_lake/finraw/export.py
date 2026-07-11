@@ -37,6 +37,12 @@ EXPORT_TABLES = [
     "kg_edges",
     "kg_quality_checks",
     "kg_archives",
+    "qa_builds",
+    "qa_templates",
+    "qa_candidates",
+    "qa_samples",
+    "qa_evidence_paths",
+    "qa_quality_checks",
 ]
 
 

@@ -40,6 +40,14 @@ LAYER_TABLES: dict[str, list[str]] = {
         "kg_quality_checks",
         "kg_archives",
     ],
+    "qa_build": [
+        "qa_builds",
+        "qa_templates",
+        "qa_candidates",
+        "qa_samples",
+        "qa_evidence_paths",
+        "qa_quality_checks",
+    ],
 }
 
 LAYER_COMMANDS: dict[str, list[str]] = {
@@ -73,6 +81,14 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "export-kg-jsonl",
         "kg-retention",
     ],
+    "qa_build": [
+        "build-qa-candidates",
+        "generate-qa",
+        "validate-qa",
+        "split-qa",
+        "build-qa",
+        "export-qa-jsonl",
+    ],
 }
 
 LAYER_OUTPUTS: dict[str, dict[str, str]] = {
@@ -93,13 +109,18 @@ LAYER_OUTPUTS: dict[str, dict[str, str]] = {
         "audit": "data/audit/qa_ready/",
         "exports": "data/layered_exports/qa_ready/",
     },
+    "qa_build": {
+        "audit": "data/audit/qa_build/",
+        "exports": "data/qa_exports/",
+    },
 }
 
 LAYER_DESCRIPTIONS: dict[str, str] = {
     "raw_lake": "Original source material and provenance only; no canonical financial claims are created here.",
     "fact_build": "Canonical entities, metric ontology, atomic facts, standardized facts, and document candidates built from raw records.",
     "fact_validation": "Quality checks, source-definition crosswalks, frequency metadata, fact-level graph_ready gates, conflict and comparability support.",
-    "qa_ready": "Derived facts, KG artifacts, and future QA outputs that consume graph-ready standardized facts.",
+    "qa_ready": "Derived facts and versioned KG artifacts that consume graph-ready standardized facts.",
+    "qa_build": "Deterministic QA candidates, samples, evidence paths, rubrics, quality checks, splits, and benchmark exports pinned to a KG build.",
 }
 
 

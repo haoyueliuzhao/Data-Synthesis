@@ -1,6 +1,6 @@
 # Layered Architecture
 
-The repository now contains multiple pipeline stages, but they are logically separated into four data layers. The raw lake remains the stable provenance layer; downstream facts, validation, and QA-ready artifacts consume it without changing the original raw objects.
+The repository now contains multiple pipeline stages, but they are logically separated into five data layers. The raw lake remains the stable provenance layer; downstream facts, validation, and QA-ready artifacts consume it without changing the original raw objects.
 
 ## Layer 1: raw_lake
 
@@ -61,7 +61,7 @@ This layer records source definitions, frequency/vintage assumptions, conflicts,
 
 ## Layer 4: qa_ready
 
-Purpose: prepare graph-ready facts for complex questions, KG construction, and QA generation.
+Purpose: prepare validated derived facts and a versioned property graph for downstream QA construction.
 
 Tables:
 
@@ -76,7 +76,22 @@ KG is first represented as an auditable property graph in the metadata database.
 
 `derived_facts` must preserve the semantic scope of the calculation. Every row carries `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. This is especially important for ranking/share facts: a ranking over the configured SEC 100-company universe is not the same as a ranking over the S&P 500, Nasdaq 100, all listed companies, or a World Bank income group.
 
-Future tables should live here if they are KG edges/nodes, retrieval traces, QA samples, rubrics, or benchmark artifacts.
+## Layer 5: qa_build
+
+Purpose: construct deterministic, versioned QA datasets from a pinned, quality-passed KG build.
+
+Tables:
+
+- `qa_builds`
+- `qa_templates`
+- `qa_candidates`
+- `qa_samples`
+- `qa_evidence_paths`
+- `qa_quality_checks`
+
+The QA layer follows `KG path -> canonical semantics -> programmatic answer -> independent recomputation -> quality gates -> semantic-group split -> export`. LLM paraphrasing is optional and disabled by default; it may change wording only, never entities, metrics, time scope, calculation scope, units, or answers.
+
+Every QA build pins the exact KG, fact, derived, entity, metric, source-definition, and document build IDs. Rejected candidates and samples remain available for audit, while only validated samples receive dataset splits and enter Benchmark, SFT, or Trace Seed exports. Provenance evidence may cite source facts, raw objects, and KG paths; page-level text evidence is not claimed until an explicit Fact-to-EvidenceChunk relation exists.
 
 ## Commands
 

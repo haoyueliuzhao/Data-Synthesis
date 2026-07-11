@@ -1,0 +1,155 @@
+from __future__ import annotations
+
+from typing import Any
+
+
+TEMPLATES: list[dict[str, Any]] = [
+    {
+        "template_id": "single_fact_flow_en_01",
+        "task_family": "single_fact",
+        "period_type": "period_flow",
+        "language": "en",
+        "template_text": "What was {entity}'s {metric} for {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "easy",
+    },
+    {
+        "template_id": "single_fact_instant_en_01",
+        "task_family": "single_fact",
+        "period_type": "point_in_time",
+        "language": "en",
+        "template_text": "What was {entity}'s {metric} as of {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "easy",
+    },
+    {
+        "template_id": "single_fact_observation_en_01",
+        "task_family": "single_fact",
+        "period_type": "observation",
+        "language": "en",
+        "template_text": "What was the {metric} for {entity} on {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "easy",
+    },
+    {
+        "template_id": "difference_en_01",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "By how much did {entity}'s {metric} change from {previous_period} to {period}?",
+        "required_slots": ["entity", "metric", "previous_period", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "yoy_growth_en_01",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "What was the year-over-year growth rate of {entity}'s {metric} in {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "qoq_growth_en_01",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "What was the quarter-over-quarter growth rate of {entity}'s {metric} in {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "ratio_en_01",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "What was {entity}'s {ratio} in {period}?",
+        "required_slots": ["entity", "ratio", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "share_en_01",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "Within {scope}, what share of total {metric} did {entity} account for in {period}?",
+        "required_slots": ["scope", "entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "temporal_extrema_en_01",
+        "task_family": "temporal_investigation",
+        "language": "en",
+        "template_text": "Between {start_period} and {end_period}, when did {entity}'s {metric} reach its {extreme}?",
+        "required_slots": ["start_period", "end_period", "entity", "metric", "extreme"],
+        "answer_type": "period_and_value",
+        "difficulty_base": "hard",
+    },
+    {
+        "template_id": "ranking_en_01",
+        "task_family": "scope_comparison",
+        "language": "en",
+        "template_text": "Within {scope}, which entities ranked highest by {metric} in {period}?",
+        "required_slots": ["scope", "metric", "period"],
+        "answer_type": "ranked_list",
+        "difficulty_base": "hard",
+    },
+    {
+        "template_id": "scope_extrema_en_01",
+        "task_family": "scope_comparison",
+        "language": "en",
+        "template_text": "Within {scope}, which entity had the {extreme} {metric} in {period}?",
+        "required_slots": ["scope", "extreme", "metric", "period"],
+        "answer_type": "entity_and_value",
+        "difficulty_base": "hard",
+    },
+    {
+        "template_id": "screening_en_01",
+        "task_family": "scope_screening",
+        "language": "en",
+        "template_text": "Within {scope}, which entities met all configured screening conditions in {period}?",
+        "required_slots": ["scope", "period"],
+        "answer_type": "entity_set",
+        "difficulty_base": "expert",
+    },
+    {
+        "template_id": "long_window_return_en_01",
+        "task_family": "temporal_investigation",
+        "language": "en",
+        "template_text": "What was the percentage change in {entity}'s {metric} from {start_period} to {end_period}?",
+        "required_slots": ["entity", "metric", "start_period", "end_period"],
+        "answer_type": "numeric",
+        "difficulty_base": "hard",
+    },
+]
+
+
+def template_for(task_subtype: str, period_type: str | None = None) -> dict[str, Any]:
+    if task_subtype == "single_fact":
+        template_id = {
+            "point_in_time": "single_fact_instant_en_01",
+            "period_flow": "single_fact_flow_en_01",
+        }.get(period_type, "single_fact_observation_en_01")
+    elif task_subtype in {
+        "multi_year_argmax",
+        "multi_year_argmin",
+        "rolling_max",
+        "rolling_min",
+        "macro_time_series_argmax",
+        "macro_time_series_argmin",
+        "time_series_argmax",
+        "time_series_argmin",
+    }:
+        template_id = "temporal_extrema_en_01"
+    elif task_subtype == "multi_condition_screening":
+        template_id = "screening_en_01"
+    elif task_subtype in {"ranking", "industry_ranking"}:
+        template_id = "ranking_en_01"
+    elif task_subtype in {"argmax", "argmin", "industry_argmax", "industry_argmin"}:
+        template_id = "scope_extrema_en_01"
+    else:
+        template_id = f"{task_subtype}_en_01"
+    return next(item for item in TEMPLATES if item["template_id"] == template_id)

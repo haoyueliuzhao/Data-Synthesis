@@ -27,6 +27,8 @@ from finraw.kg_builder import build_kg, export_kg_jsonl, kg_quality_report
 from finraw.kg_retention import enforce_kg_retention
 from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
+from finraw.qa.export import export_qa_jsonl
+from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
 from finraw.storage import RawObjectStore
@@ -146,6 +148,34 @@ def build_parser() -> argparse.ArgumentParser:
     kg_query.add_argument("--date-from")
     kg_query.add_argument("--date-to")
     kg_query.add_argument("--limit", type=int, default=100)
+
+    qa_candidates = sub.add_parser("build-qa-candidates", help="Build versioned structured QA candidates from a pinned KG build.")
+    qa_candidates.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_candidates.add_argument("--output-dir", default="data/audit/qa_build")
+    qa_candidates.add_argument("--batch-size", type=int, default=2000)
+
+    qa_generate = sub.add_parser("generate-qa", help="Render deterministic canonical QA samples from candidates.")
+    qa_generate.add_argument("--qa-build-id", required=True)
+    qa_generate.add_argument("--output-dir", default="data/audit/qa_build")
+    qa_generate.add_argument("--batch-size", type=int, default=2000)
+
+    qa_validate = sub.add_parser("validate-qa", help="Independently recompute and quality-check QA samples.")
+    qa_validate.add_argument("--qa-build-id", required=True)
+    qa_validate.add_argument("--output-dir", default="data/audit/qa_build")
+    qa_validate.add_argument("--batch-size", type=int, default=2000)
+
+    qa_split = sub.add_parser("split-qa", help="Assign passed semantic QA groups to leakage-safe splits.")
+    qa_split.add_argument("--qa-build-id", required=True)
+    qa_split.add_argument("--output-dir", default="data/audit/qa_build")
+
+    qa_export = sub.add_parser("export-qa-jsonl", help="Export passed QA as benchmark, SFT, and trace-seed JSONL.")
+    qa_export.add_argument("--qa-build-id", required=True)
+    qa_export.add_argument("--output-dir", default="data/qa_exports")
+
+    qa_all = sub.add_parser("build-qa", help="Run candidate, generation, validation, and split stages end to end.")
+    qa_all.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_all.add_argument("--output-dir", default="data/audit/qa_build")
+    qa_all.add_argument("--batch-size", type=int, default=2000)
 
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
     return parser
@@ -331,6 +361,24 @@ def main() -> None:
                     limit=args.limit,
                 )
             print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "build-qa-candidates":
+            report = build_qa_candidates(db, config, kg_build_id=args.kg_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "generate-qa":
+            report = generate_qa_samples(db, args.qa_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "validate-qa":
+            report = validate_qa_samples(db, args.qa_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "split-qa":
+            report = split_qa_samples(db, args.qa_build_id, output_dir=args.output_dir)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "export-qa-jsonl":
+            report = export_qa_jsonl(db, args.qa_build_id, args.output_dir)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "build-qa":
+            report = build_qa(db, config, kg_build_id=args.kg_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "validate":
             passed, failed = validate_raw_objects(db)
             print(f"Validation completed: passed={passed}, failed={failed}")
