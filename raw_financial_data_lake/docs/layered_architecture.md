@@ -161,4 +161,6 @@ KG and QA artifacts should bind to a specific build, for example `qa_ready_20260
 
 ## KG Quality Gates
 
-`build-kg` writes `kg_builds`, `kg_nodes`, `kg_edges`, and `kg_quality_checks`. The KG gate verifies that fact node count matches graph-ready facts, no candidate facts leak into the graph, fact nodes have Entity/Metric/Time/DataSource/RawObject/SourceDefinition edges, derived facts have `DERIVED_FROM` edges, and ranking/share-style derived facts retain an explicit scope. JSONL export is available through `export-kg-jsonl`.
+`build-kg` writes `kg_builds`, `kg_nodes`, `kg_edges`, and `kg_quality_checks`. KG schema v2 records the exact upstream entity, metric, source-definition, document, standardized-fact, and derived-fact build IDs and their frozen fact counts.
+
+The KG gate verifies build alignment, node counts, non-empty fact content, candidate exclusion, provenance status, edge endpoint existence and type, duplicate stable IDs, required Fact relationships, complete `DERIVED_FROM` inputs, source-definition provider edges, canonical derived TimePeriod reuse, and explicit ranking/share scope. A failed or interrupted build stays inactive and does not replace the previous graph. Historical builds remain addressable by `kg_build_id` for quality reports and JSONL export.

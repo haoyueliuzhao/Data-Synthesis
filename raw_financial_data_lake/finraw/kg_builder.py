@@ -9,11 +9,20 @@ from typing import Any, Iterable
 
 from finraw.db.client import DBProtocol
 
+KG_SCHEMA_VERSION = "2.0"
+
 KG_SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS kg_builds (
     kg_build_id          TEXT PRIMARY KEY,
+    graph_schema_version TEXT,
     input_fact_build_id  TEXT,
     input_qa_build_id    TEXT,
+    input_entity_build_id TEXT,
+    input_metric_build_id TEXT,
+    input_source_definition_build_id TEXT,
+    input_document_build_id TEXT,
+    input_fact_count     INTEGER,
+    input_derived_count  INTEGER,
     status               TEXT,
     started_at           TEXT,
     completed_at         TEXT,
@@ -75,21 +84,35 @@ CHECK_COLUMNS = ["check_id", "kg_build_id", "check_type", "status", "severity", 
 
 def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None, batch_size: int = 20000) -> dict[str, Any]:
     ensure_kg_schema(db)
-    input_fact_build_id = _active_build_id(db, "standardized_facts")
-    input_qa_build_id = _active_build_id(db, "derived_facts")
+    input_fact_build_id = _required_active_build_id(db, "standardized_facts")
+    input_qa_build_id = _required_active_build_id(db, "derived_facts")
+    input_entity_build_id = _required_active_build_id(db, "canonical_entities")
+    input_metric_build_id = _required_active_build_id(db, "metrics")
+    input_source_definition_build_id = _required_active_build_id(db, "source_metric_definitions")
+    input_document_build_id = _optional_active_build_id(db, "source_documents")
+    _validate_derived_build_chain(db, input_qa_build_id, input_fact_build_id)
+    input_fact_count = _expected_fact_count(db, input_fact_build_id)
+    input_derived_count = _expected_derived_count(db, input_qa_build_id, input_fact_build_id)
     kg_build_id = _new_kg_build_id()
     started_at = _now()
     _insert_kg_build(db, {
         "kg_build_id": kg_build_id,
+        "graph_schema_version": KG_SCHEMA_VERSION,
         "input_fact_build_id": input_fact_build_id,
         "input_qa_build_id": input_qa_build_id,
+        "input_entity_build_id": input_entity_build_id,
+        "input_metric_build_id": input_metric_build_id,
+        "input_source_definition_build_id": input_source_definition_build_id,
+        "input_document_build_id": input_document_build_id,
+        "input_fact_count": input_fact_count,
+        "input_derived_count": input_derived_count,
         "status": "running",
         "started_at": started_at,
         "completed_at": None,
         "node_count": 0,
         "edge_count": 0,
         "quality_status": None,
-        "notes": json.dumps({"source": "build-kg", "policy": "graph_ready_standardized_facts_and_active_derived_facts_only"}, sort_keys=True),
+        "notes": json.dumps({"source": "build-kg", "graph_schema_version": KG_SCHEMA_VERSION, "policy": "build_pinned_graph_ready_facts_and_validated_derived_facts_only"}, sort_keys=True),
         "is_active": 0,
         "superseded_by": None,
     })
@@ -143,22 +166,24 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         return edge_id
 
     # Master data nodes.
-    for row in _rows(db, "SELECT * FROM canonical_entities WHERE COALESCE(is_active, 1) = 1"):
+    for row in _rows(db, "SELECT * FROM canonical_entities WHERE build_id = ?", (input_entity_build_id,)):
         add_node(_entity_node(row.get("entity_id")), "Entity", "canonical_entities", row.get("entity_id"), _pick(row, ["entity_id", "canonical_name", "entity_type", "market", "country", "exchange", "ticker", "cik", "isin", "currency", "fiscal_year_end", "industry", "build_id"]))
-    for row in _rows(db, "SELECT * FROM canonical_securities WHERE COALESCE(is_active, 1) = 1"):
+    for row in _rows(db, "SELECT * FROM canonical_securities WHERE build_id = ?", (input_entity_build_id,)):
         security = _security_node(row.get("security_id"))
         add_node(security, "Security", "canonical_securities", row.get("security_id"), _pick(row, ["security_id", "company_entity_id", "canonical_name", "security_type", "market", "country", "exchange", "ticker", "composite_ticker", "currency", "is_primary_listing", "listing_status", "build_id"]))
         if row.get("company_entity_id"):
             add_edge(_entity_node(row.get("company_entity_id")), "HAS_SECURITY", security, "canonical_securities", row.get("security_id"))
-    for row in _rows(db, "SELECT * FROM metrics WHERE COALESCE(is_active, 1) = 1"):
+    for row in _rows(db, "SELECT * FROM metrics WHERE build_id = ?", (input_metric_build_id,)):
         add_node(_metric_node(row.get("metric_id")), "Metric", "metrics", row.get("metric_id"), _pick(row, ["metric_id", "canonical_name", "metric_category", "statement_type", "period_type", "default_unit", "default_currency", "accounting_standard", "aggregation_rule", "revision_risk", "ambiguity_notes", "build_id"]))
     for row in _rows(db, "SELECT * FROM source_registry WHERE is_active IS DISTINCT FROM FALSE"):
         add_node(_source_node(row.get("source_id")), "DataSource", "source_registry", row.get("source_id"), _pick(row, ["source_id", "source_name", "source_type", "authority_level", "market", "provider", "base_url", "access_method", "update_frequency", "license_note", "rate_limit_note"]))
-    for row in _rows(db, "SELECT * FROM source_metric_definitions WHERE COALESCE(is_active, 1) = 1"):
+    for row in _rows(db, "SELECT * FROM source_metric_definitions WHERE build_id = ?", (input_source_definition_build_id,)):
         source_def = _source_definition_node(row.get("definition_id"))
         add_node(source_def, "SourceDefinition", "source_metric_definitions", row.get("definition_id"), _pick(row, ["definition_id", "source_id", "metric_id", "raw_concept_name", "definition_text", "unit_rule", "frequency", "vintage_policy", "is_forecast", "comparable_to_metric_id", "comparability_level", "build_id"]))
         if row.get("metric_id"):
             add_edge(source_def, "DEFINES", _metric_node(row.get("metric_id")), "source_metric_definitions", row.get("definition_id"))
+        if row.get("source_id"):
+            add_edge(source_def, "PROVIDED_BY", _source_node(row.get("source_id")), "source_metric_definitions", row.get("definition_id"))
 
     # Facts and their source raw objects.
     fact_sql = """
@@ -166,10 +191,11 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         WHERE COALESCE(is_active, 1) = 1
           AND COALESCE(graph_ready, 0) = 1
           AND verification_status IN ('single_source', 'cross_verified')
+          AND build_id = ?
     """
-    for row in _rows(db, fact_sql):
+    for row in _rows(db, fact_sql, (input_fact_build_id,)):
         fact = _fact_node(row.get("fact_id"))
-        add_node(fact, "Fact", "standardized_facts", row.get("fact_id"), _pick(row, ["fact_id", "stable_fact_id", "build_id", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "source_id", "raw_object_id", "verification_status", "confidence_score"]))
+        add_node(fact, "Fact", "standardized_facts", row.get("fact_id"), _pick(row, ["fact_id", "stable_fact_id", "build_id", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "source_id", "raw_object_id", "verification_status", "graph_ready_reason", "validation_flags", "raw_equivalence_group_id", "semantic_equivalence_group_id", "confidence_score"]))
         time = _time_node(row)
         add_node(time, "TimePeriod", "standardized_facts", row.get("fact_id"), _time_properties(row))
         if row.get("entity_id"):
@@ -188,7 +214,7 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
             add_edge(fact, "USES_SOURCE_DEFINITION", _source_definition_node(row.get("source_definition_id")), "standardized_facts", row.get("fact_id"))
 
     # Source documents.
-    for row in _rows(db, "SELECT * FROM source_documents WHERE COALESCE(is_active, 1) = 1"):
+    for row in _rows(db, "SELECT * FROM source_documents WHERE build_id = ? AND document_status = 'passed'", (input_document_build_id,)):
         doc = _document_node(row.get("document_id"))
         add_node(doc, "SourceDocument", "source_documents", row.get("document_id"), _pick(row, ["document_id", "stable_document_id", "build_id", "entity_id", "source_id", "form_type", "report_type", "period_end", "filing_date", "storage_uri", "original_url", "raw_object_id", "document_status"]))
         if row.get("entity_id"):
@@ -206,8 +232,10 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         SELECT * FROM derived_facts
         WHERE COALESCE(is_active, 1) = 1
           AND verification_status IN ('single_source', 'cross_verified')
+          AND build_id = ?
+          AND input_build_id = ?
     """
-    for row in _rows(db, derived_sql):
+    for row in _rows(db, derived_sql, (input_qa_build_id, input_fact_build_id)):
         derived = _derived_fact_node(row.get("derived_id"))
         add_node(derived, "DerivedFact", "derived_facts", row.get("derived_id"), _pick(row, ["derived_id", "stable_derived_id", "build_id", "input_build_id", "derived_type", "entity_scope", "metric_scope", "time_scope", "scope_type", "scope_id", "scope_definition", "scope_entity_ids", "scope_source", "calculation_code", "output_value", "output_table", "unit", "tolerance", "verification_status"]))
         for fact_id in _json_list(row.get("input_fact_ids")):
@@ -221,8 +249,9 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         for metric_id in sorted(m for m in metric_ids if m):
             add_edge(derived, "USES_METRIC", _metric_node(metric_id), "derived_facts", row.get("derived_id"), {"metric_role": _metric_role(metric_scope, metric_id)})
         if time_scope:
-            time = _derived_time_node(row.get("derived_id"), time_scope)
-            add_node(time, "TimePeriod", "derived_facts", row.get("derived_id"), {"time_scope": time_scope})
+            time = _derived_time_node(time_scope)
+            time_scope_id = _digest([time_scope])
+            add_node(time, "TimePeriod", "derived_time_scope", time_scope_id, {"time_scope": time_scope})
             add_edge(derived, "IN_PERIOD", time, "derived_facts", row.get("derived_id"))
         if row.get("scope_id"):
             entity_set = _entity_set_node(row.get("scope_id"))
@@ -248,10 +277,19 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
     })
     if quality_status == "passed":
         _activate_kg_build(db, kg_build_id)
+    else:
+        _invalidate_kg_build(db, kg_build_id)
     report = {
         "kg_build_id": kg_build_id,
+        "graph_schema_version": KG_SCHEMA_VERSION,
         "input_fact_build_id": input_fact_build_id,
         "input_qa_build_id": input_qa_build_id,
+        "input_entity_build_id": input_entity_build_id,
+        "input_metric_build_id": input_metric_build_id,
+        "input_source_definition_build_id": input_source_definition_build_id,
+        "input_document_build_id": input_document_build_id,
+        "input_fact_count": input_fact_count,
+        "input_derived_count": input_derived_count,
         "node_count": node_count,
         "edge_count": edge_count,
         "node_type_counts": dict(sorted(node_type_counts.items())),
@@ -271,40 +309,177 @@ def kg_quality_report(db: DBProtocol, kg_build_id: str | None = None, output_dir
         if output_dir:
             report["written_files"] = [str(path) for path in write_kg_quality_report(report, output_dir)]
         return report
+
+    build_row = db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build_id,))
+    if not build_row:
+        report = {"kg_build_id": kg_build_id, "kg_quality_gate_status": "failed", "kg_quality_gate_failures": ["unknown_kg_build"]}
+        if output_dir:
+            report["written_files"] = [str(path) for path in write_kg_quality_report(report, output_dir)]
+        return report
+    build = dict(build_row)
+    fact_build_id = build.get("input_fact_build_id")
+    qa_build_id = build.get("input_qa_build_id")
+    entity_build_id = build.get("input_entity_build_id")
+    metric_build_id = build.get("input_metric_build_id")
+    definition_build_id = build.get("input_source_definition_build_id")
+    document_build_id = build.get("input_document_build_id")
+
     checks = {
-        "node_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND COALESCE(is_active, 1) = 1", (kg_build_id,)),
-        "edge_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_edges WHERE kg_build_id = ? AND COALESCE(is_active, 1) = 1", (kg_build_id,)),
-        "fact_node_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND node_type = 'Fact' AND COALESCE(is_active, 1) = 1", (kg_build_id,)),
-        "graph_ready_fact_count": _scalar(db, "SELECT COUNT(*) AS c FROM standardized_facts WHERE COALESCE(is_active, 1) = 1 AND COALESCE(graph_ready, 0) = 1 AND verification_status IN ('single_source', 'cross_verified')"),
-        "derived_fact_node_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND node_type = 'DerivedFact' AND COALESCE(is_active, 1) = 1", (kg_build_id,)),
-        "active_derived_fact_count": _scalar(db, "SELECT COUNT(*) AS c FROM derived_facts WHERE COALESCE(is_active, 1) = 1 AND verification_status IN ('single_source', 'cross_verified')"),
+        "node_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ?", (kg_build_id,)),
+        "edge_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_edges WHERE kg_build_id = ?", (kg_build_id,)),
+        "schema_version_mismatch_count": 0 if build.get("graph_schema_version") == KG_SCHEMA_VERSION else 1,
+        "recorded_input_fact_count": int(build.get("input_fact_count") or 0),
+        "recorded_input_derived_count": int(build.get("input_derived_count") or 0),
+        "fact_node_count": _node_type_count(db, kg_build_id, "Fact"),
+        "graph_ready_fact_count": _expected_fact_count(db, fact_build_id),
+        "derived_fact_node_count": _node_type_count(db, kg_build_id, "DerivedFact"),
+        "expected_derived_fact_count": _expected_derived_count(db, qa_build_id, fact_build_id),
+        "entity_node_count": _node_type_count(db, kg_build_id, "Entity"),
+        "expected_entity_node_count": _build_row_count(db, "canonical_entities", entity_build_id),
+        "metric_node_count": _node_type_count(db, kg_build_id, "Metric"),
+        "expected_metric_node_count": _build_row_count(db, "metrics", metric_build_id),
+        "source_definition_node_count": _node_type_count(db, kg_build_id, "SourceDefinition"),
+        "expected_source_definition_node_count": _build_row_count(db, "source_metric_definitions", definition_build_id),
+        "source_document_node_count": _node_type_count(db, kg_build_id, "SourceDocument"),
+        "expected_source_document_node_count": _build_row_count(db, "source_documents", document_build_id, "document_status = 'passed'"),
         "candidate_fact_leak_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND (node_type = 'CandidateFact' OR source_table = 'candidate_facts')", (kg_build_id,)),
-        "invalid_status_fact_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes n JOIN standardized_facts sf ON n.source_pk = sf.fact_id WHERE n.kg_build_id = ? AND n.node_type = 'Fact' AND (COALESCE(sf.graph_ready, 0) <> 1 OR sf.verification_status NOT IN ('single_source', 'cross_verified'))", (kg_build_id,)),
-        "candidate_kg_eligible_count": _scalar(db, "SELECT COUNT(*) AS c FROM candidate_facts WHERE COALESCE(is_active, 1) = 1 AND COALESCE(kg_eligible, 0) <> 0"),
+        "invalid_status_fact_count": _scalar(db, """
+            SELECT COUNT(*) AS c
+            FROM kg_nodes n
+            LEFT JOIN standardized_facts sf ON n.source_pk = sf.fact_id AND sf.build_id = ?
+            WHERE n.kg_build_id = ? AND n.node_type = 'Fact'
+              AND (sf.fact_id IS NULL OR COALESCE(sf.graph_ready, 0) <> 1
+                   OR sf.verification_status NOT IN ('single_source', 'cross_verified'))
+        """, (fact_build_id, kg_build_id)),
+        "invalid_status_derived_fact_count": _scalar(db, """
+            SELECT COUNT(*) AS c
+            FROM kg_nodes n
+            LEFT JOIN derived_facts d ON n.source_pk = d.derived_id
+              AND d.build_id = ? AND d.input_build_id = ?
+            WHERE n.kg_build_id = ? AND n.node_type = 'DerivedFact'
+              AND (d.derived_id IS NULL OR d.verification_status NOT IN ('single_source', 'cross_verified'))
+        """, (qa_build_id, fact_build_id, kg_build_id)),
+        "fact_build_mismatch_count": _source_build_mismatch_count(db, kg_build_id, "Fact", "standardized_facts", "fact_id", fact_build_id),
+        "derived_build_mismatch_count": _source_build_mismatch_count(db, kg_build_id, "DerivedFact", "derived_facts", "derived_id", qa_build_id),
+        "derived_input_build_mismatch_count": _scalar(db, "SELECT COUNT(*) AS c FROM derived_facts WHERE build_id = ? AND input_build_id <> ?", (qa_build_id, fact_build_id)),
         "missing_fact_entity_edges": _missing_fact_edge_count(db, kg_build_id, "HAS_FACT", incoming=True),
         "missing_fact_metric_edges": _missing_fact_edge_count(db, kg_build_id, "MEASURES"),
         "missing_fact_period_edges": _missing_fact_edge_count(db, kg_build_id, "IN_PERIOD"),
         "missing_fact_source_edges": _missing_fact_edge_count(db, kg_build_id, "FROM_SOURCE"),
         "missing_fact_raw_object_edges": _missing_fact_edge_count(db, kg_build_id, "TRACED_TO"),
         "missing_fact_source_definition_edges": _missing_fact_edge_count(db, kg_build_id, "USES_SOURCE_DEFINITION"),
-        "derived_fact_without_inputs": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes n WHERE n.kg_build_id = ? AND n.node_type = 'DerivedFact' AND NOT EXISTS (SELECT 1 FROM kg_edges e WHERE e.kg_build_id = n.kg_build_id AND e.src_node_id = n.node_id AND e.relation_type = 'DERIVED_FROM')", (kg_build_id,)),
-        "ranking_share_missing_scope": _scalar(db, "SELECT COUNT(*) AS c FROM derived_facts WHERE COALESCE(is_active, 1) = 1 AND derived_type IN ('ranking', 'share', 'argmax', 'argmin') AND (scope_id IS NULL OR scope_definition IS NULL)"),
+        "source_definition_missing_source_edges": _missing_node_edge_count(db, kg_build_id, "SourceDefinition", "PROVIDED_BY"),
+        "derived_fact_without_inputs": _missing_node_edge_count(db, kg_build_id, "DerivedFact", "DERIVED_FROM"),
+        "derived_input_edge_count": _edge_type_count(db, kg_build_id, "DERIVED_FROM"),
+        "expected_derived_input_edge_count": _expected_derived_input_count(db, qa_build_id, fact_build_id),
+        "derived_input_missing_fact_nodes": _missing_edge_target_count(db, kg_build_id, "DERIVED_FROM", "Fact"),
+        "dangling_source_edge_count": _dangling_edge_count(db, kg_build_id, incoming=False),
+        "dangling_target_edge_count": _dangling_edge_count(db, kg_build_id, incoming=True),
+        "invalid_relation_endpoint_count": _invalid_relation_endpoint_count(db, kg_build_id),
+        "duplicate_stable_node_count": _duplicate_stable_id_count(db, "kg_nodes", "stable_node_id", kg_build_id),
+        "duplicate_stable_edge_count": _duplicate_stable_id_count(db, "kg_edges", "stable_edge_id", kg_build_id),
+        "invalid_raw_object_status_count": _scalar(db, """
+            SELECT COUNT(*) AS c FROM kg_nodes n
+            LEFT JOIN raw_objects ro ON ro.raw_object_id = n.source_pk
+            WHERE n.kg_build_id = ? AND n.node_type = 'RawObject'
+              AND (ro.raw_object_id IS NULL OR ro.validation_status <> 'passed')
+        """, (kg_build_id,)),
+        "invalid_source_document_status_count": _scalar(db, """
+            SELECT COUNT(*) AS c FROM kg_nodes n
+            LEFT JOIN source_documents d ON d.document_id = n.source_pk AND d.build_id = ?
+            WHERE n.kg_build_id = ? AND n.node_type = 'SourceDocument'
+              AND (d.document_id IS NULL OR d.document_status <> 'passed')
+        """, (document_build_id, kg_build_id)),
+        "derived_time_node_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND node_type = 'TimePeriod' AND source_table = 'derived_time_scope'", (kg_build_id,)),
+        "expected_derived_time_node_count": _distinct_json_count(db, "derived_facts", "time_scope", "build_id = ? AND input_build_id = ? AND verification_status IN ('single_source', 'cross_verified')", (qa_build_id, fact_build_id)),
+        "ranking_share_missing_scope": _scalar(db, "SELECT COUNT(*) AS c FROM derived_facts WHERE build_id = ? AND input_build_id = ? AND derived_type IN ('ranking', 'share', 'argmax', 'argmin') AND (scope_id IS NULL OR scope_definition IS NULL)", (qa_build_id, fact_build_id)),
     }
-    failures = []
-    if checks["fact_node_count"] != checks["graph_ready_fact_count"]:
-        failures.append(f"fact_node_count={checks['fact_node_count']} != graph_ready_fact_count={checks['graph_ready_fact_count']}")
-    if checks["derived_fact_node_count"] != checks["active_derived_fact_count"]:
-        failures.append(f"derived_fact_node_count={checks['derived_fact_node_count']} != active_derived_fact_count={checks['active_derived_fact_count']}")
-    for key in ["candidate_fact_leak_count", "invalid_status_fact_count", "candidate_kg_eligible_count", "missing_fact_entity_edges", "missing_fact_metric_edges", "missing_fact_period_edges", "missing_fact_source_edges", "missing_fact_raw_object_edges", "missing_fact_source_definition_edges", "derived_fact_without_inputs", "ranking_share_missing_scope"]:
+
+    failures: list[str] = []
+    failed_checks: set[str] = set()
+
+    def require_zero(key: str) -> None:
         if checks.get(key, 0):
+            failed_checks.add(key)
             failures.append(f"{key}={checks[key]} > 0")
-    report = {"kg_build_id": kg_build_id, **checks, "kg_quality_gate_failures": failures, "kg_quality_gate_status": "failed" if failures else "passed"}
+
+    def require_equal(actual: str, expected: str) -> None:
+        if checks.get(actual) != checks.get(expected):
+            failed_checks.update({actual, expected})
+            failures.append(f"{actual}={checks.get(actual)} != {expected}={checks.get(expected)}")
+
+    if checks["node_count"] <= 0:
+        failed_checks.add("node_count")
+        failures.append("node_count must be > 0")
+    if checks["edge_count"] <= 0:
+        failed_checks.add("edge_count")
+        failures.append("edge_count must be > 0")
+    if checks["fact_node_count"] <= 0:
+        failed_checks.add("fact_node_count")
+        failures.append("fact_node_count must be > 0")
+
+    for actual, expected in [
+        ("fact_node_count", "graph_ready_fact_count"),
+        ("recorded_input_fact_count", "graph_ready_fact_count"),
+        ("derived_fact_node_count", "expected_derived_fact_count"),
+        ("recorded_input_derived_count", "expected_derived_fact_count"),
+        ("derived_input_edge_count", "expected_derived_input_edge_count"),
+        ("derived_time_node_count", "expected_derived_time_node_count"),
+    ]:
+        require_equal(actual, expected)
+    for actual, expected, build_id in [
+        ("entity_node_count", "expected_entity_node_count", entity_build_id),
+        ("metric_node_count", "expected_metric_node_count", metric_build_id),
+        ("source_definition_node_count", "expected_source_definition_node_count", definition_build_id),
+        ("source_document_node_count", "expected_source_document_node_count", document_build_id),
+    ]:
+        if build_id:
+            require_equal(actual, expected)
+
+    for key in [
+        "schema_version_mismatch_count",
+        "candidate_fact_leak_count",
+        "invalid_status_fact_count",
+        "invalid_status_derived_fact_count",
+        "fact_build_mismatch_count",
+        "derived_build_mismatch_count",
+        "derived_input_build_mismatch_count",
+        "missing_fact_entity_edges",
+        "missing_fact_metric_edges",
+        "missing_fact_period_edges",
+        "missing_fact_source_edges",
+        "missing_fact_raw_object_edges",
+        "missing_fact_source_definition_edges",
+        "source_definition_missing_source_edges",
+        "derived_fact_without_inputs",
+        "derived_input_missing_fact_nodes",
+        "dangling_source_edge_count",
+        "dangling_target_edge_count",
+        "invalid_relation_endpoint_count",
+        "duplicate_stable_node_count",
+        "duplicate_stable_edge_count",
+        "invalid_raw_object_status_count",
+        "invalid_source_document_status_count",
+        "ranking_share_missing_scope",
+    ]:
+        require_zero(key)
+
+    check_statuses = {key: ("failed" if key in failed_checks else "passed") for key in checks}
+    report = {
+        "kg_build_id": kg_build_id,
+        "graph_schema_version": build.get("graph_schema_version") or "1.0",
+        "input_fact_build_id": fact_build_id,
+        "input_qa_build_id": qa_build_id,
+        **checks,
+        "check_statuses": check_statuses,
+        "kg_quality_gate_failures": failures,
+        "kg_quality_gate_status": "failed" if failures else "passed",
+    }
     if write_checks:
         _write_quality_checks(db, kg_build_id, report)
     if output_dir:
         report["written_files"] = [str(path) for path in write_kg_quality_report(report, output_dir)]
     return report
-
 
 def export_kg_jsonl(db: DBProtocol, output_dir: str, kg_build_id: str | None = None) -> list[Path]:
     ensure_kg_schema(db)
@@ -317,7 +492,7 @@ def export_kg_jsonl(db: DBProtocol, output_dir: str, kg_build_id: str | None = N
     for table, path_name in [("kg_nodes", "kg_nodes.jsonl"), ("kg_edges", "kg_edges.jsonl")]:
         path = out / path_name
         with path.open("w", encoding="utf-8") as f:
-            for row in _rows(db, f"SELECT * FROM {table} WHERE kg_build_id = ? AND COALESCE(is_active, 1) = 1", (kg_build_id,)):
+            for row in _rows(db, f"SELECT * FROM {table} WHERE kg_build_id = ?", (kg_build_id,)):
                 item = dict(row)
                 if item.get("properties_json"):
                     item["properties"] = _json_value(item.pop("properties_json"))
@@ -335,6 +510,20 @@ def ensure_kg_schema(db: DBProtocol) -> None:
         sql = statement.strip()
         if sql:
             db.execute(sql)
+    migrations = {
+        "graph_schema_version": "TEXT",
+        "input_entity_build_id": "TEXT",
+        "input_metric_build_id": "TEXT",
+        "input_source_definition_build_id": "TEXT",
+        "input_document_build_id": "TEXT",
+        "input_fact_count": "INTEGER",
+        "input_derived_count": "INTEGER",
+    }
+    for column, column_type in migrations.items():
+        try:
+            db.execute(f"ALTER TABLE kg_builds ADD COLUMN {column} {column_type}")
+        except Exception:
+            pass
 
 
 def write_kg_reports(report: dict[str, Any], output_dir: str) -> list[Path]:
@@ -402,7 +591,13 @@ def _insert_many(db: DBProtocol, table: str, columns: list[str], rows: list[dict
 
 
 def _insert_kg_build(db: DBProtocol, row: dict[str, Any]) -> None:
-    columns = ["kg_build_id", "input_fact_build_id", "input_qa_build_id", "status", "started_at", "completed_at", "node_count", "edge_count", "quality_status", "notes", "is_active", "superseded_by"]
+    columns = [
+        "kg_build_id", "graph_schema_version", "input_fact_build_id", "input_qa_build_id",
+        "input_entity_build_id", "input_metric_build_id", "input_source_definition_build_id",
+        "input_document_build_id", "input_fact_count", "input_derived_count", "status",
+        "started_at", "completed_at", "node_count", "edge_count", "quality_status",
+        "notes", "is_active", "superseded_by",
+    ]
     _insert_many(db, "kg_builds", columns, [row])
 
 
@@ -412,24 +607,45 @@ def _update_kg_build(db: DBProtocol, kg_build_id: str, fields: dict[str, Any]) -
 
 
 def _activate_kg_build(db: DBProtocol, kg_build_id: str) -> None:
-    old_build_ids = [row.get("kg_build_id") for row in _rows(db, "SELECT kg_build_id FROM kg_builds WHERE COALESCE(is_active, 1) = 1 AND kg_build_id <> ?", (kg_build_id,))]
-    db.execute("UPDATE kg_builds SET is_active = 0, superseded_by = ?, status = CASE WHEN status = 'running' THEN 'superseded' ELSE status END WHERE COALESCE(is_active, 1) = 1 AND kg_build_id <> ?", (kg_build_id, kg_build_id))
-    for old_build_id in old_build_ids:
-        db.execute("UPDATE kg_nodes SET is_active = 0, superseded_by = ? WHERE kg_build_id = ? AND COALESCE(is_active, 1) = 1", (kg_build_id, old_build_id))
-        db.execute("UPDATE kg_edges SET is_active = 0, superseded_by = ? WHERE kg_build_id = ? AND COALESCE(is_active, 1) = 1", (kg_build_id, old_build_id))
-    db.execute("UPDATE kg_builds SET is_active = 1, superseded_by = NULL WHERE kg_build_id = ?", (kg_build_id,))
+    # Current-version selection belongs to kg_builds. Node and edge activity
+    # denotes a valid materialization, so switching versions must not rewrite
+    # millions of historical rows.
+    db.execute(
+        "UPDATE kg_builds SET is_active = 0, superseded_by = ?, "
+        "status = CASE WHEN status = 'running' THEN 'superseded' ELSE status END "
+        "WHERE COALESCE(is_active, 1) = 1 AND kg_build_id <> ?",
+        (kg_build_id, kg_build_id),
+    )
+    db.execute(
+        "UPDATE kg_builds SET is_active = 1, superseded_by = NULL WHERE kg_build_id = ?",
+        (kg_build_id,),
+    )
+
+
+def _invalidate_kg_build(db: DBProtocol, kg_build_id: str) -> None:
+    db.execute(
+        "UPDATE kg_nodes SET is_active = 0 WHERE kg_build_id = ?",
+        (kg_build_id,),
+    )
+    db.execute(
+        "UPDATE kg_edges SET is_active = 0 WHERE kg_build_id = ?",
+        (kg_build_id,),
+    )
 
 
 def _write_quality_checks(db: DBProtocol, kg_build_id: str, report: dict[str, Any]) -> None:
     rows = []
-    for key, value in report.items():
-        if key.startswith("kg_") or key in {"written_files"}:
-            continue
-        status = "passed" if int(value or 0) == 0 or key in {"node_count", "edge_count", "fact_node_count", "graph_ready_fact_count", "derived_fact_node_count", "active_derived_fact_count"} else "failed"
-        severity = "error" if status == "failed" else "info"
-        rows.append({"check_id": _hash_id("kgcheck", kg_build_id, key), "kg_build_id": kg_build_id, "check_type": key, "status": status, "severity": severity, "message": f"{key}={value}"})
+    for key, status in (report.get("check_statuses") or {}).items():
+        value = report.get(key)
+        rows.append({
+            "check_id": _hash_id("kgcheck", kg_build_id, key),
+            "kg_build_id": kg_build_id,
+            "check_type": key,
+            "status": status,
+            "severity": "error" if status == "failed" else "info",
+            "message": f"{key}={value}",
+        })
     _insert_many(db, "kg_quality_checks", CHECK_COLUMNS, rows)
-
 
 def _add_raw_object_node(db: DBProtocol, add_node: Any, add_edge: Any, raw_object_id: Any) -> None:
     if not raw_object_id:
@@ -447,32 +663,280 @@ def _missing_fact_edge_count(db: DBProtocol, kg_build_id: str, relation_type: st
     if incoming:
         sql = """
             SELECT COUNT(*) AS c FROM kg_nodes n
-            WHERE n.kg_build_id = ? AND n.node_type = 'Fact' AND COALESCE(n.is_active, 1) = 1
+            WHERE n.kg_build_id = ? AND n.node_type = 'Fact'
               AND NOT EXISTS (SELECT 1 FROM kg_edges e WHERE e.kg_build_id = n.kg_build_id AND e.dst_node_id = n.node_id AND e.relation_type = ?)
         """
     else:
         sql = """
             SELECT COUNT(*) AS c FROM kg_nodes n
-            WHERE n.kg_build_id = ? AND n.node_type = 'Fact' AND COALESCE(n.is_active, 1) = 1
+            WHERE n.kg_build_id = ? AND n.node_type = 'Fact'
               AND NOT EXISTS (SELECT 1 FROM kg_edges e WHERE e.kg_build_id = n.kg_build_id AND e.src_node_id = n.node_id AND e.relation_type = ?)
         """
     return _scalar(db, sql, (kg_build_id, relation_type))
 
 
-def _active_build_id(db: DBProtocol, table: str) -> str | None:
-    try:
-        row = db.fetchone(f"SELECT build_id, COUNT(*) AS c FROM {table} WHERE COALESCE(is_active, 1) = 1 GROUP BY build_id ORDER BY c DESC LIMIT 1")
-    except Exception:
-        return None
-    return row.get("build_id") if row and row.get("build_id") else None
+def _required_active_build_id(db: DBProtocol, table: str) -> str:
+    rows = _rows(
+        db,
+        f"SELECT build_id, COUNT(*) AS c FROM {table} "
+        "WHERE COALESCE(is_active, 1) = 1 AND build_id IS NOT NULL "
+        "GROUP BY build_id ORDER BY build_id",
+    )
+    if len(rows) != 1:
+        found = [row.get("build_id") for row in rows]
+        raise RuntimeError(f"{table} must have exactly one active build; found {found}")
+    return str(rows[0]["build_id"])
 
+
+def _optional_active_build_id(db: DBProtocol, table: str) -> str | None:
+    rows = _rows(
+        db,
+        f"SELECT build_id, COUNT(*) AS c FROM {table} "
+        "WHERE COALESCE(is_active, 1) = 1 AND build_id IS NOT NULL "
+        "GROUP BY build_id ORDER BY build_id",
+    )
+    if not rows:
+        return None
+    if len(rows) != 1:
+        found = [row.get("build_id") for row in rows]
+        raise RuntimeError(f"{table} must have at most one active build; found {found}")
+    return str(rows[0]["build_id"])
+
+
+def _validate_derived_build_chain(db: DBProtocol, qa_build_id: str, fact_build_id: str) -> None:
+    rows = _rows(
+        db,
+        "SELECT input_build_id, COUNT(*) AS c FROM derived_facts "
+        "WHERE build_id = ? GROUP BY input_build_id",
+        (qa_build_id,),
+    )
+    input_build_ids = {row.get("input_build_id") for row in rows}
+    if input_build_ids != {fact_build_id}:
+        raise RuntimeError(
+            f"derived build {qa_build_id} must consume only fact build {fact_build_id}; "
+            f"found {sorted(str(value) for value in input_build_ids)}"
+        )
+
+
+def _expected_fact_count(db: DBProtocol, build_id: str | None) -> int:
+    if not build_id:
+        return 0
+    return _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM standardized_facts "
+        "WHERE build_id = ? AND COALESCE(graph_ready, 0) = 1 "
+        "AND verification_status IN ('single_source', 'cross_verified')",
+        (build_id,),
+    )
+
+
+def _expected_derived_count(db: DBProtocol, qa_build_id: str | None, fact_build_id: str | None) -> int:
+    if not qa_build_id or not fact_build_id:
+        return 0
+    return _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM derived_facts "
+        "WHERE build_id = ? AND input_build_id = ? "
+        "AND verification_status IN ('single_source', 'cross_verified')",
+        (qa_build_id, fact_build_id),
+    )
+
+
+def _expected_derived_input_count(db: DBProtocol, qa_build_id: str | None, fact_build_id: str | None) -> int:
+    if not qa_build_id or not fact_build_id:
+        return 0
+    function = "jsonb_array_length" if db.__class__.__name__ == "PostgresMetadataDB" else "json_array_length"
+    return _scalar(
+        db,
+        f"SELECT COALESCE(SUM({function}(input_fact_ids)), 0) AS c FROM derived_facts "
+        "WHERE build_id = ? AND input_build_id = ? "
+        "AND verification_status IN ('single_source', 'cross_verified')",
+        (qa_build_id, fact_build_id),
+    )
+
+
+def _build_row_count(
+    db: DBProtocol,
+    table: str,
+    build_id: str | None,
+    extra_predicate: str | None = None,
+) -> int:
+    if not build_id:
+        return 0
+    sql = f"SELECT COUNT(*) AS c FROM {table} WHERE build_id = ?"
+    if extra_predicate:
+        sql += f" AND {extra_predicate}"
+    return _scalar(db, sql, (build_id,))
+
+
+def _node_type_count(db: DBProtocol, kg_build_id: str, node_type: str) -> int:
+    return _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND node_type = ?",
+        (kg_build_id, node_type),
+    )
+
+
+def _edge_type_count(db: DBProtocol, kg_build_id: str, relation_type: str) -> int:
+    return _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM kg_edges WHERE kg_build_id = ? AND relation_type = ?",
+        (kg_build_id, relation_type),
+    )
+
+
+def _missing_node_edge_count(
+    db: DBProtocol,
+    kg_build_id: str,
+    node_type: str,
+    relation_type: str,
+) -> int:
+    return _scalar(
+        db,
+        """
+        SELECT COUNT(*) AS c FROM kg_nodes n
+        WHERE n.kg_build_id = ? AND n.node_type = ?
+          AND NOT EXISTS (
+              SELECT 1 FROM kg_edges e
+              WHERE e.kg_build_id = n.kg_build_id
+                AND e.src_node_id = n.node_id
+                AND e.relation_type = ?
+          )
+        """,
+        (kg_build_id, node_type, relation_type),
+    )
+
+
+def _missing_edge_target_count(
+    db: DBProtocol,
+    kg_build_id: str,
+    relation_type: str,
+    target_node_type: str,
+) -> int:
+    return _scalar(
+        db,
+        """
+        SELECT COUNT(*) AS c FROM kg_edges e
+        LEFT JOIN kg_nodes n
+          ON n.kg_build_id = e.kg_build_id AND n.node_id = e.dst_node_id
+        WHERE e.kg_build_id = ? AND e.relation_type = ?
+          AND (n.node_id IS NULL OR n.node_type <> ?)
+        """,
+        (kg_build_id, relation_type, target_node_type),
+    )
+
+
+def _dangling_edge_count(db: DBProtocol, kg_build_id: str, incoming: bool) -> int:
+    endpoint = "dst_node_id" if incoming else "src_node_id"
+    return _scalar(
+        db,
+        f"""
+        SELECT COUNT(*) AS c FROM kg_edges e
+        LEFT JOIN kg_nodes n
+          ON n.kg_build_id = e.kg_build_id AND n.node_id = e.{endpoint}
+        WHERE e.kg_build_id = ? AND n.node_id IS NULL
+        """,
+        (kg_build_id,),
+    )
+
+
+def _invalid_relation_endpoint_count(db: DBProtocol, kg_build_id: str) -> int:
+    return _scalar(
+        db,
+        """
+        SELECT COUNT(*) AS c
+        FROM kg_edges e
+        JOIN kg_nodes src ON src.kg_build_id = e.kg_build_id AND src.node_id = e.src_node_id
+        JOIN kg_nodes dst ON dst.kg_build_id = e.kg_build_id AND dst.node_id = e.dst_node_id
+        WHERE e.kg_build_id = ?
+          AND NOT (
+            (e.relation_type = 'HAS_SECURITY' AND src.node_type = 'Entity' AND dst.node_type = 'Security')
+            OR (e.relation_type = 'HAS_FACT' AND src.node_type = 'Entity' AND dst.node_type = 'Fact')
+            OR (e.relation_type = 'MEASURES' AND src.node_type = 'Fact' AND dst.node_type = 'Metric')
+            OR (e.relation_type = 'IN_PERIOD' AND src.node_type IN ('Fact', 'DerivedFact') AND dst.node_type = 'TimePeriod')
+            OR (e.relation_type = 'FROM_SOURCE' AND src.node_type IN ('Fact', 'SourceDocument', 'RawObject') AND dst.node_type = 'DataSource')
+            OR (e.relation_type = 'TRACED_TO' AND src.node_type = 'Fact' AND dst.node_type = 'RawObject')
+            OR (e.relation_type = 'USES_SOURCE_DEFINITION' AND src.node_type = 'Fact' AND dst.node_type = 'SourceDefinition')
+            OR (e.relation_type = 'DEFINES' AND src.node_type = 'SourceDefinition' AND dst.node_type = 'Metric')
+            OR (e.relation_type = 'PROVIDED_BY' AND src.node_type = 'SourceDefinition' AND dst.node_type = 'DataSource')
+            OR (e.relation_type = 'FILED' AND src.node_type = 'Entity' AND dst.node_type = 'SourceDocument')
+            OR (e.relation_type = 'HAS_RAW_OBJECT' AND src.node_type = 'SourceDocument' AND dst.node_type = 'RawObject')
+            OR (e.relation_type = 'DERIVED_FROM' AND src.node_type = 'DerivedFact' AND dst.node_type = 'Fact')
+            OR (e.relation_type = 'ABOUT_ENTITY' AND src.node_type = 'DerivedFact' AND dst.node_type = 'Entity')
+            OR (e.relation_type = 'USES_METRIC' AND src.node_type = 'DerivedFact' AND dst.node_type = 'Metric')
+            OR (e.relation_type = 'HAS_SCOPE' AND src.node_type = 'DerivedFact' AND dst.node_type = 'EntitySet')
+            OR (e.relation_type = 'CONTAINS_ENTITY' AND src.node_type = 'EntitySet' AND dst.node_type = 'Entity')
+          )
+        """,
+        (kg_build_id,),
+    )
+
+
+def _duplicate_stable_id_count(
+    db: DBProtocol,
+    table: str,
+    stable_column: str,
+    kg_build_id: str,
+) -> int:
+    return _scalar(
+        db,
+        f"""
+        SELECT COALESCE(SUM(group_count - 1), 0) AS c
+        FROM (
+            SELECT COUNT(*) AS group_count
+            FROM {table}
+            WHERE kg_build_id = ?
+            GROUP BY {stable_column}
+            HAVING COUNT(*) > 1
+        ) duplicates
+        """,
+        (kg_build_id,),
+    )
+
+
+def _source_build_mismatch_count(
+    db: DBProtocol,
+    kg_build_id: str,
+    node_type: str,
+    source_table: str,
+    source_pk: str,
+    expected_build_id: str | None,
+) -> int:
+    if not expected_build_id:
+        return 0
+    return _scalar(
+        db,
+        f"""
+        SELECT COUNT(*) AS c FROM kg_nodes n
+        LEFT JOIN {source_table} source_row
+          ON source_row.{source_pk} = n.source_pk
+        WHERE n.kg_build_id = ? AND n.node_type = ?
+          AND (source_row.{source_pk} IS NULL OR source_row.build_id <> ?)
+        """,
+        (kg_build_id, node_type, expected_build_id),
+    )
+
+
+def _distinct_json_count(
+    db: DBProtocol,
+    table: str,
+    column: str,
+    where_clause: str,
+    params: Iterable[Any],
+) -> int:
+    rows = db.fetchall(
+        f"SELECT DISTINCT {column} FROM {table} "
+        f"WHERE {where_clause} AND {column} IS NOT NULL",
+        params,
+    )
+    return len(rows)
 
 def _active_kg_build_id(db: DBProtocol) -> str | None:
     try:
         row = db.fetchone("SELECT kg_build_id FROM kg_builds WHERE COALESCE(is_active, 1) = 1 ORDER BY completed_at DESC, started_at DESC LIMIT 1")
     except Exception:
         return None
-    return row.get("kg_build_id") if row else None
+    return dict(row).get("kg_build_id") if row else None
 
 
 def _rows(db: DBProtocol, sql: str, params: Iterable[Any] = ()) -> list[dict[str, Any]]:
@@ -480,11 +944,9 @@ def _rows(db: DBProtocol, sql: str, params: Iterable[Any] = ()) -> list[dict[str
 
 
 def _scalar(db: DBProtocol, sql: str, params: Iterable[Any] = ()) -> int:
-    try:
-        row = db.fetchone(sql, params)
-    except Exception:
-        return 0
-    return int(row.get("c") if row and row.get("c") is not None else 0)
+    row = db.fetchone(sql, params)
+    item = dict(row) if row else {}
+    return int(item.get("c") if item.get("c") is not None else 0)
 
 
 def _pick(row: dict[str, Any], keys: list[str]) -> dict[str, Any]:
@@ -517,16 +979,16 @@ def _json_list(value: Any) -> list[Any]:
 
 
 def _time_properties(row: dict[str, Any]) -> dict[str, Any]:
-    return _pick(row, ["time_basis", "metric_period_type", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "as_of_date", "report_date"])
+    return _pick(row, ["time_basis", "metric_period_type", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "as_of_date"])
 
 
 def _time_node(row: dict[str, Any]) -> str:
-    parts = [row.get("time_basis"), row.get("metric_period_type"), row.get("period_start"), row.get("period_end"), row.get("calendar_year"), row.get("fiscal_year"), row.get("fiscal_quarter"), row.get("as_of_date"), row.get("report_date")]
+    parts = [row.get("time_basis"), row.get("metric_period_type"), row.get("period_start"), row.get("period_end"), row.get("calendar_year"), row.get("fiscal_year"), row.get("fiscal_quarter"), row.get("as_of_date")]
     return "time:" + _digest(parts)
 
 
-def _derived_time_node(derived_id: Any, time_scope: dict[str, Any]) -> str:
-    return "time:derived:" + _digest([derived_id, time_scope])
+def _derived_time_node(time_scope: dict[str, Any]) -> str:
+    return "time:derived:" + _digest([time_scope])
 
 
 def _metric_role(metric_scope: dict[str, Any], metric_id: str) -> str:

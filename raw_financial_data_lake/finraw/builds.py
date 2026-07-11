@@ -271,6 +271,32 @@ def mark_running_builds_failed(db: DBProtocol, notes: str | None = None) -> None
         ["failed", _now(), notes, "running"],
     )
 
+    # KG builds are populated while inactive. Quarantine partial rows on error
+    # and preserve the previously active graph.
+    try:
+        running_kg_builds = db.fetchall(
+            "SELECT kg_build_id FROM kg_builds WHERE status = ?",
+            ["running"],
+        )
+        for row in running_kg_builds:
+            kg_build_id = row["kg_build_id"]
+            db.execute(
+                "UPDATE kg_nodes SET is_active = 0 WHERE kg_build_id = ?",
+                [kg_build_id],
+            )
+            db.execute(
+                "UPDATE kg_edges SET is_active = 0 WHERE kg_build_id = ?",
+                [kg_build_id],
+            )
+        db.execute(
+            "UPDATE kg_builds SET status = ?, quality_status = ?, completed_at = ?, "
+            "notes = COALESCE(?, notes), is_active = 0 WHERE status = ?",
+            ["failed", "failed", _now(), notes, "running"],
+        )
+    except Exception:
+        pass
+
+
 def latest_active_build(db: DBProtocol, table: str) -> str | None:
     ensure_build_schema(db)
     try:

@@ -548,8 +548,15 @@ CREATE TABLE IF NOT EXISTS pipeline_builds (
 
 CREATE TABLE IF NOT EXISTS kg_builds (
     kg_build_id          TEXT PRIMARY KEY,
+    graph_schema_version TEXT,
     input_fact_build_id  TEXT,
     input_qa_build_id    TEXT,
+    input_entity_build_id TEXT,
+    input_metric_build_id TEXT,
+    input_source_definition_build_id TEXT,
+    input_document_build_id TEXT,
+    input_fact_count     INTEGER,
+    input_derived_count  INTEGER,
     status               TEXT,
     started_at           TEXT,
     completed_at         TEXT,

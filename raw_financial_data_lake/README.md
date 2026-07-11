@@ -122,7 +122,9 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 
 `derived_facts` now carry explicit QA scope metadata: `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. Ranking and share facts should be phrased with that scope, for example "among the configured SEC 100-company universe" or "among the configured World Bank 20-country universe". Do not turn these facts into open-ended questions such as "among all companies" unless the scope actually says that.
 
-`build-kg` creates a versioned property graph inside PostgreSQL/SQLite before any Neo4j export. KG nodes include Entity, Security, Metric, SourceDefinition, Fact, DerivedFact, TimePeriod, DataSource, RawObject, SourceDocument, and EntitySet. It only consumes active graph-ready standardized facts and active validated derived facts; `candidate_facts` remain excluded.
+`build-kg` creates a versioned property graph inside PostgreSQL/SQLite before any Neo4j export. KG schema v2 pins the exact entity, metric, source-definition, document, standardized-fact, and derived-fact build IDs. KG nodes include Entity, Security, Metric, SourceDefinition, Fact, DerivedFact, canonical TimePeriod, DataSource, RawObject, SourceDocument, and EntitySet. It consumes only graph-ready facts and validated derived facts from the pinned builds; `candidate_facts` remain excluded. Repeated derived time scopes share one TimePeriod node, and source definitions connect to both their Metric and DataSource.
+
+A selected historical `kg_build_id` can still be quality-checked and exported after it is superseded. `kg_builds.is_active` selects the current graph; node/edge `is_active` records whether that build materialization is valid, so version activation does not rewrite millions of historical rows.
 
 ## Layered Exports
 
