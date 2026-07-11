@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -312,8 +312,20 @@ def _add_sec_companies(
 ) -> None:
     companies = []
     seen_ciks = set()
+    submission_by_cik: dict[str, dict[str, Any]] = {}
+    for record in raw_records:
+        if record.get("record_type") != "sec_submissions_json":
+            continue
+        payload = _json_value(record.get("record_json"))
+        if not isinstance(payload, dict):
+            continue
+        cik = _cik10(payload.get("cik"))
+        if cik:
+            submission_by_cik[cik] = payload
+
     for company in config.get("sec", {}).get("sample_companies", []):
         cik = _cik10(company.get("cik"))
+        submission = submission_by_cik.get(cik or "", {})
         if cik:
             seen_ciks.add(cik)
         companies.append({
@@ -321,8 +333,8 @@ def _add_sec_companies(
             "cik": cik,
             "name": company.get("name") or company.get("ticker"),
             "exchange": company.get("exchange"),
-            "industry": company.get("industry"),
-            "source": "config",
+            "industry": company.get("industry") or submission.get("sicDescription"),
+            "source": "config+sec_submissions" if submission else "config",
         })
 
     for record in raw_records:

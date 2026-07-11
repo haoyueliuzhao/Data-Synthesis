@@ -3,13 +3,13 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 from finraw.db.client import DBProtocol
 
-KG_SCHEMA_VERSION = "2.0"
+KG_SCHEMA_VERSION = "3.0"
 
 KG_SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS kg_builds (
@@ -198,6 +198,7 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         add_node(fact, "Fact", "standardized_facts", row.get("fact_id"), _pick(row, ["fact_id", "stable_fact_id", "build_id", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "source_id", "raw_object_id", "verification_status", "graph_ready_reason", "validation_flags", "raw_equivalence_group_id", "semantic_equivalence_group_id", "confidence_score"]))
         time = _time_node(row)
         add_node(time, "TimePeriod", "standardized_facts", row.get("fact_id"), _time_properties(row))
+        _add_time_hierarchy(add_node, add_edge, time, row, row.get("entity_id"))
         if row.get("entity_id"):
             add_edge(_entity_node(row.get("entity_id")), "HAS_FACT", fact, "standardized_facts", row.get("fact_id"))
         if row.get("metric_id"):
@@ -252,6 +253,13 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
             time = _derived_time_node(time_scope)
             time_scope_id = _digest([time_scope])
             add_node(time, "TimePeriod", "derived_time_scope", time_scope_id, {"time_scope": time_scope})
+            _add_time_hierarchy(
+                add_node,
+                add_edge,
+                time,
+                time_scope,
+                entity_scope.get("entity_id"),
+            )
             add_edge(derived, "IN_PERIOD", time, "derived_facts", row.get("derived_id"))
         if row.get("scope_id"):
             entity_set = _entity_set_node(row.get("scope_id"))
@@ -391,8 +399,19 @@ def kg_quality_report(db: DBProtocol, kg_build_id: str | None = None, output_dir
               AND (d.document_id IS NULL OR d.document_status <> 'passed')
         """, (document_build_id, kg_build_id)),
         "derived_time_node_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_nodes WHERE kg_build_id = ? AND node_type = 'TimePeriod' AND source_table = 'derived_time_scope'", (kg_build_id,)),
+        "time_hierarchy_edge_count": _scalar(db, "SELECT COUNT(*) AS c FROM kg_edges WHERE kg_build_id = ? AND relation_type IN ('BELONGS_TO_YEAR', 'BELONGS_TO_MONTH', 'BELONGS_TO_QUARTER', 'IN_FISCAL_YEAR', 'IN_FISCAL_YEAR_LABEL', 'FISCAL_YEAR_OF')", (kg_build_id,)),
+        "time_period_missing_hierarchy_count": _scalar(db, """
+            SELECT COUNT(*) AS c FROM kg_nodes n
+            WHERE n.kg_build_id = ? AND n.node_type = 'TimePeriod'
+              AND NOT EXISTS (
+                  SELECT 1 FROM kg_edges e
+                  WHERE e.kg_build_id = n.kg_build_id
+                    AND e.src_node_id = n.node_id
+                    AND e.relation_type IN ('BELONGS_TO_YEAR', 'IN_FISCAL_YEAR', 'IN_FISCAL_YEAR_LABEL')
+              )
+        """, (kg_build_id,)),
         "expected_derived_time_node_count": _distinct_json_count(db, "derived_facts", "time_scope", "build_id = ? AND input_build_id = ? AND verification_status IN ('single_source', 'cross_verified')", (qa_build_id, fact_build_id)),
-        "ranking_share_missing_scope": _scalar(db, "SELECT COUNT(*) AS c FROM derived_facts WHERE build_id = ? AND input_build_id = ? AND derived_type IN ('ranking', 'share', 'argmax', 'argmin') AND (scope_id IS NULL OR scope_definition IS NULL)", (qa_build_id, fact_build_id)),
+        "ranking_share_missing_scope": _scalar(db, "SELECT COUNT(*) AS c FROM derived_facts WHERE build_id = ? AND input_build_id = ? AND derived_type IN ('ranking', 'share', 'argmax', 'argmin', 'industry_ranking', 'industry_argmax', 'industry_argmin', 'multi_condition_screening') AND (scope_id IS NULL OR scope_definition IS NULL)", (qa_build_id, fact_build_id)),
     }
 
     failures: list[str] = []
@@ -460,6 +479,7 @@ def kg_quality_report(db: DBProtocol, kg_build_id: str | None = None, output_dir
         "duplicate_stable_edge_count",
         "invalid_raw_object_status_count",
         "invalid_source_document_status_count",
+        "time_period_missing_hierarchy_count",
         "ranking_share_missing_scope",
     ]:
         require_zero(key)
@@ -866,6 +886,12 @@ def _invalid_relation_endpoint_count(db: DBProtocol, kg_build_id: str) -> int:
             OR (e.relation_type = 'USES_METRIC' AND src.node_type = 'DerivedFact' AND dst.node_type = 'Metric')
             OR (e.relation_type = 'HAS_SCOPE' AND src.node_type = 'DerivedFact' AND dst.node_type = 'EntitySet')
             OR (e.relation_type = 'CONTAINS_ENTITY' AND src.node_type = 'EntitySet' AND dst.node_type = 'Entity')
+            OR (e.relation_type = 'BELONGS_TO_YEAR' AND src.node_type IN ('TimePeriod', 'CalendarMonth', 'CalendarQuarter') AND dst.node_type = 'CalendarYear')
+            OR (e.relation_type = 'BELONGS_TO_MONTH' AND src.node_type = 'TimePeriod' AND dst.node_type = 'CalendarMonth')
+            OR (e.relation_type = 'BELONGS_TO_QUARTER' AND src.node_type = 'TimePeriod' AND dst.node_type = 'CalendarQuarter')
+            OR (e.relation_type = 'IN_FISCAL_YEAR' AND src.node_type = 'TimePeriod' AND dst.node_type = 'FiscalYear')
+            OR (e.relation_type = 'IN_FISCAL_YEAR_LABEL' AND src.node_type = 'TimePeriod' AND dst.node_type = 'FiscalYearLabel')
+            OR (e.relation_type = 'FISCAL_YEAR_OF' AND src.node_type = 'FiscalYear' AND dst.node_type = 'Entity')
           )
         """,
         (kg_build_id,),
@@ -979,7 +1005,7 @@ def _json_list(value: Any) -> list[Any]:
 
 
 def _time_properties(row: dict[str, Any]) -> dict[str, Any]:
-    return _pick(row, ["time_basis", "metric_period_type", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "as_of_date"])
+    return _pick(row, ["time_basis", "metric_period_type", "frequency", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "as_of_date"])
 
 
 def _time_node(row: dict[str, Any]) -> str:
@@ -989,6 +1015,127 @@ def _time_node(row: dict[str, Any]) -> str:
 
 def _derived_time_node(time_scope: dict[str, Any]) -> str:
     return "time:derived:" + _digest([time_scope])
+
+
+def _add_time_hierarchy(
+    add_node: Any,
+    add_edge: Any,
+    time_node: str,
+    values: dict[str, Any],
+    entity_id: str | None,
+) -> None:
+    date_value = _coerce_date(
+        values.get("as_of_date")
+        or values.get("period_end")
+        or values.get("date")
+        or values.get("end_date")
+    )
+    basis = str(values.get("basis") or values.get("time_basis") or "").lower()
+    year = _valid_year(values.get("calendar_year"))
+    if year is None and basis != "fiscal_year":
+        year = _valid_year(
+            values.get("year") or values.get("result_year") or values.get("end_year")
+        )
+    if year is None and date_value:
+        year = date_value.year
+
+    year_node = None
+    if year is not None:
+        year_node = f"calendar_year:{year}"
+        add_node(year_node, "CalendarYear", "time_hierarchy", year, {"year": year})
+        add_edge(time_node, "BELONGS_TO_YEAR", year_node, "time_hierarchy", time_node)
+
+    frequency = str(values.get("frequency") or "").lower()
+    include_month = bool(date_value) and (
+        frequency in {"daily", "weekly", "monthly"} or basis == "observation_date"
+    )
+    if include_month and date_value:
+        month_node = f"calendar_month:{date_value.year:04d}-{date_value.month:02d}"
+        add_node(
+            month_node,
+            "CalendarMonth",
+            "time_hierarchy",
+            f"{date_value.year:04d}-{date_value.month:02d}",
+            {"year": date_value.year, "month": date_value.month},
+        )
+        add_edge(time_node, "BELONGS_TO_MONTH", month_node, "time_hierarchy", time_node)
+        month_year = f"calendar_year:{date_value.year}"
+        add_node(month_year, "CalendarYear", "time_hierarchy", date_value.year, {"year": date_value.year})
+        add_edge(month_node, "BELONGS_TO_YEAR", month_year, "time_hierarchy", month_node)
+
+    quarter = None
+    fiscal_quarter = values.get("fiscal_quarter")
+    if isinstance(fiscal_quarter, str) and fiscal_quarter in {"Q1", "Q2", "Q3", "Q4"}:
+        quarter = int(fiscal_quarter[1])
+    elif date_value and (include_month or frequency == "quarterly"):
+        quarter = (date_value.month - 1) // 3 + 1
+    if quarter is not None and date_value:
+        quarter_node = f"calendar_quarter:{date_value.year}:Q{quarter}"
+        add_node(
+            quarter_node,
+            "CalendarQuarter",
+            "time_hierarchy",
+            f"{date_value.year}:Q{quarter}",
+            {"year": date_value.year, "quarter": quarter},
+        )
+        add_edge(time_node, "BELONGS_TO_QUARTER", quarter_node, "time_hierarchy", time_node)
+        quarter_year = f"calendar_year:{date_value.year}"
+        add_node(quarter_year, "CalendarYear", "time_hierarchy", date_value.year, {"year": date_value.year})
+        add_edge(quarter_node, "BELONGS_TO_YEAR", quarter_year, "time_hierarchy", quarter_node)
+
+    fiscal_year = _valid_year(values.get("fiscal_year"))
+    if fiscal_year is None and str(values.get("basis") or "") == "fiscal_year":
+        fiscal_year = _valid_year(
+            values.get("year") or values.get("result_year") or values.get("end_year")
+        )
+    if fiscal_year is not None and entity_id:
+        fiscal_node = f"fiscal_year:{entity_id}:{fiscal_year}"
+        add_node(
+            fiscal_node,
+            "FiscalYear",
+            "time_hierarchy",
+            f"{entity_id}:{fiscal_year}",
+            {"entity_id": entity_id, "fiscal_year": fiscal_year},
+        )
+        add_edge(time_node, "IN_FISCAL_YEAR", fiscal_node, "time_hierarchy", time_node)
+        add_edge(fiscal_node, "FISCAL_YEAR_OF", _entity_node(entity_id), "time_hierarchy", fiscal_node)
+    elif fiscal_year is not None:
+        fiscal_label = f"fiscal_year_label:{fiscal_year}"
+        add_node(
+            fiscal_label,
+            "FiscalYearLabel",
+            "time_hierarchy",
+            fiscal_year,
+            {"fiscal_year": fiscal_year, "semantics": "cross_entity_fiscal_year_label"},
+        )
+        add_edge(
+            time_node,
+            "IN_FISCAL_YEAR_LABEL",
+            fiscal_label,
+            "time_hierarchy",
+            time_node,
+        )
+
+
+def _coerce_date(value: Any) -> date | None:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return None
+
+
+def _valid_year(value: Any) -> int | None:
+    try:
+        year = int(value)
+    except (TypeError, ValueError):
+        return None
+    return year if 1000 <= year <= 3000 else None
 
 
 def _metric_role(metric_scope: dict[str, Any], metric_id: str) -> str:

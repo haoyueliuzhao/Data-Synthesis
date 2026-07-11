@@ -612,3 +612,24 @@ CREATE TABLE IF NOT EXISTS kg_quality_checks (
     created_at           TEXT DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_kg_quality_checks_build ON kg_quality_checks(kg_build_id, status, severity);
+CREATE TABLE IF NOT EXISTS kg_archives (
+    archive_id          TEXT PRIMARY KEY,
+    kg_build_id         TEXT NOT NULL REFERENCES kg_builds(kg_build_id),
+    archive_uri         TEXT NOT NULL,
+    archive_format      TEXT NOT NULL,
+    compression         TEXT,
+    node_count          INTEGER,
+    edge_count          INTEGER,
+    quality_check_count INTEGER,
+    node_sha256         TEXT,
+    edge_sha256         TEXT,
+    quality_sha256      TEXT,
+    manifest_sha256     TEXT,
+    status              TEXT NOT NULL,
+    created_at          TEXT,
+    verified_at         TEXT,
+    purged_at           TEXT,
+    notes               TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_kg_archives_build ON kg_archives(kg_build_id);
+CREATE INDEX IF NOT EXISTS idx_kg_archives_status ON kg_archives(status, created_at);

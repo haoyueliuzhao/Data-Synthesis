@@ -36,6 +36,7 @@ EXPORT_TABLES = [
     "kg_nodes",
     "kg_edges",
     "kg_quality_checks",
+    "kg_archives",
 ]
 
 

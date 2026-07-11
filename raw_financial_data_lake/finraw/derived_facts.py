@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter, defaultdict
+from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, Iterable
@@ -24,14 +25,32 @@ RANKING_METRICS = {
     "cash_and_cash_equivalents", "gdp_current_usd", "population_total", "real_gdp_growth_pct",
 }
 SHARE_METRICS = {"revenue", "total_assets", "gdp_current_usd", "population_total"}
+LONG_WINDOW_RETURN_METRICS = {"broad_us_dollar_index"}
+TIME_SERIES_FREQUENCIES = {"daily", "weekly", "monthly", "quarterly", "annual"}
 
 
 def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None, batch_size: int = 5000) -> dict[str, Any]:
     input_build_id = _active_build_id(db, "standardized_facts")
     build_id = start_build(db, layer="qa_ready", command="refresh-derived-facts", prefix="qa_ready", input_build_id=input_build_id)
-    deactivate_active_rows(db, "derived_facts", build_id)
     rows = _load_standardized_rows(db)
     scope_config = _scope_config(config)
+    derived_policy = config.get("kg", {}).get("derived_policy", {})
+    multi_year_windows = [
+        int(value) for value in derived_policy.get("multi_year_windows", [5, 10])
+        if int(value) >= 2
+    ]
+    return_windows = [
+        int(value) for value in derived_policy.get("long_window_return_years", [1, 5, 10])
+        if int(value) >= 1
+    ]
+    rolling_observations = {
+        str(key): int(value)
+        for key, value in derived_policy.get(
+            "rolling_observations",
+            {"daily": 252, "weekly": 52, "monthly": 12, "quarterly": 4, "annual": 5},
+        ).items()
+        if int(value) >= 2
+    }
     report = {
         "build_id": build_id,
         "input_build_id": input_build_id,
@@ -49,7 +68,12 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
             "Ranking and share facts carry explicit scope metadata: scope_type, scope_id, scope_definition, scope_entity_ids, and scope_source.",
             "Configured SEC ranking/share facts use the sec_us_100 company universe; World Bank ranking/share facts use the configured 20-country universe.",
             "Ratio facts require numerator and denominator from the same source/entity/year/currency, but still remain single-source unless inputs are cross-verified.",
-            "long_window_return is not generated yet because no standardized market price return facts are available in the current raw lake.",
+            "Historical derived facts exclude source observations flagged as forecasts.",
+            "Multi-year extrema use explicit complete 5/10-year windows.",
+            "Time-series extrema and rolling extrema use FRED observations with frequency-aware window sizes.",
+            "long_window_return is generated only for the broad US dollar index; rates and FX quotes are not mislabeled as investment returns.",
+            "Industry rankings use canonical_entities.industry; index-constituent rankings remain blocked until authoritative constituent history is ingested.",
+            "Multi-condition screening currently means positive revenue YoY and positive net income within the configured SEC company universe.",
         ],
     }
     batch: list[dict[str, Any]] = []
@@ -79,6 +103,16 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
         emit(fact)
     for fact in _iter_shares(annual_rows, report, scope_config):
         emit(fact)
+    for fact in _iter_multi_year_extrema(annual_rows, report, multi_year_windows):
+        emit(fact)
+    for fact in _iter_time_series_extrema(rows, report, rolling_observations):
+        emit(fact)
+    for fact in _iter_long_window_returns(rows, report, return_windows):
+        emit(fact)
+    for fact in _iter_industry_rankings(annual_rows, report):
+        emit(fact)
+    for fact in _iter_multi_condition_screening(annual_rows, report, scope_config):
+        emit(fact)
 
     if batch:
         db.insert_derived_facts(batch)
@@ -98,6 +132,11 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
     if output_dir:
         paths = write_derived_facts_report(final_report, output_dir)
         final_report["written_files"] = [str(path) for path in paths]
+    deactivate_active_rows(db, "derived_facts", build_id)
+    db.execute(
+        "UPDATE derived_facts SET is_active = 1, superseded_by = NULL WHERE build_id = ?",
+        (build_id,),
+    )
     finish_build(db, build_id, "success", f"derived_count={report['derived_count']}")
     return final_report
 
@@ -110,7 +149,8 @@ def _with_build(fact: dict[str, Any], build_id: str, input_build_id: str | None)
     out["derived_id"] = versioned_id(stable_derived_id, build_id)
     out["build_id"] = build_id
     out["input_build_id"] = input_build_id
-    out["is_active"] = 1
+    # Build rows remain invisible until the full build succeeds.
+    out["is_active"] = 0
     out["superseded_by"] = None
     return out
 
@@ -141,9 +181,11 @@ def _load_standardized_rows(db: DBProtocol) -> list[dict[str, Any]]:
                sf.normalized_currency, sf.period_start, sf.period_end, sf.calendar_year,
                sf.fiscal_year, sf.fiscal_quarter, sf.time_basis, sf.metric_period_type,
                sf.source_id, sf.raw_object_id, sf.verification_status, sf.confidence_score, sf.build_id,
-               m.metric_category, m.statement_type
+               sf.frequency, sf.is_forecast, m.metric_category, m.statement_type,
+               ce.industry, ce.entity_type
         FROM standardized_facts sf
         LEFT JOIN metrics m ON m.metric_id = sf.metric_id
+        LEFT JOIN canonical_entities ce ON ce.entity_id = sf.entity_id
         WHERE sf.normalized_value IS NOT NULL
           AND COALESCE(sf.is_active, 1) = 1
           AND COALESCE(sf.graph_ready, 0) = 1
@@ -183,6 +225,9 @@ def _row_score(row: dict[str, Any]) -> tuple[int, float, str]:
 def _annual_rows(rows: list[dict[str, Any]], report: dict[str, Any]) -> list[dict[str, Any]]:
     out = []
     for row in rows:
+        if bool(row.get("is_forecast")):
+            report["skipped_counts"]["forecast_input"] += 1
+            continue
         year = None
         time_basis = None
         if row.get("source_id") == "sec_companyfacts" and row.get("fiscal_year") and row.get("fiscal_quarter") == "FY":
@@ -373,6 +418,400 @@ def _iter_shares(rows: list[dict[str, Any]], report: dict[str, Any], scope_confi
                 {"metric_id": metric_id}, {"year": year, "basis": basis},
                 "entity_value / scope_total_value * 100", value, "percent", _status_from_inputs([row]), scope,
             )
+
+
+def _iter_multi_year_extrema(
+    rows: list[dict[str, Any]],
+    report: dict[str, Any],
+    windows: list[int],
+) -> Iterable[dict[str, Any]]:
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        if row.get("normalized_unit") in {None, "document"}:
+            continue
+        key = (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+            row.get("derived_time_basis"),
+        )
+        grouped[key].append(row)
+    for key, group_rows in grouped.items():
+        by_year = {int(row["derived_year"]): row for row in group_rows}
+        if not by_year:
+            continue
+        end_year = max(by_year)
+        entity_id, metric_id, source_id, unit, currency, basis = key
+        for window in windows:
+            years = list(range(end_year - window + 1, end_year + 1))
+            if any(year not in by_year for year in years):
+                report["skipped_counts"][f"multi_year_{window}_incomplete"] += 1
+                continue
+            inputs = [by_year[year] for year in years]
+            maximum = max(inputs, key=lambda row: row["value_decimal"])
+            minimum = min(inputs, key=lambda row: row["value_decimal"])
+            common_time = {
+                "start_year": years[0],
+                "end_year": years[-1],
+                "window_years": window,
+                "basis": basis,
+            }
+            metric_scope = {"metric_id": metric_id}
+            entity_scope = {"entity_id": entity_id, "source_id": source_id}
+            yield _derived_scalar(
+                "multi_year_argmax",
+                inputs,
+                entity_scope,
+                metric_scope,
+                {**common_time, "result_year": maximum["derived_year"]},
+                "argmax(normalized_value) over complete multi-year window",
+                maximum["value_decimal"],
+                unit,
+                _status_from_inputs(inputs),
+            )
+            yield _derived_scalar(
+                "multi_year_argmin",
+                inputs,
+                entity_scope,
+                metric_scope,
+                {**common_time, "result_year": minimum["derived_year"]},
+                "argmin(normalized_value) over complete multi-year window",
+                minimum["value_decimal"],
+                unit,
+                _status_from_inputs(inputs),
+            )
+
+
+def _iter_time_series_extrema(
+    rows: list[dict[str, Any]],
+    report: dict[str, Any],
+    rolling_observations: dict[str, int],
+) -> Iterable[dict[str, Any]]:
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        frequency = str(row.get("frequency") or "").lower()
+        if (
+            row.get("source_id") != "fred_observations"
+            or frequency not in TIME_SERIES_FREQUENCIES
+            or bool(row.get("is_forecast"))
+            or not row.get("period_end")
+        ):
+            continue
+        key = (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            frequency,
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+            row.get("metric_category"),
+        )
+        grouped[key].append(row)
+
+    for key, group_rows in grouped.items():
+        group_rows = _dedupe_by_key(group_rows, lambda row: row.get("period_end"))
+        group_rows.sort(key=lambda row: str(row.get("period_end")))
+        if len(group_rows) < 2:
+            continue
+        entity_id, metric_id, source_id, frequency, unit, currency, category = key
+        scope = _single_entity_scope(entity_id, group_rows)
+        entity_scope = {"entity_id": entity_id, "source_id": source_id}
+        metric_scope = {"metric_id": metric_id, "frequency": frequency}
+        if len(group_rows) >= 12:
+            maximum = max(group_rows, key=lambda row: row["value_decimal"])
+            minimum = min(group_rows, key=lambda row: row["value_decimal"])
+            prefix = "macro_time_series" if category == "macro" else "time_series"
+            common = {
+                "start_date": str(group_rows[0]["period_end"]),
+                "end_date": str(group_rows[-1]["period_end"]),
+                "frequency": frequency,
+                "observation_count": len(group_rows),
+            }
+            yield _derived_scalar(
+                f"{prefix}_argmax",
+                group_rows,
+                entity_scope,
+                metric_scope,
+                {**common, "result_date": str(maximum["period_end"])},
+                "argmax(normalized_value) over complete observed time-series scope",
+                maximum["value_decimal"],
+                unit,
+                _status_from_inputs(group_rows),
+                scope,
+            )
+            yield _derived_scalar(
+                f"{prefix}_argmin",
+                group_rows,
+                entity_scope,
+                metric_scope,
+                {**common, "result_date": str(minimum["period_end"])},
+                "argmin(normalized_value) over complete observed time-series scope",
+                minimum["value_decimal"],
+                unit,
+                _status_from_inputs(group_rows),
+                scope,
+            )
+
+        window = rolling_observations.get(frequency)
+        if not window or len(group_rows) < window:
+            continue
+        inputs = group_rows[-window:]
+        maximum = max(inputs, key=lambda row: row["value_decimal"])
+        minimum = min(inputs, key=lambda row: row["value_decimal"])
+        common = {
+            "start_date": str(inputs[0]["period_end"]),
+            "end_date": str(inputs[-1]["period_end"]),
+            "frequency": frequency,
+            "window_observations": window,
+        }
+        yield _derived_scalar(
+            "rolling_max",
+            inputs,
+            entity_scope,
+            metric_scope,
+            {**common, "result_date": str(maximum["period_end"])},
+            "max(normalized_value) over latest frequency-aware observation window",
+            maximum["value_decimal"],
+            unit,
+            _status_from_inputs(inputs),
+            scope,
+        )
+        yield _derived_scalar(
+            "rolling_min",
+            inputs,
+            entity_scope,
+            metric_scope,
+            {**common, "result_date": str(minimum["period_end"])},
+            "min(normalized_value) over latest frequency-aware observation window",
+            minimum["value_decimal"],
+            unit,
+            _status_from_inputs(inputs),
+            scope,
+        )
+
+
+def _iter_long_window_returns(
+    rows: list[dict[str, Any]],
+    report: dict[str, Any],
+    windows: list[int],
+) -> Iterable[dict[str, Any]]:
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        if (
+            row.get("metric_id") not in LONG_WINDOW_RETURN_METRICS
+            or bool(row.get("is_forecast"))
+            or not row.get("period_end")
+        ):
+            continue
+        key = (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        )
+        grouped[key].append(row)
+    for key, group_rows in grouped.items():
+        group_rows = _dedupe_by_key(group_rows, lambda row: row.get("period_end"))
+        group_rows.sort(key=lambda row: str(row.get("period_end")))
+        dated = [(_as_date(row.get("period_end")), row) for row in group_rows]
+        dated = [(day, row) for day, row in dated if day is not None]
+        if len(dated) < 2:
+            continue
+        end_date, end_row = dated[-1]
+        entity_id, metric_id, source_id, unit, currency = key
+        for years in windows:
+            target_year = end_date.year - years
+            try:
+                target = end_date.replace(year=target_year)
+            except ValueError:
+                target = end_date.replace(year=target_year, day=28)
+            start_date, start_row = min(dated[:-1], key=lambda item: abs((item[0] - target).days))
+            if abs((start_date - target).days) > 45 or start_row["value_decimal"] == 0:
+                report["skipped_counts"][f"long_window_return_{years}y_missing_start"] += 1
+                continue
+            value = (
+                (end_row["value_decimal"] / start_row["value_decimal"]) - Decimal("1")
+            ) * Decimal("100")
+            inputs = [start_row, end_row]
+            yield _derived_scalar(
+                "long_window_return",
+                inputs,
+                {"entity_id": entity_id, "source_id": source_id},
+                {"metric_id": metric_id},
+                {
+                    "start_date": str(start_date),
+                    "end_date": str(end_date),
+                    "window_years": years,
+                },
+                "(end_index_value / start_index_value - 1) * 100",
+                value,
+                "percent",
+                _status_from_inputs(inputs),
+            )
+
+
+def _iter_industry_rankings(
+    rows: list[dict[str, Any]],
+    report: dict[str, Any],
+) -> Iterable[dict[str, Any]]:
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        industry = str(row.get("industry") or "").strip()
+        if (
+            row.get("source_id") != "sec_companyfacts"
+            or row.get("metric_id") not in RANKING_METRICS
+            or not industry
+        ):
+            continue
+        key = (
+            industry,
+            row.get("metric_id"),
+            row.get("derived_year"),
+            row.get("derived_time_basis"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        )
+        grouped[key].append(row)
+    for key, group_rows in grouped.items():
+        industry, metric_id, year, basis, unit, currency = key
+        comparable = _dedupe_by_key(group_rows, lambda row: row.get("entity_id"))
+        if len(comparable) < 2:
+            report["skipped_counts"]["industry_ranking_less_than_two_entities"] += 1
+            continue
+        comparable.sort(key=lambda row: row["value_decimal"], reverse=True)
+        top = comparable[:10]
+        bottom = list(reversed(comparable[-10:]))
+        entity_ids = sorted(row["entity_id"] for row in comparable if row.get("entity_id"))
+        slug = hashlib.sha1(industry.encode("utf-8")).hexdigest()[:12]
+        scope = {
+            "scope_type": "industry_universe",
+            "scope_id": f"industry_{slug}_{metric_id}_{year}",
+            "scope_definition": f"Canonical company industry '{industry}' with {len(entity_ids)} entities having comparable graph-ready facts.",
+            "scope_entity_ids": entity_ids,
+            "scope_source": "canonical_entities.industry",
+        }
+        entity_scope = {"industry": industry, "entity_count": len(comparable)}
+        metric_scope = {"metric_id": metric_id}
+        time_scope = {"year": year, "basis": basis}
+        yield _derived_table(
+            "industry_ranking",
+            top,
+            entity_scope,
+            metric_scope,
+            time_scope,
+            "rank entities within canonical industry by normalized_value desc",
+            _ranking_table(top),
+            unit,
+            _status_from_inputs(top),
+            scope,
+        )
+        yield _derived_scalar(
+            "industry_argmax",
+            [top[0]],
+            {**entity_scope, "entity_id": top[0].get("entity_id")},
+            metric_scope,
+            time_scope,
+            "max(normalized_value) within canonical industry scope",
+            top[0]["value_decimal"],
+            unit,
+            _status_from_inputs([top[0]]),
+            scope,
+        )
+        yield _derived_scalar(
+            "industry_argmin",
+            [bottom[0]],
+            {**entity_scope, "entity_id": bottom[0].get("entity_id")},
+            metric_scope,
+            time_scope,
+            "min(normalized_value) within canonical industry scope",
+            bottom[0]["value_decimal"],
+            unit,
+            _status_from_inputs([bottom[0]]),
+            scope,
+        )
+
+
+def _iter_multi_condition_screening(
+    rows: list[dict[str, Any]],
+    report: dict[str, Any],
+    scope_config: dict[str, Any],
+) -> Iterable[dict[str, Any]]:
+    by_entity_year: dict[tuple[str, int], dict[str, dict[str, Any]]] = defaultdict(dict)
+    for row in rows:
+        if row.get("source_id") != "sec_companyfacts" or not row.get("entity_id"):
+            continue
+        if row.get("metric_id") in {"revenue", "net_income"}:
+            by_entity_year[(row["entity_id"], int(row["derived_year"]))][row["metric_id"]] = row
+    years = sorted({year for _, year in by_entity_year})
+    for year in years:
+        matches = []
+        inputs = []
+        for entity_id in sorted({entity for entity, item_year in by_entity_year if item_year == year}):
+            current = by_entity_year.get((entity_id, year), {})
+            previous = by_entity_year.get((entity_id, year - 1), {})
+            revenue = current.get("revenue")
+            prior_revenue = previous.get("revenue")
+            net_income = current.get("net_income")
+            if not revenue or not prior_revenue or not net_income or prior_revenue["value_decimal"] == 0:
+                continue
+            growth = (
+                (revenue["value_decimal"] - prior_revenue["value_decimal"])
+                / abs(prior_revenue["value_decimal"])
+                * Decimal("100")
+            )
+            if growth <= 0 or net_income["value_decimal"] <= 0:
+                continue
+            entity_inputs = [prior_revenue, revenue, net_income]
+            inputs.extend(entity_inputs)
+            matches.append(
+                {
+                    "entity_id": entity_id,
+                    "revenue_yoy_pct": _to_float(growth),
+                    "net_income": _to_float(net_income["value_decimal"]),
+                    "currency": net_income.get("normalized_currency"),
+                }
+            )
+        if not matches:
+            continue
+        configured = scope_config.get("sec_us_100") or []
+        scope = {
+            "scope_type": "screening_result_set",
+            "scope_id": f"sec_positive_revenue_growth_profitable_{year}",
+            "scope_definition": f"Result set from the configured SEC company universe ({len(configured)} companies), screened for positive revenue YoY and positive net income with required graph-ready inputs in fiscal year {year}.",
+            "scope_entity_ids": sorted(item["entity_id"] for item in matches),
+            "scope_source": "config.sec.sample_companies + standardized_facts",
+        }
+        yield _derived_table(
+            "multi_condition_screening",
+            inputs,
+            {"source_id": "sec_companyfacts", "matched_entity_count": len(matches)},
+            {
+                "conditions": [
+                    {"metric_id": "revenue", "operator": "yoy_gt", "value": 0},
+                    {"metric_id": "net_income", "operator": "gt", "value": 0},
+                ]
+            },
+            {"fiscal_year": year, "basis": "fiscal_year"},
+            "revenue_yoy_pct > 0 AND net_income > 0",
+            matches,
+            None,
+            _status_from_inputs(inputs),
+            scope,
+        )
+
+
+def _as_date(value: Any) -> date | None:
+    if isinstance(value, date):
+        return value
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return None
 
 
 def _scope_config(config: dict[str, Any]) -> dict[str, Any]:

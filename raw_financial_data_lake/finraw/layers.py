@@ -38,6 +38,7 @@ LAYER_TABLES: dict[str, list[str]] = {
         "kg_nodes",
         "kg_edges",
         "kg_quality_checks",
+        "kg_archives",
     ],
 }
 
@@ -70,6 +71,7 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "build-kg",
         "kg-quality-report",
         "export-kg-jsonl",
+        "kg-retention",
     ],
 }
 

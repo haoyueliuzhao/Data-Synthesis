@@ -52,7 +52,7 @@ Layer 3: fact_validation
   source definitions / frequency map / comparability fields / fact_quality_checks / graph_ready gates / conflict support
 
 Layer 4: qa_ready
-  derived_facts / kg_builds / kg_nodes / kg_edges / kg_quality_checks; consumes graph_ready standardized facts only
+  derived_facts / kg_builds / kg_nodes / kg_edges / kg_quality_checks / kg_archives; consumes graph_ready standardized facts only
 ```
 
 Print the machine-readable manifest:
@@ -114,15 +114,26 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-kg --output-dir data/audit/kg
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-quality-report --output-dir data/audit/kg
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-kg-jsonl data/kg_exports/jsonl
+
+# Indexed serving queries (do not scan JSONL)
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json query-kg facts --entity-id AAPL_US --metric-id revenue --limit 20
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json query-kg derived --derived-type multi_year_argmax --entity-id AAPL_US --limit 20
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json query-kg neighbors --node-id entity:AAPL_US --direction out --limit 20
+
+# Dry-run first; execute archives to Parquet/ZSTD and purges only after checksum verification.
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive --execute --purge --vacuum
 ```
 
 `candidate_facts` are reviewable document-derived candidates. They are not accepted facts and are not promoted into `atomic_facts` without explicit validation. Fact quality gates report candidate state counts and fail if any active candidate is marked `qa_eligible` or `kg_eligible`.
 
 `standardized_facts` carry `source_definition_id`, `frequency`, `seasonal_adjustment`, `vintage_policy`, `is_forecast`, and `comparability_level`. They also carry two verification group IDs: `raw_equivalence_group_id` for strict same-source/concept duplicate checks, and `semantic_equivalence_group_id` for cross-source entity/metric/period/unit/currency comparison. `conflict_group_id` is kept as a compatibility pointer to the group that produced a conflict or source-definition mismatch. A shared `metric_id` is not enough for cross-source verification; facts with matching values but incompatible source definitions are marked `source_definition_mismatch`, not `cross_verified`.
 
-`derived_facts` now carry explicit QA scope metadata: `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. Ranking and share facts should be phrased with that scope, for example "among the configured SEC 100-company universe" or "among the configured World Bank 20-country universe". Do not turn these facts into open-ended questions such as "among all companies" unless the scope actually says that.
+`derived_facts` carry explicit QA scope metadata: `scope_type`, `scope_id`, `scope_definition`, `scope_entity_ids`, and `scope_source`. In addition to YoY/QoQ/difference/ratio/share, the current build supports complete 5/10-year extrema, frequency-aware rolling extrema, FRED full-series extrema, SIC-industry rankings, explicit multi-condition screening, and conservative long-window returns for the broad U.S. dollar index. Historical derivations exclude observations marked as forecasts. Index-constituent rankings remain disabled until authoritative constituent history is ingested.
 
-`build-kg` creates a versioned property graph inside PostgreSQL/SQLite before any Neo4j export. KG schema v2 pins the exact entity, metric, source-definition, document, standardized-fact, and derived-fact build IDs. KG nodes include Entity, Security, Metric, SourceDefinition, Fact, DerivedFact, canonical TimePeriod, DataSource, RawObject, SourceDocument, and EntitySet. It consumes only graph-ready facts and validated derived facts from the pinned builds; `candidate_facts` remain excluded. Repeated derived time scopes share one TimePeriod node, and source definitions connect to both their Metric and DataSource.
+`build-kg` creates a versioned property graph inside PostgreSQL/SQLite before any Neo4j export. KG schema v3 pins the exact entity, metric, source-definition, document, standardized-fact, and derived-fact build IDs. TimePeriod nodes connect to CalendarYear, CalendarMonth, CalendarQuarter, entity-specific FiscalYear, or cross-entity FiscalYearLabel nodes. It consumes only graph-ready facts and validated derived facts from the pinned builds; `candidate_facts` remain excluded.
+
+PostgreSQL is the indexed query-serving layer through `query-kg`; JSONL is only an interchange artifact. `kg-retention` keeps the active and previous successful builds hot, archives older graphs as checksum-verified Parquet/ZSTD, and purges PostgreSQL rows only after archive verification.
 
 A selected historical `kg_build_id` can still be quality-checked and exported after it is superseded. `kg_builds.is_active` selects the current graph; node/edge `is_active` records whether that build materialization is valid, so version activation does not rewrite millions of historical rows.
 

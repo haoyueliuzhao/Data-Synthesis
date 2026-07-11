@@ -70,6 +70,7 @@ Tables:
 - `kg_nodes`
 - `kg_edges`
 - `kg_quality_checks`
+- `kg_archives`
 
 KG is first represented as an auditable property graph in the metadata database. It consumes only graph-ready standardized facts, active validated derived facts, source documents, raw objects, source definitions, canonical entities/securities, metrics, and source registry rows. `candidate_facts` are explicitly excluded until a future promotion workflow creates accepted atomic facts.
 
@@ -161,6 +162,8 @@ KG and QA artifacts should bind to a specific build, for example `qa_ready_20260
 
 ## KG Quality Gates
 
-`build-kg` writes `kg_builds`, `kg_nodes`, `kg_edges`, and `kg_quality_checks`. KG schema v2 records the exact upstream entity, metric, source-definition, document, standardized-fact, and derived-fact build IDs and their frozen fact counts.
+`build-kg` writes `kg_builds`, `kg_nodes`, `kg_edges`, and `kg_quality_checks`. KG schema v3 records exact upstream build IDs and frozen fact counts, and adds CalendarYear/Month/Quarter, entity FiscalYear, and cross-entity FiscalYearLabel dimensions.
 
-The KG gate verifies build alignment, node counts, non-empty fact content, candidate exclusion, provenance status, edge endpoint existence and type, duplicate stable IDs, required Fact relationships, complete `DERIVED_FROM` inputs, source-definition provider edges, canonical derived TimePeriod reuse, and explicit ranking/share scope. A failed or interrupted build stays inactive and does not replace the previous graph. Historical builds remain addressable by `kg_build_id` for quality reports and JSONL export.
+The KG gate verifies build alignment, node counts, candidate exclusion, provenance status, edge endpoint existence and type, duplicate stable IDs, complete `DERIVED_FROM` inputs, source-definition provider edges, explicit ranking/screening scope, and that every TimePeriod has a calendar or fiscal hierarchy edge. A failed build stays inactive.
+
+PostgreSQL serves indexed neighbor/fact/derived queries. JSONL remains an interchange format. `kg-retention` defaults to dry-run, preserves the active plus previous successful build, writes older builds to Parquet with ZSTD and SHA-256 manifests, verifies archive row counts/checksums, and only then permits PostgreSQL purge.

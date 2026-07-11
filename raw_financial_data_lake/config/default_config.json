@@ -155,5 +155,38 @@
       "net_income"
     ],
     "min_years_per_company_critical_metric": 0
+  },
+  "kg": {
+    "retention": {
+      "hot_build_count": 2,
+      "archive_dir": "./data/kg_archive",
+      "archive_format": "parquet",
+      "compression": "zstd"
+    },
+    "query": {
+      "default_limit": 100,
+      "max_limit": 1000
+    },
+    "time_hierarchy": {
+      "enabled": true
+    },
+    "derived_policy": {
+      "multi_year_windows": [
+        5,
+        10
+      ],
+      "long_window_return_years": [
+        1,
+        5,
+        10
+      ],
+      "rolling_observations": {
+        "daily": 252,
+        "weekly": 52,
+        "monthly": 12,
+        "quarterly": 4,
+        "annual": 5
+      }
+    }
   }
 }

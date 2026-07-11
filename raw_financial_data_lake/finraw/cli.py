@@ -24,6 +24,8 @@ from finraw.layers import LAYER_TABLES, layer_manifest
 from finraw.fact_quality import enforce_fact_quality_gates
 from finraw.fact_standardization import refresh_fact_standardization
 from finraw.kg_builder import build_kg, export_kg_jsonl, kg_quality_report
+from finraw.kg_retention import enforce_kg_retention
+from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
@@ -121,6 +123,29 @@ def build_parser() -> argparse.ArgumentParser:
     kg_export = sub.add_parser("export-kg-jsonl", help="Export active or selected KG nodes and edges to JSONL.")
     kg_export.add_argument("output_dir")
     kg_export.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to the active KG build.")
+
+    kg_retention = sub.add_parser("kg-retention", help="Plan or execute hot/cold KG build retention.")
+    kg_retention.add_argument("--hot-builds", type=int, help="Number of successful KG builds to keep in PostgreSQL.")
+    kg_retention.add_argument("--archive-dir", help="Cold archive directory. Defaults to config kg.retention.archive_dir.")
+    kg_retention.add_argument("--output-dir", default="data/audit/kg_retention")
+    kg_retention.add_argument("--execute", action="store_true", help="Write verified Parquet/ZSTD archives.")
+    kg_retention.add_argument("--purge", action="store_true", help="Delete archived node/edge rows after verification.")
+    kg_retention.add_argument("--vacuum", action="store_true", help="VACUUM graph tables after purge.")
+    kg_retention.add_argument("--batch-size", type=int, default=100000)
+
+    kg_query = sub.add_parser("query-kg", help="Query the indexed PostgreSQL KG/fact serving layer.")
+    kg_query.add_argument("mode", choices=["neighbors", "facts", "derived"])
+    kg_query.add_argument("--kg-build-id")
+    kg_query.add_argument("--node-id", help="Stable or versioned node ID for neighbors mode.")
+    kg_query.add_argument("--direction", choices=["in", "out", "both"], default="both")
+    kg_query.add_argument("--relation-type")
+    kg_query.add_argument("--entity-id")
+    kg_query.add_argument("--metric-id")
+    kg_query.add_argument("--derived-type")
+    kg_query.add_argument("--source-id")
+    kg_query.add_argument("--date-from")
+    kg_query.add_argument("--date-to")
+    kg_query.add_argument("--limit", type=int, default=100)
 
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
     return parser
@@ -261,6 +286,51 @@ def main() -> None:
         elif args.command == "export-kg-jsonl":
             paths = export_kg_jsonl(db, args.output_dir, kg_build_id=args.kg_build_id)
             print(json.dumps([str(path) for path in paths], ensure_ascii=False, indent=2))
+        elif args.command == "kg-retention":
+            policy = config.get("kg", {}).get("retention", {})
+            report = enforce_kg_retention(
+                db,
+                archive_dir=args.archive_dir or policy.get("archive_dir", "data/kg_archive"),
+                hot_build_count=args.hot_builds or int(policy.get("hot_build_count", 2)),
+                execute=args.execute,
+                purge=args.purge,
+                vacuum=args.vacuum,
+                output_dir=args.output_dir,
+                batch_size=args.batch_size,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "query-kg":
+            if args.mode == "neighbors":
+                if not args.node_id:
+                    raise ValueError("--node-id is required for neighbors mode")
+                result = query_neighbors(
+                    db,
+                    args.node_id,
+                    kg_build_id=args.kg_build_id,
+                    direction=args.direction,
+                    relation_type=args.relation_type,
+                    limit=args.limit,
+                )
+            elif args.mode == "facts":
+                result = query_facts(
+                    db,
+                    entity_id=args.entity_id,
+                    metric_id=args.metric_id,
+                    date_from=args.date_from,
+                    date_to=args.date_to,
+                    source_id=args.source_id,
+                    kg_build_id=args.kg_build_id,
+                    limit=args.limit,
+                )
+            else:
+                result = query_derived_facts(
+                    db,
+                    derived_type=args.derived_type,
+                    entity_id=args.entity_id,
+                    kg_build_id=args.kg_build_id,
+                    limit=args.limit,
+                )
+            print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
         elif args.command == "validate":
             passed, failed = validate_raw_objects(db)
             print(f"Validation completed: passed={passed}, failed={failed}")

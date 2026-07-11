@@ -8,6 +8,7 @@ from finraw.db.client import MetadataDB
 from finraw.kg_builder import (
     KG_SCHEMA_VERSION,
     _activate_kg_build,
+    _add_time_hierarchy,
     _dangling_edge_count,
     _derived_time_node,
     _invalid_relation_endpoint_count,
@@ -199,3 +200,39 @@ def test_activation_switches_build_pointer_only(tmp_path) -> None:
         assert invalidated_node["is_active"] == 0
     finally:
         db.close()
+
+
+def test_time_hierarchy_links_calendar_and_fiscal_dimensions() -> None:
+    nodes = {}
+    edges = []
+
+    def add_node(stable_id, node_type, source_table, source_pk, properties):
+        nodes[stable_id] = (node_type, properties)
+
+    def add_edge(src, relation, dst, source_table, source_pk, properties=None):
+        edges.append((src, relation, dst))
+
+    _add_time_hierarchy(
+        add_node,
+        add_edge,
+        "time:test",
+        {
+            "time_basis": "observation_date",
+            "frequency": "monthly",
+            "period_end": "2024-05-31",
+            "calendar_year": 2024,
+            "fiscal_year": 2024,
+            "fiscal_quarter": "Q2",
+        },
+        "AAPL_US",
+    )
+
+    assert nodes["calendar_year:2024"][0] == "CalendarYear"
+    assert nodes["calendar_month:2024-05"][0] == "CalendarMonth"
+    assert nodes["calendar_quarter:2024:Q2"][0] == "CalendarQuarter"
+    assert nodes["fiscal_year:AAPL_US:2024"][0] == "FiscalYear"
+    assert ("time:test", "BELONGS_TO_YEAR", "calendar_year:2024") in edges
+    assert ("time:test", "BELONGS_TO_MONTH", "calendar_month:2024-05") in edges
+    assert ("time:test", "BELONGS_TO_QUARTER", "calendar_quarter:2024:Q2") in edges
+    assert ("time:test", "IN_FISCAL_YEAR", "fiscal_year:AAPL_US:2024") in edges
+    assert ("fiscal_year:AAPL_US:2024", "FISCAL_YEAR_OF", "entity:AAPL_US") in edges
