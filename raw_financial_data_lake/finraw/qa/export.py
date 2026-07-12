@@ -27,8 +27,10 @@ def export_qa_jsonl(
         )
     rows = db.fetchall(
         """
-        SELECT s.*, e.ordered_node_ids, e.ordered_edge_ids, e.source_fact_ids,
-               e.source_derived_ids, e.raw_object_ids, c.canonical_semantics
+        SELECT s.*, e.ordered_node_ids, e.ordered_edge_ids,
+               e.evidence_node_ids, e.evidence_edges, e.evidence_components,
+               e.source_fact_ids, e.source_derived_ids, e.raw_object_ids,
+               c.canonical_semantics
         FROM qa_samples s
         JOIN qa_evidence_paths e ON e.qa_id = s.qa_id
         JOIN qa_candidates c ON c.candidate_id = s.candidate_id
@@ -46,7 +48,8 @@ def export_qa_jsonl(
     splits = sorted({str(row["split"]) for row in rows})
     benchmark_paths = {split: benchmark_dir / f"{split}.jsonl" for split in splits}
     trace_paths = {split: trace_dir / f"{split}.jsonl" for split in splits}
-    sft_paths = {"train": sft_dir / "train.jsonl"}
+    sft_allowed_splits = [split for split in ["train", "train_complex"] if split in splits]
+    sft_paths = {split: sft_dir / f"{split}.jsonl" for split in sft_allowed_splits}
     benchmark_files = {
         key: path.open("w", encoding="utf-8") for key, path in benchmark_paths.items()
     }
@@ -91,8 +94,8 @@ def export_qa_jsonl(
                 )
                 + "\n"
             )
-            if split == "train":
-                sft_files["train"].write(
+            if split in sft_files:
+                sft_files[split].write(
                     json.dumps(
                         {
                             "messages": [
@@ -116,6 +119,11 @@ def export_qa_jsonl(
                         "kg_path": {
                             "node_ids": row["ordered_node_ids"],
                             "edge_ids": row["ordered_edge_ids"],
+                        },
+                        "evidence_subgraph": {
+                            "node_ids": row["evidence_node_ids"],
+                            "edges": row["evidence_edges"],
+                            "components": row["evidence_components"],
                         },
                         "source_fact_ids": row["source_fact_ids"],
                         "source_derived_ids": row["source_derived_ids"],
@@ -143,7 +151,10 @@ def export_qa_jsonl(
             split: _file_info(path, split_counts[split])
             for split, path in benchmark_paths.items()
         },
-        "sft": {"train": _file_info(sft_paths["train"], split_counts.get("train", 0))},
+        "sft": {
+            split: _file_info(path, split_counts.get(split, 0))
+            for split, path in sft_paths.items()
+        },
         "trace_seeds": {
             split: _file_info(path, split_counts[split])
             for split, path in trace_paths.items()
@@ -154,7 +165,7 @@ def export_qa_jsonl(
         "kg_build_id": build["kg_build_id"],
         "sample_count": len(rows),
         "split_counts": dict(sorted(split_counts.items())),
-        "sft_allowed_splits": ["train"],
+        "sft_allowed_splits": sft_allowed_splits,
         "files": files,
     }
     manifest_path = out / "manifest.json"
@@ -189,6 +200,9 @@ def _decode(row: dict[str, Any]) -> dict[str, Any]:
         "source_metadata",
         "ordered_node_ids",
         "ordered_edge_ids",
+        "evidence_node_ids",
+        "evidence_edges",
+        "evidence_components",
         "source_fact_ids",
         "source_derived_ids",
         "raw_object_ids",

@@ -68,6 +68,8 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             source_document_ids {json_type} NOT NULL,
             raw_object_ids {json_type} NOT NULL,
             canonical_semantics {json_type} NOT NULL,
+            derived_payload {json_type} NOT NULL,
+            recomputed_payload {json_type} NOT NULL,
             answer_payload {json_type} NOT NULL,
             kg_path {json_type} NOT NULL,
             eligibility_status TEXT NOT NULL,
@@ -111,6 +113,9 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             path_type TEXT NOT NULL,
             ordered_node_ids {json_type} NOT NULL,
             ordered_edge_ids {json_type} NOT NULL,
+            evidence_node_ids {json_type} NOT NULL,
+            evidence_edges {json_type} NOT NULL,
+            evidence_components {json_type} NOT NULL,
             source_fact_ids {json_type} NOT NULL,
             source_derived_ids {json_type} NOT NULL,
             raw_object_ids {json_type} NOT NULL,
@@ -160,6 +165,15 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "split_policy_hash": "TEXT",
         },
         "qa_samples": {"template_id": "TEXT", "template_hash": "TEXT"},
+        "qa_candidates": {
+            "derived_payload": "JSONB" if postgres else "TEXT",
+            "recomputed_payload": "JSONB" if postgres else "TEXT",
+        },
+        "qa_evidence_paths": {
+            "evidence_node_ids": "JSONB" if postgres else "TEXT",
+            "evidence_edges": "JSONB" if postgres else "TEXT",
+            "evidence_components": "JSONB" if postgres else "TEXT",
+        },
     }
     for table, columns in migrations.items():
         for column, column_type in columns.items():

@@ -83,6 +83,8 @@ CANDIDATE_COLUMNS = [
     "source_document_ids",
     "raw_object_ids",
     "canonical_semantics",
+    "derived_payload",
+    "recomputed_payload",
     "answer_payload",
     "kg_path",
     "eligibility_status",
@@ -120,6 +122,9 @@ EVIDENCE_COLUMNS = [
     "path_type",
     "ordered_node_ids",
     "ordered_edge_ids",
+    "evidence_node_ids",
+    "evidence_edges",
+    "evidence_components",
     "source_fact_ids",
     "source_derived_ids",
     "raw_object_ids",
@@ -260,7 +265,7 @@ def build_qa_candidates(
         if derived_type not in SUPPORTED_DERIVED or quota <= 0:
             continue
         for row in _load_derived_pool(db, kg, derived_type, quota):
-            if derived_type in {"share", "ranking"}:
+            if derived_type in {"share", "ranking", "industry_ranking"}:
                 row = _with_scope_inputs(db, kg, row, scope_fact_cache)
             emit(
                 _derived_candidate(
@@ -296,20 +301,22 @@ def build_qa_candidates(
     persisted_task_counts = _group_counts(
         db, "qa_candidates", "qa_build_id", qa_build_id, "task_subtype"
     )
+    build_row = db.fetchone("SELECT notes FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,))
+    notes = json_value(build_row["notes"] if build_row else None, {})
+    notes.update(
+        {
+            "policy": policy,
+            "task_counts": persisted_task_counts,
+            "emitted_task_counts": dict(counts),
+            "rejection_counts": dict(rejected),
+        }
+    )
     db.execute(
         "UPDATE qa_builds SET status = ?, candidate_count = ?, notes = ? WHERE qa_build_id = ?",
         (
             "candidates_built",
             candidate_count,
-            _db_json(
-                db,
-                {
-                    "policy": policy,
-                    "task_counts": persisted_task_counts,
-                    "emitted_task_counts": dict(counts),
-                    "rejection_counts": dict(rejected),
-                },
-            ),
+            _db_json(db, notes),
             qa_build_id,
         ),
     )
@@ -401,7 +408,8 @@ def validate_qa_samples(
         dict(row)
         for row in db.fetchall(
             """
-        SELECT s.*, c.canonical_semantics, c.answer_payload, c.kg_path,
+        SELECT s.*, c.canonical_semantics, c.derived_payload,
+               c.recomputed_payload, c.answer_payload, c.kg_path,
                c.source_fact_ids, c.source_derived_ids, c.raw_object_ids
         FROM qa_samples s JOIN qa_candidates c ON c.candidate_id = s.candidate_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'pending'
@@ -573,7 +581,7 @@ def split_qa_samples(
                 for entity in entities
             )
             if row["task_subtype"] in challenge:
-                split = "test_complex"
+                split = _complex_split(bucket)
             elif entity_holdout:
                 split = "test_entity_holdout"
             elif _latest_year(time_scope) and _latest_year(time_scope) >= cutoff_year:
@@ -656,6 +664,14 @@ def split_qa_samples(
         "build_gate_failures": failures,
     }
     return _write_report(report, output_dir, "qa_split_report")
+
+
+def _complex_split(bucket: int) -> str:
+    if bucket < 70:
+        return "train_complex"
+    if bucket < 80:
+        return "dev_complex"
+    return "test_complex"
 
 
 def build_qa(
@@ -753,6 +769,27 @@ def _fact_candidate(
     }
 
 
+def _derived_payload_from_row(row: dict[str, Any]) -> dict[str, Any]:
+    time_scope = json_value(row.get("time_scope"), {})
+    entity_scope = json_value(row.get("entity_scope"), {})
+    output_table = json_value(row.get("output_table"), [])
+    return {
+        "value": str(row.get("output_value"))
+        if row.get("output_value") is not None
+        else None,
+        "table": output_table,
+        "unit": row.get("unit"),
+        "currency": row.get("currency"),
+        "tolerance": str(row.get("tolerance") or 0),
+        "result_period": time_scope.get("result_year")
+        or time_scope.get("result_date"),
+        "winning_entity_id": entity_scope.get("entity_id")
+        if str(row.get("derived_type"))
+        in {"argmax", "argmin", "industry_argmax", "industry_argmin"}
+        else None,
+    }
+
+
 def _derived_candidate(
     db: DBProtocol,
     row: dict[str, Any],
@@ -774,6 +811,8 @@ def _derived_candidate(
             row.get(key),
             [] if key in {"input_fact_ids", "scope_entity_ids", "output_table"} else {},
         )
+    row["derived_payload"] = json_value(row.get("derived_payload"), {})
+    row["recomputed_payload"] = json_value(row.get("recomputed_payload"), {})
     derived_type = row["derived_type"]
     entity_scope = row["entity_scope"]
     metric_scope = row["metric_scope"]
@@ -797,12 +836,19 @@ def _derived_candidate(
         reasons.append("missing_metric")
     if derived_type in SCOPE_DERIVED | {"share"} and not row.get("scope_id"):
         reasons.append("missing_scope")
-    if row.get("output_value") is None and not row["output_table"]:
+    derived_payload = row["derived_payload"] or _derived_payload_from_row(row)
+    recomputed_payload = row["recomputed_payload"] or derived_payload
+    answer = recomputed_payload if row.get("scope_recomputed") else derived_payload
+    if answer.get("value") is None and not answer.get("table"):
         reasons.append("missing_answer")
     if derived_type == "share" and not row.get("share_scope_complete"):
         reasons.append("incomplete_share_scope_inputs")
-    if derived_type == "ranking" and not row.get("ranking_scope_complete"):
-        reasons.append("incomplete_ranking_scope_inputs")
+    if derived_type in {"ranking", "industry_ranking"} and not row.get(
+        f"{derived_type}_scope_complete"
+    ):
+        reasons.append(f"incomplete_{derived_type}_scope_inputs")
+    if row.get("scope_recomputed") and not row.get("derived_recompute_match"):
+        reasons.append("qa_recompute_mismatch")
     semantics = {
         "operation": derived_type,
         "entity_ids": entity_ids,
@@ -822,34 +868,26 @@ def _derived_candidate(
         "scope_id": row.get("scope_id"),
         "scope_definition": row.get("scope_definition"),
         "calculation_code": row.get("calculation_code"),
-        "top_k": len(row["output_table"])
+        "top_k": len(answer.get("table") or [])
         if derived_type in {"ranking", "industry_ranking"}
         else None,
         "scope_input_complete": bool(row.get(f"{derived_type}_scope_complete"))
-        if derived_type in {"share", "ranking"}
+        if derived_type in {"share", "ranking", "industry_ranking"}
         else None,
         "answer_basis": "pinned_scope_fact_recompute"
         if row.get("scope_recomputed")
         else "pinned_derived_fact",
-        "source_derived_output_value": str(row.get("source_derived_output_value"))
-        if row.get("source_derived_output_value") is not None
-        else None,
+        "source_derived_output_value": derived_payload.get("value"),
+        "source_derived_output_table": derived_payload.get("table")
+        if derived_type in {"ranking", "industry_ranking"}
+        else [],
+        "derived_recompute_match": bool(row.get("derived_recompute_match", True)),
+        "derived_input_fact_ids": row.get(
+            "derived_input_fact_ids", row["input_fact_ids"]
+        ),
         "expected_table": row["output_table"]
         if derived_type == "multi_condition_screening"
         else [],
-    }
-    answer = {
-        "value": str(row["output_value"])
-        if row.get("output_value") is not None
-        else None,
-        "table": row["output_table"],
-        "unit": row.get("unit"),
-        "tolerance": str(row.get("tolerance") or 0),
-        "result_period": row["time_scope"].get("result_year")
-        or row["time_scope"].get("result_date"),
-        "winning_entity_id": entity_scope.get("entity_id")
-        if derived_type in {"argmax", "argmin", "industry_argmax", "industry_argmin"}
-        else None,
     }
     stable = "qac_" + _digest(
         semantics, row["input_fact_ids"], row.get("stable_derived_id")
@@ -883,6 +921,8 @@ def _derived_candidate(
         "source_document_ids": [],
         "raw_object_ids": raw_object_ids,
         "canonical_semantics": semantics,
+        "derived_payload": derived_payload,
+        "recomputed_payload": recomputed_payload,
         "answer_payload": answer,
         "kg_path": _kg_path_from_graph(
             db,
@@ -958,6 +998,8 @@ def _sample_from_candidate(
             "source_fact_ids": candidate["source_fact_ids"],
             "source_derived_ids": candidate["source_derived_ids"],
             "raw_object_ids": candidate["raw_object_ids"],
+            "derived_payload": candidate.get("derived_payload"),
+            "recomputed_payload": candidate.get("recomputed_payload"),
         },
         "generation_method": "deterministic_template",
         "validation_status": "pending",
@@ -971,6 +1013,10 @@ def _sample_from_candidate(
         else "single_fact_path",
         "ordered_node_ids": candidate["kg_path"].get("node_ids", []),
         "ordered_edge_ids": candidate["kg_path"].get("edge_ids", []),
+        "evidence_node_ids": candidate["kg_path"].get("evidence_node_ids")
+        or candidate["kg_path"].get("node_ids", []),
+        "evidence_edges": candidate["kg_path"].get("evidence_edges", []),
+        "evidence_components": candidate["kg_path"].get("evidence_components", []),
         "source_fact_ids": candidate["source_fact_ids"],
         "source_derived_ids": candidate["source_derived_ids"],
         "raw_object_ids": candidate["raw_object_ids"],
@@ -1039,6 +1085,11 @@ def _validate_one(
         {"missing_nodes": [], "missing_edges": []},
         "Every evidence path node and edge must exist in the pinned KG build.",
     )
+    path_edges = [
+        existing_edges[edge_id]
+        for edge_id in path.get("edge_ids", [])
+        if edge_id in existing_edges
+    ]
     semantic_ok, semantic_detail = _validate_evidence_semantics(
         row["task_subtype"], path, existing_nodes, existing_edges
     )
@@ -1048,6 +1099,44 @@ def _validate_one(
         semantic_detail,
         {"missing_relations": [], "invalid_edges": []},
         "Evidence edges must connect valid endpoint types and include task-required relations.",
+    )
+    fact_coverage_ok, fact_coverage_detail = _validate_source_fact_coverage(
+        row, path, path_edges, build["kg_build_id"]
+    )
+    add(
+        "source_fact_coverage",
+        fact_coverage_ok,
+        fact_coverage_detail,
+        {"missing_fact_nodes": [], "missing_fact_relations": {}},
+        "Every source fact must appear in evidence and include Entity, Metric, Period, and Source edges.",
+    )
+    derived_edge_ok, derived_edge_detail = _validate_derived_input_edge_coverage(
+        row, path, path_edges, build["kg_build_id"]
+    )
+    add(
+        "derived_input_edge_coverage",
+        derived_edge_ok,
+        derived_edge_detail,
+        {"missing_derived_from": []},
+        "Original DerivedFact input facts must be connected by DERIVED_FROM evidence edges.",
+    )
+    scope_ok, scope_detail = _validate_scope_fact_coverage(
+        row, path, build["kg_build_id"]
+    )
+    add(
+        "scope_fact_coverage",
+        scope_ok,
+        scope_detail,
+        {"missing_scope_fact_nodes": []},
+        "Scope tasks require every declared source fact to be represented in evidence.",
+    )
+    component_count = len(path.get("evidence_components") or [])
+    add(
+        "evidence_component_count",
+        component_count == 1,
+        component_count,
+        1,
+        "Evidence subgraph should be connected; multiple components indicate a forest.",
     )
     add(
         "semantic_slots",
@@ -1064,6 +1153,16 @@ def _validate_one(
     )
     matched = _answers_match(expected, recomputed, row.get("rubric"))
     add("independent_recompute", matched, recomputed, expected, reason)
+    if row["task_subtype"] in {"share", "ranking", "industry_ranking"}:
+        derived_payload = row.get("derived_payload") or expected
+        recomputed_payload = row.get("recomputed_payload") or recomputed
+        add(
+            "derived_recompute_match",
+            _answers_match(derived_payload, recomputed_payload, row.get("rubric")),
+            recomputed_payload,
+            derived_payload,
+            "KG DerivedFact output must match complete scope recomputation before QA use.",
+        )
     if row["task_subtype"] in SCOPE_DERIVED | {"share"}:
         expected_scope_count = len(row["canonical_semantics"].get("entity_ids", []))
         represented = len({item.get("entity_id") for item in source_facts if item})
@@ -1321,6 +1420,10 @@ def _with_scope_inputs(
     entity_scope = json_value(out.get("entity_scope"), {})
     time_scope = json_value(out.get("time_scope"), {})
     input_ids = json_value(out.get("input_fact_ids"), [])
+    out["output_table"] = json_value(out.get("output_table"), [])
+    out["derived_payload"] = _derived_payload_from_row(out)
+    out["recomputed_payload"] = out["derived_payload"]
+    out["derived_recompute_match"] = True
     out["derived_input_fact_ids"] = list(input_ids)
     if not entity_ids or not metric_scope.get("metric_id") or not input_ids:
         out["share_scope_complete"] = False
@@ -1418,11 +1521,20 @@ def _with_scope_inputs(
         target_value = _decimal(by_entity[target_entity]["normalized_value"])
         if denominator > 0 and target_value is not None:
             out["source_derived_output_value"] = out.get("output_value")
-            out["output_value"] = target_value / denominator * Decimal("100")
+            out["recomputed_payload"] = {
+                **out["derived_payload"],
+                "value": str(target_value / denominator * Decimal("100")),
+                "table": [],
+                "unit": "percent",
+                "currency": None,
+            }
+            out["derived_recompute_match"] = _answers_match(
+                out["derived_payload"], out["recomputed_payload"], None
+            )
             out["scope_recomputed"] = True
         else:
             out["share_scope_complete"] = False
-    elif complete and derived_type == "ranking":
+    elif complete and derived_type in {"ranking", "industry_ranking"}:
         top_k = len(json_value(out.get("output_table"), [])) or 10
         ranked = sorted(
             by_entity.values(),
@@ -1432,15 +1544,22 @@ def _with_scope_inputs(
             ),
             reverse=True,
         )[:top_k]
-        out["output_table"] = [
-            {
-                "rank": rank,
-                "entity_id": item["entity_id"],
-                "value": _number(_decimal(item["normalized_value"])),
-                "fact_id": item["fact_id"],
-            }
-            for rank, item in enumerate(ranked, start=1)
-        ]
+        out["recomputed_payload"] = {
+            **out["derived_payload"],
+            "value": None,
+            "table": [
+                {
+                    "rank": rank,
+                    "entity_id": item["entity_id"],
+                    "value": _number(_decimal(item["normalized_value"])),
+                    "fact_id": item["fact_id"],
+                }
+                for rank, item in enumerate(ranked, start=1)
+            ],
+        }
+        out["derived_recompute_match"] = _answers_match(
+            out["derived_payload"], out["recomputed_payload"], None
+        )
         out["scope_recomputed"] = True
     return out
 
@@ -1528,13 +1647,105 @@ def _load_graph_edges(
     return out
 
 
+def _evidence_node_ids(path: dict[str, Any]) -> set[str]:
+    return set(path.get("evidence_node_ids") or path.get("node_ids") or [])
+
+
+def _fact_node_id(fact_id: str, kg_build_id: str) -> str:
+    return f"fact:{fact_id}@@{kg_build_id}"
+
+
+def _derived_node_id(derived_id: str, kg_build_id: str) -> str:
+    return f"derived_fact:{derived_id}@@{kg_build_id}"
+
+
+def _validate_source_fact_coverage(
+    row: dict[str, Any],
+    path: dict[str, Any],
+    path_edges: list[dict[str, Any]],
+    kg_build_id: str,
+) -> tuple[bool, dict[str, Any]]:
+    path_nodes = _evidence_node_ids(path)
+    required = {"HAS_FACT", "MEASURES", "IN_PERIOD", "FROM_SOURCE"}
+    fact_nodes = {
+        _fact_node_id(str(fact_id), kg_build_id): str(fact_id)
+        for fact_id in row.get("source_fact_ids", [])
+    }
+    relations_by_fact = {fact_id: set() for fact_id in fact_nodes.values()}
+    for edge in path_edges:
+        src = str(edge.get("src_node_id"))
+        dst = str(edge.get("dst_node_id"))
+        relation = str(edge.get("relation_type"))
+        if src in fact_nodes:
+            relations_by_fact[fact_nodes[src]].add(relation)
+        if dst in fact_nodes:
+            relations_by_fact[fact_nodes[dst]].add(relation)
+    missing_nodes = []
+    missing_relations: dict[str, list[str]] = {}
+    for fact_node, fact_id in fact_nodes.items():
+        if fact_node not in path_nodes:
+            missing_nodes.append(fact_id)
+            missing_relations[fact_id] = sorted(required)
+            continue
+        missing = sorted(required - relations_by_fact[fact_id])
+        if missing:
+            missing_relations[fact_id] = missing
+    detail = {
+        "missing_fact_nodes": sorted(missing_nodes),
+        "missing_fact_relations": dict(sorted(missing_relations.items())),
+    }
+    return not missing_nodes and not missing_relations, detail
+
+
+def _validate_derived_input_edge_coverage(
+    row: dict[str, Any],
+    path: dict[str, Any],
+    path_edges: list[dict[str, Any]],
+    kg_build_id: str,
+) -> tuple[bool, dict[str, Any]]:
+    derived_ids = row.get("source_derived_ids") or []
+    if not derived_ids:
+        return True, {"missing_derived_from": []}
+    derived_node = _derived_node_id(str(derived_ids[0]), kg_build_id)
+    input_fact_ids = row.get("canonical_semantics", {}).get("derived_input_fact_ids")
+    if input_fact_ids is None:
+        input_fact_ids = row.get("source_fact_ids", [])
+    edge_pairs = {
+        (str(edge.get("src_node_id")), str(edge.get("dst_node_id")))
+        for edge in path_edges
+        if str(edge.get("relation_type")) == "DERIVED_FROM"
+    }
+    missing = []
+    for fact_id in input_fact_ids:
+        fact_node = _fact_node_id(str(fact_id), kg_build_id)
+        if (derived_node, fact_node) not in edge_pairs:
+            missing.append(str(fact_id))
+    detail = {"missing_derived_from": sorted(missing)}
+    return not missing, detail
+
+
+def _validate_scope_fact_coverage(
+    row: dict[str, Any], path: dict[str, Any], kg_build_id: str
+) -> tuple[bool, dict[str, Any]]:
+    if row.get("task_subtype") not in SCOPE_DERIVED | {"share", "ranking"}:
+        return True, {"missing_scope_fact_nodes": []}
+    path_nodes = _evidence_node_ids(path)
+    missing = [
+        str(fact_id)
+        for fact_id in row.get("source_fact_ids", [])
+        if _fact_node_id(str(fact_id), kg_build_id) not in path_nodes
+    ]
+    detail = {"missing_scope_fact_nodes": sorted(missing)}
+    return not missing, detail
+
+
 def _validate_evidence_semantics(
     task_subtype: str,
     path: dict[str, Any],
     nodes: dict[str, str],
     edges: dict[str, dict[str, Any]],
 ) -> tuple[bool, dict[str, Any]]:
-    path_nodes = set(path.get("node_ids", []))
+    path_nodes = _evidence_node_ids(path)
     relations = set()
     invalid_edges = []
     for edge_id in path.get("edge_ids", []):
@@ -1713,6 +1924,39 @@ def _kg_path_from_graph(
         ):
             edge = dict(raw)
             edges[str(edge["edge_id"])] = edge
+    fact_nodes = sorted(
+        {
+            node_id
+            for edge in edges.values()
+            for node_id in (str(edge["src_node_id"]), str(edge["dst_node_id"]))
+            if node_id.startswith("fact:")
+        }
+        | {node_id for node_id in seed_nodes if node_id.startswith("fact:")}
+    )
+    fact_relations = [
+        "HAS_FACT",
+        "MEASURES",
+        "IN_PERIOD",
+        "FROM_SOURCE",
+        "TRACED_TO",
+        "USES_SOURCE_DEFINITION",
+    ]
+    for batch in chunks(fact_nodes, 300):
+        placeholders = ",".join("?" for _ in batch)
+        relation_placeholders = ",".join("?" for _ in fact_relations)
+        for direction in ("src_node_id", "dst_node_id"):
+            sql = f"""
+                SELECT edge_id, src_node_id, dst_node_id, relation_type
+                FROM kg_edges
+                WHERE kg_build_id = ?
+                  AND {direction} IN ({placeholders})
+                  AND relation_type IN ({relation_placeholders})
+                ORDER BY relation_type, edge_id
+            """
+            params = [kg_build_id, *batch, *fact_relations]
+            for raw in db.fetchall(sql, params):
+                edge = dict(raw)
+                edges[str(edge["edge_id"])] = edge
     nodes = sorted(
         {
             node_id
@@ -1725,11 +1969,64 @@ def _kg_path_from_graph(
         edges.values(),
         key=lambda edge: (str(edge["relation_type"]), str(edge["edge_id"])),
     )
+    structured_edges = [
+        {
+            "edge_id": str(edge["edge_id"]),
+            "src": str(edge["src_node_id"]),
+            "relation": str(edge["relation_type"]),
+            "dst": str(edge["dst_node_id"]),
+        }
+        for edge in ordered_edges
+    ]
+    components = _evidence_components(nodes, structured_edges)
     return {
         "node_ids": nodes,
         "edge_ids": [str(edge["edge_id"]) for edge in ordered_edges],
         "relations": [str(edge["relation_type"]) for edge in ordered_edges],
+        "evidence_node_ids": nodes,
+        "evidence_edges": structured_edges,
+        "evidence_components": components,
     }
+
+
+def _evidence_components(
+    node_ids: list[str], structured_edges: list[dict[str, str]]
+) -> list[dict[str, Any]]:
+    adjacency: dict[str, set[str]] = {node_id: set() for node_id in node_ids}
+    edges_by_node: dict[str, set[str]] = {node_id: set() for node_id in node_ids}
+    for edge in structured_edges:
+        src = edge["src"]
+        dst = edge["dst"]
+        adjacency.setdefault(src, set()).add(dst)
+        adjacency.setdefault(dst, set()).add(src)
+        edges_by_node.setdefault(src, set()).add(edge["edge_id"])
+        edges_by_node.setdefault(dst, set()).add(edge["edge_id"])
+    components = []
+    seen: set[str] = set()
+    for node_id in sorted(adjacency):
+        if node_id in seen:
+            continue
+        stack = [node_id]
+        component_nodes = set()
+        component_edges = set()
+        while stack:
+            current = stack.pop()
+            if current in component_nodes:
+                continue
+            component_nodes.add(current)
+            component_edges |= edges_by_node.get(current, set())
+            for neighbor in adjacency.get(current, set()):
+                if neighbor not in component_nodes:
+                    stack.append(neighbor)
+        seen |= component_nodes
+        components.append(
+            {
+                "component_id": len(components) + 1,
+                "node_ids": sorted(component_nodes),
+                "edge_ids": sorted(component_edges),
+            }
+        )
+    return components
 
 
 def _fact_path(row: dict[str, Any], kg_build_id: str) -> dict[str, list[str]]:
@@ -1866,18 +2163,35 @@ def _answer_text(
     return f"{_format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
 
 
+def _ranked_value_tolerance(value: Any) -> str:
+    tolerance = _decimal(value) or Decimal("0")
+    return str(max(tolerance, Decimal("0.001")))
+
+
 def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]:
     if answer.get("table"):
+        if candidate["task_subtype"] in {"ranking", "industry_ranking"}:
+            return {
+                "match_type": "ranked_table",
+                "target_rows": [
+                    {
+                        "rank": item.get("rank"),
+                        "entity_id": item.get("entity_id"),
+                        "value": item.get("value"),
+                    }
+                    for item in answer["table"]
+                ],
+                "unit": answer.get("unit"),
+                "value_tolerance": _ranked_value_tolerance(answer.get("tolerance")),
+                "order_required": True,
+                "allow_extra_entities": False,
+                "allow_missing_entities": False,
+            }
         entities = [item.get("entity_id") for item in answer["table"]]
-        match_type = (
-            "set_match"
-            if candidate["task_subtype"] == "multi_condition_screening"
-            else "ranked_list"
-        )
         return {
-            "match_type": match_type,
+            "match_type": "set_match",
             "target_entity_ids": entities,
-            "order_required": match_type == "ranked_list",
+            "order_required": False,
             "allow_extra_entities": False,
             "allow_missing_entities": False,
         }
@@ -2113,10 +2427,17 @@ def _seed_templates(db: DBProtocol) -> None:
     insert_rows(db, "qa_templates", rows, columns, {"required_slots"})
 
 
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
 def _git_commit_sha() -> str:
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
+            ["git", "rev-parse", "HEAD"],
+            cwd=_repo_root(),
+            text=True,
+            stderr=subprocess.DEVNULL,
         ).strip()
     except Exception:
         return "unknown"
@@ -2127,6 +2448,7 @@ def _git_worktree_dirty() -> bool | None:
         return bool(
             subprocess.check_output(
                 ["git", "status", "--porcelain", "--untracked-files=no"],
+                cwd=_repo_root(),
                 text=True,
                 stderr=subprocess.DEVNULL,
             ).strip()
@@ -2190,6 +2512,8 @@ def _candidate_json_columns() -> set[str]:
         "source_document_ids",
         "raw_object_ids",
         "canonical_semantics",
+        "derived_payload",
+        "recomputed_payload",
         "answer_payload",
         "kg_path",
         "rejection_reasons",
@@ -2204,6 +2528,9 @@ def _evidence_json_columns() -> set[str]:
     return {
         "ordered_node_ids",
         "ordered_edge_ids",
+        "evidence_node_ids",
+        "evidence_edges",
+        "evidence_components",
         "source_fact_ids",
         "source_derived_ids",
         "raw_object_ids",
