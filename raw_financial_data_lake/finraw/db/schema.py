@@ -642,6 +642,10 @@ CREATE TABLE IF NOT EXISTS qa_builds (
             source_definition_build_id TEXT,
             document_build_id TEXT,
             config_hash TEXT,
+            template_manifest_hash TEXT,
+            generator_version TEXT,
+            git_commit_sha TEXT,
+            split_policy_hash TEXT,
             status TEXT NOT NULL,
             started_at TEXT,
             completed_at TEXT,
@@ -696,6 +700,8 @@ CREATE TABLE IF NOT EXISTS qa_samples (
             semantic_cluster_id TEXT NOT NULL,
             qa_build_id TEXT NOT NULL,
             candidate_id TEXT NOT NULL,
+            template_id TEXT,
+            template_hash TEXT,
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
@@ -841,4 +847,3 @@ SOURCE_REGISTRY_SEED = [
         "rate_limit_note": "Connector reserved for Phase 2."
     }
 ]
-

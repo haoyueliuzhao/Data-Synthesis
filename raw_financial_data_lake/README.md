@@ -129,12 +129,12 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 
 # Layer 5: deterministic QA build pinned to a validated KG version
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-qa --kg-build-id kg_20260711_062123_bc4b4394 --output-dir data/audit/qa_build
-python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-qa-jsonl --qa-build-id qa_build_20260711_114902_79dafb27 --output-dir data/qa_exports
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-qa-jsonl --qa-build-id qa_build_20260711_172613_76035fbb --output-dir data/qa_exports
 ```
 
-`build-qa` executes candidate construction, deterministic canonical question/answer generation, independent Decimal recomputation, KG evidence-path validation, semantic-group splitting, and build activation. LLM paraphrasing is disabled by default and never computes answers. Only `qa_samples.validation_status = 'passed'` rows are split or exported.
+`build-qa` executes candidate construction, deterministic canonical question/answer generation, independent Decimal recomputation, relation-aware KG evidence validation, fixed-cutoff semantic-cluster splitting, and quality-gated activation. Share and ranking tasks carry every fact in their declared scope; top-k ranking answers are recomputed from that complete scope. LLM paraphrasing is disabled by default and never computes answers. Only a `ready` build with a passed build gate can be exported.
 
-The production QA build `qa_build_20260711_114902_79dafb27` is pinned to KG V3 `kg_20260711_062123_bc4b4394`. It contains 71,180 deduplicated canonical samples; 65,319 passed all gates and were exported to Benchmark, SFT, and Trace Seed JSONL. Rejected rows remain queryable for audit and do not enter exports.
+The active production QA V2 build `qa_build_20260711_172613_76035fbb` is pinned to KG V3 `kg_20260711_062123_bc4b4394`. All 68,231 canonical samples passed validation. The split contains 41,213 train, 5,102 dev, 5,211 standard test, 5,674 entity holdout, 9,181 temporal holdout, and 1,850 complex test rows. Benchmark and Trace Seed outputs are written per split; SFT exports only `sft/train.jsonl`, preventing evaluation leakage.
 
 `candidate_facts` are reviewable document-derived candidates. They are not accepted facts and are not promoted into `atomic_facts` without explicit validation. Fact quality gates report candidate state counts and fail if any active candidate is marked `qa_eligible` or `kg_eligible`.
 

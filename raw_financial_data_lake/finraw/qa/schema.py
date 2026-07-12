@@ -19,6 +19,10 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             source_definition_build_id TEXT,
             document_build_id TEXT,
             config_hash TEXT,
+            template_manifest_hash TEXT,
+            generator_version TEXT,
+            git_commit_sha TEXT,
+            split_policy_hash TEXT,
             status TEXT NOT NULL,
             started_at {timestamp_type},
             completed_at {timestamp_type},
@@ -79,6 +83,8 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             semantic_cluster_id TEXT NOT NULL,
             qa_build_id TEXT NOT NULL,
             candidate_id TEXT NOT NULL,
+            template_id TEXT,
+            template_hash TEXT,
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
@@ -146,3 +152,23 @@ def ensure_qa_schema(db: DBProtocol) -> None:
     )
     for statement in statements:
         db.execute(statement)
+    migrations = {
+        "qa_builds": {
+            "template_manifest_hash": "TEXT",
+            "generator_version": "TEXT",
+            "git_commit_sha": "TEXT",
+            "split_policy_hash": "TEXT",
+        },
+        "qa_samples": {"template_id": "TEXT", "template_hash": "TEXT"},
+    }
+    for table, columns in migrations.items():
+        for column, column_type in columns.items():
+            try:
+                db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
+            except Exception as exc:
+                message = str(exc).lower()
+                if (
+                    "duplicate column" not in message
+                    and "already exists" not in message
+                ):
+                    raise

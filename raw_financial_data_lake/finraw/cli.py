@@ -373,12 +373,16 @@ def main() -> None:
         elif args.command == "split-qa":
             report = split_qa_samples(db, args.qa_build_id, output_dir=args.output_dir)
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+            if report.get("build_gate_status") != "passed":
+                raise RuntimeError(f"QA build gate failed: {report.get('build_gate_failures', [])}")
         elif args.command == "export-qa-jsonl":
             report = export_qa_jsonl(db, args.qa_build_id, args.output_dir)
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "build-qa":
             report = build_qa(db, config, kg_build_id=args.kg_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+            if report.get("split", {}).get("build_gate_status") != "passed":
+                raise RuntimeError(f"QA build gate failed: {report.get('split', {}).get('build_gate_failures', [])}")
         elif args.command == "validate":
             passed, failed = validate_raw_objects(db)
             print(f"Validation completed: passed={passed}, failed={failed}")

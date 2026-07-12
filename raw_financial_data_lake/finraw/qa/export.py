@@ -17,6 +17,14 @@ def export_qa_jsonl(
     build = db.fetchone("SELECT * FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,))
     if not build:
         raise RuntimeError(f"Unknown QA build: {qa_build_id}")
+    build = dict(build)
+    build_notes = json_value(build.get("notes"), {})
+    gate_status = build_notes.get("build_gate", {}).get("status")
+    if build.get("status") != "ready" or gate_status != "passed":
+        raise RuntimeError(
+            f"QA build {qa_build_id} is not exportable: "
+            f"status={build.get('status')}, build_gate={gate_status}"
+        )
     rows = db.fetchall(
         """
         SELECT s.*, e.ordered_node_ids, e.ordered_edge_ids, e.source_fact_ids,
@@ -30,18 +38,29 @@ def export_qa_jsonl(
         (qa_build_id,),
     )
     out = Path(output_dir) / qa_build_id
-    out.mkdir(parents=True, exist_ok=True)
-    benchmark = out / "benchmark.jsonl"
-    sft = out / "sft.jsonl"
-    traces = out / "trace_seeds.jsonl"
+    benchmark_dir = out / "benchmark"
+    sft_dir = out / "sft"
+    trace_dir = out / "trace_seeds"
+    for directory in (benchmark_dir, sft_dir, trace_dir):
+        directory.mkdir(parents=True, exist_ok=True)
+    splits = sorted({str(row["split"]) for row in rows})
+    benchmark_paths = {split: benchmark_dir / f"{split}.jsonl" for split in splits}
+    trace_paths = {split: trace_dir / f"{split}.jsonl" for split in splits}
+    sft_paths = {"train": sft_dir / "train.jsonl"}
+    benchmark_files = {
+        key: path.open("w", encoding="utf-8") for key, path in benchmark_paths.items()
+    }
+    trace_files = {
+        key: path.open("w", encoding="utf-8") for key, path in trace_paths.items()
+    }
+    sft_files = {
+        key: path.open("w", encoding="utf-8") for key, path in sft_paths.items()
+    }
     split_counts: Counter[str] = Counter()
-    with (
-        benchmark.open("w", encoding="utf-8") as benchmark_file,
-        sft.open("w", encoding="utf-8") as sft_file,
-        traces.open("w", encoding="utf-8") as trace_file,
-    ):
+    try:
         for raw in rows:
             row = _decode(dict(raw))
+            split = row["split"]
             metadata = {
                 "qa_group_id": row["qa_group_id"],
                 "semantic_cluster_id": row["semantic_cluster_id"],
@@ -49,9 +68,11 @@ def export_qa_jsonl(
                 "kg_build_id": build["kg_build_id"],
                 "source_fact_ids": row["source_fact_ids"],
                 "source_derived_ids": row["source_derived_ids"],
-                "split": row["split"],
+                "split": split,
+                "template_id": row.get("template_id"),
+                "template_hash": row.get("template_hash"),
             }
-            benchmark_file.write(
+            benchmark_files[split].write(
                 json.dumps(
                     {
                         "id": row["qa_id"],
@@ -61,7 +82,7 @@ def export_qa_jsonl(
                         "rubric": row["rubric"],
                         "task_type": row["task_subtype"],
                         "difficulty": row["difficulty"],
-                        "split": row["split"],
+                        "split": split,
                         "metadata": metadata,
                     },
                     ensure_ascii=False,
@@ -70,22 +91,23 @@ def export_qa_jsonl(
                 )
                 + "\n"
             )
-            sft_file.write(
-                json.dumps(
-                    {
-                        "messages": [
-                            {"role": "user", "content": row["question"]},
-                            {"role": "assistant", "content": row["answer_text"]},
-                        ],
-                        "metadata": metadata,
-                    },
-                    ensure_ascii=False,
-                    sort_keys=True,
-                    default=str,
+            if split == "train":
+                sft_files["train"].write(
+                    json.dumps(
+                        {
+                            "messages": [
+                                {"role": "user", "content": row["question"]},
+                                {"role": "assistant", "content": row["answer_text"]},
+                            ],
+                            "metadata": metadata,
+                        },
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        default=str,
+                    )
+                    + "\n"
                 )
-                + "\n"
-            )
-            trace_file.write(
+            trace_files[split].write(
                 json.dumps(
                     {
                         "question": row["question"],
@@ -100,7 +122,7 @@ def export_qa_jsonl(
                         "raw_object_ids": row["raw_object_ids"],
                         "required_operations": _operations(row["task_subtype"]),
                         "canonical_semantics": row["canonical_semantics"],
-                        "split": row["split"],
+                        "split": split,
                     },
                     ensure_ascii=False,
                     sort_keys=True,
@@ -108,13 +130,32 @@ def export_qa_jsonl(
                 )
                 + "\n"
             )
-            split_counts[row["split"]] += 1
+            split_counts[split] += 1
+    finally:
+        for handle in [
+            *benchmark_files.values(),
+            *sft_files.values(),
+            *trace_files.values(),
+        ]:
+            handle.close()
+    files = {
+        "benchmark": {
+            split: _file_info(path, split_counts[split])
+            for split, path in benchmark_paths.items()
+        },
+        "sft": {"train": _file_info(sft_paths["train"], split_counts.get("train", 0))},
+        "trace_seeds": {
+            split: _file_info(path, split_counts[split])
+            for split, path in trace_paths.items()
+        },
+    }
     manifest = {
         "qa_build_id": qa_build_id,
         "kg_build_id": build["kg_build_id"],
         "sample_count": len(rows),
         "split_counts": dict(sorted(split_counts.items())),
-        "files": [str(benchmark), str(sft), str(traces)],
+        "sft_allowed_splits": ["train"],
+        "files": files,
     }
     manifest_path = out / "manifest.json"
     manifest_path.write_text(
@@ -124,6 +165,21 @@ def export_qa_jsonl(
     )
     manifest["manifest"] = str(manifest_path)
     return manifest
+
+
+def _file_info(path: Path, row_count: int) -> dict[str, Any]:
+    import hashlib
+
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {
+        "path": str(path),
+        "rows": row_count,
+        "bytes": path.stat().st_size,
+        "sha256": digest.hexdigest(),
+    }
 
 
 def _decode(row: dict[str, Any]) -> dict[str, Any]:

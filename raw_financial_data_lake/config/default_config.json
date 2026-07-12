@@ -192,8 +192,9 @@
   "qa": {
     "quotas": {
       "single_fact_financial": 20000,
-      "single_fact_macro": 10000,
-      "single_fact_fred": 5000
+      "single_fact_fred": 5000,
+      "single_fact_worldbank": 6000,
+      "single_fact_imf": 4000
     },
     "derived_quotas": {
       "difference": 9000,
@@ -204,18 +205,18 @@
       "multi_year_argmax": 3000,
       "multi_year_argmin": 3000,
       "industry_ranking": 1600,
-      "industry_argmax": 1200,
-      "industry_argmin": 1200,
+      "industry_argmax": 0,
+      "industry_argmin": 0,
       "ranking": 150,
-      "argmax": 150,
-      "argmin": 150,
+      "argmax": 0,
+      "argmin": 0,
       "rolling_max": 50,
       "rolling_min": 50,
       "macro_time_series_argmax": 33,
       "macro_time_series_argmin": 33,
       "time_series_argmax": 17,
       "time_series_argmin": 17,
-      "multi_condition_screening": 100,
+      "multi_condition_screening": 0,
       "long_window_return": 10
     },
     "language": "en",
@@ -223,6 +224,19 @@
       "enabled": false,
       "max_per_group": 0
     },
-    "split_policy": "semantic_group_then_entity_time_task"
+    "split_policy": "semantic_cluster_then_entity_fixed_time_task",
+    "temporal_split": {
+      "cutoff_year": 2025
+    },
+    "quality_gate": {
+      "minimum_overall_pass_rate": 0.95,
+      "critical_tasks": {
+        "single_fact": 1000,
+        "yoy_growth": 1000,
+        "qoq_growth": 1000,
+        "ratio": 500
+      },
+      "max_critical_check_failures": 0
+    }
   }
 }

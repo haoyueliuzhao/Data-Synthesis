@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import uuid
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -38,6 +39,7 @@ SCOPE_DERIVED = {
     "multi_condition_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
+GENERATOR_VERSION = "2.0.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -50,6 +52,10 @@ BUILD_COLUMNS = [
     "source_definition_build_id",
     "document_build_id",
     "config_hash",
+    "template_manifest_hash",
+    "generator_version",
+    "git_commit_sha",
+    "split_policy_hash",
     "status",
     "started_at",
     "completed_at",
@@ -89,6 +95,8 @@ SAMPLE_COLUMNS = [
     "semantic_cluster_id",
     "qa_build_id",
     "candidate_id",
+    "template_id",
+    "template_hash",
     "task_family",
     "task_subtype",
     "difficulty",
@@ -155,7 +163,13 @@ def build_qa_candidates(
         "metric_build_id": kg.get("input_metric_build_id"),
         "source_definition_build_id": kg.get("input_source_definition_build_id"),
         "document_build_id": kg.get("input_document_build_id"),
-        "config_hash": _digest(policy),
+        "config_hash": _digest(policy, TEMPLATES, GENERATOR_VERSION),
+        "template_manifest_hash": _digest(TEMPLATES),
+        "generator_version": GENERATOR_VERSION,
+        "git_commit_sha": _git_commit_sha(),
+        "split_policy_hash": _digest(
+            policy.get("split_policy"), policy.get("temporal_split")
+        ),
         "status": "building_candidates",
         "started_at": _now(),
         "completed_at": None,
@@ -165,7 +179,13 @@ def build_qa_candidates(
         "quality_status": "pending",
         "is_active": False,
         "superseded_by": None,
-        "notes": {"policy": policy, "generation": "graph_path_driven_deterministic"},
+        "notes": {
+            "policy": policy,
+            "generation": "graph_path_driven_deterministic",
+            "generator_version": GENERATOR_VERSION,
+            "template_manifest_hash": _digest(TEMPLATES),
+            "git_worktree_dirty": _git_worktree_dirty(),
+        },
     }
     insert_rows(db, "qa_builds", [build], BUILD_COLUMNS, {"notes"})
 
@@ -175,13 +195,15 @@ def build_qa_candidates(
     entity_names = {
         str(row["entity_id"]): str(row["canonical_name"])
         for row in db.fetchall(
-            "SELECT entity_id, canonical_name FROM canonical_entities WHERE COALESCE(is_active, 1) = 1"
+            "SELECT entity_id, canonical_name FROM canonical_entities WHERE build_id = ?",
+            (kg["input_entity_build_id"],),
         )
     }
     metric_names = {
         str(row["metric_id"]): str(row["canonical_name"])
         for row in db.fetchall(
-            "SELECT metric_id, canonical_name FROM metrics WHERE COALESCE(is_active, 1) = 1"
+            "SELECT metric_id, canonical_name FROM metrics WHERE build_id = ?",
+            (kg["input_metric_build_id"],),
         )
     }
     raw_by_fact = {
@@ -214,9 +236,14 @@ def build_qa_candidates(
             policy["quotas"]["single_fact_financial"],
         ),
         (
-            "single_fact_macro",
-            ["worldbank_indicators", "imf_sdmx"],
-            policy["quotas"]["single_fact_macro"],
+            "single_fact_worldbank",
+            ["worldbank_indicators"],
+            policy["quotas"]["single_fact_worldbank"],
+        ),
+        (
+            "single_fact_imf",
+            ["imf_sdmx"],
+            policy["quotas"]["single_fact_imf"],
         ),
         (
             "single_fact_fred",
@@ -226,14 +253,18 @@ def build_qa_candidates(
     ]:
         rows = _load_fact_pool(db, kg, sources, quota * 5)
         for row in _sample_fact_rows(rows, quota):
-            emit(_fact_candidate(row, qa_build_id, kg_build_id, pool_name))
+            emit(_fact_candidate(db, row, qa_build_id, kg_build_id, pool_name))
 
+    scope_fact_cache: dict[tuple[Any, ...], dict[str, dict[str, Any]]] = {}
     for derived_type, quota in policy["derived_quotas"].items():
         if derived_type not in SUPPORTED_DERIVED or quota <= 0:
             continue
         for row in _load_derived_pool(db, kg, derived_type, quota):
+            if derived_type in {"share", "ranking"}:
+                row = _with_scope_inputs(db, kg, row, scope_fact_cache)
             emit(
                 _derived_candidate(
+                    db,
                     row,
                     qa_build_id,
                     kg_build_id,
@@ -373,7 +404,8 @@ def validate_qa_samples(
         SELECT s.*, c.canonical_semantics, c.answer_payload, c.kg_path,
                c.source_fact_ids, c.source_derived_ids, c.raw_object_ids
         FROM qa_samples s JOIN qa_candidates c ON c.candidate_id = s.candidate_id
-        WHERE s.qa_build_id = ? ORDER BY s.qa_id
+        WHERE s.qa_build_id = ? AND s.validation_status = 'pending'
+        ORDER BY s.qa_id
         """,
             (qa_build_id,),
         )
@@ -400,17 +432,10 @@ def validate_qa_samples(
             for edge_id in json_value(row.get("kg_path"), {}).get("edge_ids", [])
         }
     )
-    existing_nodes = _existing_graph_ids(
-        db, "kg_nodes", "node_id", build["kg_build_id"], node_ids
-    )
-    existing_edges = _existing_graph_ids(
-        db, "kg_edges", "edge_id", build["kg_build_id"], edge_ids
-    )
+    existing_nodes = _load_graph_nodes(db, build["kg_build_id"], node_ids)
+    existing_edges = _load_graph_edges(db, build["kg_build_id"], edge_ids)
     checks: list[dict[str, Any]] = []
     status_updates: list[tuple[str, str]] = []
-    passed = 0
-    failed = 0
-    failure_counts: Counter[str] = Counter()
     for row in rows:
         decoded = _decode_validation_row(row)
         sample_checks = _validate_one(
@@ -422,13 +447,6 @@ def validate_qa_samples(
             else "rejected"
         )
         status_updates.append((status, decoded["qa_id"]))
-        if status == "passed":
-            passed += 1
-        else:
-            failed += 1
-            for check in sample_checks:
-                if check["check_status"] != "passed":
-                    failure_counts[check["check_name"]] += 1
         checks.extend(sample_checks)
         if len(checks) >= batch_size:
             insert_rows(
@@ -459,9 +477,35 @@ def validate_qa_samples(
             "UPDATE qa_samples SET validation_status = ? WHERE qa_id = ?",
             status_updates,
         )
+    total = _scalar(
+        db, "SELECT COUNT(*) AS c FROM qa_samples WHERE qa_build_id = ?", [qa_build_id]
+    )
+    passed = _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM qa_samples WHERE qa_build_id = ? AND validation_status = 'passed'",
+        [qa_build_id],
+    )
+    failed = _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM qa_samples WHERE qa_build_id = ? AND validation_status = 'rejected'",
+        [qa_build_id],
+    )
+    pending = total - passed - failed
+    failure_counts = {
+        str(item["check_name"]): int(item["c"])
+        for item in db.fetchall(
+            """
+            SELECT check_name, COUNT(*) AS c
+            FROM qa_quality_checks
+            WHERE qa_build_id = ? AND check_status <> 'passed'
+            GROUP BY check_name ORDER BY check_name
+            """,
+            (qa_build_id,),
+        )
+    }
     quality_status = (
         "passed"
-        if passed > 0 and failed == 0
+        if passed > 0 and failed == 0 and pending == 0
         else ("partial" if passed > 0 else "failed")
     )
     db.execute(
@@ -471,12 +515,14 @@ def validate_qa_samples(
     report = {
         "qa_build_id": qa_build_id,
         "kg_build_id": build["kg_build_id"],
-        "sample_count": len(rows),
+        "sample_count": total,
+        "resumed_sample_count": len(rows),
         "passed_count": passed,
         "rejected_count": failed,
-        "pass_rate": passed / len(rows) if rows else 0,
+        "pending_count": pending,
+        "pass_rate": passed / total if total else 0,
         "quality_status": quality_status,
-        "failure_counts": dict(sorted(failure_counts.items())),
+        "failure_counts": failure_counts,
     }
     return _write_report(report, output_dir, "qa_quality_report")
 
@@ -488,6 +534,9 @@ def split_qa_samples(
     output_dir: str | None = None,
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
+    build = _qa_build(db, qa_build_id)
+    policy = build.get("notes", {}).get("policy", {})
+    cutoff_year = int(policy.get("temporal_split", {}).get("cutoff_year", 2025))
     db.execute(
         "UPDATE qa_samples SET split = NULL WHERE qa_build_id = ? AND validation_status <> 'passed'",
         (qa_build_id,),
@@ -496,39 +545,38 @@ def split_qa_samples(
         dict(row)
         for row in db.fetchall(
             """
-        SELECT s.qa_id, s.qa_group_id, s.task_subtype, c.entity_ids, c.time_scope
+        SELECT s.qa_id, s.qa_group_id, s.semantic_cluster_id, s.task_subtype,
+               c.entity_ids, c.time_scope
         FROM qa_samples s JOIN qa_candidates c ON c.candidate_id = s.candidate_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'passed'
-        ORDER BY s.qa_group_id, s.qa_id
+        ORDER BY s.semantic_cluster_id, s.qa_group_id, s.qa_id
         """,
             (qa_build_id,),
         )
     ]
-    group_split: dict[str, str] = {}
+    cluster_split: dict[str, str] = {}
     split_counts: Counter[str] = Counter()
+    task_counts: Counter[str] = Counter()
     challenge = SCOPE_DERIVED | {"rolling_max", "rolling_min"}
     split_updates: list[tuple[str, str]] = []
     for row in rows:
-        group = row["qa_group_id"]
-        if group not in group_split:
-            bucket = int(hashlib.sha1(group.encode("utf-8")).hexdigest()[:8], 16) % 100
+        cluster = row.get("semantic_cluster_id") or row["qa_group_id"]
+        if cluster not in cluster_split:
+            bucket = (
+                int(hashlib.sha1(cluster.encode("utf-8")).hexdigest()[:8], 16) % 100
+            )
             entities = json_value(row.get("entity_ids"), [])
             time_scope = json_value(row.get("time_scope"), {})
+            entity_holdout = any(
+                int(hashlib.sha1(str(entity).encode("utf-8")).hexdigest()[:8], 16) % 20
+                == 0
+                for entity in entities
+            )
             if row["task_subtype"] in challenge:
                 split = "test_complex"
-            elif (
-                entities
-                and int(
-                    hashlib.sha1(str(entities[0]).encode("utf-8")).hexdigest()[:8], 16
-                )
-                % 20
-                == 0
-            ):
+            elif entity_holdout:
                 split = "test_entity_holdout"
-            elif (
-                _latest_year(time_scope)
-                and _latest_year(time_scope) >= datetime.now(timezone.utc).year - 1
-            ):
+            elif _latest_year(time_scope) and _latest_year(time_scope) >= cutoff_year:
                 split = "test_temporal_holdout"
             elif bucket < 80:
                 split = "train"
@@ -536,15 +584,53 @@ def split_qa_samples(
                 split = "dev"
             else:
                 split = "test_standard"
-            group_split[group] = split
-        split_counts[group_split[group]] += 1
-        split_updates.append((group_split[group], row["qa_id"]))
+            cluster_split[cluster] = split
+        split_counts[cluster_split[cluster]] += 1
+        task_counts[row["task_subtype"]] += 1
+        split_updates.append((cluster_split[cluster], row["qa_id"]))
     execute_many(db, "UPDATE qa_samples SET split = ? WHERE qa_id = ?", split_updates)
-    db.execute(
-        "UPDATE qa_builds SET status = ?, is_active = ? WHERE qa_build_id = ?",
-        ("ready", True, qa_build_id),
+    gate_policy = policy.get("quality_gate", {})
+    sample_count = int(build.get("sample_count") or 0)
+    pass_rate = len(rows) / sample_count if sample_count else 0.0
+    failures = []
+    minimum_rate = float(gate_policy.get("minimum_overall_pass_rate", 0.95))
+    if pass_rate < minimum_rate:
+        failures.append(f"pass_rate={pass_rate:.6f} < {minimum_rate:.6f}")
+    for task, minimum in gate_policy.get("critical_tasks", {}).items():
+        if task_counts.get(task, 0) < int(minimum):
+            failures.append(
+                f"critical_task_{task}={task_counts.get(task, 0)} < {int(minimum)}"
+            )
+    critical_checks = _scalar(
+        db,
+        """
+        SELECT COUNT(*) AS c FROM qa_quality_checks
+        WHERE qa_build_id = ? AND check_status <> 'passed'
+          AND check_name IN (
+              'structure', 'fact_membership', 'evidence_path', 'evidence_semantics',
+              'semantic_slots', 'independent_recompute', 'scope_completeness',
+              'no_answer_leakage'
+          )
+        """,
+        [qa_build_id],
     )
-    if rows:
+    max_critical = int(gate_policy.get("max_critical_check_failures", 0))
+    if critical_checks > max_critical:
+        failures.append(f"critical_check_failures={critical_checks} > {max_critical}")
+    gate_passed = bool(rows) and not failures
+    notes = dict(build.get("notes") or {})
+    notes["build_gate"] = {
+        "status": "passed" if gate_passed else "failed",
+        "failures": failures,
+        "pass_rate": pass_rate,
+        "critical_check_failures": critical_checks,
+        "temporal_cutoff_year": cutoff_year,
+    }
+    if gate_passed:
+        db.execute(
+            "UPDATE qa_builds SET status = ?, is_active = ?, notes = ? WHERE qa_build_id = ?",
+            ("ready", True, _db_json(db, notes), qa_build_id),
+        )
         old = db.fetchall(
             "SELECT qa_build_id FROM qa_builds WHERE is_active = ? AND qa_build_id <> ?",
             (True, qa_build_id),
@@ -554,11 +640,20 @@ def split_qa_samples(
                 "UPDATE qa_builds SET is_active = ?, superseded_by = ? WHERE qa_build_id = ?",
                 (False, qa_build_id, item["qa_build_id"]),
             )
+    else:
+        db.execute(
+            "UPDATE qa_builds SET status = ?, is_active = ?, notes = ? WHERE qa_build_id = ?",
+            ("quality_failed", False, _db_json(db, notes), qa_build_id),
+        )
     report = {
         "qa_build_id": qa_build_id,
         "passed_sample_count": len(rows),
-        "qa_group_count": len(group_split),
+        "semantic_cluster_count": len(cluster_split),
+        "temporal_cutoff_year": cutoff_year,
         "split_counts": dict(sorted(split_counts.items())),
+        "task_counts": dict(sorted(task_counts.items())),
+        "build_gate_status": "passed" if gate_passed else "failed",
+        "build_gate_failures": failures,
     }
     return _write_report(report, output_dir, "qa_split_report")
 
@@ -597,7 +692,11 @@ def build_qa(
 
 
 def _fact_candidate(
-    row: dict[str, Any], qa_build_id: str, kg_build_id: str, pool_name: str
+    db: DBProtocol,
+    row: dict[str, Any],
+    qa_build_id: str,
+    kg_build_id: str,
+    pool_name: str,
 ) -> dict[str, Any]:
     reasons = []
     for key, reason in [
@@ -630,7 +729,7 @@ def _fact_candidate(
     }
     stable = "qac_" + _digest(semantics)
     fact_id = str(row.get("fact_id"))
-    path = _fact_path(row, kg_build_id)
+    path = _kg_path_from_graph(db, kg_build_id, fact_ids=[fact_id])
     return {
         "candidate_id": f"{stable}__{qa_build_id}",
         "stable_candidate_id": stable,
@@ -655,6 +754,7 @@ def _fact_candidate(
 
 
 def _derived_candidate(
+    db: DBProtocol,
     row: dict[str, Any],
     qa_build_id: str,
     kg_build_id: str,
@@ -699,6 +799,10 @@ def _derived_candidate(
         reasons.append("missing_scope")
     if row.get("output_value") is None and not row["output_table"]:
         reasons.append("missing_answer")
+    if derived_type == "share" and not row.get("share_scope_complete"):
+        reasons.append("incomplete_share_scope_inputs")
+    if derived_type == "ranking" and not row.get("ranking_scope_complete"):
+        reasons.append("incomplete_ranking_scope_inputs")
     semantics = {
         "operation": derived_type,
         "entity_ids": entity_ids,
@@ -712,11 +816,24 @@ def _derived_candidate(
             for metric_id in metric_ids
         },
         "metric_scope": metric_scope,
+        "entity_scope": entity_scope,
         "time_scope": row["time_scope"],
         "scope_type": row.get("scope_type"),
         "scope_id": row.get("scope_id"),
         "scope_definition": row.get("scope_definition"),
         "calculation_code": row.get("calculation_code"),
+        "top_k": len(row["output_table"])
+        if derived_type in {"ranking", "industry_ranking"}
+        else None,
+        "scope_input_complete": bool(row.get(f"{derived_type}_scope_complete"))
+        if derived_type in {"share", "ranking"}
+        else None,
+        "answer_basis": "pinned_scope_fact_recompute"
+        if row.get("scope_recomputed")
+        else "pinned_derived_fact",
+        "source_derived_output_value": str(row.get("source_derived_output_value"))
+        if row.get("source_derived_output_value") is not None
+        else None,
         "expected_table": row["output_table"]
         if derived_type == "multi_condition_screening"
         else [],
@@ -767,7 +884,18 @@ def _derived_candidate(
         "raw_object_ids": raw_object_ids,
         "canonical_semantics": semantics,
         "answer_payload": answer,
-        "kg_path": _derived_path(row, kg_build_id),
+        "kg_path": _kg_path_from_graph(
+            db,
+            kg_build_id,
+            derived_id=row["derived_id"],
+            fact_ids=row["input_fact_ids"],
+            supplemental_fact_ids=[
+                fact_id
+                for fact_id in row["input_fact_ids"]
+                if fact_id
+                not in row.get("derived_input_fact_ids", row["input_fact_ids"])
+            ],
+        ),
         "eligibility_status": "eligible" if not reasons else "rejected",
         "rejection_reasons": reasons,
     }
@@ -809,6 +937,8 @@ def _sample_from_candidate(
         "semantic_cluster_id": cluster_id,
         "qa_build_id": candidate["qa_build_id"],
         "candidate_id": candidate["candidate_id"],
+        "template_id": template["template_id"],
+        "template_hash": _digest(template),
         "task_family": candidate["task_family"],
         "task_subtype": candidate["task_subtype"],
         "difficulty": candidate["difficulty"],
@@ -853,8 +983,8 @@ def _validate_one(
     row: dict[str, Any],
     build: dict[str, Any],
     facts: dict[str, dict[str, Any]],
-    existing_nodes: set[str],
-    existing_edges: set[str],
+    existing_nodes: dict[str, str],
+    existing_edges: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
     checks = []
 
@@ -894,8 +1024,12 @@ def _validate_one(
         "All source facts must belong to the pinned graph-ready fact build.",
     )
     path = row["kg_path"]
-    missing_nodes = sorted(set(path.get("node_ids", [])) - existing_nodes)
-    missing_edges = sorted(set(path.get("edge_ids", [])) - existing_edges)
+    missing_nodes = sorted(
+        node_id for node_id in path.get("node_ids", []) if node_id not in existing_nodes
+    )
+    missing_edges = sorted(
+        edge_id for edge_id in path.get("edge_ids", []) if edge_id not in existing_edges
+    )
     add(
         "evidence_path",
         bool(path.get("node_ids") and path.get("edge_ids"))
@@ -904,6 +1038,16 @@ def _validate_one(
         {"missing_nodes": missing_nodes, "missing_edges": missing_edges},
         {"missing_nodes": [], "missing_edges": []},
         "Every evidence path node and edge must exist in the pinned KG build.",
+    )
+    semantic_ok, semantic_detail = _validate_evidence_semantics(
+        row["task_subtype"], path, existing_nodes, existing_edges
+    )
+    add(
+        "evidence_semantics",
+        semantic_ok,
+        semantic_detail,
+        {"missing_relations": [], "invalid_edges": []},
+        "Evidence edges must connect valid endpoint types and include task-required relations.",
     )
     add(
         "semantic_slots",
@@ -1005,6 +1149,27 @@ def _recompute(
             return {}, "Ratio inputs are incomplete or denominator is zero."
         result = numerator / denominator * Decimal("100")
         unit = "percent"
+    elif task == "share" and values:
+        target_entity = semantics.get("entity_scope", {}).get("entity_id")
+        positive = [(item, value) for item, value in values if value > 0]
+        target = next(
+            (
+                value
+                for item, value in positive
+                if item.get("entity_id") == target_entity
+            ),
+            None,
+        )
+        denominator = sum((value for _, value in positive), Decimal("0"))
+        if (
+            target is None
+            or denominator == 0
+            or not semantics.get("scope_input_complete")
+        ):
+            return {}, "Share scope inputs are incomplete or denominator is zero."
+        result = target / denominator * Decimal("100")
+        unit = "percent"
+        currency = None
     elif task == "long_window_return" and len(ordered) == 2 and ordered[0][1] != 0:
         result = (ordered[1][1] / ordered[0][1] - Decimal("1")) * Decimal("100")
         unit = "percent"
@@ -1023,6 +1188,7 @@ def _recompute(
             "result_period": result_period,
         }, "Recomputed extrema over every declared input fact."
     elif task in {"ranking", "industry_ranking"} and values:
+        top_k = int(semantics.get("top_k") or len(values))
         table = [
             {
                 "rank": index + 1,
@@ -1030,7 +1196,7 @@ def _recompute(
                 "value": _number(value),
             }
             for index, (item, value) in enumerate(
-                sorted(values, key=lambda pair: pair[1], reverse=True)
+                sorted(values, key=lambda pair: pair[1], reverse=True)[:top_k]
             )
         ]
         return {
@@ -1067,6 +1233,11 @@ def _answers_match(
 ) -> bool:
     if not observed:
         return False
+    for field in ("unit", "currency"):
+        if expected.get(field) is not None and expected.get(field) != observed.get(
+            field
+        ):
+            return False
     if expected.get("value") is not None:
         left = _decimal(expected.get("value"))
         right = _decimal(observed.get("value"))
@@ -1083,13 +1254,26 @@ def _answers_match(
         "winning_entity_id"
     ] != observed.get("winning_entity_id"):
         return False
-    if expected.get("table"):
-        expected_entities = [item.get("entity_id") for item in expected["table"]]
-        observed_entities = [
-            item.get("entity_id") for item in observed.get("table", [])
-        ]
-        if expected_entities != observed_entities[: len(expected_entities)]:
+    if expected.get("table") is not None:
+        expected_table = expected.get("table") or []
+        observed_table = observed.get("table") or []
+        if len(expected_table) != len(observed_table):
             return False
+        tolerance = _decimal(expected.get("tolerance")) or Decimal("0.000001")
+        for expected_row, observed_row in zip(expected_table, observed_table):
+            if expected_row.get("entity_id") != observed_row.get("entity_id"):
+                return False
+            if expected_row.get("rank") is not None and expected_row.get(
+                "rank"
+            ) != observed_row.get("rank"):
+                return False
+            if expected_row.get("value") is not None:
+                left = _decimal(expected_row.get("value"))
+                right = _decimal(observed_row.get("value"))
+                if left is None or right is None:
+                    return False
+                if abs(left - right) > max(tolerance, abs(left) * Decimal("0.000001")):
+                    return False
     return True
 
 
@@ -1103,8 +1287,8 @@ def _load_fact_pool(
                m.canonical_name AS metric_name, m.metric_category,
                ro.original_url, ro.storage_uri, ro.content_sha256
         FROM standardized_facts sf
-        JOIN canonical_entities ce ON ce.entity_id = sf.entity_id
-        JOIN metrics m ON m.metric_id = sf.metric_id
+        JOIN canonical_entities ce ON ce.entity_id = sf.entity_id AND ce.build_id = ?
+        JOIN metrics m ON m.metric_id = sf.metric_id AND m.build_id = ?
         LEFT JOIN raw_objects ro ON ro.raw_object_id = sf.raw_object_id
         WHERE sf.build_id = ? AND COALESCE(sf.graph_ready, 0) = 1
           AND sf.verification_status IN ('single_source', 'cross_verified')
@@ -1113,9 +1297,152 @@ def _load_fact_pool(
           AND sf.normalized_value IS NOT NULL AND sf.normalized_unit IS NOT NULL
         ORDER BY sf.fact_id LIMIT ?
         """,
-        [kg["input_fact_build_id"], *source_ids, limit],
+        [
+            kg["input_entity_build_id"],
+            kg["input_metric_build_id"],
+            kg["input_fact_build_id"],
+            *source_ids,
+            limit,
+        ],
     )
     return [dict(row) for row in rows]
+
+
+def _with_scope_inputs(
+    db: DBProtocol,
+    kg: dict[str, Any],
+    row: dict[str, Any],
+    cache: dict[tuple[Any, ...], dict[str, dict[str, Any]]] | None = None,
+) -> dict[str, Any]:
+    out = dict(row)
+    derived_type = str(out.get("derived_type"))
+    entity_ids = json_value(out.get("scope_entity_ids"), [])
+    metric_scope = json_value(out.get("metric_scope"), {})
+    entity_scope = json_value(out.get("entity_scope"), {})
+    time_scope = json_value(out.get("time_scope"), {})
+    input_ids = json_value(out.get("input_fact_ids"), [])
+    out["derived_input_fact_ids"] = list(input_ids)
+    if not entity_ids or not metric_scope.get("metric_id") or not input_ids:
+        out["share_scope_complete"] = False
+        return out
+    cache_key = (
+        derived_type,
+        kg["input_fact_build_id"],
+        out.get("scope_id"),
+        metric_scope["metric_id"],
+        time_scope.get("basis"),
+        time_scope.get("year"),
+        tuple(sorted(entity_ids)),
+    )
+    by_entity = cache.get(cache_key) if cache is not None else None
+    if by_entity is None:
+        seed = db.fetchone(
+            "SELECT source_id, normalized_unit, normalized_currency FROM standardized_facts WHERE build_id = ? AND fact_id = ?",
+            (kg["input_fact_build_id"], input_ids[0]),
+        )
+        if not seed:
+            out["share_scope_complete"] = False
+            return out
+        placeholders = ",".join("?" for _ in entity_ids)
+        predicates = [
+            "build_id = ?",
+            "COALESCE(graph_ready, 0) = 1",
+            "verification_status IN ('single_source', 'cross_verified')",
+            "metric_id = ?",
+            "source_id = ?",
+            "normalized_unit = ?",
+            "COALESCE(normalized_currency, '') = COALESCE(?, '')",
+            f"entity_id IN ({placeholders})",
+        ]
+        if derived_type == "share":
+            predicates.append("CAST(normalized_value AS NUMERIC) > 0")
+        params: list[Any] = [
+            kg["input_fact_build_id"],
+            metric_scope["metric_id"],
+            seed["source_id"],
+            seed["normalized_unit"],
+            seed["normalized_currency"],
+            *entity_ids,
+        ]
+        year = time_scope.get("year")
+        if year is not None:
+            column = (
+                "fiscal_year"
+                if time_scope.get("basis") == "fiscal_year"
+                else "calendar_year"
+            )
+            predicates.append(f"{column} = ?")
+            params.append(int(year))
+        rows = [
+            dict(item)
+            for item in db.fetchall(
+                f"SELECT fact_id, entity_id, normalized_value, verification_status, confidence_score FROM standardized_facts WHERE {' AND '.join(predicates)} ORDER BY entity_id, fact_id",
+                params,
+            )
+        ]
+        by_entity = {}
+        for item in rows:
+            entity_id = str(item["entity_id"])
+            current = by_entity.get(entity_id)
+            score = (
+                item.get("verification_status") == "cross_verified",
+                float(item.get("confidence_score") or 0),
+                str(item["fact_id"]),
+            )
+            current_score = (
+                (
+                    current.get("verification_status") == "cross_verified",
+                    float(current.get("confidence_score") or 0),
+                    str(current["fact_id"]),
+                )
+                if current
+                else None
+            )
+            if current is None or score > current_score:
+                by_entity[entity_id] = item
+        if cache is not None:
+            cache[cache_key] = by_entity
+    out["input_fact_ids"] = [
+        by_entity[entity]["fact_id"] for entity in sorted(by_entity)
+    ]
+    complete = set(by_entity) == set(entity_ids) and (
+        derived_type != "share" or entity_scope.get("entity_id") in by_entity
+    )
+    out[f"{derived_type}_scope_complete"] = complete
+    if complete and derived_type == "share":
+        target_entity = str(entity_scope["entity_id"])
+        denominator = sum(
+            (_decimal(item["normalized_value"]) or Decimal("0"))
+            for item in by_entity.values()
+        )
+        target_value = _decimal(by_entity[target_entity]["normalized_value"])
+        if denominator > 0 and target_value is not None:
+            out["source_derived_output_value"] = out.get("output_value")
+            out["output_value"] = target_value / denominator * Decimal("100")
+            out["scope_recomputed"] = True
+        else:
+            out["share_scope_complete"] = False
+    elif complete and derived_type == "ranking":
+        top_k = len(json_value(out.get("output_table"), [])) or 10
+        ranked = sorted(
+            by_entity.values(),
+            key=lambda item: (
+                _decimal(item.get("normalized_value")) or Decimal("-Infinity"),
+                str(item.get("entity_id")),
+            ),
+            reverse=True,
+        )[:top_k]
+        out["output_table"] = [
+            {
+                "rank": rank,
+                "entity_id": item["entity_id"],
+                "value": _number(_decimal(item["normalized_value"])),
+                "fact_id": item["fact_id"],
+            }
+            for rank, item in enumerate(ranked, start=1)
+        ]
+        out["scope_recomputed"] = True
+    return out
 
 
 def _load_derived_pool(
@@ -1157,6 +1484,101 @@ def _load_facts_by_id(
     return out
 
 
+EDGE_ENDPOINT_TYPES = {
+    "HAS_FACT": ("Entity", "Fact"),
+    "MEASURES": ("Fact", "Metric"),
+    "IN_PERIOD": ({"Fact", "DerivedFact"}, "TimePeriod"),
+    "FROM_SOURCE": ({"Fact", "DerivedFact"}, "DataSource"),
+    "TRACED_TO": ("Fact", "RawObject"),
+    "USES_SOURCE_DEFINITION": ("Fact", "SourceDefinition"),
+    "DERIVED_FROM": ("DerivedFact", "Fact"),
+    "ABOUT_ENTITY": ("DerivedFact", "Entity"),
+    "USES_METRIC": ("DerivedFact", "Metric"),
+    "HAS_SCOPE": ("DerivedFact", "EntitySet"),
+    "CONTAINS_ENTITY": ("EntitySet", "Entity"),
+}
+
+
+def _load_graph_nodes(
+    db: DBProtocol, kg_build_id: str, node_ids: list[str]
+) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for batch in chunks(node_ids, 1000):
+        placeholders = ",".join("?" for _ in batch)
+        for row in db.fetchall(
+            f"SELECT node_id, node_type FROM kg_nodes WHERE kg_build_id = ? AND node_id IN ({placeholders})",
+            [kg_build_id, *batch],
+        ):
+            out[str(row["node_id"])] = str(row["node_type"])
+    return out
+
+
+def _load_graph_edges(
+    db: DBProtocol, kg_build_id: str, edge_ids: list[str]
+) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for batch in chunks(edge_ids, 1000):
+        placeholders = ",".join("?" for _ in batch)
+        for raw in db.fetchall(
+            f"SELECT edge_id, src_node_id, dst_node_id, relation_type FROM kg_edges WHERE kg_build_id = ? AND edge_id IN ({placeholders})",
+            [kg_build_id, *batch],
+        ):
+            row = dict(raw)
+            out[str(row["edge_id"])] = row
+    return out
+
+
+def _validate_evidence_semantics(
+    task_subtype: str,
+    path: dict[str, Any],
+    nodes: dict[str, str],
+    edges: dict[str, dict[str, Any]],
+) -> tuple[bool, dict[str, Any]]:
+    path_nodes = set(path.get("node_ids", []))
+    relations = set()
+    invalid_edges = []
+    for edge_id in path.get("edge_ids", []):
+        edge = edges.get(edge_id)
+        if not edge:
+            continue
+        src = str(edge["src_node_id"])
+        dst = str(edge["dst_node_id"])
+        relation = str(edge["relation_type"])
+        relations.add(relation)
+        expected = EDGE_ENDPOINT_TYPES.get(relation)
+        if src not in path_nodes or dst not in path_nodes or not expected:
+            invalid_edges.append(edge_id)
+            continue
+        src_expected, dst_expected = expected
+        src_types = (
+            {src_expected} if isinstance(src_expected, str) else set(src_expected)
+        )
+        dst_types = (
+            {dst_expected} if isinstance(dst_expected, str) else set(dst_expected)
+        )
+        if nodes.get(src) not in src_types or nodes.get(dst) not in dst_types:
+            invalid_edges.append(edge_id)
+    if task_subtype == "single_fact":
+        required = {
+            "HAS_FACT",
+            "MEASURES",
+            "IN_PERIOD",
+            "FROM_SOURCE",
+            "TRACED_TO",
+            "USES_SOURCE_DEFINITION",
+        }
+    else:
+        required = {"DERIVED_FROM", "USES_METRIC", "IN_PERIOD"}
+        if task_subtype in SCOPE_DERIVED | {"share"}:
+            required |= {"HAS_SCOPE", "CONTAINS_ENTITY"}
+    missing_relations = sorted(required - relations)
+    detail = {
+        "missing_relations": missing_relations,
+        "invalid_edges": sorted(invalid_edges),
+    }
+    return not missing_relations and not invalid_edges, detail
+
+
 def _existing_graph_ids(
     db: DBProtocol,
     table: str,
@@ -1191,8 +1613,8 @@ def _raw_objects_for_facts(db: DBProtocol, fact_ids: list[str]) -> list[str]:
 
 
 def _sample_fact_rows(rows: list[dict[str, Any]], quota: int) -> list[dict[str, Any]]:
-    selected = []
-    buckets: Counter[tuple[Any, ...]] = Counter()
+    frequency_buckets: Counter[tuple[Any, ...]] = Counter()
+    strata: dict[tuple[str, str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         frequency = str(row.get("frequency") or "").lower()
         period = str(row.get("period_end") or row.get("as_of_date") or "")
@@ -1205,13 +1627,109 @@ def _sample_fact_rows(rows: list[dict[str, Any]], quota: int) -> list[dict[str, 
         else:
             key = (row.get("entity_id"), row.get("metric_id"), period)
             cap = 1
-        if buckets[key] >= cap:
+        if frequency_buckets[key] >= cap:
             continue
-        buckets[key] += 1
-        selected.append(row)
-        if len(selected) >= quota:
+        frequency_buckets[key] += 1
+        stratum = (
+            str(row.get("source_id") or ""),
+            str(row.get("metric_id") or ""),
+            str(row.get("entity_id") or ""),
+        )
+        strata[stratum].append(row)
+    selected = []
+    depth = 0
+    ordered_strata = sorted(strata)
+    while len(selected) < quota:
+        added = False
+        for stratum in ordered_strata:
+            if depth < len(strata[stratum]):
+                selected.append(strata[stratum][depth])
+                added = True
+                if len(selected) >= quota:
+                    break
+        if not added:
             break
+        depth += 1
     return selected
+
+
+def _kg_path_from_graph(
+    db: DBProtocol,
+    kg_build_id: str,
+    *,
+    fact_ids: list[str],
+    derived_id: str | None = None,
+    supplemental_fact_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    if derived_id:
+        seed_nodes = [f"derived_fact:{derived_id}@@{kg_build_id}"]
+        seed_nodes.extend(
+            f"fact:{fact_id}@@{kg_build_id}"
+            for fact_id in (supplemental_fact_ids or [])
+        )
+    else:
+        seed_nodes = [f"fact:{fact_id}@@{kg_build_id}" for fact_id in fact_ids]
+    relations = [
+        "HAS_FACT",
+        "MEASURES",
+        "IN_PERIOD",
+        "FROM_SOURCE",
+        "TRACED_TO",
+        "USES_SOURCE_DEFINITION",
+        "DERIVED_FROM",
+        "ABOUT_ENTITY",
+        "USES_METRIC",
+        "HAS_SCOPE",
+    ]
+    edges: dict[str, dict[str, Any]] = {}
+    for batch in chunks(seed_nodes, 300):
+        placeholders = ",".join("?" for _ in batch)
+        relation_placeholders = ",".join("?" for _ in relations)
+        for direction in ("src_node_id", "dst_node_id"):
+            sql = f"""
+                SELECT edge_id, src_node_id, dst_node_id, relation_type
+                FROM kg_edges
+                WHERE kg_build_id = ?
+                  AND {direction} IN ({placeholders})
+                  AND relation_type IN ({relation_placeholders})
+                ORDER BY relation_type, edge_id
+            """
+            params = [kg_build_id, *batch, *relations]
+            for raw in db.fetchall(sql, params):
+                edge = dict(raw)
+                edges[str(edge["edge_id"])] = edge
+    scope_nodes = sorted(
+        {
+            str(edge["dst_node_id"])
+            for edge in edges.values()
+            if edge["relation_type"] == "HAS_SCOPE"
+        }
+    )
+    for batch in chunks(scope_nodes, 300):
+        placeholders = ",".join("?" for _ in batch)
+        for raw in db.fetchall(
+            f"SELECT edge_id, src_node_id, dst_node_id, relation_type FROM kg_edges WHERE kg_build_id = ? AND src_node_id IN ({placeholders}) AND relation_type = 'CONTAINS_ENTITY' ORDER BY edge_id",
+            [kg_build_id, *batch],
+        ):
+            edge = dict(raw)
+            edges[str(edge["edge_id"])] = edge
+    nodes = sorted(
+        {
+            node_id
+            for edge in edges.values()
+            for node_id in (str(edge["src_node_id"]), str(edge["dst_node_id"]))
+        }
+        | set(seed_nodes)
+    )
+    ordered_edges = sorted(
+        edges.values(),
+        key=lambda edge: (str(edge["relation_type"]), str(edge["edge_id"])),
+    )
+    return {
+        "node_ids": nodes,
+        "edge_ids": [str(edge["edge_id"]) for edge in ordered_edges],
+        "relations": [str(edge["relation_type"]) for edge in ordered_edges],
+    }
 
 
 def _fact_path(row: dict[str, Any], kg_build_id: str) -> dict[str, list[str]]:
@@ -1316,6 +1834,7 @@ def _question_slots(
         else "lowest",
         "scope": semantics.get("scope_definition")
         or "the explicitly configured data scope",
+        "top_k": str(len(candidate.get("answer_payload", {}).get("table") or [])),
     }
 
 
@@ -1323,6 +1842,15 @@ def _answer_text(
     candidate: dict[str, Any], answer: dict[str, Any], entity_names: dict[str, str]
 ) -> str:
     if answer.get("table"):
+        if candidate["task_subtype"] in {"ranking", "industry_ranking"}:
+            unit = answer.get("unit") or ""
+            rows = []
+            for index, item in enumerate(answer["table"], start=1):
+                rank = item.get("rank") or index
+                name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
+                value = _format_value(item.get("value"))
+                rows.append(f"{rank}. {name}: {value} {unit}".strip())
+            return "; ".join(rows)
         entities = [
             entity_names.get(item.get("entity_id"), item.get("entity_id"))
             for item in answer["table"]
@@ -1500,7 +2028,8 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
     quotas = configured.get("quotas", {})
     defaults = {
         "single_fact_financial": 20000,
-        "single_fact_macro": 10000,
+        "single_fact_worldbank": 6000,
+        "single_fact_imf": 4000,
         "single_fact_fred": 5000,
     }
     derived_defaults = {
@@ -1512,18 +2041,18 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "multi_year_argmax": 3000,
         "multi_year_argmin": 3000,
         "industry_ranking": 1600,
-        "industry_argmax": 1200,
-        "industry_argmin": 1200,
+        "industry_argmax": 0,
+        "industry_argmin": 0,
         "ranking": 150,
-        "argmax": 150,
-        "argmin": 150,
+        "argmax": 0,
+        "argmin": 0,
         "rolling_max": 50,
         "rolling_min": 50,
         "macro_time_series_argmax": 33,
         "macro_time_series_argmin": 33,
         "time_series_argmax": 17,
         "time_series_argmin": 17,
-        "multi_condition_screening": 100,
+        "multi_condition_screening": 0,
         "long_window_return": 10,
     }
     return {
@@ -1535,6 +2064,23 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "language": "en",
         "forecast_policy": "exclude_historical_questions",
         "generation_method": "deterministic_template",
+        "temporal_split": configured.get("temporal_split", {"cutoff_year": 2025}),
+        "split_policy": configured.get(
+            "split_policy", "semantic_cluster_then_entity_fixed_time_task"
+        ),
+        "quality_gate": configured.get(
+            "quality_gate",
+            {
+                "minimum_overall_pass_rate": 0.95,
+                "critical_tasks": {
+                    "single_fact": 1000,
+                    "yoy_growth": 1000,
+                    "qoq_growth": 1000,
+                    "ratio": 500,
+                },
+                "max_critical_check_failures": 0,
+            },
+        ),
     }
 
 
@@ -1565,6 +2111,28 @@ def _seed_templates(db: DBProtocol) -> None:
         for item in TEMPLATES
     ]
     insert_rows(db, "qa_templates", rows, columns, {"required_slots"})
+
+
+def _git_commit_sha() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except Exception:
+        return "unknown"
+
+
+def _git_worktree_dirty() -> bool | None:
+    try:
+        return bool(
+            subprocess.check_output(
+                ["git", "status", "--porcelain", "--untracked-files=no"],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            ).strip()
+        )
+    except Exception:
+        return None
 
 
 def _new_build_id() -> str:
