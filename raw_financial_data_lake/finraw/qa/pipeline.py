@@ -12,9 +12,10 @@ from typing import Any
 
 from finraw.db.client import DBProtocol
 from finraw.kg_query import resolve_kg_build_id
-from finraw.qa.difficulty import assess_difficulty, graph_features
+from finraw.qa.difficulty import DIFFICULTY_POLICY, assess_difficulty, graph_features
 from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
 from finraw.qa.graph_patterns import get_pattern, pattern_manifest
+from finraw.qa.operators import operator_registry
 from finraw.qa.plans import execute_plan, operation_depth
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
@@ -43,7 +44,7 @@ SCOPE_DERIVED = {
     "multi_condition_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "3.0.0"
+GENERATOR_VERSION = "4.0.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -57,6 +58,9 @@ BUILD_COLUMNS = [
     "document_build_id",
     "config_hash",
     "template_manifest_hash",
+    "pattern_manifest_hash",
+    "operator_manifest_hash",
+    "difficulty_policy_hash",
     "generator_version",
     "git_commit_sha",
     "split_policy_hash",
@@ -80,7 +84,9 @@ CANDIDATE_COLUMNS = [
     "difficulty",
     "pattern_id",
     "pattern_version",
+    "pattern_hash",
     "operation_plan_id",
+    "operation_plan_hash",
     "graph_features",
     "difficulty_score",
     "answer_schema",
@@ -187,6 +193,11 @@ def build_qa_candidates(
     if kg.get("status") != "success" or kg.get("quality_status") != "passed":
         raise RuntimeError(f"KG build is not QA eligible: {kg_build_id}")
     policy = _qa_policy(config)
+    pattern_manifest_data = pattern_manifest()
+    operator_manifest_data = operator_registry()
+    pattern_manifest_hash = _digest(pattern_manifest_data)
+    operator_manifest_hash = _digest(operator_manifest_data)
+    difficulty_policy_hash = _digest(DIFFICULTY_POLICY)
     qa_build_id = _new_build_id()
     build = {
         "qa_build_id": qa_build_id,
@@ -198,8 +209,18 @@ def build_qa_candidates(
         "metric_build_id": kg.get("input_metric_build_id"),
         "source_definition_build_id": kg.get("input_source_definition_build_id"),
         "document_build_id": kg.get("input_document_build_id"),
-        "config_hash": _digest(policy, TEMPLATES, GENERATOR_VERSION),
+        "config_hash": _digest(
+            policy,
+            TEMPLATES,
+            pattern_manifest_data,
+            operator_manifest_data,
+            DIFFICULTY_POLICY,
+            GENERATOR_VERSION,
+        ),
         "template_manifest_hash": _digest(TEMPLATES),
+        "pattern_manifest_hash": pattern_manifest_hash,
+        "operator_manifest_hash": operator_manifest_hash,
+        "difficulty_policy_hash": difficulty_policy_hash,
         "generator_version": GENERATOR_VERSION,
         "git_commit_sha": _git_commit_sha(),
         "split_policy_hash": _digest(
@@ -219,6 +240,9 @@ def build_qa_candidates(
             "generation": "graph_path_driven_deterministic",
             "generator_version": GENERATOR_VERSION,
             "template_manifest_hash": _digest(TEMPLATES),
+            "pattern_manifest_hash": pattern_manifest_hash,
+            "operator_manifest_hash": operator_manifest_hash,
+            "difficulty_policy_hash": difficulty_policy_hash,
             "git_worktree_dirty": _git_worktree_dirty(),
         },
     }
@@ -333,7 +357,13 @@ def build_qa_candidates(
             pattern = get_pattern(pattern_id)
             if not pattern.is_active:
                 continue
-            matches = discover_pattern_matches(db, kg, pattern_id, limit=int(quota))
+            matches = discover_pattern_matches(
+                db,
+                kg,
+                pattern_id,
+                limit=int(quota),
+                policy=graph_policy.get("comparability"),
+            )
             fact_map = load_bound_facts(
                 db,
                 kg["input_fact_build_id"],
@@ -648,6 +678,7 @@ def split_qa_samples(
         "rolling_max",
         "rolling_min",
         "multi_period_average",
+        "temporal_peak_followup",
     }
     split_updates: list[tuple[str, str]] = []
     for row in rows:
@@ -692,6 +723,90 @@ def split_qa_samples(
             failures.append(
                 f"critical_task_{task}={task_counts.get(task, 0)} < {int(minimum)}"
             )
+    graph_sample_counts = {
+        str(item["graph_pattern_id"]): int(item["c"])
+        for item in db.fetchall(
+            """
+            SELECT graph_pattern_id, COUNT(*) AS c
+            FROM qa_samples
+            WHERE qa_build_id = ? AND validation_status = 'passed'
+              AND graph_pattern_id IS NOT NULL
+            GROUP BY graph_pattern_id
+            """,
+            (qa_build_id,),
+        )
+    }
+    graph_candidate_stats = {
+        str(item["pattern_id"]): {
+            "candidate_count": int(item["candidate_count"]),
+            "eligible_count": int(item["eligible_count"]),
+        }
+        for item in db.fetchall(
+            """
+            SELECT pattern_id, COUNT(*) AS candidate_count,
+                   SUM(CASE WHEN eligibility_status = 'eligible' THEN 1 ELSE 0 END)
+                       AS eligible_count
+            FROM qa_candidates
+            WHERE qa_build_id = ? AND pattern_id IS NOT NULL
+            GROUP BY pattern_id
+            """,
+            (qa_build_id,),
+        )
+    }
+    for pattern_id, minimum in gate_policy.get(
+        "minimum_graph_pattern_samples", {}
+    ).items():
+        observed = graph_sample_counts.get(pattern_id, 0)
+        if observed < int(minimum):
+            failures.append(
+                f"graph_pattern_{pattern_id}={observed} < {int(minimum)}"
+            )
+    minimum_eligibility = gate_policy.get("minimum_graph_pattern_eligibility_rate")
+    if minimum_eligibility is not None:
+        minimum_eligibility = float(minimum_eligibility)
+        for pattern_id, stats in graph_candidate_stats.items():
+            count = stats["candidate_count"]
+            rate = stats["eligible_count"] / count if count else 0.0
+            if rate < minimum_eligibility:
+                failures.append(
+                    f"graph_pattern_eligibility_{pattern_id}={rate:.6f} "
+                    f"< {minimum_eligibility:.6f}"
+                )
+    graph_sample_count = sum(graph_sample_counts.values())
+    graph_feature_coverage = graph_sample_count / len(rows) if rows else 0.0
+    minimum_graph_coverage = gate_policy.get("minimum_graph_feature_coverage")
+    if minimum_graph_coverage is not None and graph_feature_coverage < float(
+        minimum_graph_coverage
+    ):
+        failures.append(
+            f"graph_feature_coverage={graph_feature_coverage:.6f} "
+            f"< {float(minimum_graph_coverage):.6f}"
+        )
+    plan_rows = db.fetchall(
+        """
+        SELECT p.operator_dag
+        FROM qa_operation_plans p
+        JOIN qa_samples s ON s.candidate_id = p.candidate_id
+        WHERE s.qa_build_id = ? AND s.validation_status = 'passed'
+        """,
+        (qa_build_id,),
+    )
+    operation_sequences = {
+        " -> ".join(
+            str(step.get("operator"))
+            for step in json_value(item["operator_dag"], {}).get("operators", [])
+        )
+        for item in plan_rows
+    }
+    operation_sequences.discard("")
+    minimum_sequences = gate_policy.get("minimum_unique_operation_sequences")
+    if minimum_sequences is not None and len(operation_sequences) < int(
+        minimum_sequences
+    ):
+        failures.append(
+            f"unique_operation_sequences={len(operation_sequences)} "
+            f"< {int(minimum_sequences)}"
+        )
     critical_checks = _scalar(
         db,
         """
@@ -717,6 +832,10 @@ def split_qa_samples(
         "failures": failures,
         "pass_rate": pass_rate,
         "critical_check_failures": critical_checks,
+        "graph_pattern_sample_counts": graph_sample_counts,
+        "graph_pattern_candidate_stats": graph_candidate_stats,
+        "graph_feature_coverage": graph_feature_coverage,
+        "unique_operation_sequences": sorted(operation_sequences),
         "temporal_cutoff_year": cutoff_year,
     }
     if gate_passed:
@@ -1055,12 +1174,15 @@ def _graph_pattern_candidate(
         "pairwise_entity_metric_comparison": "pairwise_entity_comparison",
         "entity_cross_metric_comparison": "cross_metric_comparison",
         "entity_metric_temporal_average": "multi_period_average",
+        "temporal_argmax_then_metric_lookup": "temporal_peak_followup",
     }[pattern.pattern_id]
-    if subtype == "multi_period_average":
+    if subtype in {"multi_period_average", "temporal_peak_followup"}:
         time_scope = {
             "start_year": match.get("start_period"),
             "end_year": match.get("end_period"),
             "basis": "multi_period",
+            "frequency": match.get("frequency"),
+            "observation_count": match.get("observation_count"),
         }
     else:
         time_scope = _fact_time_scope(facts[0]) if facts else {}
@@ -1090,6 +1212,13 @@ def _graph_pattern_candidate(
         "input_bindings": match["input_bindings"],
         "operation_plan": operator_dag,
         "answer_schema": pattern.answer_schema,
+        "comparability": match.get("comparability") or {},
+        "scope_type": match.get("scope_type"),
+        "scope_definition": match.get("scope_definition"),
+        "observation_count": match.get("observation_count"),
+        "frequency": match.get("frequency"),
+        "primary_metric_id": match.get("primary_metric_id"),
+        "secondary_metric_id": match.get("secondary_metric_id"),
     }
     if len(entity_ids) == 1:
         semantics["entity_id"] = entity_ids[0]
@@ -1105,7 +1234,7 @@ def _graph_pattern_candidate(
         operation_plan=operator_dag,
         answer_payload=answer,
     )
-    difficulty, score = assess_difficulty(features)
+    difficulty, score = assess_difficulty(features, pattern.difficulty_base)
     stable = "qac_" + _digest(
         pattern.pattern_id,
         pattern.pattern_version,
@@ -1114,6 +1243,8 @@ def _graph_pattern_candidate(
     )
     candidate_id = f"{stable}__{qa_build_id}"
     plan_id = "qaplan_" + _digest(stable, operator_dag, match["input_bindings"])
+    pattern_hash = _digest(pattern.as_row())
+    operation_plan_hash = _digest(operator_dag, match["input_bindings"])
     raw_object_ids = sorted(
         {
             str(fact["raw_object_id"])
@@ -1130,7 +1261,9 @@ def _graph_pattern_candidate(
         "difficulty": difficulty,
         "pattern_id": pattern.pattern_id,
         "pattern_version": pattern.pattern_version,
+        "pattern_hash": pattern_hash,
         "operation_plan_id": plan_id,
+        "operation_plan_hash": operation_plan_hash,
         "graph_features": features,
         "difficulty_score": score,
         "answer_schema": pattern.answer_schema,
@@ -1138,7 +1271,11 @@ def _graph_pattern_candidate(
         "entity_ids": entity_ids,
         "metric_ids": metric_ids,
         "time_scope": time_scope,
-        "entity_scope": {"entity_ids": entity_ids, "scope_type": "graph_pattern_binding"},
+        "entity_scope": {
+            "entity_ids": entity_ids,
+            "scope_type": match.get("scope_type") or "graph_pattern_binding",
+            "scope_definition": match.get("scope_definition"),
+        },
         "source_fact_ids": fact_ids,
         "source_derived_ids": [],
         "source_document_ids": [],
@@ -1234,7 +1371,9 @@ def _sample_from_candidate(
             "derived_payload": candidate.get("derived_payload"),
             "recomputed_payload": candidate.get("recomputed_payload"),
             "graph_pattern_id": candidate.get("pattern_id"),
+            "pattern_hash": candidate.get("pattern_hash"),
             "operation_plan_id": candidate.get("operation_plan_id"),
+            "operation_plan_hash": candidate.get("operation_plan_hash"),
             "graph_features": candidate.get("graph_features"),
         },
         "generation_method": "graph_pattern_operation_plan"
@@ -2094,6 +2233,7 @@ def _validate_evidence_semantics(
         "pairwise_entity_comparison",
         "cross_metric_comparison",
         "multi_period_average",
+        "temporal_peak_followup",
     }:
         required = {
             "HAS_FACT",
@@ -2471,12 +2611,43 @@ def _question_slots(
         "metric_b": metric_names.get(metric_ids[1], metric_ids[1].replace("_", " "))
         if len(metric_ids) > 1
         else "the second metric",
+        "primary_metric": metric_names.get(
+            semantics.get("primary_metric_id"),
+            str(semantics.get("primary_metric_id") or "the primary metric").replace("_", " "),
+        ),
+        "secondary_metric": metric_names.get(
+            semantics.get("secondary_metric_id"),
+            str(semantics.get("secondary_metric_id") or "the secondary metric").replace("_", " "),
+        ),
+        "observation_count": str(
+            semantics.get("observation_count")
+            or time_scope.get("observation_count")
+            or len(candidate.get("source_fact_ids") or [])
+        ),
+        "frequency": str(
+            semantics.get("frequency") or time_scope.get("frequency") or "periodic"
+        ),
     }
 
 
 def _answer_text(
     candidate: dict[str, Any], answer: dict[str, Any], entity_names: dict[str, str]
 ) -> str:
+    if candidate["task_subtype"] == "temporal_peak_followup":
+        semantics = candidate.get("canonical_semantics", {})
+        metric_names = semantics.get("metric_names") or {}
+        primary = metric_names.get(
+            semantics.get("primary_metric_id"), semantics.get("primary_metric_id")
+        )
+        secondary = metric_names.get(
+            semantics.get("secondary_metric_id"), semantics.get("secondary_metric_id")
+        )
+        return (
+            f"{answer.get('result_period')}: {primary} peaked at "
+            f"{_format_value(answer.get('primary_value'))} {answer.get('primary_unit') or ''}; "
+            f"{secondary} was {_format_value(answer.get('secondary_value'))} "
+            f"{answer.get('secondary_unit') or ''}"
+        ).strip()
     if answer.get("relation") and answer.get("rows"):
         labels = dict(entity_names)
         labels.update(candidate.get("canonical_semantics", {}).get("metric_names") or {})
@@ -2518,6 +2689,18 @@ def _ranked_value_tolerance(value: Any) -> str:
 
 
 def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]:
+    if candidate["task_subtype"] == "temporal_peak_followup":
+        return {
+            "match_type": "period_metric_lookup",
+            "target_period": answer.get("result_period"),
+            "primary_metric_id": answer.get("primary_metric_id"),
+            "primary_value": answer.get("primary_value"),
+            "primary_unit": answer.get("primary_unit"),
+            "secondary_metric_id": answer.get("secondary_metric_id"),
+            "secondary_value": answer.get("secondary_value"),
+            "secondary_unit": answer.get("secondary_unit"),
+            "value_tolerance": answer.get("tolerance") or "0.000001",
+        }
     if answer.get("relation") and answer.get("rows"):
         return {
             "match_type": "comparison",
@@ -2741,6 +2924,7 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "generation_method": "deterministic_template",
         "graph_patterns": {
             "enabled": bool(graph_config.get("enabled", False)),
+            "comparability": graph_config.get("comparability", {}),
             "quotas": {
                 "pairwise_entity_metric_comparison": int(
                     graph_config.get("quotas", {}).get("pairwise_entity_metric_comparison", 0)
@@ -2750,6 +2934,11 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
                 ),
                 "entity_metric_temporal_average": int(
                     graph_config.get("quotas", {}).get("entity_metric_temporal_average", 0)
+                ),
+                "temporal_argmax_then_metric_lookup": int(
+                    graph_config.get("quotas", {}).get(
+                        "temporal_argmax_then_metric_lookup", 0
+                    )
                 ),
             },
         },
@@ -2805,10 +2994,26 @@ def _seed_templates(db: DBProtocol) -> None:
 def _seed_graph_patterns(db: DBProtocol) -> None:
     rows = []
     for item in pattern_manifest():
+        pattern_hash = _digest(item)
+        pattern_key = f"{item['pattern_id']}@{item['pattern_version']}"
+        db.execute(
+            "UPDATE qa_graph_patterns SET is_active = ? "
+            "WHERE pattern_id = ? AND pattern_version <> ?",
+            (False, item["pattern_id"], item["pattern_version"]),
+        )
+        existing = db.fetchone(
+            "SELECT pattern_hash FROM qa_graph_patterns WHERE pattern_key = ?",
+            (pattern_key,),
+        )
+        if existing and existing["pattern_hash"] and existing["pattern_hash"] != pattern_hash:
+            raise RuntimeError(
+                f"Published graph pattern changed without a version bump: {pattern_key}"
+            )
         rows.append(
             {
                 **item,
-                "pattern_key": f"{item['pattern_id']}@{item['pattern_version']}",
+                "pattern_key": pattern_key,
+                "pattern_hash": pattern_hash,
             }
         )
     insert_rows(
@@ -2820,6 +3025,8 @@ def _seed_graph_patterns(db: DBProtocol) -> None:
             "pattern_id",
             "pattern_version",
             "pattern_family",
+            "matcher",
+            "pattern_hash",
             "node_constraints",
             "edge_constraints",
             "semantic_constraints",

@@ -229,7 +229,59 @@
       "quotas": {
         "pairwise_entity_metric_comparison": 2000,
         "entity_cross_metric_comparison": 2000,
-        "entity_metric_temporal_average": 2000
+        "entity_metric_temporal_average": 2000,
+        "temporal_argmax_then_metric_lookup": 1000
+      },
+      "comparability": {
+        "require_same_source": true,
+        "require_same_source_definition": true,
+        "require_same_entity_type": true,
+        "require_shared_company_industry": true,
+        "require_same_time_basis": true,
+        "require_same_period_type": true,
+        "require_same_frequency": true,
+        "require_same_seasonal_adjustment": true,
+        "require_same_vintage_policy": true,
+        "allowed_metric_pairs": [
+          ["revenue", "gross_profit"],
+          ["revenue", "operating_income"],
+          ["revenue", "net_income"],
+          ["gross_profit", "operating_income"],
+          ["operating_income", "net_income"],
+          ["total_assets", "total_liabilities"]
+        ],
+        "followup_metric_pairs": [
+          ["revenue", "net_income"],
+          ["revenue", "operating_income"],
+          ["revenue", "total_assets"],
+          ["net_income", "operating_cash_flow"]
+        ],
+        "temporal_frequencies": ["annual"],
+        "temporal_metric_ids": [
+          "cash_and_cash_equivalents",
+          "gross_profit",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "revenue",
+          "total_assets",
+          "total_liabilities"
+        ],
+        "temporal_scan_rows_per_metric": 10000,
+        "pairwise_metric_ids": [
+          "gross_profit",
+          "net_income",
+          "operating_income",
+          "revenue",
+          "total_assets",
+          "total_liabilities"
+        ],
+        "pairwise_scan_rows_per_metric": 10000,
+        "temporal_min_observations": 3,
+        "temporal_max_observations": 5,
+        "require_contiguous_periods": true,
+        "scan_multiplier": 10,
+        "max_per_stratum": 4
       }
     },
     "split_policy": "semantic_cluster_then_entity_fixed_time_task",
@@ -244,7 +296,16 @@
         "qoq_growth": 1000,
         "ratio": 500
       },
-      "max_critical_check_failures": 0
+      "max_critical_check_failures": 0,
+      "minimum_graph_pattern_samples": {
+        "pairwise_entity_metric_comparison": 500,
+        "entity_cross_metric_comparison": 350,
+        "entity_metric_temporal_average": 350,
+        "temporal_argmax_then_metric_lookup": 100
+      },
+      "minimum_graph_pattern_eligibility_rate": 0.95,
+      "minimum_graph_feature_coverage": 0.015,
+      "minimum_unique_operation_sequences": 3
     }
   }
 }

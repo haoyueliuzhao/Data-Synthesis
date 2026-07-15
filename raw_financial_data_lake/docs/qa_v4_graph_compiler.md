@@ -28,6 +28,9 @@ KG motif discovery
 - `pairwise_entity_metric_comparison`：两个实体、相同指标、相同期间；
 - `entity_cross_metric_comparison`：同一实体、同一期间、两个可比指标；
 - `entity_metric_temporal_average`：同一实体和指标的 3 至 5 个期间序列。
+- `temporal_argmax_then_metric_lookup`：先在连续时间序列中寻找主指标峰值期间，再查询同一期间的第二指标。
+
+三个单步模式的语义版本已提升到 v2。比较任务排除 forecast，并约束来源、来源定义、实体类型、scope、频率、时间口径、季调、vintage、单位和币种；跨指标任务还必须命中显式 Metric Pair Policy。时间任务仅使用同频、连续、定义一致的完整窗口。matcher 通过注册表绑定到 pattern，新增模式不再依赖 `if/elif` 分发。
 
 `entity_metric_time_lookup` 和 `fact_provenance_trace` 也已注册；前者对应现有 single-fact 结构，后者暂不启用，等待 evidence-trace 答案与文档证据扩展。
 
@@ -44,7 +47,7 @@ recompute_status
 validation_errors
 ```
 
-Operator Registry 当前提供 `lookup`、`difference`、`compare`、`mean`、`filter`、`rank`、`argmax` 和 `argmin`。每个 operator 检查输入结构、单位和币种，并返回结构化结果。复杂任务可以通过前一步输出引用构造 DAG，而不需要把每个组合预先物化成 DerivedFact。
+Operator Registry 当前提供 `lookup`、`difference`、`compare`、`mean`、`filter`、`rank`、`argmax`、`argmin` 和 `select_by_period`。`temporal_argmax_then_metric_lookup` 实际执行 `argmax → select_by_period` 两步 DAG；主副序列在候选阶段固定，第二步按分析频率的 period index 对齐，验证时从 pinned facts 重放全部中间结果。
 
 ### Question Realization
 
@@ -57,7 +60,9 @@ Operator Registry 当前提供 `lookup`、`difference`、`compare`、`mean`、`f
 ```text
 pattern_id
 pattern_version
+pattern_hash
 operation_plan_id
+operation_plan_hash
 graph_features
 difficulty_score
 answer_schema
@@ -65,6 +70,7 @@ question_intent
 ```
 
 `graph_features` 包括事实、派生事实、实体、指标、期间和来源数量，以及 evidence 节点/边、图跳数、分支数、操作数量、操作深度、scope 大小、时间跨度和答案基数。
+推理图深度与来源追溯深度分别记录为 `reasoning_graph_hop_depth` 和 `provenance_graph_depth`，避免 RawObject/SourceDefinition 叶节点抬高任务难度。
 
 `qa_samples` 新增：
 
@@ -88,6 +94,7 @@ operation_depth
 - `independent_recompute`：最终答案与重新执行 Operation Plan 的结果一致。
 
 Evidence Subgraph 仍要求每个 Fact 有 Entity、Metric、TimePeriod、DataSource 等关系，且整张证据子图连通。
+Build gate 还可要求每个 graph pattern 的最低正式样本数、最低 eligibility rate、最低 graph-feature coverage 和最低唯一 operator sequence 数。QA build 固定 `pattern_manifest_hash`、`operator_manifest_hash` 与 `difficulty_policy_hash`；已发布的 `pattern_id@version` 内容发生变化时会拒绝覆盖。
 
 ## 难度与分析
 
@@ -103,7 +110,19 @@ python -m finraw.cli \
   --output-dir data/audit/qa_analysis
 ```
 
-报告包含 graph-pattern/operation-plan 数量与熵、问题意图、答案类型、难度和 split 分布，以及 Fact/DerivedFact 节点利用率、edge type coverage 和 evidence 规模。
+报告分别展示 `all_candidates`、`eligible_candidates`、`validated_samples` 和 `exported_samples` 四层漏斗，并区分 operator sequence、normalized plan hash 和完整 DAG hash。KG 利用率只以 eligible candidate 为口径。
+
+正式构建前可运行只读预演：
+
+```bash
+python -m finraw.cli \
+  --config config/profiles/prod_phase1_with_cninfo_generated.json \
+  qa-pattern-preflight \
+  --limit-per-pattern 500 \
+  --output-dir data/audit/qa_pattern_preflight_v4
+```
+
+预演只发现和统计 motif，不创建 QA build。matcher 使用按指标分层的 indexed serving pool，再在内存中做确定性哈希 join/配对，避免在百万级 KG 边表上执行事实自连接。
 
 ## V3 生产基线
 
@@ -118,6 +137,10 @@ python -m finraw.cli \
 
 基线文件位于 `data/audit/qa_v4_baseline/`。
 
+## V4 正式库 Smoke 验证
+
+最终 smoke build `qa_build_20260715_033418_a1af0f40` 固定到 KG `kg_20260711_062123_bc4b4394`，四种模式各构建 10 条：40/40 candidates eligible，40/40 samples 通过 Operation Plan 重放、evidence coverage 和独立复算。难度分布为：两类直接比较 `medium`，多期平均 `hard`，`argmax → lookup` 两步任务 `expert`。该 build 未执行 split，不会激活或替换生产 QA 版本。
+
 ## 后续边界
 
-本阶段完成了 V4 的基础编译框架和三个可靠 motif。下一阶段仍需在该框架上实现 `filter → ranking`、`argmax → cross-metric lookup`、`ranking → secondary metric`、历史 membership 和跨来源冲突路径，并增加 graph-pattern、operator-composition、metric-pair 和 scope holdout。
+本阶段完成了 V4 编译框架、三个严格单步 motif 和首个真实两步 motif。下一阶段仍需实现 `filter → ranking`、`ranking → secondary metric`、cross-metric divergence、provenance trace、历史 membership 和跨来源冲突路径，并增加 graph-pattern、operator-composition、metric-pair 和 scope holdout。

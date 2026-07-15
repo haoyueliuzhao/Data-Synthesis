@@ -9,6 +9,7 @@ class GraphPattern:
     pattern_id: str
     pattern_version: int
     pattern_family: str
+    matcher: str | None
     node_constraints: list[dict[str, Any]]
     edge_constraints: list[dict[str, str]]
     semantic_constraints: list[dict[str, Any]]
@@ -29,6 +30,7 @@ PATTERNS: tuple[GraphPattern, ...] = (
         pattern_id="entity_metric_time_lookup",
         pattern_version=1,
         pattern_family="lookup",
+        matcher=None,
         node_constraints=[
             {"variable": "entity", "type": "Entity"},
             {"variable": "fact", "type": "Fact"},
@@ -40,16 +42,28 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"src": "fact", "relation": "MEASURES", "dst": "metric"},
             {"src": "fact", "relation": "IN_PERIOD", "dst": "period"},
         ],
-        semantic_constraints=[{"field": "fact.graph_ready", "operator": "eq", "value": True}],
-        operator_template={"operators": [{"step_id": "answer", "operator": "lookup", "inputs": [{"binding": "fact"}]}], "output_step": "answer"},
+        semantic_constraints=[
+            {"field": "fact.graph_ready", "operator": "eq", "value": True}
+        ],
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "lookup",
+                    "inputs": [{"binding": "fact"}],
+                }
+            ],
+            "output_step": "answer",
+        },
         answer_schema={"type": "numeric"},
         difficulty_base="easy",
         question_intents=("direct_lookup",),
     ),
     GraphPattern(
         pattern_id="pairwise_entity_metric_comparison",
-        pattern_version=1,
+        pattern_version=2,
         pattern_family="comparison",
+        matcher="pairwise_entity_metric_comparison",
         node_constraints=[
             {"variable": "left_entity", "type": "Entity"},
             {"variable": "left_fact", "type": "Fact"},
@@ -68,18 +82,37 @@ PATTERNS: tuple[GraphPattern, ...] = (
         ],
         semantic_constraints=[
             {"field": "left_entity", "operator": "ne", "value_from": "right_entity"},
+            {"field": "entity_type", "operator": "same"},
+            {"field": "scope", "operator": "same"},
+            {"field": "source_definition", "operator": "compatible"},
+            {"field": "time_basis", "operator": "same"},
+            {"field": "frequency", "operator": "same"},
+            {"field": "is_forecast", "operator": "eq", "value": False},
             {"field": "unit", "operator": "compatible"},
             {"field": "currency", "operator": "compatible"},
         ],
-        operator_template={"operators": [{"step_id": "answer", "operator": "compare", "inputs": [{"binding": "left"}, {"binding": "right"}]}], "output_step": "answer"},
-        answer_schema={"type": "comparison", "fields": ["winner_id", "relation", "difference", "rows"]},
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "compare",
+                    "inputs": [{"binding": "left"}, {"binding": "right"}],
+                }
+            ],
+            "output_step": "answer",
+        },
+        answer_schema={
+            "type": "comparison",
+            "fields": ["winner_id", "relation", "difference", "rows"],
+        },
         difficulty_base="medium",
         question_intents=("which_is_higher", "direct_comparison"),
     ),
     GraphPattern(
         pattern_id="entity_cross_metric_comparison",
-        pattern_version=1,
+        pattern_version=2,
         pattern_family="comparison",
+        matcher="entity_cross_metric_comparison",
         node_constraints=[
             {"variable": "entity", "type": "Entity"},
             {"variable": "left_fact", "type": "Fact"},
@@ -97,19 +130,37 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"src": "right_fact", "relation": "IN_PERIOD", "dst": "period"},
         ],
         semantic_constraints=[
-            {"field": "left_metric", "operator": "ne", "value_from": "right_metric"},
+            {"field": "metric_pair", "operator": "registered_comparable_pair"},
+            {"field": "statement_type", "operator": "same"},
+            {"field": "metric_period_type", "operator": "same"},
+            {"field": "source_definition", "operator": "compatible"},
+            {"field": "frequency", "operator": "same"},
+            {"field": "is_forecast", "operator": "eq", "value": False},
             {"field": "unit", "operator": "compatible"},
             {"field": "currency", "operator": "compatible"},
         ],
-        operator_template={"operators": [{"step_id": "answer", "operator": "compare", "inputs": [{"binding": "left"}, {"binding": "right"}]}], "output_step": "answer"},
-        answer_schema={"type": "comparison", "fields": ["winner_id", "relation", "difference", "rows"]},
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "compare",
+                    "inputs": [{"binding": "left"}, {"binding": "right"}],
+                }
+            ],
+            "output_step": "answer",
+        },
+        answer_schema={
+            "type": "comparison",
+            "fields": ["winner_id", "relation", "difference", "rows"],
+        },
         difficulty_base="medium",
         question_intents=("which_metric_is_higher", "metric_difference"),
     ),
     GraphPattern(
         pattern_id="entity_metric_temporal_average",
-        pattern_version=1,
+        pattern_version=2,
         pattern_family="temporal_aggregation",
+        matcher="entity_metric_temporal_average",
         node_constraints=[
             {"variable": "entity", "type": "Entity"},
             {"variable": "facts", "type": "Fact", "cardinality": "many"},
@@ -123,18 +174,95 @@ PATTERNS: tuple[GraphPattern, ...] = (
         ],
         semantic_constraints=[
             {"field": "facts.count", "operator": "gte", "value": 3},
+            {"field": "periods", "operator": "contiguous"},
+            {"field": "source_definition", "operator": "same"},
+            {"field": "frequency", "operator": "same"},
+            {"field": "time_basis", "operator": "same"},
+            {"field": "is_forecast", "operator": "eq", "value": False},
             {"field": "unit", "operator": "same"},
             {"field": "currency", "operator": "same"},
         ],
-        operator_template={"operators": [{"step_id": "answer", "operator": "mean", "inputs": [{"binding": "series"}]}], "output_step": "answer"},
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "mean",
+                    "inputs": [{"binding": "series"}],
+                }
+            ],
+            "output_step": "answer",
+        },
         answer_schema={"type": "numeric", "aggregation": "arithmetic_mean"},
         difficulty_base="hard",
         question_intents=("period_average", "analyst_average"),
     ),
     GraphPattern(
+        pattern_id="temporal_argmax_then_metric_lookup",
+        pattern_version=1,
+        pattern_family="multi_stage_temporal_join",
+        matcher="temporal_argmax_then_metric_lookup",
+        node_constraints=[
+            {"variable": "entity", "type": "Entity"},
+            {"variable": "primary_facts", "type": "Fact", "cardinality": "many"},
+            {"variable": "secondary_facts", "type": "Fact", "cardinality": "many"},
+            {"variable": "primary_metric", "type": "Metric"},
+            {"variable": "secondary_metric", "type": "Metric"},
+            {"variable": "periods", "type": "TimePeriod", "cardinality": "many"},
+        ],
+        edge_constraints=[
+            {"src": "entity", "relation": "HAS_FACT", "dst": "primary_facts"},
+            {"src": "entity", "relation": "HAS_FACT", "dst": "secondary_facts"},
+            {"src": "primary_facts", "relation": "MEASURES", "dst": "primary_metric"},
+            {"src": "secondary_facts", "relation": "MEASURES", "dst": "secondary_metric"},
+            {"src": "primary_facts", "relation": "IN_PERIOD", "dst": "periods"},
+            {"src": "secondary_facts", "relation": "IN_PERIOD", "dst": "periods"},
+        ],
+        semantic_constraints=[
+            {"field": "primary_facts.count", "operator": "gte", "value": 3},
+            {"field": "periods", "operator": "contiguous"},
+            {"field": "secondary_period_coverage", "operator": "eq", "value": 1.0},
+            {"field": "source_definition", "operator": "compatible_by_series"},
+            {"field": "frequency", "operator": "same"},
+            {"field": "time_basis", "operator": "same"},
+            {"field": "is_forecast", "operator": "eq", "value": False},
+        ],
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "find_peak",
+                    "operator": "argmax",
+                    "inputs": [{"binding": "primary_series"}],
+                    "params": {"selection_key": "period"},
+                },
+                {
+                    "step_id": "answer",
+                    "operator": "select_by_period",
+                    "inputs": [
+                        {"step": "find_peak"},
+                        {"binding": "secondary_series"},
+                    ],
+                },
+            ],
+            "output_step": "answer",
+        },
+        answer_schema={
+            "type": "period_metric_lookup",
+            "fields": [
+                "period",
+                "primary_value",
+                "secondary_value",
+                "unit",
+                "currency",
+            ],
+        },
+        difficulty_base="expert",
+        question_intents=("peak_then_lookup", "temporal_followup"),
+    ),
+    GraphPattern(
         pattern_id="fact_provenance_trace",
         pattern_version=1,
         pattern_family="provenance",
+        matcher=None,
         node_constraints=[
             {"variable": "fact", "type": "Fact"},
             {"variable": "source", "type": "DataSource"},
@@ -147,7 +275,16 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"src": "fact", "relation": "USES_SOURCE_DEFINITION", "dst": "definition"},
         ],
         semantic_constraints=[],
-        operator_template={"operators": [{"step_id": "answer", "operator": "provenance", "inputs": [{"binding": "fact"}]}], "output_step": "answer"},
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "provenance",
+                    "inputs": [{"binding": "fact"}],
+                }
+            ],
+            "output_step": "answer",
+        },
         answer_schema={"type": "evidence_trace"},
         difficulty_base="easy",
         question_intents=("source_trace", "definition_trace"),

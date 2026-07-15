@@ -30,6 +30,7 @@ from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
+from finraw.qa.preflight import profile_graph_patterns
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
 from finraw.storage import RawObjectStore
@@ -176,6 +177,14 @@ def build_parser() -> argparse.ArgumentParser:
     qa_analysis = sub.add_parser("qa-analysis", help="Report QA semantic diversity and KG utilization for a QA build.")
     qa_analysis.add_argument("--qa-build-id", required=True)
     qa_analysis.add_argument("--output-dir", default="data/audit/qa_analysis")
+
+    qa_preflight = sub.add_parser(
+        "qa-pattern-preflight",
+        help="Profile graph-pattern discovery against a pinned KG without creating QA rows.",
+    )
+    qa_preflight.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_preflight.add_argument("--limit-per-pattern", type=int, default=500)
+    qa_preflight.add_argument("--output-dir", default="data/audit/qa_pattern_preflight")
 
     qa_all = sub.add_parser("build-qa", help="Run candidate, generation, validation, and split stages end to end.")
     qa_all.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
@@ -386,6 +395,15 @@ def main() -> None:
         elif args.command == "qa-analysis":
             report = build_qa_diversity_report(
                 db, args.qa_build_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-pattern-preflight":
+            report = profile_graph_patterns(
+                db,
+                config,
+                kg_build_id=args.kg_build_id,
+                limit_per_pattern=args.limit_per_pattern,
+                output_dir=args.output_dir,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "build-qa":

@@ -361,6 +361,7 @@ CREATE INDEX IF NOT EXISTS idx_standardized_facts_source_definition ON standardi
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_comparability ON standardized_facts(comparability_level);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_raw_equivalence ON standardized_facts(raw_equivalence_group_id);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_semantic_equivalence ON standardized_facts(semantic_equivalence_group_id);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_qa_series ON standardized_facts(build_id, metric_id, entity_id, fiscal_year, fiscal_quarter, period_end);
 
 CREATE TABLE IF NOT EXISTS fact_quality_checks (
     check_id            TEXT PRIMARY KEY,
@@ -583,6 +584,7 @@ CREATE TABLE IF NOT EXISTS kg_nodes (
     created_at           TEXT DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type ON kg_nodes(kg_build_id, node_type);
+CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_source ON kg_nodes(kg_build_id, node_type, source_pk);
 CREATE INDEX IF NOT EXISTS idx_kg_nodes_stable ON kg_nodes(stable_node_id);
 CREATE TABLE IF NOT EXISTS kg_edges (
     edge_id              TEXT PRIMARY KEY,
@@ -647,6 +649,9 @@ CREATE TABLE IF NOT EXISTS qa_builds (
             document_build_id TEXT,
             config_hash TEXT,
             template_manifest_hash TEXT,
+            pattern_manifest_hash TEXT,
+            operator_manifest_hash TEXT,
+            difficulty_policy_hash TEXT,
             generator_version TEXT,
             git_commit_sha TEXT,
             split_policy_hash TEXT,
@@ -680,6 +685,8 @@ CREATE TABLE IF NOT EXISTS qa_graph_patterns (
             pattern_id TEXT NOT NULL,
             pattern_version INTEGER NOT NULL,
             pattern_family TEXT NOT NULL,
+            matcher TEXT,
+            pattern_hash TEXT NOT NULL,
             node_constraints JSONB NOT NULL,
             edge_constraints JSONB NOT NULL,
             semantic_constraints JSONB NOT NULL,
@@ -699,7 +706,9 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             difficulty TEXT NOT NULL,
             pattern_id TEXT,
             pattern_version INTEGER,
+            pattern_hash TEXT,
             operation_plan_id TEXT,
+            operation_plan_hash TEXT,
             graph_features JSONB,
             difficulty_score REAL,
             answer_schema JSONB,

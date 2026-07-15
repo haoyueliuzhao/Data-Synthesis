@@ -164,8 +164,8 @@ TEMPLATES: list[dict[str, Any]] = [
         "template_id": "multi_period_average_en_01",
         "task_family": "graph_temporal_aggregation",
         "language": "en",
-        "template_text": "What was the average {metric} for {entity} from {start_period} through {end_period}?",
-        "required_slots": ["entity", "metric", "start_period", "end_period"],
+        "template_text": "Across {observation_count} comparable {frequency} observations from {start_period} through {end_period}, what was the average {metric} for {entity}?",
+        "required_slots": ["entity", "metric", "start_period", "end_period", "observation_count", "frequency"],
         "answer_type": "numeric",
         "difficulty_base": "hard",
     },
@@ -173,10 +173,28 @@ TEMPLATES: list[dict[str, Any]] = [
         "template_id": "multi_period_average_en_02",
         "task_family": "graph_temporal_aggregation",
         "language": "en",
-        "template_text": "Across {start_period} to {end_period}, what arithmetic mean did {entity} report for {metric}?",
-        "required_slots": ["entity", "metric", "start_period", "end_period"],
+        "template_text": "Using the {observation_count} comparable {frequency} observations from {start_period} to {end_period}, what arithmetic mean did {entity} report for {metric}?",
+        "required_slots": ["entity", "metric", "start_period", "end_period", "observation_count", "frequency"],
         "answer_type": "numeric",
         "difficulty_base": "hard",
+    },
+    {
+        "template_id": "temporal_peak_followup_en_01",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Between {start_period} and {end_period}, when did {entity}'s {primary_metric} peak, and what was its {secondary_metric} in that same period?",
+        "required_slots": ["entity", "primary_metric", "secondary_metric", "start_period", "end_period"],
+        "answer_type": "period_metric_lookup",
+        "difficulty_base": "expert",
+    },
+    {
+        "template_id": "temporal_peak_followup_en_02",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Identify {entity}'s highest {primary_metric} from {start_period} through {end_period}, then report {secondary_metric} for the selected period.",
+        "required_slots": ["entity", "primary_metric", "secondary_metric", "start_period", "end_period"],
+        "answer_type": "period_metric_lookup",
+        "difficulty_base": "expert",
     },
 ]
 
@@ -212,11 +230,13 @@ def template_for(
         "pairwise_entity_comparison",
         "cross_metric_comparison",
         "multi_period_average",
+        "temporal_peak_followup",
     }:
         prefix = {
             "pairwise_entity_comparison": "pairwise_entity_comparison_en_",
             "cross_metric_comparison": "cross_metric_comparison_en_",
             "multi_period_average": "multi_period_average_en_",
+            "temporal_peak_followup": "temporal_peak_followup_en_",
         }[task_subtype]
         options = sorted(
             (

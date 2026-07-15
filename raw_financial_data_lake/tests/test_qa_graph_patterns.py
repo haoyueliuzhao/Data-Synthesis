@@ -5,6 +5,8 @@ from decimal import Decimal
 from finraw.db.client import MetadataDB
 from finraw.qa.difficulty import assess_difficulty, graph_features
 from finraw.qa.diversity import build_qa_diversity_report
+from finraw.qa.comparability import latest_contiguous_window, metric_pair_allowed, comparability_policy
+from finraw.qa.graph_matcher import discover_pattern_matches
 from finraw.qa.graph_patterns import get_pattern, pattern_registry
 from finraw.qa.operators import OperatorError, execute_operator
 from finraw.qa.pipeline import build_qa
@@ -44,13 +46,13 @@ def _graph_fixture(tmp_path):
     )
     for entity_id, name in [("A_US", "Company A"), ("B_US", "Company B")]:
         db.execute(
-            "INSERT INTO canonical_entities (entity_id, canonical_name, entity_type, build_id, is_active) VALUES (?, ?, ?, ?, ?)",
-            (entity_id, name, "company", entity_build, 1),
+            "INSERT INTO canonical_entities (entity_id, canonical_name, entity_type, industry, build_id, is_active) VALUES (?, ?, ?, ?, ?, ?)",
+            (entity_id, name, "company", "Technology", entity_build, 1),
         )
     for metric_id, name in [("revenue", "Revenue"), ("net_income", "Net Income")]:
         db.execute(
-            "INSERT INTO metrics (metric_id, canonical_name, metric_category, period_type, build_id, is_active) VALUES (?, ?, ?, ?, ?, ?)",
-            (metric_id, name, "financial_statement", "period_flow", metric_build, 1),
+            "INSERT INTO metrics (metric_id, canonical_name, metric_category, statement_type, period_type, build_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (metric_id, name, "financial_statement", "income_statement", "period_flow", metric_build, 1),
         )
         db.execute(
             "INSERT INTO source_metric_definitions (definition_id, source_id, metric_id, raw_concept_name, build_id, is_active) VALUES (?, ?, ?, ?, ?, ?)",
@@ -94,10 +96,11 @@ def _graph_fixture(tmp_path):
                         normalized_value, normalized_unit, normalized_currency, period_end,
                         fiscal_year, fiscal_quarter, time_basis, metric_period_type,
                         source_definition_id, source_id, raw_object_id, verification_status,
-                        graph_ready, graph_ready_reason, is_forecast
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        graph_ready, graph_ready_reason, is_forecast, frequency,
+                        seasonal_adjustment, vintage_policy, comparability_level
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
-                    (fact_id, fact_id, fact_build, 1, entity_id, metric_id, str(value), "million USD", "USD", f"{year}-12-31", year, "FY", "fiscal_year", "period_flow", f"def_{metric_id}", "sec_companyfacts", "raw_graph", "single_source", 1, "ready", 0),
+                    (fact_id, fact_id, fact_build, 1, entity_id, metric_id, str(value), "million USD", "USD", f"{year}-12-31", year, "FY", "fiscal_year", "period_flow", f"def_{metric_id}", "sec_companyfacts", "raw_graph", "single_source", 1, "ready", 0, "annual", "not_applicable", "latest_filing", "strict"),
                 )
                 fact_node = _insert_node(db, kg_build, f"fact:{fact_id}", "Fact", fact_id)
                 edges = [
@@ -120,6 +123,7 @@ def _graph_fixture(tmp_path):
                     "pairwise_entity_metric_comparison": 1,
                     "entity_cross_metric_comparison": 1,
                     "entity_metric_temporal_average": 1,
+                    "temporal_argmax_then_metric_lookup": 1,
                 },
             },
             "temporal_split": {"cutoff_year": 3000},
@@ -135,6 +139,8 @@ def test_pattern_registry_separates_pattern_plan_and_answer_schema():
     assert len(registry) >= 5
     assert pattern.operator_template["operators"][0]["operator"] == "compare"
     assert pattern.answer_schema["type"] == "comparison"
+    assert pattern.matcher == "pairwise_entity_metric_comparison"
+    assert get_pattern("temporal_argmax_then_metric_lookup").pattern_version == 1
 
 
 def test_operation_plan_replays_intermediate_results():
@@ -161,6 +167,70 @@ def test_operator_rejects_incompatible_units():
         raise AssertionError("Expected incompatible units to be rejected")
 
 
+def test_metric_pair_policy_and_temporal_continuity_are_explicit():
+    policy = comparability_policy()
+    assert metric_pair_allowed("revenue", "net_income", policy)
+    assert not metric_pair_allowed("revenue", "total_assets", policy)
+    rows = [
+        {"fact_id": "f2020", "fiscal_year": 2020},
+        {"fact_id": "f2022", "fiscal_year": 2022},
+        {"fact_id": "f2023", "fiscal_year": 2023},
+    ]
+    assert latest_contiguous_window(
+        rows, frequency="annual", minimum=3, maximum=5, require_contiguous=True
+    ) == []
+
+
+def test_temporal_argmax_then_lookup_replays_two_steps():
+    facts = {}
+    for year, revenue, income in [(2021, 100, 10), (2022, 140, 12), (2023, 120, 15)]:
+        facts[f"r{year}"] = {
+            "fact_id": f"r{year}", "metric_id": "revenue",
+            "normalized_value": str(revenue), "normalized_unit": "USD",
+            "normalized_currency": "USD", "fiscal_year": year, "time_basis": "fiscal_year",
+        }
+        facts[f"n{year}"] = {
+            "fact_id": f"n{year}", "metric_id": "net_income",
+            "normalized_value": str(income), "normalized_unit": "USD",
+            "normalized_currency": "USD", "fiscal_year": year, "time_basis": "fiscal_year",
+        }
+    pattern = get_pattern("temporal_argmax_then_metric_lookup")
+    execution = execute_plan(
+        pattern.operator_template,
+        {
+            "primary_series": ["r2021", "r2022", "r2023"],
+            "secondary_series": ["n2021", "n2022", "n2023"],
+        },
+        facts,
+    )
+    assert execution.status == "passed"
+    assert execution.output["result_period"] == 2022
+    assert Decimal(execution.output["primary_value"]) == Decimal("140")
+    assert Decimal(execution.output["secondary_value"]) == Decimal("12")
+    assert len(execution.intermediate_results) == 2
+
+
+def test_graph_matchers_exclude_forecast_facts(tmp_path):
+    db, kg_build, config = _graph_fixture(tmp_path)
+    forecast_id = "fact_B_US_revenue_2023"
+    db.execute(
+        "UPDATE standardized_facts SET is_forecast = 1 WHERE fact_id = ?",
+        (forecast_id,),
+    )
+    kg = dict(
+        db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,))
+    )
+    matches = discover_pattern_matches(
+        db,
+        kg,
+        "pairwise_entity_metric_comparison",
+        limit=20,
+        policy=config["qa"]["graph_patterns"].get("comparability"),
+    )
+    assert matches
+    assert all(forecast_id not in match["fact_ids"] for match in matches)
+
+
 def test_difficulty_uses_graph_and_operation_features():
     features = graph_features(
         source_fact_ids=[f"f{i}" for i in range(12)],
@@ -181,19 +251,38 @@ def test_difficulty_uses_graph_and_operation_features():
 def test_graph_pattern_build_discovers_and_validates_multi_hop_qa(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
     report = build_qa(db, config, kg_build_id=kg_build, output_dir=str(tmp_path / "audit"), batch_size=10)
-    assert report["candidate"]["eligible_candidate_count"] == 3
-    assert report["quality"]["passed_count"] == 3
+    assert report["candidate"]["eligible_candidate_count"] == 4
+    assert report["quality"]["passed_count"] == 4
     assert report["split"]["build_gate_status"] == "passed"
     rows = db.fetchall(
-        "SELECT pattern_id, operation_plan_id, difficulty_score FROM qa_candidates WHERE qa_build_id = ? ORDER BY pattern_id",
+        "SELECT pattern_id, pattern_hash, operation_plan_id, operation_plan_hash, difficulty_score FROM qa_candidates WHERE qa_build_id = ? ORDER BY pattern_id",
         (report["qa_build_id"],),
     )
     assert {row["pattern_id"] for row in rows} == {
         "pairwise_entity_metric_comparison",
         "entity_cross_metric_comparison",
         "entity_metric_temporal_average",
+        "temporal_argmax_then_metric_lookup",
     }
-    assert all(row["operation_plan_id"] and row["difficulty_score"] for row in rows)
+    assert all(
+        row["pattern_hash"]
+        and row["operation_plan_id"]
+        and row["operation_plan_hash"]
+        and row["difficulty_score"]
+        for row in rows
+    )
+    build = db.fetchone(
+        "SELECT pattern_manifest_hash, operator_manifest_hash, difficulty_policy_hash FROM qa_builds WHERE qa_build_id = ?",
+        (report["qa_build_id"],),
+    )
+    assert all(build[column] for column in build.keys())
+    active_versions = db.fetchall(
+        "SELECT pattern_id, pattern_version FROM qa_graph_patterns "
+        "WHERE pattern_id = 'pairwise_entity_metric_comparison' AND is_active = 1"
+    )
+    assert [(row["pattern_id"], row["pattern_version"]) for row in active_versions] == [
+        ("pairwise_entity_metric_comparison", 2)
+    ]
     checks = db.fetchall(
         "SELECT check_name, check_status FROM qa_quality_checks WHERE qa_build_id = ? AND check_name LIKE 'operator%'",
         (report["qa_build_id"],),
@@ -203,7 +292,10 @@ def test_graph_pattern_build_discovers_and_validates_multi_hop_qa(tmp_path):
     analysis = build_qa_diversity_report(
         db, report["qa_build_id"], output_dir=str(tmp_path / "analysis")
     )
-    assert analysis["semantic_diversity"]["unique_graph_patterns"] == 3
-    assert analysis["semantic_diversity"]["unique_operation_plans"] == 2
+    assert analysis["semantic_diversity"]["unique_graph_patterns"] == 4
+    assert analysis["semantic_diversity"]["unique_operation_plans"] == 3
+    assert analysis["funnels"]["validated_samples"]["sample_count"] == 4
+    assert analysis["funnels"]["exported_samples"]["sample_count"] == 4
+    assert analysis["semantic_diversity"]["unique_operator_dags"] == 4
     assert analysis["kg_utilization"]["fact_node_utilization"] > 0
     assert analysis["kg_utilization"]["edge_type_coverage"] > 0

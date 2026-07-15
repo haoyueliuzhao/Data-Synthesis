@@ -128,6 +128,8 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive --execute --purge --vacuum
 
 # Layer 5: deterministic QA build pinned to a validated KG version
+# Read-only matcher preflight: reports volume, fill rate, distribution, and SQL time.
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json qa-pattern-preflight --kg-build-id kg_20260711_062123_bc4b4394 --limit-per-pattern 500 --output-dir data/audit/qa_pattern_preflight_v4
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-qa --kg-build-id kg_20260711_062123_bc4b4394 --output-dir data/audit/qa_build
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-qa-jsonl --qa-build-id qa_build_20260712_023651_7adad081 --output-dir data/qa_exports
 ```
