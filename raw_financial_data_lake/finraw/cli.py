@@ -28,6 +28,7 @@ from finraw.kg_retention import enforce_kg_retention
 from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
+from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
@@ -171,6 +172,10 @@ def build_parser() -> argparse.ArgumentParser:
     qa_export = sub.add_parser("export-qa-jsonl", help="Export passed QA as benchmark, SFT, and trace-seed JSONL.")
     qa_export.add_argument("--qa-build-id", required=True)
     qa_export.add_argument("--output-dir", default="data/qa_exports")
+
+    qa_analysis = sub.add_parser("qa-analysis", help="Report QA semantic diversity and KG utilization for a QA build.")
+    qa_analysis.add_argument("--qa-build-id", required=True)
+    qa_analysis.add_argument("--output-dir", default="data/audit/qa_analysis")
 
     qa_all = sub.add_parser("build-qa", help="Run candidate, generation, validation, and split stages end to end.")
     qa_all.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
@@ -377,6 +382,11 @@ def main() -> None:
                 raise RuntimeError(f"QA build gate failed: {report.get('build_gate_failures', [])}")
         elif args.command == "export-qa-jsonl":
             report = export_qa_jsonl(db, args.qa_build_id, args.output_dir)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-analysis":
+            report = build_qa_diversity_report(
+                db, args.qa_build_id, output_dir=args.output_dir
+            )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "build-qa":
             report = build_qa(db, config, kg_build_id=args.kg_build_id, output_dir=args.output_dir, batch_size=args.batch_size)

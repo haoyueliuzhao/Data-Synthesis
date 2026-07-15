@@ -224,6 +224,14 @@
       "enabled": false,
       "max_per_group": 0
     },
+    "graph_patterns": {
+      "enabled": true,
+      "quotas": {
+        "pairwise_entity_metric_comparison": 2000,
+        "entity_cross_metric_comparison": 2000,
+        "entity_metric_temporal_average": 2000
+      }
+    },
     "split_policy": "semantic_cluster_then_entity_fixed_time_task",
     "temporal_split": {
       "cutoff_year": 2025

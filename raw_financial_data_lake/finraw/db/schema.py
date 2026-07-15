@@ -671,6 +671,21 @@ CREATE TABLE IF NOT EXISTS qa_templates (
             difficulty_base TEXT NOT NULL,
             is_active INTEGER DEFAULT 1
         );
+CREATE TABLE IF NOT EXISTS qa_graph_patterns (
+            pattern_key TEXT PRIMARY KEY,
+            pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            pattern_family TEXT NOT NULL,
+            node_constraints TEXT NOT NULL,
+            edge_constraints TEXT NOT NULL,
+            semantic_constraints TEXT NOT NULL,
+            operator_template TEXT NOT NULL,
+            answer_schema TEXT NOT NULL,
+            difficulty_base TEXT NOT NULL,
+            question_intents TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            UNIQUE(pattern_id, pattern_version)
+        );
 CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -678,6 +693,13 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
+            pattern_id TEXT,
+            pattern_version INTEGER,
+            operation_plan_id TEXT,
+            graph_features TEXT,
+            difficulty_score REAL,
+            answer_schema TEXT,
+            question_intent TEXT,
             entity_ids TEXT NOT NULL,
             metric_ids TEXT NOT NULL,
             time_scope TEXT NOT NULL,
@@ -695,6 +717,20 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             rejection_reasons TEXT NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_operation_plans (
+            plan_id TEXT PRIMARY KEY,
+            qa_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            operator_dag TEXT NOT NULL,
+            input_bindings TEXT NOT NULL,
+            intermediate_results TEXT NOT NULL,
+            output_schema TEXT NOT NULL,
+            recompute_status TEXT NOT NULL,
+            validation_errors TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
 CREATE TABLE IF NOT EXISTS qa_samples (
             qa_id TEXT PRIMARY KEY,
             stable_qa_id TEXT NOT NULL,
@@ -704,6 +740,11 @@ CREATE TABLE IF NOT EXISTS qa_samples (
             candidate_id TEXT NOT NULL,
             template_id TEXT,
             template_hash TEXT,
+            surface_form_id TEXT,
+            paraphrase_group_id TEXT,
+            linguistic_style TEXT,
+            graph_pattern_id TEXT,
+            operation_depth INTEGER,
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
@@ -757,6 +798,10 @@ CREATE INDEX IF NOT EXISTS idx_qa_samples_group_split ON qa_samples(qa_group_id,
 CREATE INDEX IF NOT EXISTS idx_qa_samples_cluster ON qa_samples(semantic_cluster_id);
 CREATE INDEX IF NOT EXISTS idx_qa_evidence_qa ON qa_evidence_paths(qa_id);
 CREATE INDEX IF NOT EXISTS idx_qa_quality_build_status ON qa_quality_checks(qa_build_id, check_status);
+CREATE INDEX IF NOT EXISTS idx_qa_patterns_family_active ON qa_graph_patterns(pattern_family, is_active);
+CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status);
+CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_plans_candidate ON qa_operation_plans(candidate_id);
 """
 
 SOURCE_REGISTRY_SEED = [

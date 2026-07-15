@@ -43,7 +43,9 @@ LAYER_TABLES: dict[str, list[str]] = {
     "qa_build": [
         "qa_builds",
         "qa_templates",
+        "qa_graph_patterns",
         "qa_candidates",
+        "qa_operation_plans",
         "qa_samples",
         "qa_evidence_paths",
         "qa_quality_checks",
@@ -88,6 +90,7 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "split-qa",
         "build-qa",
         "export-qa-jsonl",
+        "qa-analysis",
     ],
 }
 
@@ -120,7 +123,7 @@ LAYER_DESCRIPTIONS: dict[str, str] = {
     "fact_build": "Canonical entities, metric ontology, atomic facts, standardized facts, and document candidates built from raw records.",
     "fact_validation": "Quality checks, source-definition crosswalks, frequency metadata, fact-level graph_ready gates, conflict and comparability support.",
     "qa_ready": "Derived facts and versioned KG artifacts that consume graph-ready standardized facts.",
-    "qa_build": "Deterministic QA candidates, samples, evidence paths, rubrics, quality checks, splits, and benchmark exports pinned to a KG build.",
+    "qa_build": "Graph-pattern and legacy QA candidates, executable operation plans, samples, evidence subgraphs, rubrics, quality checks, splits, and benchmark exports pinned to a KG build.",
 }
 
 

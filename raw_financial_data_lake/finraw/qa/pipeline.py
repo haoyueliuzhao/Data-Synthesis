@@ -12,6 +12,10 @@ from typing import Any
 
 from finraw.db.client import DBProtocol
 from finraw.kg_query import resolve_kg_build_id
+from finraw.qa.difficulty import assess_difficulty, graph_features
+from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
+from finraw.qa.graph_patterns import get_pattern, pattern_manifest
+from finraw.qa.plans import execute_plan, operation_depth
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
@@ -39,7 +43,7 @@ SCOPE_DERIVED = {
     "multi_condition_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "2.0.0"
+GENERATOR_VERSION = "3.0.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -74,6 +78,13 @@ CANDIDATE_COLUMNS = [
     "task_family",
     "task_subtype",
     "difficulty",
+    "pattern_id",
+    "pattern_version",
+    "operation_plan_id",
+    "graph_features",
+    "difficulty_score",
+    "answer_schema",
+    "question_intent",
     "entity_ids",
     "metric_ids",
     "time_scope",
@@ -99,6 +110,11 @@ SAMPLE_COLUMNS = [
     "candidate_id",
     "template_id",
     "template_hash",
+    "surface_form_id",
+    "paraphrase_group_id",
+    "linguistic_style",
+    "graph_pattern_id",
+    "operation_depth",
     "task_family",
     "task_subtype",
     "difficulty",
@@ -140,6 +156,19 @@ CHECK_COLUMNS = [
     "expected_value",
     "message",
 ]
+PLAN_COLUMNS = [
+    "plan_id",
+    "qa_build_id",
+    "candidate_id",
+    "pattern_id",
+    "pattern_version",
+    "operator_dag",
+    "input_bindings",
+    "intermediate_results",
+    "output_schema",
+    "recompute_status",
+    "validation_errors",
+]
 
 
 def build_qa_candidates(
@@ -152,6 +181,7 @@ def build_qa_candidates(
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
     _seed_templates(db)
+    _seed_graph_patterns(db)
     kg_build_id = resolve_kg_build_id(db, kg_build_id)
     kg = _kg_build(db, kg_build_id)
     if kg.get("status") != "success" or kg.get("quality_status") != "passed":
@@ -195,6 +225,7 @@ def build_qa_candidates(
     insert_rows(db, "qa_builds", [build], BUILD_COLUMNS, {"notes"})
 
     candidates: list[dict[str, Any]] = []
+    plans: list[dict[str, Any]] = []
     counts: Counter[str] = Counter()
     rejected: Counter[str] = Counter()
     entity_names = {
@@ -219,20 +250,35 @@ def build_qa_candidates(
         )
     }
 
-    def emit(candidate: dict[str, Any]) -> None:
+    def flush() -> None:
+        if not candidates:
+            return
+        insert_rows(
+            db,
+            "qa_candidates",
+            candidates,
+            CANDIDATE_COLUMNS,
+            _candidate_json_columns(),
+        )
+        insert_rows(
+            db,
+            "qa_operation_plans",
+            plans,
+            PLAN_COLUMNS,
+            _plan_json_columns(),
+        )
+        candidates.clear()
+        plans.clear()
+
+    def emit(candidate: dict[str, Any], plan: dict[str, Any] | None = None) -> None:
         candidates.append(candidate)
+        if plan:
+            plans.append(plan)
         counts[candidate["task_subtype"]] += 1
         for reason in candidate["rejection_reasons"]:
             rejected[reason] += 1
         if len(candidates) >= batch_size:
-            insert_rows(
-                db,
-                "qa_candidates",
-                candidates,
-                CANDIDATE_COLUMNS,
-                _candidate_json_columns(),
-            )
-            candidates.clear()
+            flush()
 
     for pool_name, sources, quota in [
         (
@@ -279,14 +325,34 @@ def build_qa_candidates(
                 )
             )
 
-    if candidates:
-        insert_rows(
-            db,
-            "qa_candidates",
-            candidates,
-            CANDIDATE_COLUMNS,
-            _candidate_json_columns(),
-        )
+    graph_policy = policy.get("graph_patterns", {})
+    if graph_policy.get("enabled"):
+        for pattern_id, quota in graph_policy.get("quotas", {}).items():
+            if int(quota) <= 0:
+                continue
+            pattern = get_pattern(pattern_id)
+            if not pattern.is_active:
+                continue
+            matches = discover_pattern_matches(db, kg, pattern_id, limit=int(quota))
+            fact_map = load_bound_facts(
+                db,
+                kg["input_fact_build_id"],
+                [fact_id for match in matches for fact_id in match["fact_ids"]],
+            )
+            for match in matches:
+                candidate, plan = _graph_pattern_candidate(
+                    db,
+                    match,
+                    pattern,
+                    fact_map,
+                    qa_build_id,
+                    kg_build_id,
+                    entity_names,
+                    metric_names,
+                )
+                emit(candidate, plan)
+
+    flush()
 
     candidate_count = _scalar(
         db,
@@ -342,7 +408,13 @@ def generate_qa_samples(
     ensure_qa_schema(db)
     build = _qa_build(db, qa_build_id)
     candidates = db.fetchall(
-        "SELECT * FROM qa_candidates WHERE qa_build_id = ? AND eligibility_status = 'eligible' ORDER BY candidate_id",
+        """
+        SELECT c.*, p.operator_dag AS operation_plan
+        FROM qa_candidates c
+        LEFT JOIN qa_operation_plans p ON p.plan_id = c.operation_plan_id
+        WHERE c.qa_build_id = ? AND c.eligibility_status = 'eligible'
+        ORDER BY c.candidate_id
+        """,
         (qa_build_id,),
     )
     samples: list[dict[str, Any]] = []
@@ -410,8 +482,15 @@ def validate_qa_samples(
             """
         SELECT s.*, c.canonical_semantics, c.derived_payload,
                c.recomputed_payload, c.answer_payload, c.kg_path,
-               c.source_fact_ids, c.source_derived_ids, c.raw_object_ids
-        FROM qa_samples s JOIN qa_candidates c ON c.candidate_id = s.candidate_id
+               c.source_fact_ids, c.source_derived_ids, c.raw_object_ids,
+               c.pattern_id, c.pattern_version, c.operation_plan_id,
+               c.graph_features, c.answer_schema, c.question_intent,
+               p.operator_dag, p.input_bindings, p.intermediate_results,
+               p.output_schema, p.recompute_status AS plan_recompute_status,
+               p.validation_errors AS plan_validation_errors
+        FROM qa_samples s
+        JOIN qa_candidates c ON c.candidate_id = s.candidate_id
+        LEFT JOIN qa_operation_plans p ON p.plan_id = c.operation_plan_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'pending'
         ORDER BY s.qa_id
         """,
@@ -565,7 +644,11 @@ def split_qa_samples(
     cluster_split: dict[str, str] = {}
     split_counts: Counter[str] = Counter()
     task_counts: Counter[str] = Counter()
-    challenge = SCOPE_DERIVED | {"rolling_max", "rolling_min"}
+    challenge = SCOPE_DERIVED | {
+        "rolling_max",
+        "rolling_min",
+        "multi_period_average",
+    }
     split_updates: list[tuple[str, str]] = []
     for row in rows:
         cluster = row.get("semantic_cluster_id") or row["qa_group_id"]
@@ -617,7 +700,9 @@ def split_qa_samples(
           AND check_name IN (
               'structure', 'fact_membership', 'evidence_path', 'evidence_semantics',
               'semantic_slots', 'independent_recompute', 'scope_completeness',
-              'no_answer_leakage'
+              'no_answer_leakage', 'graph_pattern_match',
+              'operator_input_complete', 'operator_type_valid',
+              'intermediate_result_recompute', 'operation_trace_coverage'
           )
         """,
         [qa_build_id],
@@ -941,6 +1026,147 @@ def _derived_candidate(
     }
 
 
+def _graph_pattern_candidate(
+    db: DBProtocol,
+    match: dict[str, Any],
+    pattern: Any,
+    fact_map: dict[str, dict[str, Any]],
+    qa_build_id: str,
+    kg_build_id: str,
+    entity_name_map: dict[str, str],
+    metric_name_map: dict[str, str],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    fact_ids = [str(fact_id) for fact_id in match["fact_ids"]]
+    facts = [fact_map[fact_id] for fact_id in fact_ids if fact_id in fact_map]
+    reasons = []
+    if len(facts) != len(fact_ids):
+        reasons.append("graph_pattern_missing_bound_fact")
+    operator_dag = json.loads(json.dumps(pattern.operator_template))
+    if match.get("operator_params") and operator_dag.get("operators"):
+        operator_dag["operators"][0]["params"] = dict(match["operator_params"])
+    execution = execute_plan(operator_dag, match["input_bindings"], fact_map)
+    if execution.status != "passed":
+        reasons.append("operation_plan_execution_failed")
+    answer = execution.output
+    if answer.get("value") is None and not answer.get("table") and not answer.get("rows"):
+        reasons.append("missing_answer")
+
+    subtype = {
+        "pairwise_entity_metric_comparison": "pairwise_entity_comparison",
+        "entity_cross_metric_comparison": "cross_metric_comparison",
+        "entity_metric_temporal_average": "multi_period_average",
+    }[pattern.pattern_id]
+    if subtype == "multi_period_average":
+        time_scope = {
+            "start_year": match.get("start_period"),
+            "end_year": match.get("end_period"),
+            "basis": "multi_period",
+        }
+    else:
+        time_scope = _fact_time_scope(facts[0]) if facts else {}
+    intent_index = int(_digest(pattern.pattern_id, match)[:8], 16) % len(
+        pattern.question_intents
+    )
+    question_intent = pattern.question_intents[intent_index]
+    entity_ids = sorted(set(match["entity_ids"]))
+    metric_ids = sorted(set(match["metric_ids"]))
+    semantics = {
+        "operation": subtype,
+        "graph_pattern_id": pattern.pattern_id,
+        "graph_pattern_version": pattern.pattern_version,
+        "question_intent": question_intent,
+        "entity_ids": entity_ids,
+        "entity_names": {
+            entity_id: entity_name_map.get(entity_id, entity_id)
+            for entity_id in entity_ids
+        },
+        "metric_ids": metric_ids,
+        "metric_names": {
+            metric_id: metric_name_map.get(metric_id, metric_id.replace("_", " "))
+            for metric_id in metric_ids
+        },
+        "metric_period_type": facts[0].get("metric_period_type") if facts else None,
+        "time_scope": time_scope,
+        "input_bindings": match["input_bindings"],
+        "operation_plan": operator_dag,
+        "answer_schema": pattern.answer_schema,
+    }
+    if len(entity_ids) == 1:
+        semantics["entity_id"] = entity_ids[0]
+        semantics["entity_name"] = entity_name_map.get(entity_ids[0], entity_ids[0])
+    evidence = _kg_path_from_graph(db, kg_build_id, fact_ids=fact_ids)
+    features = graph_features(
+        source_fact_ids=fact_ids,
+        source_derived_ids=[],
+        entity_ids=entity_ids,
+        metric_ids=metric_ids,
+        facts=facts,
+        evidence=evidence,
+        operation_plan=operator_dag,
+        answer_payload=answer,
+    )
+    difficulty, score = assess_difficulty(features)
+    stable = "qac_" + _digest(
+        pattern.pattern_id,
+        pattern.pattern_version,
+        semantics,
+        fact_ids,
+    )
+    candidate_id = f"{stable}__{qa_build_id}"
+    plan_id = "qaplan_" + _digest(stable, operator_dag, match["input_bindings"])
+    raw_object_ids = sorted(
+        {
+            str(fact["raw_object_id"])
+            for fact in facts
+            if fact.get("raw_object_id")
+        }
+    )
+    candidate = {
+        "candidate_id": candidate_id,
+        "stable_candidate_id": stable,
+        "qa_build_id": qa_build_id,
+        "task_family": pattern.pattern_family,
+        "task_subtype": subtype,
+        "difficulty": difficulty,
+        "pattern_id": pattern.pattern_id,
+        "pattern_version": pattern.pattern_version,
+        "operation_plan_id": plan_id,
+        "graph_features": features,
+        "difficulty_score": score,
+        "answer_schema": pattern.answer_schema,
+        "question_intent": question_intent,
+        "entity_ids": entity_ids,
+        "metric_ids": metric_ids,
+        "time_scope": time_scope,
+        "entity_scope": {"entity_ids": entity_ids, "scope_type": "graph_pattern_binding"},
+        "source_fact_ids": fact_ids,
+        "source_derived_ids": [],
+        "source_document_ids": [],
+        "raw_object_ids": raw_object_ids,
+        "canonical_semantics": semantics,
+        "derived_payload": {},
+        "recomputed_payload": answer,
+        "answer_payload": answer,
+        "kg_path": evidence,
+        "eligibility_status": "eligible" if not reasons else "rejected",
+        "rejection_reasons": reasons,
+    }
+    plan = {
+        "plan_id": plan_id,
+        "qa_build_id": qa_build_id,
+        "candidate_id": candidate_id,
+        "pattern_id": pattern.pattern_id,
+        "pattern_version": pattern.pattern_version,
+        "operator_dag": operator_dag,
+        "input_bindings": match["input_bindings"],
+        "intermediate_results": execution.intermediate_results,
+        "output_schema": pattern.answer_schema,
+        "recompute_status": execution.status,
+        "validation_errors": execution.errors,
+    }
+    return candidate, plan
+
+
 def _sample_from_candidate(
     candidate: dict[str, Any], build: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -949,7 +1175,9 @@ def _sample_from_candidate(
     metric_names = _metric_names_from_semantics(semantics, candidate["metric_ids"])
     slots = _question_slots(candidate, entity_names, metric_names)
     template = template_for(
-        candidate["task_subtype"], semantics.get("metric_period_type")
+        candidate["task_subtype"],
+        semantics.get("metric_period_type"),
+        candidate.get("stable_candidate_id"),
     )
     question = template["template_text"].format(**slots)
     answer = candidate["answer_payload"]
@@ -979,6 +1207,11 @@ def _sample_from_candidate(
         "candidate_id": candidate["candidate_id"],
         "template_id": template["template_id"],
         "template_hash": _digest(template),
+        "surface_form_id": template["template_id"],
+        "paraphrase_group_id": "qapg_" + _digest(candidate["stable_candidate_id"]),
+        "linguistic_style": candidate.get("question_intent") or "canonical",
+        "graph_pattern_id": candidate.get("pattern_id"),
+        "operation_depth": operation_depth(candidate.get("operation_plan") or {}),
         "task_family": candidate["task_family"],
         "task_subtype": candidate["task_subtype"],
         "difficulty": candidate["difficulty"],
@@ -1000,17 +1233,26 @@ def _sample_from_candidate(
             "raw_object_ids": candidate["raw_object_ids"],
             "derived_payload": candidate.get("derived_payload"),
             "recomputed_payload": candidate.get("recomputed_payload"),
+            "graph_pattern_id": candidate.get("pattern_id"),
+            "operation_plan_id": candidate.get("operation_plan_id"),
+            "graph_features": candidate.get("graph_features"),
         },
-        "generation_method": "deterministic_template",
+        "generation_method": "graph_pattern_operation_plan"
+        if candidate.get("operation_plan_id")
+        else "deterministic_template",
         "validation_status": "pending",
         "split": None,
     }
     path = {
         "path_id": "qap_" + _digest(qa_id, candidate["kg_path"]),
         "qa_id": qa_id,
-        "path_type": "derived_fact_path"
-        if candidate["source_derived_ids"]
-        else "single_fact_path",
+        "path_type": "graph_pattern_subgraph"
+        if candidate.get("pattern_id") and candidate.get("operation_plan_id")
+        else (
+            "derived_fact_path"
+            if candidate["source_derived_ids"]
+            else "single_fact_path"
+        ),
         "ordered_node_ids": candidate["kg_path"].get("node_ids", []),
         "ordered_edge_ids": candidate["kg_path"].get("edge_ids", []),
         "evidence_node_ids": candidate["kg_path"].get("evidence_node_ids")
@@ -1146,11 +1388,60 @@ def _validate_one(
         "Entity, metric, time, unit, and required scope must be explicit.",
     )
     expected = row["answer_payload"]
-    recomputed, reason = _recompute(
-        row["task_subtype"],
-        [item for item in source_facts if item],
-        row["canonical_semantics"],
-    )
+    if row.get("operation_plan_id"):
+        fact_map = {
+            str(item["fact_id"]): item for item in source_facts if item
+        }
+        execution = execute_plan(
+            row.get("operator_dag") or {},
+            row.get("input_bindings") or {},
+            fact_map,
+        )
+        bound_ids = _bound_fact_ids(row.get("input_bindings") or {})
+        add(
+            "graph_pattern_match",
+            bool(row.get("pattern_id")) and set(bound_ids) == set(row["source_fact_ids"]),
+            {"pattern_id": row.get("pattern_id"), "bound_fact_ids": bound_ids},
+            {"pattern_id": row.get("pattern_id"), "bound_fact_ids": sorted(row["source_fact_ids"])},
+            "The graph pattern must bind exactly the facts declared by the candidate.",
+        )
+        add(
+            "operator_input_complete",
+            all(fact_id in fact_map for fact_id in bound_ids),
+            sorted(fact_map),
+            bound_ids,
+            "Every operation-plan input must resolve to a pinned graph-ready fact.",
+        )
+        add(
+            "operator_type_valid",
+            execution.status == "passed",
+            execution.errors,
+            [],
+            "Every operator must accept the bound input types, units, and currencies.",
+        )
+        add(
+            "intermediate_result_recompute",
+            _digest(execution.intermediate_results)
+            == _digest(row.get("intermediate_results") or []),
+            execution.intermediate_results,
+            row.get("intermediate_results") or [],
+            "Stored intermediate results must match a fresh operation-plan replay.",
+        )
+        add(
+            "operation_trace_coverage",
+            set(row["source_fact_ids"]).issubset(set(bound_ids)),
+            bound_ids,
+            sorted(row["source_fact_ids"]),
+            "The operation trace must cover every source fact used by the QA.",
+        )
+        recomputed = execution.output
+        reason = "Replayed the registered operation plan from pinned source facts."
+    else:
+        recomputed, reason = _recompute(
+            row["task_subtype"],
+            [item for item in source_facts if item],
+            row["canonical_semantics"],
+        )
     matched = _answers_match(expected, recomputed, row.get("rubric"))
     add("independent_recompute", matched, recomputed, expected, reason)
     if row["task_subtype"] in {"share", "ranking", "industry_ranking"}:
@@ -1184,6 +1475,16 @@ def _validate_one(
         "Canonical question must not contain the rendered answer.",
     )
     return checks
+
+
+def _bound_fact_ids(bindings: dict[str, Any]) -> list[str]:
+    output = []
+    for value in bindings.values():
+        if isinstance(value, list):
+            output.extend(str(item) for item in value)
+        elif value is not None:
+            output.append(str(value))
+    return sorted(set(output))
 
 
 def _scope_is_complete(
@@ -1353,6 +1654,25 @@ def _answers_match(
         "winning_entity_id"
     ] != observed.get("winning_entity_id"):
         return False
+    for field in ("winner_id", "relation"):
+        if expected.get(field) != observed.get(field):
+            return False
+    if expected.get("difference") is not None:
+        left = _decimal(expected.get("difference"))
+        right = _decimal(observed.get("difference"))
+        tolerance = _decimal(expected.get("tolerance")) or Decimal("0.000001")
+        if left is None or right is None or abs(left - right) > tolerance:
+            return False
+    if expected.get("rows") is not None:
+        expected_rows = expected.get("rows") or []
+        observed_rows = observed.get("rows") or []
+        if len(expected_rows) != len(observed_rows):
+            return False
+        for expected_row, observed_row in zip(expected_rows, observed_rows):
+            if expected_row.get("id") != observed_row.get("id"):
+                return False
+            if _decimal(expected_row.get("value")) != _decimal(observed_row.get("value")):
+                return False
     if expected.get("table") is not None:
         expected_table = expected.get("table") or []
         observed_table = observed.get("table") or []
@@ -1769,7 +2089,12 @@ def _validate_evidence_semantics(
         )
         if nodes.get(src) not in src_types or nodes.get(dst) not in dst_types:
             invalid_edges.append(edge_id)
-    if task_subtype == "single_fact":
+    if task_subtype in {
+        "single_fact",
+        "pairwise_entity_comparison",
+        "cross_metric_comparison",
+        "multi_period_average",
+    }:
         required = {
             "HAS_FACT",
             "MEASURES",
@@ -2111,6 +2436,8 @@ def _question_slots(
     period = _period_label(time_scope)
     previous = _previous_period_label(time_scope)
     subtype = candidate["task_subtype"]
+    entity_ids = list(candidate.get("entity_ids") or [])
+    metric_ids = list(candidate.get("metric_ids") or [])
     return {
         "entity": entity_names.get(entity_id, entity_id),
         "metric": metric_names.get(metric_id, metric_id.replace("_", " ")),
@@ -2132,12 +2459,34 @@ def _question_slots(
         "scope": semantics.get("scope_definition")
         or "the explicitly configured data scope",
         "top_k": str(len(candidate.get("answer_payload", {}).get("table") or [])),
+        "entity_a": entity_names.get(entity_ids[0], entity_ids[0])
+        if entity_ids
+        else "the first entity",
+        "entity_b": entity_names.get(entity_ids[1], entity_ids[1])
+        if len(entity_ids) > 1
+        else "the second entity",
+        "metric_a": metric_names.get(metric_ids[0], metric_ids[0].replace("_", " "))
+        if metric_ids
+        else "the first metric",
+        "metric_b": metric_names.get(metric_ids[1], metric_ids[1].replace("_", " "))
+        if len(metric_ids) > 1
+        else "the second metric",
     }
 
 
 def _answer_text(
     candidate: dict[str, Any], answer: dict[str, Any], entity_names: dict[str, str]
 ) -> str:
+    if answer.get("relation") and answer.get("rows"):
+        labels = dict(entity_names)
+        labels.update(candidate.get("canonical_semantics", {}).get("metric_names") or {})
+        if answer.get("relation") == "equal":
+            return f"Equal; difference: 0 {answer.get('unit') or ''}".strip()
+        winner = labels.get(answer.get("winner_id"), answer.get("winner_id"))
+        return (
+            f"{winner} was higher by {_format_value(answer.get('difference'))} "
+            f"{answer.get('unit') or ''}"
+        ).strip()
     if answer.get("table"):
         if candidate["task_subtype"] in {"ranking", "industry_ranking"}:
             unit = answer.get("unit") or ""
@@ -2169,6 +2518,17 @@ def _ranked_value_tolerance(value: Any) -> str:
 
 
 def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]:
+    if answer.get("relation") and answer.get("rows"):
+        return {
+            "match_type": "comparison",
+            "winner_id": answer.get("winner_id"),
+            "relation": answer.get("relation"),
+            "difference": answer.get("difference"),
+            "target_rows": answer.get("rows"),
+            "unit": answer.get("unit"),
+            "currency": answer.get("currency"),
+            "absolute_tolerance": answer.get("tolerance") or "0.000001",
+        }
     if answer.get("table"):
         if candidate["task_subtype"] in {"ranking", "industry_ranking"}:
             return {
@@ -2369,6 +2729,7 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "multi_condition_screening": 0,
         "long_window_return": 10,
     }
+    graph_config = configured.get("graph_patterns", {})
     return {
         "quotas": {key: int(quotas.get(key, value)) for key, value in defaults.items()},
         "derived_quotas": {
@@ -2378,6 +2739,20 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "language": "en",
         "forecast_policy": "exclude_historical_questions",
         "generation_method": "deterministic_template",
+        "graph_patterns": {
+            "enabled": bool(graph_config.get("enabled", False)),
+            "quotas": {
+                "pairwise_entity_metric_comparison": int(
+                    graph_config.get("quotas", {}).get("pairwise_entity_metric_comparison", 0)
+                ),
+                "entity_cross_metric_comparison": int(
+                    graph_config.get("quotas", {}).get("entity_cross_metric_comparison", 0)
+                ),
+                "entity_metric_temporal_average": int(
+                    graph_config.get("quotas", {}).get("entity_metric_temporal_average", 0)
+                ),
+            },
+        },
         "temporal_split": configured.get("temporal_split", {"cutoff_year": 2025}),
         "split_policy": configured.get(
             "split_policy", "semantic_cluster_then_entity_fixed_time_task"
@@ -2425,6 +2800,44 @@ def _seed_templates(db: DBProtocol) -> None:
         for item in TEMPLATES
     ]
     insert_rows(db, "qa_templates", rows, columns, {"required_slots"})
+
+
+def _seed_graph_patterns(db: DBProtocol) -> None:
+    rows = []
+    for item in pattern_manifest():
+        rows.append(
+            {
+                **item,
+                "pattern_key": f"{item['pattern_id']}@{item['pattern_version']}",
+            }
+        )
+    insert_rows(
+        db,
+        "qa_graph_patterns",
+        rows,
+        [
+            "pattern_key",
+            "pattern_id",
+            "pattern_version",
+            "pattern_family",
+            "node_constraints",
+            "edge_constraints",
+            "semantic_constraints",
+            "operator_template",
+            "answer_schema",
+            "difficulty_base",
+            "question_intents",
+            "is_active",
+        ],
+        {
+            "node_constraints",
+            "edge_constraints",
+            "semantic_constraints",
+            "operator_template",
+            "answer_schema",
+            "question_intents",
+        },
+    )
 
 
 def _repo_root() -> Path:
@@ -2484,6 +2897,7 @@ def _decode_candidate(row: dict[str, Any]) -> dict[str, Any]:
             row.get(key),
             [] if key.endswith("_ids") or key == "rejection_reasons" else {},
         )
+    row["operation_plan"] = json_value(row.get("operation_plan"), {})
     return row
 
 
@@ -2498,6 +2912,14 @@ def _decode_validation_row(row: dict[str, Any]) -> dict[str, Any]:
     )
     row["time_scope"] = row["canonical_semantics"].get("time_scope") or {}
     row["unit"] = row["answer_payload"].get("unit")
+    for key in [
+        "operator_dag",
+        "input_bindings",
+        "intermediate_results",
+        "output_schema",
+        "plan_validation_errors",
+    ]:
+        row[key] = json_value(row.get(key), [] if key in {"intermediate_results", "plan_validation_errors"} else {})
     return row
 
 
@@ -2517,11 +2939,23 @@ def _candidate_json_columns() -> set[str]:
         "answer_payload",
         "kg_path",
         "rejection_reasons",
+        "graph_features",
+        "answer_schema",
     }
 
 
 def _sample_json_columns() -> set[str]:
     return {"answer_value", "rubric", "source_metadata"}
+
+
+def _plan_json_columns() -> set[str]:
+    return {
+        "operator_dag",
+        "input_bindings",
+        "intermediate_results",
+        "output_schema",
+        "validation_errors",
+    }
 
 
 def _evidence_json_columns() -> set[str]:

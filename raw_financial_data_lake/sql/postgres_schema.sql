@@ -675,6 +675,21 @@ CREATE TABLE IF NOT EXISTS qa_templates (
             difficulty_base TEXT NOT NULL,
             is_active BOOLEAN DEFAULT TRUE
         );
+CREATE TABLE IF NOT EXISTS qa_graph_patterns (
+            pattern_key TEXT PRIMARY KEY,
+            pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            pattern_family TEXT NOT NULL,
+            node_constraints JSONB NOT NULL,
+            edge_constraints JSONB NOT NULL,
+            semantic_constraints JSONB NOT NULL,
+            operator_template JSONB NOT NULL,
+            answer_schema JSONB NOT NULL,
+            difficulty_base TEXT NOT NULL,
+            question_intents JSONB NOT NULL,
+            is_active BOOLEAN DEFAULT TRUE,
+            UNIQUE(pattern_id, pattern_version)
+        );
 CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -682,6 +697,13 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
+            pattern_id TEXT,
+            pattern_version INTEGER,
+            operation_plan_id TEXT,
+            graph_features JSONB,
+            difficulty_score REAL,
+            answer_schema JSONB,
+            question_intent TEXT,
             entity_ids JSONB NOT NULL,
             metric_ids JSONB NOT NULL,
             time_scope JSONB NOT NULL,
@@ -699,6 +721,20 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             rejection_reasons JSONB NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_operation_plans (
+            plan_id TEXT PRIMARY KEY,
+            qa_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            operator_dag JSONB NOT NULL,
+            input_bindings JSONB NOT NULL,
+            intermediate_results JSONB NOT NULL,
+            output_schema JSONB NOT NULL,
+            recompute_status TEXT NOT NULL,
+            validation_errors JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
 CREATE TABLE IF NOT EXISTS qa_samples (
             qa_id TEXT PRIMARY KEY,
             stable_qa_id TEXT NOT NULL,
@@ -708,6 +744,11 @@ CREATE TABLE IF NOT EXISTS qa_samples (
             candidate_id TEXT NOT NULL,
             template_id TEXT,
             template_hash TEXT,
+            surface_form_id TEXT,
+            paraphrase_group_id TEXT,
+            linguistic_style TEXT,
+            graph_pattern_id TEXT,
+            operation_depth INTEGER,
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
@@ -761,3 +802,7 @@ CREATE INDEX IF NOT EXISTS idx_qa_samples_group_split ON qa_samples(qa_group_id,
 CREATE INDEX IF NOT EXISTS idx_qa_samples_cluster ON qa_samples(semantic_cluster_id);
 CREATE INDEX IF NOT EXISTS idx_qa_evidence_qa ON qa_evidence_paths(qa_id);
 CREATE INDEX IF NOT EXISTS idx_qa_quality_build_status ON qa_quality_checks(qa_build_id, check_status);
+CREATE INDEX IF NOT EXISTS idx_qa_patterns_family_active ON qa_graph_patterns(pattern_family, is_active);
+CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status);
+CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_plans_candidate ON qa_operation_plans(candidate_id);

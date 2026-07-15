@@ -52,6 +52,23 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         )
         """,
         f"""
+        CREATE TABLE IF NOT EXISTS qa_graph_patterns (
+            pattern_key TEXT PRIMARY KEY,
+            pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            pattern_family TEXT NOT NULL,
+            node_constraints {json_type} NOT NULL,
+            edge_constraints {json_type} NOT NULL,
+            semantic_constraints {json_type} NOT NULL,
+            operator_template {json_type} NOT NULL,
+            answer_schema {json_type} NOT NULL,
+            difficulty_base TEXT NOT NULL,
+            question_intents {json_type} NOT NULL,
+            is_active {bool_type} DEFAULT {true_literal},
+            UNIQUE(pattern_id, pattern_version)
+        )
+        """,
+        f"""
         CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -59,6 +76,13 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
+            pattern_id TEXT,
+            pattern_version INTEGER,
+            operation_plan_id TEXT,
+            graph_features {json_type},
+            difficulty_score REAL,
+            answer_schema {json_type},
+            question_intent TEXT,
             entity_ids {json_type} NOT NULL,
             metric_ids {json_type} NOT NULL,
             time_scope {json_type} NOT NULL,
@@ -78,6 +102,22 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         )
         """,
         f"""
+        CREATE TABLE IF NOT EXISTS qa_operation_plans (
+            plan_id TEXT PRIMARY KEY,
+            qa_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            operator_dag {json_type} NOT NULL,
+            input_bindings {json_type} NOT NULL,
+            intermediate_results {json_type} NOT NULL,
+            output_schema {json_type} NOT NULL,
+            recompute_status TEXT NOT NULL,
+            validation_errors {json_type} NOT NULL,
+            created_at {timestamp_type} DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        f"""
         CREATE TABLE IF NOT EXISTS qa_samples (
             qa_id TEXT PRIMARY KEY,
             stable_qa_id TEXT NOT NULL,
@@ -87,6 +127,11 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             candidate_id TEXT NOT NULL,
             template_id TEXT,
             template_hash TEXT,
+            surface_form_id TEXT,
+            paraphrase_group_id TEXT,
+            linguistic_style TEXT,
+            graph_pattern_id TEXT,
+            operation_depth INTEGER,
             task_family TEXT NOT NULL,
             task_subtype TEXT NOT NULL,
             difficulty TEXT NOT NULL,
@@ -164,10 +209,25 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "git_commit_sha": "TEXT",
             "split_policy_hash": "TEXT",
         },
-        "qa_samples": {"template_id": "TEXT", "template_hash": "TEXT"},
+        "qa_samples": {
+            "template_id": "TEXT",
+            "template_hash": "TEXT",
+            "surface_form_id": "TEXT",
+            "paraphrase_group_id": "TEXT",
+            "linguistic_style": "TEXT",
+            "graph_pattern_id": "TEXT",
+            "operation_depth": "INTEGER",
+        },
         "qa_candidates": {
             "derived_payload": "JSONB" if postgres else "TEXT",
             "recomputed_payload": "JSONB" if postgres else "TEXT",
+            "pattern_id": "TEXT",
+            "pattern_version": "INTEGER",
+            "operation_plan_id": "TEXT",
+            "graph_features": "JSONB" if postgres else "TEXT",
+            "difficulty_score": "REAL",
+            "answer_schema": "JSONB" if postgres else "TEXT",
+            "question_intent": "TEXT",
         },
         "qa_evidence_paths": {
             "evidence_node_ids": "JSONB" if postgres else "TEXT",
@@ -186,3 +246,10 @@ def ensure_qa_schema(db: DBProtocol) -> None:
                     and "already exists" not in message
                 ):
                     raise
+    for statement in [
+        "CREATE INDEX IF NOT EXISTS idx_qa_patterns_family_active ON qa_graph_patterns(pattern_family, is_active)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status)",
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_plans_candidate ON qa_operation_plans(candidate_id)",
+    ]:
+        db.execute(statement)

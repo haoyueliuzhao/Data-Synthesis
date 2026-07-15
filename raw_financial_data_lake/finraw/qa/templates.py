@@ -124,10 +124,68 @@ TEMPLATES: list[dict[str, Any]] = [
         "answer_type": "numeric",
         "difficulty_base": "hard",
     },
+    {
+        "template_id": "pairwise_entity_comparison_en_01",
+        "task_family": "graph_comparison",
+        "language": "en",
+        "template_text": "In {period}, which had the higher {metric}, {entity_a} or {entity_b}, and by how much?",
+        "required_slots": ["period", "metric", "entity_a", "entity_b"],
+        "answer_type": "comparison",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "pairwise_entity_comparison_en_02",
+        "task_family": "graph_comparison",
+        "language": "en",
+        "template_text": "Compare {entity_a} and {entity_b} on {metric} in {period}. Identify the higher value and the difference.",
+        "required_slots": ["period", "metric", "entity_a", "entity_b"],
+        "answer_type": "comparison",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "cross_metric_comparison_en_01",
+        "task_family": "graph_comparison",
+        "language": "en",
+        "template_text": "For {entity} in {period}, which was higher, {metric_a} or {metric_b}, and by how much?",
+        "required_slots": ["entity", "period", "metric_a", "metric_b"],
+        "answer_type": "comparison",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "cross_metric_comparison_en_02",
+        "task_family": "graph_comparison",
+        "language": "en",
+        "template_text": "Compare {entity}'s {metric_a} with its {metric_b} for {period}, including the absolute difference.",
+        "required_slots": ["entity", "period", "metric_a", "metric_b"],
+        "answer_type": "comparison",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "multi_period_average_en_01",
+        "task_family": "graph_temporal_aggregation",
+        "language": "en",
+        "template_text": "What was the average {metric} for {entity} from {start_period} through {end_period}?",
+        "required_slots": ["entity", "metric", "start_period", "end_period"],
+        "answer_type": "numeric",
+        "difficulty_base": "hard",
+    },
+    {
+        "template_id": "multi_period_average_en_02",
+        "task_family": "graph_temporal_aggregation",
+        "language": "en",
+        "template_text": "Across {start_period} to {end_period}, what arithmetic mean did {entity} report for {metric}?",
+        "required_slots": ["entity", "metric", "start_period", "end_period"],
+        "answer_type": "numeric",
+        "difficulty_base": "hard",
+    },
 ]
 
 
-def template_for(task_subtype: str, period_type: str | None = None) -> dict[str, Any]:
+def template_for(
+    task_subtype: str,
+    period_type: str | None = None,
+    variant_seed: str | None = None,
+) -> dict[str, Any]:
     if task_subtype == "single_fact":
         template_id = {
             "point_in_time": "single_fact_instant_en_01",
@@ -150,6 +208,27 @@ def template_for(task_subtype: str, period_type: str | None = None) -> dict[str,
         template_id = "ranking_en_01"
     elif task_subtype in {"argmax", "argmin", "industry_argmax", "industry_argmin"}:
         template_id = "scope_extrema_en_01"
+    elif task_subtype in {
+        "pairwise_entity_comparison",
+        "cross_metric_comparison",
+        "multi_period_average",
+    }:
+        prefix = {
+            "pairwise_entity_comparison": "pairwise_entity_comparison_en_",
+            "cross_metric_comparison": "cross_metric_comparison_en_",
+            "multi_period_average": "multi_period_average_en_",
+        }[task_subtype]
+        options = sorted(
+            (
+                item
+                for item in TEMPLATES
+                if item["template_id"].startswith(prefix)
+            ),
+            key=lambda item: item["template_id"],
+        )
+        seed = variant_seed or task_subtype
+        index = sum(seed.encode("utf-8")) % len(options)
+        return options[index]
     else:
         template_id = f"{task_subtype}_en_01"
     return next(item for item in TEMPLATES if item["template_id"] == template_id)
