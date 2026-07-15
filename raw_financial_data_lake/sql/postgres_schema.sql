@@ -319,6 +319,8 @@ CREATE TABLE IF NOT EXISTS standardized_facts (
     is_active           INTEGER DEFAULT 1,
     superseded_by       TEXT,
     entity_id           TEXT REFERENCES canonical_entities(entity_id),
+    entity_scope_id     TEXT,
+    financial_scope_type TEXT,
     metric_id           TEXT REFERENCES metrics(metric_id),
     normalized_value    NUMERIC,
     normalized_unit     TEXT,
@@ -354,6 +356,7 @@ CREATE TABLE IF NOT EXISTS standardized_facts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_entity_metric ON standardized_facts(entity_id, metric_id);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_financial_scope ON standardized_facts(entity_scope_id, financial_scope_type);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_period_end ON standardized_facts(period_end);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_verification ON standardized_facts(verification_status);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_graph_ready ON standardized_facts(graph_ready);
@@ -697,6 +700,46 @@ CREATE TABLE IF NOT EXISTS qa_graph_patterns (
             is_active BOOLEAN DEFAULT TRUE,
             UNIQUE(pattern_id, pattern_version)
         );
+CREATE TABLE IF NOT EXISTS qa_pattern_mining_runs (
+            mining_run_id TEXT PRIMARY KEY,
+            kg_build_id TEXT NOT NULL,
+            mining_version TEXT NOT NULL,
+            config_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at TIMESTAMPTZ,
+            completed_at TIMESTAMPTZ,
+            scanned_fact_count BIGINT DEFAULT 0,
+            proposal_count BIGINT DEFAULT 0,
+            approved_count BIGINT DEFAULT 0,
+            notes JSONB NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
+            proposal_id TEXT PRIMARY KEY,
+            mining_run_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            motif_family TEXT NOT NULL,
+            motif_signature TEXT NOT NULL,
+            pattern_spec JSONB NOT NULL,
+            operator_dag_template JSONB NOT NULL,
+            answer_schema JSONB NOT NULL,
+            binding_examples JSONB NOT NULL,
+            support_count BIGINT NOT NULL,
+            entity_count BIGINT NOT NULL,
+            metric_count BIGINT NOT NULL,
+            period_count BIGINT NOT NULL,
+            support_score REAL NOT NULL,
+            completeness_score REAL NOT NULL,
+            financial_value_score REAL NOT NULL,
+            complexity_score REAL NOT NULL,
+            novelty_score REAL NOT NULL,
+            total_score REAL NOT NULL,
+            status TEXT NOT NULL,
+            rejection_reasons JSONB NOT NULL,
+            proposal_hash TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE INDEX IF NOT EXISTS idx_qa_mining_runs_kg_status ON qa_pattern_mining_runs(kg_build_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_proposals_kg_status_score ON qa_pattern_proposals(kg_build_id, status, total_score);
 CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -709,6 +752,10 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             pattern_hash TEXT,
             operation_plan_id TEXT,
             operation_plan_hash TEXT,
+            mining_run_id TEXT,
+            pattern_proposal_id TEXT,
+            pattern_proposal_hash TEXT,
+            pattern_score REAL,
             graph_features JSONB,
             difficulty_score REAL,
             answer_schema JSONB,
@@ -730,6 +777,7 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             rejection_reasons JSONB NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
+CREATE INDEX IF NOT EXISTS idx_qa_candidates_proposal ON qa_candidates(qa_build_id, pattern_proposal_id, eligibility_status);
 CREATE TABLE IF NOT EXISTS qa_operation_plans (
             plan_id TEXT PRIMARY KEY,
             qa_build_id TEXT NOT NULL,

@@ -199,6 +199,7 @@ def _standardize_one(fact: dict[str, Any], metric: dict[str, Any], build_id: str
     frequency = frequency_info.get("frequency") or source_definition.get("frequency")
     seasonal_adjustment = frequency_info.get("seasonal_adjustment")
     source_units = frequency_info.get("source_units")
+    entity_scope_id, financial_scope_type = _financial_scope(fact)
 
     for check in _basic_checks(fact, metric, normalized_value, normalized_unit):
         checks.append(check)
@@ -215,6 +216,8 @@ def _standardize_one(fact: dict[str, Any], metric: dict[str, Any], build_id: str
         "is_active": 1,
         "superseded_by": None,
         "entity_id": fact.get("entity_id"),
+        "entity_scope_id": entity_scope_id,
+        "financial_scope_type": financial_scope_type,
         "metric_id": fact.get("metric_id"),
         "normalized_value": normalized_value,
         "normalized_unit": normalized_unit,
@@ -647,6 +650,29 @@ def _merge_notes(existing: Any, extra: dict[str, Any]) -> str | None:
             payload["source_notes"] = existing
     payload.update({key: value for key, value in extra.items() if value not in {None, ""}})
     return json.dumps(payload, ensure_ascii=False, sort_keys=True) if payload else None
+
+
+def _financial_scope(fact: dict[str, Any]) -> tuple[str | None, str]:
+    notes: dict[str, Any] = {}
+    raw_notes = fact.get("notes")
+    if isinstance(raw_notes, dict):
+        notes = raw_notes
+    elif isinstance(raw_notes, str):
+        try:
+            parsed = json.loads(raw_notes)
+            notes = parsed if isinstance(parsed, dict) else {}
+        except json.JSONDecodeError:
+            notes = {}
+    entity_id = fact.get("entity_id")
+    scope_id = notes.get("entity_scope_id") or notes.get("segment_entity_id") or entity_id
+    scope_type = notes.get("financial_scope_type")
+    if not scope_type:
+        scope_type = (
+            "segment"
+            if notes.get("segment") or notes.get("segment_name") or scope_id != entity_id
+            else "consolidated_entity"
+        )
+    return (str(scope_id) if scope_id else None, str(scope_type))
 
 
 def _markdown_report(report: dict[str, Any]) -> str:

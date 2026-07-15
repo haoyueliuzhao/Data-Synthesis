@@ -40,6 +40,8 @@ EXPORT_TABLES = [
     "qa_builds",
     "qa_templates",
     "qa_graph_patterns",
+    "qa_pattern_mining_runs",
+    "qa_pattern_proposals",
     "qa_candidates",
     "qa_operation_plans",
     "qa_samples",

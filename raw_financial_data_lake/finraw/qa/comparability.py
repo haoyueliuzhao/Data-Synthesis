@@ -57,6 +57,16 @@ def comparability_policy(config: dict[str, Any] | None = None) -> dict[str, Any]
         "require_same_vintage_policy": bool(
             configured.get("require_same_vintage_policy", True)
         ),
+        "require_same_financial_scope": bool(
+            configured.get("require_same_financial_scope", True)
+        ),
+        "scope_min_entities": max(int(configured.get("scope_min_entities", 3)), 2),
+        "scope_top_k": max(int(configured.get("scope_top_k", 3)), 1),
+        "growth_threshold_pct": str(configured.get("growth_threshold_pct", 10)),
+        "debt_ratio_max_pct": str(configured.get("debt_ratio_max_pct", 70)),
+        "scope_scan_rows_per_metric": max(
+            int(configured.get("scope_scan_rows_per_metric", 20000)), 100
+        ),
         "allowed_metric_pairs": _normalise_pairs(
             configured.get("allowed_metric_pairs", DEFAULT_ALLOWED_METRIC_PAIRS)
         ),
@@ -158,7 +168,16 @@ def facts_share_semantics(
         {_normalised(row.get("source_definition_id")) for row in rows}
     ) > 1:
         errors.append("mixed_source_definition")
+    if len({financial_scope_key(row) for row in rows}) > 1:
+        errors.append("mixed_financial_scope")
     return not errors, errors
+
+
+def financial_scope_key(row: dict[str, Any]) -> tuple[str, str]:
+    return (
+        str(row.get("entity_scope_id") or row.get("entity_id") or ""),
+        str(row.get("financial_scope_type") or "consolidated_entity"),
+    )
 
 
 def fact_frequency(row: dict[str, Any]) -> str:
@@ -175,6 +194,18 @@ def fact_frequency(row: dict[str, Any]) -> str:
         quarter = str(row.get("fiscal_quarter") or "").upper()
         return "quarterly" if quarter in {"Q1", "Q2", "Q3", "Q4"} else "annual"
     return "observation"
+
+
+def annual_duration_valid(row: dict[str, Any]) -> bool:
+    if fact_frequency(row) != "annual":
+        return True
+    if str(row.get("metric_period_type") or "") == "point_in_time":
+        return True
+    start = _as_date(row.get("period_start"))
+    end = _as_date(row.get("period_end"))
+    if not start or not end:
+        return False
+    return 300 <= (end - start).days <= 430
 
 
 def period_index(row: dict[str, Any], frequency: str | None = None) -> int | None:

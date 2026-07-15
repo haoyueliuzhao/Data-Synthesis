@@ -230,7 +230,10 @@
         "pairwise_entity_metric_comparison": 2000,
         "entity_cross_metric_comparison": 2000,
         "entity_metric_temporal_average": 2000,
-        "temporal_argmax_then_metric_lookup": 1000
+        "temporal_argmax_then_metric_lookup": 1000,
+        "industry_growth_filter_then_margin_rank": 500,
+        "industry_revenue_rank_then_assets_lookup": 500,
+        "industry_multi_factor_screening": 500
       },
       "comparability": {
         "require_same_source": true,
@@ -242,6 +245,12 @@
         "require_same_frequency": true,
         "require_same_seasonal_adjustment": true,
         "require_same_vintage_policy": true,
+        "require_same_financial_scope": true,
+        "scope_min_entities": 3,
+        "scope_top_k": 3,
+        "growth_threshold_pct": 10,
+        "debt_ratio_max_pct": 70,
+        "scope_scan_rows_per_metric": 20000,
         "allowed_metric_pairs": [
           ["revenue", "gross_profit"],
           ["revenue", "operating_income"],
@@ -284,6 +293,39 @@
         "max_per_stratum": 4
       }
     },
+    "pattern_mining": {
+      "enabled": true,
+      "auto_run": false,
+      "families": [
+        "cross_metric_comparison",
+        "temporal_aggregation",
+        "temporal_extrema_followup",
+        "scope_rank_followup"
+      ],
+      "max_metrics": 24,
+      "rows_per_metric": 3000,
+      "max_proposals": 100,
+      "max_bindings_per_proposal": 20,
+      "max_candidates_per_proposal": 10,
+      "min_support": 3,
+      "target_support": 20,
+      "min_total_score": 0.62,
+      "minimum_temporal_observations": 3,
+      "maximum_temporal_observations": 5,
+      "minimum_scope_entities": 3,
+      "top_k": 3,
+      "require_contiguous_periods": true
+    },
+    "question_generation": {
+      "mode": "controlled_template",
+      "variants": 3,
+      "llm": {
+        "endpoint": "",
+        "model": "",
+        "api_key_env": "OPENAI_API_KEY",
+        "timeout_seconds": 30
+      }
+    },
     "split_policy": "semantic_cluster_then_entity_fixed_time_task",
     "temporal_split": {
       "cutoff_year": 2025
@@ -301,11 +343,14 @@
         "pairwise_entity_metric_comparison": 500,
         "entity_cross_metric_comparison": 350,
         "entity_metric_temporal_average": 350,
-        "temporal_argmax_then_metric_lookup": 100
+        "temporal_argmax_then_metric_lookup": 90,
+        "industry_growth_filter_then_margin_rank": 10,
+        "industry_revenue_rank_then_assets_lookup": 25,
+        "industry_multi_factor_screening": 10
       },
       "minimum_graph_pattern_eligibility_rate": 0.95,
       "minimum_graph_feature_coverage": 0.015,
-      "minimum_unique_operation_sequences": 3
+      "minimum_unique_operation_sequences": 6
     }
   }
 }

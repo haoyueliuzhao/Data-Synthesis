@@ -196,6 +196,60 @@ TEMPLATES: list[dict[str, Any]] = [
         "answer_type": "period_metric_lookup",
         "difficulty_base": "expert",
     },
+    {
+        "template_id": "filter_then_rank_en_01",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Within {scope}, filter companies whose revenue growth exceeded {growth_threshold}% in {period}, then rank the top {top_k} by net margin.",
+        "required_slots": ["scope", "growth_threshold", "period", "top_k"],
+        "answer_type": "ranked_table",
+        "difficulty_base": "research",
+    },
+    {
+        "template_id": "filter_then_rank_en_02",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "For {period}, screen {scope} for revenue growth above {growth_threshold}%, and list the {top_k} qualifying companies with the highest net margins.",
+        "required_slots": ["scope", "growth_threshold", "period", "top_k"],
+        "answer_type": "ranked_table",
+        "difficulty_base": "research",
+    },
+    {
+        "template_id": "rank_then_secondary_lookup_en_01",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Within {scope}, identify the top {top_k} companies by {primary_metric} in {period}, then report {secondary_metric} for each selected company.",
+        "required_slots": ["scope", "top_k", "primary_metric", "secondary_metric", "period"],
+        "answer_type": "multi_metric_ranked_table",
+        "difficulty_base": "expert",
+    },
+    {
+        "template_id": "rank_then_secondary_lookup_en_02",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Rank the top {top_k} companies in {scope} by {primary_metric} for {period} and add each company's {secondary_metric} for that period.",
+        "required_slots": ["scope", "top_k", "primary_metric", "secondary_metric", "period"],
+        "answer_type": "multi_metric_ranked_table",
+        "difficulty_base": "expert",
+    },
+    {
+        "template_id": "multi_factor_screening_en_01",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Within {scope} in {period}, which companies had revenue growth above {growth_threshold}%, net margin above the industry average, and a debt ratio below {debt_threshold}%?",
+        "required_slots": ["scope", "period", "growth_threshold", "debt_threshold"],
+        "answer_type": "screening_table",
+        "difficulty_base": "research",
+    },
+    {
+        "template_id": "multi_factor_screening_en_02",
+        "task_family": "graph_multi_stage",
+        "language": "en",
+        "template_text": "Screen {scope} for {period} using all three conditions: revenue growth greater than {growth_threshold}%, above-average net margin, and debt ratio under {debt_threshold}%.",
+        "required_slots": ["scope", "period", "growth_threshold", "debt_threshold"],
+        "answer_type": "screening_table",
+        "difficulty_base": "research",
+    },
 ]
 
 
@@ -231,12 +285,18 @@ def template_for(
         "cross_metric_comparison",
         "multi_period_average",
         "temporal_peak_followup",
+        "filter_then_rank",
+        "rank_then_secondary_lookup",
+        "multi_factor_screening",
     }:
         prefix = {
             "pairwise_entity_comparison": "pairwise_entity_comparison_en_",
             "cross_metric_comparison": "cross_metric_comparison_en_",
             "multi_period_average": "multi_period_average_en_",
             "temporal_peak_followup": "temporal_peak_followup_en_",
+            "filter_then_rank": "filter_then_rank_en_",
+            "rank_then_secondary_lookup": "rank_then_secondary_lookup_en_",
+            "multi_factor_screening": "multi_factor_screening_en_",
         }[task_subtype]
         options = sorted(
             (

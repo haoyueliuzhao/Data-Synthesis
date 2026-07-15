@@ -16,10 +16,13 @@ from finraw.qa.difficulty import DIFFICULTY_POLICY, assess_difficulty, graph_fea
 from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
 from finraw.qa.graph_patterns import get_pattern, pattern_manifest
 from finraw.qa.operators import operator_registry
+from finraw.qa.pattern_compiler import compile_pattern_proposal, compile_proposal_matches
+from finraw.qa.pattern_mining import load_approved_proposals, mine_qa_patterns, mining_policy
 from finraw.qa.plans import execute_plan, operation_depth
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
+from finraw.qa.verbalizer import realize_question
 
 
 SIMPLE_DERIVED = {"difference", "yoy_growth", "qoq_growth", "ratio", "share"}
@@ -43,8 +46,13 @@ SCOPE_DERIVED = {
     "industry_argmin",
     "multi_condition_screening",
 }
+GRAPH_SCOPE_TASKS = {
+    "filter_then_rank",
+    "rank_then_secondary_lookup",
+    "multi_factor_screening",
+}
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.0.0"
+GENERATOR_VERSION = "4.2.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -87,6 +95,10 @@ CANDIDATE_COLUMNS = [
     "pattern_hash",
     "operation_plan_id",
     "operation_plan_hash",
+    "mining_run_id",
+    "pattern_proposal_id",
+    "pattern_proposal_hash",
+    "pattern_score",
     "graph_features",
     "difficulty_score",
     "answer_schema",
@@ -193,7 +205,34 @@ def build_qa_candidates(
     if kg.get("status") != "success" or kg.get("quality_status") != "passed":
         raise RuntimeError(f"KG build is not QA eligible: {kg_build_id}")
     policy = _qa_policy(config)
-    pattern_manifest_data = pattern_manifest()
+    effective_mining_policy = mining_policy(config)
+    mining_report = None
+    if effective_mining_policy["enabled"] and effective_mining_policy["auto_run"]:
+        mining_report = mine_qa_patterns(
+            db,
+            config,
+            kg_build_id=kg_build_id,
+            output_dir=output_dir,
+        )
+    mined_proposals = (
+        load_approved_proposals(
+            db,
+            kg_build_id,
+            limit=effective_mining_policy["max_proposals"],
+        )
+        if effective_mining_policy["enabled"]
+        else []
+    )
+    mined_manifest = [
+        {
+            "proposal_id": proposal["proposal_id"],
+            "proposal_hash": proposal["proposal_hash"],
+            "motif_signature": proposal["motif_signature"],
+            "total_score": proposal["total_score"],
+        }
+        for proposal in mined_proposals
+    ]
+    pattern_manifest_data = [*pattern_manifest(), *mined_manifest]
     operator_manifest_data = operator_registry()
     pattern_manifest_hash = _digest(pattern_manifest_data)
     operator_manifest_hash = _digest(operator_manifest_data)
@@ -244,6 +283,11 @@ def build_qa_candidates(
             "operator_manifest_hash": operator_manifest_hash,
             "difficulty_policy_hash": difficulty_policy_hash,
             "git_worktree_dirty": _git_worktree_dirty(),
+            "pattern_mining": {
+                "policy": effective_mining_policy,
+                "report": mining_report,
+                "proposal_manifest": mined_manifest,
+            },
         },
     }
     insert_rows(db, "qa_builds", [build], BUILD_COLUMNS, {"notes"})
@@ -382,6 +426,32 @@ def build_qa_candidates(
                 )
                 emit(candidate, plan)
 
+    if effective_mining_policy["enabled"]:
+        for proposal in mined_proposals:
+            pattern = compile_pattern_proposal(proposal)
+            matches = compile_proposal_matches(
+                proposal,
+                limit=effective_mining_policy["max_candidates_per_proposal"],
+            )
+            fact_map = load_bound_facts(
+                db,
+                kg["input_fact_build_id"],
+                [fact_id for match in matches for fact_id in match["fact_ids"]],
+            )
+            for match in matches:
+                candidate, plan = _graph_pattern_candidate(
+                    db,
+                    match,
+                    pattern,
+                    fact_map,
+                    qa_build_id,
+                    kg_build_id,
+                    entity_names,
+                    metric_names,
+                    proposal=proposal,
+                )
+                emit(candidate, plan)
+
     flush()
 
     candidate_count = _scalar(
@@ -515,12 +585,19 @@ def validate_qa_samples(
                c.source_fact_ids, c.source_derived_ids, c.raw_object_ids,
                c.pattern_id, c.pattern_version, c.operation_plan_id,
                c.graph_features, c.answer_schema, c.question_intent,
+               c.mining_run_id, c.pattern_proposal_id,
+               c.pattern_proposal_hash, c.pattern_score,
+               mp.status AS stored_proposal_status,
+               mp.proposal_hash AS stored_proposal_hash,
+               mp.total_score AS stored_proposal_score,
+               mp.kg_build_id AS proposal_kg_build_id,
                p.operator_dag, p.input_bindings, p.intermediate_results,
                p.output_schema, p.recompute_status AS plan_recompute_status,
                p.validation_errors AS plan_validation_errors
         FROM qa_samples s
         JOIN qa_candidates c ON c.candidate_id = s.candidate_id
         LEFT JOIN qa_operation_plans p ON p.plan_id = c.operation_plan_id
+        LEFT JOIN qa_pattern_proposals mp ON mp.proposal_id = c.pattern_proposal_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'pending'
         ORDER BY s.qa_id
         """,
@@ -649,6 +726,7 @@ def split_qa_samples(
     qa_build_id: str,
     *,
     output_dir: str | None = None,
+    activate: bool = True,
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
     build = _qa_build(db, qa_build_id)
@@ -674,7 +752,7 @@ def split_qa_samples(
     cluster_split: dict[str, str] = {}
     split_counts: Counter[str] = Counter()
     task_counts: Counter[str] = Counter()
-    challenge = SCOPE_DERIVED | {
+    challenge = SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {
         "rolling_max",
         "rolling_min",
         "multi_period_average",
@@ -817,7 +895,9 @@ def split_qa_samples(
               'semantic_slots', 'independent_recompute', 'scope_completeness',
               'no_answer_leakage', 'graph_pattern_match',
               'operator_input_complete', 'operator_type_valid',
-              'intermediate_result_recompute', 'operation_trace_coverage'
+              'intermediate_result_recompute', 'operation_trace_coverage',
+              'pattern_proposal_match', 'question_slot_roundtrip',
+              'question_answer_isolation'
           )
         """,
         [qa_build_id],
@@ -837,21 +917,23 @@ def split_qa_samples(
         "graph_feature_coverage": graph_feature_coverage,
         "unique_operation_sequences": sorted(operation_sequences),
         "temporal_cutoff_year": cutoff_year,
+        "activation_requested": activate,
     }
     if gate_passed:
         db.execute(
             "UPDATE qa_builds SET status = ?, is_active = ?, notes = ? WHERE qa_build_id = ?",
-            ("ready", True, _db_json(db, notes), qa_build_id),
+            ("ready", activate, _db_json(db, notes), qa_build_id),
         )
-        old = db.fetchall(
-            "SELECT qa_build_id FROM qa_builds WHERE is_active = ? AND qa_build_id <> ?",
-            (True, qa_build_id),
-        )
-        for item in old:
-            db.execute(
-                "UPDATE qa_builds SET is_active = ?, superseded_by = ? WHERE qa_build_id = ?",
-                (False, qa_build_id, item["qa_build_id"]),
+        if activate:
+            old = db.fetchall(
+                "SELECT qa_build_id FROM qa_builds WHERE is_active = ? AND qa_build_id <> ?",
+                (True, qa_build_id),
             )
+            for item in old:
+                db.execute(
+                    "UPDATE qa_builds SET is_active = ?, superseded_by = ? WHERE qa_build_id = ?",
+                    (False, qa_build_id, item["qa_build_id"]),
+                )
     else:
         db.execute(
             "UPDATE qa_builds SET status = ?, is_active = ?, notes = ? WHERE qa_build_id = ?",
@@ -866,6 +948,7 @@ def split_qa_samples(
         "task_counts": dict(sorted(task_counts.items())),
         "build_gate_status": "passed" if gate_passed else "failed",
         "build_gate_failures": failures,
+        "activated": gate_passed and activate,
     }
     return _write_report(report, output_dir, "qa_split_report")
 
@@ -885,6 +968,7 @@ def build_qa(
     kg_build_id: str | None = None,
     output_dir: str = "data/audit/qa_build",
     batch_size: int = 2000,
+    activate: bool = True,
 ) -> dict[str, Any]:
     candidate = build_qa_candidates(
         db,
@@ -900,7 +984,9 @@ def build_qa(
     quality = validate_qa_samples(
         db, qa_build_id, output_dir=output_dir, batch_size=batch_size
     )
-    split = split_qa_samples(db, qa_build_id, output_dir=output_dir)
+    split = split_qa_samples(
+        db, qa_build_id, output_dir=output_dir, activate=activate
+    )
     report = {
         "qa_build_id": qa_build_id,
         "candidate": candidate,
@@ -1154,6 +1240,7 @@ def _graph_pattern_candidate(
     kg_build_id: str,
     entity_name_map: dict[str, str],
     metric_name_map: dict[str, str],
+    proposal: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     fact_ids = [str(fact_id) for fact_id in match["fact_ids"]]
     facts = [fact_map[fact_id] for fact_id in fact_ids if fact_id in fact_map]
@@ -1163,6 +1250,13 @@ def _graph_pattern_candidate(
     operator_dag = json.loads(json.dumps(pattern.operator_template))
     if match.get("operator_params") and operator_dag.get("operators"):
         operator_dag["operators"][0]["params"] = dict(match["operator_params"])
+    step_params = match.get("operator_step_params") or {}
+    for step in operator_dag.get("operators") or []:
+        if step.get("step_id") in step_params:
+            step["params"] = {
+                **dict(step.get("params") or {}),
+                **dict(step_params[str(step["step_id"])]),
+            }
     execution = execute_plan(operator_dag, match["input_bindings"], fact_map)
     if execution.status != "passed":
         reasons.append("operation_plan_execution_failed")
@@ -1170,12 +1264,7 @@ def _graph_pattern_candidate(
     if answer.get("value") is None and not answer.get("table") and not answer.get("rows"):
         reasons.append("missing_answer")
 
-    subtype = {
-        "pairwise_entity_metric_comparison": "pairwise_entity_comparison",
-        "entity_cross_metric_comparison": "cross_metric_comparison",
-        "entity_metric_temporal_average": "multi_period_average",
-        "temporal_argmax_then_metric_lookup": "temporal_peak_followup",
-    }[pattern.pattern_id]
+    subtype = pattern.task_subtype
     if subtype in {"multi_period_average", "temporal_peak_followup"}:
         time_scope = {
             "start_year": match.get("start_period"),
@@ -1184,6 +1273,8 @@ def _graph_pattern_candidate(
             "frequency": match.get("frequency"),
             "observation_count": match.get("observation_count"),
         }
+    elif match.get("period") is not None:
+        time_scope = _match_time_scope(match)
     else:
         time_scope = _fact_time_scope(facts[0]) if facts else {}
     intent_index = int(_digest(pattern.pattern_id, match)[:8], 16) % len(
@@ -1219,6 +1310,25 @@ def _graph_pattern_candidate(
         "frequency": match.get("frequency"),
         "primary_metric_id": match.get("primary_metric_id"),
         "secondary_metric_id": match.get("secondary_metric_id"),
+        "industry": match.get("industry"),
+        "financial_scope": match.get("financial_scope") or {},
+        "mining_run_id": proposal.get("mining_run_id") if proposal else None,
+        "pattern_proposal_id": proposal.get("proposal_id") if proposal else None,
+        "pattern_proposal_hash": proposal.get("proposal_hash") if proposal else None,
+        "pattern_score": float(proposal["total_score"]) if proposal else None,
+        "growth_threshold_pct": (
+            match.get("operator_step_params", {})
+            .get("growth_filter", {})
+            .get("value")
+            or match.get("operator_step_params", {})
+            .get("answer", {})
+            .get("growth_min_pct")
+        ),
+        "debt_ratio_max_pct": (
+            match.get("operator_step_params", {})
+            .get("answer", {})
+            .get("debt_max_pct")
+        ),
     }
     if len(entity_ids) == 1:
         semantics["entity_id"] = entity_ids[0]
@@ -1233,6 +1343,7 @@ def _graph_pattern_candidate(
         evidence=evidence,
         operation_plan=operator_dag,
         answer_payload=answer,
+        semantic_constraint_count=len(pattern.semantic_constraints),
     )
     difficulty, score = assess_difficulty(features, pattern.difficulty_base)
     stable = "qac_" + _digest(
@@ -1264,6 +1375,10 @@ def _graph_pattern_candidate(
         "pattern_hash": pattern_hash,
         "operation_plan_id": plan_id,
         "operation_plan_hash": operation_plan_hash,
+        "mining_run_id": proposal.get("mining_run_id") if proposal else None,
+        "pattern_proposal_id": proposal.get("proposal_id") if proposal else None,
+        "pattern_proposal_hash": proposal.get("proposal_hash") if proposal else None,
+        "pattern_score": float(proposal["total_score"]) if proposal else None,
         "graph_features": features,
         "difficulty_score": score,
         "answer_schema": pattern.answer_schema,
@@ -1316,7 +1431,18 @@ def _sample_from_candidate(
         semantics.get("metric_period_type"),
         candidate.get("stable_candidate_id"),
     )
-    question = template["template_text"].format(**slots)
+    canonical_question = template["template_text"].format(**slots)
+    generation_policy = (
+        build.get("notes", {}).get("policy", {}).get("question_generation", {})
+    )
+    realization = realize_question(
+        canonical_question,
+        semantics=semantics,
+        immutable_slots=slots,
+        required_slots=list(template.get("required_slots") or []),
+        config=generation_policy,
+    )
+    question = realization.question
     answer = candidate["answer_payload"]
     answer_text = _answer_text(candidate, answer, entity_names)
     group_id = "qag_" + _digest(
@@ -1354,7 +1480,7 @@ def _sample_from_candidate(
         "difficulty": candidate["difficulty"],
         "language": "en",
         "question": question,
-        "canonical_question": question,
+        "canonical_question": canonical_question,
         "answer_type": template["answer_type"],
         "answer_value": answer,
         "answer_text": answer_text,
@@ -1374,11 +1500,14 @@ def _sample_from_candidate(
             "pattern_hash": candidate.get("pattern_hash"),
             "operation_plan_id": candidate.get("operation_plan_id"),
             "operation_plan_hash": candidate.get("operation_plan_hash"),
+            "mining_run_id": candidate.get("mining_run_id"),
+            "pattern_proposal_id": candidate.get("pattern_proposal_id"),
+            "pattern_proposal_hash": candidate.get("pattern_proposal_hash"),
+            "pattern_score": candidate.get("pattern_score"),
             "graph_features": candidate.get("graph_features"),
+            "question_generation": realization.validation,
         },
-        "generation_method": "graph_pattern_operation_plan"
-        if candidate.get("operation_plan_id")
-        else "deterministic_template",
+        "generation_method": realization.generation_method,
         "validation_status": "pending",
         "split": None,
     }
@@ -1526,6 +1655,50 @@ def _validate_one(
         True,
         "Entity, metric, time, unit, and required scope must be explicit.",
     )
+    question_generation = row.get("source_metadata", {}).get(
+        "question_generation", {}
+    )
+    add(
+        "question_slot_roundtrip",
+        bool(question_generation.get("passed"))
+        and not question_generation.get("missing_slots"),
+        question_generation,
+        {"passed": True, "missing_slots": []},
+        "Generated questions must preserve every immutable semantic slot.",
+    )
+    add(
+        "question_answer_isolation",
+        question_generation.get("answer_exposed_to_generator") is False,
+        question_generation.get("answer_exposed_to_generator"),
+        False,
+        "The question generator must never receive the answer payload.",
+    )
+    if row.get("pattern_proposal_id"):
+        proposal_ok = (
+            row.get("stored_proposal_status") == "approved"
+            and row.get("stored_proposal_hash") == row.get("pattern_proposal_hash")
+            and row.get("proposal_kg_build_id") == build.get("kg_build_id")
+            and float(row.get("stored_proposal_score") or 0)
+            == float(row.get("pattern_score") or 0)
+        )
+        add(
+            "pattern_proposal_match",
+            proposal_ok,
+            {
+                "proposal_id": row.get("pattern_proposal_id"),
+                "status": row.get("stored_proposal_status"),
+                "hash": row.get("stored_proposal_hash"),
+                "score": row.get("stored_proposal_score"),
+                "kg_build_id": row.get("proposal_kg_build_id"),
+            },
+            {
+                "status": "approved",
+                "hash": row.get("pattern_proposal_hash"),
+                "score": row.get("pattern_score"),
+                "kg_build_id": build.get("kg_build_id"),
+            },
+            "Mined QA must be backed by an approved, hash-pinned proposal from the same KG build.",
+        )
     expected = row["answer_payload"]
     if row.get("operation_plan_id"):
         fact_map = {
@@ -1593,7 +1766,7 @@ def _validate_one(
             derived_payload,
             "KG DerivedFact output must match complete scope recomputation before QA use.",
         )
-    if row["task_subtype"] in SCOPE_DERIVED | {"share"}:
+    if row["task_subtype"] in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share"}:
         expected_scope_count = len(row["canonical_semantics"].get("entity_ids", []))
         represented = len({item.get("entity_id") for item in source_facts if item})
         complete = _scope_is_complete(
@@ -1819,18 +1992,18 @@ def _answers_match(
             return False
         tolerance = _decimal(expected.get("tolerance")) or Decimal("0.000001")
         for expected_row, observed_row in zip(expected_table, observed_table):
-            if expected_row.get("entity_id") != observed_row.get("entity_id"):
+            if not set(expected_row).issubset(observed_row):
                 return False
-            if expected_row.get("rank") is not None and expected_row.get(
-                "rank"
-            ) != observed_row.get("rank"):
-                return False
-            if expected_row.get("value") is not None:
-                left = _decimal(expected_row.get("value"))
-                right = _decimal(observed_row.get("value"))
-                if left is None or right is None:
-                    return False
-                if abs(left - right) > max(tolerance, abs(left) * Decimal("0.000001")):
+            for key, expected_value in expected_row.items():
+                observed_value = observed_row.get(key)
+                left = _decimal(expected_value)
+                right = _decimal(observed_value)
+                if left is not None and right is not None:
+                    if abs(left - right) > max(
+                        tolerance, abs(left) * Decimal("0.000001")
+                    ):
+                        return False
+                elif expected_value != observed_value:
                     return False
     return True
 
@@ -2186,7 +2359,7 @@ def _validate_derived_input_edge_coverage(
 def _validate_scope_fact_coverage(
     row: dict[str, Any], path: dict[str, Any], kg_build_id: str
 ) -> tuple[bool, dict[str, Any]]:
-    if row.get("task_subtype") not in SCOPE_DERIVED | {"share", "ranking"}:
+    if row.get("task_subtype") not in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share", "ranking"}:
         return True, {"missing_scope_fact_nodes": []}
     path_nodes = _evidence_node_ids(path)
     missing = [
@@ -2234,7 +2407,7 @@ def _validate_evidence_semantics(
         "cross_metric_comparison",
         "multi_period_average",
         "temporal_peak_followup",
-    }:
+    } | GRAPH_SCOPE_TASKS:
         required = {
             "HAS_FACT",
             "MEASURES",
@@ -2352,11 +2525,11 @@ def _kg_path_from_graph(
         "FROM_SOURCE",
         "TRACED_TO",
         "USES_SOURCE_DEFINITION",
-        "DERIVED_FROM",
-        "ABOUT_ENTITY",
-        "USES_METRIC",
-        "HAS_SCOPE",
     ]
+    if derived_id:
+        relations.extend(
+            ["DERIVED_FROM", "ABOUT_ENTITY", "USES_METRIC", "HAS_SCOPE"]
+        )
     edges: dict[str, dict[str, Any]] = {}
     for batch in chunks(seed_nodes, 300):
         placeholders = ",".join("?" for _ in batch)
@@ -2627,6 +2800,8 @@ def _question_slots(
         "frequency": str(
             semantics.get("frequency") or time_scope.get("frequency") or "periodic"
         ),
+        "growth_threshold": str(semantics.get("growth_threshold_pct") or "10"),
+        "debt_threshold": str(semantics.get("debt_ratio_max_pct") or "70"),
     }
 
 
@@ -2659,7 +2834,11 @@ def _answer_text(
             f"{answer.get('unit') or ''}"
         ).strip()
     if answer.get("table"):
-        if candidate["task_subtype"] in {"ranking", "industry_ranking"}:
+        if candidate["task_subtype"] in {
+            "ranking",
+            "industry_ranking",
+            "filter_then_rank",
+        }:
             unit = answer.get("unit") or ""
             rows = []
             for index, item in enumerate(answer["table"], start=1):
@@ -2667,6 +2846,36 @@ def _answer_text(
                 name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
                 value = _format_value(item.get("value"))
                 rows.append(f"{rank}. {name}: {value} {unit}".strip())
+            return "; ".join(rows)
+        if candidate["task_subtype"] == "rank_then_secondary_lookup":
+            semantics = candidate.get("canonical_semantics", {})
+            metric_names = semantics.get("metric_names") or {}
+            primary = metric_names.get(
+                semantics.get("primary_metric_id"), semantics.get("primary_metric_id")
+            )
+            secondary = metric_names.get(
+                semantics.get("secondary_metric_id"), semantics.get("secondary_metric_id")
+            )
+            rows = []
+            for item in answer["table"]:
+                name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
+                rows.append(
+                    f"{item.get('rank')}. {name}: {primary} "
+                    f"{_format_value(item.get('primary_value'))} "
+                    f"{answer.get('primary_unit') or ''}; {secondary} "
+                    f"{_format_value(item.get('secondary_value'))} "
+                    f"{answer.get('secondary_unit') or ''}"
+                )
+            return " | ".join(rows)
+        if candidate["task_subtype"] == "multi_factor_screening":
+            rows = []
+            for item in answer["table"]:
+                name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
+                rows.append(
+                    f"{name}: growth {_format_value(item.get('revenue_growth_pct'))}%, "
+                    f"net margin {_format_value(item.get('net_margin_pct'))}%, "
+                    f"debt ratio {_format_value(item.get('debt_ratio_pct'))}%"
+                )
             return "; ".join(rows)
         entities = [
             entity_names.get(item.get("entity_id"), item.get("entity_id"))
@@ -2713,7 +2922,11 @@ def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]
             "absolute_tolerance": answer.get("tolerance") or "0.000001",
         }
     if answer.get("table"):
-        if candidate["task_subtype"] in {"ranking", "industry_ranking"}:
+        if candidate["task_subtype"] in {
+            "ranking",
+            "industry_ranking",
+            "filter_then_rank",
+        }:
             return {
                 "match_type": "ranked_table",
                 "target_rows": [
@@ -2729,6 +2942,27 @@ def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]
                 "order_required": True,
                 "allow_extra_entities": False,
                 "allow_missing_entities": False,
+            }
+        if candidate["task_subtype"] == "rank_then_secondary_lookup":
+            return {
+                "match_type": "multi_metric_ranked_table",
+                "target_rows": answer["table"],
+                "primary_unit": answer.get("primary_unit"),
+                "secondary_unit": answer.get("secondary_unit"),
+                "value_tolerance": "0.000001",
+                "order_required": True,
+            }
+        if candidate["task_subtype"] == "multi_factor_screening":
+            return {
+                "match_type": "screening_table",
+                "target_rows": answer["table"],
+                "industry_average_margin_pct": answer.get(
+                    "industry_average_margin_pct"
+                ),
+                "growth_threshold_pct": answer.get("growth_threshold_pct"),
+                "debt_ratio_max_pct": answer.get("debt_ratio_max_pct"),
+                "value_tolerance": "0.000001",
+                "order_required": True,
             }
         entities = [item.get("entity_id") for item in answer["table"]]
         return {
@@ -2779,6 +3013,34 @@ def _fact_time_scope(row: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+def _match_time_scope(match: dict[str, Any]) -> dict[str, Any]:
+    period = match.get("period")
+    frequency = str(match.get("frequency") or "annual").lower()
+    text = str(period or "").strip()
+    parts = text.replace("-", " ").split()
+    year = next(
+        (int(part) for part in parts if len(part) == 4 and part.isdigit()), None
+    )
+    quarter = next(
+        (part.upper() for part in parts if part.upper() in {"Q1", "Q2", "Q3", "Q4"}),
+        None,
+    )
+    if year is not None and (frequency == "quarterly" or quarter):
+        return {
+            "fiscal_year": year,
+            "fiscal_quarter": quarter,
+            "basis": "fiscal_year",
+            "frequency": "quarterly",
+        }
+    if year is not None and frequency == "annual":
+        return {"year": year, "basis": "fiscal_year", "frequency": "annual"}
+    return {
+        "observation_date": text,
+        "basis": "observation_date",
+        "frequency": frequency,
+    }
+
+
 def _period_label(scope: dict[str, Any]) -> str:
     if scope.get("fiscal_year"):
         quarter = (
@@ -2816,9 +3078,13 @@ def _semantic_slots_complete(row: dict[str, Any]) -> bool:
     semantics = row["canonical_semantics"]
     if not row["time_scope"]:
         return False
-    if row["task_subtype"] != "multi_condition_screening" and not row.get("unit"):
+    if row["task_subtype"] == "rank_then_secondary_lookup":
+        answer = row.get("answer_payload") or {}
+        if not answer.get("primary_unit") or not answer.get("secondary_unit"):
+            return False
+    elif row["task_subtype"] != "multi_condition_screening" and not row.get("unit"):
         return False
-    if row["task_subtype"] in SCOPE_DERIVED | {"share"} and not semantics.get(
+    if row["task_subtype"] in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share"} and not semantics.get(
         "scope_definition"
     ):
         return False
@@ -2913,6 +3179,9 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "long_window_return": 10,
     }
     graph_config = configured.get("graph_patterns", {})
+    question_generation = configured.get(
+        "question_generation", {"mode": "controlled_template"}
+    )
     return {
         "quotas": {key: int(quotas.get(key, value)) for key, value in defaults.items()},
         "derived_quotas": {
@@ -2926,22 +3195,15 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
             "enabled": bool(graph_config.get("enabled", False)),
             "comparability": graph_config.get("comparability", {}),
             "quotas": {
-                "pairwise_entity_metric_comparison": int(
-                    graph_config.get("quotas", {}).get("pairwise_entity_metric_comparison", 0)
-                ),
-                "entity_cross_metric_comparison": int(
-                    graph_config.get("quotas", {}).get("entity_cross_metric_comparison", 0)
-                ),
-                "entity_metric_temporal_average": int(
-                    graph_config.get("quotas", {}).get("entity_metric_temporal_average", 0)
-                ),
-                "temporal_argmax_then_metric_lookup": int(
-                    graph_config.get("quotas", {}).get(
-                        "temporal_argmax_then_metric_lookup", 0
-                    )
-                ),
+                item["pattern_id"]: int(
+                    graph_config.get("quotas", {}).get(item["pattern_id"], 0)
+                )
+                for item in pattern_manifest()
+                if item.get("matcher") and item.get("is_active")
             },
         },
+        "pattern_mining": mining_policy(config),
+        "question_generation": question_generation,
         "temporal_split": configured.get("temporal_split", {"cutoff_year": 2025}),
         "split_policy": configured.get(
             "split_policy", "semantic_cluster_then_entity_fixed_time_task"
@@ -3275,6 +3537,11 @@ def _fact_sort_key(row: dict[str, Any]) -> tuple[str, str, str]:
 def _latest_year(scope: dict[str, Any]) -> int | None:
     for key in ["end_year", "year", "fiscal_year", "calendar_year"]:
         if scope.get(key):
-            return int(scope[key])
+            value = str(scope[key]).strip()
+            if value.isdigit():
+                return int(value)
+            for token in value.replace("-", " ").split():
+                if len(token) == 4 and token.isdigit():
+                    return int(token)
     value = scope.get("end_date") or scope.get("observation_date")
     return int(str(value)[:4]) if value and str(value)[:4].isdigit() else None

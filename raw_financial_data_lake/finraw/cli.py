@@ -30,6 +30,7 @@ from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
+from finraw.qa.pattern_mining import mine_qa_patterns
 from finraw.qa.preflight import profile_graph_patterns
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
@@ -169,6 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
     qa_split = sub.add_parser("split-qa", help="Assign passed semantic QA groups to leakage-safe splits.")
     qa_split.add_argument("--qa-build-id", required=True)
     qa_split.add_argument("--output-dir", default="data/audit/qa_build")
+    qa_split.add_argument("--no-activate", action="store_true", help="Keep a passing QA build non-active for smoke or audit runs.")
 
     qa_export = sub.add_parser("export-qa-jsonl", help="Export passed QA as benchmark, SFT, and trace-seed JSONL.")
     qa_export.add_argument("--qa-build-id", required=True)
@@ -186,10 +188,25 @@ def build_parser() -> argparse.ArgumentParser:
     qa_preflight.add_argument("--limit-per-pattern", type=int, default=500)
     qa_preflight.add_argument("--output-dir", default="data/audit/qa_pattern_preflight")
 
+    qa_mining = sub.add_parser(
+        "mine-qa-patterns",
+        help="Mine high-value executable QA pattern proposals from a pinned KG build.",
+    )
+    qa_mining.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_mining.add_argument("--output-dir", default="data/audit/qa_pattern_mining")
+
     qa_all = sub.add_parser("build-qa", help="Run candidate, generation, validation, and split stages end to end.")
     qa_all.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
     qa_all.add_argument("--output-dir", default="data/audit/qa_build")
     qa_all.add_argument("--batch-size", type=int, default=2000)
+    qa_all.add_argument("--no-activate", action="store_true", help="Keep a passing QA build non-active for smoke or audit runs.")
+    qa_all.add_argument(
+        "--mined-only",
+        action="store_true",
+        help="Build only candidates from the latest approved mining run and force non-activation.",
+    )
+    qa_all.add_argument("--max-mined-proposals", type=int, default=100)
+    qa_all.add_argument("--max-candidates-per-proposal", type=int, default=1)
 
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
     return parser
@@ -385,7 +402,12 @@ def main() -> None:
             report = validate_qa_samples(db, args.qa_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "split-qa":
-            report = split_qa_samples(db, args.qa_build_id, output_dir=args.output_dir)
+            report = split_qa_samples(
+                db,
+                args.qa_build_id,
+                output_dir=args.output_dir,
+                activate=not args.no_activate,
+            )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
             if report.get("build_gate_status") != "passed":
                 raise RuntimeError(f"QA build gate failed: {report.get('build_gate_failures', [])}")
@@ -406,8 +428,47 @@ def main() -> None:
                 output_dir=args.output_dir,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "mine-qa-patterns":
+            report = mine_qa_patterns(
+                db,
+                config,
+                kg_build_id=args.kg_build_id,
+                output_dir=args.output_dir,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "build-qa":
-            report = build_qa(db, config, kg_build_id=args.kg_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
+            if args.mined_only:
+                qa_config = config.setdefault("qa", {})
+                for key in qa_config.get("quotas", {}):
+                    qa_config["quotas"][key] = 0
+                for key in qa_config.get("derived_quotas", {}):
+                    qa_config["derived_quotas"][key] = 0
+                qa_config.setdefault("graph_patterns", {})["enabled"] = False
+                mining = qa_config.setdefault("pattern_mining", {})
+                mining.update(
+                    {
+                        "enabled": True,
+                        "auto_run": False,
+                        "max_proposals": max(args.max_mined_proposals, 1),
+                        "max_candidates_per_proposal": max(
+                            args.max_candidates_per_proposal, 1
+                        ),
+                    }
+                )
+                gate = qa_config.setdefault("quality_gate", {})
+                gate["critical_tasks"] = {}
+                gate["minimum_graph_pattern_samples"] = {}
+                gate["minimum_graph_pattern_eligibility_rate"] = 0
+                gate["minimum_graph_feature_coverage"] = 0
+                gate["minimum_unique_operation_sequences"] = 1
+            report = build_qa(
+                db,
+                config,
+                kg_build_id=args.kg_build_id,
+                output_dir=args.output_dir,
+                batch_size=args.batch_size,
+                activate=not args.no_activate and not args.mined_only,
+            )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
             if report.get("split", {}).get("build_gate_status") != "passed":
                 raise RuntimeError(f"QA build gate failed: {report.get('split', {}).get('build_gate_failures', [])}")

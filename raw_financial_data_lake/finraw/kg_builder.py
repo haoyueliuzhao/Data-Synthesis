@@ -195,7 +195,7 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
     """
     for row in _rows(db, fact_sql, (input_fact_build_id,)):
         fact = _fact_node(row.get("fact_id"))
-        add_node(fact, "Fact", "standardized_facts", row.get("fact_id"), _pick(row, ["fact_id", "stable_fact_id", "build_id", "entity_id", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "source_id", "raw_object_id", "verification_status", "graph_ready_reason", "validation_flags", "raw_equivalence_group_id", "semantic_equivalence_group_id", "confidence_score"]))
+        add_node(fact, "Fact", "standardized_facts", row.get("fact_id"), _pick(row, ["fact_id", "stable_fact_id", "build_id", "entity_id", "entity_scope_id", "financial_scope_type", "metric_id", "normalized_value", "normalized_unit", "normalized_currency", "value_scale", "period_start", "period_end", "calendar_year", "fiscal_year", "fiscal_quarter", "time_basis", "metric_period_type", "source_definition_id", "frequency", "seasonal_adjustment", "vintage_policy", "is_forecast", "comparability_level", "source_id", "raw_object_id", "verification_status", "graph_ready_reason", "validation_flags", "raw_equivalence_group_id", "semantic_equivalence_group_id", "confidence_score"]))
         time = _time_node(row)
         add_node(time, "TimePeriod", "standardized_facts", row.get("fact_id"), _time_properties(row))
         _add_time_hierarchy(add_node, add_edge, time, row, row.get("entity_id"))

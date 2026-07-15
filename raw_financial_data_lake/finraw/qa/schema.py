@@ -74,6 +74,48 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         )
         """,
         f"""
+        CREATE TABLE IF NOT EXISTS qa_pattern_mining_runs (
+            mining_run_id TEXT PRIMARY KEY,
+            kg_build_id TEXT NOT NULL,
+            mining_version TEXT NOT NULL,
+            config_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at {timestamp_type},
+            completed_at {timestamp_type},
+            scanned_fact_count BIGINT DEFAULT 0,
+            proposal_count BIGINT DEFAULT 0,
+            approved_count BIGINT DEFAULT 0,
+            notes {json_type} NOT NULL
+        )
+        """,
+        f"""
+        CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
+            proposal_id TEXT PRIMARY KEY,
+            mining_run_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            motif_family TEXT NOT NULL,
+            motif_signature TEXT NOT NULL,
+            pattern_spec {json_type} NOT NULL,
+            operator_dag_template {json_type} NOT NULL,
+            answer_schema {json_type} NOT NULL,
+            binding_examples {json_type} NOT NULL,
+            support_count BIGINT NOT NULL,
+            entity_count BIGINT NOT NULL,
+            metric_count BIGINT NOT NULL,
+            period_count BIGINT NOT NULL,
+            support_score REAL NOT NULL,
+            completeness_score REAL NOT NULL,
+            financial_value_score REAL NOT NULL,
+            complexity_score REAL NOT NULL,
+            novelty_score REAL NOT NULL,
+            total_score REAL NOT NULL,
+            status TEXT NOT NULL,
+            rejection_reasons {json_type} NOT NULL,
+            proposal_hash TEXT NOT NULL,
+            created_at {timestamp_type} DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        f"""
         CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -86,6 +128,10 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             pattern_hash TEXT,
             operation_plan_id TEXT,
             operation_plan_hash TEXT,
+            mining_run_id TEXT,
+            pattern_proposal_id TEXT,
+            pattern_proposal_hash TEXT,
+            pattern_score REAL,
             graph_features {json_type},
             difficulty_score REAL,
             answer_schema {json_type},
@@ -192,6 +238,8 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         "CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_source ON kg_nodes(kg_build_id, node_type, source_pk)",
         "CREATE INDEX IF NOT EXISTS idx_standardized_facts_qa_series ON standardized_facts(build_id, metric_id, entity_id, fiscal_year, fiscal_quarter, period_end)",
         "CREATE INDEX IF NOT EXISTS idx_qa_builds_kg_status ON qa_builds(kg_build_id, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_mining_runs_kg_status ON qa_pattern_mining_runs(kg_build_id, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_proposals_kg_status_score ON qa_pattern_proposals(kg_build_id, status, total_score)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_task_status ON qa_candidates(qa_build_id, task_subtype, eligibility_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_stable ON qa_candidates(stable_candidate_id)",
         "CREATE INDEX IF NOT EXISTS idx_qa_samples_build_status ON qa_samples(qa_build_id, validation_status)",
@@ -238,6 +286,10 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "pattern_hash": "TEXT",
             "operation_plan_id": "TEXT",
             "operation_plan_hash": "TEXT",
+            "mining_run_id": "TEXT",
+            "pattern_proposal_id": "TEXT",
+            "pattern_proposal_hash": "TEXT",
+            "pattern_score": "REAL",
             "graph_features": "JSONB" if postgres else "TEXT",
             "difficulty_score": "REAL",
             "answer_schema": "JSONB" if postgres else "TEXT",
@@ -252,6 +304,10 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "matcher": "TEXT",
             "pattern_hash": "TEXT",
         },
+        "standardized_facts": {
+            "entity_scope_id": "TEXT",
+            "financial_scope_type": "TEXT",
+        },
     }
     for table, columns in migrations.items():
         for column, column_type in columns.items():
@@ -265,8 +321,14 @@ def ensure_qa_schema(db: DBProtocol) -> None:
                 ):
                     raise
     for statement in [
+        "CREATE INDEX IF NOT EXISTS idx_standardized_facts_financial_scope ON standardized_facts(entity_scope_id, financial_scope_type)",
         "CREATE INDEX IF NOT EXISTS idx_qa_patterns_family_active ON qa_graph_patterns(pattern_family, is_active)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_patterns_family_active ON qa_graph_patterns(pattern_family, is_active)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_mining_runs_kg_status ON qa_pattern_mining_runs(kg_build_id, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_proposals_kg_status_score ON qa_pattern_proposals(kg_build_id, status, total_score)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_candidates_proposal ON qa_candidates(qa_build_id, pattern_proposal_id, eligibility_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status)",
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_plans_candidate ON qa_operation_plans(candidate_id)",
     ]:

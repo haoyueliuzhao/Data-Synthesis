@@ -7,9 +7,11 @@ from typing import Any
 
 from finraw.db.client import DBProtocol
 from finraw.qa.comparability import (
+    annual_duration_valid,
     comparability_policy,
     fact_frequency,
     facts_share_semantics,
+    financial_scope_key,
     latest_contiguous_window,
     period_index,
     period_label,
@@ -411,6 +413,7 @@ def match_temporal_argmax_followup(
         key = (
             row.get("entity_id"),
             row.get("metric_id"),
+            *financial_scope_key(row),
             row.get("source_id"),
             row.get("source_definition_id"),
             fact_frequency(row),
@@ -434,6 +437,8 @@ def match_temporal_argmax_followup(
             (
                 entity_id,
                 _,
+                entity_scope_id,
+                financial_scope_type,
                 source_id,
                 primary_definition,
                 frequency,
@@ -452,13 +457,15 @@ def match_temporal_argmax_followup(
                 for secondary_key, values in by_entity_metric.items()
                 if secondary_key[0] == entity_id
                 and secondary_key[1] == secondary_metric
-                and secondary_key[2] == source_id
-                and secondary_key[4] == frequency
-                and secondary_key[5] == time_basis
-                and secondary_key[6] == period_type
-                and secondary_key[9] == seasonal
-                and secondary_key[10] == vintage
-                and secondary_key[11] == level
+                and secondary_key[2] == entity_scope_id
+                and secondary_key[3] == financial_scope_type
+                and secondary_key[4] == source_id
+                and secondary_key[6] == frequency
+                and secondary_key[7] == time_basis
+                and secondary_key[8] == period_type
+                and secondary_key[11] == seasonal
+                and secondary_key[12] == vintage
+                and secondary_key[13] == level
             ]
             if not compatible_secondary_groups:
                 continue
@@ -510,11 +517,15 @@ def match_temporal_argmax_followup(
                     "comparability": _comparability_payload(primary_window[0]),
                     "series_definitions": {
                         "primary": primary_definition,
-                        "secondary": secondary_key[3],
+                        "secondary": secondary_key[5],
                     },
                     "series_units": {
                         "primary": [primary_unit, primary_currency],
-                        "secondary": [secondary_key[7], secondary_key[8]],
+                        "secondary": [secondary_key[9], secondary_key[10]],
+                    },
+                    "financial_scope": {
+                        "entity_scope_id": entity_scope_id,
+                        "financial_scope_type": financial_scope_type,
                     },
                     "sampling_stratum": [
                         primary_metric,
@@ -554,6 +565,7 @@ def _temporal_serving_rows(
         fetched = db.fetchall(
             """
             SELECT sf.entity_id, sf.fact_id, sf.metric_id,
+                   sf.entity_scope_id, sf.financial_scope_type,
                    sf.period_start, sf.period_end, sf.as_of_date,
                    sf.fiscal_year, sf.fiscal_quarter, sf.calendar_year,
                    sf.normalized_unit, sf.normalized_currency,
@@ -584,7 +596,12 @@ def _temporal_serving_rows(
                 policy["temporal_scan_rows_per_metric"],
             ),
         )
-        rows.extend(dict(row) for row in fetched)
+        rows.extend(
+            item
+            for row in fetched
+            for item in [dict(row)]
+            if annual_duration_valid(item)
+        )
     return rows
 
 
@@ -596,6 +613,7 @@ def _group_temporal_rows(
         key = (
             row.get("entity_id"),
             row.get("metric_id") if include_metric else None,
+            *financial_scope_key(row),
             row.get("source_id"),
             row.get("source_definition_id"),
             fact_frequency(row),
@@ -667,3 +685,7 @@ def _row_period_id(row: dict[str, Any]) -> str:
     if year and quarter in {"Q1", "Q2", "Q3", "Q4", "FY"}:
         return f"{year}-{quarter}"
     return str(row.get("period_end") or year or "unknown-period")
+
+
+# Import after registry helpers are defined so scope matchers can register themselves.
+from finraw.qa import scope_matchers as _scope_matchers  # noqa: E402,F401

@@ -16,7 +16,7 @@ DIFFICULTY_BASE_COST = {
     "research": 6.0,
 }
 DIFFICULTY_POLICY = {
-    "version": 2,
+    "version": 3,
     "thresholds": {"easy": 2.5, "medium": 5.5, "hard": 9.5, "expert": 18.0},
     "pattern_base_cost": DIFFICULTY_BASE_COST,
     "reasoning_relations": [
@@ -50,6 +50,7 @@ def graph_features(
     evidence: dict[str, Any],
     operation_plan: dict[str, Any] | None,
     answer_payload: dict[str, Any],
+    semantic_constraint_count: int = 0,
 ) -> dict[str, Any]:
     edge_rows = evidence.get("evidence_edges") or []
     periods = {
@@ -112,6 +113,7 @@ def graph_features(
         "scope_size": len(set(entity_ids)),
         "time_span_years": years[-1] - years[0] if len(years) > 1 else 0,
         "answer_cardinality": answer_cardinality,
+        "semantic_constraint_count": semantic_constraint_count,
     }
 
 
@@ -129,6 +131,7 @@ def difficulty_score(
     score += float(features.get("provenance_graph_depth", 0)) * 0.03
     score += float(features.get("operation_cost", 0))
     score += max(float(features.get("operation_depth", 0)) - 1.0, 0.0) * 1.4
+    score += min(float(features.get("semantic_constraint_count", 0)), 10.0) * 0.2
     score += min(float(features.get("time_span_years", 0)), 10.0) * 0.08
     scope_size = max(float(features.get("scope_size", 0)), 1.0)
     score += math.log2(scope_size) * 0.2

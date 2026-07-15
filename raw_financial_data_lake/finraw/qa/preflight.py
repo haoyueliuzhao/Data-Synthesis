@@ -10,6 +10,7 @@ from finraw.db.client import DBProtocol
 from finraw.kg_query import resolve_kg_build_id
 from finraw.qa.graph_matcher import discover_pattern_matches
 from finraw.qa.graph_patterns import get_pattern
+from finraw.qa.schema import ensure_qa_schema
 
 
 def profile_graph_patterns(
@@ -20,6 +21,7 @@ def profile_graph_patterns(
     limit_per_pattern: int = 500,
     output_dir: str | None = None,
 ) -> dict[str, Any]:
+    ensure_qa_schema(db)
     resolved = resolve_kg_build_id(db, kg_build_id)
     kg_row = db.fetchone(
         "SELECT * FROM kg_builds WHERE kg_build_id = ?", (resolved,)

@@ -244,6 +244,8 @@ CREATE TABLE IF NOT EXISTS standardized_facts (
     is_active           INTEGER DEFAULT 1,
     superseded_by       TEXT,
     entity_id           TEXT REFERENCES canonical_entities(entity_id),
+    entity_scope_id     TEXT,
+    financial_scope_type TEXT,
     metric_id           TEXT REFERENCES metrics(metric_id),
     normalized_value    REAL,
     normalized_unit     TEXT,
@@ -279,6 +281,7 @@ CREATE TABLE IF NOT EXISTS standardized_facts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_entity_metric ON standardized_facts(entity_id, metric_id);
+CREATE INDEX IF NOT EXISTS idx_standardized_facts_financial_scope ON standardized_facts(entity_scope_id, financial_scope_type);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_period_end ON standardized_facts(period_end);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_verification ON standardized_facts(verification_status);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_graph_ready ON standardized_facts(graph_ready);

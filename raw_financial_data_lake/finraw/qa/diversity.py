@@ -102,6 +102,19 @@ def build_qa_diversity_report(
         )
     }
     feature_rows = [row for row in eligible if row.get("graph_features")]
+    mined_candidates = [row for row in eligible if row.get("pattern_proposal_id")]
+    mined_family_counts = Counter(
+        str(row["motif_family"])
+        for row in db.fetchall(
+            """
+            SELECT p.motif_family
+            FROM qa_candidates c
+            JOIN qa_pattern_proposals p ON p.proposal_id = c.pattern_proposal_id
+            WHERE c.qa_build_id = ? AND c.eligibility_status = 'eligible'
+            """,
+            (qa_build_id,),
+        )
+    )
     avg_nodes = _average(
         len(
             row.get("kg_path", {}).get("evidence_node_ids")
@@ -137,6 +150,23 @@ def build_qa_diversity_report(
             "task_pattern_entropy": semantic["pattern_entropy"],
             "largest_pattern_share": semantic["largest_pattern_share"],
             "largest_template_share": _largest_share(template_counts),
+        },
+        "pattern_mining": {
+            "eligible_mined_candidate_count": len(mined_candidates),
+            "eligible_mined_candidate_ratio": (
+                len(mined_candidates) / len(eligible) if eligible else 0.0
+            ),
+            "unique_pattern_proposals": len(
+                {
+                    str(row["pattern_proposal_id"])
+                    for row in mined_candidates
+                    if row.get("pattern_proposal_id")
+                }
+            ),
+            "motif_family_counts": dict(sorted(mined_family_counts.items())),
+            "average_pattern_score": _average(
+                float(row.get("pattern_score") or 0) for row in mined_candidates
+            ),
         },
         "kg_utilization": {
             "population": "eligible_candidates",
@@ -296,6 +326,7 @@ def _write_report(report: dict[str, Any], output_dir: str) -> list[str]:
     )
     semantic = report["semantic_diversity"]
     usage = report["kg_utilization"]
+    mining = report["pattern_mining"]
     lines = [
         "# QA Diversity and KG Utilization Report",
         "",
@@ -305,6 +336,8 @@ def _write_report(report: dict[str, Any], output_dir: str) -> list[str]:
         f"- Unique graph patterns: `{semantic['unique_graph_patterns']}`",
         f"- Operator sequences / normalized plans / DAGs: `{semantic['unique_operation_plans']} / {semantic['unique_normalized_plans']} / {semantic['unique_operator_dags']}`",
         f"- Pattern entropy: `{semantic['task_pattern_entropy']}`",
+        f"- Mined candidates / proposals: `{mining['eligible_mined_candidate_count']} / {mining['unique_pattern_proposals']}`",
+        f"- Average mined-pattern score: `{mining['average_pattern_score']:.6f}`",
         f"- Fact node utilization: `{usage['fact_node_utilization']:.6f}`",
         f"- Derived node utilization: `{usage['derived_node_utilization']:.6f}`",
         f"- Edge type coverage: `{usage['edge_type_coverage']:.6f}`",

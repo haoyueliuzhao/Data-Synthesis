@@ -44,6 +44,8 @@ LAYER_TABLES: dict[str, list[str]] = {
         "qa_builds",
         "qa_templates",
         "qa_graph_patterns",
+        "qa_pattern_mining_runs",
+        "qa_pattern_proposals",
         "qa_candidates",
         "qa_operation_plans",
         "qa_samples",
@@ -84,6 +86,7 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "kg-retention",
     ],
     "qa_build": [
+        "mine-qa-patterns",
         "build-qa-candidates",
         "generate-qa",
         "validate-qa",
