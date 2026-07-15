@@ -9,7 +9,7 @@ from typing import Any, Protocol
 
 
 class QuestionProvider(Protocol):
-    def generate(self, request: dict[str, Any]) -> list[str]: ...
+    def generate(self, request: dict[str, Any]) -> list[Any]: ...
 
 
 @dataclass(frozen=True)
@@ -31,11 +31,14 @@ class OpenAICompatibleQuestionProvider:
         if not self.endpoint or not self.model or not self.api_key:
             raise ValueError("LLM endpoint, model, and API key environment variable are required")
 
-    def generate(self, request: dict[str, Any]) -> list[str]:
+    def generate(self, request: dict[str, Any]) -> list[Any]:
         prompt = (
             "Rewrite the canonical financial question into diverse analyst-style English. "
-            "Preserve every immutable slot exactly, preserve scope/time/operator semantics, "
-            "do not add facts, and return JSON only as {\"questions\":[...]}.\n"
+            "Preserve every immutable slot and the exact operator order, parameters, "
+            "threshold directions, scope, and time semantics. Do not add facts. Return "
+            "JSON only as {\"questions\":[{\"question\":...,\"slot_map\":...,"
+            "\"operator_id\":...,\"constraints\":[...]}]}; copy the supplied semantic "
+            "contract fields exactly.\n"
             + json.dumps(request, ensure_ascii=False, sort_keys=True)
         )
         payload = {
@@ -57,7 +60,11 @@ class OpenAICompatibleQuestionProvider:
             body = json.loads(response.read().decode("utf-8"))
         content = body["choices"][0]["message"]["content"]
         parsed = json.loads(content)
-        return [str(item) for item in parsed.get("questions", []) if str(item).strip()]
+        return [
+            item
+            for item in parsed.get("questions", [])
+            if isinstance(item, dict) and str(item.get("question") or "").strip()
+        ]
 
 
 def realize_question(
@@ -76,9 +83,12 @@ def realize_question(
         "required_slots": required_slots,
         "mode": mode,
     }
+    semantic_contract = _semantic_contract(
+        semantics, immutable_slots, required_slots
+    )
     if mode != "controlled_llm":
-        slot_check = validate_question_slots(
-            canonical_question, immutable_slots, required_slots
+        slot_check = validate_question_roundtrip(
+            canonical_question, semantic_contract, trusted_contract=True
         )
         return VerbalizationResult(
             canonical_question,
@@ -97,24 +107,23 @@ def realize_question(
                 for key in required_slots
                 if key in immutable_slots
             },
+            "semantic_contract": semantic_contract,
             "variant_count": max(int(policy.get("variants", 3)), 1),
         }
         variants = effective_provider.generate(request)
-        for question in variants:
-            slot_check = validate_question_slots(
-                question, immutable_slots, required_slots
-            )
+        for variant in variants:
+            slot_check = validate_question_roundtrip(variant, semantic_contract)
             if slot_check["passed"]:
                 return VerbalizationResult(
-                    question,
+                    str(variant["question"]),
                     "controlled_llm",
                     {**base_validation, **slot_check, "fallback_reason": None},
                 )
         fallback_reason = "no_llm_variant_passed_slot_roundtrip"
     except Exception as exc:
         fallback_reason = f"llm_unavailable:{type(exc).__name__}"
-    slot_check = validate_question_slots(
-        canonical_question, immutable_slots, required_slots
+    slot_check = validate_question_roundtrip(
+        canonical_question, semantic_contract, trusted_contract=True
     )
     return VerbalizationResult(
         canonical_question,
@@ -137,6 +146,94 @@ def validate_question_slots(
         "missing_slots": missing,
         "checked_slot_count": len(required_slots),
     }
+
+
+def validate_question_roundtrip(
+    variant: Any,
+    expected_contract: dict[str, Any],
+    *,
+    trusted_contract: bool = False,
+) -> dict[str, Any]:
+    if trusted_contract:
+        question = str(variant)
+        supplied_contract = expected_contract
+        structured = True
+    elif isinstance(variant, dict):
+        question = str(variant.get("question") or "")
+        supplied_contract = {
+            "slot_map": variant.get("slot_map"),
+            "operator_id": variant.get("operator_id"),
+            "constraints": variant.get("constraints"),
+        }
+        structured = True
+    else:
+        question = str(variant or "")
+        supplied_contract = {}
+        structured = False
+
+    required_slots = list(expected_contract.get("required_slots") or [])
+    slots = dict(expected_contract.get("slot_map") or {})
+    slot_check = validate_question_slots(question, slots, required_slots)
+    contract_errors: list[str] = []
+    if not structured:
+        contract_errors.append("missing_structured_contract")
+    if supplied_contract.get("slot_map") != slots:
+        contract_errors.append("slot_map_mismatch")
+    if supplied_contract.get("operator_id") != expected_contract.get("operator_id"):
+        contract_errors.append("operator_id_mismatch")
+    if _json_signature(supplied_contract.get("constraints")) != _json_signature(
+        expected_contract.get("constraints")
+    ):
+        contract_errors.append("constraints_mismatch")
+    return {
+        **slot_check,
+        "passed": slot_check["passed"] and not contract_errors,
+        "structured_contract": structured,
+        "contract_errors": contract_errors,
+        "expected_operator_id": expected_contract.get("operator_id"),
+        "observed_operator_id": supplied_contract.get("operator_id"),
+    }
+
+
+def _semantic_contract(
+    semantics: dict[str, Any],
+    immutable_slots: dict[str, str],
+    required_slots: list[str],
+) -> dict[str, Any]:
+    plan = semantics.get("operation_plan") or {}
+    operators = []
+    for index, step in enumerate(plan.get("operators") or []):
+        operators.append(
+            {
+                "position": index,
+                "step_id": step.get("step_id"),
+                "operator": step.get("operator"),
+                "params": _json_ready(step.get("params") or {}),
+            }
+        )
+    operator_id = "_then_".join(
+        str(item["operator"]) for item in operators if item.get("operator")
+    ) or str(semantics.get("operation") or "lookup")
+    return {
+        "slot_map": {
+            key: immutable_slots[key]
+            for key in required_slots
+            if key in immutable_slots
+        },
+        "required_slots": list(required_slots),
+        "operator_id": operator_id,
+        "constraints": operators,
+    }
+
+
+def _json_ready(value: Any) -> Any:
+    return json.loads(json.dumps(value, sort_keys=True, default=str))
+
+
+def _json_signature(value: Any) -> str:
+    return json.dumps(
+        _json_ready(value), sort_keys=True, separators=(",", ":"), default=str
+    )
 
 
 def _question_safe_semantics(semantics: dict[str, Any]) -> dict[str, Any]:

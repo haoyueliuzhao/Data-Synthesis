@@ -12,14 +12,25 @@ from typing import Any
 
 from finraw.db.client import DBProtocol
 from finraw.kg_query import resolve_kg_build_id
+from finraw.qa.comparability import comparability_policy
 from finraw.qa.difficulty import DIFFICULTY_POLICY, assess_difficulty, graph_features
 from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
 from finraw.qa.graph_patterns import get_pattern, pattern_manifest
 from finraw.qa.operators import operator_registry
-from finraw.qa.pattern_compiler import compile_pattern_proposal, compile_proposal_matches
-from finraw.qa.pattern_mining import load_approved_proposals, mine_qa_patterns, mining_policy
-from finraw.qa.plans import execute_plan, operation_depth
+from finraw.qa.pattern_compiler import (
+    COMPILER_VERSION,
+    compile_pattern_proposal,
+    compile_proposal_matches,
+)
+from finraw.qa.pattern_mining import (
+    get_approved_mining_run,
+    load_published_proposals,
+    mine_qa_patterns,
+    mining_policy,
+)
+from finraw.qa.plans import execute_plan, materialize_plan, operation_depth
 from finraw.qa.schema import ensure_qa_schema
+from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
 from finraw.qa.verbalizer import realize_question
@@ -52,11 +63,12 @@ GRAPH_SCOPE_TASKS = {
     "multi_factor_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.2.0"
+GENERATOR_VERSION = "4.4.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
     "kg_build_id",
+    "mining_run_id",
     "graph_schema_version",
     "fact_build_id",
     "derived_build_id",
@@ -99,6 +111,9 @@ CANDIDATE_COLUMNS = [
     "pattern_proposal_id",
     "pattern_proposal_hash",
     "pattern_score",
+    "pattern_compilation_id",
+    "compiled_binding_id",
+    "compiled_binding_hash",
     "graph_features",
     "difficulty_score",
     "answer_schema",
@@ -194,6 +209,7 @@ def build_qa_candidates(
     config: dict[str, Any],
     *,
     kg_build_id: str | None = None,
+    mining_run_id: str | None = None,
     output_dir: str | None = None,
     batch_size: int = 2000,
 ) -> dict[str, Any]:
@@ -207,28 +223,49 @@ def build_qa_candidates(
     policy = _qa_policy(config)
     effective_mining_policy = mining_policy(config)
     mining_report = None
-    if effective_mining_policy["enabled"] and effective_mining_policy["auto_run"]:
-        mining_report = mine_qa_patterns(
-            db,
-            config,
-            kg_build_id=kg_build_id,
-            output_dir=output_dir,
-        )
-    mined_proposals = (
-        load_approved_proposals(
+    selected_mining_run = None
+    if effective_mining_policy["enabled"]:
+        if mining_run_id is None and effective_mining_policy["auto_run"]:
+            mining_report = mine_qa_patterns(
+                db,
+                config,
+                kg_build_id=kg_build_id,
+                output_dir=output_dir,
+            )
+            mining_run_id = str(mining_report["mining_run_id"])
+        if mining_run_id is None:
+            raise ValueError(
+                "An explicit mining_run_id is required when QA pattern mining is "
+                "enabled. Pass --mining-run-id qamining_xxx."
+            )
+        selected_mining_run = get_approved_mining_run(
             db,
             kg_build_id,
+            mining_run_id,
+        )
+        mined_proposals = load_published_proposals(
+            db,
+            kg_build_id,
+            mining_run_id,
             limit=effective_mining_policy["max_proposals"],
         )
-        if effective_mining_policy["enabled"]
-        else []
-    )
+    else:
+        if mining_run_id is not None:
+            raise ValueError(
+                "mining_run_id was supplied but qa.pattern_mining.enabled is false"
+            )
+        mined_proposals = []
     mined_manifest = [
         {
             "proposal_id": proposal["proposal_id"],
             "proposal_hash": proposal["proposal_hash"],
+            "proposal_semantic_id": proposal.get("proposal_semantic_id"),
+            "proposal_snapshot_id": proposal.get("proposal_snapshot_id"),
+            "static_pattern_id": proposal.get("static_pattern_id"),
+            "binding_mode": proposal.get("binding_mode"),
             "motif_signature": proposal["motif_signature"],
             "total_score": proposal["total_score"],
+            "compiler_version": COMPILER_VERSION,
         }
         for proposal in mined_proposals
     ]
@@ -241,6 +278,7 @@ def build_qa_candidates(
     build = {
         "qa_build_id": qa_build_id,
         "kg_build_id": kg_build_id,
+        "mining_run_id": mining_run_id,
         "graph_schema_version": kg.get("graph_schema_version"),
         "fact_build_id": kg.get("input_fact_build_id"),
         "derived_build_id": kg.get("input_qa_build_id"),
@@ -255,6 +293,7 @@ def build_qa_candidates(
             operator_manifest_data,
             DIFFICULTY_POLICY,
             GENERATOR_VERSION,
+            mining_run_id,
         ),
         "template_manifest_hash": _digest(TEMPLATES),
         "pattern_manifest_hash": pattern_manifest_hash,
@@ -286,6 +325,7 @@ def build_qa_candidates(
             "pattern_mining": {
                 "policy": effective_mining_policy,
                 "report": mining_report,
+                "selected_run": selected_mining_run,
                 "proposal_manifest": mined_manifest,
             },
         },
@@ -303,12 +343,19 @@ def build_qa_candidates(
             (kg["input_entity_build_id"],),
         )
     }
-    metric_names = {
-        str(row["metric_id"]): str(row["canonical_name"])
+    metric_rows = [
+        dict(row)
         for row in db.fetchall(
-            "SELECT metric_id, canonical_name FROM metrics WHERE build_id = ?",
+            "SELECT * FROM metrics WHERE build_id = ?",
             (kg["input_metric_build_id"],),
         )
+    ]
+    metric_ontology = {
+        str(row["metric_id"]): row for row in metric_rows
+    }
+    metric_names = {
+        str(row["metric_id"]): str(row["canonical_name"])
+        for row in metric_rows
     }
     raw_by_fact = {
         str(row["fact_id"]): str(row["raw_object_id"])
@@ -338,7 +385,24 @@ def build_qa_candidates(
         candidates.clear()
         plans.clear()
 
+    seen_semantic_bindings: set[str] = set()
+
     def emit(candidate: dict[str, Any], plan: dict[str, Any] | None = None) -> None:
+        if candidate.get("eligibility_status") == "eligible":
+            semantic_binding_key = _digest(
+                candidate.get("task_subtype"),
+                sorted(candidate.get("source_fact_ids") or []),
+                sorted(candidate.get("source_derived_ids") or []),
+                candidate.get("entity_ids") or [],
+                candidate.get("metric_ids") or [],
+                candidate.get("time_scope") or {},
+                (plan or {}).get("operator_dag") or {},
+                candidate.get("answer_schema") or {},
+            )
+            if semantic_binding_key in seen_semantic_bindings:
+                rejected["semantic_binding_duplicate"] += 1
+                return
+            seen_semantic_bindings.add(semantic_binding_key)
         candidates.append(candidate)
         if plan:
             plans.append(plan)
@@ -394,6 +458,7 @@ def build_qa_candidates(
             )
 
     graph_policy = policy.get("graph_patterns", {})
+    semantic_policy = comparability_policy(graph_policy.get("comparability"))
     if graph_policy.get("enabled"):
         for pattern_id, quota in graph_policy.get("quotas", {}).items():
             if int(quota) <= 0:
@@ -423,6 +488,8 @@ def build_qa_candidates(
                     kg_build_id,
                     entity_names,
                     metric_names,
+                    metric_ontology,
+                    semantic_policy,
                 )
                 emit(candidate, plan)
 
@@ -430,8 +497,15 @@ def build_qa_candidates(
         for proposal in mined_proposals:
             pattern = compile_pattern_proposal(proposal)
             matches = compile_proposal_matches(
+                db,
+                kg,
                 proposal,
+                qa_build_id=qa_build_id,
                 limit=effective_mining_policy["max_candidates_per_proposal"],
+                policy={
+                    **effective_mining_policy,
+                    "semantic_policy": semantic_policy,
+                },
             )
             fact_map = load_bound_facts(
                 db,
@@ -448,6 +522,8 @@ def build_qa_candidates(
                     kg_build_id,
                     entity_names,
                     metric_names,
+                    metric_ontology,
+                    semantic_policy,
                     proposal=proposal,
                 )
                 emit(candidate, plan)
@@ -467,6 +543,48 @@ def build_qa_candidates(
     persisted_task_counts = _group_counts(
         db, "qa_candidates", "qa_build_id", qa_build_id, "task_subtype"
     )
+    compilation_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT * FROM qa_pattern_compilations WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    ]
+    compiled_binding_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT audit_example_overlap FROM qa_compiled_bindings "
+            "WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    ]
+    compilation_summary = {
+        "compilation_count": len(compilation_rows),
+        "successful_compilation_count": sum(
+            row.get("status") == "success" for row in compilation_rows
+        ),
+        "discovered_binding_count": sum(
+            int(row.get("discovered_binding_count") or 0)
+            for row in compilation_rows
+        ),
+        "semantic_valid_binding_count": sum(
+            int(row.get("semantic_valid_binding_count") or 0)
+            for row in compilation_rows
+        ),
+        "execution_valid_binding_count": sum(
+            int(row.get("execution_valid_binding_count") or 0)
+            for row in compilation_rows
+        ),
+        "compiled_binding_count": len(compiled_binding_rows),
+        "audit_overlap_binding_count": sum(
+            bool(row.get("audit_example_overlap"))
+            for row in compiled_binding_rows
+        ),
+        "non_audit_binding_count": sum(
+            not bool(row.get("audit_example_overlap"))
+            for row in compiled_binding_rows
+        ),
+    }
     build_row = db.fetchone("SELECT notes FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,))
     notes = json_value(build_row["notes"] if build_row else None, {})
     notes.update(
@@ -475,6 +593,7 @@ def build_qa_candidates(
             "task_counts": persisted_task_counts,
             "emitted_task_counts": dict(counts),
             "rejection_counts": dict(rejected),
+            "pattern_compilation_summary": compilation_summary,
         }
     )
     db.execute(
@@ -489,11 +608,13 @@ def build_qa_candidates(
     report = {
         "qa_build_id": qa_build_id,
         "kg_build_id": kg_build_id,
+        "mining_run_id": mining_run_id,
         "candidate_count": candidate_count,
         "eligible_candidate_count": eligible_count,
         "task_counts": persisted_task_counts,
         "emitted_task_counts": dict(sorted(counts.items())),
         "rejection_counts": dict(sorted(rejected.items())),
+        "pattern_compilation_summary": compilation_summary,
     }
     return _write_report(report, output_dir, "qa_candidate_report")
 
@@ -587,10 +708,22 @@ def validate_qa_samples(
                c.graph_features, c.answer_schema, c.question_intent,
                c.mining_run_id, c.pattern_proposal_id,
                c.pattern_proposal_hash, c.pattern_score,
+               c.pattern_compilation_id, c.compiled_binding_id,
+               c.compiled_binding_hash,
                mp.status AS stored_proposal_status,
                mp.proposal_hash AS stored_proposal_hash,
                mp.total_score AS stored_proposal_score,
                mp.kg_build_id AS proposal_kg_build_id,
+               mp.pattern_spec AS stored_pattern_spec,
+               pc.status AS compilation_status,
+               pc.proposal_id AS compilation_proposal_id,
+               pc.proposal_hash AS compilation_proposal_hash,
+               pc.target_kg_build_id AS compilation_target_kg_build_id,
+               pc.logical_plan_hash AS stored_logical_plan_hash,
+               cb.binding_hash AS stored_compiled_binding_hash,
+               cb.binding AS stored_compiled_binding,
+               cb.semantic_status AS compiled_semantic_status,
+               cb.execution_status AS compiled_execution_status,
                p.operator_dag, p.input_bindings, p.intermediate_results,
                p.output_schema, p.recompute_status AS plan_recompute_status,
                p.validation_errors AS plan_validation_errors
@@ -598,6 +731,10 @@ def validate_qa_samples(
         JOIN qa_candidates c ON c.candidate_id = s.candidate_id
         LEFT JOIN qa_operation_plans p ON p.plan_id = c.operation_plan_id
         LEFT JOIN qa_pattern_proposals mp ON mp.proposal_id = c.pattern_proposal_id
+        LEFT JOIN qa_pattern_compilations pc
+          ON pc.compilation_id = c.pattern_compilation_id
+        LEFT JOIN qa_compiled_bindings cb
+          ON cb.compiled_binding_id = c.compiled_binding_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'pending'
         ORDER BY s.qa_id
         """,
@@ -612,6 +749,19 @@ def validate_qa_samples(
         }
     )
     facts = _load_facts_by_id(db, fact_ids, build["fact_build_id"])
+    metric_ontology = {
+        str(row["metric_id"]): dict(row)
+        for row in db.fetchall(
+            "SELECT * FROM metrics WHERE build_id = ?",
+            (build["metric_build_id"],),
+        )
+    }
+    semantic_policy = comparability_policy(
+        build.get("notes", {})
+        .get("policy", {})
+        .get("graph_patterns", {})
+        .get("comparability")
+    )
     node_ids = sorted(
         {
             node_id
@@ -633,7 +783,13 @@ def validate_qa_samples(
     for row in rows:
         decoded = _decode_validation_row(row)
         sample_checks = _validate_one(
-            decoded, build, facts, existing_nodes, existing_edges
+            decoded,
+            build,
+            facts,
+            existing_nodes,
+            existing_edges,
+            metric_ontology,
+            semantic_policy,
         )
         status = (
             "passed"
@@ -896,7 +1052,9 @@ def split_qa_samples(
               'no_answer_leakage', 'graph_pattern_match',
               'operator_input_complete', 'operator_type_valid',
               'intermediate_result_recompute', 'operation_trace_coverage',
-              'pattern_proposal_match', 'question_slot_roundtrip',
+              'pattern_proposal_match', 'compiled_binding_match',
+              'semantic_constraint_gate',
+              'question_slot_roundtrip',
               'question_answer_isolation'
           )
         """,
@@ -966,6 +1124,7 @@ def build_qa(
     config: dict[str, Any],
     *,
     kg_build_id: str | None = None,
+    mining_run_id: str | None = None,
     output_dir: str = "data/audit/qa_build",
     batch_size: int = 2000,
     activate: bool = True,
@@ -974,6 +1133,7 @@ def build_qa(
         db,
         config,
         kg_build_id=kg_build_id,
+        mining_run_id=mining_run_id,
         output_dir=output_dir,
         batch_size=batch_size,
     )
@@ -1240,6 +1400,8 @@ def _graph_pattern_candidate(
     kg_build_id: str,
     entity_name_map: dict[str, str],
     metric_name_map: dict[str, str],
+    metric_ontology: dict[str, dict[str, Any]],
+    semantic_policy: dict[str, Any],
     proposal: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     fact_ids = [str(fact_id) for fact_id in match["fact_ids"]]
@@ -1247,16 +1409,18 @@ def _graph_pattern_candidate(
     reasons = []
     if len(facts) != len(fact_ids):
         reasons.append("graph_pattern_missing_bound_fact")
-    operator_dag = json.loads(json.dumps(pattern.operator_template))
-    if match.get("operator_params") and operator_dag.get("operators"):
-        operator_dag["operators"][0]["params"] = dict(match["operator_params"])
-    step_params = match.get("operator_step_params") or {}
-    for step in operator_dag.get("operators") or []:
-        if step.get("step_id") in step_params:
-            step["params"] = {
-                **dict(step.get("params") or {}),
-                **dict(step_params[str(step["step_id"])]),
-            }
+    semantic_validation = validate_semantic_constraints(
+        pattern,
+        match,
+        fact_map,
+        metric_ontology,
+        semantic_policy,
+    )
+    reasons.extend(
+        f"semantic_constraint:{error}"
+        for error in semantic_validation.errors
+    )
+    operator_dag = materialize_plan(pattern.operator_template, match)
     execution = execute_plan(operator_dag, match["input_bindings"], fact_map)
     if execution.status != "passed":
         reasons.append("operation_plan_execution_failed")
@@ -1312,10 +1476,23 @@ def _graph_pattern_candidate(
         "secondary_metric_id": match.get("secondary_metric_id"),
         "industry": match.get("industry"),
         "financial_scope": match.get("financial_scope") or {},
+        "semantic_validation": semantic_validation.as_dict(),
         "mining_run_id": proposal.get("mining_run_id") if proposal else None,
         "pattern_proposal_id": proposal.get("proposal_id") if proposal else None,
         "pattern_proposal_hash": proposal.get("proposal_hash") if proposal else None,
+        "proposal_semantic_id": (
+            proposal.get("proposal_semantic_id") if proposal else None
+        ),
+        "proposal_snapshot_id": (
+            proposal.get("proposal_snapshot_id") if proposal else None
+        ),
+        "pattern_binding_mode": proposal.get("binding_mode") if proposal else None,
         "pattern_score": float(proposal["total_score"]) if proposal else None,
+        "binding_source": match.get("binding_source"),
+        "pattern_compilation_id": match.get("pattern_compilation_id"),
+        "compiled_binding_id": match.get("compiled_binding_id"),
+        "compiled_binding_hash": match.get("compiled_binding_hash"),
+        "audit_example_overlap": match.get("audit_example_overlap"),
         "growth_threshold_pct": (
             match.get("operator_step_params", {})
             .get("growth_filter", {})
@@ -1379,6 +1556,9 @@ def _graph_pattern_candidate(
         "pattern_proposal_id": proposal.get("proposal_id") if proposal else None,
         "pattern_proposal_hash": proposal.get("proposal_hash") if proposal else None,
         "pattern_score": float(proposal["total_score"]) if proposal else None,
+        "pattern_compilation_id": match.get("pattern_compilation_id"),
+        "compiled_binding_id": match.get("compiled_binding_id"),
+        "compiled_binding_hash": match.get("compiled_binding_hash"),
         "graph_features": features,
         "difficulty_score": score,
         "answer_schema": pattern.answer_schema,
@@ -1503,6 +1683,9 @@ def _sample_from_candidate(
             "mining_run_id": candidate.get("mining_run_id"),
             "pattern_proposal_id": candidate.get("pattern_proposal_id"),
             "pattern_proposal_hash": candidate.get("pattern_proposal_hash"),
+            "proposal_semantic_id": semantics.get("proposal_semantic_id"),
+            "proposal_snapshot_id": semantics.get("proposal_snapshot_id"),
+            "pattern_binding_mode": semantics.get("pattern_binding_mode"),
             "pattern_score": candidate.get("pattern_score"),
             "graph_features": candidate.get("graph_features"),
             "question_generation": realization.validation,
@@ -1541,6 +1724,8 @@ def _validate_one(
     facts: dict[str, dict[str, Any]],
     existing_nodes: dict[str, str],
     existing_edges: dict[str, dict[str, Any]],
+    metric_ontology: dict[str, dict[str, Any]],
+    semantic_policy: dict[str, Any],
 ) -> list[dict[str, Any]]:
     checks = []
 
@@ -1661,10 +1846,11 @@ def _validate_one(
     add(
         "question_slot_roundtrip",
         bool(question_generation.get("passed"))
-        and not question_generation.get("missing_slots"),
+        and not question_generation.get("missing_slots")
+        and not question_generation.get("contract_errors"),
         question_generation,
-        {"passed": True, "missing_slots": []},
-        "Generated questions must preserve every immutable semantic slot.",
+        {"passed": True, "missing_slots": [], "contract_errors": []},
+        "Generated questions must preserve immutable slots and the exact operator/constraint contract.",
     )
     add(
         "question_answer_isolation",
@@ -1675,9 +1861,8 @@ def _validate_one(
     )
     if row.get("pattern_proposal_id"):
         proposal_ok = (
-            row.get("stored_proposal_status") == "approved"
+            row.get("stored_proposal_status") == "published"
             and row.get("stored_proposal_hash") == row.get("pattern_proposal_hash")
-            and row.get("proposal_kg_build_id") == build.get("kg_build_id")
             and float(row.get("stored_proposal_score") or 0)
             == float(row.get("pattern_score") or 0)
         )
@@ -1689,21 +1874,90 @@ def _validate_one(
                 "status": row.get("stored_proposal_status"),
                 "hash": row.get("stored_proposal_hash"),
                 "score": row.get("stored_proposal_score"),
-                "kg_build_id": row.get("proposal_kg_build_id"),
+                "source_kg_build_id": row.get("proposal_kg_build_id"),
             },
             {
-                "status": "approved",
+                "status": "published",
                 "hash": row.get("pattern_proposal_hash"),
                 "score": row.get("pattern_score"),
-                "kg_build_id": build.get("kg_build_id"),
+                "source_kg_build_id": row.get("proposal_kg_build_id"),
             },
-            "Mined QA must be backed by an approved, hash-pinned proposal from the same KG build.",
+            "Mined QA must be backed by a published, hash-pinned proposal; target KG membership is checked on its compilation.",
+        )
+        stored_binding = row.get("stored_compiled_binding") or {}
+        compiled_binding_ok = (
+            bool(row.get("pattern_compilation_id"))
+            and bool(row.get("compiled_binding_id"))
+            and row.get("compilation_status") == "success"
+            and row.get("compilation_proposal_id") == row.get("pattern_proposal_id")
+            and row.get("compilation_proposal_hash")
+            == row.get("pattern_proposal_hash")
+            and row.get("compilation_target_kg_build_id")
+            == build.get("kg_build_id")
+            and row.get("stored_compiled_binding_hash")
+            == row.get("compiled_binding_hash")
+            and row.get("compiled_semantic_status") == "passed"
+            and row.get("compiled_execution_status") == "passed"
+            and sorted(stored_binding.get("fact_ids") or [])
+            == sorted(row.get("source_fact_ids") or [])
+            and stored_binding.get("input_bindings")
+            == (row.get("input_bindings") or {})
+        )
+        add(
+            "compiled_binding_match",
+            compiled_binding_ok,
+            {
+                "compilation_id": row.get("pattern_compilation_id"),
+                "compiled_binding_id": row.get("compiled_binding_id"),
+                "binding_hash": row.get("stored_compiled_binding_hash"),
+                "semantic_status": row.get("compiled_semantic_status"),
+                "execution_status": row.get("compiled_execution_status"),
+                "target_kg_build_id": row.get("compilation_target_kg_build_id"),
+            },
+            {
+                "binding_hash": row.get("compiled_binding_hash"),
+                "semantic_status": "passed",
+                "execution_status": "passed",
+                "target_kg_build_id": build.get("kg_build_id"),
+            },
+            "Mined QA must use a successful compiled binding produced for the pinned KG build.",
         )
     expected = row["answer_payload"]
     if row.get("operation_plan_id"):
         fact_map = {
             str(item["fact_id"]): item for item in source_facts if item
         }
+        if row.get("pattern_proposal_id"):
+            pattern_spec = row.get("stored_pattern_spec") or {}
+        else:
+            try:
+                pattern_spec = get_pattern(str(row.get("pattern_id"))).as_row()
+            except ValueError:
+                pattern_spec = {}
+        semantic_validation = validate_semantic_constraints(
+            pattern_spec,
+            {
+                "fact_ids": row["source_fact_ids"],
+                "input_bindings": row.get("input_bindings") or {},
+                "metric_ids": row.get("metric_ids") or [],
+                "primary_metric_id": row["canonical_semantics"].get(
+                    "primary_metric_id"
+                ),
+                "secondary_metric_id": row["canonical_semantics"].get(
+                    "secondary_metric_id"
+                ),
+            },
+            fact_map,
+            metric_ontology,
+            semantic_policy,
+        )
+        add(
+            "semantic_constraint_gate",
+            semantic_validation.passed,
+            semantic_validation.as_dict(),
+            {"passed": True, "errors": (), "checks": "all passed"},
+            "Bound facts must satisfy the executable graph-pattern semantic constraints.",
+        )
         execution = execute_plan(
             row.get("operator_dag") or {},
             row.get("input_bindings") or {},
@@ -1767,17 +2021,21 @@ def _validate_one(
             "KG DerivedFact output must match complete scope recomputation before QA use.",
         )
     if row["task_subtype"] in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share"}:
-        expected_scope_count = len(row["canonical_semantics"].get("entity_ids", []))
-        represented = len({item.get("entity_id") for item in source_facts if item})
+        expected_entity_ids = sorted(
+            set(row["canonical_semantics"].get("entity_ids", []))
+        )
+        represented_entity_ids = sorted(
+            {str(item["entity_id"]) for item in source_facts if item.get("entity_id")}
+        )
         complete = _scope_is_complete(
-            row["task_subtype"], row["canonical_semantics"], represented
+            row["task_subtype"], row["canonical_semantics"], represented_entity_ids
         )
         add(
             "scope_completeness",
             complete,
-            represented,
-            expected_scope_count,
-            "Scope tasks require input coverage for every declared entity.",
+            represented_entity_ids,
+            expected_entity_ids,
+            "Scope tasks require the exact declared entity set, with no omissions or substitutions.",
         )
     add(
         "no_answer_leakage",
@@ -1800,15 +2058,18 @@ def _bound_fact_ids(bindings: dict[str, Any]) -> list[str]:
 
 
 def _scope_is_complete(
-    task_subtype: str, semantics: dict[str, Any], represented_entity_count: int
+    task_subtype: str,
+    semantics: dict[str, Any],
+    represented_entity_ids: list[str],
 ) -> bool:
     if (
         task_subtype == "multi_condition_screening"
         and semantics.get("scope_type") == "screening_result_set"
     ):
         return False
-    expected = len(semantics.get("entity_ids", []))
-    return expected <= 1 or represented_entity_count >= expected
+    expected = {str(value) for value in semantics.get("entity_ids", [])}
+    represented = {str(value) for value in represented_entity_ids}
+    return expected == represented
 
 
 def _recompute(
@@ -3382,11 +3643,13 @@ def _decode_validation_row(row: dict[str, Any]) -> dict[str, Any]:
     row["time_scope"] = row["canonical_semantics"].get("time_scope") or {}
     row["unit"] = row["answer_payload"].get("unit")
     for key in [
+        "stored_pattern_spec",
         "operator_dag",
         "input_bindings",
         "intermediate_results",
         "output_schema",
         "plan_validation_errors",
+        "stored_compiled_binding",
     ]:
         row[key] = json_value(row.get(key), [] if key in {"intermediate_results", "plan_validation_errors"} else {})
     return row

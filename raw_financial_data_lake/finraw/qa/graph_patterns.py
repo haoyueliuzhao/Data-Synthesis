@@ -204,7 +204,7 @@ PATTERNS: tuple[GraphPattern, ...] = (
     ),
     GraphPattern(
         pattern_id="temporal_argmax_then_metric_lookup",
-        pattern_version=3,
+        pattern_version=4,
         pattern_family="multi_stage_temporal_join",
         task_subtype="temporal_peak_followup",
         matcher="temporal_argmax_then_metric_lookup",
@@ -225,6 +225,7 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"src": "secondary_facts", "relation": "IN_PERIOD", "dst": "periods"},
         ],
         semantic_constraints=[
+            {"field": "metric_pair", "operator": "registered_followup_pair"},
             {"field": "primary_facts.count", "operator": "gte", "value": 3},
             {"field": "periods", "operator": "contiguous"},
             {"field": "annual_flow_duration", "operator": "between_days", "value": [300, 430]},
@@ -337,7 +338,7 @@ PATTERNS: tuple[GraphPattern, ...] = (
     ),
     GraphPattern(
         pattern_id="industry_revenue_rank_then_assets_lookup",
-        pattern_version=2,
+        pattern_version=3,
         pattern_family="multi_stage_scope_analysis",
         task_subtype="rank_then_secondary_lookup",
         matcher="industry_revenue_rank_then_assets_lookup",
@@ -351,6 +352,7 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"src": "entities", "relation": "HAS_FACT", "dst": "total_assets"},
         ],
         semantic_constraints=[
+            {"field": "metric_pair", "operator": "registered_followup_pair"},
             {"field": "entity.industry", "operator": "same"},
             {"field": "period", "operator": "same"},
             {"field": "financial_scope", "operator": "consolidated_entity"},

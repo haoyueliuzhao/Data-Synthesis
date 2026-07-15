@@ -643,6 +643,7 @@ CREATE INDEX IF NOT EXISTS idx_kg_archives_status ON kg_archives(status, created
 CREATE TABLE IF NOT EXISTS qa_builds (
             qa_build_id TEXT PRIMARY KEY,
             kg_build_id TEXT NOT NULL,
+            mining_run_id TEXT,
             graph_schema_version TEXT NOT NULL,
             fact_build_id TEXT,
             derived_build_id TEXT,
@@ -711,6 +712,13 @@ CREATE TABLE IF NOT EXISTS qa_pattern_mining_runs (
             scanned_fact_count BIGINT DEFAULT 0,
             proposal_count BIGINT DEFAULT 0,
             approved_count BIGINT DEFAULT 0,
+            reviewed_at TIMESTAMPTZ,
+            reviewed_by TEXT,
+            approved_at TIMESTAMPTZ,
+            approved_by TEXT,
+            superseded_at TIMESTAMPTZ,
+            superseded_by_run_id TEXT,
+            lifecycle_events JSONB NOT NULL,
             notes JSONB NOT NULL
         );
 CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
@@ -719,10 +727,18 @@ CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
             kg_build_id TEXT NOT NULL,
             motif_family TEXT NOT NULL,
             motif_signature TEXT NOT NULL,
+            proposal_semantic_id TEXT NOT NULL,
+            proposal_snapshot_id TEXT NOT NULL,
+            static_pattern_id TEXT,
+            binding_mode TEXT NOT NULL,
             pattern_spec JSONB NOT NULL,
             operator_dag_template JSONB NOT NULL,
             answer_schema JSONB NOT NULL,
             binding_examples JSONB NOT NULL,
+            heldout_bindings JSONB NOT NULL,
+            semantic_validation_results JSONB NOT NULL,
+            operation_validation_results JSONB NOT NULL,
+            lifecycle_events JSONB NOT NULL,
             support_count BIGINT NOT NULL,
             entity_count BIGINT NOT NULL,
             metric_count BIGINT NOT NULL,
@@ -733,13 +749,77 @@ CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
             complexity_score REAL NOT NULL,
             novelty_score REAL NOT NULL,
             total_score REAL NOT NULL,
+            semantic_constraint_pass_rate REAL NOT NULL,
+            operation_execution_pass_rate REAL NOT NULL,
+            example_binding_pass_rate REAL NOT NULL,
+            heldout_binding_pass_rate REAL NOT NULL,
+            static_pattern_overlap REAL NOT NULL,
+            binding_diversity_score REAL NOT NULL,
+            manual_review_status TEXT NOT NULL,
             status TEXT NOT NULL,
             rejection_reasons JSONB NOT NULL,
             proposal_hash TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_pattern_compilations (
+            compilation_id TEXT PRIMARY KEY,
+            qa_build_id TEXT NOT NULL,
+            proposal_id TEXT NOT NULL,
+            proposal_hash TEXT NOT NULL,
+            source_kg_build_id TEXT NOT NULL,
+            target_kg_build_id TEXT NOT NULL,
+            fact_build_id TEXT NOT NULL,
+            compiler_version TEXT NOT NULL,
+            logical_plan JSONB NOT NULL,
+            logical_plan_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at TIMESTAMPTZ,
+            completed_at TIMESTAMPTZ,
+            discovered_binding_count BIGINT DEFAULT 0,
+            semantic_valid_binding_count BIGINT DEFAULT 0,
+            execution_valid_binding_count BIGINT DEFAULT 0,
+            compiled_binding_count BIGINT DEFAULT 0,
+            rejected_binding_count BIGINT DEFAULT 0,
+            sampling_summary JSONB NOT NULL,
+            notes JSONB NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_compiled_bindings (
+            compiled_binding_id TEXT PRIMARY KEY,
+            compilation_id TEXT NOT NULL,
+            qa_build_id TEXT NOT NULL,
+            proposal_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            binding_hash TEXT NOT NULL,
+            binding JSONB NOT NULL,
+            sampling_stratum JSONB NOT NULL,
+            semantic_status TEXT NOT NULL,
+            execution_status TEXT NOT NULL,
+            audit_example_overlap BOOLEAN DEFAULT FALSE,
+            rejection_reasons JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(compilation_id, binding_hash)
+        );
+CREATE TABLE IF NOT EXISTS qa_graph_motif_observations (
+            observation_id TEXT PRIMARY KEY,
+            mining_run_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            motif_family TEXT NOT NULL,
+            motif_signature TEXT NOT NULL,
+            node_types JSONB NOT NULL,
+            edge_types JSONB NOT NULL,
+            support_count BIGINT NOT NULL,
+            distinct_root_count BIGINT NOT NULL,
+            binding_examples JSONB NOT NULL,
+            status TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
 CREATE INDEX IF NOT EXISTS idx_qa_mining_runs_kg_status ON qa_pattern_mining_runs(kg_build_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_builds_mining_run ON qa_builds(mining_run_id, status);
 CREATE INDEX IF NOT EXISTS idx_qa_proposals_kg_status_score ON qa_pattern_proposals(kg_build_id, status, total_score);
+CREATE INDEX IF NOT EXISTS idx_qa_proposals_semantic_snapshot ON qa_pattern_proposals(proposal_semantic_id, proposal_snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_qa_compilations_build_proposal ON qa_pattern_compilations(qa_build_id, proposal_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_compiled_bindings_compilation ON qa_compiled_bindings(compilation_id, execution_status);
+CREATE INDEX IF NOT EXISTS idx_qa_graph_motifs_run_family ON qa_graph_motif_observations(mining_run_id, motif_family, status);
 CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -756,6 +836,9 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             pattern_proposal_id TEXT,
             pattern_proposal_hash TEXT,
             pattern_score REAL,
+            pattern_compilation_id TEXT,
+            compiled_binding_id TEXT,
+            compiled_binding_hash TEXT,
             graph_features JSONB,
             difficulty_score REAL,
             answer_schema JSONB,

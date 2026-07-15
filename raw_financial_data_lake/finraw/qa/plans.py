@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 from typing import Any
 
@@ -12,6 +13,24 @@ class PlanExecution:
     intermediate_results: list[dict[str, Any]]
     status: str
     errors: list[str]
+
+
+def materialize_plan(
+    operator_template: dict[str, Any], binding: dict[str, Any]
+) -> dict[str, Any]:
+    """Apply binding-specific parameters without mutating the pattern template."""
+    plan = copy.deepcopy(operator_template)
+    if binding.get("operator_params") and plan.get("operators"):
+        plan["operators"][0]["params"] = dict(binding["operator_params"])
+    step_params = binding.get("operator_step_params") or {}
+    for step in plan.get("operators") or []:
+        step_id = str(step.get("step_id") or "")
+        if step_id in step_params:
+            step["params"] = {
+                **dict(step.get("params") or {}),
+                **dict(step_params[step_id]),
+            }
+    return plan
 
 
 def validate_plan(plan: dict[str, Any]) -> list[str]:

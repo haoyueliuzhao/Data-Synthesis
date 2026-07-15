@@ -289,6 +289,9 @@ def _lookup_ranked_entities(inputs: list[Any], params: dict[str, Any]) -> dict[s
         raise OperatorError("lookup_ranked_entities requires a ranking and secondary facts")
     ranking = inputs[0]
     secondary = _unique_by_entity(_flatten_facts([inputs[1]]), "secondary")
+    if not secondary:
+        raise OperatorError("lookup_ranked_entities requires secondary facts")
+    secondary_unit, secondary_currency = _unit_signature(list(secondary.values()))
     table = []
     for row in ranking.get("table") or []:
         entity_id = str(row.get("entity_id") or "")
@@ -307,12 +310,8 @@ def _lookup_ranked_entities(inputs: list[Any], params: dict[str, Any]) -> dict[s
         "table": table,
         "primary_unit": ranking.get("unit"),
         "primary_currency": ranking.get("currency"),
-        "secondary_unit": next(
-            (fact.get("normalized_unit") for fact in secondary.values()), None
-        ),
-        "secondary_currency": next(
-            (fact.get("normalized_currency") for fact in secondary.values()), None
-        ),
+        "secondary_unit": secondary_unit,
+        "secondary_currency": secondary_currency,
     }
 
 

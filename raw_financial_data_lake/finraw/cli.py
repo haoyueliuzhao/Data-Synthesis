@@ -30,7 +30,11 @@ from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
-from finraw.qa.pattern_mining import mine_qa_patterns
+from finraw.qa.pattern_mining import (
+    mine_qa_patterns,
+    review_pattern_proposal,
+    transition_mining_run,
+)
 from finraw.qa.preflight import profile_graph_patterns
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
@@ -154,6 +158,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     qa_candidates = sub.add_parser("build-qa-candidates", help="Build versioned structured QA candidates from a pinned KG build.")
     qa_candidates.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_candidates.add_argument(
+        "--mining-run-id",
+        help="Required explicit approved Mining Run when pattern mining is enabled.",
+    )
     qa_candidates.add_argument("--output-dir", default="data/audit/qa_build")
     qa_candidates.add_argument("--batch-size", type=int, default=2000)
 
@@ -195,15 +203,49 @@ def build_parser() -> argparse.ArgumentParser:
     qa_mining.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
     qa_mining.add_argument("--output-dir", default="data/audit/qa_pattern_mining")
 
+    qa_pattern_review = sub.add_parser(
+        "review-qa-pattern",
+        help="Approve or reject an execution-validated mined QA pattern proposal.",
+    )
+    qa_pattern_review.add_argument("--proposal-id", required=True)
+    qa_pattern_review.add_argument(
+        "--decision", required=True, choices=("approve", "reject")
+    )
+    qa_pattern_review.add_argument("--reviewer", required=True)
+    qa_pattern_review.add_argument("--notes")
+    qa_pattern_review.add_argument(
+        "--no-publish",
+        action="store_true",
+        help="Leave an approved proposal at reviewed_approved instead of publishing it.",
+    )
+
+    qa_mining_review = sub.add_parser(
+        "transition-qa-mining-run",
+        help="Review, approve for QA, or supersede a completed QA Mining Run.",
+    )
+    qa_mining_review.add_argument("--mining-run-id", required=True)
+    qa_mining_review.add_argument(
+        "--target-status",
+        required=True,
+        choices=("reviewed", "approved_for_qa", "superseded"),
+    )
+    qa_mining_review.add_argument("--reviewer", required=True)
+    qa_mining_review.add_argument("--notes")
+    qa_mining_review.add_argument("--superseded-by-run-id")
+
     qa_all = sub.add_parser("build-qa", help="Run candidate, generation, validation, and split stages end to end.")
     qa_all.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_all.add_argument(
+        "--mining-run-id",
+        help="Required explicit approved Mining Run when pattern mining is enabled.",
+    )
     qa_all.add_argument("--output-dir", default="data/audit/qa_build")
     qa_all.add_argument("--batch-size", type=int, default=2000)
     qa_all.add_argument("--no-activate", action="store_true", help="Keep a passing QA build non-active for smoke or audit runs.")
     qa_all.add_argument(
         "--mined-only",
         action="store_true",
-        help="Build only candidates from the latest approved mining run and force non-activation.",
+        help="Build only candidates from the explicitly pinned approved Mining Run and force non-activation.",
     )
     qa_all.add_argument("--max-mined-proposals", type=int, default=100)
     qa_all.add_argument("--max-candidates-per-proposal", type=int, default=1)
@@ -393,7 +435,14 @@ def main() -> None:
                 )
             print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
         elif args.command == "build-qa-candidates":
-            report = build_qa_candidates(db, config, kg_build_id=args.kg_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
+            report = build_qa_candidates(
+                db,
+                config,
+                kg_build_id=args.kg_build_id,
+                mining_run_id=args.mining_run_id,
+                output_dir=args.output_dir,
+                batch_size=args.batch_size,
+            )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "generate-qa":
             report = generate_qa_samples(db, args.qa_build_id, output_dir=args.output_dir, batch_size=args.batch_size)
@@ -436,6 +485,26 @@ def main() -> None:
                 output_dir=args.output_dir,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "review-qa-pattern":
+            report = review_pattern_proposal(
+                db,
+                args.proposal_id,
+                decision=args.decision,
+                reviewer=args.reviewer,
+                notes=args.notes,
+                publish=not args.no_publish,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "transition-qa-mining-run":
+            report = transition_mining_run(
+                db,
+                args.mining_run_id,
+                target_status=args.target_status,
+                reviewer=args.reviewer,
+                notes=args.notes,
+                superseded_by_run_id=args.superseded_by_run_id,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "build-qa":
             if args.mined_only:
                 qa_config = config.setdefault("qa", {})
@@ -465,6 +534,7 @@ def main() -> None:
                 db,
                 config,
                 kg_build_id=args.kg_build_id,
+                mining_run_id=args.mining_run_id,
                 output_dir=args.output_dir,
                 batch_size=args.batch_size,
                 activate=not args.no_activate and not args.mined_only,
