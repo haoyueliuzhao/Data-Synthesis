@@ -1,0 +1,39 @@
+{
+  "metadata_backend": {
+    "type": "postgres",
+    "dsn_env": "DATABASE_URL",
+    "postgres_schema": "./sql/postgres_schema.sql",
+    "dsn": "postgresql:///finraw"
+  },
+  "qa": {
+    "pattern_mining": {
+      "enabled": true,
+      "auto_run": false,
+      "auto_approve_for_qa": false,
+      "families": [
+        "cross_metric_comparison",
+        "temporal_aggregation",
+        "temporal_extrema_followup",
+        "scope_rank_followup",
+        "derived_fact_composition",
+        "fact_provenance",
+        "time_hierarchy",
+        "entity_set_scope"
+      ],
+      "graph_native_mining_enabled": true,
+      "graph_native_example_limit": 20,
+      "compiled_graph_scan_rows": 0,
+      "compiled_graph_evaluation_rows": 200,
+      "compiled_scan_rows_per_metric": 0,
+      "max_proposals": 100,
+      "max_bindings_per_proposal": 20,
+      "max_heldout_bindings": 100,
+      "max_candidates_per_proposal": 10,
+      "require_manual_review": false
+    },
+    "question_generation": {
+      "mode": "controlled_template",
+      "variants": 3
+    }
+  }
+}

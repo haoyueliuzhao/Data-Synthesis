@@ -125,6 +125,11 @@ def build_parser() -> argparse.ArgumentParser:
     build_kg_parser = sub.add_parser("build-kg", help="Build a versioned property graph from graph-ready facts and derived facts.")
     build_kg_parser.add_argument("--output-dir", default="data/audit/kg", help="Directory for KG build and quality reports.")
     build_kg_parser.add_argument("--batch-size", type=int, default=20000, help="Batch size for kg_nodes and kg_edges inserts.")
+    build_kg_parser.add_argument(
+        "--no-activate",
+        action="store_true",
+        help="Keep a passing KG build non-active for validation or comparison.",
+    )
 
     kg_quality = sub.add_parser("kg-quality-report", help="Write and print KG quality checks for the active or selected KG build.")
     kg_quality.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to the active KG build.")
@@ -395,9 +400,15 @@ def main() -> None:
                 raise SystemExit(1)
             print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True, default=str))
         elif args.command == "build-kg":
-            report = build_kg(db, config, output_dir=args.output_dir, batch_size=args.batch_size)
+            report = build_kg(
+                db,
+                config,
+                output_dir=args.output_dir,
+                batch_size=args.batch_size,
+                activate=not args.no_activate,
+            )
             quality_status = report.get("quality", {}).get("kg_quality_gate_status")
-            print(json.dumps({"status": "built" if quality_status == "passed" else "quality_failed", "kg_build_id": report.get("kg_build_id"), "input_fact_build_id": report.get("input_fact_build_id"), "input_qa_build_id": report.get("input_qa_build_id"), "node_count": report.get("node_count"), "edge_count": report.get("edge_count"), "kg_quality_gate_status": quality_status, "kg_quality_gate_failures": report.get("quality", {}).get("kg_quality_gate_failures"), "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+            print(json.dumps({"status": "built" if quality_status == "passed" else "quality_failed", "kg_build_id": report.get("kg_build_id"), "input_fact_build_id": report.get("input_fact_build_id"), "input_qa_build_id": report.get("input_qa_build_id"), "node_count": report.get("node_count"), "edge_count": report.get("edge_count"), "activation_requested": report.get("activation_requested"), "is_active": report.get("is_active"), "kg_quality_gate_status": quality_status, "kg_quality_gate_failures": report.get("quality", {}).get("kg_quality_gate_failures"), "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
             if quality_status != "passed":
                 raise SystemExit(1)
         elif args.command == "kg-quality-report":

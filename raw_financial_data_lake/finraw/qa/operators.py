@@ -7,6 +7,9 @@ from typing import Any, Callable
 from finraw.qa.comparability import fact_frequency, period_index, period_key, period_label
 
 
+OPERATION_OPERATOR_REGISTRY_VERSION = "1.0.0"
+
+
 class OperatorError(ValueError):
     pass
 
@@ -432,6 +435,20 @@ def operator_registry() -> dict[str, dict[str, Any]]:
             "difficulty_cost": spec.difficulty_cost,
         }
         for name, spec in OPERATORS.items()
+    }
+
+
+def operation_operator_manifest() -> dict[str, Any]:
+    """Return the frozen public contract for executable QA operators."""
+    return {
+        "registry_version": OPERATION_OPERATOR_REGISTRY_VERSION,
+        "operators": {
+            name: {
+                **metadata,
+                "executor": OPERATORS[name].executor.__name__,
+            }
+            for name, metadata in sorted(operator_registry().items())
+        },
     }
 
 

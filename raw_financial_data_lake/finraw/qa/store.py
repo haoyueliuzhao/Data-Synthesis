@@ -6,6 +6,14 @@ from typing import Any, Iterable
 from finraw.db.client import DBProtocol
 
 
+def _commit_if_needed(db: DBProtocol) -> None:
+    commit_if_needed = getattr(db, "_commit_if_needed", None)
+    if callable(commit_if_needed):
+        commit_if_needed()
+        return
+    db.conn.commit()  # type: ignore[attr-defined]
+
+
 def insert_rows(
     db: DBProtocol,
     table: str,
@@ -39,7 +47,7 @@ def insert_rows(
         )
         with db.conn.cursor() as cursor:  # type: ignore[attr-defined]
             cursor.executemany(sql, values)
-        db.conn.commit()  # type: ignore[attr-defined]
+        _commit_if_needed(db)
         return
 
     values = [
@@ -56,7 +64,7 @@ def insert_rows(
         f"VALUES ({','.join('?' for _ in columns)})"
     )
     db.conn.executemany(sql, values)  # type: ignore[attr-defined]
-    db.conn.commit()  # type: ignore[attr-defined]
+    _commit_if_needed(db)
 
 
 def execute_many(db: DBProtocol, sql: str, rows: list[tuple[Any, ...]]) -> None:
@@ -65,10 +73,10 @@ def execute_many(db: DBProtocol, sql: str, rows: list[tuple[Any, ...]]) -> None:
     if db.__class__.__name__ == "PostgresMetadataDB":
         with db.conn.cursor() as cursor:  # type: ignore[attr-defined]
             cursor.executemany(db._sql(sql), rows)  # type: ignore[attr-defined]
-        db.conn.commit()  # type: ignore[attr-defined]
+        _commit_if_needed(db)
     else:
         db.conn.executemany(sql, rows)  # type: ignore[attr-defined]
-        db.conn.commit()  # type: ignore[attr-defined]
+        _commit_if_needed(db)
 
 
 def chunks(values: list[Any], size: int = 1000) -> Iterable[list[Any]]:

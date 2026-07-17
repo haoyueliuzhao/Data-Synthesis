@@ -23,6 +23,7 @@ from finraw.qa.graph_patterns import (
 )
 from finraw.qa.operators import operator_registry
 from finraw.qa.pattern_catalog import (
+    catalog_runtime_contract,
     load_catalog_patterns,
     load_pattern_catalog_release,
     validate_catalog_target_compatibility,
@@ -45,8 +46,12 @@ from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
 from finraw.qa.verbalizer import (
+    QUESTION_PARSER_VERSION,
     build_question_contract,
+    question_parser_manifest,
+    question_parser_manifest_hash,
     realize_question,
+    validate_question_parser_support,
     validate_question_roundtrip,
 )
 
@@ -85,7 +90,7 @@ GRAPH_SCOPE_TASKS = {
     "multi_factor_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.13.0"
+GENERATOR_VERSION = "4.19.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -101,6 +106,8 @@ BUILD_COLUMNS = [
     "document_build_id",
     "config_hash",
     "template_manifest_hash",
+    "question_parser_version",
+    "question_parser_manifest_hash",
     "pattern_manifest_hash",
     "operator_manifest_hash",
     "difficulty_policy_hash",
@@ -253,6 +260,11 @@ def build_qa_candidates(
         raise RuntimeError(f"KG build is not QA eligible: {kg_build_id}")
     policy = _qa_policy(config)
     effective_mining_policy = mining_policy(config)
+    target_catalog_runtime_contract = catalog_runtime_contract(
+        config.get("qa", {})
+        .get("graph_patterns", {})
+        .get("comparability")
+    )
     mining_report = None
     selected_mining_run = None
     selected_catalog_release = None
@@ -269,6 +281,7 @@ def build_qa_candidates(
             db,
             selected_catalog_release,
             kg,
+            target_runtime_contract=target_catalog_runtime_contract,
         )
         mining_run_id = str(selected_catalog_release["source_mining_run_id"])
         mined_proposals = load_catalog_patterns(
@@ -335,6 +348,13 @@ def build_qa_candidates(
     pattern_manifest_hash = _digest(pattern_manifest_data)
     operator_manifest_hash = _digest(operator_manifest_data)
     difficulty_policy_hash = _digest(DIFFICULTY_POLICY)
+    parser_manifest = question_parser_manifest(TEMPLATES)
+    parser_manifest_hash = question_parser_manifest_hash(TEMPLATES)
+    if parser_manifest["unsupported_template_ids"]:
+        raise RuntimeError(
+            "Question Parser does not support templates: "
+            + ", ".join(parser_manifest["unsupported_template_ids"])
+        )
     qa_build_id = _new_build_id()
     build = {
         "qa_build_id": qa_build_id,
@@ -351,14 +371,18 @@ def build_qa_candidates(
         "config_hash": _digest(
             policy,
             TEMPLATES,
+            parser_manifest,
             pattern_manifest_data,
             operator_manifest_data,
             DIFFICULTY_POLICY,
             GENERATOR_VERSION,
             mining_run_id,
             pattern_catalog_release_id,
+            target_catalog_runtime_contract,
         ),
         "template_manifest_hash": _digest(TEMPLATES),
+        "question_parser_version": QUESTION_PARSER_VERSION,
+        "question_parser_manifest_hash": parser_manifest_hash,
         "pattern_manifest_hash": pattern_manifest_hash,
         "operator_manifest_hash": operator_manifest_hash,
         "difficulty_policy_hash": difficulty_policy_hash,
@@ -381,6 +405,10 @@ def build_qa_candidates(
             "generation": "graph_path_driven_deterministic",
             "generator_version": GENERATOR_VERSION,
             "template_manifest_hash": _digest(TEMPLATES),
+            "question_parser": {
+                **parser_manifest,
+                "question_parser_manifest_hash": parser_manifest_hash,
+            },
             "pattern_manifest_hash": pattern_manifest_hash,
             "operator_manifest_hash": operator_manifest_hash,
             "difficulty_policy_hash": difficulty_policy_hash,
@@ -392,6 +420,7 @@ def build_qa_candidates(
                 "proposal_manifest": mined_manifest,
                 "selected_catalog_release": selected_catalog_release,
                 "catalog_compatibility": catalog_compatibility,
+                "catalog_runtime_contract": target_catalog_runtime_contract,
             },
         },
     }
@@ -621,6 +650,27 @@ def build_qa_candidates(
             (qa_build_id,),
         )
     ]
+    graph_scan_coverage = [
+        {
+            "compilation_id": str(row["compilation_id"]),
+            **scan,
+        }
+        for row in compilation_rows
+        if (
+            scan := json_value(row.get("sampling_summary"), {}).get(
+                "graph_root_scan"
+            )
+        )
+    ]
+    graph_total_root_count = sum(
+        int(item.get("total_root_count") or 0) for item in graph_scan_coverage
+    )
+    graph_scanned_root_count = sum(
+        int(item.get("scanned_root_count") or 0) for item in graph_scan_coverage
+    )
+    graph_evaluated_root_count = sum(
+        int(item.get("evaluated_root_count") or 0) for item in graph_scan_coverage
+    )
     compiled_binding_rows = [
         dict(row)
         for row in db.fetchall(
@@ -653,6 +703,21 @@ def build_qa_candidates(
         "non_audit_binding_count": sum(
             not bool(row.get("audit_example_overlap")) for row in compiled_binding_rows
         ),
+        "graph_scan_count": len(graph_scan_coverage),
+        "total_root_count": graph_total_root_count,
+        "scanned_root_count": graph_scanned_root_count,
+        "root_coverage_rate": (
+            graph_scanned_root_count / graph_total_root_count
+            if graph_total_root_count
+            else 1.0
+        ),
+        "evaluated_root_count": graph_evaluated_root_count,
+        "evaluation_coverage_rate": (
+            graph_evaluated_root_count / graph_total_root_count
+            if graph_total_root_count
+            else 1.0
+        ),
+        "graph_scan_coverage": graph_scan_coverage,
     }
     build_row = db.fetchone(
         "SELECT notes FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,)
@@ -682,6 +747,10 @@ def build_qa_candidates(
         "kg_build_id": kg_build_id,
         "mining_run_id": mining_run_id,
         "pattern_catalog_release_id": pattern_catalog_release_id,
+        "question_parser_version": build["question_parser_version"],
+        "question_parser_manifest_hash": build[
+            "question_parser_manifest_hash"
+        ],
         "catalog_compatibility": catalog_compatibility,
         "candidate_count": candidate_count,
         "eligible_candidate_count": eligible_count,
@@ -715,6 +784,7 @@ def generate_qa_samples(
                 "graph_schema_version": build["graph_schema_version"],
                 "input_metric_build_id": build["metric_build_id"],
             },
+            target_runtime_contract=_catalog_runtime_contract_for_build(build),
         )
     candidates = db.fetchall(
         """
@@ -767,6 +837,10 @@ def generate_qa_samples(
         {
             "qa_build_id": qa_build_id,
             "kg_build_id": build["kg_build_id"],
+            "question_parser_version": build["question_parser_version"],
+            "question_parser_manifest_hash": build[
+                "question_parser_manifest_hash"
+            ],
             "sample_count": sample_count,
             "task_counts": persisted_task_counts,
             "emitted_task_counts": dict(sorted(task_counts.items())),
@@ -797,6 +871,7 @@ def validate_qa_samples(
                 "graph_schema_version": build["graph_schema_version"],
                 "input_metric_build_id": build["metric_build_id"],
             },
+            target_runtime_contract=_catalog_runtime_contract_for_build(build),
         )
     rows = [
         dict(row)
@@ -1000,6 +1075,10 @@ def validate_qa_samples(
     report = {
         "qa_build_id": qa_build_id,
         "kg_build_id": build["kg_build_id"],
+        "question_parser_version": build["question_parser_version"],
+        "question_parser_manifest_hash": build[
+            "question_parser_manifest_hash"
+        ],
         "sample_count": total,
         "resumed_sample_count": len(rows),
         "passed_count": passed,
@@ -1191,6 +1270,7 @@ def split_qa_samples(
               'intermediate_result_recompute', 'operation_trace_coverage',
               'pattern_proposal_match', 'compiled_binding_match',
               'semantic_constraint_gate',
+              'question_parser_contract',
               'question_slot_roundtrip',
               'question_semantic_reparse',
               'question_answer_isolation'
@@ -1687,11 +1767,15 @@ def _graph_pattern_candidate(
         semantic_constraint_count=len(pattern.semantic_constraints),
     )
     difficulty, score = assess_difficulty(features, pattern.difficulty_base)
+    compiled_binding_hash = match.get("compiled_binding_hash")
+    if compiled_binding_hash:
+        stable_identity = {"compiled_binding_hash": compiled_binding_hash}
+    else:
+        stable_identity = {"semantics": semantics, "fact_ids": fact_ids}
     stable = "qac_" + _digest(
         pattern.pattern_id,
         pattern.pattern_version,
-        semantics,
-        fact_ids,
+        stable_identity,
     )
     candidate_id = f"{stable}__{qa_build_id}"
     plan_id = "qaplan_" + _digest(stable, operator_dag, match["input_bindings"])
@@ -1784,6 +1868,13 @@ def _sample_from_candidate(
         semantics.get("metric_period_type"),
         candidate.get("stable_candidate_id"),
     )
+    parser_manifest = question_parser_manifest(TEMPLATES)
+    parser_support = validate_question_parser_support(template, parser_manifest)
+    if not parser_support["passed"]:
+        raise RuntimeError(
+            "Question Parser/template contract failed: "
+            + ", ".join(parser_support["errors"])
+        )
     canonical_question = template["template_text"].format(**slots)
     generation_policy = (
         build.get("notes", {}).get("policy", {}).get("question_generation", {})
@@ -1831,7 +1922,7 @@ def _sample_from_candidate(
         "task_family": candidate["task_family"],
         "task_subtype": candidate["task_subtype"],
         "difficulty": candidate["difficulty"],
-        "language": "en",
+        "language": template["language"],
         "question": question,
         "canonical_question": canonical_question,
         "answer_type": template["answer_type"],
@@ -1871,6 +1962,15 @@ def _sample_from_candidate(
             "pattern_binding_mode": semantics.get("pattern_binding_mode"),
             "pattern_score": candidate.get("pattern_score"),
             "graph_features": candidate.get("graph_features"),
+            "question_parser": {
+                "question_parser_version": build.get("question_parser_version"),
+                "question_parser_manifest_hash": build.get(
+                    "question_parser_manifest_hash"
+                ),
+                "supported_language": template["language"],
+                "supported_template_id": template["template_id"],
+                "support_validation": parser_support,
+            },
             "question_generation": realization.validation,
         },
         "generation_method": realization.generation_method,
@@ -2033,7 +2133,15 @@ def _validate_one(
         {"passed": True, "missing_slots": [], "contract_errors": []},
         "Generation-time validation must preserve immutable slots and the canonical operator contract.",
     )
-    question_reparse = _reparse_persisted_question(row)
+    parser_contract = _question_parser_contract_validation(row, build)
+    add(
+        "question_parser_contract",
+        bool(parser_contract.get("passed")),
+        parser_contract,
+        {"passed": True, "errors": []},
+        "The final verifier must use the parser version, manifest, language, and template contract pinned by the QA Build.",
+    )
+    question_reparse = _reparse_persisted_question(row, parser_contract)
     add(
         "question_semantic_reparse",
         bool(question_reparse.get("passed")),
@@ -3021,7 +3129,6 @@ def _validate_evidence_semantics(
         elif task_subtype == "scope_composition":
             required |= {
                 "DERIVED_FROM",
-                "USES_METRIC",
                 "HAS_SCOPE",
                 "CONTAINS_ENTITY",
             }
@@ -3145,6 +3252,7 @@ def _kg_path_from_graph(
         )
     else:
         seed_nodes = [f"fact:{fact_id}@@{kg_build_id}" for fact_id in fact_ids]
+    expansion_seed_nodes = list(seed_nodes)
     seed_nodes.extend(str(value) for value in (extra_node_ids or []))
     relations = [
         "HAS_FACT",
@@ -3167,7 +3275,7 @@ def _kg_path_from_graph(
         ):
             edge = dict(raw)
             edges[str(edge["edge_id"])] = edge
-    for batch in chunks(seed_nodes, 300):
+    for batch in chunks(expansion_seed_nodes, 300):
         placeholders = ",".join("?" for _ in batch)
         relation_placeholders = ",".join("?" for _ in relations)
         for direction in ("src_node_id", "dst_node_id"):
@@ -3461,7 +3569,67 @@ def _question_slots(
     }
 
 
-def _reparse_persisted_question(row: dict[str, Any]) -> dict[str, Any]:
+def _question_parser_contract_validation(
+    row: dict[str, Any], build: dict[str, Any]
+) -> dict[str, Any]:
+    manifest = question_parser_manifest(TEMPLATES)
+    manifest_hash = question_parser_manifest_hash(TEMPLATES)
+    pinned_manifest = json_value(build.get("notes"), {}).get(
+        "question_parser", {}
+    )
+    sample_contract = json_value(row.get("source_metadata"), {}).get(
+        "question_parser", {}
+    )
+    errors = []
+    if build.get("question_parser_version") != QUESTION_PARSER_VERSION:
+        errors.append("question_parser_version_mismatch")
+    if build.get("question_parser_manifest_hash") != manifest_hash:
+        errors.append("question_parser_manifest_hash_mismatch")
+    if pinned_manifest != {
+        **manifest,
+        "question_parser_manifest_hash": manifest_hash,
+    }:
+        errors.append("pinned_question_parser_manifest_mismatch")
+    template_id = str(row.get("template_id") or "")
+    language = str(row.get("language") or "")
+    if language not in set(manifest["supported_languages"]):
+        errors.append("unsupported_language")
+    if template_id not in set(manifest["supported_template_ids"]):
+        errors.append("unsupported_template_id")
+    if sample_contract.get("question_parser_version") != QUESTION_PARSER_VERSION:
+        errors.append("sample_question_parser_version_mismatch")
+    if sample_contract.get("question_parser_manifest_hash") != manifest_hash:
+        errors.append("sample_question_parser_manifest_hash_mismatch")
+    if sample_contract.get("supported_language") != language:
+        errors.append("sample_supported_language_mismatch")
+    if sample_contract.get("supported_template_id") != template_id:
+        errors.append("sample_supported_template_id_mismatch")
+    return {
+        "passed": not errors,
+        "errors": errors,
+        "question_parser_version": QUESTION_PARSER_VERSION,
+        "question_parser_manifest_hash": manifest_hash,
+        "supported_language": language,
+        "supported_template_id": template_id,
+        "supported_languages": manifest["supported_languages"],
+        "supported_template_ids": manifest["supported_template_ids"],
+    }
+
+
+def _reparse_persisted_question(
+    row: dict[str, Any], parser_contract: dict[str, Any]
+) -> dict[str, Any]:
+    if not parser_contract.get("passed"):
+        return {
+            "passed": False,
+            "missing_slots": [],
+            "contract_errors": [
+                f"question_parser:{error}"
+                for error in parser_contract.get("errors") or []
+            ],
+            "contract_source": "pinned_candidate_and_operation_plan",
+            "question_parser": parser_contract,
+        }
     try:
         template = next(
             item for item in TEMPLATES if item["template_id"] == row.get("template_id")
@@ -3509,6 +3677,7 @@ def _reparse_persisted_question(row: dict[str, Any]) -> dict[str, Any]:
         **validation,
         "contract_source": "pinned_candidate_and_operation_plan",
         "template_id": template["template_id"],
+        "question_parser": parser_contract,
     }
 
 
@@ -4115,6 +4284,27 @@ def _qa_build(db: DBProtocol, qa_build_id: str) -> dict[str, Any]:
     out = dict(row)
     out["notes"] = json_value(out.get("notes"), {})
     return out
+
+
+def _catalog_runtime_contract_for_build(
+    build: dict[str, Any],
+) -> dict[str, Any]:
+    mining_notes = json_value(build.get("notes"), {}).get("pattern_mining", {})
+    pinned = json_value(mining_notes.get("catalog_runtime_contract"), {})
+    if not pinned:
+        raise RuntimeError(
+            f"QA build {build.get('qa_build_id')} has no pinned Catalog runtime "
+            "contract"
+        )
+    current = catalog_runtime_contract(
+        json_value(pinned.get("comparability_policy"), {})
+    )
+    if _digest(pinned) != _digest(current):
+        raise RuntimeError(
+            f"QA build {build.get('qa_build_id')} Catalog runtime contract "
+            "drifted from the current deployment"
+        )
+    return current
 
 
 def _decode_candidate(row: dict[str, Any]) -> dict[str, Any]:

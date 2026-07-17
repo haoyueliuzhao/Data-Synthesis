@@ -10,6 +10,10 @@ from finraw.builds import deactivate_active_rows, finish_build, start_build
 from finraw.db.client import DBProtocol
 
 
+SOURCE_DEFINITION_SCHEMA_VERSION = "1.0.0"
+SEASONAL_ADJUSTMENT_POLICY_VERSION = "1.0.0"
+
+
 def refresh_source_metric_definitions(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
     build_id = start_build(db, layer="fact_validation", command="refresh-source-definitions", prefix="source_definitions")
     deactivate_active_rows(db, "source_metric_definitions", build_id)

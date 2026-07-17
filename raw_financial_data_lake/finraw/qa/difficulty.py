@@ -16,7 +16,8 @@ DIFFICULTY_BASE_COST = {
     "research": 6.0,
 }
 DIFFICULTY_POLICY = {
-    "version": 3,
+    "version": 4,
+    "graph_depth_method": "double_sweep_component_pseudodiameter",
     "thresholds": {"easy": 2.5, "medium": 5.5, "hard": 9.5, "expert": 18.0},
     "pattern_base_cost": DIFFICULTY_BASE_COST,
     "reasoning_relations": [
@@ -173,15 +174,29 @@ def _graph_shape(edges: list[dict[str, Any]]) -> tuple[int, int]:
         adjacency[dst].add(src)
     branch_count = sum(1 for neighbors in adjacency.values() if len(neighbors) > 2)
     max_depth = 0
-    for start in adjacency:
-        distances = {start: 0}
-        queue = deque([start])
-        while queue:
-            node = queue.popleft()
-            for neighbor in adjacency[node]:
-                if neighbor in distances:
-                    continue
-                distances[neighbor] = distances[node] + 1
-                queue.append(neighbor)
-        max_depth = max(max_depth, max(distances.values(), default=0))
+    unseen = set(adjacency)
+    while unseen:
+        start = min(unseen)
+        farthest, _, component = _farthest_node(adjacency, start)
+        unseen.difference_update(component)
+        _, depth, _ = _farthest_node(adjacency, farthest)
+        max_depth = max(max_depth, depth)
     return max_depth, branch_count
+
+
+def _farthest_node(
+    adjacency: dict[str, set[str]], start: str
+) -> tuple[str, int, set[str]]:
+    distances = {start: 0}
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        for neighbor in adjacency[node]:
+            if neighbor in distances:
+                continue
+            distances[neighbor] = distances[node] + 1
+            queue.append(neighbor)
+    farthest, depth = max(
+        distances.items(), key=lambda item: (item[1], item[0])
+    )
+    return farthest, depth, set(distances)

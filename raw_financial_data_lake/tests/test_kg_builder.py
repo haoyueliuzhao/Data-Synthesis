@@ -7,6 +7,7 @@ import pytest
 from finraw.db.client import MetadataDB
 from finraw.kg_builder import (
     KG_SCHEMA_VERSION,
+    _apply_kg_activation_policy,
     _activate_kg_build,
     _add_time_hierarchy,
     _dangling_edge_count,
@@ -198,6 +199,50 @@ def test_activation_switches_build_pointer_only(tmp_path) -> None:
             db.fetchone("SELECT * FROM kg_nodes WHERE node_id = ?", ["entity:old@@kg_old"])
         )
         assert invalidated_node["is_active"] == 0
+    finally:
+        db.close()
+
+
+def test_nonactivating_validation_build_preserves_active_pointer(tmp_path) -> None:
+    db = _db(tmp_path)
+    try:
+        for build_id, is_active in [("kg_active", 1), ("kg_validation", 0)]:
+            db.execute(
+                """
+                INSERT INTO kg_builds (
+                    kg_build_id, graph_schema_version, status, quality_status,
+                    is_active, started_at, completed_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    build_id,
+                    KG_SCHEMA_VERSION,
+                    "success",
+                    "passed",
+                    is_active,
+                    "2026-01-01",
+                    "2026-01-01",
+                ],
+            )
+
+        _apply_kg_activation_policy(
+            db,
+            "kg_validation",
+            quality_status="passed",
+            activate=False,
+        )
+
+        active = db.fetchall(
+            "SELECT kg_build_id FROM kg_builds WHERE is_active = 1"
+        )
+        validation = db.fetchone(
+            "SELECT is_active, superseded_by FROM kg_builds "
+            "WHERE kg_build_id = ?",
+            ("kg_validation",),
+        )
+        assert [row["kg_build_id"] for row in active] == ["kg_active"]
+        assert validation["is_active"] == 0
+        assert validation["superseded_by"] is None
     finally:
         db.close()
 

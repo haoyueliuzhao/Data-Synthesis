@@ -82,7 +82,14 @@ EDGE_COLUMNS = ["edge_id", "stable_edge_id", "kg_build_id", "src_node_id", "dst_
 CHECK_COLUMNS = ["check_id", "kg_build_id", "check_type", "status", "severity", "message"]
 
 
-def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None, batch_size: int = 20000) -> dict[str, Any]:
+def build_kg(
+    db: DBProtocol,
+    config: dict[str, Any],
+    output_dir: str | None = None,
+    batch_size: int = 20000,
+    *,
+    activate: bool = True,
+) -> dict[str, Any]:
     ensure_kg_schema(db)
     input_fact_build_id = _required_active_build_id(db, "standardized_facts")
     input_qa_build_id = _required_active_build_id(db, "derived_facts")
@@ -283,10 +290,12 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         "quality_status": quality_status,
         "notes": _json({"node_type_counts": dict(sorted(node_type_counts.items())), "edge_type_counts": dict(sorted(edge_type_counts.items())), "quality": quality_status}),
     })
-    if quality_status == "passed":
-        _activate_kg_build(db, kg_build_id)
-    else:
-        _invalidate_kg_build(db, kg_build_id)
+    _apply_kg_activation_policy(
+        db,
+        kg_build_id,
+        quality_status=quality_status,
+        activate=activate,
+    )
     report = {
         "kg_build_id": kg_build_id,
         "graph_schema_version": KG_SCHEMA_VERSION,
@@ -302,6 +311,8 @@ def build_kg(db: DBProtocol, config: dict[str, Any], output_dir: str | None = No
         "edge_count": edge_count,
         "node_type_counts": dict(sorted(node_type_counts.items())),
         "edge_type_counts": dict(sorted(edge_type_counts.items())),
+        "activation_requested": activate,
+        "is_active": quality_status == "passed" and activate,
         "quality": quality,
     }
     if output_dir:
@@ -624,6 +635,19 @@ def _insert_kg_build(db: DBProtocol, row: dict[str, Any]) -> None:
 def _update_kg_build(db: DBProtocol, kg_build_id: str, fields: dict[str, Any]) -> None:
     assignments = ", ".join([f"{key} = ?" for key in fields])
     db.execute(f"UPDATE kg_builds SET {assignments} WHERE kg_build_id = ?", [*fields.values(), kg_build_id])
+
+
+def _apply_kg_activation_policy(
+    db: DBProtocol,
+    kg_build_id: str,
+    *,
+    quality_status: str,
+    activate: bool,
+) -> None:
+    if quality_status == "passed" and activate:
+        _activate_kg_build(db, kg_build_id)
+    elif quality_status != "passed":
+        _invalidate_kg_build(db, kg_build_id)
 
 
 def _activate_kg_build(db: DBProtocol, kg_build_id: str) -> None:

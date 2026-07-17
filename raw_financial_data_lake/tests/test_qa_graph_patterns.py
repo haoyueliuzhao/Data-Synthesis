@@ -3,16 +3,25 @@ from __future__ import annotations
 import copy
 import json
 import sqlite3
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
+from types import SimpleNamespace
 
 import pytest
 
+import finraw.qa.pattern_catalog as pattern_catalog_module
 from finraw.db.client import MetadataDB
 from finraw.qa.binding_executor import MetricFactCache
-from finraw.qa.difficulty import assess_difficulty, graph_features
+from finraw.qa.binding_executor import _binding_hash
+from finraw.qa.difficulty import _graph_shape, assess_difficulty, graph_features
 from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.comparability import annual_duration_valid, latest_contiguous_window, metric_pair_allowed, comparability_policy
 from finraw.qa.graph_matcher import discover_pattern_matches
+from finraw.qa.graph_binding_ir import (
+    _graph_root_score,
+    _load_facts,
+    scan_pinned_graph_nodes,
+)
 from finraw.qa.graph_patterns import (
     get_pattern,
     pattern_content_hash,
@@ -21,8 +30,11 @@ from finraw.qa.graph_patterns import (
 )
 from finraw.qa.operators import OperatorError, execute_operator
 from finraw.qa.pattern_catalog import (
+    _entry_hash_payload,
+    catalog_runtime_contract,
     load_pattern_catalog_release,
     publish_mining_run_to_catalog,
+    validate_catalog_target_compatibility,
 )
 from finraw.qa.pattern_compiler import (
     compile_logical_pattern,
@@ -47,8 +59,10 @@ from finraw.qa.pattern_mining import (
 )
 from finraw.qa.pipeline import (
     _latest_year,
+    _kg_path_from_graph,
     _match_time_scope,
     _scope_is_complete,
+    _validate_evidence_semantics,
     build_qa,
     build_qa_candidates,
     generate_qa_samples,
@@ -59,7 +73,17 @@ from finraw.qa.semantic_constraints import (
     SEMANTIC_OPERATORS,
     validate_semantic_constraints,
 )
-from finraw.qa.verbalizer import realize_question, validate_question_roundtrip
+from finraw.qa.store import insert_rows
+from finraw.qa.templates import TEMPLATES
+from finraw.qa.verbalizer import (
+    QUESTION_PARSER_VERSION,
+    build_question_contract,
+    question_parser_manifest,
+    question_parser_manifest_hash,
+    realize_question,
+    validate_question_parser_support,
+    validate_question_roundtrip,
+)
 
 
 def _insert_node(db, build_id, stable_id, node_type, source_pk):
@@ -69,6 +93,122 @@ def _insert_node(db, build_id, stable_id, node_type, source_pk):
         (node_id, stable_id, build_id, node_type, source_pk, 1),
     )
     return node_id
+
+
+def test_insert_rows_respects_outer_transaction(tmp_path):
+    db = MetadataDB(str(tmp_path / "transaction.db"))
+    db.init_schema()
+    row = {
+        "source_id": "transaction_test",
+        "source_name": "Transaction Test",
+        "source_type": "api",
+        "authority_level": "S1_official",
+    }
+
+    with pytest.raises(RuntimeError, match="force rollback"):
+        with db.transaction():
+            insert_rows(db, "source_registry", [row], list(row))
+            raise RuntimeError("force rollback")
+
+    assert (
+        db.fetchone(
+            "SELECT source_id FROM source_registry WHERE source_id = ?",
+            (row["source_id"],),
+        )
+        is None
+    )
+    db.close()
+
+
+def test_question_parser_and_template_registry_have_bidirectional_contract():
+    manifest = question_parser_manifest(TEMPLATES)
+    template_ids = {str(item["template_id"]) for item in TEMPLATES}
+    assert manifest["question_parser_version"] == QUESTION_PARSER_VERSION
+    assert manifest["supported_languages"] == ["en", "zh"]
+    assert set(manifest["supported_template_ids"]) == template_ids
+    assert manifest["unsupported_template_ids"] == []
+    assert len(question_parser_manifest_hash(TEMPLATES)) == 64
+
+    for template in TEMPLATES:
+        support = validate_question_parser_support(template, manifest)
+        assert support["passed"], template["template_id"]
+        slots = {
+            slot: f"value_{slot}"
+            for slot in template.get("required_slots") or []
+        }
+        question = template["template_text"].format(**slots)
+        contract = build_question_contract(
+            {"operation": "lookup"},
+            slots,
+            list(template.get("required_slots") or []),
+        )
+        parsed = validate_question_roundtrip(
+            question, contract, trusted_contract=True
+        )
+        assert parsed["passed"], {
+            "template_id": template["template_id"],
+            "errors": parsed["contract_errors"],
+        }
+
+    unsupported = {**TEMPLATES[0], "template_id": "future_fr_01", "language": "fr"}
+    assert validate_question_parser_support(unsupported, manifest)["errors"] == [
+        "unsupported_language",
+        "unsupported_template_id",
+    ]
+
+
+def test_catalog_entry_hash_normalizes_equivalent_timezones():
+    utc_value = "2026-07-17T11:40:19.254961+00:00"
+    local_value = datetime(
+        2026,
+        7,
+        17,
+        19,
+        40,
+        19,
+        254961,
+        tzinfo=timezone(timedelta(hours=8)),
+    )
+
+    assert _entry_hash_payload({"published_at": utc_value}) == (
+        _entry_hash_payload({"published_at": local_value})
+    )
+
+
+def test_binding_hash_excludes_build_scoped_graph_evidence_ids():
+    semantic = {
+        "fact_ids": ["fact_1"],
+        "input_bindings": {"fact": "fact_1"},
+        "entity_ids": ["A_US"],
+    }
+    source = {
+        **semantic,
+        "graph_node_ids": ["fact:fact_1@@kg_source"],
+        "graph_edge_ids": ["edge:source@@kg_source"],
+        "graph_edges": [
+            {
+                "edge_id": "edge:source@@kg_source",
+                "src_node_id": "entity:A_US@@kg_source",
+                "dst_node_id": "fact:fact_1@@kg_source",
+                "relation_type": "HAS_FACT",
+            }
+        ],
+    }
+    target = {
+        **semantic,
+        "graph_node_ids": ["fact:fact_1@@kg_target"],
+        "graph_edge_ids": ["edge:source@@kg_target"],
+        "graph_edges": [
+            {
+                "edge_id": "edge:source@@kg_target",
+                "src_node_id": "entity:A_US@@kg_target",
+                "dst_node_id": "fact:fact_1@@kg_target",
+                "relation_type": "HAS_FACT",
+            }
+        ],
+    }
+
+    assert _binding_hash(source) == _binding_hash(target)
 
 
 def _insert_edge(db, build_id, stable_id, src, dst, relation):
@@ -180,6 +320,79 @@ def _graph_fixture(tmp_path):
         }
     }
     return db, kg_build, config
+
+
+def test_extra_evidence_nodes_do_not_expand_shared_source_fanout(tmp_path):
+    db, kg_build, _ = _graph_fixture(tmp_path)
+    fact_id = "fact_A_US_revenue_2023"
+    source_node = f"source:sec_companyfacts@@{kg_build}"
+
+    evidence = _kg_path_from_graph(
+        db,
+        kg_build,
+        fact_ids=[fact_id],
+        extra_node_ids=[source_node],
+    )
+
+    fact_nodes = [
+        node_id
+        for node_id in evidence["evidence_node_ids"]
+        if node_id.startswith("fact:")
+    ]
+    assert fact_nodes == [f"fact:{fact_id}@@{kg_build}"]
+
+
+def test_graph_shape_is_linear_for_large_evidence_star():
+    edges = [
+        {"src": "center", "dst": f"leaf_{index}"}
+        for index in range(5000)
+    ]
+
+    assert _graph_shape(edges) == (2, 1)
+
+
+def test_scope_composition_evidence_uses_declared_pattern_relations():
+    node_types = {
+        "entity": "Entity",
+        "fact": "Fact",
+        "metric": "Metric",
+        "period": "TimePeriod",
+        "source": "DataSource",
+        "raw": "RawObject",
+        "definition": "SourceDefinition",
+        "derived": "DerivedFact",
+        "scope": "EntitySet",
+    }
+    relations = [
+        ("entity", "fact", "HAS_FACT"),
+        ("fact", "metric", "MEASURES"),
+        ("fact", "period", "IN_PERIOD"),
+        ("fact", "source", "FROM_SOURCE"),
+        ("fact", "raw", "TRACED_TO"),
+        ("fact", "definition", "USES_SOURCE_DEFINITION"),
+        ("derived", "fact", "DERIVED_FROM"),
+        ("derived", "scope", "HAS_SCOPE"),
+        ("scope", "entity", "CONTAINS_ENTITY"),
+    ]
+    edges = {
+        f"edge_{index}": {
+            "src_node_id": src,
+            "dst_node_id": dst,
+            "relation_type": relation,
+        }
+        for index, (src, dst, relation) in enumerate(relations)
+    }
+    path = {
+        "evidence_node_ids": sorted(node_types),
+        "edge_ids": sorted(edges),
+    }
+
+    passed, details = _validate_evidence_semantics(
+        "scope_composition", path, node_types, edges
+    )
+
+    assert passed is True
+    assert details == {"missing_relations": [], "invalid_edges": []}
 
 
 def _approve_mining_run(db, mining_run_id):
@@ -495,6 +708,75 @@ def _semantic_ontology():
             "period_type": "period_flow",
         },
     }
+
+
+def test_semantic_baseline_rejects_missing_unless_explicitly_allowed():
+    cases = [
+        ("source", "source_id", "same_source"),
+        ("time_basis", "time_basis", "same_time_basis"),
+        ("frequency", "frequency", "same_frequency"),
+        (
+            "seasonal_adjustment",
+            "seasonal_adjustment",
+            "same_seasonal_adjustment",
+        ),
+        ("vintage_policy", "vintage_policy", "same_vintage_policy"),
+    ]
+    for constraint_field, fact_field, expected_error in cases:
+        facts = {
+            f"r{year}": _semantic_fact(f"r{year}", "revenue", year)
+            for year in [2022, 2023]
+        }
+        ontology = _semantic_ontology()
+        if fact_field == "seasonal_adjustment":
+            ontology = {
+                **ontology,
+                "macro_metric": {
+                    "metric_id": "macro_metric",
+                    "metric_category": "macro",
+                    "statement_type": None,
+                    "period_type": "period_flow",
+                },
+            }
+            for row in facts.values():
+                row["metric_id"] = "macro_metric"
+                row["source_definition_id"] = "def_macro_metric"
+                row["frequency"] = "quarterly"
+        for row in facts.values():
+            row[fact_field] = None
+        binding = {
+            "fact_ids": sorted(facts),
+            "input_bindings": {"series": sorted(facts)},
+        }
+        rejected = validate_semantic_constraints(
+            {"semantic_constraints": []},
+            binding,
+            facts,
+            ontology,
+            comparability_policy(),
+        )
+        assert expected_error in rejected.errors
+
+        allowed = validate_semantic_constraints(
+            {
+                "semantic_constraints": [
+                    {
+                        "field": constraint_field,
+                        "operator": "same",
+                        "allow_missing": True,
+                    }
+                ]
+            },
+            binding,
+            facts,
+            ontology,
+            comparability_policy(),
+        )
+        assert allowed.passed, (
+            constraint_field,
+            allowed.errors,
+            allowed.checks,
+        )
 
 
 def test_semantic_operator_registry_covers_static_patterns_and_fails_closed():
@@ -1242,6 +1524,40 @@ def test_final_verifier_reparses_persisted_question_independently(tmp_path):
     ]
 
 
+def test_final_verifier_rejects_question_parser_manifest_drift(tmp_path):
+    db, kg_build, config = _graph_fixture(tmp_path)
+    report = build_qa(
+        db,
+        config,
+        kg_build_id=kg_build,
+        output_dir=str(tmp_path / "parser_manifest_drift"),
+        batch_size=10,
+        activate=False,
+    )
+    sample = db.fetchone(
+        "SELECT qa_id FROM qa_samples WHERE qa_build_id = ? ORDER BY qa_id LIMIT 1",
+        (report["qa_build_id"],),
+    )
+    db.execute(
+        "UPDATE qa_builds SET question_parser_manifest_hash = ? "
+        "WHERE qa_build_id = ?",
+        ("0" * 64, report["qa_build_id"]),
+    )
+    db.execute(
+        "UPDATE qa_samples SET validation_status = 'pending' WHERE qa_id = ?",
+        (sample["qa_id"],),
+    )
+    validate_qa_samples(db, report["qa_build_id"], batch_size=10)
+    check = db.fetchone(
+        "SELECT check_status, observed_value FROM qa_quality_checks "
+        "WHERE qa_id = ? AND check_name = ?",
+        (sample["qa_id"], "question_parser_contract"),
+    )
+    assert check["check_status"] == "failed"
+    observed = json.loads(check["observed_value"])
+    assert "question_parser_manifest_hash_mismatch" in observed["errors"]
+
+
 def test_final_verifier_independently_rechecks_temporal_continuity(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
     candidate_report = build_qa_candidates(
@@ -1614,7 +1930,7 @@ def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path)
     assert logical_plan.target_kg_build_id == kg_build
     assert logical_plan.plan_version == 2
     assert logical_plan.ir_version == 1
-    assert logical_plan.compiler_version == "2.4.0"
+    assert logical_plan.compiler_version == "2.7.0"
     assert logical_plan.motif_family == "fifth_declarative_motif"
     assert [item["op"] for item in logical_plan.relational_ops] == [
         "scan_pinned_fact_nodes",
@@ -2660,7 +2976,7 @@ def test_mined_patterns_flow_through_candidate_plan_and_verifier(tmp_path):
     assert all(row["pattern_compilation_id"] for row in candidates)
     assert all(row["proposal_semantic_id"] for row in candidates)
     assert all(row["logical_plan_hash"] for row in candidates)
-    assert all(row["compiler_version"] == "2.4.0" for row in candidates)
+    assert all(row["compiler_version"] == "2.7.0" for row in candidates)
     assert all(row["compiled_binding_id"] for row in candidates)
     proposal_checks = db.fetchall(
         "SELECT check_status FROM qa_quality_checks WHERE qa_build_id = ? "
@@ -2880,6 +3196,151 @@ def _clone_kg_build(
         )
 
 
+def test_graph_native_root_scan_supports_full_and_stratified_modes(tmp_path):
+    db = MetadataDB(str(tmp_path / "graph_scan.db"))
+    db.init_schema()
+    kg_build = "kg_graph_scan"
+    db.execute(
+        "INSERT INTO kg_builds (kg_build_id, status, quality_status, is_active) "
+        "VALUES (?, ?, ?, ?)",
+        (kg_build, "success", "passed", 1),
+    )
+    for index in range(12):
+        first_stratum = index < 6
+        node_id = f"fact:root_{index:02d}@@{kg_build}"
+        properties = {
+            "source_id": "sec_companyfacts" if first_stratum else "fred",
+            "financial_scope_type": "consolidated"
+            if first_stratum
+            else "country",
+            "fiscal_year": 2021 if first_stratum else 2026,
+        }
+        db.execute(
+            "INSERT INTO kg_nodes (node_id, stable_node_id, kg_build_id, "
+            "node_type, source_table, source_pk, properties_json, is_active) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                node_id,
+                f"fact:root_{index:02d}",
+                kg_build,
+                "Fact",
+                "standardized_facts",
+                f"root_{index:02d}",
+                json.dumps(properties),
+                1,
+            ),
+        )
+        edge_count = 1 if first_stratum else 2
+        for edge_index in range(edge_count):
+            _insert_edge(
+                db,
+                kg_build,
+                f"scan_edge_{index}_{edge_index}",
+                node_id,
+                node_id,
+                f"SCAN_RELATION_{edge_index}",
+            )
+
+    def execute_scan(limit):
+        state = SimpleNamespace(
+            db=db,
+            kg={"kg_build_id": kg_build},
+            plan={"sampling": {"graph_scan_rows": limit}},
+            policy={
+                "compiled_graph_scan_rows": 999,
+                "max_candidates_per_proposal": 1,
+                "compiled_scan_multiplier": 1,
+            },
+            relation_kind="uninitialized",
+        )
+        scan_pinned_graph_nodes(
+            state,
+            {"op": "scan_pinned_graph_nodes", "role": "fact", "node_type": "Fact"},
+        )
+        return state
+
+    full = execute_scan(0)
+    assert len(full.relation) == 12
+    assert full.graph_scan_audit["scan_mode"] == "full"
+    assert full.graph_scan_audit["total_root_count"] == 12
+    assert full.graph_scan_audit["scanned_root_count"] == 12
+    assert full.graph_scan_audit["root_coverage_rate"] == 1.0
+    assert full.graph_scan_audit["evaluated_root_count"] == 12
+    assert full.graph_scan_audit["evaluation_coverage_rate"] == 1.0
+    assert full.graph_scan_audit["stratum_coverage_rate"] == 1.0
+
+    full_scan_bounded_evaluation = execute_scan(0)
+    full_scan_bounded_evaluation.policy["compiled_graph_evaluation_rows"] = 2
+    full_scan_bounded_evaluation.relation_kind = "uninitialized"
+    scan_pinned_graph_nodes(
+        full_scan_bounded_evaluation,
+        {"op": "scan_pinned_graph_nodes", "role": "fact", "node_type": "Fact"},
+    )
+    evaluation_audit = full_scan_bounded_evaluation.graph_scan_audit
+    assert len(full_scan_bounded_evaluation.relation) == 2
+    assert evaluation_audit["scanned_root_count"] == 12
+    assert evaluation_audit["root_coverage_rate"] == 1.0
+    assert evaluation_audit["evaluated_root_count"] == 2
+    assert evaluation_audit["evaluation_coverage_rate"] == pytest.approx(2 / 12)
+    assert evaluation_audit["stratum_coverage_rate"] == 1.0
+
+    bounded = execute_scan(2)
+    assert len(bounded.relation) == 2
+    audit = bounded.graph_scan_audit
+    assert audit["selection_method"] == "deterministic_hash_stratified"
+    assert audit["total_root_count"] == 12
+    assert audit["scanned_root_count"] == 2
+    assert audit["root_coverage_rate"] == pytest.approx(2 / 12)
+    assert audit["total_stratum_count"] == 2
+    assert audit["scanned_stratum_count"] == 2
+    assert audit["stratum_coverage_rate"] == 1.0
+    selected_sources = {
+        next(iter(row["roles"].values()))["properties"]["source_id"]
+        for row in bounded.relation
+    }
+    assert selected_sources == {"sec_companyfacts", "fred"}
+    assert _graph_root_score(
+        {"stable_node_id": "fact:stable", "node_id": "fact:stable@@kg_one"}
+    ) == _graph_root_score(
+        {"stable_node_id": "fact:stable", "node_id": "fact:stable@@kg_two"}
+    )
+
+    assert mining_policy(
+        {"qa": {"pattern_mining": {"compiled_graph_scan_rows": 0}}}
+    )["compiled_graph_scan_rows"] == 0
+    assert mining_policy(
+        {"qa": {"pattern_mining": {"compiled_graph_evaluation_rows": 0}}}
+    )["compiled_graph_evaluation_rows"] == 0
+
+
+def test_graph_native_fact_loader_uses_cross_backend_integer_flags():
+    class CaptureDB:
+        def __init__(self):
+            self.queries = []
+
+        def fetchall(self, sql, params=()):
+            self.queries.append((sql, params))
+            return []
+
+    db = CaptureDB()
+    state = SimpleNamespace(
+        db=db,
+        kg={
+            "input_entity_build_id": "entities_1",
+            "input_metric_build_id": "metrics_1",
+            "input_fact_build_id": "facts_1",
+        },
+    )
+    facts, metrics = _load_facts(state, ["fact_1"])
+    assert facts == {}
+    assert metrics == {}
+    sql = db.queries[0][0]
+    assert "COALESCE(sf.graph_ready, 0) = 1" in sql
+    assert "COALESCE(sf.is_forecast, 0) = 0" in sql
+    assert "FALSE" not in sql
+    assert "TRUE" not in sql
+
+
 def test_graph_native_provenance_observation_becomes_executable_qa(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
     config["qa"]["graph_patterns"]["enabled"] = False
@@ -2925,6 +3386,14 @@ def test_graph_native_provenance_observation_becomes_executable_qa(tmp_path):
         activate=False,
     )
     assert report["quality"]["quality_status"] == "passed"
+    scan_summary = report["candidate"]["pattern_compilation_summary"]
+    assert scan_summary["graph_scan_count"] >= 1
+    assert scan_summary["total_root_count"] >= scan_summary["scanned_root_count"]
+    assert 0 < scan_summary["root_coverage_rate"] <= 1
+    assert all(
+        "stratum_coverage" in item
+        for item in scan_summary["graph_scan_coverage"]
+    )
     rows = db.fetchall(
         "SELECT task_subtype, answer_value FROM qa_samples "
         "WHERE qa_build_id = ? ORDER BY qa_id",
@@ -2937,7 +3406,9 @@ def test_graph_native_provenance_observation_becomes_executable_qa(tmp_path):
     assert answer["trace"]["raw_object_id"] == "raw_graph"
 
 
-def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(tmp_path):
+def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
+    tmp_path, monkeypatch
+):
     db, source_kg, config = _graph_fixture(tmp_path)
     config["qa"]["graph_patterns"]["enabled"] = False
     config["qa"]["pattern_mining"] = {
@@ -2972,13 +3443,91 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(tmp_pa
         db, release["catalog_release_id"]
     )["entry_count"] > 0
     compatibility_contract = release["compatibility_contract"]
-    assert compatibility_contract["contract_version"] == 1
+    assert compatibility_contract["contract_version"] == 2
     assert compatibility_contract["graph_schema_version"] == "3.0"
     assert {
         item["metric_id"] for item in compatibility_contract["metric_contracts"]
     } == {"revenue", "net_income"}
+    runtime_fields = {
+        "semantic_operator_manifest_hash",
+        "operation_operator_manifest_hash",
+        "comparability_policy_hash",
+        "unit_normalization_version",
+        "time_normalization_version",
+        "source_definition_schema_version",
+        "seasonal_adjustment_policy_version",
+    }
+    assert all(compatibility_contract[field] for field in runtime_fields)
+    target_runtime = catalog_runtime_contract(
+        config["qa"]["graph_patterns"].get("comparability")
+    )
+    source_kg_row = dict(
+        db.fetchone(
+            "SELECT * FROM kg_builds WHERE kg_build_id = ?",
+            (source_kg,),
+        )
+    )
+    assert validate_catalog_target_compatibility(
+        db,
+        release,
+        source_kg_row,
+        target_runtime_contract=target_runtime,
+    )["status"] == "passed"
+    for field_name in sorted(runtime_fields):
+        incompatible_runtime = copy.deepcopy(target_runtime)
+        incompatible_runtime[field_name] = (
+            "9.9.9"
+            if field_name.endswith("_version")
+            else "0" * 64
+        )
+        with pytest.raises(RuntimeError, match=field_name):
+            validate_catalog_target_compatibility(
+                db,
+                release,
+                source_kg_row,
+                target_runtime_contract=incompatible_runtime,
+            )
 
     config["qa"]["pattern_mining"]["enabled"] = False
+    source_candidate_report = build_qa_candidates(
+        db,
+        config,
+        kg_build_id=source_kg,
+        pattern_catalog_release_id=release["catalog_release_id"],
+        output_dir=str(tmp_path / "source_kg_identity"),
+    )
+    source_qa_build_id = source_candidate_report["qa_build_id"]
+    generate_qa_samples(db, source_qa_build_id)
+    assert validate_qa_samples(db, source_qa_build_id)["quality_status"] == "passed"
+    source_candidate_identities = {
+        (row["compiled_binding_hash"], row["stable_candidate_id"])
+        for row in db.fetchall(
+            "SELECT compiled_binding_hash, stable_candidate_id FROM qa_candidates "
+            "WHERE qa_build_id = ?",
+            (source_qa_build_id,),
+        )
+    }
+    source_qa_identities = {
+        (row["compiled_binding_hash"], row["stable_qa_id"])
+        for row in db.fetchall(
+            "SELECT c.compiled_binding_hash, s.stable_qa_id FROM qa_samples s "
+            "JOIN qa_candidates c ON c.candidate_id = s.candidate_id "
+            "WHERE s.qa_build_id = ?",
+            (source_qa_build_id,),
+        )
+    }
+    policy_drift_config = copy.deepcopy(config)
+    policy_drift_config["qa"]["graph_patterns"].setdefault(
+        "comparability", {}
+    )["require_same_source"] = False
+    with pytest.raises(RuntimeError, match="comparability_policy_hash"):
+        build_qa_candidates(
+            db,
+            policy_drift_config,
+            kg_build_id=source_kg,
+            pattern_catalog_release_id=release["catalog_release_id"],
+            output_dir=str(tmp_path / "policy_drift"),
+        )
     incompatible_kg = "kg_graph_incompatible"
     _clone_kg_build(
         db,
@@ -3049,6 +3598,11 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(tmp_pa
     assert json.loads(build["notes"])["pattern_mining"][
         "catalog_compatibility"
     ]["status"] == "passed"
+    assert json.loads(build["notes"])["pattern_mining"][
+        "catalog_runtime_contract"
+    ]["comparability_policy_hash"] == compatibility_contract[
+        "comparability_policy_hash"
+    ]
     compilation = db.fetchone(
         "SELECT source_kg_build_id, target_kg_build_id, "
         "pattern_catalog_release_id, pattern_catalog_entry_hash, "
@@ -3068,6 +3622,33 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(tmp_pa
     generate_qa_samples(db, qa_build_id)
     quality = validate_qa_samples(db, qa_build_id)
     assert quality["quality_status"] == "passed"
+    target_candidate_identities = {
+        (row["compiled_binding_hash"], row["stable_candidate_id"])
+        for row in db.fetchall(
+            "SELECT compiled_binding_hash, stable_candidate_id FROM qa_candidates "
+            "WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    }
+    target_qa_identities = {
+        (row["compiled_binding_hash"], row["stable_qa_id"])
+        for row in db.fetchall(
+            "SELECT c.compiled_binding_hash, s.stable_qa_id FROM qa_samples s "
+            "JOIN qa_candidates c ON c.candidate_id = s.candidate_id "
+            "WHERE s.qa_build_id = ?",
+            (qa_build_id,),
+        )
+    }
+    assert source_candidate_identities == target_candidate_identities
+    assert source_qa_identities == target_qa_identities
+    monkeypatch.setattr(
+        pattern_catalog_module,
+        "UNIT_NORMALIZATION_VERSION",
+        "9.9.9",
+    )
+    with pytest.raises(RuntimeError, match="runtime contract drifted"):
+        generate_qa_samples(db, qa_build_id)
+    monkeypatch.undo()
 
     candidate = db.fetchone(
         "SELECT candidate_id, catalog_pattern_id FROM qa_candidates "
@@ -3111,6 +3692,11 @@ def test_all_supported_graph_observations_publish_and_execute(tmp_path):
         "fact_A_US_net_income_2023",
     ]
     fact_nodes = [f"fact:{fact_id}@@{kg_build}" for fact_id in fact_ids]
+    for fact_node in fact_nodes:
+        db.execute(
+            "UPDATE kg_nodes SET source_table = ? WHERE node_id = ?",
+            ("standardized_facts", fact_node),
+        )
     derived = _insert_node(
         db, kg_build, "derived_fact:derived_graph_1", "DerivedFact", "derived_graph_1"
     )

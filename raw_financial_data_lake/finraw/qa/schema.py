@@ -22,6 +22,8 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             document_build_id TEXT,
             config_hash TEXT,
             template_manifest_hash TEXT,
+            question_parser_version TEXT,
+            question_parser_manifest_hash TEXT,
             pattern_manifest_hash TEXT,
             operator_manifest_hash TEXT,
             difficulty_policy_hash TEXT,
@@ -389,6 +391,8 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         "CREATE INDEX IF NOT EXISTS idx_kg_edges_build_rel_src ON kg_edges(kg_build_id, relation_type, src_node_id)",
         "CREATE INDEX IF NOT EXISTS idx_kg_edges_build_rel_dst ON kg_edges(kg_build_id, relation_type, dst_node_id)",
         "CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_source ON kg_nodes(kg_build_id, node_type, source_pk)",
+        "CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_node ON kg_nodes(kg_build_id, node_type, node_id)",
+        "CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_table_node ON kg_nodes(kg_build_id, node_type, source_table, node_id)",
         "CREATE INDEX IF NOT EXISTS idx_standardized_facts_qa_series ON standardized_facts(build_id, metric_id, entity_id, fiscal_year, fiscal_quarter, period_end)",
         "CREATE INDEX IF NOT EXISTS idx_qa_builds_kg_status ON qa_builds(kg_build_id, status)",
         "CREATE UNIQUE INDEX IF NOT EXISTS uq_one_approved_mining_run_per_kg ON qa_pattern_mining_runs(kg_build_id) WHERE status = 'approved_for_qa'",
@@ -423,6 +427,8 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "mining_run_id": "TEXT",
             "pattern_catalog_release_id": "TEXT",
             "template_manifest_hash": "TEXT",
+            "question_parser_version": "TEXT",
+            "question_parser_manifest_hash": "TEXT",
             "pattern_manifest_hash": "TEXT",
             "operator_manifest_hash": "TEXT",
             "difficulty_policy_hash": "TEXT",
@@ -520,7 +526,15 @@ def ensure_qa_schema(db: DBProtocol) -> None:
     for table, columns in migrations.items():
         for column, column_type in columns.items():
             try:
-                db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
+                if postgres:
+                    db.execute(
+                        f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS "
+                        f"{column} {column_type}"
+                    )
+                else:
+                    db.execute(
+                        f"ALTER TABLE {table} ADD COLUMN {column} {column_type}"
+                    )
             except Exception as exc:
                 message = str(exc).lower()
                 if (

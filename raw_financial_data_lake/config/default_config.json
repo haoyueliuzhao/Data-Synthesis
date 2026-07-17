@@ -332,6 +332,8 @@
       "minimum_heldout_binding_pass_rate": 0.99,
       "require_manual_review": false,
       "max_candidates_per_proposal": 10,
+      "compiled_graph_scan_rows": 5000,
+      "compiled_graph_evaluation_rows": 5000,
       "compiled_scan_rows_per_metric": 0,
       "compiled_scan_multiplier": 20,
       "compiled_max_per_stratum": 4,

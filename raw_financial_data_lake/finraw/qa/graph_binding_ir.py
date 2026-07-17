@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import heapq
 import json
-from collections import defaultdict
+import re
+from collections import Counter, defaultdict
 from typing import Any
 
 from finraw.qa.comparability import fact_frequency, period_label
@@ -10,6 +12,14 @@ from finraw.qa.store import chunks, json_value
 
 
 LITERAL_BINDING_KEY = "__literal__"
+GRAPH_ROOT_SAMPLING_VERSION = "2"
+GRAPH_SCAN_STRATUM_FIELDS = (
+    "node_type",
+    "source",
+    "entity_type",
+    "year_bucket",
+    "relation_density",
+)
 
 
 def scan_pinned_graph_nodes(state: Any, operation: dict[str, Any]) -> None:
@@ -17,27 +27,25 @@ def scan_pinned_graph_nodes(state: Any, operation: dict[str, Any]) -> None:
     role = _required_text(operation, "role")
     node_type = _required_text(operation, "node_type")
     predicates = [
-        "kg_build_id = ?",
-        "node_type = ?",
-        "COALESCE(is_active, TRUE) = TRUE",
+        "n.kg_build_id = ?",
+        "n.node_type = ?",
+        "COALESCE(n.is_active, 1) = 1",
     ]
     parameters: list[Any] = [state.kg["kg_build_id"], node_type]
     source_table = operation.get("source_table")
     if source_table:
-        predicates.append("source_table = ?")
+        predicates.append("n.source_table = ?")
         parameters.append(str(source_table))
-    limit = int(
-        operation.get("limit")
-        or state.plan.get("sampling", {}).get("graph_scan_rows")
-        or state.policy.get("compiled_graph_scan_rows", 5000)
+    limit = _graph_scan_limit(state, operation)
+    evaluation_limit = _graph_evaluation_limit(state, operation)
+    rows, audit = _scan_graph_roots(
+        state,
+        predicates,
+        parameters,
+        limit=limit,
+        evaluation_limit=evaluation_limit,
     )
-    rows = state.db.fetchall(
-        "SELECT node_id, stable_node_id, node_type, source_table, source_pk, "
-        "properties_json FROM kg_nodes WHERE "
-        + " AND ".join(predicates)
-        + " ORDER BY stable_node_id, node_id LIMIT ?",
-        (*parameters, limit),
-    )
+    state.graph_scan_audit = audit
     state.relation = [
         {
             "roles": {role: _node(dict(row))},
@@ -47,11 +55,311 @@ def scan_pinned_graph_nodes(state: Any, operation: dict[str, Any]) -> None:
         for row in rows
     ]
     state.candidate_limit = max(
-        len(state.relation),
+        int(getattr(state, "limit", 0)),
         int(state.policy["max_candidates_per_proposal"])
         * int(state.policy["compiled_scan_multiplier"]),
     )
     state.relation_kind = "graph_rows"
+
+
+def _graph_scan_limit(state: Any, operation: dict[str, Any]) -> int:
+    candidates = (
+        (operation, "limit"),
+        (state.plan.get("sampling", {}), "graph_scan_rows"),
+        (state.policy, "compiled_graph_scan_rows"),
+    )
+    for container, key in candidates:
+        if key in container and container[key] is not None:
+            return max(int(container[key]), 0)
+    return 5000
+
+
+def _graph_evaluation_limit(state: Any, operation: dict[str, Any]) -> int:
+    candidates = (
+        (operation, "evaluation_limit"),
+        (state.plan.get("sampling", {}), "graph_evaluation_rows"),
+        (state.policy, "compiled_graph_evaluation_rows"),
+    )
+    for container, key in candidates:
+        if key in container and container[key] is not None:
+            return max(int(container[key]), 0)
+    return 0
+
+
+def _scan_graph_roots(
+    state: Any,
+    predicates: list[str],
+    parameters: list[Any],
+    *,
+    limit: int,
+    evaluation_limit: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    count_row = state.db.fetchone(
+        "SELECT COUNT(*) AS root_count FROM kg_nodes n WHERE "
+        + " AND ".join(predicates),
+        parameters,
+    )
+    total_root_count = int(count_row["root_count"] if count_row else 0)
+    full_scan = limit == 0
+    selection_limit = evaluation_limit if full_scan else limit
+    materialize_all = full_scan and selection_limit == 0
+    entity_types = _graph_entity_types(state)
+    global_heap: list[tuple[int, str, dict[str, Any]]] = []
+    stratum_representatives: dict[
+        str, tuple[int, str, dict[str, Any]]
+    ] = {}
+    stratum_details: dict[str, dict[str, str]] = {}
+    stratum_totals: Counter[str] = Counter()
+    all_rows: list[dict[str, Any]] = []
+
+    for row in _graph_root_pages(state, predicates, parameters):
+        item = dict(row)
+        stratum_key, stratum = _graph_root_stratum(item, entity_types)
+        stratum_totals[stratum_key] += 1
+        stratum_details[stratum_key] = stratum
+        if materialize_all:
+            all_rows.append(item)
+            continue
+        score = _graph_root_score(item)
+        heap_item = (-score, str(item["node_id"]), item)
+        if len(global_heap) < selection_limit:
+            heapq.heappush(global_heap, heap_item)
+        elif score < -global_heap[0][0]:
+            heapq.heapreplace(global_heap, heap_item)
+        current = stratum_representatives.get(stratum_key)
+        if current is None or (score, str(item["node_id"])) < (
+            current[0],
+            current[1],
+        ):
+            stratum_representatives[stratum_key] = (
+                score,
+                str(item["node_id"]),
+                item,
+            )
+
+    if materialize_all:
+        selected = all_rows
+        selection_method = "full"
+    else:
+        representatives = sorted(
+            stratum_representatives.items(),
+            key=lambda value: (
+                _stable_hash_score("stratum", value[0]),
+                value[0],
+            ),
+        )
+        selected = [value[1][2] for value in representatives[:selection_limit]]
+        selected_ids = {str(row["node_id"]) for row in selected}
+        global_rows = sorted(
+            global_heap,
+            key=lambda value: (-value[0], value[1]),
+        )
+        for _, node_id, row in global_rows:
+            if len(selected) >= selection_limit:
+                break
+            if node_id not in selected_ids:
+                selected.append(row)
+                selected_ids.add(node_id)
+        selection_method = (
+            "full_scan_deterministic_hash_stratified_evaluation"
+            if full_scan
+            else "deterministic_hash_stratified"
+        )
+
+    selected_strata = Counter(
+        _graph_root_stratum(row, entity_types)[0] for row in selected
+    )
+    stratum_coverage = [
+        {
+            **stratum_details[key],
+            "total_root_count": count,
+            "scanned_root_count": count if full_scan else selected_strata.get(key, 0),
+            "coverage_rate": (
+                1.0
+                if full_scan or not count
+                else selected_strata.get(key, 0) / count
+            ),
+            "evaluated_root_count": selected_strata.get(key, 0),
+            "evaluation_coverage_rate": (
+                selected_strata.get(key, 0) / count if count else 1.0
+            ),
+        }
+        for key, count in sorted(stratum_totals.items())
+    ]
+    scanned_root_count = total_root_count if full_scan else len(selected)
+    evaluated_root_count = len(selected)
+    total_stratum_count = len(stratum_totals)
+    scanned_stratum_count = sum(bool(value) for value in selected_strata.values())
+    return selected, {
+        "scan_mode": "full" if full_scan else "bounded",
+        "selection_method": selection_method,
+        "sampling_version": GRAPH_ROOT_SAMPLING_VERSION,
+        "configured_limit": limit,
+        "configured_evaluation_limit": evaluation_limit,
+        "stratum_dimensions": list(GRAPH_SCAN_STRATUM_FIELDS),
+        "total_root_count": total_root_count,
+        "scanned_root_count": scanned_root_count,
+        "root_coverage_rate": (
+            scanned_root_count / total_root_count if total_root_count else 1.0
+        ),
+        "evaluated_root_count": evaluated_root_count,
+        "evaluation_coverage_rate": (
+            evaluated_root_count / total_root_count if total_root_count else 1.0
+        ),
+        "total_stratum_count": total_stratum_count,
+        "scanned_stratum_count": scanned_stratum_count,
+        "stratum_coverage_rate": (
+            scanned_stratum_count / total_stratum_count
+            if total_stratum_count
+            else 1.0
+        ),
+        "stratum_coverage": stratum_coverage,
+    }
+
+
+def _graph_root_pages(
+    state: Any,
+    predicates: list[str],
+    parameters: list[Any],
+    *,
+    page_size: int = 2000,
+) -> Any:
+    cursor: str | None = None
+    while True:
+        page_predicates = list(predicates)
+        page_parameters = list(parameters)
+        if cursor is not None:
+            page_predicates.append("n.node_id > ?")
+            page_parameters.append(cursor)
+        rows = state.db.fetchall(
+            "SELECT n.node_id, n.stable_node_id, n.node_type, "
+            "n.source_table, n.source_pk, n.properties_json "
+            "FROM kg_nodes n WHERE "
+            + " AND ".join(page_predicates)
+            + " ORDER BY n.node_id LIMIT ?",
+            (*page_parameters, page_size),
+        )
+        if not rows:
+            break
+        node_ids = [str(row["node_id"]) for row in rows]
+        placeholders = ",".join("?" for _ in node_ids)
+        density_rows = state.db.fetchall(
+            "SELECT e.src_node_id, COUNT(*) AS relation_density "
+            "FROM kg_edges e WHERE e.kg_build_id = ? "
+            f"AND e.src_node_id IN ({placeholders}) "
+            "AND COALESCE(e.is_active, 1) = 1 GROUP BY e.src_node_id",
+            (state.kg["kg_build_id"], *node_ids),
+        )
+        density_by_node = {
+            str(row["src_node_id"]): int(row["relation_density"] or 0)
+            for row in density_rows
+        }
+        for row in rows:
+            item = dict(row)
+            item["relation_density"] = density_by_node.get(
+                str(item["node_id"]), 0
+            )
+            yield item
+        cursor = str(rows[-1]["node_id"])
+        if len(rows) < page_size:
+            break
+
+
+def _graph_root_stratum(
+    row: dict[str, Any],
+    entity_types: dict[str, str] | None = None,
+) -> tuple[str, dict[str, str]]:
+    properties = json_value(row.get("properties_json"), {})
+    source = str(
+        properties.get("source_id")
+        or properties.get("scope_source")
+        or row.get("source_table")
+        or "unknown"
+    )
+    entity_type = str(
+        properties.get("entity_type")
+        or (entity_types or {}).get(str(properties.get("entity_id") or ""))
+        or properties.get("financial_scope_type")
+        or "unknown"
+    )
+    year = _graph_root_year(properties)
+    year_bucket = (
+        f"{(year // 5) * 5}-{(year // 5) * 5 + 4}"
+        if year is not None
+        else "unknown"
+    )
+    density = int(row.get("relation_density") or 0)
+    stratum = {
+        "node_type": str(row.get("node_type") or "unknown"),
+        "source": source,
+        "entity_type": entity_type,
+        "year_bucket": year_bucket,
+        "relation_density": _relation_density_bucket(density),
+    }
+    return json.dumps(stratum, sort_keys=True, separators=(",", ":")), stratum
+
+
+def _graph_entity_types(state: Any) -> dict[str, str]:
+    entity_build_id = state.kg.get("input_entity_build_id")
+    if not entity_build_id:
+        return {}
+    rows = state.db.fetchall(
+        "SELECT entity_id, entity_type FROM canonical_entities "
+        "WHERE build_id = ? AND COALESCE(is_active, 1) = 1",
+        (entity_build_id,),
+    )
+    return {
+        str(row["entity_id"]): str(row["entity_type"] or "unknown")
+        for row in rows
+        if row["entity_id"]
+    }
+
+
+def _graph_root_year(properties: dict[str, Any]) -> int | None:
+    time_scope = json_value(properties.get("time_scope"), {})
+    values = [
+        properties.get("calendar_year"),
+        properties.get("fiscal_year"),
+        properties.get("year"),
+        properties.get("period_end"),
+        properties.get("as_of_date"),
+        time_scope.get("year"),
+        time_scope.get("derived_year"),
+        time_scope.get("end_year"),
+        time_scope.get("period_end"),
+    ]
+    for value in values:
+        match = re.search(r"(?<!\d)((?:19|20)\d{2})(?!\d)", str(value or ""))
+        if match:
+            return int(match.group(1))
+    return None
+
+
+def _relation_density_bucket(value: int) -> str:
+    if value <= 0:
+        return "0"
+    if value == 1:
+        return "1"
+    if value <= 3:
+        return "2-3"
+    if value <= 7:
+        return "4-7"
+    if value <= 15:
+        return "8-15"
+    return "16+"
+
+
+def _stable_hash_score(*parts: Any) -> int:
+    payload = json.dumps(parts, sort_keys=True, default=str, separators=(",", ":"))
+    return int(hashlib.sha256(payload.encode("utf-8")).hexdigest(), 16)
+
+
+def _graph_root_score(row: dict[str, Any]) -> int:
+    stable_identity = str(
+        row.get("stable_node_id")
+        or f"{row.get('source_table')}:{row.get('source_pk')}"
+    )
+    return _stable_hash_score(GRAPH_ROOT_SAMPLING_VERSION, stable_identity)
 
 
 def expand_graph_edges(state: Any, operation: dict[str, Any]) -> None:
@@ -98,8 +406,8 @@ def expand_graph_edges(state: Any, operation: dict[str, Any]) -> None:
             f"AND n.node_id = e.{target_column} "
             f"WHERE e.kg_build_id = ? AND e.{source_column} IN ({source_placeholders}) "
             f"AND e.relation_type IN ({relation_placeholders}) "
-            "AND COALESCE(e.is_active, TRUE) = TRUE "
-            "AND COALESCE(n.is_active, TRUE) = TRUE "
+            "AND COALESCE(e.is_active, 1) = 1 "
+            "AND COALESCE(n.is_active, 1) = 1 "
             f"ORDER BY e.{source_column}, e.relation_type, e.edge_id",
             [state.kg["kg_build_id"], *batch, *relation_types],
         )
@@ -305,8 +613,8 @@ def _load_facts(
             f"AND ce.entity_id = sf.entity_id "
             f"JOIN metrics m ON m.build_id = ? AND m.metric_id = sf.metric_id "
             f"WHERE sf.build_id = ? AND sf.fact_id IN ({placeholders}) "
-            "AND COALESCE(sf.graph_ready, FALSE) = TRUE "
-            "AND COALESCE(sf.is_forecast, FALSE) = FALSE",
+            "AND COALESCE(sf.graph_ready, 0) = 1 "
+            "AND COALESCE(sf.is_forecast, 0) = 0",
             [
                 state.kg["input_entity_build_id"],
                 state.kg["input_metric_build_id"],

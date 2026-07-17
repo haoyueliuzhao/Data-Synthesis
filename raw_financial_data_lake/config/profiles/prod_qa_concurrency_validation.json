@@ -1,0 +1,30 @@
+{
+  "metadata_backend": {
+    "type": "postgres",
+    "dsn_env": "DATABASE_URL",
+    "postgres_schema": "./sql/postgres_schema.sql",
+    "dsn": "postgresql:///finraw"
+  },
+  "qa": {
+    "pattern_mining": {
+      "enabled": true,
+      "auto_run": false,
+      "auto_approve_for_qa": false,
+      "families": [
+        "cross_metric_comparison"
+      ],
+      "graph_native_mining_enabled": false,
+      "graph_native_proposals_enabled": false,
+      "max_metrics": 24,
+      "rows_per_metric": 1000,
+      "pool_scan_rows_per_metric": 1000,
+      "min_support": 1,
+      "min_total_score": 0,
+      "max_proposals": 10,
+      "max_bindings_per_proposal": 3,
+      "max_heldout_bindings": 3,
+      "minimum_heldout_bindings": 1,
+      "require_manual_review": false
+    }
+  }
+}

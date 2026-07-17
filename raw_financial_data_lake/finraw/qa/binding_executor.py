@@ -218,7 +218,7 @@ def execute_compiled_bindings(
             metric_fact_cache.snapshot() if metric_fact_cache is not None else {}
         )
         audit_hashes = {
-            _digest(binding)
+            _binding_hash(binding)
             for key in ("binding_examples", "heldout_bindings")
             for binding in json_value(proposal.get(key), [])
         }
@@ -316,7 +316,16 @@ def execute_compiled_bindings(
                 {tuple(item["sampling_stratum"]) for item in selected}
             ),
             "candidate_record_count": execution_valid,
+            "prevalidation_selected_count": (
+                execution_state.prevalidation_selected_count
+            ),
+            "prevalidation_coverage_rate": (
+                execution_state.prevalidation_selected_count / discovered
+                if discovered
+                else 1.0
+            ),
             "operator_trace": execution_state.operator_trace,
+            "graph_root_scan": execution_state.graph_scan_audit,
             "rejection_counts": dict(sorted(execution_state.rejection_counts.items())),
             "metric_fact_cache": (
                 metric_fact_cache.delta(cache_before)
@@ -337,7 +346,10 @@ def execute_compiled_bindings(
                 semantic_valid,
                 execution_valid,
                 len(selected),
-                max(discovered - execution_valid, 0),
+                max(
+                    execution_state.prevalidation_selected_count - execution_valid,
+                    0,
+                ),
                 _db_json(db, summary),
                 compilation_id,
             ),
@@ -382,8 +394,10 @@ class RelationalExecutionState:
     discovered_count: int = 0
     semantic_valid_count: int = 0
     execution_valid_count: int = 0
+    prevalidation_selected_count: int = 0
     rejection_counts: dict[str, int] = field(default_factory=lambda: defaultdict(int))
     operator_trace: list[dict[str, Any]] = field(default_factory=list)
+    graph_scan_audit: dict[str, Any] = field(default_factory=dict)
 
 
 def execute_relational_ops(
@@ -517,7 +531,7 @@ def _op_scan_pinned_fact_nodes(
     state.facts = facts
     state.metrics = metrics
     state.candidate_limit = max(
-        len(facts),
+        state.limit,
         int(state.policy["max_candidates_per_proposal"])
         * int(state.policy["compiled_scan_multiplier"]),
     )
@@ -800,7 +814,9 @@ def _op_semantic_constraint_gate(
     fact_map = {str(fact["fact_id"]): fact for fact in state.facts}
     semantic_policy = comparability_policy(state.policy.get("semantic_policy"))
     accepted: list[dict[str, Any]] = []
-    for binding in state.relation:
+    validation_bindings = _prevalidation_sample(state, state.relation)
+    state.prevalidation_selected_count = len(validation_bindings)
+    for binding in validation_bindings:
         bound_facts = [
             fact_map[str(fact_id)]
             for fact_id in binding.get("fact_ids") or []
@@ -853,7 +869,7 @@ def _op_deterministic_stratified_sample(
     stratum_fields = list(state.plan.get("sampling", {}).get("stratum_fields") or [])
     candidates = []
     for binding in state.relation:
-        binding_hash = _digest(binding)
+        binding_hash = _binding_hash(binding)
         candidates.append(
             {
                 "binding": binding,
@@ -886,8 +902,34 @@ def _emit_candidates(
     candidates: list[dict[str, Any]],
 ) -> None:
     state.discovered_count += len(candidates)
-    state.relation = candidates[: state.candidate_limit]
+    state.relation = candidates
     state.relation_kind = "binding_candidates"
+
+
+def _prevalidation_sample(
+    state: RelationalExecutionState,
+    bindings: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    if len(bindings) <= state.candidate_limit:
+        return list(bindings)
+    stratum_fields = list(state.plan.get("sampling", {}).get("stratum_fields") or [])
+    candidates = [
+        {
+            "binding": binding,
+            "binding_hash": _binding_hash(binding),
+            "sampling_stratum": _sampling_stratum(binding, stratum_fields),
+            "audit_example_overlap": _binding_hash(binding) in state.audit_hashes,
+        }
+        for binding in bindings
+    ]
+    return [
+        item["binding"]
+        for item in _stratified_sample(
+            candidates,
+            state.candidate_limit,
+            state.candidate_limit,
+        )
+    ]
 
 
 def _group_value(fact: dict[str, Any], field: str) -> Any:
@@ -1255,6 +1297,15 @@ def _digest(value: Any) -> str:
         value, ensure_ascii=True, sort_keys=True, separators=(",", ":"), default=str
     )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _binding_hash(binding: dict[str, Any]) -> str:
+    semantic_payload = {
+        key: value
+        for key, value in binding.items()
+        if key not in {"graph_node_ids", "graph_edge_ids", "graph_edges"}
+    }
+    return _digest(semantic_payload)
 
 
 def _now() -> str:

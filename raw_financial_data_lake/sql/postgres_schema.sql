@@ -587,6 +587,8 @@ CREATE TABLE IF NOT EXISTS kg_nodes (
     created_at           TEXT DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type ON kg_nodes(kg_build_id, node_type);
+CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_node ON kg_nodes(kg_build_id, node_type, node_id);
+CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_table_node ON kg_nodes(kg_build_id, node_type, source_table, node_id);
 CREATE INDEX IF NOT EXISTS idx_kg_nodes_build_type_source ON kg_nodes(kg_build_id, node_type, source_pk);
 CREATE INDEX IF NOT EXISTS idx_kg_nodes_stable ON kg_nodes(stable_node_id);
 CREATE TABLE IF NOT EXISTS kg_edges (
@@ -654,6 +656,8 @@ CREATE TABLE IF NOT EXISTS qa_builds (
             document_build_id TEXT,
             config_hash TEXT,
             template_manifest_hash TEXT,
+            question_parser_version TEXT,
+            question_parser_manifest_hash TEXT,
             pattern_manifest_hash TEXT,
             operator_manifest_hash TEXT,
             difficulty_policy_hash TEXT,

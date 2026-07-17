@@ -6,15 +6,26 @@ from datetime import datetime, timezone
 from typing import Any
 
 from finraw.db.client import DBProtocol
+from finraw.fact_standardization import (
+    TIME_NORMALIZATION_VERSION,
+    UNIT_NORMALIZATION_VERSION,
+)
+from finraw.qa.comparability import comparability_policy
+from finraw.qa.operators import operation_operator_manifest
 from finraw.qa.pattern_mining import (
     get_approved_mining_run,
     load_published_proposals,
 )
 from finraw.qa.schema import ensure_qa_schema
+from finraw.qa.semantic_constraints import semantic_operator_manifest
 from finraw.qa.store import insert_rows, json_value
+from finraw.source_definitions import (
+    SEASONAL_ADJUSTMENT_POLICY_VERSION,
+    SOURCE_DEFINITION_SCHEMA_VERSION,
+)
 
 
-CATALOG_VERSION = "1.1.0"
+CATALOG_VERSION = "1.2.0"
 
 _ENTRY_JSON_COLUMNS = {
     "pattern_spec",
@@ -30,6 +41,38 @@ _METRIC_COMPATIBILITY_FIELDS = (
     "period_type",
     "aggregation_rule",
 )
+_RUNTIME_COMPATIBILITY_FIELDS = (
+    "semantic_operator_manifest_hash",
+    "operation_operator_manifest_hash",
+    "comparability_policy_hash",
+    "unit_normalization_version",
+    "time_normalization_version",
+    "source_definition_schema_version",
+    "seasonal_adjustment_policy_version",
+)
+
+
+def catalog_runtime_contract(
+    comparability_config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the deployment-independent semantic runtime contract."""
+    effective_policy = comparability_policy(comparability_config)
+    semantic_manifest = semantic_operator_manifest()
+    operation_manifest = operation_operator_manifest()
+    return {
+        "semantic_operator_manifest_hash": _digest(semantic_manifest),
+        "operation_operator_manifest_hash": _digest(operation_manifest),
+        "comparability_policy_hash": _digest(effective_policy),
+        "unit_normalization_version": UNIT_NORMALIZATION_VERSION,
+        "time_normalization_version": TIME_NORMALIZATION_VERSION,
+        "source_definition_schema_version": SOURCE_DEFINITION_SCHEMA_VERSION,
+        "seasonal_adjustment_policy_version": (
+            SEASONAL_ADJUSTMENT_POLICY_VERSION
+        ),
+        "semantic_operator_manifest": semantic_manifest,
+        "operation_operator_manifest": operation_manifest,
+        "comparability_policy": effective_policy,
+    }
 
 
 def publish_mining_run_to_catalog(
@@ -71,6 +114,9 @@ def publish_mining_run_to_catalog(
         db,
         dict(source_kg_row),
         proposals,
+        catalog_runtime_contract(
+            json_value(run.get("notes"), {}).get("semantic_policy")
+        ),
     )
 
     release_id = "qacatrelease_" + _digest(
@@ -181,8 +227,14 @@ def load_pattern_catalog_release(
     compatibility_contract = json_value(
         release["catalog_manifest"].get("compatibility_contract"), {}
     )
-    if compatibility_contract.get("contract_version") != 1:
+    if compatibility_contract.get("contract_version") != 2:
         errors.append("catalog compatibility contract is missing or unsupported")
+    errors.extend(
+        _runtime_contract_payload_errors(
+            compatibility_contract,
+            prefix="catalog",
+        )
+    )
     expected_manifest = _catalog_manifest(
         catalog_release_id,
         str(release["source_mining_run_id"]),
@@ -231,10 +283,38 @@ def validate_catalog_target_compatibility(
     db: DBProtocol,
     release: dict[str, Any],
     target_kg: dict[str, Any],
+    *,
+    target_runtime_contract: dict[str, Any],
 ) -> dict[str, Any]:
     """Fail closed when a Catalog release cannot preserve its target semantics."""
     contract = json_value(release.get("compatibility_contract"), {})
     errors: list[str] = []
+    if contract.get("contract_version") != 2:
+        errors.append("catalog compatibility contract version must be 2")
+    errors.extend(_runtime_contract_payload_errors(contract, prefix="catalog"))
+    errors.extend(
+        _runtime_contract_payload_errors(
+            target_runtime_contract,
+            prefix="target",
+        )
+    )
+    runtime_mismatches: list[dict[str, Any]] = []
+    for field_name in _RUNTIME_COMPATIBILITY_FIELDS:
+        expected_value = contract.get(field_name)
+        observed_value = target_runtime_contract.get(field_name)
+        if expected_value != observed_value:
+            runtime_mismatches.append(
+                {
+                    "field": field_name,
+                    "expected": expected_value,
+                    "observed": observed_value,
+                }
+            )
+    if runtime_mismatches:
+        errors.append(
+            "target semantic runtime mismatch: "
+            + ", ".join(item["field"] for item in runtime_mismatches)
+        )
     scan_kinds = sorted(str(value) for value in contract.get("scan_kinds") or [])
     unsupported_scan_kinds = sorted(set(scan_kinds) - {"fact", "graph"})
     if unsupported_scan_kinds:
@@ -313,6 +393,15 @@ def validate_catalog_target_compatibility(
         "required_metric_ids": required_metric_ids,
         "missing_metric_ids": missing_metrics,
         "metric_mismatches": metric_mismatches,
+        "runtime_contract": {
+            field_name: contract.get(field_name)
+            for field_name in _RUNTIME_COMPATIBILITY_FIELDS
+        },
+        "target_runtime_contract": {
+            field_name: target_runtime_contract.get(field_name)
+            for field_name in _RUNTIME_COMPATIBILITY_FIELDS
+        },
+        "runtime_mismatches": runtime_mismatches,
         "status": "passed" if not errors else "failed",
         "errors": errors,
     }
@@ -329,6 +418,7 @@ def _build_compatibility_contract(
     db: DBProtocol,
     source_kg: dict[str, Any],
     proposals: list[dict[str, Any]],
+    runtime_contract: dict[str, Any],
 ) -> dict[str, Any]:
     specs = [json_value(proposal.get("pattern_spec"), {}) for proposal in proposals]
     metric_ids = sorted(
@@ -359,7 +449,7 @@ def _build_compatibility_contract(
         json_value(spec.get("binding_query"), {}) for spec in specs
     ]
     return {
-        "contract_version": 1,
+        "contract_version": 2,
         "graph_schema_version": str(source_kg.get("graph_schema_version") or ""),
         "scan_kinds": sorted(
             {str(query.get("scan_kind") or "fact") for query in binding_queries}
@@ -377,7 +467,43 @@ def _build_compatibility_contract(
             }
             for metric_id in metric_ids
         ],
+        **runtime_contract,
     }
+
+
+def _runtime_contract_payload_errors(
+    contract: dict[str, Any],
+    *,
+    prefix: str,
+) -> list[str]:
+    errors: list[str] = []
+    payloads = (
+        (
+            "semantic_operator_manifest",
+            "semantic_operator_manifest_hash",
+        ),
+        (
+            "operation_operator_manifest",
+            "operation_operator_manifest_hash",
+        ),
+        ("comparability_policy", "comparability_policy_hash"),
+    )
+    for payload_field, hash_field in payloads:
+        payload = contract.get(payload_field)
+        observed_hash = str(contract.get(hash_field) or "")
+        if not isinstance(payload, dict):
+            errors.append(f"{prefix} {payload_field} is missing")
+        elif observed_hash != _digest(payload):
+            errors.append(f"{prefix} {hash_field} does not match its payload")
+    for field_name in (
+        "unit_normalization_version",
+        "time_normalization_version",
+        "source_definition_schema_version",
+        "seasonal_adjustment_policy_version",
+    ):
+        if not str(contract.get(field_name) or "").strip():
+            errors.append(f"{prefix} {field_name} is missing")
+    return errors
 
 
 def _pattern_metric_ids(spec: dict[str, Any]) -> list[str]:
@@ -458,7 +584,7 @@ def _catalog_entry(
 
 
 def _entry_hash_payload(entry: dict[str, Any]) -> dict[str, Any]:
-    return {
+    payload = {
         key: entry.get(key)
         for key in (
             "catalog_entry_id",
@@ -490,9 +616,20 @@ def _entry_hash_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "heldout_binding_pass_rate",
             "static_pattern_overlap",
             "status",
-            "published_at",
         )
     }
+    payload["published_at"] = _canonical_timestamp(entry.get("published_at"))
+    return payload
+
+
+def _canonical_timestamp(value: Any) -> str:
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc).isoformat()
 
 
 def _catalog_manifest(
@@ -504,7 +641,7 @@ def _catalog_manifest(
     entries: list[dict[str, Any]],
 ) -> dict[str, Any]:
     return {
-        "manifest_version": 1,
+        "manifest_version": 2,
         "catalog_version": CATALOG_VERSION,
         "catalog_release_id": release_id,
         "source_mining_run_id": source_mining_run_id,

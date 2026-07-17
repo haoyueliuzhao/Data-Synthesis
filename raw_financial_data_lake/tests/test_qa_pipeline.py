@@ -22,6 +22,12 @@ from finraw.qa.pipeline import (
     build_qa,
     split_qa_samples,
 )
+from finraw.qa.templates import TEMPLATES
+from finraw.qa.verbalizer import (
+    QUESTION_PARSER_VERSION,
+    question_parser_manifest,
+    question_parser_manifest_hash,
+)
 
 
 DERIVED_TYPES = [
@@ -376,11 +382,25 @@ def test_build_validate_split_and_export_qa(tmp_path):
     assert report["split"]["passed_sample_count"] == 1
     assert report["split"]["build_gate_status"] == "passed"
     qa_build_id = report["qa_build_id"]
-    build_row = dict(db.fetchone("SELECT notes FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,)))
+    build_row = dict(
+        db.fetchone(
+            "SELECT notes, question_parser_version, "
+            "question_parser_manifest_hash FROM qa_builds WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    )
     build_notes = json.loads(build_row["notes"])
     assert build_notes["generation"] == "graph_path_driven_deterministic"
     assert build_notes["generator_version"]
     assert build_notes["template_manifest_hash"]
+    assert build_row["question_parser_version"] == QUESTION_PARSER_VERSION
+    assert build_row["question_parser_manifest_hash"] == (
+        question_parser_manifest_hash(TEMPLATES)
+    )
+    assert build_notes["question_parser"] == {
+        **question_parser_manifest(TEMPLATES),
+        "question_parser_manifest_hash": question_parser_manifest_hash(TEMPLATES),
+    }
     assert "git_worktree_dirty" in build_notes
     assert build_notes["task_counts"] == {"single_fact": 1}
     assert build_notes["emitted_task_counts"] == {"single_fact": 1}
@@ -390,6 +410,13 @@ def test_build_validate_split_and_export_qa(tmp_path):
     assert sample["validation_status"] == "passed"
     assert sample["template_id"]
     assert sample["template_hash"]
+    parser_metadata = json.loads(sample["source_metadata"])["question_parser"]
+    assert parser_metadata["question_parser_version"] == QUESTION_PARSER_VERSION
+    assert parser_metadata["question_parser_manifest_hash"] == (
+        question_parser_manifest_hash(TEMPLATES)
+    )
+    assert parser_metadata["supported_language"] == sample["language"]
+    assert parser_metadata["supported_template_id"] == sample["template_id"]
     assert "Apple Inc." in sample["question"]
     assert float(json.loads(sample["answer_value"])["value"]) == 383285
     evidence = dict(

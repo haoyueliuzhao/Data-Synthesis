@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -10,6 +11,8 @@ from typing import Any, Protocol
 
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
+QUESTION_PARSER_VERSION = "1.0.0"
+QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh")
 
 _TONE_PREFIXES = {
     "neutral": "",
@@ -100,6 +103,14 @@ _RANK_ASC_PATTERN = re.compile(
     r"\b(?:bottom|lowest|smallest|least|ascending)\b|最低|最小|升序|后\s*\d+",
     re.IGNORECASE,
 )
+_EXTREME_MAX_PATTERN = re.compile(
+    r"\b(?:peak|highest|maximum|max)\b|最高|最大|峰值",
+    re.IGNORECASE,
+)
+_EXTREME_MIN_PATTERN = re.compile(
+    r"\b(?:trough|lowest|minimum|min)\b|最低|最小|谷值",
+    re.IGNORECASE,
+)
 _TOP_K_PATTERNS = (
     re.compile(r"\b(?:top|bottom|first|last)\s+(\d+)\b", re.IGNORECASE),
     re.compile(
@@ -108,6 +119,88 @@ _TOP_K_PATTERNS = (
     ),
     re.compile(r"(?:前|后)\s*(\d+)"),
 )
+
+
+def question_parser_manifest(templates: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return the immutable parser/template compatibility contract."""
+    supported_languages = list(QUESTION_PARSER_SUPPORTED_LANGUAGES)
+    template_contracts = sorted(
+        (
+            {
+                "template_id": str(template["template_id"]),
+                "language": str(template.get("language") or ""),
+                "task_family": str(template.get("task_family") or ""),
+                "required_slots": sorted(
+                    str(slot) for slot in template.get("required_slots") or []
+                ),
+            }
+            for template in templates
+            if str(template.get("language") or "") in supported_languages
+        ),
+        key=lambda item: item["template_id"],
+    )
+    supported_template_ids = [item["template_id"] for item in template_contracts]
+    all_template_ids = sorted(str(item["template_id"]) for item in templates)
+    return {
+        "manifest_version": 1,
+        "question_parser_version": QUESTION_PARSER_VERSION,
+        "supported_languages": supported_languages,
+        "supported_template_ids": supported_template_ids,
+        "unsupported_template_ids": sorted(
+            set(all_template_ids) - set(supported_template_ids)
+        ),
+        "template_contracts": template_contracts,
+        "semantic_capabilities": [
+            "comparison_near_threshold",
+            "extreme_direction",
+            "operator_order",
+            "rank_direction",
+            "slot_presence",
+            "top_k",
+        ],
+        "comparison_lexemes": dict(sorted(_COMPARISON_LEXEMES.items())),
+        "regex_contract": {
+            "comparison": _COMPARISON_PATTERN.pattern,
+            "number": _NUMBER_PATTERN.pattern,
+            "observable_operators": {
+                key: pattern.pattern
+                for key, pattern in sorted(_OBSERVABLE_OPERATOR_PATTERNS.items())
+            },
+            "rank_ascending": _RANK_ASC_PATTERN.pattern,
+            "rank_descending": _RANK_DESC_PATTERN.pattern,
+            "extreme_maximum": _EXTREME_MAX_PATTERN.pattern,
+            "extreme_minimum": _EXTREME_MIN_PATTERN.pattern,
+            "top_k": [pattern.pattern for pattern in _TOP_K_PATTERNS],
+        },
+    }
+
+
+def question_parser_manifest_hash(templates: list[dict[str, Any]]) -> str:
+    payload = json.dumps(
+        question_parser_manifest(templates),
+        ensure_ascii=True,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def validate_question_parser_support(
+    template: dict[str, Any], manifest: dict[str, Any]
+) -> dict[str, Any]:
+    language = str(template.get("language") or "")
+    template_id = str(template.get("template_id") or "")
+    errors = []
+    if language not in set(manifest.get("supported_languages") or []):
+        errors.append("unsupported_language")
+    if template_id not in set(manifest.get("supported_template_ids") or []):
+        errors.append("unsupported_template_id")
+    return {
+        "passed": not errors,
+        "template_id": template_id,
+        "language": language,
+        "errors": errors,
+    }
 
 
 class QuestionProvider(Protocol):
@@ -593,20 +686,8 @@ def _rank_direction(question: str) -> str | None:
 
 
 def _extreme_direction(question: str) -> str | None:
-    maximum = bool(
-        re.search(
-            r"\b(?:peak|highest|maximum|max)\b|最高|最大|峰值",
-            question,
-            re.IGNORECASE,
-        )
-    )
-    minimum = bool(
-        re.search(
-            r"\b(?:trough|lowest|minimum|min)\b|最低|最小|谷值",
-            question,
-            re.IGNORECASE,
-        )
-    )
+    maximum = bool(_EXTREME_MAX_PATTERN.search(question))
+    minimum = bool(_EXTREME_MIN_PATTERN.search(question))
     if maximum == minimum:
         return None
     return "max" if maximum else "min"

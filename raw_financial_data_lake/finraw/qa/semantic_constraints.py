@@ -15,6 +15,9 @@ from finraw.qa.comparability import (
 )
 
 
+SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.1.0"
+
+
 @dataclass(frozen=True)
 class SemanticValidationResult:
     passed: bool
@@ -122,15 +125,33 @@ def validate_semantic_constraints(
     check("comparability_level", not blocked_ids, blocked_ids, [])
 
     if comparability_policy.get("require_same_source", True):
-        _same_value_check(check, "source", rows, lambda row: row.get("source_id"))
+        _same_value_check(
+            check,
+            "source",
+            rows,
+            lambda row: row.get("source_id"),
+            allow_missing=_allows_missing(constraints, "source", "source_id"),
+        )
     if comparability_policy.get("require_same_time_basis", True) or (
         "time_basis", "same"
     ) in declared:
-        _same_value_check(check, "time_basis", rows, lambda row: row.get("time_basis"))
+        _same_value_check(
+            check,
+            "time_basis",
+            rows,
+            lambda row: row.get("time_basis"),
+            allow_missing=_allows_missing(constraints, "time_basis"),
+        )
     if comparability_policy.get("require_same_frequency", True) or (
         "frequency", "same"
     ) in declared:
-        _same_value_check(check, "frequency", rows, fact_frequency)
+        _same_value_check(
+            check,
+            "frequency",
+            rows,
+            lambda row: row.get("frequency"),
+            allow_missing=_allows_missing(constraints, "frequency"),
+        )
     if comparability_policy.get("require_same_seasonal_adjustment", True) or (
         "seasonal_adjustment", "same"
     ) in declared:
@@ -138,7 +159,12 @@ def validate_semantic_constraints(
             check,
             "seasonal_adjustment",
             rows,
-            lambda row: row.get("seasonal_adjustment"),
+            lambda row: _effective_seasonal_adjustment(
+                row, metric_ontology
+            ),
+            allow_missing=_allows_missing(
+                constraints, "seasonal_adjustment"
+            ),
         )
     if comparability_policy.get("require_same_vintage_policy", True) or (
         "vintage_policy", "same"
@@ -148,6 +174,7 @@ def validate_semantic_constraints(
             "vintage_policy",
             rows,
             lambda row: row.get("vintage_policy"),
+            allow_missing=_allows_missing(constraints, "vintage_policy"),
         )
     if comparability_policy.get("require_same_financial_scope", True) or any(
         field == "financial_scope" for field, _ in declared
@@ -171,7 +198,11 @@ def validate_semantic_constraints(
 
     if comparability_policy.get("require_same_entity_type", True):
         _same_value_check(
-            check, "entity_type", rows, lambda row: row.get("entity_type")
+            check,
+            "entity_type",
+            rows,
+            lambda row: row.get("entity_type"),
+            allow_missing=_allows_missing(constraints, "entity_type"),
         )
 
     context = SemanticConstraintContext(
@@ -260,9 +291,31 @@ def _same_value_check(
     name: str,
     rows: list[dict[str, Any]],
     getter: Any,
+    *,
+    allow_missing: bool = False,
 ) -> None:
     values = sorted({_normalise(getter(row)) for row in rows})
-    check(f"same_{name}", len(values) <= 1, values, "one compatibility class")
+    nonempty = bool(values) and values != [""]
+    check(
+        f"same_{name}",
+        len(values) == 1 and (nonempty or allow_missing),
+        values,
+        "one compatibility class"
+        + ("; missing allowed" if allow_missing else "; non-empty"),
+    )
+
+
+def _allows_missing(
+    constraints: Iterable[Mapping[str, Any]],
+    *field_names: str,
+) -> bool:
+    expected = {str(value) for value in field_names}
+    return any(
+        str(constraint.get("field") or "").split(".")[-1] in expected
+        and str(constraint.get("operator") or "") == "same"
+        and _truthy(constraint.get("allow_missing"))
+        for constraint in constraints
+    )
 
 
 def _financial_scope_errors(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -477,6 +530,8 @@ def _evaluate_same(
 ) -> SemanticCheck:
     field = str(constraint.get("field") or "")
     row_getters = {
+        "source": lambda row: row.get("source_id"),
+        "source_id": lambda row: row.get("source_id"),
         "entity_type": lambda row: row.get("entity_type"),
         "time_basis": lambda row: row.get("time_basis"),
         "frequency": fact_frequency,
@@ -493,11 +548,14 @@ def _evaluate_same(
     if field in row_getters:
         values = sorted({_normalise(row_getters[field](row)) for row in context.rows})
         nonempty = bool(values) and values != [""]
+        allow_missing = _truthy(constraint.get("allow_missing"))
         return SemanticCheck(
             f"same_{_safe_name(field)}",
-            nonempty and len(values) == 1,
+            len(values) == 1 and (nonempty or allow_missing),
             values,
-            "one non-empty value",
+            "one value; missing allowed"
+            if allow_missing
+            else "one non-empty value",
         )
     if field == "scope":
         values = sorted({_normalise(_entity_scope_label(row)) for row in context.rows})
@@ -830,6 +888,17 @@ SEMANTIC_OPERATORS: dict[str, SemanticEvaluator] = {
     "registered_followup_metric_pair": _evaluate_registered_followup_pair,
     "gt_industry_average": _evaluate_gt_industry_average,
 }
+
+
+def semantic_operator_manifest() -> dict[str, Any]:
+    """Return the frozen public contract for semantic constraint operators."""
+    return {
+        "registry_version": SEMANTIC_OPERATOR_REGISTRY_VERSION,
+        "operators": {
+            name: {"evaluator": evaluator.__name__}
+            for name, evaluator in sorted(SEMANTIC_OPERATORS.items())
+        },
+    }
 
 
 def _coverage_check(

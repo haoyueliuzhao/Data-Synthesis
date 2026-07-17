@@ -15,7 +15,7 @@ from finraw.qa.graph_patterns import (
 from finraw.qa.store import json_value
 
 
-COMPILER_VERSION = "2.4.0"
+COMPILER_VERSION = "2.7.0"
 
 
 @dataclass(frozen=True)
@@ -192,6 +192,23 @@ def compile_logical_pattern(
     from finraw.qa.binding_executor import validate_relational_ops
 
     validate_relational_ops(relational_ops)
+    graph_scan_rows = int(policy.get("compiled_graph_scan_rows", 5000))
+    graph_evaluation_rows = int(
+        policy.get("compiled_graph_evaluation_rows", 5000)
+    )
+    fact_scan_rows = int(policy["compiled_scan_rows_per_metric"])
+    scan_mode = (
+        "full"
+        if (
+            binding_query["scan_kind"] == "graph"
+            and graph_scan_rows == 0
+        )
+        or (
+            binding_query["scan_kind"] != "graph"
+            and fact_scan_rows == 0
+        )
+        else "bounded"
+    )
     return LogicalPatternPlan(
         plan_version=2,
         ir_version=int(binding_query["ir_version"]),
@@ -221,12 +238,12 @@ def compile_logical_pattern(
         sampling={
             "method": "deterministic_hash_stratified",
             "max_per_stratum": int(policy["compiled_max_per_stratum"]),
-            "scan_rows_per_metric": int(policy["compiled_scan_rows_per_metric"]),
-            "graph_scan_rows": int(policy.get("compiled_graph_scan_rows", 5000)),
-            "scan_mode": (
-                "full"
-                if int(policy["compiled_scan_rows_per_metric"]) == 0
-                else "bounded"
+            "scan_rows_per_metric": fact_scan_rows,
+            "graph_scan_rows": graph_scan_rows,
+            "graph_evaluation_rows": graph_evaluation_rows,
+            "scan_mode": scan_mode,
+            "graph_scan_mode": (
+                "full" if graph_scan_rows == 0 else "bounded_hash_stratified"
             ),
             "scan_multiplier": int(policy["compiled_scan_multiplier"]),
             "audit_examples_are_inputs": False,

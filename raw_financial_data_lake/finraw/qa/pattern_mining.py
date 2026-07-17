@@ -221,7 +221,10 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
             raw.get("compiled_metric_fact_cache_enabled", True)
         ),
         "compiled_graph_scan_rows": max(
-            int(raw.get("compiled_graph_scan_rows", 5000)), 1
+            int(raw.get("compiled_graph_scan_rows", 5000)), 0
+        ),
+        "compiled_graph_evaluation_rows": max(
+            int(raw.get("compiled_graph_evaluation_rows", 5000)), 0
         ),
         "compiled_scan_rows_per_metric": max(
             int(raw.get("compiled_scan_rows_per_metric", 0)), 0
@@ -1986,21 +1989,32 @@ def _time_hierarchy_spec(
     label: str,
 ) -> dict[str, Any]:
     return _graph_trace_spec(
+        pattern_version=2,
         task_subtype="time_hierarchy_membership",
         pattern_family="graph_time_hierarchy",
         difficulty_base="easy",
         node_constraints=[
+            {"variable": "fact", "type": "Fact"},
             {"variable": "period", "type": "TimePeriod"},
             {"variable": "hierarchy", "type": node_type},
         ],
         edge_constraints=[
+            {"src": "fact", "relation": "IN_PERIOD", "dst": "period"},
             {"src": "period", "relation": relation, "dst": "hierarchy"}
         ],
         relational_ops=[
             {
                 "op": "scan_pinned_graph_nodes",
-                "role": "period",
-                "node_type": "TimePeriod",
+                "role": "fact",
+                "node_type": "Fact",
+                "source_table": "standardized_facts",
+            },
+            {
+                "op": "expand_graph_edges",
+                "from_role": "fact",
+                "to_role": "period",
+                "relation": "IN_PERIOD",
+                "to_node_type": "TimePeriod",
             },
             {
                 "op": "expand_graph_edges",
@@ -2011,7 +2025,7 @@ def _time_hierarchy_spec(
             },
             {
                 "op": "project_graph_binding",
-                "fact_roles": ["period"],
+                "fact_roles": ["fact"],
                 "scope_type": "time_hierarchy_membership",
                 "answer": {
                     "binding": "graph_answer",
@@ -2019,7 +2033,7 @@ def _time_hierarchy_spec(
                     "output_key": "trace",
                     "fields": {
                         "fact_id": {
-                            "role": "period",
+                            "role": "fact",
                             "source": "source_pk",
                         },
                         "hierarchy_type": label,
@@ -2034,7 +2048,7 @@ def _time_hierarchy_spec(
                     },
                 },
                 "context": {
-                    "fact_id": {"role": "period", "source": "source_pk"},
+                    "fact_id": {"role": "fact", "source": "source_pk"},
                     "hierarchy_type": label,
                     "hierarchy_relation": relation,
                 },
@@ -2047,6 +2061,7 @@ def _time_hierarchy_spec(
 
 def _graph_trace_spec(
     *,
+    pattern_version: int = 1,
     task_subtype: str,
     pattern_family: str,
     difficulty_base: str,
@@ -2057,7 +2072,7 @@ def _graph_trace_spec(
     answer_schema: dict[str, Any],
 ) -> dict[str, Any]:
     return {
-        "pattern_version": 1,
+        "pattern_version": pattern_version,
         "pattern_family": pattern_family,
         "task_subtype": task_subtype,
         "semantic_profile": "graph_trace",

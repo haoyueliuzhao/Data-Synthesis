@@ -11,6 +11,9 @@ from typing import Any
 from finraw.builds import deactivate_active_rows, finish_build, start_build
 from finraw.db.client import DBProtocol
 
+UNIT_NORMALIZATION_VERSION = "1.0.0"
+TIME_NORMALIZATION_VERSION = "1.0.0"
+
 NON_NEGATIVE_STRICT = {"total_assets", "total_liabilities"}
 NON_NEGATIVE_USUALLY = {
     "revenue", "gross_profit", "cost_of_revenue", "cash_and_cash_equivalents", "inventory",
