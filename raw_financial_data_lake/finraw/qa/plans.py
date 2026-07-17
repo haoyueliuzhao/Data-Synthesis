@@ -125,6 +125,11 @@ def _resolve_input(
     if binding_name not in bindings:
         raise KeyError(f"Missing operation input binding: {binding_name}")
     fact_ids = bindings[binding_name]
+    if (
+        isinstance(fact_ids, dict)
+        and set(fact_ids) == {"__literal__"}
+    ):
+        return copy.deepcopy(fact_ids["__literal__"])
     if isinstance(fact_ids, list):
         missing = [fact_id for fact_id in fact_ids if str(fact_id) not in facts_by_id]
         if missing:

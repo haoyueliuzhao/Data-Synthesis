@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 import json
 import os
 import sqlite3
 from pathlib import Path
-from typing import Any, Iterable, Protocol
+from typing import Any, Iterable, ContextManager, Iterator, Protocol
 
 from finraw.db.schema import SCHEMA_SQL, SOURCE_REGISTRY_SEED
 from finraw.storage import utc_now
@@ -14,6 +15,7 @@ class DBProtocol(Protocol):
     def close(self) -> None: ...
     def init_schema(self) -> None: ...
     def seed_sources(self) -> None: ...
+    def transaction(self) -> ContextManager[None]: ...
     def execute(self, sql: str, params: Iterable[Any] = ()) -> None: ...
     def fetchall(self, sql: str, params: Iterable[Any] = ()) -> list[Any]: ...
     def fetchone(self, sql: str, params: Iterable[Any] = ()) -> Any | None: ...
@@ -41,6 +43,11 @@ class MetadataDB:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(str(self.db_path))
         self.conn.row_factory = sqlite3.Row
+        self._transaction_depth = 0
+
+    def _commit_if_needed(self) -> None:
+        if self._transaction_depth == 0:
+            self.conn.commit()
 
     def close(self) -> None:
         self.conn.close()
@@ -55,7 +62,7 @@ class MetadataDB:
             "CREATE INDEX IF NOT EXISTS idx_source_entities_source_code "
             "ON source_entities(source_id, source_code)"
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def seed_sources(self) -> None:
         columns = [
@@ -68,15 +75,38 @@ class MetadataDB:
         VALUES ({','.join('?' for _ in columns)})
         """
         self.conn.executemany(sql, [[row.get(col) for col in columns] for row in SOURCE_REGISTRY_SEED])
-        self.conn.commit()
+        self._commit_if_needed()
 
     def execute(self, sql: str, params: Iterable[Any] = ()) -> None:
         try:
             self.conn.execute(sql, tuple(params))
-            self.conn.commit()
+            if self._transaction_depth == 0:
+                self._commit_if_needed()
+        except Exception:
+            if self._transaction_depth == 0:
+                self.conn.rollback()
+            raise
+
+    @contextmanager
+    def transaction(self) -> Iterator[None]:
+        if self._transaction_depth:
+            self._transaction_depth += 1
+            try:
+                yield
+            finally:
+                self._transaction_depth -= 1
+            return
+        self.conn.execute("BEGIN IMMEDIATE")
+        self._transaction_depth = 1
+        try:
+            yield
         except Exception:
             self.conn.rollback()
             raise
+        else:
+            self.conn.commit()
+        finally:
+            self._transaction_depth = 0
 
     def fetchall(self, sql: str, params: Iterable[Any] = ()) -> list[sqlite3.Row]:
         return list(self.conn.execute(sql, tuple(params)).fetchall())
@@ -95,7 +125,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO ingestion_jobs ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def update_job(self, job_id: str, **fields: Any) -> None:
         assignments = []
@@ -105,7 +135,7 @@ class MetadataDB:
             values.append(self._json(value) if key in {"target_scope", "config"} else value)
         values.append(job_id)
         self.conn.execute(f"UPDATE ingestion_jobs SET {', '.join(assignments)} WHERE job_id = ?", values)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def find_raw_object(
         self,
@@ -143,7 +173,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO raw_objects ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_raw_records(self, records: list[dict[str, Any]]) -> None:
         if not records:
@@ -157,7 +187,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO raw_records ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def insert_atomic_facts(self, facts: list[dict[str, Any]]) -> None:
@@ -169,7 +199,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO atomic_facts ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def insert_standardized_facts(self, facts: list[dict[str, Any]]) -> None:
@@ -181,7 +211,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO standardized_facts ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_fact_quality_checks(self, checks: list[dict[str, Any]]) -> None:
         if not checks:
@@ -192,7 +222,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO fact_quality_checks ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def update_standardized_fact_statuses(self, updates: list[dict[str, Any]], only_flags: bool = False) -> None:
@@ -210,7 +240,7 @@ class MetadataDB:
                 "UPDATE standardized_facts SET verification_status = ?, validation_flags = ?, conflict_group_id = ? WHERE fact_id = ?",
                 values,
             )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def sync_atomic_fact_verification_status(self) -> None:
         self.conn.execute(
@@ -225,7 +255,7 @@ class MetadataDB:
               AND fact_id IN (SELECT fact_id FROM standardized_facts WHERE COALESCE(is_active, 1) = 1)
             """
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_derived_facts(self, facts: list[dict[str, Any]]) -> None:
         if not facts:
@@ -237,7 +267,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO derived_facts ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             values,
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def upsert_source_entity(self, *, source_id: str, source_code: str, source_name: str | None = None,
@@ -256,7 +286,7 @@ class MetadataDB:
             (entity_id, source_id, source_code, source_name, self._json(aliases or []), market,
              self._json(raw_metadata or {}), first_seen_at, utc_now()),
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_snapshot(self, snapshot: dict[str, Any]) -> None:
         columns = ["snapshot_id", "source_id", "snapshot_date", "storage_prefix", "object_count", "total_size_bytes", "manifest_uri", "checksum_uri"]
@@ -264,7 +294,7 @@ class MetadataDB:
             f"INSERT OR REPLACE INTO raw_dataset_snapshots ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)})",
             [snapshot.get(col) for col in columns],
         )
-        self.conn.commit()
+        self._commit_if_needed()
 
     @staticmethod
     def _json(value: Any) -> str | None:
@@ -281,6 +311,11 @@ class PostgresMetadataDB:
         self.dsn = dsn
         self.schema_path = Path(schema_path)
         self.conn = psycopg.connect(dsn, row_factory=dict_row)
+        self._transaction_depth = 0
+
+    def _commit_if_needed(self) -> None:
+        if self._transaction_depth == 0:
+            self.conn.commit()
 
     def close(self) -> None:
         self.conn.close()
@@ -289,7 +324,7 @@ class PostgresMetadataDB:
         sql = self.schema_path.read_text(encoding="utf-8")
         with self.conn.cursor() as cur:
             cur.execute(sql)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def seed_sources(self) -> None:
         columns = [
@@ -305,16 +340,34 @@ class PostgresMetadataDB:
         """
         with self.conn.cursor() as cur:
             cur.executemany(sql, [[row.get(col) for col in columns] for row in SOURCE_REGISTRY_SEED])
-        self.conn.commit()
+        self._commit_if_needed()
 
     def execute(self, sql: str, params: Iterable[Any] = ()) -> None:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(self._sql(sql), tuple(params))
-            self.conn.commit()
+            if self._transaction_depth == 0:
+                self._commit_if_needed()
         except Exception:
-            self.conn.rollback()
+            if self._transaction_depth == 0:
+                self.conn.rollback()
             raise
+
+    @contextmanager
+    def transaction(self) -> Iterator[None]:
+        if self._transaction_depth:
+            self._transaction_depth += 1
+            try:
+                yield
+            finally:
+                self._transaction_depth -= 1
+            return
+        self._transaction_depth = 1
+        try:
+            with self.conn.transaction():
+                yield
+        finally:
+            self._transaction_depth = 0
 
     def fetchall(self, sql: str, params: Iterable[Any] = ()) -> list[Any]:
         with self.conn.cursor() as cur:
@@ -334,7 +387,7 @@ class PostgresMetadataDB:
         sql = f"INSERT INTO ingestion_jobs ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (job_id) DO UPDATE SET {updates}"
         with self.conn.cursor() as cur:
             cur.execute(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def update_job(self, job_id: str, **fields: Any) -> None:
         from psycopg.types.json import Jsonb
@@ -346,7 +399,7 @@ class PostgresMetadataDB:
         values.append(job_id)
         with self.conn.cursor() as cur:
             cur.execute(f"UPDATE ingestion_jobs SET {', '.join(assignments)} WHERE job_id = %s", values)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def find_raw_object(
         self,
@@ -378,7 +431,7 @@ class PostgresMetadataDB:
         sql = f"INSERT INTO raw_objects ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (raw_object_id) DO UPDATE SET {updates}"
         with self.conn.cursor() as cur:
             cur.execute(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_raw_records(self, records: list[dict[str, Any]]) -> None:
         if not records:
@@ -390,7 +443,7 @@ class PostgresMetadataDB:
         sql = f"INSERT INTO raw_records ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (raw_record_id) DO UPDATE SET {updates}"
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def insert_atomic_facts(self, facts: list[dict[str, Any]]) -> None:
@@ -402,7 +455,7 @@ class PostgresMetadataDB:
         values = [[_row_value(row, col) for col in columns] for row in facts]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def insert_standardized_facts(self, facts: list[dict[str, Any]]) -> None:
@@ -415,7 +468,7 @@ class PostgresMetadataDB:
         values = [[Jsonb(_row_value(row, col) or []) if col == "validation_flags" else _row_value(row, col) for col in columns] for row in facts]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_fact_quality_checks(self, checks: list[dict[str, Any]]) -> None:
         if not checks:
@@ -426,7 +479,7 @@ class PostgresMetadataDB:
         values = [[_row_value(row, col) for col in columns] for row in checks]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def update_standardized_fact_statuses(self, updates: list[dict[str, Any]], only_flags: bool = False) -> None:
@@ -446,7 +499,7 @@ class PostgresMetadataDB:
                     "UPDATE standardized_facts SET verification_status = %s, validation_flags = %s, conflict_group_id = %s WHERE fact_id = %s",
                     values,
                 )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def update_standardized_graph_ready(self, updates: list[dict[str, Any]]) -> None:
         if not updates:
@@ -454,7 +507,7 @@ class PostgresMetadataDB:
         values = [(row.get("graph_ready"), row.get("graph_ready_reason"), row.get("fact_id")) for row in updates]
         with self.conn.cursor() as cur:
             cur.executemany("UPDATE standardized_facts SET graph_ready = %s, graph_ready_reason = %s WHERE fact_id = %s", values)
-        self.conn.commit()
+        self._commit_if_needed()
 
     def sync_atomic_fact_verification_status(self) -> None:
         with self.conn.cursor() as cur:
@@ -468,7 +521,7 @@ class PostgresMetadataDB:
                   AND COALESCE(af.is_active, 1) = 1
                 """
             )
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_derived_facts(self, facts: list[dict[str, Any]]) -> None:
         if not facts:
@@ -481,7 +534,7 @@ class PostgresMetadataDB:
         values = [[Jsonb(_row_value(row, col) if _row_value(row, col) is not None else ([] if col in {'input_fact_ids', 'output_table', 'scope_entity_ids'} else {})) if col in json_columns else _row_value(row, col) for col in columns] for row in facts]
         with self.conn.cursor() as cur:
             cur.executemany(sql, values)
-        self.conn.commit()
+        self._commit_if_needed()
 
 
     def upsert_source_entity(self, *, source_id: str, source_code: str, source_name: str | None = None,
@@ -503,7 +556,7 @@ class PostgresMetadataDB:
         """
         with self.conn.cursor() as cur:
             cur.execute(sql, (entity_id, source_id, source_code, source_name, aliases or [], market, Jsonb(raw_metadata or {}), first_seen_at, utc_now()))
-        self.conn.commit()
+        self._commit_if_needed()
 
     def insert_snapshot(self, snapshot: dict[str, Any]) -> None:
         columns = ["snapshot_id", "source_id", "snapshot_date", "storage_prefix", "object_count", "total_size_bytes", "manifest_uri", "checksum_uri"]
@@ -511,7 +564,7 @@ class PostgresMetadataDB:
         sql = f"INSERT INTO raw_dataset_snapshots ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))}) ON CONFLICT (snapshot_id) DO UPDATE SET {updates}"
         with self.conn.cursor() as cur:
             cur.execute(sql, [snapshot.get(col) for col in columns])
-        self.conn.commit()
+        self._commit_if_needed()
 
     @staticmethod
     def _sql(sql: str) -> str:

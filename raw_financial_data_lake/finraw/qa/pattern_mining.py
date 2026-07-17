@@ -4,7 +4,7 @@ import hashlib
 import json
 import math
 import uuid
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,14 +20,27 @@ from finraw.qa.comparability import (
     period_index,
     period_label,
 )
-from finraw.qa.graph_patterns import pattern_manifest
+from finraw.qa.graph_patterns import (
+    get_pattern,
+    pattern_content_hash,
+    pattern_manifest,
+    pattern_semantic_components,
+    pattern_semantic_digest,
+)
 from finraw.qa.plans import execute_plan, materialize_plan
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import insert_rows, json_value
 
 
-MINING_VERSION = "1.6.0"
+MINING_VERSION = "2.2.0"
+
+GRAPH_NATIVE_EXECUTABLE_FAMILIES = {
+    "derived_fact_composition",
+    "fact_provenance",
+    "time_hierarchy",
+    "entity_set_scope",
+}
 
 MINING_RUN_TRANSITIONS = {
     "success": {"reviewed"},
@@ -85,6 +98,9 @@ class PatternProposal:
     proposal_semantic_id: str
     proposal_snapshot_id: str
     static_pattern_id: str | None
+    pattern_semantic_digest: str
+    static_pattern_version: int | None
+    static_pattern_hash: str | None
     binding_mode: str
     pattern_spec: dict[str, Any]
     operator_dag_template: dict[str, Any]
@@ -135,6 +151,10 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
                     "temporal_aggregation",
                     "temporal_extrema_followup",
                     "scope_rank_followup",
+                    "derived_fact_composition",
+                    "fact_provenance",
+                    "time_hierarchy",
+                    "entity_set_scope",
                 ],
             )
         ),
@@ -164,26 +184,23 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
                 ],
             )
         ),
-        "pool_year_bucket_size": max(
-            int(raw.get("pool_year_bucket_size", 5)), 1
-        ),
+        "pool_year_bucket_size": max(int(raw.get("pool_year_bucket_size", 5)), 1),
         "graph_native_mining_enabled": bool(
             raw.get("graph_native_mining_enabled", True)
         ),
-        "graph_native_example_limit": max(int(raw.get("graph_native_example_limit", 20)), 1),
+        "graph_native_proposals_enabled": bool(
+            raw.get("graph_native_proposals_enabled", True)
+        ),
+        "graph_native_example_limit": max(
+            int(raw.get("graph_native_example_limit", 20)), 1
+        ),
         "max_proposals": max(int(raw.get("max_proposals", 100)), 1),
         "max_bindings_per_proposal": max(
             int(raw.get("max_bindings_per_proposal", 20)), 1
         ),
-        "max_heldout_bindings": max(
-            int(raw.get("max_heldout_bindings", 100)), 1
-        ),
-        "heldout_fraction": min(
-            max(float(raw.get("heldout_fraction", 0.2)), 0.0), 0.5
-        ),
-        "minimum_heldout_bindings": max(
-            int(raw.get("minimum_heldout_bindings", 1)), 0
-        ),
+        "max_heldout_bindings": max(int(raw.get("max_heldout_bindings", 100)), 1),
+        "heldout_fraction": min(max(float(raw.get("heldout_fraction", 0.2)), 0.0), 0.5),
+        "minimum_heldout_bindings": max(int(raw.get("minimum_heldout_bindings", 1)), 0),
         "minimum_semantic_constraint_pass_rate": min(
             max(float(raw.get("minimum_semantic_constraint_pass_rate", 0.95)), 0.0),
             1.0,
@@ -200,15 +217,19 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
         "max_candidates_per_proposal": max(
             int(raw.get("max_candidates_per_proposal", 10)), 1
         ),
+        "compiled_metric_fact_cache_enabled": bool(
+            raw.get("compiled_metric_fact_cache_enabled", True)
+        ),
+        "compiled_graph_scan_rows": max(
+            int(raw.get("compiled_graph_scan_rows", 5000)), 1
+        ),
         "compiled_scan_rows_per_metric": max(
             int(raw.get("compiled_scan_rows_per_metric", 0)), 0
         ),
         "compiled_scan_multiplier": max(
             int(raw.get("compiled_scan_multiplier", 20)), 1
         ),
-        "compiled_max_per_stratum": max(
-            int(raw.get("compiled_max_per_stratum", 4)), 1
-        ),
+        "compiled_max_per_stratum": max(int(raw.get("compiled_max_per_stratum", 4)), 1),
         "min_support": max(int(raw.get("min_support", 3)), 1),
         "target_support": max(int(raw.get("target_support", 20)), 2),
         "min_total_score": float(raw.get("min_total_score", 0.62)),
@@ -218,13 +239,9 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
         "maximum_temporal_observations": max(
             int(raw.get("maximum_temporal_observations", 5)), 3
         ),
-        "minimum_scope_entities": max(
-            int(raw.get("minimum_scope_entities", 3)), 2
-        ),
+        "minimum_scope_entities": max(int(raw.get("minimum_scope_entities", 3)), 2),
         "top_k": max(int(raw.get("top_k", 3)), 1),
-        "require_contiguous_periods": bool(
-            raw.get("require_contiguous_periods", True)
-        ),
+        "require_contiguous_periods": bool(raw.get("require_contiguous_periods", True)),
     }
 
 
@@ -255,7 +272,11 @@ def mine_qa_patterns(
     if kg.get("status") != "success" or kg.get("quality_status") != "passed":
         raise RuntimeError(f"KG build is not pattern-mining eligible: {kg_build_id}")
 
-    run_id = "qamining_" + datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_") + uuid.uuid4().hex[:8]
+    run_id = (
+        "qamining_"
+        + datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_")
+        + uuid.uuid4().hex[:8]
+    )
     started_at = _now()
     run = {
         "mining_run_id": run_id,
@@ -268,6 +289,8 @@ def mine_qa_patterns(
         "scanned_fact_count": 0,
         "proposal_count": 0,
         "approved_count": 0,
+        "published_proposal_manifest": None,
+        "published_proposal_manifest_hash": None,
         "reviewed_at": None,
         "reviewed_by": None,
         "approved_at": None,
@@ -284,7 +307,7 @@ def mine_qa_patterns(
         "qa_pattern_mining_runs",
         [run],
         list(run),
-        {"lifecycle_events", "notes"},
+        {"lifecycle_events", "notes", "published_proposal_manifest"},
     )
     graph_observations: list[dict[str, Any]] = []
     try:
@@ -295,11 +318,14 @@ def mine_qa_patterns(
             )
         proposals = _discover_proposals(
             facts,
+            db,
+            kg,
             metrics,
             run_id,
             kg_build_id,
             policy,
             semantic_policy,
+            graph_observations,
         )
         rows = [proposal.as_row() for proposal in proposals]
         if rows:
@@ -323,6 +349,15 @@ def mine_qa_patterns(
         approved = sum(proposal.status == "published" for proposal in proposals)
         completed_at = _now()
         graph_summary = {
+            "executable_proposal_count": sum(
+                proposal.motif_family in GRAPH_NATIVE_EXECUTABLE_FAMILIES
+                for proposal in proposals
+            ),
+            "published_executable_proposal_count": sum(
+                proposal.motif_family in GRAPH_NATIVE_EXECUTABLE_FAMILIES
+                and proposal.status == "published"
+                for proposal in proposals
+            ),
             "observation_count": len(graph_observations),
             "supported_count": sum(
                 item["status"] == "observed" for item in graph_observations
@@ -338,7 +373,7 @@ def mine_qa_patterns(
         ]
         db.execute(
             "UPDATE qa_pattern_mining_runs SET status = ?, completed_at = ?, "
-            "scanned_fact_count = ?, proposal_count = ?, approved_count = ?, "
+            "scanned_fact_count = ?, proposal_count = ?, "
             "lifecycle_events = ?, notes = ? "
             "WHERE mining_run_id = ?",
             (
@@ -346,7 +381,6 @@ def mine_qa_patterns(
                 completed_at,
                 len(facts),
                 len(proposals),
-                approved,
                 _db_json(db, run_events),
                 _db_json(
                     db,
@@ -471,6 +505,15 @@ def mine_qa_patterns(
         "approved_family_counts": dict(sorted(approved_family_counts.items())),
         "published_family_counts": dict(sorted(approved_family_counts.items())),
         "graph_native_motifs": {
+            "executable_proposal_count": sum(
+                proposal.motif_family in GRAPH_NATIVE_EXECUTABLE_FAMILIES
+                for proposal in proposals
+            ),
+            "published_executable_proposal_count": sum(
+                proposal.motif_family in GRAPH_NATIVE_EXECUTABLE_FAMILIES
+                and proposal.status == "published"
+                for proposal in proposals
+            ),
             "observation_count": len(graph_observations),
             "supported_count": sum(
                 item["status"] == "observed" for item in graph_observations
@@ -501,9 +544,9 @@ def mine_qa_patterns(
                 "status": item.status,
             }
             for family in sorted({item.motif_family for item in proposals})
-            for item in [
-                value for value in proposals if value.motif_family == family
-            ][:5]
+            for item in [value for value in proposals if value.motif_family == family][
+                :5
+            ]
         ],
     }
     _write_report(report, output_dir)
@@ -550,7 +593,9 @@ def load_published_proposals(
         {
             **dict(row),
             **{
-                column: json_value(dict(row).get(column), [] if column in list_columns else {})
+                column: json_value(
+                    dict(row).get(column), [] if column in list_columns else {}
+                )
                 for column in json_columns
             },
         }
@@ -566,9 +611,7 @@ def load_approved_proposals(
     limit: int = 100,
 ) -> list[dict[str, Any]]:
     """Compatibility alias; only fully published proposals are returned."""
-    return load_published_proposals(
-        db, kg_build_id, mining_run_id, limit=limit
-    )
+    return load_published_proposals(db, kg_build_id, mining_run_id, limit=limit)
 
 
 def get_approved_mining_run(
@@ -595,6 +638,22 @@ def get_approved_mining_run(
             f"Mining Run {mining_run_id} is not QA eligible: "
             f"status={run.get('status')}; expected approved_for_qa"
         )
+
+    audit = _validate_mining_run_proposals(db, run, require_resolved=True)
+    stored_manifest = run.get("published_proposal_manifest")
+    stored_hash = str(run.get("published_proposal_manifest_hash") or "")
+    if not stored_manifest or not stored_hash:
+        raise RuntimeError(
+            f"Mining Run {mining_run_id} has no frozen published proposal manifest"
+        )
+    if int(run.get("approved_count") or 0) != audit["published_count"]:
+        raise RuntimeError(
+            f"Mining Run {mining_run_id} approved_count no longer matches proposals"
+        )
+    if stored_manifest != audit["manifest"] or stored_hash != audit["manifest_hash"]:
+        raise RuntimeError(
+            f"Mining Run {mining_run_id} published proposal manifest changed"
+        )
     return run
 
 
@@ -609,15 +668,35 @@ def transition_mining_run(
 ) -> dict[str, Any]:
     """Move a completed Mining Run through its audited QA publication lifecycle."""
     ensure_qa_schema(db)
-    row = db.fetchone(
-        "SELECT * FROM qa_pattern_mining_runs WHERE mining_run_id = ?",
-        (mining_run_id,),
-    )
+    normalized_target = target_status.strip().lower()
+    with db.transaction():
+        updated = _transition_mining_run_transaction(
+            db,
+            mining_run_id,
+            target_status=normalized_target,
+            reviewer=reviewer,
+            notes=notes,
+            superseded_by_run_id=superseded_by_run_id,
+        )
+    if normalized_target == "approved_for_qa":
+        return get_approved_mining_run(db, str(updated["kg_build_id"]), mining_run_id)
+    return updated
+
+
+def _transition_mining_run_transaction(
+    db: DBProtocol,
+    mining_run_id: str,
+    *,
+    target_status: str,
+    reviewer: str,
+    notes: str | None,
+    superseded_by_run_id: str | None,
+) -> dict[str, Any]:
+    row = _mining_run_row_for_transition(db, mining_run_id, target_status)
     if not row:
         raise ValueError(f"Unknown QA pattern Mining Run: {mining_run_id}")
     run = _mining_run_dict(row)
     current_status = str(run.get("status") or "")
-    target_status = target_status.strip().lower()
     if target_status == current_status:
         return run
     allowed = MINING_RUN_TRANSITIONS.get(current_status, set())
@@ -627,7 +706,7 @@ def transition_mining_run(
         )
 
     changed_at = _now()
-    event = {
+    event: dict[str, Any] = {
         "stage": target_status,
         "status": "passed",
         "at": changed_at,
@@ -635,21 +714,41 @@ def transition_mining_run(
     }
     if notes:
         event["notes"] = notes
-    events = [*run["lifecycle_events"], event]
 
     if target_status == "reviewed":
+        audit = _validate_mining_run_proposals(db, run, require_resolved=False)
+        event["proposal_state_summary"] = audit["state_summary"]
+        events = [*run["lifecycle_events"], event]
+        run_notes = {
+            **run["notes"],
+            "proposal_review_snapshot": {
+                "reviewed_at": changed_at,
+                "published_count": audit["published_count"],
+                "state_summary": audit["state_summary"],
+            },
+        }
         db.execute(
             "UPDATE qa_pattern_mining_runs SET status = ?, reviewed_at = ?, "
-            "reviewed_by = ?, lifecycle_events = ? WHERE mining_run_id = ?",
+            "reviewed_by = ?, approved_count = ?, "
+            "published_proposal_manifest = NULL, "
+            "published_proposal_manifest_hash = NULL, lifecycle_events = ?, notes = ? "
+            "WHERE mining_run_id = ?",
             (
                 target_status,
                 changed_at,
                 reviewer,
+                audit["published_count"],
                 _db_json(db, events),
+                _db_json(db, run_notes),
                 mining_run_id,
             ),
         )
     elif target_status == "approved_for_qa":
+        audit = _validate_mining_run_proposals(db, run, require_resolved=True)
+        event["published_count"] = audit["published_count"]
+        event["published_proposal_manifest_hash"] = audit["manifest_hash"]
+        event["proposal_state_summary"] = audit["state_summary"]
+        events = [*run["lifecycle_events"], event]
         previous = db.fetchall(
             "SELECT * FROM qa_pattern_mining_runs "
             "WHERE kg_build_id = ? AND status = 'approved_for_qa' "
@@ -680,20 +779,38 @@ def transition_mining_run(
                     old["mining_run_id"],
                 ),
             )
+        run_notes = {
+            **run["notes"],
+            "publication_audit": {
+                "frozen_at": changed_at,
+                "published_count": audit["published_count"],
+                "published_proposal_manifest_hash": audit["manifest_hash"],
+                "proposal_state_summary": audit["state_summary"],
+                "thresholds": audit["thresholds"],
+            },
+        }
         db.execute(
             "UPDATE qa_pattern_mining_runs SET status = ?, approved_at = ?, "
-            "approved_by = ?, lifecycle_events = ? WHERE mining_run_id = ?",
+            "approved_by = ?, approved_count = ?, "
+            "published_proposal_manifest = ?, "
+            "published_proposal_manifest_hash = ?, lifecycle_events = ?, notes = ? "
+            "WHERE mining_run_id = ?",
             (
                 target_status,
                 changed_at,
                 reviewer,
+                audit["published_count"],
+                _db_json(db, audit["manifest"]),
+                audit["manifest_hash"],
                 _db_json(db, events),
+                _db_json(db, run_notes),
                 mining_run_id,
             ),
         )
     else:
         if superseded_by_run_id == mining_run_id:
             raise ValueError("A Mining Run cannot supersede itself")
+        events = [*run["lifecycle_events"], event]
         db.execute(
             "UPDATE qa_pattern_mining_runs SET status = ?, superseded_at = ?, "
             "superseded_by_run_id = ?, lifecycle_events = ? "
@@ -714,11 +831,224 @@ def transition_mining_run(
     return _mining_run_dict(updated)
 
 
+def _mining_run_row_for_transition(
+    db: DBProtocol,
+    mining_run_id: str,
+    target_status: str,
+) -> Any | None:
+    row = db.fetchone(
+        "SELECT * FROM qa_pattern_mining_runs WHERE mining_run_id = ?",
+        (mining_run_id,),
+    )
+    if (
+        not row
+        or target_status != "approved_for_qa"
+        or db.__class__.__name__ != "PostgresMetadataDB"
+    ):
+        return row
+
+    kg_build_id = str(row["kg_build_id"])
+    locked_rows = db.fetchall(
+        "SELECT * FROM qa_pattern_mining_runs WHERE kg_build_id = ? "
+        "ORDER BY mining_run_id FOR UPDATE",
+        (kg_build_id,),
+    )
+    return next(
+        (
+            locked
+            for locked in locked_rows
+            if str(locked["mining_run_id"]) == mining_run_id
+        ),
+        None,
+    )
+
+
 def _mining_run_dict(row: Any) -> dict[str, Any]:
     run = dict(row)
     run["lifecycle_events"] = json_value(run.get("lifecycle_events"), [])
     run["notes"] = json_value(run.get("notes"), {})
+    run["published_proposal_manifest"] = json_value(
+        run.get("published_proposal_manifest"), None
+    )
     return run
+
+
+def _published_manifest_entry(proposal: dict[str, Any]) -> dict[str, Any]:
+    static_version = proposal.get("static_pattern_version")
+    return {
+        "proposal_id": str(proposal["proposal_id"]),
+        "proposal_hash": str(proposal["proposal_hash"]),
+        "proposal_semantic_id": str(proposal.get("proposal_semantic_id") or ""),
+        "proposal_snapshot_id": str(proposal.get("proposal_snapshot_id") or ""),
+        "motif_family": str(proposal.get("motif_family") or ""),
+        "binding_mode": str(proposal.get("binding_mode") or ""),
+        "pattern_semantic_digest": str(proposal.get("pattern_semantic_digest") or ""),
+        "static_pattern_id": (
+            str(proposal["static_pattern_id"])
+            if proposal.get("static_pattern_id") is not None
+            else None
+        ),
+        "static_pattern_version": (
+            int(static_version) if static_version is not None else None
+        ),
+        "static_pattern_hash": (
+            str(proposal["static_pattern_hash"])
+            if proposal.get("static_pattern_hash") is not None
+            else None
+        ),
+        "support_count": int(proposal.get("support_count") or 0),
+        "semantic_constraint_pass_rate": float(
+            proposal.get("semantic_constraint_pass_rate") or 0.0
+        ),
+        "operation_execution_pass_rate": float(
+            proposal.get("operation_execution_pass_rate") or 0.0
+        ),
+        "example_binding_pass_rate": float(
+            proposal.get("example_binding_pass_rate") or 0.0
+        ),
+        "heldout_binding_pass_rate": float(
+            proposal.get("heldout_binding_pass_rate") or 0.0
+        ),
+    }
+
+
+def _validate_mining_run_proposals(
+    db: DBProtocol,
+    run: dict[str, Any],
+    *,
+    require_resolved: bool,
+) -> dict[str, Any]:
+    proposals = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT * FROM qa_pattern_proposals WHERE mining_run_id = ? "
+            "ORDER BY proposal_id",
+            (run["mining_run_id"],),
+        )
+    ]
+    errors: list[str] = []
+    expected_count = int(run.get("proposal_count") or 0)
+    if len(proposals) != expected_count:
+        errors.append(
+            f"proposal_count mismatch: run={expected_count}, actual={len(proposals)}"
+        )
+
+    policy = run.get("notes", {}).get("policy", {})
+    thresholds = {
+        "semantic_constraint_pass_rate": float(
+            policy.get("minimum_semantic_constraint_pass_rate", 0.95)
+        ),
+        "operation_execution_pass_rate": float(
+            policy.get("minimum_operation_execution_pass_rate", 0.99)
+        ),
+        "example_binding_pass_rate": 1.0,
+        "heldout_binding_pass_rate": float(
+            policy.get("minimum_heldout_binding_pass_rate", 0.99)
+        ),
+    }
+    state_counts: Counter[str] = Counter()
+    unresolved: list[str] = []
+    published: list[dict[str, Any]] = []
+    manual_rejected_count = 0
+    validation_rejected_count = 0
+
+    for proposal in proposals:
+        proposal_id = str(proposal["proposal_id"])
+        status = str(proposal.get("status") or "")
+        manual_status = str(proposal.get("manual_review_status") or "")
+        reasons = json_value(proposal.get("rejection_reasons"), [])
+        state_counts[status] += 1
+
+        if manual_status == "rejected" and status != "reviewed_rejected":
+            errors.append(
+                f"{proposal_id}: manual rejection must use reviewed_rejected status"
+            )
+        if status == "published":
+            published.append(proposal)
+            if manual_status in {"pending", "rejected", "not_started"}:
+                errors.append(
+                    f"{proposal_id}: published proposal has manual status {manual_status}"
+                )
+            if policy.get("require_manual_review") and manual_status != "approved":
+                errors.append(
+                    f"{proposal_id}: published proposal lacks manual approval"
+                )
+            for field, minimum in thresholds.items():
+                observed = float(proposal.get(field) or 0.0)
+                if observed < minimum:
+                    errors.append(f"{proposal_id}: {field}={observed} below {minimum}")
+        elif status == "reviewed_rejected":
+            manual_rejected_count += 1
+            if manual_status != "rejected":
+                errors.append(
+                    f"{proposal_id}: reviewed_rejected lacks rejected manual status"
+                )
+            if "manual_review_rejected" not in reasons:
+                errors.append(
+                    f"{proposal_id}: reviewed_rejected lacks rejection reason"
+                )
+        elif status in {"proposed", "semantic_validated"}:
+            validation_rejected_count += 1
+            if not reasons:
+                unresolved.append(proposal_id)
+        elif status in {"execution_validated", "reviewed_approved"}:
+            unresolved.append(proposal_id)
+        else:
+            errors.append(f"{proposal_id}: unsupported proposal status {status}")
+
+    if require_resolved and unresolved:
+        errors.append("unresolved proposals: " + ", ".join(sorted(unresolved)))
+    if require_resolved and not published:
+        errors.append("at least one published proposal is required")
+
+    manifest = {
+        "manifest_version": 1,
+        "mining_run_id": str(run["mining_run_id"]),
+        "kg_build_id": str(run["kg_build_id"]),
+        "published_count": len(published),
+        "proposals": [
+            _published_manifest_entry(proposal)
+            for proposal in sorted(published, key=lambda item: str(item["proposal_id"]))
+        ],
+    }
+    manifest_hash = _digest(manifest)
+    state_summary = {
+        "proposal_count": len(proposals),
+        "published_count": len(published),
+        "manual_rejected_count": manual_rejected_count,
+        "validation_rejected_count": validation_rejected_count,
+        "unresolved_count": len(unresolved),
+        "status_counts": dict(sorted(state_counts.items())),
+    }
+    if errors:
+        raise RuntimeError(
+            f"Mining Run {run['mining_run_id']} proposal validation failed: "
+            + "; ".join(errors)
+        )
+    return {
+        "published_count": len(published),
+        "manifest": manifest,
+        "manifest_hash": manifest_hash,
+        "state_summary": state_summary,
+        "thresholds": thresholds,
+    }
+
+
+def _refresh_run_published_count(db: DBProtocol, mining_run_id: str) -> int:
+    row = db.fetchone(
+        "SELECT COUNT(*) AS count FROM qa_pattern_proposals "
+        "WHERE mining_run_id = ? AND status = 'published'",
+        (mining_run_id,),
+    )
+    published_count = int(row["count"] if row else 0)
+    db.execute(
+        "UPDATE qa_pattern_mining_runs SET approved_count = ?, "
+        "published_proposal_manifest = NULL, "
+        "published_proposal_manifest_hash = NULL "
+        "WHERE mining_run_id = ? AND status IN ('success', 'reviewed')",
+        (published_count, mining_run_id),
+    )
+    return published_count
 
 
 def review_pattern_proposal(
@@ -739,6 +1069,21 @@ def review_pattern_proposal(
     if not row:
         raise ValueError(f"Unknown pattern proposal: {proposal_id}")
     proposal = dict(row)
+    run_row = db.fetchone(
+        "SELECT * FROM qa_pattern_mining_runs WHERE mining_run_id = ?",
+        (proposal["mining_run_id"],),
+    )
+    if not run_row:
+        raise ValueError(
+            f"Unknown Mining Run for pattern proposal: {proposal['mining_run_id']}"
+        )
+    run = _mining_run_dict(run_row)
+    if run.get("status") not in {"success", "reviewed"}:
+        raise ValueError(
+            f"Mining Run {run['mining_run_id']} no longer accepts proposal reviews: "
+            f"status={run.get('status')}"
+        )
+
     current_status = str(proposal.get("status") or "")
     if current_status not in {"execution_validated", "reviewed_approved"}:
         raise ValueError(
@@ -751,27 +1096,42 @@ def review_pattern_proposal(
     if current_status == "reviewed_approved" and (
         normalized_decision != "approve" or not publish
     ):
-        raise ValueError("A reviewed_approved proposal can only transition to published")
+        raise ValueError(
+            "A reviewed_approved proposal can only transition to published"
+        )
+
     reviewed_at = _now()
     events = json_value(proposal.get("lifecycle_events"), [])
     reasons = json_value(proposal.get("rejection_reasons"), [])
-    if current_status == "execution_validated":
+    if normalized_decision == "reject":
+        status = "reviewed_rejected"
+        manual_status = "rejected"
+        if "manual_review_rejected" not in reasons:
+            reasons.append("manual_review_rejected")
         event = {
-            "stage": "reviewed_approved",
-            "status": "passed" if normalized_decision == "approve" else "failed",
+            "stage": status,
+            "status": "passed",
             "at": reviewed_at,
             "reviewer": reviewer,
+            "decision": "reject",
         }
         if notes:
             event["notes"] = notes
         events.append(event)
-    if normalized_decision == "reject":
-        reasons.append("manual_review_rejected")
-        status = "execution_validated"
-        manual_status = "rejected"
     else:
         status = "reviewed_approved"
         manual_status = "approved"
+        if current_status == "execution_validated":
+            event = {
+                "stage": status,
+                "status": "passed",
+                "at": reviewed_at,
+                "reviewer": reviewer,
+                "decision": "approve",
+            }
+            if notes:
+                event["notes"] = notes
+            events.append(event)
         if publish:
             status = "published"
             events.append(
@@ -782,6 +1142,7 @@ def review_pattern_proposal(
                     "reviewer": reviewer,
                 }
             )
+
     db.execute(
         "UPDATE qa_pattern_proposals SET status = ?, manual_review_status = ?, "
         "lifecycle_events = ?, rejection_reasons = ? WHERE proposal_id = ?",
@@ -793,12 +1154,14 @@ def review_pattern_proposal(
             proposal_id,
         ),
     )
+    approved_count = _refresh_run_published_count(db, str(proposal["mining_run_id"]))
     return {
         "proposal_id": proposal_id,
         "status": status,
         "manual_review_status": manual_status,
         "lifecycle_events": events,
         "rejection_reasons": reasons,
+        "approved_count": approved_count,
     }
 
 
@@ -818,9 +1181,7 @@ def _mine_graph_native_topology(
             ["DERIVED_FROM"],
             example_limit,
         ),
-        _scope_motif_observation(
-            db, mining_run_id, kg_build_id, example_limit
-        ),
+        _scope_motif_observation(db, mining_run_id, kg_build_id, example_limit),
         _edge_motif_observation(
             db,
             mining_run_id,
@@ -844,9 +1205,7 @@ def _mine_graph_native_topology(
             ],
             example_limit,
         ),
-        _provenance_motif_observation(
-            db, mining_run_id, kg_build_id, example_limit
-        ),
+        _provenance_motif_observation(db, mining_run_id, kg_build_id, example_limit),
         _edge_motif_observation(
             db,
             mining_run_id,
@@ -1206,42 +1565,531 @@ def _density_bucket(count: int) -> str:
 
 def _discover_proposals(
     facts: list[dict[str, Any]],
+    db: DBProtocol,
+    kg: dict[str, Any],
     metrics: dict[str, dict[str, Any]],
     run_id: str,
     kg_build_id: str,
     policy: dict[str, Any],
     semantic_policy: dict[str, Any],
+    graph_observations: list[dict[str, Any]],
 ) -> list[PatternProposal]:
     raw: list[dict[str, Any]] = []
     families = set(policy["families"])
     if "cross_metric_comparison" in families:
         raw.extend(
-            _mine_cross_metric_comparison(
-                facts, metrics, policy, semantic_policy
-            )
+            _mine_cross_metric_comparison(facts, metrics, policy, semantic_policy)
         )
     if "temporal_aggregation" in families:
+        raw.extend(_mine_temporal_aggregation(facts, metrics, policy, semantic_policy))
+    if "temporal_extrema_followup" in families:
+        raw.extend(_mine_temporal_followup(facts, metrics, policy, semantic_policy))
+    if "scope_rank_followup" in families:
+        raw.extend(_mine_scope_rank_followup(facts, metrics, policy, semantic_policy))
+    if policy["graph_native_proposals_enabled"]:
         raw.extend(
-            _mine_temporal_aggregation(
-                facts, metrics, policy, semantic_policy
+            _mine_executable_graph_patterns(
+                db,
+                kg,
+                graph_observations,
+                policy,
+                semantic_policy,
+                families,
             )
         )
-    if "temporal_extrema_followup" in families:
-        raw.extend(
-            _mine_temporal_followup(facts, metrics, policy, semantic_policy)
-        )
-    if "scope_rank_followup" in families:
-        raw.extend(
-            _mine_scope_rank_followup(facts, metrics, policy, semantic_policy)
-        )
     raw = [item for item in raw if item["support_count"] > 0]
-    proposals = [
-        _proposal_from_raw(item, run_id, kg_build_id, policy) for item in raw
-    ]
+    proposals = [_proposal_from_raw(item, run_id, kg_build_id, policy) for item in raw]
     proposals.sort(
         key=lambda item: (-item.total_score, -item.support_count, item.proposal_id)
     )
     return _balanced_select(proposals, policy["max_proposals"])
+
+
+def _mine_executable_graph_patterns(
+    db: DBProtocol,
+    kg: dict[str, Any],
+    observations: list[dict[str, Any]],
+    policy: dict[str, Any],
+    semantic_policy: dict[str, Any],
+    enabled_families: set[str],
+) -> list[dict[str, Any]]:
+    from finraw.qa.binding_executor import execute_relational_ops
+    from finraw.qa.pattern_compiler import compile_logical_pattern
+
+    supported = {
+        str(item["motif_family"])
+        for item in observations
+        if item.get("status") == "observed"
+        and int(item.get("support_count") or 0) > 0
+    }
+    record_limit = (
+        int(policy["max_bindings_per_proposal"])
+        + int(policy["max_heldout_bindings"])
+    )
+    output: list[dict[str, Any]] = []
+    for family, spec in _graph_native_pattern_specs():
+        if family not in supported or family not in enabled_families:
+            continue
+        semantic_id = "graph_discovery_" + _digest(spec)[:20]
+        proposal = {
+            "proposal_id": semantic_id,
+            "proposal_hash": _digest(semantic_id, spec),
+            "proposal_semantic_id": semantic_id,
+            "proposal_snapshot_id": semantic_id,
+            "mining_run_id": "graph_discovery",
+            "kg_build_id": kg["kg_build_id"],
+            "motif_family": family,
+            "motif_signature": _digest(family, spec),
+            "pattern_semantic_digest": pattern_semantic_digest(spec),
+            "static_pattern_id": None,
+            "static_pattern_version": None,
+            "static_pattern_hash": None,
+            "static_pattern_overlap": 0.0,
+            "binding_mode": "new_pattern",
+            "pattern_spec": spec,
+            "binding_examples": [],
+            "heldout_bindings": [],
+            "total_score": 0.0,
+            "status": "published",
+        }
+        execution_policy = {**policy, "semantic_policy": semantic_policy}
+        plan = compile_logical_pattern(proposal, kg, execution_policy)
+        state = execute_relational_ops(
+            db,
+            kg,
+            plan.as_row(),
+            proposal,
+            execution_policy,
+            audit_hashes=set(),
+            limit=record_limit,
+        )
+        raw = _raw_proposal(family, [], spec)
+        raw["evaluated_binding_count"] = state.discovered_count
+        raw["support_count"] = state.semantic_valid_count
+        raw["operation_evaluated_count"] = state.semantic_valid_count
+        raw["operation_pass_count"] = state.execution_valid_count
+        for reason, count in state.rejection_counts.items():
+            if reason.startswith("semantic:"):
+                raw["semantic_rejection_counts"][reason[9:]] += count
+            elif reason.startswith("operation:"):
+                raw["operation_rejection_counts"][reason[10:]] += count
+        raw["binding_validation_records"] = [
+            {
+                "binding": item["binding"],
+                "execution_status": "passed",
+                "execution_errors": [],
+                "output_hash": item["binding_hash"],
+            }
+            for item in state.relation
+        ]
+        output.append(raw)
+    return output
+
+
+def _graph_native_pattern_specs() -> list[tuple[str, dict[str, Any]]]:
+    return [
+        (
+            "derived_fact_composition",
+            _graph_trace_spec(
+                task_subtype="derived_input_trace",
+                pattern_family="graph_composition",
+                difficulty_base="medium",
+                node_constraints=[
+                    {"variable": "derived", "type": "DerivedFact"},
+                    {
+                        "variable": "input_fact",
+                        "type": "Fact",
+                        "cardinality": "many",
+                    },
+                ],
+                edge_constraints=[
+                    {
+                        "src": "derived",
+                        "relation": "DERIVED_FROM",
+                        "dst": "input_fact",
+                    }
+                ],
+                relational_ops=[
+                    {
+                        "op": "scan_pinned_graph_nodes",
+                        "role": "derived",
+                        "node_type": "DerivedFact",
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "derived",
+                        "to_role": "input_fact",
+                        "relation": "DERIVED_FROM",
+                        "to_node_type": "Fact",
+                        "mode": "collect",
+                        "minimum_related": 1,
+                        "maximum_related": 100,
+                    },
+                    {
+                        "op": "project_graph_binding",
+                        "fact_roles": ["input_fact"],
+                        "derived_roles": ["derived"],
+                        "scope_type": "derived_fact_composition",
+                        "answer": {
+                            "binding": "graph_answer",
+                            "role": "input_fact",
+                            "shape": "records",
+                            "output_key": "records",
+                            "fields": {
+                                "fact_id": "source_pk",
+                                "entity_id": "properties.entity_id",
+                                "metric_id": "properties.metric_id",
+                                "period_end": "properties.period_end",
+                                "value": "properties.normalized_value",
+                                "unit": "properties.normalized_unit",
+                            },
+                        },
+                        "context": {
+                            "derived_id": {
+                                "role": "derived",
+                                "source": "source_pk",
+                            },
+                            "derived_type": {
+                                "role": "derived",
+                                "source": "properties.derived_type",
+                            },
+                        },
+                    },
+                ],
+                stratum_fields=["derived_type", "entity_hash_bucket"],
+                answer_schema={"type": "structured_fact_list"},
+            ),
+        ),
+        (
+            "fact_provenance",
+            _graph_trace_spec(
+                task_subtype="provenance_trace",
+                pattern_family="graph_provenance",
+                difficulty_base="easy",
+                node_constraints=[
+                    {"variable": "fact", "type": "Fact"},
+                    {"variable": "source", "type": "DataSource"},
+                    {"variable": "definition", "type": "SourceDefinition"},
+                    {"variable": "raw_object", "type": "RawObject"},
+                ],
+                edge_constraints=[
+                    {"src": "fact", "relation": "FROM_SOURCE", "dst": "source"},
+                    {
+                        "src": "fact",
+                        "relation": "USES_SOURCE_DEFINITION",
+                        "dst": "definition",
+                    },
+                    {
+                        "src": "fact",
+                        "relation": "TRACED_TO",
+                        "dst": "raw_object",
+                    },
+                ],
+                relational_ops=[
+                    {
+                        "op": "scan_pinned_graph_nodes",
+                        "role": "fact",
+                        "node_type": "Fact",
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "fact",
+                        "to_role": "source",
+                        "relation": "FROM_SOURCE",
+                        "to_node_type": "DataSource",
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "fact",
+                        "to_role": "definition",
+                        "relation": "USES_SOURCE_DEFINITION",
+                        "to_node_type": "SourceDefinition",
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "fact",
+                        "to_role": "raw_object",
+                        "relation": "TRACED_TO",
+                        "to_node_type": "RawObject",
+                    },
+                    {
+                        "op": "project_graph_binding",
+                        "fact_roles": ["fact"],
+                        "raw_object_roles": ["raw_object"],
+                        "scope_type": "fact_provenance_trace",
+                        "answer": {
+                            "binding": "graph_answer",
+                            "shape": "composite",
+                            "output_key": "trace",
+                            "fields": {
+                                "fact_id": {
+                                    "role": "fact",
+                                    "source": "source_pk",
+                                },
+                                "source_id": {
+                                    "role": "source",
+                                    "source": "source_pk",
+                                },
+                                "source_name": {
+                                    "role": "source",
+                                    "source": "properties.source_name",
+                                },
+                                "definition_id": {
+                                    "role": "definition",
+                                    "source": "source_pk",
+                                },
+                                "raw_concept_name": {
+                                    "role": "definition",
+                                    "source": "properties.raw_concept_name",
+                                },
+                                "raw_object_id": {
+                                    "role": "raw_object",
+                                    "source": "source_pk",
+                                },
+                                "storage_uri": {
+                                    "role": "raw_object",
+                                    "source": "properties.storage_uri",
+                                },
+                            },
+                        },
+                        "context": {
+                            "fact_id": {"role": "fact", "source": "source_pk"},
+                            "source_id": {
+                                "role": "source",
+                                "source": "source_pk",
+                            },
+                        },
+                    },
+                ],
+                stratum_fields=["source_id", "entity_hash_bucket"],
+                answer_schema={"type": "evidence_trace"},
+            ),
+        ),
+        *[
+            (
+                "time_hierarchy",
+                _time_hierarchy_spec(relation, node_type, label),
+            )
+            for relation, node_type, label in (
+                ("BELONGS_TO_YEAR", "CalendarYear", "calendar year"),
+                ("BELONGS_TO_QUARTER", "CalendarQuarter", "calendar quarter"),
+                ("IN_FISCAL_YEAR", "FiscalYear", "fiscal year"),
+            )
+        ],
+        (
+            "entity_set_scope",
+            _graph_trace_spec(
+                task_subtype="scope_composition",
+                pattern_family="graph_scope",
+                difficulty_base="medium",
+                node_constraints=[
+                    {"variable": "derived", "type": "DerivedFact"},
+                    {"variable": "scope", "type": "EntitySet"},
+                    {
+                        "variable": "entity",
+                        "type": "Entity",
+                        "cardinality": "many",
+                    },
+                    {
+                        "variable": "input_fact",
+                        "type": "Fact",
+                        "cardinality": "many",
+                    },
+                ],
+                edge_constraints=[
+                    {"src": "derived", "relation": "HAS_SCOPE", "dst": "scope"},
+                    {
+                        "src": "scope",
+                        "relation": "CONTAINS_ENTITY",
+                        "dst": "entity",
+                    },
+                    {
+                        "src": "derived",
+                        "relation": "DERIVED_FROM",
+                        "dst": "input_fact",
+                    },
+                ],
+                relational_ops=[
+                    {
+                        "op": "scan_pinned_graph_nodes",
+                        "role": "derived",
+                        "node_type": "DerivedFact",
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "derived",
+                        "to_role": "scope",
+                        "relation": "HAS_SCOPE",
+                        "to_node_type": "EntitySet",
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "scope",
+                        "to_role": "entity",
+                        "relation": "CONTAINS_ENTITY",
+                        "to_node_type": "Entity",
+                        "mode": "collect",
+                        "minimum_related": 1,
+                        "maximum_related": 100,
+                    },
+                    {
+                        "op": "expand_graph_edges",
+                        "from_role": "derived",
+                        "to_role": "input_fact",
+                        "relation": "DERIVED_FROM",
+                        "to_node_type": "Fact",
+                        "mode": "collect",
+                        "minimum_related": 1,
+                        "maximum_related": 100,
+                    },
+                    {
+                        "op": "project_graph_binding",
+                        "fact_roles": ["input_fact"],
+                        "derived_roles": ["derived"],
+                        "entity_roles": ["entity"],
+                        "scope_role": "scope",
+                        "scope_type": "derived_entity_set",
+                        "answer": {
+                            "binding": "graph_answer",
+                            "role": "entity",
+                            "shape": "records",
+                            "output_key": "records",
+                            "fields": {
+                                "entity_id": "source_pk",
+                                "entity_name": "properties.canonical_name",
+                                "entity_type": "properties.entity_type",
+                                "industry": "properties.industry",
+                            },
+                        },
+                        "context": {
+                            "derived_id": {
+                                "role": "derived",
+                                "source": "source_pk",
+                            },
+                            "scope_label": {
+                                "role": "scope",
+                                "source": "properties.scope_definition",
+                            },
+                        },
+                    },
+                ],
+                stratum_fields=["scope_label", "entity_hash_bucket"],
+                answer_schema={"type": "entity_scope_membership"},
+            ),
+        ),
+    ]
+
+
+def _time_hierarchy_spec(
+    relation: str,
+    node_type: str,
+    label: str,
+) -> dict[str, Any]:
+    return _graph_trace_spec(
+        task_subtype="time_hierarchy_membership",
+        pattern_family="graph_time_hierarchy",
+        difficulty_base="easy",
+        node_constraints=[
+            {"variable": "period", "type": "TimePeriod"},
+            {"variable": "hierarchy", "type": node_type},
+        ],
+        edge_constraints=[
+            {"src": "period", "relation": relation, "dst": "hierarchy"}
+        ],
+        relational_ops=[
+            {
+                "op": "scan_pinned_graph_nodes",
+                "role": "period",
+                "node_type": "TimePeriod",
+            },
+            {
+                "op": "expand_graph_edges",
+                "from_role": "period",
+                "to_role": "hierarchy",
+                "relation": relation,
+                "to_node_type": node_type,
+            },
+            {
+                "op": "project_graph_binding",
+                "fact_roles": ["period"],
+                "scope_type": "time_hierarchy_membership",
+                "answer": {
+                    "binding": "graph_answer",
+                    "shape": "composite",
+                    "output_key": "trace",
+                    "fields": {
+                        "fact_id": {
+                            "role": "period",
+                            "source": "source_pk",
+                        },
+                        "hierarchy_type": label,
+                        "hierarchy_id": {
+                            "role": "hierarchy",
+                            "source": "source_pk",
+                        },
+                        "hierarchy_properties": {
+                            "role": "hierarchy",
+                            "source": "properties",
+                        },
+                    },
+                },
+                "context": {
+                    "fact_id": {"role": "period", "source": "source_pk"},
+                    "hierarchy_type": label,
+                    "hierarchy_relation": relation,
+                },
+            },
+        ],
+        stratum_fields=["hierarchy_type", "entity_hash_bucket"],
+        answer_schema={"type": "time_hierarchy_membership"},
+    )
+
+
+def _graph_trace_spec(
+    *,
+    task_subtype: str,
+    pattern_family: str,
+    difficulty_base: str,
+    node_constraints: list[dict[str, Any]],
+    edge_constraints: list[dict[str, Any]],
+    relational_ops: list[dict[str, Any]],
+    stratum_fields: list[str],
+    answer_schema: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "pattern_version": 1,
+        "pattern_family": pattern_family,
+        "task_subtype": task_subtype,
+        "semantic_profile": "graph_trace",
+        "node_constraints": node_constraints,
+        "edge_constraints": edge_constraints,
+        "semantic_constraints": [
+            {"field": "graph_ready", "operator": "eq", "value": True},
+            {"field": "is_forecast", "operator": "eq", "value": False},
+        ],
+        "operator_template": {
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "graph_answer",
+                    "inputs": [{"binding": "graph_answer"}],
+                }
+            ],
+            "output_step": "answer",
+        },
+        "answer_schema": answer_schema,
+        "difficulty_base": difficulty_base,
+        "question_intents": [
+            "graph_evidence_trace",
+            "analyst_audit_trace",
+        ],
+        "binding_query": {
+            "ir_version": 1,
+            "scan_kind": "graph",
+            "relational_ops": relational_ops,
+            "stratum_fields": stratum_fields,
+        },
+    }
 
 
 def _mine_cross_metric_comparison(
@@ -1406,16 +2254,13 @@ def _mine_temporal_followup(
         metric_ids = sorted(by_metric)
         for primary_metric in metric_ids:
             for _, primary in sorted(by_metric[primary_metric]):
-                primary_indices = {
-                    period_index(row, frequency) for row in primary
-                }
+                primary_indices = {period_index(row, frequency) for row in primary}
                 for secondary_metric in metric_ids:
                     if secondary_metric == primary_metric:
                         continue
                     for _, secondary_rows in sorted(by_metric[secondary_metric]):
                         secondary_by_period = {
-                            period_index(row, frequency): row
-                            for row in secondary_rows
+                            period_index(row, frequency): row for row in secondary_rows
                         }
                         if None in primary_indices or not primary_indices.issubset(
                             secondary_by_period
@@ -1486,9 +2331,7 @@ def _mine_scope_rank_followup(
     groups: dict[
         ScopeContextKey,
         dict[ScopeMetricVariant, dict[str, list[dict[str, Any]]]],
-    ] = defaultdict(
-        lambda: defaultdict(lambda: defaultdict(list))
-    )
+    ] = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for fact in facts:
         if str(fact.get("entity_type")) != "company" or not fact.get("industry"):
             continue
@@ -1526,18 +2369,14 @@ def _mine_scope_rank_followup(
     for context, by_variant in groups.items():
         variants = sorted(by_variant)
         for primary_variant in variants:
-            primary_by_entity = _unique_scope_entities(
-                by_variant[primary_variant]
-            )
+            primary_by_entity = _unique_scope_entities(by_variant[primary_variant])
             for secondary_variant in variants:
                 if primary_variant.metric_id == secondary_variant.metric_id:
                     continue
                 secondary_by_entity = _unique_scope_entities(
                     by_variant[secondary_variant]
                 )
-                common = sorted(
-                    set(primary_by_entity) & set(secondary_by_entity)
-                )
+                common = sorted(set(primary_by_entity) & set(secondary_by_entity))
                 if len(common) < policy["minimum_scope_entities"]:
                     continue
                 primary = [primary_by_entity[entity] for entity in common]
@@ -1615,9 +2454,7 @@ def _unique_scope_entities(
     rows: dict[str, list[dict[str, Any]]],
 ) -> dict[str, dict[str, Any]]:
     return {
-        entity_id: values[0]
-        for entity_id, values in rows.items()
-        if len(values) == 1
+        entity_id: values[0] for entity_id, values in rows.items() if len(values) == 1
     }
 
 
@@ -1641,9 +2478,7 @@ def _proposal_from_raw(
         max(len(records) - 1, 0),
     )
     heldout_records = records[:heldout_count]
-    example_records = records[heldout_count:][
-        : policy["max_bindings_per_proposal"]
-    ]
+    example_records = records[heldout_count:][: policy["max_bindings_per_proposal"]]
     bindings = [item["binding"] for item in example_records]
     heldout_bindings = [item["binding"] for item in heldout_records]
     selected_bindings = [*bindings, *heldout_bindings]
@@ -1656,6 +2491,13 @@ def _proposal_from_raw(
     example_pass_rate = _record_pass_rate(example_records)
     heldout_pass_rate = _record_pass_rate(heldout_records)
     static_pattern_id, static_overlap = _static_pattern_match(raw["pattern_spec"])
+    static_pattern = get_pattern(static_pattern_id) if static_pattern_id else None
+    static_pattern_version = (
+        static_pattern.pattern_version if static_pattern is not None else None
+    )
+    static_pattern_hash = (
+        pattern_content_hash(static_pattern) if static_pattern is not None else None
+    )
     diversity_score = _binding_diversity_score(selected_bindings)
     pattern_spec = json.loads(json.dumps(raw["pattern_spec"]))
     pattern_spec["semantic_validation"] = {
@@ -1706,14 +2548,8 @@ def _proposal_from_raw(
         sum(
             bool(binding.get("fact_ids"))
             and bool(binding.get("input_bindings"))
-            and len(
-                {
-                    str(fact_id)
-                    for value in binding["input_bindings"].values()
-                    for fact_id in (value if isinstance(value, list) else [value])
-                }
-            )
-            == len(set(str(value) for value in binding["fact_ids"]))
+            and set(_binding_fact_ids(binding))
+            == {str(value) for value in binding["fact_ids"]}
             for binding in selected_bindings
         )
         / len(selected_bindings)
@@ -1725,6 +2561,10 @@ def _proposal_from_raw(
         "temporal_aggregation": 0.78,
         "temporal_extrema_followup": 0.94,
         "scope_rank_followup": 0.92,
+        "derived_fact_composition": 0.82,
+        "fact_provenance": 0.88,
+        "time_hierarchy": 0.72,
+        "entity_set_scope": 0.84,
     }
     financial_value_score = family_value.get(raw["motif_family"], 0.5)
     operation_count = len(pattern_spec["operator_template"]["operators"])
@@ -1740,9 +2580,7 @@ def _proposal_from_raw(
         6,
     )
     created_at = _now()
-    lifecycle_events = [
-        {"stage": "proposed", "status": "passed", "at": created_at}
-    ]
+    lifecycle_events = [{"stage": "proposed", "status": "passed", "at": created_at}]
     reasons: list[str] = []
     if support < policy["min_support"]:
         reasons.append("insufficient_support")
@@ -1756,9 +2594,7 @@ def _proposal_from_raw(
     manual_review_status = "not_started"
     if not reasons:
         status = "semantic_validated"
-        lifecycle_events.append(
-            {"stage": status, "status": "passed", "at": created_at}
-        )
+        lifecycle_events.append({"stage": status, "status": "passed", "at": created_at})
         if example_pass_rate < 1.0:
             reasons.append("binding_example_execution_failed")
         if len(heldout_records) < policy["minimum_heldout_bindings"]:
@@ -1789,21 +2625,29 @@ def _proposal_from_raw(
                     {"stage": status, "status": "passed", "at": created_at}
                 )
     semantic_payload = _semantic_pattern_payload(pattern_spec)
+    canonical_semantic_digest = pattern_semantic_digest(pattern_spec)
     semantic_digest = _digest(semantic_payload)
     semantic_id = "qapatsem_" + semantic_digest[:24]
     signature = semantic_digest
-    snapshot_id = "qapatsnap_" + _digest(
-        semantic_id,
-        kg_build_id,
-        support,
-        bindings,
-        heldout_bindings,
-        semantic_results,
-        operation_results,
-    )[:24]
+    snapshot_id = (
+        "qapatsnap_"
+        + _digest(
+            semantic_id,
+            kg_build_id,
+            support,
+            bindings,
+            heldout_bindings,
+            semantic_results,
+            operation_results,
+        )[:24]
+    )
     proposal_hash = _digest(
         snapshot_id,
         pattern_spec,
+        canonical_semantic_digest,
+        static_pattern_id,
+        static_pattern_version,
+        static_pattern_hash,
     )
     proposal_id = "qaprop_" + _digest(run_id, snapshot_id)[:24]
     return PatternProposal(
@@ -1815,9 +2659,10 @@ def _proposal_from_raw(
         proposal_semantic_id=semantic_id,
         proposal_snapshot_id=snapshot_id,
         static_pattern_id=static_pattern_id,
-        binding_mode=(
-            "known_pattern_binding" if static_pattern_id else "new_pattern"
-        ),
+        pattern_semantic_digest=canonical_semantic_digest,
+        static_pattern_version=static_pattern_version,
+        static_pattern_hash=static_pattern_hash,
+        binding_mode=("known_pattern_binding" if static_pattern_id else "new_pattern"),
         pattern_spec=pattern_spec,
         operator_dag_template=pattern_spec["operator_template"],
         answer_schema=pattern_spec["answer_schema"],
@@ -1892,6 +2737,18 @@ def _raw_proposal(
     }
 
 
+def _binding_fact_ids(binding: dict[str, Any]) -> list[str]:
+    output: set[str] = set()
+    for value in dict(binding.get("input_bindings") or {}).values():
+        if isinstance(value, dict) and set(value) == {"__literal__"}:
+            continue
+        if isinstance(value, list):
+            output.update(str(item) for item in value)
+        elif value is not None:
+            output.add(str(value))
+    return sorted(output)
+
+
 def _append_binding(
     proposal: dict[str, Any],
     binding: dict[str, Any],
@@ -1926,9 +2783,7 @@ def _append_binding(
     else:
         for error in execution.errors or ["unknown_execution_error"]:
             proposal["operation_rejection_counts"][error] += 1
-    record_limit = (
-        policy["max_bindings_per_proposal"] + policy["max_heldout_bindings"]
-    )
+    record_limit = policy["max_bindings_per_proposal"] + policy["max_heldout_bindings"]
     if len(proposal["binding_validation_records"]) < record_limit:
         proposal["binding_validation_records"].append(
             {
@@ -1982,6 +2837,17 @@ def _base_spec(
     }
 
 
+def _binding_query_spec(
+    relational_ops: list[dict[str, Any]],
+    stratum_fields: list[str],
+) -> dict[str, Any]:
+    return {
+        "ir_version": 1,
+        "relational_ops": relational_ops,
+        "stratum_fields": stratum_fields,
+    }
+
+
 def _cross_metric_spec(left: str, right: str) -> dict[str, Any]:
     spec = _base_spec(
         task_subtype="cross_metric_comparison",
@@ -2006,11 +2872,38 @@ def _cross_metric_spec(left: str, right: str) -> dict[str, Any]:
             {"field": "metric_period_type", "operator": "same"},
         ]
     )
+    spec["binding_query"] = _binding_query_spec(
+        [
+            {
+                "op": "group",
+                "keys": [
+                    "entity",
+                    "period",
+                    "source",
+                    "frequency",
+                    "time_basis",
+                    "metric_period_type",
+                    "statement_type",
+                    "financial_scope",
+                    "unit",
+                    "currency",
+                ],
+            },
+            {
+                "op": "join_metric_roles",
+                "roles": [
+                    {"binding": "left", "metric_id": left},
+                    {"binding": "right", "metric_id": right},
+                ],
+            },
+        ],
+        ["metric_ids", "frequency", "period", "entity_hash_bucket"],
+    )
     return spec
 
 
 def _temporal_average_spec(metric: str) -> dict[str, Any]:
-    return _base_spec(
+    spec = _base_spec(
         task_subtype="multi_period_average",
         pattern_family="mined_temporal",
         difficulty_base="hard",
@@ -2025,6 +2918,18 @@ def _temporal_average_spec(metric: str) -> dict[str, Any]:
         output_step="answer",
         answer_schema={"type": "numeric", "aggregation": "arithmetic_mean"},
     )
+    spec["binding_query"] = _binding_query_spec(
+        [
+            {"op": "group_series"},
+            {
+                "op": "latest_contiguous_window",
+                "binding": "series",
+                "require_annual_duration": True,
+            },
+        ],
+        ["metric_ids", "frequency", "end_period", "entity_hash_bucket"],
+    )
+    return spec
 
 
 def _temporal_followup_spec(primary: str, secondary: str) -> dict[str, Any]:
@@ -2054,6 +2959,24 @@ def _temporal_followup_spec(primary: str, secondary: str) -> dict[str, Any]:
     )
     spec["semantic_constraints"].append(
         {"field": "metric_pair", "operator": "registered_followup_pair"}
+    )
+    spec["binding_query"] = _binding_query_spec(
+        [
+            {"op": "group_series"},
+            {
+                "op": "latest_contiguous_window",
+                "require_annual_duration": True,
+            },
+            {
+                "op": "join_series_on_period",
+                "coverage": 1.0,
+                "roles": [
+                    {"binding": "primary_series", "metric_id": primary},
+                    {"binding": "secondary_series", "metric_id": secondary},
+                ],
+            },
+        ],
+        ["metric_ids", "frequency", "end_period", "entity_hash_bucket"],
     )
     return spec
 
@@ -2117,6 +3040,42 @@ def _scope_rank_spec(primary: str, secondary: str) -> dict[str, Any]:
                 "operator": "same_within_binding",
             },
         ]
+    )
+    spec["binding_query"] = _binding_query_spec(
+        [
+            {
+                "op": "group",
+                "shape": "scope_metric_variants",
+                "keys": [
+                    "industry",
+                    "period",
+                    "source",
+                    "frequency",
+                    "time_basis",
+                    "financial_scope",
+                    "seasonal_adjustment",
+                    "vintage_policy",
+                    "comparability_level",
+                ],
+                "required_fields": ["industry"],
+                "predicates": {
+                    "entity_type": "company",
+                    "frequency": "annual",
+                    "fiscal_quarter": "FY",
+                    "financial_scope_type": "consolidated_entity",
+                    "entity_scope_matches_entity": True,
+                    "annual_duration_valid": True,
+                },
+            },
+            {
+                "op": "complete_case_metric_join",
+                "roles": [
+                    {"binding": "primary", "metric_id": primary},
+                    {"binding": "secondary", "metric_id": secondary},
+                ],
+            },
+        ],
+        ["metric_ids", "industry", "period"],
     )
     return spec
 
@@ -2200,9 +3159,7 @@ def _rate(numerator: int, denominator: int) -> float:
 def _record_pass_rate(records: list[dict[str, Any]]) -> float:
     if not records:
         return 1.0
-    return sum(item["execution_status"] == "passed" for item in records) / len(
-        records
-    )
+    return sum(item["execution_status"] == "passed" for item in records) / len(records)
 
 
 def _execution_summary(record: dict[str, Any]) -> dict[str, Any]:
@@ -2216,17 +3173,14 @@ def _execution_summary(record: dict[str, Any]) -> dict[str, Any]:
 
 def _pattern_feature_set(spec: dict[str, Any]) -> set[str]:
     features = {
-        f"node:{item.get('type')}"
-        for item in spec.get("node_constraints") or []
+        f"node:{item.get('type')}" for item in spec.get("node_constraints") or []
     }
     features.update(
-        f"edge:{item.get('relation')}"
-        for item in spec.get("edge_constraints") or []
+        f"edge:{item.get('relation')}" for item in spec.get("edge_constraints") or []
     )
     template = spec.get("operator_template") or {}
     features.update(
-        f"operator:{item.get('operator')}"
-        for item in template.get("operators") or []
+        f"operator:{item.get('operator')}" for item in template.get("operators") or []
     )
     features.add(f"task:{spec.get('task_subtype')}")
     features.add(f"answer:{(spec.get('answer_schema') or {}).get('type')}")
@@ -2235,7 +3189,8 @@ def _pattern_feature_set(spec: dict[str, Any]) -> set[str]:
 
 def _static_pattern_match(spec: dict[str, Any]) -> tuple[str | None, float]:
     proposal = _semantic_pattern_components(spec)
-    matches: list[tuple[float, str]] = []
+    proposal_digest = pattern_semantic_digest(spec)
+    matches: list[tuple[float, str, dict[str, Any]]] = []
     for static in pattern_manifest():
         if not static.get("is_active", True):
             continue
@@ -2252,22 +3207,26 @@ def _static_pattern_match(spec: dict[str, Any]) -> tuple[str | None, float]:
             float(proposal["answer_schema"] == candidate["answer_schema"]),
         ]
         score = sum(component_scores) / len(component_scores)
-        matches.append((score, str(static["pattern_id"])))
+        matches.append((score, str(static["pattern_id"]), static))
     if not matches:
         return None, 0.0
-    score, pattern_id = max(matches, key=lambda item: (item[0], item[1]))
-    static_components = _semantic_pattern_components(
-        next(
-            item
-            for item in pattern_manifest()
-            if item["pattern_id"] == pattern_id
-        )
+    score, pattern_id, static = max(matches, key=lambda item: (item[0], item[1]))
+    static_components = _semantic_pattern_components(static)
+    exact_components = (
+        "task_subtype",
+        "node_grammar",
+        "edge_grammar",
+        "operator_dag",
+        "semantic_constraints",
+        "answer_schema",
     )
     known = (
-        proposal["task_subtype"] == static_components["task_subtype"]
-        and proposal["operator_dag"] == static_components["operator_dag"]
-        and proposal["answer_schema"]["type"]
-        == static_components["answer_schema"]["type"]
+        score == 1.0
+        and all(
+            proposal[component] == static_components[component]
+            for component in exact_components
+        )
+        and proposal_digest == pattern_semantic_digest(static)
     )
     return (pattern_id if known else None), score
 
@@ -2285,78 +3244,18 @@ def _semantic_pattern_payload(spec: dict[str, Any]) -> dict[str, Any]:
 
 
 def _semantic_pattern_components(spec: dict[str, Any]) -> dict[str, Any]:
-    nodes = {
-        str(item.get("variable")): str(item.get("type"))
-        for item in spec.get("node_constraints") or []
-    }
-    return {
-        "task_subtype": str(spec.get("task_subtype") or ""),
-        "node_grammar": tuple(sorted({
-            (
-                str(item.get("type")),
-                str(item.get("cardinality") or "one"),
-            )
-            for item in spec.get("node_constraints") or []
-        })),
-        "edge_grammar": tuple(sorted({
-            (
-                nodes.get(str(item.get("src")), "unknown"),
-                str(item.get("relation")),
-                nodes.get(str(item.get("dst")), "unknown"),
-            )
-            for item in spec.get("edge_constraints") or []
-        })),
-        "operator_dag": _normalize_operator_dag(
-            spec.get("operator_template") or {}
-        ),
-        "semantic_constraints": tuple(sorted({
-            _digest(item) for item in spec.get("semantic_constraints") or []
-        })),
-        "answer_schema": {
-            "type": str((spec.get("answer_schema") or {}).get("type") or ""),
-            "fields": tuple(
-                sorted((spec.get("answer_schema") or {}).get("fields") or [])
-            ),
-        },
-    }
-
-
-def _normalize_operator_dag(template: dict[str, Any]) -> tuple[Any, ...]:
-    step_positions = {
-        str(step.get("step_id")): index
-        for index, step in enumerate(template.get("operators") or [])
-    }
-    output = []
-    for step in template.get("operators") or []:
-        inputs = []
-        for value in step.get("inputs") or []:
-            if value.get("binding") is not None:
-                inputs.append(("binding", str(value["binding"])))
-            elif value.get("step") is not None:
-                inputs.append(("step", step_positions.get(str(value["step"]), -1)))
-        output.append(
-            (
-                str(step.get("operator")),
-                tuple(inputs),
-                _digest(_semantic_operator_params(step.get("params") or {})),
-            )
-        )
-    return tuple(output)
-
-
-def _semantic_operator_params(params: dict[str, Any]) -> dict[str, Any]:
-    return {
-        str(key): value
-        for key, value in params.items()
-        if key not in {"id_field"}
-    }
+    return pattern_semantic_components(spec)
 
 
 def _jaccard(left: Any, right: Any) -> float:
-    left = set(left)
-    right = set(right)
-    union = left | right
-    return len(left & right) / len(union) if union else 1.0
+    left_counts = Counter(left)
+    right_counts = Counter(right)
+    union = left_counts | right_counts
+    return (
+        sum((left_counts & right_counts).values()) / sum(union.values())
+        if union
+        else 1.0
+    )
 
 
 def _binding_diversity_score(bindings: list[dict[str, Any]]) -> float:

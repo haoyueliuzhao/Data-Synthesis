@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -180,7 +182,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
         semantic_constraints=[
             {"field": "facts.count", "operator": "gte", "value": 3},
             {"field": "periods", "operator": "contiguous"},
-            {"field": "annual_flow_duration", "operator": "between_days", "value": [300, 430]},
+            {
+                "field": "annual_flow_duration",
+                "operator": "between_days",
+                "value": [300, 430],
+            },
             {"field": "source_definition", "operator": "same"},
             {"field": "frequency", "operator": "same"},
             {"field": "time_basis", "operator": "same"},
@@ -220,7 +226,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"src": "entity", "relation": "HAS_FACT", "dst": "primary_facts"},
             {"src": "entity", "relation": "HAS_FACT", "dst": "secondary_facts"},
             {"src": "primary_facts", "relation": "MEASURES", "dst": "primary_metric"},
-            {"src": "secondary_facts", "relation": "MEASURES", "dst": "secondary_metric"},
+            {
+                "src": "secondary_facts",
+                "relation": "MEASURES",
+                "dst": "secondary_metric",
+            },
             {"src": "primary_facts", "relation": "IN_PERIOD", "dst": "periods"},
             {"src": "secondary_facts", "relation": "IN_PERIOD", "dst": "periods"},
         ],
@@ -228,7 +238,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"field": "metric_pair", "operator": "registered_followup_pair"},
             {"field": "primary_facts.count", "operator": "gte", "value": 3},
             {"field": "periods", "operator": "contiguous"},
-            {"field": "annual_flow_duration", "operator": "between_days", "value": [300, 430]},
+            {
+                "field": "annual_flow_duration",
+                "operator": "between_days",
+                "value": [300, 430],
+            },
             {"field": "secondary_period_coverage", "operator": "eq", "value": 1.0},
             {"field": "financial_scope", "operator": "same"},
             {"field": "source_definition", "operator": "compatible_by_series"},
@@ -290,7 +304,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"field": "financial_scope", "operator": "consolidated_entity"},
             {"field": "revenue_growth_pct", "operator": "gt", "value_from": "policy"},
             {"field": "scope_input_coverage", "operator": "eq", "value": 1.0},
-            {"field": "annual_flow_duration", "operator": "between_days", "value": [300, 430]},
+            {
+                "field": "annual_flow_duration",
+                "operator": "between_days",
+                "value": [300, 430],
+            },
         ],
         operator_template={
             "operators": [
@@ -307,7 +325,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
                     "step_id": "growth_filter",
                     "operator": "filter",
                     "inputs": [{"step": "growth"}],
-                    "params": {"comparison": "gt", "field": "normalized_value", "value": "10"},
+                    "params": {
+                        "comparison": "gt",
+                        "field": "normalized_value",
+                        "value": "10",
+                    },
                 },
                 {
                     "step_id": "margin",
@@ -357,7 +379,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"field": "period", "operator": "same"},
             {"field": "financial_scope", "operator": "consolidated_entity"},
             {"field": "secondary_entity_coverage", "operator": "eq", "value": 1.0},
-            {"field": "annual_flow_duration", "operator": "between_days", "value": [300, 430]},
+            {
+                "field": "annual_flow_duration",
+                "operator": "between_days",
+                "value": [300, 430],
+            },
         ],
         operator_template={
             "operators": [
@@ -404,7 +430,11 @@ PATTERNS: tuple[GraphPattern, ...] = (
             {"field": "revenue_growth_pct", "operator": "gt", "value_from": "policy"},
             {"field": "net_margin", "operator": "gt_industry_average"},
             {"field": "debt_ratio_pct", "operator": "lt", "value_from": "policy"},
-            {"field": "annual_flow_duration", "operator": "between_days", "value": [300, 430]},
+            {
+                "field": "annual_flow_duration",
+                "operator": "between_days",
+                "value": [300, 430],
+            },
         ],
         operator_template={
             "operators": [
@@ -420,19 +450,29 @@ PATTERNS: tuple[GraphPattern, ...] = (
                 {
                     "step_id": "margin",
                     "operator": "ratio_by_entity",
-                    "inputs": [{"binding": "net_income"}, {"binding": "current_revenue"}],
+                    "inputs": [
+                        {"binding": "net_income"},
+                        {"binding": "current_revenue"},
+                    ],
                     "params": {"output_metric_id": "net_margin"},
                 },
                 {
                     "step_id": "debt_ratio",
                     "operator": "ratio_by_entity",
-                    "inputs": [{"binding": "total_liabilities"}, {"binding": "total_assets"}],
+                    "inputs": [
+                        {"binding": "total_liabilities"},
+                        {"binding": "total_assets"},
+                    ],
                     "params": {"output_metric_id": "debt_ratio"},
                 },
                 {
                     "step_id": "answer",
                     "operator": "multi_factor_screen",
-                    "inputs": [{"step": "growth"}, {"step": "margin"}, {"step": "debt_ratio"}],
+                    "inputs": [
+                        {"step": "growth"},
+                        {"step": "margin"},
+                        {"step": "debt_ratio"},
+                    ],
                     "params": {"growth_min_pct": "10", "debt_max_pct": "70"},
                 },
             ],
@@ -491,3 +531,107 @@ def get_pattern(pattern_id: str) -> GraphPattern:
 
 def pattern_manifest() -> list[dict[str, Any]]:
     return [pattern.as_row() for pattern in PATTERNS]
+
+
+def pattern_content_hash(pattern: GraphPattern | dict[str, Any]) -> str:
+    """Return the immutable registry hash used by persisted graph patterns."""
+    row = pattern.as_row() if isinstance(pattern, GraphPattern) else pattern
+    payload = json.dumps(
+        (row,), ensure_ascii=False, sort_keys=True, default=str
+    ).encode("utf-8")
+    return hashlib.sha1(payload).hexdigest()[:24]
+
+
+def pattern_semantic_components(
+    pattern: GraphPattern | dict[str, Any],
+) -> dict[str, Any]:
+    """Normalize executable semantics independently of IDs and versions."""
+    spec = pattern.as_row() if isinstance(pattern, GraphPattern) else pattern
+    nodes = {
+        str(item.get("variable")): (
+            str(item.get("type") or ""),
+            str(item.get("cardinality") or "one"),
+        )
+        for item in spec.get("node_constraints") or []
+    }
+    node_grammar = tuple(
+        sorted(
+            (
+                str(item.get("type") or ""),
+                str(item.get("cardinality") or "one"),
+                _canonical_json(
+                    {
+                        str(key): value
+                        for key, value in item.items()
+                        if key not in {"variable", "values"}
+                    }
+                ),
+            )
+            for item in spec.get("node_constraints") or []
+        )
+    )
+    edge_grammar = tuple(
+        sorted(
+            (
+                nodes.get(str(item.get("src")), ("unknown", "one")),
+                str(item.get("relation") or ""),
+                nodes.get(str(item.get("dst")), ("unknown", "one")),
+                _canonical_json(
+                    {
+                        str(key): value
+                        for key, value in item.items()
+                        if key not in {"src", "relation", "dst"}
+                    }
+                ),
+            )
+            for item in spec.get("edge_constraints") or []
+        )
+    )
+    return {
+        "task_subtype": str(spec.get("task_subtype") or ""),
+        "node_grammar": node_grammar,
+        "edge_grammar": edge_grammar,
+        "operator_dag": _normalize_operator_dag(spec.get("operator_template") or {}),
+        "semantic_constraints": tuple(
+            sorted(
+                _canonical_json(item) for item in spec.get("semantic_constraints") or []
+            )
+        ),
+        "answer_schema": _canonical_json(spec.get("answer_schema") or {}),
+    }
+
+
+def pattern_semantic_digest(pattern: GraphPattern | dict[str, Any]) -> str:
+    payload = _canonical_json(pattern_semantic_components(pattern)).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _normalize_operator_dag(template: dict[str, Any]) -> tuple[Any, ...]:
+    operators = template.get("operators") or []
+    step_positions = {
+        str(step.get("step_id")): index for index, step in enumerate(operators)
+    }
+    normalized = []
+    for step in operators:
+        inputs = []
+        for value in step.get("inputs") or []:
+            if value.get("binding") is not None:
+                inputs.append(("binding", str(value["binding"])))
+            elif value.get("step") is not None:
+                inputs.append(("step", step_positions.get(str(value["step"]), -1)))
+        params = {
+            str(key): value
+            for key, value in (step.get("params") or {}).items()
+            if key not in {"id_field"}
+        }
+        normalized.append(
+            (str(step.get("operator") or ""), tuple(inputs), _canonical_json(params))
+        )
+    output_position = step_positions.get(str(template.get("output_step")), -1)
+    return tuple(normalized), output_position
+
+
+def _canonical_json(value: Any) -> str:
+    return json.dumps(
+        value, ensure_ascii=True, sort_keys=True, separators=(",", ":"), default=str
+    )

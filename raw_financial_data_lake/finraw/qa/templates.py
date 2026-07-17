@@ -250,6 +250,42 @@ TEMPLATES: list[dict[str, Any]] = [
         "answer_type": "screening_table",
         "difficulty_base": "research",
     },
+    {
+        "template_id": "derived_input_trace_en_01",
+        "task_family": "graph_composition",
+        "language": "en",
+        "template_text": "Which input facts were used to calculate the {derived_type} result {derived_id}?",
+        "required_slots": ["derived_type", "derived_id"],
+        "answer_type": "structured_fact_list",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "provenance_trace_en_01",
+        "task_family": "graph_provenance",
+        "language": "en",
+        "template_text": "Trace fact {fact_id} to its data source, source definition, and raw object.",
+        "required_slots": ["fact_id"],
+        "answer_type": "evidence_trace",
+        "difficulty_base": "easy",
+    },
+    {
+        "template_id": "time_hierarchy_membership_en_01",
+        "task_family": "graph_time_hierarchy",
+        "language": "en",
+        "template_text": "Which {hierarchy_type} does the period for fact {fact_id} belong to?",
+        "required_slots": ["hierarchy_type", "fact_id"],
+        "answer_type": "time_hierarchy_membership",
+        "difficulty_base": "easy",
+    },
+    {
+        "template_id": "scope_composition_en_01",
+        "task_family": "graph_scope",
+        "language": "en",
+        "template_text": "Which entities make up {scope_label} for derived result {derived_id}?",
+        "required_slots": ["scope_label", "derived_id"],
+        "answer_type": "entity_scope_membership",
+        "difficulty_base": "medium",
+    },
 ]
 
 
@@ -263,6 +299,18 @@ def template_for(
             "point_in_time": "single_fact_instant_en_01",
             "period_flow": "single_fact_flow_en_01",
         }.get(period_type, "single_fact_observation_en_01")
+    elif task_subtype in {
+        "derived_input_trace",
+        "provenance_trace",
+        "time_hierarchy_membership",
+        "scope_composition",
+    }:
+        template_id = {
+            "derived_input_trace": "derived_input_trace_en_01",
+            "provenance_trace": "provenance_trace_en_01",
+            "time_hierarchy_membership": "time_hierarchy_membership_en_01",
+            "scope_composition": "scope_composition_en_01",
+        }[task_subtype]
     elif task_subtype in {
         "multi_year_argmax",
         "multi_year_argmin",

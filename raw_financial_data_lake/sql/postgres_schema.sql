@@ -644,6 +644,7 @@ CREATE TABLE IF NOT EXISTS qa_builds (
             qa_build_id TEXT PRIMARY KEY,
             kg_build_id TEXT NOT NULL,
             mining_run_id TEXT,
+            pattern_catalog_release_id TEXT,
             graph_schema_version TEXT NOT NULL,
             fact_build_id TEXT,
             derived_build_id TEXT,
@@ -712,6 +713,8 @@ CREATE TABLE IF NOT EXISTS qa_pattern_mining_runs (
             scanned_fact_count BIGINT DEFAULT 0,
             proposal_count BIGINT DEFAULT 0,
             approved_count BIGINT DEFAULT 0,
+            published_proposal_manifest JSONB,
+            published_proposal_manifest_hash TEXT,
             reviewed_at TIMESTAMPTZ,
             reviewed_by TEXT,
             approved_at TIMESTAMPTZ,
@@ -720,6 +723,54 @@ CREATE TABLE IF NOT EXISTS qa_pattern_mining_runs (
             superseded_by_run_id TEXT,
             lifecycle_events JSONB NOT NULL,
             notes JSONB NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_pattern_catalog_releases (
+            catalog_release_id TEXT PRIMARY KEY,
+            catalog_version TEXT NOT NULL,
+            source_mining_run_id TEXT NOT NULL,
+            source_kg_build_id TEXT NOT NULL,
+            source_manifest_hash TEXT NOT NULL,
+            catalog_manifest JSONB NOT NULL,
+            catalog_manifest_hash TEXT NOT NULL,
+            entry_count BIGINT NOT NULL,
+            status TEXT NOT NULL,
+            published_at TIMESTAMPTZ NOT NULL,
+            published_by TEXT NOT NULL,
+            notes JSONB NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_pattern_catalog_entries (
+            catalog_entry_id TEXT PRIMARY KEY,
+            catalog_release_id TEXT NOT NULL REFERENCES qa_pattern_catalog_releases(catalog_release_id),
+            catalog_pattern_id TEXT NOT NULL,
+            catalog_entry_hash TEXT NOT NULL,
+            source_proposal_id TEXT NOT NULL,
+            source_proposal_hash TEXT NOT NULL,
+            source_mining_run_id TEXT NOT NULL,
+            source_kg_build_id TEXT NOT NULL,
+            proposal_semantic_id TEXT NOT NULL,
+            proposal_snapshot_id TEXT NOT NULL,
+            motif_family TEXT NOT NULL,
+            motif_signature TEXT NOT NULL,
+            pattern_semantic_digest TEXT NOT NULL,
+            static_pattern_id TEXT,
+            static_pattern_version BIGINT,
+            static_pattern_hash TEXT,
+            binding_mode TEXT NOT NULL,
+            pattern_spec JSONB NOT NULL,
+            operator_dag_template JSONB NOT NULL,
+            answer_schema JSONB NOT NULL,
+            binding_examples JSONB NOT NULL,
+            heldout_bindings JSONB NOT NULL,
+            support_count BIGINT NOT NULL,
+            total_score REAL NOT NULL,
+            semantic_constraint_pass_rate REAL NOT NULL,
+            operation_execution_pass_rate REAL NOT NULL,
+            example_binding_pass_rate REAL NOT NULL,
+            heldout_binding_pass_rate REAL NOT NULL,
+            static_pattern_overlap REAL NOT NULL,
+            status TEXT NOT NULL,
+            published_at TIMESTAMPTZ NOT NULL,
+            UNIQUE(catalog_release_id, catalog_pattern_id)
         );
 CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
             proposal_id TEXT PRIMARY KEY,
@@ -730,6 +781,9 @@ CREATE TABLE IF NOT EXISTS qa_pattern_proposals (
             proposal_semantic_id TEXT NOT NULL,
             proposal_snapshot_id TEXT NOT NULL,
             static_pattern_id TEXT,
+            pattern_semantic_digest TEXT NOT NULL,
+            static_pattern_version BIGINT,
+            static_pattern_hash TEXT,
             binding_mode TEXT NOT NULL,
             pattern_spec JSONB NOT NULL,
             operator_dag_template JSONB NOT NULL,
@@ -767,6 +821,10 @@ CREATE TABLE IF NOT EXISTS qa_pattern_compilations (
             proposal_id TEXT NOT NULL,
             proposal_hash TEXT NOT NULL,
             source_kg_build_id TEXT NOT NULL,
+            pattern_catalog_release_id TEXT,
+            pattern_catalog_entry_id TEXT,
+            pattern_catalog_entry_hash TEXT,
+            catalog_pattern_id TEXT,
             target_kg_build_id TEXT NOT NULL,
             fact_build_id TEXT NOT NULL,
             compiler_version TEXT NOT NULL,
@@ -813,7 +871,13 @@ CREATE TABLE IF NOT EXISTS qa_graph_motif_observations (
             status TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
+CREATE UNIQUE INDEX IF NOT EXISTS uq_one_approved_mining_run_per_kg
+ON qa_pattern_mining_runs (kg_build_id)
+WHERE status = 'approved_for_qa';
 CREATE INDEX IF NOT EXISTS idx_qa_mining_runs_kg_status ON qa_pattern_mining_runs(kg_build_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_builds_catalog_release ON qa_builds(pattern_catalog_release_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_catalog_releases_source ON qa_pattern_catalog_releases(source_mining_run_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_catalog_entries_release ON qa_pattern_catalog_entries(catalog_release_id, status, total_score);
 CREATE INDEX IF NOT EXISTS idx_qa_builds_mining_run ON qa_builds(mining_run_id, status);
 CREATE INDEX IF NOT EXISTS idx_qa_proposals_kg_status_score ON qa_pattern_proposals(kg_build_id, status, total_score);
 CREATE INDEX IF NOT EXISTS idx_qa_proposals_semantic_snapshot ON qa_pattern_proposals(proposal_semantic_id, proposal_snapshot_id);
@@ -835,8 +899,15 @@ CREATE TABLE IF NOT EXISTS qa_candidates (
             mining_run_id TEXT,
             pattern_proposal_id TEXT,
             pattern_proposal_hash TEXT,
+            proposal_semantic_id TEXT,
+            pattern_catalog_release_id TEXT,
+            pattern_catalog_entry_id TEXT,
+            pattern_catalog_entry_hash TEXT,
+            catalog_pattern_id TEXT,
             pattern_score REAL,
             pattern_compilation_id TEXT,
+            logical_plan_hash TEXT,
+            compiler_version TEXT,
             compiled_binding_id TEXT,
             compiled_binding_hash TEXT,
             graph_features JSONB,

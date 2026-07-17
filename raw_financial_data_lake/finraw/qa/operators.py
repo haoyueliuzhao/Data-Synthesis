@@ -352,6 +352,14 @@ def _multi_factor_screen(inputs: list[Any], params: dict[str, Any]) -> dict[str,
     }
 
 
+def _graph_answer(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
+    if len(inputs) != 1 or not isinstance(inputs[0], dict):
+        raise OperatorError("graph_answer requires one structured graph projection")
+    if not inputs[0]:
+        raise OperatorError("graph_answer projection is empty")
+    return dict(inputs[0])
+
+
 def _unique_by_entity(
     records: list[dict[str, Any]], label: str
 ) -> dict[str, dict[str, Any]]:
@@ -379,6 +387,9 @@ def _flatten_facts(inputs: list[Any]) -> list[dict[str, Any]]:
 
 
 OPERATORS: dict[str, OperatorSpec] = {
+    "graph_answer": OperatorSpec(
+        "graph_answer", "graph_projection", "structured", 1.0, _graph_answer
+    ),
     "lookup": OperatorSpec("lookup", "fact", "numeric", 0.0, _lookup),
     "difference": OperatorSpec("difference", "fact_pair", "numeric", 1.0, _difference),
     "compare": OperatorSpec("compare", "fact_pair", "comparison", 1.5, _compare),

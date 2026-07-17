@@ -539,15 +539,27 @@ def match_temporal_argmax_followup(
 
 
 def load_bound_facts(
-    db: DBProtocol, fact_build_id: str, fact_ids: list[str]
+    db: DBProtocol,
+    fact_build_id: str,
+    fact_ids: list[str],
+    entity_build_id: str | None = None,
 ) -> dict[str, dict[str, Any]]:
     output: dict[str, dict[str, Any]] = {}
     for batch in chunks(sorted(set(fact_ids)), 500):
         placeholders = ",".join("?" for _ in batch)
-        rows = db.fetchall(
-            f"SELECT * FROM standardized_facts WHERE build_id = ? AND fact_id IN ({placeholders})",
-            [fact_build_id, *batch],
-        )
+        if entity_build_id:
+            rows = db.fetchall(
+                f"SELECT sf.*, ce.entity_type, ce.market, ce.country, ce.industry "
+                f"FROM standardized_facts sf JOIN canonical_entities ce "
+                f"ON ce.build_id = ? AND ce.entity_id = sf.entity_id "
+                f"WHERE sf.build_id = ? AND sf.fact_id IN ({placeholders})",
+                [entity_build_id, fact_build_id, *batch],
+            )
+        else:
+            rows = db.fetchall(
+                f"SELECT * FROM standardized_facts WHERE build_id = ? AND fact_id IN ({placeholders})",
+                [fact_build_id, *batch],
+            )
         output.update({str(row["fact_id"]): dict(row) for row in rows})
     return output
 

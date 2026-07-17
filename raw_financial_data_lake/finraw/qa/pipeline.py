@@ -11,16 +11,27 @@ from pathlib import Path
 from typing import Any
 
 from finraw.db.client import DBProtocol
+from finraw.qa.binding_executor import MetricFactCache
 from finraw.kg_query import resolve_kg_build_id
 from finraw.qa.comparability import comparability_policy
 from finraw.qa.difficulty import DIFFICULTY_POLICY, assess_difficulty, graph_features
 from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
-from finraw.qa.graph_patterns import get_pattern, pattern_manifest
+from finraw.qa.graph_patterns import (
+    get_pattern,
+    pattern_content_hash,
+    pattern_manifest,
+)
 from finraw.qa.operators import operator_registry
+from finraw.qa.pattern_catalog import (
+    load_catalog_patterns,
+    load_pattern_catalog_release,
+    validate_catalog_target_compatibility,
+)
 from finraw.qa.pattern_compiler import (
     COMPILER_VERSION,
     compile_pattern_proposal,
     compile_proposal_matches,
+    logical_plan_hash,
 )
 from finraw.qa.pattern_mining import (
     get_approved_mining_run,
@@ -57,18 +68,26 @@ SCOPE_DERIVED = {
     "industry_argmin",
     "multi_condition_screening",
 }
+GRAPH_NATIVE_TASKS = {
+    "derived_input_trace",
+    "provenance_trace",
+    "time_hierarchy_membership",
+    "scope_composition",
+}
+
 GRAPH_SCOPE_TASKS = {
     "filter_then_rank",
     "rank_then_secondary_lookup",
     "multi_factor_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.4.0"
+GENERATOR_VERSION = "4.12.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
     "kg_build_id",
     "mining_run_id",
+    "pattern_catalog_release_id",
     "graph_schema_version",
     "fact_build_id",
     "derived_build_id",
@@ -110,8 +129,15 @@ CANDIDATE_COLUMNS = [
     "mining_run_id",
     "pattern_proposal_id",
     "pattern_proposal_hash",
+    "proposal_semantic_id",
+    "pattern_catalog_release_id",
+    "pattern_catalog_entry_id",
+    "pattern_catalog_entry_hash",
+    "catalog_pattern_id",
     "pattern_score",
     "pattern_compilation_id",
+    "logical_plan_hash",
+    "compiler_version",
     "compiled_binding_id",
     "compiled_binding_hash",
     "graph_features",
@@ -210,6 +236,7 @@ def build_qa_candidates(
     *,
     kg_build_id: str | None = None,
     mining_run_id: str | None = None,
+    pattern_catalog_release_id: str | None = None,
     output_dir: str | None = None,
     batch_size: int = 2000,
 ) -> dict[str, Any]:
@@ -224,7 +251,28 @@ def build_qa_candidates(
     effective_mining_policy = mining_policy(config)
     mining_report = None
     selected_mining_run = None
-    if effective_mining_policy["enabled"]:
+    selected_catalog_release = None
+    catalog_compatibility = None
+    if mining_run_id is not None and pattern_catalog_release_id is not None:
+        raise ValueError(
+            "Choose either mining_run_id or pattern_catalog_release_id, not both"
+        )
+    if pattern_catalog_release_id is not None:
+        selected_catalog_release = load_pattern_catalog_release(
+            db, pattern_catalog_release_id
+        )
+        catalog_compatibility = validate_catalog_target_compatibility(
+            db,
+            selected_catalog_release,
+            kg,
+        )
+        mining_run_id = str(selected_catalog_release["source_mining_run_id"])
+        mined_proposals = load_catalog_patterns(
+            db,
+            pattern_catalog_release_id,
+            limit=effective_mining_policy["max_proposals"],
+        )
+    elif effective_mining_policy["enabled"]:
         if mining_run_id is None and effective_mining_policy["auto_run"]:
             mining_report = mine_qa_patterns(
                 db,
@@ -262,9 +310,18 @@ def build_qa_candidates(
             "proposal_semantic_id": proposal.get("proposal_semantic_id"),
             "proposal_snapshot_id": proposal.get("proposal_snapshot_id"),
             "static_pattern_id": proposal.get("static_pattern_id"),
+            "static_pattern_version": proposal.get("static_pattern_version"),
+            "static_pattern_hash": proposal.get("static_pattern_hash"),
+            "pattern_semantic_digest": proposal.get("pattern_semantic_digest"),
             "binding_mode": proposal.get("binding_mode"),
             "motif_signature": proposal["motif_signature"],
             "total_score": proposal["total_score"],
+            "pattern_catalog_release_id": proposal.get(
+                "pattern_catalog_release_id"
+            ),
+            "pattern_catalog_entry_id": proposal.get("pattern_catalog_entry_id"),
+            "pattern_catalog_entry_hash": proposal.get("pattern_catalog_entry_hash"),
+            "catalog_pattern_id": proposal.get("catalog_pattern_id"),
             "compiler_version": COMPILER_VERSION,
         }
         for proposal in mined_proposals
@@ -279,6 +336,7 @@ def build_qa_candidates(
         "qa_build_id": qa_build_id,
         "kg_build_id": kg_build_id,
         "mining_run_id": mining_run_id,
+        "pattern_catalog_release_id": pattern_catalog_release_id,
         "graph_schema_version": kg.get("graph_schema_version"),
         "fact_build_id": kg.get("input_fact_build_id"),
         "derived_build_id": kg.get("input_qa_build_id"),
@@ -294,6 +352,7 @@ def build_qa_candidates(
             DIFFICULTY_POLICY,
             GENERATOR_VERSION,
             mining_run_id,
+            pattern_catalog_release_id,
         ),
         "template_manifest_hash": _digest(TEMPLATES),
         "pattern_manifest_hash": pattern_manifest_hash,
@@ -327,10 +386,18 @@ def build_qa_candidates(
                 "report": mining_report,
                 "selected_run": selected_mining_run,
                 "proposal_manifest": mined_manifest,
+                "selected_catalog_release": selected_catalog_release,
+                "catalog_compatibility": catalog_compatibility,
             },
         },
     }
     insert_rows(db, "qa_builds", [build], BUILD_COLUMNS, {"notes"})
+    metric_fact_cache = MetricFactCache(
+        qa_build_id=qa_build_id,
+        enabled=bool(
+            effective_mining_policy["compiled_metric_fact_cache_enabled"]
+        ),
+    )
 
     candidates: list[dict[str, Any]] = []
     plans: list[dict[str, Any]] = []
@@ -350,12 +417,9 @@ def build_qa_candidates(
             (kg["input_metric_build_id"],),
         )
     ]
-    metric_ontology = {
-        str(row["metric_id"]): row for row in metric_rows
-    }
+    metric_ontology = {str(row["metric_id"]): row for row in metric_rows}
     metric_names = {
-        str(row["metric_id"]): str(row["canonical_name"])
-        for row in metric_rows
+        str(row["metric_id"]): str(row["canonical_name"]) for row in metric_rows
     }
     raw_by_fact = {
         str(row["fact_id"]): str(row["raw_object_id"])
@@ -477,6 +541,7 @@ def build_qa_candidates(
                 db,
                 kg["input_fact_build_id"],
                 [fact_id for match in matches for fact_id in match["fact_ids"]],
+                kg["input_entity_build_id"],
             )
             for match in matches:
                 candidate, plan = _graph_pattern_candidate(
@@ -493,7 +558,7 @@ def build_qa_candidates(
                 )
                 emit(candidate, plan)
 
-    if effective_mining_policy["enabled"]:
+    if mined_proposals:
         for proposal in mined_proposals:
             pattern = compile_pattern_proposal(proposal)
             matches = compile_proposal_matches(
@@ -506,11 +571,13 @@ def build_qa_candidates(
                     **effective_mining_policy,
                     "semantic_policy": semantic_policy,
                 },
+                metric_fact_cache=metric_fact_cache,
             )
             fact_map = load_bound_facts(
                 db,
                 kg["input_fact_build_id"],
                 [fact_id for match in matches for fact_id in match["fact_ids"]],
+                kg["input_entity_build_id"],
             )
             for match in matches:
                 candidate, plan = _graph_pattern_candidate(
@@ -558,14 +625,14 @@ def build_qa_candidates(
             (qa_build_id,),
         )
     ]
+    metric_fact_cache_summary = metric_fact_cache.summary()
     compilation_summary = {
         "compilation_count": len(compilation_rows),
         "successful_compilation_count": sum(
             row.get("status") == "success" for row in compilation_rows
         ),
         "discovered_binding_count": sum(
-            int(row.get("discovered_binding_count") or 0)
-            for row in compilation_rows
+            int(row.get("discovered_binding_count") or 0) for row in compilation_rows
         ),
         "semantic_valid_binding_count": sum(
             int(row.get("semantic_valid_binding_count") or 0)
@@ -577,15 +644,15 @@ def build_qa_candidates(
         ),
         "compiled_binding_count": len(compiled_binding_rows),
         "audit_overlap_binding_count": sum(
-            bool(row.get("audit_example_overlap"))
-            for row in compiled_binding_rows
+            bool(row.get("audit_example_overlap")) for row in compiled_binding_rows
         ),
         "non_audit_binding_count": sum(
-            not bool(row.get("audit_example_overlap"))
-            for row in compiled_binding_rows
+            not bool(row.get("audit_example_overlap")) for row in compiled_binding_rows
         ),
     }
-    build_row = db.fetchone("SELECT notes FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,))
+    build_row = db.fetchone(
+        "SELECT notes FROM qa_builds WHERE qa_build_id = ?", (qa_build_id,)
+    )
     notes = json_value(build_row["notes"] if build_row else None, {})
     notes.update(
         {
@@ -594,6 +661,7 @@ def build_qa_candidates(
             "emitted_task_counts": dict(counts),
             "rejection_counts": dict(rejected),
             "pattern_compilation_summary": compilation_summary,
+            "metric_fact_cache": metric_fact_cache_summary,
         }
     )
     db.execute(
@@ -609,12 +677,15 @@ def build_qa_candidates(
         "qa_build_id": qa_build_id,
         "kg_build_id": kg_build_id,
         "mining_run_id": mining_run_id,
+        "pattern_catalog_release_id": pattern_catalog_release_id,
+        "catalog_compatibility": catalog_compatibility,
         "candidate_count": candidate_count,
         "eligible_candidate_count": eligible_count,
         "task_counts": persisted_task_counts,
         "emitted_task_counts": dict(sorted(counts.items())),
         "rejection_counts": dict(sorted(rejected.items())),
         "pattern_compilation_summary": compilation_summary,
+        "metric_fact_cache": metric_fact_cache_summary,
     }
     return _write_report(report, output_dir, "qa_candidate_report")
 
@@ -628,6 +699,19 @@ def generate_qa_samples(
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
     build = _qa_build(db, qa_build_id)
+    if build.get("pattern_catalog_release_id"):
+        release = load_pattern_catalog_release(
+            db, str(build["pattern_catalog_release_id"])
+        )
+        validate_catalog_target_compatibility(
+            db,
+            release,
+            {
+                "kg_build_id": build["kg_build_id"],
+                "graph_schema_version": build["graph_schema_version"],
+                "input_metric_build_id": build["metric_build_id"],
+            },
+        )
     candidates = db.fetchall(
         """
         SELECT c.*, p.operator_dag AS operation_plan
@@ -697,29 +781,67 @@ def validate_qa_samples(
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
     build = _qa_build(db, qa_build_id)
+    if build.get("pattern_catalog_release_id"):
+        release = load_pattern_catalog_release(
+            db, str(build["pattern_catalog_release_id"])
+        )
+        validate_catalog_target_compatibility(
+            db,
+            release,
+            {
+                "kg_build_id": build["kg_build_id"],
+                "graph_schema_version": build["graph_schema_version"],
+                "input_metric_build_id": build["metric_build_id"],
+            },
+        )
     rows = [
         dict(row)
         for row in db.fetchall(
             """
-        SELECT s.*, c.canonical_semantics, c.derived_payload,
+        SELECT s.*, c.qa_build_id AS candidate_qa_build_id, c.canonical_semantics,
                c.recomputed_payload, c.answer_payload, c.kg_path,
                c.source_fact_ids, c.source_derived_ids, c.raw_object_ids,
                c.pattern_id, c.pattern_version, c.operation_plan_id,
                c.graph_features, c.answer_schema, c.question_intent,
                c.mining_run_id, c.pattern_proposal_id,
-               c.pattern_proposal_hash, c.pattern_score,
-               c.pattern_compilation_id, c.compiled_binding_id,
+               c.pattern_catalog_release_id, c.pattern_catalog_entry_id,
+               c.pattern_catalog_entry_hash,
+               c.catalog_pattern_id,
+               c.pattern_proposal_hash, c.proposal_semantic_id, c.pattern_score,
+               c.pattern_compilation_id, c.logical_plan_hash, c.compiler_version,
+               c.compiled_binding_id,
                c.compiled_binding_hash,
                mp.status AS stored_proposal_status,
                mp.proposal_hash AS stored_proposal_hash,
+               mp.proposal_semantic_id AS stored_proposal_semantic_id,
+               mp.mining_run_id AS proposal_mining_run_id,
                mp.total_score AS stored_proposal_score,
                mp.kg_build_id AS proposal_kg_build_id,
                mp.pattern_spec AS stored_pattern_spec,
                pc.status AS compilation_status,
                pc.proposal_id AS compilation_proposal_id,
                pc.proposal_hash AS compilation_proposal_hash,
+               pc.pattern_catalog_release_id AS compilation_catalog_release_id,
+               pc.pattern_catalog_entry_id AS compilation_catalog_entry_id,
+               pc.pattern_catalog_entry_hash AS compilation_catalog_entry_hash,
+               pc.catalog_pattern_id AS compilation_catalog_pattern_id,
+               pc.qa_build_id AS compilation_qa_build_id,
+               pc.compiler_version AS stored_compiler_version,
+               pc.logical_plan AS stored_logical_plan,
+               pc.source_kg_build_id AS compilation_source_kg_build_id,
                pc.target_kg_build_id AS compilation_target_kg_build_id,
                pc.logical_plan_hash AS stored_logical_plan_hash,
+               ce.status AS catalog_entry_status,
+               ce.pattern_spec AS catalog_pattern_spec,
+               ce.total_score AS catalog_pattern_score,
+               ce.catalog_entry_hash AS stored_catalog_entry_hash,
+               ce.catalog_pattern_id AS stored_catalog_pattern_id,
+               ce.source_proposal_id AS catalog_source_proposal_id,
+               ce.source_proposal_hash AS catalog_source_proposal_hash,
+               ce.source_mining_run_id AS catalog_source_mining_run_id,
+               ce.source_kg_build_id AS catalog_source_kg_build_id,
+               ce.proposal_semantic_id AS catalog_proposal_semantic_id,
+               cr.status AS catalog_release_status,
                cb.binding_hash AS stored_compiled_binding_hash,
                cb.binding AS stored_compiled_binding,
                cb.semantic_status AS compiled_semantic_status,
@@ -733,6 +855,10 @@ def validate_qa_samples(
         LEFT JOIN qa_pattern_proposals mp ON mp.proposal_id = c.pattern_proposal_id
         LEFT JOIN qa_pattern_compilations pc
           ON pc.compilation_id = c.pattern_compilation_id
+        LEFT JOIN qa_pattern_catalog_entries ce
+          ON ce.catalog_entry_id = c.pattern_catalog_entry_id
+        LEFT JOIN qa_pattern_catalog_releases cr
+          ON cr.catalog_release_id = c.pattern_catalog_release_id
         LEFT JOIN qa_compiled_bindings cb
           ON cb.compiled_binding_id = c.compiled_binding_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'pending'
@@ -748,7 +874,12 @@ def validate_qa_samples(
             for fact_id in json_value(row.get("source_fact_ids"), [])
         }
     )
-    facts = _load_facts_by_id(db, fact_ids, build["fact_build_id"])
+    facts = _load_facts_by_id(
+        db,
+        fact_ids,
+        build["fact_build_id"],
+        build["entity_build_id"],
+    )
     metric_ontology = {
         str(row["metric_id"]): dict(row)
         for row in db.fetchall(
@@ -908,12 +1039,16 @@ def split_qa_samples(
     cluster_split: dict[str, str] = {}
     split_counts: Counter[str] = Counter()
     task_counts: Counter[str] = Counter()
-    challenge = SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {
-        "rolling_max",
-        "rolling_min",
-        "multi_period_average",
-        "temporal_peak_followup",
-    }
+    challenge = (
+        SCOPE_DERIVED
+        | GRAPH_SCOPE_TASKS
+        | {
+            "rolling_max",
+            "rolling_min",
+            "multi_period_average",
+            "temporal_peak_followup",
+        }
+    )
     split_updates: list[tuple[str, str]] = []
     for row in rows:
         cluster = row.get("semantic_cluster_id") or row["qa_group_id"]
@@ -992,9 +1127,7 @@ def split_qa_samples(
     ).items():
         observed = graph_sample_counts.get(pattern_id, 0)
         if observed < int(minimum):
-            failures.append(
-                f"graph_pattern_{pattern_id}={observed} < {int(minimum)}"
-            )
+            failures.append(f"graph_pattern_{pattern_id}={observed} < {int(minimum)}")
     minimum_eligibility = gate_policy.get("minimum_graph_pattern_eligibility_rate")
     if minimum_eligibility is not None:
         minimum_eligibility = float(minimum_eligibility)
@@ -1125,6 +1258,7 @@ def build_qa(
     *,
     kg_build_id: str | None = None,
     mining_run_id: str | None = None,
+    pattern_catalog_release_id: str | None = None,
     output_dir: str = "data/audit/qa_build",
     batch_size: int = 2000,
     activate: bool = True,
@@ -1134,6 +1268,7 @@ def build_qa(
         config,
         kg_build_id=kg_build_id,
         mining_run_id=mining_run_id,
+        pattern_catalog_release_id=pattern_catalog_release_id,
         output_dir=output_dir,
         batch_size=batch_size,
     )
@@ -1144,9 +1279,7 @@ def build_qa(
     quality = validate_qa_samples(
         db, qa_build_id, output_dir=output_dir, batch_size=batch_size
     )
-    split = split_qa_samples(
-        db, qa_build_id, output_dir=output_dir, activate=activate
-    )
+    split = split_qa_samples(db, qa_build_id, output_dir=output_dir, activate=activate)
     report = {
         "qa_build_id": qa_build_id,
         "candidate": candidate,
@@ -1231,8 +1364,7 @@ def _derived_payload_from_row(row: dict[str, Any]) -> dict[str, Any]:
         "unit": row.get("unit"),
         "currency": row.get("currency"),
         "tolerance": str(row.get("tolerance") or 0),
-        "result_period": time_scope.get("result_year")
-        or time_scope.get("result_date"),
+        "result_period": time_scope.get("result_year") or time_scope.get("result_date"),
         "winning_entity_id": entity_scope.get("entity_id")
         if str(row.get("derived_type"))
         in {"argmax", "argmin", "industry_argmax", "industry_argmin"}
@@ -1417,15 +1549,20 @@ def _graph_pattern_candidate(
         semantic_policy,
     )
     reasons.extend(
-        f"semantic_constraint:{error}"
-        for error in semantic_validation.errors
+        f"semantic_constraint:{error}" for error in semantic_validation.errors
     )
     operator_dag = materialize_plan(pattern.operator_template, match)
     execution = execute_plan(operator_dag, match["input_bindings"], fact_map)
     if execution.status != "passed":
         reasons.append("operation_plan_execution_failed")
     answer = execution.output
-    if answer.get("value") is None and not answer.get("table") and not answer.get("rows"):
+    if (
+        answer.get("value") is None
+        and not answer.get("table")
+        and not answer.get("rows")
+        and not answer.get("trace")
+        and not answer.get("records")
+    ):
         reasons.append("missing_answer")
 
     subtype = pattern.task_subtype
@@ -1445,8 +1582,8 @@ def _graph_pattern_candidate(
         pattern.question_intents
     )
     question_intent = pattern.question_intents[intent_index]
-    entity_ids = sorted(set(match["entity_ids"]))
-    metric_ids = sorted(set(match["metric_ids"]))
+    entity_ids = sorted(set(match.get("entity_ids") or []))
+    metric_ids = sorted(set(match.get("metric_ids") or []))
     semantics = {
         "operation": subtype,
         "graph_pattern_id": pattern.pattern_id,
@@ -1483,6 +1620,12 @@ def _graph_pattern_candidate(
         "proposal_semantic_id": (
             proposal.get("proposal_semantic_id") if proposal else None
         ),
+        "logical_plan_hash": match.get("logical_plan_hash"),
+        "pattern_catalog_release_id": match.get("pattern_catalog_release_id"),
+        "pattern_catalog_entry_id": match.get("pattern_catalog_entry_id"),
+        "pattern_catalog_entry_hash": match.get("pattern_catalog_entry_hash"),
+        "catalog_pattern_id": match.get("catalog_pattern_id"),
+        "compiler_version": match.get("compiler_version"),
         "proposal_snapshot_id": (
             proposal.get("proposal_snapshot_id") if proposal else None
         ),
@@ -1494,26 +1637,42 @@ def _graph_pattern_candidate(
         "compiled_binding_hash": match.get("compiled_binding_hash"),
         "audit_example_overlap": match.get("audit_example_overlap"),
         "growth_threshold_pct": (
-            match.get("operator_step_params", {})
-            .get("growth_filter", {})
-            .get("value")
+            match.get("operator_step_params", {}).get("growth_filter", {}).get("value")
             or match.get("operator_step_params", {})
             .get("answer", {})
             .get("growth_min_pct")
         ),
         "debt_ratio_max_pct": (
-            match.get("operator_step_params", {})
-            .get("answer", {})
-            .get("debt_max_pct")
+            match.get("operator_step_params", {}).get("answer", {}).get("debt_max_pct")
         ),
     }
+    for key in (
+        "derived_id",
+        "derived_type",
+        "fact_id",
+        "hierarchy_type",
+        "hierarchy_relation",
+        "scope_label",
+    ):
+        if match.get(key) is not None:
+            semantics[key] = match[key]
     if len(entity_ids) == 1:
         semantics["entity_id"] = entity_ids[0]
         semantics["entity_name"] = entity_name_map.get(entity_ids[0], entity_ids[0])
-    evidence = _kg_path_from_graph(db, kg_build_id, fact_ids=fact_ids)
+    source_derived_ids = sorted(
+        str(value) for value in match.get("source_derived_ids") or []
+    )
+    evidence = _kg_path_from_graph(
+        db,
+        kg_build_id,
+        fact_ids=fact_ids,
+        derived_id=source_derived_ids[0] if source_derived_ids else None,
+        extra_node_ids=match.get("graph_node_ids") or [],
+        extra_edge_ids=match.get("graph_edge_ids") or [],
+    )
     features = graph_features(
         source_fact_ids=fact_ids,
-        source_derived_ids=[],
+        source_derived_ids=source_derived_ids,
         entity_ids=entity_ids,
         metric_ids=metric_ids,
         facts=facts,
@@ -1531,14 +1690,14 @@ def _graph_pattern_candidate(
     )
     candidate_id = f"{stable}__{qa_build_id}"
     plan_id = "qaplan_" + _digest(stable, operator_dag, match["input_bindings"])
-    pattern_hash = _digest(pattern.as_row())
+    pattern_hash = pattern_content_hash(pattern)
     operation_plan_hash = _digest(operator_dag, match["input_bindings"])
     raw_object_ids = sorted(
-        {
-            str(fact["raw_object_id"])
-            for fact in facts
-            if fact.get("raw_object_id")
-        }
+        {str(fact["raw_object_id"]) for fact in facts if fact.get("raw_object_id")}
+        | {str(value) for value in match.get("raw_object_ids") or []}
+    )
+    source_document_ids = sorted(
+        str(value) for value in match.get("source_document_ids") or []
     )
     candidate = {
         "candidate_id": candidate_id,
@@ -1555,8 +1714,17 @@ def _graph_pattern_candidate(
         "mining_run_id": proposal.get("mining_run_id") if proposal else None,
         "pattern_proposal_id": proposal.get("proposal_id") if proposal else None,
         "pattern_proposal_hash": proposal.get("proposal_hash") if proposal else None,
+        "proposal_semantic_id": (
+            proposal.get("proposal_semantic_id") if proposal else None
+        ),
         "pattern_score": float(proposal["total_score"]) if proposal else None,
+        "pattern_catalog_release_id": match.get("pattern_catalog_release_id"),
+        "pattern_catalog_entry_id": match.get("pattern_catalog_entry_id"),
+        "pattern_catalog_entry_hash": match.get("pattern_catalog_entry_hash"),
+        "catalog_pattern_id": match.get("catalog_pattern_id"),
         "pattern_compilation_id": match.get("pattern_compilation_id"),
+        "logical_plan_hash": match.get("logical_plan_hash"),
+        "compiler_version": match.get("compiler_version"),
         "compiled_binding_id": match.get("compiled_binding_id"),
         "compiled_binding_hash": match.get("compiled_binding_hash"),
         "graph_features": features,
@@ -1572,8 +1740,8 @@ def _graph_pattern_candidate(
             "scope_definition": match.get("scope_definition"),
         },
         "source_fact_ids": fact_ids,
-        "source_derived_ids": [],
-        "source_document_ids": [],
+        "source_derived_ids": source_derived_ids,
+        "source_document_ids": source_document_ids,
         "raw_object_ids": raw_object_ids,
         "canonical_semantics": semantics,
         "derived_payload": {},
@@ -1683,7 +1851,17 @@ def _sample_from_candidate(
             "mining_run_id": candidate.get("mining_run_id"),
             "pattern_proposal_id": candidate.get("pattern_proposal_id"),
             "pattern_proposal_hash": candidate.get("pattern_proposal_hash"),
-            "proposal_semantic_id": semantics.get("proposal_semantic_id"),
+            "proposal_semantic_id": candidate.get("proposal_semantic_id"),
+            "pattern_catalog_release_id": candidate.get(
+                "pattern_catalog_release_id"
+            ),
+            "pattern_catalog_entry_id": candidate.get("pattern_catalog_entry_id"),
+            "pattern_catalog_entry_hash": candidate.get(
+                "pattern_catalog_entry_hash"
+            ),
+            "catalog_pattern_id": candidate.get("catalog_pattern_id"),
+            "logical_plan_hash": candidate.get("logical_plan_hash"),
+            "compiler_version": candidate.get("compiler_version"),
             "proposal_snapshot_id": semantics.get("proposal_snapshot_id"),
             "pattern_binding_mode": semantics.get("pattern_binding_mode"),
             "pattern_score": candidate.get("pattern_score"),
@@ -1840,9 +2018,7 @@ def _validate_one(
         True,
         "Entity, metric, time, unit, and required scope must be explicit.",
     )
-    question_generation = row.get("source_metadata", {}).get(
-        "question_generation", {}
-    )
+    question_generation = row.get("source_metadata", {}).get("question_generation", {})
     add(
         "question_slot_roundtrip",
         bool(question_generation.get("passed"))
@@ -1850,7 +2026,7 @@ def _validate_one(
         and not question_generation.get("contract_errors"),
         question_generation,
         {"passed": True, "missing_slots": [], "contract_errors": []},
-        "Generated questions must preserve immutable slots and the exact operator/constraint contract.",
+        "Generated questions must preserve immutable slots and the canonical operator contract under independent question-semantic parsing.",
     )
     add(
         "question_answer_isolation",
@@ -1860,12 +2036,37 @@ def _validate_one(
         "The question generator must never receive the answer payload.",
     )
     if row.get("pattern_proposal_id"):
-        proposal_ok = (
-            row.get("stored_proposal_status") == "published"
-            and row.get("stored_proposal_hash") == row.get("pattern_proposal_hash")
-            and float(row.get("stored_proposal_score") or 0)
-            == float(row.get("pattern_score") or 0)
-        )
+        if row.get("pattern_catalog_release_id"):
+            proposal_ok = (
+                row.get("catalog_entry_status") == "published"
+                and row.get("catalog_source_proposal_id")
+                == row.get("pattern_proposal_id")
+                and row.get("catalog_source_proposal_hash")
+                == row.get("pattern_proposal_hash")
+                and row.get("catalog_proposal_semantic_id")
+                == row.get("proposal_semantic_id")
+                and float(row.get("catalog_pattern_score") or 0)
+                == float(row.get("pattern_score") or 0)
+                and row.get("catalog_source_mining_run_id")
+                == row.get("mining_run_id")
+                and row.get("catalog_source_mining_run_id")
+                == build.get("mining_run_id")
+            )
+        else:
+            proposal_ok = (
+                row.get("stored_proposal_status") == "published"
+                and row.get("stored_proposal_hash")
+                == row.get("pattern_proposal_hash")
+                and row.get("stored_proposal_semantic_id")
+                == row.get("proposal_semantic_id")
+                and float(row.get("stored_proposal_score") or 0)
+                == float(row.get("pattern_score") or 0)
+                and bool(row.get("mining_run_id"))
+                and row.get("mining_run_id")
+                == row.get("proposal_mining_run_id")
+                and row.get("proposal_mining_run_id")
+                == build.get("mining_run_id")
+            )
         add(
             "pattern_proposal_match",
             proposal_ok,
@@ -1873,27 +2074,111 @@ def _validate_one(
                 "proposal_id": row.get("pattern_proposal_id"),
                 "status": row.get("stored_proposal_status"),
                 "hash": row.get("stored_proposal_hash"),
+                "semantic_id": row.get("stored_proposal_semantic_id"),
+                "candidate_mining_run_id": row.get("mining_run_id"),
+                "proposal_mining_run_id": row.get("proposal_mining_run_id"),
+                "qa_build_mining_run_id": build.get("mining_run_id"),
                 "score": row.get("stored_proposal_score"),
                 "source_kg_build_id": row.get("proposal_kg_build_id"),
             },
             {
                 "status": "published",
                 "hash": row.get("pattern_proposal_hash"),
+                "semantic_id": row.get("proposal_semantic_id"),
+                "candidate_mining_run_id": build.get("mining_run_id"),
+                "proposal_mining_run_id": build.get("mining_run_id"),
+                "qa_build_mining_run_id": build.get("mining_run_id"),
                 "score": row.get("pattern_score"),
                 "source_kg_build_id": row.get("proposal_kg_build_id"),
             },
-            "Mined QA must be backed by a published, hash-pinned proposal; target KG membership is checked on its compilation.",
+            "Mined QA must preserve the published Proposal identity and the Candidate, Proposal, and QA Build Mining Run chain.",
         )
+        if row.get("pattern_catalog_release_id"):
+            catalog_ok = (
+                row.get("pattern_catalog_release_id")
+                == build.get("pattern_catalog_release_id")
+                and row.get("catalog_release_status") == "published"
+                and row.get("catalog_entry_status") == "published"
+                and row.get("catalog_pattern_id")
+                == row.get("stored_catalog_pattern_id")
+                and row.get("catalog_pattern_id")
+                == row.get("compilation_catalog_pattern_id")
+                and row.get("stored_catalog_entry_hash")
+                == row.get("pattern_catalog_entry_hash")
+                and row.get("catalog_source_proposal_id")
+                == row.get("pattern_proposal_id")
+                and row.get("catalog_source_proposal_hash")
+                == row.get("pattern_proposal_hash")
+                and row.get("catalog_source_mining_run_id")
+                == row.get("mining_run_id")
+                and row.get("catalog_source_mining_run_id")
+                == build.get("mining_run_id")
+                and row.get("catalog_source_kg_build_id")
+                == row.get("compilation_source_kg_build_id")
+                and row.get("catalog_proposal_semantic_id")
+                == row.get("proposal_semantic_id")
+                and row.get("compilation_catalog_release_id")
+                == row.get("pattern_catalog_release_id")
+                and row.get("compilation_catalog_entry_id")
+                == row.get("pattern_catalog_entry_id")
+                and row.get("compilation_catalog_pattern_id")
+                == row.get("catalog_pattern_id")
+                and row.get("compilation_catalog_entry_hash")
+                == row.get("pattern_catalog_entry_hash")
+            )
+            add(
+                "pattern_catalog_match",
+                catalog_ok,
+                {
+                    "release_id": row.get("pattern_catalog_release_id"),
+                    "entry_id": row.get("pattern_catalog_entry_id"),
+                    "entry_hash": row.get("stored_catalog_entry_hash"),
+                    "catalog_pattern_id": row.get("stored_catalog_pattern_id"),
+                    "release_status": row.get("catalog_release_status"),
+                    "entry_status": row.get("catalog_entry_status"),
+                    "source_proposal_id": row.get("catalog_source_proposal_id"),
+                    "source_mining_run_id": row.get(
+                        "catalog_source_mining_run_id"
+                    ),
+                    "source_kg_build_id": row.get("catalog_source_kg_build_id"),
+                },
+                {
+                    "release_id": build.get("pattern_catalog_release_id"),
+                    "entry_id": row.get("pattern_catalog_entry_id"),
+                    "entry_hash": row.get("pattern_catalog_entry_hash"),
+                    "catalog_pattern_id": row.get("catalog_pattern_id"),
+                    "release_status": "published",
+                    "entry_status": "published",
+                    "source_proposal_id": row.get("pattern_proposal_id"),
+                    "source_mining_run_id": build.get("mining_run_id"),
+                    "source_kg_build_id": row.get("compilation_source_kg_build_id"),
+                },
+                "Catalog QA must preserve the immutable Release, Entry, Proposal, source Run, source KG, Compilation, and QA Build chain.",
+            )
         stored_binding = row.get("stored_compiled_binding") or {}
+        stored_plan = row.get("stored_logical_plan") or {}
         compiled_binding_ok = (
             bool(row.get("pattern_compilation_id"))
             and bool(row.get("compiled_binding_id"))
+            and bool(row.get("logical_plan_hash"))
+            and bool(row.get("compiler_version"))
             and row.get("compilation_status") == "success"
+            and row.get("compilation_qa_build_id") == build.get("qa_build_id")
+            and row.get("candidate_qa_build_id") == build.get("qa_build_id")
             and row.get("compilation_proposal_id") == row.get("pattern_proposal_id")
-            and row.get("compilation_proposal_hash")
-            == row.get("pattern_proposal_hash")
-            and row.get("compilation_target_kg_build_id")
-            == build.get("kg_build_id")
+            and row.get("compilation_proposal_hash") == row.get("pattern_proposal_hash")
+            and row.get("compilation_catalog_release_id")
+            == row.get("pattern_catalog_release_id")
+            and row.get("compilation_catalog_entry_id")
+            == row.get("pattern_catalog_entry_id")
+            and row.get("compilation_catalog_pattern_id")
+            == row.get("catalog_pattern_id")
+            and row.get("compilation_catalog_entry_hash")
+            == row.get("pattern_catalog_entry_hash")
+            and row.get("compilation_target_kg_build_id") == build.get("kg_build_id")
+            and row.get("stored_logical_plan_hash") == row.get("logical_plan_hash")
+            and logical_plan_hash(stored_plan) == row.get("stored_logical_plan_hash")
+            and row.get("stored_compiler_version") == row.get("compiler_version")
             and row.get("stored_compiled_binding_hash")
             == row.get("compiled_binding_hash")
             and row.get("compiled_semantic_status") == "passed"
@@ -1910,25 +2195,35 @@ def _validate_one(
                 "compilation_id": row.get("pattern_compilation_id"),
                 "compiled_binding_id": row.get("compiled_binding_id"),
                 "binding_hash": row.get("stored_compiled_binding_hash"),
+                "logical_plan_hash": row.get("stored_logical_plan_hash"),
+                "recomputed_logical_plan_hash": logical_plan_hash(stored_plan),
+                "compiler_version": row.get("stored_compiler_version"),
+                "qa_build_id": row.get("compilation_qa_build_id"),
                 "semantic_status": row.get("compiled_semantic_status"),
                 "execution_status": row.get("compiled_execution_status"),
                 "target_kg_build_id": row.get("compilation_target_kg_build_id"),
             },
             {
                 "binding_hash": row.get("compiled_binding_hash"),
+                "logical_plan_hash": row.get("logical_plan_hash"),
+                "recomputed_logical_plan_hash": row.get("logical_plan_hash"),
+                "compiler_version": row.get("compiler_version"),
+                "qa_build_id": build.get("qa_build_id"),
                 "semantic_status": "passed",
                 "execution_status": "passed",
                 "target_kg_build_id": build.get("kg_build_id"),
             },
-            "Mined QA must use a successful compiled binding produced for the pinned KG build.",
+            "Mined QA must preserve its successful Compilation, Logical Plan, compiler, binding, QA Build, and target KG pins.",
         )
     expected = row["answer_payload"]
     if row.get("operation_plan_id"):
-        fact_map = {
-            str(item["fact_id"]): item for item in source_facts if item
-        }
+        fact_map = {str(item["fact_id"]): item for item in source_facts if item}
         if row.get("pattern_proposal_id"):
-            pattern_spec = row.get("stored_pattern_spec") or {}
+            pattern_spec = (
+                row.get("catalog_pattern_spec")
+                if row.get("pattern_catalog_release_id")
+                else row.get("stored_pattern_spec")
+            ) or {}
         else:
             try:
                 pattern_spec = get_pattern(str(row.get("pattern_id"))).as_row()
@@ -1940,6 +2235,17 @@ def _validate_one(
                 "fact_ids": row["source_fact_ids"],
                 "input_bindings": row.get("input_bindings") or {},
                 "metric_ids": row.get("metric_ids") or [],
+                "entity_ids": row["canonical_semantics"].get("entity_ids")
+                or row.get("entity_ids")
+                or [],
+                "scope_definition": row["canonical_semantics"].get("scope_definition"),
+                "financial_scope": row["canonical_semantics"].get("financial_scope")
+                or {},
+                "operator_step_params": {
+                    str(step["step_id"]): dict(step.get("params") or {})
+                    for step in (row.get("operator_dag") or {}).get("operators", [])
+                    if step.get("step_id")
+                },
                 "primary_metric_id": row["canonical_semantics"].get(
                     "primary_metric_id"
                 ),
@@ -1966,9 +2272,13 @@ def _validate_one(
         bound_ids = _bound_fact_ids(row.get("input_bindings") or {})
         add(
             "graph_pattern_match",
-            bool(row.get("pattern_id")) and set(bound_ids) == set(row["source_fact_ids"]),
+            bool(row.get("pattern_id"))
+            and set(bound_ids) == set(row["source_fact_ids"]),
             {"pattern_id": row.get("pattern_id"), "bound_fact_ids": bound_ids},
-            {"pattern_id": row.get("pattern_id"), "bound_fact_ids": sorted(row["source_fact_ids"])},
+            {
+                "pattern_id": row.get("pattern_id"),
+                "bound_fact_ids": sorted(row["source_fact_ids"]),
+            },
             "The graph pattern must bind exactly the facts declared by the candidate.",
         )
         add(
@@ -2050,6 +2360,8 @@ def _validate_one(
 def _bound_fact_ids(bindings: dict[str, Any]) -> list[str]:
     output = []
     for value in bindings.values():
+        if isinstance(value, dict) and set(value) == {"__literal__"}:
+            continue
         if isinstance(value, list):
             output.extend(str(item) for item in value)
         elif value is not None:
@@ -2206,6 +2518,8 @@ def _answers_match(
 ) -> bool:
     if not observed:
         return False
+    if (rubric or {}).get("match_type") == "exact_graph_structure":
+        return expected == observed
     for field in ("unit", "currency"):
         if expected.get(field) is not None and expected.get(field) != observed.get(
             field
@@ -2244,7 +2558,9 @@ def _answers_match(
         for expected_row, observed_row in zip(expected_rows, observed_rows):
             if expected_row.get("id") != observed_row.get("id"):
                 return False
-            if _decimal(expected_row.get("value")) != _decimal(observed_row.get("value")):
+            if _decimal(expected_row.get("value")) != _decimal(
+                observed_row.get("value")
+            ):
                 return False
     if expected.get("table") is not None:
         expected_table = expected.get("table") or []
@@ -2480,14 +2796,20 @@ def _load_derived_pool(
 
 
 def _load_facts_by_id(
-    db: DBProtocol, fact_ids: list[str], fact_build_id: str
+    db: DBProtocol,
+    fact_ids: list[str],
+    fact_build_id: str,
+    entity_build_id: str,
 ) -> dict[str, dict[str, Any]]:
     out = {}
     for batch in chunks(fact_ids, 1000):
         placeholders = ",".join("?" for _ in batch)
         rows = db.fetchall(
-            f"SELECT * FROM standardized_facts WHERE build_id = ? AND fact_id IN ({placeholders})",
-            [fact_build_id, *batch],
+            f"SELECT sf.*, ce.entity_type, ce.market, ce.country, ce.industry "
+            f"FROM standardized_facts sf JOIN canonical_entities ce "
+            f"ON ce.build_id = ? AND ce.entity_id = sf.entity_id "
+            f"WHERE sf.build_id = ? AND sf.fact_id IN ({placeholders})",
+            [entity_build_id, fact_build_id, *batch],
         )
         for raw in rows:
             row = dict(raw)
@@ -2508,6 +2830,11 @@ EDGE_ENDPOINT_TYPES = {
     "USES_METRIC": ("DerivedFact", "Metric"),
     "HAS_SCOPE": ("DerivedFact", "EntitySet"),
     "CONTAINS_ENTITY": ("EntitySet", "Entity"),
+    "BELONGS_TO_YEAR": ({"TimePeriod", "CalendarMonth", "CalendarQuarter"}, "CalendarYear"),
+    "BELONGS_TO_QUARTER": ("TimePeriod", "CalendarQuarter"),
+    "IN_FISCAL_YEAR": ("TimePeriod", "FiscalYear"),
+    "IN_FISCAL_YEAR_LABEL": ("TimePeriod", "FiscalYearLabel"),
+    "FISCAL_YEAR_OF": ("FiscalYear", "Entity"),
 }
 
 
@@ -2620,7 +2947,11 @@ def _validate_derived_input_edge_coverage(
 def _validate_scope_fact_coverage(
     row: dict[str, Any], path: dict[str, Any], kg_build_id: str
 ) -> tuple[bool, dict[str, Any]]:
-    if row.get("task_subtype") not in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share", "ranking"}:
+    if row.get("task_subtype") not in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {
+        "share",
+        "ranking",
+        "scope_composition",
+    }:
         return True, {"missing_scope_fact_nodes": []}
     path_nodes = _evidence_node_ids(path)
     missing = [
@@ -2662,26 +2993,46 @@ def _validate_evidence_semantics(
         )
         if nodes.get(src) not in src_types or nodes.get(dst) not in dst_types:
             invalid_edges.append(edge_id)
-    if task_subtype in {
-        "single_fact",
-        "pairwise_entity_comparison",
-        "cross_metric_comparison",
-        "multi_period_average",
-        "temporal_peak_followup",
-    } | GRAPH_SCOPE_TASKS:
-        required = {
-            "HAS_FACT",
-            "MEASURES",
-            "IN_PERIOD",
-            "FROM_SOURCE",
-            "TRACED_TO",
-            "USES_SOURCE_DEFINITION",
+    fact_required = {
+        "HAS_FACT",
+        "MEASURES",
+        "IN_PERIOD",
+        "FROM_SOURCE",
+        "TRACED_TO",
+        "USES_SOURCE_DEFINITION",
+    }
+    if task_subtype in GRAPH_NATIVE_TASKS:
+        required = set(fact_required)
+        if task_subtype == "derived_input_trace":
+            required |= {"DERIVED_FROM", "USES_METRIC"}
+        elif task_subtype == "scope_composition":
+            required |= {
+                "DERIVED_FROM",
+                "USES_METRIC",
+                "HAS_SCOPE",
+                "CONTAINS_ENTITY",
+            }
+    elif (
+        task_subtype
+        in {
+            "single_fact",
+            "pairwise_entity_comparison",
+            "cross_metric_comparison",
+            "multi_period_average",
+            "temporal_peak_followup",
         }
+        | GRAPH_SCOPE_TASKS
+    ):
+        required = fact_required
     else:
         required = {"DERIVED_FROM", "USES_METRIC", "IN_PERIOD"}
         if task_subtype in SCOPE_DERIVED | {"share"}:
             required |= {"HAS_SCOPE", "CONTAINS_ENTITY"}
     missing_relations = sorted(required - relations)
+    if task_subtype == "time_hierarchy_membership" and not relations.intersection(
+        {"BELONGS_TO_YEAR", "BELONGS_TO_QUARTER", "IN_FISCAL_YEAR"}
+    ):
+        missing_relations.append("TIME_HIERARCHY_EDGE")
     detail = {
         "missing_relations": missing_relations,
         "invalid_edges": sorted(invalid_edges),
@@ -2770,6 +3121,8 @@ def _kg_path_from_graph(
     fact_ids: list[str],
     derived_id: str | None = None,
     supplemental_fact_ids: list[str] | None = None,
+    extra_node_ids: list[str] | None = None,
+    extra_edge_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     if derived_id:
         seed_nodes = [f"derived_fact:{derived_id}@@{kg_build_id}"]
@@ -2779,6 +3132,7 @@ def _kg_path_from_graph(
         )
     else:
         seed_nodes = [f"fact:{fact_id}@@{kg_build_id}" for fact_id in fact_ids]
+    seed_nodes.extend(str(value) for value in (extra_node_ids or []))
     relations = [
         "HAS_FACT",
         "MEASURES",
@@ -2788,10 +3142,18 @@ def _kg_path_from_graph(
         "USES_SOURCE_DEFINITION",
     ]
     if derived_id:
-        relations.extend(
-            ["DERIVED_FROM", "ABOUT_ENTITY", "USES_METRIC", "HAS_SCOPE"]
-        )
+        relations.extend(["DERIVED_FROM", "ABOUT_ENTITY", "USES_METRIC", "HAS_SCOPE"])
     edges: dict[str, dict[str, Any]] = {}
+    for batch in chunks(list(extra_edge_ids or []), 500):
+        placeholders = ",".join("?" for _ in batch)
+        for raw in db.fetchall(
+            f"SELECT edge_id, src_node_id, dst_node_id, relation_type "
+            f"FROM kg_edges WHERE kg_build_id = ? "
+            f"AND edge_id IN ({placeholders}) ORDER BY relation_type, edge_id",
+            [kg_build_id, *batch],
+        ):
+            edge = dict(raw)
+            edges[str(edge["edge_id"])] = edge
     for batch in chunks(seed_nodes, 300):
         placeholders = ",".join("?" for _ in batch)
         relation_placeholders = ",".join("?" for _ in relations)
@@ -3047,11 +3409,15 @@ def _question_slots(
         else "the second metric",
         "primary_metric": metric_names.get(
             semantics.get("primary_metric_id"),
-            str(semantics.get("primary_metric_id") or "the primary metric").replace("_", " "),
+            str(semantics.get("primary_metric_id") or "the primary metric").replace(
+                "_", " "
+            ),
         ),
         "secondary_metric": metric_names.get(
             semantics.get("secondary_metric_id"),
-            str(semantics.get("secondary_metric_id") or "the secondary metric").replace("_", " "),
+            str(semantics.get("secondary_metric_id") or "the secondary metric").replace(
+                "_", " "
+            ),
         ),
         "observation_count": str(
             semantics.get("observation_count")
@@ -3063,13 +3429,60 @@ def _question_slots(
         ),
         "growth_threshold": str(semantics.get("growth_threshold_pct") or "10"),
         "debt_threshold": str(semantics.get("debt_ratio_max_pct") or "70"),
+        "derived_id": str(semantics.get("derived_id") or "the derived result"),
+        "derived_type": str(
+            semantics.get("derived_type") or "derived calculation"
+        ).replace("_", " "),
+        "fact_id": str(
+            semantics.get("fact_id")
+            or next(iter(candidate.get("source_fact_ids") or []), "the fact")
+        ),
+        "hierarchy_type": str(
+            semantics.get("hierarchy_type") or "time hierarchy"
+        ),
+        "scope_label": str(
+            semantics.get("scope_label")
+            or semantics.get("scope_definition")
+            or "the declared entity scope"
+        ),
     }
 
 
 def _answer_text(
     candidate: dict[str, Any], answer: dict[str, Any], entity_names: dict[str, str]
 ) -> str:
-    if candidate["task_subtype"] == "temporal_peak_followup":
+    subtype = candidate["task_subtype"]
+    if subtype == "derived_input_trace":
+        return "; ".join(
+            f"{item.get('fact_id')} ({item.get('metric_id')}, "
+            f"{item.get('period_end')})"
+            for item in answer.get("records") or []
+        )
+    if subtype == "scope_composition":
+        return ", ".join(
+            str(
+                item.get("entity_name")
+                or entity_names.get(item.get("entity_id"), item.get("entity_id"))
+            )
+            for item in answer.get("records") or []
+        )
+    if subtype == "provenance_trace":
+        trace = answer.get("trace") or {}
+        return (
+            f"{trace.get('source_name') or trace.get('source_id')} | "
+            f"{trace.get('definition_id')} | {trace.get('raw_object_id')}"
+        )
+    if subtype == "time_hierarchy_membership":
+        trace = answer.get("trace") or {}
+        properties = trace.get("hierarchy_properties") or {}
+        hierarchy_value = (
+            properties.get("year")
+            or properties.get("fiscal_year")
+            or properties.get("quarter")
+            or trace.get("hierarchy_id")
+        )
+        return f"{trace.get('hierarchy_type')}: {hierarchy_value}"
+    if subtype == "temporal_peak_followup":
         semantics = candidate.get("canonical_semantics", {})
         metric_names = semantics.get("metric_names") or {}
         primary = metric_names.get(
@@ -3086,7 +3499,9 @@ def _answer_text(
         ).strip()
     if answer.get("relation") and answer.get("rows"):
         labels = dict(entity_names)
-        labels.update(candidate.get("canonical_semantics", {}).get("metric_names") or {})
+        labels.update(
+            candidate.get("canonical_semantics", {}).get("metric_names") or {}
+        )
         if answer.get("relation") == "equal":
             return f"Equal; difference: 0 {answer.get('unit') or ''}".strip()
         winner = labels.get(answer.get("winner_id"), answer.get("winner_id"))
@@ -3115,7 +3530,8 @@ def _answer_text(
                 semantics.get("primary_metric_id"), semantics.get("primary_metric_id")
             )
             secondary = metric_names.get(
-                semantics.get("secondary_metric_id"), semantics.get("secondary_metric_id")
+                semantics.get("secondary_metric_id"),
+                semantics.get("secondary_metric_id"),
             )
             rows = []
             for item in answer["table"]:
@@ -3159,6 +3575,11 @@ def _ranked_value_tolerance(value: Any) -> str:
 
 
 def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]:
+    if candidate["task_subtype"] in GRAPH_NATIVE_TASKS:
+        return {
+            "match_type": "exact_graph_structure",
+            "target_answer": answer,
+        }
     if candidate["task_subtype"] == "temporal_peak_followup":
         return {
             "match_type": "period_metric_lookup",
@@ -3339,15 +3760,22 @@ def _semantic_slots_complete(row: dict[str, Any]) -> bool:
     semantics = row["canonical_semantics"]
     if not row["time_scope"]:
         return False
+    if row["task_subtype"] in GRAPH_NATIVE_TASKS:
+        answer = row.get("answer_payload") or {}
+        return bool(
+            row["source_fact_ids"]
+            and row["time_scope"]
+            and (answer.get("trace") or answer.get("records"))
+        )
     if row["task_subtype"] == "rank_then_secondary_lookup":
         answer = row.get("answer_payload") or {}
         if not answer.get("primary_unit") or not answer.get("secondary_unit"):
             return False
     elif row["task_subtype"] != "multi_condition_screening" and not row.get("unit"):
         return False
-    if row["task_subtype"] in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share"} and not semantics.get(
-        "scope_definition"
-    ):
+    if row["task_subtype"] in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {
+        "share"
+    } and not semantics.get("scope_definition"):
         return False
     return bool(
         row["source_fact_ids"]
@@ -3517,7 +3945,7 @@ def _seed_templates(db: DBProtocol) -> None:
 def _seed_graph_patterns(db: DBProtocol) -> None:
     rows = []
     for item in pattern_manifest():
-        pattern_hash = _digest(item)
+        pattern_hash = pattern_content_hash(item)
         pattern_key = f"{item['pattern_id']}@{item['pattern_version']}"
         db.execute(
             "UPDATE qa_graph_patterns SET is_active = ? "
@@ -3528,7 +3956,11 @@ def _seed_graph_patterns(db: DBProtocol) -> None:
             "SELECT pattern_hash FROM qa_graph_patterns WHERE pattern_key = ?",
             (pattern_key,),
         )
-        if existing and existing["pattern_hash"] and existing["pattern_hash"] != pattern_hash:
+        if (
+            existing
+            and existing["pattern_hash"]
+            and existing["pattern_hash"] != pattern_hash
+        ):
             raise RuntimeError(
                 f"Published graph pattern changed without a version bump: {pattern_key}"
             )
@@ -3644,6 +4076,8 @@ def _decode_validation_row(row: dict[str, Any]) -> dict[str, Any]:
     row["unit"] = row["answer_payload"].get("unit")
     for key in [
         "stored_pattern_spec",
+        "catalog_pattern_spec",
+        "stored_logical_plan",
         "operator_dag",
         "input_bindings",
         "intermediate_results",
@@ -3651,7 +4085,10 @@ def _decode_validation_row(row: dict[str, Any]) -> dict[str, Any]:
         "plan_validation_errors",
         "stored_compiled_binding",
     ]:
-        row[key] = json_value(row.get(key), [] if key in {"intermediate_results", "plan_validation_errors"} else {})
+        row[key] = json_value(
+            row.get(key),
+            [] if key in {"intermediate_results", "plan_validation_errors"} else {},
+        )
     return row
 
 

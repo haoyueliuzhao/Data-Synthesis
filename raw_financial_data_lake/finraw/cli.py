@@ -29,6 +29,7 @@ from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
+from finraw.qa.pattern_catalog import publish_mining_run_to_catalog
 from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
 from finraw.qa.pattern_mining import (
     mine_qa_patterns,
@@ -159,6 +160,10 @@ def build_parser() -> argparse.ArgumentParser:
     qa_candidates = sub.add_parser("build-qa-candidates", help="Build versioned structured QA candidates from a pinned KG build.")
     qa_candidates.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
     qa_candidates.add_argument(
+        "--pattern-catalog-release-id",
+        help="Explicit immutable Pattern Catalog release to compile against the target KG.",
+    )
+    qa_candidates.add_argument(
         "--mining-run-id",
         help="Required explicit approved Mining Run when pattern mining is enabled.",
     )
@@ -219,6 +224,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Leave an approved proposal at reviewed_approved instead of publishing it.",
     )
 
+    qa_catalog_publish = sub.add_parser(
+        "publish-qa-pattern-catalog",
+        help="Publish immutable Pattern Catalog entries from an approved Mining Run.",
+    )
+    qa_catalog_publish.add_argument("--mining-run-id", required=True)
+    qa_catalog_publish.add_argument("--publisher", required=True)
+    qa_catalog_publish.add_argument("--notes")
+
     qa_mining_review = sub.add_parser(
         "transition-qa-mining-run",
         help="Review, approve for QA, or supersede a completed QA Mining Run.",
@@ -235,6 +248,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     qa_all = sub.add_parser("build-qa", help="Run candidate, generation, validation, and split stages end to end.")
     qa_all.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    qa_all.add_argument(
+        "--pattern-catalog-release-id",
+        help="Explicit immutable Pattern Catalog release to compile against the target KG.",
+    )
     qa_all.add_argument(
         "--mining-run-id",
         help="Required explicit approved Mining Run when pattern mining is enabled.",
@@ -440,6 +457,7 @@ def main() -> None:
                 config,
                 kg_build_id=args.kg_build_id,
                 mining_run_id=args.mining_run_id,
+                pattern_catalog_release_id=args.pattern_catalog_release_id,
                 output_dir=args.output_dir,
                 batch_size=args.batch_size,
             )
@@ -495,6 +513,14 @@ def main() -> None:
                 publish=not args.no_publish,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "publish-qa-pattern-catalog":
+            report = publish_mining_run_to_catalog(
+                db,
+                args.mining_run_id,
+                publisher=args.publisher,
+                notes=args.notes,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "transition-qa-mining-run":
             report = transition_mining_run(
                 db,
@@ -535,6 +561,7 @@ def main() -> None:
                 config,
                 kg_build_id=args.kg_build_id,
                 mining_run_id=args.mining_run_id,
+                pattern_catalog_release_id=args.pattern_catalog_release_id,
                 output_dir=args.output_dir,
                 batch_size=args.batch_size,
                 activate=not args.no_activate and not args.mined_only,
