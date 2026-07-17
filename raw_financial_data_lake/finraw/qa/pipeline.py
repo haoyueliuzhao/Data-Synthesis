@@ -44,7 +44,11 @@ from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
-from finraw.qa.verbalizer import realize_question
+from finraw.qa.verbalizer import (
+    build_question_contract,
+    realize_question,
+    validate_question_roundtrip,
+)
 
 
 SIMPLE_DERIVED = {"difference", "yoy_growth", "qoq_growth", "ratio", "share"}
@@ -81,7 +85,7 @@ GRAPH_SCOPE_TASKS = {
     "multi_factor_screening",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.12.0"
+GENERATOR_VERSION = "4.13.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -1188,6 +1192,7 @@ def split_qa_samples(
               'pattern_proposal_match', 'compiled_binding_match',
               'semantic_constraint_gate',
               'question_slot_roundtrip',
+              'question_semantic_reparse',
               'question_answer_isolation'
           )
         """,
@@ -2026,7 +2031,15 @@ def _validate_one(
         and not question_generation.get("contract_errors"),
         question_generation,
         {"passed": True, "missing_slots": [], "contract_errors": []},
-        "Generated questions must preserve immutable slots and the canonical operator contract under independent question-semantic parsing.",
+        "Generation-time validation must preserve immutable slots and the canonical operator contract.",
+    )
+    question_reparse = _reparse_persisted_question(row)
+    add(
+        "question_semantic_reparse",
+        bool(question_reparse.get("passed")),
+        question_reparse,
+        {"passed": True, "missing_slots": [], "contract_errors": []},
+        "The final verifier must independently parse the persisted question against a contract rebuilt from the pinned template and Operation DAG.",
     )
     add(
         "question_answer_isolation",
@@ -3445,6 +3458,57 @@ def _question_slots(
             or semantics.get("scope_definition")
             or "the declared entity scope"
         ),
+    }
+
+
+def _reparse_persisted_question(row: dict[str, Any]) -> dict[str, Any]:
+    try:
+        template = next(
+            item for item in TEMPLATES if item["template_id"] == row.get("template_id")
+        )
+    except StopIteration:
+        return {
+            "passed": False,
+            "missing_slots": [],
+            "contract_errors": ["template_not_found"],
+            "contract_source": "pinned_candidate_and_operation_plan",
+        }
+    semantics = {
+        **dict(row.get("canonical_semantics") or {}),
+        "operation_plan": row.get("operator_dag")
+        or dict(row.get("canonical_semantics") or {}).get("operation_plan")
+        or {},
+    }
+    entity_ids = list(
+        semantics.get("entity_ids")
+        or ([semantics["entity_id"]] if semantics.get("entity_id") else [])
+    )
+    metric_ids = list(row.get("metric_ids") or semantics.get("metric_ids") or [])
+    candidate = {
+        "canonical_semantics": semantics,
+        "entity_ids": entity_ids,
+        "metric_ids": metric_ids,
+        "time_scope": row.get("time_scope") or semantics.get("time_scope") or {},
+        "task_subtype": row["task_subtype"],
+        "answer_payload": row.get("answer_payload") or {},
+        "source_fact_ids": row.get("source_fact_ids") or [],
+    }
+    slots = _question_slots(
+        candidate,
+        _entity_names_from_semantics(semantics, entity_ids),
+        _metric_names_from_semantics(semantics, metric_ids),
+    )
+    required_slots = list(template.get("required_slots") or [])
+    contract = build_question_contract(semantics, slots, required_slots)
+    validation = validate_question_roundtrip(
+        row.get("question") or "",
+        contract,
+        trusted_contract=True,
+    )
+    return {
+        **validation,
+        "contract_source": "pinned_candidate_and_operation_plan",
+        "template_id": template["template_id"],
     }
 
 

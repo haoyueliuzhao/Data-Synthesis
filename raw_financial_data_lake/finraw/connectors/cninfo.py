@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from finraw.connectors.base import RawSourceConnector, stable_raw_record_id
 from finraw.http import get_url
 

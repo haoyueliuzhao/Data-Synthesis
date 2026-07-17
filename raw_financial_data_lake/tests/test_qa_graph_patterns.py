@@ -1196,6 +1196,52 @@ def test_graph_pattern_build_discovers_and_validates_multi_hop_qa(tmp_path):
     assert analysis["kg_utilization"]["edge_type_coverage"] > 0
 
 
+def test_final_verifier_reparses_persisted_question_independently(tmp_path):
+    db, kg_build, config = _graph_fixture(tmp_path)
+    report = build_qa(
+        db,
+        config,
+        kg_build_id=kg_build,
+        output_dir=str(tmp_path / "question_reparse"),
+        batch_size=10,
+        activate=False,
+    )
+    sample = db.fetchone(
+        "SELECT qa_id, question, source_metadata FROM qa_samples "
+        "WHERE qa_build_id = ? AND task_subtype = ?",
+        (report["qa_build_id"], "temporal_peak_followup"),
+    )
+    metadata = json.loads(sample["source_metadata"])
+    assert metadata["question_generation"]["passed"]
+    tampered = (
+        str(sample["question"])
+        .replace("peak", "trough")
+        .replace("highest", "lowest")
+    )
+    assert tampered != sample["question"]
+    db.execute(
+        "UPDATE qa_samples SET question = ?, validation_status = ? WHERE qa_id = ?",
+        (tampered, "pending", sample["qa_id"]),
+    )
+    validate_qa_samples(db, report["qa_build_id"], batch_size=10)
+    updated = db.fetchone(
+        "SELECT validation_status, source_metadata FROM qa_samples WHERE qa_id = ?",
+        (sample["qa_id"],),
+    )
+    assert json.loads(updated["source_metadata"])["question_generation"]["passed"]
+    assert updated["validation_status"] == "rejected"
+    check = db.fetchone(
+        "SELECT check_status, observed_value FROM qa_quality_checks "
+        "WHERE qa_id = ? AND check_name = ?",
+        (sample["qa_id"], "question_semantic_reparse"),
+    )
+    assert check["check_status"] == "failed"
+    observed = json.loads(check["observed_value"])
+    assert "question_semantics:extreme_direction_mismatch" in observed[
+        "contract_errors"
+    ]
+
+
 def test_final_verifier_independently_rechecks_temporal_continuity(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
     candidate_report = build_qa_candidates(
@@ -2229,6 +2275,81 @@ def test_roundtrip_rejects_natural_language_operator_reordering():
         "question_semantics:operator_order_mismatch"
         in result["contract_errors"]
     )
+
+
+def test_roundtrip_rejects_rank_direction_and_top_k_changes():
+    contract = {
+        "slot_map": {
+            "scope": "Technology",
+            "period": "fiscal year 2023",
+            "top_k": "3",
+        },
+        "required_slots": ["scope", "period", "top_k"],
+        "operator_id": "rank",
+        "constraints": [
+            {
+                "position": 0,
+                "step_id": "rank",
+                "operator": "rank",
+                "params": {"direction": "desc", "top_k": 3},
+            }
+        ],
+    }
+    wrong_direction = validate_question_roundtrip(
+        "Within Technology, rank the bottom 3 companies for fiscal year 2023.",
+        contract,
+        trusted_contract=True,
+    )
+    assert not wrong_direction["passed"]
+    assert "question_semantics:rank_direction_mismatch" in wrong_direction[
+        "contract_errors"
+    ]
+
+    wrong_top_k = validate_question_roundtrip(
+        "Within Technology, rank the top 5 companies for fiscal year 2023.",
+        contract,
+        trusted_contract=True,
+    )
+    assert not wrong_top_k["passed"]
+    assert "question_semantics:rank_top_k_mismatch" in wrong_top_k[
+        "contract_errors"
+    ]
+
+
+def test_roundtrip_parser_rejects_chinese_comparison_reversal():
+    contract = {
+        "slot_map": {
+            "scope": "科技行业",
+            "growth_threshold": "10",
+            "top_k": "3",
+        },
+        "required_slots": ["scope", "growth_threshold", "top_k"],
+        "operator_id": "filter_then_rank",
+        "constraints": [
+            {
+                "position": 0,
+                "step_id": "screen",
+                "operator": "filter",
+                "params": {"comparison": "gt", "value": 10},
+            },
+            {
+                "position": 1,
+                "step_id": "rank",
+                "operator": "rank",
+                "params": {"direction": "desc", "top_k": 3},
+            },
+        ],
+    }
+    result = validate_question_roundtrip(
+        "在科技行业中，筛选收入增长低于10%的公司，然后按利润率排名前3。",
+        contract,
+        trusted_contract=True,
+    )
+    assert not result["passed"]
+    assert result["question_semantics"]["observed_comparisons"][0]["observed"] == "lt"
+    assert "question_semantics:filter_comparison_mismatch" in result[
+        "contract_errors"
+    ]
 
 
 def test_sentence_plan_deterministically_renders_multi_step_question():

@@ -71,7 +71,9 @@ _COMPARISON_LEXEMES = {
     "小于": "lt",
     "等于": "eq",
 }
-_NUMBER_PATTERN = re.compile(r"(?<![\w.])-?\d+(?:\.\d+)?(?![\w.])")
+_NUMBER_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_.])-?\d+(?:\.\d+)?(?![A-Za-z0-9_.])"
+)
 _OBSERVABLE_OPERATOR_PATTERNS = {
     "filter": re.compile(
         r"\b(?:filter|screen|screening|qualifying|condition(?:s)?)\b|筛选|过滤|条件",
@@ -187,7 +189,9 @@ def realize_question(
         "required_slots": required_slots,
         "mode": mode,
     }
-    semantic_contract = _semantic_contract(semantics, immutable_slots, required_slots)
+    semantic_contract = build_question_contract(
+        semantics, immutable_slots, required_slots
+    )
     if mode != "controlled_llm":
         slot_check = validate_question_roundtrip(
             canonical_question, semantic_contract, trusted_contract=True
@@ -674,7 +678,7 @@ def _lower_initial(value: str) -> str:
     return value[:1].lower() + value[1:] if value else value
 
 
-def _semantic_contract(
+def build_question_contract(
     semantics: dict[str, Any],
     immutable_slots: dict[str, str],
     required_slots: list[str],
