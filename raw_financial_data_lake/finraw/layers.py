@@ -51,6 +51,7 @@ LAYER_TABLES: dict[str, list[str]] = {
         "qa_samples",
         "qa_evidence_paths",
         "qa_quality_checks",
+        "qa_archives",
     ],
 }
 
@@ -94,6 +95,8 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "build-qa",
         "export-qa-jsonl",
         "qa-analysis",
+        "qa-retention",
+        "artifact-retention",
     ],
 }
 

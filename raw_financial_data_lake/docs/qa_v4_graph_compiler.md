@@ -396,3 +396,20 @@ Generator 4.19.0 将有限词表 Parser 的支持边界显式版本化。Questio
 `qa_builds` 固定 `question_parser_version` 和 `question_parser_manifest_hash`，build notes 保存完整 manifest；每个样本还保存实际使用的 `supported_language` 和 `supported_template_id`。最终 verifier 在语义重解析前执行关键门控 `question_parser_contract`，版本、manifest、语言、模板或样本元数据任一漂移都会 fail-closed。
 
 模板与 Parser 使用双向契约测试：注册模板必须全部被 Parser 支持，Parser 声明的模板必须全部存在，并逐模板执行确定性渲染和 slot round-trip。生产 smoke build `qa_build_20260717_145056_528e2734` 的 `question_parser_contract` 与 `question_semantic_reparse` 均通过，保持非激活。当前完整测试为 100 passed。详细报告见 `data/audit/qa_production_validation_20260717/question_parser_contract_report.md`。
+
+## 2026-07-18 复杂度结构优化
+
+本轮将复杂 QA 的供给与总样本量解耦。`scope_top_ks` 从单一的 top-3/top-5 扩展为 top-1 到 top-5；增长率和负债率阈值继续由白名单场景控制。每个场景都形成不同的 Operation Plan 参数，但共享完整行业 universe，不通过截断 scope 或降低验证标准补量。`top-1` 表示“找出行业冠军后查询第二指标”，仍是完整的 `rank → secondary lookup` 两阶段任务。
+
+Semantic Operator Registry 1.2.0 将操作计划中的实际阈值作为本次场景阈值，并验证它属于配置允许集合。跨指标期间使用 fiscal/calendar frequency identity 对齐，而不是要求 `period_end` 字符串完全相同；不同 binding 可以分别保持 `period_flow` 与 `point_in_time` 的内部时间口径，因此收入排名后查询资产不会被错误拒绝。声明了全局 `time_basis same` 的 Pattern 仍执行严格全局一致校验。
+
+复杂度质量门控同时检查最低样本数和最低比例，避免 Easy/Medium 总量增长时稀释 Expert/Research。专用非激活配置 `config/profiles/prod_qa_complex_balance_validation.json` 关闭旧事实型配额，只验证四类多阶段任务。生产 KG `kg_20260711_062123_bc4b4394` 的最终非激活 build `qa_build_20260717_165208_5e528891` 结果为：
+
+- 998 candidates，998 eligible，998 verifier passed，零 semantic rejection；
+- `filter → rank` 200、multi-factor screening 300、`rank → secondary lookup` 400、`argmax → lookup` 98；
+- Expert 226（22.65%），Research 772（77.35%）；
+- train_complex 696、dev_complex 142、test_complex 160；
+- graph-pattern 数量、Expert/Research 数量与比例门控全部通过；
+- build 保持非激活，不改变正式 QA 指针。
+
+预演报告位于 `data/audit/qa_complex_balance_preflight_20260718_v2/`，最终构建报告位于 `data/audit/qa_complex_balance_validation_20260718_v3/`。

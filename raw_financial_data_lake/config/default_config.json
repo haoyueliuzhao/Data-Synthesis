@@ -190,6 +190,13 @@
     }
   },
   "qa": {
+    "retention": {
+      "hot_build_count": 1,
+      "minimum_hot_sample_count": 100,
+      "archive_dir": "./data/qa_archive",
+      "archive_format": "parquet",
+      "compression": "zstd"
+    },
     "quotas": {
       "single_fact_financial": 20000,
       "single_fact_fred": 5000,
@@ -248,8 +255,11 @@
         "require_same_financial_scope": true,
         "scope_min_entities": 3,
         "scope_top_k": 3,
+        "scope_top_ks": [1, 2, 3, 4, 5],
         "growth_threshold_pct": 10,
+        "growth_thresholds_pct": [0, 5, 10, 15],
         "debt_ratio_max_pct": 70,
+        "debt_ratio_thresholds_pct": [50, 60, 70, 80],
         "scope_scan_rows_per_metric": 20000,
         "allowed_metric_pairs": [
           ["revenue", "gross_profit"],
@@ -380,7 +390,15 @@
       },
       "minimum_graph_pattern_eligibility_rate": 0.95,
       "minimum_graph_feature_coverage": 0.015,
-      "minimum_unique_operation_sequences": 6
+      "minimum_unique_operation_sequences": 6,
+      "minimum_difficulty_samples": {
+        "expert": 150,
+        "research": 100
+      },
+      "minimum_difficulty_ratios": {
+        "expert": 0.002,
+        "research": 0.001
+      }
     }
   }
 }

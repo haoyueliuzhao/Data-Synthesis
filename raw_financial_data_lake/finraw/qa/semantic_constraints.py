@@ -15,7 +15,7 @@ from finraw.qa.comparability import (
 )
 
 
-SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.1.0"
+SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.2.0"
 
 
 @dataclass(frozen=True)
@@ -135,13 +135,26 @@ def validate_semantic_constraints(
     if comparability_policy.get("require_same_time_basis", True) or (
         "time_basis", "same"
     ) in declared:
-        _same_value_check(
-            check,
-            "time_basis",
-            rows,
-            lambda row: row.get("time_basis"),
-            allow_missing=_allows_missing(constraints, "time_basis"),
-        )
+        def time_basis_getter(row: Mapping[str, Any]) -> Any:
+            return row.get("time_basis")
+
+        if ("time_basis", "same") in declared:
+            _same_value_check(
+                check,
+                "time_basis",
+                rows,
+                time_basis_getter,
+                allow_missing=_allows_missing(constraints, "time_basis"),
+            )
+        else:
+            _same_value_within_bindings_check(
+                check,
+                "time_basis",
+                binding,
+                fact_map,
+                time_basis_getter,
+                allow_missing=_allows_missing(constraints, "time_basis"),
+            )
     if comparability_policy.get("require_same_frequency", True) or (
         "frequency", "same"
     ) in declared:
@@ -301,6 +314,35 @@ def _same_value_check(
         len(values) == 1 and (nonempty or allow_missing),
         values,
         "one compatibility class"
+        + ("; missing allowed" if allow_missing else "; non-empty"),
+    )
+
+
+def _same_value_within_bindings_check(
+    check: Any,
+    name: str,
+    binding: Mapping[str, Any],
+    fact_map: Mapping[str, dict[str, Any]],
+    getter: Any,
+    *,
+    allow_missing: bool = False,
+) -> None:
+    observed: dict[str, list[str]] = {}
+    passed = True
+    input_bindings = dict(binding.get("input_bindings") or {})
+    for binding_name in sorted(input_bindings):
+        rows = _binding_rows(binding_name, binding, fact_map)
+        if not rows:
+            continue
+        values = sorted({_normalise(getter(row)) for row in rows})
+        observed[binding_name] = values
+        nonempty = bool(values) and values != [""]
+        passed = passed and len(values) == 1 and (nonempty or allow_missing)
+    check(
+        f"same_{name}",
+        bool(observed) and passed,
+        observed,
+        "one compatibility class per input binding"
         + ("; missing allowed" if allow_missing else "; non-empty"),
     )
 
@@ -542,7 +584,7 @@ def _evaluate_same(
         "unit": lambda row: row.get("normalized_unit"),
         "currency": lambda row: row.get("normalized_currency"),
         "source_definition": lambda row: row.get("source_definition_id"),
-        "period": _period_signature,
+        "period": _period_alignment_signature,
         "entity.industry": lambda row: row.get("industry"),
     }
     if field in row_getters:
@@ -815,17 +857,38 @@ def _evaluate_gt(
     if field != "revenue_growth_pct":
         return _unsupported_field("gt", field)
     values = _growth_values(context)
-    expected = _decimal(context.policy.get("growth_threshold_pct"))
     configured = _operation_parameter(
         context, (("filter", "value"), ("multi_factor_screen", "growth_min_pct"))
     )
+    fallback = _decimal(context.policy.get("growth_threshold_pct"))
+    expected = configured if configured is not None else fallback
+    allowed = {
+        value
+        for value in (
+            _decimal(item)
+            for item in context.policy.get(
+                "growth_thresholds_pct", (context.policy.get("growth_threshold_pct"),)
+            )
+        )
+        if value is not None
+    }
     qualifying = sorted(key for key, value in values.items() if expected is not None and value > expected)
-    passed = bool(values) and bool(qualifying) and expected is not None and configured == expected
+    passed = (
+        bool(values)
+        and bool(qualifying)
+        and expected is not None
+        and configured == expected
+        and expected in allowed
+    )
     return SemanticCheck(
         "revenue_growth_pct_gt_policy",
         passed,
         {"values": _decimal_map(values), "configured_threshold": str(configured), "qualifying": qualifying},
-        {"threshold": str(expected), "comparison": "gt"},
+        {
+            "threshold": str(expected),
+            "allowed_thresholds": [str(value) for value in sorted(allowed)],
+            "comparison": "gt",
+        },
     )
 
 
@@ -836,15 +899,37 @@ def _evaluate_lt(
     if field != "debt_ratio_pct":
         return _unsupported_field("lt", field)
     values = _ratio_values(context, "total_liabilities", "total_assets")
-    expected = _decimal(context.policy.get("debt_ratio_max_pct"))
     configured = _operation_parameter(context, (("multi_factor_screen", "debt_max_pct"),))
+    fallback = _decimal(context.policy.get("debt_ratio_max_pct"))
+    expected = configured if configured is not None else fallback
+    allowed = {
+        value
+        for value in (
+            _decimal(item)
+            for item in context.policy.get(
+                "debt_ratio_thresholds_pct",
+                (context.policy.get("debt_ratio_max_pct"),),
+            )
+        )
+        if value is not None
+    }
     qualifying = sorted(key for key, value in values.items() if expected is not None and value < expected)
-    passed = bool(values) and bool(qualifying) and expected is not None and configured == expected
+    passed = (
+        bool(values)
+        and bool(qualifying)
+        and expected is not None
+        and configured == expected
+        and expected in allowed
+    )
     return SemanticCheck(
         "debt_ratio_pct_lt_policy",
         passed,
         {"values": _decimal_map(values), "configured_threshold": str(configured), "qualifying": qualifying},
-        {"threshold": str(expected), "comparison": "lt"},
+        {
+            "threshold": str(expected),
+            "allowed_thresholds": [str(value) for value in sorted(allowed)],
+            "comparison": "lt",
+        },
     )
 
 
@@ -913,8 +998,8 @@ def _coverage_check(
     primary_rows = _binding_rows(primary_binding, context.binding, context.fact_map)
     secondary_rows = _binding_rows(secondary_binding, context.binding, context.fact_map)
     if by_period:
-        primary = {_period_signature(row) for row in primary_rows}
-        secondary = {_period_signature(row) for row in secondary_rows}
+        primary = {_period_alignment_signature(row) for row in primary_rows}
+        secondary = {_period_alignment_signature(row) for row in secondary_rows}
     else:
         primary = {str(row.get("entity_id")) for row in primary_rows if row.get("entity_id")}
         secondary = {str(row.get("entity_id")) for row in secondary_rows if row.get("entity_id")}
@@ -989,6 +1074,14 @@ def _period_signature(row: Mapping[str, Any]) -> str:
             row.get("as_of_date"),
         )
     )
+
+
+def _period_alignment_signature(row: Mapping[str, Any]) -> str:
+    frequency = fact_frequency(dict(row))
+    index = period_index(dict(row), frequency)
+    if index is not None:
+        return f"{frequency}:{index}"
+    return _period_signature(row)
 
 
 def _entity_scope_label(row: Mapping[str, Any]) -> Any:

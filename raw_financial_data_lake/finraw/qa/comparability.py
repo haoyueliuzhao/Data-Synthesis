@@ -31,6 +31,9 @@ BLOCKED_COMPARABILITY_LEVELS = {
 
 def comparability_policy(config: dict[str, Any] | None = None) -> dict[str, Any]:
     configured = dict(config or {})
+    scope_top_k = max(int(configured.get("scope_top_k", 3)), 1)
+    growth_threshold = str(configured.get("growth_threshold_pct", 10))
+    debt_ratio_threshold = str(configured.get("debt_ratio_max_pct", 70))
     return {
         "require_same_source": bool(configured.get("require_same_source", True)),
         "require_same_source_definition": bool(
@@ -48,9 +51,7 @@ def comparability_policy(config: dict[str, Any] | None = None) -> dict[str, Any]
         "require_same_period_type": bool(
             configured.get("require_same_period_type", True)
         ),
-        "require_same_frequency": bool(
-            configured.get("require_same_frequency", True)
-        ),
+        "require_same_frequency": bool(configured.get("require_same_frequency", True)),
         "require_same_seasonal_adjustment": bool(
             configured.get("require_same_seasonal_adjustment", True)
         ),
@@ -61,9 +62,18 @@ def comparability_policy(config: dict[str, Any] | None = None) -> dict[str, Any]
             configured.get("require_same_financial_scope", True)
         ),
         "scope_min_entities": max(int(configured.get("scope_min_entities", 3)), 2),
-        "scope_top_k": max(int(configured.get("scope_top_k", 3)), 1),
-        "growth_threshold_pct": str(configured.get("growth_threshold_pct", 10)),
-        "debt_ratio_max_pct": str(configured.get("debt_ratio_max_pct", 70)),
+        "scope_top_k": scope_top_k,
+        "scope_top_ks": _integer_scenarios(
+            configured.get("scope_top_ks"), scope_top_k, minimum=1
+        ),
+        "growth_threshold_pct": growth_threshold,
+        "growth_thresholds_pct": _decimal_scenarios(
+            configured.get("growth_thresholds_pct"), growth_threshold
+        ),
+        "debt_ratio_max_pct": debt_ratio_threshold,
+        "debt_ratio_thresholds_pct": _decimal_scenarios(
+            configured.get("debt_ratio_thresholds_pct"), debt_ratio_threshold
+        ),
         "scope_scan_rows_per_metric": max(
             int(configured.get("scope_scan_rows_per_metric", 20000)), 100
         ),
@@ -85,8 +95,7 @@ def comparability_policy(config: dict[str, Any] | None = None) -> dict[str, Any]
                     {
                         metric
                         for pair in (
-                            DEFAULT_ALLOWED_METRIC_PAIRS
-                            + DEFAULT_FOLLOWUP_METRIC_PAIRS
+                            DEFAULT_ALLOWED_METRIC_PAIRS + DEFAULT_FOLLOWUP_METRIC_PAIRS
                         )
                         for metric in pair
                     }
@@ -159,14 +168,13 @@ def facts_share_semantics(
     ]:
         if len({_normalised(row.get(field)) for row in rows}) > 1:
             errors.append(f"mixed_{field}")
-    levels = {
-        str(row.get("comparability_level") or "").strip().lower() for row in rows
-    }
+    levels = {str(row.get("comparability_level") or "").strip().lower() for row in rows}
     if levels & BLOCKED_COMPARABILITY_LEVELS:
         errors.append("blocked_comparability_level")
-    if require_same_definition and len(
-        {_normalised(row.get("source_definition_id")) for row in rows}
-    ) > 1:
+    if (
+        require_same_definition
+        and len({_normalised(row.get("source_definition_id")) for row in rows}) > 1
+    ):
         errors.append("mixed_source_definition")
     if len({financial_scope_key(row) for row in rows}) > 1:
         errors.append("mixed_financial_scope")
@@ -280,8 +288,29 @@ def period_label(row: dict[str, Any]) -> str | int | None:
     return year or row.get("period_end") or row.get("as_of_date")
 
 
+def _integer_scenarios(values: Any, fallback: int, *, minimum: int) -> tuple[int, ...]:
+    raw_values = values if isinstance(values, (list, tuple, set)) else [fallback]
+    normalized = {max(int(value), minimum) for value in raw_values}
+    return tuple(sorted(normalized or {fallback}))
+
+
+def _decimal_scenarios(values: Any, fallback: str) -> tuple[str, ...]:
+    from decimal import Decimal, InvalidOperation
+
+    raw_values = values if isinstance(values, (list, tuple, set)) else [fallback]
+    normalized = set()
+    for value in raw_values:
+        try:
+            normalized.add(Decimal(str(value)))
+        except (InvalidOperation, TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid numeric scenario: {value!r}") from exc
+    return tuple(str(value) for value in sorted(normalized or {Decimal(fallback)}))
+
+
 def _normalise_pairs(values: Iterable[Iterable[Any]]) -> tuple[tuple[str, str], ...]:
-    return tuple(sorted({tuple(sorted((str(left), str(right)))) for left, right in values}))
+    return tuple(
+        sorted({tuple(sorted((str(left), str(right)))) for left, right in values})
+    )
 
 
 def _ordered_pairs(values: Iterable[Iterable[Any]]) -> tuple[tuple[str, str], ...]:

@@ -47,6 +47,7 @@ EXPORT_TABLES = [
     "qa_samples",
     "qa_evidence_paths",
     "qa_quality_checks",
+    "qa_archives",
 ]
 
 

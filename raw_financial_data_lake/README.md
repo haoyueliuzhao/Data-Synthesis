@@ -127,6 +127,15 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json kg-retention --hot-builds 2 --archive-dir data/kg_archive --execute --purge --vacuum
 
+# QA retention follows the same verified archive-before-purge policy.
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json qa-retention --hot-builds 1 --minimum-hot-samples 100 --archive-dir data/qa_archive
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json qa-retention --hot-builds 1 --minimum-hot-samples 100 --archive-dir data/qa_archive --execute --purge --vacuum
+
+# Artifact retention protects active QA exports. It removes only cold-archived QA exports
+# and metadata JSONL files whose canonical content and row counts match Parquet.
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json artifact-retention --qa-export-root data/qa_exports --qa-export-root data/qa_exports_v2_smoke
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json artifact-retention --qa-export-root data/qa_exports --qa-export-root data/qa_exports_v2_smoke --execute
+
 # Layer 5: deterministic QA build pinned to a validated KG version
 # Read-only matcher preflight: reports volume, fill rate, distribution, and SQL time.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json qa-pattern-preflight --kg-build-id kg_20260711_062123_bc4b4394 --limit-per-pattern 500 --output-dir data/audit/qa_pattern_preflight_v4
@@ -138,6 +147,8 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 `build-qa` executes candidate construction, deterministic canonical question/answer generation, independent Decimal recomputation, relation-aware KG evidence validation, fixed-cutoff semantic-cluster splitting, and quality-gated activation. Share, ranking, and industry-ranking tasks now retain three separate payloads: the original KG `derived_payload`, the complete-scope `recomputed_payload`, and the final QA `answer_payload`. Evidence is stored as a structured subgraph with adjacency edges and connected components, while legacy `ordered_node_ids` and `ordered_edge_ids` remain compatibility aliases. A candidate is rejected with `qa_recompute_mismatch` when the KG DerivedFact output does not match the complete-scope recomputation; top-k ranking answers are never silently overwritten. LLM paraphrasing is disabled by default and never computes answers. Only a `ready` build with a passed build gate can be exported.
 
 The active production QA build `qa_build_20260712_023651_7adad081` is pinned to KG V3 `kg_20260711_062123_bc4b4394`. It produced 68,231 candidates, rejected 4,010 DerivedFact recomputation mismatches, and exported 64,221 validated canonical samples. The split contains 41,213 train, 210 train_complex, 5,102 dev, 31 dev_complex, 5,211 standard test, 3,205 entity holdout, 9,174 temporal holdout, and 75 test_complex rows. Complex semantic groups are assigned deterministically 70/10/20 to train_complex/dev_complex/test_complex, while entity and temporal holdouts remain separate. All 64,221 samples passed `source_fact_coverage`, `derived_input_edge_coverage`, `scope_fact_coverage`, and `evidence_component_count`. Benchmark and Trace Seed outputs are written per split; SFT exports `sft/train.jsonl` and `sft/train_complex.jsonl`, preventing evaluation leakage while retaining complex-task training coverage.
+
+Complex-task balancing is enforced independently from total QA volume. Scope patterns use policy-bounded growth/debt thresholds and `top-1..top-5` operation scenarios, while the semantic verifier recomputes the materialized threshold, exact scope, and fiscal-period alignment. Quality gates can require minimum Expert/Research counts and ratios. Non-active validation build `qa_build_20260717_165208_5e528891` produced 998/998 eligible and verifier-passed multi-stage samples: 226 Expert and 772 Research, split by semantic cluster into 696 train_complex, 142 dev_complex, and 160 test_complex. It did not replace the active production QA build.
 
 `candidate_facts` are reviewable document-derived candidates. They are not accepted facts and are not promoted into `atomic_facts` without explicit validation. Fact quality gates report candidate state counts and fail if any active candidate is marked `qa_eligible` or `kg_eligible`.
 

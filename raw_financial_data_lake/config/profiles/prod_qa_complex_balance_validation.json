@@ -1,0 +1,85 @@
+{
+  "metadata_backend": {
+    "type": "postgres",
+    "dsn_env": "DATABASE_URL",
+    "postgres_schema": "./sql/postgres_schema.sql",
+    "dsn": "postgresql:///finraw"
+  },
+  "qa": {
+    "quotas": {
+      "single_fact_financial": 0,
+      "single_fact_fred": 0,
+      "single_fact_worldbank": 0,
+      "single_fact_imf": 0
+    },
+    "derived_quotas": {
+      "difference": 0,
+      "yoy_growth": 0,
+      "qoq_growth": 0,
+      "ratio": 0,
+      "share": 0,
+      "multi_year_argmax": 0,
+      "multi_year_argmin": 0,
+      "industry_ranking": 0,
+      "industry_argmax": 0,
+      "industry_argmin": 0,
+      "ranking": 0,
+      "argmax": 0,
+      "argmin": 0,
+      "rolling_max": 0,
+      "rolling_min": 0,
+      "macro_time_series_argmax": 0,
+      "macro_time_series_argmin": 0,
+      "time_series_argmax": 0,
+      "time_series_argmin": 0,
+      "multi_condition_screening": 0,
+      "long_window_return": 0
+    },
+    "graph_patterns": {
+      "enabled": true,
+      "quotas": {
+        "pairwise_entity_metric_comparison": 0,
+        "entity_cross_metric_comparison": 0,
+        "entity_metric_temporal_average": 0,
+        "temporal_argmax_then_metric_lookup": 100,
+        "industry_growth_filter_then_margin_rank": 200,
+        "industry_revenue_rank_then_assets_lookup": 400,
+        "industry_multi_factor_screening": 300
+      }
+    },
+    "pattern_mining": {
+      "enabled": false,
+      "auto_run": false
+    },
+    "quality_gate": {
+      "minimum_overall_pass_rate": 0.99,
+      "critical_tasks": {
+        "single_fact": 0,
+        "yoy_growth": 0,
+        "qoq_growth": 0,
+        "ratio": 0
+      },
+      "max_critical_check_failures": 0,
+      "minimum_graph_pattern_samples": {
+        "pairwise_entity_metric_comparison": 0,
+        "entity_cross_metric_comparison": 0,
+        "entity_metric_temporal_average": 0,
+        "temporal_argmax_then_metric_lookup": 90,
+        "industry_growth_filter_then_margin_rank": 190,
+        "industry_revenue_rank_then_assets_lookup": 380,
+        "industry_multi_factor_screening": 290
+      },
+      "minimum_graph_pattern_eligibility_rate": 0.95,
+      "minimum_graph_feature_coverage": 0.99,
+      "minimum_unique_operation_sequences": 4,
+      "minimum_difficulty_samples": {
+        "expert": 200,
+        "research": 550
+      },
+      "minimum_difficulty_ratios": {
+        "expert": 0.2,
+        "research": 0.55
+      }
+    }
+  }
+}

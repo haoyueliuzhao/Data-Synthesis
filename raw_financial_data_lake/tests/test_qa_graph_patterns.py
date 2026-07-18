@@ -3845,3 +3845,129 @@ def test_all_supported_graph_observations_publish_and_execute(tmp_path):
         "time_hierarchy_membership",
         "scope_composition",
     }.issubset(task_subtypes)
+
+
+def test_semantic_scenario_thresholds_are_dynamic_but_policy_bounded():
+    facts = {}
+    entities = ["A_US", "B_US", "C_US"]
+    for index, entity_id in enumerate(entities):
+        facts[f"prev_{entity_id}"] = _semantic_fact(
+            f"prev_{entity_id}", "revenue", 2022, entity_id=entity_id, value=100
+        )
+        facts[f"curr_{entity_id}"] = _semantic_fact(
+            f"curr_{entity_id}", "revenue", 2023, entity_id=entity_id, value=120 - index * 5
+        )
+        facts[f"net_{entity_id}"] = _semantic_fact(
+            f"net_{entity_id}", "net_income", 2023, entity_id=entity_id, value=20 - index
+        )
+    binding = {
+        "fact_ids": sorted(facts),
+        "input_bindings": {
+            "previous_revenue": [f"prev_{entity_id}" for entity_id in entities],
+            "current_revenue": [f"curr_{entity_id}" for entity_id in entities],
+            "net_income": [f"net_{entity_id}" for entity_id in entities],
+        },
+        "entity_ids": entities,
+        "metric_ids": ["revenue", "net_income"],
+        "operator_step_params": {
+            "growth_filter": {"value": "0"},
+            "answer": {"top_k": 3},
+        },
+    }
+    policy = comparability_policy({"growth_thresholds_pct": [0, 10]})
+    accepted = validate_semantic_constraints(
+        get_pattern("industry_growth_filter_then_margin_rank"),
+        binding,
+        facts,
+        _semantic_ontology(),
+        policy,
+    )
+    assert accepted.passed, (accepted.errors, accepted.checks)
+
+    rejected = validate_semantic_constraints(
+        get_pattern("industry_growth_filter_then_margin_rank"),
+        {
+            **binding,
+            "operator_step_params": {
+                "growth_filter": {"value": "7"},
+                "answer": {"top_k": 3},
+            },
+        },
+        facts,
+        _semantic_ontology(),
+        policy,
+    )
+    assert "revenue_growth_pct_gt_policy" in rejected.errors
+
+
+def test_scope_followup_aligns_fiscal_period_without_equating_time_basis():
+    facts = {}
+    entities = ["A_US", "B_US", "C_US"]
+    for index, entity_id in enumerate(entities):
+        revenue = _semantic_fact(
+            f"revenue_{entity_id}", "revenue", 2023, entity_id=entity_id, value=120 - index
+        )
+        asset = _semantic_fact(
+            f"assets_{entity_id}", "total_assets", 2023, entity_id=entity_id, value=300 + index
+        )
+        asset["time_basis"] = "as_of_date"
+        asset["metric_period_type"] = "point_in_time"
+        asset["source_definition_id"] = "def_total_assets"
+        facts[revenue["fact_id"]] = revenue
+        facts[asset["fact_id"]] = asset
+    binding = {
+        "fact_ids": sorted(facts),
+        "input_bindings": {
+            "revenue": [f"revenue_{entity_id}" for entity_id in entities],
+            "total_assets": [f"assets_{entity_id}" for entity_id in entities],
+        },
+        "entity_ids": entities,
+        "metric_ids": ["revenue", "total_assets"],
+        "primary_metric_id": "revenue",
+        "secondary_metric_id": "total_assets",
+        "operator_step_params": {"rank_revenue": {"top_k": 3}},
+    }
+    result = validate_semantic_constraints(
+        get_pattern("industry_revenue_rank_then_assets_lookup"),
+        binding,
+        facts,
+        _semantic_ontology(),
+        comparability_policy({"scope_top_ks": [3, 5]}),
+    )
+    assert result.passed, (result.errors, result.checks)
+    assert result.checks["same_time_basis"]["observed"] == {
+        "revenue": ["fiscal_year"],
+        "total_assets": ["as_of_date"],
+    }
+
+
+def test_temporal_followup_coverage_uses_fiscal_identity_not_exact_date():
+    facts = {}
+    for year in [2021, 2022, 2023]:
+        revenue = _semantic_fact(f"r{year}", "revenue", year, value=year - 1900)
+        net_income = _semantic_fact(f"n{year}", "net_income", year, value=year - 2000)
+        net_income["period_end"] = f"{year}-12-30"
+        facts[revenue["fact_id"]] = revenue
+        facts[net_income["fact_id"]] = net_income
+    binding = {
+        "fact_ids": sorted(facts),
+        "input_bindings": {
+            "primary_series": [f"r{year}" for year in [2021, 2022, 2023]],
+            "secondary_series": [f"n{year}" for year in [2021, 2022, 2023]],
+        },
+        "entity_ids": ["A_US"],
+        "metric_ids": ["revenue", "net_income"],
+        "primary_metric_id": "revenue",
+        "secondary_metric_id": "net_income",
+    }
+    result = validate_semantic_constraints(
+        get_pattern("temporal_argmax_then_metric_lookup"),
+        binding,
+        facts,
+        _semantic_ontology(),
+        comparability_policy(),
+    )
+    assert result.passed, (result.errors, result.checks)
+    assert result.checks["secondary_period_coverage_equals"]["observed"][
+        "coverage"
+    ] == "1"

@@ -804,6 +804,25 @@ CREATE TABLE IF NOT EXISTS qa_quality_checks (
             message TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_archives (
+    archive_id          TEXT PRIMARY KEY,
+    qa_build_id         TEXT NOT NULL REFERENCES qa_builds(qa_build_id),
+    archive_uri         TEXT NOT NULL,
+    archive_format      TEXT NOT NULL,
+    compression         TEXT,
+    candidate_count     BIGINT,
+    sample_count        BIGINT,
+    evidence_count      BIGINT,
+    quality_check_count BIGINT,
+    manifest_sha256     TEXT,
+    status              TEXT NOT NULL,
+    created_at          TEXT,
+    verified_at         TEXT,
+    purged_at           TEXT,
+    notes               TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_archives_build ON qa_archives(qa_build_id);
+CREATE INDEX IF NOT EXISTS idx_qa_archives_status ON qa_archives(status, created_at);
 CREATE INDEX IF NOT EXISTS idx_kg_edges_build_rel_src ON kg_edges(kg_build_id, relation_type, src_node_id);
 CREATE INDEX IF NOT EXISTS idx_kg_edges_build_rel_dst ON kg_edges(kg_build_id, relation_type, dst_node_id);
 CREATE INDEX IF NOT EXISTS idx_qa_builds_kg_status ON qa_builds(kg_build_id, status);

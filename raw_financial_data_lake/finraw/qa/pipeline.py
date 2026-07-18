@@ -261,9 +261,7 @@ def build_qa_candidates(
     policy = _qa_policy(config)
     effective_mining_policy = mining_policy(config)
     target_catalog_runtime_contract = catalog_runtime_contract(
-        config.get("qa", {})
-        .get("graph_patterns", {})
-        .get("comparability")
+        config.get("qa", {}).get("graph_patterns", {}).get("comparability")
     )
     mining_report = None
     selected_mining_run = None
@@ -333,9 +331,7 @@ def build_qa_candidates(
             "binding_mode": proposal.get("binding_mode"),
             "motif_signature": proposal["motif_signature"],
             "total_score": proposal["total_score"],
-            "pattern_catalog_release_id": proposal.get(
-                "pattern_catalog_release_id"
-            ),
+            "pattern_catalog_release_id": proposal.get("pattern_catalog_release_id"),
             "pattern_catalog_entry_id": proposal.get("pattern_catalog_entry_id"),
             "pattern_catalog_entry_hash": proposal.get("pattern_catalog_entry_hash"),
             "catalog_pattern_id": proposal.get("catalog_pattern_id"),
@@ -427,9 +423,7 @@ def build_qa_candidates(
     insert_rows(db, "qa_builds", [build], BUILD_COLUMNS, {"notes"})
     metric_fact_cache = MetricFactCache(
         qa_build_id=qa_build_id,
-        enabled=bool(
-            effective_mining_policy["compiled_metric_fact_cache_enabled"]
-        ),
+        enabled=bool(effective_mining_policy["compiled_metric_fact_cache_enabled"]),
     )
 
     candidates: list[dict[str, Any]] = []
@@ -656,11 +650,7 @@ def build_qa_candidates(
             **scan,
         }
         for row in compilation_rows
-        if (
-            scan := json_value(row.get("sampling_summary"), {}).get(
-                "graph_root_scan"
-            )
-        )
+        if (scan := json_value(row.get("sampling_summary"), {}).get("graph_root_scan"))
     ]
     graph_total_root_count = sum(
         int(item.get("total_root_count") or 0) for item in graph_scan_coverage
@@ -748,9 +738,7 @@ def build_qa_candidates(
         "mining_run_id": mining_run_id,
         "pattern_catalog_release_id": pattern_catalog_release_id,
         "question_parser_version": build["question_parser_version"],
-        "question_parser_manifest_hash": build[
-            "question_parser_manifest_hash"
-        ],
+        "question_parser_manifest_hash": build["question_parser_manifest_hash"],
         "catalog_compatibility": catalog_compatibility,
         "candidate_count": candidate_count,
         "eligible_candidate_count": eligible_count,
@@ -838,9 +826,7 @@ def generate_qa_samples(
             "qa_build_id": qa_build_id,
             "kg_build_id": build["kg_build_id"],
             "question_parser_version": build["question_parser_version"],
-            "question_parser_manifest_hash": build[
-                "question_parser_manifest_hash"
-            ],
+            "question_parser_manifest_hash": build["question_parser_manifest_hash"],
             "sample_count": sample_count,
             "task_counts": persisted_task_counts,
             "emitted_task_counts": dict(sorted(task_counts.items())),
@@ -1076,9 +1062,7 @@ def validate_qa_samples(
         "qa_build_id": qa_build_id,
         "kg_build_id": build["kg_build_id"],
         "question_parser_version": build["question_parser_version"],
-        "question_parser_manifest_hash": build[
-            "question_parser_manifest_hash"
-        ],
+        "question_parser_manifest_hash": build["question_parser_manifest_hash"],
         "sample_count": total,
         "resumed_sample_count": len(rows),
         "passed_count": passed,
@@ -1174,6 +1158,31 @@ def split_qa_samples(
         if task_counts.get(task, 0) < int(minimum):
             failures.append(
                 f"critical_task_{task}={task_counts.get(task, 0)} < {int(minimum)}"
+            )
+    difficulty_counts = {
+        str(item["difficulty"]): int(item["c"])
+        for item in db.fetchall(
+            """
+            SELECT difficulty, COUNT(*) AS c
+            FROM qa_samples
+            WHERE qa_build_id = ? AND validation_status = 'passed'
+            GROUP BY difficulty
+            """,
+            (qa_build_id,),
+        )
+    }
+    for difficulty, minimum in gate_policy.get(
+        "minimum_difficulty_samples", {}
+    ).items():
+        observed = difficulty_counts.get(str(difficulty), 0)
+        if observed < int(minimum):
+            failures.append(f"difficulty_{difficulty}={observed} < {int(minimum)}")
+    for difficulty, minimum in gate_policy.get("minimum_difficulty_ratios", {}).items():
+        observed = difficulty_counts.get(str(difficulty), 0)
+        ratio = observed / len(rows) if rows else 0.0
+        if ratio < float(minimum):
+            failures.append(
+                f"difficulty_ratio_{difficulty}={ratio:.6f} < {float(minimum):.6f}"
             )
     graph_sample_counts = {
         str(item["graph_pattern_id"]): int(item["c"])
@@ -1290,6 +1299,11 @@ def split_qa_samples(
         "critical_check_failures": critical_checks,
         "graph_pattern_sample_counts": graph_sample_counts,
         "graph_pattern_candidate_stats": graph_candidate_stats,
+        "difficulty_counts": difficulty_counts,
+        "difficulty_ratios": {
+            difficulty: count / len(rows) if rows else 0.0
+            for difficulty, count in sorted(difficulty_counts.items())
+        },
         "graph_feature_coverage": graph_feature_coverage,
         "unique_operation_sequences": sorted(operation_sequences),
         "temporal_cutoff_year": cutoff_year,
@@ -1322,6 +1336,11 @@ def split_qa_samples(
         "temporal_cutoff_year": cutoff_year,
         "split_counts": dict(sorted(split_counts.items())),
         "task_counts": dict(sorted(task_counts.items())),
+        "difficulty_counts": dict(sorted(difficulty_counts.items())),
+        "difficulty_ratios": {
+            difficulty: count / len(rows) if rows else 0.0
+            for difficulty, count in sorted(difficulty_counts.items())
+        },
         "build_gate_status": "passed" if gate_passed else "failed",
         "build_gate_failures": failures,
         "activated": gate_passed and activate,
@@ -1948,13 +1967,9 @@ def _sample_from_candidate(
             "pattern_proposal_id": candidate.get("pattern_proposal_id"),
             "pattern_proposal_hash": candidate.get("pattern_proposal_hash"),
             "proposal_semantic_id": candidate.get("proposal_semantic_id"),
-            "pattern_catalog_release_id": candidate.get(
-                "pattern_catalog_release_id"
-            ),
+            "pattern_catalog_release_id": candidate.get("pattern_catalog_release_id"),
             "pattern_catalog_entry_id": candidate.get("pattern_catalog_entry_id"),
-            "pattern_catalog_entry_hash": candidate.get(
-                "pattern_catalog_entry_hash"
-            ),
+            "pattern_catalog_entry_hash": candidate.get("pattern_catalog_entry_hash"),
             "catalog_pattern_id": candidate.get("catalog_pattern_id"),
             "logical_plan_hash": candidate.get("logical_plan_hash"),
             "compiler_version": candidate.get("compiler_version"),
@@ -2168,25 +2183,21 @@ def _validate_one(
                 == row.get("proposal_semantic_id")
                 and float(row.get("catalog_pattern_score") or 0)
                 == float(row.get("pattern_score") or 0)
-                and row.get("catalog_source_mining_run_id")
-                == row.get("mining_run_id")
+                and row.get("catalog_source_mining_run_id") == row.get("mining_run_id")
                 and row.get("catalog_source_mining_run_id")
                 == build.get("mining_run_id")
             )
         else:
             proposal_ok = (
                 row.get("stored_proposal_status") == "published"
-                and row.get("stored_proposal_hash")
-                == row.get("pattern_proposal_hash")
+                and row.get("stored_proposal_hash") == row.get("pattern_proposal_hash")
                 and row.get("stored_proposal_semantic_id")
                 == row.get("proposal_semantic_id")
                 and float(row.get("stored_proposal_score") or 0)
                 == float(row.get("pattern_score") or 0)
                 and bool(row.get("mining_run_id"))
-                and row.get("mining_run_id")
-                == row.get("proposal_mining_run_id")
-                and row.get("proposal_mining_run_id")
-                == build.get("mining_run_id")
+                and row.get("mining_run_id") == row.get("proposal_mining_run_id")
+                and row.get("proposal_mining_run_id") == build.get("mining_run_id")
             )
         add(
             "pattern_proposal_match",
@@ -2230,8 +2241,7 @@ def _validate_one(
                 == row.get("pattern_proposal_id")
                 and row.get("catalog_source_proposal_hash")
                 == row.get("pattern_proposal_hash")
-                and row.get("catalog_source_mining_run_id")
-                == row.get("mining_run_id")
+                and row.get("catalog_source_mining_run_id") == row.get("mining_run_id")
                 and row.get("catalog_source_mining_run_id")
                 == build.get("mining_run_id")
                 and row.get("catalog_source_kg_build_id")
@@ -2258,9 +2268,7 @@ def _validate_one(
                     "release_status": row.get("catalog_release_status"),
                     "entry_status": row.get("catalog_entry_status"),
                     "source_proposal_id": row.get("catalog_source_proposal_id"),
-                    "source_mining_run_id": row.get(
-                        "catalog_source_mining_run_id"
-                    ),
+                    "source_mining_run_id": row.get("catalog_source_mining_run_id"),
                     "source_kg_build_id": row.get("catalog_source_kg_build_id"),
                 },
                 {
@@ -2951,7 +2959,10 @@ EDGE_ENDPOINT_TYPES = {
     "USES_METRIC": ("DerivedFact", "Metric"),
     "HAS_SCOPE": ("DerivedFact", "EntitySet"),
     "CONTAINS_ENTITY": ("EntitySet", "Entity"),
-    "BELONGS_TO_YEAR": ({"TimePeriod", "CalendarMonth", "CalendarQuarter"}, "CalendarYear"),
+    "BELONGS_TO_YEAR": (
+        {"TimePeriod", "CalendarMonth", "CalendarQuarter"},
+        "CalendarYear",
+    ),
     "BELONGS_TO_QUARTER": ("TimePeriod", "CalendarQuarter"),
     "IN_FISCAL_YEAR": ("TimePeriod", "FiscalYear"),
     "IN_FISCAL_YEAR_LABEL": ("TimePeriod", "FiscalYearLabel"),
@@ -3558,9 +3569,7 @@ def _question_slots(
             semantics.get("fact_id")
             or next(iter(candidate.get("source_fact_ids") or []), "the fact")
         ),
-        "hierarchy_type": str(
-            semantics.get("hierarchy_type") or "time hierarchy"
-        ),
+        "hierarchy_type": str(semantics.get("hierarchy_type") or "time hierarchy"),
         "scope_label": str(
             semantics.get("scope_label")
             or semantics.get("scope_definition")
@@ -3574,9 +3583,7 @@ def _question_parser_contract_validation(
 ) -> dict[str, Any]:
     manifest = question_parser_manifest(TEMPLATES)
     manifest_hash = question_parser_manifest_hash(TEMPLATES)
-    pinned_manifest = json_value(build.get("notes"), {}).get(
-        "question_parser", {}
-    )
+    pinned_manifest = json_value(build.get("notes"), {}).get("question_parser", {})
     sample_contract = json_value(row.get("source_metadata"), {}).get(
         "question_parser", {}
     )
@@ -3687,8 +3694,7 @@ def _answer_text(
     subtype = candidate["task_subtype"]
     if subtype == "derived_input_trace":
         return "; ".join(
-            f"{item.get('fact_id')} ({item.get('metric_id')}, "
-            f"{item.get('period_end')})"
+            f"{item.get('fact_id')} ({item.get('metric_id')}, {item.get('period_end')})"
             for item in answer.get("records") or []
         )
     if subtype == "scope_composition":

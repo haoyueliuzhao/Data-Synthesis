@@ -325,17 +325,29 @@ def _insert_split_candidate_and_sample(
 def test_semantic_cluster_samples_never_cross_splits(tmp_path):
     db, _, _ = _qa_fixture(tmp_path)
     qa_build_id = "qa_split_same_cluster"
-    notes = {"policy": {"temporal_split": {"cutoff_year": 3000}, "quality_gate": {"minimum_overall_pass_rate": 1.0}}}
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 3000},
+            "quality_gate": {"minimum_overall_pass_rate": 1.0},
+        }
+    }
     db.execute(
         "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, status, sample_count, quality_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (qa_build_id, "kg_1", "3.0", "validated", 2, "passed", json.dumps(notes)),
     )
     cluster = _cluster_for_bucket("shared_cluster", 0, 69)
-    _insert_split_candidate_and_sample(db, qa_build_id, "cand_a", "qa_a", cluster, "single_fact")
-    _insert_split_candidate_and_sample(db, qa_build_id, "cand_b", "qa_b", cluster, "single_fact")
+    _insert_split_candidate_and_sample(
+        db, qa_build_id, "cand_a", "qa_a", cluster, "single_fact"
+    )
+    _insert_split_candidate_and_sample(
+        db, qa_build_id, "cand_b", "qa_b", cluster, "single_fact"
+    )
 
     report = split_qa_samples(db, qa_build_id, output_dir=str(tmp_path / "audit"))
-    rows = db.fetchall("SELECT split FROM qa_samples WHERE qa_build_id = ? ORDER BY qa_id", (qa_build_id,))
+    rows = db.fetchall(
+        "SELECT split FROM qa_samples WHERE qa_build_id = ? ORDER BY qa_id",
+        (qa_build_id,),
+    )
     splits = {row["split"] for row in rows}
     assert len(splits) == 1
     assert report["semantic_cluster_count"] == 1
@@ -345,7 +357,12 @@ def test_semantic_cluster_samples_never_cross_splits(tmp_path):
 def test_complex_tasks_reach_train_dev_and_test_splits(tmp_path):
     db, _, _ = _qa_fixture(tmp_path)
     qa_build_id = "qa_split_complex"
-    notes = {"policy": {"temporal_split": {"cutoff_year": 3000}, "quality_gate": {"minimum_overall_pass_rate": 1.0}}}
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 3000},
+            "quality_gate": {"minimum_overall_pass_rate": 1.0},
+        }
+    }
     db.execute(
         "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, status, sample_count, quality_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (qa_build_id, "kg_1", "3.0", "validated", 3, "passed", json.dumps(notes)),
@@ -365,7 +382,11 @@ def test_complex_tasks_reach_train_dev_and_test_splits(tmp_path):
             "ranking",
         )
     report = split_qa_samples(db, qa_build_id, output_dir=str(tmp_path / "audit"))
-    assert report["split_counts"] == {"dev_complex": 1, "test_complex": 1, "train_complex": 1}
+    assert report["split_counts"] == {
+        "dev_complex": 1,
+        "test_complex": 1,
+        "train_complex": 1,
+    }
     db.close()
 
 
@@ -420,7 +441,9 @@ def test_build_validate_split_and_export_qa(tmp_path):
     assert "Apple Inc." in sample["question"]
     assert float(json.loads(sample["answer_value"])["value"]) == 383285
     evidence = dict(
-        db.fetchone("SELECT * FROM qa_evidence_paths WHERE qa_id = ?", (sample["qa_id"],))
+        db.fetchone(
+            "SELECT * FROM qa_evidence_paths WHERE qa_id = ?", (sample["qa_id"],)
+        )
     )
     evidence_edges = json.loads(evidence["evidence_edges"])
     evidence_components = json.loads(evidence["evidence_components"])
@@ -562,7 +585,6 @@ def test_ranking_recompute_uses_full_scope_but_returns_top_k():
         {"rank": 1, "entity_id": "B", "value": 30},
         {"rank": 2, "entity_id": "C", "value": 20},
     ]
-
 
 
 def _insert_scope_fact(db, fact_id: str, entity_id: str, value: str) -> None:
@@ -788,10 +810,26 @@ def test_source_fact_coverage_fails_when_declared_fact_is_not_in_evidence():
         ]
     }
     path_edges = [
-        {"src_node_id": f"entity:AAPL_US@@{kg_build_id}", "dst_node_id": f"fact:fact_1@@{kg_build_id}", "relation_type": "HAS_FACT"},
-        {"src_node_id": f"fact:fact_1@@{kg_build_id}", "dst_node_id": f"metric:revenue@@{kg_build_id}", "relation_type": "MEASURES"},
-        {"src_node_id": f"fact:fact_1@@{kg_build_id}", "dst_node_id": f"time:2023-FY@@{kg_build_id}", "relation_type": "IN_PERIOD"},
-        {"src_node_id": f"fact:fact_1@@{kg_build_id}", "dst_node_id": f"source:sec_companyfacts@@{kg_build_id}", "relation_type": "FROM_SOURCE"},
+        {
+            "src_node_id": f"entity:AAPL_US@@{kg_build_id}",
+            "dst_node_id": f"fact:fact_1@@{kg_build_id}",
+            "relation_type": "HAS_FACT",
+        },
+        {
+            "src_node_id": f"fact:fact_1@@{kg_build_id}",
+            "dst_node_id": f"metric:revenue@@{kg_build_id}",
+            "relation_type": "MEASURES",
+        },
+        {
+            "src_node_id": f"fact:fact_1@@{kg_build_id}",
+            "dst_node_id": f"time:2023-FY@@{kg_build_id}",
+            "relation_type": "IN_PERIOD",
+        },
+        {
+            "src_node_id": f"fact:fact_1@@{kg_build_id}",
+            "dst_node_id": f"source:sec_companyfacts@@{kg_build_id}",
+            "relation_type": "FROM_SOURCE",
+        },
     ]
     ok, detail = _validate_source_fact_coverage(
         {"source_fact_ids": ["fact_1", "fact_missing"]}, path, path_edges, kg_build_id
@@ -825,3 +863,85 @@ def test_git_metadata_helpers_use_repo_root_cwd(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     assert _git_commit_sha() != "unknown"
     assert _git_worktree_dirty() in {True, False}
+
+
+def test_difficulty_distribution_gate_blocks_underrepresented_expert_samples(
+    tmp_path,
+):
+    db, _, _ = _qa_fixture(tmp_path)
+    qa_build_id = "qa_split_difficulty_gate"
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 3000},
+            "quality_gate": {
+                "minimum_overall_pass_rate": 1.0,
+                "minimum_difficulty_samples": {"expert": 2, "research": 1},
+                "minimum_difficulty_ratios": {"research": 0.5},
+            },
+        }
+    }
+    db.execute(
+        "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, "
+        "status, sample_count, quality_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (
+            qa_build_id,
+            "kg_1",
+            "3.0",
+            "validated",
+            2,
+            "passed",
+            json.dumps(notes),
+        ),
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_expert",
+        "qa_expert",
+        _cluster_for_bucket("expert", 0, 69),
+        "ranking",
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_research",
+        "qa_research",
+        _cluster_for_bucket("research", 0, 69),
+        "ranking",
+    )
+    db.execute(
+        "UPDATE qa_candidates SET difficulty = ? WHERE candidate_id = ?",
+        ("expert", "cand_expert"),
+    )
+    db.execute(
+        "UPDATE qa_samples SET difficulty = ? WHERE qa_id = ?",
+        ("expert", "qa_expert"),
+    )
+    db.execute(
+        "UPDATE qa_candidates SET difficulty = ? WHERE candidate_id = ?",
+        ("research", "cand_research"),
+    )
+    db.execute(
+        "UPDATE qa_samples SET difficulty = ? WHERE qa_id = ?",
+        ("research", "qa_research"),
+    )
+
+    report = split_qa_samples(
+        db,
+        qa_build_id,
+        output_dir=str(tmp_path / "audit"),
+        activate=False,
+    )
+
+    assert report["build_gate_status"] == "failed"
+    assert report["difficulty_counts"] == {"expert": 1, "research": 1}
+    assert report["difficulty_ratios"] == {"expert": 0.5, "research": 0.5}
+    assert "difficulty_expert=1 < 2" in report["build_gate_failures"]
+    build = db.fetchone(
+        "SELECT status, notes FROM qa_builds WHERE qa_build_id = ?",
+        (qa_build_id,),
+    )
+    assert build["status"] == "quality_failed"
+    build_gate = json.loads(build["notes"])["build_gate"]
+    assert build_gate["difficulty_counts"] == {"expert": 1, "research": 1}
+    db.close()

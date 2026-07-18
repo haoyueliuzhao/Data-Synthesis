@@ -17,8 +17,6 @@ def match_industry_filter_rank(
     policy: dict[str, Any],
 ) -> list[dict[str, Any]]:
     scopes = _scope_financial_groups(db, kg, policy)
-    top_k = policy["scope_top_k"]
-    threshold = Decimal(policy["growth_threshold_pct"])
     candidates = []
     for key, current in sorted(scopes.items(), key=lambda item: str(item[0])):
         industry, year, source_id, unit, currency = key
@@ -26,37 +24,45 @@ def match_industry_filter_rank(
         complete = _complete_scope_entities(
             current, previous, {"revenue", "net_income"}
         )
-        qualifying = [
-            entity_id
-            for entity_id in complete
-            if _growth_pct(
+        if len(complete) < policy["scope_min_entities"]:
+            continue
+        growth_by_entity = {
+            entity_id: _growth_pct(
                 current[entity_id]["revenue"], previous[entity_id]["revenue"]
             )
-            > threshold
-        ]
-        if len(complete) < policy["scope_min_entities"] or len(qualifying) < top_k:
-            continue
+            for entity_id in complete
+        }
         bindings = {
             "current_revenue": _fact_ids(complete, current, "revenue"),
             "previous_revenue": _fact_ids(complete, previous, "revenue"),
             "net_income": _fact_ids(complete, current, "net_income"),
         }
-        candidates.append(
-            _scope_match(
-                "industry_growth_filter_then_margin_rank",
-                bindings,
-                complete,
-                ["revenue", "net_income"],
-                industry,
-                year,
-                source_id,
-                {
-                    "growth_filter": {"value": str(threshold)},
-                    "answer": {"top_k": top_k},
-                },
-                [industry, year, "filter_rank"],
-            )
-        )
+        for threshold_value in policy["growth_thresholds_pct"]:
+            threshold = Decimal(threshold_value)
+            qualifying = [
+                entity_id
+                for entity_id in complete
+                if growth_by_entity[entity_id] > threshold
+            ]
+            for top_k in policy["scope_top_ks"]:
+                if len(qualifying) < top_k:
+                    continue
+                candidates.append(
+                    _scope_match(
+                        "industry_growth_filter_then_margin_rank",
+                        bindings,
+                        complete,
+                        ["revenue", "net_income"],
+                        industry,
+                        year,
+                        source_id,
+                        {
+                            "growth_filter": {"value": str(threshold)},
+                            "answer": {"top_k": top_k},
+                        },
+                        [industry, year, "filter_rank", threshold, top_k],
+                    )
+                )
     return _stratified_take(candidates, limit, policy["max_per_stratum"])
 
 
@@ -68,7 +74,6 @@ def match_industry_rank_lookup(
     policy: dict[str, Any],
 ) -> list[dict[str, Any]]:
     scopes = _scope_financial_groups(db, kg, policy)
-    top_k = policy["scope_top_k"]
     candidates = []
     for key, current in sorted(scopes.items(), key=lambda item: str(item[0])):
         industry, year, source_id, _, _ = key
@@ -78,25 +83,28 @@ def match_industry_rank_lookup(
             if {"revenue", "total_assets"}.issubset(metrics)
             and _ratio_compatible(metrics["revenue"], metrics["total_assets"])
         )
-        if len(complete) < max(policy["scope_min_entities"], top_k):
+        if len(complete) < policy["scope_min_entities"]:
             continue
         bindings = {
             "revenue": _fact_ids(complete, current, "revenue"),
             "total_assets": _fact_ids(complete, current, "total_assets"),
         }
-        candidates.append(
-            _scope_match(
-                "industry_revenue_rank_then_assets_lookup",
-                bindings,
-                complete,
-                ["revenue", "total_assets"],
-                industry,
-                year,
-                source_id,
-                {"rank_revenue": {"top_k": top_k}},
-                [industry, year, "rank_lookup"],
+        for top_k in policy["scope_top_ks"]:
+            if len(complete) < top_k:
+                continue
+            candidates.append(
+                _scope_match(
+                    "industry_revenue_rank_then_assets_lookup",
+                    bindings,
+                    complete,
+                    ["revenue", "total_assets"],
+                    industry,
+                    year,
+                    source_id,
+                    {"rank_revenue": {"top_k": top_k}},
+                    [industry, year, "rank_lookup", top_k],
+                )
             )
-        )
     return _stratified_take(candidates, limit, policy["max_per_stratum"])
 
 
@@ -108,8 +116,6 @@ def match_industry_multi_factor(
     policy: dict[str, Any],
 ) -> list[dict[str, Any]]:
     scopes = _scope_financial_groups(db, kg, policy)
-    growth_min = Decimal(policy["growth_threshold_pct"])
-    debt_max = Decimal(policy["debt_ratio_max_pct"])
     candidates = []
     for key, current in sorted(scopes.items(), key=lambda item: str(item[0])):
         industry, year, source_id, unit, currency = key
@@ -121,29 +127,26 @@ def match_industry_multi_factor(
         )
         if len(complete) < policy["scope_min_entities"]:
             continue
+        growth_by_entity = {
+            entity_id: _growth_pct(
+                current[entity_id]["revenue"], previous[entity_id]["revenue"]
+            )
+            for entity_id in complete
+        }
         margins = {
             entity_id: _ratio_pct(
                 current[entity_id]["net_income"], current[entity_id]["revenue"]
             )
             for entity_id in complete
         }
-        average_margin = sum(margins.values(), Decimal("0")) / Decimal(len(margins))
-        selected = [
-            entity_id
-            for entity_id in complete
-            if _growth_pct(
-                current[entity_id]["revenue"], previous[entity_id]["revenue"]
-            )
-            > growth_min
-            and margins[entity_id] > average_margin
-            and _ratio_pct(
+        debt_ratios = {
+            entity_id: _ratio_pct(
                 current[entity_id]["total_liabilities"],
                 current[entity_id]["total_assets"],
             )
-            < debt_max
-        ]
-        if not selected:
-            continue
+            for entity_id in complete
+        }
+        average_margin = sum(margins.values(), Decimal("0")) / Decimal(len(margins))
         bindings = {
             "current_revenue": _fact_ids(complete, current, "revenue"),
             "previous_revenue": _fact_ids(complete, previous, "revenue"),
@@ -151,24 +154,48 @@ def match_industry_multi_factor(
             "total_assets": _fact_ids(complete, current, "total_assets"),
             "total_liabilities": _fact_ids(complete, current, "total_liabilities"),
         }
-        candidates.append(
-            _scope_match(
-                "industry_multi_factor_screening",
-                bindings,
-                complete,
-                ["revenue", "net_income", "total_assets", "total_liabilities"],
-                industry,
-                year,
-                source_id,
-                {
-                    "answer": {
-                        "growth_min_pct": str(growth_min),
-                        "debt_max_pct": str(debt_max),
-                    }
-                },
-                [industry, year, "multi_factor"],
-            )
-        )
+        for growth_value in policy["growth_thresholds_pct"]:
+            growth_min = Decimal(growth_value)
+            for debt_value in policy["debt_ratio_thresholds_pct"]:
+                debt_max = Decimal(debt_value)
+                selected = [
+                    entity_id
+                    for entity_id in complete
+                    if growth_by_entity[entity_id] > growth_min
+                    and margins[entity_id] > average_margin
+                    and debt_ratios[entity_id] < debt_max
+                ]
+                if not selected:
+                    continue
+                candidates.append(
+                    _scope_match(
+                        "industry_multi_factor_screening",
+                        bindings,
+                        complete,
+                        [
+                            "revenue",
+                            "net_income",
+                            "total_assets",
+                            "total_liabilities",
+                        ],
+                        industry,
+                        year,
+                        source_id,
+                        {
+                            "answer": {
+                                "growth_min_pct": str(growth_min),
+                                "debt_max_pct": str(debt_max),
+                            }
+                        },
+                        [
+                            industry,
+                            year,
+                            "multi_factor",
+                            growth_min,
+                            debt_max,
+                        ],
+                    )
+                )
     return _stratified_take(candidates, limit, policy["max_per_stratum"])
 
 
@@ -243,9 +270,14 @@ def _complete_scope_entities(
     for entity_id in sorted(set(current) & set(previous)):
         current_metrics = current[entity_id]
         previous_metrics = previous[entity_id]
-        if not required_current.issubset(current_metrics) or "revenue" not in previous_metrics:
+        if (
+            not required_current.issubset(current_metrics)
+            or "revenue" not in previous_metrics
+        ):
             continue
-        if current_metrics["revenue"].get("source_definition_id") != previous_metrics["revenue"].get("source_definition_id"):
+        if current_metrics["revenue"].get("source_definition_id") != previous_metrics[
+            "revenue"
+        ].get("source_definition_id"):
             continue
         if not _ratio_compatible(
             current_metrics["revenue"], previous_metrics["revenue"]

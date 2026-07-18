@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from finraw.artifact_retention import enforce_artifact_retention
 from finraw.atomic_facts import refresh_atomic_facts
 from finraw.builds import mark_running_builds_failed
 from finraw.cninfo_discovery import discover_cninfo_announcements, discover_cninfo_from_strategy, write_cninfo_config
@@ -37,6 +38,7 @@ from finraw.qa.pattern_mining import (
     transition_mining_run,
 )
 from finraw.qa.preflight import profile_graph_patterns
+from finraw.qa_retention import enforce_qa_retention
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
 from finraw.storage import RawObjectStore
@@ -147,6 +149,40 @@ def build_parser() -> argparse.ArgumentParser:
     kg_retention.add_argument("--purge", action="store_true", help="Delete archived node/edge rows after verification.")
     kg_retention.add_argument("--vacuum", action="store_true", help="VACUUM graph tables after purge.")
     kg_retention.add_argument("--batch-size", type=int, default=100000)
+
+    qa_retention = sub.add_parser("qa-retention", help="Plan or execute hot/cold QA build retention.")
+    qa_retention.add_argument("--hot-builds", type=int, help="Number of recent passing non-trivial QA builds to keep hot.")
+    qa_retention.add_argument("--minimum-hot-samples", type=int, help="Minimum sample count for a non-active build to qualify as hot.")
+    qa_retention.add_argument("--preserve-build-id", action="append", default=[], help="Additional QA build ID to keep hot; may be repeated.")
+    qa_retention.add_argument("--archive-dir", help="Cold archive directory. Defaults to config qa.retention.archive_dir.")
+    qa_retention.add_argument("--output-dir", default="data/audit/qa_retention")
+    qa_retention.add_argument("--execute", action="store_true", help="Write verified Parquet/ZSTD archives.")
+    qa_retention.add_argument("--purge", action="store_true", help="Delete archived QA child rows after verification.")
+    qa_retention.add_argument("--vacuum", action="store_true", help="VACUUM QA child tables after purge.")
+    qa_retention.add_argument("--batch-size", type=int, default=50000)
+
+    artifact_retention = sub.add_parser(
+        "artifact-retention",
+        help="Plan or delete cold QA exports and verified redundant metadata JSONL.",
+    )
+    artifact_retention.add_argument(
+        "--qa-export-root",
+        action="append",
+        default=[],
+        help="QA export root to scan; may be repeated.",
+    )
+    artifact_retention.add_argument(
+        "--metadata-jsonl-dir", default="data/prod_exports/jsonl"
+    )
+    artifact_retention.add_argument(
+        "--metadata-parquet-dir", default="data/prod_exports/parquet"
+    )
+    artifact_retention.add_argument(
+        "--output-dir", default="data/audit/artifact_retention"
+    )
+    artifact_retention.add_argument(
+        "--execute", action="store_true", help="Delete only verified cleanup candidates."
+    )
 
     kg_query = sub.add_parser("query-kg", help="Query the indexed PostgreSQL KG/fact serving layer.")
     kg_query.add_argument("mode", choices=["neighbors", "facts", "derived"])
@@ -428,6 +464,32 @@ def main() -> None:
                 vacuum=args.vacuum,
                 output_dir=args.output_dir,
                 batch_size=args.batch_size,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-retention":
+            policy = config.get("qa", {}).get("retention", {})
+            report = enforce_qa_retention(
+                db,
+                archive_dir=args.archive_dir or policy.get("archive_dir", "data/qa_archive"),
+                hot_build_count=args.hot_builds if args.hot_builds is not None else int(policy.get("hot_build_count", 1)),
+                minimum_hot_sample_count=args.minimum_hot_samples if args.minimum_hot_samples is not None else int(policy.get("minimum_hot_sample_count", 100)),
+                preserve_build_ids=args.preserve_build_id,
+                execute=args.execute,
+                purge=args.purge,
+                vacuum=args.vacuum,
+                output_dir=args.output_dir,
+                batch_size=args.batch_size,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "artifact-retention":
+            report = enforce_artifact_retention(
+                db,
+                qa_export_roots=args.qa_export_root
+                or ["data/qa_exports", "data/qa_exports_v2_smoke"],
+                metadata_jsonl_dir=args.metadata_jsonl_dir,
+                metadata_parquet_dir=args.metadata_parquet_dir,
+                output_dir=args.output_dir,
+                execute=args.execute,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "query-kg":
