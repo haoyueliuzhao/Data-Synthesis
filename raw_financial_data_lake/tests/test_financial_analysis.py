@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from finraw.analysis.export import export_analysis_jsonl
-from finraw.analysis.pipeline import build_financial_analysis
+from finraw.analysis.pipeline import _load_kg_build, build_financial_analysis
 from finraw.analysis.signals import execute_signal
 from finraw.analysis.verifier import validate_analysis_samples
 from finraw.db.client import MetadataDB
@@ -12,7 +12,9 @@ from finraw.db.client import MetadataDB
 CASH_FLOW = "net_cash_provided_by_used_in_operating_activities"
 
 
-def _fact(fact_id: str, entity_id: str, metric_id: str, year: int, value: float) -> dict:
+def _fact(
+    fact_id: str, entity_id: str, metric_id: str, year: int, value: float
+) -> dict:
     point = metric_id in {"total_assets", "total_liabilities"}
     return {
         "fact_id": fact_id,
@@ -90,6 +92,7 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
             1,
         ),
     )
+    assert _load_kg_build(db, None)["kg_build_id"] == kg_build_id
     entities = [f"COMPANY_{index}_US" for index in range(5)]
     for index, entity_id in enumerate(entities):
         db.execute(
@@ -142,7 +145,14 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
                 ]:
                     db.execute(
                         "INSERT OR IGNORE INTO kg_nodes (node_id, stable_node_id, kg_build_id, node_type, source_pk, is_active) VALUES (?, ?, ?, ?, ?, ?)",
-                        (node_id, node_id.split("@@")[0], kg_build_id, node_type, source_pk, 1),
+                        (
+                            node_id,
+                            node_id.split("@@")[0],
+                            kg_build_id,
+                            node_type,
+                            source_pk,
+                            1,
+                        ),
                     )
                 for relation, src, dst in [
                     ("HAS_FACT", entity_node, fact_node),
@@ -191,12 +201,34 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
         str(tmp_path / "exports"),
     )
     assert manifest["sample_count"] == 6
-    train_path = Path(tmp_path / "exports" / report["analysis_build_id"] / "sft" / "train.jsonl")
+    train_path = Path(
+        tmp_path / "exports" / report["analysis_build_id"] / "sft" / "train.jsonl"
+    )
     assert train_path.exists()
-    benchmark_paths = [Path(path) for path in manifest["written_files"] if "/benchmark/" in path]
+    benchmark_paths = [
+        Path(path) for path in manifest["written_files"] if "/benchmark/" in path
+    ]
     benchmark_row = json.loads(benchmark_paths[0].read_text().splitlines()[0])
     assert benchmark_row["evidence_bundle"]["signals"]
     assert benchmark_row["expected_claim_schema"]["mandatory_claim_ids"]
+    assert "numeric_slots" in benchmark_row["expected_claim_schema"]
+
+    db.execute(
+        "UPDATE analysis_builds SET signal_registry_manifest_hash = ? "
+        "WHERE analysis_build_id = ?",
+        ("tampered_manifest", report["analysis_build_id"]),
+    )
+    drifted = validate_analysis_samples(db, report["analysis_build_id"])
+    assert drifted["quality_status"] == "failed"
+    assert drifted["failure_counts"]["signal_registry_contract"] == 6
+    db.execute(
+        "UPDATE analysis_builds SET signal_registry_manifest_hash = ? "
+        "WHERE analysis_build_id = ?",
+        (
+            report["manifests"]["signal_registry_manifest_hash"],
+            report["analysis_build_id"],
+        ),
+    )
 
     sample = db.fetchone(
         "SELECT analysis_sample_id, analysis_text FROM analysis_samples "
@@ -206,7 +238,8 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
     db.execute(
         "UPDATE analysis_samples SET analysis_text = ? WHERE analysis_sample_id = ?",
         (
-            str(sample["analysis_text"]) + " Investors should buy it at a target price of 123.",
+            str(sample["analysis_text"])
+            + " Investors should buy it at a target price of 123.",
             sample["analysis_sample_id"],
         ),
     )

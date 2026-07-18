@@ -217,12 +217,46 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             instruction TEXT NOT NULL,
             analysis_text TEXT NOT NULL,
             selected_conclusion_id TEXT NOT NULL,
+            conclusion_text TEXT,
             claim_alignment {json_type} NOT NULL,
+            numeric_slots {json_type},
+            generation_metadata {json_type},
             caveats {json_type} NOT NULL,
             rubric {json_type} NOT NULL,
             generation_method TEXT NOT NULL,
             validation_status TEXT NOT NULL,
             split TEXT,
+            created_at {timestamp_type} DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        f"""
+        CREATE TABLE IF NOT EXISTS analysis_llm_calls (
+            llm_call_id TEXT PRIMARY KEY,
+            analysis_build_id TEXT NOT NULL,
+            attempt_index INTEGER NOT NULL DEFAULT 1,
+            is_final_attempt {bool_type} NOT NULL DEFAULT {true_literal},
+            candidate_id TEXT NOT NULL,
+            analysis_sample_id TEXT NOT NULL,
+            provider TEXT,
+            endpoint_host TEXT,
+            model_requested TEXT,
+            response_model TEXT,
+            response_id TEXT,
+            request_hash TEXT,
+            response_hash TEXT,
+            http_status INTEGER,
+            http_success {bool_type} NOT NULL,
+            json_valid {bool_type} NOT NULL,
+            structured_response_valid {bool_type} NOT NULL,
+            controlled_generation {bool_type} NOT NULL,
+            latency_ms REAL,
+            prompt_tokens BIGINT,
+            completion_tokens BIGINT,
+            total_tokens BIGINT,
+            estimated_cost REAL,
+            fallback_reason TEXT,
+            error_type TEXT,
+            validation_errors {json_type},
             created_at {timestamp_type} DEFAULT CURRENT_TIMESTAMP
         )
         """,
@@ -245,14 +279,46 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         "CREATE INDEX IF NOT EXISTS idx_analysis_samples_build_status ON analysis_samples(analysis_build_id, validation_status)",
         "CREATE INDEX IF NOT EXISTS idx_analysis_samples_cluster ON analysis_samples(analysis_semantic_cluster_id)",
         "CREATE INDEX IF NOT EXISTS idx_analysis_checks_build_status ON analysis_quality_checks(analysis_build_id, check_status)",
+        "CREATE INDEX IF NOT EXISTS idx_analysis_llm_calls_build_status ON analysis_llm_calls(analysis_build_id, controlled_generation, fallback_reason)",
     ]
 
 
 def ensure_analysis_schema(db: DBProtocol) -> None:
     postgres = db.__class__.__name__ == "PostgresMetadataDB"
+    json_type = "JSONB" if postgres else "TEXT"
+    bool_type = "BOOLEAN" if postgres else "INTEGER"
+    true_literal = "TRUE" if postgres else "1"
     for statement in _ddl(
-        "JSONB" if postgres else "TEXT",
-        "BOOLEAN" if postgres else "INTEGER",
+        json_type,
+        bool_type,
         "TIMESTAMPTZ" if postgres else "TEXT",
     ):
         db.execute(statement)
+    migrations = {
+        "analysis_samples": {
+            "conclusion_text": "TEXT",
+            "numeric_slots": json_type,
+            "generation_metadata": json_type,
+        },
+        "analysis_llm_calls": {
+            "attempt_index": "INTEGER NOT NULL DEFAULT 1",
+            "is_final_attempt": f"{bool_type} NOT NULL DEFAULT {true_literal}",
+            "validation_errors": json_type,
+        },
+    }
+    for table, columns in migrations.items():
+        for column, column_type in columns.items():
+            try:
+                if postgres:
+                    db.execute(
+                        f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {column_type}"
+                    )
+                else:
+                    db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
+            except Exception as exc:
+                message = str(exc).lower()
+                if (
+                    "duplicate column" not in message
+                    and "already exists" not in message
+                ):
+                    raise

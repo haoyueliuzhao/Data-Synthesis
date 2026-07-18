@@ -151,6 +151,8 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 
 Financial Analysis Compiler is a sibling of QA V4, not an extension of `qa_samples`. It turns pinned KG facts into recomputable financial signals, complete Evidence Bundles, verifiable Claim Plans, and bounded sets of valid conclusions. The MVP supports operating-trend summaries, growth-quality diagnosis, and complete-peer positioning while rejecting unsupported numbers, causal claims, forecasts, investment recommendations, and target prices. See [Financial Analysis Compiler](docs/financial_analysis_compiler.md).
 
+The default Analysis realization is deterministic. `analysis.generation.mode=controlled_llm` enables bounded Claim-grounded text generation with independent polarity, counterevidence, Numeric Slot, conclusion-predicate, manifest, and API-success gates. The 150-sample non-secret test profile is `config/profiles/prod_analysis_llm_150_test.json`; it is separate from the closed-QA Sentence Plan profile.
+
 ```bash
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-analysis --kg-build-id kg_20260711_062123_bc4b4394 --output-dir data/audit/analysis_build --no-activate
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json validate-analysis --analysis-build-id analysis_build_xxx
@@ -237,5 +239,6 @@ Production PostgreSQL profile expects `DATABASE_URL` or an explicit `metadata_ba
 - Derived facts should consume standardized facts with acceptable validation states only.
 - Source definition mismatch is a comparability signal, not raw data corruption.
 
+Semi-open API audit: [docs/analysis_api_test_20260718.md](docs/analysis_api_test_20260718.md).
 Runbook: [docs/phase1_runbook.md](docs/phase1_runbook.md).
 Storage budget: [docs/storage_budget.md](docs/storage_budget.md).

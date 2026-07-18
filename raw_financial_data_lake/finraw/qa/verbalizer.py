@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import re
-import urllib.request
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any, Protocol
+
+from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
@@ -74,9 +74,7 @@ _COMPARISON_LEXEMES = {
     "小于": "lt",
     "等于": "eq",
 }
-_NUMBER_PATTERN = re.compile(
-    r"(?<![A-Za-z0-9_.])-?\d+(?:\.\d+)?(?![A-Za-z0-9_.])"
-)
+_NUMBER_PATTERN = re.compile(r"(?<![A-Za-z0-9_.])-?\d+(?:\.\d+)?(?![A-Za-z0-9_.])")
 _OBSERVABLE_OPERATOR_PATTERNS = {
     "filter": re.compile(
         r"\b(?:filter|screen|screening|qualifying|condition(?:s)?)\b|筛选|过滤|条件",
@@ -218,15 +216,8 @@ class OpenAICompatibleQuestionProvider:
     """Optional adapter for a configured chat-completions compatible endpoint."""
 
     def __init__(self, config: dict[str, Any]):
-        self.endpoint = str(config.get("endpoint") or "").strip()
-        self.model = str(config.get("model") or "").strip()
-        key_env = str(config.get("api_key_env") or "OPENAI_API_KEY")
-        self.api_key = os.environ.get(key_env, "")
-        self.timeout = float(config.get("timeout_seconds", 30))
-        if not self.endpoint or not self.model or not self.api_key:
-            raise ValueError(
-                "LLM endpoint, model, and API key environment variable are required"
-            )
+        self.client = OpenAICompatibleJsonClient(config)
+        self.last_telemetry: dict[str, Any] = {}
 
     def generate(self, request: dict[str, Any]) -> list[Any]:
         prompt = (
@@ -236,32 +227,25 @@ class OpenAICompatibleQuestionProvider:
             "deterministically. Return JSON only as "
             '{"sentence_plans":[{"plan_version":"sentence_plan.v1",'
             '"tone":...,"sentence_form":...,"connector":...}]}. '
-            "Do not return a question, semantic contract, slots, operators, constraints, "
-            "numbers, metric names, entity names, or time expressions.\n"
+            "Return exactly variant_count distinct plans when possible. Do not return a "
+            "question, semantic contract, slots, operators, constraints, numbers, metric "
+            "names, entity names, or time expressions.\n"
             + json.dumps(request, ensure_ascii=False, sort_keys=True)
         )
-        payload = {
-            "model": self.model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.4,
-            "response_format": {"type": "json_object"},
-        }
-        http_request = urllib.request.Request(
-            self.endpoint,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        with urllib.request.urlopen(http_request, timeout=self.timeout) as response:
-            body = json.loads(response.read().decode("utf-8"))
-        content = body["choices"][0]["message"]["content"]
-        parsed = json.loads(content)
-        return [
+        try:
+            completion = self.client.complete_json(prompt, temperature=0.4)
+        except LLMClientError as exc:
+            self.last_telemetry = dict(exc.telemetry)
+            raise
+        parsed = completion.payload
+        plans = [
             item for item in parsed.get("sentence_plans", []) if isinstance(item, dict)
         ]
+        self.last_telemetry = {
+            **completion.telemetry,
+            "structured_item_count": len(plans),
+        }
+        return plans
 
 
 def realize_question(
@@ -295,6 +279,8 @@ def realize_question(
             {**base_validation, **slot_check, "fallback_reason": None},
         )
     sentence_plan_errors: list[str] = []
+    llm_telemetry: dict[str, Any] = {}
+    effective_provider: QuestionProvider | None = None
     try:
         effective_provider = provider or OpenAICompatibleQuestionProvider(
             policy.get("llm", {})
@@ -310,6 +296,7 @@ def realize_question(
             "variant_count": max(int(policy.get("variants", 3)), 1),
         }
         plans = effective_provider.generate(request)
+        llm_telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
         for candidate_plan in plans:
             plan_check = validate_sentence_plan(candidate_plan)
             if not plan_check["passed"]:
@@ -332,11 +319,22 @@ def realize_question(
                         "sentence_plan": sentence_plan,
                         "sentence_plan_errors": [],
                         "fallback_reason": None,
+                        "llm_telemetry": {
+                            **llm_telemetry,
+                            "sentence_plan_valid": True,
+                            "controlled_generation": True,
+                        },
                     },
                 )
             sentence_plan_errors.extend(slot_check["contract_errors"])
         fallback_reason = "no_llm_sentence_plan_passed_validation"
     except Exception as exc:
+        if isinstance(exc, LLMClientError):
+            llm_telemetry = dict(exc.telemetry)
+        elif effective_provider is not None:
+            llm_telemetry = dict(
+                getattr(effective_provider, "last_telemetry", {}) or {}
+            )
         fallback_reason = f"llm_unavailable:{type(exc).__name__}"
     slot_check = validate_question_roundtrip(
         canonical_question, semantic_contract, trusted_contract=True
@@ -349,6 +347,11 @@ def realize_question(
             **slot_check,
             "sentence_plan_errors": sentence_plan_errors,
             "fallback_reason": fallback_reason,
+            "llm_telemetry": {
+                **llm_telemetry,
+                "sentence_plan_valid": False,
+                "controlled_generation": False,
+            },
         },
     )
 

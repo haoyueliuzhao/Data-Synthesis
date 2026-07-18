@@ -22,14 +22,14 @@ quality-passed pinned KG
   -> Analysis Pattern binding
   -> deterministic Financial Signal execution
   -> Evidence Bundle
-  -> Claim Graph and Valid Conclusion Set
-  -> deterministic evidence-given analysis text
-  -> independent signal/claim/evidence/text verifier
-  -> semantic-cluster split
+  -> Claim Graph and predicate-filtered Valid Conclusion Set
+  -> deterministic Claim Plan or bounded Claim-grounded LLM realization
+  -> independent signal/claim/evidence/text/numeric verifier
+  -> entity/scope connected-component holdout split
   -> benchmark / SFT / trace-seed export
 ```
 
-当前 MVP 采用确定性 Claim Plan 和文本实现，先验证数据模型与门控。后续 LLM 只能在 Claim Graph 内选择合法结论、可选 Claim、句序和风格；它不能产生新数字、新实体、新指标、新期间、新因果关系或投资建议。
+默认模式仍采用确定性 Claim Plan。设置 `analysis.generation.mode=controlled_llm` 后，LLM 接收压缩后的 Signal payload、mandatory Claim、合法结论、caveat 和 Numeric Slot，并只返回 Claim 对齐文本、合法结论和 caveat。它不能新增 Claim ID、Evidence ID、数字槽位、实体、指标、期间、因果、预测或投资建议。返回的结构化 Contract 不是语义证据；最终 Verifier 会独立解析每个 Claim 和结论句的正负/风险立场，并重新检查数字与单位。
 
 ## 六个核心对象
 
@@ -102,12 +102,16 @@ scope type / scope id / fiscal year / source / unit / currency
 
 ```text
 signal_input_complete
+analysis_signal_semantic_gate
+analysis_scope_gate
+analysis_period_gate
+analysis_unit_currency_gate
 signal_operator_recompute
 signal_payload/direction/strength match
 signal_hash_match
 ```
 
-Verifier 从 pinned Fact 重新执行 Signal，不信任已保存结果。
+统一语义门控 fail-closed 检查 graph-ready、forecast、source、SourceDefinition、frequency、seasonal adjustment、vintage、单位、币种、period type、consolidated entity scope、连续期间和完整同行实体集合。未知 Semantic Operator 直接拒绝。Verifier 从 pinned Fact 独立重放门控与 Signal，不信任发现阶段或已保存结果。
 
 ### Evidence Gate
 
@@ -123,29 +127,57 @@ bundle_counter_evidence_coverage
 ### Claim 与结论 Gate
 
 ```text
+claim_id_valid
+claim_alignment_evidence_exact
 mandatory_claim_coverage == 1.0
-selected_conclusion in valid_conclusion_set
+claim_sentence_semantics
+claim_graph_relations
+selected_conclusion predicate satisfied
+conclusion_sentence_semantics
 forbidden_claim_count == 0
-required counterevidence acknowledged
+required counterevidence acknowledged in IDs and text
 ```
+
+Claim Graph 包含一个综合 Claim：它依赖基础 Claim，风险 Claim 与综合 Claim 建立 `contradicts_claim_ids`。Valid Conclusion Set 由 Pattern 允许集合与当前 Claim 状态 Predicate 的交集产生，不再自动接受不符合当前证据的保守结论。
 
 ### 文本 Gate
 
-文本中的数字必须映射到 Fact、Signal payload 或允许的期间；同时扫描错误实体、未知期间、预测词、因果词、推荐词和目标价表达。Judge Model 后续只能作为自然度软指标，不能替代硬门控。
+每个 Signal 数值被编译为 `Numeric Slot(value, unit, tolerance, source_signal_id)`。文本中的数字必须精确映射到 Numeric Slot 或允许期间，并通过单位校验；样本保存的 Numeric Slot 还必须与 Rubric 中的固定 Contract 完全一致。Claim ID 正确但句子表达相反极性、Conclusion ID 合法但正文表达“全面改善”、或只在 ID 层挂载反向证据，都会失败。Judge Model 只能评估自然度，不能替代这些硬门控。
 
 ## Rubric 与切分
 
 Rubric 类型为 `claim_grounded_analysis`，评价事实准确性、mandatory Claim、结论一致性、反向证据、不确定性和表达。硬失败包括错误实体/期间、无证据数字、虚构因果、非法结论、遗漏强制反向证据和投资建议。
 
-样本按 `analysis_semantic_cluster_id` 确定性切分为 70/10/20 的 train/dev/test_standard。同一 Evidence Bundle、Fact 组合和 Claim Plan 不跨 split。
+切分先把共享实体或完整 peer scope 的样本合并为连通分量，再整体分配。除 train/dev/test_standard 外支持 `test_entity_holdout`、`test_temporal_holdout`、`test_peer_scope_holdout`、`test_signal_composition_holdout` 和 `test_conflicting_evidence`。每次 build 输出 entity、peer scope、evidence window 和 semantic cluster 的跨 split 泄漏审计，任一连通分量不会被拆开。
 
 ## 输出格式
 
 - Evidence-given benchmark：`instruction + evidence_bundle + claim_schema + rubric`。
-- SFT：`instruction + evidence_summary + analysis_text + claim_alignment`。
-- Trace seed：Pattern -> Binding -> Signal -> Evidence -> Claim -> Conclusion -> Response。
+- SFT：`instruction + evidence_summary + analysis_text + claim_alignment + conclusion_text + numeric_slots`。
+- Trace seed：Pattern -> Binding -> Signal -> Evidence -> Claim Graph -> Conclusion -> Generation -> Response。
+- Manifest：包含生成方式、API 成功率、fallback、token、时延和费用估算审计。
 
 首版不提供 retrieval benchmark，也不消费 document candidate facts。
+
+## API 生成与独立审计
+
+封闭 QA 的 `question_generation.mode=controlled_llm` 只让模型选择 Sentence Plan 枚举；`variants=3` 表示一次请求最多返回三个候选 Plan，不会把一个 Candidate 扩成三条 QA。半开放分析使用独立的 `analysis.generation.mode=controlled_llm`，模型生成 Claim-grounded 分析文本，两种测试不可混称。
+
+每个半开放请求写入 `analysis_llm_calls`，不保存 prompt、response 或 API key，只保存：
+
+```text
+provider / endpoint_host / requested and response model
+request_hash / response_hash / response_id
+attempt_index / is_final_attempt / validation_errors
+http_status / http_success / json_valid / structured_response_valid
+controlled_generation / latency_ms
+prompt_tokens / completion_tokens / total_tokens / estimated_cost
+fallback_reason / error_type
+```
+
+API 门控与样本 verifier 独立。即使 fallback 文本完全正确，只要 HTTP、结构化输出、受控生成或 fallback 比例不达标，build 仍为 `quality_failed`。默认阈值为 HTTP、结构化和受控生成成功率至少 98%，fallback 至多 2%。语义不合格响应最多进行一次有界修复；请求数、样本数、重试数和最终 fallback 数分别审计，默认重试率不得超过 5%。模型单价未配置时 `estimated_cost` 为 `null`，不会以零费用误导审计。
+
+非秘密测试配置为 `config/profiles/prod_analysis_llm_150_test.json`，配额为三个 Pattern 各 50 条。凭据仅从 `DASHSCOPE_API_KEY` 环境变量读取。该配置定义了正确的半开放测试，但只有实际运行后生成的 build report、`analysis_llm_calls` 和 export manifest 才能证明 150 次调用结果。
 
 ## 命令
 
@@ -171,6 +203,8 @@ python -m finraw.cli --config <config> export-analysis-jsonl \
 
 ## 生产 Smoke
 
+以下记录是确定性 Analysis 主链 smoke，不是 LLM API 生产验证。
+
 2026-07-18 在 KG `kg_20260711_062123_bc4b4394` 上完成非激活 smoke build `analysis_build_e7b50427d67ca3b53c570f70`：
 
 ```text
@@ -184,6 +218,10 @@ signal composition entropy = 1.584963
 
 三类 Pattern 均达到最低门槛，rejection count 为 0，build gate passed。该 build 保持非激活，未改变生产 KG 或 QA 指针。
 
+## 2026-07-18 API 验证
+
+真实 150 条半开放运行完成 150/150 HTTP 和结构化响应，消耗 688,309 tokens；独立 verifier 拒绝两条将风险 Claim 写成正向支持的文本，因此该非激活 build 保持失败且不可导出。修复后增加生成前极性检查、有界语义重试和逐次请求审计，3 条真实 API 回归达到 3/3 verifier passed、0 fallback、0 split leakage。完整数字与失败解释见 [analysis_api_test_20260718.md](analysis_api_test_20260718.md)。
+
 ## 后续边界
 
-P1 扩展 Claim-level LLM realization、Counterevidence Gate 和更完整的 holdout；P2 增加跨来源冲突协调及 preference/verifier 负例；文档级 EvidenceChunk、事件解释和自主检索留到文档证据链稳定之后。
+Claim-level LLM realization、Counterevidence Gate、Numeric Slot 和多类 holdout 已进入主链。仍待完成的是修复后新的全量发布运行，以及跨来源冲突协调、preference/verifier 负例、文档级 EvidenceChunk、事件解释和自主检索。

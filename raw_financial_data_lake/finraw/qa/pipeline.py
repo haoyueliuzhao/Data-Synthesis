@@ -1150,6 +1150,7 @@ def split_qa_samples(
     gate_policy = policy.get("quality_gate", {})
     sample_count = int(build.get("sample_count") or 0)
     pass_rate = len(rows) / sample_count if sample_count else 0.0
+    llm_generation = _qa_llm_generation_stats(db, qa_build_id, policy)
     failures = []
     minimum_rate = float(gate_policy.get("minimum_overall_pass_rate", 0.95))
     if pass_rate < minimum_rate:
@@ -1266,6 +1267,43 @@ def split_qa_samples(
             f"unique_operation_sequences={len(operation_sequences)} "
             f"< {int(minimum_sequences)}"
         )
+    if llm_generation["mode"] == "controlled_llm":
+        generation_gate = dict(
+            policy.get("question_generation", {}).get("api_quality_gate") or {}
+        )
+        thresholds = {
+            "http_success_rate": float(
+                generation_gate.get("minimum_http_success_rate", 0.98)
+            ),
+            "structured_response_pass_rate": float(
+                generation_gate.get("minimum_structured_response_pass_rate", 0.98)
+            ),
+            "valid_sentence_plan_rate": float(
+                generation_gate.get("minimum_valid_sentence_plan_rate", 0.98)
+            ),
+            "controlled_generation_rate": float(
+                generation_gate.get("minimum_controlled_generation_rate", 0.98)
+            ),
+        }
+        if llm_generation["request_count"] != llm_generation["expected_request_count"]:
+            failures.append(
+                "qa_llm_request_count="
+                f"{llm_generation['request_count']} != "
+                f"{llm_generation['expected_request_count']}"
+            )
+        for metric, minimum in thresholds.items():
+            observed = float(llm_generation[metric])
+            if observed < minimum:
+                failures.append(f"qa_llm_{metric}={observed:.6f} < {minimum:.6f}")
+        maximum_fallback = float(generation_gate.get("maximum_fallback_rate", 0.02))
+        if llm_generation["fallback_rate"] > maximum_fallback:
+            failures.append(
+                f"qa_llm_fallback_rate={llm_generation['fallback_rate']:.6f} "
+                f"> {maximum_fallback:.6f}"
+            )
+        if llm_generation["unknown_fallback_reason_count"]:
+            failures.append("qa_llm_unknown_fallback_reason_count must be zero")
+
     critical_checks = _scalar(
         db,
         """
@@ -1308,6 +1346,7 @@ def split_qa_samples(
         "unique_operation_sequences": sorted(operation_sequences),
         "temporal_cutoff_year": cutoff_year,
         "activation_requested": activate,
+        "llm_generation": llm_generation,
     }
     if gate_passed:
         db.execute(
@@ -1343,9 +1382,138 @@ def split_qa_samples(
         },
         "build_gate_status": "passed" if gate_passed else "failed",
         "build_gate_failures": failures,
+        "llm_generation": llm_generation,
         "activated": gate_passed and activate,
     }
     return _write_report(report, output_dir, "qa_split_report")
+
+
+def _qa_llm_generation_stats(
+    db: DBProtocol,
+    qa_build_id: str,
+    policy: dict[str, Any],
+) -> dict[str, Any]:
+    mode = str(
+        policy.get("question_generation", {}).get("mode") or "controlled_template"
+    )
+    sample_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT generation_method, source_metadata FROM qa_samples "
+            "WHERE qa_build_id = ? ORDER BY qa_id",
+            (qa_build_id,),
+        )
+    ]
+    if mode != "controlled_llm":
+        return {
+            "mode": mode,
+            "request_count": 0,
+            "expected_request_count": 0,
+            "http_success_count": 0,
+            "structured_response_pass_count": 0,
+            "valid_sentence_plan_count": 0,
+            "controlled_generation_count": 0,
+            "fallback_count": 0,
+            "http_success_rate": 1.0,
+            "structured_response_pass_rate": 1.0,
+            "valid_sentence_plan_rate": 1.0,
+            "controlled_generation_rate": 1.0,
+            "fallback_rate": 0.0,
+            "unknown_fallback_reason_count": 0,
+            "fallback_reason_distribution": {},
+            "average_latency_ms": None,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "estimated_cost": 0.0,
+            "generation_method_distribution": dict(
+                sorted(
+                    Counter(
+                        str(row["generation_method"]) for row in sample_rows
+                    ).items()
+                )
+            ),
+        }
+    telemetry_rows = []
+    fallback_reasons: Counter[str] = Counter()
+    unknown_fallbacks = 0
+    for row in sample_rows:
+        metadata = json_value(row.get("source_metadata"), {})
+        generation = dict(metadata.get("question_generation") or {})
+        telemetry = dict(generation.get("llm_telemetry") or {})
+        fallback_reason = generation.get("fallback_reason")
+        if fallback_reason:
+            fallback_reasons[str(fallback_reason)] += 1
+        elif str(row.get("generation_method")) != "controlled_llm_sentence_plan":
+            unknown_fallbacks += 1
+        telemetry_rows.append(
+            {
+                **telemetry,
+                "structured_response_valid": bool(telemetry.get("json_valid")),
+                "sentence_plan_valid": bool(telemetry.get("sentence_plan_valid")),
+                "controlled_generation": (
+                    str(row.get("generation_method")) == "controlled_llm_sentence_plan"
+                ),
+            }
+        )
+    count = len(telemetry_rows)
+
+    def rate(field: str) -> float:
+        return (
+            sum(bool(row.get(field)) for row in telemetry_rows) / count
+            if count
+            else 0.0
+        )
+
+    latencies = [
+        float(row["latency_ms"])
+        for row in telemetry_rows
+        if row.get("latency_ms") is not None
+    ]
+    fallback_count = sum(fallback_reasons.values()) + unknown_fallbacks
+    return {
+        "mode": mode,
+        "request_count": count,
+        "expected_request_count": len(sample_rows),
+        "http_success_count": sum(
+            bool(row.get("http_success")) for row in telemetry_rows
+        ),
+        "structured_response_pass_count": sum(
+            bool(row.get("structured_response_valid")) for row in telemetry_rows
+        ),
+        "valid_sentence_plan_count": sum(
+            bool(row.get("sentence_plan_valid")) for row in telemetry_rows
+        ),
+        "controlled_generation_count": sum(
+            bool(row.get("controlled_generation")) for row in telemetry_rows
+        ),
+        "fallback_count": fallback_count,
+        "http_success_rate": rate("http_success"),
+        "structured_response_pass_rate": rate("structured_response_valid"),
+        "valid_sentence_plan_rate": rate("sentence_plan_valid"),
+        "controlled_generation_rate": rate("controlled_generation"),
+        "fallback_rate": fallback_count / count if count else 1.0,
+        "unknown_fallback_reason_count": unknown_fallbacks,
+        "fallback_reason_distribution": dict(sorted(fallback_reasons.items())),
+        "average_latency_ms": sum(latencies) / len(latencies) if latencies else None,
+        "prompt_tokens": sum(
+            int(row.get("prompt_tokens") or 0) for row in telemetry_rows
+        ),
+        "completion_tokens": sum(
+            int(row.get("completion_tokens") or 0) for row in telemetry_rows
+        ),
+        "total_tokens": sum(
+            int(row.get("total_tokens") or 0) for row in telemetry_rows
+        ),
+        "estimated_cost": sum(
+            float(row.get("estimated_cost") or 0) for row in telemetry_rows
+        ),
+        "generation_method_distribution": dict(
+            sorted(
+                Counter(str(row["generation_method"]) for row in sample_rows).items()
+            )
+        ),
+    }
 
 
 def _complex_split(bucket: int) -> str:

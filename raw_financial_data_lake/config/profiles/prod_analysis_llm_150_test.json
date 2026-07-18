@@ -2385,5 +2385,57 @@
         "research": 0.2
       }
     }
+  },
+  "analysis": {
+    "enabled": true,
+    "window_years": 3,
+    "peer_min_entities": 5,
+    "peer_max_entities": 30,
+    "fact_scan_limit": 100000,
+    "pattern_quotas": {
+      "operating_trend_summary_v1": 50,
+      "growth_quality_diagnosis_v1": 50,
+      "peer_positioning_v1": 50
+    },
+    "minimum_pass_rate": 1,
+    "minimum_pattern_samples": {
+      "operating_trend_summary_v1": 50,
+      "growth_quality_diagnosis_v1": 50,
+      "peer_positioning_v1": 50
+    },
+    "generation": {
+      "mode": "controlled_llm",
+      "allow_numeric_slots": true,
+      "max_attempts": 2,
+      "llm": {
+        "provider": "dashscope_openai_compatible",
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "model": "qwen-plus",
+        "api_key_env": "DASHSCOPE_API_KEY",
+        "timeout_seconds": 90,
+        "temperature": 0.35
+      },
+      "api_quality_gate": {
+        "minimum_http_success_rate": 0.98,
+        "minimum_structured_response_pass_rate": 0.98,
+        "minimum_controlled_generation_rate": 0.98,
+        "maximum_fallback_rate": 0.02,
+        "maximum_retry_rate": 0.05
+      }
+    },
+    "split_policy": {
+      "strategy": "entity_scope_component_holdout_v1",
+      "train_pct": 70,
+      "dev_pct": 10,
+      "test_standard_pct": 20,
+      "entity_holdout_pct": 10,
+      "temporal_holdout_pct": 10,
+      "peer_scope_holdout_pct": 10,
+      "signal_composition_holdout_pct": 10,
+      "conflicting_evidence_holdout_pct": 10
+    },
+    "allow_investment_recommendations": false,
+    "allow_forecasts": false,
+    "allow_unsupported_causal_claims": false
   }
 }

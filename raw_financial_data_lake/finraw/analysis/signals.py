@@ -5,8 +5,9 @@ from decimal import Decimal, InvalidOperation
 from typing import Any, Mapping
 
 from finraw.analysis.registry import FinancialSignalSpec, signal_registry, stable_hash
+from finraw.analysis.semantic_constraints import validate_signal_semantics
 
-SIGNAL_EXECUTOR_VERSION = "1.0.0"
+SIGNAL_EXECUTOR_VERSION = "1.1.0"
 
 
 class SignalExecutionError(ValueError):
@@ -50,6 +51,13 @@ def execute_signal(
     if spec is None:
         raise SignalExecutionError(f"Unknown financial signal spec: {signal_spec_id}")
     _validate_role_inputs(spec, role_facts)
+    semantic_gate = validate_signal_semantics(
+        spec, role_facts, target_entity_id=target_entity_id
+    )
+    if not semantic_gate["passed"]:
+        raise SignalExecutionError(
+            "Signal semantic gate failed: " + ", ".join(semantic_gate["errors"])
+        )
     if spec.signal_type == "period_growth":
         return _period_growth(spec, role_facts)
     if spec.signal_type == "trend_consistency":

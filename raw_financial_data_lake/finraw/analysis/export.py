@@ -7,7 +7,7 @@ from typing import Any
 from finraw.db.client import DBProtocol
 from finraw.qa.store import json_value
 
-ANALYSIS_EXPORT_VERSION = "1.0.0"
+ANALYSIS_EXPORT_VERSION = "1.1.0"
 
 
 def export_analysis_jsonl(
@@ -21,6 +21,7 @@ def export_analysis_jsonl(
     )
     if not build:
         raise ValueError(f"Unknown analysis build: {analysis_build_id}")
+    build = dict(build)
     if str(build["status"]) != "ready" or str(build["quality_status"]) != "passed":
         raise ValueError("Only ready, quality-passed analysis builds can be exported")
     root = Path(output_dir) / analysis_build_id
@@ -72,7 +73,10 @@ def export_analysis_jsonl(
         candidate = candidates[str(sample["candidate_id"])]
         bundle = bundles[str(candidate["evidence_bundle_id"])]
         plan = plans[str(candidate["claim_plan_id"])]
-        signal_rows = [signals[str(signal_id)] for signal_id in json_value(candidate["signal_ids"], [])]
+        signal_rows = [
+            signals[str(signal_id)]
+            for signal_id in json_value(candidate["signal_ids"], [])
+        ]
         evidence_bundle = {
             "entity_ids": json_value(bundle["entity_ids"], []),
             "metric_ids": json_value(bundle["metric_ids"], []),
@@ -104,6 +108,7 @@ def export_analysis_jsonl(
                 "optional_claim_ids": json_value(plan["optional_claim_ids"], []),
                 "valid_conclusion_set": json_value(plan["valid_conclusion_set"], []),
                 "forbidden_claim_types": json_value(plan["forbidden_claim_types"], []),
+                "numeric_slots": json_value(sample.get("numeric_slots"), []),
             },
             "rubric": json_value(sample["rubric"], {}),
             "metadata": {
@@ -123,7 +128,12 @@ def export_analysis_jsonl(
                     "analysis_text": sample["analysis_text"],
                     "claim_alignment": json_value(sample["claim_alignment"], []),
                     "selected_conclusion_id": sample["selected_conclusion_id"],
+                    "conclusion_text": sample.get("conclusion_text"),
+                    "numeric_slots": json_value(sample.get("numeric_slots"), []),
                     "caveats": json_value(sample["caveats"], []),
+                    "generation_metadata": json_value(
+                        sample.get("generation_metadata"), {}
+                    ),
                 }
             )
         trace_rows.append(
@@ -143,7 +153,12 @@ def export_analysis_jsonl(
                     "evidence_edges": json_value(bundle["evidence_edges"], []),
                 },
                 "claim_planning": json_value(plan["claim_graph"], []),
-                "conclusion_selection": sample["selected_conclusion_id"],
+                "conclusion_selection": {
+                    "conclusion_id": sample["selected_conclusion_id"],
+                    "conclusion_text": sample.get("conclusion_text"),
+                },
+                "numeric_slots": json_value(sample.get("numeric_slots"), []),
+                "generation": json_value(sample.get("generation_metadata"), {}),
                 "response": sample["analysis_text"],
             }
         )
@@ -164,10 +179,15 @@ def export_analysis_jsonl(
         "sample_count": len(samples),
         "split_counts": {key: len(value) for key, value in sorted(by_split.items())},
         "formats": ["evidence_given_benchmark", "sft", "trace_seeds"],
+        "generation_audit": json_value(build.get("notes"), {}).get(
+            "llm_generation", {}
+        ),
         "written_files": [str(path) for path in written],
     }
     manifest_path = root / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, default=str) + "\n")
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, default=str) + "\n"
+    )
     manifest["written_files"].append(str(manifest_path))
     return manifest
 
@@ -175,4 +195,6 @@ def export_analysis_jsonl(
 def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8") as handle:
         for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True, default=str) + "\n")
+            handle.write(
+                json.dumps(row, ensure_ascii=False, sort_keys=True, default=str) + "\n"
+            )

@@ -7,8 +7,8 @@ from typing import Any
 
 SIGNAL_REGISTRY_VERSION = "1.0.0"
 ANALYSIS_PATTERN_REGISTRY_VERSION = "1.0.0"
-CLAIM_SCHEMA_VERSION = "1.0.0"
-CONCLUSION_POLICY_VERSION = "1.0.0"
+CLAIM_SCHEMA_VERSION = "1.1.0"
+CONCLUSION_POLICY_VERSION = "1.1.0"
 
 
 def stable_hash(value: Any) -> str:
@@ -76,7 +76,7 @@ def _growth_spec(spec_id: str, metric_id: str, category: str) -> FinancialSignal
         {"series": metric_id},
         (metric_id,),
         3,
-        {"scope_type": "canonical_consolidated_entity"},
+        {"scope_type": "canonical_consolidated_entity", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         (
             {"field": "periods", "operator": "contiguous"},
             {"field": "source_definition", "operator": "same_within_series"},
@@ -96,7 +96,7 @@ SIGNAL_SPECS = (
     _growth_spec("operating_cash_flow_growth_v1", _CASH_FLOW, "cash_flow_quality"),
     FinancialSignalSpec(
         "trend_consistency_v1", "trend_consistency", 1, "trend", {"series": "dynamic"}, (), 3,
-        {"scope_type": "canonical_consolidated_entity"},
+        {"scope_type": "canonical_consolidated_entity", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "periods", "operator": "contiguous"},),
         ({"step_id": "trend", "operator": "direction_consistency", "input": "series"},),
         {"type": "trend_signal", "fields": ["increase_count", "decrease_count", "consistency"]},
@@ -106,7 +106,7 @@ SIGNAL_SPECS = (
     FinancialSignalSpec(
         "earnings_cash_divergence_v1", "earnings_cash_divergence", 1, "earnings_quality",
         {"profit_series": "net_income", "cash_series": _CASH_FLOW},
-        ("net_income", _CASH_FLOW), 3, {"scope_type": "canonical_consolidated_entity"},
+        ("net_income", _CASH_FLOW), 3, {"scope_type": "canonical_consolidated_entity", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "periods", "operator": "exact_coverage"},),
         ({"step_id": "spread", "operator": "growth_spread", "inputs": ["profit_series", "cash_series"]},),
         {"type": "divergence_signal", "fields": ["profit_growth_pct", "cash_growth_pct", "spread_pct"]},
@@ -117,7 +117,7 @@ SIGNAL_SPECS = (
     FinancialSignalSpec(
         "margin_change_v1", "margin_change", 1, "profitability",
         {"profit_series": "net_income", "revenue_series": "revenue"},
-        ("net_income", "revenue"), 3, {"scope_type": "canonical_consolidated_entity"},
+        ("net_income", "revenue"), 3, {"scope_type": "canonical_consolidated_entity", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "periods", "operator": "exact_coverage"},),
         ({"step_id": "margin", "operator": "ratio_change", "inputs": ["profit_series", "revenue_series"]},),
         {"type": "ratio_change_signal", "fields": ["first_ratio_pct", "last_ratio_pct", "change_pp"]},
@@ -126,7 +126,7 @@ SIGNAL_SPECS = (
     FinancialSignalSpec(
         "asset_efficiency_change_v1", "asset_efficiency_change", 1, "growth_quality",
         {"revenue_series": "revenue", "asset_series": "total_assets"},
-        ("revenue", "total_assets"), 3, {"scope_type": "canonical_consolidated_entity"},
+        ("revenue", "total_assets"), 3, {"scope_type": "canonical_consolidated_entity", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "periods", "operator": "exact_coverage"},),
         ({"step_id": "efficiency", "operator": "ratio_change", "inputs": ["revenue_series", "asset_series"]},),
         {"type": "ratio_change_signal", "fields": ["first_ratio_pct", "last_ratio_pct", "change_pp"]},
@@ -135,7 +135,7 @@ SIGNAL_SPECS = (
     FinancialSignalSpec(
         "peer_growth_percentile_v1", "peer_percentile", 1, "peer_growth",
         {"current": "revenue", "previous": "revenue"}, ("revenue",), 2,
-        {"scope_type": "complete_industry_entity_set"},
+        {"scope_type": "complete_industry_entity_set", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "scope_input_coverage", "operator": "eq", "value": 1.0},),
         ({"step_id": "percentile", "operator": "peer_growth_percentile"},),
         {"type": "peer_position_signal", "fields": ["target_value", "percentile", "scope_size"]},
@@ -144,7 +144,7 @@ SIGNAL_SPECS = (
     FinancialSignalSpec(
         "peer_margin_percentile_v1", "peer_percentile", 1, "peer_profitability",
         {"profit": "net_income", "revenue": "revenue"}, ("net_income", "revenue"), 1,
-        {"scope_type": "complete_industry_entity_set"},
+        {"scope_type": "complete_industry_entity_set", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "scope_input_coverage", "operator": "eq", "value": 1.0},),
         ({"step_id": "percentile", "operator": "peer_ratio_percentile"},),
         {"type": "peer_position_signal", "fields": ["target_value", "percentile", "scope_size"]},
@@ -154,7 +154,7 @@ SIGNAL_SPECS = (
         "peer_leverage_percentile_v1", "peer_percentile", 1, "peer_leverage",
         {"liabilities": "total_liabilities", "assets": "total_assets"},
         ("total_liabilities", "total_assets"), 1,
-        {"scope_type": "complete_industry_entity_set"},
+        {"scope_type": "complete_industry_entity_set", "missing_field_defaults": {"seasonal_adjustment": "not_applicable"}},
         ({"field": "scope_input_coverage", "operator": "eq", "value": 1.0},),
         ({"step_id": "percentile", "operator": "peer_ratio_percentile"},),
         {"type": "peer_position_signal", "fields": ["target_value", "percentile", "scope_size"]},

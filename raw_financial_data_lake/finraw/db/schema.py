@@ -1028,12 +1028,41 @@ CREATE TABLE IF NOT EXISTS analysis_samples (
             instruction TEXT NOT NULL,
             analysis_text TEXT NOT NULL,
             selected_conclusion_id TEXT NOT NULL,
+            conclusion_text TEXT,
             claim_alignment TEXT NOT NULL,
+            numeric_slots TEXT,
+            generation_metadata TEXT,
             caveats TEXT NOT NULL,
             rubric TEXT NOT NULL,
             generation_method TEXT NOT NULL,
             validation_status TEXT NOT NULL,
             split TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS analysis_llm_calls (
+            llm_call_id TEXT PRIMARY KEY,
+            analysis_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            analysis_sample_id TEXT NOT NULL,
+            provider TEXT,
+            endpoint_host TEXT,
+            model_requested TEXT,
+            response_model TEXT,
+            response_id TEXT,
+            request_hash TEXT,
+            response_hash TEXT,
+            http_status INTEGER,
+            http_success INTEGER NOT NULL,
+            json_valid INTEGER NOT NULL,
+            structured_response_valid INTEGER NOT NULL,
+            controlled_generation INTEGER NOT NULL,
+            latency_ms REAL,
+            prompt_tokens BIGINT,
+            completion_tokens BIGINT,
+            total_tokens BIGINT,
+            estimated_cost REAL,
+            fallback_reason TEXT,
+            error_type TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
 CREATE TABLE IF NOT EXISTS analysis_quality_checks (
@@ -1053,6 +1082,7 @@ CREATE INDEX IF NOT EXISTS idx_analysis_candidates_build_pattern ON analysis_can
 CREATE INDEX IF NOT EXISTS idx_analysis_samples_build_status ON analysis_samples(analysis_build_id, validation_status);
 CREATE INDEX IF NOT EXISTS idx_analysis_samples_cluster ON analysis_samples(analysis_semantic_cluster_id);
 CREATE INDEX IF NOT EXISTS idx_analysis_checks_build_status ON analysis_quality_checks(analysis_build_id, check_status);
+CREATE INDEX IF NOT EXISTS idx_analysis_llm_calls_build_status ON analysis_llm_calls(analysis_build_id, controlled_generation, fallback_reason);
 
 """
 

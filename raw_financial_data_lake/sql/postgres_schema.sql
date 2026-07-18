@@ -1231,12 +1231,44 @@ CREATE TABLE IF NOT EXISTS analysis_samples (
             instruction TEXT NOT NULL,
             analysis_text TEXT NOT NULL,
             selected_conclusion_id TEXT NOT NULL,
+            conclusion_text TEXT,
             claim_alignment JSONB NOT NULL,
+            numeric_slots JSONB,
+            generation_metadata JSONB,
             caveats JSONB NOT NULL,
             rubric JSONB NOT NULL,
             generation_method TEXT NOT NULL,
             validation_status TEXT NOT NULL,
             split TEXT,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS analysis_llm_calls (
+            llm_call_id TEXT PRIMARY KEY,
+            analysis_build_id TEXT NOT NULL,
+            attempt_index INTEGER NOT NULL DEFAULT 1,
+            is_final_attempt BOOLEAN NOT NULL DEFAULT TRUE,
+            candidate_id TEXT NOT NULL,
+            analysis_sample_id TEXT NOT NULL,
+            provider TEXT,
+            endpoint_host TEXT,
+            model_requested TEXT,
+            response_model TEXT,
+            response_id TEXT,
+            request_hash TEXT,
+            response_hash TEXT,
+            http_status INTEGER,
+            http_success BOOLEAN NOT NULL,
+            json_valid BOOLEAN NOT NULL,
+            structured_response_valid BOOLEAN NOT NULL,
+            controlled_generation BOOLEAN NOT NULL,
+            latency_ms DOUBLE PRECISION,
+            prompt_tokens BIGINT,
+            completion_tokens BIGINT,
+            total_tokens BIGINT,
+            estimated_cost DOUBLE PRECISION,
+            fallback_reason TEXT,
+            error_type TEXT,
+            validation_errors JSONB,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
 CREATE TABLE IF NOT EXISTS analysis_quality_checks (
@@ -1256,3 +1288,4 @@ CREATE INDEX IF NOT EXISTS idx_analysis_candidates_build_pattern ON analysis_can
 CREATE INDEX IF NOT EXISTS idx_analysis_samples_build_status ON analysis_samples(analysis_build_id, validation_status);
 CREATE INDEX IF NOT EXISTS idx_analysis_samples_cluster ON analysis_samples(analysis_semantic_cluster_id);
 CREATE INDEX IF NOT EXISTS idx_analysis_checks_build_status ON analysis_quality_checks(analysis_build_id, check_status);
+CREATE INDEX IF NOT EXISTS idx_analysis_llm_calls_build_status ON analysis_llm_calls(analysis_build_id, controlled_generation, fallback_reason);
