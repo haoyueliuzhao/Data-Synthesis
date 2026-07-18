@@ -255,27 +255,75 @@
         "require_same_financial_scope": true,
         "scope_min_entities": 3,
         "scope_top_k": 3,
-        "scope_top_ks": [1, 2, 3, 4, 5],
+        "scope_top_ks": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
         "growth_threshold_pct": 10,
-        "growth_thresholds_pct": [0, 5, 10, 15],
+        "growth_thresholds_pct": [
+          0,
+          5,
+          10,
+          15
+        ],
         "debt_ratio_max_pct": 70,
-        "debt_ratio_thresholds_pct": [50, 60, 70, 80],
+        "debt_ratio_thresholds_pct": [
+          50,
+          60,
+          70,
+          80
+        ],
         "scope_scan_rows_per_metric": 20000,
         "allowed_metric_pairs": [
-          ["revenue", "gross_profit"],
-          ["revenue", "operating_income"],
-          ["revenue", "net_income"],
-          ["gross_profit", "operating_income"],
-          ["operating_income", "net_income"],
-          ["total_assets", "total_liabilities"]
+          [
+            "revenue",
+            "gross_profit"
+          ],
+          [
+            "revenue",
+            "operating_income"
+          ],
+          [
+            "revenue",
+            "net_income"
+          ],
+          [
+            "gross_profit",
+            "operating_income"
+          ],
+          [
+            "operating_income",
+            "net_income"
+          ],
+          [
+            "total_assets",
+            "total_liabilities"
+          ]
         ],
         "followup_metric_pairs": [
-          ["revenue", "net_income"],
-          ["revenue", "operating_income"],
-          ["revenue", "total_assets"],
-          ["net_income", "operating_cash_flow"]
+          [
+            "revenue",
+            "net_income"
+          ],
+          [
+            "revenue",
+            "operating_income"
+          ],
+          [
+            "revenue",
+            "total_assets"
+          ],
+          [
+            "net_income",
+            "operating_cash_flow"
+          ]
         ],
-        "temporal_frequencies": ["annual"],
+        "temporal_frequencies": [
+          "annual"
+        ],
         "temporal_metric_ids": [
           "cash_and_cash_equivalents",
           "gross_profit",
@@ -400,5 +448,27 @@
         "research": 0.001
       }
     }
+  },
+  "analysis": {
+    "enabled": true,
+    "window_years": 3,
+    "peer_min_entities": 5,
+    "peer_max_entities": 30,
+    "fact_scan_limit": 100000,
+    "pattern_quotas": {
+      "operating_trend_summary_v1": 500,
+      "growth_quality_diagnosis_v1": 500,
+      "peer_positioning_v1": 500
+    },
+    "minimum_pass_rate": 1.0,
+    "minimum_pattern_samples": {
+      "operating_trend_summary_v1": 1,
+      "growth_quality_diagnosis_v1": 1,
+      "peer_positioning_v1": 1
+    },
+    "generation_mode": "deterministic_claim_plan",
+    "allow_investment_recommendations": false,
+    "allow_forecasts": false,
+    "allow_unsupported_causal_claims": false
   }
 }

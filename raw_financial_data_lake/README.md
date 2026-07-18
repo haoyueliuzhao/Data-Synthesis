@@ -39,7 +39,7 @@ This means KG and QA outputs can bind to a stable build version while newer refr
 
 ## Logical Layers
 
-The code can live in one repo, but tables, commands, reports, and exports are logically separated into five layers. See [Layered Architecture](docs/layered_architecture.md).
+The code can live in one repo, but tables, commands, reports, and exports are logically separated into six layers. See [Layered Architecture](docs/layered_architecture.md).
 
 ```text
 Layer 1: raw_lake
@@ -56,6 +56,9 @@ Layer 4: qa_ready
 
 Layer 5: qa_build
   qa_builds / qa_templates / qa_candidates / qa_samples / qa_evidence_paths / qa_quality_checks
+
+Layer 6: analysis_build
+  financial signals / analysis patterns / evidence bundles / claim plans / valid conclusions / analysis samples
 ```
 
 Print the machine-readable manifest:
@@ -143,6 +146,19 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-qa --kg-build-id kg_20260711_062123_bc4b4394 --mining-run-id qamining_xxx --output-dir data/audit/qa_build
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-qa-jsonl --qa-build-id qa_build_20260712_023651_7adad081 --output-dir data/qa_exports
 ```
+
+## Semi-open Financial Analysis
+
+Financial Analysis Compiler is a sibling of QA V4, not an extension of `qa_samples`. It turns pinned KG facts into recomputable financial signals, complete Evidence Bundles, verifiable Claim Plans, and bounded sets of valid conclusions. The MVP supports operating-trend summaries, growth-quality diagnosis, and complete-peer positioning while rejecting unsupported numbers, causal claims, forecasts, investment recommendations, and target prices. See [Financial Analysis Compiler](docs/financial_analysis_compiler.md).
+
+```bash
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json build-analysis --kg-build-id kg_20260711_062123_bc4b4394 --output-dir data/audit/analysis_build --no-activate
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json validate-analysis --analysis-build-id analysis_build_xxx
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json analysis-diversity --analysis-build-id analysis_build_xxx --output-dir data/audit/analysis_build
+python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-analysis-jsonl --analysis-build-id analysis_build_xxx --output-dir data/analysis_exports
+```
+
+The non-active production smoke build `analysis_build_e7b50427d67ca3b53c570f70` generated 15 candidates and 65 signals across all three MVP patterns; 15/15 samples passed independent verification and the build gate. Peer scopes use complete 5-30 member SEC SIC major groups traced from saved SEC submissions, without truncating the entity set.
 
 `build-qa` executes candidate construction, deterministic canonical question/answer generation, independent Decimal recomputation, relation-aware KG evidence validation, fixed-cutoff semantic-cluster splitting, and quality-gated activation. Share, ranking, and industry-ranking tasks now retain three separate payloads: the original KG `derived_payload`, the complete-scope `recomputed_payload`, and the final QA `answer_payload`. Evidence is stored as a structured subgraph with adjacency edges and connected components, while legacy `ordered_node_ids` and `ordered_edge_ids` remain compatibility aliases. A candidate is rejected with `qa_recompute_mismatch` when the KG DerivedFact output does not match the complete-scope recomputation; top-k ranking answers are never silently overwritten. LLM paraphrasing is disabled by default and never computes answers. Only a `ready` build with a passed build gate can be exported.
 

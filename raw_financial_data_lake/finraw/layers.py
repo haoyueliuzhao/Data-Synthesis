@@ -53,6 +53,20 @@ LAYER_TABLES: dict[str, list[str]] = {
         "qa_quality_checks",
         "qa_archives",
     ],
+    "analysis_build": [
+        "analysis_builds",
+        "financial_signal_specs",
+        "financial_signal_instances",
+        "analysis_patterns",
+        "analysis_pattern_proposals",
+        "analysis_pattern_catalog_releases",
+        "analysis_pattern_catalog_entries",
+        "analysis_candidates",
+        "analysis_evidence_bundles",
+        "analysis_claim_plans",
+        "analysis_samples",
+        "analysis_quality_checks",
+    ],
 }
 
 LAYER_COMMANDS: dict[str, list[str]] = {
@@ -98,6 +112,12 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "qa-retention",
         "artifact-retention",
     ],
+    "analysis_build": [
+        "build-analysis",
+        "validate-analysis",
+        "analysis-diversity",
+        "export-analysis-jsonl",
+    ],
 }
 
 LAYER_OUTPUTS: dict[str, dict[str, str]] = {
@@ -122,6 +142,10 @@ LAYER_OUTPUTS: dict[str, dict[str, str]] = {
         "audit": "data/audit/qa_build/",
         "exports": "data/qa_exports/",
     },
+    "analysis_build": {
+        "audit": "data/audit/analysis_build/",
+        "exports": "data/analysis_exports/",
+    },
 }
 
 LAYER_DESCRIPTIONS: dict[str, str] = {
@@ -130,6 +154,7 @@ LAYER_DESCRIPTIONS: dict[str, str] = {
     "fact_validation": "Quality checks, source-definition crosswalks, frequency metadata, fact-level graph_ready gates, conflict and comparability support.",
     "qa_ready": "Derived facts and versioned KG artifacts that consume graph-ready standardized facts.",
     "qa_build": "Graph-pattern and legacy QA candidates, executable operation plans, samples, evidence subgraphs, rubrics, quality checks, splits, and benchmark exports pinned to a KG build.",
+    "analysis_build": "Semi-open, claim-grounded financial analysis built from pinned facts, reproducible signals, evidence bundles, claim plans, valid conclusion sets, and independent verification.",
 }
 
 

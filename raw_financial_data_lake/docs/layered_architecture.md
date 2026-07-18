@@ -1,6 +1,6 @@
 # Layered Architecture
 
-The repository now contains multiple pipeline stages, but they are logically separated into five data layers. The raw lake remains the stable provenance layer; downstream facts, validation, and QA-ready artifacts consume it without changing the original raw objects.
+The repository now contains multiple pipeline stages, but they are logically separated into six data layers. The raw lake remains the stable provenance layer; downstream facts, validation, and QA-ready artifacts consume it without changing the original raw objects.
 
 ## Layer 1: raw_lake
 
@@ -92,6 +92,27 @@ Tables:
 The QA layer follows `KG path -> canonical semantics -> programmatic answer -> independent recomputation -> quality gates -> semantic-group split -> export`. LLM paraphrasing is optional and disabled by default; it may change wording only, never entities, metrics, time scope, calculation scope, units, or answers.
 
 Every QA build pins the exact KG, fact, derived, entity, metric, source-definition, and document build IDs. Rejected candidates and samples remain available for audit, while only validated samples receive dataset splits and enter Benchmark, SFT, or Trace Seed exports. Provenance evidence may cite source facts, raw objects, and KG paths; page-level text evidence is not claimed until an explicit Fact-to-EvidenceChunk relation exists.
+
+## Layer 6: analysis_build
+
+Purpose: construct semi-open, claim-grounded financial analysis datasets beside the closed-form QA compiler.
+
+Tables:
+
+- `analysis_builds`
+- `financial_signal_specs`
+- `financial_signal_instances`
+- `analysis_patterns`
+- `analysis_pattern_proposals`
+- `analysis_pattern_catalog_releases`
+- `analysis_pattern_catalog_entries`
+- `analysis_candidates`
+- `analysis_evidence_bundles`
+- `analysis_claim_plans`
+- `analysis_samples`
+- `analysis_quality_checks`
+
+The analysis layer follows `pinned KG -> recomputable Signal -> Evidence Bundle -> Claim Plan -> Valid Conclusion Set -> claim-level verification -> split/export`. It does not reuse `qa_samples`, because correctness is evaluated against supported Claims and bounded conclusions rather than a single exact answer. Unsupported numbers, causal explanations, forecasts, investment recommendations, and target prices fail closed. See [Financial Analysis Compiler](financial_analysis_compiler.md).
 
 ## Commands
 

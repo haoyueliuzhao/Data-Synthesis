@@ -1040,3 +1040,219 @@ CREATE INDEX IF NOT EXISTS idx_qa_patterns_family_active ON qa_graph_patterns(pa
 CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status);
 CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_plans_candidate ON qa_operation_plans(candidate_id);
+
+-- Semi-open Financial Analysis Compiler
+CREATE TABLE IF NOT EXISTS analysis_builds (
+            analysis_build_id TEXT PRIMARY KEY,
+            kg_build_id TEXT NOT NULL,
+            graph_schema_version TEXT NOT NULL,
+            fact_build_id TEXT NOT NULL,
+            entity_build_id TEXT NOT NULL,
+            metric_build_id TEXT NOT NULL,
+            signal_registry_manifest_hash TEXT NOT NULL,
+            analysis_pattern_manifest_hash TEXT NOT NULL,
+            claim_schema_manifest_hash TEXT NOT NULL,
+            conclusion_policy_manifest_hash TEXT NOT NULL,
+            analysis_verifier_manifest_hash TEXT NOT NULL,
+            config_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at TIMESTAMPTZ,
+            completed_at TIMESTAMPTZ,
+            candidate_count BIGINT DEFAULT 0,
+            signal_count BIGINT DEFAULT 0,
+            sample_count BIGINT DEFAULT 0,
+            passed_count BIGINT DEFAULT 0,
+            quality_status TEXT,
+            is_active BOOLEAN DEFAULT FALSE,
+            superseded_by TEXT,
+            notes JSONB NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS financial_signal_specs (
+            signal_spec_id TEXT PRIMARY KEY,
+            signal_type TEXT NOT NULL,
+            signal_version INTEGER NOT NULL,
+            signal_category TEXT NOT NULL,
+            input_roles JSONB NOT NULL,
+            required_metrics JSONB NOT NULL,
+            required_periods INTEGER NOT NULL,
+            required_scope JSONB NOT NULL,
+            semantic_constraints JSONB NOT NULL,
+            operator_dag JSONB NOT NULL,
+            output_schema JSONB NOT NULL,
+            direction_policy JSONB NOT NULL,
+            strength_policy JSONB NOT NULL,
+            caveat_policy JSONB NOT NULL,
+            signal_hash TEXT NOT NULL,
+            is_active BOOLEAN DEFAULT TRUE
+        );
+CREATE TABLE IF NOT EXISTS financial_signal_instances (
+            signal_id TEXT PRIMARY KEY,
+            signal_spec_id TEXT NOT NULL,
+            analysis_build_id TEXT NOT NULL,
+            entity_ids JSONB NOT NULL,
+            metric_ids JSONB NOT NULL,
+            period_scope JSONB NOT NULL,
+            scope_definition TEXT,
+            input_fact_ids JSONB NOT NULL,
+            input_derived_ids JSONB NOT NULL,
+            operator_plan JSONB NOT NULL,
+            intermediate_results JSONB NOT NULL,
+            signal_payload JSONB NOT NULL,
+            direction TEXT NOT NULL,
+            strength TEXT NOT NULL,
+            confidence REAL NOT NULL,
+            supporting_evidence_ids JSONB NOT NULL,
+            counter_evidence_ids JSONB NOT NULL,
+            recompute_status TEXT NOT NULL,
+            signal_hash TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS analysis_patterns (
+            pattern_key TEXT PRIMARY KEY,
+            analysis_pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            analysis_family TEXT NOT NULL,
+            question_intents JSONB NOT NULL,
+            required_signal_roles JSONB NOT NULL,
+            optional_signal_roles JSONB NOT NULL,
+            counter_signal_roles JSONB NOT NULL,
+            evidence_constraints JSONB NOT NULL,
+            claim_schema JSONB NOT NULL,
+            conclusion_policy JSONB NOT NULL,
+            forbidden_claim_types JSONB NOT NULL,
+            difficulty_base TEXT NOT NULL,
+            instruction_template TEXT NOT NULL,
+            pattern_hash TEXT NOT NULL,
+            is_active BOOLEAN DEFAULT TRUE,
+            UNIQUE(analysis_pattern_id, pattern_version)
+        );
+CREATE TABLE IF NOT EXISTS analysis_pattern_proposals (
+            proposal_id TEXT PRIMARY KEY,
+            analysis_build_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            pattern_spec JSONB NOT NULL,
+            binding_examples JSONB NOT NULL,
+            semantic_pass_rate REAL NOT NULL,
+            signal_execution_pass_rate REAL NOT NULL,
+            claim_plan_pass_rate REAL NOT NULL,
+            heldout_pass_rate REAL NOT NULL,
+            status TEXT NOT NULL,
+            proposal_hash TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS analysis_pattern_catalog_releases (
+            catalog_release_id TEXT PRIMARY KEY,
+            catalog_version TEXT NOT NULL,
+            source_analysis_build_id TEXT NOT NULL,
+            catalog_manifest JSONB NOT NULL,
+            catalog_manifest_hash TEXT NOT NULL,
+            compatibility_contract JSONB NOT NULL,
+            status TEXT NOT NULL,
+            published_at TIMESTAMPTZ,
+            published_by TEXT
+        );
+CREATE TABLE IF NOT EXISTS analysis_pattern_catalog_entries (
+            catalog_entry_id TEXT PRIMARY KEY,
+            catalog_release_id TEXT NOT NULL,
+            analysis_pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            pattern_spec JSONB NOT NULL,
+            pattern_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            UNIQUE(catalog_release_id, analysis_pattern_id, pattern_version)
+        );
+CREATE TABLE IF NOT EXISTS analysis_candidates (
+            candidate_id TEXT PRIMARY KEY,
+            stable_candidate_id TEXT NOT NULL,
+            analysis_build_id TEXT NOT NULL,
+            analysis_pattern_id TEXT NOT NULL,
+            pattern_version INTEGER NOT NULL,
+            pattern_hash TEXT NOT NULL,
+            entity_ids JSONB NOT NULL,
+            metric_ids JSONB NOT NULL,
+            period_scope JSONB NOT NULL,
+            scope_definition TEXT,
+            signal_ids JSONB NOT NULL,
+            evidence_bundle_id TEXT NOT NULL,
+            claim_plan_id TEXT NOT NULL,
+            instruction TEXT NOT NULL,
+            difficulty TEXT NOT NULL,
+            difficulty_features JSONB NOT NULL,
+            eligibility_status TEXT NOT NULL,
+            rejection_reasons JSONB NOT NULL,
+            candidate_hash TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS analysis_evidence_bundles (
+            evidence_bundle_id TEXT PRIMARY KEY,
+            analysis_build_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            entity_ids JSONB NOT NULL,
+            metric_ids JSONB NOT NULL,
+            period_scope JSONB NOT NULL,
+            scope_definition TEXT,
+            fact_ids JSONB NOT NULL,
+            derived_fact_ids JSONB NOT NULL,
+            signal_ids JSONB NOT NULL,
+            source_document_ids JSONB NOT NULL,
+            raw_object_ids JSONB NOT NULL,
+            evidence_node_ids JSONB NOT NULL,
+            evidence_edges JSONB NOT NULL,
+            evidence_components JSONB NOT NULL,
+            supporting_evidence JSONB NOT NULL,
+            counter_evidence JSONB NOT NULL,
+            coverage_report JSONB NOT NULL,
+            bundle_hash TEXT NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS analysis_claim_plans (
+            claim_plan_id TEXT PRIMARY KEY,
+            analysis_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            claim_graph JSONB NOT NULL,
+            valid_conclusion_set JSONB NOT NULL,
+            invalid_conclusions JSONB NOT NULL,
+            mandatory_claim_ids JSONB NOT NULL,
+            optional_claim_ids JSONB NOT NULL,
+            forbidden_claim_types JSONB NOT NULL,
+            selected_conclusion_id TEXT NOT NULL,
+            plan_hash TEXT NOT NULL,
+            validation_status TEXT NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS analysis_samples (
+            analysis_sample_id TEXT PRIMARY KEY,
+            stable_analysis_sample_id TEXT NOT NULL,
+            analysis_semantic_cluster_id TEXT NOT NULL,
+            evidence_bundle_cluster_id TEXT NOT NULL,
+            signal_composition_id TEXT NOT NULL,
+            claim_schema_id TEXT NOT NULL,
+            conclusion_family_id TEXT NOT NULL,
+            analysis_build_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL,
+            instruction TEXT NOT NULL,
+            analysis_text TEXT NOT NULL,
+            selected_conclusion_id TEXT NOT NULL,
+            claim_alignment JSONB NOT NULL,
+            caveats JSONB NOT NULL,
+            rubric JSONB NOT NULL,
+            generation_method TEXT NOT NULL,
+            validation_status TEXT NOT NULL,
+            split TEXT,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS analysis_quality_checks (
+            check_id TEXT PRIMARY KEY,
+            analysis_sample_id TEXT NOT NULL,
+            analysis_build_id TEXT NOT NULL,
+            check_name TEXT NOT NULL,
+            check_status TEXT NOT NULL,
+            observed_value JSONB,
+            expected_value JSONB,
+            message TEXT,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE INDEX IF NOT EXISTS idx_analysis_builds_kg_status ON analysis_builds(kg_build_id, status);
+CREATE INDEX IF NOT EXISTS idx_signal_instances_build_spec ON financial_signal_instances(analysis_build_id, signal_spec_id, recompute_status);
+CREATE INDEX IF NOT EXISTS idx_analysis_candidates_build_pattern ON analysis_candidates(analysis_build_id, analysis_pattern_id, eligibility_status);
+CREATE INDEX IF NOT EXISTS idx_analysis_samples_build_status ON analysis_samples(analysis_build_id, validation_status);
+CREATE INDEX IF NOT EXISTS idx_analysis_samples_cluster ON analysis_samples(analysis_semantic_cluster_id);
+CREATE INDEX IF NOT EXISTS idx_analysis_checks_build_status ON analysis_quality_checks(analysis_build_id, check_status);

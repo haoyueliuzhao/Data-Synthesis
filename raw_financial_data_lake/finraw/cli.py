@@ -3,6 +3,10 @@ from __future__ import annotations
 import argparse
 import json
 
+from finraw.analysis.diversity import build_analysis_diversity_report
+from finraw.analysis.export import export_analysis_jsonl
+from finraw.analysis.pipeline import build_financial_analysis
+from finraw.analysis.verifier import validate_analysis_samples
 from finraw.artifact_retention import enforce_artifact_retention
 from finraw.atomic_facts import refresh_atomic_facts
 from finraw.builds import mark_running_builds_failed
@@ -307,6 +311,39 @@ def build_parser() -> argparse.ArgumentParser:
     )
     qa_all.add_argument("--max-mined-proposals", type=int, default=100)
     qa_all.add_argument("--max-candidates-per-proposal", type=int, default=1)
+
+    analysis_build = sub.add_parser(
+        "build-analysis",
+        help="Build claim-grounded semi-open financial analysis samples from a pinned KG.",
+    )
+    analysis_build.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
+    analysis_build.add_argument("--output-dir", default="data/audit/analysis_build")
+    analysis_build.add_argument("--limit-per-pattern", type=int)
+    analysis_build.add_argument(
+        "--no-activate",
+        action="store_true",
+        help="Keep a passing analysis build non-active for validation.",
+    )
+
+    analysis_validate = sub.add_parser(
+        "validate-analysis",
+        help="Independently replay signals and verify evidence, claims, and conclusions.",
+    )
+    analysis_validate.add_argument("--analysis-build-id", required=True)
+
+    analysis_diversity = sub.add_parser(
+        "analysis-diversity",
+        help="Report Analysis Pattern, Signal, Claim, Conclusion, and split diversity.",
+    )
+    analysis_diversity.add_argument("--analysis-build-id", required=True)
+    analysis_diversity.add_argument("--output-dir", default="data/audit/analysis_build")
+
+    analysis_export = sub.add_parser(
+        "export-analysis-jsonl",
+        help="Export Evidence-given benchmark, SFT, and trace-seed analysis JSONL.",
+    )
+    analysis_export.add_argument("--analysis-build-id", required=True)
+    analysis_export.add_argument("--output-dir", default="data/analysis_exports")
 
     sub.add_parser("validate", help="Recompute checksums for saved raw objects.")
     return parser
@@ -642,6 +679,41 @@ def main() -> None:
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
             if report.get("split", {}).get("build_gate_status") != "passed":
                 raise RuntimeError(f"QA build gate failed: {report.get('split', {}).get('build_gate_failures', [])}")
+        elif args.command == "build-analysis":
+            report = build_financial_analysis(
+                db,
+                config,
+                kg_build_id=args.kg_build_id,
+                output_dir=args.output_dir,
+                limit_per_pattern=args.limit_per_pattern,
+                activate=not args.no_activate,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+            if report.get("build_gate_status") != "passed":
+                raise RuntimeError(
+                    f"Analysis build gate failed: {report.get('build_gate_failures', [])}"
+                )
+        elif args.command == "validate-analysis":
+            report = validate_analysis_samples(db, args.analysis_build_id)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+            if report.get("quality_status") != "passed":
+                raise RuntimeError(
+                    f"Analysis validation failed: {report.get('failure_counts', {})}"
+                )
+        elif args.command == "analysis-diversity":
+            report = build_analysis_diversity_report(
+                db,
+                args.analysis_build_id,
+                output_dir=args.output_dir,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "export-analysis-jsonl":
+            report = export_analysis_jsonl(
+                db,
+                args.analysis_build_id,
+                args.output_dir,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "validate":
             passed, failed = validate_raw_objects(db)
             print(f"Validation completed: passed={passed}, failed={failed}")

@@ -59,5 +59,22 @@
       "qa_quality_checks",
       "qa_archives"
     ]
+  },
+  "analysis_build": {
+    "default_export_dir": "data/analysis_exports/",
+    "tables": [
+      "analysis_builds",
+      "financial_signal_specs",
+      "financial_signal_instances",
+      "analysis_patterns",
+      "analysis_pattern_proposals",
+      "analysis_pattern_catalog_releases",
+      "analysis_pattern_catalog_entries",
+      "analysis_candidates",
+      "analysis_evidence_bundles",
+      "analysis_claim_plans",
+      "analysis_samples",
+      "analysis_quality_checks"
+    ]
   }
 }

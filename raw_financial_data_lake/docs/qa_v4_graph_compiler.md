@@ -1,5 +1,7 @@
 # QA V4 Graph Pattern Compiler
 
+> Semi-open descriptive and diagnostic analysis is implemented as a sibling compiler rather than a QA subtype. It shares the pinned KG and verification infrastructure but persists Signals, Evidence Bundles, Claim Plans, and valid conclusion sets in separate analysis tables. See [Financial Analysis Compiler](financial_analysis_compiler.md).
+
 ## 目标
 
 QA V4 将知识图谱从事后证据层推进为问题发现与推理规划层。新增链路是：
