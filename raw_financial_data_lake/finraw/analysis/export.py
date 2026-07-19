@@ -7,7 +7,7 @@ from typing import Any
 from finraw.db.client import DBProtocol
 from finraw.qa.store import json_value
 
-ANALYSIS_EXPORT_VERSION = "1.1.0"
+ANALYSIS_EXPORT_VERSION = "1.2.0"
 
 
 def export_analysis_jsonl(
@@ -82,6 +82,18 @@ def export_analysis_jsonl(
             "metric_ids": json_value(bundle["metric_ids"], []),
             "period_scope": json_value(bundle["period_scope"], {}),
             "scope_definition": bundle.get("scope_definition"),
+            "peer_scope": {
+                "peer_scope_type": bundle.get("peer_scope_type"),
+                "peer_scope_id": bundle.get("peer_scope_id"),
+                "expected_scope_entity_ids": json_value(
+                    bundle.get("expected_scope_entity_ids"), []
+                ),
+                "scope_membership_hash": bundle.get("scope_membership_hash"),
+                "scope_eligibility_policy_hash": bundle.get(
+                    "scope_eligibility_policy_hash"
+                ),
+                "contract": json_value(bundle.get("peer_scope_contract"), {}),
+            },
             "signals": [
                 {
                     "signal_id": row["signal_id"],
@@ -129,6 +141,12 @@ def export_analysis_jsonl(
                     "claim_alignment": json_value(sample["claim_alignment"], []),
                     "selected_conclusion_id": sample["selected_conclusion_id"],
                     "conclusion_text": sample.get("conclusion_text"),
+                    "conclusion_semantic_frame": json_value(
+                        sample.get("conclusion_semantic_frame"), {}
+                    ),
+                    "conclusion_surface_form_id": sample.get(
+                        "conclusion_surface_form_id"
+                    ),
                     "numeric_slots": json_value(sample.get("numeric_slots"), []),
                     "caveats": json_value(sample["caveats"], []),
                     "generation_metadata": json_value(
@@ -144,6 +162,9 @@ def export_analysis_jsonl(
                     "entity_ids": json_value(candidate["entity_ids"], []),
                     "metric_ids": json_value(candidate["metric_ids"], []),
                     "period_scope": json_value(candidate["period_scope"], {}),
+                    "peer_scope_contract": json_value(
+                        candidate.get("peer_scope_contract"), {}
+                    ),
                 },
                 "signal_computation": evidence_bundle["signals"],
                 "evidence_selection": {
@@ -156,6 +177,10 @@ def export_analysis_jsonl(
                 "conclusion_selection": {
                     "conclusion_id": sample["selected_conclusion_id"],
                     "conclusion_text": sample.get("conclusion_text"),
+                    "semantic_frame": json_value(
+                        sample.get("conclusion_semantic_frame"), {}
+                    ),
+                    "surface_form_id": sample.get("conclusion_surface_form_id"),
                 },
                 "numeric_slots": json_value(sample.get("numeric_slots"), []),
                 "generation": json_value(sample.get("generation_metadata"), {}),

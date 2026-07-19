@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from finraw.analysis.export import export_analysis_jsonl
+from finraw.analysis.peer_scope import scope_membership_hash
 from finraw.analysis.pipeline import _load_kg_build, build_financial_analysis
 from finraw.analysis.signals import execute_signal
 from finraw.analysis.verifier import validate_analysis_samples
@@ -195,6 +196,148 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
     }
     assert sum(report["split_counts"].values()) == 6
 
+    peer_candidate = dict(
+        db.fetchone(
+            "SELECT * FROM analysis_candidates "
+            "WHERE analysis_build_id = ? AND analysis_pattern_id = ? "
+            "ORDER BY candidate_id LIMIT 1",
+            (report["analysis_build_id"], "peer_positioning_v1"),
+        )
+    )
+    peer_bundle = dict(
+        db.fetchone(
+            "SELECT * FROM analysis_evidence_bundles WHERE evidence_bundle_id = ?",
+            (peer_candidate["evidence_bundle_id"],),
+        )
+    )
+    expected_peer_ids = json.loads(peer_candidate["expected_scope_entity_ids"])
+    peer_contract = json.loads(peer_candidate["peer_scope_contract"])
+    assert expected_peer_ids == entities
+    assert peer_contract["expected_scope_entity_ids"] == entities
+    assert peer_contract["scope_membership_hash"] == peer_candidate[
+        "scope_membership_hash"
+    ]
+    assert peer_candidate["scope_eligibility_policy_hash"]
+    assert json.loads(peer_bundle["expected_scope_entity_ids"]) == entities
+
+    signal_ids = json.loads(peer_candidate["signal_ids"])
+    signal_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT signal_id, operator_plan FROM financial_signal_instances "
+            f"WHERE signal_id IN ({','.join('?' for _ in signal_ids)})",
+            signal_ids,
+        )
+    ]
+    original_plans = {
+        str(row["signal_id"]): str(row["operator_plan"]) for row in signal_rows
+    }
+    first_plan = json.loads(signal_rows[0]["operator_plan"])
+    target_entity_id = str(first_plan["target_entity_id"])
+    omitted_entity_id = next(
+        entity_id for entity_id in reversed(entities) if entity_id != target_entity_id
+    )
+    all_role_fact_ids = sorted(
+        {
+            str(fact_id)
+            for row in signal_rows
+            for fact_ids in json.loads(row["operator_plan"])["role_fact_ids"].values()
+            for fact_id in fact_ids
+        }
+    )
+    fact_entity_rows = db.fetchall(
+        "SELECT fact_id, entity_id FROM standardized_facts "
+        f"WHERE fact_id IN ({','.join('?' for _ in all_role_fact_ids)})",
+        all_role_fact_ids,
+    )
+    fact_entities = {
+        str(row["fact_id"]): str(row["entity_id"]) for row in fact_entity_rows
+    }
+    for row in signal_rows:
+        altered_plan = json.loads(row["operator_plan"])
+        altered_plan["role_fact_ids"] = {
+            role: [
+                fact_id
+                for fact_id in fact_ids
+                if fact_entities[str(fact_id)] != omitted_entity_id
+            ]
+            for role, fact_ids in altered_plan["role_fact_ids"].items()
+        }
+        db.execute(
+            "UPDATE financial_signal_instances SET operator_plan = ? "
+            "WHERE signal_id = ?",
+            (json.dumps(altered_plan), row["signal_id"]),
+        )
+
+    malicious_entity_ids = [
+        entity_id for entity_id in entities if entity_id != omitted_entity_id
+    ]
+    malicious_contract = dict(peer_contract)
+    malicious_contract["expected_scope_entity_ids"] = malicious_entity_ids
+    malicious_contract["scope_membership_hash"] = scope_membership_hash(
+        malicious_contract
+    )
+    for table, key, value in (
+        (
+            "analysis_candidates",
+            "candidate_id",
+            peer_candidate["candidate_id"],
+        ),
+        (
+            "analysis_evidence_bundles",
+            "evidence_bundle_id",
+            peer_bundle["evidence_bundle_id"],
+        ),
+    ):
+        db.execute(
+            f"UPDATE {table} SET entity_ids = ?, expected_scope_entity_ids = ?, "
+            "scope_membership_hash = ?, peer_scope_contract = ? "
+            f"WHERE {key} = ?",
+            (
+                json.dumps(malicious_entity_ids),
+                json.dumps(malicious_entity_ids),
+                malicious_contract["scope_membership_hash"],
+                json.dumps(malicious_contract),
+                value,
+            ),
+        )
+    omitted_peer = validate_analysis_samples(db, report["analysis_build_id"])
+    assert omitted_peer["failure_counts"]["peer_scope_recomputed_universe"] == 1
+    assert omitted_peer["failure_counts"]["peer_scope_fact_representation"] == 1
+
+    db.execute(
+        "UPDATE analysis_candidates SET entity_ids = ?, "
+        "expected_scope_entity_ids = ?, scope_membership_hash = ?, "
+        "peer_scope_contract = ? WHERE candidate_id = ?",
+        (
+            peer_candidate["entity_ids"],
+            peer_candidate["expected_scope_entity_ids"],
+            peer_candidate["scope_membership_hash"],
+            peer_candidate["peer_scope_contract"],
+            peer_candidate["candidate_id"],
+        ),
+    )
+    db.execute(
+        "UPDATE analysis_evidence_bundles SET entity_ids = ?, "
+        "expected_scope_entity_ids = ?, scope_membership_hash = ?, "
+        "peer_scope_contract = ? WHERE evidence_bundle_id = ?",
+        (
+            peer_bundle["entity_ids"],
+            peer_bundle["expected_scope_entity_ids"],
+            peer_bundle["scope_membership_hash"],
+            peer_bundle["peer_scope_contract"],
+            peer_bundle["evidence_bundle_id"],
+        ),
+    )
+    for signal_id, operator_plan in original_plans.items():
+        db.execute(
+            "UPDATE financial_signal_instances SET operator_plan = ? "
+            "WHERE signal_id = ?",
+            (operator_plan, signal_id),
+        )
+    restored_peer = validate_analysis_samples(db, report["analysis_build_id"])
+    assert restored_peer["quality_status"] == "passed"
+
     manifest = export_analysis_jsonl(
         db,
         report["analysis_build_id"],
@@ -212,6 +355,91 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
     assert benchmark_row["evidence_bundle"]["signals"]
     assert benchmark_row["expected_claim_schema"]["mandatory_claim_ids"]
     assert "numeric_slots" in benchmark_row["expected_claim_schema"]
+
+    plan_row = db.fetchone(
+        "SELECT claim_graph, required_caveat_ids FROM analysis_claim_plans "
+        "WHERE analysis_build_id = ? ORDER BY claim_plan_id LIMIT 1",
+        (report["analysis_build_id"],),
+    )
+    claim_graph = json.loads(plan_row["claim_graph"])
+    required_claim = next(claim for claim in claim_graph if claim["is_required"])
+    assert required_claim["allowed_entity_ids"]
+    assert required_claim["allowed_metric_ids"]
+    assert required_claim["allowed_periods"]
+    assert required_claim["allowed_predicates"]
+    assert required_claim["forbidden_claim_extensions"]
+    assert json.loads(plan_row["required_caveat_ids"]) == [
+        "bounded_structured_evidence"
+    ]
+
+    context_sample = db.fetchone(
+        "SELECT analysis_sample_id, claim_alignment, caveats FROM analysis_samples "
+        "WHERE analysis_build_id = ? ORDER BY analysis_sample_id LIMIT 1",
+        (report["analysis_build_id"],),
+    )
+    original_alignment = json.loads(context_sample["claim_alignment"])
+    unknown_entity_alignment = json.loads(context_sample["claim_alignment"])
+    unknown_entity_alignment[0]["context_bindings"]["entity_ids"].append(
+        "UNREGISTERED_ENTITY"
+    )
+    unknown_entity_alignment[0]["context_bindings"]["metric_ids"].append(
+        "unregistered_metric"
+    )
+    unknown_entity_alignment[0]["context_bindings"]["periods"].append(2099)
+    unknown_entity_alignment[0]["context_bindings"]["predicates"].append(
+        "unregistered_predicate"
+    )
+    unknown_entity_alignment[0]["context_bindings"]["numeric_slot_ids"].append(
+        "unregistered_numeric_slot"
+    )
+    db.execute(
+        "UPDATE analysis_samples SET claim_alignment = ? WHERE analysis_sample_id = ?",
+        (json.dumps(unknown_entity_alignment), context_sample["analysis_sample_id"]),
+    )
+    unknown_entity = validate_analysis_samples(db, report["analysis_build_id"])
+    assert unknown_entity["failure_counts"]["unknown_entity_count"] == 1
+    assert unknown_entity["failure_counts"]["unknown_metric_count"] == 1
+    assert unknown_entity["failure_counts"]["unknown_period_count"] == 1
+    assert unknown_entity["failure_counts"]["unknown_predicate_count"] == 1
+    assert unknown_entity["failure_counts"]["unknown_numeric_slot_count"] == 1
+    db.execute(
+        "UPDATE analysis_samples SET claim_alignment = ? WHERE analysis_sample_id = ?",
+        (json.dumps(original_alignment), context_sample["analysis_sample_id"]),
+    )
+
+    forbidden_extension_alignment = json.loads(context_sample["claim_alignment"])
+    forbidden_extension_alignment[0]["claim_extensions"] = [
+        "management_quality_judgment"
+    ]
+    db.execute(
+        "UPDATE analysis_samples SET claim_alignment = ? WHERE analysis_sample_id = ?",
+        (
+            json.dumps(forbidden_extension_alignment),
+            context_sample["analysis_sample_id"],
+        ),
+    )
+    forbidden_extension = validate_analysis_samples(db, report["analysis_build_id"])
+    assert forbidden_extension["failure_counts"]["forbidden_claim_extension_count"] == 1
+    db.execute(
+        "UPDATE analysis_samples SET claim_alignment = ? WHERE analysis_sample_id = ?",
+        (json.dumps(original_alignment), context_sample["analysis_sample_id"]),
+    )
+
+    original_caveats = json.loads(context_sample["caveats"])
+    extra_caveats = [
+        *original_caveats,
+        {"caveat_id": "unknown_caveat", "sentence": "x"},
+    ]
+    db.execute(
+        "UPDATE analysis_samples SET caveats = ? WHERE analysis_sample_id = ?",
+        (json.dumps(extra_caveats), context_sample["analysis_sample_id"]),
+    )
+    caveat_tamper = validate_analysis_samples(db, report["analysis_build_id"])
+    assert caveat_tamper["failure_counts"]["caveat_id_exact_match"] == 1
+    db.execute(
+        "UPDATE analysis_samples SET caveats = ? WHERE analysis_sample_id = ?",
+        (json.dumps(original_caveats), context_sample["analysis_sample_id"]),
+    )
 
     db.execute(
         "UPDATE analysis_builds SET signal_registry_manifest_hash = ? "
@@ -235,6 +463,19 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
         "WHERE analysis_build_id = ? ORDER BY analysis_sample_id LIMIT 1",
         (report["analysis_build_id"],),
     )
+    db.execute(
+        "UPDATE analysis_samples SET analysis_text = ? WHERE analysis_sample_id = ?",
+        (
+            str(sample["analysis_text"])
+            + " Operating cash flow strongly supports profit growth and is not a "
+            "material risk caveat.",
+            sample["analysis_sample_id"],
+        ),
+    )
+    reversed_text = validate_analysis_samples(db, report["analysis_build_id"])
+    assert reversed_text["quality_status"] == "failed"
+    assert reversed_text["failure_counts"]["analysis_text_render_contract"] == 1
+
     db.execute(
         "UPDATE analysis_samples SET analysis_text = ? WHERE analysis_sample_id = ?",
         (

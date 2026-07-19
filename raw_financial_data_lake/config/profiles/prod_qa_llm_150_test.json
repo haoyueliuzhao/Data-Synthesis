@@ -2343,7 +2343,7 @@
       "variants": 3,
       "llm": {
         "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-plus",
+        "model": "qwen-turbo",
         "api_key_env": "DASHSCOPE_API_KEY",
         "timeout_seconds": 90
       },

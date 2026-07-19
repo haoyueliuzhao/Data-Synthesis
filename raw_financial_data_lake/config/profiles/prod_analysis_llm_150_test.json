@@ -2343,7 +2343,7 @@
       "variants": 3,
       "llm": {
         "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-plus",
+        "model": "qwen-turbo",
         "api_key_env": "DASHSCOPE_API_KEY",
         "timeout_seconds": 90
       },
@@ -2410,7 +2410,7 @@
       "llm": {
         "provider": "dashscope_openai_compatible",
         "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-plus",
+        "model": "qwen-turbo",
         "api_key_env": "DASHSCOPE_API_KEY",
         "timeout_seconds": 90,
         "temperature": 0.35
@@ -2432,7 +2432,9 @@
       "temporal_holdout_pct": 10,
       "peer_scope_holdout_pct": 10,
       "signal_composition_holdout_pct": 10,
-      "conflicting_evidence_holdout_pct": 10
+      "conflicting_evidence_holdout_pct": 10,
+      "capacity_control_min_samples": 50,
+      "maximum_holdout_component_pct": 20
     },
     "allow_investment_recommendations": false,
     "allow_forecasts": false,

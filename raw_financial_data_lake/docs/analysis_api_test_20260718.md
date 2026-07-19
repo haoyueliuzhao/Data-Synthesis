@@ -66,3 +66,29 @@ This preflight is quality-passed at sample level. Its overall build gate is inte
 ## Current status
 
 The original 150-sample run is retained as an immutable failed audit build. The repaired code path is covered by unit tests that inject an opposite-stanced first response and verify that only a semantically valid retry is accepted. A second full 150-call run was not launched automatically, avoiding another roughly 0.69M-token expense solely to reproduce the same quota after the focused repair passed.
+
+## Semantic Frame v2 follow-up
+
+The bounded stance keyword parser used in the first repair remained vulnerable to negated phrases such as `supports profit growth and is not a material risk caveat`. The current contract supersedes that design. Claim and conclusion meaning is now represented by an exact four-field Semantic Frame; the LLM cannot return free Claim text and may only select a registered Surface Form ID. The verifier independently rebuilds the frame from the Claim Graph and requires the complete analysis text to equal the deterministic rendering. The old 150-sample build remains a historical v1 audit artifact and is not compatible with the v2 manifest.
+
+Current-manifest real API preflight: `analysis_build_196bced2d224df133237ef7f`.
+
+| Measure | Result |
+| --- | ---: |
+| Samples / verifier passed | 3 / 3 |
+| HTTP / Frame contract / controlled generation | 3/3 / 3/3 / 3/3 |
+| Retries / fallback | 0 / 0 |
+| Total tokens | 14,149 |
+| Mean latency | 8,976 ms |
+| Split leakage violations | 0 |
+| Duplicate `mixed mixed` renderings | 0 |
+
+The CLI exit status is non-zero only because the production profile requires 50 samples per pattern; this three-sample compatibility preflight intentionally does not satisfy the volume gate.
+
+## Claim context and extension controls
+
+Semantic Frame v1.1 adds Signal-derived Claim allowlists for entities, metrics, periods, predicates, and Numeric Slots. `required_entity_slots` and `required_period_slots` are no longer empty for evidence-bearing Claims. The final verifier reports explicit unknown-context counts, requires an empty Claim-extension set, and requires observed Caveat IDs to equal the Claim Plan's required set. Because the complete analysis text must equal the registered deterministic rendering, an otherwise valid Claim cannot append a management-quality judgment or other unregistered conclusion.
+
+### Current Claim-context manifest preflight
+
+Build `analysis_build_9b30c1d91a4d1a0893bcc47d` validated the current Claim-context and Caveat contract against the real API: 3/3 HTTP, 3/3 structured Frame responses, 3/3 controlled generations, 3/3 final verifier passes, no retries or fallback, and 16,612 total tokens. All unknown entity, metric, period, predicate, Numeric Slot, forbidden extension, and Caveat exact-set checks passed. The build remains non-active and fails only the production profile's 50-samples-per-pattern volume gate.

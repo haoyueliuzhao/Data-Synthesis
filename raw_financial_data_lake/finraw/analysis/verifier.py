@@ -4,6 +4,11 @@ import re
 from collections import Counter
 from typing import Any
 
+from finraw.analysis.peer_scope import (
+    PEER_SCOPE_ELIGIBILITY_POLICY_VERSION,
+    recompute_peer_universe,
+    scope_membership_hash,
+)
 from finraw.analysis.registry import (
     CLAIM_SCHEMA_VERSION,
     CONCLUSION_POLICY_VERSION,
@@ -21,17 +26,25 @@ from finraw.analysis.signals import (
     execute_signal,
     signal_result_hash,
 )
+from finraw.analysis.semantic_frames import (
+    FORBIDDEN_CLAIM_EXTENSIONS,
+    SEMANTIC_FRAME_VERSION,
+    build_claim_semantic_frame,
+    build_conclusion_semantic_frame,
+    render_semantic_frame,
+    semantic_frame_manifest,
+    validate_semantic_frame,
+)
 from finraw.analysis.text_semantics import (
     ANALYSIS_TEXT_PARSER_VERSION,
     validate_numeric_grounding,
-    validate_stance,
 )
 from finraw.analysis.claims import CLAIM_PLANNER_VERSION
 from finraw.analysis.generator import ANALYSIS_GENERATOR_VERSION
 from finraw.db.client import DBProtocol
 from finraw.qa.store import insert_rows, json_value
 
-ANALYSIS_VERIFIER_VERSION = "1.1.0"
+ANALYSIS_VERIFIER_VERSION = "2.1.0"
 _FORBIDDEN_PATTERNS = {
     "investment_recommendation": re.compile(
         r"\b(?:buy|sell|hold recommendation|invest in)\b", re.I
@@ -55,6 +68,12 @@ def validate_analysis_samples(db: DBProtocol, analysis_build_id: str) -> dict[st
         raise ValueError(f"Unknown analysis build: {analysis_build_id}")
     build = dict(build_row)
     kg_build_id = str(build["kg_build_id"])
+    kg_row = db.fetchone(
+        "SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build_id,)
+    )
+    if not kg_row:
+        raise ValueError(f"Unknown pinned KG build: {kg_build_id}")
+    kg = dict(kg_row)
     contract_checks = _build_contract_checks(build)
     candidates = {
         str(row["candidate_id"]): dict(row)
@@ -96,6 +115,7 @@ def validate_analysis_samples(db: DBProtocol, analysis_build_id: str) -> dict[st
         )
     ]
     check_rows: list[dict[str, Any]] = []
+    peer_scope_cache: dict[str, dict[str, Any]] = {}
     passed = 0
     failures: Counter[str] = Counter()
     for sample in samples:
@@ -112,6 +132,9 @@ def validate_analysis_samples(db: DBProtocol, analysis_build_id: str) -> dict[st
             kg_build_id,
             contract_checks,
             build,
+            db,
+            kg,
+            peer_scope_cache,
         )
         sample_passed = all(value["passed"] for value in results.values())
         status = "passed" if sample_passed else "rejected"
@@ -180,6 +203,7 @@ def _build_contract_checks(build: dict[str, Any]) -> dict[str, dict[str, Any]]:
                 "version": CLAIM_SCHEMA_VERSION,
                 "claim_planner_version": CLAIM_PLANNER_VERSION,
                 "analysis_generator_version": ANALYSIS_GENERATOR_VERSION,
+                "semantic_frame_manifest": semantic_frame_manifest(),
             }
         ),
         "conclusion_policy_contract": stable_hash(
@@ -189,6 +213,10 @@ def _build_contract_checks(build: dict[str, Any]) -> dict[str, dict[str, Any]]:
             {
                 "version": ANALYSIS_VERIFIER_VERSION,
                 "text_parser_version": ANALYSIS_TEXT_PARSER_VERSION,
+                "semantic_frame_version": SEMANTIC_FRAME_VERSION,
+                "peer_scope_eligibility_policy_version": (
+                    PEER_SCOPE_ELIGIBILITY_POLICY_VERSION
+                ),
             }
         ),
     }
@@ -272,6 +300,19 @@ def _validate_signal(db: DBProtocol, row: dict[str, Any]) -> dict[str, Any]:
         "hash_passed": hash_passed,
         "observed": recomputed,
         "expected": expected,
+        "input_entity_ids": sorted(
+            {str(fact.get("entity_id") or "") for fact in facts.values()}
+        ),
+        "role_entity_ids": {
+            role: sorted(
+                {
+                    str(facts[str(fact_id)].get("entity_id") or "")
+                    for fact_id in fact_ids
+                    if str(fact_id) in facts
+                }
+            )
+            for role, fact_ids in role_fact_ids.items()
+        },
     }
 
 
@@ -285,6 +326,9 @@ def _sample_checks(
     kg_build_id: str,
     contract_checks: dict[str, dict[str, Any]],
     build: dict[str, Any],
+    db: DBProtocol,
+    kg: dict[str, Any],
+    peer_scope_cache: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
     signal_ids = set(json_value(candidate.get("signal_ids"), []))
     fact_ids = set(json_value(bundle.get("fact_ids"), []))
@@ -324,21 +368,145 @@ def _sample_checks(
         and set(claim.get("support_fact_ids") or []).issubset(fact_ids)
         for claim in claims
     )
-    claim_semantics = {}
+    claim_frame_checks = {}
     for item in alignment:
         claim_id = str(item.get("claim_id") or "")
         claim = claim_by_id.get(claim_id) or {}
-        expected_stance = str(
-            (claim.get("semantic_contract") or {}).get("expected_stance") or ""
+        try:
+            expected_frame = build_claim_semantic_frame(
+                str(claim.get("claim_type") or ""),
+                str(claim.get("claim_role") or ""),
+                str(claim.get("claim_polarity") or ""),
+            )
+            rebuild_errors = []
+        except ValueError as exc:
+            expected_frame = {}
+            rebuild_errors = [type(exc).__name__]
+        stored_frame = dict(claim.get("semantic_frame") or {})
+        observed_frame = dict(item.get("semantic_frame") or {})
+        surface_form_id = str(item.get("surface_form_id") or "")
+        frame_errors = rebuild_errors + validate_semantic_frame(
+            observed_frame, expected_frame, kind="claim"
         )
-        claim_semantics[claim_id] = validate_stance(
-            str(item.get("sentence") or ""), expected_stance
+        stored_errors = validate_semantic_frame(
+            stored_frame, expected_frame, kind="claim"
         )
+        try:
+            rendered = render_semantic_frame(
+                expected_frame, surface_form_id, kind="claim"
+            )
+        except ValueError as exc:
+            rendered = ""
+            frame_errors.append(type(exc).__name__)
+        sentence = str(item.get("sentence") or "")
+        claim_frame_checks[claim_id] = {
+            "passed": not frame_errors and not stored_errors and sentence == rendered,
+            "expected_frame": expected_frame,
+            "stored_frame": stored_frame,
+            "observed_frame": observed_frame,
+            "surface_form_id": surface_form_id,
+            "rendered_sentence": rendered,
+            "observed_sentence": sentence,
+            "frame_errors": frame_errors,
+            "stored_frame_errors": stored_errors,
+            "frame_version": SEMANTIC_FRAME_VERSION,
+        }
+    claim_context_checks = {
+        str(item.get("claim_id") or ""): _claim_context_contract(
+            claim_by_id.get(str(item.get("claim_id") or "")) or {},
+            item,
+            signals_by_id,
+        )
+        for item in alignment
+    }
+    unknown_entities = sorted(
+        {
+            value
+            for result in claim_context_checks.values()
+            for value in result["unknown_entity_ids"]
+        }
+    )
+    unknown_metrics = sorted(
+        {
+            value
+            for result in claim_context_checks.values()
+            for value in result["unknown_metric_ids"]
+        }
+    )
+    unknown_periods = sorted(
+        {
+            value
+            for result in claim_context_checks.values()
+            for value in result["unknown_periods"]
+        }
+    )
+    unknown_predicates = sorted(
+        {
+            value
+            for result in claim_context_checks.values()
+            for value in result["unknown_predicates"]
+        }
+    )
+    unknown_numeric_slots = sorted(
+        {
+            value
+            for result in claim_context_checks.values()
+            for value in result["unknown_numeric_slot_ids"]
+        }
+    )
+    forbidden_extensions = sorted(
+        {
+            value
+            for result in claim_context_checks.values()
+            for value in result["forbidden_extensions"]
+        }
+    )
+    required_caveat_ids = sorted(
+        str(value) for value in json_value(plan.get("required_caveat_ids"), [])
+    )
+    observed_caveat_ids = [
+        str(item.get("caveat_id") or "")
+        for item in json_value(sample.get("caveats"), [])
+        if isinstance(item, dict)
+    ]
+    caveat_ids_exact = sorted(observed_caveat_ids) == required_caveat_ids and len(
+        observed_caveat_ids
+    ) == len(set(observed_caveat_ids))
     conclusion = conclusion_rows.get(selected) or {}
-    conclusion_semantics = validate_stance(
-        str(sample.get("conclusion_text") or ""),
+    expected_conclusion_frame = build_conclusion_semantic_frame(
+        selected,
         str((conclusion.get("semantic_contract") or {}).get("expected_stance") or ""),
     )
+    stored_conclusion_frame = dict(conclusion.get("semantic_frame") or {})
+    observed_conclusion_frame = json_value(sample.get("conclusion_semantic_frame"), {})
+    conclusion_surface = str(sample.get("conclusion_surface_form_id") or "")
+    conclusion_frame_errors = validate_semantic_frame(
+        observed_conclusion_frame, expected_conclusion_frame, kind="conclusion"
+    )
+    stored_conclusion_errors = validate_semantic_frame(
+        stored_conclusion_frame, expected_conclusion_frame, kind="conclusion"
+    )
+    try:
+        rendered_conclusion = render_semantic_frame(
+            expected_conclusion_frame, conclusion_surface, kind="conclusion"
+        )
+    except ValueError as exc:
+        rendered_conclusion = ""
+        conclusion_frame_errors.append(type(exc).__name__)
+    conclusion_frame_check = {
+        "passed": not conclusion_frame_errors
+        and not stored_conclusion_errors
+        and str(sample.get("conclusion_text") or "") == rendered_conclusion,
+        "expected_frame": expected_conclusion_frame,
+        "stored_frame": stored_conclusion_frame,
+        "observed_frame": observed_conclusion_frame,
+        "surface_form_id": conclusion_surface,
+        "rendered_sentence": rendered_conclusion,
+        "observed_sentence": str(sample.get("conclusion_text") or ""),
+        "frame_errors": conclusion_frame_errors,
+        "stored_frame_errors": stored_conclusion_errors,
+        "frame_version": SEMANTIC_FRAME_VERSION,
+    }
     sample_numeric_slots = json_value(sample.get("numeric_slots"), [])
     rubric_numeric_slots = json_value(sample.get("rubric"), {}).get("numeric_slots", [])
     numeric_slot_contract = stable_hash(sample_numeric_slots) == stable_hash(
@@ -359,10 +527,28 @@ def _sample_checks(
     generation_contract = _generation_contract(
         sample, generation_metadata, generation_policy
     )
+    rendered_analysis_text = " ".join(
+        [str(item.get("sentence") or "") for item in alignment]
+        + [str(sample.get("conclusion_text") or "")]
+        + [
+            str(item.get("sentence") or "")
+            for item in json_value(sample.get("caveats"), [])
+        ]
+    )
     graph_relations = _claim_graph_relations(claims)
     conclusion_predicate = _conclusion_predicate_check(conclusion, claims)
+    peer_scope_checks = _peer_scope_checks(
+        db,
+        kg,
+        candidate,
+        bundle,
+        signal_ids,
+        signal_checks,
+        peer_scope_cache,
+    )
     checks = {
         **contract_checks,
+        **peer_scope_checks,
         "signal_input_complete": _check(
             all(signal_checks[sid]["input_complete"] for sid in signal_ids),
             {sid: signal_checks[sid]["input_complete"] for sid in sorted(signal_ids)},
@@ -422,24 +608,51 @@ def _sample_checks(
             alignment,
             "each claim uses its exact support_signal_ids",
         ),
-        "claim_sentence_semantics": _check(
-            bool(claim_semantics)
-            and all(item["passed"] for item in claim_semantics.values()),
-            claim_semantics,
-            "all claim stances match claim graph",
+        "claim_semantic_frame_contract": _check(
+            bool(claim_frame_checks)
+            and all(item["passed"] for item in claim_frame_checks.values()),
+            claim_frame_checks,
+            "all claim frames are rebuilt from the claim graph and render exactly",
         ),
         "claim_counterevidence_acknowledged": _check(
             not risk_claims
             or all(
                 set(claim.get("counter_signal_ids") or []).issubset(aligned_signal_ids)
-                and claim_semantics.get(str(claim["claim_id"]), {}).get("passed")
+                and claim_frame_checks.get(str(claim["claim_id"]), {}).get("passed")
+                and claim_frame_checks.get(str(claim["claim_id"]), {})
+                .get("expected_frame", {})
+                .get("predicate")
+                == "constrains"
                 for claim in risk_claims
             ),
             {
                 "aligned_signal_ids": sorted(aligned_signal_ids),
-                "claim_semantics": claim_semantics,
+                "claim_frame_checks": claim_frame_checks,
             },
-            "all risk signals grounded and expressed as risk",
+            "all risk signals are grounded in exact constraining semantic frames",
+        ),
+        "claim_context_contract": _check(
+            bool(claim_context_checks)
+            and all(item["passed"] for item in claim_context_checks.values()),
+            claim_context_checks,
+            "stored and observed Claim context equals Signal-derived allowlists",
+        ),
+        "unknown_entity_count": _check(not unknown_entities, unknown_entities, []),
+        "unknown_metric_count": _check(not unknown_metrics, unknown_metrics, []),
+        "unknown_period_count": _check(not unknown_periods, unknown_periods, []),
+        "unknown_predicate_count": _check(
+            not unknown_predicates, unknown_predicates, []
+        ),
+        "unknown_numeric_slot_count": _check(
+            not unknown_numeric_slots, unknown_numeric_slots, []
+        ),
+        "forbidden_claim_extension_count": _check(
+            not forbidden_extensions, forbidden_extensions, []
+        ),
+        "caveat_id_exact_match": _check(
+            caveat_ids_exact,
+            sorted(observed_caveat_ids),
+            required_caveat_ids,
         ),
         "numeric_slot_contract": _check(
             numeric_slot_contract, sample_numeric_slots, rubric_numeric_slots
@@ -454,6 +667,11 @@ def _sample_checks(
             not numeric["unit_mismatches"], numeric["unit_mismatches"], []
         ),
         "forbidden_claim_count": _check(not forbidden, forbidden, []),
+        "analysis_text_render_contract": _check(
+            text == rendered_analysis_text,
+            text,
+            rendered_analysis_text,
+        ),
         "valid_conclusion": _check(
             selected in conclusion_rows, selected, sorted(conclusion_rows)
         ),
@@ -462,10 +680,10 @@ def _sample_checks(
             conclusion_predicate,
             "stored predicate matches current claim state",
         ),
-        "conclusion_sentence_semantics": _check(
-            conclusion_semantics["passed"],
-            conclusion_semantics,
-            "conclusion sentence matches selected conclusion",
+        "conclusion_semantic_frame_contract": _check(
+            conclusion_frame_check["passed"],
+            conclusion_frame_check,
+            "conclusion frame is rebuilt from the selected predicate and renders exactly",
         ),
         "claim_alignment_signal_grounding": _check(
             aligned_signal_ids.issubset(signal_ids),
@@ -481,19 +699,297 @@ def _sample_checks(
     return checks
 
 
+def _peer_scope_checks(
+    db: DBProtocol,
+    kg: dict[str, Any],
+    candidate: dict[str, Any],
+    bundle: dict[str, Any],
+    signal_ids: set[str],
+    signal_checks: dict[str, dict[str, Any]],
+    cache: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    is_peer = str(candidate.get("analysis_pattern_id") or "") == "peer_positioning_v1"
+    candidate_contract = json_value(candidate.get("peer_scope_contract"), {})
+    bundle_contract = json_value(bundle.get("peer_scope_contract"), {})
+    candidate_expected = sorted(
+        str(value)
+        for value in json_value(candidate.get("expected_scope_entity_ids"), [])
+    )
+    bundle_expected = sorted(
+        str(value)
+        for value in json_value(bundle.get("expected_scope_entity_ids"), [])
+    )
+    candidate_entities = sorted(
+        str(value) for value in json_value(candidate.get("entity_ids"), [])
+    )
+    bundle_entities = sorted(
+        str(value) for value in json_value(bundle.get("entity_ids"), [])
+    )
+    if not is_peer:
+        empty = (
+            not candidate_contract
+            and not bundle_contract
+            and not candidate_expected
+            and not bundle_expected
+            and not candidate.get("peer_scope_type")
+            and not bundle.get("peer_scope_type")
+            and not candidate.get("peer_scope_id")
+            and not bundle.get("peer_scope_id")
+            and not candidate.get("scope_membership_hash")
+            and not bundle.get("scope_membership_hash")
+            and not candidate.get("scope_eligibility_policy_hash")
+            and not bundle.get("scope_eligibility_policy_hash")
+        )
+        return {
+            "peer_scope_contract": _check(empty, "not_applicable", "empty"),
+            "peer_scope_policy_hash": _check(empty, "not_applicable", "empty"),
+            "peer_scope_membership_hash": _check(empty, "not_applicable", "empty"),
+            "peer_scope_recomputed_universe": _check(
+                empty, "not_applicable", "not_applicable"
+            ),
+            "peer_scope_fact_representation": _check(
+                empty, "not_applicable", "not_applicable"
+            ),
+        }
+
+    cache_key = stable_hash(
+        {
+            "kg_build_id": kg["kg_build_id"],
+            "contract": candidate_contract,
+        }
+    )
+    if cache_key not in cache:
+        cache[cache_key] = recompute_peer_universe(db, kg, candidate_contract)
+    recomputed = cache[cache_key]
+    recomputed_entities = sorted(
+        str(value) for value in recomputed.get("entity_ids") or []
+    )
+    role_entities = {
+        f"{signal_id}:{role}": sorted(str(value) for value in values)
+        for signal_id in sorted(signal_ids)
+        for role, values in signal_checks[signal_id].get("role_entity_ids", {}).items()
+    }
+    role_sets_exact = bool(role_entities) and all(
+        values == recomputed_entities for values in role_entities.values()
+    )
+    contract_fields = (
+        "peer_scope_type",
+        "peer_scope_id",
+        "scope_membership_hash",
+        "scope_eligibility_policy_hash",
+    )
+    top_level_contract_match = all(
+        str(candidate.get(field) or "")
+        == str(bundle.get(field) or "")
+        == str(candidate_contract.get(field) or "")
+        for field in contract_fields
+    )
+    contract_complete = all(
+        candidate_contract.get(field) not in (None, "", [])
+        for field in (
+            "peer_scope_type",
+            "peer_scope_id",
+            "fiscal_year",
+            "source_id",
+            "normalized_unit",
+            "normalized_currency",
+            "source_definition_compatibility",
+            "scope_eligibility_policy",
+            "scope_eligibility_policy_hash",
+            "scope_membership_hash",
+            "expected_scope_entity_ids",
+        )
+    )
+    observed_policy_hashes = {
+        "candidate": str(candidate.get("scope_eligibility_policy_hash") or ""),
+        "bundle": str(bundle.get("scope_eligibility_policy_hash") or ""),
+        "contract": str(
+            candidate_contract.get("scope_eligibility_policy_hash") or ""
+        ),
+    }
+    expected_policy_hash = str(
+        recomputed.get("scope_eligibility_policy_hash") or ""
+    )
+    observed_membership_hashes = {
+        "candidate": str(candidate.get("scope_membership_hash") or ""),
+        "bundle": str(bundle.get("scope_membership_hash") or ""),
+        "contract": str(candidate_contract.get("scope_membership_hash") or ""),
+        "contract_rebuilt": scope_membership_hash(candidate_contract),
+    }
+    expected_membership_hash = str(recomputed.get("scope_membership_hash") or "")
+    stored_sets = {
+        "candidate_expected": candidate_expected,
+        "bundle_expected": bundle_expected,
+        "contract_expected": sorted(
+            str(value)
+            for value in candidate_contract.get("expected_scope_entity_ids") or []
+        ),
+        "candidate_entities": candidate_entities,
+        "bundle_entities": bundle_entities,
+    }
+    return {
+        "peer_scope_contract": _check(
+            contract_complete
+            and candidate_contract == bundle_contract
+            and top_level_contract_match,
+            {
+                "candidate_contract": candidate_contract,
+                "bundle_contract": bundle_contract,
+                "top_level_contract_match": top_level_contract_match,
+            },
+            "complete and identical Candidate/Bundle peer scope contract",
+        ),
+        "peer_scope_policy_hash": _check(
+            recomputed.get("passed") is True
+            and all(value == expected_policy_hash for value in observed_policy_hashes.values()),
+            {
+                "observed": observed_policy_hashes,
+                "recompute_errors": recomputed.get("errors") or [],
+            },
+            expected_policy_hash,
+        ),
+        "peer_scope_membership_hash": _check(
+            all(
+                value == expected_membership_hash
+                for value in observed_membership_hashes.values()
+            ),
+            observed_membership_hashes,
+            expected_membership_hash,
+        ),
+        "peer_scope_recomputed_universe": _check(
+            bool(recomputed_entities)
+            and all(values == recomputed_entities for values in stored_sets.values()),
+            stored_sets,
+            recomputed_entities,
+        ),
+        "peer_scope_fact_representation": _check(
+            role_sets_exact,
+            role_entities,
+            recomputed_entities,
+        ),
+    }
+
+
+def _claim_context_contract(
+    claim: dict[str, Any],
+    alignment: dict[str, Any],
+    signals_by_id: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    signal_rows = [
+        signals_by_id[str(signal_id)]
+        for signal_id in claim.get("support_signal_ids") or []
+        if str(signal_id) in signals_by_id
+    ]
+    expected = {
+        "entity_ids": sorted(
+            {
+                str(value)
+                for row in signal_rows
+                for value in json_value(row.get("entity_ids"), [])
+            }
+        ),
+        "metric_ids": sorted(
+            {
+                str(value)
+                for row in signal_rows
+                for value in json_value(row.get("metric_ids"), [])
+            }
+        ),
+        "periods": sorted(
+            {
+                int(value)
+                for row in signal_rows
+                for value in json_value(row.get("period_scope"), {}).get("years", [])
+            }
+        ),
+        "predicates": [str((claim.get("semantic_frame") or {}).get("predicate") or "")],
+        "numeric_slot_ids": sorted(
+            str(slot.get("slot_id") or "")
+            for slot in claim.get("required_numeric_slots") or []
+        ),
+    }
+    stored = {
+        "entity_ids": sorted(
+            str(value) for value in claim.get("allowed_entity_ids") or []
+        ),
+        "metric_ids": sorted(
+            str(value) for value in claim.get("allowed_metric_ids") or []
+        ),
+        "periods": sorted(int(value) for value in claim.get("allowed_periods") or []),
+        "predicates": sorted(
+            str(value) for value in claim.get("allowed_predicates") or []
+        ),
+        "numeric_slot_ids": sorted(
+            str(value) for value in claim.get("allowed_numeric_slot_ids") or []
+        ),
+    }
+    observed_raw = alignment.get("context_bindings") or {}
+    observed = {
+        "entity_ids": sorted(
+            str(value) for value in observed_raw.get("entity_ids") or []
+        ),
+        "metric_ids": sorted(
+            str(value) for value in observed_raw.get("metric_ids") or []
+        ),
+        "periods": sorted(int(value) for value in observed_raw.get("periods") or []),
+        "predicates": sorted(
+            str(value) for value in observed_raw.get("predicates") or []
+        ),
+        "numeric_slot_ids": sorted(
+            str(value) for value in observed_raw.get("numeric_slot_ids") or []
+        ),
+    }
+    extensions = sorted(str(value) for value in alignment.get("claim_extensions") or [])
+    forbidden_contract = sorted(
+        str(value) for value in claim.get("forbidden_claim_extensions") or []
+    )
+    required_slots_match = (
+        sorted(str(value) for value in claim.get("required_entity_slots") or [])
+        == expected["entity_ids"]
+        and sorted(int(value) for value in claim.get("required_period_slots") or [])
+        == expected["periods"]
+    )
+    return {
+        "passed": stored == expected
+        and observed == expected
+        and forbidden_contract == sorted(FORBIDDEN_CLAIM_EXTENSIONS)
+        and required_slots_match
+        and not extensions,
+        "expected": expected,
+        "stored": stored,
+        "observed": observed,
+        "required_slots_match": required_slots_match,
+        "forbidden_contract": forbidden_contract,
+        "unknown_entity_ids": sorted(
+            set(observed["entity_ids"]) - set(expected["entity_ids"])
+        ),
+        "unknown_metric_ids": sorted(
+            set(observed["metric_ids"]) - set(expected["metric_ids"])
+        ),
+        "unknown_periods": sorted(set(observed["periods"]) - set(expected["periods"])),
+        "unknown_predicates": sorted(
+            set(observed["predicates"]) - set(expected["predicates"])
+        ),
+        "unknown_numeric_slot_ids": sorted(
+            set(observed["numeric_slot_ids"]) - set(expected["numeric_slot_ids"])
+        ),
+        "forbidden_extensions": extensions,
+    }
+
+
 def _generation_contract(
     sample: dict[str, Any], metadata: dict[str, Any], policy: dict[str, Any]
 ) -> dict[str, Any]:
     mode = str(policy.get("mode") or "deterministic_claim_plan")
     method = str(sample.get("generation_method") or "")
     fallback = metadata.get("fallback_reason")
-    if mode == "controlled_llm" and method == "controlled_llm_claim_generation":
+    if mode == "controlled_llm" and method == "controlled_llm_semantic_frame":
         passed = metadata.get("schema_valid") is True and not fallback
     elif mode == "controlled_llm" and "fallback" in method:
         passed = metadata.get("schema_valid") is False and bool(fallback)
     else:
         passed = mode != "controlled_llm" and method.startswith(
-            "deterministic_claim_plan"
+            "deterministic_semantic_frame"
         )
     return {
         "passed": passed,

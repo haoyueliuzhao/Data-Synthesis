@@ -94,7 +94,18 @@ Peer Pattern 要求 5-30 家完整成员，不截断 top-N。SEC 公司通过 ca
 scope type / scope id / fiscal year / source / unit / currency
 ```
 
-每个成员必须拥有同年收入、净利润、总资产、总负债以及上一年收入，所有百分位均在完整 eligible EntitySet 上计算。
+每个成员必须拥有同年收入、净利润、总资产、总负债以及上一年收入，所有百分位均在完整 eligible EntitySet 上计算。构建器不会再依赖每个实体预先选中的“最长概念序列”决定同行资格，而是针对每个 scope/year 直接全量查询 pinned KG，按验证状态、置信度、报告日期和稳定 Fact ID 选择 canonical slot。
+
+Candidate 与 Evidence Bundle 同时固定：
+
+    peer_scope_type
+    peer_scope_id
+    expected_scope_entity_ids
+    scope_membership_hash
+    scope_eligibility_policy_hash
+    peer_scope_contract
+
+peer_scope_contract 还冻结年份、来源、单位、币种、每个指标的 SourceDefinition compatibility class，以及完整资格策略。它既是构建输入，也是可复算的版本审计对象。
 
 ## 独立验证
 
@@ -113,6 +124,16 @@ signal_hash_match
 
 统一语义门控 fail-closed 检查 graph-ready、forecast、source、SourceDefinition、frequency、seasonal adjustment、vintage、单位、币种、period type、consolidated entity scope、连续期间和完整同行实体集合。未知 Semantic Operator 直接拒绝。Verifier 从 pinned Fact 独立重放门控与 Signal，不信任发现阶段或已保存结果。
 
+对于 Peer Pattern，最终 Verifier 不以“各 Role 集合彼此相等”作为完整性证明，而是绕过 mining pool 和 fact_scan_limit，重新查询 pinned standardized_facts + KG Fact nodes + canonical_entities + SEC SIC。以下检查全部 fail-closed：
+
+    peer_scope_contract
+    peer_scope_policy_hash
+    peer_scope_membership_hash
+    peer_scope_recomputed_universe
+    peer_scope_fact_representation
+
+其中 Candidate、Bundle、contract 和每个 Signal Role 的实体集合都必须与独立重建的 eligible universe 完全相等。即使所有 Role 同时漏掉同一家公司，也不能通过。
+
 ### Evidence Gate
 
 ```text
@@ -130,19 +151,43 @@ bundle_counter_evidence_coverage
 claim_id_valid
 claim_alignment_evidence_exact
 mandatory_claim_coverage == 1.0
-claim_sentence_semantics
+claim_semantic_frame_contract
+claim_context_contract
+unknown_entity_count == 0
+unknown_metric_count == 0
+unknown_period_count == 0
+unknown_predicate_count == 0
+unknown_numeric_slot_count == 0
+forbidden_claim_extension_count == 0
+caveat_id_exact_match
 claim_graph_relations
 selected_conclusion predicate satisfied
-conclusion_sentence_semantics
+conclusion_semantic_frame_contract
+analysis_text_render_contract
 forbidden_claim_count == 0
-required counterevidence acknowledged in IDs and text
+required counterevidence grounded in an exact constraining frame
 ```
 
 Claim Graph 包含一个综合 Claim：它依赖基础 Claim，风险 Claim 与综合 Claim 建立 `contradicts_claim_ids`。Valid Conclusion Set 由 Pattern 允许集合与当前 Claim 状态 Predicate 的交集产生，不再自动接受不符合当前证据的保守结论。
 
-### 文本 Gate
+### Semantic Frame 与文本 Gate
 
-每个 Signal 数值被编译为 `Numeric Slot(value, unit, tolerance, source_signal_id)`。文本中的数字必须精确映射到 Numeric Slot 或允许期间，并通过单位校验；样本保存的 Numeric Slot 还必须与 Rubric 中的固定 Contract 完全一致。Claim ID 正确但句子表达相反极性、Conclusion ID 合法但正文表达“全面改善”、或只在 ID 层挂载反向证据，都会失败。Judge Model 只能评估自然度，不能替代这些硬门控。
+Claim 和 Conclusion 的核心含义不再由关键词 Stance Parser 判断。Claim Planner 为每个对象生成固定结构：
+
+```json
+{
+  "subject": "cash_quality",
+  "predicate": "constrains",
+  "object": "growth_quality",
+  "qualifier": "risk_caveat"
+}
+```
+
+LLM 必须逐字段复制 Frame，只能选择注册的 `surface_form_id`；最终句子由程序渲染。Verifier 从 Claim Graph 的 `claim_type / claim_role / claim_polarity` 独立重建 Frame，核对存储 Frame、Surface ID、渲染句子和完整 `analysis_text`。任何 `surface_text`、自由 sentence 字段、Frame 改写或额外尾句都会 fail-closed。关键词 Parser 仅保留为诊断工具，不参与 Claim 或 Conclusion 的接受决策。
+
+每个 Claim 还固定保存 `allowed_entity_ids / allowed_metric_ids / allowed_periods / allowed_predicates / allowed_numeric_slot_ids / forbidden_claim_extensions`。Verifier 从 Claim 绑定的 Signal 独立重算允许集合，并要求 `required_entity_slots`、`required_period_slots`、存储白名单和生成对齐上下文完全一致。Surface Registry 本身属于 manifest，因此合法句式不能在不提升版本的情况下加入管理层判断或其他金融结论。Claim Plan 同时固定 `required_caveat_ids`，最终验证要求观测集合与必需集合严格相等，不接受额外或重复 Caveat。
+
+每个 Signal 数值仍被编译为 `Numeric Slot(value, unit, tolerance, source_signal_id)`。文本中的数字必须精确映射到 Numeric Slot 或允许期间，并通过单位校验；样本保存的 Numeric Slot 还必须与 Rubric 中的固定 Contract 完全一致。Judge Model 只能评估自然度，不能替代这些硬门控。
 
 ## Rubric 与切分
 
@@ -161,7 +206,7 @@ Rubric 类型为 `claim_grounded_analysis`，评价事实准确性、mandatory C
 
 ## API 生成与独立审计
 
-封闭 QA 的 `question_generation.mode=controlled_llm` 只让模型选择 Sentence Plan 枚举；`variants=3` 表示一次请求最多返回三个候选 Plan，不会把一个 Candidate 扩成三条 QA。半开放分析使用独立的 `analysis.generation.mode=controlled_llm`，模型生成 Claim-grounded 分析文本，两种测试不可混称。
+封闭 QA 的 `question_generation.mode=controlled_llm` 只让模型选择 Sentence Plan 枚举；`variants=3` 表示一次请求最多返回三个候选 Plan，不会把一个 Candidate 扩成三条 QA。半开放分析使用独立的 `analysis.generation.mode=controlled_llm`：模型在固定 Claim Graph 中选择 Claim 顺序、合法结论和注册 Surface Form，金融 Predicate 与最终核心句子由程序控制。两种测试不可混称。
 
 每个半开放请求写入 `analysis_llm_calls`，不保存 prompt、response 或 API key，只保存：
 
@@ -218,9 +263,19 @@ signal composition entropy = 1.584963
 
 三类 Pattern 均达到最低门槛，rejection count 为 0，build gate passed。该 build 保持非激活，未改变生产 KG 或 QA 指针。
 
+Peer Scope v1 上线前的首轮 9 条预演由新 Verifier 发现三个同行范围不完整并拒绝：SIC 73 漏掉 CRM、SPGI、V，SIC 36 漏掉 MU。根因是构建器按最长 SourceDefinition 序列预选事实，而不是按目标年份重建资格。修复后构建器与 Verifier 均以 pinned KG 全量 scope policy 为依据，但二者分别执行。非激活 build analysis_build_25bb2c2f08f20089a22fe0e1 的结果为：
+
+    3 patterns x 3 samples = 9 candidates
+    36 signal instances
+    9/9 verifier passed
+    peer_scope_* failures = 0
+    build gate passed
+
+报告保存在 data/audit/analysis_peer_scope_v1_preflight_20260718_v2。该运行未调用 LLM，未激活 build，也未改变生产指针。
+
 ## 2026-07-18 API 验证
 
-真实 150 条半开放运行完成 150/150 HTTP 和结构化响应，消耗 688,309 tokens；独立 verifier 拒绝两条将风险 Claim 写成正向支持的文本，因此该非激活 build 保持失败且不可导出。修复后增加生成前极性检查、有界语义重试和逐次请求审计，3 条真实 API 回归达到 3/3 verifier passed、0 fallback、0 split leakage。完整数字与失败解释见 [analysis_api_test_20260718.md](analysis_api_test_20260718.md)。
+真实 150 条半开放运行完成 150/150 HTTP 和结构化响应，消耗 688,309 tokens；独立 verifier 拒绝两条将风险 Claim 写成正向支持的文本，因此该非激活 build 保持失败且不可导出。随后 v1 关键词极性门控被 Semantic Frame v1 取代：LLM 不再提交 Claim sentence，只复制 Frame 并选择 Surface Form；Verifier 独立重建并精确渲染。历史结果与新 Contract 的边界见 [analysis_api_test_20260718.md](analysis_api_test_20260718.md)。
 
 ## 后续边界
 

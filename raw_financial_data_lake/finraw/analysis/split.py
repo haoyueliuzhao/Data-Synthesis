@@ -7,7 +7,7 @@ from typing import Any
 from finraw.db.client import DBProtocol
 from finraw.qa.store import json_value
 
-ANALYSIS_SPLIT_VERSION = "1.1.0"
+ANALYSIS_SPLIT_VERSION = "1.2.0"
 
 
 class _DisjointSet:
@@ -80,8 +80,17 @@ def split_analysis_samples(
     split_counts: Counter[str] = Counter()
     assignments: dict[str, str] = {}
     component_summary = []
+    redirected_components = 0
     for component_rows in components.values():
-        split = _component_split(component_rows, policy)
+        preferred_split = _component_split(component_rows, policy)
+        split, redirect_reason = _capacity_aware_split(
+            preferred_split,
+            component_size=len(component_rows),
+            total_sample_count=len(rows),
+            policy=policy,
+        )
+        if redirect_reason:
+            redirected_components += 1
         entities = sorted(
             {
                 str(entity_id)
@@ -114,7 +123,9 @@ def split_analysis_samples(
                 "entity_count": len(entities),
                 "periods": periods,
                 "signal_compositions": compositions,
+                "preferred_split": preferred_split,
                 "split": split,
+                "redirect_reason": redirect_reason,
             }
         )
 
@@ -124,11 +135,43 @@ def split_analysis_samples(
         "strategy": str(policy.get("strategy") or "entity_scope_component_holdout_v1"),
         "split_counts": dict(sorted(split_counts.items())),
         "component_count": len(components),
+        "redirected_component_count": redirected_components,
         "component_summary": sorted(
             component_summary, key=lambda item: item["component_hash"]
         ),
         "leakage_audit": audit,
     }
+
+
+def _capacity_aware_split(
+    preferred_split: str,
+    *,
+    component_size: int,
+    total_sample_count: int,
+    policy: dict[str, Any],
+) -> tuple[str, str | None]:
+    """Keep connected components intact without letting one dominate evaluation."""
+    minimum_samples = max(1, int(policy.get("capacity_control_min_samples", 50)))
+    maximum_pct = max(
+        0.0,
+        min(100.0, float(policy.get("maximum_holdout_component_pct", 20.0))),
+    )
+    if (
+        not preferred_split.startswith("test_")
+        or total_sample_count < minimum_samples
+        or maximum_pct >= 100.0
+    ):
+        return preferred_split, None
+
+    component_pct = component_size * 100.0 / max(total_sample_count, 1)
+    if component_pct <= maximum_pct:
+        return preferred_split, None
+    return (
+        "train",
+        "holdout_component_exceeds_capacity:"
+        f"{component_size}/{total_sample_count}={component_pct:.4f}%>"
+        f"{maximum_pct:.4f}%",
+    )
 
 
 def _component_split(rows: list[dict[str, Any]], policy: dict[str, Any]) -> str:

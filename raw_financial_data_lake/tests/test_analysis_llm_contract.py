@@ -6,9 +6,11 @@ from finraw.analysis.claims import build_claim_plan
 from finraw.analysis.generator import (
     ANALYSIS_RESPONSE_SCHEMA_VERSION,
     generate_analysis,
+    validate_analysis_response,
 )
 from finraw.analysis.registry import analysis_pattern_registry, signal_registry
 from finraw.analysis.semantic_constraints import validate_signal_semantics
+from finraw.analysis.semantic_frames import default_surface_form_id
 from finraw.analysis.text_semantics import validate_numeric_grounding, validate_stance
 
 
@@ -100,36 +102,6 @@ class _Provider:
         return self.payload
 
 
-def test_controlled_analysis_generation_keeps_auditable_contract():
-    pattern, _, plan = _operating_claim_plan()
-    mandatory = [claim for claim in plan.claims if claim["is_required"]]
-    payload = {
-        "schema_version": ANALYSIS_RESPONSE_SCHEMA_VERSION,
-        "selected_conclusion_id": plan.selected_conclusion_id,
-        "claims": [
-            {
-                "claim_id": claim["claim_id"],
-                "sentence": claim["sentence"],
-                "evidence_ids": claim["support_signal_ids"],
-            }
-            for claim in mandatory
-        ],
-        "conclusion_sentence": plan.conclusion_text,
-        "caveats": plan.caveats,
-    }
-    result = generate_analysis(
-        pattern,
-        plan,
-        [],
-        config={"mode": "controlled_llm"},
-        provider=_Provider(payload),
-    )
-    assert result.generation_method == "controlled_llm_claim_generation"
-    assert result.generation_metadata["schema_valid"] is True
-    assert result.generation_metadata["llm_telemetry"]["total_tokens"] == 150
-    assert result.numeric_slots
-
-
 class _SequenceProvider:
     def __init__(self, payloads: list[dict]):
         self.payloads = iter(payloads)
@@ -150,35 +122,72 @@ class _SequenceProvider:
         return next(self.payloads)
 
 
-def test_controlled_analysis_retries_opposite_claim_stance_and_audits_attempts():
-    pattern, _, plan = _operating_claim_plan()
+def _semantic_frame_payload(plan):
     mandatory = [claim for claim in plan.claims if claim["is_required"]]
-    valid_payload = {
+    conclusion = next(
+        item
+        for item in plan.valid_conclusions
+        if item["conclusion_id"] == plan.selected_conclusion_id
+    )
+    return {
         "schema_version": ANALYSIS_RESPONSE_SCHEMA_VERSION,
         "selected_conclusion_id": plan.selected_conclusion_id,
         "claims": [
             {
                 "claim_id": claim["claim_id"],
-                "sentence": claim["sentence"],
+                "semantic_frame": claim["semantic_frame"],
+                "surface_form_id": default_surface_form_id(
+                    claim["semantic_frame"], kind="claim"
+                ),
                 "evidence_ids": claim["support_signal_ids"],
             }
             for claim in mandatory
         ],
-        "conclusion_sentence": plan.conclusion_text,
-        "caveats": plan.caveats,
+        "conclusion_semantic_frame": conclusion["semantic_frame"],
+        "conclusion_surface_form_id": default_surface_form_id(
+            conclusion["semantic_frame"], kind="conclusion"
+        ),
+        "caveats": [{"caveat_id": caveat["caveat_id"]} for caveat in plan.caveats],
     }
+
+
+def test_controlled_analysis_generation_keeps_auditable_frame_contract():
+    pattern, _, plan = _operating_claim_plan()
+    result = generate_analysis(
+        pattern,
+        plan,
+        [],
+        config={"mode": "controlled_llm"},
+        provider=_Provider(_semantic_frame_payload(plan)),
+    )
+    assert result.generation_method == "controlled_llm_semantic_frame"
+    assert result.generation_metadata["schema_valid"] is True
+    assert result.generation_metadata["llm_telemetry"]["total_tokens"] == 150
+    assert result.numeric_slots
+    assert all(item["semantic_frame"] for item in result.claim_alignment)
+    assert all(item["surface_form_id"] for item in result.claim_alignment)
+
+
+def test_free_text_semantic_reversal_is_rejected_then_frame_payload_is_accepted():
+    pattern, _, plan = _operating_claim_plan()
+    valid_payload = _semantic_frame_payload(plan)
     invalid_payload = {
         **valid_payload,
         "claims": [dict(item) for item in valid_payload["claims"]],
     }
+    mandatory = [claim for claim in plan.claims if claim["is_required"]]
     risk_index = next(
         index for index, claim in enumerate(mandatory) if claim["claim_role"] == "risk"
     )
-    invalid_payload["claims"][risk_index]["sentence"] = (
-        "Operating cash flow strongly supports the observed profit improvement."
+    invalid_payload["claims"][risk_index]["surface_text"] = (
+        "Operating cash flow strongly supports profit growth and is not a material "
+        "risk caveat."
     )
-    provider = _SequenceProvider([invalid_payload, valid_payload])
+    validation = validate_analysis_response(invalid_payload, plan)
+    assert not validation["passed"]
+    assert "claim_fields_mismatch" in validation["errors"]
 
+    provider = _SequenceProvider([invalid_payload, valid_payload])
     result = generate_analysis(
         pattern,
         plan,
@@ -187,26 +196,32 @@ def test_controlled_analysis_retries_opposite_claim_stance_and_audits_attempts()
         provider=provider,
     )
 
-    assert result.generation_method == "controlled_llm_claim_generation"
+    assert result.generation_method == "controlled_llm_semantic_frame"
     attempts = result.generation_metadata["llm_attempts"]
     assert len(attempts) == 2
     assert attempts[0]["structured_response_valid"] is False
-    assert any(
-        error.startswith("claim_stance_mismatch:")
-        for error in attempts[0]["validation_errors"]
-    )
+    assert "claim_fields_mismatch" in attempts[0]["validation_errors"]
     assert attempts[1]["structured_response_valid"] is True
+    assert "strongly supports profit growth" not in result.analysis_text
 
 
-def test_claim_id_contract_does_not_make_opposite_sentence_semantically_valid():
-    assert not validate_stance(
-        "Operating cash flow strongly confirms the improvement.",
-        "risk",
-    )["passed"]
-    assert validate_stance(
-        "Operating cash flow weakened and is a material risk caveat.",
-        "risk",
-    )["passed"]
+def test_legacy_keyword_stance_parser_is_not_a_claim_acceptance_gate():
+    adversarial = (
+        "Operating cash flow strongly supports profit growth and is not a material "
+        "risk caveat."
+    )
+    assert validate_stance(adversarial, "risk")["passed"]
+    _, _, plan = _operating_claim_plan()
+    payload = _semantic_frame_payload(plan)
+    risk_index = next(
+        index
+        for index, claim in enumerate(
+            [claim for claim in plan.claims if claim["is_required"]]
+        )
+        if claim["claim_role"] == "risk"
+    )
+    payload["claims"][risk_index]["surface_text"] = adversarial
+    assert not validate_analysis_response(payload, plan)["passed"]
 
 
 def test_numeric_grounding_accepts_registered_slot_and_rejects_wrong_value_or_unit():
@@ -482,6 +497,34 @@ def test_temporal_holdout_hash_includes_component_identity():
     assert temporal_count < len(splits)
 
 
+def test_capacity_aware_split_redirects_oversized_holdout_without_splitting():
+    from finraw.analysis.split import _capacity_aware_split
+
+    split, reason = _capacity_aware_split(
+        "test_temporal_holdout",
+        component_size=43,
+        total_sample_count=150,
+        policy={
+            "capacity_control_min_samples": 50,
+            "maximum_holdout_component_pct": 20,
+        },
+    )
+    assert split == "train"
+    assert reason and reason.startswith("holdout_component_exceeds_capacity")
+
+    split, reason = _capacity_aware_split(
+        "test_entity_holdout",
+        component_size=20,
+        total_sample_count=150,
+        policy={
+            "capacity_control_min_samples": 50,
+            "maximum_holdout_component_pct": 20,
+        },
+    )
+    assert split == "test_entity_holdout"
+    assert reason is None
+
+
 def test_analysis_policy_propagates_bounded_retry_contract():
     from finraw.analysis.pipeline import _analysis_policy
 
@@ -500,3 +543,15 @@ def test_analysis_policy_propagates_bounded_retry_contract():
 
     assert policy["generation"]["max_attempts"] == 3
     assert policy["generation"]["api_quality_gate"]["maximum_retry_rate"] == 0.03
+
+
+def test_mixed_conclusion_surface_does_not_duplicate_mixed_modifier():
+    from finraw.analysis.semantic_frames import (
+        build_conclusion_semantic_frame,
+        render_semantic_frame,
+    )
+
+    frame = build_conclusion_semantic_frame("mixed_growth_quality", "mixed")
+    text = render_semantic_frame(frame, "conclusion_mixed", kind="conclusion")
+    assert "mixed mixed" not in text.lower()
+    assert "mixed growth-quality" in text.lower()

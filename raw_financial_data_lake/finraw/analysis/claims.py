@@ -5,8 +5,14 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from finraw.analysis.registry import AnalysisPattern, stable_hash
+from finraw.analysis.semantic_frames import (
+    FORBIDDEN_CLAIM_EXTENSIONS,
+    allowed_surface_form_ids,
+    build_claim_semantic_frame,
+    build_conclusion_semantic_frame,
+)
 
-CLAIM_PLANNER_VERSION = "1.2.0"
+CLAIM_PLANNER_VERSION = "1.4.0"
 
 _CONCLUSION_TEXT = {
     "broadly_positive": "Overall operating trends are positive across the covered evidence.",
@@ -278,6 +284,29 @@ def _claim(
         (float(signal.get("confidence") or 0) for signal in signals), default=1.0
     )
     claim_id = f"claim_{stable_hash([claim_type, signal_ids, depends_on_claim_ids or []])[:20]}"
+    semantic_frame = build_claim_semantic_frame(claim_type, claim_role, polarity)
+    numeric_slots = _numeric_slots(signals)
+    allowed_entity_ids = sorted(
+        {
+            str(entity_id)
+            for signal in signals
+            for entity_id in signal.get("entity_ids") or []
+        }
+    )
+    allowed_metric_ids = sorted(
+        {
+            str(metric_id)
+            for signal in signals
+            for metric_id in signal.get("metric_ids") or []
+        }
+    )
+    allowed_periods = sorted(
+        {
+            int(year)
+            for signal in signals
+            for year in (signal.get("period_scope") or {}).get("years", [])
+        }
+    )
     return {
         "claim_id": claim_id,
         "claim_type": claim_type,
@@ -292,11 +321,20 @@ def _claim(
             }
         ),
         "counter_signal_ids": signal_ids if claim_role == "risk" else [],
-        "required_numeric_slots": _numeric_slots(signals),
-        "required_entity_slots": [],
-        "required_period_slots": [],
+        "required_numeric_slots": numeric_slots,
+        "required_entity_slots": allowed_entity_ids,
+        "required_period_slots": allowed_periods,
+        "allowed_entity_ids": allowed_entity_ids,
+        "allowed_metric_ids": allowed_metric_ids,
+        "allowed_periods": allowed_periods,
+        "allowed_predicates": [semantic_frame["predicate"]],
+        "allowed_numeric_slot_ids": sorted(
+            str(slot["slot_id"]) for slot in numeric_slots
+        ),
+        "forbidden_claim_extensions": list(FORBIDDEN_CLAIM_EXTENSIONS),
         "qualifiers": ["indicates", "suggests", "should be considered"],
         "semantic_contract": _claim_semantic_contract(claim_role, polarity),
+        "semantic_frame": semantic_frame,
         "confidence_band": "high" if confidence >= 0.9 else "moderate",
         "is_required": is_required,
         "is_optional": False,
@@ -437,15 +475,21 @@ def _valid_conclusions(
     for conclusion_id in allowed:
         predicate = _conclusion_predicate(conclusion_id, claims)
         if predicate["passed"]:
+            expected_stance = _conclusion_polarity(conclusion_id)
+            semantic_frame = build_conclusion_semantic_frame(
+                conclusion_id, expected_stance
+            )
             valid.append(
                 {
                     "conclusion_id": conclusion_id,
                     "required_claim_ids": required,
                     "text": _CONCLUSION_TEXT[conclusion_id],
                     "conditions": predicate["conditions"],
-                    "semantic_contract": {
-                        "expected_stance": _conclusion_polarity(conclusion_id)
-                    },
+                    "semantic_contract": {"expected_stance": expected_stance},
+                    "semantic_frame": semantic_frame,
+                    "allowed_surface_form_ids": allowed_surface_form_ids(
+                        semantic_frame, kind="conclusion"
+                    ),
                 }
             )
     if selected not in {row["conclusion_id"] for row in valid}:

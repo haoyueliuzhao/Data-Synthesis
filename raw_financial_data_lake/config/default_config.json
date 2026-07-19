@@ -505,7 +505,9 @@
       "temporal_holdout_pct": 10,
       "peer_scope_holdout_pct": 10,
       "signal_composition_holdout_pct": 10,
-      "conflicting_evidence_holdout_pct": 10
+      "conflicting_evidence_holdout_pct": 10,
+      "capacity_control_min_samples": 50,
+      "maximum_holdout_component_pct": 20
     }
   }
 }

@@ -11,6 +11,12 @@ from finraw.analysis.claims import (
     build_claim_plan,
 )
 from finraw.analysis.generator import ANALYSIS_GENERATOR_VERSION, generate_analysis
+from finraw.analysis.peer_scope import (
+    PEER_SCOPE_ELIGIBILITY_POLICY_VERSION,
+    build_peer_scope_contract,
+    recompute_peer_universe,
+    source_definition_compatibility_class,
+)
 from finraw.analysis.registry import (
     ANALYSIS_PATTERNS,
     CLAIM_SCHEMA_VERSION,
@@ -23,6 +29,10 @@ from finraw.analysis.registry import (
 )
 from finraw.analysis.schema import ensure_analysis_schema
 from finraw.analysis.semantic_constraints import ANALYSIS_SEMANTIC_GATE_VERSION
+from finraw.analysis.semantic_frames import (
+    SEMANTIC_FRAME_VERSION,
+    semantic_frame_manifest,
+)
 from finraw.analysis.split import split_analysis_samples
 from finraw.analysis.signals import (
     SIGNAL_EXECUTOR_VERSION,
@@ -44,7 +54,7 @@ from finraw.qa.comparability import (
 from finraw.qa.pipeline import _kg_path_from_graph
 from finraw.qa.store import insert_rows
 
-ANALYSIS_COMPILER_VERSION = "1.2.0"
+ANALYSIS_COMPILER_VERSION = "2.2.0"
 _CASH_FLOW = "net_cash_provided_by_used_in_operating_activities"
 _REQUIRED_METRICS = (
     "revenue",
@@ -86,6 +96,12 @@ _CANDIDATE_COLUMNS = [
     "metric_ids",
     "period_scope",
     "scope_definition",
+    "peer_scope_type",
+    "peer_scope_id",
+    "expected_scope_entity_ids",
+    "scope_membership_hash",
+    "scope_eligibility_policy_hash",
+    "peer_scope_contract",
     "signal_ids",
     "evidence_bundle_id",
     "claim_plan_id",
@@ -104,6 +120,12 @@ _BUNDLE_COLUMNS = [
     "metric_ids",
     "period_scope",
     "scope_definition",
+    "peer_scope_type",
+    "peer_scope_id",
+    "expected_scope_entity_ids",
+    "scope_membership_hash",
+    "scope_eligibility_policy_hash",
+    "peer_scope_contract",
     "fact_ids",
     "derived_fact_ids",
     "signal_ids",
@@ -127,6 +149,7 @@ _PLAN_COLUMNS = [
     "mandatory_claim_ids",
     "optional_claim_ids",
     "forbidden_claim_types",
+    "required_caveat_ids",
     "selected_conclusion_id",
     "plan_hash",
     "validation_status",
@@ -145,6 +168,8 @@ _SAMPLE_COLUMNS = [
     "analysis_text",
     "selected_conclusion_id",
     "conclusion_text",
+    "conclusion_semantic_frame",
+    "conclusion_surface_form_id",
     "claim_alignment",
     "numeric_slots",
     "caveats",
@@ -242,7 +267,7 @@ def build_financial_analysis(
     fact_rows = _load_fact_rows(db, kg, policy["fact_scan_limit"])
     sic_major_groups = _load_sec_sic_major_groups(db)
     contexts = _series_contexts(fact_rows, sic_major_groups)
-    bindings = _discover_bindings(contexts, policy)
+    bindings = _discover_bindings(db, kg, contexts, policy)
     signal_rows: dict[str, dict[str, Any]] = {}
     candidate_rows: list[dict[str, Any]] = []
     bundle_rows: list[dict[str, Any]] = []
@@ -295,6 +320,8 @@ def build_financial_analysis(
             "entity_ids",
             "metric_ids",
             "period_scope",
+            "expected_scope_entity_ids",
+            "peer_scope_contract",
             "signal_ids",
             "difficulty_features",
             "rejection_reasons",
@@ -309,6 +336,8 @@ def build_financial_analysis(
             "entity_ids",
             "metric_ids",
             "period_scope",
+            "expected_scope_entity_ids",
+            "peer_scope_contract",
             "fact_ids",
             "derived_fact_ids",
             "signal_ids",
@@ -334,6 +363,7 @@ def build_financial_analysis(
             "mandatory_claim_ids",
             "optional_claim_ids",
             "forbidden_claim_types",
+            "required_caveat_ids",
         },
     )
     insert_rows(
@@ -343,6 +373,7 @@ def build_financial_analysis(
         _SAMPLE_COLUMNS,
         {
             "claim_alignment",
+            "conclusion_semantic_frame",
             "numeric_slots",
             "caveats",
             "rubric",
@@ -515,6 +546,44 @@ def _load_fact_rows(
     return [dict(row) for row in rows]
 
 
+def _load_selected_peer_facts(
+    db: DBProtocol,
+    kg: dict[str, Any],
+    fact_ids: list[str],
+) -> list[dict[str, Any]]:
+    if not fact_ids:
+        return []
+    placeholders = ",".join("?" for _ in fact_ids)
+    rows = db.fetchall(
+        f"""
+        SELECT sf.*, ce.canonical_name AS entity_name, ce.entity_type,
+               ce.industry, ce.market, ce.country, ce.cik,
+               smd.metric_id AS source_definition_metric_id,
+               smd.comparable_to_metric_id AS source_definition_comparable_metric_id,
+               smd.comparability_level AS source_definition_comparability_level,
+               smd.frequency AS source_definition_frequency,
+               smd.vintage_policy AS source_definition_vintage_policy
+        FROM standardized_facts sf
+        JOIN kg_nodes fact_node
+          ON fact_node.kg_build_id = ? AND fact_node.node_type = 'Fact'
+         AND fact_node.source_pk = sf.fact_id
+        JOIN canonical_entities ce
+          ON ce.build_id = ? AND ce.entity_id = sf.entity_id
+        LEFT JOIN source_metric_definitions smd
+          ON smd.definition_id = sf.source_definition_id
+        WHERE sf.build_id = ? AND sf.fact_id IN ({placeholders})
+        ORDER BY sf.fact_id
+        """,
+        [
+            kg["kg_build_id"],
+            kg["input_entity_build_id"],
+            kg["input_fact_build_id"],
+            *fact_ids,
+        ],
+    )
+    return [dict(row) for row in rows]
+
+
 def _load_sec_sic_major_groups(db: DBProtocol) -> dict[str, str]:
     rows = db.fetchall(
         "SELECT record_json FROM raw_records WHERE source_id = ? AND record_type = ?",
@@ -611,6 +680,8 @@ def _series_contexts(
 
 
 def _discover_bindings(
+    db: DBProtocol,
+    kg: dict[str, Any],
     contexts: dict[tuple[str, str, str, str], dict[str, Any]],
     policy: dict[str, Any],
 ) -> list[dict[str, Any]]:
@@ -637,7 +708,9 @@ def _discover_bindings(
                 best_by_entity_pattern[key] = binding
     for (pattern_id, _), binding in best_by_entity_pattern.items():
         by_pattern[pattern_id].append(binding)
-    by_pattern["peer_positioning_v1"] = _peer_bindings(contexts, policy)
+    by_pattern["peer_positioning_v1"] = _peer_bindings(
+        db, kg, contexts, policy
+    )
     output: list[dict[str, Any]] = []
     for pattern_id, values in by_pattern.items():
         quota = int(policy["pattern_quotas"].get(pattern_id, 0))
@@ -715,6 +788,8 @@ def _temporal_binding(
 
 
 def _peer_bindings(
+    db: DBProtocol,
+    kg: dict[str, Any],
     contexts: dict[tuple[str, str, str, str], dict[str, Any]],
     policy: dict[str, Any],
 ) -> list[dict[str, Any]]:
@@ -766,11 +841,88 @@ def _peer_bindings(
     bindings: list[dict[str, Any]] = []
     min_entities = policy["peer_min_entities"]
     max_entities = policy["peer_max_entities"]
-    for key, entities in sorted(scopes.items(), key=lambda item: str(item[0])):
-        if not min_entities <= len(entities) <= max_entities:
+    for key, seed_entities in sorted(scopes.items(), key=lambda item: str(item[0])):
+        if not seed_entities:
             continue
-        scope_type, scope_id, scope_name, year, _, _, _ = key
-        entity_ids = sorted(entities)
+        scope_type, scope_id, scope_name, year, source_id, unit, currency = key
+        entity_ids = sorted(seed_entities)
+        definition_rows = {
+            "revenue": [
+                row
+                for entity_id in entity_ids
+                for row in (
+                    seed_entities[entity_id]["current_revenue"],
+                    seed_entities[entity_id]["previous_revenue"],
+                )
+            ],
+            "net_income": [
+                seed_entities[entity_id]["net_income"] for entity_id in entity_ids
+            ],
+            "total_assets": [
+                seed_entities[entity_id]["total_assets"] for entity_id in entity_ids
+            ],
+            "total_liabilities": [
+                seed_entities[entity_id]["total_liabilities"] for entity_id in entity_ids
+            ],
+        }
+        definition_classes = {
+            metric_id: {
+                source_definition_compatibility_class(row) for row in rows
+            }
+            for metric_id, rows in definition_rows.items()
+        }
+        if any(
+            len(values) != 1 or "" in next(iter(values), ())
+            for values in definition_classes.values()
+        ):
+            continue
+        source_definition_compatibility = {
+            metric_id: list(next(iter(values)))
+            for metric_id, values in definition_classes.items()
+        }
+        scope_contract = build_peer_scope_contract(
+            scope_type=scope_type,
+            scope_id=scope_id,
+            scope_name=scope_name,
+            fiscal_year=year,
+            source_id=source_id,
+            normalized_unit=unit,
+            normalized_currency=currency,
+            entity_ids=entity_ids,
+            source_definition_compatibility=source_definition_compatibility,
+            min_entities=min_entities,
+            max_entities=max_entities,
+        )
+        rebuilt = recompute_peer_universe(db, kg, scope_contract)
+        if not rebuilt["passed"]:
+            continue
+        entity_ids = list(rebuilt["entity_ids"])
+        scope_contract["expected_scope_entity_ids"] = entity_ids
+        scope_contract["scope_membership_hash"] = rebuilt["scope_membership_hash"]
+        selected = dict(rebuilt["selected_fact_ids_by_entity"])
+        selected_fact_ids = sorted(
+            {
+                str(fact_id)
+                for slots in selected.values()
+                for fact_id in slots.values()
+            }
+        )
+        fact_rows = _load_selected_peer_facts(db, kg, selected_fact_ids)
+        facts_by_id = {str(row["fact_id"]): row for row in fact_rows}
+        if len(facts_by_id) != len(selected_fact_ids):
+            continue
+        entities = {
+            entity_id: {
+                slot: facts_by_id[str(fact_id)]
+                for slot, fact_id in selected[entity_id].items()
+            }
+            for entity_id in entity_ids
+        }
+        for entity_id in entity_ids:
+            entities[entity_id]["entity_name"] = (
+                entities[entity_id]["current_revenue"].get("entity_name")
+                or entity_id
+            )
         current = [entities[entity_id]["current_revenue"] for entity_id in entity_ids]
         previous = [entities[entity_id]["previous_revenue"] for entity_id in entity_ids]
         profits = [entities[entity_id]["net_income"] for entity_id in entity_ids]
@@ -803,6 +955,12 @@ def _peer_bindings(
                     "industry": scope_name,
                     "peer_scope_type": scope_type,
                     "peer_scope_id": scope_id,
+                    "expected_scope_entity_ids": entity_ids,
+                    "scope_membership_hash": scope_contract["scope_membership_hash"],
+                    "scope_eligibility_policy_hash": scope_contract[
+                        "scope_eligibility_policy_hash"
+                    ],
+                    "peer_scope_contract": scope_contract,
                     "signal_inputs": [
                         {
                             "signal_spec_id": "peer_growth_percentile_v1",
@@ -894,6 +1052,10 @@ def _compile_binding(
         compiled_signals.append(row)
     fact_ids = sorted(all_facts)
     signal_ids = sorted(row["signal_id"] for row in compiled_signals)
+    peer_scope_contract = dict(binding.get("peer_scope_contract") or {})
+    expected_scope_entity_ids = sorted(
+        str(value) for value in binding.get("expected_scope_entity_ids") or []
+    )
     path = _kg_path_from_graph(db, kg["kg_build_id"], fact_ids=fact_ids)
     evidence_bundle_id = _new_id(
         "analysis_bundle", [analysis_build_id, fact_ids, signal_ids]
@@ -908,6 +1070,14 @@ def _compile_binding(
         "metric_ids": binding["metric_ids"],
         "period_scope": binding["period_scope"],
         "scope_definition": binding["scope_definition"],
+        "peer_scope_type": binding.get("peer_scope_type"),
+        "peer_scope_id": binding.get("peer_scope_id"),
+        "expected_scope_entity_ids": expected_scope_entity_ids,
+        "scope_membership_hash": binding.get("scope_membership_hash"),
+        "scope_eligibility_policy_hash": binding.get(
+            "scope_eligibility_policy_hash"
+        ),
+        "peer_scope_contract": peer_scope_contract,
         "fact_ids": fact_ids,
         "derived_fact_ids": [],
         "signal_ids": signal_ids,
@@ -969,12 +1139,16 @@ def _compile_binding(
             claim["claim_id"] for claim in claim_result.claims if claim["is_optional"]
         ],
         "forbidden_claim_types": list(pattern.forbidden_claim_types),
+        "required_caveat_ids": sorted(
+            caveat["caveat_id"] for caveat in claim_result.caveats
+        ),
         "selected_conclusion_id": claim_result.selected_conclusion_id,
         "plan_hash": stable_hash(
             [
                 claim_result.claims,
                 claim_result.valid_conclusions,
                 claim_result.selected_conclusion_id,
+                sorted(caveat["caveat_id"] for caveat in claim_result.caveats),
             ]
         ),
         "validation_status": "planned",
@@ -1022,6 +1196,14 @@ def _compile_binding(
         "metric_ids": binding["metric_ids"],
         "period_scope": binding["period_scope"],
         "scope_definition": binding["scope_definition"],
+        "peer_scope_type": binding.get("peer_scope_type"),
+        "peer_scope_id": binding.get("peer_scope_id"),
+        "expected_scope_entity_ids": expected_scope_entity_ids,
+        "scope_membership_hash": binding.get("scope_membership_hash"),
+        "scope_eligibility_policy_hash": binding.get(
+            "scope_eligibility_policy_hash"
+        ),
+        "peer_scope_contract": peer_scope_contract,
         "signal_ids": signal_ids,
         "evidence_bundle_id": evidence_bundle_id,
         "claim_plan_id": claim_plan_id,
@@ -1058,6 +1240,8 @@ def _compile_binding(
         "analysis_text": generation.analysis_text,
         "selected_conclusion_id": generation.selected_conclusion_id,
         "conclusion_text": generation.conclusion_text,
+        "conclusion_semantic_frame": generation.conclusion_semantic_frame,
+        "conclusion_surface_form_id": generation.conclusion_surface_form_id,
         "claim_alignment": generation.claim_alignment,
         "numeric_slots": generation.numeric_slots,
         "caveats": generation.caveats,
@@ -1101,7 +1285,7 @@ def _compile_binding(
                     "controlled_generation": bool(
                         is_final
                         and generation.generation_method
-                        == "controlled_llm_claim_generation"
+                        == "controlled_llm_semantic_frame"
                     ),
                     "latency_ms": telemetry.get("latency_ms"),
                     "prompt_tokens": telemetry.get("prompt_tokens"),
@@ -1200,6 +1384,7 @@ def _binding_identity(binding: dict[str, Any]) -> Any:
         "signal_specs": sorted(
             signal["signal_spec_id"] for signal in binding["signal_inputs"]
         ),
+        "peer_scope_contract": binding.get("peer_scope_contract") or {},
     }
 
 
@@ -1265,7 +1450,7 @@ def _analysis_llm_stats(
         if row.get("estimated_cost") is not None
     ]
     controlled_samples = sum(
-        row.get("generation_method") == "controlled_llm_claim_generation"
+        row.get("generation_method") == "controlled_llm_semantic_frame"
         for row in sample_rows
     )
     return {
@@ -1301,7 +1486,7 @@ def _analysis_llm_stats(
         "unknown_fallback_reason_count": sum(
             1
             for row in sample_rows
-            if row.get("generation_method") != "controlled_llm_claim_generation"
+            if row.get("generation_method") != "controlled_llm_semantic_frame"
             and not (row.get("generation_metadata") or {}).get("fallback_reason")
         ),
         "fallback_reason_distribution": dict(sorted(fallback_reasons.items())),
@@ -1432,6 +1617,8 @@ def _analysis_policy(
             "peer_scope_holdout_pct": 10,
             "signal_composition_holdout_pct": 10,
             "conflicting_evidence_holdout_pct": 10,
+            "capacity_control_min_samples": 50,
+            "maximum_holdout_component_pct": 20,
             **dict(configured.get("split_policy") or {}),
         },
         "minimum_pass_rate": float(configured.get("minimum_pass_rate", 1.0)),
@@ -1459,6 +1646,7 @@ def _manifests() -> dict[str, str]:
                 "version": CLAIM_SCHEMA_VERSION,
                 "claim_planner_version": CLAIM_PLANNER_VERSION,
                 "analysis_generator_version": ANALYSIS_GENERATOR_VERSION,
+                "semantic_frame_manifest": semantic_frame_manifest(),
             }
         ),
         "conclusion_policy_manifest_hash": stable_hash(
@@ -1468,6 +1656,10 @@ def _manifests() -> dict[str, str]:
             {
                 "version": ANALYSIS_VERIFIER_VERSION,
                 "text_parser_version": ANALYSIS_TEXT_PARSER_VERSION,
+                "semantic_frame_version": SEMANTIC_FRAME_VERSION,
+                "peer_scope_eligibility_policy_version": (
+                    PEER_SCOPE_ELIGIBILITY_POLICY_VERSION
+                ),
             }
         ),
     }
