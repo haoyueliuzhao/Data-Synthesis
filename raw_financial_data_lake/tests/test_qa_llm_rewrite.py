@@ -262,6 +262,63 @@ def test_llm_client_discovers_models_and_falls_back_on_model_quota(monkeypatch):
     assert "protected prompt" not in serialized
     assert "secret" not in serialized
 
+
+def test_llm_client_forwards_reasoning_storage_and_custom_headers(monkeypatch):
+    monkeypatch.setenv("FINRAW_TEST_API_KEY", "secret")
+    captured = {}
+
+    class Response:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "id": "response",
+                    "model": "gpt-5.6-sol",
+                    "choices": [
+                        {"message": {"content": json.dumps({"ok": True})}}
+                    ],
+                    "usage": {"prompt_tokens": 5, "completion_tokens": 2},
+                }
+            ).encode()
+
+    def fake_urlopen(request, timeout):
+        captured["body"] = json.loads(request.data.decode())
+        captured["actor_header"] = request.get_header(
+            "X-openai-actor-authorization"
+        )
+        captured["authorization"] = request.get_header("Authorization")
+        return Response()
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    client = OpenAICompatibleJsonClient(
+        {
+            "endpoint": "https://example.test/v1/chat/completions",
+            "model": "gpt-5.6-sol",
+            "api_key_env": "FINRAW_TEST_API_KEY",
+            "reasoning_effort": "high",
+            "store": False,
+            "http_headers": {
+                "x-openai-actor-authorization": "local-image-extension"
+            },
+        }
+    )
+
+    completion = client.complete_json("return json")
+
+    assert completion.payload == {"ok": True}
+    assert captured["body"]["reasoning_effort"] == "high"
+    assert captured["body"]["store"] is False
+    assert captured["actor_header"] == "local-image-extension"
+    assert captured["authorization"] == "Bearer secret"
+
+
 def test_protected_rewrite_selects_a_stable_variant_by_style_id():
     templates = [
         {

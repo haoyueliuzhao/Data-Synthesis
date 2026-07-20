@@ -877,7 +877,10 @@ def validate_qa_samples(
         dict(row)
         for row in db.fetchall(
             """
-        SELECT s.*, c.qa_build_id AS candidate_qa_build_id, c.canonical_semantics,
+        SELECT s.*, c.qa_build_id AS candidate_qa_build_id,
+               c.stable_candidate_id, c.entity_ids, c.metric_ids,
+               c.time_scope, c.entity_scope,
+               c.canonical_semantics,
                c.recomputed_payload, c.answer_payload, c.kg_path,
                c.source_fact_ids, c.source_derived_ids, c.raw_object_ids,
                c.pattern_id, c.pattern_version, c.operation_plan_id,
@@ -1533,6 +1536,8 @@ def _qa_llm_generation_stats(
         "http_success_rate": rate("http_success"),
         "structured_response_pass_rate": rate("structured_response_valid"),
         "valid_sentence_plan_rate": rate("sentence_plan_valid"),
+        "valid_rewrite_rate": rate("rewrite_valid"),
+        "valid_surface_realization_rate": rate("surface_realization_valid"),
         "controlled_generation_rate": rate("controlled_generation"),
         "fallback_rate": fallback_count / count if count else 1.0,
         "unknown_fallback_reason_count": unknown_fallbacks,
@@ -4032,12 +4037,14 @@ def _reparse_persisted_question(
     required_slots = list(template.get("required_slots") or [])
     generation_policy = dict(parser_contract.get("generation_policy") or {})
     strategy = str(generation_policy.get("strategy") or "sentence_plan")
-    surface_slots = diversify_surface_slots(
-        slots,
-        semantics,
-        str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
-        generation_policy,
-    )
+    surface_slots = slots
+    if strategy == "protected_rewrite":
+        surface_slots = diversify_surface_slots(
+            slots,
+            semantics,
+            str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
+            generation_policy,
+        )
     generation_metadata = json_value(row.get("source_metadata"), {}).get(
         "question_generation", {}
     )

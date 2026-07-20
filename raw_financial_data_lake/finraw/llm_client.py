@@ -38,6 +38,12 @@ class OpenAICompatibleJsonClient:
         self.key_env = str(config.get("api_key_env") or "OPENAI_API_KEY")
         self.api_key = os.environ.get(self.key_env, "")
         self.timeout = float(config.get("timeout_seconds", 30))
+        self.reasoning_effort = str(config.get("reasoning_effort") or "").strip()
+        self.store = bool(config["store"]) if "store" in config else None
+        self.http_headers = {
+            str(key): str(value)
+            for key, value in dict(config.get("http_headers") or {}).items()
+        }
         self.input_cost_per_million = float(config.get("input_cost_per_million") or 0)
         self.output_cost_per_million = float(config.get("output_cost_per_million") or 0)
         self.auto_select_model = bool(config.get("auto_select_model", False))
@@ -91,7 +97,7 @@ class OpenAICompatibleJsonClient:
         }
         request = urllib.request.Request(
             endpoint,
-            headers={"Authorization": f"Bearer {self.api_key}"},
+            headers=self._request_headers(),
             method="GET",
         )
         try:
@@ -232,6 +238,15 @@ class OpenAICompatibleJsonClient:
             f"{self.provider}|{endpoint}|{credential_fingerprint}".encode("utf-8")
         ).hexdigest()
 
+    def _request_headers(self, *, json_content: bool = False) -> dict[str, str]:
+        headers = {
+            **self.http_headers,
+            "Authorization": f"Bearer {self.api_key}",
+        }
+        if json_content:
+            headers["Content-Type"] = "application/json"
+        return headers
+
     def _complete_once(
         self,
         prompt: str,
@@ -269,13 +284,14 @@ class OpenAICompatibleJsonClient:
             "temperature": temperature,
             "response_format": {"type": "json_object"},
         }
+        if self.reasoning_effort:
+            body["reasoning_effort"] = self.reasoning_effort
+        if self.store is not None:
+            body["store"] = self.store
         request = urllib.request.Request(
             self.endpoint,
             data=json.dumps(body).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
+            headers=self._request_headers(json_content=True),
             method="POST",
         )
         started = time.perf_counter()

@@ -2342,10 +2342,16 @@
       "mode": "controlled_llm",
       "variants": 3,
       "llm": {
-        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-turbo",
-        "api_key_env": "DASHSCOPE_API_KEY",
-        "timeout_seconds": 90
+        "provider": "moonlight_openai_compatible",
+        "endpoint": "https://moonlight.cool/v1/chat/completions",
+        "model": "gpt-5.6-sol",
+        "api_key_env": "OPENAI_API_KEY",
+        "reasoning_effort": "high",
+        "store": false,
+        "http_headers": {
+          "x-openai-actor-authorization": "local-image-extension"
+        },
+        "timeout_seconds": 120
       },
       "api_quality_gate": {
         "minimum_http_success_rate": 0.98,

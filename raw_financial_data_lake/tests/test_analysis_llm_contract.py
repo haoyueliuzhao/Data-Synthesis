@@ -413,6 +413,8 @@ def test_qa_api_telemetry_counts_fallback_independently_from_qa_validity():
     )
     assert stats["request_count"] == 2
     assert stats["http_success_rate"] == 0.5
+    assert stats["valid_rewrite_rate"] == 0.0
+    assert stats["valid_surface_realization_rate"] == 0.5
     assert stats["controlled_generation_rate"] == 0.5
     assert stats["fallback_rate"] == 0.5
     assert stats["fallback_reason_distribution"] == {"llm_unavailable:TimeoutError": 1}

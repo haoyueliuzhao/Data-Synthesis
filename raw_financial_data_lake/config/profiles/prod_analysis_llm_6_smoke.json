@@ -2342,10 +2342,16 @@
       "mode": "controlled_llm",
       "variants": 3,
       "llm": {
-        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-turbo",
-        "api_key_env": "DASHSCOPE_API_KEY",
-        "timeout_seconds": 90
+        "provider": "moonlight_openai_compatible",
+        "endpoint": "https://moonlight.cool/v1/chat/completions",
+        "model": "gpt-5.6-sol",
+        "api_key_env": "OPENAI_API_KEY",
+        "reasoning_effort": "high",
+        "store": false,
+        "http_headers": {
+          "x-openai-actor-authorization": "local-image-extension"
+        },
+        "timeout_seconds": 120
       },
       "api_quality_gate": {
         "minimum_http_success_rate": 0.98,
@@ -2408,19 +2414,21 @@
       "allow_numeric_slots": true,
       "max_attempts": 2,
       "llm": {
-        "provider": "dashscope_openai_compatible",
-        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-turbo",
-        "api_key_env": "DASHSCOPE_API_KEY",
-        "timeout_seconds": 90,
+        "provider": "moonlight_openai_compatible",
+        "endpoint": "https://moonlight.cool/v1/chat/completions",
+        "model": "gpt-5.6-sol",
+        "api_key_env": "OPENAI_API_KEY",
+        "reasoning_effort": "high",
+        "store": false,
+        "http_headers": {
+          "x-openai-actor-authorization": "local-image-extension"
+        },
+        "timeout_seconds": 120,
         "temperature": 0.35,
-        "models_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
-        "fallback_models": [
-          "qwen-plus",
-          "qwen-max"
-        ],
-        "auto_select_model": true,
-        "maximum_model_attempts": 6,
+        "models_endpoint": "https://moonlight.cool/v1/models",
+        "fallback_models": [],
+        "auto_select_model": false,
+        "maximum_model_attempts": 1,
         "model_discovery_cache_seconds": 3600,
         "fallback_http_statuses": [
           400,
