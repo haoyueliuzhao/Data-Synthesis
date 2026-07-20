@@ -1454,10 +1454,10 @@
         "q3"
       ],
       "exclude_title_keywords": [
-        "摘要",
-        "英文",
-        "取消",
-        "已取消"
+        "\u6458\u8981",
+        "\u82f1\u6587",
+        "\u53d6\u6d88",
+        "\u5df2\u53d6\u6d88"
       ],
       "keep_revision_versions": true
     },
@@ -1465,7 +1465,7 @@
       {
         "stock_code": "000001",
         "selector": "000001,gssz0000001",
-        "company_name": "平安银行",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
         "market": "SZSE"
       }
     ],
@@ -1473,8 +1473,8 @@
       {
         "announcement_id": "1222806509",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2024年年度报告摘要",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2024\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
         "year": "2024",
         "report_type": "annual",
         "publish_date": "2025-03-14",
@@ -1483,10 +1483,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1222806509",
-          "announcementTitle": "2024年年度报告摘要",
+          "announcementTitle": "2024\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTime": 1741968000000,
           "adjunctUrl": "finalpage/2025-03-15/1222806509.PDF",
           "adjunctSize": 901,
@@ -1500,23 +1500,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2024年年度报告摘要",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2024\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1222806505",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2024年年度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2024\u5e74\u5e74\u5ea6\u62a5\u544a",
         "year": "2024",
         "report_type": "annual",
         "publish_date": "2025-03-14",
@@ -1525,10 +1525,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1222806505",
-          "announcementTitle": "2024年年度报告",
+          "announcementTitle": "2024\u5e74\u5e74\u5ea6\u62a5\u544a",
           "announcementTime": 1741968000000,
           "adjunctUrl": "finalpage/2025-03-15/1222806505.PDF",
           "adjunctSize": 1901,
@@ -1542,23 +1542,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2024年年度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2024\u5e74\u5e74\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1219306493",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2023年年度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2023\u5e74\u5e74\u5ea6\u62a5\u544a",
         "year": "2023",
         "report_type": "annual",
         "publish_date": "2024-03-14",
@@ -1567,10 +1567,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1219306493",
-          "announcementTitle": "2023年年度报告",
+          "announcementTitle": "2023\u5e74\u5e74\u5ea6\u62a5\u544a",
           "announcementTime": 1710432000000,
           "adjunctUrl": "finalpage/2024-03-15/1219306493.PDF",
           "adjunctSize": 5530,
@@ -1584,23 +1584,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2023年年度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2023\u5e74\u5e74\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1219306483",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2023年年度报告摘要",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2023\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
         "year": "2023",
         "report_type": "annual",
         "publish_date": "2024-03-14",
@@ -1609,10 +1609,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1219306483",
-          "announcementTitle": "2023年年度报告摘要",
+          "announcementTitle": "2023\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTime": 1710432000000,
           "adjunctUrl": "finalpage/2024-03-15/1219306483.PDF",
           "adjunctSize": 728,
@@ -1626,23 +1626,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2023年年度报告摘要",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2023\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1216072955",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2022年年度报告摘要",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2022\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
         "year": "2022",
         "report_type": "annual",
         "publish_date": "2023-03-08",
@@ -1651,10 +1651,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1216072955",
-          "announcementTitle": "2022年年度报告摘要",
+          "announcementTitle": "2022\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTime": 1678291200000,
           "adjunctUrl": "finalpage/2023-03-09/1216072955.PDF",
           "adjunctSize": 727,
@@ -1668,23 +1668,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2022年年度报告摘要",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2022\u5e74\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1216072952",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2022年年度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2022\u5e74\u5e74\u5ea6\u62a5\u544a",
         "year": "2022",
         "report_type": "annual",
         "publish_date": "2023-03-08",
@@ -1693,10 +1693,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1216072952",
-          "announcementTitle": "2022年年度报告",
+          "announcementTitle": "2022\u5e74\u5e74\u5ea6\u62a5\u544a",
           "announcementTime": 1678291200000,
           "adjunctUrl": "finalpage/2023-03-09/1216072952.PDF",
           "adjunctSize": 5580,
@@ -1710,23 +1710,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2022年年度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2022\u5e74\u5e74\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1224558635",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2025年半年度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2025\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
         "year": "2025",
         "report_type": "semiannual",
         "publish_date": "2025-08-22",
@@ -1735,10 +1735,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1224558635",
-          "announcementTitle": "2025年半年度报告",
+          "announcementTitle": "2025\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
           "announcementTime": 1755878400000,
           "adjunctUrl": "finalpage/2025-08-23/1224558635.PDF",
           "adjunctSize": 1441,
@@ -1752,23 +1752,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2025年半年度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2025\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1224558629",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2025年半年度报告摘要",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2025\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
         "year": "2025",
         "report_type": "semiannual",
         "publish_date": "2025-08-22",
@@ -1777,10 +1777,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1224558629",
-          "announcementTitle": "2025年半年度报告摘要",
+          "announcementTitle": "2025\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTime": 1755878400000,
           "adjunctUrl": "finalpage/2025-08-23/1224558629.PDF",
           "adjunctSize": 239,
@@ -1794,23 +1794,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2025年半年度报告摘要",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2025\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1220882165",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2024年半年度报告摘要",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2024\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
         "year": "2024",
         "report_type": "semiannual",
         "publish_date": "2024-08-15",
@@ -1819,10 +1819,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1220882165",
-          "announcementTitle": "2024年半年度报告摘要",
+          "announcementTitle": "2024\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTime": 1723737600000,
           "adjunctUrl": "finalpage/2024-08-16/1220882165.PDF",
           "adjunctSize": 814,
@@ -1836,23 +1836,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2024年半年度报告摘要",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2024\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1220882160",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2024年半年度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2024\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
         "year": "2024",
         "report_type": "semiannual",
         "publish_date": "2024-08-15",
@@ -1861,10 +1861,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1220882160",
-          "announcementTitle": "2024年半年度报告",
+          "announcementTitle": "2024\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
           "announcementTime": 1723737600000,
           "adjunctUrl": "finalpage/2024-08-16/1220882160.PDF",
           "adjunctSize": 4673,
@@ -1878,23 +1878,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2024年半年度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2024\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1217618653",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2023年半年度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2023\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
         "year": "2023",
         "report_type": "semiannual",
         "publish_date": "2023-08-23",
@@ -1903,10 +1903,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1217618653",
-          "announcementTitle": "2023年半年度报告",
+          "announcementTitle": "2023\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
           "announcementTime": 1692806400000,
           "adjunctUrl": "finalpage/2023-08-24/1217618653.PDF",
           "adjunctSize": 1448,
@@ -1920,23 +1920,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2023年半年度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2023\u5e74\u534a\u5e74\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1217617072",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2023年半年度报告摘要",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2023\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
         "year": "2023",
         "report_type": "semiannual",
         "publish_date": "2023-08-23",
@@ -1945,10 +1945,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1217617072",
-          "announcementTitle": "2023年半年度报告摘要",
+          "announcementTitle": "2023\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTime": 1692806400000,
           "adjunctUrl": "finalpage/2023-08-24/1217617072.PDF",
           "adjunctSize": 682,
@@ -1962,23 +1962,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2023年半年度报告摘要",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2023\u5e74\u534a\u5e74\u5ea6\u62a5\u544a\u6458\u8981",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1223145614",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2025年第一季度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2025\u5e74\u7b2c\u4e00\u5b63\u5ea6\u62a5\u544a",
         "year": "2025",
         "report_type": "q1",
         "publish_date": "2025-04-18",
@@ -1987,10 +1987,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1223145614",
-          "announcementTitle": "2025年第一季度报告",
+          "announcementTitle": "2025\u5e74\u7b2c\u4e00\u5b63\u5ea6\u62a5\u544a",
           "announcementTime": 1744992000000,
           "adjunctUrl": "finalpage/2025-04-19/1223145614.PDF",
           "adjunctSize": 1617,
@@ -2004,23 +2004,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2025年第一季度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2025\u5e74\u7b2c\u4e00\u5b63\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1219692666",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2024年第一季度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2024\u5e74\u7b2c\u4e00\u5b63\u5ea6\u62a5\u544a",
         "year": "2024",
         "report_type": "q1",
         "publish_date": "2024-04-19",
@@ -2029,10 +2029,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1219692666",
-          "announcementTitle": "2024年第一季度报告",
+          "announcementTitle": "2024\u5e74\u7b2c\u4e00\u5b63\u5ea6\u62a5\u544a",
           "announcementTime": 1713542400000,
           "adjunctUrl": "finalpage/2024-04-20/1219692666.PDF",
           "adjunctSize": 1555,
@@ -2046,23 +2046,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2024年第一季度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2024\u5e74\u7b2c\u4e00\u5b63\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1216549940",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2023年一季度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2023\u5e74\u4e00\u5b63\u5ea6\u62a5\u544a",
         "year": "2023",
         "report_type": "q1",
         "publish_date": "2023-04-24",
@@ -2071,10 +2071,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1216549940",
-          "announcementTitle": "2023年一季度报告",
+          "announcementTitle": "2023\u5e74\u4e00\u5b63\u5ea6\u62a5\u544a",
           "announcementTime": 1682352000000,
           "adjunctUrl": "finalpage/2023-04-25/1216549940.PDF",
           "adjunctSize": 1362,
@@ -2088,23 +2088,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2023年一季度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2023\u5e74\u4e00\u5b63\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1224735526",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2025年三季度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2025\u5e74\u4e09\u5b63\u5ea6\u62a5\u544a",
         "year": "2025",
         "report_type": "q3",
         "publish_date": "2025-10-24",
@@ -2113,10 +2113,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1224735526",
-          "announcementTitle": "2025年三季度报告",
+          "announcementTitle": "2025\u5e74\u4e09\u5b63\u5ea6\u62a5\u544a",
           "announcementTime": 1761321600000,
           "adjunctUrl": "finalpage/2025-10-25/1224735526.PDF",
           "adjunctSize": 495,
@@ -2130,23 +2130,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2025年三季度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2025\u5e74\u4e09\u5b63\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1221432574",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2024年第三季度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2024\u5e74\u7b2c\u4e09\u5b63\u5ea6\u62a5\u544a",
         "year": "2024",
         "report_type": "q3",
         "publish_date": "2024-10-18",
@@ -2155,10 +2155,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1221432574",
-          "announcementTitle": "2024年第三季度报告",
+          "announcementTitle": "2024\u5e74\u7b2c\u4e09\u5b63\u5ea6\u62a5\u544a",
           "announcementTime": 1729267200000,
           "adjunctUrl": "finalpage/2024-10-19/1221432574.PDF",
           "adjunctSize": 1640,
@@ -2172,23 +2172,23 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2024年第三季度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2024\u5e74\u7b2c\u4e09\u5b63\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       },
       {
         "announcement_id": "1218135621",
         "stock_code": "000001",
-        "company_name": "平安银行",
-        "title": "2023年三季度报告",
+        "company_name": "\u5e73\u5b89\u94f6\u884c",
+        "title": "2023\u5e74\u4e09\u5b63\u5ea6\u62a5\u544a",
         "year": "2023",
         "report_type": "q3",
         "publish_date": "2023-10-24",
@@ -2197,10 +2197,10 @@
         "source_row": {
           "id": null,
           "secCode": "000001",
-          "secName": "平安银行",
+          "secName": "\u5e73\u5b89\u94f6\u884c",
           "orgId": "gssz0000001",
           "announcementId": "1218135621",
-          "announcementTitle": "2023年三季度报告",
+          "announcementTitle": "2023\u5e74\u4e09\u5b63\u5ea6\u62a5\u544a",
           "announcementTime": 1698163200000,
           "adjunctUrl": "finalpage/2023-10-25/1218135621.PDF",
           "adjunctSize": 1365,
@@ -2214,15 +2214,15 @@
           "batchNum": null,
           "announcementContent": "",
           "orgName": null,
-          "tileSecName": "平安银行",
-          "shortTitle": "2023年三季度报告",
+          "tileSecName": "\u5e73\u5b89\u94f6\u884c",
+          "shortTitle": "2023\u5e74\u4e09\u5b63\u5ea6\u62a5\u544a",
           "announcementTypeName": null,
           "secNameList": null
         },
         "pool_metadata": {
           "stock_code": "000001",
           "selector": "000001,gssz0000001",
-          "company_name": "平安银行",
+          "company_name": "\u5e73\u5b89\u94f6\u884c",
           "market": "SZSE"
         }
       }
@@ -2296,165 +2296,78 @@
   "qa": {
     "quotas": {
       "single_fact_financial": 0,
-      "single_fact_fred": 0,
       "single_fact_worldbank": 0,
-      "single_fact_imf": 0
+      "single_fact_imf": 0,
+      "single_fact_fred": 0
     },
-    "derived_quotas": {
-      "difference": 0,
-      "yoy_growth": 0,
-      "qoq_growth": 0,
-      "ratio": 0,
-      "share": 0,
-      "multi_year_argmax": 0,
-      "multi_year_argmin": 0,
-      "industry_ranking": 0,
-      "industry_argmax": 0,
-      "industry_argmin": 0,
-      "ranking": 0,
-      "argmax": 0,
-      "argmin": 0,
-      "rolling_max": 0,
-      "rolling_min": 0,
-      "macro_time_series_argmax": 0,
-      "macro_time_series_argmin": 0,
-      "time_series_argmax": 0,
-      "time_series_argmin": 0,
-      "multi_condition_screening": 0,
-      "long_window_return": 0
-    },
+    "derived_quotas": {},
     "graph_patterns": {
-      "enabled": true,
-      "quotas": {
-        "pairwise_entity_metric_comparison": 30,
-        "entity_cross_metric_comparison": 30,
-        "entity_metric_temporal_average": 30,
-        "temporal_argmax_then_metric_lookup": 20,
-        "industry_growth_filter_then_margin_rank": 15,
-        "industry_revenue_rank_then_assets_lookup": 15,
-        "industry_multi_factor_screening": 10
-      }
+      "enabled": false,
+      "quotas": {},
+      "comparability": {}
     },
     "pattern_mining": {
-      "enabled": false
+      "enabled": true,
+      "auto_run": false,
+      "auto_approve_for_qa": false,
+      "families": [],
+      "max_metrics": 2,
+      "rows_per_metric": 100,
+      "pool_scan_rows_per_metric": 100,
+      "graph_native_mining_enabled": false,
+      "graph_native_proposals_enabled": false,
+      "max_proposals": 20,
+      "max_bindings_per_proposal": 20,
+      "max_heldout_bindings": 20,
+      "minimum_heldout_bindings": 0,
+      "minimum_semantic_constraint_pass_rate": 0.99,
+      "minimum_operation_execution_pass_rate": 0.99,
+      "minimum_heldout_binding_pass_rate": 0.99,
+      "require_manual_review": true,
+      "max_candidates_per_proposal": 5,
+      "compiled_graph_scan_rows": 5000,
+      "compiled_graph_evaluation_rows": 5000,
+      "compiled_scan_multiplier": 10,
+      "min_support": 1,
+      "target_support": 20,
+      "min_total_score": 0.0,
+      "walk_mining": {
+        "enabled": true,
+        "grammar_version": "1.0.0",
+        "operation_macros": [
+          "temporal_extreme_followup_provenance",
+          "scope_filter_rank_followup",
+          "derived_fact_time_source_trace"
+        ],
+        "maximum_walk_depth": 5,
+        "maximum_total_steps": 12,
+        "maximum_branch_count": 5,
+        "maximum_join_count": 4,
+        "maximum_scope_size": 30,
+        "beam_width": 100,
+        "maximum_expansions_per_state": 20,
+        "maximum_query_graph_candidates": 20,
+        "minimum_estimated_support": 1,
+        "minimum_completion_rate": 0.8,
+        "minimum_unique_answer_rate": 0.9,
+        "minimum_financial_value_score": 0.7,
+        "example_binding_limit": 20,
+        "heldout_binding_limit": 20,
+        "maximum_estimated_query_cost": 1000,
+        "require_manual_review": true
+      }
     },
     "question_generation": {
-      "mode": "controlled_llm",
-      "variants": 3,
-      "llm": {
-        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-turbo",
-        "api_key_env": "DASHSCOPE_API_KEY",
-        "timeout_seconds": 90
-      },
-      "api_quality_gate": {
-        "minimum_http_success_rate": 0.98,
-        "minimum_structured_response_pass_rate": 0.98,
-        "minimum_valid_sentence_plan_rate": 0.98,
-        "minimum_controlled_generation_rate": 0.98,
-        "maximum_fallback_rate": 0.02
-      }
+      "enabled": false,
+      "provider": "deterministic"
     },
     "quality_gate": {
       "minimum_overall_pass_rate": 1.0,
-      "critical_tasks": {
-        "single_fact": 0,
-        "yoy_growth": 0,
-        "qoq_growth": 0,
-        "ratio": 0
-      },
-      "max_critical_check_failures": 0,
-      "minimum_graph_pattern_samples": {
-        "pairwise_entity_metric_comparison": 30,
-        "entity_cross_metric_comparison": 30,
-        "entity_metric_temporal_average": 30,
-        "temporal_argmax_then_metric_lookup": 20,
-        "industry_growth_filter_then_margin_rank": 15,
-        "industry_revenue_rank_then_assets_lookup": 15,
-        "industry_multi_factor_screening": 10
-      },
-      "minimum_graph_pattern_eligibility_rate": 1.0,
-      "minimum_graph_feature_coverage": 1.0,
-      "minimum_unique_operation_sequences": 6,
-      "minimum_difficulty_samples": {
-        "expert": 15,
-        "research": 35
-      },
-      "minimum_difficulty_ratios": {
-        "expert": 0.1,
-        "research": 0.2
-      }
+      "critical_tasks": {},
+      "max_critical_check_failures": 0
+    },
+    "temporal_split": {
+      "cutoff_year": 2025
     }
-  },
-  "analysis": {
-    "enabled": true,
-    "window_years": 3,
-    "peer_min_entities": 5,
-    "peer_max_entities": 30,
-    "fact_scan_limit": 100000,
-    "pattern_quotas": {
-      "operating_trend_summary_v1": 50,
-      "growth_quality_diagnosis_v1": 50,
-      "peer_positioning_v1": 50
-    },
-    "minimum_pass_rate": 1,
-    "minimum_pattern_samples": {
-      "operating_trend_summary_v1": 50,
-      "growth_quality_diagnosis_v1": 50,
-      "peer_positioning_v1": 50
-    },
-    "generation": {
-      "mode": "controlled_llm",
-      "allow_numeric_slots": true,
-      "max_attempts": 2,
-      "llm": {
-        "provider": "dashscope_openai_compatible",
-        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-        "model": "qwen-turbo",
-        "api_key_env": "DASHSCOPE_API_KEY",
-        "timeout_seconds": 90,
-        "temperature": 0.35,
-        "models_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
-        "fallback_models": [
-          "qwen-plus",
-          "qwen-max"
-        ],
-        "auto_select_model": true,
-        "maximum_model_attempts": 6,
-        "model_discovery_cache_seconds": 3600,
-        "fallback_http_statuses": [
-          400,
-          404,
-          429,
-          500,
-          502,
-          503
-        ]
-      },
-      "api_quality_gate": {
-        "minimum_http_success_rate": 0.98,
-        "minimum_structured_response_pass_rate": 0.98,
-        "minimum_controlled_generation_rate": 0.98,
-        "maximum_fallback_rate": 0.02,
-        "maximum_retry_rate": 0.05
-      },
-      "maximum_numeric_mentions": 2
-    },
-    "split_policy": {
-      "strategy": "entity_scope_component_holdout_v1",
-      "train_pct": 70,
-      "dev_pct": 10,
-      "test_standard_pct": 20,
-      "entity_holdout_pct": 10,
-      "temporal_holdout_pct": 10,
-      "peer_scope_holdout_pct": 10,
-      "signal_composition_holdout_pct": 10,
-      "conflicting_evidence_holdout_pct": 10,
-      "capacity_control_min_samples": 50,
-      "maximum_holdout_component_pct": 20
-    },
-    "allow_investment_recommendations": false,
-    "allow_forecasts": false,
-    "allow_unsupported_causal_claims": false
   }
 }

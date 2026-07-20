@@ -56,6 +56,65 @@ def build_analysis_diversity_report(
     conclusions = Counter(str(row["selected_conclusion_id"]) for row in samples)
     splits = Counter(str(row["split"]) for row in samples)
     signal_compositions = Counter(str(row["signal_composition_id"]) for row in samples)
+    generation_methods = Counter(str(row["generation_method"]) for row in samples)
+    instruction_surfaces = Counter(
+        str(
+            json_value(row.get("generation_metadata"), {}).get(
+                "instruction_surface_form_id"
+            )
+            or "unknown"
+        )
+        for row in samples
+    )
+    discourse_styles = Counter(
+        str(
+            (
+                json_value(row.get("generation_metadata"), {}).get(
+                    "discourse_plan"
+                )
+                or {}
+            ).get("style_id")
+            or "unknown"
+        )
+        for row in samples
+    )
+    transition_sequences = Counter(
+        "->".join(
+            str(value)
+            for value in (
+                (
+                    json_value(row.get("generation_metadata"), {}).get(
+                        "discourse_plan"
+                    )
+                    or {}
+                ).get("transition_ids")
+                or []
+            )
+        )
+        for row in samples
+    )
+    numeric_mention_counts = Counter(
+        sum(
+            len(values or [])
+            for values in (
+                (
+                    json_value(row.get("generation_metadata"), {}).get(
+                        "discourse_plan"
+                    )
+                    or {}
+                ).get("selected_numeric_slot_ids")
+                or {}
+            ).values()
+        )
+        for row in samples
+    )
+    valid_conclusion_counts = Counter(
+        len(json_value(row.get("valid_conclusion_set"), [])) for row in plans
+    )
+    unique_text_count = len({str(row.get("analysis_text") or "") for row in samples})
+    unique_instruction_count = len(
+        {str(row.get("instruction") or "") for row in samples}
+    )
     report = {
         "analysis_build_id": analysis_build_id,
         "candidate_count": len(candidates),
@@ -70,6 +129,26 @@ def build_analysis_diversity_report(
         "claim_type_distribution": dict(sorted(claim_types.items())),
         "conclusion_distribution": dict(sorted(conclusions.items())),
         "split_distribution": dict(sorted(splits.items())),
+        "generation_method_distribution": dict(sorted(generation_methods.items())),
+        "instruction_surface_distribution": dict(sorted(instruction_surfaces.items())),
+        "discourse_style_distribution": dict(sorted(discourse_styles.items())),
+        "transition_sequence_distribution": dict(
+            sorted(transition_sequences.items())
+        ),
+        "numeric_mention_count_distribution": {
+            str(key): value for key, value in sorted(numeric_mention_counts.items())
+        },
+        "valid_conclusion_count_distribution": {
+            str(key): value for key, value in sorted(valid_conclusion_counts.items())
+        },
+        "unique_analysis_text_count": unique_text_count,
+        "analysis_text_uniqueness_rate": unique_text_count / len(samples)
+        if samples
+        else 0,
+        "unique_instruction_count": unique_instruction_count,
+        "instruction_uniqueness_rate": unique_instruction_count / len(samples)
+        if samples
+        else 0,
         "largest_pattern_share": max(pattern_counts.values(), default=0) / len(candidates) if candidates else 0,
     }
     if output_dir:

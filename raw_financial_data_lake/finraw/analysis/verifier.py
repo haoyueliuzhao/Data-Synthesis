@@ -9,6 +9,14 @@ from finraw.analysis.peer_scope import (
     recompute_peer_universe,
     scope_membership_hash,
 )
+from finraw.analysis.discourse import (
+    DISCOURSE_PLAN_VERSION,
+    discourse_manifest,
+    render_analysis_text,
+    render_instruction,
+    render_numeric_slot,
+    validate_discourse_plan,
+)
 from finraw.analysis.registry import (
     CLAIM_SCHEMA_VERSION,
     CONCLUSION_POLICY_VERSION,
@@ -44,7 +52,7 @@ from finraw.analysis.generator import ANALYSIS_GENERATOR_VERSION
 from finraw.db.client import DBProtocol
 from finraw.qa.store import insert_rows, json_value
 
-ANALYSIS_VERIFIER_VERSION = "2.1.0"
+ANALYSIS_VERIFIER_VERSION = "2.4.0"
 _FORBIDDEN_PATTERNS = {
     "investment_recommendation": re.compile(
         r"\b(?:buy|sell|hold recommendation|invest in)\b", re.I
@@ -204,6 +212,7 @@ def _build_contract_checks(build: dict[str, Any]) -> dict[str, dict[str, Any]]:
                 "claim_planner_version": CLAIM_PLANNER_VERSION,
                 "analysis_generator_version": ANALYSIS_GENERATOR_VERSION,
                 "semantic_frame_manifest": semantic_frame_manifest(),
+                "discourse_manifest": discourse_manifest(),
             }
         ),
         "conclusion_policy_contract": stable_hash(
@@ -527,14 +536,15 @@ def _sample_checks(
     generation_contract = _generation_contract(
         sample, generation_metadata, generation_policy
     )
-    rendered_analysis_text = " ".join(
-        [str(item.get("sentence") or "") for item in alignment]
-        + [str(sample.get("conclusion_text") or "")]
-        + [
-            str(item.get("sentence") or "")
-            for item in json_value(sample.get("caveats"), [])
-        ]
+    discourse_contract = _discourse_contract(
+        sample,
+        candidate,
+        claims,
+        alignment,
+        generation_metadata,
+        generation_policy,
     )
+    rendered_analysis_text = discourse_contract["rendered_analysis_text"]
     graph_relations = _claim_graph_relations(claims)
     conclusion_predicate = _conclusion_predicate_check(conclusion, claims)
     peer_scope_checks = _peer_scope_checks(
@@ -667,6 +677,21 @@ def _sample_checks(
             not numeric["unit_mismatches"], numeric["unit_mismatches"], []
         ),
         "forbidden_claim_count": _check(not forbidden, forbidden, []),
+        "analysis_discourse_plan_contract": _check(
+            discourse_contract["plan_passed"],
+            discourse_contract,
+            "registered discourse plan with exact Claim order and numeric selections",
+        ),
+        "analysis_instruction_surface_contract": _check(
+            discourse_contract["instruction_passed"],
+            str(sample.get("instruction") or ""),
+            discourse_contract["rendered_instruction"],
+        ),
+        "analysis_numeric_evidence_render_contract": _check(
+            discourse_contract["numeric_passed"],
+            discourse_contract["numeric_checks"],
+            "all selected numeric slots render exactly from the Claim rubric",
+        ),
         "analysis_text_render_contract": _check(
             text == rendered_analysis_text,
             text,
@@ -697,6 +722,115 @@ def _sample_checks(
         ),
     }
     return checks
+
+
+def _discourse_contract(
+    sample: dict[str, Any],
+    candidate: dict[str, Any],
+    claims: list[dict[str, Any]],
+    alignment: list[dict[str, Any]],
+    metadata: dict[str, Any],
+    generation_policy: dict[str, Any],
+) -> dict[str, Any]:
+    mandatory = [claim for claim in claims if claim.get("is_required")]
+    maximum_numeric_mentions = max(
+        0, min(5, int(generation_policy.get("maximum_numeric_mentions", 2)))
+    )
+    observed_plan = metadata.get("discourse_plan")
+    plan_check = validate_discourse_plan(
+        observed_plan,
+        mandatory,
+        maximum_numeric_mentions=maximum_numeric_mentions,
+    )
+    plan = plan_check.get("plan") or {}
+    observed_order = [str(item.get("claim_id") or "") for item in alignment]
+    order_passed = bool(plan) and observed_order == plan.get("claim_order")
+    claim_by_id = {str(claim.get("claim_id") or ""): claim for claim in mandatory}
+    numeric_checks: dict[str, Any] = {}
+    for item in alignment:
+        claim_id = str(item.get("claim_id") or "")
+        claim = claim_by_id.get(claim_id) or {}
+        slots = {
+            str(slot.get("slot_id") or ""): slot
+            for slot in claim.get("required_numeric_slots") or []
+        }
+        expected_ids = list(
+            (plan.get("selected_numeric_slot_ids") or {}).get(claim_id, [])
+        )
+        observed_ids = [
+            str(value) for value in item.get("selected_numeric_slot_ids") or []
+        ]
+        expected_sentences = [
+            render_numeric_slot(slots[slot_id])
+            for slot_id in expected_ids
+            if slot_id in slots
+        ]
+        observed_sentences = [
+            str(value) for value in item.get("numeric_sentences") or []
+        ]
+        numeric_checks[claim_id] = {
+            "passed": expected_ids == observed_ids
+            and len(expected_sentences) == len(expected_ids)
+            and observed_sentences == expected_sentences,
+            "expected_slot_ids": expected_ids,
+            "observed_slot_ids": observed_ids,
+            "expected_sentences": expected_sentences,
+            "observed_sentences": observed_sentences,
+        }
+    numeric_passed = bool(numeric_checks) and all(
+        value["passed"] for value in numeric_checks.values()
+    )
+    pattern_id = str(candidate.get("analysis_pattern_id") or "")
+    instruction_surface = str(metadata.get("instruction_surface_form_id") or "")
+    try:
+        rendered_instruction = render_instruction(pattern_id, instruction_surface)
+    except ValueError:
+        rendered_instruction = ""
+    instruction_passed = (
+        bool(rendered_instruction)
+        and str(sample.get("instruction") or "") == rendered_instruction
+    )
+    manifest = discourse_manifest()
+    metadata_contract = (
+        str(metadata.get("discourse_plan_version") or "")
+        == DISCOURSE_PLAN_VERSION
+        and str(metadata.get("discourse_manifest_hash") or "")
+        == manifest["manifest_hash"]
+        and int(metadata.get("maximum_numeric_mentions", -1))
+        == maximum_numeric_mentions
+    )
+    try:
+        rendered_text = (
+            render_analysis_text(
+                alignment,
+                str(sample.get("conclusion_text") or ""),
+                json_value(sample.get("caveats"), []),
+                plan,
+            )
+            if plan_check["passed"] and order_passed
+            else ""
+        )
+    except (KeyError, ValueError):
+        rendered_text = ""
+    return {
+        "passed": plan_check["passed"]
+        and order_passed
+        and numeric_passed
+        and instruction_passed
+        and metadata_contract,
+        "plan_passed": plan_check["passed"]
+        and order_passed
+        and metadata_contract,
+        "instruction_passed": instruction_passed,
+        "numeric_passed": numeric_passed,
+        "plan_errors": plan_check["errors"],
+        "observed_order": observed_order,
+        "expected_order": plan.get("claim_order") or [],
+        "numeric_checks": numeric_checks,
+        "rendered_instruction": rendered_instruction,
+        "metadata_contract": metadata_contract,
+        "rendered_analysis_text": rendered_text,
+    }
 
 
 def _peer_scope_checks(
@@ -983,7 +1117,7 @@ def _generation_contract(
     mode = str(policy.get("mode") or "deterministic_claim_plan")
     method = str(sample.get("generation_method") or "")
     fallback = metadata.get("fallback_reason")
-    if mode == "controlled_llm" and method == "controlled_llm_semantic_frame":
+    if mode == "controlled_llm" and method == "controlled_llm_discourse_plan":
         passed = metadata.get("schema_valid") is True and not fallback
     elif mode == "controlled_llm" and "fallback" in method:
         passed = metadata.get("schema_valid") is False and bool(fallback)

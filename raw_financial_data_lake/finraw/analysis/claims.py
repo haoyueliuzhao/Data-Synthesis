@@ -12,7 +12,7 @@ from finraw.analysis.semantic_frames import (
     build_conclusion_semantic_frame,
 )
 
-CLAIM_PLANNER_VERSION = "1.4.0"
+CLAIM_PLANNER_VERSION = "1.5.0"
 
 _CONCLUSION_TEXT = {
     "broadly_positive": "Overall operating trends are positive across the covered evidence.",
@@ -386,10 +386,38 @@ def _numeric_slots(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "unit": unit,
                 "display_variants": _display_variants(display_value, unit),
                 "source_signal_id": signal_id,
+                "signal_spec_id": str(signal.get("signal_spec_id") or ""),
+                "display_label": _numeric_label(
+                    str(signal.get("signal_spec_id") or ""), field
+                ),
                 "tolerance": "0.01",
                 "is_required": False,
             }
     return list(slots.values())
+
+
+def _numeric_label(signal_spec_id: str, field: str) -> str:
+    signal_labels = {
+        "revenue_growth_v1": "revenue growth",
+        "profit_growth_v1": "net-income growth",
+        "operating_cash_flow_growth_v1": "operating-cash-flow growth",
+        "earnings_cash_divergence_v1": "earnings-to-cash divergence",
+        "margin_change_v1": "net-margin change",
+        "asset_efficiency_change_v1": "asset-efficiency change",
+        "peer_growth_percentile_v1": "peer revenue-growth percentile",
+        "peer_margin_percentile_v1": "peer net-margin percentile",
+        "peer_leverage_percentile_v1": "peer leverage percentile",
+    }
+    base = signal_labels.get(signal_spec_id, signal_spec_id.replace("_v1", ""))
+    field_labels = {
+        "growth_pct": base,
+        "spread_pct": base,
+        "change_pp": base,
+        "percentile": base,
+        "target_value": f"{base} target value",
+        "scope_size": "eligible peer-scope size",
+    }
+    return field_labels.get(field, f"{base} {field.replace('_', ' ')}").strip()
 
 
 def _numeric_unit(field: str, payload: dict[str, Any]) -> str:

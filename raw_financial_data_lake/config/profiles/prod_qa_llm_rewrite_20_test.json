@@ -1,0 +1,124 @@
+{
+  "metadata_backend": {
+    "postgres_schema": "sql/postgres_schema.sql",
+    "type": "postgres"
+  },
+  "qa": {
+    "derived_quotas": {
+      "argmax": 0,
+      "argmin": 0,
+      "difference": 1,
+      "industry_argmax": 0,
+      "industry_argmin": 0,
+      "industry_ranking": 0,
+      "long_window_return": 0,
+      "macro_time_series_argmax": 0,
+      "macro_time_series_argmin": 0,
+      "multi_condition_screening": 0,
+      "multi_year_argmax": 0,
+      "multi_year_argmin": 0,
+      "qoq_growth": 1,
+      "ranking": 0,
+      "ratio": 1,
+      "rolling_max": 0,
+      "rolling_min": 0,
+      "share": 0,
+      "time_series_argmax": 0,
+      "time_series_argmin": 0,
+      "yoy_growth": 1
+    },
+    "graph_patterns": {
+      "enabled": true,
+      "quotas": {
+        "entity_cross_metric_comparison": 2,
+        "entity_metric_temporal_average": 2,
+        "industry_growth_filter_then_margin_rank": 1,
+        "industry_multi_factor_screening": 1,
+        "industry_revenue_rank_then_assets_lookup": 1,
+        "pairwise_entity_metric_comparison": 2,
+        "temporal_argmax_then_metric_lookup": 2
+      }
+    },
+    "pattern_mining": {
+      "enabled": false
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "qoq_growth": 0,
+        "ratio": 0,
+        "single_fact": 0,
+        "yoy_growth": 0
+      },
+      "max_critical_check_failures": 0,
+      "minimum_graph_feature_coverage": 1,
+      "minimum_graph_pattern_eligibility_rate": 1,
+      "minimum_graph_pattern_samples": {
+        "entity_cross_metric_comparison": 2,
+        "entity_metric_temporal_average": 2,
+        "industry_growth_filter_then_margin_rank": 1,
+        "industry_multi_factor_screening": 1,
+        "industry_revenue_rank_then_assets_lookup": 1,
+        "pairwise_entity_metric_comparison": 2,
+        "temporal_argmax_then_metric_lookup": 2
+      },
+      "minimum_overall_pass_rate": 1,
+      "minimum_unique_operation_sequences": 6
+    },
+    "question_generation": {
+      "api_quality_gate": {
+        "maximum_fallback_rate": 0.0,
+        "minimum_controlled_generation_rate": 1.0,
+        "minimum_http_success_rate": 1.0,
+        "minimum_structured_response_pass_rate": 1.0,
+        "minimum_valid_sentence_plan_rate": 1.0,
+        "minimum_valid_surface_realization_rate": 1.0
+      },
+      "language": "en",
+      "llm": {
+        "api_key_env": "DASHSCOPE_API_KEY",
+        "auto_select_model": true,
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "fallback_models": [
+          "qwen-turbo",
+          "qwen-max"
+        ],
+        "maximum_model_attempts": 6,
+        "model": "qwen-plus",
+        "models_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
+        "preferred_model_patterns": [
+          "qwen-plus",
+          "qwen-turbo",
+          "qwen-max",
+          "qwen3"
+        ],
+        "provider": "dashscope_openai_compatible",
+        "timeout_seconds": 90,
+        "model_discovery_cache_seconds": 3600,
+        "fallback_http_statuses": [
+          400,
+          404,
+          429,
+          500,
+          502,
+          503
+        ]
+      },
+      "mode": "controlled_llm",
+      "strategy": "protected_rewrite",
+      "surface_variation": {
+        "enabled": true,
+        "entity_suffix_shortening": true
+      },
+      "variants": 3
+    },
+    "quotas": {
+      "single_fact_financial": 2,
+      "single_fact_fred": 1,
+      "single_fact_imf": 1,
+      "single_fact_worldbank": 1
+    },
+    "temporal_split": {
+      "cutoff_year": 2025
+    }
+  }
+}

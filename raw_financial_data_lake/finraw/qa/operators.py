@@ -4,7 +4,12 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
 
-from finraw.qa.comparability import fact_frequency, period_index, period_key, period_label
+from finraw.qa.comparability import (
+    fact_frequency,
+    period_index,
+    period_key,
+    period_label,
+)
 
 
 OPERATION_OPERATOR_REGISTRY_VERSION = "1.0.0"
@@ -38,7 +43,9 @@ def _unit_signature(facts: list[dict[str, Any]]) -> tuple[str | None, str | None
     units = {fact.get("normalized_unit") for fact in facts}
     currencies = {fact.get("normalized_currency") for fact in facts}
     if len(units) != 1:
-        raise OperatorError(f"Incompatible units: {sorted(str(item) for item in units)}")
+        raise OperatorError(
+            f"Incompatible units: {sorted(str(item) for item in units)}"
+        )
     if len(currencies) != 1:
         raise OperatorError(
             f"Incompatible currencies: {sorted(str(item) for item in currencies)}"
@@ -73,8 +80,12 @@ def _compare(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     unit, currency = _unit_signature([left, right])
     left_value = _fact_value(left)
     right_value = _fact_value(right)
-    left_id = str(left.get(params.get("id_field", "entity_id")) or left.get("metric_id"))
-    right_id = str(right.get(params.get("id_field", "entity_id")) or right.get("metric_id"))
+    left_id = str(
+        left.get(params.get("id_field", "entity_id")) or left.get("metric_id")
+    )
+    right_id = str(
+        right.get(params.get("id_field", "entity_id")) or right.get("metric_id")
+    )
     if left_value > right_value:
         winner_id, relation = left_id, "greater"
     elif right_value > left_value:
@@ -135,7 +146,9 @@ def _arg_extreme(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
 
 def _select_by_period(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     if len(inputs) != 2 or not isinstance(inputs[0], dict):
-        raise OperatorError("select_by_period requires an extrema result and a fact series")
+        raise OperatorError(
+            "select_by_period requires an extrema result and a fact series"
+        )
     selection = inputs[0]
     facts = _flatten_facts([inputs[1]])
     frequency = str(selection.get("frequency") or "")
@@ -148,10 +161,7 @@ def _select_by_period(inputs: list[Any], params: dict[str, Any]) -> dict[str, An
             selected_index is not None
             and period_index(fact, frequency) == selected_index
         )
-        or (
-            selected_index is None
-            and tuple(period_key(fact)) == selected_period
-        )
+        or (selected_index is None and tuple(period_key(fact)) == selected_period)
     ]
     if len(matches) != 1:
         raise OperatorError(
@@ -213,7 +223,9 @@ def _filter(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     }
     if operator not in comparators:
         raise OperatorError(f"Unsupported filter comparison: {operator}")
-    selected = [fact for fact in facts if comparators[operator](_decimal(fact.get(field)))]
+    selected = [
+        fact for fact in facts if comparators[operator](_decimal(fact.get(field)))
+    ]
     return {"records": selected, "count": len(selected)}
 
 
@@ -238,7 +250,10 @@ def _growth_by_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str, An
                 "normalized_unit": "percent",
                 "normalized_currency": None,
                 "metric_id": params.get("output_metric_id") or "growth_pct",
-                "input_fact_ids": [previous_fact.get("fact_id"), current_fact.get("fact_id")],
+                "input_fact_ids": [
+                    previous_fact.get("fact_id"),
+                    current_fact.get("fact_id"),
+                ],
             }
         )
     return {"records": records, "count": len(records), "unit": "percent"}
@@ -246,7 +261,9 @@ def _growth_by_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str, An
 
 def _ratio_by_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     if len(inputs) != 2:
-        raise OperatorError("ratio_by_entity requires numerator and denominator fact sets")
+        raise OperatorError(
+            "ratio_by_entity requires numerator and denominator fact sets"
+        )
     numerators = _unique_by_entity(_flatten_facts([inputs[0]]), "numerator")
     denominators = _unique_by_entity(_flatten_facts([inputs[1]]), "denominator")
     records = []
@@ -265,7 +282,10 @@ def _ratio_by_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any
                 "normalized_unit": "percent",
                 "normalized_currency": None,
                 "metric_id": params.get("output_metric_id") or "ratio_pct",
-                "input_fact_ids": [numerator.get("fact_id"), denominator.get("fact_id")],
+                "input_fact_ids": [
+                    numerator.get("fact_id"),
+                    denominator.get("fact_id"),
+                ],
             }
         )
     return {"records": records, "count": len(records), "unit": "percent"}
@@ -287,19 +307,31 @@ def _intersect_on_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str,
     return {"records": records, "count": len(records)}
 
 
-def _lookup_ranked_entities(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
+def _lookup_ranked_entities(
+    inputs: list[Any], params: dict[str, Any]
+) -> dict[str, Any]:
     if len(inputs) != 2 or not isinstance(inputs[0], dict):
-        raise OperatorError("lookup_ranked_entities requires a ranking and secondary facts")
+        raise OperatorError(
+            "lookup_ranked_entities requires a ranking and secondary facts"
+        )
     ranking = inputs[0]
     secondary = _unique_by_entity(_flatten_facts([inputs[1]]), "secondary")
     if not secondary:
         raise OperatorError("lookup_ranked_entities requires secondary facts")
     secondary_unit, secondary_currency = _unit_signature(list(secondary.values()))
     table = []
-    for row in ranking.get("table") or []:
+    target_ranks = {int(value) for value in params.get("target_ranks") or []}
+    ranking_rows = [
+        row
+        for row in ranking.get("table") or []
+        if not target_ranks or int(row.get("rank") or 0) in target_ranks
+    ]
+    for row in ranking_rows:
         entity_id = str(row.get("entity_id") or "")
         if entity_id not in secondary:
-            raise OperatorError(f"Missing secondary fact for ranked entity: {entity_id}")
+            raise OperatorError(
+                f"Missing secondary fact for ranked entity: {entity_id}"
+            )
         fact = secondary[entity_id]
         table.append(
             {
@@ -311,6 +343,7 @@ def _lookup_ranked_entities(inputs: list[Any], params: dict[str, Any]) -> dict[s
         )
     return {
         "table": table,
+        "ranking_table": [dict(row) for row in ranking.get("table") or []],
         "primary_unit": ranking.get("unit"),
         "primary_currency": ranking.get("currency"),
         "secondary_unit": secondary_unit,
@@ -318,16 +351,40 @@ def _lookup_ranked_entities(inputs: list[Any], params: dict[str, Any]) -> dict[s
     }
 
 
+def _attach_provenance(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
+    if (
+        len(inputs) != 2
+        or not isinstance(inputs[0], dict)
+        or not isinstance(inputs[1], dict)
+    ):
+        raise OperatorError(
+            "attach_provenance requires a selected result and provenance map"
+        )
+    selection = dict(inputs[0])
+    fact_id = str(selection.get("secondary_fact_id") or selection.get("fact_id") or "")
+    if not fact_id:
+        raise OperatorError("attach_provenance selection has no fact_id")
+    raw_object_ids = sorted(str(value) for value in inputs[1].get(fact_id) or [])
+    if not raw_object_ids:
+        raise OperatorError(f"No provenance is bound for selected fact: {fact_id}")
+    selection["raw_object_ids"] = raw_object_ids
+    return selection
+
+
 def _multi_factor_screen(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     if len(inputs) != 3:
-        raise OperatorError("multi_factor_screen requires growth, margin, and debt records")
+        raise OperatorError(
+            "multi_factor_screen requires growth, margin, and debt records"
+        )
     growth = _unique_by_entity(_flatten_facts([inputs[0]]), "growth")
     margin = _unique_by_entity(_flatten_facts([inputs[1]]), "margin")
     debt = _unique_by_entity(_flatten_facts([inputs[2]]), "debt")
     common = sorted(set(growth) & set(margin) & set(debt))
     if not common:
         raise OperatorError("multi_factor_screen has no complete entities")
-    industry_average = sum((_fact_value(margin[key]) for key in common), Decimal("0")) / Decimal(len(common))
+    industry_average = sum(
+        (_fact_value(margin[key]) for key in common), Decimal("0")
+    ) / Decimal(len(common))
     growth_min = _decimal(params.get("growth_min_pct", 10))
     debt_max = _decimal(params.get("debt_max_pct", 70))
     table = []
@@ -335,7 +392,11 @@ def _multi_factor_screen(inputs: list[Any], params: dict[str, Any]) -> dict[str,
         growth_value = _fact_value(growth[entity_id])
         margin_value = _fact_value(margin[entity_id])
         debt_value = _fact_value(debt[entity_id])
-        if growth_value > growth_min and margin_value > industry_average and debt_value < debt_max:
+        if (
+            growth_value > growth_min
+            and margin_value > industry_average
+            and debt_value < debt_max
+        ):
             table.append(
                 {
                     "entity_id": entity_id,
@@ -409,19 +470,46 @@ OPERATORS: dict[str, OperatorSpec] = {
     "rank": OperatorSpec("rank", "fact_set", "ranked_table", 2.5, _rank),
     "filter": OperatorSpec("filter", "fact_set", "fact_set", 1.5, _filter),
     "growth_by_entity": OperatorSpec(
-        "growth_by_entity", "paired_entity_fact_sets", "entity_value_set", 2.5, _growth_by_entity
+        "growth_by_entity",
+        "paired_entity_fact_sets",
+        "entity_value_set",
+        2.5,
+        _growth_by_entity,
     ),
     "ratio_by_entity": OperatorSpec(
-        "ratio_by_entity", "paired_entity_fact_sets", "entity_value_set", 2.0, _ratio_by_entity
+        "ratio_by_entity",
+        "paired_entity_fact_sets",
+        "entity_value_set",
+        2.0,
+        _ratio_by_entity,
     ),
     "intersect_on_entity": OperatorSpec(
-        "intersect_on_entity", "entity_value_sets", "entity_value_set", 1.5, _intersect_on_entity
+        "intersect_on_entity",
+        "entity_value_sets",
+        "entity_value_set",
+        1.5,
+        _intersect_on_entity,
     ),
     "lookup_ranked_entities": OperatorSpec(
-        "lookup_ranked_entities", "ranking_and_fact_set", "multi_metric_ranked_table", 2.5, _lookup_ranked_entities
+        "lookup_ranked_entities",
+        "ranking_and_fact_set",
+        "multi_metric_ranked_table",
+        2.5,
+        _lookup_ranked_entities,
+    ),
+    "attach_provenance": OperatorSpec(
+        "attach_provenance",
+        "selection_and_provenance_map",
+        "period_metric_provenance",
+        1.0,
+        _attach_provenance,
     ),
     "multi_factor_screen": OperatorSpec(
-        "multi_factor_screen", "three_entity_value_sets", "screening_table", 3.5, _multi_factor_screen
+        "multi_factor_screen",
+        "three_entity_value_sets",
+        "screening_table",
+        3.5,
+        _multi_factor_screen,
     ),
 }
 
@@ -452,7 +540,9 @@ def operation_operator_manifest() -> dict[str, Any]:
     }
 
 
-def execute_operator(name: str, inputs: list[Any], params: dict[str, Any] | None = None) -> dict[str, Any]:
+def execute_operator(
+    name: str, inputs: list[Any], params: dict[str, Any] | None = None
+) -> dict[str, Any]:
     if name not in OPERATORS:
         raise OperatorError(f"Unknown QA operator: {name}")
     effective_params = dict(params or {})

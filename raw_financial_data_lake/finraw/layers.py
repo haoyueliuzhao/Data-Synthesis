@@ -45,6 +45,7 @@ LAYER_TABLES: dict[str, list[str]] = {
         "qa_templates",
         "qa_graph_patterns",
         "qa_pattern_mining_runs",
+        "qa_graph_walk_observations",
         "qa_pattern_proposals",
         "qa_candidates",
         "qa_operation_plans",

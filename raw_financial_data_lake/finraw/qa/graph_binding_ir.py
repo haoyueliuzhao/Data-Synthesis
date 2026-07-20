@@ -105,9 +105,7 @@ def _scan_graph_roots(
     materialize_all = full_scan and selection_limit == 0
     entity_types = _graph_entity_types(state)
     global_heap: list[tuple[int, str, dict[str, Any]]] = []
-    stratum_representatives: dict[
-        str, tuple[int, str, dict[str, Any]]
-    ] = {}
+    stratum_representatives: dict[str, tuple[int, str, dict[str, Any]]] = {}
     stratum_details: dict[str, dict[str, str]] = {}
     stratum_totals: Counter[str] = Counter()
     all_rows: list[dict[str, Any]] = []
@@ -175,9 +173,7 @@ def _scan_graph_roots(
             "total_root_count": count,
             "scanned_root_count": count if full_scan else selected_strata.get(key, 0),
             "coverage_rate": (
-                1.0
-                if full_scan or not count
-                else selected_strata.get(key, 0) / count
+                1.0 if full_scan or not count else selected_strata.get(key, 0) / count
             ),
             "evaluated_root_count": selected_strata.get(key, 0),
             "evaluation_coverage_rate": (
@@ -209,9 +205,7 @@ def _scan_graph_roots(
         "total_stratum_count": total_stratum_count,
         "scanned_stratum_count": scanned_stratum_count,
         "stratum_coverage_rate": (
-            scanned_stratum_count / total_stratum_count
-            if total_stratum_count
-            else 1.0
+            scanned_stratum_count / total_stratum_count if total_stratum_count else 1.0
         ),
         "stratum_coverage": stratum_coverage,
     }
@@ -256,9 +250,7 @@ def _graph_root_pages(
         }
         for row in rows:
             item = dict(row)
-            item["relation_density"] = density_by_node.get(
-                str(item["node_id"]), 0
-            )
+            item["relation_density"] = density_by_node.get(str(item["node_id"]), 0)
             yield item
         cursor = str(rows[-1]["node_id"])
         if len(rows) < page_size:
@@ -284,9 +276,7 @@ def _graph_root_stratum(
     )
     year = _graph_root_year(properties)
     year_bucket = (
-        f"{(year // 5) * 5}-{(year // 5) * 5 + 4}"
-        if year is not None
-        else "unknown"
+        f"{(year // 5) * 5}-{(year // 5) * 5 + 4}" if year is not None else "unknown"
     )
     density = int(row.get("relation_density") or 0)
     stratum = {
@@ -356,8 +346,7 @@ def _stable_hash_score(*parts: Any) -> int:
 
 def _graph_root_score(row: dict[str, Any]) -> int:
     stable_identity = str(
-        row.get("stable_node_id")
-        or f"{row.get('source_table')}:{row.get('source_pk')}"
+        row.get("stable_node_id") or f"{row.get('source_table')}:{row.get('source_pk')}"
     )
     return _stable_hash_score(GRAPH_ROOT_SAMPLING_VERSION, stable_identity)
 
@@ -390,9 +379,7 @@ def expand_graph_edges(state: Any, operation: dict[str, Any]) -> None:
             for node in _role_nodes(row, from_role)
         }
     )
-    matches: dict[str, list[tuple[dict[str, Any], dict[str, Any]]]] = defaultdict(
-        list
-    )
+    matches: dict[str, list[tuple[dict[str, Any], dict[str, Any]]]] = defaultdict(list)
     source_column = "src_node_id" if direction == "out" else "dst_node_id"
     target_column = "dst_node_id" if direction == "out" else "src_node_id"
     for batch in chunks(source_ids, 500):
@@ -446,9 +433,7 @@ def expand_graph_edges(state: Any, operation: dict[str, Any]) -> None:
             continue
         if mode == "collect":
             copied = _copy_graph_row(row)
-            copied["roles"][to_role] = _unique_nodes(
-                node for _, node in selected
-            )
+            copied["roles"][to_role] = _unique_nodes(node for _, node in selected)
             _extend_evidence(copied, selected)
             expanded.append(copied)
         else:
@@ -459,6 +444,341 @@ def expand_graph_edges(state: Any, operation: dict[str, Any]) -> None:
                 expanded.append(copied)
     state.relation = expanded[: state.candidate_limit]
     state.relation_kind = "graph_rows"
+
+
+def filter_graph_role(state: Any, operation: dict[str, Any]) -> None:
+    _expect(state, "graph_rows", operation)
+    role = _required_text(operation, "role")
+    predicates = list(operation.get("predicates") or [])
+    if not predicates:
+        raise ValueError("filter_graph_role requires predicates")
+    required = bool(operation.get("required", True))
+    filtered: list[dict[str, Any]] = []
+    for row in state.relation:
+        original = row.get("roles", {}).get(role)
+        nodes = [
+            node for node in _role_nodes(row, role) if _node_matches(node, predicates)
+        ]
+        if not nodes and required:
+            continue
+        copied = _copy_graph_row(row)
+        copied["roles"][role] = (
+            nodes if isinstance(original, list) else (nodes[0] if nodes else None)
+        )
+        filtered.append(copied)
+    state.relation = filtered[: state.candidate_limit]
+    state.relation_kind = "graph_rows"
+
+
+def deduplicate_graph_role(state: Any, operation: dict[str, Any]) -> None:
+    _expect(state, "graph_rows", operation)
+    role = _required_text(operation, "role")
+    keys = [str(value) for value in operation.get("keys") or []]
+    selection = str(operation.get("selection") or "min_source_pk")
+    if not keys or selection != "min_source_pk":
+        raise ValueError(
+            "deduplicate_graph_role requires keys and min_source_pk selection"
+        )
+    accepted: list[dict[str, Any]] = []
+    for row in state.relation:
+        original = row.get("roles", {}).get(role)
+        grouped = _nodes_by_key(row, role, keys)
+        if not grouped:
+            continue
+        selected = [
+            min(
+                nodes,
+                key=lambda node: (
+                    str(node.get("source_pk") or ""),
+                    str(node.get("node_id") or ""),
+                ),
+            )
+            for _, nodes in sorted(grouped.items(), key=lambda item: str(item[0]))
+        ]
+        copied = _copy_graph_row(row)
+        copied["roles"][role] = selected if isinstance(original, list) else selected[0]
+        copied.setdefault("join_metadata", {})[
+            str(operation.get("dedup_id") or f"deduplicate_{role}")
+        ] = {
+            "relation": "deduplicate",
+            "role": role,
+            "keys": keys,
+            "selection": selection,
+            "input_count": sum(len(nodes) for nodes in grouped.values()),
+            "selected_count": len(selected),
+        }
+        accepted.append(copied)
+    state.relation = accepted[: state.candidate_limit]
+    state.relation_kind = "graph_rows"
+
+
+def require_graph_roles_contiguous(state: Any, operation: dict[str, Any]) -> None:
+    _expect(state, "graph_rows", operation)
+    roles = [str(value) for value in operation.get("roles") or []]
+    group_keys = [str(value) for value in operation.get("group_keys") or []]
+    period_key = _required_text(operation, "period_key")
+    minimum = max(int(operation.get("minimum_observations") or 2), 2)
+    if not roles or not group_keys:
+        raise ValueError("require_graph_roles_contiguous requires roles and group_keys")
+    accepted: list[dict[str, Any]] = []
+    for row in state.relation:
+        role_periods: dict[str, dict[tuple[Any, ...], set[int]]] = {}
+        valid = True
+        for role in roles:
+            grouped: dict[tuple[Any, ...], set[int]] = defaultdict(set)
+            for node in _role_nodes(row, role):
+                group = tuple(_node_value(node, key) for key in group_keys)
+                try:
+                    period = int(_node_value(node, period_key))
+                except (TypeError, ValueError):
+                    valid = False
+                    break
+                if any(value in {None, ""} for value in group):
+                    valid = False
+                    break
+                grouped[group].add(period)
+            if not valid or not grouped:
+                valid = False
+                break
+            if any(
+                len(periods) < minimum
+                or sorted(periods) != list(range(min(periods), max(periods) + 1))
+                for periods in grouped.values()
+            ):
+                valid = False
+                break
+            role_periods[role] = grouped
+        if not valid:
+            continue
+        group_sets = [set(grouped) for grouped in role_periods.values()]
+        if any(groups != group_sets[0] for groups in group_sets[1:]):
+            continue
+        if any(
+            role_periods[role][group] != role_periods[roles[0]][group]
+            for role in roles[1:]
+            for group in group_sets[0]
+        ):
+            continue
+        copied = _copy_graph_row(row)
+        copied.setdefault("join_metadata", {})[
+            str(operation.get("constraint_id") or "roles_contiguous")
+        ] = {
+            "relation": "contiguous",
+            "roles": roles,
+            "period_key": period_key,
+            "minimum_observations": minimum,
+        }
+        accepted.append(copied)
+    state.relation = accepted[: state.candidate_limit]
+    state.relation_kind = "graph_rows"
+
+
+def assert_role_key_equal(state: Any, operation: dict[str, Any]) -> None:
+    _expect(state, "graph_rows", operation)
+    roles = [str(value) for value in operation.get("roles") or []]
+    keys = [str(value) for value in operation.get("keys") or []]
+    if len(roles) < 2 or not keys:
+        raise ValueError("assert_role_key_equal requires at least two roles and keys")
+    use_intersection = bool(operation.get("intersection", False))
+    minimum_common = max(int(operation.get("minimum_common") or 1), 1)
+    accepted: list[dict[str, Any]] = []
+    for row in state.relation:
+        keyed = {role: _nodes_by_key(row, role, keys) for role in roles}
+        if any(not values for values in keyed.values()):
+            continue
+        key_sets = [set(values) for values in keyed.values()]
+        common = set.intersection(*key_sets)
+        if len(common) < minimum_common:
+            continue
+        if not use_intersection and any(
+            values != key_sets[0] for values in key_sets[1:]
+        ):
+            continue
+        selected_keys = common if use_intersection else key_sets[0]
+        if any(
+            any(len(keyed[role][key]) != 1 for key in selected_keys) for role in roles
+        ):
+            continue
+        copied = _copy_graph_row(row)
+        for role in roles:
+            original = row.get("roles", {}).get(role)
+            nodes = [keyed[role][key][0] for key in sorted(selected_keys, key=str)]
+            copied["roles"][role] = nodes if isinstance(original, list) else nodes[0]
+        copied.setdefault("join_metadata", {})[
+            str(operation.get("join_id") or "role_key_equal")
+        ] = {
+            "relation": "equal",
+            "roles": roles,
+            "keys": keys,
+            "matched_key_count": len(selected_keys),
+            "intersection": use_intersection,
+        }
+        accepted.append(copied)
+    state.relation = accepted[: state.candidate_limit]
+    state.relation_kind = "graph_rows"
+
+
+def assert_role_key_relation(state: Any, operation: dict[str, Any]) -> None:
+    _expect(state, "graph_rows", operation)
+    left_role = _required_text(operation, "left_role")
+    right_role = _required_text(operation, "right_role")
+    match_keys = [str(value) for value in operation.get("match_keys") or []]
+    period_key = _required_text(operation, "key")
+    relation = str(operation.get("relation") or "")
+    distance = int(operation.get("value") or 1)
+    if relation != "previous_by" or distance <= 0 or not match_keys:
+        raise ValueError(
+            "assert_role_key_relation supports previous_by with match_keys"
+        )
+    accepted: list[dict[str, Any]] = []
+    for row in state.relation:
+        left = _period_nodes_by_group(row, left_role, match_keys, period_key)
+        right = _period_nodes_by_group(row, right_role, match_keys, period_key)
+        common_groups = sorted(set(left) & set(right), key=str)
+        if not common_groups:
+            continue
+        available_periods = [
+            {
+                period
+                for period in left[group]
+                if period - distance in right[group]
+                and len(left[group][period]) == 1
+                and len(right[group][period - distance]) == 1
+            }
+            for group in common_groups
+        ]
+        shared_periods = (
+            set.intersection(*available_periods) if available_periods else set()
+        )
+        if not shared_periods:
+            continue
+        selected_period = max(shared_periods)
+        left_nodes = [left[group][selected_period][0] for group in common_groups]
+        right_nodes = [
+            right[group][selected_period - distance][0] for group in common_groups
+        ]
+        copied = _copy_graph_row(row)
+        copied["roles"][left_role] = left_nodes
+        copied["roles"][right_role] = right_nodes
+        copied.setdefault("join_metadata", {})[
+            str(operation.get("join_id") or "period_relation")
+        ] = {
+            "relation": relation,
+            "distance": distance,
+            "selected_period": selected_period,
+            "group_count": len(common_groups),
+        }
+        accepted.append(copied)
+    state.relation = accepted[: state.candidate_limit]
+    state.relation_kind = "graph_rows"
+
+
+def require_role_coverage(state: Any, operation: dict[str, Any]) -> None:
+    _expect(state, "graph_rows", operation)
+    scope_role = _required_text(operation, "scope_role")
+    fact_roles = [str(value) for value in operation.get("fact_roles") or []]
+    coverage = float(operation.get("coverage", 1.0))
+    if not fact_roles or coverage != 1.0:
+        raise ValueError("require_role_coverage currently requires exact 1.0 coverage")
+    entity_source = str(operation.get("scope_entity_source") or "source_pk")
+    fact_entity_source = str(
+        operation.get("fact_entity_source") or "properties.entity_id"
+    )
+    accepted: list[dict[str, Any]] = []
+    for row in state.relation:
+        expected = {
+            str(_node_value(node, entity_source))
+            for node in _role_nodes(row, scope_role)
+            if _node_value(node, entity_source) not in {None, ""}
+        }
+        represented = {
+            role: {
+                str(_node_value(node, fact_entity_source))
+                for node in _role_nodes(row, role)
+                if _node_value(node, fact_entity_source) not in {None, ""}
+            }
+            for role in fact_roles
+        }
+        if expected and all(values == expected for values in represented.values()):
+            copied = _copy_graph_row(row)
+            copied["scope_coverage"] = {
+                "expected_entity_ids": sorted(expected),
+                "represented_entity_ids": {
+                    key: sorted(value) for key, value in represented.items()
+                },
+                "coverage": 1.0,
+            }
+            accepted.append(copied)
+    state.relation = accepted[: state.candidate_limit]
+    state.relation_kind = "graph_rows"
+
+
+def project_graph_binding_v2(state: Any, operation: dict[str, Any]) -> None:
+    if not operation.get("role_bindings"):
+        raise ValueError("project_graph_binding_v2 requires role_bindings")
+    if not operation.get("query_graph_hash"):
+        raise ValueError("project_graph_binding_v2 requires query_graph_hash")
+    enriched = {**operation, "projection_version": 2}
+    project_graph_binding(state, enriched)
+
+
+def _node_matches(node: dict[str, Any], predicates: list[dict[str, Any]]) -> bool:
+    operators = {
+        "eq": lambda left, right: left == right,
+        "ne": lambda left, right: left != right,
+        "in": lambda left, right: left in right,
+        "not_in": lambda left, right: left not in right,
+        "exists": lambda left, right: (left is not None) is bool(right),
+        "truthy": lambda left, right: bool(left) is bool(right),
+        "gt": lambda left, right: left is not None and left > right,
+        "gte": lambda left, right: left is not None and left >= right,
+        "lt": lambda left, right: left is not None and left < right,
+        "lte": lambda left, right: left is not None and left <= right,
+    }
+    for predicate in predicates:
+        operator = str(predicate.get("operator") or "")
+        if operator not in operators:
+            raise ValueError(f"Unsupported graph role predicate operator: {operator}")
+        left = _node_value(node, str(predicate.get("field") or ""))
+        right = predicate.get("value")
+        if operator in {"in", "not_in"} and not isinstance(right, (list, tuple, set)):
+            raise ValueError(f"Graph role predicate {operator} requires a collection")
+        try:
+            passed = operators[operator](left, right)
+        except TypeError:
+            passed = False
+        if not passed:
+            return False
+    return True
+
+
+def _nodes_by_key(
+    row: dict[str, Any], role: str, keys: list[str]
+) -> dict[tuple[Any, ...], list[dict[str, Any]]]:
+    output: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
+    for node in _role_nodes(row, role):
+        key = tuple(_node_value(node, field) for field in keys)
+        if all(value not in {None, ""} for value in key):
+            output[key].append(node)
+    return output
+
+
+def _period_nodes_by_group(
+    row: dict[str, Any], role: str, match_keys: list[str], period_key: str
+) -> dict[tuple[Any, ...], dict[int, list[dict[str, Any]]]]:
+    output: dict[tuple[Any, ...], dict[int, list[dict[str, Any]]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for node in _role_nodes(row, role):
+        group = tuple(_node_value(node, field) for field in match_keys)
+        raw_period = _node_value(node, period_key)
+        try:
+            period = int(raw_period)
+        except (TypeError, ValueError):
+            continue
+        if all(value not in {None, ""} for value in group):
+            output[group][period].append(node)
+    return output
 
 
 def project_graph_binding(state: Any, operation: dict[str, Any]) -> None:
@@ -506,9 +826,37 @@ def project_graph_binding(state: Any, operation: dict[str, Any]) -> None:
             | _source_pks(row, operation.get("metric_roles") or [])
         )
         input_bindings = {
-            "facts": fact_ids,
             answer_binding: {LITERAL_BINDING_KEY: answer},
         }
+        if int(operation.get("projection_version") or 1) < 2:
+            input_bindings["facts"] = fact_ids
+        for binding_name, role_spec in dict(
+            operation.get("role_bindings") or {}
+        ).items():
+            role = str(
+                role_spec.get("role") if isinstance(role_spec, dict) else role_spec
+            )
+            role_fact_ids = sorted(
+                {
+                    str(node.get("source_pk"))
+                    for node in _role_nodes(row, role)
+                    if node.get("source_pk")
+                }
+            )
+            if not role_fact_ids or any(
+                value not in fact_map for value in role_fact_ids
+            ):
+                input_bindings = {}
+                break
+            input_bindings[str(binding_name)] = role_fact_ids
+        if not input_bindings:
+            continue
+        provenance_spec = dict(operation.get("provenance_binding") or {})
+        if provenance_spec:
+            provenance_binding = str(provenance_spec.get("binding") or "provenance_map")
+            input_bindings[provenance_binding] = {
+                LITERAL_BINDING_KEY: _project_provenance_map(row, provenance_spec)
+            }
         first = facts[0]
         binding = {
             "input_bindings": input_bindings,
@@ -530,6 +878,16 @@ def project_graph_binding(state: Any, operation: dict[str, Any]) -> None:
             "raw_object_ids": sorted(
                 _source_pks(row, operation.get("raw_object_roles") or [])
             ),
+            "scope_entity_ids": sorted(
+                _source_pks(row, operation.get("entity_roles") or [])
+            ),
+            "query_graph_hash": operation.get("query_graph_hash"),
+            "answer_target": dict(operation.get("answer_target") or {}),
+            "projection_version": int(operation.get("projection_version") or 1),
+            "walk_binding_trace": _walk_binding_trace(row),
+            "join_metadata": dict(row.get("join_metadata") or {}),
+            "scope_coverage": dict(row.get("scope_coverage") or {}),
+            "evidence_policy": dict(operation.get("evidence_policy") or {}),
             "graph_node_ids": sorted(set(row["graph_node_ids"])),
             "graph_edge_ids": sorted(
                 {str(edge["edge_id"]) for edge in row["graph_edges"]}
@@ -542,9 +900,7 @@ def project_graph_binding(state: Any, operation: dict[str, Any]) -> None:
                 ),
             ),
         }
-        for field_name, projection in dict(
-            operation.get("context") or {}
-        ).items():
+        for field_name, projection in dict(operation.get("context") or {}).items():
             binding[str(field_name)] = _project_value(row, projection)
         candidates.append(binding)
     state.discovered_count += len(candidates)
@@ -559,10 +915,11 @@ def _project_answer(
     role = str(answer_spec.get("role") or "")
     shape = str(answer_spec.get("shape") or "record")
     output_key = str(
-        answer_spec.get("output_key")
-        or ("records" if shape == "records" else "trace")
+        answer_spec.get("output_key") or ("records" if shape == "records" else "trace")
     )
     fields = dict(answer_spec.get("fields") or {})
+    if shape == "fact_trace_records":
+        return _project_fact_trace_records(row, answer_spec, output_key)
     if shape == "composite":
         record = {
             str(name): _project_value(row, projection)
@@ -573,15 +930,121 @@ def _project_answer(
     if not nodes:
         return {}
     records = [
-        {
-            str(name): _node_value(node, str(source))
-            for name, source in fields.items()
-        }
+        {str(name): _node_value(node, str(source)) for name, source in fields.items()}
         for node in nodes
     ]
     records = sorted(records, key=_digest)
     value: Any = records if shape == "records" else records[0]
     return {output_key: value, "count": len(records)}
+
+
+def _project_provenance_map(
+    row: dict[str, Any], spec: dict[str, Any]
+) -> dict[str, list[str]]:
+    fact_nodes = {
+        str(node["node_id"]): str(node["source_pk"])
+        for node in _role_nodes(row, str(spec.get("fact_role") or ""))
+        if node.get("source_pk")
+    }
+    raw_nodes = {
+        str(node["node_id"]): str(node["source_pk"])
+        for node in _role_nodes(row, str(spec.get("raw_object_role") or ""))
+        if node.get("source_pk")
+    }
+    relation = str(spec.get("relation") or "TRACED_TO")
+    output: dict[str, set[str]] = defaultdict(set)
+    for edge in row.get("graph_edges") or []:
+        if str(edge.get("relation_type")) != relation:
+            continue
+        src = str(edge.get("src_node_id"))
+        dst = str(edge.get("dst_node_id"))
+        if src in fact_nodes and dst in raw_nodes:
+            output[fact_nodes[src]].add(raw_nodes[dst])
+        elif dst in fact_nodes and src in raw_nodes:
+            output[fact_nodes[dst]].add(raw_nodes[src])
+    return {key: sorted(values) for key, values in sorted(output.items())}
+
+
+def _walk_binding_trace(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "roles": {
+            str(role): [
+                {
+                    "node_id": str(node["node_id"]),
+                    "node_type": str(node["node_type"]),
+                    "source_pk": node.get("source_pk"),
+                }
+                for node in _role_nodes(row, str(role))
+            ]
+            for role in sorted(row.get("roles") or {})
+        },
+        "edges": sorted(
+            [dict(edge) for edge in row.get("graph_edges") or []],
+            key=lambda edge: (
+                str(edge.get("relation_type")),
+                str(edge.get("src_node_id")),
+                str(edge.get("dst_node_id")),
+            ),
+        ),
+    }
+
+
+def _project_fact_trace_records(
+    row: dict[str, Any], spec: dict[str, Any], output_key: str
+) -> dict[str, Any]:
+    fact_nodes = _role_nodes(row, str(spec.get("fact_role") or ""))
+    period_nodes = {
+        str(node["node_id"]): node
+        for node in _role_nodes(row, str(spec.get("period_role") or ""))
+    }
+    hierarchy_nodes = {
+        str(node["node_id"]): node
+        for node in _role_nodes(row, str(spec.get("hierarchy_role") or ""))
+    }
+    raw_nodes = {
+        str(node["node_id"]): node
+        for node in _role_nodes(row, str(spec.get("raw_object_role") or ""))
+    }
+    outgoing: dict[tuple[str, str], set[str]] = defaultdict(set)
+    for edge in row.get("graph_edges") or []:
+        outgoing[(str(edge.get("src_node_id")), str(edge.get("relation_type")))].add(
+            str(edge.get("dst_node_id"))
+        )
+    records = []
+    for fact in fact_nodes:
+        fact_node_id = str(fact["node_id"])
+        period_ids = outgoing.get((fact_node_id, "IN_PERIOD"), set()) & set(
+            period_nodes
+        )
+        raw_ids = outgoing.get((fact_node_id, "TRACED_TO"), set()) & set(raw_nodes)
+        fiscal_ids = {
+            hierarchy_id
+            for period_id in period_ids
+            for hierarchy_id in outgoing.get((period_id, "IN_FISCAL_YEAR"), set())
+            if hierarchy_id in hierarchy_nodes
+        }
+        records.append(
+            {
+                "fact_id": fact.get("source_pk"),
+                "entity_id": _node_value(fact, "properties.entity_id"),
+                "metric_id": _node_value(fact, "properties.metric_id"),
+                "value": _node_value(fact, "properties.normalized_value"),
+                "unit": _node_value(fact, "properties.normalized_unit"),
+                "period_ids": sorted(
+                    str(period_nodes[value].get("source_pk") or value)
+                    for value in period_ids
+                ),
+                "fiscal_year_ids": sorted(
+                    str(hierarchy_nodes[value].get("source_pk") or value)
+                    for value in fiscal_ids
+                ),
+                "raw_object_ids": sorted(
+                    str(raw_nodes[value].get("source_pk") or value) for value in raw_ids
+                ),
+            }
+        )
+    records.sort(key=_digest)
+    return {output_key: records, "count": len(records)} if records else {}
 
 
 def _project_value(row: dict[str, Any], projection: Any) -> Any:
@@ -672,15 +1135,11 @@ def _role_nodes(row: dict[str, Any], role: str) -> list[dict[str, Any]]:
     return [value] if isinstance(value, dict) else []
 
 
-def _role_property(
-    row: dict[str, Any], role: Any, property_name: str
-) -> Any:
+def _role_property(row: dict[str, Any], role: Any, property_name: str) -> Any:
     if not role:
         return None
     nodes = _role_nodes(row, str(role))
-    return (
-        (nodes[0].get("properties") or {}).get(property_name) if nodes else None
-    )
+    return (nodes[0].get("properties") or {}).get(property_name) if nodes else None
 
 
 def _source_pks(row: dict[str, Any], roles: Any) -> set[str]:
@@ -693,11 +1152,15 @@ def _source_pks(row: dict[str, Any], roles: Any) -> set[str]:
 
 
 def _copy_graph_row(row: dict[str, Any]) -> dict[str, Any]:
-    return {
+    copied = {
         "roles": dict(row["roles"]),
         "graph_node_ids": list(row["graph_node_ids"]),
         "graph_edges": list(row["graph_edges"]),
     }
+    for field in ("join_metadata", "scope_coverage"):
+        if field in row:
+            copied[field] = dict(row[field])
+    return copied
 
 
 def _extend_evidence(

@@ -875,6 +875,47 @@ CREATE TABLE IF NOT EXISTS qa_graph_motif_observations (
             status TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_graph_walk_observations (
+            walk_observation_id TEXT PRIMARY KEY,
+            mining_run_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            discovery_method TEXT NOT NULL,
+            walk_grammar_version TEXT NOT NULL,
+            operation_macro_id TEXT NOT NULL,
+            walk_signature TEXT NOT NULL,
+            query_graph_ir JSONB NOT NULL,
+            query_graph_hash TEXT NOT NULL,
+            anchor_node_type TEXT NOT NULL,
+            answer_target_type TEXT NOT NULL,
+            walk_depth INTEGER NOT NULL,
+            branch_count INTEGER NOT NULL,
+            join_count INTEGER NOT NULL,
+            scope_expansion_count INTEGER NOT NULL,
+            followup_count INTEGER NOT NULL,
+            estimated_support_count BIGINT NOT NULL,
+            evaluated_binding_count BIGINT NOT NULL,
+            completed_binding_count BIGINT NOT NULL,
+            structurally_completed_binding_count BIGINT NOT NULL DEFAULT 0,
+            structural_completion_rate REAL NOT NULL DEFAULT 0,
+            answer_yield_rate REAL NOT NULL DEFAULT 0,
+            unique_answer_rate REAL NOT NULL DEFAULT 0,
+            total_root_count BIGINT NOT NULL DEFAULT 0,
+            scanned_root_count BIGINT NOT NULL DEFAULT 0,
+            root_coverage_rate REAL NOT NULL DEFAULT 0,
+            evaluated_root_count BIGINT NOT NULL DEFAULT 0,
+            evaluation_coverage_rate REAL NOT NULL DEFAULT 0,
+            stratum_coverage JSONB NOT NULL,
+            financial_value_score REAL NOT NULL,
+            answerability_score REAL NOT NULL,
+            novelty_score REAL NOT NULL,
+            estimated_cost REAL NOT NULL,
+            total_score REAL NOT NULL,
+            status TEXT NOT NULL,
+            rejection_reasons JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE INDEX IF NOT EXISTS idx_qa_graph_walks_run_macro ON qa_graph_walk_observations(mining_run_id, operation_macro_id, status);
+CREATE INDEX IF NOT EXISTS idx_qa_graph_walks_hash ON qa_graph_walk_observations(query_graph_hash, kg_build_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_one_approved_mining_run_per_kg
 ON qa_pattern_mining_runs (kg_build_id)
 WHERE status = 'approved_for_qa';

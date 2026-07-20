@@ -1930,7 +1930,7 @@ def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path)
     assert logical_plan.target_kg_build_id == kg_build
     assert logical_plan.plan_version == 2
     assert logical_plan.ir_version == 1
-    assert logical_plan.compiler_version == "2.7.0"
+    assert logical_plan.compiler_version == "2.8.0"
     assert logical_plan.motif_family == "fifth_declarative_motif"
     assert [item["op"] for item in logical_plan.relational_ops] == [
         "scan_pinned_fact_nodes",
@@ -2976,7 +2976,7 @@ def test_mined_patterns_flow_through_candidate_plan_and_verifier(tmp_path):
     assert all(row["pattern_compilation_id"] for row in candidates)
     assert all(row["proposal_semantic_id"] for row in candidates)
     assert all(row["logical_plan_hash"] for row in candidates)
-    assert all(row["compiler_version"] == "2.7.0" for row in candidates)
+    assert all(row["compiler_version"] == "2.8.0" for row in candidates)
     assert all(row["compiled_binding_id"] for row in candidates)
     proposal_checks = db.fetchall(
         "SELECT check_status FROM qa_quality_checks WHERE qa_build_id = ? "
@@ -3971,3 +3971,66 @@ def test_temporal_followup_coverage_uses_fiscal_identity_not_exact_date():
     assert result.checks["secondary_period_coverage_equals"]["observed"][
         "coverage"
     ] == "1"
+
+def test_roundtrip_accepts_filtering_modifier_and_highest_to_lowest_ranking():
+    contract = {
+        "slot_map": {
+            "scope": "Synthetic Technology Peer Set",
+            "filter_metric": "revenue growth",
+            "ranking_metric": "net margin",
+            "period": "FY2023",
+        },
+        "required_slots": [
+            "scope",
+            "filter_metric",
+            "ranking_metric",
+            "period",
+        ],
+        "operator_id": "filter_then_rank",
+        "constraints": [
+            {
+                "position": 0,
+                "step_id": "screen",
+                "operator": "filter",
+                "params": {"comparison": "gt", "value": 10},
+            },
+            {
+                "position": 1,
+                "step_id": "rank",
+                "operator": "rank",
+                "params": {"direction": "desc", "top_k": 3},
+            },
+        ],
+    }
+    variant = {
+        "question": (
+            "Find the top 3 entities in the Synthetic Technology Peer Set with "
+            "the highest net margin, after filtering entities whose revenue growth "
+            "is above 10% for FY2023."
+        ),
+        "slot_map": contract["slot_map"],
+        "operator_id": contract["operator_id"],
+        "constraints": contract["constraints"],
+    }
+    result = validate_question_roundtrip(variant, contract)
+    assert result["passed"], result
+    sequence_variant = {
+        **variant,
+        "question": (
+            "Within the Synthetic Technology Peer Set for FY2023, filter entities "
+            "whose revenue growth is above 10%, then rank the top 3 by net margin "
+            "from highest to lowest."
+        ),
+    }
+    sequence_result = validate_question_roundtrip(sequence_variant, contract)
+    assert sequence_result["passed"], sequence_result
+    implicit_filter_variant = {
+        **variant,
+        "question": (
+            "Find the top 3 entities in the Synthetic Technology Peer Set whose "
+            "revenue growth is above 10% for FY2023 and rank them by net margin "
+            "from highest to lowest."
+        ),
+    }
+    implicit_result = validate_question_roundtrip(implicit_filter_variant, contract)
+    assert implicit_result["passed"], implicit_result

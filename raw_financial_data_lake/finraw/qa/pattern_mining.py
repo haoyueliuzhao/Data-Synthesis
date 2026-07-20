@@ -33,7 +33,7 @@ from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import insert_rows, json_value
 
 
-MINING_VERSION = "2.2.0"
+MINING_VERSION = "2.3.0"
 
 GRAPH_NATIVE_EXECUTABLE_FAMILIES = {
     "derived_fact_composition",
@@ -139,6 +139,7 @@ class PatternProposal:
 def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
     qa = config.get("qa", {})
     raw = qa.get("pattern_mining", {})
+    walk_raw = dict(raw.get("walk_mining") or {})
     return {
         "enabled": bool(raw.get("enabled", False)),
         "auto_run": bool(raw.get("auto_run", False)),
@@ -245,6 +246,37 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
         "minimum_scope_entities": max(int(raw.get("minimum_scope_entities", 3)), 2),
         "top_k": max(int(raw.get("top_k", 3)), 1),
         "require_contiguous_periods": bool(raw.get("require_contiguous_periods", True)),
+        "walk_mining": {
+            "enabled": bool(walk_raw.get("enabled", False)),
+            "grammar_version": str(walk_raw.get("grammar_version") or "1.0.0"),
+            "operation_macros": tuple(
+                str(value)
+                for value in walk_raw.get(
+                    "operation_macros",
+                    [
+                        "temporal_extreme_followup_provenance",
+                        "scope_filter_rank_followup",
+                        "derived_fact_time_source_trace",
+                    ],
+                )
+            ),
+            "beam_width": max(int(walk_raw.get("beam_width", 100)), 1),
+            "minimum_estimated_support": max(
+                int(walk_raw.get("minimum_estimated_support", 10)), 1
+            ),
+            "minimum_completion_rate": min(
+                max(float(walk_raw.get("minimum_completion_rate", 0.8)), 0.0), 1.0
+            ),
+            "minimum_unique_answer_rate": min(
+                max(float(walk_raw.get("minimum_unique_answer_rate", 0.99)), 0.0), 1.0
+            ),
+            "maximum_estimated_query_cost": max(
+                float(walk_raw.get("maximum_estimated_query_cost", 1000)), 0.0
+            ),
+            "maximum_query_graph_candidates": max(
+                int(walk_raw.get("maximum_query_graph_candidates", 500)), 1
+            ),
+        },
     }
 
 
@@ -313,6 +345,7 @@ def mine_qa_patterns(
         {"lifecycle_events", "notes", "published_proposal_manifest"},
     )
     graph_observations: list[dict[str, Any]] = []
+    walk_observations: list[dict[str, Any]] = []
     try:
         facts, metrics = _load_mining_pool(db, kg, policy)
         if policy["graph_native_mining_enabled"]:
@@ -329,7 +362,16 @@ def mine_qa_patterns(
             policy,
             semantic_policy,
             graph_observations,
+            walk_observations,
         )
+        if walk_observations:
+            insert_rows(
+                db,
+                "qa_graph_walk_observations",
+                walk_observations,
+                list(walk_observations[0]),
+                {"query_graph_ir", "stratum_coverage", "rejection_reasons"},
+            )
         rows = [proposal.as_row() for proposal in proposals]
         if rows:
             insert_rows(
@@ -387,7 +429,24 @@ def mine_qa_patterns(
                 _db_json(db, run_events),
                 _db_json(
                     db,
-                    {**run["notes"], "graph_native_mining": graph_summary},
+                    {
+                        **run["notes"],
+                        "graph_native_mining": graph_summary,
+                        "typed_walk_mining": {
+                            "enabled": policy["walk_mining"]["enabled"],
+                            "observation_count": len(walk_observations),
+                            "accepted_count": sum(
+                                item["status"] == "observed"
+                                for item in walk_observations
+                            ),
+                            "support_by_macro": {
+                                item["operation_macro_id"]: item[
+                                    "completed_binding_count"
+                                ]
+                                for item in walk_observations
+                            },
+                        },
+                    },
                 ),
                 run_id,
             ),
@@ -524,6 +583,30 @@ def mine_qa_patterns(
             "support_by_family": {
                 item["motif_family"]: item["support_count"]
                 for item in graph_observations
+            },
+        },
+        "typed_walk_motifs": {
+            "observation_count": len(walk_observations),
+            "accepted_count": sum(
+                item["status"] == "observed" for item in walk_observations
+            ),
+            "by_macro": {
+                item["operation_macro_id"]: {
+                    "status": item["status"],
+                    "estimated_support_count": item["estimated_support_count"],
+                    "evaluated_binding_count": item["evaluated_binding_count"],
+                    "structurally_completed_binding_count": item[
+                        "structurally_completed_binding_count"
+                    ],
+                    "completed_binding_count": item["completed_binding_count"],
+                    "structural_completion_rate": item["structural_completion_rate"],
+                    "answer_yield_rate": item["answer_yield_rate"],
+                    "unique_answer_rate": item["unique_answer_rate"],
+                    "root_coverage_rate": item["root_coverage_rate"],
+                    "evaluation_coverage_rate": item["evaluation_coverage_rate"],
+                    "rejection_reasons": item["rejection_reasons"],
+                }
+                for item in walk_observations
             },
         },
         "top_proposals": [
@@ -1576,6 +1659,7 @@ def _discover_proposals(
     policy: dict[str, Any],
     semantic_policy: dict[str, Any],
     graph_observations: list[dict[str, Any]],
+    walk_observations: list[dict[str, Any]],
 ) -> list[PatternProposal]:
     raw: list[dict[str, Any]] = []
     families = set(policy["families"])
@@ -1600,6 +1684,21 @@ def _discover_proposals(
                 families,
             )
         )
+    if policy["walk_mining"]["enabled"]:
+        walk_raw, observed = _mine_executable_typed_walk_patterns(
+            db,
+            kg,
+            policy,
+            semantic_policy,
+        )
+        for item in observed:
+            item["mining_run_id"] = run_id
+            item["walk_observation_id"] = (
+                "qawalkobs_"
+                + _digest(run_id, item["query_graph_hash"], item["status"])[:24]
+            )
+        raw.extend(walk_raw)
+        walk_observations.extend(observed)
     raw = [item for item in raw if item["support_count"] > 0]
     proposals = [_proposal_from_raw(item, run_id, kg_build_id, policy) for item in raw]
     proposals.sort(
@@ -1622,12 +1721,10 @@ def _mine_executable_graph_patterns(
     supported = {
         str(item["motif_family"])
         for item in observations
-        if item.get("status") == "observed"
-        and int(item.get("support_count") or 0) > 0
+        if item.get("status") == "observed" and int(item.get("support_count") or 0) > 0
     }
-    record_limit = (
-        int(policy["max_bindings_per_proposal"])
-        + int(policy["max_heldout_bindings"])
+    record_limit = int(policy["max_bindings_per_proposal"]) + int(
+        policy["max_heldout_bindings"]
     )
     output: list[dict[str, Any]] = []
     for family, spec in _graph_native_pattern_specs():
@@ -1687,6 +1784,271 @@ def _mine_executable_graph_patterns(
         ]
         output.append(raw)
     return output
+
+
+def _mine_executable_typed_walk_patterns(
+    db: DBProtocol,
+    kg: dict[str, Any],
+    policy: dict[str, Any],
+    semantic_policy: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    from finraw.qa.binding_executor import execute_relational_ops
+    from finraw.qa.graph_walk.audit import walk_observation_row
+    from finraw.qa.graph_walk.explorer import discover_query_graphs
+    from finraw.qa.graph_walk.operation_macros import get_operation_macro
+    from finraw.qa.graph_walk.proposal_builder import query_graph_pattern_spec
+    from finraw.qa.graph_walk.scorer import score_query_graph
+    from finraw.qa.pattern_compiler import compile_logical_pattern
+
+    settings = dict(policy["walk_mining"])
+    graphs = discover_query_graphs(
+        list(settings["operation_macros"]),
+        discovery_method="typed_walk",
+        beam_width=int(settings["beam_width"]),
+    )[: int(settings["maximum_query_graph_candidates"])]
+    record_limit = int(policy["max_bindings_per_proposal"]) + int(
+        policy["max_heldout_bindings"]
+    )
+    execution_policy = {**policy, "semantic_policy": semantic_policy}
+    output: list[dict[str, Any]] = []
+    observations: list[dict[str, Any]] = []
+    for graph in graphs:
+        spec = query_graph_pattern_spec(graph)
+        family = str(spec["pattern_family"])
+        semantic_id = "typed_walk_" + graph.query_graph_hash[:20]
+        proposal = {
+            "proposal_id": semantic_id,
+            "proposal_hash": _digest(semantic_id, spec),
+            "proposal_semantic_id": semantic_id,
+            "proposal_snapshot_id": semantic_id,
+            "mining_run_id": "typed_walk_discovery",
+            "kg_build_id": kg["kg_build_id"],
+            "motif_family": family,
+            "motif_signature": graph.query_graph_hash,
+            "pattern_semantic_digest": pattern_semantic_digest(spec),
+            "static_pattern_id": None,
+            "static_pattern_version": None,
+            "static_pattern_hash": None,
+            "static_pattern_overlap": 0.0,
+            "binding_mode": "new_pattern",
+            "pattern_spec": spec,
+            "binding_examples": [],
+            "heldout_bindings": [],
+            "total_score": 0.0,
+            "status": "published",
+        }
+        state = None
+        execution_error = None
+        try:
+            plan = compile_logical_pattern(proposal, kg, execution_policy)
+            state = execute_relational_ops(
+                db,
+                kg,
+                plan.as_row(),
+                proposal,
+                execution_policy,
+                audit_hashes=set(),
+                limit=record_limit,
+            )
+        except (RuntimeError, ValueError) as exc:
+            execution_error = str(exc)
+
+        macro = get_operation_macro(graph.operation_macro_id)
+        if state is None:
+            estimate = {
+                "estimated_support_count": 0,
+                "evaluated_binding_count": 0,
+                "completed_binding_count": 0,
+                "structurally_completed_binding_count": 0,
+                "structural_completion_rate": 0.0,
+                "answer_yield_rate": 0.0,
+                "unique_answer_rate": 0.0,
+                "total_root_count": 0,
+                "scanned_root_count": 0,
+                "root_coverage_rate": 0.0,
+                "evaluated_root_count": 0,
+                "evaluation_coverage_rate": 0.0,
+                "stratum_coverage": [],
+            }
+            scores = {
+                "financial_value_score": macro.financial_value_score,
+                "answerability_score": 0.0,
+                "novelty_score": 1.0,
+                "estimated_cost": _typed_walk_cost(graph),
+                "total_score": 0.0,
+            }
+            observations.append(
+                walk_observation_row(
+                    mining_run_id="pending",
+                    kg_build_id=str(kg["kg_build_id"]),
+                    graph=graph,
+                    estimate=estimate,
+                    scores=scores,
+                    status="rejected",
+                    rejection_reasons=[f"query_execution_failed:{execution_error}"],
+                )
+            )
+            continue
+
+        fact_map = {str(fact["fact_id"]): fact for fact in state.facts}
+        executed_records: list[dict[str, Any]] = []
+        for item in state.relation:
+            binding = item["binding"]
+            execution = execute_plan(
+                materialize_plan(spec["operator_template"], binding),
+                binding["input_bindings"],
+                fact_map,
+            )
+            if execution.status != "passed":
+                continue
+            executed_records.append(
+                {
+                    "binding": binding,
+                    "execution_status": "passed",
+                    "execution_errors": [],
+                    "output_hash": _digest(execution.output),
+                    "_semantic_binding_hash": _typed_walk_binding_identity(binding),
+                }
+            )
+
+        records, unique_answer_rate, completed = _unambiguous_typed_walk_records(
+            executed_records
+        )
+        evaluated = int(state.discovered_count)
+        structurally_completed = int(state.semantic_valid_count)
+        completion_rate = _rate(structurally_completed, evaluated)
+        answer_yield_rate = _rate(completed, structurally_completed)
+        estimated_cost = _typed_walk_cost(graph)
+        answerability = completion_rate * answer_yield_rate * unique_answer_rate
+        total_score = score_query_graph(
+            support_rate=min(completed / max(int(policy["target_support"]), 1), 1.0),
+            financial_value=macro.financial_value_score,
+            answerability=answerability,
+            novelty=1.0,
+            diversity=min(len(records) / max(record_limit, 1), 1.0),
+            estimated_cost=estimated_cost,
+            ambiguity=1.0 - unique_answer_rate,
+        )
+        reasons = []
+        if completed < int(settings["minimum_estimated_support"]):
+            reasons.append("insufficient_estimated_support")
+        if completion_rate < float(settings["minimum_completion_rate"]):
+            reasons.append("completion_rate_below_threshold")
+        if unique_answer_rate < float(settings["minimum_unique_answer_rate"]):
+            reasons.append("unique_answer_rate_below_threshold")
+        if estimated_cost > float(settings["maximum_estimated_query_cost"]):
+            reasons.append("estimated_query_cost_above_threshold")
+        scan_audit = dict(state.graph_scan_audit or {})
+        estimate = {
+            "estimated_support_count": completed,
+            "evaluated_binding_count": evaluated,
+            "completed_binding_count": completed,
+            "structurally_completed_binding_count": structurally_completed,
+            "structural_completion_rate": completion_rate,
+            "answer_yield_rate": answer_yield_rate,
+            "unique_answer_rate": unique_answer_rate,
+            "total_root_count": int(scan_audit.get("total_root_count") or 0),
+            "scanned_root_count": int(scan_audit.get("scanned_root_count") or 0),
+            "root_coverage_rate": float(scan_audit.get("root_coverage_rate") or 0),
+            "evaluated_root_count": int(scan_audit.get("evaluated_root_count") or 0),
+            "evaluation_coverage_rate": float(
+                scan_audit.get("evaluation_coverage_rate") or 0
+            ),
+            "stratum_coverage": list(scan_audit.get("stratum_coverage") or []),
+        }
+        scores = {
+            "financial_value_score": macro.financial_value_score,
+            "answerability_score": answerability,
+            "novelty_score": 1.0,
+            "estimated_cost": estimated_cost,
+            "total_score": total_score,
+        }
+        observations.append(
+            walk_observation_row(
+                mining_run_id="pending",
+                kg_build_id=str(kg["kg_build_id"]),
+                graph=graph,
+                estimate=estimate,
+                scores=scores,
+                status="rejected" if reasons else "observed",
+                rejection_reasons=reasons,
+            )
+        )
+        if reasons:
+            continue
+        raw = _raw_proposal(
+            family,
+            list(spec.get("required_metric_ids") or []),
+            spec,
+        )
+        raw["evaluated_binding_count"] = completed
+        raw["support_count"] = completed
+        raw["operation_evaluated_count"] = completed
+        raw["operation_pass_count"] = completed
+        for reason, count in state.rejection_counts.items():
+            if reason.startswith("semantic:"):
+                raw["semantic_rejection_counts"][reason[9:]] += count
+            elif reason.startswith("operation:"):
+                raw["operation_rejection_counts"][reason[10:]] += count
+        raw["binding_validation_records"] = records
+        output.append(raw)
+    return output, observations
+
+
+def _typed_walk_binding_identity(binding: dict[str, Any]) -> str:
+    return _digest(
+        {
+            "input_bindings": binding.get("input_bindings") or {},
+            "fact_ids": sorted(binding.get("fact_ids") or []),
+            "entity_ids": sorted(binding.get("entity_ids") or []),
+            "metric_ids": sorted(binding.get("metric_ids") or []),
+            "scope_entity_ids": sorted(binding.get("scope_entity_ids") or []),
+            "scope_definition": binding.get("scope_definition"),
+            "query_graph_hash": binding.get("query_graph_hash"),
+        }
+    )
+
+
+def _unambiguous_typed_walk_records(
+    records: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], float, int]:
+    records_by_binding: dict[str, dict[str, Any]] = {}
+    answers_by_binding: defaultdict[str, set[str]] = defaultdict(set)
+    for record in records:
+        binding_hash = str(record["_semantic_binding_hash"])
+        answers_by_binding[binding_hash].add(str(record["output_hash"]))
+        records_by_binding.setdefault(binding_hash, record)
+
+    unambiguous = {
+        binding_hash
+        for binding_hash, answer_hashes in answers_by_binding.items()
+        if len(answer_hashes) == 1
+    }
+    selected = [
+        {
+            key: value
+            for key, value in records_by_binding[binding_hash].items()
+            if key != "_semantic_binding_hash"
+        }
+        for binding_hash in sorted(unambiguous)
+    ]
+    return (
+        selected,
+        _rate(len(unambiguous), len(answers_by_binding)),
+        len(answers_by_binding),
+    )
+
+
+def _typed_walk_cost(graph: Any) -> float:
+    step_count = sum(len(walk.get("steps") or []) for walk in graph.walks)
+    branch_count = max(len(graph.walks) - 1, 0)
+    join_count = len(graph.joins)
+    scope_count = sum(
+        step.get("to_node_type") == "Entity"
+        for walk in graph.walks
+        for step in walk.get("steps") or []
+    )
+    return float(step_count + 1.5 * branch_count + 2.0 * join_count + scope_count)
 
 
 def _graph_native_pattern_specs() -> list[tuple[str, dict[str, Any]]]:
@@ -2000,7 +2362,7 @@ def _time_hierarchy_spec(
         ],
         edge_constraints=[
             {"src": "fact", "relation": "IN_PERIOD", "dst": "period"},
-            {"src": "period", "relation": relation, "dst": "hierarchy"}
+            {"src": "period", "relation": relation, "dst": "hierarchy"},
         ],
         relational_ops=[
             {
@@ -2581,7 +2943,10 @@ def _proposal_from_raw(
         "time_hierarchy": 0.72,
         "entity_set_scope": 0.84,
     }
-    financial_value_score = family_value.get(raw["motif_family"], 0.5)
+    financial_value_score = float(
+        pattern_spec.get("financial_value_score")
+        or family_value.get(raw["motif_family"], 0.5)
+    )
     operation_count = len(pattern_spec["operator_template"]["operators"])
     complexity_score = min(operation_count / 3.0, 1.0)
     novelty_score = 0.0 if static_pattern_id else 1.0 - static_overlap
@@ -3255,7 +3620,12 @@ def _semantic_pattern_payload(spec: dict[str, Any]) -> dict[str, Any]:
         for value in node.get("values") or [node.get("variable")]
         if value
     )
-    return {**components, "metric_roles": metric_roles}
+    return {
+        **components,
+        "metric_roles": metric_roles,
+        "query_graph_hash": spec.get("query_graph_hash"),
+        "operation_macro_id": spec.get("operation_macro_id"),
+    }
 
 
 def _semantic_pattern_components(spec: dict[str, Any]) -> dict[str, Any]:
@@ -3347,6 +3717,36 @@ def _write_report(report: dict[str, Any], output_dir: str | None) -> None:
         f"- `{family}`: {count}"
         for family, count in report["approved_family_counts"].items()
     )
+    walk_summary = report.get("typed_walk_motifs") or {}
+    if int(walk_summary.get("observation_count") or 0):
+        lines.extend(
+            [
+                "",
+                "## Typed Edge Walk",
+                "",
+                f"- Observed / accepted: `{walk_summary['observation_count']}` / "
+                f"`{walk_summary['accepted_count']}`",
+            ]
+        )
+        for macro_id, item in sorted((walk_summary.get("by_macro") or {}).items()):
+            lines.append(
+                f"- `{macro_id}`: status=`{item['status']}`, "
+                f"support=`{item['estimated_support_count']}`, "
+                f"structural=`{item['structural_completion_rate']:.2%}`, "
+                f"answer_yield=`{item['answer_yield_rate']:.2%}`, "
+                f"unique=`{item['unique_answer_rate']:.2%}`, "
+                f"root_coverage=`{item['root_coverage_rate']:.2%}`"
+            )
+    if report.get("top_proposals"):
+        lines.extend(["", "## Top Proposals", ""])
+        for item in report["top_proposals"]:
+            lines.append(
+                f"- `{item['motif_family']}` / `{item['proposal_id']}`: "
+                f"status=`{item['status']}`, support=`{item['support_count']}`, "
+                f"semantic=`{item['semantic_constraint_pass_rate']:.2%}`, "
+                f"operation=`{item['operation_execution_pass_rate']:.2%}`, "
+                f"heldout=`{item['heldout_binding_pass_rate']:.2%}`"
+            )
     (target / "qa_pattern_mining_report.md").write_text(
         "\n".join(lines) + "\n", encoding="utf-8"
     )

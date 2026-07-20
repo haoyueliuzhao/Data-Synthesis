@@ -15,7 +15,7 @@ from finraw.qa.graph_patterns import (
 from finraw.qa.store import json_value
 
 
-COMPILER_VERSION = "2.7.0"
+COMPILER_VERSION = "2.8.0"
 
 
 @dataclass(frozen=True)
@@ -265,7 +265,7 @@ def _binding_query(spec: dict[str, Any], pattern: GraphPattern) -> dict[str, Any
     else:
         query = _legacy_binding_query(spec, pattern)
         query.setdefault("scan_kind", "fact")
-    if query["ir_version"] != 1:
+    if query["ir_version"] not in {1, 2}:
         raise ValueError(f"Unsupported binding query IR version: {query['ir_version']}")
     if not query["relational_ops"]:
         raise ValueError("Pattern proposal has no declarative relational operators")
@@ -418,6 +418,9 @@ def compile_proposal_matches(
 
 
 def _metric_ids(spec: dict[str, Any]) -> list[str]:
+    declared = [str(value) for value in spec.get("required_metric_ids") or []]
+    if declared:
+        return sorted(set(declared))
     for constraint in spec.get("node_constraints") or []:
         if constraint.get("variable") == "metrics":
             return [str(value) for value in constraint.get("values") or []]

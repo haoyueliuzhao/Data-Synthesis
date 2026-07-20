@@ -7,7 +7,7 @@ from typing import Any
 from finraw.db.client import DBProtocol
 from finraw.qa.store import json_value
 
-ANALYSIS_EXPORT_VERSION = "1.2.0"
+ANALYSIS_EXPORT_VERSION = "1.3.0"
 
 
 def export_analysis_jsonl(
@@ -129,6 +129,13 @@ def export_analysis_jsonl(
                 "pattern_id": candidate["analysis_pattern_id"],
                 "difficulty": candidate["difficulty"],
                 "split": sample["split"],
+                "generation_method": sample["generation_method"],
+                "instruction_surface_form_id": json_value(
+                    sample.get("generation_metadata"), {}
+                ).get("instruction_surface_form_id"),
+                "discourse_plan_version": json_value(
+                    sample.get("generation_metadata"), {}
+                ).get("discourse_plan_version"),
             },
         }
         by_split.setdefault(str(sample["split"]), []).append(benchmark)
@@ -203,7 +210,11 @@ def export_analysis_jsonl(
         "export_version": ANALYSIS_EXPORT_VERSION,
         "sample_count": len(samples),
         "split_counts": {key: len(value) for key, value in sorted(by_split.items())},
-        "formats": ["evidence_given_benchmark", "sft", "trace_seeds"],
+        "formats": [
+            "evidence_given_benchmark",
+            "claim_grounded_discourse_sft",
+            "trace_seeds",
+        ],
         "generation_audit": json_value(build.get("notes"), {}).get(
             "llm_generation", {}
         ),

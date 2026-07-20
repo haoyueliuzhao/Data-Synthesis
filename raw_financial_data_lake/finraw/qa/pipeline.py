@@ -16,6 +16,7 @@ from finraw.kg_query import resolve_kg_build_id
 from finraw.qa.comparability import comparability_policy
 from finraw.qa.difficulty import DIFFICULTY_POLICY, assess_difficulty, graph_features
 from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
+from finraw.qa.walk_verifier import validate_walk_binding
 from finraw.qa.graph_patterns import (
     get_pattern,
     pattern_content_hash,
@@ -47,12 +48,18 @@ from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
 from finraw.qa.verbalizer import (
     QUESTION_PARSER_VERSION,
+    SURFACE_VARIATION_VERSION,
+    build_protected_question,
     build_question_contract,
+    diversify_surface_slots,
     question_parser_manifest,
+    protected_rewrite_style_ids,
     question_parser_manifest_hash,
     realize_question,
+    surface_variation_manifest,
     validate_question_parser_support,
     validate_question_roundtrip,
+    validate_rewrite_numeric_grounding,
 )
 
 
@@ -82,15 +89,17 @@ GRAPH_NATIVE_TASKS = {
     "provenance_trace",
     "time_hierarchy_membership",
     "scope_composition",
+    "walk_derived_input_time_source_trace",
 }
 
 GRAPH_SCOPE_TASKS = {
     "filter_then_rank",
     "rank_then_secondary_lookup",
     "multi_factor_screening",
+    "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.19.0"
+GENERATOR_VERSION = "4.20.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -346,6 +355,9 @@ def build_qa_candidates(
     difficulty_policy_hash = _digest(DIFFICULTY_POLICY)
     parser_manifest = question_parser_manifest(TEMPLATES)
     parser_manifest_hash = question_parser_manifest_hash(TEMPLATES)
+    surface_manifest = surface_variation_manifest(
+        policy.get("question_generation") or {}
+    )
     if parser_manifest["unsupported_template_ids"]:
         raise RuntimeError(
             "Question Parser does not support templates: "
@@ -368,6 +380,7 @@ def build_qa_candidates(
             policy,
             TEMPLATES,
             parser_manifest,
+            surface_manifest,
             pattern_manifest_data,
             operator_manifest_data,
             DIFFICULTY_POLICY,
@@ -405,6 +418,7 @@ def build_qa_candidates(
                 **parser_manifest,
                 "question_parser_manifest_hash": parser_manifest_hash,
             },
+            "surface_variation": surface_manifest,
             "pattern_manifest_hash": pattern_manifest_hash,
             "operator_manifest_hash": operator_manifest_hash,
             "difficulty_policy_hash": difficulty_policy_hash,
@@ -979,6 +993,7 @@ def validate_qa_samples(
     for row in rows:
         decoded = _decode_validation_row(row)
         sample_checks = _validate_one(
+            db,
             decoded,
             build,
             facts,
@@ -1281,6 +1296,12 @@ def split_qa_samples(
             "valid_sentence_plan_rate": float(
                 generation_gate.get("minimum_valid_sentence_plan_rate", 0.98)
             ),
+            "valid_surface_realization_rate": float(
+                generation_gate.get(
+                    "minimum_valid_surface_realization_rate",
+                    generation_gate.get("minimum_valid_sentence_plan_rate", 0.98),
+                )
+            ),
             "controlled_generation_rate": float(
                 generation_gate.get("minimum_controlled_generation_rate", 0.98)
             ),
@@ -1320,7 +1341,11 @@ def split_qa_samples(
               'question_parser_contract',
               'question_slot_roundtrip',
               'question_semantic_reparse',
-              'question_answer_isolation'
+              'question_answer_isolation',
+              'query_graph_hash', 'walk_role_type_match',
+              'walk_role_constraint_match', 'walk_edge_replay',
+              'walk_join_key_match', 'walk_scope_exact_match',
+              'answer_lineage_match', 'evidence_finalization_match'
           )
         """,
         [qa_build_id],
@@ -1412,11 +1437,15 @@ def _qa_llm_generation_stats(
             "http_success_count": 0,
             "structured_response_pass_count": 0,
             "valid_sentence_plan_count": 0,
+            "valid_rewrite_count": 0,
+            "valid_surface_realization_count": 0,
             "controlled_generation_count": 0,
             "fallback_count": 0,
             "http_success_rate": 1.0,
             "structured_response_pass_rate": 1.0,
             "valid_sentence_plan_rate": 1.0,
+            "valid_rewrite_rate": 1.0,
+            "valid_surface_realization_rate": 1.0,
             "controlled_generation_rate": 1.0,
             "fallback_rate": 0.0,
             "unknown_fallback_reason_count": 0,
@@ -1444,16 +1473,23 @@ def _qa_llm_generation_stats(
         fallback_reason = generation.get("fallback_reason")
         if fallback_reason:
             fallback_reasons[str(fallback_reason)] += 1
-        elif str(row.get("generation_method")) != "controlled_llm_sentence_plan":
+        method = str(row.get("generation_method"))
+        controlled = method in {
+            "controlled_llm_sentence_plan",
+            "controlled_llm_protected_rewrite",
+        }
+        if not fallback_reason and not controlled:
             unknown_fallbacks += 1
+        sentence_plan_valid = bool(telemetry.get("sentence_plan_valid"))
+        rewrite_valid = bool(telemetry.get("rewrite_valid"))
         telemetry_rows.append(
             {
                 **telemetry,
                 "structured_response_valid": bool(telemetry.get("json_valid")),
-                "sentence_plan_valid": bool(telemetry.get("sentence_plan_valid")),
-                "controlled_generation": (
-                    str(row.get("generation_method")) == "controlled_llm_sentence_plan"
-                ),
+                "sentence_plan_valid": sentence_plan_valid,
+                "rewrite_valid": rewrite_valid,
+                "surface_realization_valid": sentence_plan_valid or rewrite_valid,
+                "controlled_generation": controlled,
             }
         )
     count = len(telemetry_rows)
@@ -1483,6 +1519,12 @@ def _qa_llm_generation_stats(
         ),
         "valid_sentence_plan_count": sum(
             bool(row.get("sentence_plan_valid")) for row in telemetry_rows
+        ),
+        "valid_rewrite_count": sum(
+            bool(row.get("rewrite_valid")) for row in telemetry_rows
+        ),
+        "valid_surface_realization_count": sum(
+            bool(row.get("surface_realization_valid")) for row in telemetry_rows
         ),
         "controlled_generation_count": sum(
             bool(row.get("controlled_generation")) for row in telemetry_rows
@@ -1834,17 +1876,57 @@ def _graph_pattern_candidate(
         and not answer.get("rows")
         and not answer.get("trace")
         and not answer.get("records")
+        and not answer.get("inputs")
     ):
         reasons.append("missing_answer")
 
+    pattern_spec = (
+        json_value(proposal.get("pattern_spec"), {}) if proposal else pattern.as_row()
+    )
+    walk_validation = None
+    evidence_finalization = None
+    if match.get("query_graph_hash"):
+        walk_validation = validate_walk_binding(
+            db,
+            kg_build_id,
+            pattern_spec,
+            match,
+            answer,
+        )
+        evidence_finalization = walk_validation.get("evidence_finalization")
+        if not walk_validation.get("passed"):
+            reasons.extend(
+                f"typed_walk:{error}"
+                for error in walk_validation.get("errors") or ["validation_failed"]
+            )
+
     subtype = pattern.task_subtype
-    if subtype in {"multi_period_average", "temporal_peak_followup"}:
+    if subtype in {
+        "multi_period_average",
+        "temporal_peak_followup",
+        "walk_temporal_peak_followup_provenance",
+    }:
+        fact_years = sorted(
+            {
+                int(fact["fiscal_year"])
+                for fact in facts
+                if fact.get("fiscal_year") is not None
+            }
+        )
         time_scope = {
-            "start_year": match.get("start_period"),
-            "end_year": match.get("end_period"),
+            "start_year": match.get("start_period")
+            or (fact_years[0] if fact_years else None),
+            "end_year": match.get("end_period")
+            or (fact_years[-1] if fact_years else None),
             "basis": "multi_period",
             "frequency": match.get("frequency"),
-            "observation_count": match.get("observation_count"),
+            "observation_count": match.get("observation_count") or len(fact_years),
+        }
+    elif subtype == "walk_scope_filter_rank_followup":
+        time_scope = {
+            "year": match.get("current_period"),
+            "basis": "fiscal_year",
+            "frequency": match.get("frequency"),
         }
     elif match.get("period") is not None:
         time_scope = _match_time_scope(match)
@@ -1917,6 +1999,16 @@ def _graph_pattern_candidate(
         "debt_ratio_max_pct": (
             match.get("operator_step_params", {}).get("answer", {}).get("debt_max_pct")
         ),
+        "top_k": match.get("top_k"),
+        "followup_rank": match.get("followup_rank"),
+        "current_period": match.get("current_period"),
+        "query_graph_hash": match.get("query_graph_hash"),
+        "answer_target": match.get("answer_target") or {},
+        "walk_binding_trace": match.get("walk_binding_trace") or {},
+        "join_metadata": match.get("join_metadata") or {},
+        "scope_coverage": match.get("scope_coverage") or {},
+        "walk_validation": walk_validation or {},
+        "evidence_finalization": evidence_finalization or {},
     }
     for key in (
         "derived_id",
@@ -2062,16 +2154,42 @@ def _sample_from_candidate(
             "Question Parser/template contract failed: "
             + ", ".join(parser_support["errors"])
         )
+    required_slots = list(template.get("required_slots") or [])
     canonical_question = template["template_text"].format(**slots)
     generation_policy = (
         build.get("notes", {}).get("policy", {}).get("question_generation", {})
     )
+    surface_slots = diversify_surface_slots(
+        slots,
+        semantics,
+        str(candidate.get("stable_candidate_id") or candidate["candidate_id"]),
+        generation_policy,
+    )
+    protected_question = build_protected_question(
+        template["template_text"], required_slots
+    )
+    rewrite_styles = protected_rewrite_style_ids()
+    realization_policy = {
+        **generation_policy,
+        "style_variant_id": rewrite_styles[
+            int(
+                _digest(
+                    candidate.get("stable_candidate_id") or candidate["candidate_id"],
+                    "protected_rewrite_style",
+                )[:8],
+                16,
+            )
+            % len(rewrite_styles)
+        ],
+    }
     realization = realize_question(
         canonical_question,
         semantics=semantics,
         immutable_slots=slots,
-        required_slots=list(template.get("required_slots") or []),
-        config=generation_policy,
+        required_slots=required_slots,
+        config=realization_policy,
+        surface_slots=surface_slots,
+        protected_question=protected_question,
     )
     question = realization.question
     answer = candidate["answer_payload"]
@@ -2185,6 +2303,7 @@ def _sample_from_candidate(
 
 
 def _validate_one(
+    db: DBProtocol,
     row: dict[str, Any],
     build: dict[str, Any],
     facts: dict[str, dict[str, Any]],
@@ -2306,6 +2425,7 @@ def _validate_one(
         True,
         "Entity, metric, time, unit, and required scope must be explicit.",
     )
+    stored_binding = row.get("stored_compiled_binding") or {}
     question_generation = row.get("source_metadata", {}).get("question_generation", {})
     add(
         "question_slot_roundtrip",
@@ -2607,6 +2727,46 @@ def _validate_one(
             sorted(row["source_fact_ids"]),
             "The operation trace must cover every source fact used by the QA.",
         )
+        if stored_binding.get("query_graph_hash"):
+            walk_validation = validate_walk_binding(
+                db,
+                build["kg_build_id"],
+                pattern_spec,
+                stored_binding,
+                execution.output,
+            )
+            for check_name in (
+                "query_graph_hash",
+                "walk_role_type_match",
+                "walk_role_constraint_match",
+                "walk_edge_replay",
+                "walk_join_key_match",
+                "walk_scope_exact_match",
+                "answer_lineage_match",
+            ):
+                detail = dict(walk_validation.get("checks", {}).get(check_name) or {})
+                add(
+                    check_name,
+                    bool(detail.get("passed")),
+                    detail,
+                    {"passed": True},
+                    f"Typed Walk check {check_name} must replay against the pinned KG.",
+                )
+            stored_finalization = dict(
+                row.get("canonical_semantics", {}).get("evidence_finalization") or {}
+            )
+            replayed_finalization = dict(
+                walk_validation.get("evidence_finalization") or {}
+            )
+            add(
+                "evidence_finalization_match",
+                bool(stored_finalization.get("finalization_hash"))
+                and stored_finalization.get("finalization_hash")
+                == replayed_finalization.get("finalization_hash"),
+                replayed_finalization,
+                stored_finalization,
+                "Required, context, and discarded evidence must match independent lineage finalization.",
+            )
         recomputed = execution.output
         reason = "Replayed the registered operation plan from pinned source facts."
     else:
@@ -3305,24 +3465,24 @@ def _validate_evidence_semantics(
         required = set(fact_required)
         if task_subtype == "derived_input_trace":
             required |= {"DERIVED_FROM", "USES_METRIC"}
+        elif task_subtype == "walk_derived_input_time_source_trace":
+            required |= {"DERIVED_FROM", "IN_FISCAL_YEAR", "TRACED_TO"}
         elif task_subtype == "scope_composition":
             required |= {
                 "DERIVED_FROM",
                 "HAS_SCOPE",
                 "CONTAINS_ENTITY",
             }
-    elif (
-        task_subtype
-        in {
-            "single_fact",
-            "pairwise_entity_comparison",
-            "cross_metric_comparison",
-            "multi_period_average",
-            "temporal_peak_followup",
-        }
-        | GRAPH_SCOPE_TASKS
-    ):
+    elif task_subtype in {
+        "single_fact",
+        "pairwise_entity_comparison",
+        "cross_metric_comparison",
+        "multi_period_average",
+        "temporal_peak_followup",
+    } | GRAPH_SCOPE_TASKS | {"walk_temporal_peak_followup_provenance"}:
         required = fact_required
+        if task_subtype == "walk_scope_filter_rank_followup":
+            required |= {"CONTAINS_ENTITY"}
     else:
         required = {"DERIVED_FROM", "USES_METRIC", "IN_PERIOD"}
         if task_subtype in SCOPE_DERIVED | {"share"}:
@@ -3694,7 +3854,25 @@ def _question_slots(
         else "lowest",
         "scope": semantics.get("scope_definition")
         or "the explicitly configured data scope",
-        "top_k": str(len(candidate.get("answer_payload", {}).get("table") or [])),
+        "top_k": str(
+            semantics.get("top_k")
+            or len(candidate.get("answer_payload", {}).get("ranking_table") or [])
+            or len(candidate.get("answer_payload", {}).get("table") or [])
+        ),
+        "growth_metric": metric_names.get("revenue", "revenue"),
+        "ranking_metric": str(
+            semantics.get("ranking_metric_name")
+            or semantics.get("ranking_metric_id")
+            or "net margin"
+        ).replace("_", " "),
+        "debt_metric": str(
+            semantics.get("debt_metric_name")
+            or semantics.get("debt_metric_id")
+            or "debt ratio"
+        ).replace("_", " "),
+        "benchmark": str(
+            semantics.get("benchmark_label") or "the industry average"
+        ),
         "entity_a": entity_names.get(entity_ids[0], entity_ids[0])
         if entity_ids
         else "the first entity",
@@ -3751,7 +3929,13 @@ def _question_parser_contract_validation(
 ) -> dict[str, Any]:
     manifest = question_parser_manifest(TEMPLATES)
     manifest_hash = question_parser_manifest_hash(TEMPLATES)
-    pinned_manifest = json_value(build.get("notes"), {}).get("question_parser", {})
+    build_notes = json_value(build.get("notes"), {})
+    pinned_manifest = build_notes.get("question_parser", {})
+    generation_policy = (
+        build_notes.get("policy", {}).get("question_generation", {})
+    )
+    expected_surface_manifest = surface_variation_manifest(generation_policy)
+    pinned_surface_manifest = build_notes.get("surface_variation", {})
     sample_contract = json_value(row.get("source_metadata"), {}).get(
         "question_parser", {}
     )
@@ -3765,6 +3949,8 @@ def _question_parser_contract_validation(
         "question_parser_manifest_hash": manifest_hash,
     }:
         errors.append("pinned_question_parser_manifest_mismatch")
+    if pinned_surface_manifest != expected_surface_manifest:
+        errors.append("pinned_surface_variation_manifest_mismatch")
     template_id = str(row.get("template_id") or "")
     language = str(row.get("language") or "")
     if language not in set(manifest["supported_languages"]):
@@ -3788,6 +3974,8 @@ def _question_parser_contract_validation(
         "supported_template_id": template_id,
         "supported_languages": manifest["supported_languages"],
         "supported_template_ids": manifest["supported_template_ids"],
+        "generation_policy": generation_policy,
+        "surface_variation_manifest": expected_surface_manifest,
     }
 
 
@@ -3842,14 +4030,57 @@ def _reparse_persisted_question(
         _metric_names_from_semantics(semantics, metric_ids),
     )
     required_slots = list(template.get("required_slots") or [])
-    contract = build_question_contract(semantics, slots, required_slots)
+    generation_policy = dict(parser_contract.get("generation_policy") or {})
+    strategy = str(generation_policy.get("strategy") or "sentence_plan")
+    surface_slots = diversify_surface_slots(
+        slots,
+        semantics,
+        str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
+        generation_policy,
+    )
+    generation_metadata = json_value(row.get("source_metadata"), {}).get(
+        "question_generation", {}
+    )
+    surface_errors: list[str] = []
+    if strategy == "protected_rewrite":
+        if generation_metadata.get("surface_variation_version") != (
+            SURFACE_VARIATION_VERSION
+        ):
+            surface_errors.append("surface_variation_version_mismatch")
+        if generation_metadata.get("surface_slots") != {
+            slot: surface_slots[slot] for slot in required_slots
+        }:
+            surface_errors.append("surface_slot_map_mismatch")
+        if generation_metadata.get("protected_question") != (
+            build_protected_question(template["template_text"], required_slots)
+        ):
+            surface_errors.append("protected_question_mismatch")
+    contract = build_question_contract(semantics, surface_slots, required_slots)
     validation = validate_question_roundtrip(
         row.get("question") or "",
         contract,
         trusted_contract=True,
     )
+    numeric_grounding = validate_rewrite_numeric_grounding(
+        row.get("question") or "", surface_slots
+    )
+    contract_errors = [
+        *validation.get("contract_errors", []),
+        *[f"surface_contract:{error}" for error in surface_errors],
+        *[
+            f"surface_contract:{error}"
+            for error in numeric_grounding.get("errors") or []
+        ],
+    ]
     return {
         **validation,
+        "passed": bool(validation.get("passed"))
+        and not surface_errors
+        and bool(numeric_grounding.get("passed")),
+        "contract_errors": contract_errors,
+        "surface_slots": surface_slots,
+        "surface_errors": surface_errors,
+        "numeric_grounding": numeric_grounding,
         "contract_source": "pinned_candidate_and_operation_plan",
         "template_id": template["template_id"],
         "question_parser": parser_contract,
@@ -3860,6 +4091,41 @@ def _answer_text(
     candidate: dict[str, Any], answer: dict[str, Any], entity_names: dict[str, str]
 ) -> str:
     subtype = candidate["task_subtype"]
+    if subtype == "walk_derived_input_time_source_trace":
+        return "; ".join(
+            f"{item.get('fact_id')} (FY {item.get('fiscal_year')}, raw {item.get('raw_object_id')})"
+            for item in answer.get("inputs") or []
+        )
+    if subtype == "walk_temporal_peak_followup_provenance":
+        semantics = candidate.get("canonical_semantics", {})
+        metric_names = semantics.get("metric_names") or {}
+        primary = metric_names.get(
+            semantics.get("primary_metric_id"), semantics.get("primary_metric_id")
+        )
+        secondary = metric_names.get(
+            semantics.get("secondary_metric_id"), semantics.get("secondary_metric_id")
+        )
+        raw_objects = ", ".join(answer.get("raw_object_ids") or [])
+        return (
+            f"{answer.get('result_period')}: {primary} peaked at "
+            f"{_format_value(answer.get('primary_value'))} {answer.get('primary_unit') or ''}; "
+            f"{secondary} was {_format_value(answer.get('secondary_value'))} "
+            f"{answer.get('secondary_unit') or ''}; raw object: {raw_objects}"
+        ).strip()
+    if subtype == "walk_scope_filter_rank_followup":
+        ranking_rows = []
+        for item in answer.get("ranking_table") or []:
+            name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
+            ranking_rows.append(
+                f"{item.get('rank')}. {name}: {_format_value(item.get('value'))}%"
+            )
+        followups = []
+        for item in answer.get("table") or []:
+            name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
+            followups.append(
+                f"{name} debt ratio: {_format_value(item.get('secondary_value'))}%"
+            )
+        return "; ".join([*ranking_rows, *followups])
     if subtype == "derived_input_trace":
         return "; ".join(
             f"{item.get('fact_id')} ({item.get('metric_id')}, {item.get('period_end')})"
@@ -3982,6 +4248,11 @@ def _ranked_value_tolerance(value: Any) -> str:
 
 
 def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]:
+    if candidate["task_subtype"].startswith("walk_"):
+        return {
+            "match_type": "exact_graph_structure",
+            "target_answer": answer,
+        }
     if candidate["task_subtype"] in GRAPH_NATIVE_TASKS:
         return {
             "match_type": "exact_graph_structure",

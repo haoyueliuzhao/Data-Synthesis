@@ -11,7 +11,9 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
-QUESTION_PARSER_VERSION = "1.0.0"
+QUESTION_REWRITE_VERSION = "question_rewrite.v2"
+SURFACE_VARIATION_VERSION = "surface_variation.v1"
+QUESTION_PARSER_VERSION = "1.3.0"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh")
 
 _TONE_PREFIXES = {
@@ -25,6 +27,12 @@ _CONNECTORS = {
     "then": "then",
     "next": "next",
     "subsequently": "subsequently",
+}
+_PROTECTED_REWRITE_STYLES = {
+    "direct": "Use a direct analytical question.",
+    "analyst": "Use an analyst-review formulation.",
+    "concise": "Use a compact request with minimal filler.",
+    "comparative": "Emphasize the filtering and ranking sequence.",
 }
 
 _COMPARISON_PATTERN = re.compile(
@@ -77,7 +85,7 @@ _COMPARISON_LEXEMES = {
 _NUMBER_PATTERN = re.compile(r"(?<![A-Za-z0-9_.])-?\d+(?:\.\d+)?(?![A-Za-z0-9_.])")
 _OBSERVABLE_OPERATOR_PATTERNS = {
     "filter": re.compile(
-        r"\b(?:filter|screen|screening|qualifying|condition(?:s)?)\b|筛选|过滤|条件",
+        r"\b(?:filter(?:s|ed|ing)?|screen(?:s|ed|ing)?|qualifying|condition(?:s)?)\b|筛选|过滤|条件",
         re.IGNORECASE,
     ),
     "rank": re.compile(
@@ -109,6 +117,30 @@ _EXTREME_MIN_PATTERN = re.compile(
     r"\b(?:trough|lowest|minimum|min)\b|最低|最小|谷值",
     re.IGNORECASE,
 )
+_PROTECTED_SLOT_PATTERN = re.compile(r"<slot_[a-z0-9_]+>")
+_FORBIDDEN_QUESTION_EXTENSION = re.compile(
+    r"\b(?:because|caused? by|management quality|forecast|predict|guarantee|"
+    r"buy|sell|target price|investment recommendation)\b|"
+    r"因为|导致|管理层能力|预测|保证|买入|卖出|目标价|投资建议",
+    re.IGNORECASE,
+)
+_METRIC_SURFACE_ALIASES = {
+    "revenue": ("revenue", "sales"),
+    "net income": ("net income", "net profit"),
+    "operating income": ("operating income", "operating profit"),
+    "gross profit": ("gross profit",),
+    "total assets": ("total assets", "assets"),
+    "total liabilities": ("total liabilities", "liabilities"),
+    "net cash provided by used in operating activities": (
+        "operating cash flow",
+        "cash flow from operations",
+    ),
+    "operating cash flow": ("operating cash flow", "cash flow from operations"),
+    "net margin": ("net margin", "net profit margin"),
+    "debt ratio": ("debt ratio", "liabilities-to-assets ratio"),
+}
+
+
 _TOP_K_PATTERNS = (
     re.compile(r"\b(?:top|bottom|first|last)\s+(\d+)\b", re.IGNORECASE),
     re.compile(
@@ -220,32 +252,52 @@ class OpenAICompatibleQuestionProvider:
         self.last_telemetry: dict[str, Any] = {}
 
     def generate(self, request: dict[str, Any]) -> list[Any]:
-        prompt = (
-            "Do not write or rewrite the financial question. Select sentence-plan IDs "
-            "only from the supplied enum schema. The application will render all semantic "
-            "language, slots, comparisons, thresholds, ordering, and top-k values "
-            "deterministically. Return JSON only as "
-            '{"sentence_plans":[{"plan_version":"sentence_plan.v1",'
-            '"tone":...,"sentence_form":...,"connector":...}]}. '
-            "Return exactly variant_count distinct plans when possible. Do not return a "
-            "question, semantic contract, slots, operators, constraints, numbers, metric "
-            "names, entity names, or time expressions.\n"
-            + json.dumps(request, ensure_ascii=False, sort_keys=True)
-        )
+        strategy = str(request.get("generation_strategy") or "sentence_plan")
+        if strategy == "protected_rewrite":
+            prompt = (
+                "Rewrite the protected financial question naturally while preserving its "
+                "exact meaning. Every <slot_name> token is immutable: include every "
+                "required placeholder exactly once and add no other placeholders, numbers, "
+                "entities, metrics, periods, conditions, conclusions, causes, forecasts, "
+                "or recommendations. Preserve comparison direction, extrema direction, "
+                "top-k, and operation order. Return JSON only as "
+                f'{{"rewrites":[{{"rewrite_version":"{QUESTION_REWRITE_VERSION}",'
+                '"question_template":"..."}]}. Return distinct concise interrogative '
+                "rewrites ending with a question mark.\n"
+                + json.dumps(request, ensure_ascii=False, sort_keys=True)
+            )
+            response_key = "rewrites"
+            temperature = 0.7
+        else:
+            prompt = (
+                "Do not write or rewrite the financial question. Select sentence-plan IDs "
+                "only from the supplied enum schema. The application will render all "
+                "semantic language, slots, comparisons, thresholds, ordering, and top-k "
+                "values deterministically. Return JSON only as "
+                '{"sentence_plans":[{"plan_version":"sentence_plan.v1",'
+                '"tone":...,"sentence_form":...,"connector":...}]}. '
+                "Return exactly variant_count distinct plans when possible. Do not return "
+                "a question, semantic contract, slots, operators, constraints, numbers, "
+                "metric names, entity names, or time expressions.\n"
+                + json.dumps(request, ensure_ascii=False, sort_keys=True)
+            )
+            response_key = "sentence_plans"
+            temperature = 0.4
         try:
-            completion = self.client.complete_json(prompt, temperature=0.4)
+            completion = self.client.complete_json(prompt, temperature=temperature)
         except LLMClientError as exc:
             self.last_telemetry = dict(exc.telemetry)
             raise
         parsed = completion.payload
-        plans = [
-            item for item in parsed.get("sentence_plans", []) if isinstance(item, dict)
+        items = [
+            item for item in parsed.get(response_key, []) if isinstance(item, dict)
         ]
         self.last_telemetry = {
             **completion.telemetry,
-            "structured_item_count": len(plans),
+            "generation_strategy": strategy,
+            "structured_item_count": len(items),
         }
-        return plans
+        return items
 
 
 def realize_question(
@@ -256,6 +308,8 @@ def realize_question(
     required_slots: list[str],
     config: dict[str, Any] | None,
     provider: QuestionProvider | None = None,
+    surface_slots: dict[str, str] | None = None,
+    protected_question: str | None = None,
 ) -> VerbalizationResult:
     policy = dict(config or {})
     mode = str(policy.get("mode") or "controlled_template")
@@ -277,6 +331,19 @@ def realize_question(
             canonical_question,
             "deterministic_template",
             {**base_validation, **slot_check, "fallback_reason": None},
+        )
+    strategy = str(policy.get("strategy") or "sentence_plan")
+    if strategy == "protected_rewrite":
+        return _realize_protected_rewrite(
+            canonical_question,
+            semantics=semantics,
+            canonical_slots=immutable_slots,
+            surface_slots=surface_slots or immutable_slots,
+            required_slots=required_slots,
+            protected_question=protected_question,
+            policy=policy,
+            provider=provider,
+            base_validation=base_validation,
         )
     sentence_plan_errors: list[str] = []
     llm_telemetry: dict[str, Any] = {}
@@ -354,6 +421,342 @@ def realize_question(
             },
         },
     )
+
+
+def protected_rewrite_style_ids() -> list[str]:
+    return sorted(_PROTECTED_REWRITE_STYLES)
+
+
+def _realize_protected_rewrite(
+    canonical_question: str,
+    *,
+    semantics: dict[str, Any],
+    canonical_slots: dict[str, str],
+    surface_slots: dict[str, str],
+    required_slots: list[str],
+    protected_question: str | None,
+    policy: dict[str, Any],
+    provider: QuestionProvider | None,
+    base_validation: dict[str, Any],
+) -> VerbalizationResult:
+    effective_provider: QuestionProvider | None = None
+    telemetry: dict[str, Any] = {}
+    errors: list[str] = []
+    protected = protected_question or _protect_question_text(
+        canonical_question, canonical_slots, required_slots
+    )
+    protected_names = sorted(
+        {
+            token.removeprefix("<slot_").removesuffix(">")
+            for token in _PROTECTED_SLOT_PATTERN.findall(protected)
+        }
+    )
+    placeholders = [slot_placeholder(name) for name in protected_names]
+    resolved_slots = {
+        name: str(surface_slots.get(name) or canonical_slots.get(name) or "")
+        for name in protected_names
+    }
+    style_variant_id = str(policy.get("style_variant_id") or "direct")
+    if style_variant_id not in _PROTECTED_REWRITE_STYLES:
+        style_variant_id = "direct"
+    surface_contract = build_question_contract(
+        semantics, resolved_slots, protected_names
+    )
+    deterministic_surface = render_protected_question(protected, resolved_slots)
+    try:
+        effective_provider = provider or OpenAICompatibleQuestionProvider(
+            policy.get("llm", {})
+        )
+        request = {
+            "generation_strategy": "protected_rewrite",
+            "protected_question": protected,
+            "required_placeholders": placeholders,
+            "rewrite_schema": {
+                "rewrite_version": QUESTION_REWRITE_VERSION,
+                "allowed_fields": ["rewrite_version", "question_template"],
+            },
+            "variant_count": max(int(policy.get("variants", 3)), 1),
+            "language": str(policy.get("language") or "en"),
+            "style_variant_id": style_variant_id,
+            "style_instruction": _PROTECTED_REWRITE_STYLES[style_variant_id],
+        }
+        rewrites = effective_provider.generate(request)
+        telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
+        indexed_rewrites = list(enumerate(rewrites))
+        if indexed_rewrites:
+            style_offset = (
+                protected_rewrite_style_ids().index(style_variant_id)
+                % len(indexed_rewrites)
+            )
+            indexed_rewrites = (
+                indexed_rewrites[style_offset:] + indexed_rewrites[:style_offset]
+            )
+        for rewrite_variant_index, candidate in indexed_rewrites:
+            rewrite_check = validate_protected_rewrite(candidate, placeholders)
+            if not rewrite_check["passed"]:
+                errors.extend(rewrite_check["rewrite_errors"])
+                continue
+            question = render_protected_question(
+                rewrite_check["question_template"], resolved_slots
+            )
+            slot_check = validate_question_roundtrip(
+                question, surface_contract, trusted_contract=True
+            )
+            numeric_check = validate_rewrite_numeric_grounding(question, resolved_slots)
+            if slot_check["passed"] and numeric_check["passed"]:
+                return VerbalizationResult(
+                    question,
+                    "controlled_llm_protected_rewrite",
+                    {
+                        **base_validation,
+                        **slot_check,
+                        "semantic_rendering": "llm_protected_template",
+                        "rewrite_version": QUESTION_REWRITE_VERSION,
+                        "style_variant_id": style_variant_id,
+                        "rewrite_variant_index": rewrite_variant_index,
+                        "rewrite_valid": True,
+                        "rewrite_errors": [],
+                        "protected_question": protected,
+                        "surface_slots": resolved_slots,
+                        "surface_variation_version": SURFACE_VARIATION_VERSION,
+                        "numeric_grounding": numeric_check,
+                        "fallback_reason": None,
+                        "llm_telemetry": {
+                            **telemetry,
+                            "sentence_plan_valid": True,
+                            "rewrite_valid": True,
+                            "controlled_generation": True,
+                        },
+                    },
+                )
+            errors.extend(slot_check["contract_errors"])
+            errors.extend(numeric_check["errors"])
+        fallback_reason = "no_llm_protected_rewrite_passed_validation"
+    except Exception as exc:
+        if isinstance(exc, LLMClientError):
+            telemetry = dict(exc.telemetry)
+        elif effective_provider is not None:
+            telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
+        fallback_reason = f"llm_unavailable:{type(exc).__name__}"
+
+    fallback_check = validate_question_roundtrip(
+        deterministic_surface, surface_contract, trusted_contract=True
+    )
+    return VerbalizationResult(
+        deterministic_surface,
+        "deterministic_surface_fallback",
+        {
+            **base_validation,
+            **fallback_check,
+            "semantic_rendering": "deterministic_surface_template",
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "style_variant_id": style_variant_id,
+            "rewrite_valid": False,
+            "rewrite_errors": sorted(set(errors)),
+            "protected_question": protected,
+            "surface_slots": resolved_slots,
+            "surface_variation_version": SURFACE_VARIATION_VERSION,
+            "numeric_grounding": validate_rewrite_numeric_grounding(
+                deterministic_surface, resolved_slots
+            ),
+            "fallback_reason": fallback_reason,
+            "llm_telemetry": {
+                **telemetry,
+                "sentence_plan_valid": False,
+                "rewrite_valid": False,
+                "controlled_generation": False,
+            },
+        },
+    )
+
+
+def slot_placeholder(slot_name: str) -> str:
+    normalized = re.sub(r"[^a-z0-9_]+", "_", slot_name.casefold()).strip("_")
+    return f"<slot_{normalized}>"
+
+
+def build_protected_question(template_text: str, slot_names: list[str]) -> str:
+    placeholders = {name: slot_placeholder(name) for name in slot_names}
+    return template_text.format(**placeholders)
+
+
+def _protect_question_text(
+    question: str,
+    slots: dict[str, str],
+    required_slots: list[str],
+) -> str:
+    protected = question
+    for slot in sorted(
+        required_slots,
+        key=lambda name: len(str(slots.get(name) or "")),
+        reverse=True,
+    ):
+        value = str(slots.get(slot) or "").strip()
+        if not value:
+            continue
+        protected, _ = re.subn(
+            re.escape(value),
+            slot_placeholder(slot),
+            protected,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+    return protected
+
+
+def validate_protected_rewrite(
+    candidate: Any, required_placeholders: list[str]
+) -> dict[str, Any]:
+    errors: list[str] = []
+    if not isinstance(candidate, dict):
+        return {
+            "passed": False,
+            "question_template": "",
+            "rewrite_errors": ["rewrite_not_object"],
+        }
+    if set(candidate) - {"rewrite_version", "question_template"}:
+        errors.append("rewrite_unknown_fields")
+    if str(candidate.get("rewrite_version") or "") != QUESTION_REWRITE_VERSION:
+        errors.append("rewrite_version_invalid")
+    question_template = str(candidate.get("question_template") or "").strip()
+    observed = _PROTECTED_SLOT_PATTERN.findall(question_template)
+    if sorted(observed) != sorted(required_placeholders):
+        errors.append("rewrite_placeholder_mismatch")
+    if len(observed) != len(set(observed)):
+        errors.append("rewrite_placeholder_duplicate")
+    if _NUMBER_PATTERN.search(question_template):
+        errors.append("rewrite_unprotected_number")
+    if not question_template.endswith("?") or question_template.count("?") != 1:
+        errors.append("rewrite_not_single_question")
+    if _FORBIDDEN_QUESTION_EXTENSION.search(question_template):
+        errors.append("rewrite_forbidden_extension")
+    return {
+        "passed": not errors,
+        "question_template": question_template,
+        "rewrite_errors": errors,
+    }
+
+
+def render_protected_question(
+    question_template: str, surface_slots: dict[str, str]
+) -> str:
+    output = question_template
+    for slot, value in sorted(surface_slots.items()):
+        output = output.replace(slot_placeholder(slot), str(value))
+    return output
+
+
+def validate_rewrite_numeric_grounding(
+    question: str, surface_slots: dict[str, str]
+) -> dict[str, Any]:
+    allowed = {
+        value
+        for slot_value in surface_slots.values()
+        for value in _NUMBER_PATTERN.findall(str(slot_value))
+    }
+    observed = set(_NUMBER_PATTERN.findall(question))
+    extra = sorted(observed - allowed)
+    return {
+        "passed": not extra,
+        "extra_numbers": extra,
+        "errors": ["rewrite_unsupported_number" for _ in extra],
+    }
+
+
+def diversify_surface_slots(
+    canonical_slots: dict[str, str],
+    semantics: dict[str, Any],
+    stable_seed: str,
+    config: dict[str, Any] | None,
+) -> dict[str, str]:
+    policy = dict((config or {}).get("surface_variation") or {})
+    if not policy.get("enabled", False):
+        return dict(canonical_slots)
+    output: dict[str, str] = {}
+    for slot, value in canonical_slots.items():
+        options = _surface_options(slot, str(value), semantics, policy)
+        digest = hashlib.sha256(
+            f"{SURFACE_VARIATION_VERSION}|{stable_seed}|{slot}".encode("utf-8")
+        ).hexdigest()
+        output[slot] = options[int(digest[:8], 16) % len(options)]
+    return output
+
+
+def surface_variation_manifest(config: dict[str, Any] | None) -> dict[str, Any]:
+    policy = dict((config or {}).get("surface_variation") or {})
+    manifest = {
+        "surface_variation_version": SURFACE_VARIATION_VERSION,
+        "enabled": bool(policy.get("enabled", False)),
+        "entity_suffix_shortening": bool(policy.get("entity_suffix_shortening", True)),
+        "metric_aliases": {
+            key: list(values) for key, values in sorted(_METRIC_SURFACE_ALIASES.items())
+        },
+        "period_styles": ["canonical", "fiscal_or_calendar"],
+    }
+    payload = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+    return {
+        **manifest,
+        "surface_variation_manifest_hash": hashlib.sha256(
+            payload.encode("utf-8")
+        ).hexdigest(),
+    }
+
+
+def _surface_options(
+    slot: str,
+    value: str,
+    semantics: dict[str, Any],
+    policy: dict[str, Any],
+) -> list[str]:
+    options = [value]
+    normalized = _normalize(value)
+    if slot.startswith("metric") or slot in {
+        "ratio",
+        "primary_metric",
+        "secondary_metric",
+        "growth_metric",
+        "ranking_metric",
+        "debt_metric",
+    }:
+        options.extend(_METRIC_SURFACE_ALIASES.get(normalized, ()))
+    if slot.startswith("entity") and policy.get("entity_suffix_shortening", True):
+        shortened = re.sub(
+            r",?\\s+(?:inc\\.?|corp\\.?|corporation|company|co\\.?|ltd\\.?|plc)$",
+            "",
+            value,
+            flags=re.IGNORECASE,
+        ).strip()
+        if shortened:
+            options.append(shortened)
+    if slot in {"period", "previous_period", "start_period", "end_period"}:
+        match = re.fullmatch(r"(?:fiscal year\\s+|FY\\s*)?(\\d{4})", value, re.I)
+        if match:
+            year = match.group(1)
+            basis = str(
+                (semantics.get("time_scope") or {}).get("basis")
+                or semantics.get("time_basis")
+                or ""
+            )
+            options.append(
+                f"FY{year}" if "fiscal" in basis else f"calendar year {year}"
+            )
+    if slot == "frequency" and normalized == "annual":
+        options.append("yearly")
+    if slot == "extreme":
+        if normalized == "highest":
+            options.extend(["maximum", "peak"])
+        elif normalized == "lowest":
+            options.extend(["minimum", "trough"])
+    if slot == "scope":
+        options.append(
+            re.sub(
+                r"the explicitly configured data scope",
+                "the covered data universe",
+                value,
+                flags=re.IGNORECASE,
+            )
+        )
+    return list(dict.fromkeys(item for item in options if item))
 
 
 def validate_sentence_plan(candidate: Any) -> dict[str, Any]:
@@ -547,6 +950,28 @@ def validate_question_semantics(
         operator: _operator_position(question, operator)
         for operator in dict.fromkeys(expected_order)
     }
+    if "filter" in expected_order and observed_positions.get("filter") is None:
+        implicit_filter_positions = [
+            _comparison_position_near_number(question, item.get("value"))
+            for item in requirements["comparisons"]
+            if item.get("value") is not None
+        ]
+        if implicit_filter_positions and all(
+            position is not None for position in implicit_filter_positions
+        ):
+            observed_positions["filter"] = min(
+                int(position)
+                for position in implicit_filter_positions
+                if position is not None
+            )
+    if expected_order == ["filter", "rank"] and re.search(
+        r"\b(?:after|following)\s+(?:filter(?:ing|ed)?|screen(?:ing|ed)?)\b",
+        question,
+        re.IGNORECASE,
+    ):
+        rank_position = observed_positions.get("rank")
+        if rank_position is not None:
+            observed_positions["filter"] = rank_position - 1
     if len(expected_order) > 1:
         missing = [
             operator
@@ -680,7 +1105,43 @@ def _comparison_near_number(question: str, expected_value: Any) -> str | None:
     return min(candidates)[2]
 
 
+def _comparison_position_near_number(
+    question: str, expected_value: Any
+) -> int | None:
+    expected = _decimal_key(expected_value)
+    if expected is None:
+        return None
+    candidates: list[tuple[int, int]] = []
+    for number_match in _NUMBER_PATTERN.finditer(question):
+        if _decimal_key(number_match.group(0)) != expected:
+            continue
+        for comparison_match in _COMPARISON_PATTERN.finditer(question):
+            if comparison_match.end() <= number_match.start():
+                distance = number_match.start() - comparison_match.end()
+            elif comparison_match.start() >= number_match.end():
+                distance = comparison_match.start() - number_match.end()
+            else:
+                distance = 0
+            if distance <= 48:
+                candidates.append((distance, comparison_match.start()))
+    return min(candidates)[1] if candidates else None
+
+
 def _rank_direction(question: str) -> str | None:
+    descending_sequence = re.search(
+        r"\b(?:highest|largest|greatest)\b.{0,32}\b(?:to|toward)\s+"
+        r"(?:the\s+)?(?:lowest|smallest|least)\b",
+        question,
+        re.IGNORECASE,
+    )
+    ascending_sequence = re.search(
+        r"\b(?:lowest|smallest|least)\b.{0,32}\b(?:to|toward)\s+"
+        r"(?:the\s+)?(?:highest|largest|greatest)\b",
+        question,
+        re.IGNORECASE,
+    )
+    if bool(descending_sequence) != bool(ascending_sequence):
+        return "desc" if descending_sequence else "asc"
     descending = bool(_RANK_DESC_PATTERN.search(question))
     ascending = bool(_RANK_ASC_PATTERN.search(question))
     if descending == ascending:
@@ -706,8 +1167,11 @@ def _extract_top_k(question: str) -> int | None:
 
 
 def _operator_position(question: str, operator: str) -> int | None:
-    match = _OBSERVABLE_OPERATOR_PATTERNS[operator].search(question)
-    return match.start() if match else None
+    matches = list(_OBSERVABLE_OPERATOR_PATTERNS[operator].finditer(question))
+    if not matches:
+        return None
+    match = matches[-1] if operator == "rank" else matches[0]
+    return match.start()
 
 
 def _render_sequence_connector(

@@ -79,6 +79,15 @@ def execute_plan(
             output = execute_operator(
                 str(step["operator"]), resolved, dict(step.get("params") or {})
             )
+            output = _with_answer_lineage(
+                output,
+                resolved,
+                [
+                    str(reference["step"])
+                    for reference in step.get("inputs") or []
+                    if "step" in reference
+                ],
+            )
             results[str(step["step_id"])] = output
             trace.append(
                 {
@@ -91,6 +100,95 @@ def execute_plan(
     except (KeyError, OperatorError, TypeError, ValueError) as exc:
         return PlanExecution({}, trace, "failed", [str(exc)])
     return PlanExecution(results[str(plan["output_step"])], trace, "passed", [])
+
+
+def _with_answer_lineage(
+    output: dict[str, Any], inputs: list[Any], input_step_ids: list[str]
+) -> dict[str, Any]:
+    result = dict(output)
+    existing = dict(result.get("lineage") or {})
+    input_fact_ids = sorted(
+        _collect_values(
+            inputs,
+            {"fact_id", "input_fact_ids", "primary_fact_id", "secondary_fact_id"},
+            lineage_field="input_fact_ids",
+        )
+    )
+    selected_fact_ids = sorted(
+        _collect_values(
+            result,
+            {"fact_id", "input_fact_ids", "primary_fact_id", "secondary_fact_id"},
+            lineage_field="selected_fact_ids",
+        )
+    )
+    input_entity_ids = sorted(
+        _collect_values(
+            inputs, {"entity_id", "winner_id"}, lineage_field="input_entity_ids"
+        )
+    )
+    selected_entity_ids = sorted(
+        _collect_values(
+            result, {"entity_id", "winner_id"}, lineage_field="selected_entity_ids"
+        )
+    )
+    input_periods = sorted(
+        _collect_values(
+            inputs, {"period", "result_period"}, lineage_field="input_periods"
+        )
+    )
+    selected_periods = sorted(
+        _collect_values(
+            result, {"period", "result_period"}, lineage_field="selected_periods"
+        )
+    )
+    result["lineage"] = {
+        "input_fact_ids": sorted(
+            set(existing.get("input_fact_ids") or []) | set(input_fact_ids)
+        ),
+        "selected_fact_ids": sorted(
+            set(existing.get("selected_fact_ids") or []) | set(selected_fact_ids)
+        ),
+        "input_entity_ids": sorted(
+            set(existing.get("input_entity_ids") or []) | set(input_entity_ids)
+        ),
+        "selected_entity_ids": sorted(
+            set(existing.get("selected_entity_ids") or []) | set(selected_entity_ids)
+        ),
+        "input_periods": sorted(
+            set(existing.get("input_periods") or []) | set(input_periods)
+        ),
+        "selected_periods": sorted(
+            set(existing.get("selected_periods") or []) | set(selected_periods)
+        ),
+        "input_step_ids": sorted(
+            set(existing.get("input_step_ids") or []) | set(input_step_ids)
+        ),
+    }
+    return result
+
+
+def _collect_values(value: Any, keys: set[str], *, lineage_field: str) -> set[str]:
+    output: set[str] = set()
+    if isinstance(value, dict):
+        lineage = value.get("lineage")
+        if isinstance(lineage, dict):
+            output.update(
+                str(item)
+                for item in lineage.get(lineage_field) or []
+                if item not in {None, ""}
+            )
+        for key, item in value.items():
+            if key == "lineage":
+                continue
+            if key in keys:
+                values = item if isinstance(item, list) else [item]
+                output.update(str(entry) for entry in values if entry not in {None, ""})
+            else:
+                output.update(_collect_values(item, keys, lineage_field=lineage_field))
+    elif isinstance(value, list):
+        for item in value:
+            output.update(_collect_values(item, keys, lineage_field=lineage_field))
+    return output
 
 
 def operation_depth(plan: dict[str, Any]) -> int:
@@ -125,10 +223,7 @@ def _resolve_input(
     if binding_name not in bindings:
         raise KeyError(f"Missing operation input binding: {binding_name}")
     fact_ids = bindings[binding_name]
-    if (
-        isinstance(fact_ids, dict)
-        and set(fact_ids) == {"__literal__"}
-    ):
+    if isinstance(fact_ids, dict) and set(fact_ids) == {"__literal__"}:
         return copy.deepcopy(fact_ids["__literal__"])
     if isinstance(fact_ids, list):
         missing = [fact_id for fact_id in fact_ids if str(fact_id) not in facts_by_id]

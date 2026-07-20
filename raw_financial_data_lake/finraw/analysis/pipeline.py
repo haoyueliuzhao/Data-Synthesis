@@ -10,6 +10,7 @@ from finraw.analysis.claims import (
     CLAIM_PLANNER_VERSION,
     build_claim_plan,
 )
+from finraw.analysis.discourse import discourse_manifest
 from finraw.analysis.generator import ANALYSIS_GENERATOR_VERSION, generate_analysis
 from finraw.analysis.peer_scope import (
     PEER_SCOPE_ELIGIBILITY_POLICY_VERSION,
@@ -54,7 +55,7 @@ from finraw.qa.comparability import (
 from finraw.qa.pipeline import _kg_path_from_graph
 from finraw.qa.store import insert_rows
 
-ANALYSIS_COMPILER_VERSION = "2.2.0"
+ANALYSIS_COMPILER_VERSION = "2.3.0"
 _CASH_FLOW = "net_cash_provided_by_used_in_operating_activities"
 _REQUIRED_METRICS = (
     "revenue",
@@ -1236,7 +1237,7 @@ def _compile_binding(
         "conclusion_family_id": generation.selected_conclusion_id,
         "analysis_build_id": analysis_build_id,
         "candidate_id": candidate_id,
-        "instruction": pattern.instruction_template,
+        "instruction": generation.instruction_text,
         "analysis_text": generation.analysis_text,
         "selected_conclusion_id": generation.selected_conclusion_id,
         "conclusion_text": generation.conclusion_text,
@@ -1285,7 +1286,7 @@ def _compile_binding(
                     "controlled_generation": bool(
                         is_final
                         and generation.generation_method
-                        == "controlled_llm_semantic_frame"
+                        == "controlled_llm_discourse_plan"
                     ),
                     "latency_ms": telemetry.get("latency_ms"),
                     "prompt_tokens": telemetry.get("prompt_tokens"),
@@ -1415,10 +1416,13 @@ def _analysis_llm_stats(
             "retry_count": 0,
             "http_success_count": 0,
             "structured_response_pass_count": 0,
+            "attempt_structured_response_pass_count": 0,
+            "final_attempt_count": 0,
             "controlled_generation_count": 0,
             "fallback_count": 0,
             "http_success_rate": 1.0,
             "structured_response_pass_rate": 1.0,
+            "attempt_structured_response_pass_rate": 1.0,
             "controlled_generation_rate": 1.0,
             "fallback_rate": 0.0,
             "retry_rate": 0.0,
@@ -1433,6 +1437,21 @@ def _analysis_llm_stats(
         }
     request_count = len(llm_call_rows)
     sample_count = len(sample_rows)
+    final_attempt_rows = [
+        row for row in llm_call_rows if bool(row.get("is_final_attempt"))
+    ]
+    if not final_attempt_rows:
+        latest_by_sample: dict[str, dict[str, Any]] = {}
+        for row in llm_call_rows:
+            sample_key = str(
+                row.get("analysis_sample_id") or row.get("candidate_id") or ""
+            )
+            previous = latest_by_sample.get(sample_key)
+            if previous is None or int(row.get("attempt_index") or 1) >= int(
+                previous.get("attempt_index") or 1
+            ):
+                latest_by_sample[sample_key] = row
+        final_attempt_rows = list(latest_by_sample.values())
     fallback_reasons = Counter(
         str((row.get("generation_metadata") or {}).get("fallback_reason"))
         for row in sample_rows
@@ -1450,7 +1469,7 @@ def _analysis_llm_stats(
         if row.get("estimated_cost") is not None
     ]
     controlled_samples = sum(
-        row.get("generation_method") == "controlled_llm_semantic_frame"
+        row.get("generation_method") == "controlled_llm_discourse_plan"
         for row in sample_rows
     )
     return {
@@ -1462,8 +1481,12 @@ def _analysis_llm_stats(
             bool(row.get("http_success")) for row in llm_call_rows
         ),
         "structured_response_pass_count": sum(
+            bool(row.get("structured_response_valid")) for row in final_attempt_rows
+        ),
+        "attempt_structured_response_pass_count": sum(
             bool(row.get("structured_response_valid")) for row in llm_call_rows
         ),
+        "final_attempt_count": len(final_attempt_rows),
         "controlled_generation_count": controlled_samples,
         "fallback_count": fallback_count,
         "http_success_rate": sum(bool(row.get("http_success")) for row in llm_call_rows)
@@ -1471,6 +1494,12 @@ def _analysis_llm_stats(
         if request_count
         else 0.0,
         "structured_response_pass_rate": sum(
+            bool(row.get("structured_response_valid")) for row in final_attempt_rows
+        )
+        / len(final_attempt_rows)
+        if final_attempt_rows
+        else 0.0,
+        "attempt_structured_response_pass_rate": sum(
             bool(row.get("structured_response_valid")) for row in llm_call_rows
         )
         / request_count
@@ -1486,7 +1515,7 @@ def _analysis_llm_stats(
         "unknown_fallback_reason_count": sum(
             1
             for row in sample_rows
-            if row.get("generation_method") != "controlled_llm_semantic_frame"
+            if row.get("generation_method") != "controlled_llm_discourse_plan"
             and not (row.get("generation_metadata") or {}).get("fallback_reason")
         ),
         "fallback_reason_distribution": dict(sorted(fallback_reasons.items())),
@@ -1585,6 +1614,9 @@ def _analysis_policy(
         "mode": generation_mode,
         "allow_numeric_slots": bool(generation.get("allow_numeric_slots", True)),
         "max_attempts": max(1, min(3, int(generation.get("max_attempts", 2)))),
+        "maximum_numeric_mentions": max(
+            0, min(5, int(generation.get("maximum_numeric_mentions", 2)))
+        ),
         "llm": llm_config,
         "api_quality_gate": {
             "minimum_http_success_rate": float(
@@ -1647,6 +1679,7 @@ def _manifests() -> dict[str, str]:
                 "claim_planner_version": CLAIM_PLANNER_VERSION,
                 "analysis_generator_version": ANALYSIS_GENERATOR_VERSION,
                 "semantic_frame_manifest": semantic_frame_manifest(),
+                "discourse_manifest": discourse_manifest(),
             }
         ),
         "conclusion_policy_manifest_hash": stable_hash(

@@ -104,12 +104,9 @@ def validate_semantic_constraints(
     if not rows:
         return _result(checks)
 
-
     # These are baseline admission rules for every executable graph binding.
     not_ready_ids = sorted(
-        str(row.get("fact_id"))
-        for row in rows
-        if not _truthy(row.get("graph_ready"))
+        str(row.get("fact_id")) for row in rows if not _truthy(row.get("graph_ready"))
     )
     check("graph_ready", not not_ready_ids, not_ready_ids, [])
     forecast_ids = sorted(
@@ -119,8 +116,7 @@ def validate_semantic_constraints(
     blocked_ids = sorted(
         str(row.get("fact_id"))
         for row in rows
-        if _normalise(row.get("comparability_level"))
-        in BLOCKED_COMPARABILITY_LEVELS
+        if _normalise(row.get("comparability_level")) in BLOCKED_COMPARABILITY_LEVELS
     )
     check("comparability_level", not blocked_ids, blocked_ids, [])
 
@@ -132,9 +128,11 @@ def validate_semantic_constraints(
             lambda row: row.get("source_id"),
             allow_missing=_allows_missing(constraints, "source", "source_id"),
         )
-    if comparability_policy.get("require_same_time_basis", True) or (
-        "time_basis", "same"
-    ) in declared:
+    if (
+        comparability_policy.get("require_same_time_basis", True)
+        or ("time_basis", "same") in declared
+    ):
+
         def time_basis_getter(row: Mapping[str, Any]) -> Any:
             return row.get("time_basis")
 
@@ -155,9 +153,10 @@ def validate_semantic_constraints(
                 time_basis_getter,
                 allow_missing=_allows_missing(constraints, "time_basis"),
             )
-    if comparability_policy.get("require_same_frequency", True) or (
-        "frequency", "same"
-    ) in declared:
+    if (
+        comparability_policy.get("require_same_frequency", True)
+        or ("frequency", "same") in declared
+    ):
         _same_value_check(
             check,
             "frequency",
@@ -165,23 +164,21 @@ def validate_semantic_constraints(
             lambda row: row.get("frequency"),
             allow_missing=_allows_missing(constraints, "frequency"),
         )
-    if comparability_policy.get("require_same_seasonal_adjustment", True) or (
-        "seasonal_adjustment", "same"
-    ) in declared:
+    if (
+        comparability_policy.get("require_same_seasonal_adjustment", True)
+        or ("seasonal_adjustment", "same") in declared
+    ):
         _same_value_check(
             check,
             "seasonal_adjustment",
             rows,
-            lambda row: _effective_seasonal_adjustment(
-                row, metric_ontology
-            ),
-            allow_missing=_allows_missing(
-                constraints, "seasonal_adjustment"
-            ),
+            lambda row: _effective_seasonal_adjustment(row, metric_ontology),
+            allow_missing=_allows_missing(constraints, "seasonal_adjustment"),
         )
-    if comparability_policy.get("require_same_vintage_policy", True) or (
-        "vintage_policy", "same"
-    ) in declared:
+    if (
+        comparability_policy.get("require_same_vintage_policy", True)
+        or ("vintage_policy", "same") in declared
+    ):
         _same_value_check(
             check,
             "vintage_policy",
@@ -195,7 +192,9 @@ def validate_semantic_constraints(
         scope_errors = _financial_scope_errors(rows)
         check("financial_scope", not scope_errors, scope_errors, {})
 
-    if any(field in {"source_definition", "source_definition_id"} for field, _ in declared):
+    if any(
+        field in {"source_definition", "source_definition_id"} for field, _ in declared
+    ):
         definition_errors = _source_definition_errors(
             rows,
             require_exact_by_series=bool(
@@ -295,7 +294,9 @@ def _binding_rows(
     fact_map: Mapping[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
     value = dict(binding.get("input_bindings") or {}).get(binding_name)
-    fact_ids = value if isinstance(value, list) else ([value] if value is not None else [])
+    fact_ids = (
+        value if isinstance(value, list) else ([value] if value is not None else [])
+    )
     return [fact_map[str(fact_id)] for fact_id in fact_ids if str(fact_id) in fact_map]
 
 
@@ -370,8 +371,7 @@ def _financial_scope_errors(rows: list[dict[str, Any]]) -> dict[str, Any]:
         if len(scopes) > 1
     }
     scope_types = {
-        str(row.get("financial_scope_type") or "consolidated_entity")
-        for row in rows
+        str(row.get("financial_scope_type") or "consolidated_entity") for row in rows
     }
     if len(scope_types) > 1:
         errors["mixed_scope_type_across_entities"] = sorted(scope_types)
@@ -386,9 +386,7 @@ def _financial_scope_errors(rows: list[dict[str, Any]]) -> dict[str, Any]:
     if invalid_consolidated:
         errors["misaligned_consolidated_scope"] = invalid_consolidated
     if len(by_entity) > 1 and scope_types != {"consolidated_entity"}:
-        scope_ids = {
-            str(row.get("entity_scope_id") or "") for row in rows
-        }
+        scope_ids = {str(row.get("entity_scope_id") or "") for row in rows}
         if len(scope_ids) > 1:
             errors["noncanonical_cross_entity_scope"] = sorted(scope_ids)
     return errors
@@ -495,11 +493,16 @@ def _evaluate_eq(
             == len({str(row.get("entity_id")) for row in rows if row.get("entity_id")})
             for rows in binding_rows.values()
         )
-        exact = bool(expected_ids) and bool(entity_sets) and all(
-            values == expected_ids for values in entity_sets.values()
-        ) and unique
-        observed_ratio = Decimal("1") if exact else _minimum_set_coverage(
-            entity_sets.values(), expected_ids
+        exact = (
+            bool(expected_ids)
+            and bool(entity_sets)
+            and all(values == expected_ids for values in entity_sets.values())
+            and unique
+        )
+        observed_ratio = (
+            Decimal("1")
+            if exact
+            else _minimum_set_coverage(entity_sets.values(), expected_ids)
         )
         expected_ratio = _decimal(expected)
         return SemanticCheck(
@@ -595,9 +598,7 @@ def _evaluate_same(
             f"same_{_safe_name(field)}",
             len(values) == 1 and (nonempty or allow_missing),
             values,
-            "one value; missing allowed"
-            if allow_missing
-            else "one non-empty value",
+            "one value; missing allowed" if allow_missing else "one non-empty value",
         )
     if field == "scope":
         values = sorted({_normalise(_entity_scope_label(row)) for row in context.rows})
@@ -636,9 +637,7 @@ def _evaluate_compatible(
         )
     if field in {"source_definition", "source_definition_id"}:
         errors = _source_definition_errors(context.rows, require_exact_by_series=True)
-        return SemanticCheck(
-            "source_definition_compatibility", not errors, errors, {}
-        )
+        return SemanticCheck("source_definition_compatibility", not errors, errors, {})
     return _unsupported_field("compatible", field)
 
 
@@ -751,12 +750,14 @@ def _evaluate_complete_across_bindings(
     }
     expected = {str(value) for value in context.binding.get("entity_ids") or []}
     unique = all(
-        len(_binding_rows(name, context.binding, context.fact_map))
-        == len(values)
+        len(_binding_rows(name, context.binding, context.fact_map)) == len(values)
         for name, values in entity_sets.items()
     )
-    complete = bool(entity_sets) and bool(expected) and unique and all(
-        values == expected for values in entity_sets.values()
+    complete = (
+        bool(entity_sets)
+        and bool(expected)
+        and unique
+        and all(values == expected for values in entity_sets.values())
     )
     return SemanticCheck(
         "scope_entity_coverage",
@@ -821,7 +822,9 @@ def _evaluate_registered_comparable_pair(
     context: SemanticConstraintContext, constraint: Mapping[str, Any]
 ) -> SemanticCheck:
     if str(constraint.get("field") or "") != "metric_pair":
-        return _unsupported_field(str(constraint.get("operator")), str(constraint.get("field")))
+        return _unsupported_field(
+            str(constraint.get("operator")), str(constraint.get("field"))
+        )
     pair = _metric_role_pair(context.binding, context.spec)
     allowed = bool(pair) and metric_pair_allowed(pair[0], pair[1], dict(context.policy))
     return SemanticCheck(
@@ -836,7 +839,9 @@ def _evaluate_registered_followup_pair(
     context: SemanticConstraintContext, constraint: Mapping[str, Any]
 ) -> SemanticCheck:
     if str(constraint.get("field") or "") != "metric_pair":
-        return _unsupported_field(str(constraint.get("operator")), str(constraint.get("field")))
+        return _unsupported_field(
+            str(constraint.get("operator")), str(constraint.get("field"))
+        )
     pair = _metric_role_pair(context.binding, context.spec)
     allowed_pairs = {
         (str(left), str(right))
@@ -872,7 +877,11 @@ def _evaluate_gt(
         )
         if value is not None
     }
-    qualifying = sorted(key for key, value in values.items() if expected is not None and value > expected)
+    qualifying = sorted(
+        key
+        for key, value in values.items()
+        if expected is not None and value > expected
+    )
     passed = (
         bool(values)
         and bool(qualifying)
@@ -883,7 +892,11 @@ def _evaluate_gt(
     return SemanticCheck(
         "revenue_growth_pct_gt_policy",
         passed,
-        {"values": _decimal_map(values), "configured_threshold": str(configured), "qualifying": qualifying},
+        {
+            "values": _decimal_map(values),
+            "configured_threshold": str(configured),
+            "qualifying": qualifying,
+        },
         {
             "threshold": str(expected),
             "allowed_thresholds": [str(value) for value in sorted(allowed)],
@@ -899,7 +912,9 @@ def _evaluate_lt(
     if field != "debt_ratio_pct":
         return _unsupported_field("lt", field)
     values = _ratio_values(context, "total_liabilities", "total_assets")
-    configured = _operation_parameter(context, (("multi_factor_screen", "debt_max_pct"),))
+    configured = _operation_parameter(
+        context, (("multi_factor_screen", "debt_max_pct"),)
+    )
     fallback = _decimal(context.policy.get("debt_ratio_max_pct"))
     expected = configured if configured is not None else fallback
     allowed = {
@@ -913,7 +928,11 @@ def _evaluate_lt(
         )
         if value is not None
     }
-    qualifying = sorted(key for key, value in values.items() if expected is not None and value < expected)
+    qualifying = sorted(
+        key
+        for key, value in values.items()
+        if expected is not None and value < expected
+    )
     passed = (
         bool(values)
         and bool(qualifying)
@@ -924,7 +943,11 @@ def _evaluate_lt(
     return SemanticCheck(
         "debt_ratio_pct_lt_policy",
         passed,
-        {"values": _decimal_map(values), "configured_threshold": str(configured), "qualifying": qualifying},
+        {
+            "values": _decimal_map(values),
+            "configured_threshold": str(configured),
+            "qualifying": qualifying,
+        },
         {
             "threshold": str(expected),
             "allowed_thresholds": [str(value) for value in sorted(allowed)],
@@ -940,14 +963,20 @@ def _evaluate_gt_industry_average(
     if field != "net_margin":
         return _unsupported_field("gt_industry_average", field)
     values = _ratio_values(context, "net_income", "current_revenue")
-    average = sum(values.values(), Decimal("0")) / Decimal(len(values)) if values else None
+    average = (
+        sum(values.values(), Decimal("0")) / Decimal(len(values)) if values else None
+    )
     qualifying = sorted(
         key for key, value in values.items() if average is not None and value > average
     )
     return SemanticCheck(
         "net_margin_gt_industry_average",
         bool(values) and bool(qualifying),
-        {"values": _decimal_map(values), "average": str(average), "qualifying": qualifying},
+        {
+            "values": _decimal_map(values),
+            "average": str(average),
+            "qualifying": qualifying,
+        },
         "at least one entity above the recomputed scope average",
     )
 
@@ -1001,17 +1030,22 @@ def _coverage_check(
         primary = {_period_alignment_signature(row) for row in primary_rows}
         secondary = {_period_alignment_signature(row) for row in secondary_rows}
     else:
-        primary = {str(row.get("entity_id")) for row in primary_rows if row.get("entity_id")}
-        secondary = {str(row.get("entity_id")) for row in secondary_rows if row.get("entity_id")}
+        primary = {
+            str(row.get("entity_id")) for row in primary_rows if row.get("entity_id")
+        }
+        secondary = {
+            str(row.get("entity_id")) for row in secondary_rows if row.get("entity_id")
+        }
     unique = len(primary_rows) == len(primary) and len(secondary_rows) == len(secondary)
-    ratio = Decimal(len(primary & secondary)) / Decimal(len(primary)) if primary else Decimal("0")
+    ratio = (
+        Decimal(len(primary & secondary)) / Decimal(len(primary))
+        if primary
+        else Decimal("0")
+    )
     expected = _decimal(expected_value)
     return SemanticCheck(
         f"{field}_equals",
-        expected is not None
-        and ratio == expected
-        and primary == secondary
-        and unique,
+        expected is not None and ratio == expected and primary == secondary and unique,
         {
             "coverage": str(ratio),
             "primary": sorted(primary),
@@ -1023,20 +1057,25 @@ def _coverage_check(
 
 
 def _input_entity_sets(context: SemanticConstraintContext) -> dict[str, set[str]]:
-    return {
-        str(name): {
-            str(row.get("entity_id"))
-            for row in _binding_rows(str(name), context.binding, context.fact_map)
-            if row.get("entity_id")
+    output: dict[str, set[str]] = {}
+    for name, value in dict(context.binding.get("input_bindings") or {}).items():
+        if isinstance(value, dict) and set(value) == {"__literal__"}:
+            continue
+        rows = _binding_rows(str(name), context.binding, context.fact_map)
+        if not rows:
+            continue
+        output[str(name)] = {
+            str(row.get("entity_id")) for row in rows if row.get("entity_id")
         }
-        for name in dict(context.binding.get("input_bindings") or {})
-    }
+    return output
 
 
 def _minimum_set_coverage(values: Iterable[set[str]], expected: set[str]) -> Decimal:
     if not expected:
         return Decimal("0")
-    ratios = [Decimal(len(value & expected)) / Decimal(len(expected)) for value in values]
+    ratios = [
+        Decimal(len(value & expected)) / Decimal(len(expected)) for value in values
+    ]
     return min(ratios, default=Decimal("0"))
 
 
@@ -1044,13 +1083,21 @@ def _ontology_semantic_check(
     context: SemanticConstraintContext, field: str
 ) -> SemanticCheck:
     missing = sorted(
-        {str(row.get("metric_id")) for row in context.rows if str(row.get("metric_id")) not in context.metric_ontology}
+        {
+            str(row.get("metric_id"))
+            for row in context.rows
+            if str(row.get("metric_id")) not in context.metric_ontology
+        }
     )
     values = sorted(
         {
             _normalise(
                 context.metric_ontology.get(str(row.get("metric_id")), {}).get(field)
-                or (row.get("metric_period_type") if field == "period_type" else row.get(field))
+                or (
+                    row.get("metric_period_type")
+                    if field == "period_type"
+                    else row.get(field)
+                )
             )
             for row in context.rows
         }
@@ -1109,23 +1156,33 @@ def _effective_seasonal_adjustment(
 
 
 def _growth_values(context: SemanticConstraintContext) -> dict[str, Decimal]:
-    current = _rows_by_entity(_binding_rows("current_revenue", context.binding, context.fact_map))
-    previous = _rows_by_entity(_binding_rows("previous_revenue", context.binding, context.fact_map))
+    current = _rows_by_entity(
+        _binding_rows("current_revenue", context.binding, context.fact_map)
+    )
+    previous = _rows_by_entity(
+        _binding_rows("previous_revenue", context.binding, context.fact_map)
+    )
     output: dict[str, Decimal] = {}
     for entity_id in sorted(set(current) & set(previous)):
         current_value = _fact_decimal(current[entity_id])
         previous_value = _fact_decimal(previous[entity_id])
         if current_value is None or previous_value in {None, Decimal("0")}:
             continue
-        output[entity_id] = ((current_value - previous_value) / abs(previous_value)) * Decimal("100")
+        output[entity_id] = (
+            (current_value - previous_value) / abs(previous_value)
+        ) * Decimal("100")
     return output
 
 
 def _ratio_values(
     context: SemanticConstraintContext, numerator_binding: str, denominator_binding: str
 ) -> dict[str, Decimal]:
-    numerators = _rows_by_entity(_binding_rows(numerator_binding, context.binding, context.fact_map))
-    denominators = _rows_by_entity(_binding_rows(denominator_binding, context.binding, context.fact_map))
+    numerators = _rows_by_entity(
+        _binding_rows(numerator_binding, context.binding, context.fact_map)
+    )
+    denominators = _rows_by_entity(
+        _binding_rows(denominator_binding, context.binding, context.fact_map)
+    )
     output: dict[str, Decimal] = {}
     for entity_id in sorted(set(numerators) & set(denominators)):
         numerator = _fact_decimal(numerators[entity_id])
@@ -1152,7 +1209,10 @@ def _operation_parameter(
     for step in context.spec.get("operator_template", {}).get("operators") or []:
         operator = str(step.get("operator") or "")
         step_id = str(step.get("step_id") or "")
-        params = {**dict(step.get("params") or {}), **dict(overrides.get(step_id) or {})}
+        params = {
+            **dict(step.get("params") or {}),
+            **dict(overrides.get(step_id) or {}),
+        }
         for expected_operator, parameter in candidates:
             if operator == expected_operator and parameter in params:
                 return _decimal(params.get(parameter))
@@ -1193,11 +1253,15 @@ def _unsupported_field(operator: str, field: str) -> SemanticCheck:
 
 
 def _safe_name(value: str) -> str:
-    return "".join(character if character.isalnum() else "_" for character in value).strip("_")
+    return "".join(
+        character if character.isalnum() else "_" for character in value
+    ).strip("_")
 
 
 def _result(checks: dict[str, dict[str, Any]]) -> SemanticValidationResult:
-    errors = tuple(sorted(name for name, value in checks.items() if not value["passed"]))
+    errors = tuple(
+        sorted(name for name, value in checks.items() if not value["passed"])
+    )
     return SemanticValidationResult(not errors, errors, checks)
 
 

@@ -458,6 +458,60 @@ def test_analysis_compiler_builds_three_patterns_and_rejects_tampering(tmp_path)
         ),
     )
 
+    discourse_sample = db.fetchone(
+        "SELECT analysis_sample_id, instruction, generation_metadata "
+        "FROM analysis_samples WHERE analysis_build_id = ? "
+        "ORDER BY analysis_sample_id LIMIT 1",
+        (report["analysis_build_id"],),
+    )
+    original_instruction = str(discourse_sample["instruction"])
+    original_generation_metadata = json.loads(
+        discourse_sample["generation_metadata"]
+    )
+    db.execute(
+        "UPDATE analysis_samples SET instruction = ? WHERE analysis_sample_id = ?",
+        ("Invented investment instruction", discourse_sample["analysis_sample_id"]),
+    )
+    instruction_tamper = validate_analysis_samples(db, report["analysis_build_id"])
+    assert instruction_tamper["failure_counts"][
+        "analysis_instruction_surface_contract"
+    ] == 1
+    db.execute(
+        "UPDATE analysis_samples SET instruction = ? WHERE analysis_sample_id = ?",
+        (original_instruction, discourse_sample["analysis_sample_id"]),
+    )
+
+    altered_generation_metadata = dict(original_generation_metadata)
+    altered_generation_metadata["discourse_plan"] = dict(
+        original_generation_metadata["discourse_plan"]
+    )
+    altered_generation_metadata["discourse_plan"]["transition_ids"] = list(
+        altered_generation_metadata["discourse_plan"]["transition_ids"]
+    )
+    altered_generation_metadata["discourse_plan"]["transition_ids"][0] = (
+        "invented_transition"
+    )
+    db.execute(
+        "UPDATE analysis_samples SET generation_metadata = ? "
+        "WHERE analysis_sample_id = ?",
+        (
+            json.dumps(altered_generation_metadata),
+            discourse_sample["analysis_sample_id"],
+        ),
+    )
+    discourse_tamper = validate_analysis_samples(db, report["analysis_build_id"])
+    assert discourse_tamper["failure_counts"][
+        "analysis_discourse_plan_contract"
+    ] == 1
+    db.execute(
+        "UPDATE analysis_samples SET generation_metadata = ? "
+        "WHERE analysis_sample_id = ?",
+        (
+            json.dumps(original_generation_metadata),
+            discourse_sample["analysis_sample_id"],
+        ),
+    )
+
     sample = db.fetchone(
         "SELECT analysis_sample_id, analysis_text FROM analysis_samples "
         "WHERE analysis_build_id = ? ORDER BY analysis_sample_id LIMIT 1",

@@ -35,6 +35,10 @@ from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.pattern_catalog import publish_mining_run_to_catalog
+from finraw.qa.pattern_ideation import (
+    generate_pattern_ideas,
+    write_pattern_ideation_report,
+)
 from finraw.qa.pipeline import build_qa, build_qa_candidates, generate_qa_samples, split_qa_samples, validate_qa_samples
 from finraw.qa.pattern_mining import (
     mine_qa_patterns,
@@ -252,6 +256,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     qa_mining.add_argument("--kg-build-id", help="Optional KG build ID. Defaults to active KG.")
     qa_mining.add_argument("--output-dir", default="data/audit/qa_pattern_mining")
+
+    qa_ideation = sub.add_parser(
+        "ideate-qa-patterns",
+        help="Ask an LLM for registry-bounded QA pattern ideas without publishing them.",
+    )
+    qa_ideation.add_argument(
+        "--metric-id",
+        action="append",
+        default=[],
+        help="Allowed metric ID. Repeat to pass multiple IDs; defaults to active metrics.",
+    )
+    qa_ideation.add_argument("--maximum-ideas", type=int, default=10)
+    qa_ideation.add_argument(
+        "--output-dir", default="data/audit/qa_pattern_ideation"
+    )
 
     qa_pattern_review = sub.add_parser(
         "review-qa-pattern",
@@ -612,6 +631,34 @@ def main() -> None:
                 kg_build_id=args.kg_build_id,
                 output_dir=args.output_dir,
             )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "ideate-qa-patterns":
+            metric_ids = sorted(set(args.metric_id))
+            if not metric_ids:
+                metric_ids = [
+                    str(row["metric_id"])
+                    for row in db.fetchall(
+                        """
+                        SELECT metric_id
+                        FROM metrics
+                        WHERE is_active = 1
+                        ORDER BY metric_id
+                        LIMIT 100
+                        """
+                    )
+                ]
+            generation = dict(
+                config.get("qa", {}).get("question_generation", {}) or {}
+            )
+            report = generate_pattern_ideas(
+                metric_ids,
+                {
+                    "maximum_ideas": args.maximum_ideas,
+                    "llm": generation.get("llm") or {},
+                },
+            )
+            output = write_pattern_ideation_report(report, args.output_dir)
+            report["output"] = str(output)
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "review-qa-pattern":
             report = review_pattern_proposal(

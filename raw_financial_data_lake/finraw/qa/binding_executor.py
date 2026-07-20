@@ -11,8 +11,15 @@ from typing import Any
 
 from finraw.db.client import DBProtocol
 from finraw.qa.graph_binding_ir import (
+    assert_role_key_equal,
+    deduplicate_graph_role,
+    assert_role_key_relation,
     expand_graph_edges,
+    filter_graph_role,
     project_graph_binding,
+    project_graph_binding_v2,
+    require_graph_roles_contiguous,
+    require_role_coverage,
     scan_pinned_graph_nodes,
 )
 from finraw.qa.comparability import (
@@ -47,9 +54,7 @@ class MetricFactCache:
     _facts_by_key: dict[tuple[str, ...], tuple[dict[str, Any], ...]] = field(
         default_factory=dict
     )
-    _metrics_by_key: dict[tuple[str, str], dict[str, Any]] = field(
-        default_factory=dict
-    )
+    _metrics_by_key: dict[tuple[str, str], dict[str, Any]] = field(default_factory=dict)
     _scanned_fact_keys: set[tuple[str, ...]] = field(default_factory=set)
     hit_count: int = 0
     miss_count: int = 0
@@ -72,9 +77,7 @@ class MetricFactCache:
             metric_fact_scan_policy_hash(rows_per_metric),
         )
 
-    def get_facts(
-        self, key: tuple[str, ...]
-    ) -> list[dict[str, Any]] | None:
+    def get_facts(self, key: tuple[str, ...]) -> list[dict[str, Any]] | None:
         if not self.enabled:
             return None
         cached = self._facts_by_key.get(key)
@@ -85,9 +88,7 @@ class MetricFactCache:
         self.reused_fact_count += len(cached)
         return [dict(row) for row in cached]
 
-    def put_facts(
-        self, key: tuple[str, ...], rows: list[dict[str, Any]]
-    ) -> None:
+    def put_facts(self, key: tuple[str, ...], rows: list[dict[str, Any]]) -> None:
         snapshot = tuple(dict(row) for row in rows)
         self._scanned_fact_keys.add(key)
         self.fact_query_count += 1
@@ -474,10 +475,11 @@ def validate_relational_ops(operations: list[dict[str, Any]]) -> None:
             "Relational plan must start with a registered pinned fact or graph scan"
         )
     prefix_length = 2 if fact_plan else 1
-    if graph_plan and (
-        names.count("project_graph_binding") != 1
-        or "expand_graph_edges" not in names
-    ):
+    projection_count = sum(
+        names.count(name)
+        for name in ("project_graph_binding", "project_graph_binding_v2")
+    )
+    if graph_plan and (projection_count != 1 or "expand_graph_edges" not in names):
         raise ValueError(
             "Graph plans require edge expansion and exactly one binding projection"
         )
@@ -516,6 +518,7 @@ def validate_relational_ops(operations: list[dict[str, Any]]) -> None:
                 "scope_metric_variants",
             }:
                 raise ValueError(f"Unsupported group shape: {operation.get('shape')}")
+
 
 def _op_scan_pinned_fact_nodes(
     state: RelationalExecutionState, operation: dict[str, Any]
@@ -1142,7 +1145,14 @@ def _binding_value(rows: list[dict[str, Any]]) -> Any:
 RELATIONAL_OPERATOR_REGISTRY = {
     "scan_pinned_graph_nodes": scan_pinned_graph_nodes,
     "expand_graph_edges": expand_graph_edges,
+    "filter_graph_role": filter_graph_role,
+    "assert_role_key_equal": assert_role_key_equal,
+    "deduplicate_graph_role": deduplicate_graph_role,
+    "assert_role_key_relation": assert_role_key_relation,
+    "require_role_coverage": require_role_coverage,
     "project_graph_binding": project_graph_binding,
+    "project_graph_binding_v2": project_graph_binding_v2,
+    "require_graph_roles_contiguous": require_graph_roles_contiguous,
     "scan_pinned_fact_nodes": _op_scan_pinned_fact_nodes,
     "join_entity_metric_period": _op_join_entity_metric_period,
     "group": _op_group,

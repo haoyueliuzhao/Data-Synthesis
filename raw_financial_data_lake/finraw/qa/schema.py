@@ -261,6 +261,47 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         )
         """,
         f"""
+        CREATE TABLE IF NOT EXISTS qa_graph_walk_observations (
+            walk_observation_id TEXT PRIMARY KEY,
+            mining_run_id TEXT NOT NULL,
+            kg_build_id TEXT NOT NULL,
+            discovery_method TEXT NOT NULL,
+            walk_grammar_version TEXT NOT NULL,
+            operation_macro_id TEXT NOT NULL,
+            walk_signature TEXT NOT NULL,
+            query_graph_ir {json_type} NOT NULL,
+            query_graph_hash TEXT NOT NULL,
+            anchor_node_type TEXT NOT NULL,
+            answer_target_type TEXT NOT NULL,
+            walk_depth INTEGER NOT NULL,
+            branch_count INTEGER NOT NULL,
+            join_count INTEGER NOT NULL,
+            scope_expansion_count INTEGER NOT NULL,
+            followup_count INTEGER NOT NULL,
+            estimated_support_count BIGINT NOT NULL,
+            evaluated_binding_count BIGINT NOT NULL,
+            completed_binding_count BIGINT NOT NULL,
+            structurally_completed_binding_count BIGINT NOT NULL DEFAULT 0,
+            structural_completion_rate REAL NOT NULL DEFAULT 0,
+            answer_yield_rate REAL NOT NULL DEFAULT 0,
+            unique_answer_rate REAL NOT NULL DEFAULT 0,
+            total_root_count BIGINT NOT NULL DEFAULT 0,
+            scanned_root_count BIGINT NOT NULL DEFAULT 0,
+            root_coverage_rate REAL NOT NULL DEFAULT 0,
+            evaluated_root_count BIGINT NOT NULL DEFAULT 0,
+            evaluation_coverage_rate REAL NOT NULL DEFAULT 0,
+            stratum_coverage {json_type} NOT NULL,
+            financial_value_score REAL NOT NULL,
+            answerability_score REAL NOT NULL,
+            novelty_score REAL NOT NULL,
+            estimated_cost REAL NOT NULL,
+            total_score REAL NOT NULL,
+            status TEXT NOT NULL,
+            rejection_reasons {json_type} NOT NULL,
+            created_at {timestamp_type} DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        f"""
         CREATE TABLE IF NOT EXISTS qa_candidates (
             candidate_id TEXT PRIMARY KEY,
             stable_candidate_id TEXT NOT NULL,
@@ -403,6 +444,8 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
         "CREATE INDEX IF NOT EXISTS idx_qa_compilations_build_proposal ON qa_pattern_compilations(qa_build_id, proposal_id, status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_compiled_bindings_compilation ON qa_compiled_bindings(compilation_id, execution_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_graph_motifs_run_family ON qa_graph_motif_observations(mining_run_id, motif_family, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_graph_walks_run_macro ON qa_graph_walk_observations(mining_run_id, operation_macro_id, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_graph_walks_hash ON qa_graph_walk_observations(query_graph_hash, kg_build_id)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_task_status ON qa_candidates(qa_build_id, task_subtype, eligibility_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_stable ON qa_candidates(stable_candidate_id)",
         "CREATE INDEX IF NOT EXISTS idx_qa_samples_build_status ON qa_samples(qa_build_id, validation_status)",
@@ -501,6 +544,18 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "binding_diversity_score": "REAL",
             "manual_review_status": "TEXT",
         },
+        "qa_graph_walk_observations": {
+            "structurally_completed_binding_count": "BIGINT DEFAULT 0",
+            "structural_completion_rate": "REAL DEFAULT 0",
+            "answer_yield_rate": "REAL DEFAULT 0",
+            "unique_answer_rate": "REAL DEFAULT 0",
+            "total_root_count": "BIGINT DEFAULT 0",
+            "scanned_root_count": "BIGINT DEFAULT 0",
+            "root_coverage_rate": "REAL DEFAULT 0",
+            "evaluated_root_count": "BIGINT DEFAULT 0",
+            "evaluation_coverage_rate": "REAL DEFAULT 0",
+            "stratum_coverage": "JSONB" if postgres else "TEXT",
+        },
         "qa_pattern_mining_runs": {
             "reviewed_at": "TIMESTAMPTZ" if postgres else "TEXT",
             "reviewed_by": "TEXT",
@@ -532,9 +587,7 @@ def ensure_qa_schema(db: DBProtocol) -> None:
                         f"{column} {column_type}"
                     )
                 else:
-                    db.execute(
-                        f"ALTER TABLE {table} ADD COLUMN {column} {column_type}"
-                    )
+                    db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
             except Exception as exc:
                 message = str(exc).lower()
                 if (
@@ -557,6 +610,8 @@ def ensure_qa_schema(db: DBProtocol) -> None:
         "CREATE INDEX IF NOT EXISTS idx_qa_compilations_build_proposal ON qa_pattern_compilations(qa_build_id, proposal_id, status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_compiled_bindings_compilation ON qa_compiled_bindings(compilation_id, execution_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_graph_motifs_run_family ON qa_graph_motif_observations(mining_run_id, motif_family, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_graph_walks_run_macro ON qa_graph_walk_observations(mining_run_id, operation_macro_id, status)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_graph_walks_hash ON qa_graph_walk_observations(query_graph_hash, kg_build_id)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_pattern ON qa_candidates(qa_build_id, pattern_id, eligibility_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_proposal ON qa_candidates(qa_build_id, pattern_proposal_id, eligibility_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status)",

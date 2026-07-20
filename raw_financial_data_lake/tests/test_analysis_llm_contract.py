@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from finraw.analysis.claims import build_claim_plan
+from finraw.analysis.discourse import default_discourse_plan, render_analysis_text
 from finraw.analysis.generator import (
     ANALYSIS_RESPONSE_SCHEMA_VERSION,
     generate_analysis,
@@ -122,8 +123,11 @@ class _SequenceProvider:
         return next(self.payloads)
 
 
-def _semantic_frame_payload(plan):
+def _semantic_frame_payload(plan, pattern=None):
+    pattern = pattern or analysis_pattern_registry()["operating_trend_summary_v1"]
     mandatory = [claim for claim in plan.claims if claim["is_required"]]
+    discourse = default_discourse_plan(mandatory, maximum_numeric_mentions=2)
+    by_id = {claim["claim_id"]: claim for claim in mandatory}
     conclusion = next(
         item
         for item in plan.valid_conclusions
@@ -131,17 +135,20 @@ def _semantic_frame_payload(plan):
     )
     return {
         "schema_version": ANALYSIS_RESPONSE_SCHEMA_VERSION,
+        "instruction_surface_form_id": "canonical",
         "selected_conclusion_id": plan.selected_conclusion_id,
+        "discourse_plan": discourse,
         "claims": [
             {
-                "claim_id": claim["claim_id"],
-                "semantic_frame": claim["semantic_frame"],
+                "claim_id": claim_id,
+                "semantic_frame": by_id[claim_id]["semantic_frame"],
                 "surface_form_id": default_surface_form_id(
-                    claim["semantic_frame"], kind="claim"
+                    by_id[claim_id]["semantic_frame"], kind="claim"
                 ),
-                "evidence_ids": claim["support_signal_ids"],
+                "evidence_ids": by_id[claim_id]["support_signal_ids"],
+                "numeric_slot_ids": discourse["selected_numeric_slot_ids"][claim_id],
             }
-            for claim in mandatory
+            for claim_id in discourse["claim_order"]
         ],
         "conclusion_semantic_frame": conclusion["semantic_frame"],
         "conclusion_surface_form_id": default_surface_form_id(
@@ -160,7 +167,7 @@ def test_controlled_analysis_generation_keeps_auditable_frame_contract():
         config={"mode": "controlled_llm"},
         provider=_Provider(_semantic_frame_payload(plan)),
     )
-    assert result.generation_method == "controlled_llm_semantic_frame"
+    assert result.generation_method == "controlled_llm_discourse_plan"
     assert result.generation_metadata["schema_valid"] is True
     assert result.generation_metadata["llm_telemetry"]["total_tokens"] == 150
     assert result.numeric_slots
@@ -183,7 +190,7 @@ def test_free_text_semantic_reversal_is_rejected_then_frame_payload_is_accepted(
         "Operating cash flow strongly supports profit growth and is not a material "
         "risk caveat."
     )
-    validation = validate_analysis_response(invalid_payload, plan)
+    validation = validate_analysis_response(invalid_payload, plan, pattern=pattern)
     assert not validation["passed"]
     assert "claim_fields_mismatch" in validation["errors"]
 
@@ -196,7 +203,7 @@ def test_free_text_semantic_reversal_is_rejected_then_frame_payload_is_accepted(
         provider=provider,
     )
 
-    assert result.generation_method == "controlled_llm_semantic_frame"
+    assert result.generation_method == "controlled_llm_discourse_plan"
     attempts = result.generation_metadata["llm_attempts"]
     assert len(attempts) == 2
     assert attempts[0]["structured_response_valid"] is False
@@ -211,7 +218,7 @@ def test_legacy_keyword_stance_parser_is_not_a_claim_acceptance_gate():
         "risk caveat."
     )
     assert validate_stance(adversarial, "risk")["passed"]
-    _, _, plan = _operating_claim_plan()
+    pattern, _, plan = _operating_claim_plan()
     payload = _semantic_frame_payload(plan)
     risk_index = next(
         index
@@ -221,7 +228,7 @@ def test_legacy_keyword_stance_parser_is_not_a_claim_acceptance_gate():
         if claim["claim_role"] == "risk"
     )
     payload["claims"][risk_index]["surface_text"] = adversarial
-    assert not validate_analysis_response(payload, plan)["passed"]
+    assert not validate_analysis_response(payload, plan, pattern=pattern)["passed"]
 
 
 def test_numeric_grounding_accepts_registered_slot_and_rejects_wrong_value_or_unit():
@@ -411,6 +418,77 @@ def test_qa_api_telemetry_counts_fallback_independently_from_qa_validity():
     assert stats["fallback_reason_distribution"] == {"llm_unavailable:TimeoutError": 1}
 
 
+def test_analysis_llm_gate_uses_final_attempt_validity_and_audits_raw_attempts():
+    from finraw.analysis.pipeline import _analysis_llm_stats, _build_gate_failures
+
+    sample_rows = [
+        {
+            "analysis_sample_id": "sample_a",
+            "generation_method": "controlled_llm_discourse_plan",
+            "generation_metadata": {},
+        },
+        {
+            "analysis_sample_id": "sample_b",
+            "generation_method": "controlled_llm_discourse_plan",
+            "generation_metadata": {},
+        },
+    ]
+    llm_call_rows = [
+        {
+            "analysis_sample_id": "sample_a",
+            "attempt_index": 1,
+            "is_final_attempt": False,
+            "http_success": True,
+            "structured_response_valid": False,
+        },
+        {
+            "analysis_sample_id": "sample_a",
+            "attempt_index": 2,
+            "is_final_attempt": True,
+            "http_success": True,
+            "structured_response_valid": True,
+        },
+        {
+            "analysis_sample_id": "sample_b",
+            "attempt_index": 1,
+            "is_final_attempt": True,
+            "http_success": True,
+            "structured_response_valid": True,
+        },
+    ]
+    policy = {
+        "minimum_pass_rate": 1.0,
+        "minimum_pattern_samples": {},
+        "generation": {
+            "mode": "controlled_llm",
+            "api_quality_gate": {
+                "minimum_http_success_rate": 1.0,
+                "minimum_structured_response_pass_rate": 1.0,
+                "minimum_controlled_generation_rate": 1.0,
+                "maximum_fallback_rate": 0.0,
+                "maximum_retry_rate": 0.5,
+            },
+        },
+    }
+
+    stats = _analysis_llm_stats(sample_rows, llm_call_rows, policy)
+
+    assert stats["request_count"] == 3
+    assert stats["final_attempt_count"] == 2
+    assert stats["structured_response_pass_rate"] == 1.0
+    assert stats["attempt_structured_response_pass_rate"] == 2 / 3
+    assert stats["retry_rate"] == 0.5
+    assert not _build_gate_failures(
+        {
+            "pass_rate": 1.0,
+            "failure_counts": {},
+        },
+        {},
+        policy,
+        stats,
+    )
+
+
 def test_shared_llm_client_records_telemetry_without_prompt_response_or_key(
     monkeypatch,
 ):
@@ -555,3 +633,138 @@ def test_mixed_conclusion_surface_does_not_duplicate_mixed_modifier():
     text = render_semantic_frame(frame, "conclusion_mixed", kind="conclusion")
     assert "mixed mixed" not in text.lower()
     assert "mixed growth-quality" in text.lower()
+
+
+def test_discourse_plan_rejects_unknown_transition_and_claim_order_drift():
+    pattern, _, plan = _operating_claim_plan()
+    payload = _semantic_frame_payload(plan, pattern)
+    payload["discourse_plan"]["transition_ids"][1] = "invented_transition"
+    payload["claims"] = list(reversed(payload["claims"]))
+
+    validation = validate_analysis_response(payload, plan, pattern=pattern)
+
+    assert validation["passed"] is False
+    assert "discourse_next_transition_unknown" in validation["errors"]
+    assert "claim_order_discourse_mismatch" in validation["errors"]
+
+
+def test_discourse_plan_rejects_unregistered_numeric_slot_and_instruction():
+    pattern, _, plan = _operating_claim_plan()
+    payload = _semantic_frame_payload(plan, pattern)
+    claim_id = payload["claims"][0]["claim_id"]
+    payload["instruction_surface_form_id"] = "invented_instruction"
+    payload["discourse_plan"]["selected_numeric_slot_ids"][claim_id] = [
+        "invented.numeric_slot"
+    ]
+    payload["claims"][0]["numeric_slot_ids"] = ["invented.numeric_slot"]
+
+    validation = validate_analysis_response(payload, plan, pattern=pattern)
+
+    assert validation["passed"] is False
+    assert "instruction_surface_form_invalid" in validation["errors"]
+    assert any(
+        error.startswith("discourse_numeric_slot_invalid")
+        for error in validation["errors"]
+    )
+
+
+def test_controlled_discourse_renders_grounded_numeric_evidence_and_instruction():
+    pattern, _, plan = _operating_claim_plan()
+    result = generate_analysis(
+        pattern,
+        plan,
+        [],
+        config={"mode": "controlled_llm", "maximum_numeric_mentions": 2},
+        provider=_Provider(_semantic_frame_payload(plan, pattern)),
+    )
+
+    selected = [
+        slot_id
+        for item in result.claim_alignment
+        for slot_id in item["selected_numeric_slot_ids"]
+    ]
+    assert result.generation_method == "controlled_llm_discourse_plan"
+    assert 1 <= len(selected) <= 2
+    assert result.instruction_surface_form_id == "canonical"
+    assert result.instruction_text == pattern.instruction_template
+    assert any(item["numeric_sentences"] for item in result.claim_alignment)
+    assert validate_numeric_grounding(
+        result.analysis_text,
+        result.numeric_slots,
+        [],
+    )["passed"]
+
+def test_discourse_renderer_avoids_duplicate_overall_and_repairs_transition_case():
+    alignment = [
+        {
+            "claim_id": "claim_1",
+            "sentence": "Revenue growth supports the assessment.",
+            "numeric_sentences": [],
+        }
+    ]
+    plan = {
+        "claim_order": ["claim_1"],
+        "transition_ids": ["first"],
+        "style_id": "compact_evidence",
+        "conclusion_transition_id": "overall",
+        "caveat_transition_id": "evidence_boundary",
+    }
+    text = render_analysis_text(
+        alignment,
+        "Overall, the evidence is mixed.",
+        [{"sentence": "This assessment is bounded."}],
+        plan,
+    )
+    assert "Overall, Overall" not in text
+    assert text.startswith("First, revenue growth")
+    assert "Overall, the evidence is mixed." in text
+    taken_together = render_analysis_text(
+        alignment,
+        "Taken together, the evidence is mixed.",
+        [{"sentence": "This assessment is bounded."}],
+        {**plan, "conclusion_transition_id": "taken_together"},
+    )
+    assert "Taken together, taken together" not in taken_together
+    assert "Taken together, the evidence is mixed." in taken_together
+    assert "Within this evidence boundary, this assessment is bounded." in text
+
+def test_controlled_provider_can_copy_the_pinned_valid_response_template():
+    pattern, signals, plan = _operating_claim_plan()
+
+    class CapturingProvider:
+        last_telemetry = {
+            "provider": "fake",
+            "http_success": True,
+            "json_valid": True,
+            "total_tokens": 10,
+        }
+
+        def __init__(self):
+            self.request = None
+
+        def generate(self, request):
+            self.request = request
+            return request["valid_response_template"]
+
+    provider = CapturingProvider()
+    result = generate_analysis(
+        pattern,
+        plan,
+        signals,
+        config={"mode": "controlled_llm", "maximum_numeric_mentions": 2},
+        provider=provider,
+    )
+    assert result.generation_method == "controlled_llm_discourse_plan"
+    assert provider.request is not None
+    template = provider.request["valid_response_template"]
+    assert set(template) == {
+        "schema_version",
+        "instruction_surface_form_id",
+        "selected_conclusion_id",
+        "discourse_plan",
+        "claims",
+        "conclusion_semantic_frame",
+        "conclusion_surface_form_id",
+        "caveats",
+    }
+    assert len(provider.request["numeric_slots"]) <= len(result.numeric_slots)

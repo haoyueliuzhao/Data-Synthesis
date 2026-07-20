@@ -11,6 +11,8 @@ from finraw.fact_standardization import (
     UNIT_NORMALIZATION_VERSION,
 )
 from finraw.qa.comparability import comparability_policy
+from finraw.qa.graph_walk.operation_macros import operation_macro_manifest
+from finraw.qa.graph_walk.schema_registry import relation_schema_manifest
 from finraw.qa.operators import operation_operator_manifest
 from finraw.qa.pattern_mining import (
     get_approved_mining_run,
@@ -41,6 +43,10 @@ _METRIC_COMPATIBILITY_FIELDS = (
     "period_type",
     "aggregation_rule",
 )
+_WALK_RUNTIME_COMPATIBILITY_FIELDS = (
+    "walk_relation_schema_manifest_hash",
+    "walk_operation_macro_manifest_hash",
+)
 _RUNTIME_COMPATIBILITY_FIELDS = (
     "semantic_operator_manifest_hash",
     "operation_operator_manifest_hash",
@@ -59,10 +65,14 @@ def catalog_runtime_contract(
     effective_policy = comparability_policy(comparability_config)
     semantic_manifest = semantic_operator_manifest()
     operation_manifest = operation_operator_manifest()
+    walk_relation_manifest = relation_schema_manifest()
+    walk_macro_manifest = operation_macro_manifest()
     return {
         "semantic_operator_manifest_hash": _digest(semantic_manifest),
         "operation_operator_manifest_hash": _digest(operation_manifest),
         "comparability_policy_hash": _digest(effective_policy),
+        "walk_relation_schema_manifest_hash": _digest(walk_relation_manifest),
+        "walk_operation_macro_manifest_hash": _digest(walk_macro_manifest),
         "unit_normalization_version": UNIT_NORMALIZATION_VERSION,
         "time_normalization_version": TIME_NORMALIZATION_VERSION,
         "source_definition_schema_version": SOURCE_DEFINITION_SCHEMA_VERSION,
@@ -72,6 +82,8 @@ def catalog_runtime_contract(
         "semantic_operator_manifest": semantic_manifest,
         "operation_operator_manifest": operation_manifest,
         "comparability_policy": effective_policy,
+        "walk_relation_schema_manifest": walk_relation_manifest,
+        "walk_operation_macro_manifest": walk_macro_manifest,
     }
 
 
@@ -299,7 +311,12 @@ def validate_catalog_target_compatibility(
         )
     )
     runtime_mismatches: list[dict[str, Any]] = []
-    for field_name in _RUNTIME_COMPATIBILITY_FIELDS:
+    ir_versions = sorted(int(value) for value in contract.get("ir_versions") or [])
+    runtime_fields = [
+        *_RUNTIME_COMPATIBILITY_FIELDS,
+        *(_WALK_RUNTIME_COMPATIBILITY_FIELDS if 2 in ir_versions else ()),
+    ]
+    for field_name in runtime_fields:
         expected_value = contract.get(field_name)
         observed_value = target_runtime_contract.get(field_name)
         if expected_value != observed_value:
@@ -321,8 +338,7 @@ def validate_catalog_target_compatibility(
         errors.append(
             "unsupported scan kinds: " + ", ".join(unsupported_scan_kinds)
         )
-    ir_versions = sorted(int(value) for value in contract.get("ir_versions") or [])
-    unsupported_ir_versions = sorted(set(ir_versions) - {1})
+    unsupported_ir_versions = sorted(set(ir_versions) - {1, 2})
     if unsupported_ir_versions:
         errors.append(
             "unsupported IR versions: "
@@ -507,7 +523,9 @@ def _runtime_contract_payload_errors(
 
 
 def _pattern_metric_ids(spec: dict[str, Any]) -> list[str]:
-    metric_ids: set[str] = set()
+    metric_ids: set[str] = {
+        str(value) for value in spec.get("required_metric_ids") or []
+    }
     for constraint in spec.get("node_constraints") or []:
         if constraint.get("variable") == "metrics":
             metric_ids.update(
