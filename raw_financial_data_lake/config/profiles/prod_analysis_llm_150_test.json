@@ -2357,8 +2357,16 @@
         "minimum_http_success_rate": 0.98,
         "minimum_structured_response_pass_rate": 0.98,
         "minimum_valid_sentence_plan_rate": 0.98,
+        "minimum_valid_denormalization_rate": 0.98,
+        "minimum_denormalization_applied_rate": 0.5,
         "minimum_controlled_generation_rate": 0.98,
         "maximum_fallback_rate": 0.02
+      },
+      "strategy": "protected_rewrite",
+      "surface_variation": {
+        "enabled": true,
+        "entity_suffix_shortening": true,
+        "llm_selects_variants": true
       }
     },
     "quality_gate": {

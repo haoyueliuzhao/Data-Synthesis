@@ -11,8 +11,8 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
-QUESTION_REWRITE_VERSION = "question_rewrite.v2"
-SURFACE_VARIATION_VERSION = "surface_variation.v1"
+QUESTION_REWRITE_VERSION = "question_rewrite.v3"
+SURFACE_VARIATION_VERSION = "surface_variation.v2"
 QUESTION_PARSER_VERSION = "1.3.0"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh")
 
@@ -254,15 +254,30 @@ class OpenAICompatibleQuestionProvider:
     def generate(self, request: dict[str, Any]) -> list[Any]:
         strategy = str(request.get("generation_strategy") or "sentence_plan")
         if strategy == "protected_rewrite":
+            surface_instruction = ""
+            surface_schema = request.get("surface_variant_schema")
+            if surface_schema:
+                surface_instruction = (
+                    " Also select exactly one allowed variant_id for every protected slot "
+                    "in surface_variant_ids. Prefer context-appropriate non-canonical "
+                    "variants and vary selections across rewrites. Variant IDs resolve to "
+                    "locally validated equivalent expressions; never invent IDs."
+                )
             prompt = (
                 "Rewrite the protected financial question naturally while preserving its "
                 "exact meaning. Every <slot_name> token is immutable: include every "
                 "required placeholder exactly once and add no other placeholders, numbers, "
                 "entities, metrics, periods, conditions, conclusions, causes, forecasts, "
                 "or recommendations. Preserve comparison direction, extrema direction, "
-                "top-k, and operation order. Return JSON only as "
+                "top-k, and operation order. Preserve parser-critical operator anchors "
+                "from the protected question: keep highest/lowest for extrema, keep "
+                "the exact form 'top <slot_top_k>' when present, keep then for sequential "
+                "operations, and keep report or add each for lookup operations. Return "
+                "JSON only as "
                 f'{{"rewrites":[{{"rewrite_version":"{QUESTION_REWRITE_VERSION}",'
-                '"question_template":"..."}]}. Return distinct concise interrogative '
+                '"question_template":"...","surface_variant_ids":{{...}}}]}. '
+                + surface_instruction
+                + " Return distinct concise interrogative "
                 "rewrites ending with a question mark.\n"
                 + json.dumps(request, ensure_ascii=False, sort_keys=True)
             )
@@ -442,6 +457,7 @@ def _realize_protected_rewrite(
     effective_provider: QuestionProvider | None = None
     telemetry: dict[str, Any] = {}
     errors: list[str] = []
+    selected_surface_fallback: tuple[dict[str, str], dict[str, str]] | None = None
     protected = protected_question or _protect_question_text(
         canonical_question, canonical_slots, required_slots
     )
@@ -456,6 +472,18 @@ def _realize_protected_rewrite(
         name: str(surface_slots.get(name) or canonical_slots.get(name) or "")
         for name in protected_names
     }
+    variant_choices = {
+        name: choices
+        for name, choices in surface_slot_variants(
+            canonical_slots, semantics, policy
+        ).items()
+        if name in protected_names
+    }
+    llm_selects_variants = bool(
+        dict(policy.get("surface_variation") or {}).get(
+            "llm_selects_variants", False
+        )
+    )
     style_variant_id = str(policy.get("style_variant_id") or "direct")
     if style_variant_id not in _PROTECTED_REWRITE_STYLES:
         style_variant_id = "direct"
@@ -480,6 +508,24 @@ def _realize_protected_rewrite(
             "style_variant_id": style_variant_id,
             "style_instruction": _PROTECTED_REWRITE_STYLES[style_variant_id],
         }
+        if llm_selects_variants:
+            request["surface_variant_schema"] = {
+                "selection_required": True,
+                "slots": {
+                    name: [
+                        {
+                            "variant_id": variant_id,
+                            "style": (
+                                "canonical"
+                                if variant_id == "canonical"
+                                else "equivalent_surface_alternative"
+                            ),
+                        }
+                        for variant_id in choices
+                    ]
+                    for name, choices in sorted(variant_choices.items())
+                },
+            }
         rewrites = effective_provider.generate(request)
         telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
         indexed_rewrites = list(enumerate(rewrites))
@@ -492,17 +538,49 @@ def _realize_protected_rewrite(
                 indexed_rewrites[style_offset:] + indexed_rewrites[:style_offset]
             )
         for rewrite_variant_index, candidate in indexed_rewrites:
-            rewrite_check = validate_protected_rewrite(candidate, placeholders)
+            rewrite_check = validate_protected_rewrite(
+                candidate,
+                placeholders,
+                variant_choices if llm_selects_variants else None,
+            )
+            surface_selection_errors = [
+                error
+                for error in rewrite_check["rewrite_errors"]
+                if error.startswith("rewrite_surface_variant")
+            ]
+            if (
+                llm_selects_variants
+                and not surface_selection_errors
+                and rewrite_check["surface_variant_ids"]
+            ):
+                candidate_slots = resolve_surface_variant_ids(
+                    variant_choices, rewrite_check["surface_variant_ids"]
+                )
+                if selected_surface_fallback is None:
+                    selected_surface_fallback = (
+                        rewrite_check["surface_variant_ids"],
+                        candidate_slots,
+                    )
             if not rewrite_check["passed"]:
                 errors.extend(rewrite_check["rewrite_errors"])
                 continue
+            candidate_slots = resolved_slots
+            if llm_selects_variants:
+                candidate_slots = resolve_surface_variant_ids(
+                    variant_choices, rewrite_check["surface_variant_ids"]
+                )
             question = render_protected_question(
-                rewrite_check["question_template"], resolved_slots
+                rewrite_check["question_template"], candidate_slots
+            )
+            candidate_surface_contract = build_question_contract(
+                semantics, candidate_slots, protected_names
             )
             slot_check = validate_question_roundtrip(
-                question, surface_contract, trusted_contract=True
+                question, candidate_surface_contract, trusted_contract=True
             )
-            numeric_check = validate_rewrite_numeric_grounding(question, resolved_slots)
+            numeric_check = validate_rewrite_numeric_grounding(
+                question, candidate_slots
+            )
             if slot_check["passed"] and numeric_check["passed"]:
                 return VerbalizationResult(
                     question,
@@ -517,7 +595,21 @@ def _realize_protected_rewrite(
                         "rewrite_valid": True,
                         "rewrite_errors": [],
                         "protected_question": protected,
-                        "surface_slots": resolved_slots,
+                        "surface_slots": candidate_slots,
+                        "surface_realization_source": (
+                            "llm_variant_selection"
+                            if llm_selects_variants
+                            else "deterministic_variant_selection"
+                        ),
+                        "surface_variant_ids": rewrite_check[
+                            "surface_variant_ids"
+                        ],
+                        "denormalization_applied": any(
+                            variant_id != "canonical"
+                            for variant_id in rewrite_check[
+                                "surface_variant_ids"
+                            ].values()
+                        ),
                         "surface_variation_version": SURFACE_VARIATION_VERSION,
                         "numeric_grounding": numeric_check,
                         "fallback_reason": None,
@@ -525,6 +617,13 @@ def _realize_protected_rewrite(
                             **telemetry,
                             "sentence_plan_valid": True,
                             "rewrite_valid": True,
+                            "denormalization_valid": True,
+                            "denormalization_applied": any(
+                                variant_id != "canonical"
+                                for variant_id in rewrite_check[
+                                    "surface_variant_ids"
+                                ].values()
+                            ),
                             "controlled_generation": True,
                         },
                     },
@@ -538,6 +637,54 @@ def _realize_protected_rewrite(
         elif effective_provider is not None:
             telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
         fallback_reason = f"llm_unavailable:{type(exc).__name__}"
+
+    if selected_surface_fallback is not None:
+        variant_ids, selected_slots = selected_surface_fallback
+        controlled_surface = render_protected_question(protected, selected_slots)
+        selected_contract = build_question_contract(
+            semantics, selected_slots, protected_names
+        )
+        selected_check = validate_question_roundtrip(
+            controlled_surface, selected_contract, trusted_contract=True
+        )
+        selected_numeric_check = validate_rewrite_numeric_grounding(
+            controlled_surface, selected_slots
+        )
+        if selected_check["passed"] and selected_numeric_check["passed"]:
+            denormalization_applied = any(
+                variant_id != "canonical" for variant_id in variant_ids.values()
+            )
+            return VerbalizationResult(
+                controlled_surface,
+                "controlled_llm_surface_realization",
+                {
+                    **base_validation,
+                    **selected_check,
+                    "semantic_rendering": (
+                        "deterministic_template_with_llm_surface_variants"
+                    ),
+                    "rewrite_version": QUESTION_REWRITE_VERSION,
+                    "style_variant_id": style_variant_id,
+                    "rewrite_valid": False,
+                    "rewrite_errors": sorted(set(errors)),
+                    "protected_question": protected,
+                    "surface_slots": selected_slots,
+                    "surface_realization_source": "llm_variant_selection",
+                    "surface_variant_ids": variant_ids,
+                    "surface_variation_version": SURFACE_VARIATION_VERSION,
+                    "denormalization_applied": denormalization_applied,
+                    "numeric_grounding": selected_numeric_check,
+                    "fallback_reason": None,
+                    "llm_telemetry": {
+                        **telemetry,
+                        "sentence_plan_valid": True,
+                        "rewrite_valid": False,
+                        "denormalization_valid": True,
+                        "denormalization_applied": denormalization_applied,
+                        "controlled_generation": True,
+                    },
+                },
+            )
 
     fallback_check = validate_question_roundtrip(
         deterministic_surface, surface_contract, trusted_contract=True
@@ -555,6 +702,9 @@ def _realize_protected_rewrite(
             "rewrite_errors": sorted(set(errors)),
             "protected_question": protected,
             "surface_slots": resolved_slots,
+            "surface_realization_source": "deterministic_fallback",
+            "surface_variant_ids": {},
+            "denormalization_applied": False,
             "surface_variation_version": SURFACE_VARIATION_VERSION,
             "numeric_grounding": validate_rewrite_numeric_grounding(
                 deterministic_surface, resolved_slots
@@ -564,6 +714,8 @@ def _realize_protected_rewrite(
                 **telemetry,
                 "sentence_plan_valid": False,
                 "rewrite_valid": False,
+                "denormalization_valid": False,
+                "denormalization_applied": False,
                 "controlled_generation": False,
             },
         },
@@ -605,7 +757,9 @@ def _protect_question_text(
 
 
 def validate_protected_rewrite(
-    candidate: Any, required_placeholders: list[str]
+    candidate: Any,
+    required_placeholders: list[str],
+    allowed_surface_variants: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     errors: list[str] = []
     if not isinstance(candidate, dict):
@@ -614,7 +768,10 @@ def validate_protected_rewrite(
             "question_template": "",
             "rewrite_errors": ["rewrite_not_object"],
         }
-    if set(candidate) - {"rewrite_version", "question_template"}:
+    allowed_fields = {"rewrite_version", "question_template"}
+    if allowed_surface_variants is not None:
+        allowed_fields.add("surface_variant_ids")
+    if set(candidate) - allowed_fields:
         errors.append("rewrite_unknown_fields")
     if str(candidate.get("rewrite_version") or "") != QUESTION_REWRITE_VERSION:
         errors.append("rewrite_version_invalid")
@@ -630,9 +787,25 @@ def validate_protected_rewrite(
         errors.append("rewrite_not_single_question")
     if _FORBIDDEN_QUESTION_EXTENSION.search(question_template):
         errors.append("rewrite_forbidden_extension")
+    surface_variant_ids: dict[str, str] = {}
+    if allowed_surface_variants is not None:
+        raw_variant_ids = candidate.get("surface_variant_ids")
+        if not isinstance(raw_variant_ids, dict):
+            errors.append("rewrite_surface_variant_ids_missing")
+        else:
+            surface_variant_ids = {
+                str(slot): str(variant_id)
+                for slot, variant_id in raw_variant_ids.items()
+            }
+            if set(surface_variant_ids) != set(allowed_surface_variants):
+                errors.append("rewrite_surface_variant_slots_mismatch")
+            for slot, variant_id in surface_variant_ids.items():
+                if variant_id not in allowed_surface_variants.get(slot, {}):
+                    errors.append("rewrite_surface_variant_id_invalid")
     return {
         "passed": not errors,
         "question_template": question_template,
+        "surface_variant_ids": surface_variant_ids,
         "rewrite_errors": errors,
     }
 
@@ -672,14 +845,44 @@ def diversify_surface_slots(
     policy = dict((config or {}).get("surface_variation") or {})
     if not policy.get("enabled", False):
         return dict(canonical_slots)
+    variants = surface_slot_variants(canonical_slots, semantics, config)
     output: dict[str, str] = {}
-    for slot, value in canonical_slots.items():
-        options = _surface_options(slot, str(value), semantics, policy)
+    for slot, choices in variants.items():
+        options = list(choices.values())
         digest = hashlib.sha256(
             f"{SURFACE_VARIATION_VERSION}|{stable_seed}|{slot}".encode("utf-8")
         ).hexdigest()
         output[slot] = options[int(digest[:8], 16) % len(options)]
     return output
+
+
+def surface_slot_variants(
+    canonical_slots: dict[str, str],
+    semantics: dict[str, Any],
+    config: dict[str, Any] | None,
+) -> dict[str, dict[str, str]]:
+    policy = dict((config or {}).get("surface_variation") or {})
+    output: dict[str, dict[str, str]] = {}
+    for slot, value in canonical_slots.items():
+        options = (
+            _surface_options(slot, str(value), semantics, policy)
+            if policy.get("enabled", False)
+            else [str(value)]
+        )
+        output[slot] = {
+            ("canonical" if index == 0 else f"alternative_{index}"): option
+            for index, option in enumerate(options)
+        }
+    return output
+
+
+def resolve_surface_variant_ids(
+    variants: dict[str, dict[str, str]], variant_ids: dict[str, str]
+) -> dict[str, str]:
+    return {
+        slot: choices[variant_ids[slot]]
+        for slot, choices in variants.items()
+    }
 
 
 def surface_variation_manifest(config: dict[str, Any] | None) -> dict[str, Any]:
@@ -688,6 +891,7 @@ def surface_variation_manifest(config: dict[str, Any] | None) -> dict[str, Any]:
         "surface_variation_version": SURFACE_VARIATION_VERSION,
         "enabled": bool(policy.get("enabled", False)),
         "entity_suffix_shortening": bool(policy.get("entity_suffix_shortening", True)),
+        "llm_selects_variants": bool(policy.get("llm_selects_variants", False)),
         "metric_aliases": {
             key: list(values) for key, values in sorted(_METRIC_SURFACE_ALIASES.items())
         },
@@ -721,7 +925,7 @@ def _surface_options(
         options.extend(_METRIC_SURFACE_ALIASES.get(normalized, ()))
     if slot.startswith("entity") and policy.get("entity_suffix_shortening", True):
         shortened = re.sub(
-            r",?\\s+(?:inc\\.?|corp\\.?|corporation|company|co\\.?|ltd\\.?|plc)$",
+            r",?\s+(?:inc\.?|corp\.?|corporation|company|co\.?|ltd\.?|plc)$",
             "",
             value,
             flags=re.IGNORECASE,
@@ -729,7 +933,7 @@ def _surface_options(
         if shortened:
             options.append(shortened)
     if slot in {"period", "previous_period", "start_period", "end_period"}:
-        match = re.fullmatch(r"(?:fiscal year\\s+|FY\\s*)?(\\d{4})", value, re.I)
+        match = re.fullmatch(r"(?:fiscal year\s+|FY\s*)?(\d{4})", value, re.I)
         if match:
             year = match.group(1)
             basis = str(

@@ -11,6 +11,7 @@ from finraw.qa.verbalizer import (
     build_protected_question,
     diversify_surface_slots,
     realize_question,
+    surface_slot_variants,
     surface_variation_manifest,
 )
 
@@ -30,7 +31,9 @@ class _RewriteProvider:
         return self.payload if isinstance(self.payload, list) else [self.payload]
 
 
-def _rewrite_case(provider, *, style_variant_id="analyst"):
+def _rewrite_case(
+    provider, *, style_variant_id="analyst", llm_selects_variants=False
+):
     canonical = (
         "Within Technology, filter companies whose Revenue growth exceeded 10% "
         "in 2023, then rank the top 3 by net margin."
@@ -84,6 +87,10 @@ def _rewrite_case(provider, *, style_variant_id="analyst"):
             "strategy": "protected_rewrite",
             "variants": 2,
             "style_variant_id": style_variant_id,
+            "surface_variation": {
+                "enabled": True,
+                "llm_selects_variants": llm_selects_variants,
+            },
         },
         provider=provider,
         surface_slots=surface,
@@ -184,6 +191,119 @@ def test_surface_variation_is_deterministic_and_manifested():
     assert first["metric"] in {"Revenue", "revenue", "sales"}
     assert first["period"] in {"2023", "FY2023"}
     assert surface_variation_manifest(policy)["surface_variation_manifest_hash"]
+
+
+def test_llm_selects_valid_denormalized_surface_variants_without_seeing_values():
+    provider = _RewriteProvider(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "For <slot_period> within <slot_scope>, screen businesses with "
+                "<slot_growth_metric> growth above <slot_growth_threshold>%, then "
+                "list the top <slot_top_k> by <slot_ranking_metric>?"
+            ),
+            "surface_variant_ids": {
+                "growth_metric": "alternative_2",
+                "growth_threshold": "canonical",
+                "period": "alternative_1",
+                "ranking_metric": "alternative_1",
+                "scope": "canonical",
+                "top_k": "canonical",
+            },
+        }
+    )
+
+    result = _rewrite_case(provider, llm_selects_variants=True)
+
+    assert result.generation_method == "controlled_llm_protected_rewrite"
+    assert "sales growth above 10%" in result.question
+    assert "FY2023" in result.question
+    assert "net profit margin" in result.question
+    assert result.validation["surface_realization_source"] == "llm_variant_selection"
+    assert result.validation["llm_telemetry"]["denormalization_valid"] is True
+    request = provider.requests[0]
+    assert request["surface_variant_schema"]["selection_required"] is True
+    serialized = json.dumps(request)
+    assert "Technology" not in serialized
+    assert "Revenue" not in serialized
+    assert "2023" not in serialized
+
+
+def test_llm_surface_variant_selection_rejects_unknown_variant():
+    provider = _RewriteProvider(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "Within <slot_scope>, screen businesses with <slot_growth_metric> "
+                "growth above <slot_growth_threshold>% in <slot_period>, then rank "
+                "the top <slot_top_k> by <slot_ranking_metric>?"
+            ),
+            "surface_variant_ids": {
+                "growth_metric": "invented_alias",
+                "growth_threshold": "canonical",
+                "period": "canonical",
+                "ranking_metric": "canonical",
+                "scope": "canonical",
+                "top_k": "canonical",
+            },
+        }
+    )
+
+    result = _rewrite_case(provider, llm_selects_variants=True)
+
+    assert result.generation_method == "deterministic_surface_fallback"
+    assert result.validation["passed"] is True
+    assert "rewrite_surface_variant_id_invalid" in result.validation["rewrite_errors"]
+    assert result.validation["llm_telemetry"]["denormalization_valid"] is False
+
+
+def test_valid_llm_surface_selection_survives_invalid_freeform_rewrite():
+    provider = _RewriteProvider(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "Within <slot_scope>, screen businesses with <slot_growth_metric> "
+                "growth below <slot_growth_threshold>% in <slot_period>, then rank "
+                "the top <slot_top_k> by <slot_ranking_metric>?"
+            ),
+            "surface_variant_ids": {
+                "growth_metric": "alternative_2",
+                "growth_threshold": "canonical",
+                "period": "alternative_1",
+                "ranking_metric": "alternative_1",
+                "scope": "canonical",
+                "top_k": "canonical",
+            },
+        }
+    )
+
+    result = _rewrite_case(provider, llm_selects_variants=True)
+
+    assert result.generation_method == "controlled_llm_surface_realization"
+    assert result.validation["passed"] is True
+    assert result.validation["rewrite_valid"] is False
+    assert result.validation["llm_telemetry"]["denormalization_valid"] is True
+    assert result.validation["llm_telemetry"]["denormalization_applied"] is True
+    assert "sales growth exceeded 10%" in result.question
+    assert "FY2023" in result.question
+
+
+def test_surface_slot_variants_are_canonical_and_whitelisted():
+    variants = surface_slot_variants(
+        {"metric": "Revenue", "period": "2023"},
+        {"time_scope": {"basis": "fiscal_year"}},
+        {"surface_variation": {"enabled": True}},
+    )
+
+    assert variants["metric"] == {
+        "canonical": "Revenue",
+        "alternative_1": "revenue",
+        "alternative_2": "sales",
+    }
+    assert variants["period"] == {
+        "canonical": "2023",
+        "alternative_1": "FY2023",
+    }
 
 
 def test_llm_client_discovers_models_and_falls_back_on_model_quota(monkeypatch):

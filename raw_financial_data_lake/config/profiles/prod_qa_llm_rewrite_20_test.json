@@ -79,6 +79,8 @@
         "minimum_http_success_rate": 1.0,
         "minimum_structured_response_pass_rate": 1.0,
         "minimum_valid_sentence_plan_rate": 1.0,
+        "minimum_valid_denormalization_rate": 1.0,
+        "minimum_denormalization_applied_rate": 0.5,
         "minimum_valid_surface_realization_rate": 1.0
       },
       "language": "en",
@@ -114,7 +116,8 @@
       "strategy": "protected_rewrite",
       "surface_variation": {
         "enabled": true,
-        "entity_suffix_shortening": true
+        "entity_suffix_shortening": true,
+        "llm_selects_variants": true
       },
       "variants": 3
     },

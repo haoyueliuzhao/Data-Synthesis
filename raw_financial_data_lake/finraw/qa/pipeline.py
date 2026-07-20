@@ -56,6 +56,8 @@ from finraw.qa.verbalizer import (
     protected_rewrite_style_ids,
     question_parser_manifest_hash,
     realize_question,
+    resolve_surface_variant_ids,
+    surface_slot_variants,
     surface_variation_manifest,
     validate_question_parser_support,
     validate_question_roundtrip,
@@ -1305,6 +1307,12 @@ def split_qa_samples(
                     generation_gate.get("minimum_valid_sentence_plan_rate", 0.98),
                 )
             ),
+            "valid_denormalization_rate": float(
+                generation_gate.get("minimum_valid_denormalization_rate", 0.0)
+            ),
+            "denormalization_applied_rate": float(
+                generation_gate.get("minimum_denormalization_applied_rate", 0.0)
+            ),
             "controlled_generation_rate": float(
                 generation_gate.get("minimum_controlled_generation_rate", 0.98)
             ),
@@ -1442,6 +1450,8 @@ def _qa_llm_generation_stats(
             "valid_sentence_plan_count": 0,
             "valid_rewrite_count": 0,
             "valid_surface_realization_count": 0,
+            "valid_denormalization_count": 0,
+            "denormalization_applied_count": 0,
             "controlled_generation_count": 0,
             "fallback_count": 0,
             "http_success_rate": 1.0,
@@ -1449,6 +1459,8 @@ def _qa_llm_generation_stats(
             "valid_sentence_plan_rate": 1.0,
             "valid_rewrite_rate": 1.0,
             "valid_surface_realization_rate": 1.0,
+            "valid_denormalization_rate": 1.0,
+            "denormalization_applied_rate": 1.0,
             "controlled_generation_rate": 1.0,
             "fallback_rate": 0.0,
             "unknown_fallback_reason_count": 0,
@@ -1480,11 +1492,16 @@ def _qa_llm_generation_stats(
         controlled = method in {
             "controlled_llm_sentence_plan",
             "controlled_llm_protected_rewrite",
+            "controlled_llm_surface_realization",
         }
         if not fallback_reason and not controlled:
             unknown_fallbacks += 1
         sentence_plan_valid = bool(telemetry.get("sentence_plan_valid"))
         rewrite_valid = bool(telemetry.get("rewrite_valid"))
+        denormalization_valid = bool(telemetry.get("denormalization_valid"))
+        denormalization_applied = bool(
+            telemetry.get("denormalization_applied")
+        )
         telemetry_rows.append(
             {
                 **telemetry,
@@ -1492,6 +1509,8 @@ def _qa_llm_generation_stats(
                 "sentence_plan_valid": sentence_plan_valid,
                 "rewrite_valid": rewrite_valid,
                 "surface_realization_valid": sentence_plan_valid or rewrite_valid,
+                "denormalization_valid": denormalization_valid,
+                "denormalization_applied": denormalization_applied,
                 "controlled_generation": controlled,
             }
         )
@@ -1529,6 +1548,12 @@ def _qa_llm_generation_stats(
         "valid_surface_realization_count": sum(
             bool(row.get("surface_realization_valid")) for row in telemetry_rows
         ),
+        "valid_denormalization_count": sum(
+            bool(row.get("denormalization_valid")) for row in telemetry_rows
+        ),
+        "denormalization_applied_count": sum(
+            bool(row.get("denormalization_applied")) for row in telemetry_rows
+        ),
         "controlled_generation_count": sum(
             bool(row.get("controlled_generation")) for row in telemetry_rows
         ),
@@ -1538,6 +1563,8 @@ def _qa_llm_generation_stats(
         "valid_sentence_plan_rate": rate("sentence_plan_valid"),
         "valid_rewrite_rate": rate("rewrite_valid"),
         "valid_surface_realization_rate": rate("surface_realization_valid"),
+        "valid_denormalization_rate": rate("denormalization_valid"),
+        "denormalization_applied_rate": rate("denormalization_applied"),
         "controlled_generation_rate": rate("controlled_generation"),
         "fallback_rate": fallback_count / count if count else 1.0,
         "unknown_fallback_reason_count": unknown_fallbacks,
@@ -4037,19 +4064,38 @@ def _reparse_persisted_question(
     required_slots = list(template.get("required_slots") or [])
     generation_policy = dict(parser_contract.get("generation_policy") or {})
     strategy = str(generation_policy.get("strategy") or "sentence_plan")
-    surface_slots = slots
-    if strategy == "protected_rewrite":
-        surface_slots = diversify_surface_slots(
-            slots,
-            semantics,
-            str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
-            generation_policy,
-        )
     generation_metadata = json_value(row.get("source_metadata"), {}).get(
         "question_generation", {}
     )
+    surface_slots = slots
     surface_errors: list[str] = []
     if strategy == "protected_rewrite":
+        source = str(generation_metadata.get("surface_realization_source") or "")
+        if source == "llm_variant_selection":
+            variants = surface_slot_variants(slots, semantics, generation_policy)
+            variant_ids = generation_metadata.get("surface_variant_ids")
+            if not isinstance(variant_ids, dict) or set(variant_ids) != set(
+                required_slots
+            ):
+                surface_errors.append("surface_variant_ids_mismatch")
+            else:
+                selected_variants = {
+                    slot: variants[slot] for slot in required_slots
+                }
+                try:
+                    surface_slots = resolve_surface_variant_ids(
+                        selected_variants,
+                        {slot: str(value) for slot, value in variant_ids.items()},
+                    )
+                except KeyError:
+                    surface_errors.append("surface_variant_id_invalid")
+        else:
+            surface_slots = diversify_surface_slots(
+                slots,
+                semantics,
+                str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
+                generation_policy,
+            )
         if generation_metadata.get("surface_variation_version") != (
             SURFACE_VARIATION_VERSION
         ):
