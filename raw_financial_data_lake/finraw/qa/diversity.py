@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -45,7 +46,7 @@ def build_qa_diversity_report(
         for row in db.fetchall(
             """
             SELECT candidate_id, template_id, task_subtype, difficulty, answer_type,
-                   validation_status, split
+                   validation_status, split, question, generation_method, source_metadata
             FROM qa_samples WHERE qa_build_id = ?
             """,
             (qa_build_id,),
@@ -126,6 +127,43 @@ def build_qa_diversity_report(
     avg_edges = _average(
         len(row.get("kg_path", {}).get("edge_ids") or []) for row in eligible
     )
+    surface_rows = []
+    slot_variant_counts: Counter[str] = Counter()
+    for row in exported_samples or validated_samples:
+        generation = dict(
+            json_value(row.get("source_metadata"), {}).get(
+                "question_generation"
+            )
+            or {}
+        )
+        variant_ids = dict(generation.get("surface_variant_ids") or {})
+        noncanonical_count = sum(
+            str(variant_id) != "canonical"
+            for variant_id in variant_ids.values()
+        )
+        for slot, variant_id in variant_ids.items():
+            slot_variant_counts[f"{slot}:{variant_id}"] += 1
+        surface_rows.append(
+            {
+                "question": str(row.get("question") or ""),
+                "generation_method": str(row.get("generation_method") or "none"),
+                "style_variant_id": str(
+                    generation.get("style_variant_id") or "none"
+                ),
+                "surface_realization_source": str(
+                    generation.get("surface_realization_source") or "none"
+                ),
+                "surface_signature": _surface_signature(
+                    str(row.get("question") or ""),
+                    dict(generation.get("surface_slots") or {}),
+                ),
+                "noncanonical_count": noncanonical_count,
+                "denormalization_applied": bool(
+                    generation.get("denormalization_applied")
+                ),
+            }
+        )
+    surface_count = len(surface_rows)
     report = {
         "qa_build_id": qa_build_id,
         "kg_build_id": build["kg_build_id"],
@@ -168,6 +206,59 @@ def build_qa_diversity_report(
                 float(row.get("pattern_score") or 0) for row in mined_candidates
             ),
         },
+        "surface_diversity": {
+            "population": (
+                "exported_samples" if exported_samples else "validated_samples"
+            ),
+            "sample_count": surface_count,
+            "unique_question_count": len(
+                {row["question"] for row in surface_rows if row["question"]}
+            ),
+            "unique_question_rate": (
+                len({row["question"] for row in surface_rows if row["question"]})
+                / surface_count
+                if surface_count
+                else 0.0
+            ),
+            "unique_linguistic_skeleton_count": len(
+                {
+                    row["surface_signature"]
+                    for row in surface_rows
+                    if row["surface_signature"]
+                }
+            ),
+            "generation_method_distribution": dict(
+                sorted(
+                    Counter(
+                        row["generation_method"] for row in surface_rows
+                    ).items()
+                )
+            ),
+            "style_variant_distribution": dict(
+                sorted(
+                    Counter(
+                        row["style_variant_id"] for row in surface_rows
+                    ).items()
+                )
+            ),
+            "surface_realization_source_distribution": dict(
+                sorted(
+                    Counter(
+                        row["surface_realization_source"] for row in surface_rows
+                    ).items()
+                )
+            ),
+            "denormalization_applied_rate": (
+                sum(row["denormalization_applied"] for row in surface_rows)
+                / surface_count
+                if surface_count
+                else 0.0
+            ),
+            "average_noncanonical_slots": _average(
+                row["noncanonical_count"] for row in surface_rows
+            ),
+            "slot_variant_usage": dict(sorted(slot_variant_counts.items())),
+        },
         "kg_utilization": {
             "population": "eligible_candidates",
             "used_fact_nodes": len(used_fact_ids),
@@ -200,6 +291,28 @@ def build_qa_diversity_report(
     if output_dir:
         report["written_files"] = _write_report(report, output_dir)
     return report
+
+
+def _surface_signature(question: str, surface_slots: dict[str, Any]) -> str:
+    signature = question
+    replacements = sorted(
+        (
+            (str(slot), str(value).strip())
+            for slot, value in surface_slots.items()
+            if str(value).strip()
+        ),
+        key=lambda item: len(item[1]),
+        reverse=True,
+    )
+    for slot, value in replacements:
+        signature = re.sub(
+            re.escape(value),
+            f"<slot_{slot}>",
+            signature,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+    return re.sub(r"\s+", " ", signature.casefold()).strip()
 
 
 def _funnel(

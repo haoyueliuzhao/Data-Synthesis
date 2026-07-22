@@ -35,7 +35,7 @@ class OpenAICompatibleJsonClient:
         self.endpoint = str(config.get("endpoint") or "").strip()
         self.model = str(config.get("model") or "").strip()
         self.provider = str(config.get("provider") or "openai_compatible")
-        self.key_env = str(config.get("api_key_env") or "OPENAI_API_KEY")
+        self.key_env = str(config.get("api_key_env") or "DASHSCOPE_API_KEY")
         self.api_key = os.environ.get(self.key_env, "")
         self.timeout = float(config.get("timeout_seconds", 30))
         self.reasoning_effort = str(config.get("reasoning_effort") or "").strip()
@@ -67,7 +67,7 @@ class OpenAICompatibleJsonClient:
         )
         self.fallback_http_statuses = {
             int(item)
-            for item in config.get("fallback_http_statuses") or [400, 404, 429]
+            for item in config.get("fallback_http_statuses") or [400, 403, 404, 429]
         }
         if not self.endpoint or not self.model or not self.api_key:
             raise ValueError(

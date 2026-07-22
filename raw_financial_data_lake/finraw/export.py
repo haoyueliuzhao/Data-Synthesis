@@ -46,6 +46,7 @@ EXPORT_TABLES = [
     "qa_candidates",
     "qa_operation_plans",
     "qa_samples",
+    "qa_distribution_labels",
     "qa_evidence_paths",
     "qa_quality_checks",
     "qa_archives",

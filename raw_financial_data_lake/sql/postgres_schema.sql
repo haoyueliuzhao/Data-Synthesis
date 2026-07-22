@@ -1023,6 +1023,39 @@ CREATE TABLE IF NOT EXISTS qa_samples (
             split TEXT,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_distribution_labels (
+            alignment_id TEXT PRIMARY KEY,
+            qa_id TEXT NOT NULL,
+            qa_build_id TEXT NOT NULL,
+            alignment_standard TEXT NOT NULL,
+            alignment_version TEXT NOT NULL,
+            benchmark_task TEXT NOT NULL,
+            market_subset TEXT NOT NULL,
+            language TEXT NOT NULL,
+            topic TEXT NOT NULL,
+            subtopic TEXT NOT NULL,
+            entity_type TEXT NOT NULL,
+            metric_families JSONB NOT NULL,
+            source_classes JSONB NOT NULL,
+            time_basis TEXT NOT NULL,
+            frequency TEXT NOT NULL,
+            period_count INTEGER NOT NULL,
+            time_span_months INTEGER NOT NULL,
+            answer_type TEXT NOT NULL,
+            operation_families JSONB NOT NULL,
+            primary_operation_family TEXT NOT NULL,
+            operation_depth INTEGER NOT NULL,
+            scope_size INTEGER NOT NULL,
+            rubric_type TEXT NOT NULL,
+            generation_pipeline TEXT NOT NULL,
+            structural_features JSONB NOT NULL,
+            completeness_checks JSONB NOT NULL,
+            classification_reasons JSONB NOT NULL,
+            label_hash TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(qa_id, alignment_standard, alignment_version)
+        );
+CREATE INDEX IF NOT EXISTS idx_qa_distribution_build_task ON qa_distribution_labels(qa_build_id, benchmark_task, market_subset);
 CREATE TABLE IF NOT EXISTS qa_evidence_paths (
             path_id TEXT PRIMARY KEY,
             qa_id TEXT NOT NULL,

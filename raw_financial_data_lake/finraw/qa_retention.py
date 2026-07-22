@@ -41,6 +41,7 @@ QA_BUILD_TABLES: tuple[tuple[str, str], ...] = (
     ("qa_candidates", "qa_build_id = ?"),
     ("qa_operation_plans", "qa_build_id = ?"),
     ("qa_samples", "qa_build_id = ?"),
+    ("qa_distribution_labels", "qa_build_id = ?"),
     (
         "qa_evidence_paths",
         "qa_id IN (SELECT qa_id FROM qa_samples WHERE qa_build_id = ?)",

@@ -2340,18 +2340,18 @@
     },
     "question_generation": {
       "mode": "controlled_llm",
+      "max_attempts": 2,
       "variants": 3,
       "llm": {
-        "provider": "moonlight_openai_compatible",
-        "endpoint": "https://moonlight.cool/v1/chat/completions",
-        "model": "gpt-5.6-sol",
-        "api_key_env": "OPENAI_API_KEY",
-        "reasoning_effort": "high",
-        "store": false,
-        "http_headers": {
-          "x-openai-actor-authorization": "local-image-extension"
-        },
-        "timeout_seconds": 120
+        "provider": "dashscope_openai_compatible",
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "model": "qwen-turbo",
+        "api_key_env": "DASHSCOPE_API_KEY",
+        "timeout_seconds": 90,
+        "models_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
+        "fallback_models": ["qwen-plus", "qwen-max"],
+        "auto_select_model": true,
+        "maximum_model_attempts": 6
       },
       "api_quality_gate": {
         "minimum_http_success_rate": 0.98,
@@ -2359,14 +2359,19 @@
         "minimum_valid_sentence_plan_rate": 0.98,
         "minimum_valid_denormalization_rate": 0.98,
         "minimum_denormalization_applied_rate": 0.5,
+        "minimum_average_noncanonical_slots": 1.0,
+        "minimum_style_variant_count": 4,
         "minimum_controlled_generation_rate": 0.98,
-        "maximum_fallback_rate": 0.02
+        "maximum_fallback_rate": 0.02,
+        "maximum_retry_rate": 0.10
       },
       "strategy": "protected_rewrite",
       "surface_variation": {
         "enabled": true,
         "entity_suffix_shortening": true,
-        "llm_selects_variants": true
+        "llm_selects_variants": false,
+        "scope_contextualization": true,
+        "minimum_noncanonical_selections": 1
       }
     },
     "quality_gate": {
@@ -2422,24 +2427,20 @@
       "allow_numeric_slots": true,
       "max_attempts": 2,
       "llm": {
-        "provider": "moonlight_openai_compatible",
-        "endpoint": "https://moonlight.cool/v1/chat/completions",
-        "model": "gpt-5.6-sol",
-        "api_key_env": "OPENAI_API_KEY",
-        "reasoning_effort": "high",
-        "store": false,
-        "http_headers": {
-          "x-openai-actor-authorization": "local-image-extension"
-        },
-        "timeout_seconds": 120,
+        "provider": "dashscope_openai_compatible",
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "model": "qwen-turbo",
+        "api_key_env": "DASHSCOPE_API_KEY",
+        "timeout_seconds": 90,
         "temperature": 0.35,
-        "models_endpoint": "https://moonlight.cool/v1/models",
-        "fallback_models": [],
-        "auto_select_model": false,
-        "maximum_model_attempts": 1,
+        "models_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
+        "fallback_models": ["qwen-plus", "qwen-max"],
+        "auto_select_model": true,
+        "maximum_model_attempts": 6,
         "model_discovery_cache_seconds": 3600,
         "fallback_http_statuses": [
           400,
+          403,
           404,
           429,
           500,

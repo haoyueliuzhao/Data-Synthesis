@@ -147,6 +147,23 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json export-qa-jsonl --qa-build-id qa_build_20260712_023651_7adad081 --output-dir data/qa_exports
 ```
 
+## FinSearchComp Distribution Alignment
+
+The official FinSearchComp release is pinned as evaluation-only data. The
+alignment workflow assigns the same T2/T3, market, topic, answer, operation,
+time, source, and rubric taxonomy to passed project QA, persists the labels in
+`qa_distribution_labels`, and emits a coverage matrix, TVD/Jensen-Shannon
+distances, a gap manifest, and separate agent-input/hidden-gold views.
+
+```bash
+python -m finraw.cli freeze-finsearchcomp
+python -m finraw.cli analyze-finsearchcomp
+python -m finraw.cli --config config/profiles/prod_qa_validation.json align-finsearchcomp --qa-build-id qa_build_20260712_023651_7adad081 --output-dir data/audit/finsearchcomp_alignment_active_v1
+```
+
+See [FinSearchComp T2/T3 Distribution Alignment](docs/finsearchcomp_distribution_alignment.md)
+and the [annotation guideline](benchmarks/finsearchcomp/annotations/annotation_guideline.md).
+
 ## Semi-open Financial Analysis
 
 Financial Analysis Compiler is a sibling of QA V4, not an extension of `qa_samples`. It turns pinned KG facts into recomputable financial signals, complete Evidence Bundles, verifiable Claim Plans, and bounded sets of valid conclusions. The MVP supports operating-trend summaries, growth-quality diagnosis, and complete-peer positioning while rejecting unsupported numbers, causal claims, forecasts, investment recommendations, and target prices. See [Financial Analysis Compiler](docs/financial_analysis_compiler.md).

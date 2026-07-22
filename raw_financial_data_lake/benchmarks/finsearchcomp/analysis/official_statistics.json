@@ -1,0 +1,111 @@
+{
+  "annotation_status": {
+    "manual_review_pending": 635,
+    "rule_preannotated": 635
+  },
+  "answer_length": {
+    "max": 601.0,
+    "mean": 41.62834645669292,
+    "median": 34.0,
+    "p90": 85.0,
+    "p95": 119.0
+  },
+  "answer_type_distribution": {
+    "boolean": 2,
+    "entity": 5,
+    "entity_and_value": 6,
+    "numeric": 573,
+    "period": 6,
+    "period_and_value": 9,
+    "ranked_table": 21,
+    "table": 13
+  },
+  "contamination_guard": true,
+  "dataset_id": "ByteSeedXpert/FinSearchComp",
+  "label_distribution": {
+    "Complex_Historical_Investigation(Global)": 84,
+    "Complex_Historical_Investigation(Greater China)": 88,
+    "Simple_Historical_Lookup(Global)": 119,
+    "Simple_Historical_Lookup(Greater China)": 100,
+    "Time-Sensitive_Data_Fetching(Global)": 134,
+    "Time-Sensitive_Data_Fetching(Greater China)": 110
+  },
+  "language_distribution": {
+    "en": 337,
+    "mixed": 68,
+    "zh": 230
+  },
+  "license": "CC BY 4.0",
+  "market_distribution": {
+    "global": 337,
+    "greater_china": 298
+  },
+  "missing_rate": {
+    "akshare_ticker": 0.6267716535433071,
+    "ground_truth": 0.6157480314960629,
+    "judge_prompt_template": 0.0,
+    "judge_system_prompt": 0.0,
+    "label": 0.0,
+    "prompt": 0.0,
+    "prompt_id": 0.0,
+    "response_reference": 0.2110236220472441,
+    "response_reference_translate": 0.7889763779527559,
+    "time": 0.6157480314960629,
+    "wind_ticker": 0.6157480314960629,
+    "yfinance_ticker": 0.7889763779527559
+  },
+  "prompt_length": {
+    "max": 728.0,
+    "mean": 95.11653543307087,
+    "median": 55.0,
+    "p90": 201.0,
+    "p95": 283.2999999999995
+  },
+  "raw_fields": [
+    "akshare_ticker",
+    "ground_truth",
+    "judge_prompt_template",
+    "judge_system_prompt",
+    "label",
+    "prompt",
+    "prompt_id",
+    "response_reference",
+    "response_reference_translate",
+    "time",
+    "wind_ticker",
+    "yfinance_ticker"
+  ],
+  "revision": "1fd1beea75482e2dd5e2be8f618195d9c6aff176",
+  "row_count": 635,
+  "rubric_distribution": {
+    "absolute_tolerance": 10,
+    "exact_or_other": 194,
+    "range": 35,
+    "relative_tolerance": 107,
+    "rounding": 269,
+    "structured": 20
+  },
+  "task_distribution": {
+    "T1": 244,
+    "T2": 219,
+    "T3": 172
+  },
+  "task_market_distribution": {
+    "T1|global": 134,
+    "T1|greater_china": 110,
+    "T2|global": 119,
+    "T2|greater_china": 100,
+    "T3|global": 84,
+    "T3|greater_china": 88
+  },
+  "topic_distribution": {
+    "corporate_fundamentals": 95,
+    "fund_and_portfolio": 9,
+    "industry_and_alternative_data": 6,
+    "macroeconomics": 32,
+    "market_data": 278,
+    "other_financial": 215
+  },
+  "usage": "evaluation_only",
+  "viewer_only_or_absent_fields": {}
+}

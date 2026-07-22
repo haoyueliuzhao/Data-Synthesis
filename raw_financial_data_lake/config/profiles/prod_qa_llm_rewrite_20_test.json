@@ -81,30 +81,32 @@
         "minimum_valid_sentence_plan_rate": 1.0,
         "minimum_valid_denormalization_rate": 1.0,
         "minimum_denormalization_applied_rate": 0.5,
-        "minimum_valid_surface_realization_rate": 1.0
+        "minimum_valid_surface_realization_rate": 1.0,
+        "minimum_average_noncanonical_slots": 1.0,
+        "minimum_style_variant_count": 4,
+        "maximum_retry_rate": 0.25
       },
       "language": "en",
       "llm": {
-        "api_key_env": "OPENAI_API_KEY",
-        "auto_select_model": false,
-        "endpoint": "https://moonlight.cool/v1/chat/completions",
-        "fallback_models": [],
-        "http_headers": {
-          "x-openai-actor-authorization": "local-image-extension"
-        },
-        "maximum_model_attempts": 1,
-        "model": "gpt-5.6-sol",
-        "models_endpoint": "https://moonlight.cool/v1/models",
+        "api_key_env": "DASHSCOPE_API_KEY",
+        "auto_select_model": true,
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "fallback_models": ["qwen-plus", "qwen-max"],
+        "maximum_model_attempts": 6,
+        "model": "qwen-turbo",
+        "models_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/models",
         "preferred_model_patterns": [
-          "gpt-5.6-sol"
+          "qwen-plus",
+          "qwen-turbo",
+          "qwen-max",
+          "qwen3"
         ],
-        "provider": "moonlight_openai_compatible",
-        "reasoning_effort": "high",
-        "store": false,
-        "timeout_seconds": 120,
+        "provider": "dashscope_openai_compatible",
+        "timeout_seconds": 90,
         "model_discovery_cache_seconds": 3600,
         "fallback_http_statuses": [
           400,
+          403,
           404,
           429,
           500,
@@ -113,11 +115,14 @@
         ]
       },
       "mode": "controlled_llm",
+      "max_attempts": 3,
       "strategy": "protected_rewrite",
       "surface_variation": {
         "enabled": true,
         "entity_suffix_shortening": true,
-        "llm_selects_variants": true
+        "llm_selects_variants": false,
+        "scope_contextualization": true,
+        "minimum_noncanonical_selections": 1
       },
       "variants": 3
     },

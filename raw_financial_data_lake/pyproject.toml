@@ -6,6 +6,7 @@ requires-python = ">=3.10"
 dependencies = [
     "beautifulsoup4>=4.12.0",
     "lxml>=5.2.0",
+    "openpyxl>=3.1.0",
     "pandas>=2.2.0",
     "pydantic>=2.7.0",
     "pyarrow>=16.0.0",
@@ -29,4 +30,3 @@ pdf = [
 
 [project.scripts]
 finraw = "finraw.cli:main"
-

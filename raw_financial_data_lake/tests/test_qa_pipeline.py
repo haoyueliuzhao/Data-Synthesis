@@ -13,6 +13,7 @@ from finraw.qa.pipeline import (
     _complex_split,
     _derived_candidate,
     _evidence_components,
+    _fact_time_scope,
     _git_commit_sha,
     _git_worktree_dirty,
     _recompute,
@@ -53,6 +54,31 @@ DERIVED_TYPES = [
     "multi_condition_screening",
     "long_window_return",
 ]
+
+
+def test_macro_fact_time_scope_uses_calendar_or_observation_basis():
+    annual = _fact_time_scope(
+        {
+            "source_id": "worldbank_indicators",
+            "frequency": "annual",
+            "fiscal_year": 2023,
+            "calendar_year": 2023,
+        }
+    )
+    monthly = _fact_time_scope(
+        {
+            "source_id": "fred_observations",
+            "frequency": "monthly",
+            "fiscal_year": 2023,
+            "period_end": "2023-06-01",
+        }
+    )
+
+    assert annual == {"calendar_year": 2023, "basis": "calendar_year"}
+    assert monthly == {
+        "observation_date": "2023-06-01",
+        "basis": "observation_date",
+    }
 
 
 def _insert_node(db, kg_build: str, node_id: str, node_type: str) -> None:

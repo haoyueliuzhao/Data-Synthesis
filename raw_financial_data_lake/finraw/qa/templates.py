@@ -400,10 +400,64 @@ TEMPLATES: list[dict[str, Any]] = [
 ]
 
 
+_ZH_TEMPLATE_TEXTS = {
+    "single_fact_flow_en_01": "{entity}在{period}报告的{metric}是多少？",
+    "single_fact_instant_en_01": "截至{period}，{entity}的{metric}是多少？",
+    "single_fact_observation_en_01": "{entity}在{period}的{metric}观测值是多少？",
+    "difference_en_01": "从{previous_period}到{period}，{entity}的{metric}变化了多少？",
+    "yoy_growth_en_01": "{entity}的{metric}在{period}的同比增长率是多少？",
+    "qoq_growth_en_01": "{entity}的{metric}在{period}的环比增长率是多少？",
+    "ratio_en_01": "{entity}在{period}的{ratio}是多少？",
+    "share_en_01": "在{scope}中，{entity}在{period}的{metric}占总量的比例是多少？",
+    "temporal_extrema_en_01": "在{start_period}至{end_period}期间，{entity}的{metric}何时达到{extreme}，对应数值是多少？",
+    "ranking_en_01": "在{scope}中，按{period}的{metric}从高到低列出前{top_k}个实体。",
+    "scope_extrema_en_01": "在{scope}中，哪个实体在{period}的{metric}{extreme}？",
+    "screening_en_01": "在{scope}中，哪些实体在{period}同时满足全部筛选条件？",
+    "long_window_return_en_01": "{entity}的{metric}从{start_period}到{end_period}变化了百分之多少？",
+    "pairwise_entity_comparison_en_01": "在{period}，{entity_a}和{entity_b}哪一个的{metric}更高，相差多少？",
+    "pairwise_entity_comparison_en_02": "比较{entity_a}与{entity_b}在{period}的{metric}，指出较高者及差额。",
+    "cross_metric_comparison_en_01": "对{entity}而言，{period}的{metric_a}和{metric_b}哪一个更高，相差多少？",
+    "cross_metric_comparison_en_02": "比较{entity}在{period}的{metric_a}与{metric_b}，并给出绝对差额。",
+    "multi_period_average_en_01": "基于{start_period}至{end_period}的{observation_count}个可比{frequency}观测，{entity}的{metric}平均值是多少？",
+    "multi_period_average_en_02": "使用{start_period}至{end_period}的{observation_count}个可比{frequency}观测，计算{entity}的{metric}算术平均值。",
+    "temporal_peak_followup_en_01": "在{start_period}至{end_period}期间，找出{entity}的{primary_metric}最高时期，并报告同一期的{secondary_metric}。",
+    "temporal_peak_followup_en_02": "找出{entity}在{start_period}至{end_period}间{primary_metric}最高的期间，并报告该期的{secondary_metric}。",
+    "filter_then_rank_en_01": "在{scope}中，筛选{period}的{growth_metric}增长超过{growth_threshold}%的公司，再按{ranking_metric}列出前{top_k}名。",
+    "filter_then_rank_en_02": "针对{period}，从{scope}筛选{growth_metric}增幅高于{growth_threshold}%的公司，再按{ranking_metric}排名并列出前{top_k}家。",
+    "rank_then_secondary_lookup_en_01": "在{scope}中，按{period}的{primary_metric}排名取前{top_k}家公司，再报告每家公司的{secondary_metric}。",
+    "rank_then_secondary_lookup_en_02": "按{period}的{primary_metric}对{scope}中的公司排名取前{top_k}名，然后报告其同期{secondary_metric}。",
+    "multi_factor_screening_en_01": "在{scope}中，哪些公司在{period}同时满足：{growth_metric}增长超过{growth_threshold}%、{ranking_metric}高于{benchmark}、且{debt_metric}低于{debt_threshold}%？",
+    "multi_factor_screening_en_02": "使用三项条件筛选{period}的{scope}：{growth_metric}增幅大于{growth_threshold}%、{ranking_metric}高于{benchmark}、{debt_metric}低于{debt_threshold}%。",
+    "derived_input_trace_en_01": "计算{derived_type}结果{derived_id}使用了哪些输入事实？",
+    "provenance_trace_en_01": "请追溯事实{fact_id}的数据源、来源定义和原始对象。",
+    "time_hierarchy_membership_en_01": "事实{fact_id}对应期间属于哪个{hierarchy_type}？",
+    "scope_composition_en_01": "派生结果{derived_id}的{scope_label}包含哪些实体？",
+    "walk_temporal_peak_followup_provenance_en_01": "在{start_period}至{end_period}期间，找出{entity}的{primary_metric}最高值，再报告同一期的{secondary_metric}及其来源原始文件。",
+    "walk_scope_filter_rank_followup_en_01": "在{scope}中，筛选{period}的{growth_metric}增幅超过{growth_threshold}%的公司，再按{primary_metric}排名取前{top_k}名，并报告第一名的{secondary_metric}。",
+    "walk_derived_input_time_source_trace_en_01": "{derived_type}结果{derived_id}由哪些事实计算得到？请列出对应财政年度和来源原始文件。",
+}
+
+for _english_template in list(TEMPLATES):
+    _text = _ZH_TEMPLATE_TEXTS.get(_english_template["template_id"])
+    if _text:
+        TEMPLATES.append(
+            {
+                **_english_template,
+                "template_id": _english_template["template_id"].replace(
+                    "_en_", "_zh_"
+                ),
+                "language": "zh",
+                "template_text": _text,
+            }
+        )
+
+
 def template_for(
     task_subtype: str,
     period_type: str | None = None,
     variant_seed: str | None = None,
+    *,
+    language: str = "en",
 ) -> dict[str, Any]:
     if task_subtype == "single_fact":
         template_id = {
@@ -469,7 +523,23 @@ def template_for(
         )
         seed = variant_seed or task_subtype
         index = sum(seed.encode("utf-8")) % len(options)
-        return options[index]
+        return _template_in_language(options[index], language)
     else:
         template_id = f"{task_subtype}_en_01"
-    return next(item for item in TEMPLATES if item["template_id"] == template_id)
+    template = next(item for item in TEMPLATES if item["template_id"] == template_id)
+    return _template_in_language(template, language)
+
+
+def _template_in_language(
+    template: dict[str, Any], language: str
+) -> dict[str, Any]:
+    normalized = str(language or "en").casefold()
+    if normalized == "en":
+        return template
+    localized_id = str(template["template_id"]).replace("_en_", f"_{normalized}_")
+    try:
+        return next(item for item in TEMPLATES if item["template_id"] == localized_id)
+    except StopIteration as exc:
+        raise ValueError(
+            f"No {normalized} template for {template['template_id']}"
+        ) from exc

@@ -15,7 +15,7 @@ from finraw.qa.graph_patterns import (
 from finraw.qa.store import json_value
 
 
-COMPILER_VERSION = "2.8.0"
+COMPILER_VERSION = "2.8.1"
 
 
 @dataclass(frozen=True)

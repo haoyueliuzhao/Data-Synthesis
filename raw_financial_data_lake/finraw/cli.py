@@ -34,6 +34,13 @@ from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
+from finraw.qa.finsearchcomp_alignment import (
+    FINSEARCHCOMP_RAW_SHA256,
+    FINSEARCHCOMP_REVISION,
+    align_qa_build_to_finsearchcomp,
+    analyze_official_finsearchcomp,
+    freeze_finsearchcomp_dataset,
+)
 from finraw.qa.pattern_catalog import publish_mining_run_to_catalog
 from finraw.qa.pattern_ideation import (
     generate_pattern_ideas,
@@ -241,6 +248,49 @@ def build_parser() -> argparse.ArgumentParser:
     qa_analysis = sub.add_parser("qa-analysis", help="Report QA semantic diversity and KG utilization for a QA build.")
     qa_analysis.add_argument("--qa-build-id", required=True)
     qa_analysis.add_argument("--output-dir", default="data/audit/qa_analysis")
+
+    freeze_finsearchcomp = sub.add_parser(
+        "freeze-finsearchcomp",
+        help="Validate and freeze a pinned official FinSearchComp JSON release.",
+    )
+    freeze_finsearchcomp.add_argument(
+        "--input-path",
+        default="benchmarks/finsearchcomp/raw/finsearchcomp_data.json",
+    )
+    freeze_finsearchcomp.add_argument(
+        "--output-dir", default="benchmarks/finsearchcomp/frozen"
+    )
+    freeze_finsearchcomp.add_argument("--revision", default=FINSEARCHCOMP_REVISION)
+    freeze_finsearchcomp.add_argument(
+        "--expected-sha256", default=FINSEARCHCOMP_RAW_SHA256
+    )
+
+    analyze_finsearchcomp = sub.add_parser(
+        "analyze-finsearchcomp",
+        help="Create deterministic native statistics and reviewable T1/T2/T3 taxonomy.",
+    )
+    analyze_finsearchcomp.add_argument(
+        "--frozen-path",
+        default="benchmarks/finsearchcomp/frozen/finsearchcomp_v1.parquet",
+    )
+    analyze_finsearchcomp.add_argument(
+        "--output-dir", default="benchmarks/finsearchcomp/analysis"
+    )
+
+    align_finsearchcomp = sub.add_parser(
+        "align-finsearchcomp",
+        help="Map a passed QA build to FinSearchComp T2/T3 and report distribution gaps.",
+    )
+    align_finsearchcomp.add_argument("--qa-build-id", required=True)
+    align_finsearchcomp.add_argument(
+        "--official-taxonomy-path",
+        default="benchmarks/finsearchcomp/analysis/item_taxonomy.parquet",
+    )
+    align_finsearchcomp.add_argument(
+        "--output-dir", default="data/audit/finsearchcomp_alignment"
+    )
+    align_finsearchcomp.add_argument("--target-t2-count", type=int, default=3000)
+    align_finsearchcomp.add_argument("--target-t3-count", type=int, default=1500)
 
     qa_preflight = sub.add_parser(
         "qa-pattern-preflight",
@@ -613,6 +663,27 @@ def main() -> None:
         elif args.command == "qa-analysis":
             report = build_qa_diversity_report(
                 db, args.qa_build_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "freeze-finsearchcomp":
+            report = freeze_finsearchcomp_dataset(
+                args.input_path,
+                args.output_dir,
+                revision=args.revision,
+                expected_sha256=args.expected_sha256,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "analyze-finsearchcomp":
+            report = analyze_official_finsearchcomp(args.frozen_path, args.output_dir)
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "align-finsearchcomp":
+            report = align_qa_build_to_finsearchcomp(
+                db,
+                args.qa_build_id,
+                args.official_taxonomy_path,
+                args.output_dir,
+                target_t2_count=args.target_t2_count,
+                target_t3_count=args.target_t3_count,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "qa-pattern-preflight":

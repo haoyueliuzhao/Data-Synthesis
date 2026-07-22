@@ -888,12 +888,12 @@ def project_graph_binding(state: Any, operation: dict[str, Any]) -> None:
             "join_metadata": dict(row.get("join_metadata") or {}),
             "scope_coverage": dict(row.get("scope_coverage") or {}),
             "evidence_policy": dict(operation.get("evidence_policy") or {}),
-            "graph_node_ids": sorted(set(row["graph_node_ids"])),
+            "graph_node_ids": _projected_graph_node_ids(row),
             "graph_edge_ids": sorted(
-                {str(edge["edge_id"]) for edge in row["graph_edges"]}
+                {str(edge["edge_id"]) for edge in _projected_walk_edges(row)}
             ),
             "graph_edges": sorted(
-                row["graph_edges"],
+                _projected_walk_edges(row),
                 key=lambda edge: (
                     str(edge["relation_type"]),
                     str(edge["edge_id"]),
@@ -979,7 +979,7 @@ def _walk_binding_trace(row: dict[str, Any]) -> dict[str, Any]:
             for role in sorted(row.get("roles") or {})
         },
         "edges": sorted(
-            [dict(edge) for edge in row.get("graph_edges") or []],
+            _projected_walk_edges(row),
             key=lambda edge: (
                 str(edge.get("relation_type")),
                 str(edge.get("src_node_id")),
@@ -987,6 +987,33 @@ def _walk_binding_trace(row: dict[str, Any]) -> dict[str, Any]:
             ),
         ),
     }
+
+
+def _projected_walk_edges(row: dict[str, Any]) -> list[dict[str, Any]]:
+    """Keep only edges whose endpoints survived role filtering and joins."""
+    role_node_ids = {
+        str(node.get("node_id"))
+        for role in row.get("roles") or {}
+        for node in _role_nodes(row, str(role))
+        if node.get("node_id")
+    }
+    return [
+        dict(edge)
+        for edge in row.get("graph_edges") or []
+        if str(edge.get("src_node_id")) in role_node_ids
+        and str(edge.get("dst_node_id")) in role_node_ids
+    ]
+
+
+def _projected_graph_node_ids(row: dict[str, Any]) -> list[str]:
+    return sorted(
+        {
+            str(node.get("node_id"))
+            for role in row.get("roles") or {}
+            for node in _role_nodes(row, str(role))
+            if node.get("node_id")
+        }
+    )
 
 
 def _project_fact_trace_records(
@@ -1013,6 +1040,7 @@ def _project_fact_trace_records(
     records = []
     for fact in fact_nodes:
         fact_node_id = str(fact["node_id"])
+        entity_id = _node_value(fact, "properties.entity_id")
         period_ids = outgoing.get((fact_node_id, "IN_PERIOD"), set()) & set(
             period_nodes
         )
@@ -1023,10 +1051,24 @@ def _project_fact_trace_records(
             for hierarchy_id in outgoing.get((period_id, "IN_FISCAL_YEAR"), set())
             if hierarchy_id in hierarchy_nodes
         }
+        fiscal_year_values = sorted(
+            str(hierarchy_nodes[value].get("source_pk") or value)
+            for value in fiscal_ids
+        )
+        entity_fiscal_year_values = [
+            value
+            for value in fiscal_year_values
+            if entity_id and value.startswith(f"{entity_id}:")
+        ]
+        if entity_fiscal_year_values:
+            fiscal_year_values = entity_fiscal_year_values
+        raw_object_values = sorted(
+            str(raw_nodes[value].get("source_pk") or value) for value in raw_ids
+        )
         records.append(
             {
                 "fact_id": fact.get("source_pk"),
-                "entity_id": _node_value(fact, "properties.entity_id"),
+                "entity_id": entity_id,
                 "metric_id": _node_value(fact, "properties.metric_id"),
                 "value": _node_value(fact, "properties.normalized_value"),
                 "unit": _node_value(fact, "properties.normalized_unit"),
@@ -1034,12 +1076,15 @@ def _project_fact_trace_records(
                     str(period_nodes[value].get("source_pk") or value)
                     for value in period_ids
                 ),
-                "fiscal_year_ids": sorted(
-                    str(hierarchy_nodes[value].get("source_pk") or value)
-                    for value in fiscal_ids
+                "fiscal_year_ids": fiscal_year_values,
+                "fiscal_year": (
+                    fiscal_year_values[0].rsplit(":", 1)[-1]
+                    if len(fiscal_year_values) == 1
+                    else None
                 ),
-                "raw_object_ids": sorted(
-                    str(raw_nodes[value].get("source_pk") or value) for value in raw_ids
+                "raw_object_ids": raw_object_values,
+                "raw_object_id": (
+                    raw_object_values[0] if len(raw_object_values) == 1 else None
                 ),
             }
         )

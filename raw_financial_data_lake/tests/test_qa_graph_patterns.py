@@ -1474,6 +1474,9 @@ def test_graph_pattern_build_discovers_and_validates_multi_hop_qa(tmp_path):
     assert analysis["funnels"]["validated_samples"]["sample_count"] == 4
     assert analysis["funnels"]["exported_samples"]["sample_count"] == 4
     assert analysis["semantic_diversity"]["unique_operator_dags"] == 4
+    assert analysis["surface_diversity"]["sample_count"] == 4
+    assert analysis["surface_diversity"]["unique_question_count"] == 4
+    assert analysis["surface_diversity"]["unique_linguistic_skeleton_count"] == 4
     assert analysis["kg_utilization"]["fact_node_utilization"] > 0
     assert analysis["kg_utilization"]["edge_type_coverage"] > 0
 
@@ -1930,7 +1933,7 @@ def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path)
     assert logical_plan.target_kg_build_id == kg_build
     assert logical_plan.plan_version == 2
     assert logical_plan.ir_version == 1
-    assert logical_plan.compiler_version == "2.8.0"
+    assert logical_plan.compiler_version == "2.8.1"
     assert logical_plan.motif_family == "fifth_declarative_motif"
     assert [item["op"] for item in logical_plan.relational_ops] == [
         "scan_pinned_fact_nodes",
@@ -2976,7 +2979,7 @@ def test_mined_patterns_flow_through_candidate_plan_and_verifier(tmp_path):
     assert all(row["pattern_compilation_id"] for row in candidates)
     assert all(row["proposal_semantic_id"] for row in candidates)
     assert all(row["logical_plan_hash"] for row in candidates)
-    assert all(row["compiler_version"] == "2.8.0" for row in candidates)
+    assert all(row["compiler_version"] == "2.8.1" for row in candidates)
     assert all(row["compiled_binding_id"] for row in candidates)
     proposal_checks = db.fetchall(
         "SELECT check_status FROM qa_quality_checks WHERE qa_build_id = ? "
@@ -4034,3 +4037,58 @@ def test_roundtrip_accepts_filtering_modifier_and_highest_to_lowest_ranking():
     }
     implicit_result = validate_question_roundtrip(implicit_filter_variant, contract)
     assert implicit_result["passed"], implicit_result
+
+
+def test_roundtrip_accepts_chinese_filter_rank_then_followup_lookup():
+    contract = {
+        "slot_map": {
+            "scope": "医疗服务同行范围",
+            "period": "2025财年",
+            "growth_threshold": "10",
+            "top_k": "3",
+            "primary_metric": "净利率",
+            "secondary_metric": "资产负债率",
+        },
+        "required_slots": [
+            "scope",
+            "period",
+            "growth_threshold",
+            "top_k",
+            "primary_metric",
+            "secondary_metric",
+        ],
+        "operator_id": "filter_then_rank_then_lookup",
+        "constraints": [
+            {
+                "position": 0,
+                "step_id": "screen",
+                "operator": "filter",
+                "params": {"comparison": "gt", "value": 10},
+            },
+            {
+                "position": 1,
+                "step_id": "rank",
+                "operator": "rank",
+                "params": {"direction": "desc", "top_k": 3},
+            },
+            {
+                "position": 2,
+                "step_id": "followup",
+                "operator": "lookup_ranked_entities",
+                "params": {"target_ranks": [1]},
+            },
+        ],
+    }
+    question = (
+        "在医疗服务同行范围中，筛选2025财年收入增幅超过10%的公司，"
+        "再按净利率排名取前3名，并报告第一名的资产负债率。"
+    )
+
+    result = validate_question_roundtrip(question, contract, trusted_contract=True)
+
+    assert result["passed"], result
+    assert result["question_semantics"]["observed_operator_order"] == [
+        "filter",
+        "rank",
+        "lookup",
+    ]

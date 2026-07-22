@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 import uuid
 from collections import Counter, defaultdict
@@ -101,7 +102,7 @@ GRAPH_SCOPE_TASKS = {
     "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.20.0"
+GENERATOR_VERSION = "4.20.1"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -519,50 +520,99 @@ def build_qa_candidates(
         if len(candidates) >= batch_size:
             flush()
 
-    for pool_name, sources, quota in [
+    pool_specs = [
         (
             "single_fact_financial",
             ["sec_companyfacts"],
             policy["quotas"]["single_fact_financial"],
+            None,
         ),
         (
             "single_fact_worldbank",
             ["worldbank_indicators"],
             policy["quotas"]["single_fact_worldbank"],
+            None,
         ),
         (
             "single_fact_imf",
             ["imf_sdmx"],
             policy["quotas"]["single_fact_imf"],
+            None,
         ),
         (
             "single_fact_fred",
             ["fred_observations"],
             policy["quotas"]["single_fact_fred"],
+            None,
         ),
-    ]:
-        rows = _load_fact_pool(db, kg, sources, quota * 5)
+        (
+            "single_fact_greater_china",
+            list(
+                policy["benchmark_alignment"].get(
+                    "greater_china_source_ids", ["worldbank_indicators"]
+                )
+            ),
+            policy["quotas"]["single_fact_greater_china"],
+            list(
+                policy["benchmark_alignment"].get(
+                    "greater_china_entity_ids",
+                    ["CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"],
+                )
+            ),
+        ),
+    ]
+    for pool_name, sources, quota, entity_filter in pool_specs:
+        if quota <= 0:
+            continue
+        rows = _load_fact_pool(
+            db, kg, sources, quota * 5, entity_ids=entity_filter
+        )
         for row in _sample_fact_rows(rows, quota):
             emit(_fact_candidate(db, row, qa_build_id, kg_build_id, pool_name))
 
     scope_fact_cache: dict[tuple[Any, ...], dict[str, dict[str, Any]]] = {}
+
+    def emit_derived(row: dict[str, Any], derived_type: str) -> None:
+        if derived_type in {"share", "ranking", "industry_ranking"}:
+            row = _with_scope_inputs(db, kg, row, scope_fact_cache)
+        emit(
+            _derived_candidate(
+                db,
+                row,
+                qa_build_id,
+                kg_build_id,
+                entity_names,
+                metric_names,
+                raw_by_fact,
+            )
+        )
+
     for derived_type, quota in policy["derived_quotas"].items():
         if derived_type not in SUPPORTED_DERIVED or quota <= 0:
             continue
         for row in _load_derived_pool(db, kg, derived_type, quota):
-            if derived_type in {"share", "ranking", "industry_ranking"}:
-                row = _with_scope_inputs(db, kg, row, scope_fact_cache)
-            emit(
-                _derived_candidate(
-                    db,
-                    row,
-                    qa_build_id,
-                    kg_build_id,
-                    entity_names,
-                    metric_names,
-                    raw_by_fact,
-                )
-            )
+            emit_derived(row, derived_type)
+
+    greater_china_entities = list(
+        policy["benchmark_alignment"].get(
+            "greater_china_entity_ids",
+            ["CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"],
+        )
+    )
+    for derived_type, quota in dict(
+        policy["benchmark_alignment"].get("greater_china_derived_quotas") or {}
+    ).items():
+        quota = int(quota)
+        if derived_type not in SUPPORTED_DERIVED or quota <= 0:
+            continue
+        for row in _load_derived_pool(
+            db,
+            kg,
+            derived_type,
+            quota,
+            entity_ids=greater_china_entities,
+        ):
+            emit_derived(row, derived_type)
 
     graph_policy = policy.get("graph_patterns", {})
     semantic_policy = comparability_policy(graph_policy.get("comparability"))
@@ -1317,16 +1367,53 @@ def split_qa_samples(
                 generation_gate.get("minimum_controlled_generation_rate", 0.98)
             ),
         }
-        if llm_generation["request_count"] != llm_generation["expected_request_count"]:
+        if llm_generation["request_count"] < llm_generation["expected_request_count"]:
             failures.append(
                 "qa_llm_request_count="
-                f"{llm_generation['request_count']} != "
+                f"{llm_generation['request_count']} < "
                 f"{llm_generation['expected_request_count']}"
+            )
+        maximum_retry_rate = float(
+            generation_gate.get("maximum_retry_rate", 0.10)
+        )
+        if float(llm_generation["retry_rate"]) > maximum_retry_rate:
+            failures.append(
+                f"qa_llm_retry_rate={llm_generation['retry_rate']:.6f} > "
+                f"{maximum_retry_rate:.6f}"
             )
         for metric, minimum in thresholds.items():
             observed = float(llm_generation[metric])
             if observed < minimum:
                 failures.append(f"qa_llm_{metric}={observed:.6f} < {minimum:.6f}")
+        minimum_average_noncanonical = float(
+            generation_gate.get("minimum_average_noncanonical_slots", 0.0)
+        )
+        if (
+            float(llm_generation["average_noncanonical_slots"])
+            < minimum_average_noncanonical
+        ):
+            failures.append(
+                "qa_llm_average_noncanonical_slots="
+                f"{llm_generation['average_noncanonical_slots']:.6f} < "
+                f"{minimum_average_noncanonical:.6f}"
+            )
+        minimum_style_count = int(
+            generation_gate.get("minimum_style_variant_count", 0)
+        )
+        observed_style_count = len(
+            {
+                key
+                for key, value in llm_generation[
+                    "style_variant_distribution"
+                ].items()
+                if key != "none" and int(value) > 0
+            }
+        )
+        if observed_style_count < minimum_style_count:
+            failures.append(
+                f"qa_llm_style_variant_count={observed_style_count} < "
+                f"{minimum_style_count}"
+            )
         maximum_fallback = float(generation_gate.get("maximum_fallback_rate", 0.02))
         if llm_generation["fallback_rate"] > maximum_fallback:
             failures.append(
@@ -1352,6 +1439,7 @@ def split_qa_samples(
               'question_parser_contract',
               'question_slot_roundtrip',
               'question_semantic_reparse',
+              'benchmark_output_contract',
               'question_answer_isolation',
               'query_graph_hash', 'walk_role_type_match',
               'walk_role_constraint_match', 'walk_edge_replay',
@@ -1445,6 +1533,8 @@ def _qa_llm_generation_stats(
             "mode": mode,
             "request_count": 0,
             "expected_request_count": 0,
+            "retry_count": 0,
+            "retry_rate": 0.0,
             "http_success_count": 0,
             "structured_response_pass_count": 0,
             "valid_sentence_plan_count": 0,
@@ -1452,6 +1542,7 @@ def _qa_llm_generation_stats(
             "valid_surface_realization_count": 0,
             "valid_denormalization_count": 0,
             "denormalization_applied_count": 0,
+            "noncanonical_selection_count": 0,
             "controlled_generation_count": 0,
             "fallback_count": 0,
             "http_success_rate": 1.0,
@@ -1461,6 +1552,9 @@ def _qa_llm_generation_stats(
             "valid_surface_realization_rate": 1.0,
             "valid_denormalization_rate": 1.0,
             "denormalization_applied_rate": 1.0,
+            "average_noncanonical_slots": 0.0,
+            "style_variant_distribution": {},
+            "surface_realization_source_distribution": {},
             "controlled_generation_rate": 1.0,
             "fallback_rate": 0.0,
             "unknown_fallback_reason_count": 0,
@@ -1502,6 +1596,14 @@ def _qa_llm_generation_stats(
         denormalization_applied = bool(
             telemetry.get("denormalization_applied")
         )
+        surface_variant_ids = dict(generation.get("surface_variant_ids") or {})
+        noncanonical_selection_count = int(
+            generation.get("noncanonical_selection_count")
+            or sum(
+                str(variant_id) != "canonical"
+                for variant_id in surface_variant_ids.values()
+            )
+        )
         telemetry_rows.append(
             {
                 **telemetry,
@@ -1511,10 +1613,21 @@ def _qa_llm_generation_stats(
                 "surface_realization_valid": sentence_plan_valid or rewrite_valid,
                 "denormalization_valid": denormalization_valid,
                 "denormalization_applied": denormalization_applied,
+                "noncanonical_selection_count": noncanonical_selection_count,
+                "style_variant_id": str(
+                    generation.get("style_variant_id") or "none"
+                ),
+                "surface_realization_source": str(
+                    generation.get("surface_realization_source") or "none"
+                ),
                 "controlled_generation": controlled,
             }
         )
     count = len(telemetry_rows)
+    request_count = sum(
+        max(int(row.get("request_count") or 1), 1) for row in telemetry_rows
+    )
+    retry_count = max(request_count - count, 0)
 
     def rate(field: str) -> float:
         return (
@@ -1531,8 +1644,10 @@ def _qa_llm_generation_stats(
     fallback_count = sum(fallback_reasons.values()) + unknown_fallbacks
     return {
         "mode": mode,
-        "request_count": count,
+        "request_count": request_count,
         "expected_request_count": len(sample_rows),
+        "retry_count": retry_count,
+        "retry_rate": retry_count / count if count else 0.0,
         "http_success_count": sum(
             bool(row.get("http_success")) for row in telemetry_rows
         ),
@@ -1554,6 +1669,10 @@ def _qa_llm_generation_stats(
         "denormalization_applied_count": sum(
             bool(row.get("denormalization_applied")) for row in telemetry_rows
         ),
+        "noncanonical_selection_count": sum(
+            int(row.get("noncanonical_selection_count") or 0)
+            for row in telemetry_rows
+        ),
         "controlled_generation_count": sum(
             bool(row.get("controlled_generation")) for row in telemetry_rows
         ),
@@ -1565,6 +1684,31 @@ def _qa_llm_generation_stats(
         "valid_surface_realization_rate": rate("surface_realization_valid"),
         "valid_denormalization_rate": rate("denormalization_valid"),
         "denormalization_applied_rate": rate("denormalization_applied"),
+        "average_noncanonical_slots": (
+            sum(
+                int(row.get("noncanonical_selection_count") or 0)
+                for row in telemetry_rows
+            )
+            / count
+            if count
+            else 0.0
+        ),
+        "style_variant_distribution": dict(
+            sorted(
+                Counter(
+                    str(row.get("style_variant_id") or "none")
+                    for row in telemetry_rows
+                ).items()
+            )
+        ),
+        "surface_realization_source_distribution": dict(
+            sorted(
+                Counter(
+                    str(row.get("surface_realization_source") or "none")
+                    for row in telemetry_rows
+                ).items()
+            )
+        ),
         "controlled_generation_rate": rate("controlled_generation"),
         "fallback_rate": fallback_count / count if count else 1.0,
         "unknown_fallback_reason_count": unknown_fallbacks,
@@ -2173,11 +2317,19 @@ def _sample_from_candidate(
     semantics = candidate["canonical_semantics"]
     entity_names = _entity_names_from_semantics(semantics, candidate["entity_ids"])
     metric_names = _metric_names_from_semantics(semantics, candidate["metric_ids"])
-    slots = _question_slots(candidate, entity_names, metric_names)
+    build_policy = build.get("notes", {}).get("policy", {})
+    generation_policy = build_policy.get("question_generation", {})
+    language = str(
+        generation_policy.get("language") or build_policy.get("language") or "en"
+    ).casefold()
+    slots = _localize_question_slots(
+        _question_slots(candidate, entity_names, metric_names), language
+    )
     template = template_for(
         candidate["task_subtype"],
         semantics.get("metric_period_type"),
         candidate.get("stable_candidate_id"),
+        language=language,
     )
     parser_manifest = question_parser_manifest(TEMPLATES)
     parser_support = validate_question_parser_support(template, parser_manifest)
@@ -2186,11 +2338,24 @@ def _sample_from_candidate(
             "Question Parser/template contract failed: "
             + ", ".join(parser_support["errors"])
         )
+    template_text = str(template["template_text"])
     required_slots = list(template.get("required_slots") or [])
-    canonical_question = template["template_text"].format(**slots)
-    generation_policy = (
-        build.get("notes", {}).get("policy", {}).get("question_generation", {})
+    answer = candidate["answer_payload"]
+    output_instruction = _benchmark_output_instruction(
+        answer,
+        str(template.get("answer_type") or ""),
+        generation_policy,
+        language,
     )
+    if output_instruction:
+        slots["output_instruction"] = output_instruction
+        required_slots.append("output_instruction")
+        template_text += (
+            " 请{output_instruction}。"
+            if language == "zh"
+            else " Return the result as {output_instruction}."
+        )
+    canonical_question = template_text.format(**slots)
     surface_slots = diversify_surface_slots(
         slots,
         semantics,
@@ -2198,7 +2363,7 @@ def _sample_from_candidate(
         generation_policy,
     )
     protected_question = build_protected_question(
-        template["template_text"], required_slots
+        template_text, required_slots
     )
     rewrite_styles = protected_rewrite_style_ids()
     realization_policy = {
@@ -2224,7 +2389,6 @@ def _sample_from_candidate(
         protected_question=protected_question,
     )
     question = realization.question
-    answer = candidate["answer_payload"]
     answer_text = _answer_text(candidate, answer, entity_names)
     group_id = "qag_" + _digest(
         candidate["task_subtype"],
@@ -2241,7 +2405,12 @@ def _sample_from_candidate(
     )
     stable_qa_id = "qa_" + _digest(_normalise_question(question), answer)
     qa_id = f"{stable_qa_id}__{candidate['qa_build_id']}"
-    rubric = _rubric(candidate, answer)
+    rubric = _benchmark_aligned_rubric(
+        _rubric(candidate, answer),
+        generation_policy,
+        answer,
+        str(template.get("answer_type") or ""),
+    )
     sample = {
         "qa_id": qa_id,
         "stable_qa_id": stable_qa_id,
@@ -2483,6 +2652,14 @@ def _validate_one(
         question_reparse,
         {"passed": True, "missing_slots": [], "contract_errors": []},
         "The final verifier must independently parse the persisted question against a contract rebuilt from the pinned template and Operation DAG.",
+    )
+    output_contract = _validate_benchmark_output_contract(row)
+    add(
+        "benchmark_output_contract",
+        bool(output_contract.get("passed")),
+        output_contract,
+        {"passed": True, "errors": []},
+        "FinSearchComp-aligned questions must preserve the requested unit, precision, and structured output contract.",
     )
     add(
         "question_answer_isolation",
@@ -3075,9 +3252,19 @@ def _answers_match(
 
 
 def _load_fact_pool(
-    db: DBProtocol, kg: dict[str, Any], source_ids: list[str], limit: int
+    db: DBProtocol,
+    kg: dict[str, Any],
+    source_ids: list[str],
+    limit: int,
+    *,
+    entity_ids: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     placeholders = ",".join("?" for _ in source_ids)
+    entity_clause = ""
+    entity_params: list[Any] = []
+    if entity_ids:
+        entity_clause = " AND sf.entity_id IN (" + ",".join("?" for _ in entity_ids) + ")"
+        entity_params = list(entity_ids)
     rows = db.fetchall(
         f"""
         SELECT sf.*, ce.canonical_name AS entity_name, ce.entity_type,
@@ -3092,6 +3279,7 @@ def _load_fact_pool(
           AND COALESCE(CAST(sf.is_forecast AS INTEGER), 0) = 0
           AND sf.source_id IN ({placeholders})
           AND sf.normalized_value IS NOT NULL AND sf.normalized_unit IS NOT NULL
+          {entity_clause}
         ORDER BY sf.fact_id LIMIT ?
         """,
         [
@@ -3099,6 +3287,7 @@ def _load_fact_pool(
             kg["input_metric_build_id"],
             kg["input_fact_build_id"],
             *source_ids,
+            *entity_params,
             limit,
         ],
     )
@@ -3263,25 +3452,47 @@ def _with_scope_inputs(
 
 
 def _load_derived_pool(
-    db: DBProtocol, kg: dict[str, Any], derived_type: str, limit: int
+    db: DBProtocol,
+    kg: dict[str, Any],
+    derived_type: str,
+    limit: int,
+    entity_ids: list[str] | None = None,
 ) -> list[dict[str, Any]]:
-    rows = db.fetchall(
-        """
+    query = """
         SELECT d.*
         FROM derived_facts d
         WHERE d.build_id = ? AND d.input_build_id = ?
           AND d.verification_status IN ('single_source', 'cross_verified')
           AND d.derived_type = ?
-        ORDER BY d.derived_id LIMIT ?
-        """,
-        (
-            kg["input_qa_build_id"],
-            kg["input_fact_build_id"],
-            derived_type,
-            limit,
-        ),
-    )
-    return [dict(row) for row in rows]
+        ORDER BY d.derived_id
+    """
+    parameters: list[Any] = [
+        kg["input_qa_build_id"],
+        kg["input_fact_build_id"],
+        derived_type,
+    ]
+    if not entity_ids:
+        query += " LIMIT ?"
+        parameters.append(limit)
+    rows = [dict(row) for row in db.fetchall(query, parameters)]
+    if entity_ids:
+        allowed = set(entity_ids)
+        rows = [
+            row
+            for row in rows
+            if allowed
+            & (
+                set(json_value(row.get("scope_entity_ids"), []))
+                | {
+                    value
+                    for value in [
+                        json_value(row.get("entity_scope"), {}).get("entity_id")
+                    ]
+                    if value
+                }
+            )
+        ]
+    return rows[:limit]
 
 
 def _load_facts_by_id(
@@ -3866,6 +4077,12 @@ def _question_slots(
     subtype = candidate["task_subtype"]
     entity_ids = list(candidate.get("entity_ids") or [])
     metric_ids = list(candidate.get("metric_ids") or [])
+    primary_metric_id = semantics.get("primary_metric_id") or (
+        metric_ids[0] if metric_ids else None
+    )
+    secondary_metric_id = semantics.get("secondary_metric_id") or (
+        metric_ids[1] if len(metric_ids) > 1 else None
+    )
     return {
         "entity": entity_names.get(entity_id, entity_id),
         "metric": metric_names.get(metric_id, metric_id.replace("_", " ")),
@@ -3918,16 +4135,12 @@ def _question_slots(
         if len(metric_ids) > 1
         else "the second metric",
         "primary_metric": metric_names.get(
-            semantics.get("primary_metric_id"),
-            str(semantics.get("primary_metric_id") or "the primary metric").replace(
-                "_", " "
-            ),
+            primary_metric_id,
+            str(primary_metric_id or "the primary metric").replace("_", " "),
         ),
         "secondary_metric": metric_names.get(
-            semantics.get("secondary_metric_id"),
-            str(semantics.get("secondary_metric_id") or "the secondary metric").replace(
-                "_", " "
-            ),
+            secondary_metric_id,
+            str(secondary_metric_id or "the secondary metric").replace("_", " "),
         ),
         "observation_count": str(
             semantics.get("observation_count")
@@ -3954,6 +4167,88 @@ def _question_slots(
             or "the declared entity scope"
         ),
     }
+
+
+_ZH_SLOT_TERMS = {
+    "revenue": "收入",
+    "sales": "销售收入",
+    "net income": "净利润",
+    "operating income": "营业利润",
+    "gross profit": "毛利润",
+    "operating cash flow": "经营现金流",
+    "net cash provided by used in operating activities": "经营活动现金流净额",
+    "total assets": "总资产",
+    "total liabilities": "总负债",
+    "net margin": "净利率",
+    "debt ratio": "资产负债率",
+    "the industry average": "行业平均值",
+    "the explicitly configured data scope": "明确配置的数据范围",
+    "annual": "年度",
+    "quarterly": "季度",
+    "monthly": "月度",
+    "daily": "日度",
+    "periodic": "期间",
+    "highest": "最高值",
+    "lowest": "最低值",
+    "china": "中国",
+    "hong kong sar, china": "中国香港特别行政区",
+    "macao sar, china": "中国澳门特别行政区",
+}
+
+
+def _localize_question_slots(
+    slots: dict[str, str], language: str
+) -> dict[str, str]:
+    if language != "zh":
+        return slots
+    localized = {}
+    for key, value in slots.items():
+        text = str(value)
+        localized[key] = _ZH_SLOT_TERMS.get(text.casefold(), text)
+    return localized
+
+
+def _benchmark_output_instruction(
+    answer: dict[str, Any],
+    answer_type: str,
+    generation_policy: dict[str, Any],
+    language: str,
+) -> str | None:
+    policy = dict(generation_policy.get("benchmark_alignment") or {})
+    if not policy.get("enabled"):
+        return None
+    decimal_places = max(int(policy.get("decimal_places", 2)), 0)
+    unit = str(
+        answer.get("unit")
+        or answer.get("secondary_unit")
+        or answer.get("primary_unit")
+        or ""
+    ).strip()
+    currency = str(answer.get("currency") or "").strip()
+    unit_label = unit
+    if currency and currency.casefold() not in unit.casefold():
+        unit_label = " ".join(item for item in (unit, currency) if item)
+    structured = any(
+        marker in answer_type
+        for marker in ("table", "list", "set", "trace", "provenance")
+    )
+    if language == "zh":
+        parts = []
+        if structured:
+            parts.append("使用完整表格并保持要求的顺序")
+        if policy.get("explicit_unit", True) and unit_label:
+            parts.append(f"以{unit_label}为单位")
+        if policy.get("explicit_precision", True) and not structured:
+            parts.append(f"数值保留{decimal_places}位小数")
+        return "，".join(parts) or "按指定结构完整作答"
+    parts = []
+    if structured:
+        parts.append("a complete table in the required order")
+    if policy.get("explicit_unit", True) and unit_label:
+        parts.append(f"{unit_label} units")
+    if policy.get("explicit_precision", True) and not structured:
+        parts.append(f"values rounded to {decimal_places} decimal places")
+    return ", with ".join(parts) or "the complete requested structure"
 
 
 def _question_parser_contract_validation(
@@ -4056,13 +4351,32 @@ def _reparse_persisted_question(
         "answer_payload": row.get("answer_payload") or {},
         "source_fact_ids": row.get("source_fact_ids") or [],
     }
-    slots = _question_slots(
-        candidate,
-        _entity_names_from_semantics(semantics, entity_ids),
-        _metric_names_from_semantics(semantics, metric_ids),
+    slots = _localize_question_slots(
+        _question_slots(
+            candidate,
+            _entity_names_from_semantics(semantics, entity_ids),
+            _metric_names_from_semantics(semantics, metric_ids),
+        ),
+        str(row.get("language") or "en").casefold(),
     )
     required_slots = list(template.get("required_slots") or [])
     generation_policy = dict(parser_contract.get("generation_policy") or {})
+    language = str(row.get("language") or "en").casefold()
+    template_text = str(template["template_text"])
+    output_instruction = _benchmark_output_instruction(
+        candidate["answer_payload"],
+        str(template.get("answer_type") or ""),
+        generation_policy,
+        language,
+    )
+    if output_instruction:
+        slots["output_instruction"] = output_instruction
+        required_slots.append("output_instruction")
+        template_text += (
+            " 请{output_instruction}。"
+            if language == "zh"
+            else " Return the result as {output_instruction}."
+        )
     strategy = str(generation_policy.get("strategy") or "sentence_plan")
     generation_metadata = json_value(row.get("source_metadata"), {}).get(
         "question_generation", {}
@@ -4105,7 +4419,7 @@ def _reparse_persisted_question(
         }:
             surface_errors.append("surface_slot_map_mismatch")
         if generation_metadata.get("protected_question") != (
-            build_protected_question(template["template_text"], required_slots)
+            build_protected_question(template_text, required_slots)
         ):
             surface_errors.append("protected_question_mismatch")
     contract = build_question_contract(semantics, surface_slots, required_slots)
@@ -4146,7 +4460,8 @@ def _answer_text(
     subtype = candidate["task_subtype"]
     if subtype == "walk_derived_input_time_source_trace":
         return "; ".join(
-            f"{item.get('fact_id')} (FY {item.get('fiscal_year')}, raw {item.get('raw_object_id')})"
+            f"{item.get('fact_id')} (FY {item.get('fiscal_year')}, "
+            f"raw {item.get('raw_object_id')})"
             for item in answer.get("inputs") or []
         )
     if subtype == "walk_temporal_peak_followup_provenance":
@@ -4411,7 +4726,95 @@ def _rubric(candidate: dict[str, Any], answer: dict[str, Any]) -> dict[str, Any]
     }
 
 
+def _benchmark_aligned_rubric(
+    rubric: dict[str, Any],
+    generation_policy: dict[str, Any],
+    answer: dict[str, Any],
+    answer_type: str,
+) -> dict[str, Any]:
+    policy = dict(generation_policy.get("benchmark_alignment") or {})
+    if not policy.get("enabled"):
+        return rubric
+    structured = any(
+        marker in answer_type
+        for marker in ("table", "list", "set", "trace", "provenance")
+    )
+    unit = str(
+        answer.get("unit")
+        or answer.get("secondary_unit")
+        or answer.get("primary_unit")
+        or ""
+    ).strip()
+    currency = str(answer.get("currency") or "").strip()
+    return {
+        **rubric,
+        "benchmark_alignment": "finsearchcomp",
+        "requested_decimal_places": max(int(policy.get("decimal_places", 2)), 0),
+        "unit_must_match": bool(policy.get("explicit_unit", True)),
+        "requested_unit": unit,
+        "requested_currency": currency,
+        "precision_must_match": bool(policy.get("explicit_precision", True))
+        and not structured,
+        "complete_output_required": bool(policy.get("explicit_output_format", True))
+        and structured,
+    }
+
+
+def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
+    rubric = dict(row.get("rubric") or {})
+    if rubric.get("benchmark_alignment") != "finsearchcomp":
+        return {"passed": True, "enabled": False, "errors": []}
+    question = str(row.get("question") or "")
+    normalized = question.casefold()
+    errors: list[str] = []
+    unit = str(rubric.get("requested_unit") or "").strip()
+    currency = str(rubric.get("requested_currency") or "").strip()
+    if rubric.get("unit_must_match") and unit:
+        unit_tokens = [
+            token.casefold() for token in re.findall(r"[A-Za-z%]+", unit) if token
+        ]
+        if unit_tokens and not all(token in normalized for token in unit_tokens):
+            errors.append("requested_unit_missing")
+    if rubric.get("unit_must_match") and currency:
+        if currency.casefold() not in normalized:
+            errors.append("requested_currency_missing")
+    decimal_places = max(int(rubric.get("requested_decimal_places") or 0), 0)
+    if rubric.get("precision_must_match"):
+        precision_patterns = (
+            rf"\b{decimal_places}\s+decimal\s+places?\b",
+            rf"保留\s*{decimal_places}\s*位小数",
+        )
+        if not any(re.search(pattern, normalized) for pattern in precision_patterns):
+            errors.append("requested_precision_missing")
+    if rubric.get("complete_output_required"):
+        if not re.search(
+            r"complete\s+table|required\s+order|完整表格|保持(?:要求的)?顺序",
+            normalized,
+        ):
+            errors.append("structured_output_instruction_missing")
+    return {
+        "passed": not errors,
+        "enabled": True,
+        "errors": errors,
+        "requested_unit": unit,
+        "requested_currency": currency,
+        "requested_decimal_places": decimal_places,
+        "precision_required": bool(rubric.get("precision_must_match")),
+        "structured_output_required": bool(rubric.get("complete_output_required")),
+    }
+
 def _fact_time_scope(row: dict[str, Any]) -> dict[str, Any]:
+    source_id = str(row.get("source_id") or "").lower()
+    if source_id.startswith(("fred_", "worldbank_", "imf_")):
+        year = row.get("calendar_year") or row.get("fiscal_year")
+        if year and str(row.get("frequency") or "").lower() == "annual":
+            return {"calendar_year": int(year), "basis": "calendar_year"}
+        period = row.get("period_end") or row.get("as_of_date")
+        return (
+            {"observation_date": str(period), "basis": "observation_date"}
+            if period
+            else {}
+        )
     if row.get("fiscal_year"):
         return {
             "fiscal_year": int(row["fiscal_year"]),
@@ -4493,12 +4896,30 @@ def _semantic_slots_complete(row: dict[str, Any]) -> bool:
         return False
     if row["task_subtype"] in GRAPH_NATIVE_TASKS:
         answer = row.get("answer_payload") or {}
+        evidence_payload = answer.get("trace") or answer.get("records")
+        if row["task_subtype"] == "walk_derived_input_time_source_trace":
+            evidence_payload = answer.get("inputs")
+            return bool(
+                row["source_fact_ids"]
+                and row["time_scope"]
+                and evidence_payload
+                and all(
+                    item.get("fact_id")
+                    and item.get("entity_id")
+                    and item.get("fiscal_year")
+                    and item.get("raw_object_id")
+                    for item in evidence_payload
+                )
+            )
         return bool(
             row["source_fact_ids"]
             and row["time_scope"]
-            and (answer.get("trace") or answer.get("records"))
+            and evidence_payload
         )
-    if row["task_subtype"] == "rank_then_secondary_lookup":
+    if row["task_subtype"] in {
+        "rank_then_secondary_lookup",
+        "walk_scope_filter_rank_followup",
+    }:
         answer = row.get("answer_payload") or {}
         if not answer.get("primary_unit") or not answer.get("secondary_unit"):
             return False
@@ -4574,6 +4995,7 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
         "single_fact_worldbank": 6000,
         "single_fact_imf": 4000,
         "single_fact_fred": 5000,
+        "single_fact_greater_china": 0,
     }
     derived_defaults = {
         "difference": 9000,
@@ -4608,7 +5030,7 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
             key: int(configured.get("derived_quotas", {}).get(key, value))
             for key, value in derived_defaults.items()
         },
-        "language": "en",
+        "language": str(configured.get("language") or "en"),
         "forecast_policy": "exclude_historical_questions",
         "generation_method": "deterministic_template",
         "graph_patterns": {
@@ -4623,6 +5045,7 @@ def _qa_policy(config: dict[str, Any]) -> dict[str, Any]:
             },
         },
         "pattern_mining": mining_policy(config),
+        "benchmark_alignment": dict(configured.get("benchmark_alignment") or {}),
         "question_generation": question_generation,
         "temporal_split": configured.get("temporal_split", {"cutoff_year": 2025}),
         "split_policy": configured.get(

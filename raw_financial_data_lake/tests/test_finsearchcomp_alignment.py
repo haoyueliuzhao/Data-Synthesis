@@ -1,0 +1,376 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pandas as pd
+
+from finraw.db.client import MetadataDB
+from finraw.qa.finsearchcomp_alignment import (
+    _current_market,
+    _legacy_operations,
+    _legacy_period_count,
+    align_qa_build_to_finsearchcomp,
+    analyze_official_finsearchcomp,
+    freeze_finsearchcomp_dataset,
+)
+from finraw.qa.pipeline import (
+    _benchmark_aligned_rubric,
+    _validate_benchmark_output_contract,
+)
+from finraw.qa.schema import ensure_qa_schema
+from finraw.qa.templates import template_for
+
+
+def _official_rows() -> list[dict[str, str]]:
+    labels = [
+        "Time-Sensitive_Data_Fetching(Global)",
+        "Time-Sensitive_Data_Fetching(Greater China)",
+        "Simple_Historical_Lookup(Global)",
+        "Simple_Historical_Lookup(Greater China)",
+        "Complex_Historical_Investigation(Global)",
+        "Complex_Historical_Investigation(Greater China)",
+    ]
+    prompts = [
+        "What is the latest close price of IBM?",
+        "今天上证指数收盘是多少？",
+        "What was Apple's FY2023 revenue in million USD?",
+        "2023年中国GDP是多少亿元？",
+        "From 2020 to 2024, which year had the highest revenue and what was the value?",
+        "在2020至2024年间，筛选收入增长为正的公司并排名前三。",
+    ]
+    return [
+        {
+            "prompt_id": f"prompt_{index}",
+            "prompt": prompt,
+            "response_reference": "100, 1% error allowed",
+            "judge_prompt_template": "{prompt} {response_reference} {response}",
+            "judge_system_prompt": "judge",
+            "label": label,
+        }
+        for index, (label, prompt) in enumerate(zip(labels, prompts), start=1)
+    ]
+
+
+def _insert_candidate(
+    db: MetadataDB,
+    *,
+    candidate_id: str,
+    qa_build_id: str,
+    subtype: str,
+    pattern_id: str | None,
+    entity_ids: list[str],
+    metric_ids: list[str],
+    time_scope: dict,
+    source_id: str,
+    graph_features: dict,
+    answer_schema: dict,
+) -> None:
+    db.execute(
+        """
+        INSERT INTO qa_candidates (
+            candidate_id, stable_candidate_id, qa_build_id, task_family,
+            task_subtype, difficulty, pattern_id, entity_ids, metric_ids,
+            time_scope, entity_scope, source_fact_ids, source_derived_ids,
+            source_document_ids, raw_object_ids, canonical_semantics,
+            derived_payload, recomputed_payload, answer_payload, kg_path,
+            graph_features, answer_schema, eligibility_status, rejection_reasons
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            candidate_id,
+            f"stable_{candidate_id}",
+            qa_build_id,
+            "financial_qa",
+            subtype,
+            "hard" if pattern_id else "easy",
+            pattern_id,
+            json.dumps(entity_ids),
+            json.dumps(metric_ids),
+            json.dumps(time_scope),
+            json.dumps({}),
+            json.dumps([]),
+            json.dumps([]),
+            json.dumps([]),
+            json.dumps([]),
+            json.dumps(
+                {
+                    "source_id": source_id,
+                    "entity_type": "listed_company",
+                    "frequency": "annual",
+                }
+            ),
+            json.dumps({}),
+            json.dumps({}),
+            json.dumps({"value": "1"}),
+            json.dumps({}),
+            json.dumps(graph_features),
+            json.dumps(answer_schema),
+            "eligible",
+            json.dumps([]),
+        ),
+    )
+
+
+def _insert_sample(
+    db: MetadataDB,
+    *,
+    qa_id: str,
+    qa_build_id: str,
+    candidate_id: str,
+    subtype: str,
+    question: str,
+    answer_type: str,
+) -> None:
+    db.execute(
+        """
+        INSERT INTO qa_samples (
+            qa_id, stable_qa_id, qa_group_id, semantic_cluster_id,
+            qa_build_id, candidate_id, task_family, task_subtype,
+            difficulty, language, question, canonical_question, answer_type,
+            answer_value, answer_text, unit, currency, rubric,
+            source_metadata, generation_method, validation_status, split
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            qa_id,
+            f"stable_{qa_id}",
+            f"group_{qa_id}",
+            f"cluster_{qa_id}",
+            qa_build_id,
+            candidate_id,
+            "financial_qa",
+            subtype,
+            "hard" if "rank" in subtype else "easy",
+            "en",
+            question,
+            question,
+            answer_type,
+            json.dumps({"value": "1"}),
+            "1 million USD",
+            "million USD",
+            "USD",
+            json.dumps(
+                {
+                    "match_type": "numeric_tolerance",
+                    "relative_tolerance": "0.01",
+                }
+            ),
+            json.dumps({}),
+            "deterministic_template",
+            "passed",
+            "train",
+        ),
+    )
+
+
+def test_finsearchcomp_freeze_analyze_and_current_alignment(tmp_path: Path):
+    raw_path = tmp_path / "official.json"
+    raw_path.write_text(json.dumps(_official_rows()), encoding="utf-8")
+    frozen_dir = tmp_path / "frozen"
+    freeze = freeze_finsearchcomp_dataset(
+        str(raw_path), str(frozen_dir), expected_sha256=None
+    )
+
+    assert freeze["row_count"] == 6
+    assert freeze["usage"] == "evaluation_only"
+    assert (frozen_dir / "SHA256SUMS").exists()
+    frozen_manifest = [
+        json.loads(line)
+        for line in (frozen_dir / "official_evaluation_manifest.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert all("official_item_id" in row for row in frozen_manifest)
+
+    analysis_dir = tmp_path / "analysis"
+    stats = analyze_official_finsearchcomp(
+        str(frozen_dir / "finsearchcomp_v1.parquet"), str(analysis_dir)
+    )
+
+    assert stats["task_distribution"] == {"T1": 2, "T2": 2, "T3": 2}
+    assert stats["viewer_only_or_absent_fields"]["ground_truth"] == (
+        "not_present_in_frozen_raw_json"
+    )
+    official_taxonomy = pd.read_parquet(analysis_dir / "item_taxonomy.parquet")
+    assert set(official_taxonomy["benchmark_task"]) == {"T1", "T2", "T3"}
+    assert (analysis_dir / "official_statistics.xlsx").exists()
+
+    db = MetadataDB(str(tmp_path / "qa.db"))
+    db.init_schema()
+    ensure_qa_schema(db)
+    db.execute(
+        "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, status) VALUES (?, ?, ?, ?)",
+        ("qa_build", "kg_build", "kg.v1", "ready"),
+    )
+    _insert_candidate(
+        db,
+        candidate_id="candidate_t2",
+        qa_build_id="qa_build",
+        subtype="single_fact",
+        pattern_id=None,
+        entity_ids=["AAPL_US"],
+        metric_ids=["revenue"],
+        time_scope={
+            "fiscal_year": 2023,
+            "basis": "fiscal_year",
+            "start_year": "2020 Q1",
+            "end_year": "2020 Q4",
+            "frequency": "quarterly",
+        },
+        source_id="sec_companyfacts",
+        graph_features={"entity_count": 1, "period_count": 1},
+        answer_schema={"type": "numeric"},
+    )
+    _insert_sample(
+        db,
+        qa_id="qa_t2",
+        qa_build_id="qa_build",
+        candidate_id="candidate_t2",
+        subtype="single_fact",
+        question="What was Apple's FY2023 revenue in million USD?",
+        answer_type="numeric",
+    )
+    _insert_candidate(
+        db,
+        candidate_id="candidate_t3",
+        qa_build_id="qa_build",
+        subtype="filter_then_rank",
+        pattern_id="industry_growth_filter_then_margin_rank",
+        entity_ids=["A_US", "B_US", "C_US"],
+        metric_ids=["revenue", "net_margin"],
+        time_scope={"fiscal_year": 2023, "basis": "fiscal_year"},
+        source_id="sec_companyfacts",
+        graph_features={
+            "entity_count": 3,
+            "period_count": 2,
+            "operation_depth": 2,
+            "scope_size": 3,
+        },
+        answer_schema={"type": "ranked_table"},
+    )
+    _insert_sample(
+        db,
+        qa_id="qa_t3",
+        qa_build_id="qa_build",
+        candidate_id="candidate_t3",
+        subtype="filter_then_rank",
+        question=(
+            "Among the covered companies in FY2023, filter those with positive "
+            "revenue growth and rank the top 3 by net margin."
+        ),
+        answer_type="ranked_table",
+    )
+    db.execute(
+        """
+        INSERT INTO qa_operation_plans (
+            plan_id, qa_build_id, candidate_id, pattern_id, pattern_version,
+            operator_dag, input_bindings, intermediate_results, output_schema,
+            recompute_status, validation_errors
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            "plan_t3",
+            "qa_build",
+            "candidate_t3",
+            "industry_growth_filter_then_margin_rank",
+            1,
+            json.dumps(
+                {
+                    "operators": [
+                        {"step_id": "filter", "operator": "filter"},
+                        {"step_id": "rank", "operator": "rank"},
+                    ]
+                }
+            ),
+            json.dumps({}),
+            json.dumps({}),
+            json.dumps({}),
+            "passed",
+            json.dumps([]),
+        ),
+    )
+
+    output_dir = tmp_path / "alignment"
+    report = align_qa_build_to_finsearchcomp(
+        db,
+        "qa_build",
+        str(analysis_dir / "item_taxonomy.parquet"),
+        str(output_dir),
+        target_t2_count=20,
+        target_t3_count=10,
+    )
+
+    assert report["current_task_counts"] == {"T2": 1, "T3": 1}
+    assert report["contamination"]["exact_match_count"] == 1
+    assert report["execution_quality"]["verifier_pass_rate"] == 1.0
+    assert db.fetchone(
+        "SELECT COUNT(*) AS c FROM qa_distribution_labels WHERE qa_build_id = ?",
+        ("qa_build",),
+    )["c"] == 2
+    labels = pd.read_parquet(output_dir / "current_qa_taxonomy.parquet")
+    assert set(labels["generation_pipeline"]) == {"fact_qa", "static_graph_pattern"}
+    assert (output_dir / "gap_manifest.json").exists()
+    assert (output_dir / "agent_input_manifest.jsonl").exists()
+    assert (output_dir / "hidden_gold_manifest.jsonl").exists()
+    db.close()
+
+
+def test_greater_china_macro_entities_are_classified_without_cninfo():
+    assert _current_market(["worldbank_indicators"], ["CHN_COUNTRY"]) == (
+        "greater_china"
+    )
+    assert _current_market(
+        ["worldbank_indicators"], ["HKG_COUNTRY", "MAC_COUNTRY"]
+    ) == "greater_china"
+    assert _current_market(["worldbank_indicators"], ["USA_COUNTRY"]) == "global"
+
+
+def test_chinese_template_and_benchmark_output_contract_are_fail_closed():
+    template = template_for(
+        "single_fact", "period_flow", "candidate_1", language="zh"
+    )
+    assert template["language"] == "zh"
+    assert "多少" in template["template_text"]
+
+    policy = {
+        "benchmark_alignment": {
+            "enabled": True,
+            "decimal_places": 2,
+            "explicit_unit": True,
+            "explicit_precision": True,
+            "explicit_output_format": True,
+        }
+    }
+    rubric = _benchmark_aligned_rubric(
+        {"match_type": "numeric_tolerance"},
+        policy,
+        {"value": "1", "unit": "million USD", "currency": "USD"},
+        "numeric",
+    )
+    valid = _validate_benchmark_output_contract(
+        {
+            "question": "请以million USD为单位作答，数值保留2位小数。",
+            "rubric": rubric,
+        }
+    )
+    assert valid["passed"]
+
+    invalid = _validate_benchmark_output_contract(
+        {
+            "question": "请以million USD为单位作答。",
+            "rubric": rubric,
+        }
+    )
+    assert not invalid["passed"]
+    assert "requested_precision_missing" in invalid["errors"]
+
+
+def test_long_window_extrema_are_structurally_multi_period():
+    row = {"source_fact_ids": [f"fact_{index}" for index in range(5)]}
+
+    assert _legacy_period_count("multi_year_argmax", row) == 5
+    assert _legacy_operations("multi_year_argmax") == [
+        "lookup",
+        "temporal_extreme",
+    ]

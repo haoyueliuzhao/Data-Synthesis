@@ -15,6 +15,11 @@ from finraw.qa.graph_walk.schema_registry import (
     relation_schema_manifest,
     validate_relation_step,
 )
+from finraw.qa.graph_binding_ir import (
+    _project_fact_trace_records,
+    _projected_graph_node_ids,
+    _projected_walk_edges,
+)
 from finraw.qa.pattern_mining import (
     _typed_walk_binding_identity,
     _unambiguous_typed_walk_records,
@@ -42,6 +47,74 @@ def test_typed_walk_relation_registry_is_fail_closed():
         validate_relation_step("Entity", "HAS_FACT", "in", "Fact")
     with pytest.raises(ValueError, match="Unsupported typed walk edge"):
         validate_relation_step("Entity", "UNKNOWN_RELATION", "out", "Fact")
+
+
+def test_walk_projection_discards_edges_to_nodes_removed_from_roles():
+    entity = {"node_id": "entity", "node_type": "Entity", "source_pk": "A_US"}
+    kept_fact = {"node_id": "fact_kept", "node_type": "Fact", "source_pk": "f1"}
+    row = {
+        "roles": {"entity": [entity], "facts": [kept_fact]},
+        "graph_edges": [
+            {
+                "edge_id": "kept",
+                "src_node_id": "entity",
+                "dst_node_id": "fact_kept",
+                "relation_type": "HAS_FACT",
+            },
+            {
+                "edge_id": "discarded",
+                "src_node_id": "entity",
+                "dst_node_id": "fact_removed",
+                "relation_type": "HAS_FACT",
+            },
+        ],
+    }
+
+    assert _projected_graph_node_ids(row) == ["entity", "fact_kept"]
+    assert [edge["edge_id"] for edge in _projected_walk_edges(row)] == ["kept"]
+
+
+def test_fact_trace_projects_entity_specific_fiscal_year_and_raw_object():
+    row = {
+        "roles": {
+            "facts": [{
+                "node_id": "fact",
+                "source_pk": "f1",
+                "properties": {
+                    "entity_id": "A_US",
+                    "metric_id": "revenue",
+                    "normalized_value": "10",
+                    "normalized_unit": "million USD",
+                },
+            }],
+            "periods": [{"node_id": "period", "source_pk": "period_2025"}],
+            "years": [
+                {"node_id": "year_a", "source_pk": "A_US:2025"},
+                {"node_id": "year_b", "source_pk": "B_US:2025"},
+            ],
+            "raw": [{"node_id": "raw", "source_pk": "raw_1"}],
+        },
+        "graph_edges": [
+            {"src_node_id": "fact", "dst_node_id": "period", "relation_type": "IN_PERIOD"},
+            {"src_node_id": "period", "dst_node_id": "year_a", "relation_type": "IN_FISCAL_YEAR"},
+            {"src_node_id": "period", "dst_node_id": "year_b", "relation_type": "IN_FISCAL_YEAR"},
+            {"src_node_id": "fact", "dst_node_id": "raw", "relation_type": "TRACED_TO"},
+        ],
+    }
+    result = _project_fact_trace_records(
+        row,
+        {
+            "fact_role": "facts",
+            "period_role": "periods",
+            "hierarchy_role": "years",
+            "raw_object_role": "raw",
+        },
+        "inputs",
+    )
+
+    assert result["inputs"][0]["fiscal_year_ids"] == ["A_US:2025"]
+    assert result["inputs"][0]["fiscal_year"] == "2025"
+    assert result["inputs"][0]["raw_object_id"] == "raw_1"
 
 
 def test_query_graph_compiles_role_filters_joins_coverage_and_projection_v2():

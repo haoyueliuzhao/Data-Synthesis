@@ -222,7 +222,7 @@ fallback_reason / error_type
 
 API 门控与样本 verifier 独立。即使 fallback 文本完全正确，只要 HTTP、结构化输出、受控生成或 fallback 比例不达标，build 仍为 `quality_failed`。默认阈值为 HTTP、结构化和受控生成成功率至少 98%，fallback 至多 2%。语义不合格响应最多进行一次有界修复；请求数、样本数、重试数和最终 fallback 数分别审计，默认重试率不得超过 5%。模型单价未配置时 `estimated_cost` 为 `null`，不会以零费用误导审计。
 
-非秘密测试配置为 `config/profiles/prod_analysis_llm_150_test.json`，配额为三个 Pattern 各 50 条。凭据仅从 `OPENAI_API_KEY` 环境变量读取；当前 profile 使用 Moonlight OpenAI-compatible `/v1/chat/completions`、`gpt-5.6-sol`、`reasoning_effort=high` 和 `store=false`。该配置定义了正确的半开放测试，但只有实际运行后生成的 build report、`analysis_llm_calls` 和 export manifest 才能证明 150 次调用结果。
+非秘密测试配置为 `config/profiles/prod_analysis_llm_150_test.json`，配额为三个 Pattern 各 50 条。凭据仅从 `DASHSCOPE_API_KEY` 环境变量读取；当前 profile 使用 DashScope OpenAI-compatible `/compatible-mode/v1/chat/completions` 和 `qwen-turbo`，并允许通过模型目录自动回退到可用的 Qwen 模型。该配置定义了正确的半开放测试，但只有实际运行后生成的 build report、`analysis_llm_calls` 和 export manifest 才能证明 150 次调用结果。
 
 ## 命令
 

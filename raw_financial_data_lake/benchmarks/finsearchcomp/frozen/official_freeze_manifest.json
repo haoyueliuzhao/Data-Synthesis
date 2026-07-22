@@ -1,0 +1,33 @@
+{
+  "contamination_guard": true,
+  "dataset_id": "ByteSeedXpert/FinSearchComp",
+  "license": "CC BY 4.0",
+  "parquet_sha256": "7970d9fe0048bdcaf2be89e8fd081fbc1ad37525e8c16beb2ae94e0018a4220c",
+  "raw_schema": [
+    "akshare_ticker",
+    "ground_truth",
+    "judge_prompt_template",
+    "judge_system_prompt",
+    "label",
+    "prompt",
+    "prompt_id",
+    "response_reference",
+    "response_reference_translate",
+    "time",
+    "wind_ticker",
+    "yfinance_ticker"
+  ],
+  "raw_sha256": "6437a6dae907ec81002bd817dafc26c3e46e6b6edfde700f22645b1e2aa208c4",
+  "required_schema": [
+    "judge_prompt_template",
+    "judge_system_prompt",
+    "label",
+    "prompt",
+    "prompt_id",
+    "response_reference"
+  ],
+  "revision": "1fd1beea75482e2dd5e2be8f618195d9c6aff176",
+  "row_count": 635,
+  "taxonomy_version": "finsearchcomp_taxonomy.v1",
+  "usage": "evaluation_only"
+}

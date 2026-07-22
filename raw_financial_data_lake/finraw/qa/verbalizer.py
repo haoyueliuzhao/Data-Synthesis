@@ -12,8 +12,8 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
 QUESTION_REWRITE_VERSION = "question_rewrite.v3"
-SURFACE_VARIATION_VERSION = "surface_variation.v2"
-QUESTION_PARSER_VERSION = "1.3.0"
+SURFACE_VARIATION_VERSION = "surface_variation.v3"
+QUESTION_PARSER_VERSION = "1.3.1"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh")
 
 _TONE_PREFIXES = {
@@ -33,6 +33,10 @@ _PROTECTED_REWRITE_STYLES = {
     "analyst": "Use an analyst-review formulation.",
     "concise": "Use a compact request with minimal filler.",
     "comparative": "Emphasize the filtering and ranking sequence.",
+    "evidence_focused": "Use an evidence-focused financial research formulation.",
+    "plain_language": "Use clear plain language without losing financial precision.",
+    "research": "Use a compact institutional-research formulation.",
+    "screening": "Use a financial-screening formulation when the task permits it.",
 }
 
 _COMPARISON_PATTERN = re.compile(
@@ -89,7 +93,7 @@ _OBSERVABLE_OPERATOR_PATTERNS = {
         re.IGNORECASE,
     ),
     "rank": re.compile(
-        r"\b(?:rank|ranking|top\s+\d+|bottom\s+\d+|highest|lowest)\b|排名|排行|前\s*\d+|后\s*\d+",
+        r"\b(?:rank|ranking|top\s+\d+|bottom\s+\d+|highest|lowest)\b|排名|排行|排序|前\s*\d+|后\s*\d+",
         re.IGNORECASE,
     ),
     "extreme": re.compile(
@@ -138,6 +142,36 @@ _METRIC_SURFACE_ALIASES = {
     "operating cash flow": ("operating cash flow", "cash flow from operations"),
     "net margin": ("net margin", "net profit margin"),
     "debt ratio": ("debt ratio", "liabilities-to-assets ratio"),
+    "cost of revenue": ("cost of revenue", "cost of sales"),
+    "research and development expense": (
+        "research and development expense",
+        "R&D expense",
+    ),
+    "selling, general and administrative expense": (
+        "selling, general and administrative expense",
+        "SG&A expense",
+    ),
+    "shareholders' equity": ("shareholders' equity", "stockholders' equity"),
+    "cash and cash equivalents": (
+        "cash and cash equivalents",
+        "cash and equivalents",
+    ),
+    "accounts receivable, net": (
+        "accounts receivable, net",
+        "net accounts receivable",
+    ),
+    "long-term debt": ("long-term debt", "long-term borrowings"),
+    "net cash provided by used in investing activities": (
+        "investing cash flow",
+        "cash flow from investing activities",
+    ),
+    "net cash provided by used in financing activities": (
+        "financing cash flow",
+        "cash flow from financing activities",
+    ),
+    "capital expenditures": ("capital expenditures", "capital spending", "capex"),
+    "earnings per share, basic": ("basic earnings per share", "basic EPS"),
+    "earnings per share, diluted": ("diluted earnings per share", "diluted EPS"),
 }
 
 
@@ -148,6 +182,7 @@ _TOP_K_PATTERNS = (
         re.IGNORECASE,
     ),
     re.compile(r"(?:前|后)\s*(\d+)"),
+    re.compile(r"(?:最高|最低)(?:的)?\s*(\d+)"),
 )
 
 
@@ -479,10 +514,22 @@ def _realize_protected_rewrite(
         ).items()
         if name in protected_names
     }
+    resolved_variant_ids = _surface_variant_ids_for_values(
+        variant_choices, resolved_slots
+    )
     llm_selects_variants = bool(
         dict(policy.get("surface_variation") or {}).get(
             "llm_selects_variants", False
         )
+    )
+    surface_policy = dict(policy.get("surface_variation") or {})
+    noncanonical_slot_capacity = sum(
+        any(variant_id != "canonical" for variant_id in choices)
+        for choices in variant_choices.values()
+    )
+    minimum_noncanonical_selections = min(
+        max(int(surface_policy.get("minimum_noncanonical_selections", 1)), 0),
+        noncanonical_slot_capacity,
     )
     style_variant_id = str(policy.get("style_variant_id") or "direct")
     if style_variant_id not in _PROTECTED_REWRITE_STYLES:
@@ -499,6 +546,7 @@ def _realize_protected_rewrite(
             "generation_strategy": "protected_rewrite",
             "protected_question": protected,
             "required_placeholders": placeholders,
+            "semantic_cues": _protected_rewrite_semantic_cues(surface_contract),
             "rewrite_schema": {
                 "rewrite_version": QUESTION_REWRITE_VERSION,
                 "allowed_fields": ["rewrite_version", "question_template"],
@@ -508,9 +556,29 @@ def _realize_protected_rewrite(
             "style_variant_id": style_variant_id,
             "style_instruction": _PROTECTED_REWRITE_STYLES[style_variant_id],
         }
+        repair_errors = sorted(
+            set(str(item) for item in policy.get("_rewrite_repair_errors") or [])
+        )
+        if repair_errors:
+            request["repair_contract"] = {
+                "previous_error_codes": repair_errors,
+                "instruction": (
+                    "Return a fresh rewrite that satisfies the unchanged protected "
+                    "question and surface-variant schemas."
+                ),
+            }
         if llm_selects_variants:
+            request["rewrite_schema"]["allowed_fields"].append(
+                "surface_variant_ids"
+            )
+            request["rewrite_schema"]["required_fields"] = [
+                "rewrite_version",
+                "question_template",
+                "surface_variant_ids",
+            ]
             request["surface_variant_schema"] = {
                 "selection_required": True,
+                "minimum_noncanonical_selections": minimum_noncanonical_selections,
                 "slots": {
                     name: [
                         {
@@ -519,6 +587,9 @@ def _realize_protected_rewrite(
                                 "canonical"
                                 if variant_id == "canonical"
                                 else "equivalent_surface_alternative"
+                            ),
+                            "transformation": _surface_variant_transformation(
+                                name, variant_id
                             ),
                         }
                         for variant_id in choices
@@ -542,6 +613,7 @@ def _realize_protected_rewrite(
                 candidate,
                 placeholders,
                 variant_choices if llm_selects_variants else None,
+                minimum_noncanonical_selections=minimum_noncanonical_selections,
             )
             surface_selection_errors = [
                 error
@@ -582,6 +654,16 @@ def _realize_protected_rewrite(
                 question, candidate_slots
             )
             if slot_check["passed"] and numeric_check["passed"]:
+                selected_variant_ids = (
+                    rewrite_check["surface_variant_ids"]
+                    if llm_selects_variants
+                    else resolved_variant_ids
+                )
+                noncanonical_selection_count = sum(
+                    str(candidate_slots.get(name) or "")
+                    != str(canonical_slots.get(name) or "")
+                    for name in protected_names
+                )
                 return VerbalizationResult(
                     question,
                     "controlled_llm_protected_rewrite",
@@ -590,10 +672,12 @@ def _realize_protected_rewrite(
                         **slot_check,
                         "semantic_rendering": "llm_protected_template",
                         "rewrite_version": QUESTION_REWRITE_VERSION,
+                        "rewrite_attempt_count": 1,
                         "style_variant_id": style_variant_id,
                         "rewrite_variant_index": rewrite_variant_index,
                         "rewrite_valid": True,
                         "rewrite_errors": [],
+                        "rewrite_warnings": rewrite_check["rewrite_warnings"],
                         "protected_question": protected,
                         "surface_slots": candidate_slots,
                         "surface_realization_source": (
@@ -601,14 +685,12 @@ def _realize_protected_rewrite(
                             if llm_selects_variants
                             else "deterministic_variant_selection"
                         ),
-                        "surface_variant_ids": rewrite_check[
-                            "surface_variant_ids"
-                        ],
-                        "denormalization_applied": any(
-                            variant_id != "canonical"
-                            for variant_id in rewrite_check[
-                                "surface_variant_ids"
-                            ].values()
+                        "surface_variant_ids": selected_variant_ids,
+                        "denormalization_applied": bool(
+                            noncanonical_selection_count
+                        ),
+                        "noncanonical_selection_count": (
+                            noncanonical_selection_count
                         ),
                         "surface_variation_version": SURFACE_VARIATION_VERSION,
                         "numeric_grounding": numeric_check,
@@ -618,11 +700,11 @@ def _realize_protected_rewrite(
                             "sentence_plan_valid": True,
                             "rewrite_valid": True,
                             "denormalization_valid": True,
-                            "denormalization_applied": any(
-                                variant_id != "canonical"
-                                for variant_id in rewrite_check[
-                                    "surface_variant_ids"
-                                ].values()
+                            "denormalization_applied": bool(
+                                noncanonical_selection_count
+                            ),
+                            "noncanonical_selection_count": (
+                                noncanonical_selection_count
                             ),
                             "controlled_generation": True,
                         },
@@ -630,6 +712,48 @@ def _realize_protected_rewrite(
                 )
             errors.extend(slot_check["contract_errors"])
             errors.extend(numeric_check["errors"])
+        max_attempts = max(1, min(3, int(policy.get("max_attempts", 2))))
+        if max_attempts > 1:
+            retry_result = _realize_protected_rewrite(
+                canonical_question,
+                semantics=semantics,
+                canonical_slots=canonical_slots,
+                surface_slots=surface_slots,
+                required_slots=required_slots,
+                protected_question=protected,
+                policy={
+                    **policy,
+                    "max_attempts": max_attempts - 1,
+                    "_rewrite_repair_errors": sorted(set(errors)),
+                },
+                provider=effective_provider,
+                base_validation=base_validation,
+            )
+            retry_validation = dict(retry_result.validation)
+            retry_telemetry = dict(
+                retry_validation.get("llm_telemetry") or {}
+            )
+            telemetry = _merge_llm_attempt_telemetry(
+                [telemetry, retry_telemetry]
+            )
+            rewrite_attempt_count = 1 + int(
+                retry_validation.get("rewrite_attempt_count") or 1
+            )
+            if retry_result.generation_method in {
+                "controlled_llm_protected_rewrite",
+                "controlled_llm_surface_realization",
+            }:
+                return VerbalizationResult(
+                    retry_result.question,
+                    retry_result.generation_method,
+                    {
+                        **retry_validation,
+                        "rewrite_attempt_count": rewrite_attempt_count,
+                        "repair_error_codes": sorted(set(errors)),
+                        "llm_telemetry": telemetry,
+                    },
+                )
+            errors.extend(retry_validation.get("rewrite_errors") or [])
         fallback_reason = "no_llm_protected_rewrite_passed_validation"
     except Exception as exc:
         if isinstance(exc, LLMClientError):
@@ -689,6 +813,11 @@ def _realize_protected_rewrite(
     fallback_check = validate_question_roundtrip(
         deterministic_surface, surface_contract, trusted_contract=True
     )
+    fallback_noncanonical_count = sum(
+        str(resolved_slots.get(name) or "")
+        != str(canonical_slots.get(name) or "")
+        for name in protected_names
+    )
     return VerbalizationResult(
         deterministic_surface,
         "deterministic_surface_fallback",
@@ -703,8 +832,9 @@ def _realize_protected_rewrite(
             "protected_question": protected,
             "surface_slots": resolved_slots,
             "surface_realization_source": "deterministic_fallback",
-            "surface_variant_ids": {},
-            "denormalization_applied": False,
+            "surface_variant_ids": resolved_variant_ids,
+            "denormalization_applied": bool(fallback_noncanonical_count),
+            "noncanonical_selection_count": fallback_noncanonical_count,
             "surface_variation_version": SURFACE_VARIATION_VERSION,
             "numeric_grounding": validate_rewrite_numeric_grounding(
                 deterministic_surface, resolved_slots
@@ -715,7 +845,8 @@ def _realize_protected_rewrite(
                 "sentence_plan_valid": False,
                 "rewrite_valid": False,
                 "denormalization_valid": False,
-                "denormalization_applied": False,
+                "denormalization_applied": bool(fallback_noncanonical_count),
+                "noncanonical_selection_count": fallback_noncanonical_count,
                 "controlled_generation": False,
             },
         },
@@ -725,6 +856,37 @@ def _realize_protected_rewrite(
 def slot_placeholder(slot_name: str) -> str:
     normalized = re.sub(r"[^a-z0-9_]+", "_", slot_name.casefold()).strip("_")
     return f"<slot_{normalized}>"
+
+
+def _merge_llm_attempt_telemetry(
+    attempts: list[dict[str, Any]],
+) -> dict[str, Any]:
+    rows = [dict(item) for item in attempts if item]
+    if not rows:
+        return {}
+    merged = dict(rows[-1])
+    merged.update(
+        {
+            "request_count": sum(
+                max(int(row.get("request_count") or 1), 1) for row in rows
+            ),
+            "latency_ms": sum(float(row.get("latency_ms") or 0) for row in rows),
+            "prompt_tokens": sum(
+                int(row.get("prompt_tokens") or 0) for row in rows
+            ),
+            "completion_tokens": sum(
+                int(row.get("completion_tokens") or 0) for row in rows
+            ),
+            "total_tokens": sum(int(row.get("total_tokens") or 0) for row in rows),
+            "estimated_cost": sum(
+                float(row.get("estimated_cost") or 0) for row in rows
+            ),
+            "http_success": all(bool(row.get("http_success")) for row in rows),
+            "json_valid": all(bool(row.get("json_valid")) for row in rows),
+            "rewrite_api_attempt_count": len(rows),
+        }
+    )
+    return merged
 
 
 def build_protected_question(template_text: str, slot_names: list[str]) -> str:
@@ -760,19 +922,26 @@ def validate_protected_rewrite(
     candidate: Any,
     required_placeholders: list[str],
     allowed_surface_variants: dict[str, dict[str, str]] | None = None,
+    *,
+    minimum_noncanonical_selections: int = 0,
 ) -> dict[str, Any]:
     errors: list[str] = []
+    warnings: list[str] = []
     if not isinstance(candidate, dict):
         return {
             "passed": False,
             "question_template": "",
             "rewrite_errors": ["rewrite_not_object"],
+            "rewrite_warnings": [],
         }
     allowed_fields = {"rewrite_version", "question_template"}
     if allowed_surface_variants is not None:
         allowed_fields.add("surface_variant_ids")
     if set(candidate) - allowed_fields:
-        errors.append("rewrite_unknown_fields")
+        # Provider-specific explanatory fields are never consumed. Treating them
+        # as warnings preserves a closed rendering contract without rejecting an
+        # otherwise valid protected question.
+        warnings.append("rewrite_unknown_fields_ignored")
     if str(candidate.get("rewrite_version") or "") != QUESTION_REWRITE_VERSION:
         errors.append("rewrite_version_invalid")
     question_template = str(candidate.get("question_template") or "").strip()
@@ -788,6 +957,7 @@ def validate_protected_rewrite(
     if _FORBIDDEN_QUESTION_EXTENSION.search(question_template):
         errors.append("rewrite_forbidden_extension")
     surface_variant_ids: dict[str, str] = {}
+    noncanonical_selection_count = 0
     if allowed_surface_variants is not None:
         raw_variant_ids = candidate.get("surface_variant_ids")
         if not isinstance(raw_variant_ids, dict):
@@ -802,11 +972,19 @@ def validate_protected_rewrite(
             for slot, variant_id in surface_variant_ids.items():
                 if variant_id not in allowed_surface_variants.get(slot, {}):
                     errors.append("rewrite_surface_variant_id_invalid")
+            noncanonical_selection_count = sum(
+                variant_id != "canonical"
+                for variant_id in surface_variant_ids.values()
+            )
+            if noncanonical_selection_count < minimum_noncanonical_selections:
+                errors.append("rewrite_surface_variant_diversity_insufficient")
     return {
         "passed": not errors,
         "question_template": question_template,
         "surface_variant_ids": surface_variant_ids,
+        "noncanonical_selection_count": noncanonical_selection_count,
         "rewrite_errors": errors,
+        "rewrite_warnings": warnings,
     }
 
 
@@ -846,14 +1024,44 @@ def diversify_surface_slots(
     if not policy.get("enabled", False):
         return dict(canonical_slots)
     variants = surface_slot_variants(canonical_slots, semantics, config)
-    output: dict[str, str] = {}
+    selected_ids: dict[str, str] = {}
     for slot, choices in variants.items():
-        options = list(choices.values())
+        option_ids = list(choices)
         digest = hashlib.sha256(
             f"{SURFACE_VARIATION_VERSION}|{stable_seed}|{slot}".encode("utf-8")
         ).hexdigest()
-        output[slot] = options[int(digest[:8], 16) % len(options)]
-    return output
+        selected_ids[slot] = option_ids[int(digest[:8], 16) % len(option_ids)]
+    minimum_noncanonical = max(
+        int(policy.get("minimum_noncanonical_selections", 1)), 0
+    )
+    selected_noncanonical = sum(
+        variant_id != "canonical" for variant_id in selected_ids.values()
+    )
+    if selected_noncanonical < minimum_noncanonical:
+        eligible_slots = sorted(
+            (
+                slot
+                for slot, choices in variants.items()
+                if any(variant_id != "canonical" for variant_id in choices)
+            ),
+            key=lambda slot: hashlib.sha256(
+                f"{stable_seed}|force_noncanonical|{slot}".encode("utf-8")
+            ).hexdigest(),
+        )
+        for slot in eligible_slots:
+            alternatives = [
+                variant_id
+                for variant_id in variants[slot]
+                if variant_id != "canonical"
+            ]
+            selected_ids[slot] = alternatives[0]
+            selected_noncanonical += 1
+            if selected_noncanonical >= minimum_noncanonical:
+                break
+    return {
+        slot: variants[slot][variant_id]
+        for slot, variant_id in selected_ids.items()
+    }
 
 
 def surface_slot_variants(
@@ -885,6 +1093,23 @@ def resolve_surface_variant_ids(
     }
 
 
+def _surface_variant_ids_for_values(
+    variants: dict[str, dict[str, str]], selected_slots: dict[str, str]
+) -> dict[str, str]:
+    output: dict[str, str] = {}
+    for slot, choices in variants.items():
+        selected_value = str(selected_slots.get(slot) or "")
+        output[slot] = next(
+            (
+                variant_id
+                for variant_id, value in choices.items()
+                if str(value) == selected_value
+            ),
+            "canonical",
+        )
+    return output
+
+
 def surface_variation_manifest(config: dict[str, Any] | None) -> dict[str, Any]:
     policy = dict((config or {}).get("surface_variation") or {})
     manifest = {
@@ -892,10 +1117,20 @@ def surface_variation_manifest(config: dict[str, Any] | None) -> dict[str, Any]:
         "enabled": bool(policy.get("enabled", False)),
         "entity_suffix_shortening": bool(policy.get("entity_suffix_shortening", True)),
         "llm_selects_variants": bool(policy.get("llm_selects_variants", False)),
+        "minimum_noncanonical_selections": max(
+            int(policy.get("minimum_noncanonical_selections", 1)), 0
+        ),
+        "protected_rewrite_styles": dict(sorted(_PROTECTED_REWRITE_STYLES.items())),
         "metric_aliases": {
             key: list(values) for key, values in sorted(_METRIC_SURFACE_ALIASES.items())
         },
-        "period_styles": ["canonical", "fiscal_or_calendar"],
+        "period_styles": [
+            "canonical",
+            "compact_fiscal_or_calendar",
+            "spaced_fiscal_or_calendar",
+            "natural_fiscal_or_calendar",
+        ],
+        "scope_contextualization": bool(policy.get("scope_contextualization", True)),
     }
     payload = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
     return {
@@ -933,6 +1168,25 @@ def _surface_options(
         if shortened:
             options.append(shortened)
     if slot in {"period", "previous_period", "start_period", "end_period"}:
+        quarter_match = re.fullmatch(
+            r"fiscal year\s+(\d{4})\s+(Q[1-4](?:_YTD)?)", value, re.I
+        )
+        if quarter_match:
+            year, quarter = quarter_match.groups()
+            quarter = quarter.upper()
+            natural_quarters = {
+                "Q1": f"the first quarter of FY{year}",
+                "Q2": f"the second quarter of FY{year}",
+                "Q3": f"the third quarter of FY{year}",
+                "Q4": f"the fourth quarter of FY{year}",
+                "Q1_YTD": f"the first three months of FY{year}",
+                "Q2_YTD": f"the first six months of FY{year}",
+                "Q3_YTD": f"the first nine months of FY{year}",
+                "Q4_YTD": f"the full fiscal year {year}",
+            }
+            options.extend(
+                [f"FY{year} {quarter.replace('_', ' ')}", natural_quarters[quarter]]
+            )
         match = re.fullmatch(r"(?:fiscal year\s+|FY\s*)?(\d{4})", value, re.I)
         if match:
             year = match.group(1)
@@ -941,9 +1195,14 @@ def _surface_options(
                 or semantics.get("time_basis")
                 or ""
             )
-            options.append(
-                f"FY{year}" if "fiscal" in basis else f"calendar year {year}"
-            )
+            if "fiscal" in basis:
+                options.extend(
+                    [f"FY{year}", f"FY {year}", f"the {year} fiscal year"]
+                )
+            else:
+                options.extend(
+                    [f"calendar year {year}", f"CY {year}", f"the {year} calendar year"]
+                )
     if slot == "frequency" and normalized == "annual":
         options.append("yearly")
     if slot == "extreme":
@@ -960,7 +1219,38 @@ def _surface_options(
                 flags=re.IGNORECASE,
             )
         )
+        if policy.get("scope_contextualization", True) and not re.search(
+            r"\b(?:scope|universe|peer|companies|entities)\b", value, re.IGNORECASE
+        ):
+            options.extend(
+                [f"the {value} peer group", f"covered {value} companies"]
+            )
     return list(dict.fromkeys(item for item in options if item))
+
+
+def _surface_variant_transformation(slot: str, variant_id: str) -> str:
+    if variant_id == "canonical":
+        return "canonical"
+    if slot.startswith("metric") or slot in {
+        "ratio",
+        "primary_metric",
+        "secondary_metric",
+        "growth_metric",
+        "ranking_metric",
+        "debt_metric",
+    }:
+        return "registered_financial_synonym"
+    if slot.startswith("entity"):
+        return "registered_short_entity_name"
+    if slot in {"period", "previous_period", "start_period", "end_period"}:
+        return "equivalent_period_style"
+    if slot == "scope":
+        return "equivalent_scope_description"
+    if slot == "frequency":
+        return "equivalent_frequency_term"
+    if slot == "extreme":
+        return "equivalent_extrema_term"
+    return "equivalent_surface_form"
 
 
 def validate_sentence_plan(candidate: Any) -> dict[str, Any]:
@@ -1376,6 +1666,33 @@ def _operator_position(question: str, operator: str) -> int | None:
         return None
     match = matches[-1] if operator == "rank" else matches[0]
     return match.start()
+
+
+def _protected_rewrite_semantic_cues(
+    semantic_contract: dict[str, Any],
+) -> dict[str, Any]:
+    """Expose operation grammar only; never expose slots, values, or answers."""
+    requirements = _semantic_requirements(semantic_contract)
+    operator_order = list(requirements.get("operator_order") or [])
+    cue_words = {
+        "filter": ["filter", "screen"],
+        "rank": ["rank", "top <slot_top_k>"],
+        "extreme": ["highest", "lowest", "maximum", "minimum"],
+        "lookup": ["report", "look up", "what was"],
+    }
+    return {
+        "operator_order": operator_order,
+        "required_operator_anchors": {
+            operator: cue_words[operator]
+            for operator in operator_order
+            if operator in cue_words
+        },
+        "extreme_direction": requirements.get("extreme_direction"),
+        "instruction": (
+            "Express every listed operation exactly once in the listed order using "
+            "an applicable observable anchor; these cues contain no result values."
+        ),
+    }
 
 
 def _render_sequence_connector(

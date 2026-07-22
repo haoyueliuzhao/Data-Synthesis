@@ -31,6 +31,26 @@ class _RewriteProvider:
         return self.payload if isinstance(self.payload, list) else [self.payload]
 
 
+class _SequenceRewriteProvider(_RewriteProvider):
+    def __init__(self, payloads):
+        super().__init__(None)
+        self.payloads = list(payloads)
+
+    def generate(self, request):
+        self.requests.append(request)
+        payload = self.payloads.pop(0)
+        self.last_telemetry = {
+            "request_count": 1,
+            "http_success": True,
+            "json_valid": True,
+            "latency_ms": 10,
+            "prompt_tokens": 20,
+            "completion_tokens": 10,
+            "total_tokens": 30,
+        }
+        return payload if isinstance(payload, list) else [payload]
+
+
 def _rewrite_case(
     provider, *, style_variant_id="analyst", llm_selects_variants=False
 ):
@@ -122,10 +142,45 @@ def test_protected_api_rewrite_changes_language_but_preserves_surface_slots():
     assert request["style_variant_id"] == "analyst"
     assert "analyst-review" in request["style_instruction"]
     assert result.validation["style_variant_id"] == "analyst"
+    assert result.validation["denormalization_applied"] is True
+    assert result.validation["noncanonical_selection_count"] >= 1
+    assert result.validation["surface_realization_source"] == (
+        "deterministic_variant_selection"
+    )
+    assert "surface_variant_schema" not in request
+    assert request["semantic_cues"]["operator_order"] == ["filter", "rank"]
+    assert set(request["semantic_cues"]["required_operator_anchors"]) == {
+        "filter",
+        "rank",
+    }
     assert "Technology" not in serialized
     assert "Revenue" not in serialized
     assert "2023" not in serialized
     assert "answer" not in serialized.casefold()
+
+
+def test_protected_rewrite_ignores_unconsumed_provider_metadata():
+    provider = _RewriteProvider(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "For <slot_period> within <slot_scope>, first screen businesses with "
+                "<slot_growth_metric> growth above <slot_growth_threshold>%; then "
+                "identify the top <slot_top_k> by <slot_ranking_metric>?"
+            ),
+            "explanation": "A provider-added field that is never rendered.",
+        }
+    )
+
+    result = _rewrite_case(provider)
+
+    assert result.generation_method == "controlled_llm_protected_rewrite"
+    assert result.validation["rewrite_valid"] is True
+    assert result.validation["rewrite_errors"] == []
+    assert result.validation["rewrite_warnings"] == [
+        "rewrite_unknown_fields_ignored"
+    ]
+    assert "provider-added" not in result.question
 
 
 def test_protected_rewrite_rejects_comparison_reversal_and_falls_back():
@@ -187,6 +242,7 @@ def test_surface_variation_is_deterministic_and_manifested():
     )
 
     assert first == second
+    assert first != slots
     assert first["entity"] in {"Apple Inc.", "Apple"}
     assert first["metric"] in {"Revenue", "revenue", "sales"}
     assert first["period"] in {"2023", "FY2023"}
@@ -223,6 +279,17 @@ def test_llm_selects_valid_denormalized_surface_variants_without_seeing_values()
     assert result.validation["llm_telemetry"]["denormalization_valid"] is True
     request = provider.requests[0]
     assert request["surface_variant_schema"]["selection_required"] is True
+    assert "surface_variant_ids" in request["rewrite_schema"]["allowed_fields"]
+    assert request["rewrite_schema"]["required_fields"] == [
+        "rewrite_version",
+        "question_template",
+        "surface_variant_ids",
+    ]
+    assert request["surface_variant_schema"]["minimum_noncanonical_selections"] == 1
+    assert {
+        item["transformation"]
+        for item in request["surface_variant_schema"]["slots"]["growth_metric"]
+    } == {"canonical", "registered_financial_synonym"}
     serialized = json.dumps(request)
     assert "Technology" not in serialized
     assert "Revenue" not in serialized
@@ -303,7 +370,111 @@ def test_surface_slot_variants_are_canonical_and_whitelisted():
     assert variants["period"] == {
         "canonical": "2023",
         "alternative_1": "FY2023",
+        "alternative_2": "FY 2023",
+        "alternative_3": "the 2023 fiscal year",
     }
+
+
+def test_surface_slot_variants_naturalize_fiscal_ytd_periods():
+    variants = surface_slot_variants(
+        {"period": "fiscal year 2020 Q2_YTD"},
+        {"time_scope": {"basis": "fiscal_year"}},
+        {"surface_variation": {"enabled": True}},
+    )
+
+    assert "FY2020 Q2 YTD" in variants["period"].values()
+    assert "the first six months of FY2020" in variants["period"].values()
+
+
+def test_llm_surface_selection_requires_a_noncanonical_variant_when_available():
+    provider = _RewriteProvider(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "Within <slot_scope>, screen businesses with <slot_growth_metric> "
+                "growth above <slot_growth_threshold>% in <slot_period>, then rank "
+                "the top <slot_top_k> by <slot_ranking_metric>?"
+            ),
+            "surface_variant_ids": {
+                "growth_metric": "canonical",
+                "growth_threshold": "canonical",
+                "period": "canonical",
+                "ranking_metric": "canonical",
+                "scope": "canonical",
+                "top_k": "canonical",
+            },
+        }
+    )
+
+    result = _rewrite_case(provider, llm_selects_variants=True)
+
+    assert result.generation_method == "deterministic_surface_fallback"
+    assert "rewrite_surface_variant_diversity_insufficient" in (
+        result.validation["rewrite_errors"]
+    )
+
+
+def test_invalid_rewrite_is_repaired_by_one_bounded_second_request():
+    valid_variant_ids = {
+        "growth_metric": "alternative_2",
+        "growth_threshold": "canonical",
+        "period": "alternative_1",
+        "ranking_metric": "alternative_1",
+        "scope": "canonical",
+        "top_k": "canonical",
+    }
+    provider = _SequenceRewriteProvider(
+        [
+            {
+                "rewrite_version": QUESTION_REWRITE_VERSION,
+                "question_template": "This is not a valid protected question.",
+            },
+            {
+                "rewrite_version": QUESTION_REWRITE_VERSION,
+                "question_template": (
+                    "For <slot_period> within <slot_scope>, screen businesses with "
+                    "<slot_growth_metric> growth above <slot_growth_threshold>%, "
+                    "then list the top <slot_top_k> by <slot_ranking_metric>?"
+                ),
+                "surface_variant_ids": valid_variant_ids,
+            },
+        ]
+    )
+
+    result = _rewrite_case(provider, llm_selects_variants=True)
+
+    assert result.generation_method == "controlled_llm_protected_rewrite"
+    assert len(provider.requests) == 2
+    assert provider.requests[1]["repair_contract"]["previous_error_codes"]
+    assert result.validation["rewrite_attempt_count"] == 2
+    assert result.validation["llm_telemetry"]["request_count"] == 2
+    assert result.validation["llm_telemetry"]["total_tokens"] == 60
+    assert result.validation["repair_error_codes"]
+
+
+def test_advanced_metric_slots_fall_back_to_ordered_candidate_metric_ids():
+    from finraw.qa.pipeline import _question_slots
+
+    slots = _question_slots(
+        {
+            "canonical_semantics": {
+                "scope_definition": "a complete peer universe",
+                "primary_metric_id": None,
+                "secondary_metric_id": None,
+            },
+            "time_scope": {"year": 2023, "basis": "fiscal_year"},
+            "task_subtype": "rank_then_secondary_lookup",
+            "entity_ids": ["A_US", "B_US"],
+            "metric_ids": ["revenue", "total_assets"],
+            "answer_payload": {"table": [{"entity_id": "A_US"}]},
+            "source_fact_ids": [],
+        },
+        {"A_US": "A Corp", "B_US": "B Corp"},
+        {"revenue": "Revenue", "total_assets": "Total Assets"},
+    )
+
+    assert slots["primary_metric"] == "Revenue"
+    assert slots["secondary_metric"] == "Total Assets"
 
 
 def test_llm_client_discovers_models_and_falls_back_on_model_quota(monkeypatch):

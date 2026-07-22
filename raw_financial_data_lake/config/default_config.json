@@ -438,10 +438,13 @@
       "mode": "controlled_template",
       "strategy": "sentence_plan",
       "variants": 3,
+      "max_attempts": 2,
       "language": "en",
       "surface_variation": {
         "enabled": false,
-        "entity_suffix_shortening": true
+        "entity_suffix_shortening": true,
+        "scope_contextualization": true,
+        "minimum_noncanonical_selections": 1
       },
       "llm": {
         "endpoint": "",
@@ -456,11 +459,12 @@
           "qwen-max",
           "qwen3"
         ],
-        "api_key_env": "OPENAI_API_KEY",
+        "api_key_env": "DASHSCOPE_API_KEY",
         "timeout_seconds": 30,
         "model_discovery_cache_seconds": 3600,
         "fallback_http_statuses": [
           400,
+          403,
           404,
           429,
           500,
@@ -474,7 +478,8 @@
         "minimum_valid_sentence_plan_rate": 0.98,
         "minimum_valid_surface_realization_rate": 0.98,
         "minimum_controlled_generation_rate": 0.98,
-        "maximum_fallback_rate": 0.02
+        "maximum_fallback_rate": 0.02,
+        "maximum_retry_rate": 0.10
       }
     },
     "split_policy": "semantic_cluster_then_entity_fixed_time_task",
