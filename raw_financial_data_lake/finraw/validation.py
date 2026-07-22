@@ -9,10 +9,14 @@ from finraw.storage import sha256_bytes
 
 
 def validate_raw_objects(db: MetadataDB) -> tuple[int, int]:
-    rows = db.fetchall("SELECT raw_object_id, storage_uri, content_sha256 FROM raw_objects")
+    rows = db.fetchall(
+        "SELECT raw_object_id, storage_uri, content_sha256, response_status, "
+        "validation_status, notes FROM raw_objects"
+    )
     passed = 0
     failed = 0
     for row in rows:
+        row = dict(row)
         path = Path(row["storage_uri"])
         if not path.exists():
             db.execute(
@@ -22,18 +26,33 @@ def validate_raw_objects(db: MetadataDB) -> tuple[int, int]:
             failed += 1
             continue
         actual = sha256_bytes(path.read_bytes())
-        if actual == row["content_sha256"]:
-            db.execute(
-                "UPDATE raw_objects SET validation_status = ? WHERE raw_object_id = ?",
-                ("passed", row["raw_object_id"]),
-            )
-            passed += 1
-        else:
+        if actual != row["content_sha256"]:
             db.execute(
                 "UPDATE raw_objects SET validation_status = ?, notes = ? WHERE raw_object_id = ?",
                 ("failed", f"sha256 mismatch actual={actual}", row["raw_object_id"]),
             )
             failed += 1
+            continue
+        if row.get("validation_status") in {"warning", "superseded", "retired"}:
+            passed += 1
+            continue
+        response_status = row.get("response_status")
+        if response_status is not None and not 200 <= int(response_status) < 300:
+            db.execute(
+                "UPDATE raw_objects SET validation_status = ?, notes = ? WHERE raw_object_id = ?",
+                (
+                    "failed",
+                    f"HTTP status {response_status}; checksum verified",
+                    row["raw_object_id"],
+                ),
+            )
+            failed += 1
+            continue
+        db.execute(
+            "UPDATE raw_objects SET validation_status = ? WHERE raw_object_id = ?",
+            ("passed", row["raw_object_id"]),
+        )
+        passed += 1
     return passed, failed
 
 

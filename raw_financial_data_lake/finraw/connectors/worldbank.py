@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from typing import Any
 
 from finraw.connectors.base import RawSourceConnector, stable_raw_record_id
@@ -106,18 +107,34 @@ class WorldBankConnector(RawSourceConnector):
             return {"object": dict(existing), "payload": [], "skipped_existing": True}
 
         print(f"[worldbank] fetch {dry_run_label}", flush=True)
-        try:
-            resp = get_url(url, params=params, retries=1, timeout_seconds=25)
-            validation_status, notes = self._validate_payload(resp.content, resp.status)
-            content = resp.content
-            headers = resp.headers
-            status = resp.status
-        except Exception as exc:
-            content = self.json_bytes({"error": str(exc), "url": canonical_url})
-            headers = {}
-            status = 0
-            validation_status = "failed"
-            notes = f"request failed: {exc}"
+        content = b""
+        headers: dict[str, str] = {}
+        status = 0
+        validation_status = "failed"
+        notes = "request not attempted"
+        for attempt in range(3):
+            try:
+                resp = get_url(url, params=params, retries=1, timeout_seconds=25)
+                validation_status, notes = self._validate_payload(
+                    resp.content, resp.status
+                )
+                content = resp.content
+                headers = resp.headers
+                status = resp.status
+                if validation_status == "passed":
+                    break
+                retryable = resp.status in {400, 408, 429, 500, 502, 503, 504}
+                if not retryable or attempt == 2:
+                    break
+            except Exception as exc:
+                content = self.json_bytes({"error": str(exc), "url": canonical_url})
+                headers = {}
+                status = 0
+                validation_status = "failed"
+                notes = f"request failed: {exc}"
+                if attempt == 2:
+                    break
+            time.sleep(attempt + 1)
         obj = self.save_raw_bytes(
             source_id=self.source_id,
             job_id=job_id,

@@ -278,8 +278,14 @@ def _audit_sec_filings(report: dict[str, Any] | None, config: dict[str, Any]) ->
     target_tickers = {company.get("ticker") or str(company.get("cik")).zfill(10) for company in companies}
     expected_forms = set(sec_cfg.get("filing_forms", ["10-K", "10-Q", "8-K"]))
     limit_per_company = int(sec_cfg.get("filing_limit_per_company", 0) or 0)
+    limits_by_form = {
+        str(form): max(int(limit), 0)
+        for form, limit in dict(sec_cfg.get("filing_limits_by_form") or {}).items()
+        if str(form) in expected_forms
+    }
     records = _records_for_source("sec_filings")
     by_ticker_forms: dict[str, set[str]] = defaultdict(set)
+    by_ticker_form_counts: dict[str, Counter[str]] = defaultdict(Counter)
     dates = []
     forms = set()
     for record in records:
@@ -287,11 +293,26 @@ def _audit_sec_filings(report: dict[str, Any] | None, config: dict[str, Any]) ->
         form = record.get("metric_hint")
         if ticker and form:
             by_ticker_forms[ticker].add(form)
+            by_ticker_form_counts[ticker][form] += 1
             forms.add(form)
         dates.append(_parse_date(record.get("period_hint")))
     missing_10k = sorted(ticker for ticker in target_tickers if "10-K" in expected_forms and "10-K" not in by_ticker_forms.get(ticker, set()))
-    expected_docs = len(target_tickers) * limit_per_company if limit_per_company else len(records)
-    missing_docs = max(expected_docs - len(records), 0)
+    expected_per_company = (
+        sum(limits_by_form.values()) if limits_by_form else limit_per_company
+    )
+    expected_docs = (
+        len(target_tickers) * expected_per_company
+        if expected_per_company
+        else len(records)
+    )
+    if limits_by_form:
+        missing_docs = sum(
+            max(limit - by_ticker_form_counts[ticker].get(form, 0), 0)
+            for ticker in target_tickers
+            for form, limit in limits_by_form.items()
+        )
+    else:
+        missing_docs = max(expected_docs - len(records), 0)
     report["entity_count"] = len(by_ticker_forms)
     report["metric_count"] = len(forms)
     _merge_dates(report, dates)
@@ -300,6 +321,14 @@ def _audit_sec_filings(report: dict[str, Any] | None, config: dict[str, Any]) ->
     report["missing_items"] = [{"type": "company_without_downloaded_10K", "ticker": item} for item in missing_10k[:100]]
     if missing_10k:
         report["coverage_notes"].append(f"{len(missing_10k)} configured companies do not have a downloaded 10-K in the current filing sample.")
+    if limits_by_form:
+        report["coverage_notes"].append(
+            "SEC filing coverage uses per-form targets: "
+            + ", ".join(
+                f"{form}={limit}" for form, limit in sorted(limits_by_form.items())
+            )
+            + "."
+        )
     report["coverage_notes"].append("Filing documents are raw HTML/TXT/PDF-like source documents and are not parse-ready for facts.")
     _set_quality(report)
 
@@ -655,4 +684,3 @@ def _markdown_report(report: dict[str, Any]) -> str:
         lines.append(f"- {source_id}")
     lines.append("")
     return "\n".join(lines)
-

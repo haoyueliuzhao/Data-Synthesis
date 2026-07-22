@@ -15,11 +15,23 @@ class SecFilingsConnector(RawSourceConnector):
         companies = sec_config.get("filing_companies") or sec_config.get("sample_companies", [])
         forms = set(sec_config.get("filing_forms", ["10-K", "10-Q", "8-K"]))
         limit_per_company = int(sec_config.get("filing_limit_per_company", 5))
+        limits_by_form = {
+            str(form): max(int(limit), 0)
+            for form, limit in dict(
+                sec_config.get("filing_limits_by_form") or {}
+            ).items()
+            if str(form) in forms
+        }
         user_agent = sec_config["user_agent"]
         job_id = self.begin_job(
             source_id=self.source_id,
             job_type="incremental",
-            target_scope={"companies": companies, "forms": sorted(forms), "limit_per_company": limit_per_company},
+            target_scope={
+                "companies": companies,
+                "forms": sorted(forms),
+                "limit_per_company": limit_per_company,
+                "limits_by_form": limits_by_form,
+            },
             config={"dry_run": self.dry_run},
         )
         objects = []
@@ -49,7 +61,12 @@ class SecFilingsConnector(RawSourceConnector):
                 payload = submissions.json()
                 recent = payload.get("filings", {}).get("recent", {})
                 filings = self._recent_filings(recent)
-                selected = [filing for filing in filings if filing.get("form") in forms][:limit_per_company]
+                selected = self._select_filings(
+                    filings,
+                    forms,
+                    limit_per_company=limit_per_company,
+                    limits_by_form=limits_by_form,
+                )
                 records_found += len(selected)
 
                 for filing in selected:
@@ -130,6 +147,29 @@ class SecFilingsConnector(RawSourceConnector):
                 item[key] = values[i] if i < len(values) else None
             filings.append(item)
         return filings
+
+    @staticmethod
+    def _select_filings(
+        filings: list[dict[str, Any]],
+        forms: set[str],
+        *,
+        limit_per_company: int,
+        limits_by_form: dict[str, int],
+    ) -> list[dict[str, Any]]:
+        if not limits_by_form:
+            return [
+                filing for filing in filings if filing.get("form") in forms
+            ][:limit_per_company]
+        selected: list[dict[str, Any]] = []
+        counts = {form: 0 for form in forms}
+        for filing in filings:
+            form = str(filing.get("form") or "")
+            limit = limits_by_form.get(form, 0)
+            if form not in forms or counts.get(form, 0) >= limit:
+                continue
+            selected.append(filing)
+            counts[form] = counts.get(form, 0) + 1
+        return selected
 
     @staticmethod
     def _object_type(filename: str) -> str:

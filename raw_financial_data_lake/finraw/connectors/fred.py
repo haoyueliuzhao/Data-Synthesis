@@ -14,6 +14,9 @@ class FredConnector(RawSourceConnector):
         cfg = self.config["fred"]
         series_ids = cfg["series_ids"]
         api_key = os.environ.get("FRED_API_KEY") or cfg.get("api_key")
+        vintage_excluded_series = {
+            str(value) for value in cfg.get("vintage_excluded_series", [])
+        }
         if not api_key:
             raise RuntimeError("FRED_API_KEY is not set and config/local_secrets.json does not contain fred.api_key")
         objects = []
@@ -94,7 +97,10 @@ class FredConnector(RawSourceConnector):
                         ])
                         records_saved += 1
 
-                if cfg.get("include_vintages", True):
+                if (
+                    cfg.get("include_vintages", True)
+                    and series_id not in vintage_excluded_series
+                ):
                     vintage = self._fetch_json_object(
                         job_id=job_id,
                         source_id=self.source_id,

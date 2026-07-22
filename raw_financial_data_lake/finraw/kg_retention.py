@@ -42,7 +42,11 @@ def ensure_kg_retention_schema(db: DBProtocol) -> None:
             db.execute(sql)
 
 
-def plan_kg_retention(db: DBProtocol, hot_build_count: int = 2) -> dict[str, Any]:
+def plan_kg_retention(
+    db: DBProtocol,
+    hot_build_count: int = 2,
+    preserve_build_ids: Iterable[str] = (),
+) -> dict[str, Any]:
     ensure_kg_retention_schema(db)
     if hot_build_count < 1:
         raise ValueError("hot_build_count must be at least 1")
@@ -65,8 +69,11 @@ def plan_kg_retention(db: DBProtocol, hot_build_count: int = 2) -> dict[str, Any
         and row.get("quality_status") == "passed"
         and int(row.get("actual_node_count") or 0) > 0
     ]
+    preserved = {str(build_id) for build_id in preserve_build_ids if build_id}
     hot_ids = {row["kg_build_id"] for row in valid[:hot_build_count]}
     hot_ids.update(row["kg_build_id"] for row in builds if int(row.get("is_active") or 0) == 1)
+    hot_ids.update(preserved)
+    known_ids = {str(row["kg_build_id"]) for row in builds}
     archive_candidates = [
         row
         for row in builds
@@ -84,6 +91,8 @@ def plan_kg_retention(db: DBProtocol, hot_build_count: int = 2) -> dict[str, Any
     return {
         "hot_build_count": hot_build_count,
         "hot_build_ids": sorted(hot_ids),
+        "explicitly_preserved_build_ids": sorted(preserved),
+        "unknown_preserved_build_ids": sorted(preserved - known_ids),
         "hot_builds": [row for row in builds if row["kg_build_id"] in hot_ids],
         "archive_candidates": archive_candidates,
         "empty_non_hot_builds": empty_builds,
@@ -97,13 +106,18 @@ def enforce_kg_retention(
     archive_dir: str,
     *,
     hot_build_count: int = 2,
+    preserve_build_ids: Iterable[str] = (),
     execute: bool = False,
     purge: bool = False,
     vacuum: bool = False,
     output_dir: str | None = None,
     batch_size: int = 100_000,
 ) -> dict[str, Any]:
-    plan = plan_kg_retention(db, hot_build_count=hot_build_count)
+    plan = plan_kg_retention(
+        db,
+        hot_build_count=hot_build_count,
+        preserve_build_ids=preserve_build_ids,
+    )
     report: dict[str, Any] = {
         **plan,
         "execute": execute,
@@ -141,7 +155,11 @@ def enforce_kg_retention(
     if purge and vacuum and report["purged_build_ids"]:
         _vacuum_graph_tables(db)
 
-    final_plan = plan_kg_retention(db, hot_build_count=hot_build_count)
+    final_plan = plan_kg_retention(
+        db,
+        hot_build_count=hot_build_count,
+        preserve_build_ids=preserve_build_ids,
+    )
     report["post_retention"] = final_plan
     if output_dir:
         report["written_files"] = [str(path) for path in write_retention_report(report, output_dir)]

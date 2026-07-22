@@ -124,3 +124,26 @@ def test_retention_is_dry_run_by_default(tmp_path: Path) -> None:
         assert not (tmp_path / "archive").exists()
     finally:
         db.close()
+
+
+def test_retention_preserves_explicit_downstream_kg_build(tmp_path: Path) -> None:
+    db = _db(tmp_path)
+    try:
+        _insert_build(db, "kg_referenced", 0, "2026-01-01")
+        _insert_build(db, "kg_recent", 0, "2026-01-02")
+        _insert_build(db, "kg_active", 1, "2026-01-03")
+
+        plan = plan_kg_retention(
+            db,
+            hot_build_count=1,
+            preserve_build_ids=["kg_referenced"],
+        )
+
+        assert plan["hot_build_ids"] == ["kg_active", "kg_referenced"]
+        assert plan["explicitly_preserved_build_ids"] == ["kg_referenced"]
+        assert plan["unknown_preserved_build_ids"] == []
+        assert [row["kg_build_id"] for row in plan["archive_candidates"]] == [
+            "kg_recent"
+        ]
+    finally:
+        db.close()

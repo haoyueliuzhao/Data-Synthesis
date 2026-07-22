@@ -495,10 +495,20 @@ STANDARD_MACRO_METRICS: list[dict[str, Any]] = [
     ("gdp_current_usd", "Gross Domestic Product, Current USD", "macro", "period_flow", "USD", "USD", "annual_or_quarterly_flow; fiscal/calendar basis must be source-specific", "high", "GDP can be annual, quarterly SAAR, local currency, real, or current USD. Keep units/frequency explicit."),
     ("real_gdp_growth_pct", "Real GDP Growth", "macro", "period_flow", "percent", None, "period_growth_rate", "high", "Annual, quarterly, and annualized growth rates are not interchangeable."),
     ("real_gdp_chained_usd", "Real GDP, Chained Dollars", "macro", "period_flow", "chained_usd", "USD", "period_flow", "high", "Base year and chain-type dollars vary by source vintage."),
+    ("gdp_constant_usd", "Gross Domestic Product, Constant USD", "macro", "period_flow", "constant_USD", "USD", "annual_period_flow", "high", "Constant-price GDP depends on the source base year and revision vintage."),
+    ("gdp_deflator_growth_pct", "GDP Deflator Growth", "macro", "period_flow", "percent", None, "annual_growth_rate", "high", "Implicit GDP deflator growth is not interchangeable with CPI inflation."),
     ("gdp_per_capita_current_usd", "GDP per Capita, Current USD", "macro", "period_flow", "USD_per_person", "USD", "annual", "high", "Depends on GDP and population vintage."),
     ("consumer_price_index", "Consumer Price Index", "macro", "point_in_time", "index", None, "index_level", "high", "Index base period differs by source; do not compare levels across base periods without rebasing."),
     ("core_consumer_price_index", "Core Consumer Price Index", "macro", "point_in_time", "index", None, "index_level", "high", "Excludes food and energy; definition can vary by source."),
     ("inflation_rate_cpi", "Inflation, Consumer Prices", "macro", "period_flow", "percent", None, "period_growth_rate", "high", "YoY CPI inflation, average CPI inflation, and point-to-point inflation differ."),
+    ("trade_pct_gdp", "Trade, Percent of GDP", "macro", "period_flow", "percent", None, "annual_ratio", "high", "Trade is exports plus imports of goods and services divided by GDP."),
+    ("central_government_debt_pct_gdp", "Central Government Debt, Percent of GDP", "macro", "point_in_time", "percent", None, "reported_ratio", "high", "Central government debt coverage differs from general government gross debt."),
+    ("government_revenue_excluding_grants_pct_gdp", "Government Revenue Excluding Grants, Percent of GDP", "macro", "period_flow", "percent", None, "annual_ratio", "high", "Excludes grants and depends on government-sector coverage."),
+    ("government_education_expenditure_pct_gdp", "Government Education Expenditure, Percent of GDP", "macro", "period_flow", "percent", None, "annual_ratio", "high", "Government education expenditure coverage and reporting years vary."),
+    ("current_health_expenditure_pct_gdp", "Current Health Expenditure, Percent of GDP", "macro", "period_flow", "percent", None, "annual_ratio", "high", "Current health expenditure excludes capital formation and can be revised."),
+    ("gini_index", "Gini Index", "macro", "point_in_time", "index", None, "reported_index", "high", "Survey year, welfare concept, and interpolation policy differ across countries."),
+    ("co2_emissions_per_capita", "CO2 Emissions per Capita", "macro", "period_flow", "metric_tons_per_capita", None, "annual_per_capita", "high", "Territorial emissions methodology and population vintage matter."),
+    ("internet_users_pct_population", "Individuals Using the Internet", "macro", "point_in_time", "percent", None, "reported_rate", "high", "Survey and estimation methods vary across countries and years."),
     ("producer_price_index", "Producer Price Index", "macro", "point_in_time", "index", None, "index_level", "high", "Index base and commodity scope differ by source."),
     ("unemployment_rate", "Unemployment Rate", "macro", "point_in_time", "percent", None, "reported_rate", "medium", "Seasonal adjustment and labor-force definitions matter."),
     ("labor_force_participation_rate", "Labor Force Participation Rate", "macro", "point_in_time", "percent", None, "reported_rate", "medium", "Population universe and seasonal adjustment matter."),
@@ -631,6 +641,16 @@ WORLD_BANK_ALIASES = {
     "FS.AST.PRVT.GD.ZS": "domestic_credit_private_sector_pct_gdp",
     "NE.CON.GOVT.ZS": "government_consumption_pct_gdp",
     "NE.GDI.TOTL.ZS": "gross_capital_formation_pct_gdp",
+    "NY.GDP.MKTP.KD": "gdp_constant_usd",
+    "NY.GDP.DEFL.KD.ZG": "gdp_deflator_growth_pct",
+    "NE.TRD.GNFS.ZS": "trade_pct_gdp",
+    "GC.DOD.TOTL.GD.ZS": "central_government_debt_pct_gdp",
+    "GC.REV.XGRT.GD.ZS": "government_revenue_excluding_grants_pct_gdp",
+    "SE.XPD.TOTL.GD.ZS": "government_education_expenditure_pct_gdp",
+    "SH.XPD.CHEX.GD.ZS": "current_health_expenditure_pct_gdp",
+    "SI.POV.GINI": "gini_index",
+    "EN.ATM.CO2E.PC": "co2_emissions_per_capita",
+    "IT.NET.USER.ZS": "internet_users_pct_population",
 }
 
 IMF_ALIASES = {
@@ -1100,4 +1120,3 @@ def _markdown_report(report: dict[str, Any]) -> str:
         lines.append(f"- {note}")
     lines.append("")
     return "\n".join(lines)
-

@@ -158,6 +158,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     kg_retention = sub.add_parser("kg-retention", help="Plan or execute hot/cold KG build retention.")
     kg_retention.add_argument("--hot-builds", type=int, help="Number of successful KG builds to keep in PostgreSQL.")
+    kg_retention.add_argument("--preserve-build-id", action="append", default=[], help="Additional KG build ID to keep hot; may be repeated.")
     kg_retention.add_argument("--archive-dir", help="Cold archive directory. Defaults to config kg.retention.archive_dir.")
     kg_retention.add_argument("--output-dir", default="data/audit/kg_retention")
     kg_retention.add_argument("--execute", action="store_true", help="Write verified Parquet/ZSTD archives.")
@@ -565,6 +566,7 @@ def main() -> None:
                 db,
                 archive_dir=args.archive_dir or policy.get("archive_dir", "data/kg_archive"),
                 hot_build_count=args.hot_builds or int(policy.get("hot_build_count", 2)),
+                preserve_build_ids=args.preserve_build_id,
                 execute=args.execute,
                 purge=args.purge,
                 vacuum=args.vacuum,

@@ -82,8 +82,14 @@ class RawSourceConnector(ABC):
             existing = self.db.find_existing_passed_object(source_id, effective_original_url, content_hash)
             if existing:
                 raw_object = dict(existing)
+                self._supersede_failed_objects(
+                    source_id, effective_original_url, raw_object["raw_object_id"]
+                )
                 raw_object["duplicate_status"] = "duplicate_existing"
                 return raw_object
+            relative_path = self._collision_safe_relative_path(
+                relative_path, content_hash
+            )
             path = self.store.write_bytes(relative_path, content)
             storage_uri = str(path)
         else:
@@ -115,7 +121,51 @@ class RawSourceConnector(ABC):
         }
         if not self.dry_run:
             self.db.insert_raw_object(raw_object)
+            if validation_status in {"passed", "warning"}:
+                self._supersede_failed_objects(
+                    source_id, effective_original_url, raw_object["raw_object_id"]
+                )
         return raw_object
+
+    def _collision_safe_relative_path(
+        self, relative_path: str, content_hash: str
+    ) -> str:
+        requested = Path(self.store.root) / relative_path
+        existing_hash: str | None = None
+        row = self.db.fetchone(
+            "SELECT content_sha256 FROM raw_objects WHERE storage_uri = ? "
+            "ORDER BY retrieval_time DESC LIMIT 1",
+            (str(requested),),
+        )
+        if row:
+            existing_hash = str(row["content_sha256"])
+        elif requested.exists():
+            existing_hash = sha256_bytes(requested.read_bytes())
+        if not existing_hash or existing_hash == content_hash:
+            return relative_path
+        path = Path(relative_path)
+        suffix = "".join(path.suffixes)
+        stem = path.name[: -len(suffix)] if suffix else path.name
+        versioned_name = f"{stem}__sha256={content_hash[:12]}{suffix}"
+        return str(path.with_name(versioned_name))
+
+    def _supersede_failed_objects(
+        self, source_id: str, original_url: str, replacement_id: str
+    ) -> None:
+        self.db.execute(
+            "UPDATE raw_objects SET validation_status = ?, "
+            "notes = COALESCE(notes, '') || ? "
+            "WHERE source_id = ? AND original_url = ? "
+            "AND validation_status = ? AND raw_object_id <> ?",
+            (
+                "superseded",
+                f"; superseded by {replacement_id}",
+                source_id,
+                original_url,
+                "failed",
+                replacement_id,
+            ),
+        )
 
     def create_snapshot(self, *, source_id: str, prefix: str, objects: list[dict[str, Any]]) -> None:
         snapshot_id = f"snapshot_{source_id}_{self.snapshot_date}_{uuid.uuid4().hex[:8]}"
@@ -174,4 +224,3 @@ def stable_raw_record_id(source_id: str, raw_object_id: str, record_type: str, r
     )
     digest = hashlib.sha1(payload.encode("utf-8")).hexdigest()[:24]
     return f"rawrec_{digest}"
-

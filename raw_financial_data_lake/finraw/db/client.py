@@ -362,6 +362,9 @@ class PostgresMetadataDB:
             finally:
                 self._transaction_depth -= 1
             return
+        # psycopg starts an implicit transaction even for SELECT. End that
+        # read transaction so this context owns the real top-level commit.
+        self.conn.commit()
         self._transaction_depth = 1
         try:
             with self.conn.transaction():

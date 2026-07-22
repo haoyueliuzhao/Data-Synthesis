@@ -1,0 +1,21 @@
+{
+  "extends": "prod_qa_llm_150_test.json",
+  "qa": {
+    "quality_gate": {
+      "minimum_difficulty_samples": {
+        "expert": 15,
+        "research": 34
+      }
+    },
+    "question_generation": {
+      "mode": "controlled_template",
+      "surface_variation": {
+        "enabled": false,
+        "entity_suffix_shortening": true,
+        "llm_selects_variants": false,
+        "scope_contextualization": true,
+        "minimum_noncanonical_selections": 0
+      }
+    }
+  }
+}

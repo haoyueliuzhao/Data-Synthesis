@@ -4378,12 +4378,15 @@ def _reparse_persisted_question(
             else " Return the result as {output_instruction}."
         )
     strategy = str(generation_policy.get("strategy") or "sentence_plan")
+    generation_mode = str(
+        generation_policy.get("mode") or "controlled_template"
+    )
     generation_metadata = json_value(row.get("source_metadata"), {}).get(
         "question_generation", {}
     )
     surface_slots = slots
     surface_errors: list[str] = []
-    if strategy == "protected_rewrite":
+    if generation_mode == "controlled_llm" and strategy == "protected_rewrite":
         source = str(generation_metadata.get("surface_realization_source") or "")
         if source == "llm_variant_selection":
             variants = surface_slot_variants(slots, semantics, generation_policy)

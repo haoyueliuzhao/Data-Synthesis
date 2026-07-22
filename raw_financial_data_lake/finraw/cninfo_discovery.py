@@ -5,10 +5,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from finraw.http import post_form
+from finraw.http import get_url, post_form
 
 CNINFO_QUERY_URL = "https://www.cninfo.com.cn/new/hisAnnouncement/query"
 CNINFO_STATIC_BASE = "https://static.cninfo.com.cn/"
+CNINFO_STOCK_REGISTRY_URLS = {
+    "SZSE": "https://www.cninfo.com.cn/new/data/szse_stock.json",
+    "SSE": "https://www.cninfo.com.cn/new/data/sse_stock.json",
+}
 
 CATEGORY_MAP = {
     "annual": "category_ndbg_szsh",
@@ -94,6 +98,53 @@ def write_cninfo_config(path: str, announcements: list[dict[str, Any]]) -> Path:
     return out
 
 
+def resolve_cninfo_stock_selectors(
+    stock_pool: list[dict[str, Any]],
+) -> dict[tuple[str, str], str]:
+    """Resolve CNInfo's exchange-specific orgId without guessing from stock codes."""
+    requested_markets = {
+        str(stock.get("market") or "SZSE").upper()
+        for stock in stock_pool
+        if "," not in str(stock.get("selector") or "")
+    }
+    registries: dict[str, dict[str, str]] = {}
+    for market in sorted(requested_markets):
+        url = CNINFO_STOCK_REGISTRY_URLS.get(market)
+        if not url:
+            raise ValueError(f"Unsupported CNInfo market for selector resolution: {market}")
+        response = get_url(url, polite_delay_seconds=0.2)
+        if response.status != 200:
+            raise RuntimeError(
+                f"CNInfo stock registry failed for {market}: HTTP {response.status}"
+            )
+        rows = dict(response.json()).get("stockList") or []
+        registries[market] = {
+            str(row.get("code") or "").strip(): str(row.get("orgId") or "").strip()
+            for row in rows
+            if row.get("code") and row.get("orgId")
+        }
+
+    resolved: dict[tuple[str, str], str] = {}
+    missing: list[str] = []
+    for stock in stock_pool:
+        code = str(stock.get("stock_code") or "").strip()
+        market = str(stock.get("market") or "SZSE").upper()
+        explicit = str(stock.get("selector") or "").strip()
+        if explicit and "," in explicit:
+            resolved[(market, code)] = explicit
+            continue
+        org_id = registries.get(market, {}).get(code)
+        if not code or not org_id:
+            missing.append(f"{market}:{code or '<missing>'}")
+            continue
+        resolved[(market, code)] = f"{code},{org_id}"
+    if missing:
+        raise ValueError(
+            "CNInfo selectors could not be resolved for: " + ", ".join(sorted(missing))
+        )
+    return resolved
+
+
 def _infer_year(row: dict[str, Any]) -> str:
     title = _clean_title(row.get("announcementTitle"))
     for token in title.replace("年", " ").replace("年度", " ").split():
@@ -128,11 +179,22 @@ def discover_cninfo_from_strategy(strategy: dict[str, Any]) -> list[dict[str, An
     end_date = cninfo["end_date"]
     max_pages = int(cninfo.get("max_pages", 1))
     page_size = int(cninfo.get("page_size", 30))
+    excluded = tuple(
+        str(value)
+        for value in dict(cninfo.get("selection_policy") or {}).get(
+            "exclude_title_keywords", []
+        )
+        if str(value)
+    )
     all_announcements: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    selectors = resolve_cninfo_stock_selectors(stock_pool)
     for stock in stock_pool:
-        selector = stock.get("selector") or stock.get("stock_code")
+        stock_code = str(stock.get("stock_code") or "").strip()
+        market = str(stock.get("market") or "SZSE").upper()
+        selector = selectors.get((market, stock_code))
         if not selector:
-            continue
+            raise ValueError(f"Missing resolved CNInfo selector for {market}:{stock_code}")
         for category in categories:
             discovered = discover_cninfo_announcements(
                 stock=selector,
@@ -143,8 +205,13 @@ def discover_cninfo_from_strategy(strategy: dict[str, Any]) -> list[dict[str, An
                 max_pages=max_pages,
             )
             for ann in discovered:
+                if any(keyword in str(ann.get("title") or "") for keyword in excluded):
+                    continue
                 ann.setdefault("stock_code", stock.get("stock_code"))
                 ann.setdefault("company_name", stock.get("company_name"))
                 ann["pool_metadata"] = stock
-            all_announcements.extend(discovered)
+                identity = str(ann.get("announcement_id") or ann.get("url") or "")
+                if identity and identity not in seen:
+                    seen.add(identity)
+                    all_announcements.append(ann)
     return all_announcements

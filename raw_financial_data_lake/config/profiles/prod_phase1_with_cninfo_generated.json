@@ -1228,7 +1228,12 @@
       "10-Q",
       "8-K"
     ],
-    "filing_limit_per_company": 3
+    "filing_limit_per_company": 31,
+    "filing_limits_by_form": {
+      "10-K": 6,
+      "10-Q": 20,
+      "8-K": 5
+    }
   },
   "fred": {
     "base_url": "https://api.stlouisfed.org/fred",
@@ -1263,7 +1268,7 @@
       "T10Y3M",
       "MORTGAGE30US",
       "AAA",
-      "BAA",
+      "BAA10Y",
       "INDPRO",
       "TCU",
       "HOUST",
@@ -1282,11 +1287,66 @@
       "DEXUSEU",
       "DEXJPUS",
       "DEXCHUS",
-      "DTWEXBGS"
+      "DTWEXBGS",
+      "SP500",
+      "NASDAQCOM",
+      "DJIA",
+      "VIXCLS",
+      "DCOILWTICO",
+      "DCOILBRENTEU",
+      "DHHNGSP",
+      "PCOPPUSDM",
+      "SOFR",
+      "EFFR",
+      "OBFR",
+      "DFII5",
+      "DFII10",
+      "DFII30",
+      "T5YIE",
+      "T10YIE",
+      "T5YIFR",
+      "BAMLH0A0HYM2",
+      "BAMLC0A0CM",
+      "BAMLCC0A1AAATRIV",
+      "CP",
+      "CPALTT01USM657N",
+      "CORESTICKM159SFRBATL",
+      "PCECC96",
+      "GCEC1",
+      "GPDI",
+      "PNFI",
+      "NETEXP",
+      "DGORDER",
+      "NEWORDER",
+      "AMTMNO",
+      "IPMAN",
+      "MANEMP",
+      "USPRIV",
+      "OPHNFB",
+      "ULCNFB",
+      "BAA",
+      "CPATAX",
+      "GFDEBTN",
+      "GFDEGDQ188S",
+      "WALCL",
+      "TOTRESNS",
+      "RRPONTSYD",
+      "DRTSCILM",
+      "DRCCLACBS",
+      "DEXUSUK",
+      "DEXCAUS",
+      "DEXUSAL",
+      "DEXKOUS",
+      "DEXSIUS"
     ],
     "include_metadata": true,
     "include_release": true,
-    "include_vintages": true
+    "include_vintages": true,
+    "vintage_excluded_series": [
+      "SP500",
+      "DJIA",
+      "EXHOSLUSM495S"
+    ]
   },
   "worldbank": {
     "base_url": "https://api.worldbank.org/v2",
@@ -1310,7 +1370,17 @@
       "SAU",
       "TUR",
       "CHE",
-      "SWE"
+      "SWE",
+      "HKG",
+      "MAC",
+      "SGP",
+      "RUS",
+      "ZAF",
+      "ARG",
+      "CHL",
+      "POL",
+      "NOR",
+      "ARE"
     ],
     "indicators": [
       "NY.GDP.MKTP.CD",
@@ -1332,9 +1402,19 @@
       "FM.LBL.BMNY.GD.ZS",
       "FS.AST.PRVT.GD.ZS",
       "NE.CON.GOVT.ZS",
-      "NE.GDI.TOTL.ZS"
+      "NE.GDI.TOTL.ZS",
+      "NY.GDP.MKTP.KD",
+      "NY.GDP.DEFL.KD.ZG",
+      "NE.TRD.GNFS.ZS",
+      "GC.DOD.TOTL.GD.ZS",
+      "GC.REV.XGRT.GD.ZS",
+      "SE.XPD.TOTL.GD.ZS",
+      "SH.XPD.CHEX.GD.ZS",
+      "SI.POV.GINI",
+      "EN.ATM.CO2E.PC",
+      "IT.NET.USER.ZS"
     ],
-    "date_range": "1995:2025",
+    "date_range": "1990:2025",
     "include_country_metadata": true,
     "include_indicator_metadata": true
   },
@@ -1434,7 +1514,7 @@
     "note": "Add SDMX 2.1/3.0 target URLs here. Connector stores raw JSON/XML responses."
   },
   "cninfo": {
-    "start_date": "2023-01-01",
+    "start_date": "2019-01-01",
     "end_date": "2025-12-31",
     "categories": [
       "annual",
@@ -1442,7 +1522,7 @@
       "q1",
       "q3"
     ],
-    "max_pages": 2,
+    "max_pages": 4,
     "page_size": 30,
     "selection_policy": {
       "market": "CN_A_SHARE",
@@ -1466,6 +1546,60 @@
         "stock_code": "000001",
         "selector": "000001,gssz0000001",
         "company_name": "平安银行",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "000002",
+        "selector": "000002",
+        "company_name": "万科A",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "000333",
+        "selector": "000333",
+        "company_name": "美的集团",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "000651",
+        "selector": "000651",
+        "company_name": "格力电器",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "000858",
+        "selector": "000858",
+        "company_name": "五粮液",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "002230",
+        "selector": "002230",
+        "company_name": "科大讯飞",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "002415",
+        "selector": "002415",
+        "company_name": "海康威视",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "002594",
+        "selector": "002594",
+        "company_name": "比亚迪",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "300059",
+        "selector": "300059",
+        "company_name": "东方财富",
+        "market": "SZSE"
+      },
+      {
+        "stock_code": "300750",
+        "selector": "300750",
+        "company_name": "宁德时代",
         "market": "SZSE"
       }
     ],

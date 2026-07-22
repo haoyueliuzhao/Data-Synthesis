@@ -1481,6 +1481,28 @@ def test_graph_pattern_build_discovers_and_validates_multi_hop_qa(tmp_path):
     assert analysis["kg_utilization"]["edge_type_coverage"] > 0
 
 
+def test_controlled_template_ignores_protected_rewrite_surface_contract(tmp_path):
+    db, kg_build, config = _graph_fixture(tmp_path)
+    config = copy.deepcopy(config)
+    config["qa"]["question_generation"] = {
+        "mode": "controlled_template",
+        "strategy": "protected_rewrite",
+        "surface_variation": {"enabled": False},
+    }
+
+    report = build_qa(
+        db,
+        config,
+        kg_build_id=kg_build,
+        output_dir=str(tmp_path / "controlled_template"),
+        batch_size=10,
+        activate=False,
+    )
+
+    assert report["quality"]["passed_count"] == 4
+    assert report["quality"]["failure_counts"] == {}
+
+
 def test_final_verifier_reparses_persisted_question_independently(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
     report = build_qa(

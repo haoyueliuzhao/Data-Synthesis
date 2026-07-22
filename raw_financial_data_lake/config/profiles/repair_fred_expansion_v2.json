@@ -1,0 +1,13 @@
+{
+  "extends": "prod_phase1_with_cninfo_generated.json",
+  "fred": {
+    "series_ids": [
+      "PCOPPUSDM",
+      "BAA10Y"
+    ],
+    "include_metadata": true,
+    "include_release": true,
+    "include_vintages": true,
+    "vintage_excluded_series": []
+  }
+}
