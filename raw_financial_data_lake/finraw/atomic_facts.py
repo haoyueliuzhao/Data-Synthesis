@@ -25,6 +25,12 @@ FX_ENTITY_BY_FRED_SERIES = {
     "DTWEXBGS": "USD_BROAD_INDEX",
 }
 
+CN_DISCLOSURE_RECORD_TYPES = {
+    "cninfo_announcements": "cninfo_pdf_announcement",
+    "bse_disclosures": "bse_pdf_announcement",
+    "hkex_disclosures": "hkex_pdf_annual_report",
+}
+
 
 def refresh_atomic_facts(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None, batch_size: int = 5000) -> dict[str, Any]:
     build_id = start_build(db, layer="fact_build", command="refresh-atomic-facts", prefix="fact_build")
@@ -35,20 +41,25 @@ def refresh_atomic_facts(db: DBProtocol, config: dict[str, Any], output_dir: str
         "build_id": build_id,
         "inserted_count": 0,
         "source_document_count": 0,
+        "promoted_document_candidate_count": 0,
         "source_counts": Counter(),
         "metric_counts": Counter(),
         "skipped_counts": Counter(),
         "notes": [
-            "Atomic facts are extracted from structured raw records: SEC companyfacts XBRL JSON, FRED observations, World Bank observations, and IMF DataMapper/WEO JSON.",
-            "SEC filing HTML and CNInfo PDF records are indexed in source_documents, not represented as value=1 atomic facts.",
+            "Atomic facts are extracted from structured raw records plus explicitly approved, evidence-verified consolidated statement candidates.",
+            "SEC filing HTML and official PRC disclosure PDFs remain indexed in source_documents; only numeric PDF candidates that passed the separate promotion policy become atomic facts.",
         ],
     }
     source_document_count = _refresh_source_documents(db, context, build_id, report)
     report["source_document_count"] = source_document_count
 
     batch: list[dict[str, Any]] = []
+    promotion_updates: list[tuple[str, str]] = []
     for fact in _iter_atomic_facts(db, context, report):
+        candidate_id = fact.pop("_candidate_id", None)
         fact = _with_build(fact, build_id)
+        if candidate_id:
+            promotion_updates.append((fact["fact_id"], candidate_id))
         batch.append(fact)
         if len(batch) >= batch_size:
             db.insert_atomic_facts(batch)
@@ -57,11 +68,18 @@ def refresh_atomic_facts(db: DBProtocol, config: dict[str, Any], output_dir: str
     if batch:
         db.insert_atomic_facts(batch)
         report["inserted_count"] += len(batch)
+    for promoted_fact_id, candidate_id in promotion_updates:
+        db.execute(
+            "UPDATE candidate_facts SET candidate_state = ?, promotion_status = ?, promoted_fact_id = ? WHERE candidate_id = ?",
+            ["promoted_to_atomic_fact", "promoted", promoted_fact_id, candidate_id],
+        )
+    report["promoted_document_candidate_count"] = len(promotion_updates)
 
     final_report = {
         "build_id": build_id,
         "inserted_count": report["inserted_count"],
         "source_document_count": report["source_document_count"],
+        "promoted_document_candidate_count": report["promoted_document_candidate_count"],
         "source_counts": dict(sorted(report["source_counts"].items())),
         "top_metric_counts": dict(report["metric_counts"].most_common(30)),
         "skipped_counts": dict(sorted(report["skipped_counts"].items())),
@@ -185,6 +203,126 @@ def _iter_atomic_facts(db: DBProtocol, context: dict[str, Any], report: dict[str
                 yield fact
         elif record_type == "imf_sdmx_response":
             yield from _extract_imf_datamapper(record, context, report)
+
+    yield from _extract_approved_document_candidates(db, context, report)
+
+
+def _extract_approved_document_candidates(
+    db: DBProtocol,
+    context: dict[str, Any],
+    report: dict[str, Any],
+) -> Iterable[dict[str, Any]]:
+    placeholders = ",".join("?" for _ in CN_DISCLOSURE_RECORD_TYPES)
+    rows = db.fetchall(
+        f"""
+        SELECT cf.candidate_id, cf.raw_object_id, cf.table_id, cf.entity_id,
+               cf.matched_metric_id, cf.value, cf.unit, cf.currency,
+               cf.period_start, cf.period_end, cf.fiscal_year,
+               cf.fiscal_quarter, cf.source_field_name, cf.page_number,
+               cf.row_index, cf.column_index, cf.financial_scope_type,
+               cf.evidence_sha256, cf.confidence_score,
+               cf.cross_check_status, cf.extraction_metadata,
+               ro.source_id, ro.source_publish_date
+        FROM candidate_facts cf
+        JOIN raw_objects ro ON ro.raw_object_id = cf.raw_object_id
+        WHERE COALESCE(cf.is_active, 1) = 1
+          AND cf.evidence_status = 'verified'
+          AND cf.promotion_status IN ('approved_for_atomic_fact', 'promoted')
+          AND cf.matched_metric_id IS NOT NULL
+          AND ro.source_id IN ({placeholders})
+          AND EXISTS (
+              SELECT 1
+              FROM candidate_fact_evidence cfe
+              WHERE cfe.candidate_id = cf.candidate_id
+                AND cfe.validation_status = 'verified'
+                AND cfe.evidence_sha256 = cf.evidence_sha256
+          )
+        ORDER BY cf.entity_id, cf.matched_metric_id, cf.period_end,
+                 cf.raw_object_id, cf.page_number, cf.row_index,
+                 cf.column_index
+        """,
+        tuple(CN_DISCLOSURE_RECORD_TYPES),
+    )
+    for raw_row in rows:
+        row = dict(raw_row)
+        value = _decimal_or_none(row.get("value"))
+        metric_id = row.get("matched_metric_id")
+        metric = context["metrics"].get(metric_id, {})
+        if value is None:
+            report["skipped_counts"]["document_candidate_non_numeric"] += 1
+            continue
+        if not row.get("entity_id") or not metric:
+            report["skipped_counts"]["document_candidate_missing_identity"] += 1
+            continue
+        if row.get("financial_scope_type") != "consolidated_entity":
+            report["skipped_counts"]["document_candidate_non_consolidated"] += 1
+            continue
+        source_id = str(row.get("source_id") or "")
+        if source_id not in CN_DISCLOSURE_RECORD_TYPES:
+            report["skipped_counts"]["document_candidate_unregistered_source"] += 1
+            continue
+        period_end = _date_or_none(row.get("period_end"))
+        period_start = _date_or_none(row.get("period_start"))
+        if not period_end:
+            report["skipped_counts"]["document_candidate_missing_period"] += 1
+            continue
+        period_type = metric.get("period_type")
+        as_of_date = period_end if period_type == "point_in_time" else None
+        notes = _compact_notes(
+            {
+                "candidate_id": row.get("candidate_id"),
+                "candidate_evidence_sha256": row.get("evidence_sha256"),
+                "candidate_cross_check_status": row.get("cross_check_status"),
+                "parser_metadata": _json_value(row.get("extraction_metadata")),
+                "entity_scope_id": row.get("entity_id"),
+                "financial_scope_type": row.get("financial_scope_type"),
+                "accounting_standard": "PRC_ASBE",
+            }
+        )
+        fact = _fact(
+            entity_id=row.get("entity_id"),
+            metric_id=metric_id,
+            value=value,
+            unit=row.get("unit"),
+            currency=row.get("currency"),
+            period_start=period_start,
+            period_end=period_end,
+            fiscal_year=_int_or_none(row.get("fiscal_year")),
+            fiscal_quarter=row.get("fiscal_quarter"),
+            as_of_date=as_of_date,
+            report_date=_date_or_none(row.get("source_publish_date")),
+            source_id=source_id,
+            raw_object_id=row.get("raw_object_id"),
+            source_field_name=row.get("source_field_name"),
+            source_page_or_table=(
+                f"page={row.get('page_number')};table={row.get('table_id')};"
+                f"row={row.get('row_index')};column={row.get('column_index')}"
+            ),
+            extraction_method="pdf_financial_statement_table",
+            confidence_score=row.get("confidence_score"),
+            verification_status="single_source",
+            tolerance=0.000001,
+            notes=notes,
+            stable_parts=[
+                source_id,
+                row.get("entity_id"),
+                metric_id,
+                row.get("raw_object_id"),
+                row.get("source_field_name"),
+                row.get("page_number"),
+                row.get("row_index"),
+                row.get("column_index"),
+                period_start,
+                period_end,
+                value,
+                row.get("unit"),
+                row.get("evidence_sha256"),
+            ],
+        )
+        fact["_candidate_id"] = row.get("candidate_id")
+        _count_fact(report, fact)
+        yield fact
+
 
 
 def _extract_sec_companyfacts(record: dict[str, Any], context: dict[str, Any], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
@@ -590,9 +728,13 @@ def _refresh_source_documents(db: DBProtocol, context: dict[str, Any], build_id:
                ro.storage_uri, ro.original_url, ro.validation_status
         FROM raw_records rr
         LEFT JOIN raw_objects ro ON ro.raw_object_id = rr.raw_object_id
-        WHERE rr.record_type IN (?, ?)
+        WHERE rr.record_type IN (?, ?, ?)
         """,
-        ("sec_filing_document", "cninfo_pdf_announcement"),
+        (
+            "sec_filing_document",
+            "cninfo_pdf_announcement",
+            "bse_pdf_announcement",
+        ),
     )
     count = 0
     for row in rows:
@@ -600,7 +742,9 @@ def _refresh_source_documents(db: DBProtocol, context: dict[str, Any], build_id:
         if record.get("record_type") == "sec_filing_document":
             document = _source_document_for_sec_filing(record, context, build_id, report)
         else:
-            document = _source_document_for_cninfo(record, context, build_id, report)
+            document = _source_document_for_cn_disclosure(
+                record, context, build_id, report
+            )
         if not document:
             continue
         _insert_source_document(db, document)
@@ -645,24 +789,38 @@ def _source_document_for_sec_filing(record: dict[str, Any], context: dict[str, A
     }
 
 
-def _source_document_for_cninfo(record: dict[str, Any], context: dict[str, Any], build_id: str, report: dict[str, Any]) -> dict[str, Any] | None:
+def _source_document_for_cn_disclosure(record: dict[str, Any], context: dict[str, Any], build_id: str, report: dict[str, Any]) -> dict[str, Any] | None:
+    source_id = str(record.get("source_id") or "")
+    if source_id not in CN_DISCLOSURE_RECORD_TYPES:
+        report["skipped_counts"]["cn_disclosure_unregistered_source"] += 1
+        return None
+    skip_prefix = {
+        "bse_disclosures": "bse",
+        "hkex_disclosures": "hkex",
+    }.get(source_id, "cninfo")
     payload = _json_value(record.get("record_json"))
     if not isinstance(payload, dict):
-        report["skipped_counts"]["cninfo_invalid_json"] += 1
+        report["skipped_counts"][f"{skip_prefix}_invalid_json"] += 1
         return None
     report_type = payload.get("report_type") or record.get("metric_hint")
     if not report_type:
-        report["skipped_counts"]["cninfo_unmapped_report_type"] += 1
+        report["skipped_counts"][f"{skip_prefix}_unmapped_report_type"] += 1
         return None
     stock_code = payload.get("stock_code") or record.get("entity_hint")
-    entity_id = _lookup_entity(context, "cninfo_announcements", stock_code, payload.get("company_name"))
+    entity_id = _lookup_entity(
+        context, source_id, stock_code, payload.get("company_name")
+    )
     if not entity_id:
-        report["skipped_counts"]["cninfo_missing_entity"] += 1
+        report["skipped_counts"][f"{skip_prefix}_missing_entity"] += 1
         return None
     year = _int_or_none(payload.get("year") or record.get("period_hint"))
-    period_end, _ = _cninfo_period(year, str(report_type))
+    period_end, _ = (
+        (None, None)
+        if source_id == "hkex_disclosures"
+        else _cninfo_period(year, str(report_type))
+    )
     filing_date = _date_or_none(payload.get("publish_date"))
-    stable_document_id = _stable_document_id("cninfo_announcements", entity_id, report_type, payload.get("announcement_id"), payload.get("filename"), record.get("raw_object_id"))
+    stable_document_id = _stable_document_id(source_id, entity_id, report_type, payload.get("announcement_id"), payload.get("filename"), record.get("raw_object_id"))
     return {
         "document_id": versioned_id(stable_document_id, build_id),
         "stable_document_id": stable_document_id,
@@ -670,7 +828,7 @@ def _source_document_for_cninfo(record: dict[str, Any], context: dict[str, Any],
         "is_active": 1,
         "superseded_by": None,
         "entity_id": entity_id,
-        "source_id": "cninfo_announcements",
+        "source_id": source_id,
         "form_type": None,
         "report_type": str(report_type),
         "period_end": period_end,
@@ -878,4 +1036,3 @@ def _markdown_report(report: dict[str, Any]) -> str:
         lines.append(f"- {note}")
     lines.append("")
     return "\n".join(lines)
-

@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+import re
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from finraw.http import get_url, post_form
+from finraw.http import post_form
 
 CNINFO_QUERY_URL = "https://www.cninfo.com.cn/new/hisAnnouncement/query"
+CNINFO_TOP_SEARCH_URL = "https://www.cninfo.com.cn/new/information/topSearch/query"
 CNINFO_STATIC_BASE = "https://static.cninfo.com.cn/"
-CNINFO_STOCK_REGISTRY_URLS = {
-    "SZSE": "https://www.cninfo.com.cn/new/data/szse_stock.json",
-    "SSE": "https://www.cninfo.com.cn/new/data/sse_stock.json",
+CNINFO_COLUMNS = {
+    "SZSE": "szse",
+    "SSE": "sse",
 }
 
 CATEGORY_MAP = {
@@ -30,6 +32,7 @@ def discover_cninfo_announcements(
     category: str = "annual",
     page_size: int = 30,
     max_pages: int = 1,
+    market: str | None = None,
 ) -> list[dict[str, Any]]:
     announcements: list[dict[str, Any]] = []
     category_value = CATEGORY_MAP.get(category, category)
@@ -37,7 +40,7 @@ def discover_cninfo_announcements(
         form = {
             "pageNum": page,
             "pageSize": page_size,
-            "column": "szse",
+            "column": _cninfo_column(market, stock),
             "tabName": "fulltext",
             "plate": "",
             "stock": stock,
@@ -71,11 +74,12 @@ def discover_cninfo_announcements(
             if not adjunct_url:
                 continue
             stock_code = (row.get("secCode") or stock.split(",")[0].split("#")[-1]).strip()
-            year = _infer_year(row)
+            year = _infer_year(row, category)
             announcements.append(
                 {
                     "announcement_id": row.get("announcementId"),
                     "stock_code": stock_code,
+                    "market": str(market or _infer_market(stock_code)).upper(),
                     "company_name": row.get("secName"),
                     "title": _clean_title(row.get("announcementTitle")),
                     "year": year,
@@ -102,42 +106,29 @@ def resolve_cninfo_stock_selectors(
     stock_pool: list[dict[str, Any]],
 ) -> dict[tuple[str, str], str]:
     """Resolve CNInfo's exchange-specific orgId without guessing from stock codes."""
-    requested_markets = {
-        str(stock.get("market") or "SZSE").upper()
-        for stock in stock_pool
-        if "," not in str(stock.get("selector") or "")
-    }
-    registries: dict[str, dict[str, str]] = {}
-    for market in sorted(requested_markets):
-        url = CNINFO_STOCK_REGISTRY_URLS.get(market)
-        if not url:
-            raise ValueError(f"Unsupported CNInfo market for selector resolution: {market}")
-        response = get_url(url, polite_delay_seconds=0.2)
-        if response.status != 200:
-            raise RuntimeError(
-                f"CNInfo stock registry failed for {market}: HTTP {response.status}"
-            )
-        rows = dict(response.json()).get("stockList") or []
-        registries[market] = {
-            str(row.get("code") or "").strip(): str(row.get("orgId") or "").strip()
-            for row in rows
-            if row.get("code") and row.get("orgId")
-        }
-
     resolved: dict[tuple[str, str], str] = {}
     missing: list[str] = []
     for stock in stock_pool:
         code = str(stock.get("stock_code") or "").strip()
-        market = str(stock.get("market") or "SZSE").upper()
+        market = str(stock.get("market") or _infer_market(code)).upper()
+        _cninfo_column(market, code)
         explicit = str(stock.get("selector") or "").strip()
-        if explicit and "," in explicit:
-            resolved[(market, code)] = explicit
+        if explicit:
+            selector_code, separator, org_id = explicit.partition(",")
+            if separator and selector_code.strip() == code and org_id.strip():
+                resolved[(market, code)] = f"{code},{org_id.strip()}"
+                continue
+            if separator:
+                raise ValueError(
+                    f"CNInfo selector does not match requested stock: {market}:{code}"
+                )
+        org_id = _resolve_org_id_from_top_search(code)
+        if not org_id:
+            org_id = _resolve_org_id_from_announcements(code, market)
+        if code and org_id:
+            resolved[(market, code)] = f"{code},{org_id}"
             continue
-        org_id = registries.get(market, {}).get(code)
-        if not code or not org_id:
-            missing.append(f"{market}:{code or '<missing>'}")
-            continue
-        resolved[(market, code)] = f"{code},{org_id}"
+        missing.append(f"{market}:{code or '<missing>'}")
     if missing:
         raise ValueError(
             "CNInfo selectors could not be resolved for: " + ", ".join(sorted(missing))
@@ -145,13 +136,129 @@ def resolve_cninfo_stock_selectors(
     return resolved
 
 
-def _infer_year(row: dict[str, Any]) -> str:
+def _resolve_org_id_from_top_search(stock_code: str) -> str | None:
+    if not stock_code:
+        return None
+    response = post_form(
+        CNINFO_TOP_SEARCH_URL,
+        {"keyWord": stock_code, "maxSecNum": 10, "maxListNum": 5},
+        headers={
+            "Referer": "https://www.cninfo.com.cn/",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+        polite_delay_seconds=0.2,
+    )
+    if response.status != 200:
+        raise RuntimeError(
+            f"CNInfo top-search failed for {stock_code}: HTTP {response.status}"
+        )
+    payload = response.json()
+    rows = payload if isinstance(payload, list) else []
+    org_ids = {
+        str(row.get("orgId") or "").strip()
+        for row in rows
+        if str(row.get("code") or "").strip() == stock_code
+        and not _boolean_value(row.get("delisted"))
+        and str(row.get("orgId") or "").strip()
+    }
+    if len(org_ids) > 1:
+        raise ValueError(
+            f"CNInfo top-search returned multiple orgIds for {stock_code}: "
+            + ", ".join(sorted(org_ids))
+        )
+    return next(iter(org_ids), None)
+
+
+def _resolve_org_id_from_announcements(stock_code: str, market: str) -> str | None:
+    """Resolve an orgId from CNInfo's official announcement search.
+
+    CNInfo's former exchange stock registry endpoints now return 404. The
+    announcement endpoint remains authoritative and includes both secCode and
+    orgId. Exact code matching prevents a broad search result from silently
+    binding the wrong issuer.
+    """
+    if not stock_code:
+        return None
+    form = {
+        "pageNum": 1,
+        "pageSize": 30,
+        "column": _cninfo_column(market, stock_code),
+        "tabName": "fulltext",
+        "plate": "",
+        "stock": "",
+        "searchkey": stock_code,
+        "secid": "",
+        "category": "",
+        "trade": "",
+        "seDate": f"1990-01-01~{date.today().isoformat()}",
+        "sortName": "",
+        "sortType": "",
+        "isHLtitle": "true",
+    }
+    response = post_form(
+        CNINFO_QUERY_URL,
+        form,
+        headers={
+            "Referer": "https://www.cninfo.com.cn/new/commonUrl/pageOfSearch?url=disclosure/list/search",
+            "Origin": "https://www.cninfo.com.cn",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+        polite_delay_seconds=0.2,
+    )
+    if response.status != 200:
+        raise RuntimeError(
+            f"CNInfo orgId lookup failed for {market}:{stock_code}: "
+            f"HTTP {response.status}"
+        )
+    rows = dict(response.json()).get("announcements") or []
+    org_ids = {
+        str(row.get("orgId") or "").strip()
+        for row in rows
+        if str(row.get("secCode") or "").strip() == stock_code
+        and str(row.get("orgId") or "").strip()
+    }
+    if len(org_ids) > 1:
+        raise ValueError(
+            f"CNInfo returned multiple orgIds for {market}:{stock_code}: "
+            + ", ".join(sorted(org_ids))
+        )
+    return next(iter(org_ids), None)
+
+
+def _cninfo_column(market: str | None, stock: str) -> str:
+    stock_code = str(stock).split(",", 1)[0].strip()
+    normalized_market = str(market or _infer_market(stock_code)).upper()
+    try:
+        return CNINFO_COLUMNS[normalized_market]
+    except KeyError as exc:
+        raise ValueError(
+            f"Unsupported CNInfo market for announcement discovery: {normalized_market}"
+        ) from exc
+
+
+def _infer_market(stock_code: str) -> str:
+    return "SSE" if str(stock_code).startswith(("5", "6", "9")) else "SZSE"
+
+
+def _boolean_value(value: Any) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y"}
+    return bool(value)
+
+
+def _infer_year(row: dict[str, Any], report_type: str) -> str:
     title = _clean_title(row.get("announcementTitle"))
-    for token in title.replace("年", " ").replace("年度", " ").split():
-        if token.isdigit() and len(token) == 4:
-            return token
-    date = str(row.get("announcementTime") or "")[:4]
-    return date if date.isdigit() else "unknown"
+    title_year = re.search(r"(?<!\d)(20\d{2})(?!\d)", title)
+    if title_year:
+        return title_year.group(1)
+
+    publish_date = _format_announcement_time(row.get("announcementTime"))
+    if not publish_date or not publish_date[:4].isdigit():
+        return "unknown"
+    publish_year = int(publish_date[:4])
+    # Annual reports are normally filed in the following calendar year. Other
+    # periodic reports use their publication year when the title omits a year.
+    return str(publish_year - 1 if report_type == "annual" else publish_year)
 
 
 def _clean_title(value: str | None) -> str:
@@ -203,6 +310,7 @@ def discover_cninfo_from_strategy(strategy: dict[str, Any]) -> list[dict[str, An
                 category=category,
                 page_size=page_size,
                 max_pages=max_pages,
+                market=market,
             )
             for ann in discovered:
                 if any(keyword in str(ann.get("title") or "") for keyword in excluded):

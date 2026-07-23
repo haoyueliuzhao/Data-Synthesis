@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "raw-financial-data-lake"
 version = "0.1.0"
@@ -11,7 +15,8 @@ dependencies = [
     "pydantic>=2.7.0",
     "pyarrow>=16.0.0",
     "psycopg[binary]>=3.2.0",
-    "python-dateutil>=2.9.0"
+    "python-dateutil>=2.9.0",
+    "requests>=2.32.0"
 ]
 
 [project.optional-dependencies]
@@ -30,3 +35,7 @@ pdf = [
 
 [project.scripts]
 finraw = "finraw.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["finraw*"]
+exclude = ["config*", "data*", "docs*", "sql*", "tests*"]

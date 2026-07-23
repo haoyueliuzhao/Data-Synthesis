@@ -11,7 +11,20 @@ from finraw.builds import deactivate_active_rows, finish_build, start_build
 from finraw.db.client import DBProtocol
 
 
-COMPANY_SOURCE_IDS = {"sec_companyfacts", "sec_submissions", "sec_filings", "cninfo_announcements"}
+COMPANY_SOURCE_IDS = {
+    "sec_companyfacts",
+    "sec_submissions",
+    "sec_filings",
+    "cninfo_announcements",
+    "bse_disclosures",
+    "hkex_disclosures",
+}
+
+CN_COMPANY_SOURCES = {
+    "cninfo_announcements": ("cninfo", "cninfo_pdf_announcement"),
+    "bse_disclosures": ("bse", "bse_pdf_announcement"),
+    "hkex_disclosures": ("hkex", "hkex_pdf_annual_report"),
+}
 
 FRED_CURRENCY_PAIRS = {
     "DEXUSEU": {"entity_id": "EUR_USD", "canonical_name": "Euro to U.S. Dollar Spot Exchange Rate", "currency": "EUR/USD"},
@@ -396,31 +409,54 @@ def _add_cninfo_companies(
     config: dict[str, Any],
 ) -> None:
     companies: dict[str, dict[str, Any]] = {}
-    for item in config.get("cninfo", {}).get("stock_pool", []):
-        code = _clean_code(item.get("stock_code"))
-        if not code:
-            continue
-        companies[code] = {
-            "stock_code": code,
-            "name": item.get("company_name") or code,
-            "exchange": item.get("market") or _cn_exchange_from_selector(item.get("selector")),
-            "source": "config",
-        }
+    for source_id, (config_key, _) in CN_COMPANY_SOURCES.items():
+        for item in config.get(config_key, {}).get("stock_pool", []):
+            code = _clean_code(item.get("stock_code"))
+            if not code:
+                continue
+            companies[code] = {
+                "stock_code": code,
+                "name": item.get("company_name") or code,
+                "exchange": (
+                    item.get("market")
+                    or item.get("exchange")
+                    or _cn_exchange_from_selector(item.get("selector"))
+                    or ("BSE" if source_id == "bse_disclosures" else None)
+                ),
+                "industry": item.get("industry"),
+                "source": "config",
+                "source_ids": {source_id},
+            }
     for source_entity in source_entities:
-        if source_entity.get("source_id") != "cninfo_announcements":
+        source_id = str(source_entity.get("source_id") or "")
+        if source_id not in CN_COMPANY_SOURCES:
             continue
         code = _clean_code(source_entity.get("source_code"))
         if not code:
             continue
         metadata = _json_value(source_entity.get("raw_metadata"))
-        companies.setdefault(code, {
-            "stock_code": code,
-            "name": source_entity.get("source_name") or (metadata.get("secName") if isinstance(metadata, dict) else None) or code,
-            "exchange": _cn_exchange_from_metadata(metadata),
-            "source": "source_entities",
-        })
+        company = companies.setdefault(
+            code,
+            {
+                "stock_code": code,
+                "name": source_entity.get("source_name")
+                or (metadata.get("secName") if isinstance(metadata, dict) else None)
+                or code,
+                "exchange": (
+                    "BSE" if source_id == "bse_disclosures" else
+                    "HKEX" if source_id == "hkex_disclosures" else
+                    _cn_exchange_from_metadata(metadata)
+                ),
+                "industry": _cn_industry_from_metadata(metadata),
+                "source": "source_entities",
+                "source_ids": set(),
+            },
+        )
+        company.setdefault("source_ids", set()).add(source_id)
     for record in raw_records:
-        if record.get("record_type") != "cninfo_pdf_announcement":
+        source_id = str(record.get("source_id") or "")
+        source_spec = CN_COMPANY_SOURCES.get(source_id)
+        if not source_spec or record.get("record_type") != source_spec[1]:
             continue
         payload = _json_value(record.get("record_json"))
         if not isinstance(payload, dict):
@@ -428,34 +464,58 @@ def _add_cninfo_companies(
         code = _clean_code(payload.get("stock_code"))
         if not code:
             continue
-        companies.setdefault(code, {
-            "stock_code": code,
-            "name": payload.get("company_name") or payload.get("source_row", {}).get("secName") or code,
-            "exchange": _cn_exchange_from_metadata(payload.get("source_row")),
-            "source": "raw_records",
-        })
+        company = companies.setdefault(
+            code,
+            {
+                "stock_code": code,
+                "name": payload.get("company_name")
+                or payload.get("source_row", {}).get("secName")
+                or code,
+                "exchange": (
+                    "BSE" if source_id == "bse_disclosures" else
+                    "HKEX" if source_id == "hkex_disclosures" else
+                    _cn_exchange_from_metadata(payload.get("source_row"))
+                ),
+                "industry": _cn_industry_from_metadata(payload),
+                "source": "raw_records",
+                "source_ids": set(),
+            },
+        )
+        company.setdefault("source_ids", set()).add(source_id)
 
     for company in companies.values():
         code = company["stock_code"]
         exchange = company.get("exchange") or "CN"
+        source_ids = set(company.get("source_ids") or [])
+        is_hk = "hkex_disclosures" in source_ids or exchange in {"HK", "HKEX"}
+        exchange = "HKEX" if is_hk else exchange
         entity_id = f"{code}_{exchange}"
         _upsert_entity(entity_by_id, {
             "entity_id": entity_id,
             "canonical_name": company.get("name") or code,
             "entity_type": "company",
-            "market": "CN",
-            "country": "CN",
+            "market": "HK" if is_hk else "CN",
+            "country": "HK" if is_hk else "CN",
             "exchange": exchange,
             "ticker": code,
             "cik": None,
             "isin": None,
-            "currency": "CNY",
-            "fiscal_year_end": "12-31",
-            "industry": None,
+            "currency": "HKD" if is_hk else "CNY",
+            "fiscal_year_end": None if is_hk else "12-31",
+            "industry": company.get("industry"),
         })
         aliases = [code, company.get("name"), f"{code}.{exchange}" if exchange not in {"CN", None} else None]
-        for alias in aliases:
-            _add_alias(alias_by_id, entity_id, "cninfo_announcements", code, company.get("name"), alias, 0.96)
+        for source_id in sorted(company.get("source_ids") or []):
+            for alias in aliases:
+                _add_alias(
+                    alias_by_id,
+                    entity_id,
+                    source_id,
+                    code,
+                    company.get("name"),
+                    alias,
+                    0.96,
+                )
 
 
 def _add_worldbank_countries(
@@ -986,6 +1046,23 @@ def _cn_exchange_from_metadata(metadata: Any) -> str | None:
     return None
 
 
+def _cn_industry_from_metadata(metadata: Any) -> str | None:
+    if not isinstance(metadata, dict):
+        return None
+    pool_metadata = metadata.get("pool_metadata")
+    if isinstance(pool_metadata, dict) and pool_metadata.get("industry"):
+        return str(pool_metadata["industry"])
+    source_row = metadata.get("source_row")
+    if isinstance(source_row, dict):
+        for field in ("CSRC_CODE_DESC", "xxhyzl", "industry"):
+            if source_row.get(field):
+                return str(source_row[field])
+    for field in ("industry", "CSRC_CODE_DESC", "xxhyzl"):
+        if metadata.get(field):
+            return str(metadata[field])
+    return None
+
+
 def _markdown_report(report: dict[str, Any]) -> str:
     lines = ["# Entity Normalization Report", ""]
     lines.append(f"Canonical entities: {report['canonical_entity_count']}")
@@ -1018,4 +1095,3 @@ def _markdown_report(report: dict[str, Any]) -> str:
         lines.append(f"- {note}")
     lines.append("")
     return "\n".join(lines)
-

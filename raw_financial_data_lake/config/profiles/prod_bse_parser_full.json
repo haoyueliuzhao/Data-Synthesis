@@ -1,0 +1,17 @@
+{
+  "extends": "prod_greater_china_authoritative_full.json",
+  "document_extraction": {
+    "cn_financial_statements": {
+      "source_ids": [
+        "bse_disclosures"
+      ],
+      "report_types": [
+        "annual"
+      ],
+      "max_objects": 0
+    }
+  },
+  "greater_china_expansion": {
+    "qa_generation_enabled": false
+  }
+}

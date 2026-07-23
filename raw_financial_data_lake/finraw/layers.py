@@ -26,6 +26,7 @@ LAYER_TABLES: dict[str, list[str]] = {
         "document_text_chunks",
         "raw_extracted_tables",
         "candidate_facts",
+        "candidate_fact_evidence",
     ],
     "fact_validation": [
         "source_metric_definitions",
@@ -45,6 +46,11 @@ LAYER_TABLES: dict[str, list[str]] = {
         "qa_templates",
         "qa_graph_patterns",
         "qa_pattern_mining_runs",
+        "qa_pattern_catalog_releases",
+        "qa_pattern_catalog_entries",
+        "qa_pattern_compilations",
+        "qa_compiled_bindings",
+        "qa_graph_motif_observations",
         "qa_graph_walk_observations",
         "qa_pattern_proposals",
         "qa_candidates",
@@ -67,6 +73,7 @@ LAYER_TABLES: dict[str, list[str]] = {
         "analysis_evidence_bundles",
         "analysis_claim_plans",
         "analysis_samples",
+        "analysis_llm_calls",
         "analysis_quality_checks",
     ],
 }
@@ -87,6 +94,7 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "refresh-atomic-facts",
         "standardize-facts",
         "refresh-document-extraction",
+        "refresh-cn-financial-statements",
     ],
     "fact_validation": [
         "refresh-source-definitions",
@@ -115,6 +123,7 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "analyze-finsearchcomp",
         "align-finsearchcomp",
         "qa-retention",
+        "purge-qa-history",
         "artifact-retention",
     ],
     "analysis_build": [

@@ -117,6 +117,10 @@
     "announcements": [],
     "note": "Add direct CNInfo PDF announcement URLs here. Connector stores raw PDFs and metadata."
   },
+  "bse": {
+    "announcements": [],
+    "note": "BSE official disclosure PDFs. Generate targets with discover-bse-batch."
+  },
   "storage_policy": {
     "backend": "local_filesystem",
     "storage_root": "./data/fin_raw",
@@ -515,6 +519,26 @@
         "expert": 0.002,
         "research": 0.001
       }
+    }
+  },
+  "document_extraction": {
+    "cn_financial_statements": {
+      "source_ids": [
+        "cninfo_announcements",
+        "bse_disclosures",
+        "hkex_disclosures"
+      ],
+      "report_types": [
+        "annual"
+      ],
+      "maximum_statement_pages": 20,
+      "max_objects": 0,
+      "allow_single_official_source": true,
+      "require_consolidated_scope": true,
+      "unit_evidence_policy": "same_page_or_financial_statement_section",
+      "maximum_unit_carry_pages": 12,
+      "maximum_statement_carry_pages": 4,
+      "require_dual_parser_evidence": true
     }
   },
   "analysis": {

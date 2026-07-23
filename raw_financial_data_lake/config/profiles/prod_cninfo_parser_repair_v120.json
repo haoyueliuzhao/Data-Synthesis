@@ -1,0 +1,28 @@
+{
+  "extends": "prod_greater_china_authoritative_full.json",
+  "cninfo": {
+    "stock_pool": [
+      {
+        "stock_code": "000713"
+      },
+      {
+        "stock_code": "600007"
+      }
+    ],
+    "announcements": []
+  },
+  "document_extraction": {
+    "cn_financial_statements": {
+      "source_ids": [
+        "cninfo_announcements"
+      ],
+      "report_types": [
+        "annual"
+      ],
+      "max_objects": 100
+    }
+  },
+  "greater_china_expansion": {
+    "qa_generation_enabled": false
+  }
+}

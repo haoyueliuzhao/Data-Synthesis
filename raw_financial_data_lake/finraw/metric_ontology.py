@@ -13,6 +13,69 @@ from finraw.db.client import DBProtocol
 Metric = dict[str, Any]
 Alias = dict[str, Any]
 
+CNINFO_STRICT_ALIASES: dict[str, tuple[str, ...]] = {
+    "revenue": ("营业收入", "营业收入合计", "营业总收入"),
+    "operating_income": ("营业利润",),
+    "net_income": ("净利润",),
+    "gross_profit": ("毛利",),
+    "cost_of_revenue": ("营业成本",),
+    "research_and_development_expense": ("研发费用",),
+    "total_assets": ("资产总计", "资产合计"),
+    "total_liabilities": ("负债合计", "负债总计"),
+    "shareholders_equity": ("所有者权益合计", "股东权益合计"),
+    "cash_and_cash_equivalents": ("现金及现金等价物", "期末现金及现金等价物余额"),
+    "inventory": ("存货",),
+    "accounts_receivable_net": ("应收账款",),
+    "net_cash_provided_by_used_in_operating_activities": (
+        "经营活动产生的现金流量净额",
+        "经营活动现金流量净额",
+    ),
+    "net_cash_provided_by_used_in_investing_activities": ("投资活动产生的现金流量净额",),
+    "net_cash_provided_by_used_in_financing_activities": ("筹资活动产生的现金流量净额",),
+    "earnings_per_share_basic": ("基本每股收益",),
+    "earnings_per_share_diluted": ("稀释每股收益",),
+}
+
+HKEX_STRICT_ALIASES: dict[str, tuple[str, ...]] = {
+    "revenue": ("Revenue", "Turnover"),
+    "operating_income": ("Operating profit", "Profit from operations"),
+    "net_income": (
+        "Profit for the year",
+        "Profit for the period",
+        "Profit after tax",
+        "Profit after taxation",
+        "Profit for the financial year",
+    ),
+    "gross_profit": ("Gross profit",),
+    "cost_of_revenue": ("Cost of sales",),
+    "total_assets": ("Total assets",),
+    "total_liabilities": ("Total liabilities",),
+    "shareholders_equity": (
+        "Total equity",
+        "Total shareholders' equity",
+    ),
+    "cash_and_cash_equivalents": ("Cash and cash equivalents",),
+    "inventory": ("Inventories",),
+    "net_cash_provided_by_used_in_operating_activities": (
+        "Net cash generated from operating activities",
+        "Net cash used in operating activities",
+        "Net cash generated from/(used in) operating activities",
+        "Net cash from operating activities",
+        "Net cash flows from operating activities",
+        "Net cash generated from operations",
+    ),
+    "net_cash_provided_by_used_in_investing_activities": (
+        "Net cash generated from investing activities",
+        "Net cash used in investing activities",
+        "Net cash generated from/(used in) investing activities",
+    ),
+    "net_cash_provided_by_used_in_financing_activities": (
+        "Net cash generated from financing activities",
+        "Net cash used in financing activities",
+        "Net cash generated from/(used in) financing activities",
+    ),
+}
+
 
 SEC_METRICS: list[dict[str, Any]] = [
     {
@@ -795,6 +858,29 @@ def build_metric_ontology(db: DBProtocol, config: dict[str, Any]) -> tuple[list[
             _add_alias(aliases, spec["metric_id"], None, raw_name, None, 0.8)
         for concept in spec.get("concepts", []):
             _add_alias(aliases, spec["metric_id"], "sec_companyfacts", concept.split(":", 1)[-1], concept, spec.get("confidence", 0.9))
+
+    for metric_id, raw_names in CNINFO_STRICT_ALIASES.items():
+        for raw_name in raw_names:
+            for source_id in ("cninfo_announcements", "bse_disclosures"):
+                _add_alias(
+                    aliases,
+                    metric_id,
+                    source_id,
+                    raw_name,
+                    raw_name,
+                    0.99,
+                )
+
+    for metric_id, raw_names in HKEX_STRICT_ALIASES.items():
+        for raw_name in raw_names:
+            _add_alias(
+                aliases,
+                metric_id,
+                "hkex_disclosures",
+                raw_name,
+                raw_name,
+                0.99,
+            )
 
     for row in STANDARD_MACRO_METRICS:
         _add_metric(metrics, _macro_metric(*row))

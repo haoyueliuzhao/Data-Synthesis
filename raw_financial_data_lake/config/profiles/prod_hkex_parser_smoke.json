@@ -1,0 +1,20 @@
+{
+  "extends": "prod_greater_china_authoritative.json",
+  "document_extraction": {
+    "cn_financial_statements": {
+      "source_ids": [
+        "hkex_disclosures"
+      ],
+      "report_types": [
+        "annual"
+      ],
+      "max_objects": 3,
+      "allow_single_official_source": true,
+      "require_consolidated_scope": true,
+      "require_dual_parser_evidence": true
+    }
+  },
+  "greater_china_expansion": {
+    "qa_generation_enabled": false
+  }
+}

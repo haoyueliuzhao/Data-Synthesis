@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from decimal import Decimal
 import json
 import os
 import sqlite3
@@ -586,6 +587,9 @@ def create_metadata_db(config: dict[str, Any]) -> DBProtocol:
 
 
 def _row_value(row: dict[str, Any], column: str) -> Any:
+    value = row.get(column)
     if column == "is_active":
-        return row.get(column, 1)
-    return row.get(column)
+        return 1 if value is None else value
+    if isinstance(value, Decimal):
+        return str(value)
+    return value

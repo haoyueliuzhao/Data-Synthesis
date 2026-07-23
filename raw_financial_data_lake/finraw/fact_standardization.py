@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
@@ -149,9 +150,18 @@ def _load_source_definition_context(db: DBProtocol) -> dict[tuple[str, str, str]
     context = {}
     for row in rows:
         item = dict(row)
-        key = (str(item.get("source_id") or ""), str(item.get("metric_id") or ""), str(item.get("raw_concept_name") or ""))
+        source_id = str(item.get("source_id") or "")
+        metric_id = str(item.get("metric_id") or "")
+        raw_concept = str(item.get("raw_concept_name") or "")
+        key = (source_id, metric_id, raw_concept)
         if all(key):
             context[key] = item
+            normalized_key = (
+                source_id,
+                metric_id,
+                _normalized_source_concept(raw_concept),
+            )
+            context.setdefault(normalized_key, item)
     return context
 
 
@@ -280,11 +290,18 @@ def _source_definition_for_fact(fact: dict[str, Any], source_definitions: dict[t
     candidates = [concept]
     if ":" in concept:
         candidates.append(concept.split(":", 1)[-1])
-    for candidate in candidates:
+    candidates.extend(
+        [_normalized_source_concept(value) for value in tuple(candidates)]
+    )
+    for candidate in dict.fromkeys(candidates):
         row = source_definitions.get((source_id, metric_id, candidate))
         if row:
             return row
     return {}
+
+
+def _normalized_source_concept(value: Any) -> str:
+    return re.sub(r"\s+", "", str(value or "")).casefold()
 
 
 def _frequency_for_fact(fact: dict[str, Any], frequency_map: dict[tuple[str, str], dict[str, Any]]) -> dict[str, Any]:
@@ -582,6 +599,11 @@ def _currency_from_unit(unit: Any) -> str | None:
 
 def _monetary_scale(unit: str) -> Decimal | None:
     text = unit.lower()
+    # Match compound Chinese scales before their generic suffixes.
+    if "hundred_million" in text:
+        return Decimal("100")
+    if "ten_thousand" in text:
+        return Decimal("0.01")
     if "thousand" in text:
         return Decimal("0.001")
     if "million" in text:
@@ -600,7 +622,15 @@ def _time_basis(fact: dict[str, Any], metric: dict[str, Any]) -> str:
         return "observation_date"
     if source in {"worldbank_indicators", "imf_sdmx"}:
         return "calendar_year"
-    if source in {"sec_filings", "cninfo_announcements"}:
+    if source in {"cninfo_announcements", "bse_disclosures", "hkex_disclosures"} and fact.get(
+        "extraction_method"
+    ) == "pdf_financial_statement_table":
+        return (
+            "fiscal_period"
+            if period_type == "period_flow"
+            else "fiscal_point_in_time"
+        )
+    if source in {"sec_filings", "cninfo_announcements", "bse_disclosures", "hkex_disclosures"}:
         return "document_period"
     return "source_period"
 
@@ -703,4 +733,3 @@ def _markdown_report(report: dict[str, Any]) -> str:
         lines.append(f"- {note}")
     lines.append("")
     return "\n".join(lines)
-

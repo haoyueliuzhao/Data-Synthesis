@@ -467,6 +467,20 @@ CREATE TABLE IF NOT EXISTS candidate_facts (
     value               TEXT,
     unit                TEXT,
     period_hint         TEXT,
+    period_start        DATE,
+    period_end          DATE,
+    fiscal_year         INTEGER,
+    fiscal_quarter      TEXT,
+    currency            TEXT,
+    value_scale         TEXT,
+    source_field_name   TEXT,
+    statement_type      TEXT,
+    financial_scope_type TEXT,
+    page_number         INTEGER,
+    row_index           INTEGER,
+    column_index        INTEGER,
+    extraction_metadata JSONB,
+    evidence_sha256     TEXT,
     evidence_text       TEXT,
     confidence_score    DOUBLE PRECISION,
     review_status      TEXT,
@@ -486,6 +500,37 @@ CREATE INDEX IF NOT EXISTS idx_candidate_facts_raw_object ON candidate_facts(raw
 CREATE INDEX IF NOT EXISTS idx_candidate_facts_review ON candidate_facts(review_status);
 CREATE INDEX IF NOT EXISTS idx_candidate_facts_state ON candidate_facts(candidate_state, promotion_status);
 CREATE INDEX IF NOT EXISTS idx_candidate_facts_eligibility ON candidate_facts(qa_eligible, kg_eligible);
+CREATE INDEX IF NOT EXISTS idx_candidate_facts_source_metric_period
+ON candidate_facts(matched_metric_id, entity_id, period_end);
+
+CREATE TABLE IF NOT EXISTS candidate_fact_evidence (
+    evidence_id         TEXT PRIMARY KEY,
+    candidate_id        TEXT REFERENCES candidate_facts(candidate_id),
+    build_id            TEXT,
+    raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
+    table_id            TEXT REFERENCES raw_extracted_tables(table_id),
+    page_number         INTEGER,
+    unit_source_page    INTEGER,
+    unit_evidence_text  TEXT,
+    statement_source_page INTEGER,
+    period_source_page  INTEGER,
+    statement_type      TEXT,
+    financial_scope_type TEXT,
+    row_index           INTEGER,
+    column_index        INTEGER,
+    source_field_name   TEXT,
+    raw_value_text      TEXT,
+    period_label        TEXT,
+    evidence_text       TEXT,
+    evidence_sha256     TEXT,
+    verification_method TEXT,
+    validation_status   TEXT,
+    validation_errors   JSONB,
+    created_at          TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_candidate_fact_evidence_candidate ON candidate_fact_evidence(candidate_id);
+CREATE INDEX IF NOT EXISTS idx_candidate_fact_evidence_object_page ON candidate_fact_evidence(raw_object_id, page_number);
 
 
 CREATE TABLE IF NOT EXISTS source_documents (

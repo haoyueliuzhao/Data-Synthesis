@@ -188,6 +188,7 @@ def _definition_row(row: dict[str, Any], metadata: dict[str, Any] | None = None)
         "source_units": metadata.get("units") or metadata.get("unit"),
         "source_frequency": metadata.get("frequency") or metadata.get("frequency_short"),
         "source_seasonal_adjustment": metadata.get("seasonal_adjustment") or metadata.get("seasonal_adjustment_short"),
+        "accounting_standard": _accounting_standard(source_id),
     }
     return {
         "definition_id": _id("sdef", source_id, row.get("metric_id"), concept),
@@ -215,6 +216,13 @@ def _source_policy(source_id: str | None, metadata: dict[str, Any] | None = None
         return {"frequency": _normalise_frequency(metadata.get("frequency") or metadata.get("frequency_short")) or "series_metadata", "vintage_policy": "FRED realtime_start/realtime_end retained when available", "is_forecast": False, "comparability_level": "series_level"}
     if source_id == "sec_companyfacts":
         return {"frequency": "filing_period", "vintage_policy": "SEC filed date and accession retained; amendments/restatements selected upstream", "is_forecast": False, "comparability_level": "xbrl_concept_level"}
+    if source_id in {"cninfo_announcements", "bse_disclosures", "hkex_disclosures"}:
+        provider = {
+            "cninfo_announcements": "CNInfo",
+            "bse_disclosures": "BSE",
+            "hkex_disclosures": "HKEXnews",
+        }[source_id]
+        return {"frequency": "filing_period", "vintage_policy": f"{provider} publication date and every corrected or restated filing are retained", "is_forecast": False, "comparability_level": "source_concept_scope_level"}
     return {"frequency": None, "vintage_policy": None, "is_forecast": False, "comparability_level": "source_metadata_only"}
 
 
@@ -224,7 +232,28 @@ def _definition_text(row: dict[str, Any], metadata: dict[str, Any] | None = None
     metric = row.get("canonical_name") or row.get("metric_id")
     title = (metadata or {}).get("title") or (metadata or {}).get("name")
     suffix = f" Source title: {title}." if title else ""
+    if source_id in {"cninfo_announcements", "bse_disclosures"}:
+        return (
+            f"{source_id}:{concept} is an exact consolidated-statement label mapped to "
+            f"canonical metric {metric} under PRC Accounting Standards for Business "
+            f"Enterprises; company-only and segment rows are not comparable.{suffix}"
+        )
+    if source_id == "hkex_disclosures":
+        return (
+            f"{source_id}:{concept} is an exact consolidated-statement label mapped "
+            f"to canonical metric {metric} under issuer-reported HKFRS or IFRS; "
+            f"company-only, segment, and note rows are not comparable.{suffix}"
+        )
     return f"{source_id}:{concept} mapped to canonical metric {metric}.{suffix}"
+
+
+def _accounting_standard(source_id: str | None) -> str | None:
+    return {
+        "sec_companyfacts": "US_GAAP_or_issuer_reported_IFRS",
+        "cninfo_announcements": "PRC_ASBE",
+        "bse_disclosures": "PRC_ASBE",
+        "hkex_disclosures": "HKFRS_or_IFRS_issuer_reported",
+    }.get(source_id)
 
 
 def _unit_rule(source_id: str | None, row: dict[str, Any]) -> str | None:
@@ -233,6 +262,8 @@ def _unit_rule(source_id: str | None, row: dict[str, Any]) -> str | None:
         return f"source reported unit normalized by fact_standardization; default_unit={unit}"
     if source_id == "sec_companyfacts":
         return "XBRL unitRef normalized by fact_standardization"
+    if source_id in {"cninfo_announcements", "bse_disclosures", "hkex_disclosures"}:
+        return "Currency and scale must be read from the same consolidated statement page header before normalization"
     return unit
 
 

@@ -134,6 +134,11 @@ python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json qa-retention --hot-builds 1 --minimum-hot-samples 100 --archive-dir data/qa_archive
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json qa-retention --hot-builds 1 --minimum-hot-samples 100 --archive-dir data/qa_archive --execute --purge --vacuum
 
+Before a ground-up QA rebuild, inspect and then purge generated QA, mining/catalog/compiler state, semi-open analysis builds, and their artifacts:
+
+    python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json purge-qa-history --output-dir data/audit/qa_history_cleanup
+    python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json purge-qa-history --execute --confirm PURGE_GENERATED_QA --output-dir data/audit/qa_history_cleanup
+
 # Artifact retention protects active QA exports. It removes only cold-archived QA exports
 # and metadata JSONL files whose canonical content and row counts match Parquet.
 python -m finraw.cli --config config/profiles/prod_phase1_with_cninfo_generated.json artifact-retention --qa-export-root data/qa_exports --qa-export-root data/qa_exports_v2_smoke

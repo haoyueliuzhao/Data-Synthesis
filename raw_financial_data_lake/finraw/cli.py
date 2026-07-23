@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 from finraw.analysis.diversity import build_analysis_diversity_report
 from finraw.analysis.export import export_analysis_jsonl
@@ -10,16 +11,33 @@ from finraw.analysis.verifier import validate_analysis_samples
 from finraw.artifact_retention import enforce_artifact_retention
 from finraw.atomic_facts import refresh_atomic_facts
 from finraw.builds import mark_running_builds_failed
+from finraw.bse_discovery import discover_bse_from_strategy, write_bse_config
+from finraw.cn_financial_statements import refresh_cn_financial_statements
+from finraw.cn_market_universe import (
+    assemble_cn_expansion_profile,
+    build_a_share_universe,
+    write_a_share_universe,
+    write_cn_expansion_profile,
+)
 from finraw.cninfo_discovery import discover_cninfo_announcements, discover_cninfo_from_strategy, write_cninfo_config
 from finraw.config import load_config
 from finraw.connectors.cninfo import CninfoConnector
+from finraw.connectors.bse import BseConnector
 from finraw.connectors.fred import FredConnector
 from finraw.connectors.imf import ImfSdmxConnector
+from finraw.connectors.hkex import HkexConnector
+from finraw.connectors.official_publications import OfficialPublicationConnector
 from finraw.connectors.sec import SecBulkConnector
 from finraw.connectors.sec_filings import SecFilingsConnector
 from finraw.connectors.sec_sample import SecCompanyJsonConnector
 from finraw.connectors.worldbank import WorldBankConnector
 from finraw.coverage import build_data_coverage_report, refresh_data_coverage_report, write_coverage_outputs
+from finraw.hkex_discovery import (
+    assemble_hkex_expansion_profile,
+    build_hkex_disclosure_config,
+    write_hkex_config,
+    write_hkex_expansion_profile,
+)
 from finraw.derived_facts import refresh_derived_facts
 from finraw.document_extraction import refresh_document_extraction
 from finraw.db.client import create_metadata_db
@@ -28,6 +46,7 @@ from finraw.export import export_jsonl, export_layer_jsonl, export_layer_parquet
 from finraw.layers import LAYER_TABLES, layer_manifest
 from finraw.fact_quality import enforce_fact_quality_gates
 from finraw.fact_standardization import refresh_fact_standardization
+from finraw.greater_china_quality import enforce_greater_china_quality_gates
 from finraw.kg_builder import build_kg, export_kg_jsonl, kg_quality_report
 from finraw.kg_retention import enforce_kg_retention
 from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
@@ -53,7 +72,13 @@ from finraw.qa.pattern_mining import (
     transition_mining_run,
 )
 from finraw.qa.preflight import profile_graph_patterns
+from finraw.qa_cleanup import (
+    PURGE_CONFIRMATION,
+    default_qa_artifact_paths,
+    purge_qa_history,
+)
 from finraw.qa_retention import enforce_qa_retention
+from finraw.regional_share_audit import audit_regional_shares
 from finraw.source_definitions import refresh_source_metric_definitions, refresh_time_series_frequency_map
 from finraw.quality import QualityGateError, enforce_quality_gates
 from finraw.storage import RawObjectStore
@@ -70,7 +95,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("seed-sources", help="Insert source registry seed rows.")
 
     ingest = sub.add_parser("ingest", help="Run an ingestion connector.")
-    ingest.add_argument("source", choices=["sec-sample", "sec-filings", "sec-bulk", "fred", "worldbank", "imf", "cninfo", "test", "all"])
+    ingest.add_argument("source", choices=["sec-sample", "sec-filings", "sec-bulk", "fred", "worldbank", "imf", "cninfo", "bse", "hkex", "official-publications", "test", "all"])
     ingest.add_argument("--dry-run", action="store_true", help="Print targets without downloading or writing data.")
 
     export_jsonl_parser = sub.add_parser("export-jsonl", help="Export metadata tables to JSONL.")
@@ -92,6 +117,7 @@ def build_parser() -> argparse.ArgumentParser:
     discover_cninfo.add_argument("--start-date", required=True, help="Start date YYYY-MM-DD")
     discover_cninfo.add_argument("--end-date", required=True, help="End date YYYY-MM-DD")
     discover_cninfo.add_argument("--category", default="annual", help="annual, semiannual, q1, q3, or raw CNInfo category code")
+    discover_cninfo.add_argument("--market", choices=["SSE", "SZSE"], help="Exchange column; inferred from the stock code when omitted.")
     discover_cninfo.add_argument("--max-pages", type=int, default=1)
     discover_cninfo.add_argument("--page-size", type=int, default=30)
     discover_cninfo.add_argument("--output", default="config/cninfo_announcements.generated.json")
@@ -100,6 +126,75 @@ def build_parser() -> argparse.ArgumentParser:
     discover_batch.add_argument("--strategy", required=True)
     discover_batch.add_argument("--output", default="config/cninfo_announcements.generated.json")
 
+    discover_universe = sub.add_parser(
+        "discover-a-share-universe",
+        help="Build an authoritative, industry-stratified SSE/SZSE/BSE company pool.",
+    )
+    discover_universe.add_argument("--sse-count", type=int, default=45)
+    discover_universe.add_argument("--szse-count", type=int, default=40)
+    discover_universe.add_argument("--bse-count", type=int, default=15)
+    discover_universe.add_argument(
+        "--output", default="config/scopes/cn_a_share_authoritative_100.json"
+    )
+
+    discover_bse = sub.add_parser(
+        "discover-bse-batch",
+        help="Discover BSE official report PDFs from an A-share universe file.",
+    )
+    discover_bse.add_argument("--strategy", required=True)
+    discover_bse.add_argument(
+        "--output", default="config/bse_announcements.generated.json"
+    )
+
+    assemble_cn_profile = sub.add_parser(
+        "assemble-cn-expansion-profile",
+        help="Validate official A-share report coverage and assemble an ingestion profile.",
+    )
+    assemble_cn_profile.add_argument(
+        "--universe",
+        default="config/scopes/cn_a_share_authoritative_100.json",
+    )
+    assemble_cn_profile.add_argument(
+        "--cninfo-manifest",
+        default="config/cninfo_announcements.authoritative_100.json",
+    )
+    assemble_cn_profile.add_argument(
+        "--bse-manifest",
+        default="config/bse_announcements.authoritative_15.json",
+    )
+    assemble_cn_profile.add_argument(
+        "--extends", default="prod_phase1_with_cninfo_generated.json"
+    )
+    assemble_cn_profile.add_argument(
+        "--output", default="config/profiles/prod_cn_authoritative_expansion.json"
+    )
+
+    discover_hkex = sub.add_parser(
+        "discover-hkex-batch",
+        help="Resolve a 30-50 company HKEX pool and discover official annual reports.",
+    )
+    discover_hkex.add_argument("--company-count", type=int, default=40)
+    discover_hkex.add_argument("--start-date", default="2020-01-01")
+    discover_hkex.add_argument("--end-date")
+    discover_hkex.add_argument("--minimum-annual-years", type=int, default=5)
+    discover_hkex.add_argument(
+        "--output", default="config/hkex_announcements.authoritative_40.json"
+    )
+
+    assemble_hkex_profile = sub.add_parser(
+        "assemble-hkex-expansion-profile",
+        help="Add a validated HKEX annual-report manifest to the A-share profile.",
+    )
+    assemble_hkex_profile.add_argument(
+        "--manifest", default="config/hkex_announcements.authoritative_40.json"
+    )
+    assemble_hkex_profile.add_argument(
+        "--extends", default="prod_cn_authoritative_expansion.json"
+    )
+    assemble_hkex_profile.add_argument(
+        "--output", default="config/profiles/prod_greater_china_authoritative.json"
+    )
+
     sub.add_parser("quality-report", help="Print data quality and coverage summary as JSON.")
 
     coverage_report = sub.add_parser("coverage-report", help="Print detailed source/entity/time/data-type coverage as JSON.")
@@ -107,6 +202,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     refresh_coverage = sub.add_parser("refresh-coverage-report", help="Refresh data_coverage_report table and optionally write report files.")
     refresh_coverage.add_argument("--output-dir", default="data/audit", help="Directory for JSON and Markdown coverage reports.")
+    regional_share = sub.add_parser(
+        "regional-share-audit",
+        help="Audit international versus Greater China shares across active data layers.",
+    )
+    regional_share.add_argument(
+        "--output-dir",
+        default="data/audit/regional_share",
+        help="Directory for JSON and Markdown regional share reports.",
+    )
     refresh_entities = sub.add_parser("refresh-entities", help="Rebuild canonical_entities and entity_alias_map from raw/source metadata.")
     refresh_entities.add_argument("--output-dir", default="data/audit", help="Directory for entity normalization report files.")
 
@@ -134,10 +238,25 @@ def build_parser() -> argparse.ArgumentParser:
     doc_extract = sub.add_parser("refresh-document-extraction", help="Build document text chunks, table placeholders, and candidate document facts.")
     doc_extract.add_argument("--output-dir", default="data/audit", help="Directory for document extraction report files.")
 
+    cn_statements = sub.add_parser("refresh-cn-financial-statements", help="Parse and verify consolidated CNInfo PDF statement candidates.")
+    cn_statements.add_argument("--output-dir", default="data/audit/fact_build/cn_statements")
+    cn_statements.add_argument("--max-objects", type=int, help="Optional deterministic object limit for smoke tests; omit for configured/full input.")
+    cn_statements.add_argument("--report-type", action="append", dest="report_types", help="Eligible report type; repeat to select multiple. Defaults to configured annual reports.")
+
     sub.add_parser("enforce-quality", help="Enforce configured raw object quality gates and storage budget.")
 
     enforce_fact_quality = sub.add_parser("enforce-fact-quality", help="Enforce fact-level quality gates and mark graph-ready standardized facts.")
     enforce_fact_quality.add_argument("--output-dir", default="data/audit/fact_validation", help="Directory for fact quality report files.")
+
+    greater_china_quality = sub.add_parser(
+        "enforce-greater-china-quality",
+        help="Enforce company-level Greater China raw, parser, fact, and official-source coverage gates.",
+    )
+    greater_china_quality.add_argument(
+        "--output-dir",
+        default="data/audit/greater_china_validation",
+        help="Directory for scoped Greater China quality report files.",
+    )
 
     build_kg_parser = sub.add_parser("build-kg", help="Build a versioned property graph from graph-ready facts and derived facts.")
     build_kg_parser.add_argument("--output-dir", default="data/audit/kg", help="Directory for KG build and quality reports.")
@@ -176,6 +295,45 @@ def build_parser() -> argparse.ArgumentParser:
     qa_retention.add_argument("--purge", action="store_true", help="Delete archived QA child rows after verification.")
     qa_retention.add_argument("--vacuum", action="store_true", help="VACUUM QA child tables after purge.")
     qa_retention.add_argument("--batch-size", type=int, default=50000)
+
+    qa_purge = sub.add_parser(
+        "purge-qa-history",
+        help="Plan or purge all generated QA, mining/catalog, and analysis history.",
+    )
+    qa_purge.add_argument(
+        "--execute",
+        action="store_true",
+        help="Execute the destructive cleanup; otherwise only write a plan.",
+    )
+    qa_purge.add_argument(
+        "--confirm",
+        help=f"Required with --execute; must equal {PURGE_CONFIRMATION}.",
+    )
+    qa_purge.add_argument(
+        "--keep-analysis",
+        action="store_true",
+        help="Keep semi-open financial analysis builds and registries.",
+    )
+    qa_purge.add_argument(
+        "--keep-registries",
+        action="store_true",
+        help="Keep code-rebuildable QA templates, graph patterns, signals, and analysis patterns.",
+    )
+    qa_purge.add_argument(
+        "--keep-artifacts",
+        action="store_true",
+        help="Keep generated QA/analysis exports and archives on disk.",
+    )
+    qa_purge.add_argument(
+        "--keep-audit-artifacts",
+        action="store_true",
+        help="Keep old QA, analysis, FinSearchComp alignment, and LLM test audit directories.",
+    )
+    qa_purge.add_argument(
+        "--output-dir",
+        default="data/audit/qa_history_cleanup",
+        help="Directory for the cleanup plan or result report.",
+    )
 
     artifact_retention = sub.add_parser(
         "artifact-retention",
@@ -453,6 +611,19 @@ def main() -> None:
                 connectors.append(ImfSdmxConnector(db, store, config, dry_run=args.dry_run))
             if args.source in {"cninfo", "all"}:
                 connectors.append(CninfoConnector(db, store, config, dry_run=args.dry_run))
+            if args.source in {"bse", "all"}:
+                connectors.append(BseConnector(db, store, config, dry_run=args.dry_run))
+            if args.source in {"hkex", "all"}:
+                connectors.append(HkexConnector(db, store, config, dry_run=args.dry_run))
+            if args.source in {"official-publications", "all"}:
+                connectors.append(
+                    OfficialPublicationConnector(
+                        db,
+                        store,
+                        config,
+                        dry_run=args.dry_run,
+                    )
+                )
             for connector in connectors:
                 connector.run()
             print("Ingestion completed.")
@@ -484,6 +655,7 @@ def main() -> None:
                 category=args.category,
                 page_size=args.page_size,
                 max_pages=args.max_pages,
+                market=args.market,
             )
             path = write_cninfo_config(args.output, announcements)
             print(json.dumps({"output": str(path), "announcement_count": len(announcements)}, ensure_ascii=False, indent=2))
@@ -493,6 +665,86 @@ def main() -> None:
             announcements = discover_cninfo_from_strategy(strategy)
             path = write_cninfo_config(args.output, announcements)
             print(json.dumps({"output": str(path), "announcement_count": len(announcements)}, ensure_ascii=False, indent=2))
+        elif args.command == "discover-a-share-universe":
+            universe = build_a_share_universe(
+                sse_count=args.sse_count,
+                szse_count=args.szse_count,
+                bse_count=args.bse_count,
+            )
+            path = write_a_share_universe(args.output, universe)
+            print(
+                json.dumps(
+                    {"output": str(path), **universe["universe"]},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+        elif args.command == "discover-bse-batch":
+            with open(args.strategy, "r", encoding="utf-8") as f:
+                strategy = json.load(f)
+            announcements = discover_bse_from_strategy(strategy)
+            path = write_bse_config(args.output, announcements)
+            print(
+                json.dumps(
+                    {
+                        "output": str(path),
+                        "announcement_count": len(announcements),
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+        elif args.command == "assemble-cn-expansion-profile":
+            profile = assemble_cn_expansion_profile(
+                universe_path=args.universe,
+                cninfo_manifest_path=args.cninfo_manifest,
+                bse_manifest_path=args.bse_manifest,
+                extends=args.extends,
+            )
+            path = write_cn_expansion_profile(args.output, profile)
+            print(
+                json.dumps(
+                    {
+                        "output": str(path),
+                        **profile["greater_china_expansion"]["coverage_contract"],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+        elif args.command == "discover-hkex-batch":
+            hkex_config = build_hkex_disclosure_config(
+                requested_count=args.company_count,
+                start_date=args.start_date,
+                end_date=args.end_date,
+                minimum_annual_years=args.minimum_annual_years,
+            )
+            path = write_hkex_config(args.output, hkex_config)
+            print(
+                json.dumps(
+                    {"output": str(path), **hkex_config["hkex"]["coverage"]},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+        elif args.command == "assemble-hkex-expansion-profile":
+            profile = assemble_hkex_expansion_profile(
+                manifest_path=args.manifest,
+                extends=args.extends,
+            )
+            path = write_hkex_expansion_profile(args.output, profile)
+            print(
+                json.dumps(
+                    {
+                        "output": str(path),
+                        **profile["greater_china_expansion"]["coverage_contract"][
+                            "hkex"
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
         elif args.command == "quality-report":
             print(json.dumps(quality_report(db), ensure_ascii=False, indent=2, sort_keys=True, default=str))
         elif args.command == "coverage-report":
@@ -504,6 +756,22 @@ def main() -> None:
         elif args.command == "refresh-coverage-report":
             report = refresh_data_coverage_report(db, config, output_dir=args.output_dir)
             print(json.dumps({"status": "refreshed", "row_count": len(report["data_coverage_report"]), "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
+        elif args.command == "regional-share-audit":
+            report = audit_regional_shares(db, config, output_dir=args.output_dir)
+            print(
+                json.dumps(
+                    {
+                        "status": "audited",
+                        "kg_build_id": report["pinned_builds"]["kg_build_id"],
+                        "balance_status": report["balance_assessment"]["status"],
+                        "summary_matrix": report["summary_matrix"],
+                        "written_files": report.get("written_files", []),
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                    default=str,
+                )
+            )
         elif args.command == "refresh-entities":
             report = refresh_entity_normalization(db, config, output_dir=args.output_dir)
             print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "canonical_entity_count": report["canonical_entity_count"], "alias_count": report["alias_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2))
@@ -528,6 +796,15 @@ def main() -> None:
         elif args.command == "refresh-document-extraction":
             report = refresh_document_extraction(db, config, output_dir=args.output_dir)
             print(json.dumps({"status": "refreshed", "build_id": report.get("build_id"), "chunk_count": report["chunk_count"], "candidate_count": report["candidate_count"], "candidate_state_counts": report.get("candidate_state_counts"), "promotion_status_counts": report.get("promotion_status_counts"), "candidate_qa_eligible_count": report.get("candidate_qa_eligible_count"), "candidate_kg_eligible_count": report.get("candidate_kg_eligible_count"), "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "refresh-cn-financial-statements":
+            report = refresh_cn_financial_statements(
+                db,
+                config,
+                output_dir=args.output_dir,
+                max_objects=args.max_objects,
+                report_types=tuple(args.report_types) if args.report_types else None,
+            )
+            print(json.dumps({"status": "refreshed", "build_id": report["build_id"], "object_count": report["object_count"], "parsed_object_count": report["parsed_object_count"], "candidate_count": report["candidate_count"], "promotion_approved_count": report["promotion_approved_count"], "output_dir": args.output_dir}, ensure_ascii=False, indent=2, default=str))
         elif args.command == "enforce-quality":
             try:
                 result = enforce_quality_gates(db, config)
@@ -542,6 +819,33 @@ def main() -> None:
                 print(json.dumps({"fact_quality_gate_status": "failed", "error": str(exc)}, ensure_ascii=False, indent=2))
                 raise SystemExit(1)
             print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True, default=str))
+        elif args.command == "enforce-greater-china-quality":
+            try:
+                result = enforce_greater_china_quality_gates(
+                    db, config, output_dir=args.output_dir
+                )
+            except QualityGateError as exc:
+                print(
+                    json.dumps(
+                        {
+                            "greater_china_quality_gate_status": "failed",
+                            "error": str(exc),
+                            "output_dir": args.output_dir,
+                        },
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+                )
+                raise SystemExit(1)
+            print(
+                json.dumps(
+                    result,
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                    default=str,
+                )
+            )
         elif args.command == "build-kg":
             report = build_kg(
                 db,
@@ -587,6 +891,27 @@ def main() -> None:
                 vacuum=args.vacuum,
                 output_dir=args.output_dir,
                 batch_size=args.batch_size,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "purge-qa-history":
+            project_root = Path(__file__).resolve().parents[1]
+            artifact_paths = []
+            if not args.keep_artifacts:
+                artifact_paths = default_qa_artifact_paths(
+                    project_root,
+                    include_analysis=not args.keep_analysis,
+                    include_audit=not args.keep_audit_artifacts,
+                    exclude_paths=[args.output_dir],
+                )
+            report = purge_qa_history(
+                db,
+                project_root=project_root,
+                include_analysis=not args.keep_analysis,
+                include_registries=not args.keep_registries,
+                artifact_paths=artifact_paths,
+                execute=args.execute,
+                confirmation=args.confirm,
+                output_dir=args.output_dir,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "artifact-retention":

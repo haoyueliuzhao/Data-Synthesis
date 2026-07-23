@@ -1,0 +1,134 @@
+{
+  "contract_id": "greater_china_qa_constraints_v1",
+  "contract_version": "1.0.0",
+  "generation_enabled": false,
+  "purpose": "Eligibility and semantic constraints for a future Greater China QA rebuild. This file does not authorize candidate or sample generation.",
+  "upstream_requirements": {
+    "pinned_raw_snapshot_required": true,
+    "pinned_entity_build_required": true,
+    "pinned_metric_build_required": true,
+    "pinned_fact_build_required": true,
+    "pinned_kg_build_required": true,
+    "greater_china_quality_gate_status": "passed",
+    "minimum_graph_ready_ratio": 0.9,
+    "minimum_company_metric_profile_pass_ratio": 0.9,
+    "target_company_metric_profile_pass_ratio": 1.0,
+    "minimum_annual_years_per_company": 5
+  },
+  "authority_policy": {
+    "minimum_authority_level": "S1_official",
+    "allowed_corporate_sources": [
+      "cninfo_announcements",
+      "bse_disclosures",
+      "hkex_disclosures"
+    ],
+    "allowed_market_and_macro_sources": [
+      "nbs_official_statistics",
+      "pboc_official_statistics",
+      "safe_official_statistics",
+      "sse_market_statistics",
+      "szse_market_statistics",
+      "bse_market_statistics",
+      "csi_index_publications"
+    ],
+    "raw_object_trace_required": true,
+    "source_definition_required": true,
+    "document_evidence_required_for_pdf_facts": true,
+    "candidate_fact_direct_use_forbidden": true
+  },
+  "entity_policy": {
+    "allowed_markets": ["CN", "HK"],
+    "allowed_exchanges": ["SSE", "SZSE", "BSE", "HKEX"],
+    "security_identity_required": true,
+    "company_identity_required": true,
+    "listing_venue_required": true,
+    "a_share_h_share_adr_must_remain_distinct": true,
+    "cross_listing_join_requires_canonical_company_relation": true,
+    "ticker_only_join_forbidden": true,
+    "historical_name_and_ticker_validity_required": true
+  },
+  "fact_policy": {
+    "graph_ready_required": true,
+    "is_forecast": false,
+    "verification_status_forbidden": ["conflict", "rejected", "source_definition_mismatch"],
+    "financial_scope_type_allowed": [
+      "canonical_consolidated_entity",
+      "regulated_financial_group",
+      "hkex_net_assets_presentation"
+    ],
+    "metric_coverage_profile_required": true,
+    "not_applicable_metric_must_not_be_rendered_as_missing_or_zero": true,
+    "complete_scope_required_for_ranking_and_screening": true
+  },
+  "accounting_policy": {
+    "allowed_standards": ["ASBE", "HKFRS", "IFRS"],
+    "cross_standard_comparison_requires_explicit_compatibility": true,
+    "gaap_non_gaap_mixing_forbidden": true,
+    "parent_attributable_profit_must_not_substitute_consolidated_net_income": true,
+    "segment_and_consolidated_scope_mixing_forbidden": true,
+    "point_in_time_and_period_flow_direct_comparison_forbidden": true,
+    "restatement_policy": "latest_official_filing_with_prior_versions_retained"
+  },
+  "time_policy": {
+    "fiscal_and_calendar_periods_must_be_explicit": true,
+    "report_date_and_period_end_must_remain_distinct": true,
+    "annual_duration_days_min": 300,
+    "annual_duration_days_max": 430,
+    "quarterly_ytd_and_single_quarter_must_remain_distinct": true,
+    "continuous_window_required_for_temporal_operations": true,
+    "future_or_unfiled_periods_forbidden": true
+  },
+  "unit_currency_policy": {
+    "allowed_currencies": ["CNY", "HKD", "USD"],
+    "currency_must_be_explicit_in_question_or_output_contract": true,
+    "unit_must_be_explicit_in_question_or_output_contract": true,
+    "source_scale_must_be_retained": true,
+    "normalized_scale_required_for_calculation": true,
+    "cross_currency_operation_requires_pinned_fx_fact": true,
+    "fx_rate_date_and_rate_type_required": true,
+    "implicit_rmb_hkd_equivalence_forbidden": true
+  },
+  "future_language_distribution": {
+    "languages": ["zh", "en", "zh_en_bilingual"],
+    "minimum_zh_ratio": 0.6,
+    "minimum_zh_en_bilingual_ratio": 0.15,
+    "maximum_single_surface_template_ratio": 0.1,
+    "internal_ids_must_not_appear_in_question": true,
+    "official_source_names_may_appear_when_provenance_is_requested": true,
+    "surface_diversification_requires_semantic_round_trip": true
+  },
+  "future_market_distribution": {
+    "minimum_greater_china_ratio": 0.4,
+    "minimum_a_share_ratio_within_greater_china": 0.6,
+    "minimum_hkex_ratio_within_greater_china": 0.25,
+    "minimum_bse_ratio_within_a_share": 0.1,
+    "market_quota_is_applied_after_quality_filtering": true
+  },
+  "question_completeness": {
+    "required_slots": [
+      "entity",
+      "metric",
+      "period",
+      "financial_scope",
+      "unit",
+      "currency",
+      "answer_format",
+      "precision_or_tolerance"
+    ],
+    "source_definition_slot_required_for_cross_source_tasks": true,
+    "scope_definition_slot_required_for_ranking_and_screening": true
+  },
+  "hard_rejections": [
+    "ambiguous_entity_or_listing",
+    "ambiguous_metric_definition",
+    "ambiguous_fiscal_or_calendar_period",
+    "ambiguous_unit_or_currency",
+    "missing_raw_object_lineage",
+    "missing_source_definition",
+    "incomplete_peer_or_index_scope",
+    "unsupported_cross_standard_comparison",
+    "candidate_fact_not_promoted",
+    "document_presence_used_as_numeric_fact",
+    "unknown_or_not_applicable_metric_treated_as_zero"
+  ]
+}

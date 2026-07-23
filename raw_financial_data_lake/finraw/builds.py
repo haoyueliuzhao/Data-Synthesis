@@ -80,6 +80,26 @@ BUILD_COLUMNS: dict[str, dict[str, str]] = {
         "promoted_fact_id": "TEXT",
         "qa_eligible": "INTEGER DEFAULT 0",
         "kg_eligible": "INTEGER DEFAULT 0",
+        "period_start": "TEXT",
+        "period_end": "TEXT",
+        "fiscal_year": "INTEGER",
+        "fiscal_quarter": "TEXT",
+        "currency": "TEXT",
+        "value_scale": "TEXT",
+        "source_field_name": "TEXT",
+        "statement_type": "TEXT",
+        "financial_scope_type": "TEXT",
+        "page_number": "INTEGER",
+        "row_index": "INTEGER",
+        "column_index": "INTEGER",
+        "extraction_metadata": "TEXT",
+        "evidence_sha256": "TEXT",
+    },
+    "candidate_fact_evidence": {
+        "unit_source_page": "INTEGER",
+        "unit_evidence_text": "TEXT",
+        "statement_source_page": "INTEGER",
+        "period_source_page": "INTEGER",
     },
     "source_documents": {
         "stable_document_id": "TEXT",
@@ -186,6 +206,38 @@ CREATE INDEX IF NOT EXISTS idx_source_documents_period ON source_documents(perio
 CREATE INDEX IF NOT EXISTS idx_source_documents_raw_object ON source_documents(raw_object_id);
 """
 
+DOCUMENT_CANDIDATE_EVIDENCE_SQL = """
+CREATE TABLE IF NOT EXISTS candidate_fact_evidence (
+    evidence_id         TEXT PRIMARY KEY,
+    candidate_id        TEXT REFERENCES candidate_facts(candidate_id),
+    build_id            TEXT,
+    raw_object_id       TEXT REFERENCES raw_objects(raw_object_id),
+    table_id            TEXT REFERENCES raw_extracted_tables(table_id),
+    page_number         INTEGER,
+    unit_source_page    INTEGER,
+    unit_evidence_text  TEXT,
+    statement_source_page INTEGER,
+    period_source_page  INTEGER,
+    statement_type      TEXT,
+    financial_scope_type TEXT,
+    row_index           INTEGER,
+    column_index        INTEGER,
+    source_field_name   TEXT,
+    raw_value_text      TEXT,
+    period_label        TEXT,
+    evidence_text       TEXT,
+    evidence_sha256     TEXT,
+    verification_method TEXT,
+    validation_status   TEXT,
+    validation_errors   TEXT,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_candidate_fact_evidence_candidate
+ON candidate_fact_evidence(candidate_id);
+CREATE INDEX IF NOT EXISTS idx_candidate_fact_evidence_object_page
+ON candidate_fact_evidence(raw_object_id, page_number);
+"""
+
 
 def make_build_id(prefix: str) -> str:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -193,7 +245,7 @@ def make_build_id(prefix: str) -> str:
 
 
 def ensure_build_schema(db: DBProtocol) -> None:
-    for sql_block in [MDM_SQL, SOURCE_DOCUMENTS_SQL]:
+    for sql_block in [MDM_SQL, SOURCE_DOCUMENTS_SQL, DOCUMENT_CANDIDATE_EVIDENCE_SQL]:
         for statement in sql_block.split(";"):
             statement = statement.strip()
             if statement:
