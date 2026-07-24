@@ -64,6 +64,9 @@ class MetadataDB:
             "ON source_entities(source_id, source_code)"
         )
         self._commit_if_needed()
+        from finraw.qa.evaluation.schema import ensure_evaluation_schema
+
+        ensure_evaluation_schema(self)
 
     def seed_sources(self) -> None:
         columns = [
@@ -326,6 +329,9 @@ class PostgresMetadataDB:
         with self.conn.cursor() as cur:
             cur.execute(sql)
         self._commit_if_needed()
+        from finraw.qa.evaluation.schema import ensure_evaluation_schema
+
+        ensure_evaluation_schema(self)
 
     def seed_sources(self) -> None:
         columns = [

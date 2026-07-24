@@ -949,6 +949,157 @@ CREATE TABLE IF NOT EXISTS qa_quality_checks (
             message TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+CREATE TABLE IF NOT EXISTS qa_evaluation_runs (
+            evaluation_run_id TEXT PRIMARY KEY,
+            qa_build_id TEXT NOT NULL,
+            rubric_version TEXT NOT NULL,
+            rubric_hash TEXT NOT NULL,
+            evaluation_config_hash TEXT NOT NULL,
+            judge_config_hash TEXT NOT NULL,
+            judge_manifest TEXT NOT NULL,
+            sample_manifest TEXT NOT NULL,
+            sample_manifest_hash TEXT NOT NULL,
+            calibration_version TEXT,
+            evaluation_mode TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at TEXT,
+            completed_at TEXT,
+            git_commit_sha TEXT,
+            notes TEXT NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_judge_calls (
+            judge_call_id TEXT PRIMARY KEY,
+            evaluation_run_id TEXT NOT NULL,
+            qa_id TEXT NOT NULL,
+            judge_role TEXT NOT NULL,
+            provider TEXT,
+            requested_model TEXT,
+            response_model TEXT,
+            prompt_hash TEXT,
+            response_hash TEXT,
+            input_view_hash TEXT NOT NULL,
+            scores TEXT NOT NULL,
+            fatal_flags TEXT NOT NULL,
+            issue_codes TEXT NOT NULL,
+            confidence REAL,
+            brief_justification TEXT NOT NULL,
+            telemetry TEXT NOT NULL,
+            status TEXT NOT NULL,
+            error_message TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(evaluation_run_id, qa_id, judge_role)
+        );
+CREATE TABLE IF NOT EXISTS qa_evaluation_items (
+            evaluation_item_id TEXT PRIMARY KEY,
+            evaluation_run_id TEXT NOT NULL,
+            qa_id TEXT NOT NULL,
+            deterministic_gate_status TEXT NOT NULL,
+            deterministic_gate_reasons TEXT NOT NULL,
+            dimension_scores TEXT NOT NULL,
+            subjective_quality_score REAL,
+            standalone_financial_value_score REAL,
+            dataset_role_value_score REAL NOT NULL,
+            coverage_contributions TEXT NOT NULL,
+            dataset_role_components TEXT NOT NULL,
+            judge_disagreement TEXT NOT NULL,
+            judge_confidence REAL,
+            fatal_flags TEXT NOT NULL,
+            confirmed_fatal_flags TEXT NOT NULL,
+            issue_codes TEXT NOT NULL,
+            decision TEXT NOT NULL,
+            decision_reasons TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(evaluation_run_id, qa_id)
+        );
+CREATE TABLE IF NOT EXISTS qa_human_reviews (
+            human_review_id TEXT PRIMARY KEY,
+            evaluation_run_id TEXT NOT NULL,
+            qa_id TEXT NOT NULL,
+            reviewer_id TEXT NOT NULL,
+            rubric_version TEXT NOT NULL,
+            dimension_scores TEXT NOT NULL,
+            fatal_flags TEXT NOT NULL,
+            decision TEXT NOT NULL,
+            reason_codes TEXT NOT NULL,
+            reviewed_at TEXT NOT NULL,
+            UNIQUE(evaluation_run_id, qa_id, reviewer_id)
+        );
+CREATE TABLE IF NOT EXISTS qa_perturbation_cases (
+            perturbation_id TEXT PRIMARY KEY,
+            source_qa_id TEXT NOT NULL,
+            perturbed_question TEXT NOT NULL,
+            perturbation_type TEXT NOT NULL,
+            expected_affected_dimensions TEXT NOT NULL,
+            expected_fatal_flags TEXT NOT NULL,
+            mutation_manifest TEXT NOT NULL,
+            status TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS qa_quality_releases (
+            quality_release_id TEXT PRIMARY KEY,
+            qa_build_id TEXT NOT NULL,
+            evaluation_run_id TEXT NOT NULL,
+            selection_policy_version TEXT NOT NULL,
+            target_size BIGINT NOT NULL,
+            distribution_contract TEXT NOT NULL,
+            quality_thresholds TEXT NOT NULL,
+            member_manifest_hash TEXT,
+            status TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+CREATE TABLE IF NOT EXISTS qa_quality_release_members (
+            release_member_id TEXT PRIMARY KEY,
+            quality_release_id TEXT NOT NULL,
+            qa_id TEXT NOT NULL,
+            selection_score REAL NOT NULL,
+            subjective_score REAL NOT NULL,
+            dataset_role_score REAL NOT NULL,
+            novelty_score REAL NOT NULL,
+            selection_stratum TEXT NOT NULL,
+            selection_reason TEXT NOT NULL,
+            is_selected INTEGER DEFAULT 0,
+            UNIQUE(quality_release_id, qa_id)
+        );
+CREATE TABLE IF NOT EXISTS qa_empirical_runs (
+            empirical_run_id TEXT PRIMARY KEY,
+            qa_build_ids TEXT NOT NULL,
+            evaluation_mode TEXT NOT NULL,
+            model_manifest TEXT NOT NULL,
+            sample_manifest TEXT NOT NULL,
+            config_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at TEXT,
+            completed_at TEXT,
+            notes TEXT NOT NULL
+        );
+CREATE TABLE IF NOT EXISTS qa_empirical_model_trials (
+            trial_id TEXT PRIMARY KEY,
+            empirical_run_id TEXT NOT NULL,
+            qa_build_id TEXT NOT NULL,
+            qa_id TEXT NOT NULL,
+            model_role TEXT NOT NULL,
+            provider TEXT,
+            requested_model TEXT NOT NULL,
+            response_model TEXT,
+            answer_text TEXT NOT NULL,
+            answer_payload TEXT NOT NULL,
+            match_status TEXT NOT NULL,
+            match_details TEXT NOT NULL,
+            prompt_hash TEXT NOT NULL,
+            response_hash TEXT,
+            telemetry TEXT NOT NULL,
+            status TEXT NOT NULL,
+            error_message TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(empirical_run_id, qa_id, model_role)
+        );
+CREATE INDEX IF NOT EXISTS idx_qaempirical_runs_status ON qa_empirical_runs(status, started_at);
+CREATE INDEX IF NOT EXISTS idx_qaempirical_trials_run_model ON qa_empirical_model_trials(empirical_run_id, model_role, match_status);
+CREATE INDEX IF NOT EXISTS idx_qaeval_runs_build_status ON qa_evaluation_runs(qa_build_id, status);
+CREATE INDEX IF NOT EXISTS idx_qaeval_calls_run_qa ON qa_judge_calls(evaluation_run_id, qa_id, status);
+CREATE INDEX IF NOT EXISTS idx_qaeval_items_run_decision ON qa_evaluation_items(evaluation_run_id, decision);
+CREATE INDEX IF NOT EXISTS idx_qaeval_reviews_run_qa ON qa_human_reviews(evaluation_run_id, qa_id);
+CREATE INDEX IF NOT EXISTS idx_qaeval_release_run ON qa_quality_releases(evaluation_run_id, status);
 CREATE TABLE IF NOT EXISTS qa_archives (
     archive_id          TEXT PRIMARY KEY,
     qa_build_id         TEXT NOT NULL REFERENCES qa_builds(qa_build_id),

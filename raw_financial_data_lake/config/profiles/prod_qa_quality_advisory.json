@@ -1,0 +1,108 @@
+{
+  "extends": "prod_greater_china_authoritative_full.json",
+  "qa": {
+    "quality_evaluation": {
+      "enabled": true,
+      "evaluation_mode": "advisory",
+      "maximum_concurrency": 32,
+      "llm": {
+        "provider": "deepseek_official",
+        "endpoint": "https://api.deepseek.com/v1/chat/completions",
+        "models_endpoint": "https://api.deepseek.com/models",
+        "model": "deepseek-v4-pro",
+        "fallback_models": [],
+        "auto_select_model": false,
+        "maximum_model_attempts": 1,
+        "preferred_model_patterns": [
+          "deepseek-v4-pro",
+          "deepseek-v4-flash",
+          "deepseek-chat"
+        ],
+        "api_key_env": "DEEPSEEK_API_KEY",
+        "timeout_seconds": 60,
+        "max_output_tokens": 1200,
+        "input_cost_per_million": 0.435,
+        "output_cost_per_million": 0.87,
+        "fallback_http_statuses": [
+          400,
+          403,
+          404,
+          429,
+          500,
+          502,
+          503
+        ],
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "judge_routing": {
+        "base_judges": [
+          "surface_financial_analyst",
+          "grounded_qa_auditor"
+        ],
+        "adjudicator": "adversarial_reviewer",
+        "secondary_review_scope": "all",
+        "total_score_disagreement_threshold": 12,
+        "dimension_disagreement_threshold": 2,
+        "minimum_confidence": 0.7,
+        "random_high_score_audit_ratio": 1.0
+      },
+      "calibration": {
+        "required": false,
+        "replacement_mode": "llm_secondary_review",
+        "calibration_set_version": null,
+        "minimum_human_review_items": 0,
+        "minimum_perturbation_pairs": 0,
+        "thresholds_are_calibrated": false
+      },
+      "judges": {
+        "surface_financial_analyst": {
+          "model": "deepseek-v4-pro",
+          "auto_select_model": false,
+          "fallback_models": [],
+          "maximum_model_attempts": 1
+        },
+        "grounded_qa_auditor": {
+          "model": "deepseek-v4-pro",
+          "auto_select_model": false,
+          "fallback_models": [],
+          "maximum_model_attempts": 1
+        },
+        "adversarial_reviewer": {
+          "model": "deepseek-v4-pro",
+          "auto_select_model": false,
+          "fallback_models": [],
+          "maximum_model_attempts": 1
+        }
+      },
+      "empirical_evaluation": {
+        "enabled": true,
+        "mode": "evidence_given",
+        "sample_seed": "deepseek-l3-smoke-v1",
+        "maximum_concurrency": 32,
+        "minimum_model_count": 2,
+        "supported_answer_types": [
+          "*"
+        ],
+        "models": [
+          {
+            "model_role": "deepseek_v4_pro",
+            "model": "deepseek-v4-pro",
+            "auto_select_model": false,
+            "fallback_models": [],
+            "maximum_model_attempts": 1
+          },
+          {
+            "model_role": "deepseek_v4_flash",
+            "model": "deepseek-v4-flash",
+            "auto_select_model": false,
+            "fallback_models": [],
+            "maximum_model_attempts": 1
+          }
+        ],
+        "max_contract_attempts": 3
+      }
+    }
+  }
+}

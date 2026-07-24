@@ -13,6 +13,15 @@ PURGE_CONFIRMATION = "PURGE_GENERATED_QA"
 
 # Child rows precede their logical parents so the same plan works for SQLite.
 QA_GENERATED_TABLES: tuple[str, ...] = (
+    "qa_empirical_model_trials",
+    "qa_empirical_runs",
+    "qa_quality_release_members",
+    "qa_quality_releases",
+    "qa_human_reviews",
+    "qa_evaluation_items",
+    "qa_judge_calls",
+    "qa_evaluation_runs",
+    "qa_perturbation_cases",
     "qa_distribution_labels",
     "qa_quality_checks",
     "qa_evidence_paths",

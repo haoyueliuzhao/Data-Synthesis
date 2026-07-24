@@ -225,7 +225,10 @@ class OpenAICompatibleJsonClient:
             if model and model not in output and _chat_model_candidate(model):
                 output.append(model)
 
-        add(_MODEL_SUCCESS_CACHE.get(self._cache_key(self.endpoint), ""))
+        # A cached success is only a routing hint when fallback/discovery is enabled.
+        # Strict model trials must never inherit another client's endpoint cache.
+        if self.auto_select_model or self.fallback_models:
+            add(_MODEL_SUCCESS_CACHE.get(self._cache_key(self.endpoint), ""))
         add(self.model)
         for model in self.fallback_models:
             add(model)

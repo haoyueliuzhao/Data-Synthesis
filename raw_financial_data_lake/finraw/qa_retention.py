@@ -35,7 +35,34 @@ CREATE INDEX IF NOT EXISTS idx_qa_archives_status
 
 
 QA_BUILD_TABLES: tuple[tuple[str, str], ...] = (
+    ("qa_empirical_model_trials", "qa_build_id = ?"),
+    (
+        "qa_empirical_runs",
+        "empirical_run_id IN (SELECT empirical_run_id FROM qa_empirical_model_trials WHERE qa_build_id = ?)",
+    ),
     ("qa_builds", "qa_build_id = ?"),
+    ("qa_evaluation_runs", "qa_build_id = ?"),
+    (
+        "qa_judge_calls",
+        "evaluation_run_id IN (SELECT evaluation_run_id FROM qa_evaluation_runs WHERE qa_build_id = ?)",
+    ),
+    (
+        "qa_evaluation_items",
+        "evaluation_run_id IN (SELECT evaluation_run_id FROM qa_evaluation_runs WHERE qa_build_id = ?)",
+    ),
+    (
+        "qa_human_reviews",
+        "evaluation_run_id IN (SELECT evaluation_run_id FROM qa_evaluation_runs WHERE qa_build_id = ?)",
+    ),
+    ("qa_quality_releases", "qa_build_id = ?"),
+    (
+        "qa_quality_release_members",
+        "quality_release_id IN (SELECT quality_release_id FROM qa_quality_releases WHERE qa_build_id = ?)",
+    ),
+    (
+        "qa_perturbation_cases",
+        "source_qa_id IN (SELECT qa_id FROM qa_samples WHERE qa_build_id = ?)",
+    ),
     ("qa_pattern_compilations", "qa_build_id = ?"),
     ("qa_compiled_bindings", "qa_build_id = ?"),
     ("qa_candidates", "qa_build_id = ?"),
@@ -51,6 +78,9 @@ QA_BUILD_TABLES: tuple[tuple[str, str], ...] = (
 
 
 def ensure_qa_retention_schema(db: DBProtocol) -> None:
+    from finraw.qa.evaluation.schema import ensure_evaluation_schema
+
+    ensure_evaluation_schema(db)
     for statement in QA_RETENTION_SCHEMA_SQL.split(";"):
         sql = statement.strip()
         if sql:
@@ -464,6 +494,38 @@ def _purge_archived_qa_build(db: DBProtocol, qa_build_id: str, archive_id: str) 
         )
 
     with db.transaction():
+        db.execute(
+            "DELETE FROM qa_empirical_model_trials WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+        db.execute(
+            "DELETE FROM qa_empirical_runs WHERE empirical_run_id NOT IN "
+            "(SELECT DISTINCT empirical_run_id FROM qa_empirical_model_trials)"
+        )
+        db.execute(
+            "DELETE FROM qa_quality_release_members WHERE quality_release_id IN "
+            "(SELECT quality_release_id FROM qa_quality_releases WHERE qa_build_id = ?)",
+            (qa_build_id,),
+        )
+        db.execute(
+            "DELETE FROM qa_quality_releases WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+        for table in ("qa_human_reviews", "qa_evaluation_items", "qa_judge_calls"):
+            db.execute(
+                f"DELETE FROM {table} WHERE evaluation_run_id IN "
+                "(SELECT evaluation_run_id FROM qa_evaluation_runs WHERE qa_build_id = ?)",
+                (qa_build_id,),
+            )
+        db.execute(
+            "DELETE FROM qa_evaluation_runs WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+        db.execute(
+            "DELETE FROM qa_perturbation_cases WHERE source_qa_id IN "
+            "(SELECT qa_id FROM qa_samples WHERE qa_build_id = ?)",
+            (qa_build_id,),
+        )
         db.execute(
             "DELETE FROM qa_evidence_paths WHERE qa_id IN "
             "(SELECT qa_id FROM qa_samples WHERE qa_build_id = ?)",

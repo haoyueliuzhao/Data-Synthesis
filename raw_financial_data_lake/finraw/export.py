@@ -49,6 +49,15 @@ EXPORT_TABLES = [
     "qa_distribution_labels",
     "qa_evidence_paths",
     "qa_quality_checks",
+    "qa_evaluation_runs",
+    "qa_judge_calls",
+    "qa_evaluation_items",
+    "qa_human_reviews",
+    "qa_perturbation_cases",
+    "qa_quality_releases",
+    "qa_quality_release_members",
+    "qa_empirical_runs",
+    "qa_empirical_model_trials",
     "qa_archives",
 ]
 

@@ -216,6 +216,83 @@
     }
   },
   "qa": {
+    "quality_evaluation": {
+      "enabled": false,
+      "evaluation_mode": "advisory",
+      "rubric_version": "financial_qa_quality.v1",
+      "sample_validation_statuses": [
+        "passed"
+      ],
+      "sample_seed": "qa-quality-v1",
+      "maximum_concurrency": 4,
+      "max_contract_attempts": 2,
+      "judge_routing": {
+        "base_judges": [
+          "surface_financial_analyst",
+          "grounded_qa_auditor"
+        ],
+        "adjudicator": "adversarial_reviewer",
+        "total_score_disagreement_threshold": 12,
+        "dimension_disagreement_threshold": 2,
+        "minimum_confidence": 0.7,
+        "random_high_score_audit_ratio": 0.1,
+        "secondary_review_scope": "boundary_and_audit"
+      },
+      "decision_thresholds": {
+        "accepted": 80,
+        "coverage_acceptance": 70,
+        "manual_review": 60,
+        "fatal_flag_requires_review": true
+      },
+      "calibration": {
+        "required": true,
+        "calibration_set_version": "qa_quality_calibration.v1",
+        "minimum_human_review_items": 200,
+        "minimum_perturbation_pairs": 100,
+        "thresholds_are_calibrated": false,
+        "replacement_mode": "human"
+      },
+      "release_selection": {
+        "subjective_weight": 0.7,
+        "dataset_role_weight": 0.2,
+        "novelty_weight": 0.1,
+        "minimum_subjective_score": 70,
+        "no_confirmed_fatal_flags": true
+      },
+      "llm": {
+        "provider": "openai_compatible",
+        "endpoint": "",
+        "models_endpoint": "",
+        "model": "",
+        "fallback_models": [],
+        "auto_select_model": false,
+        "maximum_model_attempts": 3,
+        "api_key_env": "DEEPSEEK_API_KEY",
+        "timeout_seconds": 60,
+        "max_output_tokens": 1200,
+        "fallback_http_statuses": [
+          400,
+          403,
+          404,
+          429,
+          500,
+          502,
+          503
+        ]
+      },
+      "judges": {},
+      "empirical_evaluation": {
+        "enabled": false,
+        "mode": "evidence_given",
+        "sample_seed": "qa-l3-v1",
+        "maximum_concurrency": 2,
+        "minimum_model_count": 2,
+        "supported_answer_types": [
+          "numeric"
+        ],
+        "models": []
+      }
+    },
     "benchmark_alignment": {
       "contamination_audit": {
         "embedding_review_threshold": 0.65,

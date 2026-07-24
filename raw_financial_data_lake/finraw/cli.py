@@ -54,6 +54,15 @@ from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
 from finraw.qa.export import export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
+from finraw.qa.evaluation import (
+    adjudicate_quality_run,
+    build_empirical_report,
+    run_empirical_model_evaluation,
+    export_manual_review_queue,
+    init_quality_evaluation,
+    quality_evaluation_report,
+    run_quality_evaluation,
+)
 from finraw.qa.finsearchcomp_alignment import (
     FINSEARCHCOMP_RAW_SHA256,
     FINSEARCHCOMP_REVISION,
@@ -427,6 +436,74 @@ def build_parser() -> argparse.ArgumentParser:
     qa_analysis = sub.add_parser("qa-analysis", help="Report QA semantic diversity and KG utilization for a QA build.")
     qa_analysis.add_argument("--qa-build-id", required=True)
     qa_analysis.add_argument("--output-dir", default="data/audit/qa_analysis")
+
+    qa_quality_init = sub.add_parser(
+        "qa-quality-init",
+        help="Create a version-pinned advisory financial QA quality evaluation run.",
+    )
+    qa_quality_init.add_argument("--qa-build-id", required=True)
+    qa_quality_init.add_argument("--limit", type=int)
+    qa_quality_init.add_argument(
+        "--evaluation-mode",
+        choices=("advisory", "calibration", "release_gate", "retrospective"),
+    )
+
+    qa_quality_evaluate = sub.add_parser(
+        "qa-quality-evaluate",
+        help="Run Surface and Grounded financial quality judges and aggregate results.",
+    )
+    qa_quality_evaluate.add_argument("--evaluation-run-id", required=True)
+    qa_quality_evaluate.add_argument(
+        "--output-dir", default="data/audit/qa_quality/report"
+    )
+
+    qa_quality_adjudicate = sub.add_parser(
+        "qa-quality-adjudicate",
+        help="Run the adversarial judge for disputed or boundary quality items.",
+    )
+    qa_quality_adjudicate.add_argument("--evaluation-run-id", required=True)
+    qa_quality_adjudicate.add_argument(
+        "--output-dir", default="data/audit/qa_quality/report"
+    )
+
+    qa_quality_empirical = sub.add_parser(
+        "qa-quality-empirical",
+        help="Run evidence-given L3 trials with multiple pinned respondent models.",
+    )
+    qa_quality_empirical.add_argument(
+        "--qa-build-id", action="append", required=True
+    )
+    qa_quality_empirical.add_argument("--limit", type=int, default=12)
+    qa_quality_empirical.add_argument(
+        "--output-dir", default="data/audit/qa_quality/empirical"
+    )
+
+    qa_quality_empirical_report = sub.add_parser(
+        "qa-quality-empirical-report",
+        help="Rebuild a persisted L3 empirical evaluation report.",
+    )
+    qa_quality_empirical_report.add_argument("--empirical-run-id", required=True)
+    qa_quality_empirical_report.add_argument(
+        "--output-dir", default="data/audit/qa_quality/empirical"
+    )
+
+    qa_quality_report = sub.add_parser(
+        "qa-quality-report",
+        help="Rebuild a reproducible financial QA quality and slice report.",
+    )
+    qa_quality_report.add_argument("--evaluation-run-id", required=True)
+    qa_quality_report.add_argument(
+        "--output-dir", default="data/audit/qa_quality/report"
+    )
+
+    qa_quality_review = sub.add_parser(
+        "qa-quality-review-export",
+        help="Export a blind human-review queue for disputed quality items.",
+    )
+    qa_quality_review.add_argument("--evaluation-run-id", required=True)
+    qa_quality_review.add_argument(
+        "--output-dir", default="data/audit/qa_quality/review"
+    )
 
     freeze_finsearchcomp = sub.add_parser(
         "freeze-finsearchcomp",
@@ -1044,6 +1121,49 @@ def main() -> None:
         elif args.command == "qa-analysis":
             report = build_qa_diversity_report(
                 db, args.qa_build_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-init":
+            report = init_quality_evaluation(
+                db,
+                config,
+                args.qa_build_id,
+                limit=args.limit,
+                evaluation_mode=args.evaluation_mode,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-evaluate":
+            report = run_quality_evaluation(
+                db, args.evaluation_run_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-adjudicate":
+            report = adjudicate_quality_run(
+                db, args.evaluation_run_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-empirical":
+            report = run_empirical_model_evaluation(
+                db,
+                config,
+                args.qa_build_id,
+                limit=args.limit,
+                output_dir=args.output_dir,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-empirical-report":
+            report = build_empirical_report(
+                db, args.empirical_run_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-report":
+            report = quality_evaluation_report(
+                db, args.evaluation_run_id, output_dir=args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-review-export":
+            report = export_manual_review_queue(
+                db, args.evaluation_run_id, args.output_dir
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "freeze-finsearchcomp":

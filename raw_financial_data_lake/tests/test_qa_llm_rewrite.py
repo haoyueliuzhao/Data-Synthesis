@@ -711,3 +711,53 @@ def test_protected_rewrite_allows_single_imperative_financial_task():
     )
 
     assert result["passed"] is True
+
+
+
+def test_llm_client_strict_model_does_not_reuse_endpoint_success_cache(monkeypatch):
+    monkeypatch.setenv("FINRAW_TEST_API_KEY", "secret")
+    post_models = []
+
+    class Response:
+        status = 200
+
+        def __init__(self, model):
+            self.model = model
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "id": "response",
+                    "model": self.model,
+                    "choices": [{"message": {"content": json.dumps({"ok": True})}}],
+                    "usage": {"prompt_tokens": 2, "completion_tokens": 1},
+                }
+            ).encode()
+
+    def fake_urlopen(request, timeout):
+        body = json.loads(request.data.decode())
+        post_models.append(body["model"])
+        return Response(body["model"])
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    common = {
+        "endpoint": "https://strict-pinning.test/v1/chat/completions",
+        "api_key_env": "FINRAW_TEST_API_KEY",
+        "auto_select_model": False,
+        "fallback_models": [],
+        "maximum_model_attempts": 1,
+    }
+    OpenAICompatibleJsonClient({**common, "model": "model-pro"}).complete_json("one")
+    second = OpenAICompatibleJsonClient(
+        {**common, "model": "model-flash"}
+    ).complete_json("two")
+
+    assert post_models == ["model-pro", "model-flash"]
+    assert second.telemetry["response_model"] == "model-flash"
+    assert second.telemetry["model_fallback_used"] is False
