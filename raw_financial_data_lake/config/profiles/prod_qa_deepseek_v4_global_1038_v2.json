@@ -1,0 +1,17 @@
+{
+  "extends": "prod_qa_deepseek_v4_global_1038.json",
+  "qa": {
+    "quality_gate": {
+      "minimum_generation_pipeline_samples": {
+        "__replace__": true,
+        "automatic_pattern_mining": 130,
+        "typed_edge_walk": 8
+      },
+      "minimum_generation_pipeline_ratios": {
+        "__replace__": true,
+        "automatic_pattern_mining": 0.12,
+        "typed_edge_walk": 0.008
+      }
+    }
+  }
+}

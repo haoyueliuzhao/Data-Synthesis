@@ -178,6 +178,135 @@ def export_qa_jsonl(
     return manifest
 
 
+def combine_qa_export_manifests(
+    manifest_paths: list[str],
+    output_dir: str,
+    release_id: str,
+) -> dict[str, Any]:
+    """Combine immutable regional QA exports into one checksummed release."""
+    if len(manifest_paths) < 2:
+        raise ValueError("A combined QA release requires at least two source manifests")
+    if not release_id.strip():
+        raise ValueError("release_id must not be empty")
+    out = Path(output_dir) / release_id
+    if out.exists():
+        raise FileExistsError(f"Combined QA release already exists: {out}")
+
+    sources: list[dict[str, Any]] = []
+    kg_build_ids: set[str] = set()
+    qa_build_ids: set[str] = set()
+    artifact_rows: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    source_sample_count = 0
+    source_split_counts: Counter[str] = Counter()
+
+    for raw_manifest_path in manifest_paths:
+        manifest_path = Path(raw_manifest_path)
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        qa_build_id = str(manifest.get("qa_build_id") or "")
+        kg_build_id = str(manifest.get("kg_build_id") or "")
+        if not qa_build_id or not kg_build_id:
+            raise ValueError(f"Invalid source QA manifest: {manifest_path}")
+        if qa_build_id in qa_build_ids:
+            raise ValueError(f"Duplicate source QA build: {qa_build_id}")
+        qa_build_ids.add(qa_build_id)
+        kg_build_ids.add(kg_build_id)
+        source_sample_count += int(manifest.get("sample_count") or 0)
+        source_split_counts.update(
+            {
+                str(key): int(value)
+                for key, value in manifest.get("split_counts", {}).items()
+            }
+        )
+        sources.append(
+            {
+                "qa_build_id": qa_build_id,
+                "kg_build_id": kg_build_id,
+                "manifest_path": str(manifest_path),
+                "manifest_sha256": _sha256(manifest_path),
+                "sample_count": int(manifest.get("sample_count") or 0),
+            }
+        )
+        for artifact_kind, split_files in manifest.get("files", {}).items():
+            for split, file_info in split_files.items():
+                path = Path(str(file_info["path"]))
+                expected_sha256 = str(file_info.get("sha256") or "")
+                if _sha256(path) != expected_sha256:
+                    raise ValueError(f"Source artifact checksum mismatch: {path}")
+                rows = _read_jsonl(path)
+                expected_rows = int(file_info.get("rows") or 0)
+                if len(rows) != expected_rows:
+                    raise ValueError(
+                        f"Source artifact row mismatch: {path}: "
+                        f"expected={expected_rows}, actual={len(rows)}"
+                    )
+                artifact_rows.setdefault(str(artifact_kind), {}).setdefault(
+                    str(split), []
+                ).extend(rows)
+
+    if len(kg_build_ids) != 1:
+        raise ValueError(
+            "Combined QA release sources must use one pinned KG build: "
+            f"{sorted(kg_build_ids)}"
+        )
+
+    benchmark_rows = [
+        row for rows in artifact_rows.get("benchmark", {}).values() for row in rows
+    ]
+    benchmark_ids = [str(row.get("id") or "") for row in benchmark_rows]
+    if (
+        len(set(benchmark_ids)) != len(benchmark_ids)
+        or any(not value for value in benchmark_ids)
+    ):
+        raise ValueError("Combined benchmark contains missing or duplicate QA IDs")
+    if len(benchmark_rows) != source_sample_count:
+        raise ValueError(
+            "Combined benchmark sample count does not match source manifests: "
+            f"expected={source_sample_count}, actual={len(benchmark_rows)}"
+        )
+
+    sources.sort(key=lambda row: str(row["qa_build_id"]))
+    files: dict[str, dict[str, dict[str, Any]]] = {}
+    for artifact_kind, split_rows in sorted(artifact_rows.items()):
+        for split, rows in sorted(split_rows.items()):
+            path = out / artifact_kind / f"{split}.jsonl"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            ordered_rows = sorted(rows, key=_combined_row_sort_key)
+            with path.open("w", encoding="utf-8") as handle:
+                for row in ordered_rows:
+                    handle.write(
+                        json.dumps(
+                            row,
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            default=str,
+                        )
+                        + "\n"
+                    )
+            files.setdefault(artifact_kind, {})[split] = _file_info(
+                path, len(ordered_rows)
+            )
+
+    manifest = {
+        "release_id": release_id,
+        "release_type": "combined_immutable_qa_export",
+        "kg_build_id": next(iter(kg_build_ids)),
+        "qa_build_ids": sorted(qa_build_ids),
+        "source_manifests": sources,
+        "sample_count": source_sample_count,
+        "split_counts": dict(sorted(source_split_counts.items())),
+        "sft_allowed_splits": ["train", "train_complex"],
+        "files": files,
+    }
+    manifest_path = out / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True, default=str)
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest["manifest"] = str(manifest_path)
+    return manifest
+
+
 def _file_info(path: Path, row_count: int) -> dict[str, Any]:
     import hashlib
 
@@ -191,6 +320,42 @@ def _file_info(path: Path, row_count: int) -> dict[str, Any]:
         "bytes": path.stat().st_size,
         "sha256": digest.hexdigest(),
     }
+
+
+def _sha256(path: Path) -> str:
+    import hashlib
+
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            value = json.loads(line)
+            if not isinstance(value, dict):
+                raise ValueError(f"Expected JSON object at {path}:{line_number}")
+            rows.append(value)
+    return rows
+
+
+def _combined_row_sort_key(row: dict[str, Any]) -> tuple[str, str, str]:
+    metadata = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+    messages = row.get("messages") if isinstance(row.get("messages"), list) else []
+    question = str(row.get("question") or "")
+    if not question and messages and isinstance(messages[0], dict):
+        question = str(messages[0].get("content") or "")
+    return (
+        str(row.get("id") or metadata.get("qa_build_id") or ""),
+        str(metadata.get("qa_group_id") or ""),
+        question,
+    )
 
 
 def _decode(row: dict[str, Any]) -> dict[str, Any]:

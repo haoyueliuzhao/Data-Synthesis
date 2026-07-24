@@ -342,6 +342,24 @@ def test_extra_evidence_nodes_do_not_expand_shared_source_fanout(tmp_path):
     assert fact_nodes == [f"fact:{fact_id}@@{kg_build}"]
 
 
+def test_extra_evidence_nodes_exclude_orphans_but_keep_connected_nodes(tmp_path):
+    db, kg_build, _ = _graph_fixture(tmp_path)
+    fact_id = "fact_A_US_revenue_2023"
+    source_node = f"source:sec_companyfacts@@{kg_build}"
+    orphan_node = f"raw_object:orphan@@{kg_build}"
+
+    evidence = _kg_path_from_graph(
+        db,
+        kg_build,
+        fact_ids=[fact_id],
+        extra_node_ids=[source_node, orphan_node],
+    )
+
+    assert source_node in evidence["evidence_node_ids"]
+    assert orphan_node not in evidence["evidence_node_ids"]
+    assert len(evidence["evidence_components"]) == 1
+
+
 def test_graph_shape_is_linear_for_large_evidence_star():
     edges = [
         {"src": "center", "dst": f"leaf_{index}"}

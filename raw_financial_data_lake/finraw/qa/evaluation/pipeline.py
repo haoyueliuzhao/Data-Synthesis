@@ -19,7 +19,7 @@ from finraw.qa.evaluation.aggregation import (
 from finraw.qa.evaluation.contracts import EVALUATION_SYSTEM_VERSION, RUBRIC_VERSION
 from finraw.qa.evaluation.dataset_metrics import (
     compute_dataset_role_values,
-    resolve_dataset_role_contract,
+    select_dataset_role_contract,
 )
 from finraw.qa.evaluation.input_views import load_evaluation_bundles
 from finraw.qa.evaluation.judge import (
@@ -146,8 +146,14 @@ def init_quality_evaluation(
         raise RuntimeError(f"QA build {qa_build_id} has no eligible samples to evaluate")
 
     evaluation_run_id = _new_run_id()
-    dataset_role_contract = resolve_dataset_role_contract(
-        quality_config.get("dataset_role_contract") or {}
+    contract_bundles = load_evaluation_bundles(
+        db,
+        qa_build_id,
+        qa_ids=[str(row["qa_id"]) for row in sample_rows],
+    )
+    dataset_role_contract = select_dataset_role_contract(
+        quality_config,
+        contract_bundles,
     )
     dataset_role_contract_hash = _hash(dataset_role_contract)
     sample_manifest = {

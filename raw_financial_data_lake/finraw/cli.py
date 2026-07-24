@@ -52,7 +52,7 @@ from finraw.kg_builder import build_kg, export_kg_jsonl, kg_quality_report
 from finraw.kg_retention import enforce_kg_retention
 from finraw.kg_query import query_derived_facts, query_facts, query_neighbors
 from finraw.metric_ontology import refresh_metric_ontology
-from finraw.qa.export import export_qa_jsonl
+from finraw.qa.export import combine_qa_export_manifests, export_qa_jsonl
 from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.evaluation import (
     adjudicate_quality_run,
@@ -433,6 +433,19 @@ def build_parser() -> argparse.ArgumentParser:
     qa_export = sub.add_parser("export-qa-jsonl", help="Export passed QA as benchmark, SFT, and trace-seed JSONL.")
     qa_export.add_argument("--qa-build-id", required=True)
     qa_export.add_argument("--output-dir", default="data/qa_exports")
+
+    qa_release_export = sub.add_parser(
+        "export-qa-release",
+        help="Combine checksummed regional QA manifests into one immutable release.",
+    )
+    qa_release_export.add_argument(
+        "--qa-manifest",
+        action="append",
+        required=True,
+        help="Source QA export manifest. Repeat for each regional build.",
+    )
+    qa_release_export.add_argument("--release-id", required=True)
+    qa_release_export.add_argument("--output-dir", default="data/qa_exports")
 
     qa_analysis = sub.add_parser("qa-analysis", help="Report QA semantic diversity and KG utilization for a QA build.")
     qa_analysis.add_argument("--qa-build-id", required=True)
@@ -1138,6 +1151,13 @@ def main() -> None:
         elif args.command == "export-qa-jsonl":
             report = export_qa_jsonl(db, args.qa_build_id, args.output_dir)
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "export-qa-release":
+            report = combine_qa_export_manifests(
+                args.qa_manifest,
+                args.output_dir,
+                args.release_id,
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "qa-analysis":
             report = build_qa_diversity_report(
                 db, args.qa_build_id, output_dir=args.output_dir
@@ -1149,7 +1169,6 @@ def main() -> None:
                 config,
                 args.qa_build_id,
                 limit=args.limit,
-                mode=args.mode,
                 evaluation_mode=args.evaluation_mode,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
@@ -1169,6 +1188,7 @@ def main() -> None:
                 config,
                 args.qa_build_id,
                 limit=args.limit,
+                mode=args.mode,
                 output_dir=args.output_dir,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))

@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from finraw.db.client import MetadataDB
-from finraw.llm_client import JsonCompletion
+from finraw.llm_client import JsonCompletion, LLMClientError
 from finraw.qa.answer_schema_registry import (
     match_answer,
     normalize_model_answer,
@@ -86,6 +86,9 @@ def test_quality_evaluation_dual_judge_and_report(tmp_path: Path) -> None:
 
     assert report["population"]["sample_count"] == 1
     assert report["population"]["judge_call_success_count"] == 2
+    assert report["dataset_role_contract"]["contract_id"] == (
+        "finsearchcomp_t2_t3_global_release.v1"
+    )
     assert report["decision_counts"] == {"accepted": 1}
     assert report["subjective_quality"]["mean"] == pytest.approx(86.25)
     assert report["telemetry"]["total_tokens"] == 300
@@ -1448,6 +1451,47 @@ def test_l3_separates_api_success_from_json_contract_success(
     assert report["overall"]["end_to_end_accuracy"] == 0.0
     assert report["status"] == "partial"
     db.close()
+
+def test_l3_http_success_survives_json_contract_exception(
+    tmp_path: Path,
+) -> None:
+    db = _db_with_sample(tmp_path, failed_l0=False)
+
+    class InvalidJsonClient:
+        def __init__(self, model_config: dict[str, Any]):
+            self.model = model_config["model"]
+
+        def complete_json(
+            self,
+            prompt: str,
+            *,
+            temperature: float,
+        ) -> JsonCompletion:
+            raise LLMClientError(
+                "All configured LLM models failed",
+                {
+                    "provider": "fixture",
+                    "model_requested": self.model,
+                    "http_success": True,
+                    "http_status": 200,
+                    "json_valid": False,
+                    "error_type": "JSONDecodeError",
+                },
+            )
+
+    report = run_empirical_model_evaluation(
+        db,
+        _l3_mode_config("evidence_only"),
+        ["qa_build_eval"],
+        limit=1,
+        client_factory=InvalidJsonClient,
+    )
+
+    assert report["overall"]["api_call_success_rate"] == 1.0
+    assert report["overall"]["contract_success_rate"] == 0.0
+    assert report["overall"]["end_to_end_accuracy"] == 0.0
+    db.close()
+
 
 def test_l3_semantic_correctness_is_separate_from_unit_currency(
     tmp_path: Path,

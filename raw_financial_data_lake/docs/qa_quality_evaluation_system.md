@@ -88,6 +88,20 @@ penalizes saturation; it does not treat a singleton as inherently valuable.
 The resolved contract and its hash are pinned in every evaluation run. This score
 cannot rescue an invalid financial question or a confirmed fatal defect.
 
+## 4.1 Regional contracts and language identity
+
+An evaluation run still pins one `qa_build_id`, so Dataset Role V2.1 resolves the
+contract from the build's actual market pool:
+
+- Global: T2 119/203, T3 84/203; English 80%, Chinese 15%, mixed 5%;
+- Greater China: T2 100/188, T3 88/188; Chinese 65%, English 20%, mixed 15%;
+- Combined: the four official market-task cells and both market-language grids.
+
+The resolved contract and hash are immutable run metadata. `bilingual`,
+`mixed-language`, `zh_en`, and `en_zh` are canonicalized to `mixed` before both
+scoring and release selection. A future multi-build evaluation run can use the
+Combined contract without changing these cell semantics.
+
 ## 5. L2 judge views
 
 ### Surface Financial Analyst
@@ -255,8 +269,20 @@ correctness failures.
 `qa-quality-release` selects only `accepted` or `accepted_for_coverage` samples
 from `train` and `train_complex`. It independently rechecks the immutable sample
 manifest, deterministic status, Dataset Role eligibility, subjective threshold,
-and confirmed fatal flags. Advisory runs create `draft_advisory`; production
-`release_gate` runs fail closed unless human-calibrated thresholds are frozen.
+and confirmed fatal flags.
+
+Selection V2 is quota constrained rather than a global Top-N. It converts every
+hard target distribution to deterministic integer counts using largest
+remainders, then fills scarce task-language-pipeline intersections before using
+quality score as the tie-breaker. The release report records target, eligible,
+selected, and unmet counts for every cell. It also requires at least 1.3 eligible
+Typed Walk candidates per selected Typed Walk slot by default. A quota or supply
+shortfall produces `draft_partial` in advisory mode or `partial` in a calibrated
+release gate; imbalance is never silently published.
+
+The current pilot pipeline contract is Fact 30%, Derived 25%, Static Pattern 25%,
+Automatic Mining 15%, and Typed Walk 5%. The 5% Walk target should only be raised
+when its candidate supply repeatedly clears the configured buffer.
 
 ```bash
 python -m finraw.cli --config CONFIG qa-quality-release \

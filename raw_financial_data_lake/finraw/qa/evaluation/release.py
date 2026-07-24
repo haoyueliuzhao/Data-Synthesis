@@ -3,18 +3,20 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from finraw.db.client import DBProtocol
+from finraw.qa.evaluation.dataset_metrics import dataset_role_features
 from finraw.qa.evaluation.input_views import load_evaluation_bundles
 from finraw.qa.evaluation.schema import ensure_evaluation_schema
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.store import insert_rows, json_value
 
 
-SELECTION_POLICY_VERSION = "qa_quality_release_selection.v1"
+SELECTION_POLICY_VERSION = "qa_quality_release_selection.v2"
 RELEASE_DECISIONS = frozenset({"accepted", "accepted_for_coverage"})
 TRAINING_SPLITS = frozenset({"train", "train_complex"})
 
@@ -122,6 +124,7 @@ def build_quality_release(
                 "dataset_role_score": dataset_role,
                 "novelty_score": novelty,
                 "selection_stratum": _selection_stratum(bundle),
+                "distribution_features": dataset_role_features(bundle),
                 "eligible": not reasons,
                 "reasons": reasons or ["all_release_gates_passed"],
             }
@@ -141,10 +144,19 @@ def build_quality_release(
     if requested_target is not None and requested_target < 0:
         raise ValueError("target_size must be zero or positive")
     effective_target = int(requested_target or len(eligible))
-    selected = eligible[:effective_target]
+    distribution_contract = (run.get("notes") or {}).get(
+        "dataset_role_contract", {}
+    )
+    quota_result = _select_with_distribution_quotas(
+        eligible,
+        distribution_contract,
+        effective_target,
+        selection,
+    )
+    selected = quota_result["selected"]
     selected_ids = {row["qa_id"] for row in selected}
     selection_ranks = {
-        row["qa_id"]: rank for rank, row in enumerate(eligible, start=1)
+        row["qa_id"]: rank for rank, row in enumerate(selected, start=1)
     }
 
     quality_release_id = _release_id()
@@ -168,6 +180,14 @@ def build_quality_release(
                     "selected": is_selected,
                     "gate_reasons": row["reasons"],
                     "selection_rank": selection_ranks.get(row["qa_id"]),
+                    "quota_selection_status": (
+                        "selected"
+                        if is_selected
+                        else "eligible_not_selected_by_quota"
+                        if row["eligible"]
+                        else "ineligible"
+                    ),
+                    "distribution_features": row["distribution_features"],
                 },
                 "is_selected": is_selected,
             }
@@ -178,6 +198,7 @@ def build_quality_release(
             "qa_id": row["qa_id"],
             "selection_score": row["selection_score"],
             "selection_stratum": row["selection_stratum"],
+            "distribution_features": row["distribution_features"],
         }
         for row in selected
     ]
@@ -186,6 +207,8 @@ def build_quality_release(
         calibrated,
         len(selected_ids),
         effective_target,
+        quota_satisfied=bool(quota_result["quota_satisfied"]),
+        supply_preflight_passed=bool(quota_result["supply_preflight_passed"]),
     )
     release_row = {
         "quality_release_id": quality_release_id,
@@ -193,9 +216,7 @@ def build_quality_release(
         "evaluation_run_id": evaluation_run_id,
         "selection_policy_version": SELECTION_POLICY_VERSION,
         "target_size": effective_target,
-        "distribution_contract": (run.get("notes") or {}).get(
-            "dataset_role_contract", {}
-        ),
+        "distribution_contract": distribution_contract,
         "quality_thresholds": {
             "decision_thresholds": quality_config.get("decision_thresholds") or {},
             "release_selection": selection,
@@ -231,11 +252,23 @@ def build_quality_release(
         "decision_counts": _counts(items, "decision"),
         "selected_split_counts": _selected_split_counts(selected_ids, bundles),
         "exclusion_reason_counts": _reason_counts(assessed),
+        "distribution_quota_audit": {
+            key: value
+            for key, value in quota_result.items()
+            if key != "selected"
+        },
         "selection_policy": {
             "release_decisions": sorted(RELEASE_DECISIONS),
             "training_splits": sorted(TRAINING_SPLITS),
             "minimum_subjective_score": minimum_subjective,
             "weights": weights,
+            "distribution_quota_enforced": bool(
+                selection.get("enforce_distribution_quotas", False)
+            ),
+            "hard_distribution_names": quota_result["hard_distribution_names"],
+            "minimum_candidate_multiplier": selection.get(
+                "minimum_candidate_multiplier"
+            ) or {"typed_edge_walk": 1.3},
             "fail_closed": True,
         },
     }
@@ -340,15 +373,200 @@ def _selection_stratum(bundle: dict[str, Any]) -> str:
     )
 
 
+def _select_with_distribution_quotas(
+    eligible: list[dict[str, Any]],
+    contract: dict[str, Any],
+    target_size: int,
+    selection: dict[str, Any],
+) -> dict[str, Any]:
+    enforce = bool(selection.get("enforce_distribution_quotas", False))
+    distributions_by_name = {
+        str(row.get("name")): row
+        for row in contract.get("target_distributions") or []
+    }
+    hard_names = [
+        str(value)
+        for value in contract.get("release_hard_distributions") or []
+    ]
+    unknown = sorted(set(hard_names) - set(distributions_by_name))
+    if unknown:
+        raise ValueError("Unknown hard release distributions: " + ",".join(unknown))
+    hard = [distributions_by_name[name] for name in hard_names]
+    quotas = {
+        str(row["name"]): _largest_remainder_counts(
+            {str(key): float(value) for key, value in row["shares"].items()},
+            target_size,
+        )
+        for row in hard
+    }
+    supply = {
+        str(row["name"]): Counter(
+            _feature_key(candidate["distribution_features"], row["fields"])
+            for candidate in eligible
+        )
+        for row in hard
+    }
+    preflight = _pipeline_supply_preflight(
+        quotas,
+        supply,
+        selection.get("minimum_candidate_multiplier") or {
+            "typed_edge_walk": 1.3
+        },
+    )
+
+    if not enforce or not hard:
+        selected = eligible[:target_size]
+    else:
+        remaining = {
+            name: dict(values) for name, values in quotas.items()
+        }
+        pool = list(eligible)
+        selected = []
+        while pool and len(selected) < target_size:
+            feasible = [
+                row
+                for row in pool
+                if all(
+                    remaining[str(distribution["name"])].get(
+                        _feature_key(
+                            row["distribution_features"],
+                            distribution["fields"],
+                        ),
+                        0,
+                    )
+                    > 0
+                    for distribution in hard
+                )
+            ]
+            if not feasible:
+                break
+            availability = {
+                str(distribution["name"]): Counter(
+                    _feature_key(row["distribution_features"], distribution["fields"])
+                    for row in feasible
+                )
+                for distribution in hard
+            }
+
+            def priority(row: dict[str, Any]) -> tuple[float, float, str]:
+                pressure = 0.0
+                for distribution in hard:
+                    name = str(distribution["name"])
+                    key = _feature_key(
+                        row["distribution_features"], distribution["fields"]
+                    )
+                    pressure += remaining[name].get(key, 0) / max(
+                        availability[name].get(key, 0), 1
+                    )
+                return (-pressure, -float(row["selection_score"]), row["qa_id"])
+
+            chosen = min(feasible, key=priority)
+            selected.append(chosen)
+            pool.remove(chosen)
+            for distribution in hard:
+                name = str(distribution["name"])
+                key = _feature_key(
+                    chosen["distribution_features"], distribution["fields"]
+                )
+                remaining[name][key] -= 1
+
+    selected_counts = {
+        str(row["name"]): dict(
+            sorted(
+                Counter(
+                    _feature_key(candidate["distribution_features"], row["fields"])
+                    for candidate in selected
+                ).items()
+            )
+        )
+        for row in hard
+    }
+    unmet: dict[str, dict[str, int]] = {}
+    for name, target_counts in quotas.items():
+        gaps = {
+            key: count - int(selected_counts.get(name, {}).get(key, 0))
+            for key, count in target_counts.items()
+            if int(selected_counts.get(name, {}).get(key, 0)) != count
+        }
+        if gaps:
+            unmet[name] = gaps
+    quota_satisfied = len(selected) >= target_size and (not enforce or not unmet)
+    return {
+        "selected": selected,
+        "enforced": enforce,
+        "hard_distribution_names": hard_names,
+        "target_counts": quotas,
+        "eligible_supply_counts": {
+            name: dict(sorted(values.items())) for name, values in supply.items()
+        },
+        "selected_counts": selected_counts,
+        "unmet_counts": unmet,
+        "quota_satisfied": quota_satisfied,
+        "supply_preflight": preflight,
+        "supply_preflight_passed": all(
+            row["passed"] for row in preflight.values()
+        ),
+    }
+
+
+def _largest_remainder_counts(
+    shares: dict[str, float], target_size: int
+) -> dict[str, int]:
+    raw = {key: value * target_size for key, value in shares.items()}
+    counts = {key: int(value) for key, value in raw.items()}
+    remainder = target_size - sum(counts.values())
+    order = sorted(shares, key=lambda key: (-(raw[key] - counts[key]), key))
+    for key in order[:remainder]:
+        counts[key] += 1
+    return dict(sorted(counts.items()))
+
+
+def _pipeline_supply_preflight(
+    quotas: dict[str, dict[str, int]],
+    supply: dict[str, Counter[str]],
+    minimum_multipliers: dict[str, Any],
+) -> dict[str, Any]:
+    output = {}
+    pipeline_quotas = quotas.get("generation_pipeline") or {}
+    pipeline_supply = supply.get("generation_pipeline") or Counter()
+    for pipeline, raw_multiplier in sorted(minimum_multipliers.items()):
+        target = int(pipeline_quotas.get(str(pipeline), 0))
+        available = int(pipeline_supply.get(str(pipeline), 0))
+        multiplier = max(float(raw_multiplier), 1.0)
+        observed = available / target if target else None
+        output[str(pipeline)] = {
+            "target_count": target,
+            "eligible_count": available,
+            "minimum_candidate_multiplier": multiplier,
+            "observed_candidate_multiplier": (
+                round(observed, 6) if observed is not None else None
+            ),
+            "passed": target == 0 or available >= target * multiplier,
+        }
+    return output
+
+
+def _feature_key(features: dict[str, str], fields: list[str]) -> str:
+    return "|".join(str(features.get(str(field)) or "unknown") for field in fields)
+
+
 def _release_status(
     mode: str,
     calibrated: bool,
     selected_count: int,
     target_size: int,
+    *,
+    quota_satisfied: bool,
+    supply_preflight_passed: bool,
 ) -> str:
+    complete = (
+        selected_count >= target_size
+        and quota_satisfied
+        and supply_preflight_passed
+    )
     if mode != "release_gate" or not calibrated:
-        return "draft_advisory"
-    return "ready" if selected_count >= target_size else "partial"
+        return "draft_advisory" if complete else "draft_partial"
+    return "ready" if complete else "partial"
 
 
 def _selected_split_counts(
@@ -410,6 +628,8 @@ def _write_report(
                 f"- Selected: {report['selected_count']} / "
                 f"{report['target_size']}",
                 f"- Manifest hash: {report['member_manifest_hash']}",
+                f"- Distribution quota satisfied: {report['distribution_quota_audit']['quota_satisfied']}",
+                f"- Candidate supply preflight: {report['distribution_quota_audit']['supply_preflight_passed']}",
                 "",
                 "Only accepted training samples that pass all deterministic, "
                 "fatal-flag, subjective-score, and Dataset Role gates are selected.",

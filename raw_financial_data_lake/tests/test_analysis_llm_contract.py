@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+import pytest
+
 from finraw.analysis.claims import build_claim_plan
 from finraw.analysis.discourse import default_discourse_plan, render_analysis_text
 from finraw.analysis.generator import (
@@ -544,6 +546,57 @@ def test_shared_llm_client_records_telemetry_without_prompt_response_or_key(
     assert "private compact evidence" not in serialized
     assert secret not in serialized
     assert completion.telemetry["estimated_cost"] is None
+
+
+def test_shared_llm_client_preserves_http_success_on_invalid_json(
+    monkeypatch,
+):
+    import json
+    import urllib.request
+
+    from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
+
+    monkeypatch.setenv("FINRAW_TEST_API_KEY", "test-secret-not-for-storage")
+
+    class Response:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "id": "response_invalid_json",
+                    "model": "model-test",
+                    "choices": [{"message": {"content": "not-json"}}],
+                }
+            ).encode()
+
+    monkeypatch.setattr(
+        urllib.request,
+        "urlopen",
+        lambda request, timeout: Response(),
+    )
+    client = OpenAICompatibleJsonClient(
+        {
+            "endpoint": "https://example.test/v1/chat/completions",
+            "model": "model-test",
+            "api_key_env": "FINRAW_TEST_API_KEY",
+            "maximum_model_attempts": 1,
+        }
+    )
+
+    with pytest.raises(LLMClientError) as caught:
+        client.complete_json("return json")
+
+    assert caught.value.telemetry["http_success"] is True
+    assert caught.value.telemetry["json_valid"] is False
+    assert caught.value.telemetry["http_status"] == 200
+    assert caught.value.telemetry["error_type"] == "JSONDecodeError"
 
 
 def test_temporal_holdout_hash_includes_component_identity():

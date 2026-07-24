@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from threading import Lock
 from typing import Any, Callable
 
 from finraw.db.client import DBProtocol
@@ -146,33 +147,6 @@ def run_empirical_model_evaluation(
             sorted(Counter(_stratum(bundle) for bundle in selected).items())
         ),
     }
-    insert_rows(
-        db,
-        "qa_empirical_runs",
-        [
-            {
-                "empirical_run_id": run_id,
-                "qa_build_ids": qa_build_ids,
-                "evaluation_mode": trial_mode,
-                "model_manifest": model_manifest,
-                "sample_manifest": sample_manifest,
-                "config_hash": _hash(_redact_model_spec(empirical)),
-                "status": "running",
-                "started_at": _now(),
-                "completed_at": None,
-                "notes": {
-                    "empirical_system_version": EMPIRICAL_SYSTEM_VERSION,
-                    "scoring_owner": "deterministic_gold_rubric",
-                    "model_as_judge": False,
-                    "answer_schema_manifest": answer_schema_manifest(),
-                    "mode_contract": _mode_contract(trial_mode),
-                },
-            }
-        ],
-        RUN_COLUMNS,
-        {"qa_build_ids", "model_manifest", "sample_manifest", "notes"},
-    )
-
     gold_evidence = {
         str(bundle["qa_id"]): _load_evidence_facts(
             db,
@@ -206,9 +180,37 @@ def run_empirical_model_evaluation(
             )
         prompt_evidence[qa_id] = rows
 
+    insert_rows(
+        db,
+        "qa_empirical_runs",
+        [
+            {
+                "empirical_run_id": run_id,
+                "qa_build_ids": qa_build_ids,
+                "evaluation_mode": trial_mode,
+                "model_manifest": model_manifest,
+                "sample_manifest": sample_manifest,
+                "config_hash": _hash(_redact_model_spec(empirical)),
+                "status": "running",
+                "started_at": _now(),
+                "completed_at": None,
+                "notes": {
+                    "empirical_system_version": EMPIRICAL_SYSTEM_VERSION,
+                    "scoring_owner": "deterministic_gold_rubric",
+                    "model_as_judge": False,
+                    "answer_schema_manifest": answer_schema_manifest(),
+                    "mode_contract": _mode_contract(trial_mode),
+                },
+            }
+        ],
+        RUN_COLUMNS,
+        {"qa_build_ids", "model_manifest", "sample_manifest", "notes"},
+    )
+
     tasks = [(bundle, spec) for bundle in selected for spec in model_specs]
     max_workers = max(int(empirical.get("maximum_concurrency") or 2), 1)
     factory = client_factory or OpenAICompatibleJsonClient
+    retrieval_db_lock = Lock()
 
     def invoke(
         bundle: dict[str, Any], spec: dict[str, Any]
@@ -245,6 +247,7 @@ def run_empirical_model_evaluation(
                     prompt,
                     empirical,
                     state,
+                    tool_db_lock=retrieval_db_lock,
                 )
             else:
                 completion_payload, telemetry = _complete_answer_contract(
@@ -324,6 +327,9 @@ def run_empirical_model_evaluation(
                 **dict(state.get("telemetry") or {}),
                 **dict(getattr(exc, "telemetry", {}) or {}),
             }
+            state["api_call_success"] = bool(
+                state["api_call_success"] or telemetry.get("http_success")
+            )
             component_scores = _failed_component_scores(
                 trial_mode,
                 bool(state["api_call_success"]),
@@ -965,6 +971,17 @@ def _complete_answer_contract(
             }
             return completion.payload, telemetry
         except Exception as exc:
+            failure_telemetry = dict(
+                getattr(exc, "telemetry", {}) or {}
+            )
+            state["telemetry"] = {
+                **dict(state.get("telemetry") or {}),
+                **failure_telemetry,
+            }
+            state["api_call_success"] = bool(
+                state["api_call_success"]
+                or failure_telemetry.get("http_success")
+            )
             failures.append(
                 {
                     "attempt": attempt,
@@ -1286,7 +1303,7 @@ def _load_distractor_facts(
             "WHERE build_id = ? AND graph_ready = ? ORDER BY fact_id LIMIT ?",
             (
                 build["fact_build_id"],
-                True,
+                1,
                 max(limit * 20, limit + len(excluded_fact_ids)),
             ),
         )
@@ -1352,6 +1369,8 @@ def _run_retrieval_tool_loop(
     prompt: str,
     empirical: dict[str, Any],
     state: dict[str, Any],
+    *,
+    tool_db_lock: Any | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     maximum_rounds = max(int(empirical.get("maximum_tool_rounds") or 8), 1)
     answer_schema = _resolved_answer_schema(bundle)
@@ -1396,12 +1415,21 @@ def _run_retrieval_tool_loop(
         arguments = payload.get("arguments")
         if not isinstance(arguments, dict):
             raise ValueError("tool call arguments must be a JSON object")
-        result = _execute_registered_tool(
-            db,
-            str(bundle["qa_build_id"]),
-            tool_name,
-            arguments,
-        )
+        if tool_db_lock is None:
+            result = _execute_registered_tool(
+                db,
+                str(bundle["qa_build_id"]),
+                tool_name,
+                arguments,
+            )
+        else:
+            with tool_db_lock:
+                result = _execute_registered_tool(
+                    db,
+                    str(bundle["qa_build_id"]),
+                    tool_name,
+                    arguments,
+                )
         state["tool_trace"].append(
             {
                 "round": round_number,
@@ -1466,8 +1494,8 @@ def _execute_registered_tool(
             build["fact_build_id"],
             entity_id,
             metric_id,
-            True,
-            False,
+            1,
+            0,
         ]
         for field in ("fiscal_year", "period_start", "period_end"):
             value = arguments.get(field)

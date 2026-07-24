@@ -178,6 +178,9 @@ class OpenAICompatibleJsonClient:
                         "model": model,
                         "http_status": status,
                         "error_type": exc.telemetry.get("error_type"),
+                        "http_success": bool(
+                            exc.telemetry.get("http_success")
+                        ),
                     }
                 )
                 if status not in self.fallback_http_statuses:
@@ -188,7 +191,9 @@ class OpenAICompatibleJsonClient:
             "model_requested": self.model,
             "request_hash": request_hash,
             "request_count": len(attempts),
-            "http_success": False,
+            "http_success": any(
+                bool(item.get("http_success")) for item in attempts
+            ),
             "json_valid": False,
             "http_status": attempts[-1]["http_status"] if attempts else None,
             "latency_ms": None,
@@ -313,8 +318,10 @@ class OpenAICompatibleJsonClient:
             method="POST",
         )
         started = time.perf_counter()
+        response_status: int | None = None
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                response_status = int(getattr(response, "status", 200))
                 raw = response.read().decode("utf-8")
                 elapsed = round((time.perf_counter() - started) * 1000, 3)
                 response_body = json.loads(raw)
@@ -363,7 +370,11 @@ class OpenAICompatibleJsonClient:
                 return JsonCompletion(parsed, telemetry)
         except Exception as exc:
             elapsed = round((time.perf_counter() - started) * 1000, 3)
-            status = exc.code if isinstance(exc, urllib.error.HTTPError) else None
+            status = (
+                exc.code
+                if isinstance(exc, urllib.error.HTTPError)
+                else response_status
+            )
             telemetry = {
                 **base,
                 "latency_ms": elapsed,

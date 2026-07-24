@@ -110,7 +110,7 @@ GRAPH_SCOPE_TASKS = {
     "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.25.0"
+GENERATOR_VERSION = "4.25.1"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -4556,7 +4556,6 @@ def _kg_path_from_graph(
     else:
         seed_nodes = [f"fact:{fact_id}@@{kg_build_id}" for fact_id in fact_ids]
     expansion_seed_nodes = list(seed_nodes)
-    seed_nodes.extend(str(value) for value in (extra_node_ids or []))
     relations = [
         "HAS_FACT",
         "MEASURES",

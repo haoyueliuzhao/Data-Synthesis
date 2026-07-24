@@ -12,7 +12,7 @@ from finraw.qa.split_leakage import (
 )
 
 
-DATASET_ROLE_POLICY_VERSION = "qa_dataset_role.v2"
+DATASET_ROLE_POLICY_VERSION = "qa_dataset_role.v2.1"
 GAP_DIMENSIONS = (
     "benchmark_task",
     "market_subset",
@@ -23,7 +23,15 @@ GAP_DIMENSIONS = (
     "answer_type",
 )
 
-DEFAULT_DATASET_ROLE_CONTRACT = {
+PILOT_PIPELINE_SHARES = {
+    "fact_qa": 0.30,
+    "derived_fact_qa": 0.25,
+    "static_graph_pattern": 0.25,
+    "automatic_pattern_mining": 0.15,
+    "typed_edge_walk": 0.05,
+}
+
+COMBINED_DATASET_ROLE_CONTRACT = {
     "contract_id": "finsearchcomp_t2_t3_release.v1",
     "training_splits": sorted(TRAIN_SPLITS),
     "target_distributions": [
@@ -45,30 +53,128 @@ DEFAULT_DATASET_ROLE_CONTRACT = {
             "shares": {
                 "global|en": (203 / 391) * 0.80,
                 "global|zh": (203 / 391) * 0.15,
-                "global|bilingual": (203 / 391) * 0.05,
+                "global|mixed": (203 / 391) * 0.05,
                 "greater_china|zh": (188 / 391) * 0.65,
                 "greater_china|en": (188 / 391) * 0.20,
-                "greater_china|bilingual": (188 / 391) * 0.15,
+                "greater_china|mixed": (188 / 391) * 0.15,
             },
         },
         {
             "name": "generation_pipeline",
             "fields": ["generation_pipeline"],
             "weight": 0.30,
-            "shares": {
-                "fact_qa": 0.30,
-                "derived_fact_qa": 0.25,
-                "static_graph_pattern": 0.25,
-                "automatic_pattern_mining": 0.12,
-                "typed_edge_walk": 0.08,
-            },
+            "shares": PILOT_PIPELINE_SHARES,
         },
+    ],
+    "release_hard_distributions": [
+        "benchmark_task_market",
+        "market_language",
+        "generation_pipeline",
     ],
     "gap_manifest_paths": [],
     "gap_manifest_weight": 1.0,
     "maximum_per_surface_signature": 25,
     "maximum_per_program_signature": 250,
 }
+
+GLOBAL_DATASET_ROLE_CONTRACT = {
+    **COMBINED_DATASET_ROLE_CONTRACT,
+    "contract_id": "finsearchcomp_t2_t3_global_release.v1",
+    "target_distributions": [
+        {
+            "name": "benchmark_task",
+            "fields": ["benchmark_task"],
+            "weight": 0.45,
+            "shares": {"T2": 119 / 203, "T3": 84 / 203},
+        },
+        {
+            "name": "language",
+            "fields": ["language"],
+            "weight": 0.25,
+            "shares": {"en": 0.80, "zh": 0.15, "mixed": 0.05},
+        },
+        {
+            "name": "generation_pipeline",
+            "fields": ["generation_pipeline"],
+            "weight": 0.30,
+            "shares": PILOT_PIPELINE_SHARES,
+        },
+    ],
+    "release_hard_distributions": [
+        "benchmark_task",
+        "language",
+        "generation_pipeline",
+    ],
+}
+
+GREATER_CHINA_DATASET_ROLE_CONTRACT = {
+    **COMBINED_DATASET_ROLE_CONTRACT,
+    "contract_id": "finsearchcomp_t2_t3_greater_china_release.v1",
+    "target_distributions": [
+        {
+            "name": "benchmark_task",
+            "fields": ["benchmark_task"],
+            "weight": 0.45,
+            "shares": {"T2": 100 / 188, "T3": 88 / 188},
+        },
+        {
+            "name": "language",
+            "fields": ["language"],
+            "weight": 0.25,
+            "shares": {"zh": 0.65, "en": 0.20, "mixed": 0.15},
+        },
+        {
+            "name": "generation_pipeline",
+            "fields": ["generation_pipeline"],
+            "weight": 0.30,
+            "shares": PILOT_PIPELINE_SHARES,
+        },
+    ],
+    "release_hard_distributions": [
+        "benchmark_task",
+        "language",
+        "generation_pipeline",
+    ],
+}
+
+DEFAULT_DATASET_ROLE_CONTRACT = COMBINED_DATASET_ROLE_CONTRACT
+
+REGIONAL_DATASET_ROLE_CONTRACTS = {
+    "global": GLOBAL_DATASET_ROLE_CONTRACT,
+    "greater_china": GREATER_CHINA_DATASET_ROLE_CONTRACT,
+    "combined": COMBINED_DATASET_ROLE_CONTRACT,
+}
+
+LANGUAGE_ALIASES = {
+    "bilingual": "mixed",
+    "mixed_language": "mixed",
+    "zh_en": "mixed",
+    "en_zh": "mixed",
+}
+
+
+def select_dataset_role_contract(
+    quality_config: dict[str, Any],
+    bundles: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Resolve the contract against the actual logical release pool."""
+    mode = str(quality_config.get("dataset_role_contract_mode") or "auto_by_market")
+    explicit = quality_config.get("dataset_role_contract") or {}
+    if mode == "explicit":
+        return resolve_dataset_role_contract(explicit)
+    markets = sorted(
+        {
+            str((row.get("distribution_label") or {}).get("market_subset") or "")
+            for row in bundles
+            if (row.get("distribution_label") or {}).get("market_subset")
+        }
+    )
+    scope = markets[0] if len(markets) == 1 else "combined"
+    configured = quality_config.get("dataset_role_contracts") or {}
+    selected = configured.get(scope) or REGIONAL_DATASET_ROLE_CONTRACTS.get(scope)
+    if not selected:
+        selected = explicit or COMBINED_DATASET_ROLE_CONTRACT
+    return resolve_dataset_role_contract(selected)
 
 
 def compute_dataset_role_values(
@@ -197,10 +303,16 @@ def compute_dataset_role_values(
 def resolve_dataset_role_contract(
     contract: dict[str, Any] | None,
 ) -> dict[str, Any]:
+    raw_contract = dict(contract or {})
     resolved = {
         **DEFAULT_DATASET_ROLE_CONTRACT,
-        **dict(contract or {}),
+        **raw_contract,
     }
+    if (
+        "target_distributions" in raw_contract
+        and "release_hard_distributions" not in raw_contract
+    ):
+        resolved["release_hard_distributions"] = []
     resolved["contract_id"] = str(
         resolved.get("contract_id") or "unnamed_dataset_role_contract"
     )
@@ -223,10 +335,10 @@ def resolve_dataset_role_contract(
         distribution = dict(raw)
         name = str(distribution.get("name") or "")
         fields = [str(item) for item in distribution.get("fields") or []]
-        shares = {
-            str(key): float(value)
-            for key, value in dict(distribution.get("shares") or {}).items()
-        }
+        shares: dict[str, float] = {}
+        for key, value in dict(distribution.get("shares") or {}).items():
+            normalized_key = _normalize_distribution_key(str(key), fields)
+            shares[normalized_key] = shares.get(normalized_key, 0.0) + float(value)
         if not name or not fields or not shares:
             raise ValueError("Each target distribution requires name, fields, and shares")
         if any(value < 0 for value in shares.values()):
@@ -245,6 +357,17 @@ def resolve_dataset_role_contract(
     if not target_distributions:
         raise ValueError("Dataset Role contract has no target distributions")
     resolved["target_distributions"] = target_distributions
+    distribution_names = {row["name"] for row in target_distributions}
+    hard_distributions = [
+        str(value)
+        for value in resolved.get("release_hard_distributions") or []
+    ]
+    unknown_hard = sorted(set(hard_distributions) - distribution_names)
+    if unknown_hard:
+        raise ValueError(
+            "Unknown release_hard_distributions: " + ",".join(unknown_hard)
+        )
+    resolved["release_hard_distributions"] = hard_distributions
     resolved["gap_manifest_paths"] = [
         str(item) for item in resolved.get("gap_manifest_paths") or []
     ]
@@ -308,7 +431,9 @@ def _features(bundle: dict[str, Any]) -> dict[str, str]:
     row = {
         "benchmark_task": str(label.get("benchmark_task") or "unknown"),
         "market_subset": str(label.get("market_subset") or "unknown"),
-        "language": str(sample.get("language") or label.get("language") or "unknown"),
+        "language": normalize_dataset_language(
+            sample.get("language") or label.get("language") or "unknown"
+        ),
         "topic": str(label.get("topic") or "unknown"),
         "primary_operation_family": operation,
         "frequency": str(label.get("frequency") or "unknown"),
@@ -438,12 +563,43 @@ def _weighted_mean(values: list[tuple[float, float]]) -> float:
     return sum(value * weight for value, weight in values if weight > 0) / denominator
 
 
+def dataset_role_features(bundle: dict[str, Any]) -> dict[str, str]:
+    return _features(bundle)
+
+
+def normalize_dataset_language(value: Any) -> str:
+    normalized = str(value or "unknown").strip().casefold().replace("-", "_")
+    return LANGUAGE_ALIASES.get(normalized, normalized)
+
+
+def _normalize_field_value(field: str, value: Any) -> str:
+    if field == "language":
+        return normalize_dataset_language(value)
+    return str(value or "unknown")
+
+
+def _normalize_distribution_key(key: str, fields: list[str]) -> str:
+    values = key.split("|")
+    if len(values) != len(fields):
+        return key
+    return "|".join(
+        _normalize_field_value(field, value)
+        for field, value in zip(fields, values, strict=True)
+    )
+
+
 def _stratum_key(row: dict[str, str], fields: list[str]) -> str:
-    return "|".join(str(row.get(field) or "unknown") for field in fields)
+    return "|".join(
+        _normalize_field_value(field, row.get(field)) for field in fields
+    )
 
 
 def _matches_selector(row: dict[str, str], selector: dict[str, str]) -> bool:
-    return all(str(row.get(key) or "unknown") == value for key, value in selector.items())
+    return all(
+        _normalize_field_value(key, row.get(key))
+        == _normalize_field_value(key, value)
+        for key, value in selector.items()
+    )
 
 
 def _ineligible_output(
