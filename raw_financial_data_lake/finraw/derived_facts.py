@@ -8,10 +8,21 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, Iterable
 
-from finraw.builds import deactivate_active_rows, finish_build, start_build, versioned_id
+from finraw.builds import (
+    deactivate_active_rows,
+    finish_build,
+    start_build,
+    versioned_id,
+)
 from finraw.db.client import DBProtocol
 
 VALID_INPUT_STATUSES = {"single_source", "cross_verified"}
+DEFAULT_ANNUAL_FILING_SOURCES = {
+    "sec_companyfacts",
+    "cninfo_announcements",
+    "bse_disclosures",
+    "hkex_disclosures",
+}
 FINANCIAL_RATIOS = [
     ("gross_margin", "gross_profit", "revenue", "percent"),
     ("operating_margin", "operating_income", "revenue", "percent"),
@@ -21,26 +32,55 @@ FINANCIAL_RATIOS = [
     ("rd_to_revenue", "research_and_development_expense", "revenue", "percent"),
 ]
 RANKING_METRICS = {
-    "revenue", "net_income", "operating_income", "gross_profit", "total_assets", "total_liabilities",
-    "cash_and_cash_equivalents", "gdp_current_usd", "population_total", "real_gdp_growth_pct",
+    "revenue",
+    "net_income",
+    "operating_income",
+    "gross_profit",
+    "total_assets",
+    "total_liabilities",
+    "cash_and_cash_equivalents",
+    "gdp_current_usd",
+    "population_total",
+    "real_gdp_growth_pct",
 }
 SHARE_METRICS = {"revenue", "total_assets", "gdp_current_usd", "population_total"}
 LONG_WINDOW_RETURN_METRICS = {"broad_us_dollar_index"}
 TIME_SERIES_FREQUENCIES = {"daily", "weekly", "monthly", "quarterly", "annual"}
 
 
-def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None, batch_size: int = 5000) -> dict[str, Any]:
+def refresh_derived_facts(
+    db: DBProtocol,
+    config: dict[str, Any],
+    output_dir: str | None = None,
+    batch_size: int = 5000,
+) -> dict[str, Any]:
     input_build_id = _active_build_id(db, "standardized_facts")
-    build_id = start_build(db, layer="qa_ready", command="refresh-derived-facts", prefix="qa_ready", input_build_id=input_build_id)
+    build_id = start_build(
+        db,
+        layer="qa_ready",
+        command="refresh-derived-facts",
+        prefix="qa_ready",
+        input_build_id=input_build_id,
+    )
     rows = _load_standardized_rows(db)
     scope_config = _scope_config(config)
     derived_policy = config.get("kg", {}).get("derived_policy", {})
+    annual_filing_sources = {
+        str(value)
+        for value in derived_policy.get(
+            "annual_filing_sources",
+            sorted(DEFAULT_ANNUAL_FILING_SOURCES),
+        )
+        if value
+    }
     multi_year_windows = [
-        int(value) for value in derived_policy.get("multi_year_windows", [5, 10])
+        int(value)
+        for value in derived_policy.get("multi_year_windows", [5, 10])
         if int(value) >= 2
     ]
     return_windows = [
-        int(value) for value in derived_policy.get("long_window_return_years", [1, 5, 10])
+        int(value)
+        for value in derived_policy.get("long_window_return_years", [1, 5, 10])
         if int(value) >= 1
     ]
     rolling_observations = {
@@ -63,7 +103,7 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
         "skipped_counts": Counter(),
         "notes": [
             "Derived facts are generated only from graph_ready standardized_facts with non-conflict, non-rejected inputs.",
-            "YoY/difference use annual SEC FY facts and World Bank calendar-year facts; high-frequency FRED daily/monthly series are intentionally excluded for now.",
+            "YoY/difference use registered authoritative filing-source FY facts and World Bank calendar-year facts; high-frequency FRED daily/monthly series are intentionally excluded for now.",
             "QoQ uses SEC quarterly facts only; macro quarterly/daily derivations need a frequency-aware calendar layer.",
             "Ranking and share facts carry explicit scope metadata: scope_type, scope_id, scope_definition, scope_entity_ids, and scope_source.",
             "Configured SEC ranking/share facts use the sec_us_100 company universe; World Bank ranking/share facts use the configured 20-country universe.",
@@ -90,7 +130,11 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
             db.insert_derived_facts(batch)
             batch.clear()
 
-    annual_rows = _annual_rows(rows, report)
+    annual_rows = _annual_rows(
+        rows,
+        report,
+        annual_filing_sources=annual_filing_sources,
+    )
     quarterly_rows = _quarterly_rows(rows, report)
 
     for fact in _iter_yoy_and_difference(annual_rows, report):
@@ -109,7 +153,11 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
         emit(fact)
     for fact in _iter_long_window_returns(rows, report, return_windows):
         emit(fact)
-    for fact in _iter_industry_rankings(annual_rows, report):
+    for fact in _iter_industry_rankings(
+        annual_rows,
+        report,
+        annual_filing_sources=annual_filing_sources,
+    ):
         emit(fact)
     for fact in _iter_multi_condition_screening(annual_rows, report, scope_config):
         emit(fact)
@@ -141,8 +189,9 @@ def refresh_derived_facts(db: DBProtocol, config: dict[str, Any], output_dir: st
     return final_report
 
 
-
-def _with_build(fact: dict[str, Any], build_id: str, input_build_id: str | None) -> dict[str, Any]:
+def _with_build(
+    fact: dict[str, Any], build_id: str, input_build_id: str | None
+) -> dict[str, Any]:
     stable_derived_id = fact["derived_id"]
     out = dict(fact)
     out["stable_derived_id"] = stable_derived_id
@@ -164,19 +213,26 @@ def _active_build_id(db: DBProtocol, table: str) -> str | None:
         return None
     return row["build_id"] if row and row["build_id"] else None
 
+
 def write_derived_facts_report(report: dict[str, Any], output_dir: str) -> list[Path]:
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     json_path = out / "derived_facts_report.json"
     md_path = out / "derived_facts_report.md"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    json_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, default=str)
+        + "\n",
+        encoding="utf-8",
+    )
     md_path.write_text(_markdown_report(report), encoding="utf-8")
     return [json_path, md_path]
 
 
 def _load_standardized_rows(db: DBProtocol) -> list[dict[str, Any]]:
-    rows = [dict(row) for row in db.fetchall(
-        """
+    rows = [
+        dict(row)
+        for row in db.fetchall(
+            """
         SELECT sf.fact_id, sf.entity_id, sf.metric_id, sf.normalized_value, sf.normalized_unit,
                sf.normalized_currency, sf.period_start, sf.period_end, sf.calendar_year,
                sf.fiscal_year, sf.fiscal_quarter, sf.time_basis, sf.metric_period_type,
@@ -191,7 +247,8 @@ def _load_standardized_rows(db: DBProtocol) -> list[dict[str, Any]]:
           AND COALESCE(sf.graph_ready, 0) = 1
           AND sf.verification_status IN ('single_source', 'cross_verified')
         """
-    )]
+        )
+    ]
     normalized = []
     for row in rows:
         value = _decimal_or_none(row.get("normalized_value"))
@@ -206,9 +263,17 @@ def _dedupe_rows(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     best: dict[tuple[Any, ...], dict[str, Any]] = {}
     for row in rows:
         key = (
-            row.get("entity_id"), row.get("metric_id"), row.get("source_id"), row.get("period_start"),
-            row.get("period_end"), row.get("calendar_year"), row.get("fiscal_year"), row.get("fiscal_quarter"),
-            row.get("normalized_unit"), row.get("normalized_currency"), row.get("value_decimal"),
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("period_start"),
+            row.get("period_end"),
+            row.get("calendar_year"),
+            row.get("fiscal_year"),
+            row.get("fiscal_quarter"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+            row.get("value_decimal"),
         )
         current = best.get(key)
         if current is None or _row_score(row) > _row_score(current):
@@ -222,7 +287,12 @@ def _row_score(row: dict[str, Any]) -> tuple[int, float, str]:
     return status_score, confidence, str(row.get("fact_id") or "")
 
 
-def _annual_rows(rows: list[dict[str, Any]], report: dict[str, Any]) -> list[dict[str, Any]]:
+def _annual_rows(
+    rows: list[dict[str, Any]],
+    report: dict[str, Any],
+    annual_filing_sources: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    filing_sources = annual_filing_sources or DEFAULT_ANNUAL_FILING_SOURCES
     out = []
     for row in rows:
         if bool(row.get("is_forecast")):
@@ -230,10 +300,16 @@ def _annual_rows(rows: list[dict[str, Any]], report: dict[str, Any]) -> list[dic
             continue
         year = None
         time_basis = None
-        if row.get("source_id") == "sec_companyfacts" and row.get("fiscal_year") and row.get("fiscal_quarter") == "FY":
+        if (
+            row.get("source_id") in filing_sources
+            and row.get("fiscal_year")
+            and row.get("fiscal_quarter") == "FY"
+        ):
             year = int(row["fiscal_year"])
             time_basis = "fiscal_year"
-        elif row.get("source_id") == "worldbank_indicators" and row.get("calendar_year"):
+        elif row.get("source_id") == "worldbank_indicators" and row.get(
+            "calendar_year"
+        ):
             year = int(row["calendar_year"])
             time_basis = "calendar_year"
         elif row.get("time_basis") == "calendar_year" and row.get("calendar_year"):
@@ -246,28 +322,52 @@ def _annual_rows(rows: list[dict[str, Any]], report: dict[str, Any]) -> list[dic
         row["derived_year"] = year
         row["derived_time_basis"] = time_basis
         out.append(row)
-    return _dedupe_by_key(out, lambda row: (
-        row.get("entity_id"), row.get("metric_id"), row.get("source_id"), row.get("derived_year"),
-        row.get("derived_time_basis"), row.get("normalized_unit"), row.get("normalized_currency"),
-    ))
+    return _dedupe_by_key(
+        out,
+        lambda row: (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("derived_year"),
+            row.get("derived_time_basis"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        ),
+    )
 
 
-def _quarterly_rows(rows: list[dict[str, Any]], report: dict[str, Any]) -> list[dict[str, Any]]:
+def _quarterly_rows(
+    rows: list[dict[str, Any]], report: dict[str, Any]
+) -> list[dict[str, Any]]:
     out = []
     valid_quarters = {"Q1": 1, "Q2": 2, "Q3": 3, "Q4": 4}
     for row in rows:
         quarter = row.get("fiscal_quarter")
-        if row.get("source_id") == "sec_companyfacts" and quarter in valid_quarters and row.get("fiscal_year"):
+        if (
+            row.get("source_id") == "sec_companyfacts"
+            and quarter in valid_quarters
+            and row.get("fiscal_year")
+        ):
             row = dict(row)
-            row["derived_quarter_index"] = int(row["fiscal_year"]) * 4 + valid_quarters[quarter]
+            row["derived_quarter_index"] = (
+                int(row["fiscal_year"]) * 4 + valid_quarters[quarter]
+            )
             row["derived_quarter"] = quarter
             out.append(row)
         else:
             report["skipped_counts"]["non_quarterly_input"] += 1
-    return _dedupe_by_key(out, lambda row: (
-        row.get("entity_id"), row.get("metric_id"), row.get("source_id"), row.get("fiscal_year"),
-        row.get("fiscal_quarter"), row.get("normalized_unit"), row.get("normalized_currency"),
-    ))
+    return _dedupe_by_key(
+        out,
+        lambda row: (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("fiscal_year"),
+            row.get("fiscal_quarter"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        ),
+    )
 
 
 def _dedupe_by_key(rows: list[dict[str, Any]], key_fn: Any) -> list[dict[str, Any]]:
@@ -280,15 +380,26 @@ def _dedupe_by_key(rows: list[dict[str, Any]], key_fn: Any) -> list[dict[str, An
     return list(best.values())
 
 
-def _iter_yoy_and_difference(rows: list[dict[str, Any]], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
+def _iter_yoy_and_difference(
+    rows: list[dict[str, Any]], report: dict[str, Any]
+) -> Iterable[dict[str, Any]]:
     grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         if row.get("normalized_unit") in {None, "document"}:
             continue
-        key = (row.get("entity_id"), row.get("metric_id"), row.get("source_id"), row.get("normalized_unit"), row.get("normalized_currency"), row.get("derived_time_basis"))
+        key = (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+            row.get("derived_time_basis"),
+        )
         grouped[key].append(row)
     for key, group_rows in grouped.items():
-        group_rows.sort(key=lambda r: (r["derived_year"], str(r.get("period_end") or "")))
+        group_rows.sort(
+            key=lambda r: (r["derived_year"], str(r.get("period_end") or ""))
+        )
         by_year: dict[int, dict[str, Any]] = {}
         for row in group_rows:
             current = by_year.get(row["derived_year"])
@@ -301,47 +412,100 @@ def _iter_yoy_and_difference(rows: list[dict[str, Any]], report: dict[str, Any])
                 continue
             diff = curr["value_decimal"] - prev["value_decimal"]
             yield _derived_scalar(
-                "difference", [prev, curr], {"entity_id": curr["entity_id"]}, {"metric_id": curr["metric_id"]},
-                {"year": year, "basis": curr["derived_time_basis"], "previous_year": year - 1},
-                "current_value - prior_year_value", diff, curr.get("normalized_unit"), _status_from_inputs([prev, curr]),
+                "difference",
+                [prev, curr],
+                {"entity_id": curr["entity_id"]},
+                {"metric_id": curr["metric_id"]},
+                {
+                    "year": year,
+                    "basis": curr["derived_time_basis"],
+                    "previous_year": year - 1,
+                },
+                "current_value - prior_year_value",
+                diff,
+                curr.get("normalized_unit"),
+                _status_from_inputs([prev, curr]),
             )
             if prev["value_decimal"] == 0:
                 report["skipped_counts"]["yoy_zero_prior_value"] += 1
                 continue
             yoy = diff / abs(prev["value_decimal"]) * Decimal("100")
             yield _derived_scalar(
-                "yoy_growth", [prev, curr], {"entity_id": curr["entity_id"]}, {"metric_id": curr["metric_id"]},
-                {"year": year, "basis": curr["derived_time_basis"], "previous_year": year - 1},
-                "(current_value - prior_year_value) / abs(prior_year_value) * 100", yoy, "percent", _status_from_inputs([prev, curr]),
+                "yoy_growth",
+                [prev, curr],
+                {"entity_id": curr["entity_id"]},
+                {"metric_id": curr["metric_id"]},
+                {
+                    "year": year,
+                    "basis": curr["derived_time_basis"],
+                    "previous_year": year - 1,
+                },
+                "(current_value - prior_year_value) / abs(prior_year_value) * 100",
+                yoy,
+                "percent",
+                _status_from_inputs([prev, curr]),
             )
 
 
-def _iter_qoq_growth(rows: list[dict[str, Any]], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
+def _iter_qoq_growth(
+    rows: list[dict[str, Any]], report: dict[str, Any]
+) -> Iterable[dict[str, Any]]:
     grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
-        key = (row.get("entity_id"), row.get("metric_id"), row.get("source_id"), row.get("normalized_unit"), row.get("normalized_currency"))
+        key = (
+            row.get("entity_id"),
+            row.get("metric_id"),
+            row.get("source_id"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        )
         grouped[key].append(row)
     for group_rows in grouped.values():
         group_rows.sort(key=lambda r: r["derived_quarter_index"])
         prev = None
         for curr in group_rows:
-            if prev and curr["derived_quarter_index"] == prev["derived_quarter_index"] + 1:
+            if (
+                prev
+                and curr["derived_quarter_index"] == prev["derived_quarter_index"] + 1
+            ):
                 if prev["value_decimal"] == 0:
                     report["skipped_counts"]["qoq_zero_prior_value"] += 1
                 else:
-                    qoq = (curr["value_decimal"] - prev["value_decimal"]) / abs(prev["value_decimal"]) * Decimal("100")
+                    qoq = (
+                        (curr["value_decimal"] - prev["value_decimal"])
+                        / abs(prev["value_decimal"])
+                        * Decimal("100")
+                    )
                     yield _derived_scalar(
-                        "qoq_growth", [prev, curr], {"entity_id": curr["entity_id"]}, {"metric_id": curr["metric_id"]},
-                        {"fiscal_year": curr.get("fiscal_year"), "fiscal_quarter": curr.get("fiscal_quarter"), "previous_quarter": prev.get("fiscal_quarter")},
-                        "(current_quarter_value - prior_quarter_value) / abs(prior_quarter_value) * 100", qoq, "percent", _status_from_inputs([prev, curr]),
+                        "qoq_growth",
+                        [prev, curr],
+                        {"entity_id": curr["entity_id"]},
+                        {"metric_id": curr["metric_id"]},
+                        {
+                            "fiscal_year": curr.get("fiscal_year"),
+                            "fiscal_quarter": curr.get("fiscal_quarter"),
+                            "previous_quarter": prev.get("fiscal_quarter"),
+                        },
+                        "(current_quarter_value - prior_quarter_value) / abs(prior_quarter_value) * 100",
+                        qoq,
+                        "percent",
+                        _status_from_inputs([prev, curr]),
                     )
             prev = curr
 
 
-def _iter_ratios(rows: list[dict[str, Any]], report: dict[str, Any]) -> Iterable[dict[str, Any]]:
+def _iter_ratios(
+    rows: list[dict[str, Any]], report: dict[str, Any]
+) -> Iterable[dict[str, Any]]:
     by_period: dict[tuple[Any, ...], dict[str, dict[str, Any]]] = defaultdict(dict)
     for row in rows:
-        key = (row.get("entity_id"), row.get("source_id"), row.get("derived_year"), row.get("derived_time_basis"), row.get("normalized_currency"))
+        key = (
+            row.get("entity_id"),
+            row.get("source_id"),
+            row.get("derived_year"),
+            row.get("derived_time_basis"),
+            row.get("normalized_currency"),
+        )
         by_period[key][row.get("metric_id")] = row
     for (entity_id, source_id, year, basis, currency), metrics in by_period.items():
         for ratio_name, numerator_metric, denominator_metric, unit in FINANCIAL_RATIOS:
@@ -352,26 +516,59 @@ def _iter_ratios(rows: list[dict[str, Any]], report: dict[str, Any]) -> Iterable
             if denominator["value_decimal"] == 0:
                 report["skipped_counts"][f"{ratio_name}_zero_denominator"] += 1
                 continue
-            value = numerator["value_decimal"] / denominator["value_decimal"] * Decimal("100")
+            value = (
+                numerator["value_decimal"]
+                / denominator["value_decimal"]
+                * Decimal("100")
+            )
             yield _derived_scalar(
-                "ratio", [numerator, denominator], {"entity_id": entity_id}, {"ratio_id": ratio_name, "numerator": numerator_metric, "denominator": denominator_metric},
-                {"year": year, "basis": basis}, "numerator_value / denominator_value * 100", value, unit,
+                "ratio",
+                [numerator, denominator],
+                {"entity_id": entity_id},
+                {
+                    "ratio_id": ratio_name,
+                    "numerator": numerator_metric,
+                    "denominator": denominator_metric,
+                },
+                {"year": year, "basis": basis},
+                "numerator_value / denominator_value * 100",
+                value,
+                unit,
                 _status_from_inputs([numerator, denominator]),
             )
 
 
-def _iter_rankings_and_extrema(rows: list[dict[str, Any]], report: dict[str, Any], scope_config: dict[str, Any]) -> Iterable[dict[str, Any]]:
+def _iter_rankings_and_extrema(
+    rows: list[dict[str, Any]], report: dict[str, Any], scope_config: dict[str, Any]
+) -> Iterable[dict[str, Any]]:
     grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         if row.get("metric_id") not in RANKING_METRICS:
             continue
-        key = (row.get("source_id"), row.get("metric_id"), row.get("derived_year"), row.get("derived_time_basis"), row.get("normalized_unit"), row.get("normalized_currency"))
+        key = (
+            row.get("source_id"),
+            row.get("metric_id"),
+            row.get("derived_year"),
+            row.get("derived_time_basis"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        )
         grouped[key].append(row)
-    for (source_id, metric_id, year, basis, unit, currency), group_rows in grouped.items():
+    for (
+        source_id,
+        metric_id,
+        year,
+        basis,
+        unit,
+        currency,
+    ), group_rows in grouped.items():
         by_entity: dict[str, dict[str, Any]] = {}
         for row in group_rows:
             entity_id = row.get("entity_id")
-            if entity_id and (entity_id not in by_entity or row["value_decimal"] > by_entity[entity_id]["value_decimal"]):
+            if entity_id and (
+                entity_id not in by_entity
+                or row["value_decimal"] > by_entity[entity_id]["value_decimal"]
+            ):
                 by_entity[entity_id] = row
         comparable = list(by_entity.values())
         if len(comparable) < 2:
@@ -381,26 +578,82 @@ def _iter_rankings_and_extrema(rows: list[dict[str, Any]], report: dict[str, Any
         top = comparable[:10]
         bottom = list(reversed(comparable[-10:]))
         scope = _group_scope(scope_config, source_id, metric_id, comparable)
-        entity_scope = {"source_id": source_id, "entity_count": len(comparable), "scope_id": scope["scope_id"]}
+        entity_scope = {
+            "source_id": source_id,
+            "entity_count": len(comparable),
+            "scope_id": scope["scope_id"],
+        }
         metric_scope = {"metric_id": metric_id}
         time_scope = {"year": year, "basis": basis}
-        yield _derived_table("ranking", top, entity_scope, metric_scope, time_scope, "rank entities by normalized_value desc", _ranking_table(top), unit, _status_from_inputs(top), scope)
-        yield _derived_scalar("argmax", [top[0]], {**entity_scope, "entity_id": top[0].get("entity_id")}, metric_scope, time_scope, "max(normalized_value) over entity scope", top[0]["value_decimal"], unit, _status_from_inputs([top[0]]), scope)
-        yield _derived_scalar("argmin", [bottom[0]], {**entity_scope, "entity_id": bottom[0].get("entity_id")}, metric_scope, time_scope, "min(normalized_value) over entity scope", bottom[0]["value_decimal"], unit, _status_from_inputs([bottom[0]]), scope)
+        yield _derived_table(
+            "ranking",
+            top,
+            entity_scope,
+            metric_scope,
+            time_scope,
+            "rank entities by normalized_value desc",
+            _ranking_table(top),
+            unit,
+            _status_from_inputs(top),
+            scope,
+        )
+        yield _derived_scalar(
+            "argmax",
+            [top[0]],
+            {**entity_scope, "entity_id": top[0].get("entity_id")},
+            metric_scope,
+            time_scope,
+            "max(normalized_value) over entity scope",
+            top[0]["value_decimal"],
+            unit,
+            _status_from_inputs([top[0]]),
+            scope,
+        )
+        yield _derived_scalar(
+            "argmin",
+            [bottom[0]],
+            {**entity_scope, "entity_id": bottom[0].get("entity_id")},
+            metric_scope,
+            time_scope,
+            "min(normalized_value) over entity scope",
+            bottom[0]["value_decimal"],
+            unit,
+            _status_from_inputs([bottom[0]]),
+            scope,
+        )
 
 
-def _iter_shares(rows: list[dict[str, Any]], report: dict[str, Any], scope_config: dict[str, Any]) -> Iterable[dict[str, Any]]:
+def _iter_shares(
+    rows: list[dict[str, Any]], report: dict[str, Any], scope_config: dict[str, Any]
+) -> Iterable[dict[str, Any]]:
     grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         if row.get("metric_id") not in SHARE_METRICS:
             continue
-        key = (row.get("source_id"), row.get("metric_id"), row.get("derived_year"), row.get("derived_time_basis"), row.get("normalized_unit"), row.get("normalized_currency"))
+        key = (
+            row.get("source_id"),
+            row.get("metric_id"),
+            row.get("derived_year"),
+            row.get("derived_time_basis"),
+            row.get("normalized_unit"),
+            row.get("normalized_currency"),
+        )
         grouped[key].append(row)
-    for (source_id, metric_id, year, basis, unit, currency), group_rows in grouped.items():
+    for (
+        source_id,
+        metric_id,
+        year,
+        basis,
+        unit,
+        currency,
+    ), group_rows in grouped.items():
         by_entity: dict[str, dict[str, Any]] = {}
         for row in group_rows:
             entity_id = row.get("entity_id")
-            if entity_id and (entity_id not in by_entity or row["value_decimal"] > by_entity[entity_id]["value_decimal"]):
+            if entity_id and (
+                entity_id not in by_entity
+                or row["value_decimal"] > by_entity[entity_id]["value_decimal"]
+            ):
                 by_entity[entity_id] = row
         comparable = [row for row in by_entity.values() if row["value_decimal"] > 0]
         if len(comparable) < 2:
@@ -414,9 +667,21 @@ def _iter_shares(rows: list[dict[str, Any]], report: dict[str, Any], scope_confi
         for row in comparable:
             value = row["value_decimal"] / total * Decimal("100")
             yield _derived_scalar(
-                "share", [row], {"source_id": source_id, "entity_id": row.get("entity_id"), "entity_count": len(comparable), "scope_id": scope["scope_id"]},
-                {"metric_id": metric_id}, {"year": year, "basis": basis},
-                "entity_value / scope_total_value * 100", value, "percent", _status_from_inputs([row]), scope,
+                "share",
+                [row],
+                {
+                    "source_id": source_id,
+                    "entity_id": row.get("entity_id"),
+                    "entity_count": len(comparable),
+                    "scope_id": scope["scope_id"],
+                },
+                {"metric_id": metric_id},
+                {"year": year, "basis": basis},
+                "entity_value / scope_total_value * 100",
+                value,
+                "percent",
+                _status_from_inputs([row]),
+                scope,
             )
 
 
@@ -628,9 +893,13 @@ def _iter_long_window_returns(
                 target = end_date.replace(year=target_year)
             except ValueError:
                 target = end_date.replace(year=target_year, day=28)
-            start_date, start_row = min(dated[:-1], key=lambda item: abs((item[0] - target).days))
+            start_date, start_row = min(
+                dated[:-1], key=lambda item: abs((item[0] - target).days)
+            )
             if abs((start_date - target).days) > 45 or start_row["value_decimal"] == 0:
-                report["skipped_counts"][f"long_window_return_{years}y_missing_start"] += 1
+                report["skipped_counts"][
+                    f"long_window_return_{years}y_missing_start"
+                ] += 1
                 continue
             value = (
                 (end_row["value_decimal"] / start_row["value_decimal"]) - Decimal("1")
@@ -656,17 +925,20 @@ def _iter_long_window_returns(
 def _iter_industry_rankings(
     rows: list[dict[str, Any]],
     report: dict[str, Any],
+    annual_filing_sources: set[str] | None = None,
 ) -> Iterable[dict[str, Any]]:
+    filing_sources = annual_filing_sources or DEFAULT_ANNUAL_FILING_SOURCES
     grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         industry = str(row.get("industry") or "").strip()
         if (
-            row.get("source_id") != "sec_companyfacts"
+            row.get("source_id") not in filing_sources
             or row.get("metric_id") not in RANKING_METRICS
             or not industry
         ):
             continue
         key = (
+            row.get("source_id"),
             industry,
             row.get("metric_id"),
             row.get("derived_year"),
@@ -676,7 +948,7 @@ def _iter_industry_rankings(
         )
         grouped[key].append(row)
     for key, group_rows in grouped.items():
-        industry, metric_id, year, basis, unit, currency = key
+        source_id, industry, metric_id, year, basis, unit, currency = key
         comparable = _dedupe_by_key(group_rows, lambda row: row.get("entity_id"))
         if len(comparable) < 2:
             report["skipped_counts"]["industry_ranking_less_than_two_entities"] += 1
@@ -684,16 +956,27 @@ def _iter_industry_rankings(
         comparable.sort(key=lambda row: row["value_decimal"], reverse=True)
         top = comparable[:10]
         bottom = list(reversed(comparable[-10:]))
-        entity_ids = sorted(row["entity_id"] for row in comparable if row.get("entity_id"))
+        entity_ids = sorted(
+            row["entity_id"] for row in comparable if row.get("entity_id")
+        )
         slug = hashlib.sha1(industry.encode("utf-8")).hexdigest()[:12]
+        source_slug = hashlib.sha1(str(source_id).encode("utf-8")).hexdigest()[:8]
         scope = {
             "scope_type": "industry_universe",
-            "scope_id": f"industry_{slug}_{metric_id}_{year}",
-            "scope_definition": f"Canonical company industry '{industry}' with {len(entity_ids)} entities having comparable graph-ready facts.",
+            "scope_id": f"industry_{source_slug}_{slug}_{metric_id}_{year}",
+            "scope_definition": (
+                f"Canonical company industry '{industry}' within authoritative "
+                f"source '{source_id}', with {len(entity_ids)} entities having "
+                "comparable graph-ready facts."
+            ),
             "scope_entity_ids": entity_ids,
-            "scope_source": "canonical_entities.industry",
+            "scope_source": "canonical_entities.industry + standardized_facts.source_id",
         }
-        entity_scope = {"industry": industry, "entity_count": len(comparable)}
+        entity_scope = {
+            "source_id": source_id,
+            "industry": industry,
+            "entity_count": len(comparable),
+        }
         metric_scope = {"metric_id": metric_id}
         time_scope = {"year": year, "basis": basis}
         yield _derived_table(
@@ -744,18 +1027,27 @@ def _iter_multi_condition_screening(
         if row.get("source_id") != "sec_companyfacts" or not row.get("entity_id"):
             continue
         if row.get("metric_id") in {"revenue", "net_income"}:
-            by_entity_year[(row["entity_id"], int(row["derived_year"]))][row["metric_id"]] = row
+            by_entity_year[(row["entity_id"], int(row["derived_year"]))][
+                row["metric_id"]
+            ] = row
     years = sorted({year for _, year in by_entity_year})
     for year in years:
         matches = []
         inputs = []
-        for entity_id in sorted({entity for entity, item_year in by_entity_year if item_year == year}):
+        for entity_id in sorted(
+            {entity for entity, item_year in by_entity_year if item_year == year}
+        ):
             current = by_entity_year.get((entity_id, year), {})
             previous = by_entity_year.get((entity_id, year - 1), {})
             revenue = current.get("revenue")
             prior_revenue = previous.get("revenue")
             net_income = current.get("net_income")
-            if not revenue or not prior_revenue or not net_income or prior_revenue["value_decimal"] == 0:
+            if (
+                not revenue
+                or not prior_revenue
+                or not net_income
+                or prior_revenue["value_decimal"] == 0
+            ):
                 continue
             growth = (
                 (revenue["value_decimal"] - prior_revenue["value_decimal"])
@@ -816,9 +1108,17 @@ def _as_date(value: Any) -> date | None:
 
 def _scope_config(config: dict[str, Any]) -> dict[str, Any]:
     sec_companies = config.get("sec", {}).get("sample_companies", []) or []
-    sec_entity_ids = sorted({f"{company.get('ticker')}_US" for company in sec_companies if company.get("ticker")})
+    sec_entity_ids = sorted(
+        {
+            f"{company.get('ticker')}_US"
+            for company in sec_companies
+            if company.get("ticker")
+        }
+    )
     wb_countries = config.get("worldbank", {}).get("countries", []) or []
-    wb_entity_ids = sorted({f"{country}_COUNTRY" for country in wb_countries if country})
+    wb_entity_ids = sorted(
+        {f"{country}_COUNTRY" for country in wb_countries if country}
+    )
     return {
         "sec_us_100": sec_entity_ids,
         "worldbank_20x20_countries": wb_entity_ids,
@@ -827,8 +1127,12 @@ def _scope_config(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _single_entity_scope(entity_id: str | None, inputs: list[dict[str, Any]]) -> dict[str, Any]:
-    entity_ids = sorted({row.get("entity_id") for row in inputs if row.get("entity_id")})
+def _single_entity_scope(
+    entity_id: str | None, inputs: list[dict[str, Any]]
+) -> dict[str, Any]:
+    entity_ids = sorted(
+        {row.get("entity_id") for row in inputs if row.get("entity_id")}
+    )
     if entity_id and entity_id not in entity_ids:
         entity_ids.append(entity_id)
         entity_ids.sort()
@@ -836,19 +1140,28 @@ def _single_entity_scope(entity_id: str | None, inputs: list[dict[str, Any]]) ->
     return {
         "scope_type": "single_entity" if entity_id else "input_fact_scope",
         "scope_id": scope_id,
-        "scope_definition": "Single canonical entity derived fact." if entity_id else "Derived from the explicitly referenced input facts only.",
+        "scope_definition": "Single canonical entity derived fact."
+        if entity_id
+        else "Derived from the explicitly referenced input facts only.",
         "scope_entity_ids": entity_ids,
         "scope_source": "input_facts",
     }
 
 
-def _group_scope(scope_config: dict[str, Any], source_id: str | None, metric_id: str | None, rows: list[dict[str, Any]]) -> dict[str, Any]:
+def _group_scope(
+    scope_config: dict[str, Any],
+    source_id: str | None,
+    metric_id: str | None,
+    rows: list[dict[str, Any]],
+) -> dict[str, Any]:
     entity_ids = sorted({row.get("entity_id") for row in rows if row.get("entity_id")})
     if source_id == "sec_companyfacts":
         configured = scope_config.get("sec_us_100") or []
         return {
             "scope_type": "configured_company_universe",
-            "scope_id": "sec_us_100" if scope_config.get("sec_company_count") == 100 else "sec_configured_companies",
+            "scope_id": "sec_us_100"
+            if scope_config.get("sec_company_count") == 100
+            else "sec_configured_companies",
             "scope_definition": f"Configured SEC US company universe ({len(configured)} companies); this derived group includes {len(entity_ids)} entities with graph-ready {metric_id} facts.",
             "scope_entity_ids": entity_ids,
             "scope_source": "config.sec.sample_companies",
@@ -857,7 +1170,9 @@ def _group_scope(scope_config: dict[str, Any], source_id: str | None, metric_id:
         configured = scope_config.get("worldbank_20x20_countries") or []
         return {
             "scope_type": "configured_country_universe",
-            "scope_id": "worldbank_20x20_countries" if scope_config.get("worldbank_country_count") == 20 else "worldbank_configured_countries",
+            "scope_id": "worldbank_20x20_countries"
+            if scope_config.get("worldbank_country_count") == 20
+            else "worldbank_configured_countries",
             "scope_definition": f"Configured World Bank country universe ({len(configured)} countries); this derived group includes {len(entity_ids)} entities with graph-ready {metric_id} facts.",
             "scope_entity_ids": entity_ids,
             "scope_source": "config.worldbank.countries",
@@ -873,10 +1188,31 @@ def _group_scope(scope_config: dict[str, Any], source_id: str | None, metric_id:
     }
 
 
-def _derived_scalar(derived_type: str, inputs: list[dict[str, Any]], entity_scope: dict[str, Any], metric_scope: dict[str, Any], time_scope: dict[str, Any], calculation_code: str, value: Decimal, unit: str | None, status: str, scope: dict[str, Any] | None = None) -> dict[str, Any]:
+def _derived_scalar(
+    derived_type: str,
+    inputs: list[dict[str, Any]],
+    entity_scope: dict[str, Any],
+    metric_scope: dict[str, Any],
+    time_scope: dict[str, Any],
+    calculation_code: str,
+    value: Decimal,
+    unit: str | None,
+    status: str,
+    scope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     input_ids = [row["fact_id"] for row in inputs if row.get("fact_id")]
     scope = scope or _single_entity_scope(entity_scope.get("entity_id"), inputs)
-    payload = {"type": derived_type, "inputs": input_ids, "entity_scope": entity_scope, "metric_scope": metric_scope, "time_scope": time_scope, "scope_type": scope.get("scope_type"), "scope_id": scope.get("scope_id"), "scope_entity_ids": scope.get("scope_entity_ids"), "calculation_code": calculation_code}
+    payload = {
+        "type": derived_type,
+        "inputs": input_ids,
+        "entity_scope": entity_scope,
+        "metric_scope": metric_scope,
+        "time_scope": time_scope,
+        "scope_type": scope.get("scope_type"),
+        "scope_id": scope.get("scope_id"),
+        "scope_entity_ids": scope.get("scope_entity_ids"),
+        "calculation_code": calculation_code,
+    }
     return {
         "derived_id": _derived_id(payload),
         "derived_type": derived_type,
@@ -898,10 +1234,31 @@ def _derived_scalar(derived_type: str, inputs: list[dict[str, Any]], entity_scop
     }
 
 
-def _derived_table(derived_type: str, inputs: list[dict[str, Any]], entity_scope: dict[str, Any], metric_scope: dict[str, Any], time_scope: dict[str, Any], calculation_code: str, output_table: list[dict[str, Any]], unit: str | None, status: str, scope: dict[str, Any] | None = None) -> dict[str, Any]:
+def _derived_table(
+    derived_type: str,
+    inputs: list[dict[str, Any]],
+    entity_scope: dict[str, Any],
+    metric_scope: dict[str, Any],
+    time_scope: dict[str, Any],
+    calculation_code: str,
+    output_table: list[dict[str, Any]],
+    unit: str | None,
+    status: str,
+    scope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     input_ids = [row["fact_id"] for row in inputs if row.get("fact_id")]
     scope = scope or _single_entity_scope(entity_scope.get("entity_id"), inputs)
-    payload = {"type": derived_type, "inputs": input_ids, "entity_scope": entity_scope, "metric_scope": metric_scope, "time_scope": time_scope, "scope_type": scope.get("scope_type"), "scope_id": scope.get("scope_id"), "scope_entity_ids": scope.get("scope_entity_ids"), "calculation_code": calculation_code}
+    payload = {
+        "type": derived_type,
+        "inputs": input_ids,
+        "entity_scope": entity_scope,
+        "metric_scope": metric_scope,
+        "time_scope": time_scope,
+        "scope_type": scope.get("scope_type"),
+        "scope_id": scope.get("scope_id"),
+        "scope_entity_ids": scope.get("scope_entity_ids"),
+        "calculation_code": calculation_code,
+    }
     return {
         "derived_id": _derived_id(payload),
         "derived_type": derived_type,
@@ -925,7 +1282,12 @@ def _derived_table(derived_type: str, inputs: list[dict[str, Any]], entity_scope
 
 def _ranking_table(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [
-        {"rank": idx + 1, "entity_id": row.get("entity_id"), "fact_id": row.get("fact_id"), "value": _to_float(row["value_decimal"])}
+        {
+            "rank": idx + 1,
+            "entity_id": row.get("entity_id"),
+            "fact_id": row.get("fact_id"),
+            "value": _to_float(row["value_decimal"]),
+        }
         for idx, row in enumerate(rows)
     ]
 

@@ -11,9 +11,9 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
-QUESTION_REWRITE_VERSION = "question_rewrite.v3"
-SURFACE_VARIATION_VERSION = "surface_variation.v3"
-QUESTION_PARSER_VERSION = "1.3.1"
+QUESTION_REWRITE_VERSION = "question_rewrite.v3.1"
+SURFACE_VARIATION_VERSION = "surface_variation.v3.1"
+QUESTION_PARSER_VERSION = "1.3.3"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh")
 
 _TONE_PREFIXES = {
@@ -37,6 +37,8 @@ _PROTECTED_REWRITE_STYLES = {
     "plain_language": "Use clear plain language without losing financial precision.",
     "research": "Use a compact institutional-research formulation.",
     "screening": "Use a financial-screening formulation when the task permits it.",
+    "historical_lookup": "Use the compact style of a historical financial-data query.",
+    "historical_investigation": "Use a concise multi-step historical investigation style.",
 }
 
 _COMPARISON_PATTERN = re.compile(
@@ -128,6 +130,34 @@ _FORBIDDEN_QUESTION_EXTENSION = re.compile(
     r"因为|导致|管理层能力|预测|保证|买入|卖出|目标价|投资建议",
     re.IGNORECASE,
 )
+_ZH_METRIC_SURFACE_ALIASES = {
+    "收入": ("营业收入", "营收"),
+    "营业收入": ("收入", "营收"),
+    "营收": ("营业收入", "收入"),
+    "净利润": ("净收益",),
+    "净收益": ("净利润",),
+    "营业利润": ("经营利润",),
+    "经营利润": ("营业利润",),
+    "毛利润": ("毛利",),
+    "毛利": ("毛利润",),
+    "总资产": ("资产总额",),
+    "资产总额": ("总资产",),
+    "总负债": ("负债总额",),
+    "负债总额": ("总负债",),
+    "经营现金流": ("经营活动现金流",),
+    "经营活动现金流": ("经营现金流",),
+    "经营活动现金流净额": ("经营现金流净额",),
+    "投资活动现金流净额": ("投资现金流净额",),
+    "筹资活动现金流净额": ("融资活动现金流净额",),
+    "应收账款净额": ("净应收账款",),
+    "基本每股收益": ("基本EPS",),
+    "稀释每股收益": ("稀释EPS",),
+    "研发费用": ("研发支出",),
+    "inventory": ("存货",),
+    "净利率": ("净利润率",),
+    "资产负债率": ("负债资产比",),
+}
+
 _METRIC_SURFACE_ALIASES = {
     "revenue": ("revenue", "sales"),
     "net income": ("net income", "net profit"),
@@ -307,13 +337,20 @@ class OpenAICompatibleQuestionProvider:
                 "top-k, and operation order. Preserve parser-critical operator anchors "
                 "from the protected question: keep highest/lowest for extrema, keep "
                 "the exact form 'top <slot_top_k>' when present, keep then for sequential "
-                "operations, and keep report or add each for lookup operations. Return "
-                "JSON only as "
+                "operations, and keep report or add each for lookup operations. "
+                "Use the supplied benchmark_style_constraints as presentation guidance: "
+                "write a self-contained real-world financial search question, do not mention "
+                "a knowledge graph, internal IDs, templates, or hidden evidence, and do not "
+                "copy or imitate any benchmark item verbatim. Return JSON only as "
                 f'{{"rewrites":[{{"rewrite_version":"{QUESTION_REWRITE_VERSION}",'
                 '"question_template":"...","surface_variant_ids":{{...}}}]}. '
                 + surface_instruction
-                + " Return distinct concise interrogative "
-                "rewrites ending with a question mark.\n"
+                + " Return exactly variant_count concise interrogative rewrites, "
+                "each no longer than 70 words and containing at most one question mark "
+                "(ASCII ? or full-width ？); a concise imperative request is also valid. "
+                "A deterministic output-format instruction "
+                "may follow that question as a final sentence. Do not include explanations "
+                "or analysis.\n"
                 + json.dumps(request, ensure_ascii=False, sort_keys=True)
             )
             response_key = "rewrites"
@@ -555,6 +592,9 @@ def _realize_protected_rewrite(
             "language": str(policy.get("language") or "en"),
             "style_variant_id": style_variant_id,
             "style_instruction": _PROTECTED_REWRITE_STYLES[style_variant_id],
+            "benchmark_style_constraints": dict(
+                policy.get("benchmark_style_constraints") or {}
+            ),
         }
         repair_errors = sorted(
             set(str(item) for item in policy.get("_rewrite_repair_errors") or [])
@@ -952,7 +992,7 @@ def validate_protected_rewrite(
         errors.append("rewrite_placeholder_duplicate")
     if _NUMBER_PATTERN.search(question_template):
         errors.append("rewrite_unprotected_number")
-    if not question_template.endswith("?") or question_template.count("?") != 1:
+    if question_template.count("?") + question_template.count("？") > 1:
         errors.append("rewrite_not_single_question")
     if _FORBIDDEN_QUESTION_EXTENSION.search(question_template):
         errors.append("rewrite_forbidden_extension")
@@ -1070,6 +1110,7 @@ def surface_slot_variants(
     config: dict[str, Any] | None,
 ) -> dict[str, dict[str, str]]:
     policy = dict((config or {}).get("surface_variation") or {})
+    policy["_language"] = str((config or {}).get("language") or "en").casefold()
     output: dict[str, dict[str, str]] = {}
     for slot, value in canonical_slots.items():
         options = (
@@ -1157,7 +1198,12 @@ def _surface_options(
         "ranking_metric",
         "debt_metric",
     }:
-        options.extend(_METRIC_SURFACE_ALIASES.get(normalized, ()))
+        metric_aliases = (
+            _ZH_METRIC_SURFACE_ALIASES
+            if policy.get("_language") == "zh"
+            else _METRIC_SURFACE_ALIASES
+        )
+        options.extend(metric_aliases.get(normalized, ()))
     if slot.startswith("entity") and policy.get("entity_suffix_shortening", True):
         shortened = re.sub(
             r",?\s+(?:inc\.?|corp\.?|corporation|company|co\.?|ltd\.?|plc)$",
@@ -1174,20 +1220,33 @@ def _surface_options(
         if quarter_match:
             year, quarter = quarter_match.groups()
             quarter = quarter.upper()
-            natural_quarters = {
-                "Q1": f"the first quarter of FY{year}",
-                "Q2": f"the second quarter of FY{year}",
-                "Q3": f"the third quarter of FY{year}",
-                "Q4": f"the fourth quarter of FY{year}",
-                "Q1_YTD": f"the first three months of FY{year}",
-                "Q2_YTD": f"the first six months of FY{year}",
-                "Q3_YTD": f"the first nine months of FY{year}",
-                "Q4_YTD": f"the full fiscal year {year}",
-            }
-            options.extend(
-                [f"FY{year} {quarter.replace('_', ' ')}", natural_quarters[quarter]]
-            )
+            if policy.get("_language") == "zh":
+                natural_quarters = {
+                    "Q1": f"{year}财年第一季度",
+                    "Q2": f"{year}财年第二季度",
+                    "Q3": f"{year}财年第三季度",
+                    "Q4": f"{year}财年第四季度",
+                    "Q1_YTD": f"{year}财年前三个月",
+                    "Q2_YTD": f"{year}财年上半年",
+                    "Q3_YTD": f"{year}财年前九个月",
+                    "Q4_YTD": f"{year}完整财年",
+                }
+                options.extend([f"{year}财年{quarter.replace('_', ' ')}", natural_quarters[quarter]])
+            else:
+                natural_quarters = {
+                    "Q1": f"the first quarter of FY{year}",
+                    "Q2": f"the second quarter of FY{year}",
+                    "Q3": f"the third quarter of FY{year}",
+                    "Q4": f"the fourth quarter of FY{year}",
+                    "Q1_YTD": f"the first three months of FY{year}",
+                    "Q2_YTD": f"the first six months of FY{year}",
+                    "Q3_YTD": f"the first nine months of FY{year}",
+                    "Q4_YTD": f"the full fiscal year {year}",
+                }
+                options.extend([f"FY{year} {quarter.replace('_', ' ')}", natural_quarters[quarter]])
         match = re.fullmatch(r"(?:fiscal year\s+|FY\s*)?(\d{4})", value, re.I)
+        if policy.get("_language") == "zh":
+            match = match or re.fullmatch(r"(\d{4})(?:财年|财政年度|自然年|年)", value)
         if match:
             year = match.group(1)
             basis = str(
@@ -1195,14 +1254,16 @@ def _surface_options(
                 or semantics.get("time_basis")
                 or ""
             )
-            if "fiscal" in basis:
+            if policy.get("_language") == "zh":
                 options.extend(
-                    [f"FY{year}", f"FY {year}", f"the {year} fiscal year"]
+                    [f"{year}财年", f"{year}财政年度"]
+                    if "fiscal" in basis
+                    else [f"{year}年", f"{year}自然年"]
                 )
+            elif "fiscal" in basis:
+                options.extend([f"FY{year}", f"FY {year}", f"the {year} fiscal year"])
             else:
-                options.extend(
-                    [f"calendar year {year}", f"CY {year}", f"the {year} calendar year"]
-                )
+                options.extend([f"calendar year {year}", f"CY {year}", f"the {year} calendar year"])
     if slot == "frequency" and normalized == "annual":
         options.append("yearly")
     if slot == "extreme":
@@ -1210,7 +1271,7 @@ def _surface_options(
             options.extend(["maximum", "peak"])
         elif normalized == "lowest":
             options.extend(["minimum", "trough"])
-    if slot == "scope":
+    if slot == "scope" and policy.get("_language") != "zh":
         options.append(
             re.sub(
                 r"the explicitly configured data scope",
@@ -1664,7 +1725,7 @@ def _operator_position(question: str, operator: str) -> int | None:
     matches = list(_OBSERVABLE_OPERATOR_PATTERNS[operator].finditer(question))
     if not matches:
         return None
-    match = matches[-1] if operator == "rank" else matches[0]
+    match = matches[-1] if operator in {"rank", "lookup"} else matches[0]
     return match.start()
 
 
@@ -1678,7 +1739,7 @@ def _protected_rewrite_semantic_cues(
         "filter": ["filter", "screen"],
         "rank": ["rank", "top <slot_top_k>"],
         "extreme": ["highest", "lowest", "maximum", "minimum"],
-        "lookup": ["report", "look up", "what was"],
+        "lookup": ["report", "look up"],
     }
     return {
         "operator_order": operator_order,

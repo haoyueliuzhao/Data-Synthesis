@@ -45,6 +45,7 @@ from finraw.entity_normalization import refresh_entity_normalization
 from finraw.export import export_jsonl, export_layer_jsonl, export_layer_parquet, export_parquet
 from finraw.layers import LAYER_TABLES, layer_manifest
 from finraw.fact_quality import enforce_fact_quality_gates
+from finraw.fact_universe import build_fact_universe
 from finraw.fact_standardization import refresh_fact_standardization
 from finraw.greater_china_quality import enforce_greater_china_quality_gates
 from finraw.kg_builder import build_kg, export_kg_jsonl, kg_quality_report
@@ -256,6 +257,25 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         default="data/audit/greater_china_validation",
         help="Directory for scoped Greater China quality report files.",
+    )
+
+    fact_universe = sub.add_parser(
+        "build-fact-universe",
+        help=(
+            "Build a versioned, regionally stratified serving universe from "
+            "graph-ready standardized facts."
+        ),
+    )
+    fact_universe.add_argument(
+        "--output-dir",
+        default="data/audit/fact_universe",
+        help="Directory for fact-universe manifest and quality reports.",
+    )
+    fact_universe.add_argument(
+        "--batch-size",
+        type=int,
+        default=10000,
+        help="Batch size for fact-universe membership inserts.",
     )
 
     build_kg_parser = sub.add_parser("build-kg", help="Build a versioned property graph from graph-ready facts and derived facts.")
@@ -846,6 +866,40 @@ def main() -> None:
                     default=str,
                 )
             )
+        elif args.command == "build-fact-universe":
+            report = build_fact_universe(
+                db,
+                config,
+                output_dir=args.output_dir,
+                batch_size=args.batch_size,
+            )
+            print(
+                json.dumps(
+                    {
+                        "status": (
+                            "built"
+                            if report.get("quality_status") == "passed"
+                            else "quality_failed"
+                        ),
+                        "universe_build_id": report.get("universe_build_id"),
+                        "input_fact_build_id": report.get("input_fact_build_id"),
+                        "target_greater_china_share": report.get(
+                            "target_greater_china_share"
+                        ),
+                        "actual_greater_china_share": report.get(
+                            "actual_greater_china_share"
+                        ),
+                        "member_distribution": report.get("member_distribution"),
+                        "quality_failures": report.get("quality_failures"),
+                        "output_dir": args.output_dir,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                    default=str,
+                )
+            )
+            if report.get("quality_status") != "passed":
+                raise SystemExit(1)
         elif args.command == "build-kg":
             report = build_kg(
                 db,

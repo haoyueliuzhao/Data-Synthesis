@@ -1,0 +1,8 @@
+{
+  "extends": "prod_greater_china_authoritative_full.json",
+  "document_extraction": {
+    "cn_financial_statements": {
+      "source_ids": ["hkex_disclosures"]
+    }
+  }
+}

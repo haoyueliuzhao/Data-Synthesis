@@ -1,0 +1,193 @@
+{
+  "extends": "prod_greater_china_authoritative_full.json",
+  "qa": {
+    "language": "en",
+    "benchmark_alignment": {
+      "target_market_subset": "global",
+      "greater_china_source_ids": [
+        "cninfo_announcements",
+        "bse_disclosures",
+        "hkex_announcements",
+        "nbs_publications",
+        "pboc_publications",
+        "safe_publications",
+        "sse_market_statistics",
+        "szse_market_statistics"
+      ],
+      "greater_china_entity_ids": [],
+      "greater_china_derived_quotas": {},
+      "excluded_task_subtypes": [
+        "derived_input_trace",
+        "provenance_trace",
+        "time_hierarchy_membership",
+        "scope_composition",
+        "walk_derived_input_time_source_trace"
+      ]
+    },
+    "quotas": {
+      "single_fact_financial": 110,
+      "single_fact_worldbank": 45,
+      "single_fact_imf": 45,
+      "single_fact_fred": 45,
+      "single_fact_greater_china": 0
+    },
+    "derived_quotas": {
+      "difference": 30,
+      "yoy_growth": 50,
+      "qoq_growth": 0,
+      "ratio": 20,
+      "share": 0,
+      "multi_year_argmax": 17,
+      "multi_year_argmin": 17,
+      "industry_ranking": 0,
+      "industry_argmax": 0,
+      "industry_argmin": 0,
+      "ranking": 0,
+      "argmax": 0,
+      "argmin": 0,
+      "rolling_max": 0,
+      "rolling_min": 0,
+      "macro_time_series_argmax": 0,
+      "macro_time_series_argmin": 0,
+      "time_series_argmax": 0,
+      "time_series_argmin": 0,
+      "multi_condition_screening": 0,
+      "long_window_return": 0
+    },
+    "graph_patterns": {
+      "enabled": true,
+      "quotas": {
+        "pairwise_entity_metric_comparison": 28,
+        "entity_cross_metric_comparison": 14,
+        "entity_metric_temporal_average": 24,
+        "temporal_argmax_then_metric_lookup": 20,
+        "industry_growth_filter_then_margin_rank": 0,
+        "industry_revenue_rank_then_assets_lookup": 31,
+        "industry_multi_factor_screening": 0
+      }
+    },
+    "pattern_mining": {
+      "enabled": true,
+      "auto_run": false,
+      "auto_approve_for_qa": false,
+      "require_manual_review": false,
+      "max_proposals": 15,
+      "max_candidates_per_proposal": 2,
+      "compiled_graph_scan_rows": 0,
+      "compiled_graph_evaluation_rows": 5000,
+      "walk_mining": {
+        "enabled": true
+      }
+    },
+    "question_generation": {
+      "mode": "controlled_llm",
+      "strategy": "protected_rewrite",
+      "variants": 1,
+      "language": "en",
+      "max_attempts": 2,
+      "max_workers": 12,
+      "benchmark_style_constraints": {
+        "alignment_standard": "FinSearchComp T2/T3 aggregate style only",
+        "contamination_guard": "Do not reproduce or closely paraphrase any benchmark item.",
+        "self_contained": true,
+        "historical_period_explicit": true,
+        "financial_metric_precise": true,
+        "natural_search_task_wording": true,
+        "internal_system_terms_forbidden": true,
+        "concise_but_multi_step_when_required": true
+      },
+      "benchmark_alignment": {
+        "enabled": true,
+        "explicit_unit": true,
+        "explicit_precision": true,
+        "explicit_output_format": true,
+        "decimal_places": 2
+      },
+      "surface_variation": {
+        "enabled": true,
+        "entity_suffix_shortening": true,
+        "scope_contextualization": true,
+        "llm_selects_variants": false,
+        "minimum_noncanonical_selections": 1
+      },
+      "api_quality_gate": {
+        "minimum_http_success_rate": 0.98,
+        "minimum_structured_response_pass_rate": 0.98,
+        "minimum_valid_surface_realization_rate": 0.98,
+        "minimum_valid_denormalization_rate": 0.98,
+        "minimum_denormalization_applied_rate": 0.6,
+        "minimum_controlled_generation_rate": 0.98,
+        "minimum_average_noncanonical_slots": 1.0,
+        "minimum_style_variant_count": 8,
+        "maximum_retry_rate": 0.2,
+        "maximum_fallback_rate": 0.02
+      },
+      "llm": {
+        "provider": "deepseek_official",
+        "endpoint": "https://api.deepseek.com/v1/chat/completions",
+        "models_endpoint": "https://api.deepseek.com/models",
+        "model": "deepseek-v4-pro",
+        "fallback_models": [
+          "deepseek-v4-flash"
+        ],
+        "auto_select_model": true,
+        "maximum_model_attempts": 2,
+        "preferred_model_patterns": [
+          "deepseek-v4-pro",
+          "deepseek-v4-flash"
+        ],
+        "api_key_env": "DEEPSEEK_API_KEY",
+        "timeout_seconds": 120,
+        "max_output_tokens": 512,
+        "input_cost_per_million": 0.435,
+        "output_cost_per_million": 0.87,
+        "fallback_http_statuses": [
+          400,
+          403,
+          404,
+          429,
+          500,
+          502,
+          503
+        ],
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "quality_gate": {
+      "minimum_overall_pass_rate": 0.99,
+      "critical_tasks": {
+        "__replace__": true,
+        "single_fact": 220,
+        "yoy_growth": 40,
+        "ratio": 15
+      },
+      "max_critical_check_failures": 0,
+      "minimum_graph_pattern_samples": {
+        "__replace__": true,
+        "pairwise_entity_metric_comparison": 20,
+        "entity_cross_metric_comparison": 10,
+        "entity_metric_temporal_average": 15,
+        "temporal_argmax_then_metric_lookup": 15,
+        "industry_revenue_rank_then_assets_lookup": 15
+      },
+      "minimum_graph_pattern_eligibility_rate": 0.95,
+      "minimum_graph_feature_coverage": 0.2,
+      "minimum_unique_operation_sequences": 5,
+      "minimum_difficulty_samples": {
+        "__replace__": true,
+        "expert": 30,
+        "research": 5
+      },
+      "minimum_difficulty_ratios": {
+        "__replace__": true,
+        "expert": 0.04,
+        "research": 0.005
+      }
+    },
+    "temporal_split": {
+      "cutoff_year": 2025
+    }
+  }
+}

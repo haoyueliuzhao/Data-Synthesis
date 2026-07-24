@@ -1,7 +1,10 @@
 {
   "contract_id": "greater_china_qa_constraints_v1",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "generation_enabled": false,
+  "benchmark_market": "greater_china",
+  "internal_region_scope": "mainland_hong_kong_macau",
+  "taiwan_policy": "excluded_until_authoritative_source_and_entity_contract_are_available",
   "purpose": "Eligibility and semantic constraints for a future Greater China QA rebuild. This file does not authorize candidate or sample generation.",
   "upstream_requirements": {
     "pinned_raw_snapshot_required": true,
@@ -99,6 +102,10 @@
   },
   "future_market_distribution": {
     "minimum_greater_china_ratio": 0.4,
+    "finsearchcomp_t2_reference_greater_china_ratio": 0.4566210045662101,
+    "finsearchcomp_t3_reference_greater_china_ratio": 0.5116279069767442,
+    "finsearchcomp_combined_t2_t3_reference_greater_china_ratio": 0.48081841432225064,
+    "benchmark_alignment_tolerance": 0.05,
     "minimum_a_share_ratio_within_greater_china": 0.6,
     "minimum_hkex_ratio_within_greater_china": 0.25,
     "minimum_bse_ratio_within_a_share": 0.1,

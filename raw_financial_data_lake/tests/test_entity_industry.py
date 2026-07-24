@@ -48,7 +48,34 @@ def test_configured_bse_company_has_stable_exchange_and_industry() -> None:
     assert entities["920001_BSE"]["exchange"] == "BSE"
     assert entities["920001_BSE"]["industry"] == "计算机、通信和其他电子设备制造业"
     assert any(
-        row["source_id"] == "bse_disclosures"
-        and row["entity_id"] == "920001_BSE"
+        row["source_id"] == "bse_disclosures" and row["entity_id"] == "920001_BSE"
         for row in aliases.values()
     )
+
+
+def test_generic_cn_market_does_not_replace_exchange_in_canonical_id() -> None:
+    entities = {}
+    aliases = {}
+    config = {
+        "cninfo": {
+            "stock_pool": [
+                {
+                    "stock_code": "000504",
+                    "company_name": "南华生物",
+                    "market": "CN",
+                },
+                {
+                    "stock_code": "600257",
+                    "company_name": "大湖股份",
+                    "market": "CN",
+                },
+            ]
+        }
+    }
+
+    _add_cninfo_companies(entities, aliases, [], [], config)
+
+    assert "000504_SZSE" in entities
+    assert "600257_SSE" in entities
+    assert "000504_CN" not in entities
+    assert "600257_CN" not in entities

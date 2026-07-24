@@ -10,7 +10,7 @@ from typing import Any, Iterable, Mapping
 from finraw.db.client import DBProtocol
 
 
-AUDIT_VERSION = "1.0.0"
+AUDIT_VERSION = "1.2.0"
 GREATER_CHINA = "greater_china"
 INTERNATIONAL = "international"
 MIXED_GLOBAL = "mixed_global"
@@ -23,7 +23,16 @@ REGION_BUCKETS = (GREATER_CHINA, INTERNATIONAL, MIXED_GLOBAL, UNCLASSIFIED)
 GREATER_CHINA_COUNTRY_CODES = {"CN", "CHN", "HK", "HKG", "MO", "MAC"}
 GREATER_CHINA_ENTITY_IDS = {"CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"}
 GREATER_CHINA_EXCHANGES = {"SSE", "SZSE", "BSE", "HK", "HKEX", "MO", "MACAU"}
-GREATER_CHINA_MARKETS = {"CN", "CHINA", "PRC", "MAINLAND CHINA", "HK", "HONG KONG", "MO", "MACAU"}
+GREATER_CHINA_MARKETS = {
+    "CN",
+    "CHINA",
+    "PRC",
+    "MAINLAND CHINA",
+    "HK",
+    "HONG KONG",
+    "MO",
+    "MACAU",
+}
 
 GREATER_CHINA_SOURCE_IDS = {
     "bse_disclosures",
@@ -52,7 +61,65 @@ DISCLOSURE_DOCUMENT_SOURCE_IDS = {
 }
 
 PROMOTED_CANDIDATE_STATUSES = {"approved_for_atomic_fact", "promoted"}
-FINSEARCHCOMP_GREATER_CHINA_REFERENCE_SHARE = 298 / 635
+FINSEARCHCOMP_REGIONAL_REFERENCE = {
+    "t2": {
+        "global_count": 119,
+        "greater_china_count": 100,
+        "total_count": 219,
+        "greater_china_share": 100 / 219,
+    },
+    "t3": {
+        "global_count": 84,
+        "greater_china_count": 88,
+        "total_count": 172,
+        "greater_china_share": 88 / 172,
+    },
+    "combined_t2_t3": {
+        "global_count": 203,
+        "greater_china_count": 188,
+        "total_count": 391,
+        "greater_china_share": 188 / 391,
+    },
+}
+INTERNAL_GREATER_CHINA_MINIMUM_SHARE = 0.40
+BENCHMARK_ALIGNMENT_TOLERANCE = 0.05
+
+T2_DERIVED_TYPES = {"difference", "yoy_growth", "qoq_growth", "ratio"}
+T3_DERIVED_TYPES = {
+    "share",
+    "multi_year_argmax",
+    "multi_year_argmin",
+    "rolling_max",
+    "rolling_min",
+    "macro_time_series_argmax",
+    "macro_time_series_argmin",
+    "time_series_argmax",
+    "time_series_argmin",
+    "long_window_return",
+    "ranking",
+    "argmax",
+    "argmin",
+    "industry_ranking",
+    "industry_argmax",
+    "industry_argmin",
+    "multi_condition_screening",
+}
+
+COMPANY_PROFILE_METRICS = {
+    "revenue",
+    "operating_income",
+    "net_income",
+    "total_assets",
+    "total_liabilities",
+    "shareholders_equity",
+    "net_cash_provided_by_used_in_operating_activities",
+}
+COMPANY_PROFILE_INCOME_METRICS = {"revenue", "operating_income", "net_income"}
+COMPANY_PROFILE_POSITION_METRICS = {
+    "total_assets",
+    "total_liabilities",
+    "shareholders_equity",
+}
 
 
 def classify_source(source_id: Any, market: Any = None) -> str:
@@ -97,9 +164,7 @@ def classify_entity(
     if entity_type == "country":
         return INTERNATIONAL
     source_regions = {
-        classify_source(source_id)
-        for source_id in alias_source_ids
-        if source_id
+        classify_source(source_id) for source_id in alias_source_ids if source_id
     }
     if source_regions == {GREATER_CHINA}:
         return GREATER_CHINA
@@ -167,9 +232,7 @@ def distribution(counts: Mapping[str, int | float]) -> dict[str, Any]:
         bucket: int(counts.get(bucket, 0) or 0) for bucket in REGION_BUCKETS
     }
     total = sum(bucket_counts.values())
-    broad_international = (
-        bucket_counts[INTERNATIONAL] + bucket_counts[MIXED_GLOBAL]
-    )
+    broad_international = bucket_counts[INTERNATIONAL] + bucket_counts[MIXED_GLOBAL]
     return {
         "total": total,
         "bucket_counts": bucket_counts,
@@ -183,16 +246,38 @@ def distribution(counts: Mapping[str, int | float]) -> dict[str, Any]:
     }
 
 
+def regional_alignment_status(
+    greater_china_share: float,
+    *,
+    internal_minimum: float = INTERNAL_GREATER_CHINA_MINIMUM_SHARE,
+    benchmark_reference: float = FINSEARCHCOMP_REGIONAL_REFERENCE["combined_t2_t3"][
+        "greater_china_share"
+    ],
+    tolerance: float = BENCHMARK_ALIGNMENT_TOLERANCE,
+) -> str:
+    if greater_china_share < 0.25:
+        return "severely_underrepresented"
+    if greater_china_share < internal_minimum:
+        return "below_internal_contract"
+    if greater_china_share < benchmark_reference - tolerance:
+        return "contract_met_but_benchmark_underrepresented"
+    if greater_china_share <= benchmark_reference + tolerance:
+        return "within_benchmark_alignment_band"
+    return "greater_china_overweighted"
+
+
 def audit_regional_shares(
     db: DBProtocol,
     config: dict[str, Any],
     output_dir: str | None = None,
 ) -> dict[str, Any]:
-    del config  # The audit is pinned to the active KG contract and DB metadata.
-    source_rows = [_as_dict(row) for row in db.fetchall(
-        "SELECT source_id, source_name, market, provider, authority_level "
-        "FROM source_registry"
-    )]
+    source_rows = [
+        _as_dict(row)
+        for row in db.fetchall(
+            "SELECT source_id, source_name, market, provider, authority_level "
+            "FROM source_registry"
+        )
+    ]
     source_markets = {
         str(row.get("source_id") or ""): row.get("market") for row in source_rows
     }
@@ -219,13 +304,9 @@ def audit_regional_shares(
     entity_report = _summarize_entities(entity_rows, entity_regions)
 
     raw_hints = _raw_object_hints(db)
-    raw_report, raw_regions = _raw_object_audit(
-        db, raw_hints, source_markets
-    )
+    raw_report, raw_regions = _raw_object_audit(db, raw_hints, source_markets)
     raw_record_report = _raw_record_audit(db, source_markets)
-    candidate_report = _candidate_audit(
-        db, entity_regions, source_policy
-    )
+    candidate_report = _candidate_audit(db, entity_regions, source_policy)
     atomic_report = _atomic_fact_audit(
         db,
         builds["atomic_build_id"],
@@ -240,10 +321,21 @@ def audit_regional_shares(
         source_policy,
         metric_categories,
     )
+    fact_universe_report = _fact_universe_audit(
+        db,
+        builds["fact_universe_build_id"],
+    )
     derived_report, scope_regions = _derived_fact_audit(
         db,
         builds["derived_build_id"],
         builds["fact_build_id"],
+        entity_regions,
+    )
+    company_profile_report = _company_profile_audit(
+        db,
+        builds["fact_build_id"],
+        builds["entity_build_id"],
+        entity_rows,
         entity_regions,
     )
     document_report = _source_document_audit(
@@ -263,20 +355,26 @@ def audit_regional_shares(
         raw_regions,
         scope_regions,
         builds["entity_build_id"],
+        source_policy,
+    )
+    qa_constructible_report = _qa_constructible_audit(
+        db,
+        standardized_report,
+        derived_report,
+        kg_report=kg_report,
     )
 
     structured_gc_sources_without_facts = sorted(
         source_id
         for source_id in GREATER_CHINA_SOURCE_IDS
         if raw_report["by_source"].get(source_id, {}).get("usable_object_count", 0)
-        and standardized_report["by_source"].get(source_id, {}).get("fact_count", 0) == 0
+        and standardized_report["by_source"].get(source_id, {}).get("fact_count", 0)
+        == 0
     )
     document_index_gaps = []
     for source_id in sorted(DISCLOSURE_DOCUMENT_SOURCE_IDS):
         usable_objects = int(
-            raw_report["by_source"].get(source_id, {}).get(
-                "usable_object_count", 0
-            )
+            raw_report["by_source"].get(source_id, {}).get("usable_object_count", 0)
         )
         indexed_documents = int(
             document_report["by_source"].get(source_id, {}).get("total", 0)
@@ -293,19 +391,19 @@ def audit_regional_shares(
     greater_china_derived_type_gaps = sorted(
         derived_type
         for derived_type, item in derived_report["by_derived_type"].items()
-        if item["total"] > 0
-        and item["bucket_counts"][GREATER_CHINA] == 0
+        if item["total"] > 0 and item["bucket_counts"][GREATER_CHINA] == 0
     )
     source_wide_forecast_exclusions = sorted(
         source_id
         for source_id, item in standardized_report["by_source"].items()
-        if item["graph_ready_count"] > 0
-        and item["historical_graph_ready_count"] == 0
+        if item["graph_ready_count"] > 0 and item["historical_graph_ready_count"] == 0
     )
     report = {
         "audit_version": AUDIT_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "scope_policy": {
+            "benchmark_market": "greater_china",
+            "internal_region_scope": "mainland_hong_kong_macau",
             "greater_china_definition": "mainland_china_hong_kong_macau",
             "greater_china_country_codes": sorted(GREATER_CHINA_COUNTRY_CODES),
             "taiwan_policy": (
@@ -326,15 +424,22 @@ def audit_regional_shares(
         "candidate_facts": candidate_report,
         "atomic_facts": atomic_report,
         "standardized_facts": standardized_report,
+        "fact_universe": fact_universe_report,
         "derived_facts": derived_report,
+        "company_profile_capability": company_profile_report,
+        "qa_constructible_capability": qa_constructible_report,
         "source_documents": document_report,
         "knowledge_graph": kg_report,
         "finsearchcomp_reference": {
-            "total_count": 635,
-            "greater_china_count": 298,
-            "global_count": 337,
-            "greater_china_share": FINSEARCHCOMP_GREATER_CHINA_REFERENCE_SHARE,
-            "usage": "distribution_reference_only",
+            **FINSEARCHCOMP_REGIONAL_REFERENCE,
+            "usage": "T2/T3 distribution reference only",
+            "internal_minimum_greater_china_share": (
+                INTERNAL_GREATER_CHINA_MINIMUM_SHARE
+            ),
+            "alignment_tolerance": BENCHMARK_ALIGNMENT_TOLERANCE,
+            "internal_contract_source": (
+                "config/scopes/greater_china_qa_constraints.json"
+            ),
         },
         "structured_greater_china_sources_without_active_facts": (
             structured_gc_sources_without_facts
@@ -346,6 +451,7 @@ def audit_regional_shares(
         "source_wide_forecast_exclusions": source_wide_forecast_exclusions,
     }
     report["summary_matrix"] = _summary_matrix(report)
+    report["capability_dimensions"] = _capability_dimensions(report)
     report["balance_assessment"] = _balance_assessment(report)
     if output_dir:
         paths = write_regional_share_report(report, output_dir)
@@ -353,9 +459,7 @@ def audit_regional_shares(
     return report
 
 
-def write_regional_share_report(
-    report: dict[str, Any], output_dir: str
-) -> list[Path]:
+def write_regional_share_report(report: dict[str, Any], output_dir: str) -> list[Path]:
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     json_path = output / "regional_share_audit.json"
@@ -374,20 +478,23 @@ def _active_kg_build(db: DBProtocol) -> dict[str, Any]:
         "ORDER BY completed_at DESC LIMIT 1"
     )
     if not row:
-        raise RuntimeError("No active successful KG build is available for regional audit")
+        raise RuntimeError(
+            "No active successful KG build is available for regional audit"
+        )
     return _as_dict(row)
 
 
-def _pinned_builds(
-    db: DBProtocol, active_kg: Mapping[str, Any]
-) -> dict[str, str]:
+def _pinned_builds(db: DBProtocol, active_kg: Mapping[str, Any]) -> dict[str, str]:
     fact_build_id = str(active_kg.get("input_fact_build_id") or "")
+    fact_universe_build_id = str(active_kg.get("input_fact_universe_build_id") or "")
     derived_build_id = str(active_kg.get("input_qa_build_id") or "")
     entity_build_id = str(active_kg.get("input_entity_build_id") or "")
     metric_build_id = str(active_kg.get("input_metric_build_id") or "")
     document_build_id = str(active_kg.get("input_document_build_id") or "")
     if not all([fact_build_id, derived_build_id, entity_build_id, metric_build_id]):
-        raise RuntimeError("Active KG does not contain a complete pinned build contract")
+        raise RuntimeError(
+            "Active KG does not contain a complete pinned build contract"
+        )
     fact_build = db.fetchone(
         "SELECT input_build_id FROM pipeline_builds WHERE build_id = ?",
         [fact_build_id],
@@ -410,13 +517,12 @@ def _pinned_builds(
         "atomic_build_id": atomic_build_id,
         "document_build_id": document_build_id,
         "fact_build_id": fact_build_id,
+        "fact_universe_build_id": fact_universe_build_id,
         "derived_build_id": derived_build_id,
     }
 
 
-def _entity_alias_sources(
-    db: DBProtocol, build_id: str
-) -> dict[str, set[str]]:
+def _entity_alias_sources(db: DBProtocol, build_id: str) -> dict[str, set[str]]:
     rows = db.fetchall(
         "SELECT entity_id, source_id FROM entity_alias_map WHERE build_id = ?",
         [build_id],
@@ -432,14 +538,15 @@ def _entity_alias_sources(
 def _entity_audit(
     db: DBProtocol, build_id: str
 ) -> tuple[list[dict[str, Any]], dict[str, str], dict[str, Any]]:
-    rows = [_as_dict(row) for row in db.fetchall(
-        "SELECT entity_id, canonical_name, entity_type, market, country, "
-        "exchange, ticker FROM canonical_entities WHERE build_id = ?",
-        [build_id],
-    )]
-    regions = {
-        str(row.get("entity_id")): classify_entity(row) for row in rows
-    }
+    rows = [
+        _as_dict(row)
+        for row in db.fetchall(
+            "SELECT entity_id, canonical_name, entity_type, market, country, "
+            "exchange, ticker FROM canonical_entities WHERE build_id = ?",
+            [build_id],
+        )
+    ]
+    regions = {str(row.get("entity_id")): classify_entity(row) for row in rows}
     return rows, regions, _summarize_entities(rows, regions)
 
 
@@ -537,7 +644,11 @@ def _raw_object_audit(
         "usable_size_distribution": distribution(usable_bytes),
         "by_source": {
             source_id: {
-                **{key: value for key, value in item.items() if not isinstance(value, Counter)},
+                **{
+                    key: value
+                    for key, value in item.items()
+                    if not isinstance(value, Counter)
+                },
                 "status_counts": dict(sorted(item["status_counts"].items())),
                 "region_distribution": distribution(item["region_counts"]),
                 "usable_region_distribution": distribution(
@@ -698,6 +809,9 @@ def _summarize_fact_groups(
     historical_ready_by_source: Counter[str] = Counter()
     by_frequency: dict[str, Counter[str]] = defaultdict(Counter)
     by_category: dict[str, Counter[str]] = defaultdict(Counter)
+    historical_metric_ids_by_category: dict[str, dict[str, set[str]]] = defaultdict(
+        lambda: defaultdict(set)
+    )
     details = _empty_region_details()
     ready_details = _empty_region_details()
     historical_ready_details = _empty_region_details()
@@ -736,6 +850,8 @@ def _summarize_fact_groups(
             _update_region_details(
                 historical_ready_details[region], row, historical_ready
             )
+            if metric_id:
+                historical_metric_ids_by_category[category][region].add(metric_id)
     report = {
         "distribution": distribution(counts),
         "details_by_region": _finalize_region_details(details),
@@ -766,8 +882,11 @@ def _summarize_fact_groups(
         report["graph_ready_details_by_region"] = _finalize_region_details(
             ready_details
         )
-        report["historical_graph_ready_details_by_region"] = (
-            _finalize_region_details(historical_ready_details)
+        report["historical_graph_ready_details_by_region"] = _finalize_region_details(
+            historical_ready_details
+        )
+        report["historical_metric_family_coverage"] = _metric_family_coverage(
+            historical_metric_ids_by_category
         )
         for source_id in by_source:
             report["by_source"][source_id]["graph_ready_count"] = int(
@@ -785,8 +904,7 @@ def _metric_categories(db: DBProtocol, build_id: str) -> dict[str, str]:
         [build_id],
     )
     return {
-        str(row["metric_id"]): str(row["metric_category"] or "unknown")
-        for row in rows
+        str(row["metric_id"]): str(row["metric_category"] or "unknown") for row in rows
     }
 
 
@@ -836,10 +954,250 @@ def _derived_fact_audit(
             derived_type: distribution(values)
             for derived_type, values in sorted(by_type.items())
         },
-        "scope_region_count": dict(
-            sorted(Counter(scope_regions.values()).items())
-        ),
+        "scope_region_count": dict(sorted(Counter(scope_regions.values()).items())),
     }, scope_regions
+
+
+def _company_profile_audit(
+    db: DBProtocol,
+    fact_build_id: str,
+    entity_build_id: str,
+    entity_rows: Iterable[Mapping[str, Any]],
+    entity_regions: Mapping[str, str],
+) -> dict[str, Any]:
+    companies = {
+        str(row.get("entity_id")): row
+        for row in entity_rows
+        if str(row.get("entity_type") or "") == "company"
+    }
+    rows = db.fetchall(
+        "SELECT sf.entity_id, sf.metric_id, sf.fiscal_year "
+        "FROM standardized_facts sf JOIN canonical_entities ce "
+        "ON ce.entity_id = sf.entity_id AND ce.build_id = ? "
+        "WHERE sf.build_id = ? AND ce.entity_type = 'company' "
+        "AND COALESCE(sf.is_active, 1) = 1 "
+        "AND COALESCE(sf.graph_ready, 0) = 1 "
+        "AND COALESCE(sf.is_forecast, 0) = 0 "
+        "AND sf.fiscal_quarter = 'FY' AND sf.fiscal_year IS NOT NULL "
+        "AND sf.metric_id IN ("
+        + ",".join("?" for _ in COMPANY_PROFILE_METRICS)
+        + ") GROUP BY sf.entity_id, sf.metric_id, sf.fiscal_year",
+        [entity_build_id, fact_build_id, *sorted(COMPANY_PROFILE_METRICS)],
+    )
+    metric_years: dict[str, dict[str, set[int]]] = defaultdict(lambda: defaultdict(set))
+    for raw_row in rows:
+        row = _as_dict(raw_row)
+        metric_years[str(row["entity_id"])][str(row["metric_id"])].add(
+            int(row["fiscal_year"])
+        )
+
+    company_counts: Counter[str] = Counter()
+    passing_counts: Counter[str] = Counter()
+    by_region: dict[str, dict[str, Any]] = {
+        region: {"company_count": 0, "passing_company_count": 0}
+        for region in REGION_BUCKETS
+    }
+    failed_samples: dict[str, list[dict[str, Any]]] = {
+        region: [] for region in REGION_BUCKETS
+    }
+    for entity_id, company in companies.items():
+        region = entity_regions.get(entity_id, UNCLASSIFIED)
+        company_counts[region] += 1
+        by_region[region]["company_count"] += 1
+        covered_metrics = {
+            metric_id
+            for metric_id, years in metric_years.get(entity_id, {}).items()
+            if len(years) >= 5
+        }
+        passed = (
+            len(covered_metrics) >= 3
+            and bool(covered_metrics & COMPANY_PROFILE_INCOME_METRICS)
+            and bool(covered_metrics & COMPANY_PROFILE_POSITION_METRICS)
+        )
+        if passed:
+            passing_counts[region] += 1
+            by_region[region]["passing_company_count"] += 1
+        elif len(failed_samples[region]) < 20:
+            failed_samples[region].append(
+                {
+                    "entity_id": entity_id,
+                    "canonical_name": company.get("canonical_name"),
+                    "covered_metric_ids": sorted(covered_metrics),
+                }
+            )
+    for region, item in by_region.items():
+        item["profile_pass_ratio"] = _ratio(
+            item["passing_company_count"], item["company_count"]
+        )
+    return {
+        "policy_id": "cross_region_company_profile_v1",
+        "minimum_years_per_metric": 5,
+        "minimum_covered_metric_count": 3,
+        "required_income_metric_group": sorted(COMPANY_PROFILE_INCOME_METRICS),
+        "required_position_metric_group": sorted(COMPANY_PROFILE_POSITION_METRICS),
+        "company_distribution": distribution(company_counts),
+        "passing_company_distribution": distribution(passing_counts),
+        "by_region": by_region,
+        "failed_company_samples": failed_samples,
+    }
+
+
+def _qa_constructible_audit(
+    db: DBProtocol,
+    standardized_report: Mapping[str, Any],
+    derived_report: Mapping[str, Any],
+    *,
+    kg_report: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    kg_distributions = (
+        kg_report.get("classified_node_type_distributions", {}) if kg_report else {}
+    )
+    fact_distribution = (
+        kg_distributions.get("Fact")
+        or standardized_report["historical_graph_ready_distribution"]
+    )
+    t2_counts = Counter(fact_distribution["bucket_counts"])
+    t3_counts: Counter[str] = Counter()
+    unmapped_types = []
+    derived_by_type = (
+        kg_report.get("derived_by_type", {})
+        if kg_report
+        else derived_report["by_derived_type"]
+    )
+    for derived_type, item in derived_by_type.items():
+        counts = item["bucket_counts"]
+        if derived_type in T2_DERIVED_TYPES:
+            t2_counts.update(counts)
+        elif derived_type in T3_DERIVED_TYPES:
+            t3_counts.update(counts)
+        else:
+            unmapped_types.append(derived_type)
+    t2 = distribution(t2_counts)
+    t3 = distribution(t3_counts)
+    combined_total = FINSEARCHCOMP_REGIONAL_REFERENCE["combined_t2_t3"]["total_count"]
+    t2_weight = FINSEARCHCOMP_REGIONAL_REFERENCE["t2"]["total_count"] / combined_total
+    t3_weight = FINSEARCHCOMP_REGIONAL_REFERENCE["t3"]["total_count"] / combined_total
+    weighted_share = (
+        t2["greater_china_share"] * t2_weight + t3["greater_china_share"] * t3_weight
+    )
+    sample_row = db.fetchone("SELECT COUNT(*) AS row_count FROM qa_samples")
+    materialized_count = int(
+        _as_dict(sample_row).get("row_count", 0) if sample_row else 0
+    )
+    return {
+        "measure_type": (
+            "pinned_kg_constructibility_proxy"
+            if kg_report
+            else "pre_build_constructibility_proxy"
+        ),
+        "materialized_qa_sample_count": materialized_count,
+        "t2_proxy_distribution": t2,
+        "t3_proxy_distribution": t3,
+        "benchmark_task_weights": {"T2": t2_weight, "T3": t3_weight},
+        "benchmark_weighted_greater_china_share": weighted_share,
+        "unmapped_derived_types": sorted(unmapped_types),
+        "limitations": [
+            "T2 proxy counts pinned KG Fact nodes plus simple DerivedFact nodes.",
+            "T3 proxy counts pinned KG temporal, scope, ranking and screening DerivedFact nodes.",
+            "The proxy is not a substitute for a regenerated, quality-gated QA build.",
+        ],
+    }
+
+
+def _fact_universe_audit(
+    db: DBProtocol,
+    universe_build_id: str,
+) -> dict[str, Any]:
+    if not universe_build_id:
+        return {
+            "universe_build_id": None,
+            "status": "not_pinned",
+            "distribution": distribution({}),
+            "by_source": {},
+        }
+    build_row = db.fetchone(
+        "SELECT * FROM fact_universe_builds WHERE universe_build_id = ?",
+        [universe_build_id],
+    )
+    if not build_row:
+        return {
+            "universe_build_id": universe_build_id,
+            "status": "missing",
+            "distribution": distribution({}),
+            "by_source": {},
+        }
+    count_rows = db.fetchall(
+        "SELECT region_bucket, COUNT(*) AS row_count "
+        "FROM fact_universe_members WHERE universe_build_id = ? "
+        "GROUP BY region_bucket",
+        [universe_build_id],
+    )
+    counts = Counter(
+        {str(row["region_bucket"]): int(row["row_count"]) for row in count_rows}
+    )
+    source_rows = db.fetchall(
+        "SELECT sf.source_id, m.region_bucket, COUNT(*) AS row_count "
+        "FROM fact_universe_members m "
+        "JOIN standardized_facts sf ON sf.fact_id = m.fact_id "
+        "WHERE m.universe_build_id = ? "
+        "GROUP BY sf.source_id, m.region_bucket",
+        [universe_build_id],
+    )
+    by_source: dict[str, Counter[str]] = defaultdict(Counter)
+    for raw_row in source_rows:
+        row = _as_dict(raw_row)
+        by_source[str(row.get("source_id") or "unknown")][
+            str(row.get("region_bucket") or UNCLASSIFIED)
+        ] += int(row.get("row_count") or 0)
+    derived_count_rows = db.fetchall(
+        "SELECT region_bucket, COUNT(*) AS row_count "
+        "FROM fact_universe_derived_members WHERE universe_build_id = ? "
+        "GROUP BY region_bucket",
+        [universe_build_id],
+    )
+    derived_counts = Counter(
+        {str(row["region_bucket"]): int(row["row_count"]) for row in derived_count_rows}
+    )
+    derived_type_rows = db.fetchall(
+        "SELECT d.derived_type, m.region_bucket, COUNT(*) AS row_count "
+        "FROM fact_universe_derived_members m "
+        "JOIN derived_facts d ON d.derived_id = m.derived_id "
+        "WHERE m.universe_build_id = ? "
+        "GROUP BY d.derived_type, m.region_bucket",
+        [universe_build_id],
+    )
+    derived_by_type: dict[str, Counter[str]] = defaultdict(Counter)
+    for raw_row in derived_type_rows:
+        row = _as_dict(raw_row)
+        derived_by_type[str(row.get("derived_type") or "unknown")][
+            str(row.get("region_bucket") or UNCLASSIFIED)
+        ] += int(row.get("row_count") or 0)
+    build = _as_dict(build_row)
+    return {
+        "universe_build_id": universe_build_id,
+        "input_fact_build_id": build.get("input_fact_build_id"),
+        "policy_id": build.get("policy_id"),
+        "policy_version": build.get("policy_version"),
+        "target_greater_china_share": float(
+            build.get("target_greater_china_share") or 0
+        ),
+        "recorded_actual_greater_china_share": float(
+            build.get("actual_greater_china_share") or 0
+        ),
+        "status": build.get("status"),
+        "quality_status": build.get("quality_status"),
+        "membership_manifest_hash": build.get("membership_manifest_hash"),
+        "distribution": distribution(counts),
+        "derived_distribution": distribution(derived_counts),
+        "derived_by_type": {
+            derived_type: distribution(type_counts)
+            for derived_type, type_counts in sorted(derived_by_type.items())
+        },
+        "by_source": {
+            source_id: distribution(values)
+            for source_id, values in sorted(by_source.items())
+        },
+    }
 
 
 def _source_document_audit(
@@ -888,6 +1246,7 @@ def _kg_region_audit(
     raw_regions: Mapping[str, str],
     scope_regions: Mapping[str, str],
     entity_build_id: str,
+    source_policy: Mapping[str, str],
 ) -> dict[str, Any]:
     kg_build_id = str(active_kg["kg_build_id"])
     node_rows = db.fetchall(
@@ -899,13 +1258,56 @@ def _kg_region_audit(
         str(row["node_type"]): int(row["node_count"]) for row in node_rows
     }
     region_counts: Counter[str] = Counter()
-    region_counts.update(
-        entity_report["distribution"]["bucket_counts"]
+    region_counts.update(entity_report["distribution"]["bucket_counts"])
+    fact_rows = db.fetchall(
+        "SELECT sf.entity_id, sf.source_id, COUNT(*) AS row_count "
+        "FROM kg_nodes n JOIN standardized_facts sf ON sf.fact_id = n.source_pk "
+        "WHERE n.kg_build_id = ? AND n.node_type = 'Fact' "
+        "GROUP BY sf.entity_id, sf.source_id",
+        [kg_build_id],
     )
-    region_counts.update(
-        standardized_report["graph_ready_distribution"]["bucket_counts"]
+    kg_fact_counts: Counter[str] = Counter()
+    for raw_row in fact_rows:
+        row = _as_dict(raw_row)
+        region = _entity_or_source_region(
+            row.get("entity_id"),
+            str(row.get("source_id") or ""),
+            entity_regions,
+            source_policy,
+        )
+        kg_fact_counts[region] += int(row.get("row_count") or 0)
+    kg_fact_distribution = distribution(kg_fact_counts)
+    region_counts.update(kg_fact_counts)
+
+    derived_rows = db.fetchall(
+        "SELECT d.derived_type, d.entity_scope, d.scope_id, "
+        "d.scope_entity_ids, COUNT(*) AS row_count "
+        "FROM kg_nodes n JOIN derived_facts d ON d.derived_id = n.source_pk "
+        "WHERE n.kg_build_id = ? AND n.node_type = 'DerivedFact' "
+        "GROUP BY d.derived_type, d.entity_scope, d.scope_id, d.scope_entity_ids",
+        [kg_build_id],
     )
-    region_counts.update(derived_report["distribution"]["bucket_counts"])
+    kg_derived_counts: Counter[str] = Counter()
+    kg_derived_by_type: dict[str, Counter[str]] = defaultdict(Counter)
+    for raw_row in derived_rows:
+        row = _as_dict(raw_row)
+        entity_scope = _json_dict(row.get("entity_scope"))
+        entity_ids = {str(value) for value in _json_list(row.get("scope_entity_ids"))}
+        if entity_scope.get("entity_id"):
+            entity_ids.add(str(entity_scope["entity_id"]))
+        entity_ids.update(
+            str(value) for value in entity_scope.get("entity_ids", []) if value
+        )
+        scope_id = str(row.get("scope_id") or "")
+        if not entity_ids and scope_id in entity_regions:
+            entity_ids.add(scope_id)
+        region = classify_entity_scope(entity_ids, entity_regions)
+        count = int(row.get("row_count") or 0)
+        derived_type = str(row.get("derived_type") or "unknown")
+        kg_derived_counts[region] += count
+        kg_derived_by_type[derived_type][region] += count
+    kg_derived_distribution = distribution(kg_derived_counts)
+    region_counts.update(kg_derived_counts)
     region_counts.update(document_report["distribution"]["bucket_counts"])
 
     security_rows = db.fetchall(
@@ -938,8 +1340,7 @@ def _kg_region_audit(
         [kg_build_id],
     )
     raw_node_counts: Counter[str] = Counter(
-        raw_regions.get(str(row["source_pk"]), UNCLASSIFIED)
-        for row in raw_node_rows
+        raw_regions.get(str(row["source_pk"]), UNCLASSIFIED) for row in raw_node_rows
     )
     region_counts.update(raw_node_counts)
 
@@ -967,12 +1368,16 @@ def _kg_region_audit(
         "shared_infrastructure_share": _ratio(shared_infrastructure, total_nodes),
         "classified_node_type_distributions": {
             "Entity": entity_report["distribution"],
-            "Fact": standardized_report["graph_ready_distribution"],
-            "DerivedFact": derived_report["distribution"],
+            "Fact": kg_fact_distribution,
+            "DerivedFact": kg_derived_distribution,
             "SourceDocument": document_report["distribution"],
             "Security": distribution(security_counts),
             "RawObject": distribution(raw_node_counts),
             "EntitySet": distribution(entity_set_counts),
+        },
+        "derived_by_type": {
+            derived_type: distribution(values)
+            for derived_type, values in sorted(kg_derived_by_type.items())
         },
     }
 
@@ -995,6 +1400,17 @@ def _summary_matrix(report: Mapping[str, Any]) -> list[dict[str, Any]]:
             "historical_graph_ready_facts",
             report["standardized_facts"]["historical_graph_ready_distribution"],
         ),
+        ("fact_universe_members", report["fact_universe"]["distribution"]),
+        (
+            "kg_fact_nodes",
+            report["knowledge_graph"]["classified_node_type_distributions"]["Fact"],
+        ),
+        (
+            "kg_derived_fact_nodes",
+            report["knowledge_graph"]["classified_node_type_distributions"][
+                "DerivedFact"
+            ],
+        ),
         ("derived_facts", report["derived_facts"]["distribution"]),
         (
             "kg_region_addressable_nodes",
@@ -1004,27 +1420,118 @@ def _summary_matrix(report: Mapping[str, Any]) -> list[dict[str, Any]]:
     return [{"layer": layer, **dist} for layer, dist in rows]
 
 
+def _capability_dimensions(report: Mapping[str, Any]) -> dict[str, Any]:
+    graph_ready = report["standardized_facts"]["historical_graph_ready_distribution"]
+    entities = report["canonical_entities"]["distribution"]
+    metrics = report["standardized_facts"]["historical_metric_family_coverage"]
+    companies = report["company_profile_capability"]
+    qa_capability = report["qa_constructible_capability"]
+    company_pass_distribution = companies["passing_company_distribution"]
+    serving_facts = report["fact_universe"]["distribution"]
+    kg_facts = report["knowledge_graph"]["classified_node_type_distributions"]["Fact"]
+    return {
+        "graph_ready_fact_share": {
+            "greater_china_share": graph_ready["greater_china_share"],
+            "greater_china_count": graph_ready["bucket_counts"][GREATER_CHINA],
+            "international_broad_count": graph_ready["international_broad_count"],
+        },
+        "serving_fact_universe_share": {
+            "greater_china_share": serving_facts["greater_china_share"],
+            "greater_china_count": serving_facts["bucket_counts"][GREATER_CHINA],
+            "international_broad_count": serving_facts["international_broad_count"],
+            "universe_build_id": report["fact_universe"].get("universe_build_id"),
+        },
+        "kg_fact_share": {
+            "greater_china_share": kg_facts["greater_china_share"],
+            "greater_china_count": kg_facts["bucket_counts"][GREATER_CHINA],
+            "international_broad_count": kg_facts["international_broad_count"],
+        },
+        "entity_share": {
+            "greater_china_share": entities["greater_china_share"],
+            "greater_china_count": entities["bucket_counts"][GREATER_CHINA],
+            "international_broad_count": entities["international_broad_count"],
+        },
+        "metric_family_coverage": {
+            "greater_china_union_coverage_ratio": metrics[
+                "greater_china_union_coverage_ratio"
+            ],
+            "greater_china_metric_count": metrics["greater_china_metric_count"],
+            "union_metric_count": metrics["union_metric_count"],
+            "by_metric_family": metrics["by_metric_family"],
+        },
+        "company_profile_pass_share": {
+            "greater_china_share_of_passing_companies": (
+                company_pass_distribution["greater_china_share"]
+            ),
+            "greater_china_passing_company_count": (
+                company_pass_distribution["bucket_counts"][GREATER_CHINA]
+            ),
+            "greater_china_within_region_pass_ratio": companies["by_region"][
+                GREATER_CHINA
+            ]["profile_pass_ratio"],
+            "international_broad_passing_company_count": (
+                company_pass_distribution["international_broad_count"]
+            ),
+        },
+        "qa_constructible_candidate_share": {
+            "measure_type": qa_capability["measure_type"],
+            "benchmark_weighted_greater_china_share": qa_capability[
+                "benchmark_weighted_greater_china_share"
+            ],
+            "t2_greater_china_share": qa_capability["t2_proxy_distribution"][
+                "greater_china_share"
+            ],
+            "t3_greater_china_share": qa_capability["t3_proxy_distribution"][
+                "greater_china_share"
+            ],
+            "materialized_qa_sample_count": qa_capability[
+                "materialized_qa_sample_count"
+            ],
+        },
+    }
+
+
 def _balance_assessment(report: Mapping[str, Any]) -> dict[str, Any]:
     matrix = {row["layer"]: row for row in report["summary_matrix"]}
     graph_share_all = float(matrix["graph_ready_facts"]["greater_china_share"])
-    graph_share = float(
-        matrix["historical_graph_ready_facts"]["greater_china_share"]
-    )
+    graph_share = float(matrix["historical_graph_ready_facts"]["greater_china_share"])
+    serving_share = float(matrix["fact_universe_members"]["greater_china_share"])
+    kg_fact_share = float(matrix["kg_fact_nodes"]["greater_china_share"])
     entity_share = float(matrix["canonical_entities"]["greater_china_share"])
     document_share = float(matrix["source_documents"]["greater_china_share"])
     derived_share = float(matrix["derived_facts"]["greater_china_share"])
-    reference = FINSEARCHCOMP_GREATER_CHINA_REFERENCE_SHARE
+    capability = report["capability_dimensions"]
+    qa_share = float(
+        capability["qa_constructible_candidate_share"][
+            "benchmark_weighted_greater_china_share"
+        ]
+    )
+    metric_coverage = float(
+        capability["metric_family_coverage"]["greater_china_union_coverage_ratio"]
+    )
+    company_pass_share = float(
+        capability["company_profile_pass_share"][
+            "greater_china_share_of_passing_companies"
+        ]
+    )
+    reference = FINSEARCHCOMP_REGIONAL_REFERENCE["combined_t2_t3"][
+        "greater_china_share"
+    ]
+    status = regional_alignment_status(qa_share)
     findings = []
     if graph_share < 0.10:
-        findings.append("大中华区在历史 graph-ready 结构化事实中严重不足。")
+        findings.append(
+            "大中华区在完整历史 graph-ready 归档事实中仍严重不足；"
+            "服务层平衡不能替代继续扩充权威来源。"
+        )
+    if serving_share < INTERNAL_GREATER_CHINA_MINIMUM_SHARE:
+        findings.append("Fact Universe 未达到大中华区最低 40% 的内部合同。")
+    if abs(serving_share - kg_fact_share) > 1e-12:
+        findings.append("KG Fact 节点分布与其固定的 Fact Universe 不一致。")
     if derived_share < graph_share:
-        findings.append(
-            "大中华区从 graph-ready 事实到派生事实时占比进一步下降。"
-        )
+        findings.append("大中华区从 graph-ready 事实到派生事实时占比进一步下降。")
     if entity_share > graph_share * 3:
-        findings.append(
-            "实体覆盖明显宽于结构化事实密度，仅看公司数会高估区域平衡度。"
-        )
+        findings.append("实体覆盖明显宽于结构化事实密度，仅看公司数会高估区域平衡度。")
     if document_share > graph_share * 3:
         findings.append("文档覆盖明显强于可用于图推理的数值事实覆盖。")
     if report["structured_greater_china_sources_without_active_facts"]:
@@ -1033,14 +1540,30 @@ def _balance_assessment(report: Mapping[str, Any]) -> dict[str, Any]:
         )
     if report["document_index_gaps"]:
         findings.append("部分已校验披露文件尚未进入 source_documents 索引。")
+    if qa_share < INTERNAL_GREATER_CHINA_MINIMUM_SHARE:
+        findings.append("T2/T3 可构造性代理未达到大中华区最低 40% 的内部 QA 合同。")
+    if metric_coverage < INTERNAL_GREATER_CHINA_MINIMUM_SHARE:
+        findings.append("大中华区历史指标族覆盖仍明显窄于全库指标集合。")
     return {
-        "status": "international_heavy" if graph_share < 0.35 else "closer_to_reference",
+        "status": status,
+        "primary_alignment_measure": "qa_constructible_candidate_share",
+        "qa_constructible_greater_china_share": qa_share,
         "graph_ready_greater_china_share": graph_share,
+        "serving_fact_universe_greater_china_share": serving_share,
+        "kg_fact_greater_china_share": kg_fact_share,
         "all_period_graph_ready_greater_china_share": graph_share_all,
         "derived_greater_china_share": derived_share,
         "entity_greater_china_share": entity_share,
         "document_greater_china_share": document_share,
-        "finsearchcomp_reference_greater_china_share": reference,
+        "metric_family_coverage_ratio": metric_coverage,
+        "company_profile_pass_greater_china_share": company_pass_share,
+        "finsearchcomp_combined_t2_t3_reference_share": reference,
+        "internal_minimum_greater_china_share": (INTERNAL_GREATER_CHINA_MINIMUM_SHARE),
+        "alignment_band": {
+            "lower": reference - BENCHMARK_ALIGNMENT_TOLERANCE,
+            "upper": reference + BENCHMARK_ALIGNMENT_TOLERANCE,
+        },
+        "qa_constructible_share_gap_vs_reference": qa_share - reference,
         "graph_ready_share_gap_vs_reference": graph_share - reference,
         "findings": findings,
     }
@@ -1054,7 +1577,9 @@ def _regional_markdown(report: Mapping[str, Any]) -> str:
         f"- generated_at: {report['generated_at']}",
         f"- active_kg: `{report['pinned_builds']['kg_build_id']}`",
         f"- status: {report['balance_assessment']['status']}",
-        "- Greater China scope: 中国大陆、香港、澳门；台湾尚未纳入当前权威源合同",
+        "- benchmark_market: `greater_china`",
+        "- internal_region_scope: `mainland_hong_kong_macau`",
+        "- 当前内部范围：中国大陆、香港、澳门；台湾尚未纳入当前权威源合同",
         "- International broad: international + mixed_global",
         "",
         "## 核心占比",
@@ -1078,13 +1603,80 @@ def _regional_markdown(report: Mapping[str, Any]) -> str:
             )
         )
 
-    lines.extend([
-        "",
-        "## 可用 Raw 对象按来源",
-        "",
-        "| source_id | objects | size | 大中华区 | 国际 | 混合/全球 |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
-    ])
+    reference = report["finsearchcomp_reference"]
+    lines.extend(
+        [
+            "",
+            "## FinSearchComp T2/T3 地域参考",
+            "",
+            "| task | Global | Greater China | Greater China share |",
+            "| --- | ---: | ---: | ---: |",
+        ]
+    )
+    for task_key, task_label in (
+        ("t2", "T2"),
+        ("t3", "T3"),
+        ("combined_t2_t3", "T2+T3"),
+    ):
+        item = reference[task_key]
+        lines.append(
+            f"| {task_label} | {_number(item['global_count'])} | "
+            f"{_number(item['greater_china_count'])} | "
+            f"{_percent(item['greater_china_share'])} |"
+        )
+
+    capability = report["capability_dimensions"]
+    fact_capability = capability["graph_ready_fact_share"]
+    serving_capability = capability["serving_fact_universe_share"]
+    kg_fact_capability = capability["kg_fact_share"]
+    entity_capability = capability["entity_share"]
+    metric_capability = capability["metric_family_coverage"]
+    company_capability = capability["company_profile_pass_share"]
+    qa_capability = capability["qa_constructible_candidate_share"]
+    lines.extend(
+        [
+            "",
+            "## 七维能力评估",
+            "",
+            "| 维度 | 大中华区指标 | 补充信息 |",
+            "| --- | ---: | --- |",
+            "| Historical graph-ready Fact Share | "
+            f"{_percent(fact_capability['greater_china_share'])} | "
+            f"{_number(fact_capability['greater_china_count'])} facts |",
+            "| Serving Fact Universe Share | "
+            f"{_percent(serving_capability['greater_china_share'])} | "
+            f"{_number(serving_capability['greater_china_count'])} facts; "
+            f"`{serving_capability['universe_build_id'] or 'not_pinned'}` |",
+            "| KG Fact Share | "
+            f"{_percent(kg_fact_capability['greater_china_share'])} | "
+            f"{_number(kg_fact_capability['greater_china_count'])} Fact nodes |",
+            "| Entity Share | "
+            f"{_percent(entity_capability['greater_china_share'])} | "
+            f"{_number(entity_capability['greater_china_count'])} entities |",
+            "| Metric-family Coverage | "
+            f"{_percent(metric_capability['greater_china_union_coverage_ratio'])} | "
+            f"{_number(metric_capability['greater_china_metric_count'])}/"
+            f"{_number(metric_capability['union_metric_count'])} unique metrics |",
+            "| Company-profile Pass Share | "
+            f"{_percent(company_capability['greater_china_share_of_passing_companies'])} | "
+            "within-region pass rate "
+            f"{_percent(company_capability['greater_china_within_region_pass_ratio'])} |",
+            "| QA-constructible Candidate Share | "
+            f"{_percent(qa_capability['benchmark_weighted_greater_china_share'])} | "
+            f"T2 {_percent(qa_capability['t2_greater_china_share'])}; "
+            f"T3 {_percent(qa_capability['t3_greater_china_share'])}; proxy |",
+        ]
+    )
+
+    lines.extend(
+        [
+            "",
+            "## 可用 Raw 对象按来源",
+            "",
+            "| source_id | objects | size | 大中华区 | 国际 | 混合/全球 |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for source_id, item in sorted(
         report["raw_objects"]["by_source"].items(),
         key=lambda pair: (-int(pair[1]["usable_object_count"]), pair[0]),
@@ -1098,13 +1690,15 @@ def _regional_markdown(report: Mapping[str, Any]) -> str:
             f"{_number(counts[MIXED_GLOBAL])} |"
         )
 
-    lines.extend([
-        "",
-        "## Active 标准事实按来源",
-        "",
-        "| source_id | facts | graph-ready | 历史 graph-ready | 大中华区 | 国际 | 混合/全球 |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Active 标准事实按来源",
+            "",
+            "| source_id | facts | graph-ready | 历史 graph-ready | 大中华区 | 国际 | 混合/全球 |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for source_id, item in sorted(
         report["standardized_facts"]["by_source"].items(),
         key=lambda pair: (-int(pair[1]["fact_count"]), pair[0]),
@@ -1119,17 +1713,19 @@ def _regional_markdown(report: Mapping[str, Any]) -> str:
             f"{_number(counts[MIXED_GLOBAL])} |"
         )
 
-    lines.extend([
-        "",
-        "## 历史 Graph-ready 区域多样性",
-        "",
-        "| 区域 | facts | entities | metrics | sources | min_date | max_date | facts/entity |",
-        "| --- | ---: | ---: | ---: | ---: | --- | --- | ---: |",
-    ])
+    lines.extend(
+        [
+            "",
+            "## 历史 Graph-ready 区域多样性",
+            "",
+            "| 区域 | facts | entities | metrics | sources | min_date | max_date | facts/entity |",
+            "| --- | ---: | ---: | ---: | ---: | --- | --- | ---: |",
+        ]
+    )
     for region in REGION_BUCKETS:
-        item = report["standardized_facts"][
-            "historical_graph_ready_details_by_region"
-        ][region]
+        item = report["standardized_facts"]["historical_graph_ready_details_by_region"][
+            region
+        ]
         lines.append(
             f"| {region} | {_number(item['fact_count'])} | "
             f"{_number(item['entity_count'])} | {_number(item['metric_count'])} | "
@@ -1138,38 +1734,51 @@ def _regional_markdown(report: Mapping[str, Any]) -> str:
         )
 
     kg = report["knowledge_graph"]
-    lines.extend([
-        "",
-        "## KG",
-        "",
-        f"- nodes: {_number(kg['node_count'])}",
-        f"- edges: {_number(kg['edge_count'])}",
-        f"- region-addressable nodes: {_number(kg['region_addressable_node_distribution']['total'])}",
-        f"- shared infrastructure nodes: {_number(kg['shared_infrastructure_node_count'])} ({_percent(kg['shared_infrastructure_share'])})",
-        "",
-        "时间、指标、来源定义等共享基础节点不强行归入任何地域；KG 地域占比仅对可归属节点计算。",
-        "",
-        "## 结论",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## KG",
+            "",
+            f"- nodes: {_number(kg['node_count'])}",
+            f"- edges: {_number(kg['edge_count'])}",
+            f"- region-addressable nodes: {_number(kg['region_addressable_node_distribution']['total'])}",
+            f"- shared infrastructure nodes: {_number(kg['shared_infrastructure_node_count'])} ({_percent(kg['shared_infrastructure_share'])})",
+            "",
+            "时间、指标、来源定义等共享基础节点不强行归入任何地域；KG 地域占比仅对可归属节点计算。",
+            "",
+            "## 结论",
+            "",
+        ]
+    )
     for finding in report["balance_assessment"]["findings"]:
         lines.append(f"- {finding}")
-    reference = report["finsearchcomp_reference"]["greater_china_share"]
-    historical_share = report["balance_assessment"][
-        "graph_ready_greater_china_share"
+    combined_reference = report["finsearchcomp_reference"]["combined_t2_t3"][
+        "greater_china_share"
     ]
+    historical_share = report["balance_assessment"]["graph_ready_greater_china_share"]
+    serving_share = report["balance_assessment"][
+        "serving_fact_universe_greater_china_share"
+    ]
+    kg_fact_share = report["balance_assessment"]["kg_fact_greater_china_share"]
+    qa_share = report["balance_assessment"]["qa_constructible_greater_china_share"]
     lines.append(
         "- 历史 graph-ready 大中华区占比为 "
-        f"{_percent(historical_share)}，相对 FinSearchComp 地域参考 "
-        f"{_percent(reference)} 相差 {(historical_share - reference) * 100:.2f} 个百分点。"
+        f"{_percent(historical_share)}；Fact Universe 为 "
+        f"{_percent(serving_share)}；KG Fact 节点为 "
+        f"{_percent(kg_fact_share)}；T2/T3 可构造性代理为 "
+        f"{_percent(qa_share)}，相对 FinSearchComp T2+T3 参考 "
+        f"{_percent(combined_reference)} 相差 "
+        f"{(qa_share - combined_reference) * 100:.2f} 个百分点。"
     )
-    lines.extend([
-        "",
-        "## 文档索引缺口",
-        "",
-        "| source_id | usable raw objects | indexed documents | gap |",
-        "| --- | ---: | ---: | ---: |",
-    ])
+    lines.extend(
+        [
+            "",
+            "## 文档索引缺口",
+            "",
+            "| source_id | usable raw objects | indexed documents | gap |",
+            "| --- | ---: | ---: | ---: |",
+        ]
+    )
     for item in report["document_index_gaps"]:
         lines.append(
             f"| {item['source_id']} | {_number(item['usable_object_count'])} | "
@@ -1179,39 +1788,43 @@ def _regional_markdown(report: Mapping[str, Any]) -> str:
     if not report["document_index_gaps"]:
         lines.append("| - | 0 | 0 | 0 |")
 
-    lines.extend([
-        "",
-        "## 大中华区尚无输出的派生类型",
-        "",
-        *(
-            f"- `{derived_type}`"
-            for derived_type in report[
-                "greater_china_derived_types_without_outputs"
-            ]
-        ),
-    ])
+    lines.extend(
+        [
+            "",
+            "## 大中华区尚无输出的派生类型",
+            "",
+            *(
+                f"- `{derived_type}`"
+                for derived_type in report[
+                    "greater_china_derived_types_without_outputs"
+                ]
+            ),
+        ]
+    )
     raw_only = report["structured_greater_china_sources_without_active_facts"]
-    lines.extend([
-        "",
-        "## 大中华区仍停留在 Raw 层的权威来源",
-        "",
-        *(f"- `{source_id}`" for source_id in raw_only),
-        "",
-        "这些来源已保存原始材料和元数据，但尚未形成 active standardized facts，不能计入事实库或 KG 推理覆盖。",
-        "",
-        "## 解释边界",
-        "",
-        "- 原始对象按内容归属审计；World Bank 中国对象计入大中华区，IMF 多国包计入 mixed_global。",
-        "- Fact、DerivedFact 和 Entity 按 canonical entity/scope 归属，而不是按 API 提供方所在地归属。",
-        "- historical_graph_ready 遵循当前 is_forecast 元数据；整批来源级 forecast 标记会保守排除其中的历史年份。",
-        "- 当前整批被排除的来源："
-        + ", ".join(
-            f"`{source_id}`"
-            for source_id in report["source_wide_forecast_exclusions"]
-        )
-        + "。",
-        "- 635 道 FinSearchComp 的 298/337 地域分布只作为未来 QA 配额参考，不作为 Raw 或 Fact 层硬门槛。",
-    ])
+    lines.extend(
+        [
+            "",
+            "## 大中华区仍停留在 Raw 层的权威来源",
+            "",
+            *(f"- `{source_id}`" for source_id in raw_only),
+            "",
+            "这些来源已保存原始材料和元数据，但尚未形成 active standardized facts，不能计入事实库或 KG 推理覆盖。",
+            "",
+            "## 解释边界",
+            "",
+            "- 原始对象按内容归属审计；World Bank 中国对象计入大中华区，IMF 多国包计入 mixed_global。",
+            "- Fact、DerivedFact 和 Entity 按 canonical entity/scope 归属，而不是按 API 提供方所在地归属。",
+            "- historical_graph_ready 遵循当前 is_forecast 元数据；整批来源级 forecast 标记会保守排除其中的历史年份。",
+            "- 当前整批被排除的来源："
+            + ", ".join(
+                f"`{source_id}`"
+                for source_id in report["source_wide_forecast_exclusions"]
+            )
+            + "。",
+            "- FinSearchComp T2/T3 的 203/188 地域分布只作为未来 QA 配额参考，不作为 Raw 或 Fact 层硬门槛。",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -1248,7 +1861,7 @@ def _update_region_details(
 
 
 def _finalize_region_details(
-    details: Mapping[str, Mapping[str, Any]]
+    details: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, dict[str, Any]]:
     output = {}
     for region in REGION_BUCKETS:
@@ -1266,6 +1879,44 @@ def _finalize_region_details(
             ),
         }
     return output
+
+
+def _metric_family_coverage(
+    metric_ids_by_category: Mapping[str, Mapping[str, set[str]]],
+) -> dict[str, Any]:
+    by_family: dict[str, dict[str, Any]] = {}
+    all_greater_china: set[str] = set()
+    all_broad_international: set[str] = set()
+    for family, regions in sorted(metric_ids_by_category.items()):
+        greater_china = set(regions.get(GREATER_CHINA, set()))
+        broad_international = set(regions.get(INTERNATIONAL, set())) | set(
+            regions.get(MIXED_GLOBAL, set())
+        )
+        union = greater_china | broad_international
+        all_greater_china.update(greater_china)
+        all_broad_international.update(broad_international)
+        by_family[family] = {
+            "greater_china_metric_count": len(greater_china),
+            "international_broad_metric_count": len(broad_international),
+            "union_metric_count": len(union),
+            "shared_metric_count": len(greater_china & broad_international),
+            "greater_china_union_coverage_ratio": _ratio(
+                len(greater_china), len(union)
+            ),
+            "greater_china_metric_ids": sorted(greater_china),
+            "international_broad_metric_ids": sorted(broad_international),
+        }
+    union = all_greater_china | all_broad_international
+    return {
+        "greater_china_metric_count": len(all_greater_china),
+        "international_broad_metric_count": len(all_broad_international),
+        "union_metric_count": len(union),
+        "shared_metric_count": len(all_greater_china & all_broad_international),
+        "greater_china_union_coverage_ratio": _ratio(
+            len(all_greater_china), len(union)
+        ),
+        "by_metric_family": by_family,
+    }
 
 
 def _entity_or_source_region(

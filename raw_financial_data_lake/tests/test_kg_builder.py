@@ -12,6 +12,7 @@ from finraw.kg_builder import (
     _add_time_hierarchy,
     _dangling_edge_count,
     _derived_time_node,
+    _eligible_derived_rows,
     _invalid_relation_endpoint_count,
     _invalidate_kg_build,
     _optional_active_build_id,
@@ -103,6 +104,42 @@ def test_active_build_selection_rejects_mixed_builds(tmp_path) -> None:
         with pytest.raises(RuntimeError, match="exactly one active build"):
             _required_active_build_id(db, "metrics")
         assert _optional_active_build_id(db, "source_documents") is None
+    finally:
+        db.close()
+
+
+def test_fact_universe_keeps_only_closed_derived_fact_inputs(tmp_path) -> None:
+    db = _db(tmp_path)
+    try:
+        for derived_id, input_fact_ids in [
+            ("derived_closed", ["fact_a", "fact_b"]),
+            ("derived_open", ["fact_a", "fact_c"]),
+            ("derived_empty", []),
+        ]:
+            db.execute(
+                "INSERT INTO derived_facts ("
+                "derived_id, build_id, input_build_id, derived_type, "
+                "input_fact_ids, verification_status, is_active"
+                ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [
+                    derived_id,
+                    "derived_build",
+                    "fact_build",
+                    "difference",
+                    json.dumps(input_fact_ids),
+                    "single_source",
+                    1,
+                ],
+            )
+
+        rows = _eligible_derived_rows(
+            db,
+            "derived_build",
+            "fact_build",
+            selected_fact_ids={"fact_a", "fact_b"},
+        )
+
+        assert [row["derived_id"] for row in rows] == ["derived_closed"]
     finally:
         db.close()
 

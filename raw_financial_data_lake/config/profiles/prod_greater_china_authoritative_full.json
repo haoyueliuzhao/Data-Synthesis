@@ -7,7 +7,8 @@
       "minimum_company_metric_profile_pass_ratio": 0.9,
       "target_company_metric_profile_pass_ratio": 1.0,
       "minimum_graph_ready_ratio": 0.9,
-      "minimum_verified_document_ratio": 0.9,
+      "minimum_document_with_verified_fact_ratio": 0.9,
+      "minimum_required_metric_extraction_complete_ratio": 0.9,
       "core_metric_ids": [
         "revenue",
         "net_income",
@@ -33,12 +34,20 @@
           "required_metric_groups": [
             {
               "group_id": "operating_performance",
-              "metric_ids": ["revenue", "operating_income", "net_income"],
+              "metric_ids": [
+                "revenue",
+                "operating_income",
+                "net_income"
+              ],
               "minimum_metric_count": 1
             },
             {
               "group_id": "financial_position",
-              "metric_ids": ["total_assets", "total_liabilities", "shareholders_equity"],
+              "metric_ids": [
+                "total_assets",
+                "total_liabilities",
+                "shareholders_equity"
+              ],
               "minimum_metric_count": 1
             }
           ],
@@ -49,7 +58,9 @@
           "profile_id": "regulated_financial_institution",
           "description": "Banks, insurers and regulated financial-market institutions. Revenue and operating cash flow are presentation-dependent; earnings plus at least two balance-sheet anchors remain mandatory.",
           "match": {
-            "industry_contains_any": ["金融"],
+            "industry_ontology_ids": [
+              "financial_institution"
+            ],
             "company_keys": [
               "hkex_disclosures:00005",
               "hkex_disclosures:00023",
@@ -72,12 +83,19 @@
           "required_metric_groups": [
             {
               "group_id": "earnings",
-              "metric_ids": ["net_income", "operating_income"],
+              "metric_ids": [
+                "net_income",
+                "operating_income"
+              ],
               "minimum_metric_count": 1
             },
             {
               "group_id": "financial_position",
-              "metric_ids": ["total_assets", "total_liabilities", "shareholders_equity"],
+              "metric_ids": [
+                "total_assets",
+                "total_liabilities",
+                "shareholders_equity"
+              ],
               "minimum_metric_count": 2
             }
           ],
@@ -87,6 +105,25 @@
         {
           "profile_id": "hkex_net_assets_presentation",
           "description": "HKEX issuers whose primary consolidated statement follows a net-assets or UK-style presentation and does not necessarily publish standalone total-assets and total-liabilities lines.",
+          "statement_schema_detection": {
+            "source_ids": [
+              "hkex_disclosures"
+            ],
+            "exchanges": [
+              "HKEX"
+            ],
+            "required_any_metric_ids": [
+              "shareholders_equity"
+            ],
+            "absent_metric_ids": [
+              "total_assets",
+              "total_liabilities"
+            ],
+            "required_statement_types": [
+              "income_statement",
+              "balance_sheet"
+            ]
+          },
           "match": {
             "company_keys": [
               "hkex_disclosures:00001",
@@ -117,12 +154,19 @@
           "required_metric_groups": [
             {
               "group_id": "operating_performance",
-              "metric_ids": ["revenue", "operating_income", "net_income"],
+              "metric_ids": [
+                "revenue",
+                "operating_income",
+                "net_income"
+              ],
               "minimum_metric_count": 1
             },
             {
               "group_id": "position_or_cash_anchor",
-              "metric_ids": ["shareholders_equity", "net_cash_provided_by_used_in_operating_activities"],
+              "metric_ids": [
+                "shareholders_equity",
+                "net_cash_provided_by_used_in_operating_activities"
+              ],
               "minimum_metric_count": 1
             }
           ],
@@ -132,7 +176,11 @@
       ],
       "minimum_a_share_companies": 100,
       "minimum_hkex_companies": 40,
-      "required_a_share_exchanges": ["SSE", "SZSE", "BSE"],
+      "required_a_share_exchanges": [
+        "SSE",
+        "SZSE",
+        "BSE"
+      ],
       "required_official_publication_sources": [
         "nbs_official_statistics",
         "pboc_official_statistics",
@@ -144,6 +192,24 @@
       ]
     },
     "qa_generation_enabled": false
+  },
+  "fact_universe": {
+    "enabled": true,
+    "policy_id": "finsearchcomp_t2_t3_regional_balance_v2",
+    "target_greater_china_share": 0.48,
+    "include_forecasts": false,
+    "minimum_per_stratum": 1,
+    "minimum_stratum_coverage": 0.95,
+    "derived_chain_priority": {
+      "enabled": true,
+      "target_fraction": 0.9,
+      "evaluation_interval": 25,
+      "minimum_greater_china_share": 0.43,
+      "maximum_greater_china_share": 0.53
+    }
+  },
+  "kg": {
+    "use_active_fact_universe": true
   },
   "official_publications": {
     "targets": [
@@ -598,5 +664,10 @@
         "authority": "China Securities Index Company"
       }
     ]
+  },
+  "document_extraction": {
+    "cn_financial_statements": {
+      "maximum_statement_pages": 60
+    }
   }
 }

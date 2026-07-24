@@ -29,7 +29,16 @@ SOURCE_DATA_TYPES = {
     "fred_observations": ["macro_timeseries", "rates", "employment", "inflation", "fx"],
     "worldbank_indicators": ["country_macro", "development_indicators", "annual_observations"],
     "imf_sdmx": ["international_macro", "imf_datamapper_raw_json"],
-    "cninfo_announcements": ["cn_company_announcements", "reports_pdf"],
+    "cninfo_announcements": ["cn_company_announcements", "reports_pdf", "financial_statement_facts"],
+    "bse_disclosures": ["cn_company_announcements", "annual_reports_pdf", "financial_statement_facts"],
+    "hkex_disclosures": ["hk_company_announcements", "annual_reports_pdf", "financial_statement_facts"],
+    "nbs_official_statistics": ["cn_macro_statistics", "official_publications"],
+    "pboc_official_statistics": ["cn_money_credit_rates", "official_publications"],
+    "safe_official_statistics": ["cn_fx_external_sector", "official_publications"],
+    "sse_market_statistics": ["cn_exchange_market_statistics", "official_publications"],
+    "szse_market_statistics": ["cn_exchange_market_statistics", "official_publications"],
+    "bse_market_statistics": ["cn_exchange_market_statistics", "official_publications"],
+    "csi_index_publications": ["cn_index_publications", "official_publications"],
     "exchange_announcements": ["exchange_announcements"],
 }
 
@@ -41,6 +50,15 @@ SOURCE_ENTITY_TYPES = {
     "worldbank_indicators": ["country", "region", "indicator"],
     "imf_sdmx": ["country", "region", "indicator"],
     "cninfo_announcements": ["cn_company"],
+    "bse_disclosures": ["cn_company"],
+    "hkex_disclosures": ["hk_listed_company"],
+    "nbs_official_statistics": ["country", "macro_series"],
+    "pboc_official_statistics": ["country", "macro_series"],
+    "safe_official_statistics": ["country", "macro_series", "currency_pair"],
+    "sse_market_statistics": ["exchange", "market_series"],
+    "szse_market_statistics": ["exchange", "market_series"],
+    "bse_market_statistics": ["exchange", "market_series"],
+    "csi_index_publications": ["index"],
     "exchange_announcements": ["company"],
 }
 
@@ -51,7 +69,9 @@ PARSE_READY = {
     "fred_observations": True,
     "worldbank_indicators": True,
     "imf_sdmx": False,
-    "cninfo_announcements": False,
+    "cninfo_announcements": True,
+    "bse_disclosures": True,
+    "hkex_disclosures": True,
     "exchange_announcements": False,
 }
 
@@ -80,11 +100,13 @@ def build_data_coverage_report(db: DBProtocol, config: dict[str, Any]) -> dict[s
     record_rows = [dict(row) for row in db.fetchall("SELECT * FROM raw_records")]
     entity_rows = [dict(row) for row in db.fetchall("SELECT * FROM source_entities")]
     job_rows = [dict(row) for row in db.fetchall("SELECT * FROM ingestion_jobs")]
+    active_fact_summaries = _active_fact_summaries(db)
 
     source_ids = sorted(
         {row["source_id"] for row in registry_rows}
         | {row["source_id"] for row in object_rows}
         | {row["source_id"] for row in record_rows}
+        | set(active_fact_summaries)
         | {"exchange_announcements"}
     )
     registry_by_source = {row["source_id"]: row for row in registry_rows}
@@ -102,6 +124,7 @@ def build_data_coverage_report(db: DBProtocol, config: dict[str, Any]) -> dict[s
             records_by_source.get(source_id, []),
             entities_by_source.get(source_id, []),
             jobs_by_source.get(source_id, []),
+            active_fact_summaries.get(source_id, {}),
         )
 
     _audit_sec_companyfacts(source_reports.get("sec_companyfacts"), config)
@@ -112,6 +135,8 @@ def build_data_coverage_report(db: DBProtocol, config: dict[str, Any]) -> dict[s
     _audit_imf(source_reports.get("imf_sdmx"), config)
     _audit_cninfo(source_reports.get("cninfo_announcements"), config)
     _audit_exchange_announcements(source_reports.get("exchange_announcements"))
+    for source_report in source_reports.values():
+        _set_quality(source_report)
 
     summary_rows = [_summary_row(source_reports[source_id]) for source_id in source_ids]
     return {
@@ -144,6 +169,25 @@ def write_coverage_outputs(report: dict[str, Any], output_dir: str) -> list[Path
     return [json_path, md_path]
 
 
+def _active_fact_summaries(db: DBProtocol) -> dict[str, dict[str, Any]]:
+    rows = db.fetchall(
+        "SELECT source_id, COUNT(*) AS active_standardized_fact_count, "
+        "SUM(CASE WHEN COALESCE(graph_ready, 0) = 1 THEN 1 ELSE 0 END) "
+        "AS active_graph_ready_fact_count, "
+        "COUNT(DISTINCT entity_id) AS active_fact_entity_count, "
+        "COUNT(DISTINCT metric_id) AS active_fact_metric_count, "
+        "MIN(period_end) AS active_fact_min_date, "
+        "MAX(period_end) AS active_fact_max_date "
+        "FROM standardized_facts WHERE COALESCE(is_active, 1) = 1 "
+        "GROUP BY source_id"
+    )
+    return {
+        str(row["source_id"]): dict(row)
+        for row in rows
+        if row["source_id"]
+    }
+
+
 def _base_source_report(
     source_id: str,
     registry: dict[str, Any],
@@ -151,6 +195,7 @@ def _base_source_report(
     records: list[dict[str, Any]],
     entities: list[dict[str, Any]],
     jobs: list[dict[str, Any]],
+    active_fact_summary: dict[str, Any],
 ) -> dict[str, Any]:
     dates = []
     for obj in objects:
@@ -192,7 +237,24 @@ def _base_source_report(
         "missing_rate": 0.0 if objects else 1.0,
         "missing_items": [],
         "coverage_notes": [],
-        "parse_ready": PARSE_READY.get(source_id, False),
+        "active_standardized_fact_count": int(
+            active_fact_summary.get("active_standardized_fact_count") or 0
+        ),
+        "active_graph_ready_fact_count": int(
+            active_fact_summary.get("active_graph_ready_fact_count") or 0
+        ),
+        "active_fact_entity_count": int(
+            active_fact_summary.get("active_fact_entity_count") or 0
+        ),
+        "active_fact_metric_count": int(
+            active_fact_summary.get("active_fact_metric_count") or 0
+        ),
+        "active_fact_min_date": active_fact_summary.get("active_fact_min_date"),
+        "active_fact_max_date": active_fact_summary.get("active_fact_max_date"),
+        "parse_ready": bool(
+            PARSE_READY.get(source_id, False)
+            or active_fact_summary.get("active_standardized_fact_count")
+        ),
         "quality_level": "unclassified",
         "latest_job_status": jobs[-1].get("status") if jobs else None,
     }
@@ -477,7 +539,16 @@ def _audit_cninfo(report: dict[str, Any] | None, config: dict[str, Any]) -> None
     report["stock_year_report_types"] = {key: sorted(value) for key, value in sorted(stock_year_type.items())}
     report["missing_rate"] = _rate(len(missing), len(target_urls)) if target_urls else report["missing_rate"]
     report["missing_items"] = [{"type": "missing_cninfo_pdf", "url": item} for item in missing]
-    report["coverage_notes"].append("CNInfo PDFs are raw documents; table extraction and financial field normalization have not been run.")
+    if report.get("active_standardized_fact_count"):
+        report["coverage_notes"].append(
+            "CNInfo PDF parsing has produced "
+            f"{report['active_standardized_fact_count']} active standardized facts; "
+            "document-level completeness is evaluated by the Greater China quality gate."
+        )
+    else:
+        report["coverage_notes"].append(
+            "CNInfo PDFs are present, but no active standardized facts were found."
+        )
     _set_quality(report)
 
 
@@ -534,6 +605,13 @@ def _data_sources(source_reports: dict[str, dict[str, Any]]) -> list[dict[str, A
             "provider": report.get("provider"),
             "market": report.get("market"),
             "object_count": report.get("object_count"),
+            "parse_ready": report.get("parse_ready"),
+            "active_standardized_fact_count": report.get(
+                "active_standardized_fact_count"
+            ),
+            "active_graph_ready_fact_count": report.get(
+                "active_graph_ready_fact_count"
+            ),
             "quality_level": report.get("quality_level"),
         })
     return sorted(rows, key=lambda row: row["source_id"])

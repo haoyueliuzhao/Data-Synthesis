@@ -247,7 +247,7 @@ def _standardize_one(fact: dict[str, Any], metric: dict[str, Any], build_id: str
         "frequency": frequency,
         "seasonal_adjustment": seasonal_adjustment,
         "vintage_policy": source_definition.get("vintage_policy"),
-        "is_forecast": _int_bool(source_definition.get("is_forecast")),
+        "is_forecast": _forecast_status(fact, source_definition),
         "comparability_level": source_definition.get("comparability_level"),
         "as_of_date": fact.get("as_of_date"),
         "report_date": fact.get("report_date"),
@@ -283,6 +283,22 @@ def _int_bool(value: Any) -> int | None:
     return None
 
 
+def _forecast_status(
+    fact: dict[str, Any], source_definition: dict[str, Any]
+) -> int | None:
+    notes = fact.get("notes")
+    if isinstance(notes, str):
+        try:
+            notes = json.loads(notes)
+        except json.JSONDecodeError:
+            notes = {}
+    if isinstance(notes, dict) and "is_forecast" in notes:
+        explicit = _int_bool(notes.get("is_forecast"))
+        if explicit is not None:
+            return explicit
+    return _int_bool(source_definition.get("is_forecast"))
+
+
 def _source_definition_for_fact(fact: dict[str, Any], source_definitions: dict[tuple[str, str, str], dict[str, Any]]) -> dict[str, Any]:
     source_id = str(fact.get("source_id") or "")
     metric_id = str(fact.get("metric_id") or "")
@@ -307,7 +323,22 @@ def _normalized_source_concept(value: Any) -> str:
 def _frequency_for_fact(fact: dict[str, Any], frequency_map: dict[tuple[str, str], dict[str, Any]]) -> dict[str, Any]:
     source_id = str(fact.get("source_id") or "")
     series_id = str(fact.get("source_field_name") or "")
-    return frequency_map.get((source_id, series_id), {})
+    mapped = frequency_map.get((source_id, series_id))
+    if mapped:
+        return mapped
+    notes = fact.get("notes")
+    if isinstance(notes, str):
+        try:
+            notes = json.loads(notes)
+        except json.JSONDecodeError:
+            notes = {}
+    if isinstance(notes, dict):
+        return {
+            "frequency": notes.get("frequency"),
+            "seasonal_adjustment": notes.get("seasonal_adjustment"),
+            "source_units": notes.get("source_units") or fact.get("unit"),
+        }
+    return {}
 
 def _normalize_unit(value: Decimal | None, fact: dict[str, Any], metric: dict[str, Any]) -> tuple[Decimal | None, str | None, str | None, str | None]:
     unit = str(fact.get("unit") or metric.get("default_unit") or "").strip()
@@ -622,6 +653,20 @@ def _time_basis(fact: dict[str, Any], metric: dict[str, Any]) -> str:
         return "observation_date"
     if source in {"worldbank_indicators", "imf_sdmx"}:
         return "calendar_year"
+    if source in {
+        "nbs_official_statistics",
+        "pboc_official_statistics",
+        "safe_official_statistics",
+        "sse_market_statistics",
+        "szse_market_statistics",
+        "bse_market_statistics",
+        "csi_index_publications",
+    }:
+        return (
+            "calendar_point_in_time"
+            if period_type == "point_in_time"
+            else "calendar_period"
+        )
     if source in {"cninfo_announcements", "bse_disclosures", "hkex_disclosures"} and fact.get(
         "extraction_method"
     ) == "pdf_financial_statement_table":

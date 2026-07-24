@@ -1,0 +1,91 @@
+{
+  "extends": "prod_greater_china_authoritative_full.json",
+  "qa": {
+    "question_generation": {
+      "mode": "controlled_llm",
+      "strategy": "protected_rewrite",
+      "language": "en",
+      "llm": {
+        "provider": "deepseek_official",
+        "endpoint": "https://api.deepseek.com/v1/chat/completions",
+        "models_endpoint": "https://api.deepseek.com/models",
+        "model": "deepseek-v4-pro",
+        "fallback_models": [
+          "deepseek-v4-flash"
+        ],
+        "auto_select_model": true,
+        "maximum_model_attempts": 2,
+        "preferred_model_patterns": [
+          "deepseek-v4-pro",
+          "deepseek-v4-flash"
+        ],
+        "api_key_env": "DEEPSEEK_API_KEY",
+        "timeout_seconds": 120,
+        "max_output_tokens": 4096,
+        "input_cost_per_million": 0.435,
+        "output_cost_per_million": 0.87,
+        "fallback_http_statuses": [
+          400,
+          403,
+          404,
+          429,
+          500,
+          502,
+          503
+        ]
+      }
+    },
+    "pattern_mining": {
+      "enabled": true,
+      "auto_run": false,
+      "auto_approve_for_qa": false,
+      "require_manual_review": false,
+      "families": [
+        "cross_metric_comparison",
+        "temporal_aggregation",
+        "temporal_extrema_followup",
+        "scope_rank_followup",
+        "derived_fact_composition",
+        "fact_provenance",
+        "time_hierarchy",
+        "scope_composition"
+      ],
+      "max_proposals": 40,
+      "max_bindings_per_proposal": 20,
+      "max_heldout_bindings": 50,
+      "max_candidates_per_proposal": 2,
+      "compiled_graph_scan_rows": 0,
+      "compiled_graph_evaluation_rows": 5000,
+      "walk_mining": {
+        "enabled": true,
+        "grammar_version": "1.0.0",
+        "operation_macros": [
+          "temporal_extreme_followup_provenance",
+          "scope_filter_rank_followup",
+          "derived_fact_time_source_trace"
+        ],
+        "anchor_node_types": [
+          "Entity",
+          "EntitySet",
+          "DerivedFact"
+        ],
+        "maximum_walk_depth": 5,
+        "maximum_total_steps": 12,
+        "maximum_branch_count": 5,
+        "maximum_join_count": 4,
+        "maximum_scope_size": 30,
+        "beam_width": 100,
+        "maximum_expansions_per_state": 20,
+        "maximum_query_graph_candidates": 100,
+        "minimum_estimated_support": 3,
+        "minimum_completion_rate": 0.8,
+        "minimum_unique_answer_rate": 0.99,
+        "minimum_financial_value_score": 0.7,
+        "example_binding_limit": 20,
+        "heldout_binding_limit": 50,
+        "maximum_estimated_query_cost": 1000,
+        "require_manual_review": false
+      }
+    }
+  }
+}

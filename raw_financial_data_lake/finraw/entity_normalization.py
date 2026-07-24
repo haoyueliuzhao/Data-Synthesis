@@ -27,13 +27,28 @@ CN_COMPANY_SOURCES = {
 }
 
 FRED_CURRENCY_PAIRS = {
-    "DEXUSEU": {"entity_id": "EUR_USD", "canonical_name": "Euro to U.S. Dollar Spot Exchange Rate", "currency": "EUR/USD"},
-    "DEXJPUS": {"entity_id": "USD_JPY", "canonical_name": "U.S. Dollar to Japanese Yen Spot Exchange Rate", "currency": "USD/JPY"},
-    "DEXCHUS": {"entity_id": "USD_CNY", "canonical_name": "U.S. Dollar to Chinese Yuan Renminbi Spot Exchange Rate", "currency": "USD/CNY"},
+    "DEXUSEU": {
+        "entity_id": "EUR_USD",
+        "canonical_name": "Euro to U.S. Dollar Spot Exchange Rate",
+        "currency": "EUR/USD",
+    },
+    "DEXJPUS": {
+        "entity_id": "USD_JPY",
+        "canonical_name": "U.S. Dollar to Japanese Yen Spot Exchange Rate",
+        "currency": "USD/JPY",
+    },
+    "DEXCHUS": {
+        "entity_id": "USD_CNY",
+        "canonical_name": "U.S. Dollar to Chinese Yuan Renminbi Spot Exchange Rate",
+        "currency": "USD/CNY",
+    },
 }
 
 FRED_INDEX_SERIES = {
-    "DTWEXBGS": {"entity_id": "USD_BROAD_INDEX", "canonical_name": "Nominal Broad U.S. Dollar Index"},
+    "DTWEXBGS": {
+        "entity_id": "USD_BROAD_INDEX",
+        "canonical_name": "Nominal Broad U.S. Dollar Index",
+    },
 }
 
 CURATED_ENTITY_ALIASES = {
@@ -41,10 +56,25 @@ CURATED_ENTITY_ALIASES = {
 }
 
 
-def refresh_entity_normalization(db: DBProtocol, config: dict[str, Any], output_dir: str | None = None) -> dict[str, Any]:
-    build_id = start_build(db, layer="fact_build", command="refresh-entities", prefix="entity_normalization")
-    entities, aliases, securities, relationships, series_maps, diagnostics = build_entity_normalization(db, config)
-    for table in ["source_series_entity_map", "entity_relationships", "canonical_securities", "entity_alias_map", "canonical_entities"]:
+def refresh_entity_normalization(
+    db: DBProtocol, config: dict[str, Any], output_dir: str | None = None
+) -> dict[str, Any]:
+    build_id = start_build(
+        db,
+        layer="fact_build",
+        command="refresh-entities",
+        prefix="entity_normalization",
+    )
+    entities, aliases, securities, relationships, series_maps, diagnostics = (
+        build_entity_normalization(db, config)
+    )
+    for table in [
+        "source_series_entity_map",
+        "entity_relationships",
+        "canonical_securities",
+        "entity_alias_map",
+        "canonical_entities",
+    ]:
         deactivate_active_rows(db, table, build_id)
     for entity in entities:
         db.execute(
@@ -259,8 +289,16 @@ def refresh_entity_normalization(db: DBProtocol, config: dict[str, Any], output_
         "security_count": len(securities),
         "relationship_count": len(relationships),
         "source_series_map_count": len(series_maps),
-        "entity_type_counts": dict(sorted(Counter(entity["entity_type"] for entity in entities).items())),
-        "market_counts": dict(sorted(Counter(entity.get("market") or "unknown" for entity in entities).items())),
+        "entity_type_counts": dict(
+            sorted(Counter(entity["entity_type"] for entity in entities).items())
+        ),
+        "market_counts": dict(
+            sorted(
+                Counter(
+                    entity.get("market") or "unknown" for entity in entities
+                ).items()
+            )
+        ),
         "diagnostics": diagnostics,
         "sample_entities": entities[:20],
         "sample_aliases": aliases[:30],
@@ -270,13 +308,34 @@ def refresh_entity_normalization(db: DBProtocol, config: dict[str, Any], output_
     if output_dir:
         paths = write_entity_normalization_report(report, output_dir)
         report["written_files"] = [str(path) for path in paths]
-    finish_build(db, build_id, "success", f"canonical_entity_count={len(entities)}; alias_count={len(aliases)}; security_count={len(securities)}; source_series_map_count={len(series_maps)}")
+    finish_build(
+        db,
+        build_id,
+        "success",
+        f"canonical_entity_count={len(entities)}; alias_count={len(aliases)}; security_count={len(securities)}; source_series_map_count={len(series_maps)}",
+    )
     return report
 
 
-def build_entity_normalization(db: DBProtocol, config: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
-    source_entities = [dict(row) for row in db.fetchall("SELECT * FROM source_entities")]
-    raw_records = [dict(row) for row in db.fetchall("SELECT source_id, record_type, record_key, record_json, entity_hint, metric_hint FROM raw_records")]
+def build_entity_normalization(
+    db: DBProtocol, config: dict[str, Any]
+) -> tuple[
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    dict[str, Any],
+]:
+    source_entities = [
+        dict(row) for row in db.fetchall("SELECT * FROM source_entities")
+    ]
+    raw_records = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT source_id, record_type, record_key, record_json, entity_hint, metric_hint FROM raw_records"
+        )
+    ]
     fred_metric_by_series = _load_fred_metric_map(db)
 
     entity_by_id: dict[str, dict[str, Any]] = {}
@@ -291,27 +350,61 @@ def build_entity_normalization(db: DBProtocol, config: dict[str, Any]) -> tuple[
     }
 
     _add_sec_companies(entity_by_id, alias_by_id, source_entities, raw_records, config)
-    _add_cninfo_companies(entity_by_id, alias_by_id, source_entities, raw_records, config)
+    _add_cninfo_companies(
+        entity_by_id, alias_by_id, source_entities, raw_records, config
+    )
     _add_worldbank_countries(entity_by_id, alias_by_id, source_entities)
+    _add_official_china_entities(entity_by_id, alias_by_id, source_entities)
     _add_imf_countries(entity_by_id, alias_by_id, raw_records)
-    _add_fred_entities(entity_by_id, alias_by_id, source_entities, fred_metric_by_series, series_maps, relationships)
+    _add_fred_entities(
+        entity_by_id,
+        alias_by_id,
+        source_entities,
+        fred_metric_by_series,
+        series_maps,
+        relationships,
+    )
     _add_company_security_mdm(entity_by_id, securities, relationships)
     _add_diagnostics(diagnostics, source_entities, entity_by_id)
 
-    entities = sorted(entity_by_id.values(), key=lambda row: (row["entity_type"], row["entity_id"]))
-    aliases = sorted(alias_by_id.values(), key=lambda row: (row["entity_id"], row.get("source_id") or "", row.get("alias") or ""))
+    entities = sorted(
+        entity_by_id.values(), key=lambda row: (row["entity_type"], row["entity_id"])
+    )
+    aliases = sorted(
+        alias_by_id.values(),
+        key=lambda row: (
+            row["entity_id"],
+            row.get("source_id") or "",
+            row.get("alias") or "",
+        ),
+    )
     security_rows = sorted(securities.values(), key=lambda row: row["security_id"])
-    relationship_rows = sorted(relationships.values(), key=lambda row: row["relationship_id"])
+    relationship_rows = sorted(
+        relationships.values(), key=lambda row: row["relationship_id"]
+    )
     series_map_rows = sorted(series_maps.values(), key=lambda row: row["series_map_id"])
-    return entities, aliases, security_rows, relationship_rows, series_map_rows, diagnostics
+    return (
+        entities,
+        aliases,
+        security_rows,
+        relationship_rows,
+        series_map_rows,
+        diagnostics,
+    )
 
 
-def write_entity_normalization_report(report: dict[str, Any], output_dir: str) -> list[Path]:
+def write_entity_normalization_report(
+    report: dict[str, Any], output_dir: str
+) -> list[Path]:
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     json_path = out / "entity_normalization_report.json"
     md_path = out / "entity_normalization_report.md"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    json_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, default=str)
+        + "\n",
+        encoding="utf-8",
+    )
     md_path.write_text(_markdown_report(report), encoding="utf-8")
     return [json_path, md_path]
 
@@ -341,14 +434,16 @@ def _add_sec_companies(
         submission = submission_by_cik.get(cik or "", {})
         if cik:
             seen_ciks.add(cik)
-        companies.append({
-            "ticker": _upper(company.get("ticker")),
-            "cik": cik,
-            "name": company.get("name") or company.get("ticker"),
-            "exchange": company.get("exchange"),
-            "industry": company.get("industry") or submission.get("sicDescription"),
-            "source": "config+sec_submissions" if submission else "config",
-        })
+        companies.append(
+            {
+                "ticker": _upper(company.get("ticker")),
+                "cik": cik,
+                "name": company.get("name") or company.get("ticker"),
+                "exchange": company.get("exchange"),
+                "industry": company.get("industry") or submission.get("sicDescription"),
+                "source": "config+sec_submissions" if submission else "config",
+            }
+        )
 
     for record in raw_records:
         if record.get("record_type") != "sec_submissions_json":
@@ -360,14 +455,16 @@ def _add_sec_companies(
         if cik in seen_ciks:
             continue
         ticker = _upper(record.get("entity_hint"))
-        companies.append({
-            "ticker": ticker,
-            "cik": cik,
-            "name": payload.get("name") or ticker or cik,
-            "exchange": None,
-            "industry": payload.get("sicDescription"),
-            "source": "sec_submissions",
-        })
+        companies.append(
+            {
+                "ticker": ticker,
+                "cik": cik,
+                "name": payload.get("name") or ticker or cik,
+                "exchange": None,
+                "industry": payload.get("sicDescription"),
+                "source": "sec_submissions",
+            }
+        )
         if cik:
             seen_ciks.add(cik)
 
@@ -377,28 +474,54 @@ def _add_sec_companies(
         if not ticker and not cik:
             continue
         entity_id = f"{ticker}_US" if ticker else f"CIK{cik}_US"
-        _upsert_entity(entity_by_id, {
-            "entity_id": entity_id,
-            "canonical_name": company.get("name") or ticker or f"CIK{cik}",
-            "entity_type": "company",
-            "market": "US",
-            "country": "US",
-            "exchange": company.get("exchange"),
-            "ticker": ticker,
-            "cik": cik,
-            "isin": None,
-            "currency": "USD",
-            "fiscal_year_end": None,
-            "industry": company.get("industry"),
-        })
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": entity_id,
+                "canonical_name": company.get("name") or ticker or f"CIK{cik}",
+                "entity_type": "company",
+                "market": "US",
+                "country": "US",
+                "exchange": company.get("exchange"),
+                "ticker": ticker,
+                "cik": cik,
+                "isin": None,
+                "currency": "USD",
+                "fiscal_year_end": None,
+                "industry": company.get("industry"),
+            },
+        )
         short_name = _short_company_alias(company.get("name"))
-        aliases = [ticker, company.get("name"), short_name, cik, f"CIK{cik}" if cik else None, f"CIK{int(cik)}" if cik else None]
+        aliases = [
+            ticker,
+            company.get("name"),
+            short_name,
+            cik,
+            f"CIK{cik}" if cik else None,
+            f"CIK{int(cik)}" if cik else None,
+        ]
         for curated_alias in CURATED_ENTITY_ALIASES.get(entity_id, []):
-            _add_alias(alias_by_id, entity_id, None, None, "curated_entity_alias", curated_alias, 0.82)
+            _add_alias(
+                alias_by_id,
+                entity_id,
+                None,
+                None,
+                "curated_entity_alias",
+                curated_alias,
+                0.82,
+            )
         for source_id in ["sec_companyfacts", "sec_submissions", "sec_filings"]:
             source_code = cik if source_id != "sec_filings" else ticker or cik
             for alias in aliases:
-                _add_alias(alias_by_id, entity_id, source_id, source_code, company.get("name"), alias, 0.98)
+                _add_alias(
+                    alias_by_id,
+                    entity_id,
+                    source_id,
+                    source_code,
+                    company.get("name"),
+                    alias,
+                    0.98,
+                )
 
 
 def _add_cninfo_companies(
@@ -417,11 +540,12 @@ def _add_cninfo_companies(
             companies[code] = {
                 "stock_code": code,
                 "name": item.get("company_name") or code,
-                "exchange": (
-                    item.get("market")
-                    or item.get("exchange")
+                "exchange": _canonical_cn_exchange(
+                    item.get("exchange")
                     or _cn_exchange_from_selector(item.get("selector"))
                     or ("BSE" if source_id == "bse_disclosures" else None)
+                    or item.get("market"),
+                    code,
                 ),
                 "industry": item.get("industry"),
                 "source": "config",
@@ -443,9 +567,11 @@ def _add_cninfo_companies(
                 or (metadata.get("secName") if isinstance(metadata, dict) else None)
                 or code,
                 "exchange": (
-                    "BSE" if source_id == "bse_disclosures" else
-                    "HKEX" if source_id == "hkex_disclosures" else
-                    _cn_exchange_from_metadata(metadata)
+                    "BSE"
+                    if source_id == "bse_disclosures"
+                    else "HKEX"
+                    if source_id == "hkex_disclosures"
+                    else _cn_exchange_from_metadata(metadata)
                 ),
                 "industry": _cn_industry_from_metadata(metadata),
                 "source": "source_entities",
@@ -453,6 +579,18 @@ def _add_cninfo_companies(
             },
         )
         company.setdefault("source_ids", set()).add(source_id)
+        metadata_exchange = (
+            "BSE"
+            if source_id == "bse_disclosures"
+            else "HKEX"
+            if source_id == "hkex_disclosures"
+            else _cn_exchange_from_metadata(metadata)
+        )
+        company["exchange"] = _prefer_specific_cn_exchange(
+            company.get("exchange"),
+            metadata_exchange,
+            code,
+        )
     for record in raw_records:
         source_id = str(record.get("source_id") or "")
         source_spec = CN_COMPANY_SOURCES.get(source_id)
@@ -472,9 +610,11 @@ def _add_cninfo_companies(
                 or payload.get("source_row", {}).get("secName")
                 or code,
                 "exchange": (
-                    "BSE" if source_id == "bse_disclosures" else
-                    "HKEX" if source_id == "hkex_disclosures" else
-                    _cn_exchange_from_metadata(payload.get("source_row"))
+                    "BSE"
+                    if source_id == "bse_disclosures"
+                    else "HKEX"
+                    if source_id == "hkex_disclosures"
+                    else _cn_exchange_from_metadata(payload.get("source_row"))
                 ),
                 "industry": _cn_industry_from_metadata(payload),
                 "source": "raw_records",
@@ -482,6 +622,18 @@ def _add_cninfo_companies(
             },
         )
         company.setdefault("source_ids", set()).add(source_id)
+        payload_exchange = (
+            "BSE"
+            if source_id == "bse_disclosures"
+            else "HKEX"
+            if source_id == "hkex_disclosures"
+            else _cn_exchange_from_metadata(payload.get("source_row"))
+        )
+        company["exchange"] = _prefer_specific_cn_exchange(
+            company.get("exchange"),
+            payload_exchange,
+            code,
+        )
 
     for company in companies.values():
         code = company["stock_code"]
@@ -490,21 +642,28 @@ def _add_cninfo_companies(
         is_hk = "hkex_disclosures" in source_ids or exchange in {"HK", "HKEX"}
         exchange = "HKEX" if is_hk else exchange
         entity_id = f"{code}_{exchange}"
-        _upsert_entity(entity_by_id, {
-            "entity_id": entity_id,
-            "canonical_name": company.get("name") or code,
-            "entity_type": "company",
-            "market": "HK" if is_hk else "CN",
-            "country": "HK" if is_hk else "CN",
-            "exchange": exchange,
-            "ticker": code,
-            "cik": None,
-            "isin": None,
-            "currency": "HKD" if is_hk else "CNY",
-            "fiscal_year_end": None if is_hk else "12-31",
-            "industry": company.get("industry"),
-        })
-        aliases = [code, company.get("name"), f"{code}.{exchange}" if exchange not in {"CN", None} else None]
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": entity_id,
+                "canonical_name": company.get("name") or code,
+                "entity_type": "company",
+                "market": "HK" if is_hk else "CN",
+                "country": "HK" if is_hk else "CN",
+                "exchange": exchange,
+                "ticker": code,
+                "cik": None,
+                "isin": None,
+                "currency": "HKD" if is_hk else "CNY",
+                "fiscal_year_end": None if is_hk else "12-31",
+                "industry": company.get("industry"),
+            },
+        )
+        aliases = [
+            code,
+            company.get("name"),
+            f"{code}.{exchange}" if exchange not in {"CN", None} else None,
+        ]
         for source_id in sorted(company.get("source_ids") or []):
             for alias in aliases:
                 _add_alias(
@@ -533,25 +692,114 @@ def _add_worldbank_countries(
         if not iso3:
             continue
         entity_id = f"{iso3}_COUNTRY"
-        region = metadata.get("region", {}) if isinstance(metadata.get("region"), dict) else {}
+        region = (
+            metadata.get("region", {})
+            if isinstance(metadata.get("region"), dict)
+            else {}
+        )
         country_name = source_entity.get("source_name") or metadata.get("name") or iso3
-        _upsert_entity(entity_by_id, {
-            "entity_id": entity_id,
-            "canonical_name": country_name,
-            "entity_type": "country",
-            "market": "Global",
-            "country": iso3,
-            "exchange": None,
-            "ticker": None,
-            "cik": None,
-            "isin": None,
-            "currency": None,
-            "fiscal_year_end": None,
-            "industry": region.get("value"),
-        })
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": entity_id,
+                "canonical_name": country_name,
+                "entity_type": "country",
+                "market": "Global",
+                "country": iso3,
+                "exchange": None,
+                "ticker": None,
+                "cik": None,
+                "isin": None,
+                "currency": None,
+                "fiscal_year_end": None,
+                "industry": region.get("value"),
+            },
+        )
         aliases = [iso3, metadata.get("id"), metadata.get("iso2Code"), country_name]
         for alias in aliases:
-            _add_alias(alias_by_id, entity_id, "worldbank_indicators", iso3, country_name, alias, 0.97)
+            _add_alias(
+                alias_by_id,
+                entity_id,
+                "worldbank_indicators",
+                iso3,
+                country_name,
+                alias,
+                0.97,
+            )
+
+
+OFFICIAL_CHINA_ENTITY_SOURCES = {
+    "nbs_official_statistics",
+    "pboc_official_statistics",
+    "safe_official_statistics",
+    "sse_market_statistics",
+    "szse_market_statistics",
+    "bse_market_statistics",
+    "csi_index_publications",
+}
+
+OFFICIAL_CHINA_ENTITY_IDS = {
+    "CHN": "CHN_COUNTRY",
+    "CNY_FX_MARKET": "CNY_FX_MARKET",
+    "SSE_MARKET": "SSE_MARKET",
+    "SSE_INDEX_FAMILY": "SSE_INDEX_FAMILY",
+    "SZSE_MARKET": "SZSE_MARKET",
+    "BSE_MARKET": "BSE_MARKET",
+    "899050": "BSE_50_INDEX",
+    "CSI_INDEX_FAMILY": "CSI_INDEX_FAMILY",
+}
+
+
+def _add_official_china_entities(
+    entity_by_id: dict[str, dict[str, Any]],
+    alias_by_id: dict[str, dict[str, Any]],
+    source_entities: list[dict[str, Any]],
+) -> None:
+    for source_entity in source_entities:
+        source_id = str(source_entity.get("source_id") or "")
+        source_code = _upper(source_entity.get("source_code"))
+        if source_id not in OFFICIAL_CHINA_ENTITY_SOURCES or not source_code:
+            continue
+        metadata = _json_value(source_entity.get("raw_metadata"))
+        kind = str(metadata.get("kind") or "market").strip().lower()
+        entity_type = kind if kind in {"country", "market", "index", "index_family"} else "market"
+        entity_id = OFFICIAL_CHINA_ENTITY_IDS.get(source_code, source_code)
+        source_name = source_entity.get("source_name") or source_code
+        exchange = {
+            "sse_market_statistics": "SSE",
+            "szse_market_statistics": "SZSE",
+            "bse_market_statistics": "BSE",
+        }.get(source_id)
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": entity_id,
+                "canonical_name": "China" if source_code == "CHN" else source_name,
+                "entity_type": entity_type,
+                "market": "CN",
+                "country": "CHN",
+                "exchange": exchange,
+                "ticker": source_code if entity_type == "index" else None,
+                "cik": None,
+                "isin": None,
+                "currency": "CNY" if entity_type in {"country", "market"} else None,
+                "fiscal_year_end": None,
+                "industry": None,
+            },
+        )
+        aliases = [source_code, source_name]
+        if source_code == "CHN":
+            aliases.extend(["China", "中国"])
+        for alias in aliases:
+            _add_alias(
+                alias_by_id,
+                entity_id,
+                source_id,
+                source_code,
+                source_name,
+                alias,
+                0.99,
+            )
 
 
 def _add_imf_countries(
@@ -591,43 +839,55 @@ def _add_imf_countries(
     for iso3 in sorted(country_codes):
         entity_id = f"{iso3}_COUNTRY"
         existing = entity_by_id.get(entity_id)
-        country_name = existing.get("canonical_name") if existing else _country_name(iso3)
-        _upsert_entity(entity_by_id, {
-            "entity_id": entity_id,
-            "canonical_name": country_name,
-            "entity_type": "country",
-            "market": "Global",
-            "country": iso3,
-            "exchange": None,
-            "ticker": None,
-            "cik": None,
-            "isin": None,
-            "currency": None,
-            "fiscal_year_end": None,
-            "industry": existing.get("industry") if existing else None,
-        })
+        country_name = (
+            existing.get("canonical_name") if existing else _country_name(iso3)
+        )
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": entity_id,
+                "canonical_name": country_name,
+                "entity_type": "country",
+                "market": "Global",
+                "country": iso3,
+                "exchange": None,
+                "ticker": None,
+                "cik": None,
+                "isin": None,
+                "currency": None,
+                "fiscal_year_end": None,
+                "industry": existing.get("industry") if existing else None,
+            },
+        )
         for alias in [iso3, country_name]:
-            _add_alias(alias_by_id, entity_id, "imf_sdmx", iso3, country_name, alias, 0.9)
+            _add_alias(
+                alias_by_id, entity_id, "imf_sdmx", iso3, country_name, alias, 0.9
+            )
 
     for code in sorted(region_codes):
         entity_id = f"{code}_REGION"
         region_name = IMF_REGION_NAMES.get(code, code)
-        _upsert_entity(entity_by_id, {
-            "entity_id": entity_id,
-            "canonical_name": region_name,
-            "entity_type": "region",
-            "market": "Global",
-            "country": None,
-            "exchange": None,
-            "ticker": None,
-            "cik": None,
-            "isin": None,
-            "currency": None,
-            "fiscal_year_end": None,
-            "industry": "IMF aggregate",
-        })
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": entity_id,
+                "canonical_name": region_name,
+                "entity_type": "region",
+                "market": "Global",
+                "country": None,
+                "exchange": None,
+                "ticker": None,
+                "cik": None,
+                "isin": None,
+                "currency": None,
+                "fiscal_year_end": None,
+                "industry": "IMF aggregate",
+            },
+        )
         for alias in [code, region_name]:
-            _add_alias(alias_by_id, entity_id, "imf_sdmx", code, region_name, alias, 0.86)
+            _add_alias(
+                alias_by_id, entity_id, "imf_sdmx", code, region_name, alias, 0.86
+            )
 
 
 IMF_REGION_NAMES = {
@@ -646,6 +906,7 @@ IMF_REGION_NAMES = {
 def _country_name(iso3: str) -> str:
     try:
         import pycountry
+
         country = pycountry.countries.get(alpha_3=iso3)
         if country:
             return country.name
@@ -665,37 +926,68 @@ def _add_fred_entities(
     by_code = {
         source_entity.get("source_code"): source_entity
         for source_entity in source_entities
-        if source_entity.get("source_id") == "fred_observations" and source_entity.get("source_code")
+        if source_entity.get("source_id") == "fred_observations"
+        and source_entity.get("source_code")
     }
     for code, source_entity in sorted(by_code.items()):
         metadata = _json_value(source_entity.get("raw_metadata"))
         metadata = metadata if isinstance(metadata, dict) else {}
         name = source_entity.get("source_name") or metadata.get("title") or code
         series_entity_id = f"FRED_SERIES_{_safe_token(code)}"
-        _upsert_entity(entity_by_id, {
-            "entity_id": series_entity_id,
-            "canonical_name": name,
-            "entity_type": "fred_series",
-            "market": metadata.get("market") or _fred_market_hint(code, name),
-            "country": "US" if _fred_default_us_series(code, name) else None,
-            "exchange": None,
-            "ticker": code,
-            "cik": None,
-            "isin": None,
-            "currency": None,
-            "fiscal_year_end": None,
-            "industry": "FRED time series",
-        })
+        _upsert_entity(
+            entity_by_id,
+            {
+                "entity_id": series_entity_id,
+                "canonical_name": name,
+                "entity_type": "fred_series",
+                "market": metadata.get("market") or _fred_market_hint(code, name),
+                "country": "US" if _fred_default_us_series(code, name) else None,
+                "exchange": None,
+                "ticker": code,
+                "cik": None,
+                "isin": None,
+                "currency": None,
+                "fiscal_year_end": None,
+                "industry": "FRED time series",
+            },
+        )
         for alias in [code, name, metadata.get("id"), metadata.get("title")]:
-            _add_alias(alias_by_id, series_entity_id, "fred_observations", code, name, alias, 0.99)
+            _add_alias(
+                alias_by_id,
+                series_entity_id,
+                "fred_observations",
+                code,
+                name,
+                alias,
+                0.99,
+            )
 
         target = _fred_target_spec(code, source_entity)
         target_id = target.get("entity_id")
         if target_id:
             _upsert_entity(entity_by_id, _fred_target_entity(target, code))
             for alias in target.get("aliases", []):
-                _add_alias(alias_by_id, target_id, "fred_observations", code, name, alias, float(target.get("confidence_score", 0.86)))
-            _add_relationship(relationships, series_entity_id, "series_applies_to", target_id, "canonical_entity", target_id, "fred_observations", code, float(target.get("confidence_score", 0.86)), {"series_title": name, "target_role": target.get("target_role")})
+                _add_alias(
+                    alias_by_id,
+                    target_id,
+                    "fred_observations",
+                    code,
+                    name,
+                    alias,
+                    float(target.get("confidence_score", 0.86)),
+                )
+            _add_relationship(
+                relationships,
+                series_entity_id,
+                "series_applies_to",
+                target_id,
+                "canonical_entity",
+                target_id,
+                "fred_observations",
+                code,
+                float(target.get("confidence_score", 0.86)),
+                {"series_title": name, "target_role": target.get("target_role")},
+            )
 
         metric_id = fred_metric_by_series.get(str(code))
         map_id = _series_map_id("fred_observations", str(code))
@@ -706,11 +998,16 @@ def _add_fred_entities(
             "series_id": str(code),
             "series_entity_id": series_entity_id,
             "metric_id": metric_id,
-            "applies_to_entity_id": target_id if target_role == "applies_to" else target.get("applies_to_entity_id"),
-            "instrument_entity_id": target_id if target_role == "instrument" else target.get("instrument_entity_id"),
+            "applies_to_entity_id": target_id
+            if target_role == "applies_to"
+            else target.get("applies_to_entity_id"),
+            "instrument_entity_id": target_id
+            if target_role == "instrument"
+            else target.get("instrument_entity_id"),
             "frequency": metadata.get("frequency") or metadata.get("frequency_short"),
             "source_units": metadata.get("units") or metadata.get("units_short"),
-            "seasonal_adjustment": metadata.get("seasonal_adjustment") or metadata.get("seasonal_adjustment_short"),
+            "seasonal_adjustment": metadata.get("seasonal_adjustment")
+            or metadata.get("seasonal_adjustment_short"),
             "notes": {
                 "series_title": name,
                 "target_role": target_role,
@@ -722,7 +1019,10 @@ def _add_fred_entities(
 
 def _load_fred_metric_map(db: DBProtocol) -> dict[str, str]:
     try:
-        rows = db.fetchall("SELECT raw_concept_name, metric_id FROM metric_alias_map WHERE source_id = ? AND COALESCE(is_active, 1) = 1", ["fred_observations"])
+        rows = db.fetchall(
+            "SELECT raw_concept_name, metric_id FROM metric_alias_map WHERE source_id = ? AND COALESCE(is_active, 1) = 1",
+            ["fred_observations"],
+        )
     except Exception:
         return {}
     out = {}
@@ -733,13 +1033,19 @@ def _load_fred_metric_map(db: DBProtocol) -> dict[str, str]:
     return out
 
 
-def _add_company_security_mdm(entity_by_id: dict[str, dict[str, Any]], securities: dict[str, dict[str, Any]], relationships: dict[str, dict[str, Any]]) -> None:
+def _add_company_security_mdm(
+    entity_by_id: dict[str, dict[str, Any]],
+    securities: dict[str, dict[str, Any]],
+    relationships: dict[str, dict[str, Any]],
+) -> None:
     for entity in entity_by_id.values():
         if entity.get("entity_type") != "company" or not entity.get("ticker"):
             continue
         exchange = entity.get("exchange") or entity.get("market")
         security_id = _security_id(entity.get("ticker"), exchange, "equity")
-        composite = f"{entity.get('ticker')}.{exchange}" if exchange else entity.get("ticker")
+        composite = (
+            f"{entity.get('ticker')}.{exchange}" if exchange else entity.get("ticker")
+        )
         securities[security_id] = {
             "security_id": security_id,
             "company_entity_id": entity.get("entity_id"),
@@ -759,7 +1065,18 @@ def _add_company_security_mdm(entity_by_id: dict[str, dict[str, Any]], securitie
             "valid_from": None,
             "valid_to": None,
         }
-        _add_relationship(relationships, entity.get("entity_id"), "company_has_security", security_id, "security", None, None, entity.get("ticker"), 0.9, {"exchange": exchange, "composite_ticker": composite})
+        _add_relationship(
+            relationships,
+            entity.get("entity_id"),
+            "company_has_security",
+            security_id,
+            "security",
+            None,
+            None,
+            entity.get("ticker"),
+            0.9,
+            {"exchange": exchange, "composite_ticker": composite},
+        )
 
 
 def _fred_target_spec(code: str, source_entity: dict[str, Any]) -> dict[str, Any]:
@@ -770,24 +1087,121 @@ def _fred_target_spec(code: str, source_entity: dict[str, Any]) -> dict[str, Any
     title_l = title.lower()
     if code in FRED_CURRENCY_PAIRS:
         spec = FRED_CURRENCY_PAIRS[code]
-        return {**spec, "entity_type": "currency_pair", "target_role": "instrument", "market": "Global", "country": None, "exchange": None, "ticker": code, "confidence_score": 0.94, "mapping_method": "curated_fred_currency_pair", "aliases": [code, spec["canonical_name"], spec["currency"], spec["entity_id"].replace("_", "/")]}
+        return {
+            **spec,
+            "entity_type": "currency_pair",
+            "target_role": "instrument",
+            "market": "Global",
+            "country": None,
+            "exchange": None,
+            "ticker": code,
+            "confidence_score": 0.94,
+            "mapping_method": "curated_fred_currency_pair",
+            "aliases": [
+                code,
+                spec["canonical_name"],
+                spec["currency"],
+                spec["entity_id"].replace("_", "/"),
+            ],
+        }
     if code in FRED_INDEX_SERIES:
         spec = FRED_INDEX_SERIES[code]
-        return {**spec, "entity_type": "index", "target_role": "instrument", "market": "US_Global", "country": "US", "exchange": None, "ticker": code, "currency": "USD", "confidence_score": 0.92, "mapping_method": "curated_fred_index", "aliases": [code, spec["canonical_name"]]}
+        return {
+            **spec,
+            "entity_type": "index",
+            "target_role": "instrument",
+            "market": "US_Global",
+            "country": "US",
+            "exchange": None,
+            "ticker": code,
+            "currency": "USD",
+            "confidence_score": 0.92,
+            "mapping_method": "curated_fred_index",
+            "aliases": [code, spec["canonical_name"]],
+        }
     maturity = _treasury_maturity_label(code, title)
     if maturity:
         entity_id = f"US_TREASURY_{_safe_token(maturity)}_CMT"
         name = f"U.S. Treasury {maturity.replace('_', ' ')} Constant Maturity"
-        return {"entity_id": entity_id, "canonical_name": name, "entity_type": "instrument", "target_role": "instrument", "market": "US Treasury", "country": "US", "exchange": None, "ticker": None, "currency": "USD", "confidence_score": 0.93, "mapping_method": "fred_treasury_constant_maturity_rule", "aliases": [code, title, name]}
+        return {
+            "entity_id": entity_id,
+            "canonical_name": name,
+            "entity_type": "instrument",
+            "target_role": "instrument",
+            "market": "US Treasury",
+            "country": "US",
+            "exchange": None,
+            "ticker": None,
+            "currency": "USD",
+            "confidence_score": 0.93,
+            "mapping_method": "fred_treasury_constant_maturity_rule",
+            "aliases": [code, title, name],
+        }
     if code in {"FEDFUNDS", "EFFR"} or "federal funds" in title_l:
-        return {"entity_id": "US_FED_FUNDS_MARKET", "canonical_name": "U.S. Federal Funds Market", "entity_type": "instrument", "target_role": "instrument", "market": "US Money Market", "country": "US", "exchange": None, "ticker": None, "currency": "USD", "confidence_score": 0.9, "mapping_method": "fred_money_market_rule", "aliases": [code, title, "Federal Funds Market"]}
+        return {
+            "entity_id": "US_FED_FUNDS_MARKET",
+            "canonical_name": "U.S. Federal Funds Market",
+            "entity_type": "instrument",
+            "target_role": "instrument",
+            "market": "US Money Market",
+            "country": "US",
+            "exchange": None,
+            "ticker": None,
+            "currency": "USD",
+            "confidence_score": 0.9,
+            "mapping_method": "fred_money_market_rule",
+            "aliases": [code, title, "Federal Funds Market"],
+        }
     if code == "SOFR" or "secured overnight financing rate" in title_l:
-        return {"entity_id": "US_SOFR_MARKET", "canonical_name": "U.S. Secured Overnight Financing Rate Market", "entity_type": "instrument", "target_role": "instrument", "market": "US Money Market", "country": "US", "exchange": None, "ticker": None, "currency": "USD", "confidence_score": 0.9, "mapping_method": "fred_money_market_rule", "aliases": [code, title, "SOFR"]}
+        return {
+            "entity_id": "US_SOFR_MARKET",
+            "canonical_name": "U.S. Secured Overnight Financing Rate Market",
+            "entity_type": "instrument",
+            "target_role": "instrument",
+            "market": "US Money Market",
+            "country": "US",
+            "exchange": None,
+            "ticker": None,
+            "currency": "USD",
+            "confidence_score": 0.9,
+            "mapping_method": "fred_money_market_rule",
+            "aliases": [code, title, "SOFR"],
+        }
     if "crude oil" in title_l or code in {"DCOILWTICO", "DCOILBRENTEU"}:
-        commodity = "WTI Crude Oil" if "wti" in title_l or code == "DCOILWTICO" else "Brent Crude Oil"
+        commodity = (
+            "WTI Crude Oil"
+            if "wti" in title_l or code == "DCOILWTICO"
+            else "Brent Crude Oil"
+        )
         entity_id = _safe_token(commodity) + "_COMMODITY"
-        return {"entity_id": entity_id, "canonical_name": commodity, "entity_type": "commodity", "target_role": "instrument", "market": "Global", "country": None, "exchange": None, "ticker": code, "currency": "USD", "confidence_score": 0.86, "mapping_method": "fred_commodity_title_rule", "aliases": [code, title, commodity]}
-    return {"entity_id": "USA_COUNTRY", "canonical_name": "United States", "entity_type": "country", "target_role": "applies_to", "market": "US", "country": "USA", "exchange": None, "ticker": None, "currency": None, "confidence_score": 0.78, "mapping_method": "fred_default_us_macro_rule", "aliases": ["USA", "US", "United States"]}
+        return {
+            "entity_id": entity_id,
+            "canonical_name": commodity,
+            "entity_type": "commodity",
+            "target_role": "instrument",
+            "market": "Global",
+            "country": None,
+            "exchange": None,
+            "ticker": code,
+            "currency": "USD",
+            "confidence_score": 0.86,
+            "mapping_method": "fred_commodity_title_rule",
+            "aliases": [code, title, commodity],
+        }
+    return {
+        "entity_id": "USA_COUNTRY",
+        "canonical_name": "United States",
+        "entity_type": "country",
+        "target_role": "applies_to",
+        "market": "US",
+        "country": "USA",
+        "exchange": None,
+        "ticker": None,
+        "currency": None,
+        "confidence_score": 0.78,
+        "mapping_method": "fred_default_us_macro_rule",
+        "aliases": ["USA", "US", "United States"],
+    }
 
 
 def _fred_target_entity(target: dict[str, Any], code: str) -> dict[str, Any]:
@@ -837,7 +1251,20 @@ def _fred_market_hint(code: str, title: str) -> str | None:
 
 def _fred_default_us_series(code: str, title: str) -> bool:
     title_l = str(title).lower()
-    return code.upper() not in FRED_CURRENCY_PAIRS and any(token in title_l for token in ["united states", "u.s.", "federal", "treasury", "cpi", "gdp", "unemployment", "industrial production", "retail"])
+    return code.upper() not in FRED_CURRENCY_PAIRS and any(
+        token in title_l
+        for token in [
+            "united states",
+            "u.s.",
+            "federal",
+            "treasury",
+            "cpi",
+            "gdp",
+            "unemployment",
+            "industrial production",
+            "retail",
+        ]
+    )
 
 
 def _add_relationship(
@@ -854,7 +1281,9 @@ def _add_relationship(
 ) -> None:
     if not subject_entity_id or not relationship_type or not object_id:
         return
-    relationship_id = _relationship_id(subject_entity_id, relationship_type, object_id, source_id, source_code)
+    relationship_id = _relationship_id(
+        subject_entity_id, relationship_type, object_id, source_id, source_code
+    )
     relationships[relationship_id] = {
         "relationship_id": relationship_id,
         "subject_entity_id": subject_entity_id,
@@ -871,7 +1300,11 @@ def _add_relationship(
     }
 
 
-def _add_diagnostics(diagnostics: dict[str, Any], source_entities: list[dict[str, Any]], entity_by_id: dict[str, dict[str, Any]]) -> None:
+def _add_diagnostics(
+    diagnostics: dict[str, Any],
+    source_entities: list[dict[str, Any]],
+    entity_by_id: dict[str, dict[str, Any]],
+) -> None:
     mapped_sources = set()
     for entity in entity_by_id.values():
         if entity.get("entity_type") == "company":
@@ -883,22 +1316,36 @@ def _add_diagnostics(diagnostics: dict[str, Any], source_entities: list[dict[str
     for source_entity in source_entities:
         source_id = source_entity.get("source_id")
         metadata = _json_value(source_entity.get("raw_metadata"))
-        if source_id == "worldbank_indicators" and isinstance(metadata, dict) and metadata.get("kind") == "indicator":
+        if (
+            source_id == "worldbank_indicators"
+            and isinstance(metadata, dict)
+            and metadata.get("kind") == "indicator"
+        ):
             continue
-        if source_id == "fred_observations" and source_entity.get("source_code") not in {*FRED_CURRENCY_PAIRS, *FRED_INDEX_SERIES}:
+        if source_id == "fred_observations" and source_entity.get(
+            "source_code"
+        ) not in {*FRED_CURRENCY_PAIRS, *FRED_INDEX_SERIES}:
             continue
         if source_id not in mapped_sources:
-            diagnostics["unmapped_source_entities"].append({
-                "source_id": source_id,
-                "source_code": source_entity.get("source_code"),
-                "source_name": source_entity.get("source_name"),
-                "reason": "no high-confidence canonical entity rule yet",
-            })
-    diagnostics["notes"].append("FRED series are now modeled as fred_series entities with source_series_entity_map rows linking each series to its metric and applies_to/instrument target.")
-    diagnostics["notes"].append("IMF DataMapper country codes are mapped to canonical country entities; countries missing from World Bank metadata use ISO3 fallback names until an ISO metadata enrichment pass is added.")
+            diagnostics["unmapped_source_entities"].append(
+                {
+                    "source_id": source_id,
+                    "source_code": source_entity.get("source_code"),
+                    "source_name": source_entity.get("source_name"),
+                    "reason": "no high-confidence canonical entity rule yet",
+                }
+            )
+    diagnostics["notes"].append(
+        "FRED series are now modeled as fred_series entities with source_series_entity_map rows linking each series to its metric and applies_to/instrument target."
+    )
+    diagnostics["notes"].append(
+        "IMF DataMapper country codes are mapped to canonical country entities; countries missing from World Bank metadata use ISO3 fallback names until an ISO metadata enrichment pass is added."
+    )
 
 
-def _upsert_entity(entity_by_id: dict[str, dict[str, Any]], entity: dict[str, Any]) -> None:
+def _upsert_entity(
+    entity_by_id: dict[str, dict[str, Any]], entity: dict[str, Any]
+) -> None:
     existing = entity_by_id.get(entity["entity_id"])
     if not existing:
         entity_by_id[entity["entity_id"]] = entity
@@ -935,10 +1382,13 @@ def _add_alias(
         alias_by_id[alias_id] = row
 
 
-def _alias_id(entity_id: str, source_id: str | None, source_code: str | None, alias: str) -> str:
-    digest = hashlib.sha1(f"{entity_id}|{source_id}|{source_code or ''}|{alias.lower()}".encode("utf-8")).hexdigest()[:16]
+def _alias_id(
+    entity_id: str, source_id: str | None, source_code: str | None, alias: str
+) -> str:
+    digest = hashlib.sha1(
+        f"{entity_id}|{source_id}|{source_code or ''}|{alias.lower()}".encode("utf-8")
+    ).hexdigest()[:16]
     return f"alias_{digest}"
-
 
 
 def _json_text(value: Any) -> str | None:
@@ -958,14 +1408,25 @@ def _security_id(ticker: Any, exchange: Any, security_type: str) -> str:
     return f"SECURITY_{_safe_token(ticker)}_{_safe_token(exchange or 'UNKNOWN')}_{_safe_token(security_type)}"
 
 
-def _relationship_id(subject_entity_id: str, relationship_type: str, object_id: str, source_id: str | None, source_code: str | None) -> str:
-    digest = hashlib.sha1(f"{subject_entity_id}|{relationship_type}|{object_id}|{source_id or ''}|{source_code or ''}".encode("utf-8")).hexdigest()[:16]
+def _relationship_id(
+    subject_entity_id: str,
+    relationship_type: str,
+    object_id: str,
+    source_id: str | None,
+    source_code: str | None,
+) -> str:
+    digest = hashlib.sha1(
+        f"{subject_entity_id}|{relationship_type}|{object_id}|{source_id or ''}|{source_code or ''}".encode(
+            "utf-8"
+        )
+    ).hexdigest()[:16]
     return f"rel_{digest}"
 
 
 def _series_map_id(source_id: str, series_id: str) -> str:
     digest = hashlib.sha1(f"{source_id}|{series_id}".encode("utf-8")).hexdigest()[:16]
     return f"seriesmap_{digest}"
+
 
 def _json_value(value: Any) -> Any:
     if isinstance(value, (dict, list)):
@@ -1005,7 +1466,6 @@ def _clean_code(value: Any) -> str | None:
     return text if text else None
 
 
-
 def _short_company_alias(value: Any) -> str | None:
     if value is None:
         return None
@@ -1020,6 +1480,44 @@ def _short_company_alias(value: Any) -> str | None:
         flags=re.IGNORECASE,
     ).strip(" ,.-")
     return cleaned if cleaned and cleaned.lower() != text.lower() else None
+
+
+def _canonical_cn_exchange(value: Any, stock_code: Any) -> str | None:
+    token = str(value or "").strip().upper()
+    aliases = {
+        "SH": "SSE",
+        "SHSE": "SSE",
+        "SSE": "SSE",
+        "SZ": "SZSE",
+        "SZSE": "SZSE",
+        "BJ": "BSE",
+        "BSE": "BSE",
+        "HK": "HKEX",
+        "HKEX": "HKEX",
+    }
+    if token in aliases:
+        return aliases[token]
+    code = _clean_code(stock_code) or ""
+    if code.startswith(("4", "8")):
+        return "BSE"
+    if code.startswith("6"):
+        return "SSE"
+    if code.startswith(("0", "3")):
+        return "SZSE"
+    return None
+
+
+def _prefer_specific_cn_exchange(
+    current: Any,
+    candidate: Any,
+    stock_code: Any,
+) -> str | None:
+    return (
+        _canonical_cn_exchange(candidate, stock_code)
+        or _canonical_cn_exchange(current, stock_code)
+        or _canonical_cn_exchange(None, stock_code)
+    )
+
 
 def _cn_exchange_from_selector(selector: Any) -> str | None:
     text = str(selector or "")
@@ -1081,7 +1579,9 @@ def _markdown_report(report: dict[str, Any]) -> str:
         lines.append(
             "| {entity_id} | {canonical_name} | {entity_type} | {market} | {ticker} | {cik} |".format(
                 entity_id=entity.get("entity_id") or "",
-                canonical_name=str(entity.get("canonical_name") or "").replace("|", "\\|"),
+                canonical_name=str(entity.get("canonical_name") or "").replace(
+                    "|", "\\|"
+                ),
                 entity_type=entity.get("entity_type") or "",
                 market=entity.get("market") or "",
                 ticker=entity.get("ticker") or "",

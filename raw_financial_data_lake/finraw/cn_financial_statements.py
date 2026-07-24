@@ -14,8 +14,8 @@ from typing import Any
 from finraw.builds import finish_build, start_build, versioned_id
 from finraw.db.client import DBProtocol
 
-PARSER_VERSION = "1.25.0"
-EVIDENCE_POLICY_VERSION = "1.25.0"
+PARSER_VERSION = "1.33.0"
+EVIDENCE_POLICY_VERSION = "1.33.0"
 SOURCE_ID = "cninfo_announcements"
 RECORD_TYPE = "cninfo_pdf_announcement"
 CN_DISCLOSURE_RECORD_TYPES = {
@@ -43,6 +43,11 @@ STATEMENT_LAYOUTS = (
     ("合并现金流量表", "cash_flow", "rightmost_periods"),
     (
         "CONSOLIDATED STATEMENT OF PROFIT OR LOSS AND OTHER COMPREHENSIVE INCOME",
+        "income_statement",
+        "rightmost_periods",
+    ),
+    (
+        "CONSOLIDATED STATEMENT OF PROFIT OR LOSS AND OTHER COMPREHENSIE INCOME",
         "income_statement",
         "rightmost_periods",
     ),
@@ -1639,6 +1644,8 @@ def _has_relative_period_columns(
                 ("本年年末余额", "上年年末余额"),
                 ("期末余额", "上年年末余额"),
                 ("本期期末", "上期期末"),
+                ("期末余额", "期初余额"),
+                ("期末数", "期初数"),
             )
         )
     return any(
@@ -1701,6 +1708,28 @@ def _periods_for_statement(
                     "fiscal_quarter": "FY",
                 }
             )
+        has_relative_columns = _has_relative_period_columns(
+            header_text, statement_type
+        )
+        if (
+            report_year is not None
+            and not periods
+            and has_relative_columns
+        ):
+            current_end = f"{report_year:04d}-12-31"
+            seen.add(current_end)
+            periods.append(
+                {
+                    "label": f"{report_year}年12月31日",
+                    "period_start": None,
+                    "period_end": current_end,
+                    "fiscal_year": report_year,
+                    "fiscal_quarter": "FY",
+                    "period_inference": (
+                        "explicit_relative_comparative_header"
+                    ),
+                }
+            )
         if (
             report_year is not None
             and f"{report_year:04d}-12-31" not in seen
@@ -1709,7 +1738,7 @@ def _periods_for_statement(
         if (
             report_year is not None
             and len(periods) == 1
-            and _has_relative_period_columns(header_text, statement_type)
+            and has_relative_columns
         ):
             previous_end = f"{report_year - 1:04d}-12-31"
             periods.append(
@@ -2306,7 +2335,7 @@ def _positioned_numeric_values(
         else:
             matching.append(word)
 
-    for line in lines:
+    for line_index, line in enumerate(lines):
         ordered = sorted(line, key=lambda item: float(item.get("x0") or 0))
         numeric = [
             (index, str(word.get("text") or ""), value)
@@ -2315,14 +2344,31 @@ def _positioned_numeric_values(
         ]
         if len(numeric) < expected_value_count:
             continue
-        line_label = _normalize_label(
-            "".join(
-                str(word.get("text") or "")
-                for word in ordered
+        label_matches = False
+        for start_index in range(max(0, line_index - 2), line_index + 1):
+            prefix_lines = lines[start_index:line_index]
+            if any(
+                _decimal_value(word.get("text")) is not None
+                for prefix_line in prefix_lines
+                for word in prefix_line
+            ):
+                continue
+            label_words = [
+                word
+                for candidate_line in [*prefix_lines, ordered]
+                for word in sorted(
+                    candidate_line,
+                    key=lambda item: float(item.get("x0") or 0),
+                )
                 if _decimal_value(word.get("text")) is None
+            ]
+            line_label = _normalize_label(
+                "".join(str(word.get("text") or "") for word in label_words)
             )
-        )
-        if not _strict_source_label_match(line_label, source_field_name):
+            if _strict_source_label_match(line_label, source_field_name):
+                label_matches = True
+                break
+        if not label_matches:
             continue
         if value_column_policy == "consolidated_first_pair":
             required_columns = expected_value_count * 2
@@ -2377,14 +2423,15 @@ def _strict_source_label_match(label: str, source_field_name: str) -> bool:
         return True
     if not re.search(r"[a-z]", source_label):
         return False
-    suffix = label[len(source_label) :] if label.startswith(source_label) else ""
-    return bool(
-        suffix
-        and re.fullmatch(
-            r"[\u3400-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef╱]+",
-            suffix,
-        )
+    cjk_punctuation_pattern = (
+        r"[\u3400-\u9fff\uf900-\ufaff"
+        r"\u3000-\u303f\uff00-\uffef╱]+"
     )
+    suffix = label[len(source_label) :] if label.startswith(source_label) else ""
+    if suffix and re.fullmatch(cjk_punctuation_pattern, suffix):
+        return True
+    prefix = label[: -len(source_label)] if label.endswith(source_label) else ""
+    return bool(prefix and re.fullmatch(cjk_punctuation_pattern, prefix))
 
 
 
@@ -2415,6 +2462,8 @@ def _decimal_value(value: Any) -> Decimal | None:
 
 def _normalize_label(value: str) -> str:
     text = re.sub(r"\s+", "", value or "").casefold()
+    text = text.replace("’", "'").replace("‘", "'")
+    text = re.sub(r"^[ivxlcdm]+[.．]", "", text)
     text = re.sub(r"^[一二三四五六七八九十]+[、.．]", "", text)
     text = re.sub(r"^[（(][一二三四五六七八九十\d]+[）)]", "", text)
     text = text.lstrip("、.．")
@@ -2447,6 +2496,25 @@ def _apply_accounting_identity_checks(
 
     for metric_rows in groups.values():
         if set(metric_rows) != required:
+            continue
+        equity_source_fields = {
+            _normalize_label(str(row.get("source_field_name") or ""))
+            for row in metric_rows["shareholders_equity"]
+        }
+        total_equity_labels = {
+            _normalize_label(value)
+            for value in (
+                "所有者权益合计",
+                "股东权益合计",
+                "Net assets",
+                "Total equity",
+                "Total shareholders' equity",
+            )
+        }
+        if any(
+            source_field and source_field not in total_equity_labels
+            for source_field in equity_source_fields
+        ):
             continue
         values = {
             metric_id: {Decimal(row["value"]) for row in rows}
@@ -2500,16 +2568,77 @@ def _apply_cross_checks(
         ].append(candidate)
 
     for rows in groups.values():
-        values = {row["value"] for row in rows}
-        object_ids = {row["raw_object_id"] for row in rows}
+        selected_rows: list[dict[str, Any]] = []
+        rows_by_object: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for row in rows:
+            rows_by_object[str(row["raw_object_id"])].append(row)
+
+        for object_rows in rows_by_object.values():
+            object_values = {str(row["value"]) for row in object_rows}
+            if len(object_values) == 1:
+                selected_rows.extend(object_rows)
+                continue
+
+            selected_page = max(
+                int(row.get("page_number") or row.get("_statement_source_page") or 0)
+                for row in object_rows
+            )
+            primary_rows = [
+                row
+                for row in object_rows
+                if int(
+                    row.get("page_number")
+                    or row.get("_statement_source_page")
+                    or 0
+                )
+                == selected_page
+            ]
+            primary_values = {str(row["value"]) for row in primary_rows}
+            if len(primary_values) != 1:
+                _reject_conflict_rows(
+                    object_rows,
+                    "The latest primary-statement page in one official "
+                    "document produced multiple values for the same semantic "
+                    "fact.",
+                )
+                continue
+
+            selected_value = next(iter(primary_values))
+            selected_rows.extend(primary_rows)
+            for row in object_rows:
+                row["extraction_metadata"][
+                    "same_document_selected_statement_page"
+                ] = selected_page
+                row["extraction_metadata"][
+                    "same_document_selected_value"
+                ] = selected_value
+                if row in primary_rows:
+                    continue
+                row["candidate_state"] = "superseded"
+                row["cross_check_status"] = (
+                    "superseded_same_document_summary"
+                )
+                row["promotion_status"] = "rejected_superseded"
+                row["review_status"] = (
+                    "cn_pdf_superseded_same_document_summary"
+                )
+                row["state_reason"] = (
+                    "A later primary-statement page in the same official "
+                    "document reports the selected semantic fact."
+                )
+
+        if not selected_rows:
+            continue
+        values = {str(row["value"]) for row in selected_rows}
+        object_ids = {str(row["raw_object_id"]) for row in selected_rows}
         if len(values) == 1 and len(object_ids) > 1:
-            for row in rows:
+            for row in selected_rows:
                 row["candidate_state"] = "cross_checked"
                 row["cross_check_status"] = "matched_official_comparative"
                 row["promotion_status"] = "approved_for_atomic_fact"
             continue
         if len(values) == 1:
-            for row in rows:
+            for row in selected_rows:
                 row["cross_check_status"] = "single_official_document"
                 row["promotion_status"] = (
                     "approved_for_atomic_fact"
@@ -2518,42 +2647,31 @@ def _apply_cross_checks(
                 )
             continue
 
-        values_by_object: dict[str, set[str]] = defaultdict(set)
-        for row in rows:
-            values_by_object[str(row["raw_object_id"])].add(str(row["value"]))
-        if any(len(item) > 1 for item in values_by_object.values()):
-            _reject_conflict_rows(
-                rows,
-                "A single official document produced multiple values for the "
-                "same semantic fact.",
-            )
-            continue
-
         publish_dates = {
             str(row.get("_source_publish_date") or "")
-            for row in rows
+            for row in selected_rows
         }
         if "" in publish_dates:
             _reject_conflict_rows(
-                rows,
+                selected_rows,
                 "Conflicting official versions lack complete publication dates.",
             )
             continue
         latest_publish_date = max(publish_dates)
         latest_rows = [
             row
-            for row in rows
+            for row in selected_rows
             if str(row.get("_source_publish_date")) == latest_publish_date
         ]
         latest_values = {str(row["value"]) for row in latest_rows}
         if len(latest_values) != 1:
             _reject_conflict_rows(
-                rows,
+                selected_rows,
                 "The latest official publication contains conflicting values.",
             )
             continue
         selected_value = next(iter(latest_values))
-        for row in rows:
+        for row in selected_rows:
             row["extraction_metadata"]["latest_official_publish_date"] = (
                 latest_publish_date
             )

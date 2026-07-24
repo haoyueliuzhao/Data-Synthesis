@@ -161,6 +161,7 @@
     "min_years_per_company_critical_metric": 0
   },
   "kg": {
+    "use_active_fact_universe": false,
     "retention": {
       "hot_build_count": 2,
       "archive_dir": "./data/kg_archive",
@@ -175,6 +176,12 @@
       "enabled": true
     },
     "derived_policy": {
+      "annual_filing_sources": [
+        "sec_companyfacts",
+        "cninfo_announcements",
+        "bse_disclosures",
+        "hkex_disclosures"
+      ],
       "multi_year_windows": [
         5,
         10
@@ -191,6 +198,21 @@
         "quarterly": 4,
         "annual": 5
       }
+    }
+  },
+  "fact_universe": {
+    "enabled": false,
+    "policy_id": "regional_stratified_historical_v1",
+    "target_greater_china_share": 0.48,
+    "include_forecasts": false,
+    "minimum_per_stratum": 1,
+    "minimum_stratum_coverage": 0.95,
+    "derived_chain_priority": {
+      "enabled": false,
+      "target_fraction": 0.9,
+      "evaluation_interval": 25,
+      "minimum_greater_china_share": 0.43,
+      "maximum_greater_china_share": 0.53
     }
   },
   "qa": {

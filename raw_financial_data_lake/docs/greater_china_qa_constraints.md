@@ -6,6 +6,8 @@ This contract defines the admission boundary for a future Greater China QA rebui
 
 The design goal is to preserve the auditability of the raw lake while making future Chinese and bilingual questions financially unambiguous. A sample is admitted only after its facts have passed candidate promotion, standardization, source-definition matching, fact-quality checks, and KG construction.
 
+The external benchmark label remains `benchmark_market=greater_china` for FinSearchComp alignment. The current internal source contract is narrower: `internal_region_scope=mainland_hong_kong_macau`. Taiwan is excluded until authoritative sources and an explicit entity contract are available; reports must not imply that Taiwan is already covered.
+
 ## Authority Boundary
 
 Corporate facts must originate from CNInfo, Beijing Stock Exchange disclosures, or HKEXnews. Market, index, monetary, external-sector, and national statistics must originate from the relevant exchange, CSI, NBS, PBOC, or SAFE. Every numerical fact must resolve to a graph-ready standardized fact, an official source definition, and a passed raw object. Parsed PDF candidates are never directly eligible.
@@ -40,6 +42,8 @@ When QA generation is eventually enabled, Greater China samples must include Chi
 
 Market quotas are applied only after quality filtering. The intended distribution reserves explicit shares for A-shares, HKEX, and BSE; quota pressure can never relax source, scope, or evidence gates.
 
+The distribution reference is computed from FinSearchComp T2/T3 only: T2 Greater China is `100/219` (45.66%), T3 is `88/172` (51.16%), and their combined reference is `188/391` (48.08%). The internal minimum remains 40%; the benchmark-alignment band is the combined reference plus or minus five percentage points. Raw-object or Fact counts alone do not determine alignment. Audits also report entity share, metric-family coverage, five-year company-profile coverage, and the quality-gated QA-constructible share.
+
 ## Activation Checklist
 
 Generation may be enabled only after all of the following are true:
@@ -48,6 +52,7 @@ Generation may be enabled only after all of the following are true:
 2. The company metric-profile pass ratio is at least 90%, with the remaining gap published and a 100% target retained.
 3. The scoped graph-ready fact ratio is at least 90%.
 4. All required official publication targets have passed download and checksum validation.
+5. At least 90% of annual documents contribute a verified promoted fact, and at least 90% satisfy their selected Profile's required metric-extraction groups. Income statement, balance sheet, and cash-flow statement verification ratios are reported separately; none is described as whole-document verification.
 5. A pinned KG build passes node, edge, scope, source-definition, and evidence-lineage checks.
 6. Chinese and bilingual parser/verbalizer round-trip tests exist for every enabled task pattern.
 

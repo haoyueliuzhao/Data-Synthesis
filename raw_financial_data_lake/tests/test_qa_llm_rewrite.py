@@ -13,6 +13,7 @@ from finraw.qa.verbalizer import (
     realize_question,
     surface_slot_variants,
     surface_variation_manifest,
+    validate_protected_rewrite,
 )
 
 
@@ -375,6 +376,36 @@ def test_surface_slot_variants_are_canonical_and_whitelisted():
     }
 
 
+def test_chinese_surface_variants_cover_localized_fiscal_periods_and_metrics():
+    variants = surface_slot_variants(
+        {"metric": "基本每股收益", "period": "2024财年"},
+        {"time_scope": {"basis": "fiscal_year"}},
+        {
+            "language": "zh",
+            "surface_variation": {
+                "enabled": True,
+                "minimum_noncanonical_selections": 1,
+            },
+        },
+    )
+
+    assert "基本EPS" in variants["metric"].values()
+    assert "2024财政年度" in variants["period"].values()
+    diversified = diversify_surface_slots(
+        {"metric": "基本每股收益", "period": "2024财年"},
+        {"time_scope": {"basis": "fiscal_year"}},
+        "zh-stable",
+        {
+            "language": "zh",
+            "surface_variation": {
+                "enabled": True,
+                "minimum_noncanonical_selections": 1,
+            },
+        },
+    )
+    assert diversified != {"metric": "基本每股收益", "period": "2024财年"}
+
+
 def test_surface_slot_variants_naturalize_fiscal_ytd_periods():
     variants = surface_slot_variants(
         {"period": "fiscal year 2020 Q2_YTD"},
@@ -554,7 +585,7 @@ def test_llm_client_discovers_models_and_falls_back_on_model_quota(monkeypatch):
     assert "secret" not in serialized
 
 
-def test_llm_client_forwards_reasoning_storage_and_custom_headers(monkeypatch):
+def test_llm_client_forwards_non_thinking_storage_and_custom_headers(monkeypatch):
     monkeypatch.setenv("FINRAW_TEST_API_KEY", "secret")
     captured = {}
 
@@ -594,7 +625,9 @@ def test_llm_client_forwards_reasoning_storage_and_custom_headers(monkeypatch):
             "model": "gpt-5.6-sol",
             "api_key_env": "FINRAW_TEST_API_KEY",
             "reasoning_effort": "high",
+            "thinking": {"type": "disabled"},
             "store": False,
+            "max_output_tokens": 777,
             "http_headers": {
                 "x-openai-actor-authorization": "local-image-extension"
             },
@@ -604,8 +637,10 @@ def test_llm_client_forwards_reasoning_storage_and_custom_headers(monkeypatch):
     completion = client.complete_json("return json")
 
     assert completion.payload == {"ok": True}
-    assert captured["body"]["reasoning_effort"] == "high"
+    assert captured["body"]["thinking"] == {"type": "disabled"}
+    assert "reasoning_effort" not in captured["body"]
     assert captured["body"]["store"] is False
+    assert captured["body"]["max_tokens"] == 777
     assert captured["actor_header"] == "local-image-extension"
     assert captured["authorization"] == "Bearer secret"
 
@@ -634,3 +669,45 @@ def test_protected_rewrite_selects_a_stable_variant_by_style_id():
     assert result.generation_method == "controlled_llm_protected_rewrite"
     assert result.validation["rewrite_variant_index"] == 1
     assert result.question.startswith("For FY2023")
+
+
+def test_protected_rewrite_allows_one_question_followed_by_output_instruction():
+    result = validate_protected_rewrite(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "What was <slot_metric> for <slot_period>? "
+                "Return <slot_output_instruction>."
+            ),
+        },
+        ["<slot_metric>", "<slot_period>", "<slot_output_instruction>"],
+    )
+
+    assert result["passed"] is True
+
+
+def test_protected_rewrite_accepts_full_width_chinese_question_mark():
+    result = validate_protected_rewrite(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": "<slot_entity>在<slot_period>的<slot_metric>是多少？",
+        },
+        ["<slot_entity>", "<slot_period>", "<slot_metric>"],
+    )
+
+    assert result["passed"] is True
+
+
+def test_protected_rewrite_allows_single_imperative_financial_task():
+    result = validate_protected_rewrite(
+        {
+            "rewrite_version": QUESTION_REWRITE_VERSION,
+            "question_template": (
+                "Rank the top <slot_top_k> companies by <slot_metric>, then "
+                "report <slot_followup_metric>."
+            ),
+        },
+        ["<slot_top_k>", "<slot_metric>", "<slot_followup_metric>"],
+    )
+
+    assert result["passed"] is True

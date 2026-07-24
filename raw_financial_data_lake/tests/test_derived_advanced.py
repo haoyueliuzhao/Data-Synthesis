@@ -9,6 +9,7 @@ from finraw.derived_facts import (
     _iter_long_window_returns,
     _iter_multi_condition_screening,
     _iter_multi_year_extrema,
+    _iter_ratios,
     _iter_time_series_extrema,
 )
 
@@ -53,7 +54,9 @@ def test_frequency_aware_extrema_and_long_window_return() -> None:
     report = {"skipped_counts": Counter()}
     rows = []
     for month in range(1, 13):
-        row = _row(2024, str(month), metric="consumer_price_index", entity="USA_COUNTRY")
+        row = _row(
+            2024, str(month), metric="consumer_price_index", entity="USA_COUNTRY"
+        )
         row.update(
             {
                 "fact_id": f"cpi:{month}",
@@ -74,7 +77,12 @@ def test_frequency_aware_extrema_and_long_window_return() -> None:
 
     index_rows = []
     for year in range(2014, 2025):
-        row = _row(year, str(100 + year - 2014), metric="broad_us_dollar_index", entity="USD_INDEX")
+        row = _row(
+            year,
+            str(100 + year - 2014),
+            metric="broad_us_dollar_index",
+            entity="USD_INDEX",
+        )
         row.update(
             {
                 "fact_id": f"dollar:{year}",
@@ -120,6 +128,59 @@ def test_industry_ranking_and_multi_condition_screening_have_explicit_scopes() -
     assert screening[0]["derived_type"] == "multi_condition_screening"
     assert screening[0]["scope_id"].endswith("_2024")
     assert screening[0]["output_table"][0]["entity_id"] == "A_US"
+
+
+def test_greater_china_authoritative_filings_support_ratios_and_industry_rankings() -> (
+    None
+):
+    report = {"skipped_counts": Counter()}
+    rows = []
+    for entity, values in {
+        "A_CN": {
+            "revenue": "100",
+            "net_income": "12",
+            "total_assets": "200",
+            "total_liabilities": "80",
+        },
+        "B_CN": {
+            "revenue": "90",
+            "net_income": "9",
+            "total_assets": "180",
+            "total_liabilities": "90",
+        },
+    }.items():
+        for metric, value in values.items():
+            row = _row(2024, value, metric=metric, entity=entity)
+            row.update(
+                {
+                    "source_id": "cninfo_announcements",
+                    "normalized_currency": "CNY",
+                    "industry": "Industrial Machinery",
+                }
+            )
+            rows.append(row)
+
+    annual = _annual_rows(rows, report)
+    ratios = list(_iter_ratios(annual, report))
+    rankings = list(_iter_industry_rankings(annual, report))
+
+    assert len(annual) == 8
+    assert {fact["metric_scope"]["ratio_id"] for fact in ratios} == {
+        "net_margin",
+        "liabilities_to_assets",
+    }
+    assert {fact["entity_scope"]["entity_id"] for fact in ratios} == {
+        "A_CN",
+        "B_CN",
+    }
+    assert {fact["derived_type"] for fact in rankings} == {
+        "industry_ranking",
+        "industry_argmax",
+        "industry_argmin",
+    }
+    assert all(
+        fact["entity_scope"]["source_id"] == "cninfo_announcements" for fact in rankings
+    )
 
 
 def test_forecasts_do_not_enter_historical_annual_derivations() -> None:

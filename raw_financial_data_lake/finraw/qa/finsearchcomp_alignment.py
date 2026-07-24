@@ -19,7 +19,7 @@ FINSEARCHCOMP_REVISION = "1fd1beea75482e2dd5e2be8f618195d9c6aff176"
 FINSEARCHCOMP_RAW_SHA256 = (
     "6437a6dae907ec81002bd817dafc26c3e46e6b6edfde700f22645b1e2aa208c4"
 )
-FINSEARCHCOMP_ALIGNMENT_VERSION = "finsearchcomp_alignment.v1.1"
+FINSEARCHCOMP_ALIGNMENT_VERSION = "finsearchcomp_alignment.v1.2"
 FINSEARCHCOMP_TAXONOMY_VERSION = "finsearchcomp_taxonomy.v1.1"
 EXPECTED_LABELS = {
     "Time-Sensitive_Data_Fetching(Global)",
@@ -564,12 +564,20 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
     )
     if not metric_families:
         metric_families = [str(metric).replace("_", " ") for metric in metric_ids]
+    rubric = dict(row.get("rubric") or {})
+    requested_unit = str(rubric.get("requested_unit") or row.get("unit") or "")
+    requested_currency = (
+        str(rubric.get("requested_currency") or "")
+        if "requested_currency" in rubric
+        else str(row.get("currency") or "")
+    )
     completeness = _question_completeness(
         question,
-        unit=str(row.get("unit") or ""),
-        currency=str(row.get("currency") or ""),
+        unit=requested_unit,
+        currency=requested_currency,
         time_scope=time_scope,
         benchmark_task=benchmark_task,
+        precision_required=bool(rubric.get("precision_must_match")),
     )
     generation_pipeline = _generation_pipeline(row)
     payload = {
@@ -1501,12 +1509,25 @@ def _current_frequency(time_scope: dict[str, Any]) -> str:
 
 
 def _current_market(source_ids: list[str], entity_ids: list[str]) -> str:
-    if any(source.casefold().startswith("cninfo") for source in source_ids):
+    greater_china_source_prefixes = (
+        "cninfo",
+        "bse_",
+        "hkex_",
+        "nbs_",
+        "pboc_",
+        "safe_",
+        "sse_",
+        "szse_",
+    )
+    if source_ids and all(
+        source.casefold().startswith(greater_china_source_prefixes)
+        for source in source_ids
+    ):
         return "greater_china"
     greater_china_entities = {"CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"}
     if entity_ids and all(
         item in greater_china_entities
-        or item.endswith(("_CN", "_HK", "_MO"))
+        or item.endswith(("_CN", "_HK", "_MO", "_SSE", "_SZSE", "_BSE", "_HKEX"))
         for item in entity_ids
     ):
         return "greater_china"
@@ -1515,7 +1536,8 @@ def _current_market(source_ids: list[str], entity_ids: list[str]) -> str:
 
 def _generation_pipeline(row: dict[str, Any]) -> str:
     pattern = str(row.get("pattern_id") or "")
-    if pattern.startswith("walk_"):
+    task_subtype = str(row.get("task_subtype") or "")
+    if pattern.startswith("walk_") or task_subtype.startswith("walk_"):
         return "typed_edge_walk"
     if row.get("pattern_proposal_id"):
         return "automatic_pattern_mining"
@@ -1533,10 +1555,9 @@ def _question_completeness(
     currency: str,
     time_scope: dict[str, Any],
     benchmark_task: str,
+    precision_required: bool = True,
 ) -> dict[str, bool]:
     normalized = question.casefold()
-    unit_tokens = [token.casefold() for token in re.findall(r"[A-Za-z%]+", unit)]
-    currency_tokens = [currency.casefold()] if currency else []
     time_explicit = bool(
         re.search(r"\b(?:19|20)\d{2}\b|q[1-4]|fy\s*(?:19|20)\d{2}", normalized)
         or any(str(value) in question for value in time_scope.values() if isinstance(value, int))
@@ -1545,11 +1566,58 @@ def _question_completeness(
         "entity_explicit": True,
         "metric_explicit": True,
         "time_explicit": time_explicit,
-        "unit_explicit": not unit or any(token in normalized for token in unit_tokens),
-        "currency_explicit": not currency or any(token in normalized for token in currency_tokens),
-        "output_format_explicit": bool(re.search(r"table|list|rank|report|列出|排序|报告", normalized)) or benchmark_task == "T2",
-        "precision_explicit": bool(re.search(r"round|decimal|nearest|保留|取整|四舍五入|tolerance|误差", normalized)),
+        "unit_explicit": not unit or _alignment_unit_present(question, unit),
+        "currency_explicit": not currency or _alignment_currency_present(question, currency),
+        "output_format_explicit": bool(
+            re.search(
+                r"table|list|rank|report|列出|排序|报告|完整表格|为单位|位小数",
+                normalized,
+            )
+        )
+        or benchmark_task == "T2",
+        "precision_explicit": (
+            not precision_required
+            or bool(
+                re.search(
+                    r"round|decimal|nearest|保留|取整|四舍五入|tolerance|误差",
+                    normalized,
+                )
+            )
+        ),
     }
+
+
+def _alignment_unit_present(question: str, requested_unit: str) -> bool:
+    aliases = {
+        "million USD": ("million USD", "USD millions", "百万美元"),
+        "million CNY": ("million CNY", "CNY millions", "百万元人民币"),
+        "million RMB": ("million RMB", "RMB millions", "百万元人民币"),
+        "million HKD": ("million HKD", "HKD millions", "百万港元"),
+        "billion USD": ("billion USD", "USD billions", "十亿美元"),
+        "billion CNY": ("billion CNY", "CNY billions", "十亿元人民币"),
+        "billion HKD": ("billion HKD", "HKD billions", "十亿港元"),
+        "USD_per_share": ("USD per share", "美元/股"),
+        "CNY_per_share": ("CNY per share", "人民币元/股"),
+        "HKD_per_share": ("HKD per share", "港元/股"),
+        "percent": ("percent", "%", "百分比"),
+        "%": ("percent", "%", "百分比"),
+    }.get(requested_unit, (requested_unit,))
+    compact = re.sub(r"\s+", "", question.casefold())
+    if any(re.sub(r"\s+", "", alias.casefold()) in compact for alias in aliases):
+        return True
+    tokens = [token.casefold() for token in re.findall(r"[A-Za-z%]+", requested_unit)]
+    return bool(tokens) and all(token in question.casefold() for token in tokens)
+
+
+def _alignment_currency_present(question: str, requested_currency: str) -> bool:
+    aliases = {
+        "USD": ("USD", "US dollars", "美元"),
+        "CNY": ("CNY", "RMB", "人民币"),
+        "RMB": ("RMB", "CNY", "人民币"),
+        "HKD": ("HKD", "Hong Kong dollars", "港元"),
+    }.get(requested_currency.upper(), (requested_currency,))
+    normalized = question.casefold()
+    return any(alias.casefold() in normalized for alias in aliases)
 
 
 def _tools_for_sources(source_ids: list[str]) -> list[str]:

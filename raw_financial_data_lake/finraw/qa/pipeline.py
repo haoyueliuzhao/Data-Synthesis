@@ -6,6 +6,7 @@ import re
 import subprocess
 import uuid
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -54,7 +55,6 @@ from finraw.qa.verbalizer import (
     build_question_contract,
     diversify_surface_slots,
     question_parser_manifest,
-    protected_rewrite_style_ids,
     question_parser_manifest_hash,
     realize_question,
     resolve_surface_variant_ids,
@@ -102,7 +102,7 @@ GRAPH_SCOPE_TASKS = {
     "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.20.1"
+GENERATOR_VERSION = "4.22.1"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -447,13 +447,23 @@ def build_qa_candidates(
     plans: list[dict[str, Any]] = []
     counts: Counter[str] = Counter()
     rejected: Counter[str] = Counter()
-    entity_names = {
-        str(row["entity_id"]): str(row["canonical_name"])
+    entity_rows = [
+        dict(row)
         for row in db.fetchall(
-            "SELECT entity_id, canonical_name FROM canonical_entities WHERE build_id = ?",
+            "SELECT entity_id, canonical_name, country, market, exchange "
+            "FROM canonical_entities WHERE build_id = ?",
             (kg["input_entity_build_id"],),
         )
+    ]
+    entity_names = {
+        str(row["entity_id"]): str(row["canonical_name"]) for row in entity_rows
     }
+    target_market_subset = str(
+        policy["benchmark_alignment"].get("target_market_subset") or ""
+    ).casefold()
+    target_market_entity_ids = _target_market_entity_ids(
+        entity_rows, target_market_subset
+    )
     metric_rows = [
         dict(row)
         for row in db.fetchall(
@@ -494,8 +504,25 @@ def build_qa_candidates(
         plans.clear()
 
     seen_semantic_bindings: set[str] = set()
+    excluded_task_subtypes = {
+        str(item)
+        for item in policy["benchmark_alignment"].get("excluded_task_subtypes", [])
+    }
+    pinned_node_cache: dict[tuple[str, str], str | None] = {}
 
     def emit(candidate: dict[str, Any], plan: dict[str, Any] | None = None) -> None:
+        if candidate.get("task_subtype") in excluded_task_subtypes:
+            rejected["excluded_benchmark_task_subtype"] += 1
+            return
+        if candidate.get("eligibility_status") == "eligible":
+            evidence_errors = _pinned_candidate_evidence_errors(
+                db, kg_build_id, candidate, pinned_node_cache
+            )
+            if evidence_errors:
+                candidate["eligibility_status"] = "rejected"
+                candidate["rejection_reasons"] = sorted(
+                    set(candidate.get("rejection_reasons") or []) | set(evidence_errors)
+                )
         if candidate.get("eligibility_status") == "eligible":
             semantic_binding_key = _digest(
                 candidate.get("task_subtype"),
@@ -553,10 +580,14 @@ def build_qa_candidates(
                 )
             ),
             policy["quotas"]["single_fact_greater_china"],
-            list(
-                policy["benchmark_alignment"].get(
-                    "greater_china_entity_ids",
-                    ["CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"],
+            (
+                None
+                if target_market_subset == "greater_china"
+                else list(
+                    policy["benchmark_alignment"].get(
+                        "greater_china_entity_ids",
+                        ["CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"],
+                    )
                 )
             ),
         ),
@@ -564,8 +595,13 @@ def build_qa_candidates(
     for pool_name, sources, quota, entity_filter in pool_specs:
         if quota <= 0:
             continue
+        effective_entity_filter = _intersect_entity_filters(
+            entity_filter, target_market_entity_ids
+        )
+        if target_market_entity_ids is not None and not effective_entity_filter:
+            continue
         rows = _load_fact_pool(
-            db, kg, sources, quota * 5, entity_ids=entity_filter
+            db, kg, sources, quota * 5, entity_ids=effective_entity_filter
         )
         for row in _sample_fact_rows(rows, quota):
             emit(_fact_candidate(db, row, qa_build_id, kg_build_id, pool_name))
@@ -590,14 +626,26 @@ def build_qa_candidates(
     for derived_type, quota in policy["derived_quotas"].items():
         if derived_type not in SUPPORTED_DERIVED or quota <= 0:
             continue
-        for row in _load_derived_pool(db, kg, derived_type, quota):
+        for row in _load_derived_pool(
+            db,
+            kg,
+            derived_type,
+            quota,
+            entity_ids=target_market_entity_ids,
+        ):
             emit_derived(row, derived_type)
 
-    greater_china_entities = list(
-        policy["benchmark_alignment"].get(
-            "greater_china_entity_ids",
-            ["CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"],
+    greater_china_entities = (
+        _intersect_entity_filters(
+            list(
+                policy["benchmark_alignment"].get(
+                    "greater_china_entity_ids",
+                    ["CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"],
+                )
+            ),
+            target_market_entity_ids,
         )
+        or []
     )
     for derived_type, quota in dict(
         policy["benchmark_alignment"].get("greater_china_derived_quotas") or {}
@@ -623,12 +671,19 @@ def build_qa_candidates(
             pattern = get_pattern(pattern_id)
             if not pattern.is_active:
                 continue
+            requested_quota = int(quota)
+            discovery_limit = requested_quota
+            if target_market_entity_ids is not None:
+                discovery_limit = max(requested_quota * 5, requested_quota)
             matches = discover_pattern_matches(
                 db,
                 kg,
                 pattern_id,
-                limit=int(quota),
+                limit=discovery_limit,
                 policy=graph_policy.get("comparability"),
+            )
+            matches = _filter_matches_by_entity_ids(
+                matches, target_market_entity_ids, requested_quota
             )
             fact_map = load_bound_facts(
                 db,
@@ -654,17 +709,24 @@ def build_qa_candidates(
     if mined_proposals:
         for proposal in mined_proposals:
             pattern = compile_pattern_proposal(proposal)
+            proposal_limit = effective_mining_policy["max_candidates_per_proposal"]
+            compile_limit = proposal_limit
+            if target_market_entity_ids is not None:
+                compile_limit = max(proposal_limit * 5, proposal_limit)
             matches = compile_proposal_matches(
                 db,
                 kg,
                 proposal,
                 qa_build_id=qa_build_id,
-                limit=effective_mining_policy["max_candidates_per_proposal"],
+                limit=compile_limit,
                 policy={
                     **effective_mining_policy,
                     "semantic_policy": semantic_policy,
                 },
                 metric_fact_cache=metric_fact_cache,
+            )
+            matches = _filter_matches_by_entity_ids(
+                matches, target_market_entity_ids, proposal_limit
             )
             fact_map = load_bound_facts(
                 db,
@@ -840,6 +902,17 @@ def generate_qa_samples(
             },
             target_runtime_contract=_catalog_runtime_contract_for_build(build),
         )
+    existing_sample_count = _scalar(
+        db,
+        "SELECT COUNT(*) AS c FROM qa_samples WHERE qa_build_id = ?",
+        [qa_build_id],
+    )
+    if existing_sample_count:
+        raise RuntimeError(
+            f"QA build {qa_build_id} already has {existing_sample_count} samples; "
+            "create a new build or explicitly purge its downstream QA artifacts "
+            "before regenerating"
+        )
     candidates = db.fetchall(
         """
         SELECT c.*, p.operator_dag AS operation_plan
@@ -853,25 +926,42 @@ def generate_qa_samples(
     samples: list[dict[str, Any]] = []
     paths: list[dict[str, Any]] = []
     task_counts: Counter[str] = Counter()
-    for raw in candidates:
-        candidate = _decode_candidate(dict(raw))
-        sample, path = _sample_from_candidate(candidate, build)
-        samples.append(sample)
-        paths.append(path)
-        task_counts[sample["task_subtype"]] += 1
-        if len(samples) >= batch_size:
-            insert_rows(
-                db, "qa_samples", samples, SAMPLE_COLUMNS, _sample_json_columns()
-            )
-            insert_rows(
-                db,
-                "qa_evidence_paths",
-                paths,
-                EVIDENCE_COLUMNS,
-                _evidence_json_columns(),
-            )
-            samples.clear()
-            paths.clear()
+    generation_policy = dict(
+        build.get("notes", {}).get("policy", {}).get("question_generation") or {}
+    )
+    max_workers = max(int(generation_policy.get("max_workers", 1)), 1)
+    max_workers = min(max_workers, max(len(candidates), 1))
+    decoded_candidates = [_decode_candidate(dict(raw)) for raw in candidates]
+
+    def render(candidate: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+        return _sample_from_candidate(candidate, build)
+
+    def consume(results: Any) -> None:
+        for sample, path in results:
+            samples.append(sample)
+            paths.append(path)
+            task_counts[sample["task_subtype"]] += 1
+            if len(samples) >= batch_size:
+                insert_rows(
+                    db, "qa_samples", samples, SAMPLE_COLUMNS, _sample_json_columns()
+                )
+                insert_rows(
+                    db,
+                    "qa_evidence_paths",
+                    paths,
+                    EVIDENCE_COLUMNS,
+                    _evidence_json_columns(),
+                )
+                samples.clear()
+                paths.clear()
+
+    if max_workers == 1:
+        consume(map(render, decoded_candidates))
+    else:
+        with ThreadPoolExecutor(
+            max_workers=max_workers, thread_name_prefix="qa-llm"
+        ) as executor:
+            consume(executor.map(render, decoded_candidates))
     if samples:
         insert_rows(db, "qa_samples", samples, SAMPLE_COLUMNS, _sample_json_columns())
         insert_rows(
@@ -894,6 +984,7 @@ def generate_qa_samples(
             "question_parser_version": build["question_parser_version"],
             "question_parser_manifest_hash": build["question_parser_manifest_hash"],
             "sample_count": sample_count,
+            "generation_max_workers": max_workers,
             "task_counts": persisted_task_counts,
             "emitted_task_counts": dict(sorted(task_counts.items())),
         },
@@ -1373,9 +1464,7 @@ def split_qa_samples(
                 f"{llm_generation['request_count']} < "
                 f"{llm_generation['expected_request_count']}"
             )
-        maximum_retry_rate = float(
-            generation_gate.get("maximum_retry_rate", 0.10)
-        )
+        maximum_retry_rate = float(generation_gate.get("maximum_retry_rate", 0.10))
         if float(llm_generation["retry_rate"]) > maximum_retry_rate:
             failures.append(
                 f"qa_llm_retry_rate={llm_generation['retry_rate']:.6f} > "
@@ -1397,15 +1486,11 @@ def split_qa_samples(
                 f"{llm_generation['average_noncanonical_slots']:.6f} < "
                 f"{minimum_average_noncanonical:.6f}"
             )
-        minimum_style_count = int(
-            generation_gate.get("minimum_style_variant_count", 0)
-        )
+        minimum_style_count = int(generation_gate.get("minimum_style_variant_count", 0))
         observed_style_count = len(
             {
                 key
-                for key, value in llm_generation[
-                    "style_variant_distribution"
-                ].items()
+                for key, value in llm_generation["style_variant_distribution"].items()
                 if key != "none" and int(value) > 0
             }
         )
@@ -1593,9 +1678,7 @@ def _qa_llm_generation_stats(
         sentence_plan_valid = bool(telemetry.get("sentence_plan_valid"))
         rewrite_valid = bool(telemetry.get("rewrite_valid"))
         denormalization_valid = bool(telemetry.get("denormalization_valid"))
-        denormalization_applied = bool(
-            telemetry.get("denormalization_applied")
-        )
+        denormalization_applied = bool(telemetry.get("denormalization_applied"))
         surface_variant_ids = dict(generation.get("surface_variant_ids") or {})
         noncanonical_selection_count = int(
             generation.get("noncanonical_selection_count")
@@ -1614,9 +1697,7 @@ def _qa_llm_generation_stats(
                 "denormalization_valid": denormalization_valid,
                 "denormalization_applied": denormalization_applied,
                 "noncanonical_selection_count": noncanonical_selection_count,
-                "style_variant_id": str(
-                    generation.get("style_variant_id") or "none"
-                ),
+                "style_variant_id": str(generation.get("style_variant_id") or "none"),
                 "surface_realization_source": str(
                     generation.get("surface_realization_source") or "none"
                 ),
@@ -1670,8 +1751,7 @@ def _qa_llm_generation_stats(
             bool(row.get("denormalization_applied")) for row in telemetry_rows
         ),
         "noncanonical_selection_count": sum(
-            int(row.get("noncanonical_selection_count") or 0)
-            for row in telemetry_rows
+            int(row.get("noncanonical_selection_count") or 0) for row in telemetry_rows
         ),
         "controlled_generation_count": sum(
             bool(row.get("controlled_generation")) for row in telemetry_rows
@@ -1696,8 +1776,7 @@ def _qa_llm_generation_stats(
         "style_variant_distribution": dict(
             sorted(
                 Counter(
-                    str(row.get("style_variant_id") or "none")
-                    for row in telemetry_rows
+                    str(row.get("style_variant_id") or "none") for row in telemetry_rows
                 ).items()
             )
         ),
@@ -1842,6 +1921,50 @@ def _fact_candidate(
     }
 
 
+def _pinned_candidate_evidence_errors(
+    db: DBProtocol,
+    kg_build_id: str,
+    candidate: dict[str, Any],
+    node_cache: dict[tuple[str, str], str | None] | None = None,
+) -> list[str]:
+    cache = node_cache if node_cache is not None else {}
+    path = dict(candidate.get("kg_path") or {})
+    evidence_node_ids = set(path.get("evidence_node_ids") or path.get("node_ids") or [])
+    evidence_edge_ids = path.get("evidence_edges") or path.get("edge_ids") or []
+    expected_nodes: list[str] = []
+    errors: set[str] = set()
+    bindings = (
+        ("Fact", "standardized_facts", candidate.get("source_fact_ids") or []),
+        ("DerivedFact", "derived_facts", candidate.get("source_derived_ids") or []),
+    )
+    for node_type, source_table, source_ids in bindings:
+        for source_id in source_ids:
+            key = (node_type, str(source_id))
+            if key not in cache:
+                stable_node_id = (
+                    f"fact:{source_id}"
+                    if node_type == "Fact"
+                    else f"derived_fact:{source_id}"
+                )
+                row = db.fetchone(
+                    "SELECT node_id FROM kg_nodes "
+                    "WHERE kg_build_id = ? AND node_type = ? "
+                    "AND (source_pk = ? OR stable_node_id = ?)",
+                    (kg_build_id, node_type, str(source_id), stable_node_id),
+                )
+                cache[key] = str(row["node_id"]) if row else None
+            node_id = cache[key]
+            if not node_id:
+                errors.add("missing_pinned_kg_node")
+                continue
+            expected_nodes.append(node_id)
+            if node_id not in evidence_node_ids:
+                errors.add("incomplete_pinned_kg_evidence")
+    if expected_nodes and not evidence_edge_ids:
+        errors.add("empty_pinned_kg_evidence")
+    return sorted(errors)
+
+
 def _derived_payload_from_row(row: dict[str, Any]) -> dict[str, Any]:
     time_scope = json_value(row.get("time_scope"), {})
     entity_scope = json_value(row.get("entity_scope"), {})
@@ -1971,6 +2094,29 @@ def _derived_candidate(
             if fact_id in raw_by_fact
         }
     )
+    kg_path = _kg_path_from_graph(
+        db,
+        kg_build_id,
+        derived_id=row["derived_id"],
+        fact_ids=row["input_fact_ids"],
+        supplemental_fact_ids=[
+            fact_id
+            for fact_id in row["input_fact_ids"]
+            if fact_id not in row.get("derived_input_fact_ids", row["input_fact_ids"])
+        ],
+    )
+    evidence_nodes = set(kg_path.get("evidence_node_ids") or [])
+    required_evidence_nodes = {
+        _derived_node_id(str(row["derived_id"]), kg_build_id),
+        *(
+            _fact_node_id(str(fact_id), kg_build_id)
+            for fact_id in row["input_fact_ids"]
+        ),
+    }
+    if not required_evidence_nodes.issubset(evidence_nodes) or not kg_path.get(
+        "edge_ids"
+    ):
+        reasons.append("incomplete_pinned_kg_evidence")
     return {
         "candidate_id": f"{stable}__{qa_build_id}",
         "stable_candidate_id": stable,
@@ -1996,18 +2142,7 @@ def _derived_candidate(
         "derived_payload": derived_payload,
         "recomputed_payload": recomputed_payload,
         "answer_payload": answer,
-        "kg_path": _kg_path_from_graph(
-            db,
-            kg_build_id,
-            derived_id=row["derived_id"],
-            fact_ids=row["input_fact_ids"],
-            supplemental_fact_ids=[
-                fact_id
-                for fact_id in row["input_fact_ids"]
-                if fact_id
-                not in row.get("derived_input_fact_ids", row["input_fact_ids"])
-            ],
-        ),
+        "kg_path": kg_path,
         "eligibility_status": "eligible" if not reasons else "rejected",
         "rejection_reasons": reasons,
     }
@@ -2350,22 +2485,18 @@ def _sample_from_candidate(
     if output_instruction:
         slots["output_instruction"] = output_instruction
         required_slots.append("output_instruction")
-        template_text += (
-            " 请{output_instruction}。"
-            if language == "zh"
-            else " Return the result as {output_instruction}."
-        )
-    canonical_question = template_text.format(**slots)
+        template_text += ("" if language == "zh" else " ") + "{output_instruction}"
+    canonical_question = _normalize_question_typography(
+        template_text.format(**slots), language
+    )
     surface_slots = diversify_surface_slots(
         slots,
         semantics,
         str(candidate.get("stable_candidate_id") or candidate["candidate_id"]),
         generation_policy,
     )
-    protected_question = build_protected_question(
-        template_text, required_slots
-    )
-    rewrite_styles = protected_rewrite_style_ids()
+    protected_question = build_protected_question(template_text, required_slots)
+    rewrite_styles = _benchmark_rewrite_styles(candidate["task_subtype"])
     realization_policy = {
         **generation_policy,
         "style_variant_id": rewrite_styles[
@@ -2388,7 +2519,7 @@ def _sample_from_candidate(
         surface_slots=surface_slots,
         protected_question=protected_question,
     )
-    question = realization.question
+    question = _normalize_question_typography(realization.question, language)
     answer_text = _answer_text(candidate, answer, entity_names)
     group_id = "qag_" + _digest(
         candidate["task_subtype"],
@@ -3251,6 +3382,64 @@ def _answers_match(
     return True
 
 
+GREATER_CHINA_COUNTRY_CODES = {"CN", "CHN", "HK", "HKG", "MO", "MAC"}
+GREATER_CHINA_MARKETS = {"CN", "HK", "HKG", "MAINLAND", "GREATER_CHINA"}
+GREATER_CHINA_EXCHANGES = {"SSE", "SZSE", "BSE", "HKEX"}
+
+
+def _target_market_entity_ids(
+    entity_rows: list[dict[str, Any]], target_market_subset: str
+) -> list[str] | None:
+    target = str(target_market_subset or "").casefold()
+    if not target:
+        return None
+    if target not in {"global", "greater_china"}:
+        raise ValueError(
+            "qa.benchmark_alignment.target_market_subset must be global or "
+            "greater_china"
+        )
+    greater_china_ids = {
+        str(row["entity_id"])
+        for row in entity_rows
+        if str(row.get("country") or "").upper() in GREATER_CHINA_COUNTRY_CODES
+        or str(row.get("market") or "").upper() in GREATER_CHINA_MARKETS
+        or str(row.get("exchange") or "").upper() in GREATER_CHINA_EXCHANGES
+    }
+    all_ids = {str(row["entity_id"]) for row in entity_rows}
+    selected = (
+        greater_china_ids if target == "greater_china" else all_ids - greater_china_ids
+    )
+    return sorted(selected)
+
+
+def _intersect_entity_filters(
+    left: list[str] | None, right: list[str] | None
+) -> list[str] | None:
+    if left is None:
+        return right
+    if right is None:
+        return left
+    return sorted(set(left) & set(right))
+
+
+def _filter_matches_by_entity_ids(
+    matches: list[dict[str, Any]],
+    entity_ids: list[str] | None,
+    limit: int,
+) -> list[dict[str, Any]]:
+    if entity_ids is None:
+        return matches[:limit]
+    allowed = set(entity_ids)
+    selected = []
+    for match in matches:
+        bound = {str(item) for item in match.get("entity_ids") or []}
+        if bound and bound <= allowed:
+            selected.append(match)
+            if len(selected) >= limit:
+                break
+    return selected
+
+
 def _load_fact_pool(
     db: DBProtocol,
     kg: dict[str, Any],
@@ -3263,7 +3452,9 @@ def _load_fact_pool(
     entity_clause = ""
     entity_params: list[Any] = []
     if entity_ids:
-        entity_clause = " AND sf.entity_id IN (" + ",".join("?" for _ in entity_ids) + ")"
+        entity_clause = (
+            " AND sf.entity_id IN (" + ",".join("?" for _ in entity_ids) + ")"
+        )
         entity_params = list(entity_ids)
     rows = db.fetchall(
         f"""
@@ -3461,12 +3652,19 @@ def _load_derived_pool(
     query = """
         SELECT d.*
         FROM derived_facts d
+        JOIN kg_nodes n
+          ON n.kg_build_id = ?
+         AND n.node_type = 'DerivedFact'
+         AND n.source_table = 'derived_facts'
+         AND n.source_pk = d.derived_id
         WHERE d.build_id = ? AND d.input_build_id = ?
+          AND COALESCE(d.is_active, 1) = 1
           AND d.verification_status IN ('single_source', 'cross_verified')
           AND d.derived_type = ?
         ORDER BY d.derived_id
     """
     parameters: list[Any] = [
+        kg["kg_build_id"],
         kg["input_qa_build_id"],
         kg["input_fact_build_id"],
         derived_type,
@@ -4119,9 +4317,7 @@ def _question_slots(
             or semantics.get("debt_metric_id")
             or "debt ratio"
         ).replace("_", " "),
-        "benchmark": str(
-            semantics.get("benchmark_label") or "the industry average"
-        ),
+        "benchmark": str(semantics.get("benchmark_label") or "the industry average"),
         "entity_a": entity_names.get(entity_ids[0], entity_ids[0])
         if entity_ids
         else "the first entity",
@@ -4181,6 +4377,23 @@ _ZH_SLOT_TERMS = {
     "total liabilities": "总负债",
     "net margin": "净利率",
     "debt ratio": "资产负债率",
+    "cost of revenue": "营业成本",
+    "cost of sales": "销售成本",
+    "research and development expense": "研发费用",
+    "selling, general and administrative expense": "销售、一般及管理费用",
+    "shareholders' equity": "股东权益",
+    "stockholders' equity": "股东权益",
+    "cash and cash equivalents": "现金及现金等价物",
+    "accounts receivable, net": "应收账款净额",
+    "net accounts receivable": "应收账款净额",
+    "long-term debt": "长期债务",
+    "investing cash flow": "投资活动现金流",
+    "net cash provided by used in investing activities": "投资活动现金流净额",
+    "financing cash flow": "筹资活动现金流",
+    "net cash provided by used in financing activities": "筹资活动现金流净额",
+    "capital expenditures": "资本性支出",
+    "earnings per share, basic": "基本每股收益",
+    "earnings per share, diluted": "稀释每股收益",
     "the industry average": "行业平均值",
     "the explicitly configured data scope": "明确配置的数据范围",
     "annual": "年度",
@@ -4196,16 +4409,67 @@ _ZH_SLOT_TERMS = {
 }
 
 
-def _localize_question_slots(
-    slots: dict[str, str], language: str
-) -> dict[str, str]:
-    if language != "zh":
-        return slots
+_PUBLIC_SCOPE_PATTERNS = (
+    re.compile(
+        r"the canonical '(.+)' industry complete-case universe "
+        r"\((\d+) companies with consolidated comparable inputs\)",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"canonical company industry '(.+)' within authoritative source '.+', "
+        r"with (\d+) entities having comparable graph-ready facts\.?",
+        re.IGNORECASE,
+    ),
+)
+
+
+def _public_scope_slot(text: str) -> str:
+    for pattern in _PUBLIC_SCOPE_PATTERNS:
+        match = pattern.fullmatch(text)
+        if match:
+            industry, company_count = match.groups()
+            return (
+                f"the {industry} industry peer group "
+                f"({company_count} comparable companies)"
+            )
+    return text
+
+
+def _localize_question_slots(slots: dict[str, str], language: str) -> dict[str, str]:
     localized = {}
     for key, value in slots.items():
         text = str(value)
-        localized[key] = _ZH_SLOT_TERMS.get(text.casefold(), text)
+        if key in {"scope", "scope_label"}:
+            text = _public_scope_slot(text)
+        if language != "zh":
+            localized[key] = text
+            continue
+        localized_text = _ZH_SLOT_TERMS.get(text.casefold(), text)
+        fiscal_match = re.fullmatch(r"fiscal year\s+(\d{4})(.*)", localized_text, re.I)
+        calendar_match = re.fullmatch(
+            r"calendar year\s+(\d{4})(.*)", localized_text, re.I
+        )
+        if fiscal_match:
+            localized_text = f"{fiscal_match.group(1)}财年{fiscal_match.group(2)}"
+        elif calendar_match:
+            localized_text = f"{calendar_match.group(1)}自然年{calendar_match.group(2)}"
+        scope_match = re.fullmatch(
+            r"the (.+) industry peer group \((\d+) comparable companies\)",
+            localized_text,
+            re.IGNORECASE,
+        )
+        if scope_match:
+            industry, company_count = scope_match.groups()
+            localized_text = f"{industry}行业同行范围（{company_count}家可比公司）"
+        localized[key] = localized_text
     return localized
+
+
+def _normalize_question_typography(question: str, language: str) -> str:
+    normalized = re.sub(r"[ \t]+", " ", question).strip()
+    if language == "zh":
+        normalized = re.sub(r"([。！？；，])\s+", r"\1", normalized)
+    return normalized
 
 
 def _benchmark_output_instruction(
@@ -4237,18 +4501,95 @@ def _benchmark_output_instruction(
         if structured:
             parts.append("使用完整表格并保持要求的顺序")
         if policy.get("explicit_unit", True) and unit_label:
-            parts.append(f"以{unit_label}为单位")
+            parts.append(f"以{_localized_unit_label(unit_label, language)}为单位")
         if policy.get("explicit_precision", True) and not structured:
             parts.append(f"数值保留{decimal_places}位小数")
-        return "，".join(parts) or "按指定结构完整作答"
+        return "请" + ("，".join(parts) or "按指定结构完整作答") + "。"
     parts = []
     if structured:
         parts.append("a complete table in the required order")
     if policy.get("explicit_unit", True) and unit_label:
-        parts.append(f"{unit_label} units")
+        localized_unit = _localized_unit_label(unit_label, language)
+        if _is_monetary_unit(unit_label):
+            parts.append(f"monetary amounts in {localized_unit}")
+        else:
+            parts.append(f"values in {localized_unit}")
     if policy.get("explicit_precision", True) and not structured:
         parts.append(f"values rounded to {decimal_places} decimal places")
-    return ", with ".join(parts) or "the complete requested structure"
+    return (
+        "Report the result as "
+        + (", with ".join(parts) or "the complete requested structure")
+        + "."
+    )
+
+
+def _is_monetary_unit(unit_label: str) -> bool:
+    normalized = str(unit_label).casefold()
+    return any(code in normalized for code in ("usd", "cny", "rmb", "hkd")) and not any(
+        marker in normalized for marker in ("per_share", "per share", "%", "percent")
+    )
+
+
+def _localized_unit_label(unit_label: str, language: str) -> str:
+    normalized = " ".join(str(unit_label).strip().split())
+    if language != "zh":
+        replacements = {
+            "million USD": "USD millions",
+            "million CNY": "CNY millions",
+            "million HKD": "HKD millions",
+            "billion USD": "USD billions",
+            "billion CNY": "CNY billions",
+            "billion HKD": "HKD billions",
+            "USD_per_share": "USD per share",
+            "CNY_per_share": "CNY per share",
+            "HKD_per_share": "HKD per share",
+            "percent": "percent",
+        }
+        return replacements.get(normalized, normalized)
+    replacements = {
+        "million USD": "百万美元",
+        "million CNY": "百万元人民币",
+        "million RMB": "百万元人民币",
+        "million HKD": "百万港元",
+        "billion USD": "十亿美元",
+        "billion CNY": "十亿元人民币",
+        "billion RMB": "十亿元人民币",
+        "billion HKD": "十亿港元",
+        "USD": "美元",
+        "CNY": "人民币",
+        "RMB": "人民币",
+        "HKD": "港元",
+        "USD_per_share": "美元/股",
+        "CNY_per_share": "人民币元/股",
+        "HKD_per_share": "港元/股",
+        "percent": "百分比",
+        "%": "百分比",
+    }
+    return replacements.get(normalized, normalized)
+
+
+_T2_STYLE_TASKS = {
+    "single_fact",
+    "difference",
+    "yoy_growth",
+    "qoq_growth",
+    "ratio",
+    "pairwise_entity_comparison",
+    "cross_metric_comparison",
+}
+
+
+def _benchmark_rewrite_styles(task_subtype: str) -> list[str]:
+    if task_subtype in _T2_STYLE_TASKS:
+        return ["direct", "concise", "historical_lookup", "plain_language"]
+    if task_subtype in {
+        "filter_then_rank",
+        "rank_then_secondary_lookup",
+        "multi_factor_screening",
+        "walk_scope_filter_rank_followup",
+    }:
+        return ["screening", "comparative", "research", "historical_investigation"]
+    return ["analyst", "evidence_focused", "research", "historical_investigation"]
 
 
 def _question_parser_contract_validation(
@@ -4258,9 +4599,7 @@ def _question_parser_contract_validation(
     manifest_hash = question_parser_manifest_hash(TEMPLATES)
     build_notes = json_value(build.get("notes"), {})
     pinned_manifest = build_notes.get("question_parser", {})
-    generation_policy = (
-        build_notes.get("policy", {}).get("question_generation", {})
-    )
+    generation_policy = build_notes.get("policy", {}).get("question_generation", {})
     expected_surface_manifest = surface_variation_manifest(generation_policy)
     pinned_surface_manifest = build_notes.get("surface_variation", {})
     sample_contract = json_value(row.get("source_metadata"), {}).get(
@@ -4372,15 +4711,9 @@ def _reparse_persisted_question(
     if output_instruction:
         slots["output_instruction"] = output_instruction
         required_slots.append("output_instruction")
-        template_text += (
-            " 请{output_instruction}。"
-            if language == "zh"
-            else " Return the result as {output_instruction}."
-        )
+        template_text += ("" if language == "zh" else " ") + "{output_instruction}"
     strategy = str(generation_policy.get("strategy") or "sentence_plan")
-    generation_mode = str(
-        generation_policy.get("mode") or "controlled_template"
-    )
+    generation_mode = str(generation_policy.get("mode") or "controlled_template")
     generation_metadata = json_value(row.get("source_metadata"), {}).get(
         "question_generation", {}
     )
@@ -4396,9 +4729,7 @@ def _reparse_persisted_question(
             ):
                 surface_errors.append("surface_variant_ids_mismatch")
             else:
-                selected_variants = {
-                    slot: variants[slot] for slot in required_slots
-                }
+                selected_variants = {slot: variants[slot] for slot in required_slots}
                 try:
                     surface_slots = resolve_surface_variant_ids(
                         selected_variants,
@@ -4773,13 +5104,10 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
     unit = str(rubric.get("requested_unit") or "").strip()
     currency = str(rubric.get("requested_currency") or "").strip()
     if rubric.get("unit_must_match") and unit:
-        unit_tokens = [
-            token.casefold() for token in re.findall(r"[A-Za-z%]+", unit) if token
-        ]
-        if unit_tokens and not all(token in normalized for token in unit_tokens):
+        if not _output_contract_unit_present(question, unit):
             errors.append("requested_unit_missing")
     if rubric.get("unit_must_match") and currency:
-        if currency.casefold() not in normalized:
+        if not _output_contract_currency_present(question, currency):
             errors.append("requested_currency_missing")
     decimal_places = max(int(rubric.get("requested_decimal_places") or 0), 0)
     if rubric.get("precision_must_match"):
@@ -4805,6 +5133,36 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         "precision_required": bool(rubric.get("precision_must_match")),
         "structured_output_required": bool(rubric.get("complete_output_required")),
     }
+
+
+def _output_contract_unit_present(question: str, requested_unit: str) -> bool:
+    normalized = " ".join(str(question).casefold().split())
+    compact = re.sub(r"\s+", "", normalized)
+    aliases = {
+        str(requested_unit).strip(),
+        _localized_unit_label(requested_unit, "en"),
+        _localized_unit_label(requested_unit, "zh"),
+    }
+    for alias in aliases:
+        alias_normalized = " ".join(str(alias).casefold().split())
+        if alias_normalized and re.sub(r"\s+", "", alias_normalized) in compact:
+            return True
+    unit_tokens = [
+        token.casefold() for token in re.findall(r"[A-Za-z%]+", requested_unit) if token
+    ]
+    return bool(unit_tokens) and all(token in normalized for token in unit_tokens)
+
+
+def _output_contract_currency_present(question: str, requested_currency: str) -> bool:
+    aliases = {
+        "USD": ("USD", "US dollars", "美元"),
+        "CNY": ("CNY", "RMB", "人民币"),
+        "RMB": ("RMB", "CNY", "人民币"),
+        "HKD": ("HKD", "Hong Kong dollars", "港元"),
+    }.get(str(requested_currency).upper(), (requested_currency,))
+    normalized = " ".join(str(question).casefold().split())
+    return any(str(alias).casefold() in normalized for alias in aliases if alias)
+
 
 def _fact_time_scope(row: dict[str, Any]) -> dict[str, Any]:
     source_id = str(row.get("source_id") or "").lower()
@@ -4914,11 +5272,7 @@ def _semantic_slots_complete(row: dict[str, Any]) -> bool:
                     for item in evidence_payload
                 )
             )
-        return bool(
-            row["source_fact_ids"]
-            and row["time_scope"]
-            and evidence_payload
-        )
+        return bool(row["source_fact_ids"] and row["time_scope"] and evidence_payload)
     if row["task_subtype"] in {
         "rank_then_secondary_lookup",
         "walk_scope_filter_rank_followup",

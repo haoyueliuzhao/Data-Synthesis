@@ -37,9 +37,10 @@ CNINFO_STRICT_ALIASES: dict[str, tuple[str, ...]] = {
 }
 
 HKEX_STRICT_ALIASES: dict[str, tuple[str, ...]] = {
-    "revenue": ("Revenue", "Turnover"),
+    "revenue": ("Revenue", "Turnover", "Operating revenue"),
     "operating_income": ("Operating profit", "Profit from operations"),
     "net_income": (
+        "Net profit",
         "Profit for the year",
         "Profit for the period",
         "Profit after tax",
@@ -51,25 +52,42 @@ HKEX_STRICT_ALIASES: dict[str, tuple[str, ...]] = {
     "total_assets": ("Total assets",),
     "total_liabilities": ("Total liabilities",),
     "shareholders_equity": (
+        "Net assets",
+        "Shareholders' funds",
+        "Equity attributable to owners of the Company",
         "Total equity",
         "Total shareholders' equity",
     ),
     "cash_and_cash_equivalents": ("Cash and cash equivalents",),
     "inventory": ("Inventories",),
     "net_cash_provided_by_used_in_operating_activities": (
+        "Net cash flow from operating activities",
+        "Net cash flows from operating activities",
+        "Net cash inflow from operating activities",
+        "Net cash outflow from operating activities",
         "Net cash generated from operating activities",
         "Net cash used in operating activities",
         "Net cash generated from/(used in) operating activities",
         "Net cash from operating activities",
-        "Net cash flows from operating activities",
         "Net cash generated from operations",
     ),
     "net_cash_provided_by_used_in_investing_activities": (
+        "Net cash flow from investing activities",
+        "Net cash flows from investing activities",
+        "Net cash inflow from investing activities",
+        "Net cash outflow from investing activities",
+        "Net cash flows used in investing activities",
         "Net cash generated from investing activities",
         "Net cash used in investing activities",
         "Net cash generated from/(used in) investing activities",
     ),
     "net_cash_provided_by_used_in_financing_activities": (
+        "Net cash flow from financing activities",
+        "Net cash flows from financing activities",
+        "Net cash inflow from financing activities",
+        "Net cash outflow from financing activities",
+        "Net cash flows used in financing activities",
+        "Net cash flows from/(used in) financing activities",
         "Net cash generated from financing activities",
         "Net cash used in financing activities",
         "Net cash generated from/(used in) financing activities",
@@ -554,8 +572,67 @@ SEC_METRICS.extend([
     },
 ])
 
+OFFICIAL_CHINA_ALIASES: dict[str, dict[str, tuple[str, ...]]] = {
+    "nbs_official_statistics": {
+        "gdp_current_cny": ("GDP:Q2:absolute", "GDP:H1:absolute", "国内生产总值:全年绝对量"),
+        "real_gdp_growth_pct": ("GDP:Q2:yoy_growth", "GDP:H1:yoy_growth", "国内生产总值:全年同比增长"),
+        "inflation_rate_cpi": ("全国居民消费价格:12月同比", "全国居民消费价格:全年涨跌幅"),
+        "industrial_production_growth_pct": ("规模以上工业增加值:12月同比增长", "规模以上工业增加值:1-12月同比增长"),
+        "retail_sales_current_cny": ("社会消费品零售总额:12月:绝对量", "社会消费品零售总额:1-12月:绝对量"),
+        "retail_sales_growth_pct": ("社会消费品零售总额:12月:同比增长", "社会消费品零售总额:1-12月:同比增长"),
+        "industrial_enterprise_revenue_current_cny": ("规模以上工业企业:营业收入",),
+        "industrial_enterprise_profit_current_cny": ("规模以上工业企业:利润总额",),
+    },
+    "pboc_official_statistics": {
+        "money_supply_m2": ("广义货币(M2)余额",),
+        "money_supply_m2_growth_pct": ("广义货币(M2)同比增长",),
+        "aggregate_financing_flow_current_cny": ("前八个月社会融资规模增量累计",),
+    },
+    "safe_official_statistics": {
+        "current_account_balance_current_usd": ("BPM6:1. Current account",),
+        "external_debt_total_current_usd": ("外债总额头寸",),
+        "official_foreign_exchange_reserves_current_usd": ("1. Foreign currency reserves",),
+        "official_reserve_assets_current_usd": ("Official reserve assets total",),
+        "fx_market_turnover_current_usd": ("五、合计",),
+    },
+    "sse_market_statistics": {
+        "listed_company_count": ("No. of Listed Companies",),
+        "listed_security_count": ("No. of Listed Securities",),
+        "market_capitalization": ("Total Market Capitalization",),
+        "negotiable_market_capitalization": ("Total Negotiable Market Capitalization",),
+        "market_turnover_value": ("Total Turnover in Value",),
+        "market_average_pe_ratio": ("Average P/E Ratio",),
+    },
+    "szse_market_statistics": {
+        "listed_company_count": ("No. of Listed Companies",),
+        "listed_security_count": ("No. of Listed Securities",),
+        "market_capitalization": ("Total Market Capitalization",),
+        "negotiable_market_capitalization": ("Total Negotiable Market Capitalization",),
+        "market_turnover_value": ("Total Turnover in Value",),
+        "market_average_pe_ratio": ("Average P/E Ratio",),
+    },
+}
+
+
 STANDARD_MACRO_METRICS: list[dict[str, Any]] = [
+    ("listed_company_count", "Listed Company Count", "market", "point_in_time", "count", None, "month-end exchange count", "medium", "Counts depend on exchange coverage and listing-status rules."),
+    ("listed_security_count", "Listed Security Count", "market", "point_in_time", "count", None, "month-end exchange count", "medium", "Includes security types covered by the source exchange report; not interchangeable with listed-company count."),
+    ("market_capitalization", "Market Capitalization", "market", "point_in_time", "CNY", "CNY", "month-end exchange market capitalization", "medium", "Exchange-wide market capitalization; source coverage and unit must remain explicit."),
+    ("negotiable_market_capitalization", "Negotiable Market Capitalization", "market", "point_in_time", "CNY", "CNY", "month-end exchange negotiable market capitalization", "medium", "Free-float or negotiable capitalization follows the exchange definition and is not total capitalization."),
+    ("market_turnover_value", "Market Turnover Value", "market", "period_flow", "CNY", "CNY", "reported exchange-period turnover", "medium", "Monthly and year-to-date turnover are not interchangeable."),
+    ("market_average_pe_ratio", "Market Average P/E Ratio", "market", "point_in_time", "ratio", None, "exchange-reported month-end average", "high", "Weighting and constituent coverage follow the reporting exchange methodology."),
     ("gdp_current_usd", "Gross Domestic Product, Current USD", "macro", "period_flow", "USD", "USD", "annual_or_quarterly_flow; fiscal/calendar basis must be source-specific", "high", "GDP can be annual, quarterly SAAR, local currency, real, or current USD. Keep units/frequency explicit."),
+    ("gdp_current_cny", "Gross Domestic Product, Current CNY", "macro", "period_flow", "CNY", "CNY", "reported calendar-period flow", "high", "NBS current-price GDP in CNY; quarterly and cumulative periods must remain distinct."),
+    ("industrial_production_growth_pct", "Industrial Production Growth", "macro", "period_flow", "percent", None, "reported period growth rate", "high", "Monthly and year-to-date growth rates are not interchangeable."),
+    ("retail_sales_current_cny", "Retail Sales, Current CNY", "macro", "period_flow", "CNY", "CNY", "reported period value", "high", "Monthly and cumulative retail-sales amounts must remain distinct."),
+    ("retail_sales_growth_pct", "Retail Sales Growth", "macro", "period_flow", "percent", None, "reported period growth rate", "high", "Monthly and cumulative growth rates are not interchangeable."),
+    ("industrial_enterprise_revenue_current_cny", "Industrial Enterprise Revenue, Current CNY", "macro", "period_flow", "CNY", "CNY", "annual designated-size industrial enterprise total", "high", "Coverage is industrial enterprises above designated size, not all companies."),
+    ("industrial_enterprise_profit_current_cny", "Industrial Enterprise Profit, Current CNY", "macro", "period_flow", "CNY", "CNY", "annual designated-size industrial enterprise total", "high", "Coverage is industrial enterprises above designated size, not all companies."),
+    ("money_supply_m2_growth_pct", "Money Supply M2 Growth", "macro", "point_in_time", "percent", None, "reported year-over-year rate", "high", "PBOC monetary aggregate definitions and revisions apply."),
+    ("aggregate_financing_flow_current_cny", "Aggregate Financing to the Real Economy Flow, Current CNY", "macro", "period_flow", "CNY", "CNY", "reported cumulative flow", "high", "Cumulative social-financing flow and monthly increment are not interchangeable."),
+    ("official_foreign_exchange_reserves_current_usd", "Official Foreign Exchange Reserves, Current USD", "macro", "point_in_time", "USD", "USD", "month-end reserve position", "high", "Foreign currency reserves are a component of total official reserve assets."),
+    ("official_reserve_assets_current_usd", "Official Reserve Assets, Current USD", "macro", "point_in_time", "USD", "USD", "month-end reserve position", "high", "Includes foreign exchange reserves and other official reserve components."),
+    ("fx_market_turnover_current_usd", "Foreign Exchange Market Turnover, Current USD", "market", "period_flow", "USD", "USD", "monthly total turnover", "high", "SAFE total foreign-exchange turnover; currency denomination and market coverage must be explicit."),
     ("real_gdp_growth_pct", "Real GDP Growth", "macro", "period_flow", "percent", None, "period_growth_rate", "high", "Annual, quarterly, and annualized growth rates are not interchangeable."),
     ("real_gdp_chained_usd", "Real GDP, Chained Dollars", "macro", "period_flow", "chained_usd", "USD", "period_flow", "high", "Base year and chain-type dollars vary by source vintage."),
     ("gdp_constant_usd", "Gross Domestic Product, Constant USD", "macro", "period_flow", "constant_USD", "USD", "annual_period_flow", "high", "Constant-price GDP depends on the source base year and revision vintage."),
@@ -884,6 +961,18 @@ def build_metric_ontology(db: DBProtocol, config: dict[str, Any]) -> tuple[list[
 
     for row in STANDARD_MACRO_METRICS:
         _add_metric(metrics, _macro_metric(*row))
+
+    for source_id, metric_aliases in OFFICIAL_CHINA_ALIASES.items():
+        for metric_id, raw_names in metric_aliases.items():
+            for raw_name in raw_names:
+                _add_alias(
+                    aliases,
+                    metric_id,
+                    source_id,
+                    raw_name,
+                    raw_name,
+                    0.99,
+                )
 
     _add_document_metrics(metrics, aliases)
     _add_fred_metrics(metrics, aliases, source_entities, diagnostics)

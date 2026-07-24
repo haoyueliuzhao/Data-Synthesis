@@ -291,6 +291,70 @@ CREATE INDEX IF NOT EXISTS idx_standardized_facts_raw_equivalence ON standardize
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_semantic_equivalence ON standardized_facts(semantic_equivalence_group_id);
 CREATE INDEX IF NOT EXISTS idx_standardized_facts_qa_series ON standardized_facts(build_id, metric_id, entity_id, fiscal_year, fiscal_quarter, period_end);
 
+CREATE TABLE IF NOT EXISTS fact_universe_builds (
+    universe_build_id   TEXT PRIMARY KEY,
+    input_fact_build_id TEXT NOT NULL,
+    input_entity_build_id TEXT NOT NULL,
+    policy_id           TEXT NOT NULL,
+    policy_version      TEXT NOT NULL,
+    config_hash         TEXT NOT NULL,
+    membership_manifest_hash TEXT,
+    target_greater_china_share REAL NOT NULL,
+    actual_greater_china_share REAL,
+    candidate_fact_count INTEGER DEFAULT 0,
+    member_count        INTEGER DEFAULT 0,
+    greater_china_member_count INTEGER DEFAULT 0,
+    international_member_count INTEGER DEFAULT 0,
+    unclassified_candidate_count INTEGER DEFAULT 0,
+    status              TEXT NOT NULL,
+    quality_status      TEXT,
+    started_at          TEXT,
+    completed_at        TEXT,
+    is_active           INTEGER DEFAULT 0,
+    superseded_by       TEXT,
+    notes               TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_fact_universe_builds_active
+ON fact_universe_builds(is_active, status, input_fact_build_id);
+
+CREATE TABLE IF NOT EXISTS fact_universe_members (
+    membership_id       TEXT PRIMARY KEY,
+    universe_build_id   TEXT NOT NULL REFERENCES fact_universe_builds(universe_build_id),
+    fact_id             TEXT NOT NULL REFERENCES standardized_facts(fact_id),
+    region_bucket       TEXT NOT NULL,
+    stratum_key         TEXT NOT NULL,
+    selection_rank      INTEGER NOT NULL,
+    selection_reason    TEXT NOT NULL,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fact_universe_members_unique
+ON fact_universe_members(universe_build_id, fact_id);
+CREATE INDEX IF NOT EXISTS idx_fact_universe_members_fact
+ON fact_universe_members(fact_id, universe_build_id);
+CREATE INDEX IF NOT EXISTS idx_fact_universe_members_region
+ON fact_universe_members(universe_build_id, region_bucket);
+
+
+CREATE TABLE IF NOT EXISTS fact_universe_derived_members (
+    membership_id       TEXT PRIMARY KEY,
+    universe_build_id   TEXT NOT NULL REFERENCES fact_universe_builds(universe_build_id),
+    derived_id          TEXT NOT NULL REFERENCES derived_facts(derived_id),
+    region_bucket       TEXT NOT NULL,
+    stratum_key         TEXT NOT NULL,
+    selection_rank      INTEGER NOT NULL,
+    selection_reason    TEXT NOT NULL,
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fact_universe_derived_unique
+ON fact_universe_derived_members(universe_build_id, derived_id);
+CREATE INDEX IF NOT EXISTS idx_fact_universe_derived_id
+ON fact_universe_derived_members(derived_id, universe_build_id);
+CREATE INDEX IF NOT EXISTS idx_fact_universe_derived_region
+ON fact_universe_derived_members(universe_build_id, region_bucket);
+
 CREATE TABLE IF NOT EXISTS fact_quality_checks (
     check_id            TEXT PRIMARY KEY,
     fact_id             TEXT REFERENCES atomic_facts(fact_id),
@@ -599,6 +663,7 @@ CREATE TABLE IF NOT EXISTS kg_builds (
     kg_build_id          TEXT PRIMARY KEY,
     graph_schema_version TEXT,
     input_fact_build_id  TEXT,
+    input_fact_universe_build_id TEXT,
     input_qa_build_id    TEXT,
     input_entity_build_id TEXT,
     input_metric_build_id TEXT,

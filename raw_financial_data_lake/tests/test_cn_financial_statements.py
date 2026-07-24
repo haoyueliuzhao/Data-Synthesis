@@ -71,6 +71,28 @@ def test_positioned_words_recover_split_table_values() -> None:
     ]
 
 
+def test_positioned_words_recover_bounded_multiline_primary_label() -> None:
+    words = [
+        {"text": "本公司擁有人應佔權益", "x0": 68.0, "top": 100.0},
+        {"text": "Equity attributable to owners of", "x0": 68.0, "top": 112.0},
+        {"text": "the Company", "x0": 68.0, "top": 124.0},
+        {"text": "40", "x0": 330.0, "top": 124.0},
+        {"text": "264,867,183", "x0": 390.0, "top": 124.0},
+        {"text": "244,047,069", "x0": 480.0, "top": 124.0},
+    ]
+
+    values = _positioned_numeric_values(
+        words,
+        "equityattributabletoownersofthecompany",
+        2,
+    )
+
+    assert values == [
+        (2, "264,867,183", Decimal("264867183")),
+        (3, "244,047,069", Decimal("244047069")),
+    ]
+
+
 def test_positioned_values_do_not_bind_total_to_noncurrent_liabilities() -> None:
     words = [
         {"text": "非流动负债合计", "x0": 90.0, "top": 100.0},
@@ -222,6 +244,21 @@ def test_statement_identity_does_not_require_a_specific_unit_phrase() -> None:
         "income_statement",
     )
     assert [row["fiscal_year"] for row in periods] == [2023, 2022]
+
+
+def test_hkex_statement_identity_accepts_audited_pdf_text_extraction_variant() -> None:
+    assert _statement_identity(
+        "CONSOLIDATED STATEMENT OF PROFIT OR LOSS AND OTHER COMPREHENSI\n"
+        "E INCOME",
+        source_id="hkex_disclosures",
+    ) == {
+        "statement_title": (
+            "CONSOLIDATED STATEMENT OF PROFIT OR LOSS AND OTHER "
+            "COMPREHENSIE INCOME"
+        ),
+        "statement_type": "income_statement",
+        "value_column_policy": "rightmost_periods",
+    }
 
 
 def test_cninfo_statement_title_can_follow_prior_statement_on_same_page() -> None:
@@ -474,6 +511,29 @@ def test_hkex_split_label_and_left_translation_column_are_mapped() -> None:
     assert [str(item[2]) for item in values] == ["280847", "266396"]
 
 
+def test_hkex_bilingual_chinese_prefix_maps_registered_english_label() -> None:
+    aliases = {"revenue": "revenue"}
+
+    assert _matched_metric_alias(
+        ["收入", "Revenue", "5", "180,736,575", "250,565,107"],
+        aliases,
+    ) == ("revenue", "revenue")
+    words = [
+        {"text": text, "x0": x0, "top": 100.0}
+        for x0, text in enumerate(
+            ("收入", "Revenue", "5", "180,736,575", "250,565,107"),
+            start=1,
+        )
+    ]
+
+    values = _positioned_numeric_values(words, "revenue", 2)
+
+    assert [str(item[2]) for item in values] == [
+        "180736575",
+        "250565107",
+    ]
+
+
 def test_primary_net_income_label_does_not_match_nearby_scopes() -> None:
     aliases = {"净利润": "net_income"}
 
@@ -583,6 +643,41 @@ def test_greater_china_strict_aliases_include_only_primary_totals() -> None:
     )
 
 
+def test_hkex_strict_aliases_cover_audited_primary_statement_variants() -> None:
+    assert "Operating revenue" in HKEX_STRICT_ALIASES["revenue"]
+    assert "Net profit" in HKEX_STRICT_ALIASES["net_income"]
+    assert "Net assets" in HKEX_STRICT_ALIASES["shareholders_equity"]
+    assert "Shareholders' funds" in HKEX_STRICT_ALIASES["shareholders_equity"]
+    assert (
+        "Net cash inflow from operating activities"
+        in HKEX_STRICT_ALIASES[
+            "net_cash_provided_by_used_in_operating_activities"
+        ]
+    )
+    assert (
+        "Net cash flows used in investing activities"
+        in HKEX_STRICT_ALIASES[
+            "net_cash_provided_by_used_in_investing_activities"
+        ]
+    )
+
+
+def test_hkex_row_normalization_handles_roman_prefix_and_curly_apostrophe() -> None:
+    aliases = {
+        "operatingrevenue": "revenue",
+        "shareholders'funds": "shareholders_equity",
+    }
+
+    assert _matched_metric_alias(
+        ["I. Operating revenue", "602,315,354", "424,060,635"],
+        aliases,
+    ) == ("operatingrevenue", "revenue")
+    assert _matched_metric_alias(
+        ["Shareholders’ funds", "102,331", "105,498"],
+        aliases,
+    ) == ("shareholders'funds", "shareholders_equity")
+
+
 def test_chapter_prefixed_company_statement_closes_consolidated_section() -> None:
     text = "（四） 母公司利润表\n单位：元\n2024 年\n2023 年"
 
@@ -668,6 +763,21 @@ def test_period_parser_uses_statement_header_and_report_year() -> None:
     ]
     assert relative_periods[1]["period_inference"] == (
         "explicit_relative_comparative_header"
+    )
+
+    opening_balance_periods = _periods_for_statement(
+        "合并资产负债表\n期末余额 期初余额\n",
+        "balance_sheet",
+        report_year=2025,
+    )
+    assert [row["period_end"] for row in opening_balance_periods] == [
+        "2025-12-31",
+        "2024-12-31",
+    ]
+    assert all(
+        row.get("period_inference")
+        == "explicit_relative_comparative_header"
+        for row in opening_balance_periods
     )
 
 
@@ -805,6 +915,37 @@ def test_non_target_company_statement_stops_consolidated_carry() -> None:
     )
 
 
+def test_same_document_later_primary_statement_supersedes_summary() -> None:
+    summary = _candidate("total_assets", "90")
+    summary["page_number"] = 40
+    primary = _candidate("total_assets", "100")
+    primary["page_number"] = 160
+
+    _apply_cross_checks([summary, primary], allow_single=True)
+
+    assert summary["promotion_status"] == "rejected_superseded"
+    assert summary["cross_check_status"] == (
+        "superseded_same_document_summary"
+    )
+    assert primary["promotion_status"] == "approved_for_atomic_fact"
+    assert primary["cross_check_status"] == "single_official_document"
+    assert summary["extraction_metadata"][
+        "same_document_selected_statement_page"
+    ] == 160
+
+
+def test_same_document_latest_primary_page_conflict_is_rejected() -> None:
+    left = _candidate("total_assets", "100")
+    left["page_number"] = 160
+    right = _candidate("total_assets", "101")
+    right["page_number"] = 160
+
+    _apply_cross_checks([left, right], allow_single=True)
+
+    assert all(row["promotion_status"] == "rejected_conflict" for row in [left, right])
+    assert all(row["cross_check_status"] == "conflict" for row in [left, right])
+
+
 def test_latest_official_restatement_supersedes_older_comparative() -> None:
     old = _candidate(
         "total_assets",
@@ -828,6 +969,22 @@ def test_latest_official_restatement_supersedes_older_comparative() -> None:
     assert latest["promotion_status"] == "approved_for_atomic_fact"
     assert latest["cross_check_status"] == "latest_official_restated_value"
     assert latest["extraction_metadata"]["selected_official_value"] == "105"
+
+
+def test_parent_attributable_equity_does_not_trigger_total_equity_identity() -> None:
+    candidates = [
+        _candidate("total_assets", "100"),
+        _candidate("total_liabilities", "60"),
+        _candidate("shareholders_equity", "35"),
+    ]
+    candidates[-1]["source_field_name"] = (
+        "equityattributabletoownersofthecompany"
+    )
+
+    _apply_accounting_identity_checks(candidates)
+
+    assert all(row["evidence_status"] == "verified" for row in candidates)
+    assert all(row["promotion_status"] == "not_promoted" for row in candidates)
 
 
 def test_accounting_identity_rejects_malformed_complete_triple() -> None:

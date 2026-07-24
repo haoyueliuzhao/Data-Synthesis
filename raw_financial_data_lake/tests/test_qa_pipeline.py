@@ -18,6 +18,11 @@ from finraw.qa.pipeline import (
     _git_worktree_dirty,
     _recompute,
     _rubric,
+    _filter_matches_by_entity_ids,
+    _intersect_entity_filters,
+    _localize_question_slots,
+    _normalize_question_typography,
+    _target_market_entity_ids,
     _validate_source_fact_coverage,
     _with_scope_inputs,
     build_qa,
@@ -769,6 +774,26 @@ def test_share_candidate_accepts_complete_matching_scope(tmp_path):
     assert scoped["share_scope_complete"] is True
     assert scoped["derived_recompute_match"] is True
     assert scoped["input_fact_ids"] == ["fact_1", "fact_msft"]
+    derived_node = f"derived_fact:derived_share_good@@{kg_build}"
+    msft_fact_node = f"fact:fact_msft@@{kg_build}"
+    _insert_node(db, kg_build, derived_node, "DerivedFact")
+    _insert_node(db, kg_build, msft_fact_node, "Fact")
+    _insert_edge(
+        db,
+        kg_build,
+        f"edge_share_aapl@@{kg_build}",
+        derived_node,
+        f"fact:fact_1@@{kg_build}",
+        "DERIVED_FROM",
+    )
+    _insert_edge(
+        db,
+        kg_build,
+        f"edge_share_msft@@{kg_build}",
+        derived_node,
+        msft_fact_node,
+        "DERIVED_FROM",
+    )
     candidate = _derived_candidate(
         db,
         scoped,
@@ -971,3 +996,61 @@ def test_difficulty_distribution_gate_blocks_underrepresented_expert_samples(
     build_gate = json.loads(build["notes"])["build_gate"]
     assert build_gate["difficulty_counts"] == {"expert": 1, "research": 1}
     db.close()
+
+
+def test_question_typography_removes_english_spacing_after_chinese_punctuation():
+    assert (
+        _normalize_question_typography("问题？  请保留2位。", "zh")
+        == "问题？请保留2位。"
+    )
+    assert (
+        _normalize_question_typography("What  changed? Report it.", "en")
+        == "What changed? Report it."
+    )
+
+
+def test_question_scope_slots_hide_internal_graph_terminology():
+    complete_case = (
+        "the canonical 'Petroleum Refining' industry complete-case universe "
+        "(3 companies with consolidated comparable inputs)"
+    )
+    graph_scope = (
+        "Canonical company industry '采矿业' within authoritative source "
+        "'cninfo_announcements', with 5 entities having comparable graph-ready facts."
+    )
+
+    assert _localize_question_slots({"scope": complete_case}, "en") == {
+        "scope": "the Petroleum Refining industry peer group (3 comparable companies)"
+    }
+    assert _localize_question_slots({"scope": graph_scope}, "zh") == {
+        "scope": "采矿业行业同行范围（5家可比公司）"
+    }
+
+
+def test_target_market_entity_filter_is_fail_closed():
+    rows = [
+        {"entity_id": "A_US", "country": "US", "market": "US", "exchange": None},
+        {"entity_id": "A_CN", "country": "CN", "market": "CN", "exchange": "SSE"},
+        {"entity_id": "A_HK", "country": "HK", "market": "HK", "exchange": "HKEX"},
+    ]
+
+    assert _target_market_entity_ids(rows, "greater_china") == ["A_CN", "A_HK"]
+    assert _target_market_entity_ids(rows, "global") == ["A_US"]
+    assert _target_market_entity_ids(rows, "") is None
+    with pytest.raises(ValueError):
+        _target_market_entity_ids(rows, "unknown")
+
+
+def test_market_match_filter_rejects_cross_region_and_unbound_matches():
+    matches = [
+        {"entity_ids": ["A_CN"], "fact_ids": ["f1"]},
+        {"entity_ids": ["A_CN", "B_US"], "fact_ids": ["f2"]},
+        {"entity_ids": [], "fact_ids": ["f3"]},
+        {"entity_ids": ["B_CN"], "fact_ids": ["f4"]},
+    ]
+
+    assert _filter_matches_by_entity_ids(matches, ["A_CN", "B_CN"], 10) == [
+        matches[0],
+        matches[3],
+    ]
+    assert _intersect_entity_filters(["A_CN", "B_US"], ["A_CN"]) == ["A_CN"]

@@ -8,8 +8,10 @@ import pandas as pd
 from finraw.db.client import MetadataDB
 from finraw.qa.finsearchcomp_alignment import (
     _current_market,
+    _generation_pipeline,
     _legacy_operations,
     _legacy_period_count,
+    _question_completeness,
     align_qa_build_to_finsearchcomp,
     analyze_official_finsearchcomp,
     freeze_finsearchcomp_dataset,
@@ -326,6 +328,45 @@ def test_greater_china_macro_entities_are_classified_without_cninfo():
     assert _current_market(["worldbank_indicators"], ["USA_COUNTRY"]) == "global"
 
 
+def test_greater_china_exchange_sources_and_entities_are_classified():
+    assert _current_market(["bse_disclosures"], ["920010_BSE"]) == "greater_china"
+    assert _current_market(["hkex_disclosures"], ["02318_HKEX"]) == "greater_china"
+    assert _current_market(["sse_market_statistics"], ["SSE_MARKET"]) == "greater_china"
+
+
+def test_alignment_completeness_accepts_localized_chinese_output_contract():
+    result = _question_completeness(
+        "公司在2024财年的收入是多少？请以百万元人民币为单位，数值保留2位小数。",
+        unit="million CNY",
+        currency="CNY",
+        time_scope={"basis": "fiscal_year", "fiscal_year": 2024},
+        benchmark_task="T2",
+    )
+    assert all(result.values())
+
+
+def test_alignment_completeness_treats_precision_as_applicability_aware():
+    result = _question_completeness(
+        "请使用完整表格并保持要求的顺序。",
+        unit="",
+        currency="",
+        time_scope={},
+        benchmark_task="T3",
+        precision_required=False,
+    )
+    assert result["precision_explicit"] is True
+
+
+def test_typed_walk_pipeline_is_classified_from_task_subtype():
+    assert _generation_pipeline(
+        {
+            "task_subtype": "walk_scope_filter_rank_followup",
+            "pattern_id": "mined_pattern_1",
+            "pattern_proposal_id": "proposal_1",
+        }
+    ) == "typed_edge_walk"
+
+
 def test_chinese_template_and_benchmark_output_contract_are_fail_closed():
     template = template_for(
         "single_fact", "period_flow", "candidate_1", language="zh"
@@ -364,6 +405,51 @@ def test_chinese_template_and_benchmark_output_contract_are_fail_closed():
     )
     assert not invalid["passed"]
     assert "requested_precision_missing" in invalid["errors"]
+
+
+def test_chinese_output_contract_accepts_localized_unit_and_currency_aliases():
+    cases = [
+        ("请以百万元人民币为单位，数值保留2位小数。", "million CNY", "CNY"),
+        ("请以人民币元/股为单位，数值保留2位小数。", "CNY_per_share", "CNY"),
+        ("请以百万港元为单位，数值保留2位小数。", "million HKD", "HKD"),
+        ("请以百分比为单位，数值保留2位小数。", "percent", ""),
+    ]
+    for question, unit, currency in cases:
+        result = _validate_benchmark_output_contract(
+            {
+                "question": question,
+                "rubric": {
+                    "benchmark_alignment": "finsearchcomp",
+                    "unit_must_match": True,
+                    "requested_unit": unit,
+                    "requested_currency": currency,
+                    "precision_must_match": True,
+                    "requested_decimal_places": 2,
+                    "complete_output_required": False,
+                },
+            }
+        )
+        assert result["passed"], (question, result)
+
+
+def test_chinese_output_contract_rejects_wrong_localized_currency():
+    result = _validate_benchmark_output_contract(
+        {
+            "question": "请以百万港元为单位，数值保留2位小数。",
+            "rubric": {
+                "benchmark_alignment": "finsearchcomp",
+                "unit_must_match": True,
+                "requested_unit": "million CNY",
+                "requested_currency": "CNY",
+                "precision_must_match": True,
+                "requested_decimal_places": 2,
+                "complete_output_required": False,
+            },
+        }
+    )
+    assert not result["passed"]
+    assert "requested_unit_missing" in result["errors"]
+    assert "requested_currency_missing" in result["errors"]
 
 
 def test_long_window_extrema_are_structurally_multi_period():

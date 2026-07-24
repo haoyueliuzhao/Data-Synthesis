@@ -209,13 +209,36 @@ def _definition_row(row: dict[str, Any], metadata: dict[str, Any] | None = None)
 def _source_policy(source_id: str | None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
     metadata = metadata or {}
     if source_id == "imf_sdmx":
-        return {"frequency": "annual", "vintage_policy": "IMF release; future years may be forecasts", "is_forecast": True, "comparability_level": "definition_level"}
+        return {
+            "frequency": "annual",
+            "vintage_policy": (
+                "IMF WEO release mixes historical observations and projections; "
+                "forecast status is assigned per fact"
+            ),
+            "is_forecast": None,
+            "comparability_level": "definition_level",
+        }
     if source_id == "worldbank_indicators":
         return {"frequency": "annual", "vintage_policy": "World Bank latest available revision", "is_forecast": False, "comparability_level": "definition_level"}
     if source_id == "fred_observations":
         return {"frequency": _normalise_frequency(metadata.get("frequency") or metadata.get("frequency_short")) or "series_metadata", "vintage_policy": "FRED realtime_start/realtime_end retained when available", "is_forecast": False, "comparability_level": "series_level"}
     if source_id == "sec_companyfacts":
         return {"frequency": "filing_period", "vintage_policy": "SEC filed date and accession retained; amendments/restatements selected upstream", "is_forecast": False, "comparability_level": "xbrl_concept_level"}
+    if source_id in {
+        "nbs_official_statistics",
+        "pboc_official_statistics",
+        "safe_official_statistics",
+        "sse_market_statistics",
+        "szse_market_statistics",
+        "bse_market_statistics",
+        "csi_index_publications",
+    }:
+        return {
+            "frequency": "publication_period",
+            "vintage_policy": "Official authority publication; every archived revision is retained",
+            "is_forecast": False,
+            "comparability_level": "source_concept_period_level",
+        }
     if source_id in {"cninfo_announcements", "bse_disclosures", "hkex_disclosures"}:
         provider = {
             "cninfo_announcements": "CNInfo",

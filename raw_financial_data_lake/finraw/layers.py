@@ -32,6 +32,9 @@ LAYER_TABLES: dict[str, list[str]] = {
         "source_metric_definitions",
         "time_series_frequency_map",
         "fact_quality_checks",
+        "fact_universe_builds",
+        "fact_universe_members",
+        "fact_universe_derived_members",
     ],
     "qa_ready": [
         "derived_facts",
@@ -102,6 +105,7 @@ LAYER_COMMANDS: dict[str, list[str]] = {
         "standardize-facts",
         "enforce-quality",
         "enforce-fact-quality",
+        "build-fact-universe",
     ],
     "qa_ready": [
         "refresh-derived-facts",

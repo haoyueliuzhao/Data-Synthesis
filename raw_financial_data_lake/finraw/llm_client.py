@@ -38,7 +38,17 @@ class OpenAICompatibleJsonClient:
         self.key_env = str(config.get("api_key_env") or "DASHSCOPE_API_KEY")
         self.api_key = os.environ.get(self.key_env, "")
         self.timeout = float(config.get("timeout_seconds", 30))
+        self.max_output_tokens = max(int(config.get("max_output_tokens", 2048)), 1)
         self.reasoning_effort = str(config.get("reasoning_effort") or "").strip()
+        thinking = config.get("thinking")
+        if isinstance(thinking, str):
+            thinking = {"type": thinking}
+        self.thinking = dict(thinking) if isinstance(thinking, dict) else None
+        if self.thinking is not None and self.thinking.get("type") not in {
+            "enabled",
+            "disabled",
+        }:
+            raise ValueError("thinking.type must be enabled or disabled")
         self.store = bool(config["store"]) if "store" in config else None
         self.http_headers = {
             str(key): str(value)
@@ -282,9 +292,14 @@ class OpenAICompatibleJsonClient:
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": temperature,
+            "max_tokens": self.max_output_tokens,
             "response_format": {"type": "json_object"},
         }
-        if self.reasoning_effort:
+        if self.thinking is not None:
+            body["thinking"] = self.thinking
+        if self.reasoning_effort and (
+            self.thinking is None or self.thinking.get("type") != "disabled"
+        ):
             body["reasoning_effort"] = self.reasoning_effort
         if self.store is not None:
             body["store"] = self.store

@@ -22,6 +22,7 @@ def load_config(path: str | None = None) -> dict[str, Any]:
         with secrets_path.open("r", encoding="utf-8") as f:
             config = _deep_merge(config, json.load(f))
 
+    config = _strip_replace_markers(config)
     for key in ("storage_root", "metadata_db"):
         value = Path(config[key])
         if not value.is_absolute():
@@ -50,10 +51,26 @@ def _load_profile(path: Path, loading: set[Path]) -> dict[str, Any]:
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
+    if override.get("__replace__") is True:
+        return dict(override)
     merged = dict(base)
     for key, value in override.items():
+        if key == "__replace__":
+            continue
         if isinstance(value, dict) and isinstance(merged.get(key), dict):
             merged[key] = _deep_merge(merged[key], value)
         else:
             merged[key] = value
     return merged
+
+
+def _strip_replace_markers(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _strip_replace_markers(item)
+            for key, item in value.items()
+            if key != "__replace__"
+        }
+    if isinstance(value, list):
+        return [_strip_replace_markers(item) for item in value]
+    return value
