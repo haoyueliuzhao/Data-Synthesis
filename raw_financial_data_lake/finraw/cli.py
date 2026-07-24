@@ -57,6 +57,7 @@ from finraw.qa.diversity import build_qa_diversity_report
 from finraw.qa.evaluation import (
     adjudicate_quality_run,
     build_empirical_report,
+    build_quality_release,
     run_empirical_model_evaluation,
     export_manual_review_queue,
     init_quality_evaluation,
@@ -468,12 +469,21 @@ def build_parser() -> argparse.ArgumentParser:
 
     qa_quality_empirical = sub.add_parser(
         "qa-quality-empirical",
-        help="Run evidence-given L3 trials with multiple pinned respondent models.",
+        help="Run one of four pinned L3 empirical evaluation modes.",
     )
     qa_quality_empirical.add_argument(
         "--qa-build-id", action="append", required=True
     )
     qa_quality_empirical.add_argument("--limit", type=int, default=12)
+    qa_quality_empirical.add_argument(
+        "--mode",
+        choices=(
+            "gold_plan_given",
+            "evidence_only",
+            "evidence_pool",
+            "retrieval_tool",
+        ),
+    )
     qa_quality_empirical.add_argument(
         "--output-dir", default="data/audit/qa_quality/empirical"
     )
@@ -503,6 +513,16 @@ def build_parser() -> argparse.ArgumentParser:
     qa_quality_review.add_argument("--evaluation-run-id", required=True)
     qa_quality_review.add_argument(
         "--output-dir", default="data/audit/qa_quality/review"
+    )
+
+    qa_quality_release = sub.add_parser(
+        "qa-quality-release",
+        help="Build a fail-closed quality-aware training release.",
+    )
+    qa_quality_release.add_argument("--evaluation-run-id", required=True)
+    qa_quality_release.add_argument("--target-size", type=int)
+    qa_quality_release.add_argument(
+        "--output-dir", default="data/audit/qa_quality/release"
     )
 
     freeze_finsearchcomp = sub.add_parser(
@@ -1129,6 +1149,7 @@ def main() -> None:
                 config,
                 args.qa_build_id,
                 limit=args.limit,
+                mode=args.mode,
                 evaluation_mode=args.evaluation_mode,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
@@ -1164,6 +1185,14 @@ def main() -> None:
         elif args.command == "qa-quality-review-export":
             report = export_manual_review_queue(
                 db, args.evaluation_run_id, args.output_dir
+            )
+            print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        elif args.command == "qa-quality-release":
+            report = build_quality_release(
+                db,
+                args.evaluation_run_id,
+                target_size=args.target_size,
+                output_dir=args.output_dir,
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "freeze-finsearchcomp":

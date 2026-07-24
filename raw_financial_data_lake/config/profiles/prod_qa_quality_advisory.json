@@ -78,7 +78,7 @@
       },
       "empirical_evaluation": {
         "enabled": true,
-        "mode": "evidence_given",
+        "mode": "gold_plan_given",
         "sample_seed": "deepseek-l3-smoke-v1",
         "maximum_concurrency": 32,
         "minimum_model_count": 2,

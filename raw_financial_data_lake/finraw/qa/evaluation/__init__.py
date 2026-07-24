@@ -16,6 +16,7 @@ from finraw.qa.evaluation.pipeline import (
     quality_evaluation_report,
     run_quality_evaluation,
 )
+from finraw.qa.evaluation.release import build_quality_release
 
 __all__ = [
     "build_empirical_report",
@@ -25,4 +26,5 @@ __all__ = [
     "init_quality_evaluation",
     "quality_evaluation_report",
     "run_quality_evaluation",
+    "build_quality_release",
 ]

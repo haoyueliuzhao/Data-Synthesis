@@ -219,11 +219,11 @@
     "quality_evaluation": {
       "enabled": false,
       "evaluation_mode": "advisory",
-      "rubric_version": "financial_qa_quality.v1",
+      "rubric_version": "financial_qa_quality.v2",
       "sample_validation_statuses": [
         "passed"
       ],
-      "sample_seed": "qa-quality-v1",
+      "sample_seed": "qa-quality-v2",
       "maximum_concurrency": 4,
       "max_contract_attempts": 2,
       "judge_routing": {
@@ -235,14 +235,71 @@
         "total_score_disagreement_threshold": 12,
         "dimension_disagreement_threshold": 2,
         "minimum_confidence": 0.7,
-        "random_high_score_audit_ratio": 0.1,
-        "secondary_review_scope": "boundary_and_audit"
+        "adversarial_dimension_score_threshold": 3
       },
       "decision_thresholds": {
         "accepted": 80,
         "coverage_acceptance": 70,
         "manual_review": 60,
         "fatal_flag_requires_review": true
+      },
+      "dataset_role_contract": {
+        "contract_id": "finsearchcomp_t2_t3_release.v1",
+        "training_splits": [
+          "train",
+          "train_complex"
+        ],
+        "target_release_count": 0,
+        "target_distributions": [
+          {
+            "name": "benchmark_task_market",
+            "fields": [
+              "benchmark_task",
+              "market_subset"
+            ],
+            "weight": 0.45,
+            "shares": {
+              "T2|global": 0.3043478261,
+              "T2|greater_china": 0.2557544757,
+              "T3|global": 0.2148337596,
+              "T3|greater_china": 0.2250639386
+            }
+          },
+          {
+            "name": "market_language",
+            "fields": [
+              "market_subset",
+              "language"
+            ],
+            "weight": 0.25,
+            "shares": {
+              "global|en": 0.4153452685,
+              "global|zh": 0.0778772379,
+              "global|bilingual": 0.0259590793,
+              "greater_china|zh": 0.3125319693,
+              "greater_china|en": 0.0961636829,
+              "greater_china|bilingual": 0.0721227621
+            }
+          },
+          {
+            "name": "generation_pipeline",
+            "fields": [
+              "generation_pipeline"
+            ],
+            "weight": 0.3,
+            "shares": {
+              "fact_qa": 0.3,
+              "derived_fact_qa": 0.25,
+              "static_graph_pattern": 0.25,
+              "automatic_pattern_mining": 0.12,
+              "typed_edge_walk": 0.08
+            }
+          }
+        ],
+        "gap_manifest_paths": [],
+        "gap_manifest_weight": 1.0,
+        "maximum_per_surface_signature": 25,
+        "maximum_per_program_signature": 250
       },
       "calibration": {
         "required": true,
@@ -251,6 +308,14 @@
         "minimum_perturbation_pairs": 100,
         "thresholds_are_calibrated": false,
         "replacement_mode": "human"
+      },
+      "reporting": {
+        "minimum_slice_size": 30,
+        "confidence_interval": "wilson_score_95",
+        "generation_feedback": {
+          "minimum_issue_count": 1,
+          "maximum_hotspots": 100
+        }
       },
       "release_selection": {
         "subjective_weight": 0.7,
@@ -283,8 +348,10 @@
       "judges": {},
       "empirical_evaluation": {
         "enabled": false,
-        "mode": "evidence_given",
+        "mode": "gold_plan_given",
         "sample_seed": "qa-l3-v1",
+        "distractor_count": 8,
+        "maximum_tool_rounds": 8,
         "maximum_concurrency": 2,
         "minimum_model_count": 2,
         "supported_answer_types": [

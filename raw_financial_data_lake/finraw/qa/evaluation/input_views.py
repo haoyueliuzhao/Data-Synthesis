@@ -4,6 +4,10 @@ from collections import defaultdict
 from typing import Any, Iterable
 
 from finraw.db.client import DBProtocol
+from finraw.qa.evaluation.required_checks import (
+    required_check_manifest_hash,
+    required_checks_for,
+)
 from finraw.qa.evaluation.rubrics import rubric_for_task
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.store import json_value
@@ -58,13 +62,17 @@ def load_evaluation_bundles(
         )
     }
     failed_checks: dict[str, list[str]] = defaultdict(list)
+    observed_checks: dict[str, set[str]] = defaultdict(set)
     for row in db.fetchall(
         "SELECT qa_id, check_name, check_status FROM qa_quality_checks "
         "WHERE qa_build_id = ?",
         (qa_build_id,),
     ):
+        qa_id = str(row["qa_id"])
+        check_name = str(row["check_name"])
+        observed_checks[qa_id].add(check_name)
         if str(row["check_status"]) != "passed":
-            failed_checks[str(row["qa_id"])].append(str(row["check_name"]))
+            failed_checks[qa_id].append(check_name)
 
     bundles = []
     for sample in samples:
@@ -82,6 +90,11 @@ def load_evaluation_bundles(
             l0_reasons.append(
                 f"candidate_eligibility_status={candidate.get('eligibility_status')}"
             )
+        pipeline = _generation_pipeline(candidate)
+        required_checks = required_checks_for(pipeline, candidate)
+        missing_checks = sorted(set(required_checks) - observed_checks.get(qa_id, set()))
+        if missing_checks:
+            l0_reasons.append("missing_quality_checks=" + ",".join(missing_checks))
         if failed_checks.get(qa_id):
             l0_reasons.append(
                 "failed_quality_checks=" + ",".join(sorted(failed_checks[qa_id]))
@@ -94,6 +107,10 @@ def load_evaluation_bundles(
             "operation_plan": plan,
             "distribution_label": label,
             "evidence": path,
+            "generation_pipeline": pipeline,
+            "required_quality_checks": list(required_checks),
+            "observed_quality_checks": sorted(observed_checks.get(qa_id, set())),
+            "required_check_manifest_hash": required_check_manifest_hash(),
             "deterministic_gate_status": "passed" if not l0_reasons else "failed",
             "deterministic_gate_reasons": l0_reasons,
         }

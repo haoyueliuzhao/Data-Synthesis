@@ -12,16 +12,18 @@ single score:
 4. How difficult and discriminative is it empirically?
 5. Does training on it improve downstream financial search and reasoning?
 
-The implemented first phase covers L0-L2. L3 empirical model trials and L4
-training-utility experiments remain explicit later phases.
+The implemented system covers L0-L3. L4 training-utility experiments remain an
+explicit later phase.
 
 ```text
 Pinned QA Build
   -> L0 deterministic validity (hard veto)
-  -> L1 structure, coverage, rarity, and dataset role
+  -> L1 release-contract gap and dataset role
   -> L2 Surface + Grounded financial judges
   -> disagreement / fatal routing
-  -> advisory decision and human review queue
+  -> Risk Router and calibrated decision
+  -> quality-aware release
+  -> L3 four-mode empirical evaluation
   -> reproducible slice report
 ```
 
@@ -57,19 +59,34 @@ score can override the result.
 
 ## 4. L1 dataset role value
 
-`dataset_role_value_score` is programmatic and distinct from item-level financial
-value. It combines rarity or coverage contribution across:
+`dataset_role_value_score` is programmatic and distinct from item-level
+financial value. Version `qa_dataset_role.v2` no longer rewards rarity inside
+the evaluated batch. It measures the remaining deficit against a pinned Release
+Contract and, when configured, a FinSearchComp Gap Manifest.
 
-- T2/T3 x market x language cell;
-- operation x answer type;
-- source class x metric family;
-- advanced automatic pipeline use;
-- holdout role;
-- graph-pattern coverage;
-- question-skeleton coverage.
+The default contract freezes:
 
-This score can preserve a rare but sound item. It cannot rescue an invalid
-financial question or a confirmed fatal defect.
+- the official T2/T3 x Global/Greater China target distribution;
+- a market-language distribution that prevents language from determining market;
+- target shares for Fact, DerivedFact, Static Pattern, Automatic Mining, and
+  Typed Edge Walk pipelines;
+- optional absolute gap targets;
+- surface-signature and operation-program capacity limits.
+
+Only `train` and `train_complex` participate in training-distribution
+counts. `dev`, `test`, and every holdout split receive a Dataset Role
+score of zero and cannot become `accepted_for_coverage`. Quality evaluation
+can still accept those items as evaluation samples, but release selection and
+SFT export must preserve their holdout role.
+
+Question identity uses the existing protected question or template identity,
+the Contamination Guard slot-normalized signature, and the normalized Operation
+Program signature. Entity substitution, year substitution, or light paraphrase
+therefore does not manufacture a new rare skeleton. Signature capacity only
+penalizes saturation; it does not treat a singleton as inherently valuable.
+
+The resolved contract and its hash are pinned in every evaluation run. This score
+cannot rescue an invalid financial question or a confirmed fatal defect.
 
 ## 5. L2 judge views
 
@@ -93,21 +110,22 @@ and evidence/scope mismatch.
 
 ## 6. Rubric and decisions
 
-Both T2 and T3 use eight 1-5 dimensions:
+T2 and T3 use eight 1-5 dimensions, but roles do not vote on dimensions they
+cannot observe. Surface owns task authenticity, standalone financial value,
+clarity, and language quality. Grounded owns financial semantics, reasoning
+necessity, evidence/scope fit, and answer/rubric fit. Their owned dimensions form
+the provisional score.
 
-- task authenticity;
-- standalone financial value;
-- financial semantic validity;
-- clarity and unambiguity;
-- reasoning necessity;
-- evidence/scope fit;
-- answer/rubric fit;
-- language quality.
+The Adversarial Reviewer is not a third ordinary voter. It receives only routed
+dimensions and returns uphold, downgrade, fatal, or escalate resolutions. The
+final item records base dimensions and score, the threshold-only base decision,
+all adversarial resolutions, final dimensions and score, final decision, and
+score delta.
 
 T2 weights precision, historical scope, and verifiability more heavily. T3 gives
 more weight to financial value, necessary multi-step reasoning, and scope fit.
-Scores are aggregated by dimension median and normalized to 0-100. Judge
-disagreement, confidence, and fatal-flag disagreement remain separate fields.
+Confidence, fatal flags, routing reasons, and adjudication state remain separate
+from the numeric score.
 
 Initial advisory decisions are:
 
@@ -115,15 +133,44 @@ Initial advisory decisions are:
 L0 failure                     -> rejected_deterministic
 confirmed fatal defect         -> rejected_subjective_fatal
 score >= 80, low disagreement  -> accepted
-score >= 70 + rare coverage    -> accepted_for_coverage
-score 60-80 or disagreement    -> manual_review
+score >= 70 + contract gap
+  + training-eligible split      -> accepted_for_coverage
+score 60-80                    -> manual_review
+pending adversarial challenge  -> manual_review
+unresolved human-routed dispute -> manual_review
+unresolved LLM-only dispute     -> quarantined_judge_disagreement
 score < 60                     -> rejected_subjective_quality
 ```
 
 These thresholds are not a release gate until calibration records
 `thresholds_are_calibrated=true`.
 
-## 7. Persistence
+The Risk Router records `no_dispute`, `adversarial_challenge_pending`,
+`adversarial_challenge_resolved`, `human_review_required`, or
+`quarantined_judge_disagreement`. Judge non-consensus is never relabeled as a
+quality defect.
+
+## 7. L2 diagnostic reporting
+
+Each report separates issue evidence into:
+
+- per-role Surface, Grounded, and Adversarial counts;
+- samples flagged by any judge;
+- samples flagged by at least two roles;
+- issues confirmed by a structured Adversarial resolution.
+
+Legacy Adversarial calls without a resolution contract are not reported as
+confirmed adjudication. Unresolved items are classified by total-score
+disagreement, same-dimension disagreement for legacy runs, low confidence, fatal
+disagreement, missing dimensions, pending adjudicator, resolution-contract
+errors, escalation, and multiple reasons.
+
+Reports also compare base and final scores and decisions, summarize resolution
+actions and transitions, and expose task-subtype slices. Every rate includes a
+95% Wilson interval. Slices below the configured minimum, 30 by default, are
+marked insufficient_slice_size and are descriptive only.
+
+## 8. Persistence
 
 The QA layer now includes:
 
@@ -169,14 +216,56 @@ An evaluation report writes:
 - `qa_quality_evaluation_report.md`;
 - `qa_evaluation_items.jsonl`;
 - `judge_disagreement.jsonl`;
-- `manual_review_queue.jsonl`.
+- `judge_disagreement_quarantine.jsonl`;
+- `manual_review_queue.jsonl`;
+- `qa_generation_issue_feedback.json`;
+- `qa_generation_issue_hotspots.csv`.
 
 Slice metrics are reported by benchmark task, market, language, difficulty,
 generation pipeline, operation family, answer type, and topic. Each slice includes
 sample count, L0 pass rate, subjective mean/P10/P50/P90, fatal rate, review rate,
 judge disagreement rate, and dataset-role value.
 
-## 10. Calibration and later phases
+## 9.1 Generation feedback loop
+
+Successful judge calls are attributed to the generation components that produced
+each sample. The feedback cube is keyed by:
+
+```text
+Issue Code x Template ID x Pattern ID x Operation Macro
+           x Metric Pair x Generation Pipeline x Language
+```
+
+Every row reports the component population, samples flagged by any judge,
+samples flagged by at least two roles, adversarially confirmed samples, and the
+affected rate within that exact component slice. One-dimensional hotspots also
+identify a bad template, metric pair, macro, pipeline, or language when the full
+cube is sparse.
+
+Issues are routed to an owning module. Formulaic instructions go to the output
+contract and verbalizer, awkward periods to the period verbalizer, unclear scopes
+to the scope description builder, weak metric pairs to the ontology and Pattern
+Gate, and weak follow-ups to static patterns or Walk Macros. `overly_trivial`
+changes sampling quota, while `low_standalone_value` changes Pattern Value and
+dataset selection. These are quality optimization signals, not deterministic
+correctness failures.
+
+## 10. Quality-aware release
+
+`qa-quality-release` selects only `accepted` or `accepted_for_coverage` samples
+from `train` and `train_complex`. It independently rechecks the immutable sample
+manifest, deterministic status, Dataset Role eligibility, subjective threshold,
+and confirmed fatal flags. Advisory runs create `draft_advisory`; production
+`release_gate` runs fail closed unless human-calibrated thresholds are frozen.
+
+```bash
+python -m finraw.cli --config CONFIG qa-quality-release \
+  --evaluation-run-id qaeval_xxx \
+  --target-size 1000 \
+  --output-dir data/audit/qa_quality/release
+```
+
+## 11. Calibration and later phases
 
 Before `release_gate` mode is allowed to block publication:
 
@@ -205,23 +294,61 @@ Flash fallback: an unavailable Pro call is recorded as a failed call.
 
 This is a provisional operational replacement, not evidence of human-judge
 agreement. Items that remain disputed after the adversarial pass are marked
-`rejected_llm_review_unresolved` rather than silently accepted.
+`quarantined_judge_disagreement`. Quarantine is a routing outcome, not a
+subjective-quality rejection, and such items cannot enter a quality release.
 
 ## L3 empirical model trials
 
-`qa-quality-empirical` sends a stratified numeric sample to both pinned
-respondent models under the same evidence-given contract. DeepSeek-V4-Pro and
-DeepSeek-V4-Flash answer independently. Neither model judges the other; Gold
-and Rubric perform deterministic numeric, unit, currency, and tolerance checks.
+L3 uses four separate, pinned run modes. One empirical run evaluates exactly one
+mode so the same model and QA item cannot leak information between modes:
 
-```bash
-python -m finraw.cli --config config/profiles/prod_qa_quality_advisory.json \
-  qa-quality-empirical \
-  --qa-build-id QA_BUILD_GLOBAL \
-  --qa-build-id QA_BUILD_GREATER_CHINA \
-  --limit 12 \
-  --output-dir data/audit/qa_quality/deepseek_l3_smoke
-```
+| Mode | Input | Primary capability |
+| --- | --- | --- |
+| gold_plan_given | Evidence + Gold Operation Plan | Plan execution and output compliance |
+| evidence_only | Evidence only | Independent reasoning-program formation |
+| evidence_pool | Relevant evidence + distractors | Evidence selection and calculation |
+| retrieval_tool | Question + registered tools | Retrieval, tool use, evidence selection, and calculation |
 
-The API credential is read only from `DEEPSEEK_API_KEY`; it is never persisted
-in run manifests, trial telemetry, or reports.
+retrieval_tool exposes only registered entity, metric, pinned-fact, and
+calculator tools. It must execute at least one tool call; a direct unsupported
+answer fails the end-to-end gate. Mode C and D also require an exact
+selected_evidence_ids set. Mode A and B store evidence selection as not
+applicable rather than awarding an artificial pass.
+
+Each Trial persists:
+
+    api_call_success
+    json_contract_success
+    semantic_answer_correct
+    unit_currency_correct
+    row_completeness
+    order_correct
+    evidence_selection_correct
+    end_to_end_correct
+
+Every overall, model, and slice report fixes the following denominators:
+
+    contract_success_rate
+    = valid JSON answer contracts / all trials
+
+    semantic_accuracy_given_valid_contract
+    = semantically correct answers / valid JSON contracts
+
+    end_to_end_accuracy
+    = fully correct trials / all trials
+
+DeepSeek-V4-Pro and DeepSeek-V4-Flash answer independently. Neither model judges
+the other; the shared Answer Schema Registry, Gold answer, and Rubric perform
+deterministic scoring.
+
+    python -m finraw.cli --config config/profiles/prod_qa_quality_advisory.json \
+      qa-quality-empirical \
+      --qa-build-id QA_BUILD_GLOBAL \
+      --qa-build-id QA_BUILD_GREATER_CHINA \
+      --mode evidence_pool \
+      --limit 100 \
+      --output-dir data/audit/qa_quality/l3_evidence_pool
+
+Run the command once per mode to compare the capability gaps. The API credential
+is read only from DEEPSEEK_API_KEY; it is never persisted in run manifests,
+trial telemetry, or reports.

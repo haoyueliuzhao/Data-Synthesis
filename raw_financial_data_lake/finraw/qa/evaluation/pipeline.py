@@ -11,15 +11,26 @@ from typing import Any
 from urllib.parse import urlparse
 
 from finraw.db.client import DBProtocol
-from finraw.qa.evaluation.aggregation import aggregate_judgments, needs_adjudication
+from finraw.qa.evaluation.aggregation import (
+    adjudication_dimensions,
+    aggregate_judgments,
+    needs_adjudication,
+)
 from finraw.qa.evaluation.contracts import EVALUATION_SYSTEM_VERSION, RUBRIC_VERSION
-from finraw.qa.evaluation.dataset_metrics import compute_dataset_role_values
+from finraw.qa.evaluation.dataset_metrics import (
+    compute_dataset_role_values,
+    resolve_dataset_role_contract,
+)
 from finraw.qa.evaluation.input_views import load_evaluation_bundles
 from finraw.qa.evaluation.judge import (
     FinancialQualityJudge,
     JudgeFunction,
 )
 from finraw.qa.evaluation.reports import build_quality_report
+from finraw.qa.evaluation.required_checks import (
+    required_check_manifest,
+    required_check_manifest_hash,
+)
 from finraw.qa.evaluation.rubrics import rubric_for_task, rubric_hash
 from finraw.qa.evaluation.schema import ensure_evaluation_schema
 from finraw.qa.schema import ensure_qa_schema
@@ -57,9 +68,12 @@ CALL_COLUMNS = [
     "response_hash",
     "input_view_hash",
     "scores",
+    "reviewed_dimensions",
+    "resolutions",
     "fatal_flags",
     "issue_codes",
     "confidence",
+    "escalate_to_human",
     "brief_justification",
     "telemetry",
     "status",
@@ -132,12 +146,18 @@ def init_quality_evaluation(
         raise RuntimeError(f"QA build {qa_build_id} has no eligible samples to evaluate")
 
     evaluation_run_id = _new_run_id()
+    dataset_role_contract = resolve_dataset_role_contract(
+        quality_config.get("dataset_role_contract") or {}
+    )
+    dataset_role_contract_hash = _hash(dataset_role_contract)
     sample_manifest = {
         "population": "qa_samples",
         "validation_statuses": list(statuses),
         "sample_count": len(sample_rows),
         "qa_ids": [str(row["qa_id"]) for row in sample_rows],
         "stable_qa_ids": [str(row["stable_qa_id"]) for row in sample_rows],
+        "required_check_manifest_hash": required_check_manifest_hash(),
+        "dataset_role_contract_hash": dataset_role_contract_hash,
     }
     judge_manifest = _judge_manifest(quality_config)
     run = {
@@ -160,6 +180,9 @@ def init_quality_evaluation(
         "git_commit_sha": _git_commit_sha(),
         "notes": {
             "evaluation_system_version": EVALUATION_SYSTEM_VERSION,
+            "required_check_manifest": required_check_manifest(),
+            "dataset_role_contract": dataset_role_contract,
+            "dataset_role_contract_hash": dataset_role_contract_hash,
             "quality_config": _redact_config(quality_config),
             "qa_build_status": dict(build_row).get("status"),
             "thresholds_are_calibrated": bool(
@@ -194,6 +217,7 @@ def run_quality_evaluation(
     judge_function: JudgeFunction | None = None,
 ) -> dict[str, Any]:
     run = _evaluation_run(db, evaluation_run_id)
+    _assert_run_system_version(run)
     config = dict(run["notes"].get("quality_config") or {})
     base_roles = tuple(
         str(role)
@@ -225,31 +249,15 @@ def adjudicate_quality_run(
     judge_function: JudgeFunction | None = None,
 ) -> dict[str, Any]:
     run = _evaluation_run(db, evaluation_run_id)
+    _assert_run_system_version(run)
     config = dict(run["notes"].get("quality_config") or {})
     items = _evaluation_items(db, evaluation_run_id)
-    audit_ratio = float(
-        (config.get("judge_routing") or {}).get(
-            "random_high_score_audit_ratio", 0.1
-        )
-    )
-    secondary_scope = str(
-        (config.get("judge_routing") or {}).get("secondary_review_scope")
-        or "boundary_and_audit"
-    )
     qa_ids = [
         str(item["qa_id"])
         for item in items
         if item.get("deterministic_gate_status") == "passed"
-        and (
-            secondary_scope == "all"
-            or needs_adjudication(item)
-            or item.get("decision") == "accepted_for_coverage"
-            or (
-                item.get("decision") == "accepted"
-                and _audit_fraction(evaluation_run_id, str(item["qa_id"]))
-                < audit_ratio
-            )
-        )
+        and needs_adjudication(item)
+        and adjudication_dimensions(item)
     ]
     if qa_ids:
         role = str(
@@ -317,7 +325,10 @@ def _evaluate_roles(
             db,
             run["qa_build_id"],
             qa_ids=run["sample_manifest"].get("qa_ids") or [],
-        )
+        ),
+        contract=(run.get("notes") or {}).get("dataset_role_contract")
+        or config.get("dataset_role_contract")
+        or {},
     )
     existing = {
         (str(row["qa_id"]), str(row["judge_role"]))
@@ -328,6 +339,10 @@ def _evaluate_roles(
         )
     }
     judge = FinancialQualityJudge(config)
+    current_items = {
+        str(item["qa_id"]): item
+        for item in _evaluation_items(db, run["evaluation_run_id"])
+    }
     tasks = []
     for bundle in bundles:
         if bundle["deterministic_gate_status"] != "passed":
@@ -339,11 +354,28 @@ def _evaluate_roles(
     max_workers = max(int(config.get("maximum_concurrency", 4)), 1)
 
     def invoke(bundle: dict[str, Any], role: str) -> dict[str, Any]:
-        view = (
-            bundle["surface_view"]
-            if role == "surface_financial_analyst"
-            else bundle["grounded_view"]
-        )
+        if role == "surface_financial_analyst":
+            view = bundle["surface_view"]
+        elif role == "adversarial_reviewer":
+            provisional = current_items.get(str(bundle["qa_id"])) or {}
+            reviewed_dimensions = adjudication_dimensions(provisional)
+            view = {
+                **bundle["grounded_view"],
+                "reviewed_dimensions": reviewed_dimensions,
+                "provisional_evaluation": {
+                    "dimension_scores": {
+                        dimension: (provisional.get("dimension_scores") or {}).get(
+                            dimension
+                        )
+                        for dimension in reviewed_dimensions
+                    },
+                    "fatal_flags": provisional.get("fatal_flags") or [],
+                    "issue_codes": provisional.get("issue_codes") or [],
+                    "decision_reasons": provisional.get("decision_reasons") or [],
+                },
+            }
+        else:
+            view = bundle["grounded_view"]
         rubric = rubric_for_task(
             bundle["distribution_label"].get("benchmark_task") or "T2"
         )
@@ -353,9 +385,18 @@ def _evaluate_roles(
         try:
             if judge_function:
                 payload, telemetry = judge_function(role, view, rubric)
-                from finraw.qa.evaluation.contracts import normalize_judge_payload
+                from finraw.qa.evaluation.contracts import (
+                    normalize_adversarial_payload,
+                    normalize_judge_payload,
+                )
 
-                payload = normalize_judge_payload(payload)
+                payload = (
+                    normalize_adversarial_payload(
+                        payload, list(view.get("reviewed_dimensions") or [])
+                    )
+                    if role == "adversarial_reviewer"
+                    else normalize_judge_payload(payload, role)
+                )
             else:
                 payload, telemetry = judge.evaluate(role, view, rubric)
             return _call_row(
@@ -390,7 +431,15 @@ def _evaluate_roles(
         "qa_judge_calls",
         call_rows,
         CALL_COLUMNS,
-        {"scores", "fatal_flags", "issue_codes", "brief_justification", "telemetry"},
+        {
+            "scores",
+            "reviewed_dimensions",
+            "resolutions",
+            "fatal_flags",
+            "issue_codes",
+            "brief_justification",
+            "telemetry",
+        },
     )
 
     all_calls = _judge_calls(db, run["evaluation_run_id"])
@@ -464,15 +513,30 @@ def _call_row(
         "response_hash": telemetry.get("response_hash"),
         "input_view_hash": telemetry.get("input_view_hash") or "unknown",
         "scores": payload.get("scores") or {},
+        "reviewed_dimensions": payload.get("reviewed_dimensions") or [],
+        "resolutions": payload.get("resolutions") or {},
         "fatal_flags": payload.get("fatal_flags") or [],
         "issue_codes": payload.get("issue_codes") or [],
         "confidence": payload.get("confidence"),
+        "escalate_to_human": bool(payload.get("escalate_to_human")),
         "brief_justification": payload.get("brief_justification") or {},
         "telemetry": telemetry,
         "status": status,
         "error_message": error_message,
         "created_at": _now(),
     }
+
+
+def _assert_run_system_version(run: dict[str, Any]) -> None:
+    observed = str(
+        (run.get("notes") or {}).get("evaluation_system_version") or ""
+    )
+    if observed != EVALUATION_SYSTEM_VERSION:
+        raise RuntimeError(
+            "Evaluation run contract mismatch: "
+            f"run={observed or 'unknown'}, current={EVALUATION_SYSTEM_VERSION}. "
+            "Initialize a new evaluation run instead of mixing judge contracts."
+        )
 
 
 def _evaluation_run(db: DBProtocol, evaluation_run_id: str) -> dict[str, Any]:
@@ -503,6 +567,8 @@ def _judge_calls(db: DBProtocol, evaluation_run_id: str) -> list[dict[str, Any]]
         row = dict(raw)
         for key, default in {
             "scores": {},
+            "reviewed_dimensions": [],
+            "resolutions": {},
             "fatal_flags": [],
             "issue_codes": [],
             "brief_justification": {},
@@ -594,11 +660,6 @@ def _git_commit_sha() -> str:
         ).strip()
     except Exception:
         return "unknown"
-
-
-def _audit_fraction(evaluation_run_id: str, qa_id: str) -> float:
-    digest = _hash((evaluation_run_id, qa_id, "high_score_audit"))
-    return int(digest[:16], 16) / float(16**16 - 1)
 
 
 def _hash(value: Any) -> str:

@@ -43,9 +43,12 @@ def ensure_evaluation_schema(db: DBProtocol) -> None:
             response_hash TEXT,
             input_view_hash TEXT NOT NULL,
             scores {json_type} NOT NULL,
+            reviewed_dimensions {json_type} NOT NULL,
+            resolutions {json_type} NOT NULL,
             fatal_flags {json_type} NOT NULL,
             issue_codes {json_type} NOT NULL,
             confidence REAL,
+            escalate_to_human {bool_type} DEFAULT {false_literal},
             brief_justification {json_type} NOT NULL,
             telemetry {json_type} NOT NULL,
             status TEXT NOT NULL,
@@ -159,10 +162,21 @@ def ensure_evaluation_schema(db: DBProtocol) -> None:
             provider TEXT,
             requested_model TEXT NOT NULL,
             response_model TEXT,
+            trial_mode TEXT NOT NULL,
+            selected_evidence_ids {json_type} NOT NULL,
+            tool_trace {json_type} NOT NULL,
             answer_text TEXT NOT NULL,
             answer_payload {json_type} NOT NULL,
             match_status TEXT NOT NULL,
             match_details {json_type} NOT NULL,
+            api_call_success {bool_type} NOT NULL,
+            json_contract_success {bool_type} NOT NULL,
+            semantic_answer_correct {bool_type} NOT NULL,
+            unit_currency_correct {bool_type} NOT NULL,
+            row_completeness {bool_type} NOT NULL,
+            order_correct {bool_type} NOT NULL,
+            evidence_selection_correct {bool_type},
+            end_to_end_correct {bool_type} NOT NULL,
             prompt_hash TEXT NOT NULL,
             response_hash TEXT,
             telemetry {json_type} NOT NULL,
@@ -182,3 +196,47 @@ def ensure_evaluation_schema(db: DBProtocol) -> None:
     ]
     for statement in statements:
         db.execute(statement)
+    migrations = {
+        "reviewed_dimensions": json_type,
+        "resolutions": json_type,
+        "escalate_to_human": bool_type,
+    }
+    for column, column_type in migrations.items():
+        try:
+            if postgres:
+                db.execute(
+                    f"ALTER TABLE qa_judge_calls ADD COLUMN IF NOT EXISTS "
+                    f"{column} {column_type}"
+                )
+            else:
+                db.execute(
+                    f"ALTER TABLE qa_judge_calls ADD COLUMN {column} {column_type}"
+                )
+        except Exception as exc:
+            message = str(exc).lower()
+            if "duplicate column" not in message and "already exists" not in message:
+                raise
+    trial_migrations = {
+        "trial_mode": "TEXT",
+        "selected_evidence_ids": json_type,
+        "tool_trace": json_type,
+        "api_call_success": bool_type,
+        "json_contract_success": bool_type,
+        "semantic_answer_correct": bool_type,
+        "unit_currency_correct": bool_type,
+        "row_completeness": bool_type,
+        "order_correct": bool_type,
+        "evidence_selection_correct": bool_type,
+        "end_to_end_correct": bool_type,
+    }
+    for column, column_type in trial_migrations.items():
+        try:
+            suffix = " IF NOT EXISTS" if postgres else ""
+            db.execute(
+                "ALTER TABLE qa_empirical_model_trials ADD COLUMN"
+                f"{suffix} {column} {column_type}"
+            )
+        except Exception as exc:
+            message = str(exc).lower()
+            if "duplicate column" not in message and "already exists" not in message:
+                raise

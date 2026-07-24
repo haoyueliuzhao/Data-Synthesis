@@ -8,7 +8,9 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 from finraw.qa.evaluation.contracts import (
     JUDGE_ROLES,
     JudgeContractError,
+    adversarial_response_contract,
     judge_response_contract,
+    normalize_adversarial_payload,
     normalize_judge_payload,
 )
 
@@ -31,20 +33,29 @@ class FinancialQualityJudge:
     ) -> tuple[dict[str, Any], dict[str, Any]]:
         if role not in JUDGE_ROLES:
             raise ValueError(f"Unknown quality judge role: {role}")
+        reviewed_dimensions = list(view.get("reviewed_dimensions") or [])
         prompt = build_judge_prompt(role, view, rubric)
         client = self._client(role)
         max_attempts = max(int(self.config.get("max_contract_attempts", 2)), 1)
         failures = []
         for attempt in range(1, max_attempts + 1):
             try:
-                completion = client.complete_json(prompt, temperature=0.0)
-                payload = normalize_judge_payload(completion.payload)
+                attempt_prompt = _contract_repair_prompt(prompt, failures)
+                completion = client.complete_json(attempt_prompt, temperature=0.0)
+                payload = (
+                    normalize_adversarial_payload(
+                        completion.payload, reviewed_dimensions
+                    )
+                    if role == "adversarial_reviewer"
+                    else normalize_judge_payload(completion.payload, role)
+                )
                 return payload, {
                     **completion.telemetry,
                     "contract_attempt": attempt,
                     "contract_failure_count": len(failures),
                     "input_view_hash": _hash(view),
-                    "prompt_hash": _hash(prompt),
+                    "base_prompt_hash": _hash(prompt),
+                    "prompt_hash": _hash(attempt_prompt),
                 }
             except (JudgeContractError, LLMClientError) as exc:
                 telemetry = getattr(exc, "telemetry", {})
@@ -95,8 +106,9 @@ def build_judge_prompt(
             "correctness; deterministic validation owns that decision."
         ),
         "adversarial_reviewer": (
-            "Actively search for hidden ambiguity, meaningless operation stacking, weak "
-            "financial logic, evidence/scope mismatch, and unnatural output requirements."
+            "Resolve only the listed disputed dimensions. Do not rescore unrelated "
+            "dimensions. Uphold the provisional score, downgrade it, confirm a fatal "
+            "defect, or escalate when the supplied evidence cannot resolve the dispute."
         ),
     }[role]
     request = {
@@ -104,10 +116,18 @@ def build_judge_prompt(
         "focus": focus,
         "rubric": rubric,
         "input_view": view,
-        "response_contract": judge_response_contract(),
+        "response_contract": (
+            adversarial_response_contract(list(view.get("reviewed_dimensions") or []))
+            if role == "adversarial_reviewer"
+            else judge_response_contract(role)
+        ),
         "rules": [
             "Return one JSON object only.",
-            "Use every score dimension exactly once and score each from 1 to 5.",
+            (
+                "Resolve every reviewed dimension exactly once and do not add dimensions."
+                if role == "adversarial_reviewer"
+                else "Score only the dimensions assigned to this role, exactly once."
+            ),
             "Use only listed fatal flags and issue codes.",
             "Do not disclose chain-of-thought; provide only two brief justifications.",
             "Never infer that a generation pipeline or a longer question is higher quality.",
@@ -115,6 +135,19 @@ def build_judge_prompt(
     }
     return "Evaluate this financial QA item.\n" + json.dumps(
         request, ensure_ascii=False, sort_keys=True
+    )
+
+
+def _contract_repair_prompt(prompt: str, failures: list[dict[str, Any]]) -> str:
+    if not failures:
+        return prompt
+    failure = failures[-1]
+    return (
+        prompt
+        + "\n\nCONTRACT REPAIR REQUIRED. The previous response was rejected: "
+        + str(failure.get("message") or failure.get("error_type") or "invalid contract")
+        + ". Return exactly one JSON object matching response_contract. Do not add "
+        + "markdown, commentary, missing fields, or unregistered fields."
     )
 
 

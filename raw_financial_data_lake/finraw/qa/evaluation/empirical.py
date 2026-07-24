@@ -13,12 +13,30 @@ from typing import Any, Callable
 
 from finraw.db.client import DBProtocol
 from finraw.llm_client import OpenAICompatibleJsonClient
+from finraw.qa.answer_schema_registry import (
+    SUPPORTED_ANSWER_TYPES,
+    canonical_gold,
+    answer_schema_manifest,
+    match_answer as registry_match_answer,
+    model_contract as registry_model_contract,
+    normalize_model_answer as registry_normalize_model_answer,
+    resolve_answer_schema,
+    rubric_contract as registry_rubric_contract,
+)
 from finraw.qa.evaluation.input_views import load_evaluation_bundles
 from finraw.qa.evaluation.schema import ensure_evaluation_schema
 from finraw.qa.store import insert_rows, json_value
 
 
-EMPIRICAL_SYSTEM_VERSION = "financial_qa_empirical.v1.0"
+EMPIRICAL_SYSTEM_VERSION = "financial_qa_empirical.v3.0"
+
+EMPIRICAL_MODES = frozenset({
+    "gold_plan_given",
+    "evidence_only",
+    "evidence_pool",
+    "retrieval_tool",
+})
+MODE_ALIASES = {"evidence_given": "gold_plan_given"}
 
 RUN_COLUMNS = [
     "empirical_run_id",
@@ -42,10 +60,21 @@ TRIAL_COLUMNS = [
     "provider",
     "requested_model",
     "response_model",
+    "trial_mode",
+    "selected_evidence_ids",
+    "tool_trace",
     "answer_text",
     "answer_payload",
     "match_status",
     "match_details",
+    "api_call_success",
+    "json_contract_success",
+    "semantic_answer_correct",
+    "unit_currency_correct",
+    "row_completeness",
+    "order_correct",
+    "evidence_selection_correct",
+    "end_to_end_correct",
     "prompt_hash",
     "response_hash",
     "telemetry",
@@ -64,18 +93,19 @@ def run_empirical_model_evaluation(
     qa_build_ids: list[str],
     *,
     limit: int = 12,
+    mode: str | None = None,
     output_dir: str | None = None,
     client_factory: ClientFactory | None = None,
 ) -> dict[str, Any]:
-    """Run L3 model trials without letting one model judge another."""
+    """Run one pinned L3 evaluation mode without model-as-judge scoring."""
     ensure_evaluation_schema(db)
     quality = dict((config.get("qa") or {}).get("quality_evaluation") or {})
     empirical = dict(quality.get("empirical_evaluation") or {})
     if not empirical.get("enabled", False):
-        raise RuntimeError("qa.quality_evaluation.empirical_evaluation.enabled is false")
-    mode = str(empirical.get("mode") or "evidence_given")
-    if mode != "evidence_given":
-        raise ValueError(f"Unsupported empirical evaluation mode: {mode}")
+        raise RuntimeError(
+            "qa.quality_evaluation.empirical_evaluation.enabled is false"
+        )
+    trial_mode = _normalize_mode(mode or empirical.get("mode"))
     model_specs = [dict(item) for item in empirical.get("models") or []]
     if len(model_specs) < 2:
         raise RuntimeError("L3 empirical evaluation requires at least two models")
@@ -100,7 +130,9 @@ def run_empirical_model_evaluation(
         str(empirical.get("sample_seed") or "qa-l3-v1"),
     )
     if not selected:
-        raise RuntimeError("No supported deterministic QA samples are available for L3")
+        raise RuntimeError(
+            "No supported deterministic QA samples are available for L3"
+        )
 
     run_id = _new_run_id()
     model_manifest = {
@@ -110,7 +142,9 @@ def run_empirical_model_evaluation(
     sample_manifest = {
         "sample_count": len(selected),
         "qa_ids": [str(bundle["qa_id"]) for bundle in selected],
-        "strata": dict(sorted(Counter(_stratum(bundle) for bundle in selected).items())),
+        "strata": dict(
+            sorted(Counter(_stratum(bundle) for bundle in selected).items())
+        ),
     }
     insert_rows(
         db,
@@ -119,7 +153,7 @@ def run_empirical_model_evaluation(
             {
                 "empirical_run_id": run_id,
                 "qa_build_ids": qa_build_ids,
-                "evaluation_mode": mode,
+                "evaluation_mode": trial_mode,
                 "model_manifest": model_manifest,
                 "sample_manifest": sample_manifest,
                 "config_hash": _hash(_redact_model_spec(empirical)),
@@ -130,6 +164,8 @@ def run_empirical_model_evaluation(
                     "empirical_system_version": EMPIRICAL_SYSTEM_VERSION,
                     "scoring_owner": "deterministic_gold_rubric",
                     "model_as_judge": False,
+                    "answer_schema_manifest": answer_schema_manifest(),
+                    "mode_contract": _mode_contract(trial_mode),
                 },
             }
         ],
@@ -137,78 +173,145 @@ def run_empirical_model_evaluation(
         {"qa_build_ids", "model_manifest", "sample_manifest", "notes"},
     )
 
-    evidence_by_qa = {
+    gold_evidence = {
         str(bundle["qa_id"]): _load_evidence_facts(
-            db, bundle["candidate"].get("source_fact_ids") or []
+            db,
+            str(bundle["qa_build_id"]),
+            bundle["candidate"].get("source_fact_ids") or [],
         )
         for bundle in selected
     }
+    prompt_evidence = {}
+    for bundle in selected:
+        qa_id = str(bundle["qa_id"])
+        rows = list(gold_evidence[qa_id])
+        if trial_mode == "evidence_pool":
+            rows.extend(
+                _load_distractor_facts(
+                    db,
+                    bundle,
+                    {str(row["fact_id"]) for row in rows},
+                    int(empirical.get("distractor_count") or 8),
+                    str(empirical.get("sample_seed") or "qa-l3-v1"),
+                )
+            )
+            rows.sort(
+                key=lambda row: _hash(
+                    (
+                        empirical.get("sample_seed") or "qa-l3-v1",
+                        qa_id,
+                        row.get("fact_id"),
+                    )
+                )
+            )
+        prompt_evidence[qa_id] = rows
+
     tasks = [(bundle, spec) for bundle in selected for spec in model_specs]
     max_workers = max(int(empirical.get("maximum_concurrency") or 2), 1)
     factory = client_factory or OpenAICompatibleJsonClient
 
-    def invoke(bundle: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+    def invoke(
+        bundle: dict[str, Any], spec: dict[str, Any]
+    ) -> dict[str, Any]:
+        qa_id = str(bundle["qa_id"])
         role = str(spec.get("model_role") or spec.get("model") or "model")
         model_config = {**dict(quality.get("llm") or {}), **spec}
         model_config["auto_select_model"] = False
         model_config["fallback_models"] = []
         model_config["maximum_model_attempts"] = 1
         prompt = _build_empirical_prompt(
-            bundle, evidence_by_qa[str(bundle["qa_id"])]
+            bundle,
+            prompt_evidence[qa_id],
+            trial_mode,
         )
         trial_id = "qaempiricaltrial_" + _hash(
-            (run_id, bundle["qa_id"], role)
+            (run_id, qa_id, role, trial_mode)
         )[:24]
+        state: dict[str, Any] = {
+            "api_call_success": False,
+            "json_contract_success": False,
+            "selected_evidence_ids": [],
+            "tool_trace": [],
+            "telemetry": {},
+        }
         try:
-            maximum_attempts = max(
-                int(empirical.get("max_contract_attempts") or 2), 1
-            )
             client = factory(model_config)
-            failures = []
-            for attempt in range(1, maximum_attempts + 1):
-                try:
-                    attempt_prompt = _contract_repair_prompt(prompt, failures)
-                    completion = client.complete_json(attempt_prompt, temperature=0.0)
-                    answer_type = str(bundle["sample"].get("answer_type") or "")
-                    answer_text, answer_payload = _normalize_model_answer(
-                        completion.payload, answer_type
-                    )
-                    telemetry = {
-                        **dict(completion.telemetry),
-                        "contract_attempt": attempt,
-                        "contract_failure_count": len(failures),
-                    }
-                    break
-                except Exception as exc:
-                    failures.append(
-                        {
-                            "attempt": attempt,
-                            "error_type": type(exc).__name__,
-                            "message": str(exc)[:300],
-                        }
-                    )
-                    if attempt >= maximum_attempts:
-                        raise
-            matched, details = match_empirical_answer(
-                answer_type,
-                bundle["sample"].get("answer_value") or {},
-                answer_payload,
-                bundle["sample"].get("rubric") or {},
+            answer_schema = _resolved_answer_schema(bundle)
+            if trial_mode == "retrieval_tool":
+                completion_payload, telemetry = _run_retrieval_tool_loop(
+                    db,
+                    client,
+                    bundle,
+                    prompt,
+                    empirical,
+                    state,
+                )
+            else:
+                completion_payload, telemetry = _complete_answer_contract(
+                    client,
+                    prompt,
+                    max(int(empirical.get("max_contract_attempts") or 2), 1),
+                    state,
+                    answer_schema,
+                    trial_mode == "evidence_pool",
+                )
+            state["telemetry"] = telemetry
+            selected_evidence_ids = _selected_evidence_ids(
+                completion_payload,
+                required=trial_mode in {"evidence_pool", "retrieval_tool"},
             )
+            answer_text, answer_payload = registry_normalize_model_answer(
+                completion_payload,
+                answer_schema,
+            )
+            state["json_contract_success"] = True
+            state["selected_evidence_ids"] = selected_evidence_ids
+            rubric = bundle["sample"].get("rubric") or {}
+            expected = bundle["sample"].get("answer_value") or {}
+            matched, details = registry_match_answer(
+                answer_schema,
+                expected,
+                answer_payload,
+                rubric,
+            )
+            component_scores = _component_scores(
+                answer_schema,
+                expected,
+                answer_payload,
+                rubric,
+                details,
+                trial_mode,
+                set(
+                    str(item)
+                    for item in bundle["candidate"].get("source_fact_ids") or []
+                ),
+                set(selected_evidence_ids),
+                api_call_success=True,
+                json_contract_success=True,
+            )
+            details = {
+                **dict(details),
+                "component_scores": component_scores,
+            }
             return {
                 "trial_id": trial_id,
                 "empirical_run_id": run_id,
                 "qa_build_id": bundle["qa_build_id"],
-                "qa_id": bundle["qa_id"],
+                "qa_id": qa_id,
                 "model_role": role,
-                "provider": telemetry.get("provider") or model_config.get("provider"),
+                "provider": telemetry.get("provider")
+                or model_config.get("provider"),
                 "requested_model": model_config.get("model"),
                 "response_model": telemetry.get("response_model")
                 or telemetry.get("model_selected"),
+                "trial_mode": trial_mode,
+                "selected_evidence_ids": selected_evidence_ids,
+                "tool_trace": state["tool_trace"],
                 "answer_text": answer_text,
                 "answer_payload": answer_payload,
                 "match_status": "passed" if matched else "failed",
                 "match_details": details,
+                **component_scores,
                 "prompt_hash": _hash(prompt),
                 "response_hash": telemetry.get("response_hash"),
                 "telemetry": telemetry,
@@ -217,20 +320,36 @@ def run_empirical_model_evaluation(
                 "created_at": _now(),
             }
         except Exception as exc:
-            telemetry = dict(getattr(exc, "telemetry", {}) or {})
+            telemetry = {
+                **dict(state.get("telemetry") or {}),
+                **dict(getattr(exc, "telemetry", {}) or {}),
+            }
+            component_scores = _failed_component_scores(
+                trial_mode,
+                bool(state["api_call_success"]),
+                bool(state["json_contract_success"]),
+            )
             return {
                 "trial_id": trial_id,
                 "empirical_run_id": run_id,
                 "qa_build_id": bundle["qa_build_id"],
-                "qa_id": bundle["qa_id"],
+                "qa_id": qa_id,
                 "model_role": role,
-                "provider": telemetry.get("provider") or model_config.get("provider"),
+                "provider": telemetry.get("provider")
+                or model_config.get("provider"),
                 "requested_model": model_config.get("model"),
                 "response_model": telemetry.get("response_model"),
+                "trial_mode": trial_mode,
+                "selected_evidence_ids": state["selected_evidence_ids"],
+                "tool_trace": state["tool_trace"],
                 "answer_text": "",
                 "answer_payload": {},
                 "match_status": "not_scored",
-                "match_details": {},
+                "match_details": {
+                    "contract_error": str(exc)[:500],
+                    "component_scores": component_scores,
+                },
+                **component_scores,
                 "prompt_hash": _hash(prompt),
                 "response_hash": telemetry.get("response_hash"),
                 "telemetry": telemetry,
@@ -244,7 +363,10 @@ def run_empirical_model_evaluation(
         trials = [invoke(bundle, spec) for bundle, spec in tasks]
     else:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(invoke, bundle, spec) for bundle, spec in tasks]
+            futures = [
+                executor.submit(invoke, bundle, spec)
+                for bundle, spec in tasks
+            ]
             for future in as_completed(futures):
                 trials.append(future.result())
     insert_rows(
@@ -252,19 +374,34 @@ def run_empirical_model_evaluation(
         "qa_empirical_model_trials",
         trials,
         TRIAL_COLUMNS,
-        {"answer_payload", "match_details", "telemetry"},
+        {
+            "selected_evidence_ids",
+            "tool_trace",
+            "answer_payload",
+            "match_details",
+            "telemetry",
+        },
     )
-    failed_calls = sum(row["status"] != "succeeded" for row in trials)
+    failed_trials = sum(
+        not row["json_contract_success"] for row in trials
+    )
     db.execute(
         "UPDATE qa_empirical_runs SET status = ?, completed_at = ? "
         "WHERE empirical_run_id = ?",
-        ("completed" if failed_calls == 0 else "partial", _now(), run_id),
+        (
+            "completed" if failed_trials == 0 else "partial",
+            _now(),
+            run_id,
+        ),
     )
     return build_empirical_report(db, run_id, output_dir=output_dir)
 
 
 def build_empirical_report(
-    db: DBProtocol, empirical_run_id: str, *, output_dir: str | None = None
+    db: DBProtocol,
+    empirical_run_id: str,
+    *,
+    output_dir: str | None = None,
 ) -> dict[str, Any]:
     ensure_evaluation_schema(db)
     run_raw = db.fetchone(
@@ -281,6 +418,9 @@ def build_empirical_report(
         "notes": {},
     }.items():
         run[key] = json_value(run.get(key), default)
+    run_version = str(
+        (run.get("notes") or {}).get("empirical_system_version") or "legacy"
+    )
     trials = []
     for raw in db.fetchall(
         "SELECT * FROM qa_empirical_model_trials WHERE empirical_run_id = ? "
@@ -289,26 +429,24 @@ def build_empirical_report(
     ):
         row = dict(raw)
         for key, default in {
+            "selected_evidence_ids": [],
+            "tool_trace": [],
             "answer_payload": {},
             "match_details": {},
             "telemetry": {},
         }.items():
             row[key] = json_value(row.get(key), default)
+        if run_version != EMPIRICAL_SYSTEM_VERSION:
+            row = _infer_legacy_trial_metrics(row, run["evaluation_mode"])
         trials.append(row)
+
     dimensions = _trial_dimensions(db, trials)
     per_model: dict[str, dict[str, Any]] = {}
     for role in sorted({str(row["model_role"]) for row in trials}):
         rows = [row for row in trials if str(row["model_role"]) == role]
-        succeeded = [row for row in rows if row["status"] == "succeeded"]
         per_model[role] = {
             "requested_model": rows[0].get("requested_model") if rows else None,
-            "trial_count": len(rows),
-            "call_success_count": len(succeeded),
-            "call_success_rate": _rate(len(succeeded), len(rows)),
-            "answer_pass_count": sum(row["match_status"] == "passed" for row in rows),
-            "answer_pass_rate": _rate(
-                sum(row["match_status"] == "passed" for row in rows), len(succeeded)
-            ),
+            **_trial_metric_summary(rows),
             "total_tokens": _sum_telemetry(rows, "total_tokens"),
             "estimated_cost": _sum_telemetry(rows, "estimated_cost"),
             "fallback_count": sum(
@@ -317,29 +455,47 @@ def build_empirical_report(
             ),
             "accuracy_slices": _accuracy_slices(rows, dimensions),
         }
+
     by_qa: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in trials:
         by_qa[str(row["qa_id"])].append(row)
     disagreement_count = sum(
-        len({row["match_status"] for row in rows if row["status"] == "succeeded"}) > 1
+        len(
+            {
+                bool(row.get("end_to_end_correct"))
+                for row in rows
+                if row.get("api_call_success")
+            }
+        )
+        > 1
         for rows in by_qa.values()
     )
+    mode = _normalize_mode(run["evaluation_mode"])
     report = {
         "empirical_run_id": empirical_run_id,
         "qa_build_ids": run["qa_build_ids"],
-        "evaluation_mode": run["evaluation_mode"],
+        "evaluation_mode": mode,
+        "empirical_system_version": run_version,
+        "legacy_metric_inference": run_version != EMPIRICAL_SYSTEM_VERSION,
+        "mode_contract": _mode_contract(mode),
         "status": run["status"],
         "sample_count": int(run["sample_manifest"].get("sample_count") or 0),
         "trial_count": len(trials),
+        "overall": _trial_metric_summary(trials),
         "model_results": per_model,
         "model_disagreement_count": disagreement_count,
         "model_disagreement_rate": _rate(
-            disagreement_count, int(run["sample_manifest"].get("sample_count") or 0)
+            disagreement_count,
+            int(run["sample_manifest"].get("sample_count") or 0),
         ),
         "scoring_policy": {
             "owner": "deterministic_gold_rubric",
             "model_as_judge": False,
-            "evidence_given": True,
+            "gold_plan_given": mode == "gold_plan_given",
+            "evidence_given": mode
+            in {"gold_plan_given", "evidence_only", "evidence_pool"},
+            "distractors_given": mode == "evidence_pool",
+            "tools_enabled": mode == "retrieval_tool",
             "human_calibration_replacement": False,
         },
     }
@@ -351,173 +507,152 @@ def build_empirical_report(
         md_path = out / "qa_empirical_report.md"
         json_path.write_text(_pretty(report) + "\n", encoding="utf-8")
         trials_path.write_text(
-            "".join(_compact(row) + "\n" for row in trials), encoding="utf-8"
+            "".join(_compact(row) + "\n" for row in trials),
+            encoding="utf-8",
         )
         lines = [
             "# Financial QA L3 Empirical Evaluation",
             "",
-            f"- Run: `{empirical_run_id}`",
-            f"- Mode: `{run['evaluation_mode']}`",
-            f"- Samples: `{report['sample_count']}`",
-            f"- Trials: `{report['trial_count']}`",
-            f"- Model disagreements: `{disagreement_count}`",
+            f"- Run: {empirical_run_id}",
+            f"- Mode: {mode}",
+            f"- Samples: {report['sample_count']}",
+            f"- Trials: {report['trial_count']}",
+            f"- Contract success: "
+            f"{report['overall']['contract_success_rate']}",
+            f"- Semantic accuracy given valid contract: "
+            f"{report['overall']['semantic_accuracy_given_valid_contract']}",
+            f"- End-to-end accuracy: "
+            f"{report['overall']['end_to_end_accuracy']}",
+            f"- Model disagreements: {disagreement_count}",
             "",
             "## Models",
             "",
         ]
         for role, values in per_model.items():
             lines.append(
-                f"- `{role}`: answers `{values['answer_pass_count']} / "
-                f"{values['call_success_count']}`, tokens `{values['total_tokens']}`"
+                f"- {role}: contract={values['contract_success_rate']}, "
+                f"semantic|valid={values['semantic_accuracy_given_valid_contract']}, "
+                f"end_to_end={values['end_to_end_accuracy']}, "
+                f"tokens={values['total_tokens']}"
             )
         md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-        report["written_files"] = [str(json_path), str(md_path), str(trials_path)]
+        report["written_files"] = [
+            str(json_path),
+            str(md_path),
+            str(trials_path),
+        ]
     return report
 
 
 def match_numeric_answer(
     expected: dict[str, Any], observed: dict[str, Any], rubric: dict[str, Any]
 ) -> tuple[bool, dict[str, Any]]:
-    target = _decimal(rubric.get("target_value")) or _decimal(expected.get("value"))
-    value = _decimal(observed.get("value"))
-    if target is None or value is None:
-        return False, {"reason": "missing_numeric_value"}
-    absolute = max(
-        (_decimal(rubric.get(key)) or Decimal("0"))
-        for key in ("absolute_tolerance", "value_tolerance", "display_absolute_tolerance")
+    schema = resolve_answer_schema("numeric", {"type": "numeric"}, rubric)
+    return registry_match_answer(schema, expected, observed, rubric)
+
+
+def _resolved_answer_schema(bundle: dict[str, Any]) -> dict[str, Any]:
+    sample = bundle["sample"]
+    candidate = bundle["candidate"]
+    return resolve_answer_schema(
+        str(sample.get("answer_type") or ""),
+        candidate.get("answer_schema") or {},
+        sample.get("rubric") or {},
+        candidate.get("canonical_semantics") or {},
     )
-    if rubric.get("precision_must_match") and rubric.get(
-        "requested_decimal_places"
-    ) is not None:
-        display_tolerance = Decimal("0.5") * Decimal("1").scaleb(
-            -int(rubric["requested_decimal_places"])
-        )
-        absolute = max(absolute, display_tolerance)
-    relative = _decimal(rubric.get("relative_tolerance")) or Decimal("0")
-    tolerance = max(absolute, abs(target) * relative, Decimal("0.000001"))
-    candidates = [value]
-    if rubric.get("accept_percent_decimal_equivalence"):
-        candidates.extend([value * Decimal("100"), value / Decimal("100")])
-    error = min(abs(target - candidate) for candidate in candidates)
-    unit_expected = str(
-        rubric.get("requested_unit") or expected.get("unit") or ""
-    ).strip()
-    unit_observed = str(observed.get("unit") or "").strip()
-    currency_expected = str(
-        rubric.get("requested_currency") or expected.get("currency") or ""
-    ).strip()
-    currency_observed = str(observed.get("currency") or "").strip()
-    unit_ok = not rubric.get("unit_must_match") or _same_token(
-        unit_expected, unit_observed
-    )
-    currency_ok = not currency_expected or _same_token(
-        currency_expected, currency_observed
-    )
-    matched = error <= tolerance and unit_ok and currency_ok
-    return matched, {
-        "numeric_error": str(error),
-        "tolerance": str(tolerance),
-        "unit_match": unit_ok,
-        "currency_match": currency_ok,
-    }
 
 
 def _build_empirical_prompt(
-    bundle: dict[str, Any], evidence_facts: list[dict[str, Any]]
+    bundle: dict[str, Any],
+    evidence_facts: list[dict[str, Any]],
+    mode: str = "gold_plan_given",
 ) -> str:
+    mode = _normalize_mode(mode)
     sample = bundle["sample"]
     candidate = bundle["candidate"]
     plan = bundle["operation_plan"]
     rubric = sample.get("rubric") or {}
     answer_type = str(sample.get("answer_type") or "")
-    request = {
-        "task": "Answer the financial question using only the supplied evidence.",
+    answer_schema = _resolved_answer_schema(bundle)
+    output_contract = registry_model_contract(answer_schema)
+    if mode in {"evidence_pool", "retrieval_tool"}:
+        output_contract = {
+            **output_contract,
+            "selected_evidence_ids": [
+                "exact fact_id values actually used in the answer"
+            ],
+        }
+    request: dict[str, Any] = {
+        "task": _mode_contract(mode)["task"],
+        "evaluation_mode": mode,
         "question": sample.get("question"),
         "answer_type": answer_type,
-        "evidence_facts": evidence_facts,
-        "provenance_context": {
+        "answer_schema": answer_schema,
+        "output_contract": output_contract,
+        "rubric_contract": registry_rubric_contract(answer_schema, rubric),
+        "rules": [
+            "Return one JSON object only.",
+            "Follow the requested precision in answer_text and answer_payload.",
+            "Keep numeric values as strings without thousands separators.",
+            "Use exact identifiers returned in evidence or tool results.",
+            "Do not return internal reasoning text.",
+        ],
+    }
+    if mode in {"gold_plan_given", "evidence_only", "evidence_pool"}:
+        request["evidence_facts"] = evidence_facts
+        request["provenance_context"] = {
             "raw_object_ids": candidate.get("raw_object_ids") or [],
             "source_document_ids": candidate.get("source_document_ids") or [],
-        },
-        "operation_plan": [
+        }
+        request["rules"].append(
+            "Do not introduce facts not present in the supplied evidence."
+        )
+    if mode == "gold_plan_given":
+        request["operation_plan"] = [
             {
                 "operator": step.get("operator"),
                 "params": step.get("params") or {},
             }
             for step in (plan.get("operator_dag") or {}).get("operators", [])
-        ],
-        "output_contract": {
-            "answer_text": "brief final answer in the question language",
-            "answer_payload": _answer_payload_contract(answer_type, rubric),
-        },
-        "rules": [
-            "Return one JSON object only.",
-            "Do not introduce facts not present in evidence_facts or provenance_context.",
-            "Follow the requested precision in answer_text and answer_payload.",
-            "Keep numeric values as strings without thousands separators.",
-            "Use exact entity_id and raw_object_id identifiers from the evidence.",
-            "Do not return internal lineage, input fact IDs, or reasoning text.",
-        ],
-    }
-    return "Solve this evidence-given financial QA item.\n" + json.dumps(
-        request, ensure_ascii=False, sort_keys=True, default=str
+        ]
+    elif mode == "evidence_only":
+        request["rules"].append(
+            "Choose and execute the required calculation method yourself."
+        )
+    elif mode == "evidence_pool":
+        request["rules"].extend(
+            [
+                "The evidence pool contains distractors.",
+                "Select only evidence needed for the answer.",
+                "selected_evidence_ids must exactly list the facts used.",
+            ]
+        )
+    elif mode == "retrieval_tool":
+        request["available_tools"] = _tool_contracts()
+        request["rules"].extend(
+            [
+                "No evidence is supplied initially.",
+                "Use registered tools to retrieve evidence before answering.",
+                "Return a tool call as action=tool_call, tool, and arguments.",
+                "Return the final answer with action=final and "
+                "selected_evidence_ids.",
+            ]
+        )
+    return "Solve this financial QA trial.\n" + json.dumps(
+        request,
+        ensure_ascii=False,
+        sort_keys=True,
+        default=str,
     )
 
 
 def _answer_payload_contract(
     answer_type: str, rubric: dict[str, Any]
 ) -> dict[str, Any]:
-    unit = rubric.get("requested_unit") or "unit stated in question"
-    currency = rubric.get("requested_currency") or None
-    if answer_type == "numeric":
-        return {"value": "numeric string", "unit": unit, "currency": currency}
-    if answer_type == "comparison":
-        return {
-            "winner_id": "exact evidence entity_id or metric_id",
-            "relation": "greater, less, or equal",
-            "difference": "non-negative numeric string",
-            "rows": [{"id": "entity_id or metric_id", "value": "numeric string"}],
-            "unit": unit,
-            "currency": currency,
-        }
-    if answer_type == "period_and_value":
-        return {
-            "result_period": "year, quarter, month, or date",
-            "value": "numeric string",
-            "unit": unit,
-            "currency": currency,
-        }
-    if answer_type in {"period_metric_lookup", "period_metric_provenance"}:
-        contract = {
-            "result_period": "selected period",
-            "primary_value": "numeric string",
-            "secondary_value": "numeric string",
-            "primary_unit": unit,
-            "secondary_unit": unit,
-            "currency": currency,
-        }
-        if answer_type == "period_metric_provenance":
-            contract["raw_object_ids"] = ["exact raw_object_id"]
-        return contract
-    if answer_type == "ranked_table":
-        row = {"rank": "integer", "entity_id": "exact entity_id", "value": "numeric string"}
-    elif answer_type in {"multi_metric_ranked_table", "filtered_rank_followup"}:
-        row = {
-            "rank": "integer",
-            "entity_id": "exact entity_id",
-            "primary_value": "numeric string",
-            "secondary_value": "numeric string",
-        }
-    elif answer_type == "screening_table":
-        row = {
-            "entity_id": "exact entity_id",
-            "revenue_growth_pct": "numeric string",
-            "net_margin_pct": "numeric string",
-            "debt_ratio_pct": "numeric string",
-        }
-    else:
-        return {"value": "answer value", "unit": unit, "currency": currency}
-    return {"table": [row], "unit": unit, "currency": currency}
+    schema = resolve_answer_schema(
+        answer_type, {"type": answer_type}, rubric
+    )
+    return registry_model_contract(schema)["answer_payload"]
 
 
 def _contract_repair_prompt(
@@ -538,22 +673,8 @@ def _contract_repair_prompt(
 def _normalize_model_answer(
     payload: dict[str, Any], answer_type: str
 ) -> tuple[str, dict[str, Any]]:
-    if not isinstance(payload, dict):
-        raise ValueError("Model answer must be a JSON object")
-    answer_text = str(payload.get("answer_text") or "").strip()
-    answer_payload = payload.get("answer_payload")
-    if not answer_text or not isinstance(answer_payload, dict):
-        raise ValueError("Model answer requires answer_text and answer_payload")
-    if answer_type == "numeric" and _decimal(answer_payload.get("value")) is None:
-        raise ValueError("numeric answer_payload.value must be numeric")
-    if answer_type in {
-        "ranked_table",
-        "multi_metric_ranked_table",
-        "screening_table",
-        "filtered_rank_followup",
-    } and not isinstance(answer_payload.get("table"), list):
-        raise ValueError("table answer requires answer_payload.table")
-    return answer_text, answer_payload
+    schema = resolve_answer_schema(answer_type, {"type": answer_type}, {})
+    return registry_normalize_model_answer(payload, schema)
 
 
 def match_empirical_answer(
@@ -562,94 +683,15 @@ def match_empirical_answer(
     observed: dict[str, Any],
     rubric: dict[str, Any],
 ) -> tuple[bool, dict[str, Any]]:
-    if answer_type == "numeric":
-        return match_numeric_answer(expected, observed, rubric)
-    checks: dict[str, bool] = {}
-    if answer_type == "comparison":
-        checks["winner"] = str(observed.get("winner_id")) == str(
-            rubric.get("winner_id") or expected.get("winner_id")
-        )
-        checks["relation"] = str(observed.get("relation")) == str(
-            rubric.get("relation") or expected.get("relation")
-        )
-        checks["difference"] = _numeric_field_match(
-            rubric.get("difference") or expected.get("difference"),
-            observed.get("difference"),
-            rubric,
-        )
-        checks["rows"] = _table_match(
-            rubric.get("target_rows") or expected.get("rows") or [],
-            observed.get("rows") or [],
-            rubric,
-        )
-    elif answer_type == "period_and_value":
-        checks["period"] = _period_match(
-            rubric.get("target_period") or expected.get("result_period"), observed
-        )
-        checks["value"] = _numeric_field_match(
-            rubric.get("target_value") or expected.get("value"),
-            observed.get("value"),
-            rubric,
-        )
-    elif answer_type in {"period_metric_lookup", "period_metric_provenance"}:
-        checks["period"] = _period_match(
-            rubric.get("target_period")
-            or expected.get("result_period")
-            or expected.get("period"),
-            observed,
-        )
-        checks["primary_value"] = _numeric_field_match(
-            rubric.get("primary_value") or expected.get("primary_value"),
-            observed.get("primary_value"),
-            rubric,
-        )
-        checks["secondary_value"] = _numeric_field_match(
-            rubric.get("secondary_value")
-            or expected.get("secondary_value")
-            or expected.get("value"),
-            observed.get("secondary_value")
-            if observed.get("secondary_value") is not None
-            else observed.get("value"),
-            rubric,
-        )
-        if answer_type == "period_metric_provenance":
-            checks["raw_object_ids"] = set(
-                str(item) for item in expected.get("raw_object_ids") or []
-            ) == set(str(item) for item in observed.get("raw_object_ids") or [])
-    elif answer_type in {
-        "ranked_table",
-        "multi_metric_ranked_table",
-        "screening_table",
-        "filtered_rank_followup",
-    }:
-        target = rubric.get("target_rows")
-        if target is None:
-            target = (rubric.get("target_answer") or {}).get("table")
-        if target is None:
-            target = expected.get("table") or []
-        checks["table"] = _table_match(
-            target, observed.get("table") or [], rubric
-        )
-    else:
-        return False, {"reason": f"unsupported_answer_type:{answer_type}"}
-    checks["unit"] = _unit_contract_match(expected, observed, rubric)
-    passed = all(checks.values())
-    return passed, {"checks": checks}
+    schema = resolve_answer_schema(
+        answer_type, {"type": answer_type}, rubric
+    )
+    return registry_match_answer(schema, expected, observed, rubric)
 
 
 def _answer_contract_supported(sample: dict[str, Any]) -> bool:
     answer_type = str(sample.get("answer_type") or "")
-    return answer_type in {
-        "numeric",
-        "comparison",
-        "period_and_value",
-        "period_metric_lookup",
-        "period_metric_provenance",
-        "ranked_table",
-        "multi_metric_ranked_table",
-        "screening_table",
-        "filtered_rank_followup",
-    }
+    return answer_type in SUPPORTED_ANSWER_TYPES
 
 
 def _numeric_tolerance(target: Decimal, rubric: dict[str, Any]) -> Decimal:
@@ -757,24 +799,741 @@ def _unit_contract_match(
     return any(_same_token(requested, str(item or "")) for item in candidates)
 
 
-def _load_evidence_facts(db: DBProtocol, fact_ids: list[str]) -> list[dict[str, Any]]:
+def _load_evidence_facts(
+    db: DBProtocol, qa_build_id: str, fact_ids: list[str]
+) -> list[dict[str, Any]]:
     if not fact_ids:
         return []
+    build_raw = db.fetchone(
+        "SELECT fact_build_id, entity_build_id, metric_build_id, "
+        "source_definition_build_id FROM qa_builds WHERE qa_build_id = ?",
+        (qa_build_id,),
+    )
+    if not build_raw:
+        raise RuntimeError(f"Unknown QA build for evidence loading: {qa_build_id}")
+    build = dict(build_raw)
+    required = (
+        "fact_build_id",
+        "entity_build_id",
+        "metric_build_id",
+        "source_definition_build_id",
+    )
+    missing = [key for key in required if not build.get(key)]
+    if missing:
+        raise RuntimeError(
+            f"QA build {qa_build_id} is missing pinned evidence builds: {missing}"
+        )
     placeholders = ",".join("?" for _ in fact_ids)
     rows = db.fetchall(
-        "SELECT facts.fact_id, facts.entity_id, entities.canonical_name AS entity_name, "
-        "facts.metric_id, metrics.canonical_name AS metric_name, facts.normalized_value, "
+        "SELECT facts.fact_id, facts.entity_id, "
+        "entities.canonical_name AS entity_name, facts.metric_id, "
+        "metrics.canonical_name AS metric_name, facts.normalized_value, "
         "facts.normalized_unit, facts.normalized_currency, facts.period_start, "
-        "facts.period_end, facts.fiscal_year, facts.fiscal_quarter, facts.as_of_date, "
-        "facts.source_id, facts.source_definition_id, facts.raw_object_id FROM standardized_facts facts "
-        "LEFT JOIN canonical_entities entities ON entities.entity_id = facts.entity_id "
-        "LEFT JOIN metrics ON metrics.metric_id = facts.metric_id "
-        f"WHERE facts.fact_id IN ({placeholders}) "
+        "facts.period_end, facts.fiscal_year, facts.fiscal_quarter, "
+        "facts.as_of_date, facts.source_id, facts.source_definition_id, "
+        "definitions.definition_text AS source_definition_text, "
+        "definitions.comparability_level AS source_definition_comparability, "
+        "facts.raw_object_id, facts.build_id AS fact_build_id, "
+        "entities.build_id AS entity_build_id, metrics.build_id AS metric_build_id, "
+        "definitions.build_id AS source_definition_build_id "
+        "FROM standardized_facts facts "
+        "LEFT JOIN canonical_entities entities "
+        "ON entities.entity_id = facts.entity_id AND entities.build_id = ? "
+        "LEFT JOIN metrics "
+        "ON metrics.metric_id = facts.metric_id AND metrics.build_id = ? "
+        "LEFT JOIN source_metric_definitions definitions "
+        "ON definitions.definition_id = facts.source_definition_id "
+        "AND definitions.build_id = ? "
+        f"WHERE facts.fact_id IN ({placeholders}) AND facts.build_id = ? "
         "ORDER BY facts.entity_id, facts.metric_id, facts.period_end, facts.fact_id",
-        tuple(fact_ids),
+        (
+            build["entity_build_id"],
+            build["metric_build_id"],
+            build["source_definition_build_id"],
+            *fact_ids,
+            build["fact_build_id"],
+        ),
     )
-    return [dict(row) for row in rows]
+    result = [dict(row) for row in rows]
+    observed = {str(row["fact_id"]) for row in result}
+    missing_facts = sorted(set(str(item) for item in fact_ids) - observed)
+    if missing_facts:
+        raise RuntimeError(
+            f"Pinned evidence facts not found in QA build {qa_build_id}: "
+            + ",".join(missing_facts[:20])
+        )
+    return result
 
+
+
+def _infer_legacy_trial_metrics(
+    row: dict[str, Any],
+    evaluation_mode: str,
+) -> dict[str, Any]:
+    api_success = str(row.get("status") or "") == "succeeded"
+    contract_success = api_success
+    semantic_correct = str(row.get("match_status") or "") == "passed"
+    return {
+        **row,
+        "trial_mode": _normalize_mode(evaluation_mode),
+        "selected_evidence_ids": row.get("selected_evidence_ids") or [],
+        "tool_trace": row.get("tool_trace") or [],
+        "api_call_success": api_success,
+        "json_contract_success": contract_success,
+        "semantic_answer_correct": semantic_correct,
+        "unit_currency_correct": semantic_correct,
+        "row_completeness": semantic_correct,
+        "order_correct": semantic_correct,
+        "evidence_selection_correct": None,
+        "end_to_end_correct": semantic_correct,
+    }
+
+
+def _normalize_mode(value: Any) -> str:
+    mode = str(value or "gold_plan_given").strip().casefold()
+    mode = MODE_ALIASES.get(mode, mode)
+    if mode not in EMPIRICAL_MODES:
+        raise ValueError(
+            f"Unsupported empirical evaluation mode: {mode}; "
+            f"expected one of {sorted(EMPIRICAL_MODES)}"
+        )
+    return mode
+
+
+def _mode_contract(mode: str) -> dict[str, Any]:
+    mode = _normalize_mode(mode)
+    contracts = {
+        "gold_plan_given": {
+            "label": "Mode A: Gold Plan Given",
+            "task": "Execute the supplied operation plan over the supplied evidence.",
+            "measures": ["plan_execution", "answer_contract"],
+        },
+        "evidence_only": {
+            "label": "Mode B: Evidence Only",
+            "task": "Infer the calculation method from the question and evidence.",
+            "measures": ["reasoning_program_formation", "answer_contract"],
+        },
+        "evidence_pool": {
+            "label": "Mode C: Evidence Pool",
+            "task": "Select relevant evidence from a pool with distractors and answer.",
+            "measures": [
+                "evidence_selection",
+                "reasoning_program_formation",
+                "answer_contract",
+            ],
+        },
+        "retrieval_tool": {
+            "label": "Mode D: Retrieval / Tool",
+            "task": "Use registered tools to retrieve evidence and answer the question.",
+            "measures": [
+                "tool_use",
+                "evidence_retrieval",
+                "reasoning_program_formation",
+                "answer_contract",
+            ],
+        },
+    }
+    return contracts[mode]
+
+
+def _complete_answer_contract(
+    client: OpenAICompatibleJsonClient,
+    prompt: str,
+    maximum_attempts: int,
+    state: dict[str, Any],
+    answer_schema: dict[str, Any] | None = None,
+    require_evidence_selection: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    failures = []
+    schema = answer_schema
+    for attempt in range(1, maximum_attempts + 1):
+        try:
+            attempt_prompt = _contract_repair_prompt(prompt, failures)
+            completion = client.complete_json(attempt_prompt, temperature=0.0)
+            state["api_call_success"] = True
+            state["telemetry"] = dict(completion.telemetry)
+            if schema is not None:
+                registry_normalize_model_answer(completion.payload, schema)
+            _selected_evidence_ids(
+                completion.payload,
+                required=require_evidence_selection,
+            )
+            telemetry = {
+                **dict(completion.telemetry),
+                "contract_attempt": attempt,
+                "contract_failure_count": len(failures),
+            }
+            return completion.payload, telemetry
+        except Exception as exc:
+            failures.append(
+                {
+                    "attempt": attempt,
+                    "error_type": type(exc).__name__,
+                    "message": str(exc)[:300],
+                }
+            )
+            if attempt >= maximum_attempts:
+                raise
+    raise RuntimeError("Unreachable empirical contract retry state")
+
+
+def _selected_evidence_ids(
+    payload: dict[str, Any],
+    *,
+    required: bool,
+) -> list[str]:
+    values = payload.get("selected_evidence_ids")
+    if values is None and not required:
+        return []
+    if not isinstance(values, list):
+        raise ValueError("selected_evidence_ids must be a JSON list")
+    selected = [str(item).strip() for item in values if str(item).strip()]
+    if required and not selected:
+        raise ValueError("selected_evidence_ids must be non-empty in this mode")
+    if len(selected) != len(set(selected)):
+        raise ValueError("selected_evidence_ids must not contain duplicates")
+    return selected
+
+
+def _component_scores(
+    schema: dict[str, Any],
+    expected: dict[str, Any],
+    observed: dict[str, Any],
+    rubric: dict[str, Any],
+    match_details: dict[str, Any],
+    mode: str,
+    expected_evidence_ids: set[str],
+    selected_evidence_ids: set[str],
+    *,
+    api_call_success: bool,
+    json_contract_success: bool,
+) -> dict[str, Any]:
+    semantic = _semantic_answer_correct(match_details)
+    unit_currency = _unit_currency_correct(
+        schema,
+        expected,
+        observed,
+        rubric,
+    )
+    row_complete = _row_completeness(schema, expected, observed, rubric)
+    order = _order_correct(schema, expected, observed, rubric)
+    evidence: bool | None = None
+    if mode in {"evidence_pool", "retrieval_tool"}:
+        evidence = bool(expected_evidence_ids) and (
+            selected_evidence_ids == expected_evidence_ids
+        )
+    end_to_end = all(
+        (
+            api_call_success,
+            json_contract_success,
+            semantic,
+            unit_currency,
+            row_complete,
+            order,
+            evidence is not False,
+        )
+    )
+    return {
+        "api_call_success": api_call_success,
+        "json_contract_success": json_contract_success,
+        "semantic_answer_correct": semantic,
+        "unit_currency_correct": unit_currency,
+        "row_completeness": row_complete,
+        "order_correct": order,
+        "evidence_selection_correct": evidence,
+        "end_to_end_correct": end_to_end,
+    }
+
+
+def _failed_component_scores(
+    mode: str,
+    api_call_success: bool,
+    json_contract_success: bool,
+) -> dict[str, Any]:
+    return {
+        "api_call_success": api_call_success,
+        "json_contract_success": json_contract_success,
+        "semantic_answer_correct": False,
+        "unit_currency_correct": False,
+        "row_completeness": False,
+        "order_correct": False,
+        "evidence_selection_correct": (
+            False if mode in {"evidence_pool", "retrieval_tool"} else None
+        ),
+        "end_to_end_correct": False,
+    }
+
+
+def _semantic_answer_correct(details: dict[str, Any]) -> bool:
+    if "numeric_error" in details and "tolerance" in details:
+        error = _decimal(details.get("numeric_error"))
+        tolerance = _decimal(details.get("tolerance"))
+        return bool(
+            error is not None
+            and tolerance is not None
+            and error <= tolerance
+        )
+    checks = details.get("checks")
+    if isinstance(checks, dict):
+        semantic_checks = [
+            bool(value)
+            for key, value in checks.items()
+            if key not in {"unit", "currency"}
+        ]
+        return bool(semantic_checks) and all(semantic_checks)
+    return False
+
+
+def _unit_currency_correct(
+    schema: dict[str, Any],
+    expected: dict[str, Any],
+    observed: dict[str, Any],
+    rubric: dict[str, Any],
+) -> bool:
+    gold = canonical_gold(schema, expected, rubric)
+    requested_unit = str(
+        rubric.get("requested_unit")
+        or schema.get("requested_unit")
+        or gold.get("unit")
+        or ""
+    )
+    requested_currency = str(
+        rubric.get("requested_currency")
+        or schema.get("requested_currency")
+        or gold.get("currency")
+        or ""
+    )
+    observed_units = [
+        str(observed.get(key) or "")
+        for key in ("unit", "primary_unit", "secondary_unit")
+        if observed.get(key) is not None
+    ]
+    observed_currencies = [
+        str(observed.get(key) or "")
+        for key in ("currency", "primary_currency", "secondary_currency")
+        if observed.get(key) is not None
+    ]
+    unit_ok = (
+        True
+        if not rubric.get("unit_must_match")
+        else bool(observed_units)
+        and any(_same_token(requested_unit, item) for item in observed_units)
+    )
+    currency_ok = (
+        True
+        if not requested_currency
+        else bool(observed_currencies)
+        and any(
+            _same_token(requested_currency, item)
+            for item in observed_currencies
+        )
+    )
+    return unit_ok and currency_ok
+
+
+def _table_fields(answer_type: str) -> tuple[str, ...]:
+    return {
+        "comparison": ("rows",),
+        "ranked_table": ("ranking_table",),
+        "multi_metric_ranked_table": (
+            "ranking_table",
+            "secondary_metric_table",
+        ),
+        "filtered_rank_followup": (
+            "ranking_table",
+            "followup_table",
+        ),
+        "screening_table": ("screening_table",),
+    }.get(answer_type, ())
+
+
+def _row_completeness(
+    schema: dict[str, Any],
+    expected: dict[str, Any],
+    observed: dict[str, Any],
+    rubric: dict[str, Any],
+) -> bool:
+    gold = canonical_gold(schema, expected, rubric)
+    fields = _table_fields(str(schema["type"]))
+    if not fields:
+        return True
+    for field in fields:
+        expected_rows = gold.get(field) or []
+        observed_rows = observed.get(field)
+        if not isinstance(observed_rows, list):
+            return False
+        if len(expected_rows) != len(observed_rows):
+            return False
+        for expected_row, observed_row in zip(expected_rows, observed_rows):
+            if not isinstance(observed_row, dict):
+                return False
+            if not set(expected_row).issubset(observed_row):
+                return False
+    return True
+
+
+def _order_correct(
+    schema: dict[str, Any],
+    expected: dict[str, Any],
+    observed: dict[str, Any],
+    rubric: dict[str, Any],
+) -> bool:
+    if not bool(rubric.get("order_required") or schema.get("order_required")):
+        return True
+    gold = canonical_gold(schema, expected, rubric)
+    for field in _table_fields(str(schema["type"])):
+        expected_rows = gold.get(field) or []
+        observed_rows = observed.get(field) or []
+        if len(expected_rows) != len(observed_rows):
+            return False
+        expected_order = [_row_identity(row) for row in expected_rows]
+        observed_order = [_row_identity(row) for row in observed_rows]
+        if expected_order != observed_order:
+            return False
+    return True
+
+
+def _row_identity(row: Any) -> tuple[str, ...]:
+    if not isinstance(row, dict):
+        return ("invalid",)
+    keys = [
+        key
+        for key in ("rank", "entity_id", "id", "period", "result_period")
+        if key in row
+    ]
+    return tuple(str(row.get(key)) for key in keys)
+
+
+def _trial_metric_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    count = len(rows)
+    api_count = sum(bool(row.get("api_call_success")) for row in rows)
+    contract_count = sum(
+        bool(row.get("json_contract_success")) for row in rows
+    )
+    semantic_count = sum(
+        bool(row.get("semantic_answer_correct")) for row in rows
+    )
+    end_to_end_count = sum(
+        bool(row.get("end_to_end_correct")) for row in rows
+    )
+    evidence_rows = [
+        row
+        for row in rows
+        if row.get("evidence_selection_correct") is not None
+    ]
+    evidence_count = sum(
+        bool(row.get("evidence_selection_correct")) for row in evidence_rows
+    )
+    return {
+        "trial_count": count,
+        "api_call_success_count": api_count,
+        "api_call_success_rate": _rate(api_count, count),
+        "json_contract_success_count": contract_count,
+        "contract_success_rate": _rate(contract_count, count),
+        "contract_success_given_api_rate": _rate(
+            contract_count,
+            api_count,
+        ),
+        "semantic_answer_correct_count": semantic_count,
+        "semantic_accuracy_given_valid_contract": _rate(
+            semantic_count,
+            contract_count,
+        ),
+        "unit_currency_correct_rate": _rate(
+            sum(bool(row.get("unit_currency_correct")) for row in rows),
+            contract_count,
+        ),
+        "row_completeness_rate": _rate(
+            sum(bool(row.get("row_completeness")) for row in rows),
+            contract_count,
+        ),
+        "order_correct_rate": _rate(
+            sum(bool(row.get("order_correct")) for row in rows),
+            contract_count,
+        ),
+        "evidence_selection_applicable_count": len(evidence_rows),
+        "evidence_selection_correct_rate": (
+            _rate(evidence_count, len(evidence_rows))
+            if evidence_rows
+            else None
+        ),
+        "end_to_end_correct_count": end_to_end_count,
+        "end_to_end_accuracy": _rate(end_to_end_count, count),
+        "answer_pass_count": sum(
+            row.get("match_status") == "passed" for row in rows
+        ),
+        "answer_pass_rate": _rate(
+            sum(row.get("match_status") == "passed" for row in rows),
+            contract_count,
+        ),
+    }
+
+
+def _load_distractor_facts(
+    db: DBProtocol,
+    bundle: dict[str, Any],
+    excluded_fact_ids: set[str],
+    limit: int,
+    seed: str,
+) -> list[dict[str, Any]]:
+    if limit <= 0:
+        return []
+    build = _pinned_builds(db, str(bundle["qa_build_id"]))
+    candidates = [
+        str(row["fact_id"])
+        for row in db.fetchall(
+            "SELECT fact_id FROM standardized_facts "
+            "WHERE build_id = ? AND graph_ready = ? ORDER BY fact_id LIMIT ?",
+            (
+                build["fact_build_id"],
+                True,
+                max(limit * 20, limit + len(excluded_fact_ids)),
+            ),
+        )
+        if str(row["fact_id"]) not in excluded_fact_ids
+    ]
+    candidates.sort(
+        key=lambda fact_id: _hash(
+            (seed, bundle["qa_id"], "distractor", fact_id)
+        )
+    )
+    return _load_evidence_facts(
+        db,
+        str(bundle["qa_build_id"]),
+        candidates[:limit],
+    )
+
+
+def _pinned_builds(db: DBProtocol, qa_build_id: str) -> dict[str, Any]:
+    row = db.fetchone(
+        "SELECT fact_build_id, entity_build_id, metric_build_id, "
+        "source_definition_build_id FROM qa_builds WHERE qa_build_id = ?",
+        (qa_build_id,),
+    )
+    if not row:
+        raise RuntimeError(f"Unknown QA build: {qa_build_id}")
+    return dict(row)
+
+
+def _tool_contracts() -> list[dict[str, Any]]:
+    return [
+        {
+            "name": "search_entities",
+            "arguments": {"query": "company or country name"},
+        },
+        {
+            "name": "search_metrics",
+            "arguments": {"query": "financial metric name"},
+        },
+        {
+            "name": "search_facts",
+            "arguments": {
+                "entity_id": "exact entity_id",
+                "metric_id": "exact metric_id",
+                "fiscal_year": "optional integer",
+                "period_start": "optional YYYY-MM-DD",
+                "period_end": "optional YYYY-MM-DD",
+            },
+        },
+        {
+            "name": "calculator",
+            "arguments": {
+                "operation": "difference, ratio, percent_change, or mean",
+                "values": ["numeric strings"],
+            },
+        },
+    ]
+
+
+def _run_retrieval_tool_loop(
+    db: DBProtocol,
+    client: OpenAICompatibleJsonClient,
+    bundle: dict[str, Any],
+    prompt: str,
+    empirical: dict[str, Any],
+    state: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    maximum_rounds = max(int(empirical.get("maximum_tool_rounds") or 8), 1)
+    answer_schema = _resolved_answer_schema(bundle)
+    telemetry_totals: dict[str, Any] = {}
+    for round_number in range(1, maximum_rounds + 1):
+        round_prompt = prompt
+        if state["tool_trace"]:
+            round_prompt += "\n\nTOOL TRANSCRIPT:\n" + json.dumps(
+                state["tool_trace"],
+                ensure_ascii=False,
+                sort_keys=True,
+                default=str,
+            )
+            round_prompt += (
+                "\nContinue with another registered tool call or return action=final."
+            )
+        completion = client.complete_json(round_prompt, temperature=0.0)
+        state["api_call_success"] = True
+        telemetry_totals = _merge_telemetry(
+            telemetry_totals,
+            dict(completion.telemetry),
+        )
+        state["telemetry"] = telemetry_totals
+        payload = completion.payload
+        action = str(payload.get("action") or "").strip().casefold()
+        if action == "final" or (
+            payload.get("answer_text") and payload.get("answer_payload")
+        ):
+            if not state["tool_trace"]:
+                raise ValueError(
+                    "retrieval_tool mode requires at least one executed tool call"
+                )
+            _selected_evidence_ids(payload, required=True)
+            registry_normalize_model_answer(payload, answer_schema)
+            telemetry_totals["tool_round_count"] = round_number
+            return payload, telemetry_totals
+        if action != "tool_call":
+            raise ValueError(
+                "retrieval_tool response must use action=tool_call or action=final"
+            )
+        tool_name = str(payload.get("tool") or "")
+        arguments = payload.get("arguments")
+        if not isinstance(arguments, dict):
+            raise ValueError("tool call arguments must be a JSON object")
+        result = _execute_registered_tool(
+            db,
+            str(bundle["qa_build_id"]),
+            tool_name,
+            arguments,
+        )
+        state["tool_trace"].append(
+            {
+                "round": round_number,
+                "tool": tool_name,
+                "arguments": arguments,
+                "result": result,
+            }
+        )
+    raise RuntimeError("retrieval_tool exceeded maximum_tool_rounds")
+
+
+def _execute_registered_tool(
+    db: DBProtocol,
+    qa_build_id: str,
+    tool_name: str,
+    arguments: dict[str, Any],
+) -> Any:
+    build = _pinned_builds(db, qa_build_id)
+    if tool_name == "search_entities":
+        query = str(arguments.get("query") or "").strip()
+        if not query:
+            raise ValueError("search_entities.query is required")
+        return [
+            dict(row)
+            for row in db.fetchall(
+                "SELECT entity_id, canonical_name, entity_type, market, ticker "
+                "FROM canonical_entities WHERE build_id = ? "
+                "AND LOWER(canonical_name) LIKE ? "
+                "ORDER BY canonical_name, entity_id LIMIT 20",
+                (build["entity_build_id"], f"%{query.casefold()}%"),
+            )
+        ]
+    if tool_name == "search_metrics":
+        query = str(arguments.get("query") or "").strip()
+        if not query:
+            raise ValueError("search_metrics.query is required")
+        return [
+            dict(row)
+            for row in db.fetchall(
+                "SELECT metric_id, canonical_name, statement_type, period_type "
+                "FROM metrics WHERE build_id = ? "
+                "AND LOWER(canonical_name) LIKE ? "
+                "ORDER BY canonical_name, metric_id LIMIT 20",
+                (build["metric_build_id"], f"%{query.casefold()}%"),
+            )
+        ]
+    if tool_name == "search_facts":
+        entity_id = str(arguments.get("entity_id") or "").strip()
+        metric_id = str(arguments.get("metric_id") or "").strip()
+        if not entity_id or not metric_id:
+            raise ValueError(
+                "search_facts requires entity_id and metric_id"
+            )
+        conditions = [
+            "build_id = ?",
+            "entity_id = ?",
+            "metric_id = ?",
+            "graph_ready = ?",
+            "(is_forecast = ? OR is_forecast IS NULL)",
+        ]
+        params: list[Any] = [
+            build["fact_build_id"],
+            entity_id,
+            metric_id,
+            True,
+            False,
+        ]
+        for field in ("fiscal_year", "period_start", "period_end"):
+            value = arguments.get(field)
+            if value is not None and str(value).strip():
+                conditions.append(f"{field} = ?")
+                params.append(value)
+        rows = db.fetchall(
+            "SELECT fact_id FROM standardized_facts WHERE "
+            + " AND ".join(conditions)
+            + " ORDER BY period_end, fact_id LIMIT 100",
+            params,
+        )
+        return _load_evidence_facts(
+            db,
+            qa_build_id,
+            [str(row["fact_id"]) for row in rows],
+        )
+    if tool_name == "calculator":
+        return _calculator(arguments)
+    raise ValueError(f"Unknown retrieval tool: {tool_name}")
+
+
+def _calculator(arguments: dict[str, Any]) -> dict[str, str]:
+    operation = str(arguments.get("operation") or "").strip().casefold()
+    raw_values = arguments.get("values")
+    if not isinstance(raw_values, list) or not raw_values:
+        raise ValueError("calculator.values must be a non-empty list")
+    values = [_decimal(item) for item in raw_values]
+    if any(item is None for item in values):
+        raise ValueError("calculator.values must all be numeric")
+    numbers = [item for item in values if item is not None]
+    if operation == "difference" and len(numbers) == 2:
+        result = numbers[0] - numbers[1]
+    elif operation == "ratio" and len(numbers) == 2:
+        if numbers[1] == 0:
+            raise ValueError("calculator ratio denominator is zero")
+        result = numbers[0] / numbers[1]
+    elif operation == "percent_change" and len(numbers) == 2:
+        if numbers[0] == 0:
+            raise ValueError("calculator percent_change base is zero")
+        result = (numbers[1] - numbers[0]) / abs(numbers[0]) * Decimal("100")
+    elif operation == "mean":
+        result = sum(numbers, Decimal("0")) / Decimal(len(numbers))
+    else:
+        raise ValueError(
+            "Unsupported calculator operation or argument cardinality"
+        )
+    return {"value": format(result, "f")}
+
+
+def _merge_telemetry(
+    accumulated: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    out = {**accumulated, **current}
+    for key in (
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens",
+        "estimated_cost",
+    ):
+        if accumulated.get(key) is not None or current.get(key) is not None:
+            out[key] = float(accumulated.get(key) or 0) + float(
+                current.get(key) or 0
+            )
+    return out
 
 
 def _trial_dimensions(
@@ -813,9 +1572,10 @@ def _trial_dimensions(
 
 
 def _accuracy_slices(
-    rows: list[dict[str, Any]], dimensions: dict[str, dict[str, str]]
-) -> dict[str, dict[str, dict[str, float | int]]]:
-    output: dict[str, dict[str, dict[str, float | int]]] = {}
+    rows: list[dict[str, Any]],
+    dimensions: dict[str, dict[str, str]],
+) -> dict[str, dict[str, dict[str, Any]]]:
+    output: dict[str, dict[str, dict[str, Any]]] = {}
     for field in (
         "market_subset",
         "benchmark_task",
@@ -825,19 +1585,17 @@ def _accuracy_slices(
     ):
         grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in rows:
-            value = dimensions.get(str(row["qa_id"]), {}).get(field, "unknown")
+            value = dimensions.get(str(row["qa_id"]), {}).get(
+                field,
+                "unknown",
+            )
             grouped[value].append(row)
-        output[field] = {}
-        for value, grouped_rows in sorted(grouped.items()):
-            succeeded = [item for item in grouped_rows if item["status"] == "succeeded"]
-            passed = sum(item["match_status"] == "passed" for item in grouped_rows)
-            output[field][value] = {
-                "sample_count": len(grouped_rows),
-                "call_success_count": len(succeeded),
-                "answer_pass_count": passed,
-                "answer_accuracy": _rate(passed, len(succeeded)),
-            }
+        output[field] = {
+            value: _trial_metric_summary(grouped_rows)
+            for value, grouped_rows in sorted(grouped.items())
+        }
     return output
+
 
 def _stratified_sample(
     bundles: list[dict[str, Any]], limit: int, seed: str
