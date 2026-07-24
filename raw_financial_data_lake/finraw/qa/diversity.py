@@ -68,6 +68,8 @@ def build_qa_diversity_report(
     }
 
     semantic = funnels["eligible_candidates"]
+    generation_pipeline_counts = semantic["generation_pipeline_counts"]
+    generation_pipeline_total = sum(generation_pipeline_counts.values())
     template_counts = Counter(
         str(row.get("template_id") or "none") for row in exported_samples or samples
     )
@@ -183,6 +185,20 @@ def build_qa_diversity_report(
             "question_intent_counts": semantic["question_intent_counts"],
             "difficulty_counts": semantic["difficulty_counts"],
             "answer_type_counts": semantic["answer_type_counts"],
+            "generation_pipeline_counts": generation_pipeline_counts,
+            "generation_pipeline_ratios": {
+                name: count / generation_pipeline_total
+                if generation_pipeline_total
+                else 0.0
+                for name, count in sorted(generation_pipeline_counts.items())
+            },
+            "advanced_automatic_pipeline_ratio": (
+                generation_pipeline_counts.get("automatic_pattern_mining", 0)
+                + generation_pipeline_counts.get("typed_edge_walk", 0)
+            )
+            / generation_pipeline_total
+            if generation_pipeline_total
+            else 0.0,
             "task_counts": funnels["exported_samples"]["task_counts"],
             "split_counts": funnels["exported_samples"]["split_counts"],
             "task_pattern_entropy": semantic["pattern_entropy"],
@@ -322,6 +338,9 @@ def _funnel(
         str(row.get("pattern_id") or "legacy_fact_or_derived") for row in candidates
     )
     sequences = Counter(_operation_signature(row.get("operation_plan")) for row in candidates)
+    generation_pipelines = Counter(
+        _generation_pipeline(row) for row in candidates
+    )
     normalized_hashes = Counter(
         _plan_hash(row.get("operation_plan"), include_params=False) for row in candidates
     )
@@ -337,6 +356,7 @@ def _funnel(
         "unique_operator_dag_hashes": len(dag_hashes),
         "graph_pattern_counts": dict(sorted(pattern_counts.items())),
         "operator_sequence_counts": dict(sorted(sequences.items())),
+        "generation_pipeline_counts": dict(sorted(generation_pipelines.items())),
         "question_intent_counts": dict(
             sorted(Counter(str(row.get("question_intent") or "legacy_default") for row in candidates).items())
         ),
@@ -380,6 +400,20 @@ def _decode_candidate(row: dict[str, Any]) -> dict[str, Any]:
     }.items():
         row[key] = json_value(row.get(key), default)
     return row
+
+
+def _generation_pipeline(row: dict[str, Any]) -> str:
+    pattern_id = str(row.get("pattern_id") or "")
+    task_subtype = str(row.get("task_subtype") or "")
+    if pattern_id.startswith("walk_") or task_subtype.startswith("walk_"):
+        return "typed_edge_walk"
+    if row.get("pattern_proposal_id"):
+        return "automatic_pattern_mining"
+    if pattern_id:
+        return "static_graph_pattern"
+    if row.get("source_derived_ids"):
+        return "derived_fact_qa"
+    return "fact_qa"
 
 
 def _operation_signature(plan: dict[str, Any] | None) -> str:
@@ -449,6 +483,7 @@ def _write_report(report: dict[str, Any], output_dir: str) -> list[str]:
         f"- Unique graph patterns: `{semantic['unique_graph_patterns']}`",
         f"- Operator sequences / normalized plans / DAGs: `{semantic['unique_operation_plans']} / {semantic['unique_normalized_plans']} / {semantic['unique_operator_dags']}`",
         f"- Pattern entropy: `{semantic['task_pattern_entropy']}`",
+        f"- Advanced automatic pipeline ratio: `{semantic['advanced_automatic_pipeline_ratio']:.6f}`",
         f"- Mined candidates / proposals: `{mining['eligible_mined_candidate_count']} / {mining['unique_pattern_proposals']}`",
         f"- Average mined-pattern score: `{mining['average_pattern_score']:.6f}`",
         f"- Fact node utilization: `{usage['fact_node_utilization']:.6f}`",
@@ -462,6 +497,11 @@ def _write_report(report: dict[str, Any], output_dir: str) -> list[str]:
         lines.append(
             f"- `{name}`: candidates={funnel['candidate_count']}, samples={funnel['sample_count']}, patterns={funnel['unique_graph_patterns']}"
         )
+    lines.extend(["", "## Generation Pipeline Counts", ""])
+    lines.extend(
+        f"- `{key}`: `{value}`"
+        for key, value in semantic["generation_pipeline_counts"].items()
+    )
     lines.extend(["", "## Graph Pattern Counts", ""])
     lines.extend(f"- `{key}`: `{value}`" for key, value in semantic["graph_pattern_counts"].items())
     lines.extend(["", "## Difficulty Counts", ""])

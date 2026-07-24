@@ -8,9 +8,15 @@ import re
 from typing import Any, Iterable, Mapping
 
 from finraw.db.client import DBProtocol
+from finraw.source_registry import (
+    DISCLOSURE_DOCUMENT_SOURCE_IDS,
+    GREATER_CHINA_SOURCE_IDS,
+    INTERNATIONAL_SOURCE_IDS,
+    MULTI_REGION_SOURCE_IDS,
+)
 
 
-AUDIT_VERSION = "1.2.0"
+AUDIT_VERSION = "1.3.0"
 GREATER_CHINA = "greater_china"
 INTERNATIONAL = "international"
 MIXED_GLOBAL = "mixed_global"
@@ -32,32 +38,6 @@ GREATER_CHINA_MARKETS = {
     "HONG KONG",
     "MO",
     "MACAU",
-}
-
-GREATER_CHINA_SOURCE_IDS = {
-    "bse_disclosures",
-    "bse_market_statistics",
-    "cninfo_announcements",
-    "csi_index_publications",
-    "hkex_disclosures",
-    "nbs_official_statistics",
-    "pboc_official_statistics",
-    "safe_official_statistics",
-    "sse_market_statistics",
-    "szse_market_statistics",
-}
-INTERNATIONAL_SOURCE_IDS = {
-    "fred_observations",
-    "sec_companyfacts",
-    "sec_filings",
-    "sec_submissions",
-}
-MULTI_REGION_SOURCE_IDS = {"imf_sdmx", "worldbank_indicators"}
-DISCLOSURE_DOCUMENT_SOURCE_IDS = {
-    "bse_disclosures",
-    "cninfo_announcements",
-    "hkex_disclosures",
-    "sec_filings",
 }
 
 PROMOTED_CANDIDATE_STATUSES = {"approved_for_atomic_fact", "promoted"}

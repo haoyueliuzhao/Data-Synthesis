@@ -33,9 +33,12 @@ Official taxonomy + current taxonomy
 ```
 
 The classifier uses facts and operation plans rather than wording alone. T3 is
-triggered by multi-period, multi-entity, multi-source, complete-scope,
-multi-stage, or structured-answer requirements. Low-depth fixed historical
-queries remain T2.
+triggered by long or multi-entity/multi-period windows, multi-source joins,
+complete scopes, at least two reasoning operations after retrieval, or structured
+multi-item answers. A lookup followed by one difference, ratio, or growth
+calculation remains T2. Entity count alone is not a T3 trigger: a direct same-period comparison between
+two entities remains T2 unless another complex-investigation condition applies.
+Low-depth fixed historical queries remain T2.
 
 ## QA Chain Mapping
 
@@ -55,7 +58,7 @@ or T3 by itself.
 Each current QA receives a versioned label containing:
 
 ```text
-benchmark_task, market_subset, language, topic, subtopic
+benchmark_task, difficulty, market_subset, language, topic, subtopic
 entity_type, metric_families, source_classes
 time_basis, frequency, period_count, time_span_months
 answer_type, operation_families, operation_depth, scope_size
@@ -113,6 +116,55 @@ Two validated non-active capability builds add important structures:
 Typed Edge Walk has implementation and tests but no retained production sample,
 so its current distribution contribution is zero.
 
+## Benchmark Task and Difficulty Cross-Audit
+
+`benchmark_task` and `difficulty` describe different properties and are audited
+jointly. Every alignment report includes this matrix:
+
+| Benchmark Task | Easy | Medium | Hard | Expert | Research |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| T2 | count | count | count | count | count |
+| T3 | count | count | count | count | count |
+
+The audit computes three diagnostic ratios:
+
+```text
+T3 easy / all T3
+T2 (expert + research) / all T2
+T3 (hard + expert + research) / all T3
+```
+
+Production profiles currently require review when T3 easy exceeds 15%, T2
+expert/research exceeds 5%, T3 hard-or-higher falls below 50%, or the T3
+task share falls outside the production 40%-55% band. The report is
+marked `review_required` and identifies the generation pipelines and T3
+classification reasons contributing to suspicious cells. These diagnostics do
+not relabel samples by difficulty; they expose disagreement between the task
+classifier and the independent difficulty policy for correction.
+
+The matrix is written to `benchmark_task_difficulty_matrix.csv`, included in the
+JSON and Markdown reports, and `difficulty` is persisted in
+`qa_distribution_labels` under alignment contract v1.4.
+
+## 1,000-Item Pilot Cross-Audit
+
+Alignment v1.3 exposed 180 `T3 easy` samples, all from DerivedFact QA and all
+classified through the old `operation_depth>=2` rule. They were simple
+`lookup + one calculation` tasks rather than complex investigations.
+
+Alignment v1.4 excludes retrieval from reasoning depth. The corrected matrix is:
+
+| Benchmark Task | Easy | Medium | Hard | Expert | Research | Total |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| T2 | 678 | 0 | 45 | 0 | 0 | 723 |
+| T3 | 0 | 54 | 87 | 74 | 62 | 277 |
+
+The cross cells are now internally consistent: T3 easy is 0%, T2
+expert/research is 0%, and T3 hard-or-higher is 80.51%. However, corrected T3
+share is only 27.70%, below the 40%-55% production band. The next release must
+add genuinely complex tasks through multi-stage Automatic Mining and Typed Walk
+rather than relabeling one-step DerivedFact tasks.
+
 ## Quality Interpretation
 
 The alignment command only consumes `qa_samples.validation_status='passed'`.
@@ -146,3 +198,23 @@ Before using the gap manifest for a release:
 6. compare process metrics for source authority, evidence recall, tool choice,
    unit alignment, time alignment, calculation, and citations.
 
+
+
+## Contamination Guard 2.0
+
+污染检测不再只比较 normalized exact hash。每次对齐同时生成：
+
+1. normalized exact question hash；
+2. question skeleton hash，实体、年份、数值、单位和指标槽位被规范化；
+3. entity-metric-time slot-normalized signature；
+4. normalized Operation Program signature；
+5. 本地中英文 word/character n-gram embedding cosine near-duplicate；
+6. contamination_manual_review.jsonl 和 contamination_exclusion_manifest.jsonl。
+
+Operation Program 相同只作为风险信号，不会单独判定污染。Exact Match、完整槽位同构，
+或“高 embedding 相似度 + Operation Program 一致”会进入 blocked exclusion manifest；
+中等相似或仅骨架一致进入人工复核；即使没有样本达到阈值，也会抽取 embedding 最相近的
+Top-N 样本做校准复核，并报告相似度 P50/P90/P95/P99/Max。所有 backend、维度、阈值和
+fingerprint 版本都写入 alignment report，确保历史审计可复现。只要人工复核队列非空，训练发布门保持
+pending_manual_review；存在硬污染时为 failed。官方题目改公司、改年份或做同义改写后，
+不得作为训练样本发布。

@@ -31,13 +31,28 @@ def test_typed_walk_registry_discovers_deterministic_query_graphs():
     first = discover_query_graphs()
     second = discover_query_graphs()
 
-    assert len(first) == 3
+    assert len(first) == 5
     assert [item.query_graph_hash for item in first] == [
         item.query_graph_hash for item in second
     ]
-    assert len({item.query_graph_hash for item in first}) == 3
+    assert len({item.query_graph_hash for item in first}) == 5
     assert relation_schema_manifest()["manifest_hash"]
     assert operation_macro_manifest()["manifest_hash"]
+
+
+    graphs = {item.operation_macro_id: item for item in first}
+    assert graphs[
+        "temporal_revenue_peak_net_income_provenance"
+    ].binding_projection["context"] == {
+        "primary_metric_id": "revenue",
+        "secondary_metric_id": "net_income",
+    }
+    assert graphs[
+        "temporal_assets_peak_liabilities_provenance"
+    ].binding_projection["context"] == {
+        "primary_metric_id": "total_assets",
+        "secondary_metric_id": "total_liabilities",
+    }
 
 
 def test_typed_walk_relation_registry_is_fail_closed():

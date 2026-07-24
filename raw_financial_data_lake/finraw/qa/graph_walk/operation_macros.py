@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 
-OPERATION_MACRO_REGISTRY_VERSION = "1.0.0"
+OPERATION_MACRO_REGISTRY_VERSION = "1.1.0"
 
 
 @dataclass(frozen=True)
@@ -54,9 +54,13 @@ def _annual_metric(metric_id: str) -> tuple[tuple[str, str, Any], ...]:
     )
 
 
-MACROS: tuple[OperationMacro, ...] = (
-    OperationMacro(
-        macro_id="temporal_extreme_followup_provenance",
+def _temporal_followup_macro(
+    macro_id: str,
+    primary_metric_id: str,
+    secondary_metric_id: str,
+) -> OperationMacro:
+    return OperationMacro(
+        macro_id=macro_id,
         pattern_family="walk_temporal_followup",
         task_subtype="walk_temporal_peak_followup_provenance",
         anchor_role="entity",
@@ -67,14 +71,14 @@ MACROS: tuple[OperationMacro, ...] = (
                 "Fact",
                 "many",
                 "entity",
-                _annual_metric("revenue"),
+                _annual_metric(primary_metric_id),
             ),
             MacroRole(
                 "secondary_series",
                 "Fact",
                 "many",
                 "entity",
-                _annual_metric("net_cash_provided_by_used_in_operating_activities"),
+                _annual_metric(secondary_metric_id),
             ),
             MacroRole("raw_objects", "RawObject", "many", "secondary_series"),
         ),
@@ -103,7 +107,10 @@ MACROS: tuple[OperationMacro, ...] = (
                 {
                     "step_id": "select_followup",
                     "operator": "select_by_period",
-                    "inputs": [{"step": "find_peak"}, {"binding": "secondary_series"}],
+                    "inputs": [
+                        {"step": "find_peak"},
+                        {"binding": "secondary_series"},
+                    ],
                 },
                 {
                     "step_id": "answer",
@@ -118,13 +125,39 @@ MACROS: tuple[OperationMacro, ...] = (
         },
         answer_schema={
             "type": "period_metric_provenance",
-            "fields": ["period", "primary_value", "secondary_value", "raw_object_ids"],
+            "fields": [
+                "period",
+                "primary_value",
+                "secondary_value",
+                "raw_object_ids",
+            ],
         },
-        answer_target={"type": "period_metric_provenance", "role": "secondary_series"},
+        answer_target={
+            "type": "period_metric_provenance",
+            "role": "secondary_series",
+        },
         difficulty_base="research",
         question_intents=("peak_followup_with_source",),
         maximum_walk_depth=3,
         financial_value_score=0.96,
+    )
+
+
+MACROS: tuple[OperationMacro, ...] = (
+    _temporal_followup_macro(
+        "temporal_extreme_followup_provenance",
+        "revenue",
+        "net_cash_provided_by_used_in_operating_activities",
+    ),
+    _temporal_followup_macro(
+        "temporal_revenue_peak_net_income_provenance",
+        "revenue",
+        "net_income",
+    ),
+    _temporal_followup_macro(
+        "temporal_assets_peak_liabilities_provenance",
+        "total_assets",
+        "total_liabilities",
     ),
     OperationMacro(
         macro_id="scope_filter_rank_followup",

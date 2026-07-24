@@ -8,11 +8,12 @@ import uuid
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
 from finraw.db.client import DBProtocol
+from finraw.source_registry import GREATER_CHINA_QA_SOURCE_IDS
 from finraw.qa.binding_executor import MetricFactCache
 from finraw.kg_query import resolve_kg_build_id
 from finraw.qa.comparability import comparability_policy
@@ -46,6 +47,13 @@ from finraw.qa.pattern_mining import (
 from finraw.qa.plans import execute_plan, materialize_plan, operation_depth
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.semantic_constraints import validate_semantic_constraints
+from finraw.qa.split_leakage import (
+    audit_split_leakage,
+    cluster_id as split_cluster_id,
+    entity_ids as split_entity_ids,
+    leakage_policy,
+    strict_holdout_clusters,
+)
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
 from finraw.qa.verbalizer import (
@@ -102,7 +110,7 @@ GRAPH_SCOPE_TASKS = {
     "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.22.1"
+GENERATOR_VERSION = "4.25.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -576,7 +584,7 @@ def build_qa_candidates(
             "single_fact_greater_china",
             list(
                 policy["benchmark_alignment"].get(
-                    "greater_china_source_ids", ["worldbank_indicators"]
+                    "greater_china_source_ids", GREATER_CHINA_QA_SOURCE_IDS
                 )
             ),
             policy["quotas"]["single_fact_greater_china"],
@@ -709,7 +717,9 @@ def build_qa_candidates(
     if mined_proposals:
         for proposal in mined_proposals:
             pattern = compile_pattern_proposal(proposal)
-            proposal_limit = effective_mining_policy["max_candidates_per_proposal"]
+            proposal_limit = _proposal_candidate_limit(
+                proposal, effective_mining_policy
+            )
             compile_limit = proposal_limit
             if target_market_entity_ids is not None:
                 compile_limit = max(proposal_limit * 5, proposal_limit)
@@ -932,6 +942,7 @@ def generate_qa_samples(
     max_workers = max(int(generation_policy.get("max_workers", 1)), 1)
     max_workers = min(max_workers, max(len(candidates), 1))
     decoded_candidates = [_decode_candidate(dict(raw)) for raw in candidates]
+    _assign_candidate_languages(decoded_candidates, generation_policy)
 
     def render(candidate: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         return _sample_from_candidate(candidate, build)
@@ -973,6 +984,9 @@ def generate_qa_samples(
     persisted_task_counts = _group_counts(
         db, "qa_samples", "qa_build_id", qa_build_id, "task_subtype"
     )
+    persisted_language_counts = _group_counts(
+        db, "qa_samples", "qa_build_id", qa_build_id, "language"
+    )
     db.execute(
         "UPDATE qa_builds SET status = ?, sample_count = ? WHERE qa_build_id = ?",
         ("samples_generated", sample_count, qa_build_id),
@@ -987,6 +1001,7 @@ def generate_qa_samples(
             "generation_max_workers": max_workers,
             "task_counts": persisted_task_counts,
             "emitted_task_counts": dict(sorted(task_counts.items())),
+            "language_counts": persisted_language_counts,
         },
         output_dir,
         "qa_generation_report",
@@ -1247,6 +1262,7 @@ def split_qa_samples(
     build = _qa_build(db, qa_build_id)
     policy = build.get("notes", {}).get("policy", {})
     cutoff_year = int(policy.get("temporal_split", {}).get("cutoff_year", 2025))
+    split_leakage_policy = leakage_policy(policy)
     db.execute(
         "UPDATE qa_samples SET split = NULL WHERE qa_build_id = ? AND validation_status <> 'passed'",
         (qa_build_id,),
@@ -1256,7 +1272,11 @@ def split_qa_samples(
         for row in db.fetchall(
             """
         SELECT s.qa_id, s.qa_group_id, s.semantic_cluster_id, s.task_subtype,
-               c.entity_ids, c.time_scope
+               s.template_id, s.graph_pattern_id, s.question,
+               s.canonical_question, s.source_metadata,
+               c.pattern_id, c.pattern_proposal_id, c.proposal_semantic_id,
+               c.catalog_pattern_id, c.entity_ids, c.metric_ids, c.time_scope,
+               c.source_document_ids, c.canonical_semantics
         FROM qa_samples s JOIN qa_candidates c ON c.candidate_id = s.candidate_id
         WHERE s.qa_build_id = ? AND s.validation_status = 'passed'
         ORDER BY s.semantic_cluster_id, s.qa_group_id, s.qa_id
@@ -1277,42 +1297,70 @@ def split_qa_samples(
             "temporal_peak_followup",
         }
     )
-    split_updates: list[tuple[str, str]] = []
+    rows_by_cluster: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
-        cluster = row.get("semantic_cluster_id") or row["qa_group_id"]
-        if cluster not in cluster_split:
-            bucket = (
-                int(hashlib.sha1(cluster.encode("utf-8")).hexdigest()[:8], 16) % 100
-            )
-            entities = json_value(row.get("entity_ids"), [])
-            time_scope = json_value(row.get("time_scope"), {})
-            entity_holdout = any(
-                int(hashlib.sha1(str(entity).encode("utf-8")).hexdigest()[:8], 16) % 20
-                == 0
-                for entity in entities
-            )
-            if row["task_subtype"] in challenge:
-                split = _complex_split(bucket)
-            elif entity_holdout:
-                split = "test_entity_holdout"
-            elif _latest_year(time_scope) and _latest_year(time_scope) >= cutoff_year:
-                split = "test_temporal_holdout"
-            elif bucket < 80:
-                split = "train"
-            elif bucket < 90:
-                split = "dev"
-            else:
-                split = "test_standard"
-            cluster_split[cluster] = split
-        split_counts[cluster_split[cluster]] += 1
-        task_counts[row["task_subtype"]] += 1
-        split_updates.append((cluster_split[cluster], row["qa_id"]))
+        rows_by_cluster[split_cluster_id(row)].append(row)
+    strict_holdouts = strict_holdout_clusters(
+        rows,
+        cutoff_year=cutoff_year,
+        policy=split_leakage_policy,
+    )
+    entity_holdout_clusters = strict_holdouts["entity_holdout_clusters"]
+    temporal_holdout_clusters = strict_holdouts["temporal_holdout_clusters"]
+
+    split_updates: list[tuple[str, str]] = []
+    for cluster, cluster_rows in sorted(rows_by_cluster.items()):
+        bucket = int(hashlib.sha1(cluster.encode("utf-8")).hexdigest()[:8], 16) % 100
+        task_subtypes = {str(row["task_subtype"]) for row in cluster_rows}
+        entities = set().union(*(split_entity_ids(row) for row in cluster_rows))
+        latest = max(
+            (
+                _latest_year(json_value(row.get("time_scope"), {})) or 0
+                for row in cluster_rows
+            ),
+            default=0,
+        )
+        entity_holdout = cluster in entity_holdout_clusters
+        temporal_holdout = cluster in temporal_holdout_clusters
+        if entity_holdout:
+            split = "test_entity_holdout"
+        elif temporal_holdout:
+            split = "test_temporal_holdout"
+        elif task_subtypes & challenge:
+            split = _complex_split(bucket)
+        elif any(
+            int(hashlib.sha1(str(entity).encode("utf-8")).hexdigest()[:8], 16) % 20
+            == 0
+            for entity in entities
+        ):
+            split = "test_entity_holdout"
+        elif latest >= cutoff_year:
+            split = "test_temporal_holdout"
+        elif bucket < 80:
+            split = "train"
+        elif bucket < 90:
+            split = "dev"
+        else:
+            split = "test_standard"
+        cluster_split[cluster] = split
+        for row in cluster_rows:
+            row["split"] = split
+            split_counts[split] += 1
+            task_counts[row["task_subtype"]] += 1
+            split_updates.append((split, row["qa_id"]))
     execute_many(db, "UPDATE qa_samples SET split = ? WHERE qa_id = ?", split_updates)
+    split_leakage_audit = audit_split_leakage(rows, split_leakage_policy)
     gate_policy = policy.get("quality_gate", {})
     sample_count = int(build.get("sample_count") or 0)
     pass_rate = len(rows) / sample_count if sample_count else 0.0
     llm_generation = _qa_llm_generation_stats(db, qa_build_id, policy)
+    production_funnel = _qa_production_funnel_stats(
+        db, qa_build_id, llm_generation
+    )
     failures = []
+    for violation in split_leakage_audit["violations"]:
+        overlap_count = split_leakage_audit["checks"][violation]["overlap_count"]
+        failures.append(f"split_leakage_{violation}={overlap_count} > 0")
     minimum_rate = float(gate_policy.get("minimum_overall_pass_rate", 0.95))
     if pass_rate < minimum_rate:
         failures.append(f"pass_rate={pass_rate:.6f} < {minimum_rate:.6f}")
@@ -1321,6 +1369,109 @@ def split_qa_samples(
             failures.append(
                 f"critical_task_{task}={task_counts.get(task, 0)} < {int(minimum)}"
             )
+    pipeline_rows = [
+        dict(row)
+        for row in db.fetchall(
+            """
+            SELECT c.pattern_id, c.pattern_proposal_id, c.source_derived_ids,
+                   c.task_subtype
+            FROM qa_samples s
+            JOIN qa_candidates c ON c.candidate_id = s.candidate_id
+            WHERE s.qa_build_id = ? AND s.validation_status = 'passed'
+            ORDER BY s.qa_id
+            """,
+            (qa_build_id,),
+        )
+    ]
+    generation_pipeline_counts = Counter(
+        _candidate_generation_pipeline(row) for row in pipeline_rows
+    )
+    generation_pipeline_ratios = {
+        pipeline_name: count / len(rows) if rows else 0.0
+        for pipeline_name, count in sorted(generation_pipeline_counts.items())
+    }
+    for pipeline_name, minimum in gate_policy.get(
+        "minimum_generation_pipeline_samples", {}
+    ).items():
+        observed = generation_pipeline_counts.get(str(pipeline_name), 0)
+        if observed < int(minimum):
+            failures.append(
+                f"generation_pipeline_{pipeline_name}={observed} < {int(minimum)}"
+            )
+    for pipeline_name, minimum in gate_policy.get(
+        "minimum_generation_pipeline_ratios", {}
+    ).items():
+        observed = generation_pipeline_ratios.get(str(pipeline_name), 0.0)
+        if observed < float(minimum):
+            failures.append(
+                f"generation_pipeline_ratio_{pipeline_name}={observed:.6f} "
+                f"< {float(minimum):.6f}"
+            )
+    advanced_automatic_ratio = (
+        generation_pipeline_counts.get("automatic_pattern_mining", 0)
+        + generation_pipeline_counts.get("typed_edge_walk", 0)
+    ) / len(rows) if rows else 0.0
+    minimum_advanced_ratio = gate_policy.get(
+        "minimum_advanced_automatic_pipeline_ratio"
+    )
+    if (
+        minimum_advanced_ratio is not None
+        and advanced_automatic_ratio < float(minimum_advanced_ratio)
+    ):
+        failures.append(
+            f"advanced_automatic_pipeline_ratio={advanced_automatic_ratio:.6f} "
+            f"< {float(minimum_advanced_ratio):.6f}"
+        )
+    for pipeline_name, maximum in gate_policy.get(
+        "maximum_generation_pipeline_ratios", {}
+    ).items():
+        observed = generation_pipeline_ratios.get(str(pipeline_name), 0.0)
+        if observed > float(maximum):
+            failures.append(
+                f"generation_pipeline_ratio_{pipeline_name}={observed:.6f} "
+                f"> {float(maximum):.6f}"
+            )
+    for task, maximum in gate_policy.get("maximum_task_ratios", {}).items():
+        observed = task_counts.get(str(task), 0) / len(rows) if rows else 0.0
+        if observed > float(maximum):
+            failures.append(
+                f"task_ratio_{task}={observed:.6f} > {float(maximum):.6f}"
+            )
+    language_counts = {
+        str(item["language"]): int(item["c"])
+        for item in db.fetchall(
+            """
+            SELECT language, COUNT(*) AS c
+            FROM qa_samples
+            WHERE qa_build_id = ? AND validation_status = 'passed'
+            GROUP BY language
+            """,
+            (qa_build_id,),
+        )
+    }
+    for language, minimum in gate_policy.get("minimum_language_samples", {}).items():
+        observed = language_counts.get(str(language), 0)
+        if observed < int(minimum):
+            failures.append(f"language_{language}={observed} < {int(minimum)}")
+    for language, minimum in gate_policy.get("minimum_language_ratios", {}).items():
+        observed = language_counts.get(str(language), 0)
+        ratio = observed / len(rows) if rows else 0.0
+        if ratio < float(minimum):
+            failures.append(
+                f"language_ratio_{language}={ratio:.6f} < {float(minimum):.6f}"
+            )
+    maximum_single_language_ratio = gate_policy.get("maximum_single_language_ratio")
+    if maximum_single_language_ratio is not None and rows:
+        observed_maximum = max(language_counts.values(), default=0) / len(rows)
+        if observed_maximum > float(maximum_single_language_ratio):
+            failures.append(
+                f"maximum_single_language_ratio={observed_maximum:.6f} > "
+                f"{float(maximum_single_language_ratio):.6f}"
+            )
+    if gate_policy.get("require_multiple_languages") and len(language_counts) < 2:
+        failures.append(
+            f"language_category_count={len(language_counts)} < 2"
+        )
     difficulty_counts = {
         str(item["difficulty"]): int(item["c"])
         for item in db.fetchall(
@@ -1547,6 +1698,16 @@ def split_qa_samples(
         "graph_pattern_sample_counts": graph_sample_counts,
         "graph_pattern_candidate_stats": graph_candidate_stats,
         "difficulty_counts": difficulty_counts,
+        "language_counts": language_counts,
+        "generation_pipeline_counts": dict(
+            sorted(generation_pipeline_counts.items())
+        ),
+        "generation_pipeline_ratios": generation_pipeline_ratios,
+        "advanced_automatic_pipeline_ratio": advanced_automatic_ratio,
+        "language_ratios": {
+            language: count / len(rows) if rows else 0.0
+            for language, count in sorted(language_counts.items())
+        },
         "difficulty_ratios": {
             difficulty: count / len(rows) if rows else 0.0
             for difficulty, count in sorted(difficulty_counts.items())
@@ -1556,6 +1717,12 @@ def split_qa_samples(
         "temporal_cutoff_year": cutoff_year,
         "activation_requested": activate,
         "llm_generation": llm_generation,
+        "production_funnel": production_funnel,
+        "split_leakage": split_leakage_audit,
+        "strict_holdout_clusters": {
+            "entity": strict_holdouts["entity_holdout_cluster_count"],
+            "temporal": strict_holdouts["temporal_holdout_cluster_count"],
+        },
     }
     if gate_passed:
         db.execute(
@@ -1584,6 +1751,16 @@ def split_qa_samples(
         "temporal_cutoff_year": cutoff_year,
         "split_counts": dict(sorted(split_counts.items())),
         "task_counts": dict(sorted(task_counts.items())),
+        "language_counts": dict(sorted(language_counts.items())),
+        "generation_pipeline_counts": dict(
+            sorted(generation_pipeline_counts.items())
+        ),
+        "generation_pipeline_ratios": generation_pipeline_ratios,
+        "advanced_automatic_pipeline_ratio": advanced_automatic_ratio,
+        "language_ratios": {
+            language: count / len(rows) if rows else 0.0
+            for language, count in sorted(language_counts.items())
+        },
         "difficulty_counts": dict(sorted(difficulty_counts.items())),
         "difficulty_ratios": {
             difficulty: count / len(rows) if rows else 0.0
@@ -1592,9 +1769,264 @@ def split_qa_samples(
         "build_gate_status": "passed" if gate_passed else "failed",
         "build_gate_failures": failures,
         "llm_generation": llm_generation,
+        "production_funnel": production_funnel,
+        "split_leakage": split_leakage_audit,
+        "strict_holdout_clusters": {
+            "entity": strict_holdouts["entity_holdout_cluster_count"],
+            "temporal": strict_holdouts["temporal_holdout_cluster_count"],
+        },
         "activated": gate_passed and activate,
     }
     return _write_report(report, output_dir, "qa_split_report")
+
+
+def _proposal_candidate_limit(
+    proposal: dict[str, Any], policy: dict[str, Any]
+) -> int:
+    spec = json_value(proposal.get("pattern_spec"), {})
+    family = str(proposal.get("motif_family") or spec.get("pattern_family") or "")
+    family_limits = dict(policy.get("max_candidates_per_proposal_by_family") or {})
+    if family in family_limits:
+        return max(int(family_limits[family]), 1)
+    discovery_method = str(spec.get("discovery_method") or "")
+    task_subtype = str(spec.get("task_subtype") or "")
+    if discovery_method == "typed_walk" or task_subtype.startswith("walk_"):
+        return max(int(policy["max_candidates_per_typed_walk_proposal"]), 1)
+    return max(int(policy["max_candidates_per_proposal"]), 1)
+
+
+def _candidate_generation_pipeline(row: dict[str, Any]) -> str:
+    pattern_id = str(row.get("pattern_id") or "")
+    task_subtype = str(row.get("task_subtype") or "")
+    if pattern_id.startswith("walk_") or task_subtype.startswith("walk_"):
+        return "typed_edge_walk"
+    if row.get("pattern_proposal_id"):
+        return "automatic_pattern_mining"
+    if pattern_id:
+        return "static_graph_pattern"
+    if json_value(row.get("source_derived_ids"), []):
+        return "derived_fact_qa"
+    return "fact_qa"
+
+
+def _qa_production_funnel_stats(
+    db: DBProtocol,
+    qa_build_id: str,
+    llm_generation: dict[str, Any],
+) -> dict[str, Any]:
+    """Report every persisted production denominator instead of release-only pass rate."""
+    candidate_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT candidate_id, eligibility_status, source_fact_ids, "
+            "source_derived_ids, source_document_ids, kg_path, rejection_reasons "
+            "FROM qa_candidates WHERE qa_build_id = ? ORDER BY candidate_id",
+            (qa_build_id,),
+        )
+    ]
+    attempted = len(candidate_rows)
+    eligible_rows = [
+        row for row in candidate_rows if row.get("eligibility_status") == "eligible"
+    ]
+    eligible_ids = {str(row["candidate_id"]) for row in eligible_rows}
+    eligible = len(eligible_rows)
+
+    def binding_ready(row: dict[str, Any]) -> bool:
+        input_ids = (
+            list(json_value(row.get("source_fact_ids"), []))
+            + list(json_value(row.get("source_derived_ids"), []))
+            + list(json_value(row.get("source_document_ids"), []))
+        )
+        path = json_value(row.get("kg_path"), {})
+        evidence_nodes = path.get("evidence_node_ids") or path.get("node_ids") or []
+        return bool(input_ids) and bool(evidence_nodes)
+
+    binding_ready_count = sum(binding_ready(row) for row in eligible_rows)
+    rejection_reasons: Counter[str] = Counter()
+    for row in candidate_rows:
+        if row.get("eligibility_status") == "eligible":
+            continue
+        reasons = json_value(row.get("rejection_reasons"), [])
+        rejection_reasons.update(str(reason) for reason in reasons or ["unspecified"])
+
+    plan_statuses: dict[str, list[str]] = defaultdict(list)
+    for row in db.fetchall(
+        "SELECT candidate_id, recompute_status FROM qa_operation_plans "
+        "WHERE qa_build_id = ? ORDER BY candidate_id, plan_id",
+        (qa_build_id,),
+    ):
+        candidate_id = str(row["candidate_id"])
+        if candidate_id in eligible_ids:
+            plan_statuses[candidate_id].append(str(row["recompute_status"]))
+    operation_applicable = len(plan_statuses)
+    operation_passed = sum(
+        bool(statuses) and all(status == "passed" for status in statuses)
+        for statuses in plan_statuses.values()
+    )
+
+    sample_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT qa_id, candidate_id, validation_status, split "
+            "FROM qa_samples WHERE qa_build_id = ? ORDER BY qa_id",
+            (qa_build_id,),
+        )
+    ]
+    canonical_materialized = len(sample_rows)
+    final_validated = sum(
+        str(row.get("validation_status")) == "passed" for row in sample_rows
+    )
+    final_released = sum(
+        str(row.get("validation_status")) == "passed" and bool(row.get("split"))
+        for row in sample_rows
+    )
+
+    checks_by_qa: dict[str, dict[str, str]] = defaultdict(dict)
+    for row in db.fetchall(
+        "SELECT qa_id, check_name, check_status FROM qa_quality_checks "
+        "WHERE qa_build_id = ? ORDER BY qa_id, check_name",
+        (qa_build_id,),
+    ):
+        checks_by_qa[str(row["qa_id"])][str(row["check_name"])] = str(
+            row["check_status"]
+        )
+
+    def passed_checks(required: set[str]) -> int:
+        return sum(
+            all(checks_by_qa.get(str(row["qa_id"]), {}).get(name) == "passed" for name in required)
+            for row in sample_rows
+        )
+
+    parser_checks = {
+        "question_parser_contract",
+        "question_slot_roundtrip",
+        "question_semantic_reparse",
+    }
+    evidence_checks = {
+        "fact_membership",
+        "evidence_path",
+        "evidence_semantics",
+    }
+    parser_passed = passed_checks(parser_checks)
+    evidence_passed = passed_checks(evidence_checks)
+
+    compilation_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT discovered_binding_count, semantic_valid_binding_count, "
+            "execution_valid_binding_count, compiled_binding_count, "
+            "rejected_binding_count FROM qa_pattern_compilations "
+            "WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    ]
+    binding_compiler = {
+        "compilation_count": len(compilation_rows),
+        "discovered_binding_count": sum(
+            int(row.get("discovered_binding_count") or 0) for row in compilation_rows
+        ),
+        "semantic_valid_binding_count": sum(
+            int(row.get("semantic_valid_binding_count") or 0) for row in compilation_rows
+        ),
+        "execution_valid_binding_count": sum(
+            int(row.get("execution_valid_binding_count") or 0) for row in compilation_rows
+        ),
+        "compiled_binding_count": sum(
+            int(row.get("compiled_binding_count") or 0) for row in compilation_rows
+        ),
+        "rejected_binding_count": sum(
+            int(row.get("rejected_binding_count") or 0) for row in compilation_rows
+        ),
+    }
+    compiled_binding_rows = [
+        dict(row)
+        for row in db.fetchall(
+            "SELECT semantic_status, execution_status FROM qa_compiled_bindings "
+            "WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    ]
+    binding_compiler["persisted_binding_count"] = len(compiled_binding_rows)
+    binding_compiler["persisted_binding_passed_count"] = sum(
+        row.get("semantic_status") == "passed"
+        and row.get("execution_status") == "passed"
+        for row in compiled_binding_rows
+    )
+
+    def stage(
+        name: str,
+        count: int,
+        denominator: int,
+        denominator_stage: str,
+        *,
+        not_applicable_count: int = 0,
+    ) -> dict[str, Any]:
+        return {
+            "stage": name,
+            "count": int(count),
+            "denominator": int(denominator),
+            "denominator_stage": denominator_stage,
+            "pass_rate": count / denominator if denominator else None,
+            "drop_count": max(int(denominator) - int(count), 0),
+            "not_applicable_count": int(not_applicable_count),
+        }
+
+    llm_expected = int(llm_generation.get("expected_request_count") or 0)
+    llm_rewrite_passed = int(llm_generation.get("valid_rewrite_count") or 0)
+    stages = [
+        stage("candidate_attempted", attempted, attempted, "candidate_attempted"),
+        stage("candidate_eligible", eligible, attempted, "candidate_attempted"),
+        stage("candidate_binding_succeeded", binding_ready_count, eligible, "candidate_eligible"),
+        stage(
+            "operation_replay_passed",
+            operation_passed,
+            operation_applicable,
+            "operation_replay_applicable",
+            not_applicable_count=max(eligible - operation_applicable, 0),
+        ),
+        stage(
+            "canonical_qa_materialized",
+            canonical_materialized,
+            eligible,
+            "candidate_eligible",
+        ),
+        stage("llm_rewrite_passed", llm_rewrite_passed, llm_expected, "llm_sample_attempted"),
+        stage("parser_validation_passed", parser_passed, canonical_materialized, "canonical_qa_materialized"),
+        stage("evidence_validation_passed", evidence_passed, canonical_materialized, "canonical_qa_materialized"),
+        stage("final_validation_passed", final_validated, canonical_materialized, "canonical_qa_materialized"),
+        stage("final_released", final_released, canonical_materialized, "canonical_qa_materialized"),
+    ]
+    return {
+        "funnel_version": "qa_production_funnel.v1",
+        "scope_note": (
+            "Candidate attempted counts persisted QA candidates, not all graph roots or "
+            "motifs inspected before proposal/candidate materialization."
+        ),
+        "stages": stages,
+        "end_to_end_release_yield": final_released / attempted if attempted else 0.0,
+        "final_sample_validation_rate": (
+            final_validated / canonical_materialized if canonical_materialized else 0.0
+        ),
+        "operation_replay": {
+            "applicable_count": operation_applicable,
+            "passed_count": operation_passed,
+            "failed_count": operation_applicable - operation_passed,
+            "not_applicable_count": max(eligible - operation_applicable, 0),
+        },
+        "llm": {
+            "sample_attempted_count": llm_expected,
+            "api_request_count_including_retries": int(
+                llm_generation.get("request_count") or 0
+            ),
+            "http_success_count": int(llm_generation.get("http_success_count") or 0),
+            "rewrite_passed_count": llm_rewrite_passed,
+            "fallback_count": int(llm_generation.get("fallback_count") or 0),
+        },
+        "parser_required_checks": sorted(parser_checks),
+        "evidence_required_checks": sorted(evidence_checks),
+        "candidate_rejection_reason_counts": dict(sorted(rejection_reasons.items())),
+        "binding_compiler": binding_compiler,
+    }
 
 
 def _qa_llm_generation_stats(
@@ -2446,6 +2878,74 @@ def _graph_pattern_candidate(
     return candidate, plan
 
 
+def _assign_candidate_languages(
+    candidates: list[dict[str, Any]], generation_policy: dict[str, Any]
+) -> dict[str, int]:
+    """Assign exact, deterministic language quotas without coupling them to market."""
+    configured = generation_policy.get("language_distribution")
+    if not configured:
+        fallback = str(generation_policy.get("language") or "en").casefold()
+        configured = {fallback: 1.0}
+    if not isinstance(configured, dict) or not configured:
+        raise ValueError("question_generation.language_distribution must be a mapping")
+    supported = {"en", "zh", "mixed"}
+    weights: dict[str, float] = {}
+    for raw_language, raw_weight in configured.items():
+        language = str(raw_language).casefold()
+        if language not in supported:
+            raise ValueError(f"Unsupported question language: {language}")
+        weight = float(raw_weight)
+        if weight < 0:
+            raise ValueError("Language distribution weights cannot be negative")
+        if weight:
+            weights[language] = weight
+    if not weights:
+        raise ValueError("Language distribution must contain a positive weight")
+    count = len(candidates)
+    if not count:
+        return {}
+    weight_total = sum(weights.values())
+    exact = {
+        language: count * weight / weight_total
+        for language, weight in weights.items()
+    }
+    targets = {language: int(value) for language, value in exact.items()}
+    remainder = count - sum(targets.values())
+    for language in sorted(
+        weights,
+        key=lambda item: (-(exact[item] - targets[item]), item),
+    )[:remainder]:
+        targets[language] += 1
+
+    ordered = sorted(
+        candidates,
+        key=lambda item: (
+            _digest(
+                item.get("stable_candidate_id") or item.get("candidate_id"),
+                "question_language_assignment.v1",
+            ),
+            str(item.get("candidate_id") or ""),
+        ),
+    )
+    assigned = Counter()
+    for position, candidate in enumerate(ordered, start=1):
+        available = [
+            language
+            for language, target in targets.items()
+            if assigned[language] < target
+        ]
+        language = max(
+            available,
+            key=lambda item: (
+                targets[item] * position / count - assigned[item],
+                _digest(candidate.get("stable_candidate_id"), item),
+            ),
+        )
+        candidate["_question_language"] = language
+        assigned[language] += 1
+    return dict(sorted(assigned.items()))
+
+
 def _sample_from_candidate(
     candidate: dict[str, Any], build: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -2455,7 +2955,10 @@ def _sample_from_candidate(
     build_policy = build.get("notes", {}).get("policy", {})
     generation_policy = build_policy.get("question_generation", {})
     language = str(
-        generation_policy.get("language") or build_policy.get("language") or "en"
+        candidate.get("_question_language")
+        or generation_policy.get("language")
+        or build_policy.get("language")
+        or "en"
     ).casefold()
     slots = _localize_question_slots(
         _question_slots(candidate, entity_names, metric_names), language
@@ -2476,11 +2979,19 @@ def _sample_from_candidate(
     template_text = str(template["template_text"])
     required_slots = list(template.get("required_slots") or [])
     answer = candidate["answer_payload"]
+    output_contract = _conditional_output_contract(
+        answer,
+        str(template.get("answer_type") or ""),
+        generation_policy,
+        str(candidate.get("stable_candidate_id") or candidate["candidate_id"]),
+        candidate.get("time_scope") or semantics.get("time_scope") or {},
+    )
     output_instruction = _benchmark_output_instruction(
         answer,
         str(template.get("answer_type") or ""),
         generation_policy,
         language,
+        output_contract,
     )
     if output_instruction:
         slots["output_instruction"] = output_instruction
@@ -2499,6 +3010,7 @@ def _sample_from_candidate(
     rewrite_styles = _benchmark_rewrite_styles(candidate["task_subtype"])
     realization_policy = {
         **generation_policy,
+        "language": language,
         "style_variant_id": rewrite_styles[
             int(
                 _digest(
@@ -2520,7 +3032,9 @@ def _sample_from_candidate(
         protected_question=protected_question,
     )
     question = _normalize_question_typography(realization.question, language)
-    answer_text = _answer_text(candidate, answer, entity_names)
+    answer_text = _answer_text(
+        candidate, answer, entity_names, output_contract
+    )
     group_id = "qag_" + _digest(
         candidate["task_subtype"],
         candidate["source_fact_ids"],
@@ -2541,6 +3055,7 @@ def _sample_from_candidate(
         generation_policy,
         answer,
         str(template.get("answer_type") or ""),
+        output_contract,
     )
     sample = {
         "qa_id": qa_id,
@@ -2605,6 +3120,14 @@ def _sample_from_candidate(
                 "support_validation": parser_support,
             },
             "question_generation": realization.validation,
+            "output_contract": output_contract,
+            "language_assignment": {
+                "assignment_version": "question_language_assignment.v1",
+                "selected_language": language,
+                "configured_distribution": dict(
+                    generation_policy.get("language_distribution") or {}
+                ),
+            },
         },
         "generation_method": realization.generation_method,
         "validation_status": "pending",
@@ -4467,21 +4990,23 @@ def _localize_question_slots(slots: dict[str, str], language: str) -> dict[str, 
 
 def _normalize_question_typography(question: str, language: str) -> str:
     normalized = re.sub(r"[ \t]+", " ", question).strip()
-    if language == "zh":
+    if language in {"zh", "mixed"}:
         normalized = re.sub(r"([。！？；，])\s+", r"\1", normalized)
     return normalized
 
 
-def _benchmark_output_instruction(
+def _conditional_output_contract(
     answer: dict[str, Any],
     answer_type: str,
     generation_policy: dict[str, Any],
-    language: str,
-) -> str | None:
+    stable_seed: str,
+    time_scope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     policy = dict(generation_policy.get("benchmark_alignment") or {})
     if not policy.get("enabled"):
-        return None
-    decimal_places = max(int(policy.get("decimal_places", 2)), 0)
+        return {"enabled": False, "contract_version": "output_contract.disabled"}
+    configured = dict(policy.get("output_contract") or {})
+    mode = str(configured.get("mode") or "fixed").casefold()
     unit = str(
         answer.get("unit")
         or answer.get("secondary_unit")
@@ -4489,39 +5014,239 @@ def _benchmark_output_instruction(
         or ""
     ).strip()
     currency = str(answer.get("currency") or "").strip()
-    unit_label = unit
-    if currency and currency.casefold() not in unit.casefold():
-        unit_label = " ".join(item for item in (unit, currency) if item)
     structured = any(
         marker in answer_type
         for marker in ("table", "list", "set", "trace", "provenance")
     )
-    if language == "zh":
-        parts = []
-        if structured:
-            parts.append("使用完整表格并保持要求的顺序")
-        if policy.get("explicit_unit", True) and unit_label:
-            parts.append(f"以{_localized_unit_label(unit_label, language)}为单位")
-        if policy.get("explicit_precision", True) and not structured:
-            parts.append(f"数值保留{decimal_places}位小数")
-        return "请" + ("，".join(parts) or "按指定结构完整作答") + "。"
-    parts = []
+    base = {
+        "enabled": True,
+        "contract_version": str(
+            configured.get("version") or "conditional_output_contract.v1"
+        ),
+        "mode": mode,
+        "requested_unit": unit,
+        "requested_currency": currency,
+        "unit_required": bool(policy.get("explicit_unit", True)) and bool(unit),
+        "precision_required": False,
+        "requested_decimal_places": None,
+        "complete_output_required": structured,
+        "period_format_required": False,
+        "requested_period_format": None,
+        "entity_output": None,
+        "instruction_style": _stable_contract_choice(
+            configured.get("instruction_styles")
+            or ["direct", "compact", "formal"],
+            stable_seed,
+            "instruction_style",
+        ),
+    }
+    if mode != "conditional":
+        return {
+            **base,
+            "contract_type": "structured_table" if structured else "numeric",
+            "precision_required": bool(policy.get("explicit_precision", True))
+            and not structured,
+            "requested_decimal_places": max(
+                int(policy.get("decimal_places", 2)), 0
+            ),
+            "complete_output_required": bool(
+                policy.get("explicit_output_format", True)
+            )
+            and structured,
+        }
     if structured:
-        parts.append("a complete table in the required order")
-    if policy.get("explicit_unit", True) and unit_label:
-        localized_unit = _localized_unit_label(unit_label, language)
-        if _is_monetary_unit(unit_label):
-            parts.append(f"monetary amounts in {localized_unit}")
-        else:
-            parts.append(f"values in {localized_unit}")
-    if policy.get("explicit_precision", True) and not structured:
-        parts.append(f"values rounded to {decimal_places} decimal places")
-    return (
-        "Report the result as "
-        + (", with ".join(parts) or "the complete requested structure")
-        + "."
-    )
+        return {**base, "contract_type": "structured_table"}
 
+    normalized_answer_type = str(answer_type).casefold()
+    if normalized_answer_type in {"entity", "entity_set"}:
+        return {
+            **base,
+            "contract_type": "entity_only",
+            "unit_required": False,
+            "entity_output": "name_only",
+        }
+
+    contract = dict(base)
+    if "entity" in normalized_answer_type:
+        contract["entity_output"] = "name_and_value"
+    if "period" in normalized_answer_type or answer.get("result_period") is not None:
+        contract["period_format_required"] = True
+        contract["requested_period_format"] = _period_output_format(
+            answer.get("result_period"), time_scope or {}
+        )
+
+    normalized_unit = unit.casefold()
+    if normalized_unit in {"percent", "%", "percentage", "percentage point"}:
+        decimal_places = _stable_contract_choice(
+            configured.get("percentage_decimal_places") or [1, 2],
+            stable_seed,
+            "percentage_decimal_places",
+        )
+        contract_type = "percentage_numeric"
+    elif _is_monetary_unit(" ".join(item for item in (unit, currency) if item)):
+        decimal_places = _stable_contract_choice(
+            configured.get("monetary_decimal_places") or [0, 1, 2],
+            stable_seed,
+            "monetary_decimal_places",
+        )
+        contract_type = "monetary_numeric"
+    elif _is_exact_integer_answer(answer, configured):
+        decimal_places = None
+        contract_type = "exact_integer"
+    else:
+        decimal_places = _stable_contract_choice(
+            configured.get("numeric_decimal_places") or [1, 2],
+            stable_seed,
+            "numeric_decimal_places",
+        )
+        contract_type = "numeric"
+    return {
+        **contract,
+        "contract_type": contract_type,
+        "precision_required": decimal_places is not None,
+        "requested_decimal_places": decimal_places,
+    }
+
+
+def _stable_contract_choice(
+    values: Any, stable_seed: str, contract_field: str
+) -> Any:
+    choices = list(values or [])
+    if not choices:
+        raise ValueError(f"Output contract field {contract_field} has no choices")
+    index = int(_digest(stable_seed, "output_contract.v1", contract_field)[:8], 16)
+    return choices[index % len(choices)]
+
+
+def _is_exact_integer_answer(
+    answer: dict[str, Any], configured: dict[str, Any]
+) -> bool:
+    value = _decimal(answer.get("value"))
+    if value is None or value != value.to_integral_value():
+        return False
+    unit = str(answer.get("unit") or "").casefold().replace("_", " ").strip()
+    integer_units = {
+        str(item).casefold().replace("_", " ").strip()
+        for item in configured.get("exact_integer_units")
+        or ["count", "people", "persons", "companies", "entities", "units"]
+    }
+    return unit in integer_units
+
+
+def _period_output_format(value: Any, time_scope: dict[str, Any]) -> str:
+    text = str(value or "")
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+        return "YYYY-MM-DD"
+    if re.fullmatch(r"\d{4}-\d{2}", text):
+        return "YYYY-MM"
+    basis = str(time_scope.get("basis") or "").casefold()
+    return "fiscal_year" if "fiscal" in basis else "calendar_year"
+
+
+def _benchmark_output_instruction(
+    answer: dict[str, Any],
+    answer_type: str,
+    generation_policy: dict[str, Any],
+    language: str,
+    output_contract: dict[str, Any] | None = None,
+) -> str | None:
+    contract = output_contract or _conditional_output_contract(
+        answer, answer_type, generation_policy, "legacy_output_contract"
+    )
+    if not contract.get("enabled"):
+        return None
+    if language == "mixed":
+        return _benchmark_output_instruction(
+            answer, answer_type, generation_policy, "zh", contract
+        )
+    unit = str(contract.get("requested_unit") or "").strip()
+    currency = str(contract.get("requested_currency") or "").strip()
+    unit_label = unit
+    if currency and currency.casefold() not in unit.casefold():
+        unit_label = " ".join(item for item in (unit, currency) if item)
+    style = str(contract.get("instruction_style") or "direct")
+    contract_type = str(contract.get("contract_type") or "numeric")
+    decimals = contract.get("requested_decimal_places")
+
+    if language == "zh":
+        if contract_type == "structured_table":
+            phrases = {
+                "direct": "请使用完整表格并保持要求的顺序",
+                "compact": "请按要求顺序完整列成表格",
+                "formal": "请以完整有序表格呈现全部结果",
+            }
+            result = phrases.get(style, phrases["direct"])
+            if contract.get("unit_required") and unit_label:
+                result += f"，金额或数值单位为{_localized_unit_label(unit_label, language)}"
+            return result + "。"
+        if contract_type == "entity_only":
+            return "请只返回实体名称。"
+        parts = []
+        if contract.get("entity_output") == "name_and_value":
+            parts.append("同时给出实体名称和数值")
+        period_format = contract.get("requested_period_format")
+        if contract.get("period_format_required") and period_format:
+            labels = {
+                "YYYY-MM-DD": "日期使用YYYY-MM-DD格式",
+                "YYYY-MM": "月份使用YYYY-MM格式",
+                "fiscal_year": "期间使用财年格式",
+                "calendar_year": "期间使用自然年格式",
+            }
+            parts.append(labels[str(period_format)])
+        if contract_type == "exact_integer":
+            parts.append("返回精确整数")
+        if contract.get("unit_required") and unit_label:
+            parts.append(f"以{_localized_unit_label(unit_label, language)}为单位")
+        if contract.get("precision_required") and decimals is not None:
+            precision = {
+                "direct": f"数值保留{decimals}位小数",
+                "compact": f"保留{decimals}位小数",
+                "formal": f"结果统一保留{decimals}位小数",
+            }
+            parts.append(precision.get(style, precision["direct"]))
+        return "请" + "，".join(parts or ["按指定形式完整作答"]) + "。"
+
+    if contract_type == "structured_table":
+        phrases = {
+            "direct": "Report all rows as a complete table in the required order",
+            "compact": "Return a complete table in the required order",
+            "formal": "Present the complete result as an ordered table",
+        }
+        result = phrases.get(style, phrases["direct"])
+        if contract.get("unit_required") and unit_label:
+            result += f", using {_localized_unit_label(unit_label, language)}"
+        return result + "."
+    if contract_type == "entity_only":
+        return "Return the entity name only."
+    parts = []
+    if contract.get("entity_output") == "name_and_value":
+        parts.append("include both the entity name and value")
+    period_format = contract.get("requested_period_format")
+    if contract.get("period_format_required") and period_format:
+        labels = {
+            "YYYY-MM-DD": "format the date as YYYY-MM-DD",
+            "YYYY-MM": "format the month as YYYY-MM",
+            "fiscal_year": "identify the period as a fiscal year",
+            "calendar_year": "identify the period as a calendar year",
+        }
+        parts.append(labels[str(period_format)])
+    if contract_type == "exact_integer":
+        parts.append("return an exact integer")
+    if contract.get("unit_required") and unit_label:
+        localized = _localized_unit_label(unit_label, language)
+        parts.append(
+            f"use {localized}"
+            if _is_monetary_unit(unit_label)
+            else f"report values in {localized}"
+        )
+    if contract.get("precision_required") and decimals is not None:
+        precision = {
+            "direct": f"round values to {decimals} decimal places",
+            "compact": f"use {decimals} decimal places",
+            "formal": f"report all values to {decimals} decimal places",
+        }
+        parts.append(precision.get(style, precision["direct"]))
+    return "Please " + ", and ".join(parts or ["return the requested result"]) + "."
 
 def _is_monetary_unit(unit_label: str) -> bool:
     normalized = str(unit_label).casefold()
@@ -4702,11 +5427,19 @@ def _reparse_persisted_question(
     generation_policy = dict(parser_contract.get("generation_policy") or {})
     language = str(row.get("language") or "en").casefold()
     template_text = str(template["template_text"])
+    output_contract = _conditional_output_contract(
+        candidate["answer_payload"],
+        str(template.get("answer_type") or ""),
+        generation_policy,
+        str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
+        candidate.get("time_scope") or {},
+    )
     output_instruction = _benchmark_output_instruction(
         candidate["answer_payload"],
         str(template.get("answer_type") or ""),
         generation_policy,
         language,
+        output_contract,
     )
     if output_instruction:
         slots["output_instruction"] = output_instruction
@@ -4789,8 +5522,14 @@ def _reparse_persisted_question(
 
 
 def _answer_text(
-    candidate: dict[str, Any], answer: dict[str, Any], entity_names: dict[str, str]
+    candidate: dict[str, Any],
+    answer: dict[str, Any],
+    entity_names: dict[str, str],
+    output_contract: dict[str, Any] | None = None,
 ) -> str:
+    def format_value(value: Any) -> str:
+        return _format_contract_value(value, output_contract)
+
     subtype = candidate["task_subtype"]
     if subtype == "walk_derived_input_time_source_trace":
         return "; ".join(
@@ -4810,8 +5549,8 @@ def _answer_text(
         raw_objects = ", ".join(answer.get("raw_object_ids") or [])
         return (
             f"{answer.get('result_period')}: {primary} peaked at "
-            f"{_format_value(answer.get('primary_value'))} {answer.get('primary_unit') or ''}; "
-            f"{secondary} was {_format_value(answer.get('secondary_value'))} "
+            f"{format_value(answer.get('primary_value'))} {answer.get('primary_unit') or ''}; "
+            f"{secondary} was {format_value(answer.get('secondary_value'))} "
             f"{answer.get('secondary_unit') or ''}; raw object: {raw_objects}"
         ).strip()
     if subtype == "walk_scope_filter_rank_followup":
@@ -4819,13 +5558,13 @@ def _answer_text(
         for item in answer.get("ranking_table") or []:
             name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
             ranking_rows.append(
-                f"{item.get('rank')}. {name}: {_format_value(item.get('value'))}%"
+                f"{item.get('rank')}. {name}: {format_value(item.get('value'))}%"
             )
         followups = []
         for item in answer.get("table") or []:
             name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
             followups.append(
-                f"{name} debt ratio: {_format_value(item.get('secondary_value'))}%"
+                f"{name} debt ratio: {format_value(item.get('secondary_value'))}%"
             )
         return "; ".join([*ranking_rows, *followups])
     if subtype == "derived_input_trace":
@@ -4868,8 +5607,8 @@ def _answer_text(
         )
         return (
             f"{answer.get('result_period')}: {primary} peaked at "
-            f"{_format_value(answer.get('primary_value'))} {answer.get('primary_unit') or ''}; "
-            f"{secondary} was {_format_value(answer.get('secondary_value'))} "
+            f"{format_value(answer.get('primary_value'))} {answer.get('primary_unit') or ''}; "
+            f"{secondary} was {format_value(answer.get('secondary_value'))} "
             f"{answer.get('secondary_unit') or ''}"
         ).strip()
     if answer.get("relation") and answer.get("rows"):
@@ -4881,7 +5620,7 @@ def _answer_text(
             return f"Equal; difference: 0 {answer.get('unit') or ''}".strip()
         winner = labels.get(answer.get("winner_id"), answer.get("winner_id"))
         return (
-            f"{winner} was higher by {_format_value(answer.get('difference'))} "
+            f"{winner} was higher by {format_value(answer.get('difference'))} "
             f"{answer.get('unit') or ''}"
         ).strip()
     if answer.get("table"):
@@ -4895,7 +5634,7 @@ def _answer_text(
             for index, item in enumerate(answer["table"], start=1):
                 rank = item.get("rank") or index
                 name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
-                value = _format_value(item.get("value"))
+                value = format_value(item.get("value"))
                 rows.append(f"{rank}. {name}: {value} {unit}".strip())
             return "; ".join(rows)
         if candidate["task_subtype"] == "rank_then_secondary_lookup":
@@ -4913,9 +5652,9 @@ def _answer_text(
                 name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
                 rows.append(
                     f"{item.get('rank')}. {name}: {primary} "
-                    f"{_format_value(item.get('primary_value'))} "
+                    f"{format_value(item.get('primary_value'))} "
                     f"{answer.get('primary_unit') or ''}; {secondary} "
-                    f"{_format_value(item.get('secondary_value'))} "
+                    f"{format_value(item.get('secondary_value'))} "
                     f"{answer.get('secondary_unit') or ''}"
                 )
             return " | ".join(rows)
@@ -4924,9 +5663,9 @@ def _answer_text(
             for item in answer["table"]:
                 name = entity_names.get(item.get("entity_id"), item.get("entity_id"))
                 rows.append(
-                    f"{name}: growth {_format_value(item.get('revenue_growth_pct'))}%, "
-                    f"net margin {_format_value(item.get('net_margin_pct'))}%, "
-                    f"debt ratio {_format_value(item.get('debt_ratio_pct'))}%"
+                    f"{name}: growth {format_value(item.get('revenue_growth_pct'))}%, "
+                    f"net margin {format_value(item.get('net_margin_pct'))}%, "
+                    f"debt ratio {format_value(item.get('debt_ratio_pct'))}%"
                 )
             return "; ".join(rows)
         entities = [
@@ -4938,11 +5677,30 @@ def _answer_text(
         name = entity_names.get(
             answer["winning_entity_id"], answer["winning_entity_id"]
         )
-        return f"{name}: {_format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
+        return f"{name}: {format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
     if answer.get("result_period") is not None:
-        return f"{answer['result_period']}: {_format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
-    return f"{_format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
+        return f"{answer['result_period']}: {format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
+    return f"{format_value(answer.get('value'))} {answer.get('unit') or ''}".strip()
 
+
+
+def _format_contract_value(
+    value: Any, output_contract: dict[str, Any] | None
+) -> str:
+    if not output_contract:
+        return _format_value(value)
+    decimal_value = _decimal(value)
+    if decimal_value is None:
+        return _format_value(value)
+    if output_contract.get("contract_type") == "exact_integer":
+        return str(decimal_value.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    places = output_contract.get("requested_decimal_places")
+    if places is None or not output_contract.get("precision_required"):
+        return _format_value(value)
+    places = max(int(places), 0)
+    quantum = Decimal("1").scaleb(-places)
+    rounded = decimal_value.quantize(quantum, rounding=ROUND_HALF_UP)
+    return f"{rounded:.{places}f}"
 
 def _ranked_value_tolerance(value: Any) -> str:
     tolerance = _decimal(value) or Decimal("0")
@@ -5065,34 +5823,39 @@ def _benchmark_aligned_rubric(
     generation_policy: dict[str, Any],
     answer: dict[str, Any],
     answer_type: str,
+    output_contract: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    policy = dict(generation_policy.get("benchmark_alignment") or {})
-    if not policy.get("enabled"):
-        return rubric
-    structured = any(
-        marker in answer_type
-        for marker in ("table", "list", "set", "trace", "provenance")
+    contract = output_contract or _conditional_output_contract(
+        answer, answer_type, generation_policy, "legacy_output_contract"
     )
-    unit = str(
-        answer.get("unit")
-        or answer.get("secondary_unit")
-        or answer.get("primary_unit")
-        or ""
-    ).strip()
-    currency = str(answer.get("currency") or "").strip()
-    return {
+    if not contract.get("enabled"):
+        return rubric
+    aligned = {
         **rubric,
         "benchmark_alignment": "finsearchcomp",
-        "requested_decimal_places": max(int(policy.get("decimal_places", 2)), 0),
-        "unit_must_match": bool(policy.get("explicit_unit", True)),
-        "requested_unit": unit,
-        "requested_currency": currency,
-        "precision_must_match": bool(policy.get("explicit_precision", True))
-        and not structured,
-        "complete_output_required": bool(policy.get("explicit_output_format", True))
-        and structured,
+        "output_contract_version": contract.get("contract_version"),
+        "output_contract_type": contract.get("contract_type"),
+        "requested_decimal_places": contract.get("requested_decimal_places"),
+        "unit_must_match": bool(contract.get("unit_required")),
+        "requested_unit": contract.get("requested_unit") or "",
+        "requested_currency": contract.get("requested_currency") or "",
+        "precision_must_match": bool(contract.get("precision_required")),
+        "complete_output_required": bool(contract.get("complete_output_required")),
+        "period_format_must_match": bool(contract.get("period_format_required")),
+        "requested_period_format": contract.get("requested_period_format"),
+        "entity_output": contract.get("entity_output"),
+        "instruction_style": contract.get("instruction_style"),
     }
-
+    places = contract.get("requested_decimal_places")
+    if contract.get("precision_required") and places is not None:
+        rounding_tolerance = Decimal("0.5") * Decimal("1").scaleb(-int(places))
+        aligned["display_absolute_tolerance"] = str(rounding_tolerance)
+        aligned["rounding_mode"] = "half_up"
+        for key in ("absolute_tolerance", "value_tolerance"):
+            if key in aligned:
+                existing = _decimal(aligned.get(key)) or Decimal("0")
+                aligned[key] = str(max(existing, rounding_tolerance))
+    return aligned
 
 def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
     rubric = dict(row.get("rubric") or {})
@@ -5119,10 +5882,33 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
             errors.append("requested_precision_missing")
     if rubric.get("complete_output_required"):
         if not re.search(
-            r"complete\s+table|required\s+order|完整表格|保持(?:要求的)?顺序",
+            r"complete\s+table|required\s+order|ordered\s+table|"
+            r"完整.*表格|顺序.*表格|保持(?:要求的)?顺序|有序表格",
             normalized,
         ):
             errors.append("structured_output_instruction_missing")
+    requested_period_format = str(rubric.get("requested_period_format") or "")
+    if rubric.get("period_format_must_match") and requested_period_format:
+        period_patterns = {
+            "YYYY-MM-DD": (r"yyyy-mm-dd",),
+            "YYYY-MM": (r"yyyy-mm",),
+            "fiscal_year": (r"fiscal\s+year|财年",),
+            "calendar_year": (r"calendar\s+year|自然年",),
+        }
+        if not any(
+            re.search(pattern, normalized)
+            for pattern in period_patterns.get(requested_period_format, ())
+        ):
+            errors.append("requested_period_format_missing")
+    entity_output = str(rubric.get("entity_output") or "")
+    if entity_output == "name_only" and not re.search(
+        r"entity\s+name\s+only|只返回实体名称", normalized
+    ):
+        errors.append("entity_name_only_instruction_missing")
+    if entity_output == "name_and_value" and not re.search(
+        r"entity\s+name\s+and\s+value|实体名称和数值", normalized
+    ):
+        errors.append("entity_name_value_instruction_missing")
     return {
         "passed": not errors,
         "enabled": True,
@@ -5132,6 +5918,9 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         "requested_decimal_places": decimal_places,
         "precision_required": bool(rubric.get("precision_must_match")),
         "structured_output_required": bool(rubric.get("complete_output_required")),
+        "requested_period_format": requested_period_format,
+        "period_format_required": bool(rubric.get("period_format_must_match")),
+        "entity_output": entity_output or None,
     }
 
 

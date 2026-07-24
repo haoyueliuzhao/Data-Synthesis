@@ -124,7 +124,7 @@ def test_question_parser_and_template_registry_have_bidirectional_contract():
     manifest = question_parser_manifest(TEMPLATES)
     template_ids = {str(item["template_id"]) for item in TEMPLATES}
     assert manifest["question_parser_version"] == QUESTION_PARSER_VERSION
-    assert manifest["supported_languages"] == ["en", "zh"]
+    assert manifest["supported_languages"] == ["en", "zh", "mixed"]
     assert set(manifest["supported_template_ids"]) == template_ids
     assert manifest["unsupported_template_ids"] == []
     assert len(question_parser_manifest_hash(TEMPLATES)) == 64

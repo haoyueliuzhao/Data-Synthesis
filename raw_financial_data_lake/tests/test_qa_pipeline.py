@@ -7,10 +7,14 @@ import pytest
 
 from finraw.db.client import MetadataDB
 from finraw.qa.export import export_qa_jsonl
+from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.pipeline import (
     _answer_text,
     _answers_match,
+    _assign_candidate_languages,
     _complex_split,
+    _candidate_generation_pipeline,
+    _conditional_output_contract,
     _derived_candidate,
     _evidence_components,
     _fact_time_scope,
@@ -19,20 +23,25 @@ from finraw.qa.pipeline import (
     _recompute,
     _rubric,
     _filter_matches_by_entity_ids,
+    _format_contract_value,
     _intersect_entity_filters,
     _localize_question_slots,
     _normalize_question_typography,
+    _proposal_candidate_limit,
+    _benchmark_aligned_rubric,
+    _benchmark_output_instruction,
     _target_market_entity_ids,
     _validate_source_fact_coverage,
     _with_scope_inputs,
     build_qa,
     split_qa_samples,
 )
-from finraw.qa.templates import TEMPLATES
+from finraw.qa.templates import TEMPLATES, template_for
 from finraw.qa.verbalizer import (
     QUESTION_PARSER_VERSION,
     question_parser_manifest,
     question_parser_manifest_hash,
+    validate_question_parser_support,
 )
 
 
@@ -59,6 +68,140 @@ DERIVED_TYPES = [
     "multi_condition_screening",
     "long_window_return",
 ]
+
+
+
+
+def test_language_distribution_is_exact_deterministic_and_market_independent():
+    candidates_a = [
+        {"candidate_id": f"candidate_{index}", "stable_candidate_id": f"stable_{index}"}
+        for index in range(100)
+    ]
+    candidates_b = [dict(item) for item in reversed(candidates_a)]
+    policy = {"language_distribution": {"en": 0.80, "zh": 0.15, "mixed": 0.05}}
+
+    counts_a = _assign_candidate_languages(candidates_a, policy)
+    counts_b = _assign_candidate_languages(candidates_b, policy)
+
+    assert counts_a == {"en": 80, "mixed": 5, "zh": 15}
+    assert counts_b == counts_a
+    assert {
+        row["stable_candidate_id"]: row["_question_language"] for row in candidates_a
+    } == {
+        row["stable_candidate_id"]: row["_question_language"] for row in candidates_b
+    }
+
+
+def test_mixed_template_is_covered_by_question_parser_contract():
+    template = template_for("single_fact", "period_flow", language="mixed")
+    manifest = question_parser_manifest(TEMPLATES)
+
+    assert template["language"] == "mixed"
+    assert "mixed" in manifest["supported_languages"]
+    assert "根据已披露数据" in template["template_text"]
+    assert validate_question_parser_support(template, manifest)["passed"] is True
+
+
+
+
+def test_conditional_output_contract_varies_by_answer_semantics_and_seed():
+    policy = {
+        "benchmark_alignment": {
+            "enabled": True,
+            "explicit_unit": True,
+            "output_contract": {
+                "mode": "conditional",
+                "version": "conditional_output_contract.v1",
+                "monetary_decimal_places": [0, 1, 2],
+                "percentage_decimal_places": [1, 2],
+                "numeric_decimal_places": [1, 2],
+                "exact_integer_units": ["count"],
+                "instruction_styles": ["direct", "compact", "formal"],
+            },
+        }
+    }
+    money_contracts = [
+        _conditional_output_contract(
+            {"value": "123.456", "unit": "million USD", "currency": "USD"},
+            "numeric",
+            policy,
+            f"money_{index}",
+        )
+        for index in range(100)
+    ]
+    percent_contracts = [
+        _conditional_output_contract(
+            {"value": "12.345", "unit": "percent"},
+            "numeric",
+            policy,
+            f"percent_{index}",
+        )
+        for index in range(100)
+    ]
+    integer_contract = _conditional_output_contract(
+        {"value": "42", "unit": "count"}, "numeric", policy, "integer"
+    )
+    table_contract = _conditional_output_contract(
+        {"table": [{"rank": 1}], "unit": "million USD"},
+        "ranked_table",
+        policy,
+        "table",
+    )
+    period_contract = _conditional_output_contract(
+        {"result_period": "2023", "value": "1", "unit": "million USD"},
+        "period_and_value",
+        policy,
+        "period",
+        {"basis": "fiscal_year"},
+    )
+
+    assert {row["requested_decimal_places"] for row in money_contracts} == {0, 1, 2}
+    assert {row["requested_decimal_places"] for row in percent_contracts} == {1, 2}
+    assert integer_contract["contract_type"] == "exact_integer"
+    assert integer_contract["precision_required"] is False
+    assert table_contract["contract_type"] == "structured_table"
+    assert table_contract["complete_output_required"] is True
+    assert table_contract["precision_required"] is False
+    assert period_contract["requested_period_format"] == "fiscal_year"
+    assert period_contract["period_format_required"] is True
+
+
+def test_output_contract_aligns_instruction_answer_text_and_rubric_tolerance():
+    policy = {
+        "benchmark_alignment": {
+            "enabled": True,
+            "explicit_unit": True,
+            "output_contract": {
+                "mode": "conditional",
+                "monetary_decimal_places": [0],
+                "percentage_decimal_places": [1],
+                "numeric_decimal_places": [2],
+                "instruction_styles": ["compact"],
+            },
+        }
+    }
+    answer = {"value": "123.56", "unit": "million USD", "currency": "USD"}
+    contract = _conditional_output_contract(
+        answer, "numeric", policy, "fixed_zero"
+    )
+    instruction = _benchmark_output_instruction(
+        answer, "numeric", policy, "en", contract
+    )
+    rubric = _benchmark_aligned_rubric(
+        {"match_type": "numeric_tolerance", "absolute_tolerance": "0.000001"},
+        policy,
+        answer,
+        "numeric",
+        contract,
+    )
+
+    assert contract["requested_decimal_places"] == 0
+    assert "0 decimal places" in instruction
+    assert _format_contract_value(answer["value"], contract) == "124"
+    assert rubric["requested_decimal_places"] == 0
+    assert rubric["absolute_tolerance"] == "0.5"
+    assert rubric["display_absolute_tolerance"] == "0.5"
+    assert rubric["rounding_mode"] == "half_up"
 
 
 def test_macro_fact_time_scope_uses_calendar_or_observation_basis():
@@ -253,6 +396,58 @@ def _qa_fixture(tmp_path):
     return db, kg_build, config
 
 
+def test_generation_pipeline_classifier_and_proposal_limits_are_fail_closed():
+    assert _candidate_generation_pipeline(
+        {"pattern_id": "walk_scope", "task_subtype": "walk_scope"}
+    ) == "typed_edge_walk"
+    assert _candidate_generation_pipeline(
+        {
+            "pattern_id": "mined_pattern",
+            "task_subtype": "multi_period_average",
+            "pattern_proposal_id": "proposal_1",
+        }
+    ) == "automatic_pattern_mining"
+    assert _candidate_generation_pipeline(
+        {"pattern_id": "static_pattern", "task_subtype": "comparison"}
+    ) == "static_graph_pattern"
+    assert _candidate_generation_pipeline(
+        {"task_subtype": "yoy_growth", "source_derived_ids": ["derived_1"]}
+    ) == "derived_fact_qa"
+    assert _candidate_generation_pipeline({"task_subtype": "single_fact"}) == "fact_qa"
+
+    policy = {
+        "max_candidates_per_proposal": 5,
+        "max_candidates_per_typed_walk_proposal": 12,
+        "max_candidates_per_proposal_by_family": {
+            "temporal_aggregation": 7
+        },
+    }
+    assert _proposal_candidate_limit(
+        {
+            "motif_family": "temporal_aggregation",
+            "pattern_spec": {"task_subtype": "multi_period_average"},
+        },
+        policy,
+    ) == 7
+    assert _proposal_candidate_limit(
+        {
+            "motif_family": "walk_temporal_followup",
+            "pattern_spec": {
+                "discovery_method": "typed_walk",
+                "task_subtype": "walk_temporal_peak_followup_provenance",
+            },
+        },
+        policy,
+    ) == 12
+    assert _proposal_candidate_limit(
+        {
+            "motif_family": "cross_metric_comparison",
+            "pattern_spec": {"task_subtype": "cross_metric_comparison"},
+        },
+        policy,
+    ) == 5
+
+
 def test_complex_split_policy_keeps_training_and_eval_buckets():
     assert _complex_split(0) == "train_complex"
     assert _complex_split(69) == "train_complex"
@@ -421,6 +616,103 @@ def test_complex_tasks_reach_train_dev_and_test_splits(tmp_path):
     db.close()
 
 
+def test_production_funnel_separates_release_quality_from_end_to_end_yield(tmp_path):
+    db, _, _ = _qa_fixture(tmp_path)
+    qa_build_id = "qa_split_production_funnel"
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 3000},
+            "quality_gate": {"minimum_overall_pass_rate": 1.0},
+        }
+    }
+    db.execute(
+        "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, "
+        "status, sample_count, quality_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (
+            qa_build_id,
+            "kg_1",
+            "3.0",
+            "validated",
+            1,
+            "passed",
+            json.dumps(notes),
+        ),
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_released",
+        "qa_released",
+        _cluster_for_bucket("released", 0, 69),
+        "single_fact",
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_rejected",
+        "qa_rejected",
+        _cluster_for_bucket("rejected", 0, 69),
+        "single_fact",
+    )
+    db.execute("DELETE FROM qa_samples WHERE qa_id = ?", ("qa_rejected",))
+    db.execute(
+        "UPDATE qa_candidates SET eligibility_status = ?, rejection_reasons = ? "
+        "WHERE candidate_id = ?",
+        (
+            "rejected",
+            json.dumps(["semantic_constraint_failed"]),
+            "cand_rejected",
+        ),
+    )
+    for check_name in (
+        "question_parser_contract",
+        "question_slot_roundtrip",
+        "question_semantic_reparse",
+        "fact_membership",
+        "evidence_path",
+        "evidence_semantics",
+    ):
+        db.execute(
+            "INSERT INTO qa_quality_checks (check_id, qa_id, qa_build_id, "
+            "check_name, check_status) VALUES (?, ?, ?, ?, ?)",
+            (
+                f"check_{check_name}",
+                "qa_released",
+                qa_build_id,
+                check_name,
+                "passed",
+            ),
+        )
+
+    report = split_qa_samples(
+        db, qa_build_id, output_dir=str(tmp_path / "audit"), activate=False
+    )
+
+    funnel = report["production_funnel"]
+    stages = {row["stage"]: row for row in funnel["stages"]}
+    assert stages["candidate_attempted"]["count"] == 2
+    assert stages["candidate_eligible"] == {
+        "stage": "candidate_eligible",
+        "count": 1,
+        "denominator": 2,
+        "denominator_stage": "candidate_attempted",
+        "pass_rate": 0.5,
+        "drop_count": 1,
+        "not_applicable_count": 0,
+    }
+    assert stages["candidate_binding_succeeded"]["count"] == 1
+    assert stages["canonical_qa_materialized"]["count"] == 1
+    assert stages["parser_validation_passed"]["count"] == 1
+    assert stages["evidence_validation_passed"]["count"] == 1
+    assert stages["final_released"]["count"] == 1
+    assert funnel["final_sample_validation_rate"] == 1.0
+    assert funnel["end_to_end_release_yield"] == 0.5
+    assert funnel["candidate_rejection_reason_counts"] == {
+        "semantic_constraint_failed": 1
+    }
+    db.close()
+
+
 def test_build_validate_split_and_export_qa(tmp_path):
     db, kg_build, config = _qa_fixture(tmp_path)
     report = build_qa(
@@ -433,6 +725,16 @@ def test_build_validate_split_and_export_qa(tmp_path):
     assert report["quality"]["passed_count"] == 1
     assert report["split"]["passed_sample_count"] == 1
     assert report["split"]["build_gate_status"] == "passed"
+    production_funnel = report["split"]["production_funnel"]
+    stages = {row["stage"]: row for row in production_funnel["stages"]}
+    assert stages["candidate_attempted"]["count"] == 1
+    assert stages["candidate_eligible"]["count"] == 1
+    assert stages["canonical_qa_materialized"]["count"] == 1
+    assert stages["parser_validation_passed"]["count"] == 1
+    assert stages["evidence_validation_passed"]["count"] == 1
+    assert stages["final_released"]["count"] == 1
+    assert production_funnel["end_to_end_release_yield"] == 1.0
+    assert production_funnel["final_sample_validation_rate"] == 1.0
     qa_build_id = report["qa_build_id"]
     build_row = dict(
         db.fetchone(
@@ -1054,3 +1356,199 @@ def test_market_match_filter_rejects_cross_region_and_unbound_matches():
         matches[3],
     ]
     assert _intersect_entity_filters(["A_CN", "B_US"], ["A_CN"]) == ["A_CN"]
+
+
+def test_advanced_pipeline_distribution_gate_blocks_fact_dominance(tmp_path):
+    db, _, _ = _qa_fixture(tmp_path)
+    ensure_qa_schema(db)
+    qa_build_id = "qa_split_advanced_pipeline_gate"
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 3000},
+            "quality_gate": {
+                "minimum_overall_pass_rate": 1.0,
+                "minimum_generation_pipeline_samples": {
+                    "automatic_pattern_mining": 1,
+                    "typed_edge_walk": 1,
+                },
+                "minimum_generation_pipeline_ratios": {
+                    "automatic_pattern_mining": 0.4,
+                    "typed_edge_walk": 0.1,
+                },
+                "minimum_advanced_automatic_pipeline_ratio": 0.6,
+                "maximum_generation_pipeline_ratios": {"fact_qa": 0.4},
+                "maximum_task_ratios": {"single_fact": 0.5},
+            },
+        }
+    }
+    db.execute(
+        "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, "
+        "status, sample_count, quality_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (qa_build_id, "kg_1", "3.0", "validated", 2, "passed", json.dumps(notes)),
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_fact_dominant",
+        "qa_fact_dominant",
+        _cluster_for_bucket("fact_dominant", 0, 69),
+        "single_fact",
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_mined",
+        "qa_mined",
+        _cluster_for_bucket("mined", 0, 69),
+        "single_fact",
+    )
+    db.execute(
+        "UPDATE qa_candidates SET pattern_id = ?, pattern_proposal_id = ? "
+        "WHERE candidate_id = ?",
+        ("mined_pattern", "proposal_1", "cand_mined"),
+    )
+
+    report = split_qa_samples(
+        db, qa_build_id, output_dir=str(tmp_path / "audit"), activate=False
+    )
+
+    assert report["generation_pipeline_counts"] == {
+        "automatic_pattern_mining": 1,
+        "fact_qa": 1,
+    }
+    assert report["advanced_automatic_pipeline_ratio"] == 0.5
+    assert "generation_pipeline_typed_edge_walk=0 < 1" in report[
+        "build_gate_failures"
+    ]
+    assert "generation_pipeline_ratio_typed_edge_walk=0.000000 < 0.100000" in report[
+        "build_gate_failures"
+    ]
+    assert "advanced_automatic_pipeline_ratio=0.500000 < 0.600000" in report[
+        "build_gate_failures"
+    ]
+    assert "generation_pipeline_ratio_fact_qa=0.500000 > 0.400000" in report[
+        "build_gate_failures"
+    ]
+    assert "task_ratio_single_fact=1.000000 > 0.500000" in report[
+        "build_gate_failures"
+    ]
+    db.close()
+
+
+def test_language_distribution_gate_rejects_market_language_shortcut(tmp_path):
+    db, _, _ = _qa_fixture(tmp_path)
+    qa_build_id = "qa_split_language_gate"
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 3000},
+            "quality_gate": {
+                "minimum_overall_pass_rate": 1.0,
+                "minimum_language_ratios": {"zh": 0.2, "mixed": 0.1},
+                "maximum_single_language_ratio": 0.8,
+                "require_multiple_languages": True,
+            },
+        }
+    }
+    db.execute(
+        "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, "
+        "status, sample_count, quality_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (qa_build_id, "kg_1", "3.0", "validated", 2, "passed", json.dumps(notes)),
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_language_a",
+        "qa_language_a",
+        _cluster_for_bucket("language_a", 0, 69),
+        "single_fact",
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_language_b",
+        "qa_language_b",
+        _cluster_for_bucket("language_b", 0, 69),
+        "single_fact",
+    )
+
+    report = split_qa_samples(
+        db, qa_build_id, output_dir=str(tmp_path / "audit"), activate=False
+    )
+
+    assert report["build_gate_status"] == "failed"
+    assert report["language_counts"] == {"en": 2}
+    assert "language_ratio_zh=0.000000 < 0.200000" in report["build_gate_failures"]
+    assert "language_ratio_mixed=0.000000 < 0.100000" in report["build_gate_failures"]
+    assert "maximum_single_language_ratio=1.000000 > 0.800000" in report[
+        "build_gate_failures"
+    ]
+    assert "language_category_count=1 < 2" in report["build_gate_failures"]
+    db.close()
+
+
+def test_temporal_holdout_isolates_the_complete_entity_metric_series(tmp_path):
+    db, _, _ = _qa_fixture(tmp_path)
+    qa_build_id = "qa_split_temporal_series"
+    notes = {
+        "policy": {
+            "temporal_split": {"cutoff_year": 2025},
+            "split_leakage": {
+                "entity_isolation": "entity_component",
+                "temporal_isolation": "entity_metric_series_component",
+            },
+            "quality_gate": {"minimum_overall_pass_rate": 1.0},
+        }
+    }
+    db.execute(
+        "INSERT INTO qa_builds (qa_build_id, kg_build_id, graph_schema_version, "
+        "status, sample_count, quality_status, notes) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (
+            qa_build_id,
+            "kg_1",
+            "3.0",
+            "validated",
+            2,
+            "passed",
+            json.dumps(notes),
+        ),
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_series_old",
+        "qa_series_old",
+        _cluster_for_bucket("series_old", 0, 69),
+        "single_fact",
+        entity_ids=["SERIES_ENTITY_1"],
+        time_scope={"year": 2023, "basis": "fiscal_year"},
+    )
+    _insert_split_candidate_and_sample(
+        db,
+        qa_build_id,
+        "cand_series_cutoff",
+        "qa_series_cutoff",
+        _cluster_for_bucket("series_cutoff", 0, 69),
+        "single_fact",
+        entity_ids=["SERIES_ENTITY_1"],
+        time_scope={"year": 2025, "basis": "fiscal_year"},
+    )
+
+    report = split_qa_samples(
+        db, qa_build_id, output_dir=str(tmp_path / "audit"), activate=False
+    )
+    splits = {
+        row["split"]
+        for row in db.fetchall(
+            "SELECT split FROM qa_samples WHERE qa_build_id = ?",
+            (qa_build_id,),
+        )
+    }
+
+    assert splits == {"test_temporal_holdout"}
+    assert report["strict_holdout_clusters"]["temporal"] == 2
+    checks = report["split_leakage"]["checks"]
+    assert checks["temporal_holdout_entity_metric_period"]["overlap_count"] == 0
+    assert checks["temporal_holdout_entity_metric_series"]["overlap_count"] == 0
+    assert report["split_leakage"]["passed"] is True
+    db.close()

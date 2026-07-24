@@ -408,6 +408,7 @@ def _ddl(json_type: str, bool_type: str, timestamp_type: str) -> list[str]:
             alignment_standard TEXT NOT NULL,
             alignment_version TEXT NOT NULL,
             benchmark_task TEXT NOT NULL,
+            difficulty TEXT NOT NULL,
             market_subset TEXT NOT NULL,
             language TEXT NOT NULL,
             topic TEXT NOT NULL,
@@ -550,6 +551,9 @@ def ensure_qa_schema(db: DBProtocol) -> None:
             "answer_schema": "JSONB" if postgres else "TEXT",
             "question_intent": "TEXT",
         },
+        "qa_distribution_labels": {
+            "difficulty": "TEXT",
+        },
         "qa_evidence_paths": {
             "evidence_node_ids": "JSONB" if postgres else "TEXT",
             "evidence_edges": "JSONB" if postgres else "TEXT",
@@ -651,5 +655,6 @@ def ensure_qa_schema(db: DBProtocol) -> None:
         "CREATE INDEX IF NOT EXISTS idx_qa_candidates_proposal ON qa_candidates(qa_build_id, pattern_proposal_id, eligibility_status)",
         "CREATE INDEX IF NOT EXISTS idx_qa_plans_build_pattern ON qa_operation_plans(qa_build_id, pattern_id, recompute_status)",
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_qa_plans_candidate ON qa_operation_plans(candidate_id)",
+        "CREATE INDEX IF NOT EXISTS idx_qa_distribution_build_task_difficulty ON qa_distribution_labels(qa_build_id, benchmark_task, difficulty)",
     ]:
         db.execute(statement)

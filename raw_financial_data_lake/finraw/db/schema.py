@@ -896,6 +896,7 @@ CREATE TABLE IF NOT EXISTS qa_distribution_labels (
             alignment_standard TEXT NOT NULL,
             alignment_version TEXT NOT NULL,
             benchmark_task TEXT NOT NULL,
+            difficulty TEXT NOT NULL,
             market_subset TEXT NOT NULL,
             language TEXT NOT NULL,
             topic TEXT NOT NULL,
@@ -922,6 +923,7 @@ CREATE TABLE IF NOT EXISTS qa_distribution_labels (
             UNIQUE(qa_id, alignment_standard, alignment_version)
         );
 CREATE INDEX IF NOT EXISTS idx_qa_distribution_build_task ON qa_distribution_labels(qa_build_id, benchmark_task, market_subset);
+CREATE INDEX IF NOT EXISTS idx_qa_distribution_build_task_difficulty ON qa_distribution_labels(qa_build_id, benchmark_task, difficulty);
 CREATE TABLE IF NOT EXISTS qa_evidence_paths (
             path_id TEXT PRIMARY KEY,
             qa_id TEXT NOT NULL,

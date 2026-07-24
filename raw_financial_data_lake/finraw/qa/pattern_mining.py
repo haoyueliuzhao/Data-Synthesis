@@ -33,7 +33,7 @@ from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import insert_rows, json_value
 
 
-MINING_VERSION = "2.3.0"
+MINING_VERSION = "2.4.0"
 
 GRAPH_NATIVE_EXECUTABLE_FAMILIES = {
     "derived_fact_composition",
@@ -218,6 +218,21 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
         "max_candidates_per_proposal": max(
             int(raw.get("max_candidates_per_proposal", 10)), 1
         ),
+        "max_candidates_per_typed_walk_proposal": max(
+            int(
+                raw.get(
+                    "max_candidates_per_typed_walk_proposal",
+                    raw.get("max_candidates_per_proposal", 10),
+                )
+            ),
+            1,
+        ),
+        "max_candidates_per_proposal_by_family": {
+            str(family): max(int(limit), 1)
+            for family, limit in dict(
+                raw.get("max_candidates_per_proposal_by_family") or {}
+            ).items()
+        },
         "compiled_metric_fact_cache_enabled": bool(
             raw.get("compiled_metric_fact_cache_enabled", True)
         ),
@@ -255,6 +270,8 @@ def mining_policy(config: dict[str, Any]) -> dict[str, Any]:
                     "operation_macros",
                     [
                         "temporal_extreme_followup_provenance",
+                        "temporal_revenue_peak_net_income_provenance",
+                        "temporal_assets_peak_liabilities_provenance",
                         "scope_filter_rank_followup",
                         "derived_fact_time_source_trace",
                     ],

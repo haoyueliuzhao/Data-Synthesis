@@ -7,6 +7,7 @@ import pandas as pd
 
 from finraw.db.client import MetadataDB
 from finraw.qa.finsearchcomp_alignment import (
+    _contamination_report,
     _current_market,
     _generation_pipeline,
     _legacy_operations,
@@ -14,6 +15,8 @@ from finraw.qa.finsearchcomp_alignment import (
     _question_completeness,
     align_qa_build_to_finsearchcomp,
     analyze_official_finsearchcomp,
+    benchmark_task_difficulty_audit,
+    classify_current_benchmark_task,
     freeze_finsearchcomp_dataset,
 )
 from finraw.qa.pipeline import (
@@ -305,11 +308,23 @@ def test_finsearchcomp_freeze_analyze_and_current_alignment(tmp_path: Path):
 
     assert report["current_task_counts"] == {"T2": 1, "T3": 1}
     assert report["contamination"]["exact_match_count"] == 1
+    assert report["contamination"]["blocked_qa_count"] == 1
+    assert report["contamination"]["training_release_gate"] == "failed"
+    assert (output_dir / "contamination_manual_review.jsonl").exists()
+    assert (output_dir / "contamination_exclusion_manifest.jsonl").exists()
     assert report["execution_quality"]["verifier_pass_rate"] == 1.0
-    assert db.fetchone(
-        "SELECT COUNT(*) AS c FROM qa_distribution_labels WHERE qa_build_id = ?",
-        ("qa_build",),
-    )["c"] == 2
+    cross_audit = report["benchmark_task_difficulty_audit"]
+    assert cross_audit["matrix"]["T2"]["easy"] == 1
+    assert cross_audit["matrix"]["T3"]["hard"] == 1
+    assert cross_audit["status"] == "passed"
+    assert (output_dir / "benchmark_task_difficulty_matrix.csv").exists()
+    assert (
+        db.fetchone(
+            "SELECT COUNT(*) AS c FROM qa_distribution_labels WHERE qa_build_id = ?",
+            ("qa_build",),
+        )["c"]
+        == 2
+    )
     labels = pd.read_parquet(output_dir / "current_qa_taxonomy.parquet")
     assert set(labels["generation_pipeline"]) == {"fact_qa", "static_graph_pattern"}
     assert (output_dir / "gap_manifest.json").exists()
@@ -322,9 +337,10 @@ def test_greater_china_macro_entities_are_classified_without_cninfo():
     assert _current_market(["worldbank_indicators"], ["CHN_COUNTRY"]) == (
         "greater_china"
     )
-    assert _current_market(
-        ["worldbank_indicators"], ["HKG_COUNTRY", "MAC_COUNTRY"]
-    ) == "greater_china"
+    assert (
+        _current_market(["worldbank_indicators"], ["HKG_COUNTRY", "MAC_COUNTRY"])
+        == "greater_china"
+    )
     assert _current_market(["worldbank_indicators"], ["USA_COUNTRY"]) == "global"
 
 
@@ -358,19 +374,20 @@ def test_alignment_completeness_treats_precision_as_applicability_aware():
 
 
 def test_typed_walk_pipeline_is_classified_from_task_subtype():
-    assert _generation_pipeline(
-        {
-            "task_subtype": "walk_scope_filter_rank_followup",
-            "pattern_id": "mined_pattern_1",
-            "pattern_proposal_id": "proposal_1",
-        }
-    ) == "typed_edge_walk"
+    assert (
+        _generation_pipeline(
+            {
+                "task_subtype": "walk_scope_filter_rank_followup",
+                "pattern_id": "mined_pattern_1",
+                "pattern_proposal_id": "proposal_1",
+            }
+        )
+        == "typed_edge_walk"
+    )
 
 
 def test_chinese_template_and_benchmark_output_contract_are_fail_closed():
-    template = template_for(
-        "single_fact", "period_flow", "candidate_1", language="zh"
-    )
+    template = template_for("single_fact", "period_flow", "candidate_1", language="zh")
     assert template["language"] == "zh"
     assert "多少" in template["template_text"]
 
@@ -460,3 +477,209 @@ def test_long_window_extrema_are_structurally_multi_period():
         "lookup",
         "temporal_extreme",
     ]
+
+
+def test_benchmark_task_classifier_does_not_treat_entity_count_alone_as_t3():
+    task, reasons = classify_current_benchmark_task(
+        period_count=1,
+        entity_count=2,
+        reasoning_operation_depth=1,
+        source_count=1,
+        scope_complete=False,
+        answer_type="numeric",
+    )
+    assert task == "T2"
+    assert reasons == []
+
+    task, reasons = classify_current_benchmark_task(
+        period_count=2,
+        entity_count=2,
+        reasoning_operation_depth=1,
+        source_count=1,
+        scope_complete=False,
+        answer_type="comparison",
+    )
+    assert task == "T3"
+    assert reasons == ["multi_entity_multi_period"]
+
+
+def test_benchmark_task_difficulty_audit_flags_cross_distribution_anomalies():
+    rows = [
+        {
+            "benchmark_task": "T3",
+            "difficulty": "easy",
+            "generation_pipeline": "fact_qa",
+            "classification_reasons": ["period_count>=3"],
+        }
+        for _ in range(4)
+    ]
+    rows += [
+        {
+            "benchmark_task": "T3",
+            "difficulty": "hard",
+            "generation_pipeline": "automatic_pattern_mining",
+            "classification_reasons": ["reasoning_operation_depth>=2"],
+        }
+    ]
+    rows += [
+        {
+            "benchmark_task": "T2",
+            "difficulty": "research",
+            "generation_pipeline": "typed_edge_walk",
+            "classification_reasons": ["fixed_historical_low_depth"],
+        },
+        {
+            "benchmark_task": "T2",
+            "difficulty": "easy",
+            "generation_pipeline": "fact_qa",
+            "classification_reasons": ["fixed_historical_low_depth"],
+        },
+    ]
+    audit = benchmark_task_difficulty_audit(rows)
+    assert audit["matrix"]["T3"]["easy"] == 4
+    assert audit["t3_easy_ratio"] == 0.8
+    assert audit["t2_expert_research_ratio"] == 0.5
+    assert audit["t3_hard_or_higher_ratio"] == 0.2
+    assert audit["status"] == "review_required"
+    assert len(audit["failures"]) == 3
+    assert audit["t3_easy_pipeline_counts"] == {"fact_qa": 4}
+
+
+def test_alignment_difficulty_schema_migrates_before_index_creation(tmp_path: Path):
+    db = MetadataDB(str(tmp_path / "legacy.sqlite"))
+    db.init_schema()
+    db.execute("DROP TABLE qa_distribution_labels")
+    db.execute(
+        "CREATE TABLE qa_distribution_labels ("
+        "alignment_id TEXT PRIMARY KEY, qa_build_id TEXT NOT NULL, "
+        "benchmark_task TEXT NOT NULL, market_subset TEXT NOT NULL)"
+    )
+    ensure_qa_schema(db)
+    columns = {
+        row["name"] for row in db.fetchall("PRAGMA table_info(qa_distribution_labels)")
+    }
+    assert "difficulty" in columns
+    indexes = {
+        row["name"] for row in db.fetchall("PRAGMA index_list(qa_distribution_labels)")
+    }
+    assert "idx_qa_distribution_build_task_difficulty" in indexes
+    db.close()
+
+
+def test_contamination_detects_company_and_year_substitution_without_exact_match():
+    official = [
+        {
+            "item_id": "official_1",
+            "prompt": "What was Apple's FY2023 revenue in million USD?",
+            "normalized_prompt_sha256": "official_exact_hash",
+            "metric_families": ["revenue"],
+            "operation_families": ["lookup"],
+            "answer_type": "numeric",
+            "period_count": 1,
+            "time_basis": "fiscal_period",
+            "frequency": "annual",
+        }
+    ]
+    current = [
+        {
+            "qa_id": "qa_substituted",
+            "question": "What was Microsoft's FY2024 revenue in million USD?",
+            "normalized_question_sha256": "different_exact_hash",
+            "metric_families": ["revenue"],
+            "operation_families": ["lookup"],
+            "answer_type": "numeric",
+            "period_count": 1,
+            "time_basis": "fiscal_period",
+            "frequency": "annual",
+        }
+    ]
+
+    report = _contamination_report(official, current)
+
+    assert report["exact_match_count"] == 0
+    assert report["question_skeleton_match_count"] == 1
+    assert report["slot_normalized_match_count"] == 1
+    assert report["blocked_qa_ids"] == ["qa_substituted"]
+    assert report["passed"] is False
+
+
+def test_operation_program_match_alone_is_not_treated_as_contamination():
+    official = [
+        {
+            "item_id": "official_1",
+            "prompt": "What was Apple's FY2023 revenue?",
+            "normalized_prompt_sha256": "official_hash",
+            "metric_families": ["revenue"],
+            "operation_families": ["lookup"],
+            "answer_type": "numeric",
+            "period_count": 1,
+            "time_basis": "fiscal_period",
+            "frequency": "annual",
+        }
+    ]
+    current = [
+        {
+            "qa_id": "qa_unrelated_lookup",
+            "question": "Report the unemployment rate for Germany in January 2010.",
+            "normalized_question_sha256": "current_hash",
+            "metric_families": ["employment"],
+            "operation_families": ["lookup"],
+            "answer_type": "numeric",
+            "period_count": 1,
+            "time_basis": "calendar_period",
+            "frequency": "monthly",
+        }
+    ]
+
+    report = _contamination_report(official, current)
+
+    assert report["operation_program_match_count"] == 1
+    assert report["blocked_qa_count"] == 0
+    assert report["passed"] is True
+
+
+def test_synonymous_benchmark_paraphrase_enters_manual_review_queue():
+    official = [
+        {
+            "item_id": "official_extreme",
+            "prompt": (
+                "From 2020 to 2024, which year had the highest revenue "
+                "and what was the value?"
+            ),
+            "normalized_prompt_sha256": "official_extreme_hash",
+            "metric_families": ["revenue"],
+            "operation_families": ["argmax", "lookup"],
+            "answer_type": "period_and_value",
+            "period_count": 5,
+            "time_basis": "fiscal_period",
+            "frequency": "annual",
+        }
+    ]
+    current = [
+        {
+            "qa_id": "qa_paraphrase",
+            "question": (
+                "Identify the fiscal year between 2019 and 2023 when sales "
+                "peaked, and report the corresponding amount."
+            ),
+            "normalized_question_sha256": "different_hash",
+            "metric_families": ["revenue"],
+            "operation_families": ["argmax", "lookup"],
+            "answer_type": "period_and_value",
+            "period_count": 5,
+            "time_basis": "fiscal_period",
+            "frequency": "annual",
+        }
+    ]
+
+    report = _contamination_report(
+        official,
+        current,
+        policy={"minimum_calibration_review_pairs": 0},
+    )
+
+    assert report["exact_match_count"] == 0
+    assert report["embedding_review_count"] == 1
+    assert report["manual_review_qa_count"] == 1
+    assert report["training_release_gate"] == "pending_manual_review"
+    assert report["training_release_ready"] is False

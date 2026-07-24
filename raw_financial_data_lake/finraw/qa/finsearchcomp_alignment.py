@@ -11,16 +11,27 @@ from typing import Any, Iterable
 import pandas as pd
 
 from finraw.db.client import DBProtocol
+from finraw.qa.contamination import contamination_report
 from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.store import chunks, insert_rows, json_value
+from finraw.source_registry import (
+    GREATER_CHINA_SOURCE_IDS,
+    canonical_source_ids,
+)
 
 
 FINSEARCHCOMP_REVISION = "1fd1beea75482e2dd5e2be8f618195d9c6aff176"
 FINSEARCHCOMP_RAW_SHA256 = (
     "6437a6dae907ec81002bd817dafc26c3e46e6b6edfde700f22645b1e2aa208c4"
 )
-FINSEARCHCOMP_ALIGNMENT_VERSION = "finsearchcomp_alignment.v1.2"
-FINSEARCHCOMP_TAXONOMY_VERSION = "finsearchcomp_taxonomy.v1.1"
+FINSEARCHCOMP_ALIGNMENT_VERSION = "finsearchcomp_alignment.v1.5"
+FINSEARCHCOMP_TAXONOMY_VERSION = "finsearchcomp_taxonomy.v1.2"
+DIFFICULTY_LEVELS = ("easy", "medium", "hard", "expert", "research")
+DEFAULT_DIFFICULTY_CROSS_AUDIT_POLICY = {
+    "maximum_t3_easy_ratio": 0.15,
+    "maximum_t2_expert_research_ratio": 0.05,
+    "minimum_t3_hard_or_higher_ratio": 0.50,
+}
 EXPECTED_LABELS = {
     "Time-Sensitive_Data_Fetching(Global)",
     "Time-Sensitive_Data_Fetching(Greater China)",
@@ -44,6 +55,7 @@ ALIGNMENT_COLUMNS = [
     "alignment_standard",
     "alignment_version",
     "benchmark_task",
+    "difficulty",
     "market_subset",
     "language",
     "topic",
@@ -370,6 +382,8 @@ def align_qa_build_to_finsearchcomp(
     *,
     target_t2_count: int = 3000,
     target_t3_count: int = 1500,
+    difficulty_audit_policy: dict[str, Any] | None = None,
+    contamination_audit_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
     build = db.fetchone(
@@ -381,6 +395,9 @@ def align_qa_build_to_finsearchcomp(
     official = _read_taxonomy(official_taxonomy_path)
     official = [row for row in official if row.get("benchmark_task") in {"T2", "T3"}]
     current = _current_qa_taxonomy(db, qa_build_id)
+    difficulty_audit = benchmark_task_difficulty_audit(
+        current, difficulty_audit_policy
+    )
     _persist_current_labels(db, current)
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -393,8 +410,22 @@ def align_qa_build_to_finsearchcomp(
     matrix_xlsx = out / "coverage_matrix.xlsx"
     matrix.to_csv(matrix_csv, index=False)
     matrix.to_excel(matrix_xlsx, index=False)
+    difficulty_matrix_path = out / "benchmark_task_difficulty_matrix.csv"
+    pd.DataFrame(difficulty_audit["matrix_rows"]).to_csv(
+        difficulty_matrix_path, index=False
+    )
     distances = _distribution_distances(official, current)
-    contamination = _contamination_report(official, current)
+    contamination, contamination_review, contamination_exclusions = (
+        contamination_report(
+            official,
+            current,
+            policy=contamination_audit_policy,
+        )
+    )
+    review_path = out / "contamination_manual_review.jsonl"
+    exclusion_path = out / "contamination_exclusion_manifest.jsonl"
+    _write_jsonl(review_path, contamination_review)
+    _write_jsonl(exclusion_path, contamination_exclusions)
     gaps = _gap_manifest(
         official,
         current,
@@ -414,6 +445,7 @@ def align_qa_build_to_finsearchcomp(
         "official_task_counts": dict(sorted(Counter(row["benchmark_task"] for row in official).items())),
         "current_task_counts": dict(sorted(Counter(row["benchmark_task"] for row in current).items())),
         "current_pipeline_counts": dict(sorted(Counter(row["generation_pipeline"] for row in current).items())),
+        "benchmark_task_difficulty_audit": difficulty_audit,
         "distribution_distances": distances,
         "coverage_summary": _coverage_summary(matrix),
         "question_completeness": _completeness_summary(current),
@@ -422,6 +454,7 @@ def align_qa_build_to_finsearchcomp(
             "verifier_pass_rate": 1.0 if current else 0.0,
             "operation_plan_replay_required": True,
             "official_benchmark_gain_status": "not_run",
+            "contamination_release_gate": contamination["training_release_gate"],
         },
         "contamination": contamination,
         "gap_summary": gaps["summary"],
@@ -429,6 +462,8 @@ def align_qa_build_to_finsearchcomp(
             "official_dataset": "evaluation_only",
             "official_prompt_rewrites_for_training": False,
             "current_qa": "training_or_internal_evaluation_according_to_split",
+            "blocked_qa_ids": "must_be_excluded_from_training_exports",
+            "manual_review_queue": "requires_human_decision_before_release",
         },
     }
     report_path = out / "finsearchcomp_alignment_report.json"
@@ -440,9 +475,12 @@ def align_qa_build_to_finsearchcomp(
         str(current_jsonl),
         str(matrix_csv),
         str(matrix_xlsx),
+        str(difficulty_matrix_path),
         str(gap_path),
         str(agent_path),
         str(hidden_path),
+        str(review_path),
+        str(exclusion_path),
         str(report_path),
         str(report_md_path),
     ]
@@ -526,6 +564,9 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
         or features.get("operation_depth")
         or max(len(operators), 0)
     )
+    reasoning_operation_depth = sum(
+        operator not in {"lookup"} for operator in operators
+    )
     scope_size = int(features.get("scope_size") or len(entity_ids))
     answer_type = _normalize_answer_type(
         str(row["answer_schema"].get("type") or row.get("sample_answer_type") or "numeric")
@@ -541,20 +582,14 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
             or row.get("entity_scope")
         )
     )
-    t3_reasons = []
-    if period_count >= 3:
-        t3_reasons.append("period_count>=3")
-    if entity_count >= 2:
-        t3_reasons.append("entity_count>=2")
-    if operation_depth >= 2:
-        t3_reasons.append("operation_depth>=2")
-    if source_count >= 2:
-        t3_reasons.append("source_count>=2")
-    if scope_complete:
-        t3_reasons.append("scope_completeness")
-    if answer_type in {"list", "table", "ranking", "ranked_table", "screening_table"}:
-        t3_reasons.append("structured_multi_item_answer")
-    benchmark_task = "T3" if t3_reasons else "T2"
+    benchmark_task, t3_reasons = classify_current_benchmark_task(
+        period_count=period_count,
+        entity_count=entity_count,
+        reasoning_operation_depth=reasoning_operation_depth,
+        source_count=source_count,
+        scope_complete=scope_complete,
+        answer_type=answer_type,
+    )
     question = str(row.get("question") or "")
     time_scope = row["time_scope"]
     span_months = _current_span_months(time_scope, period_count)
@@ -602,6 +637,7 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
         "operation_families": operation_families,
         "primary_operation_family": _primary_operation(operation_families),
         "operation_depth": operation_depth,
+        "reasoning_operation_depth": reasoning_operation_depth,
         "scope_size": scope_size,
         "rubric_type": _current_rubric_type(row["rubric"]),
         "generation_pipeline": generation_pipeline,
@@ -611,6 +647,7 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
             "source_count_for_answer": source_count,
             "fact_count": int(features.get("fact_count") or len(row["source_fact_ids"])),
             "derived_fact_count": int(features.get("derived_fact_count") or len(row["source_derived_ids"])),
+            "reasoning_operation_depth": reasoning_operation_depth,
             "requires_scope_completeness": scope_complete,
             "requires_cross_source_join": source_count >= 2,
             "requires_external_tool": True,
@@ -638,6 +675,7 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
         key: payload[key]
         for key in (
             "benchmark_task",
+            "difficulty",
             "market_subset",
             "topic",
             "entity_type",
@@ -655,6 +693,177 @@ def _annotate_current_item(row: dict[str, Any], source_ids: list[str]) -> dict[s
         [payload["qa_id"], FINSEARCHCOMP_ALIGNMENT_VERSION]
     )[:24]
     return payload
+
+
+def classify_current_benchmark_task(
+    *,
+    period_count: int,
+    entity_count: int,
+    reasoning_operation_depth: int,
+    source_count: int,
+    scope_complete: bool,
+    answer_type: str,
+) -> tuple[str, list[str]]:
+    """Classify task complexity without treating entity count alone as T3."""
+    reasons: list[str] = []
+    if period_count >= 3:
+        reasons.append("period_count>=3")
+    if reasoning_operation_depth >= 2:
+        reasons.append("reasoning_operation_depth>=2")
+    if source_count >= 2:
+        reasons.append("source_count>=2")
+    if scope_complete:
+        reasons.append("scope_completeness")
+    if answer_type in {
+        "list",
+        "table",
+        "ranking",
+        "ranked_table",
+        "screening_table",
+    }:
+        reasons.append("structured_multi_item_answer")
+    if entity_count >= 2 and period_count >= 2:
+        reasons.append("multi_entity_multi_period")
+    return ("T3", reasons) if reasons else ("T2", [])
+
+
+def benchmark_task_difficulty_audit(
+    rows: list[dict[str, Any]],
+    policy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    configured = dict(DEFAULT_DIFFICULTY_CROSS_AUDIT_POLICY)
+    configured.update(policy or {})
+    counts = {
+        task: {level: 0 for level in DIFFICULTY_LEVELS}
+        for task in ("T2", "T3")
+    }
+    unknown = Counter()
+    for row in rows:
+        task = str(row.get("benchmark_task") or "unknown")
+        difficulty = str(row.get("difficulty") or "unknown").casefold()
+        if task not in counts or difficulty not in DIFFICULTY_LEVELS:
+            unknown[f"{task}:{difficulty}"] += 1
+            continue
+        counts[task][difficulty] += 1
+
+    task_totals = {task: sum(values.values()) for task, values in counts.items()}
+    matrix_rows = []
+    for task in ("T2", "T3"):
+        for level in DIFFICULTY_LEVELS:
+            count = counts[task][level]
+            matrix_rows.append(
+                {
+                    "benchmark_task": task,
+                    "difficulty": level,
+                    "count": count,
+                    "task_share": count / task_totals[task]
+                    if task_totals[task]
+                    else 0.0,
+                }
+            )
+
+    t3_total = task_totals["T3"]
+    t2_total = task_totals["T2"]
+    t3_easy_ratio = counts["T3"]["easy"] / t3_total if t3_total else 0.0
+    t2_advanced_count = counts["T2"]["expert"] + counts["T2"]["research"]
+    t2_advanced_ratio = t2_advanced_count / t2_total if t2_total else 0.0
+    t3_hard_plus_count = sum(
+        counts["T3"][level] for level in ("hard", "expert", "research")
+    )
+    t3_hard_plus_ratio = t3_hard_plus_count / t3_total if t3_total else 0.0
+
+    failures = []
+    total_classified = t2_total + t3_total
+    t3_task_ratio = t3_total / total_classified if total_classified else 0.0
+    minimum_t3_task_ratio = configured.get("minimum_t3_task_ratio")
+    if (
+        minimum_t3_task_ratio is not None
+        and t3_task_ratio < float(minimum_t3_task_ratio)
+    ):
+        failures.append(
+            f"t3_task_ratio={t3_task_ratio:.6f} < "
+            f"{float(minimum_t3_task_ratio):.6f}"
+        )
+    maximum_t3_task_ratio = configured.get("maximum_t3_task_ratio")
+    if (
+        maximum_t3_task_ratio is not None
+        and t3_task_ratio > float(maximum_t3_task_ratio)
+    ):
+        failures.append(
+            f"t3_task_ratio={t3_task_ratio:.6f} > "
+            f"{float(maximum_t3_task_ratio):.6f}"
+        )
+    if unknown:
+        failures.append(f"unknown_task_difficulty_labels={sum(unknown.values())}")
+    maximum_t3_easy = float(configured["maximum_t3_easy_ratio"])
+    if t3_easy_ratio > maximum_t3_easy:
+        failures.append(
+            f"t3_easy_ratio={t3_easy_ratio:.6f} > {maximum_t3_easy:.6f}"
+        )
+    maximum_t2_advanced = float(
+        configured["maximum_t2_expert_research_ratio"]
+    )
+    if t2_advanced_ratio > maximum_t2_advanced:
+        failures.append(
+            "t2_expert_research_ratio="
+            f"{t2_advanced_ratio:.6f} > {maximum_t2_advanced:.6f}"
+        )
+    minimum_t3_hard_plus = float(configured["minimum_t3_hard_or_higher_ratio"])
+    if t3_hard_plus_ratio < minimum_t3_hard_plus:
+        failures.append(
+            "t3_hard_or_higher_ratio="
+            f"{t3_hard_plus_ratio:.6f} < {minimum_t3_hard_plus:.6f}"
+        )
+
+    suspicious_t3_easy = [
+        row
+        for row in rows
+        if row.get("benchmark_task") == "T3"
+        and str(row.get("difficulty") or "").casefold() == "easy"
+    ]
+    suspicious_t2_advanced = [
+        row
+        for row in rows
+        if row.get("benchmark_task") == "T2"
+        and str(row.get("difficulty") or "").casefold()
+        in {"expert", "research"}
+    ]
+    return {
+        "difficulty_levels": list(DIFFICULTY_LEVELS),
+        "matrix": counts,
+        "matrix_rows": matrix_rows,
+        "task_totals": task_totals,
+        "t3_task_ratio": t3_task_ratio,
+        "t3_easy_count": counts["T3"]["easy"],
+        "t3_easy_ratio": t3_easy_ratio,
+        "t2_expert_research_count": t2_advanced_count,
+        "t2_expert_research_ratio": t2_advanced_ratio,
+        "t3_hard_or_higher_count": t3_hard_plus_count,
+        "t3_hard_or_higher_ratio": t3_hard_plus_ratio,
+        "unknown_label_counts": dict(sorted(unknown.items())),
+        "t3_easy_pipeline_counts": dict(
+            sorted(Counter(row["generation_pipeline"] for row in suspicious_t3_easy).items())
+        ),
+        "t3_easy_reason_counts": dict(
+            sorted(
+                Counter(
+                    reason
+                    for row in suspicious_t3_easy
+                    for reason in row.get("classification_reasons", [])
+                ).items()
+            )
+        ),
+        "t2_advanced_pipeline_counts": dict(
+            sorted(
+                Counter(
+                    row["generation_pipeline"] for row in suspicious_t2_advanced
+                ).items()
+            )
+        ),
+        "policy": configured,
+        "status": "passed" if not failures else "review_required",
+        "failures": failures,
+    }
 
 
 def _persist_current_labels(db: DBProtocol, rows: list[dict[str, Any]]) -> None:
@@ -832,27 +1041,13 @@ def _gap_manifest(
 
 
 def _contamination_report(
-    official: list[dict[str, Any]], current: list[dict[str, Any]]
+    official: list[dict[str, Any]],
+    current: list[dict[str, Any]],
+    *,
+    policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    official_hashes = {
-        str(row.get("normalized_prompt_sha256") or "")
-        for row in official
-        if row.get("normalized_prompt_sha256")
-    }
-    matches = [
-        row["qa_id"]
-        for row in current
-        if row.get("normalized_question_sha256") in official_hashes
-    ]
-    return {
-        "comparison": "normalized_exact_hash",
-        "official_hash_count": len(official_hashes),
-        "current_hash_count": len({row.get("normalized_question_sha256") for row in current}),
-        "exact_match_count": len(matches),
-        "matched_qa_ids": matches,
-        "passed": not matches,
-        "near_duplicate_review_status": "not_run",
-    }
+    report, _, _ = contamination_report(official, current, policy=policy)
+    return report
 
 
 def _write_agent_views(
@@ -1042,6 +1237,13 @@ def _alignment_markdown(report: dict[str, Any]) -> str:
         f"- Official tasks: `{report['official_task_counts']}`",
         f"- Current tasks: `{report['current_task_counts']}`",
         f"- Exact contamination matches: `{contamination['exact_match_count']}`",
+        f"- Question skeleton matches: `{contamination['question_skeleton_match_count']}`",
+        f"- Slot-normalized matches: `{contamination['slot_normalized_match_count']}`",
+        f"- Operation-program matches: `{contamination['operation_program_match_count']}`",
+        f"- Embedding review candidates: `{contamination['embedding_review_count']}`",
+        f"- Blocked contaminated QA: `{contamination['blocked_qa_count']}`",
+        f"- Manual review QA: `{contamination['manual_review_qa_count']}`",
+        f"- Training release gate: `{contamination['training_release_gate']}`",
         f"- Coverage matrix rows: `{coverage['row_count']}`",
         f"- Official categories covered: `{coverage['official_category_coverage_rate']:.2%}`",
         "",
@@ -1051,6 +1253,36 @@ def _alignment_markdown(report: dict[str, Any]) -> str:
     lines.extend(
         f"- `{key}`: `{value}`" for key, value in report["current_pipeline_counts"].items()
     )
+    audit = report["benchmark_task_difficulty_audit"]
+    lines.extend(
+        [
+            "",
+            "## Benchmark Task x Difficulty",
+            "",
+            "| Benchmark Task | Easy | Medium | Hard | Expert | Research |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for task in ("T2", "T3"):
+        values = audit["matrix"][task]
+        lines.append(
+            f"| {task} | {values['easy']} | {values['medium']} | "
+            f"{values['hard']} | {values['expert']} | {values['research']} |"
+        )
+    lines.extend(
+        [
+            "",
+            f"- Audit status: `{audit['status']}`",
+            f"- T3 task ratio: `{audit['t3_task_ratio']:.2%}`",
+            f"- T3 easy ratio: `{audit['t3_easy_ratio']:.2%}`",
+            "- T2 expert/research ratio: "
+            f"`{audit['t2_expert_research_ratio']:.2%}`",
+            "- T3 hard-or-higher ratio: "
+            f"`{audit['t3_hard_or_higher_ratio']:.2%}`",
+        ]
+    )
+    if audit["failures"]:
+        lines.append(f"- Review triggers: `{audit['failures']}`")
     lines.extend(["", "## Distribution Distances", ""])
     for key, value in report["distribution_distances"].items():
         if key == "conditional":
@@ -1509,20 +1741,8 @@ def _current_frequency(time_scope: dict[str, Any]) -> str:
 
 
 def _current_market(source_ids: list[str], entity_ids: list[str]) -> str:
-    greater_china_source_prefixes = (
-        "cninfo",
-        "bse_",
-        "hkex_",
-        "nbs_",
-        "pboc_",
-        "safe_",
-        "sse_",
-        "szse_",
-    )
-    if source_ids and all(
-        source.casefold().startswith(greater_china_source_prefixes)
-        for source in source_ids
-    ):
+    normalized_sources = set(canonical_source_ids(source_ids))
+    if normalized_sources and normalized_sources <= GREATER_CHINA_SOURCE_IDS:
         return "greater_china"
     greater_china_entities = {"CHN_COUNTRY", "HKG_COUNTRY", "MAC_COUNTRY"}
     if entity_ids and all(

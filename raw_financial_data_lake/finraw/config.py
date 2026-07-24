@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from finraw.source_registry import normalize_config_source_ids
+
 
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[1] / "config" / "default_config.json"
 
@@ -22,7 +24,7 @@ def load_config(path: str | None = None) -> dict[str, Any]:
         with secrets_path.open("r", encoding="utf-8") as f:
             config = _deep_merge(config, json.load(f))
 
-    config = _strip_replace_markers(config)
+    config = normalize_config_source_ids(_strip_replace_markers(config))
     for key in ("storage_root", "metadata_db"):
         value = Path(config[key])
         if not value.is_absolute():

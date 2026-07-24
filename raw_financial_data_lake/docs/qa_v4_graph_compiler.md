@@ -500,3 +500,34 @@ python -m finraw.cli \
 Protected Rewrite 请求包含不带事实值的 operator cues，用于要求模型保留 filter、rank、extreme、lookup 的次序。Provider 多返回的说明字段被忽略并审计；占位符缺失、额外数字、比较或极值反转、操作次序错误和多问句继续 fail-closed。失败样本使用确定性表面形式，不会进入“受控 LLM 成功”统计。
 
 真实 19 条非激活回归 build `qa_build_20260722_031157_6210ed2d` 中，19/19 QA verifier 通过，18/19 完成受控 LLM 改写，唯一回退由多问句门控触发。共使用 12,999 tokens，形成 19 个唯一问题、19 个唯一语言骨架和 7 种语体。详细报告见 `docs/qa_surface_diversity_v3_report.md`。
+
+
+## Split Leakage Contract 1.0
+
+QA split 现在同时执行“划分约束”和“独立泄漏审计”，不再只依赖
+semantic_cluster_id：
+
+- test_entity_holdout 按共享 Entity 的 semantic-cluster 连通分量划分；
+  同一实体不会同时出现在训练集和实体留出集。
+- test_temporal_holdout 默认按 Entity-Metric Series 连通分量划分；
+  一条序列只要包含 cutoff 年份，整条序列都进入时间留出集。该策略防止
+  同一公司同一指标的相邻年份跨 train/test。
+- entity-metric-period 使用规范化时间字段构造身份，并与更严格的
+  Entity-Metric Series 身份分别审计。
+- 来源文档、complex pattern 和 canonical question skeleton 都会报告
+  train/evaluation 重叠。来源文档默认硬门控；复杂 pattern 和问题骨架默认
+  只报告，因为 complex 70/10/20 训练和受控模板复用可能有意保留同构结构。
+  Benchmark 可通过配置将后两项升级为严格 holdout。
+
+qa_split_report.json 和 qa_builds.notes.build_gate.split_leakage 固定保存：
+
+    semantic cluster overlap
+    train/test_entity_holdout entity overlap
+    train/test_temporal_holdout entity-metric-period overlap
+    train/test_temporal_holdout entity-metric-series overlap
+    train/test_complex pattern overlap
+    train/evaluation source-document overlap
+    train/evaluation canonical-question-skeleton overlap
+
+每项包含训练分母、目标分母、交集数、目标侧交集率和限量示例。启用硬门控的
+交集会使 build 进入 quality_failed，避免仅在报告中暴露问题后仍激活数据集。

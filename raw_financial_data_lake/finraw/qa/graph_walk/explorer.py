@@ -79,6 +79,16 @@ def find_typed_paths(
     return sorted(complete, key=lambda item: (item.total_cost, str(item.steps)))[:limit]
 
 
+def _metric_id_for_role(macro: OperationMacro, role_name: str) -> str:
+    role = next(item for item in macro.roles if item.role == role_name)
+    for field, operator, value in role.predicates:
+        if field == "properties.metric_id" and operator == "eq":
+            return str(value)
+    raise ValueError(
+        f"Macro {macro.macro_id} role {role_name} has no fixed metric predicate"
+    )
+
+
 def assemble_query_graph(
     macro: OperationMacro,
     *,
@@ -164,7 +174,7 @@ def assemble_query_graph(
         for name, spec in roles.items()
         if spec["node_type"] == "Fact" and not spec.get("generated")
     ]
-    if macro.macro_id == "temporal_extreme_followup_provenance":
+    if macro.pattern_family == "walk_temporal_followup":
         role_constraints.append(
             {
                 "constraint": "require_roles_contiguous",
@@ -216,10 +226,12 @@ def assemble_query_graph(
             "fields": {"fact_id": "source_pk"},
         },
     }
-    if macro.macro_id == "temporal_extreme_followup_provenance":
+    if macro.pattern_family == "walk_temporal_followup":
         projection["context"] = {
-            "primary_metric_id": "revenue",
-            "secondary_metric_id": "net_cash_provided_by_used_in_operating_activities",
+            "primary_metric_id": _metric_id_for_role(macro, "primary_series"),
+            "secondary_metric_id": _metric_id_for_role(
+                macro, "secondary_series"
+            ),
         }
         projection["provenance_binding"] = {
             "binding": "provenance_map",

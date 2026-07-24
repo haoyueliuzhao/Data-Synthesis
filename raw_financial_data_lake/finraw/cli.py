@@ -1065,6 +1065,16 @@ def main() -> None:
                 args.output_dir,
                 target_t2_count=args.target_t2_count,
                 target_t3_count=args.target_t3_count,
+                difficulty_audit_policy=dict(
+                    config.get("qa", {})
+                    .get("benchmark_alignment", {})
+                    .get("difficulty_cross_audit", {})
+                ),
+                contamination_audit_policy=dict(
+                    config.get("qa", {})
+                    .get("benchmark_alignment", {})
+                    .get("contamination_audit", {})
+                ),
             )
             print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
         elif args.command == "qa-pattern-preflight":

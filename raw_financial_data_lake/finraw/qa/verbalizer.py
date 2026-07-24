@@ -13,8 +13,8 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
 QUESTION_REWRITE_VERSION = "question_rewrite.v3.1"
 SURFACE_VARIATION_VERSION = "surface_variation.v3.1"
-QUESTION_PARSER_VERSION = "1.3.3"
-QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh")
+QUESTION_PARSER_VERSION = "1.4.0"
+QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh", "mixed")
 
 _TONE_PREFIXES = {
     "neutral": "",

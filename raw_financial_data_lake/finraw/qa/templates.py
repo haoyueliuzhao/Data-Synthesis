@@ -450,6 +450,19 @@ for _english_template in list(TEMPLATES):
                 "template_text": _text,
             }
         )
+        TEMPLATES.append(
+            {
+                **_english_template,
+                "template_id": _english_template["template_id"].replace(
+                    "_en_", "_mixed_"
+                ),
+                "language": "mixed",
+                "template_text": (
+                    "根据已披露数据 / Based on the reported data, "
+                    + _english_template["template_text"]
+                ),
+            }
+        )
 
 
 def template_for(

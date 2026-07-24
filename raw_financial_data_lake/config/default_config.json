@@ -216,6 +216,17 @@
     }
   },
   "qa": {
+    "benchmark_alignment": {
+      "contamination_audit": {
+        "embedding_review_threshold": 0.65,
+        "embedding_reject_threshold": 0.85,
+        "maximum_review_pairs": 500,
+        "minimum_calibration_review_pairs": 50,
+        "block_exact_match": true,
+        "block_slot_normalized_match": true,
+        "block_high_embedding_with_program_match": true
+      }
+    },
     "retention": {
       "hot_build_count": 1,
       "minimum_hot_sample_count": 100,
@@ -416,6 +427,8 @@
       "minimum_heldout_binding_pass_rate": 0.99,
       "require_manual_review": false,
       "max_candidates_per_proposal": 10,
+      "max_candidates_per_typed_walk_proposal": 10,
+      "max_candidates_per_proposal_by_family": {},
       "compiled_graph_scan_rows": 5000,
       "compiled_graph_evaluation_rows": 5000,
       "compiled_scan_rows_per_metric": 0,
@@ -434,6 +447,8 @@
         "grammar_version": "1.0.0",
         "operation_macros": [
           "temporal_extreme_followup_provenance",
+          "temporal_revenue_peak_net_income_provenance",
+          "temporal_assets_peak_liabilities_provenance",
           "scope_filter_rank_followup",
           "derived_fact_time_source_trace"
         ],
@@ -512,8 +527,26 @@
     "temporal_split": {
       "cutoff_year": 2025
     },
+    "split_leakage": {
+      "policy_version": "1.0.0",
+      "entity_isolation": "entity_component",
+      "temporal_isolation": "entity_metric_series_component",
+      "enforce_semantic_cluster_disjoint": true,
+      "enforce_entity_holdout_disjoint": true,
+      "enforce_temporal_exact_disjoint": true,
+      "enforce_temporal_series_disjoint": true,
+      "enforce_source_document_disjoint": true,
+      "enforce_complex_pattern_disjoint": false,
+      "enforce_question_skeleton_disjoint": false,
+      "maximum_reported_examples": 50
+    },
     "quality_gate": {
       "minimum_overall_pass_rate": 0.95,
+      "minimum_generation_pipeline_samples": {},
+      "minimum_generation_pipeline_ratios": {},
+      "minimum_advanced_automatic_pipeline_ratio": 0.0,
+      "maximum_generation_pipeline_ratios": {},
+      "maximum_task_ratios": {},
       "critical_tasks": {
         "single_fact": 1000,
         "yoy_growth": 1000,
