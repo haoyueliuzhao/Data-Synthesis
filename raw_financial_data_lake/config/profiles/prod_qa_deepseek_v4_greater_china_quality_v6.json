@@ -1,0 +1,97 @@
+{
+  "extends": "prod_qa_deepseek_v4_greater_china_1442_v5.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 0,
+      "single_fact_worldbank": 0,
+      "single_fact_imf": 0,
+      "single_fact_fred": 0,
+      "single_fact_greater_china": 240
+    },
+    "derived_quotas": {
+      "__replace__": true,
+      "difference": 100,
+      "yoy_growth": 180,
+      "ratio": 90,
+      "multi_year_argmax": 70,
+      "multi_year_argmin": 70
+    },
+    "graph_patterns": {
+      "quotas": {
+        "__replace__": true,
+        "pairwise_entity_metric_comparison": 40,
+        "entity_cross_metric_comparison": 15,
+        "entity_metric_temporal_average": 30,
+        "temporal_argmax_then_metric_lookup": 120,
+        "industry_growth_filter_then_margin_rank": 100,
+        "industry_revenue_rank_then_assets_lookup": 25,
+        "industry_multi_factor_screening": 100
+      }
+    },
+    "pattern_mining": {
+      "max_candidates_per_proposal": 20,
+      "max_candidates_per_typed_walk_proposal": 45,
+      "max_candidates_per_proposal_by_family": {
+        "cross_metric_comparison": 6,
+        "temporal_aggregation": 8,
+        "temporal_extrema_followup": 35,
+        "scope_rank_followup": 35,
+        "walk_temporal_followup": 45,
+        "walk_scope_analysis": 45
+      }
+    },
+    "question_generation": {
+      "benchmark_alignment": {
+        "output_contract": {
+          "version": "conditional_output_contract.v3"
+        }
+      }
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "__replace__": true,
+        "single_fact": 180,
+        "yoy_growth": 130,
+        "ratio": 60,
+        "filter_then_rank": 65,
+        "multi_factor_screening": 65
+      },
+      "minimum_graph_pattern_samples": {
+        "__replace__": true,
+        "pairwise_entity_metric_comparison": 20,
+        "entity_cross_metric_comparison": 6,
+        "entity_metric_temporal_average": 15,
+        "temporal_argmax_then_metric_lookup": 75,
+        "industry_growth_filter_then_margin_rank": 65,
+        "industry_revenue_rank_then_assets_lookup": 12,
+        "industry_multi_factor_screening": 65
+      },
+      "minimum_difficulty_samples": {
+        "__replace__": true,
+        "expert": 120,
+        "research": 100
+      },
+      "minimum_generation_pipeline_samples": {
+        "__replace__": true,
+        "automatic_pattern_mining": 210,
+        "typed_edge_walk": 75
+      },
+      "minimum_generation_pipeline_ratios": {
+        "__replace__": true,
+        "automatic_pattern_mining": 0.14,
+        "typed_edge_walk": 0.05
+      },
+      "minimum_advanced_automatic_pipeline_ratio": 0.20,
+      "maximum_generation_pipeline_ratios": {
+        "__replace__": true,
+        "fact_qa": 0.20
+      },
+      "maximum_task_ratios": {
+        "__replace__": true,
+        "single_fact": 0.20,
+        "entity_metric_temporal_average": 0.03
+      }
+    }
+  }
+}

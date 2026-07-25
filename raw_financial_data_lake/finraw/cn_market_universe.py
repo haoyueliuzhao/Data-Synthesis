@@ -145,16 +145,49 @@ def build_a_share_universe(
     if sse_count + szse_count + bse_count < 100:
         raise ValueError("A-share universe must contain at least 100 companies")
     today_value = date.today()
-    bse_history_cutoff = date(today_value.year - 5, 12, 31).isoformat()
-    sse = _stratified_select(discover_sse_companies(), sse_count)
-    szse = _stratified_select(discover_szse_companies(), szse_count)
-    bse_candidates = [
-        company
-        for company in discover_bse_companies()
-        if str(company.get("listing_date") or "9999-12-31")
-        <= bse_history_cutoff
-    ]
-    bse = _stratified_select(bse_candidates, bse_count)
+    listing_history_cutoff = date(today_value.year - 5, 12, 31).isoformat()
+
+    def eligible_for_history(company: dict[str, Any]) -> bool:
+        return (
+            str(company.get("listing_date") or "9999-12-31") <= listing_history_cutoff
+        )
+
+    sse_discovery_limit = max(
+        20,
+        ((sse_count + len(INDUSTRY_CODES) - 1) // len(INDUSTRY_CODES)) * 2,
+    )
+    szse_discovery_limit = max(
+        20,
+        ((szse_count + len(INDUSTRY_CODES) - 1) // len(INDUSTRY_CODES)) * 2,
+    )
+    sse = _stratified_select(
+        [
+            company
+            for company in discover_sse_companies(
+                limit_per_industry_board=sse_discovery_limit
+            )
+            if eligible_for_history(company)
+        ],
+        sse_count,
+    )
+    szse = _stratified_select(
+        [
+            company
+            for company in discover_szse_companies(
+                limit_per_industry=szse_discovery_limit
+            )
+            if eligible_for_history(company)
+        ],
+        szse_count,
+    )
+    bse = _stratified_select(
+        [
+            company
+            for company in discover_bse_companies()
+            if eligible_for_history(company)
+        ],
+        bse_count,
+    )
     selected = [*sse, *szse, *bse]
     if len(selected) != sse_count + szse_count + bse_count:
         raise RuntimeError(
@@ -164,12 +197,12 @@ def build_a_share_universe(
     today = today_value.isoformat()
     return {
         "universe": {
-            "universe_id": "cn_a_share_authoritative_100_v1",
+            "universe_id": f"cn_a_share_authoritative_{len(selected)}_v1",
             "as_of_date": today,
             "selection_method": "deterministic_round_robin_by_exchange_and_industry",
             "eligibility_policy": {
                 "exclude_special_treatment_and_delisting_names": True,
-                "bse_listing_date_on_or_before": bse_history_cutoff,
+                "listing_date_on_or_before": listing_history_cutoff,
                 "minimum_completed_annual_reports": 5,
             },
             "requested_counts": {
@@ -242,12 +275,8 @@ def assemble_cn_expansion_profile(
     extends: str = "prod_phase1_with_cninfo_generated.json",
 ) -> dict[str, Any]:
     universe = json.loads(Path(universe_path).read_text(encoding="utf-8"))
-    cninfo_manifest = json.loads(
-        Path(cninfo_manifest_path).read_text(encoding="utf-8")
-    )
-    bse_manifest = json.loads(
-        Path(bse_manifest_path).read_text(encoding="utf-8")
-    )
+    cninfo_manifest = json.loads(Path(cninfo_manifest_path).read_text(encoding="utf-8"))
+    bse_manifest = json.loads(Path(bse_manifest_path).read_text(encoding="utf-8"))
     cninfo = dict(universe.get("cninfo") or {})
     bse = dict(universe.get("bse") or {})
     cninfo["announcements"] = list(
@@ -304,9 +333,7 @@ def _validate_annual_report_coverage(
         if re.fullmatch(r"20\d{2}", year):
             years_by_code[code].add(year)
     required_years = int(
-        dict(source_config.get("selection_policy") or {}).get(
-            "minimum_annual_years", 5
-        )
+        dict(source_config.get("selection_policy") or {}).get("minimum_annual_years", 5)
     )
     insufficient = {
         code: sorted(years_by_code.get(code, set()))
@@ -375,8 +402,7 @@ def _deduplicate_companies(
 ) -> list[dict[str, Any]]:
     return list(
         {
-            (str(row["market"]), str(row["stock_code"])): row
-            for row in companies
+            (str(row["market"]), str(row["stock_code"])): row for row in companies
         }.values()
     )
 

@@ -330,3 +330,35 @@ def _seed_fact_pool(db: MetadataDB) -> None:
                 1,
             ),
         )
+
+
+def test_fact_universe_fails_closed_below_capacity_contract(tmp_path) -> None:
+    db = MetadataDB(str(tmp_path / "metadata.sqlite3"))
+    db.init_schema()
+    try:
+        _seed_fact_pool(db)
+        report = build_fact_universe(
+            db,
+            {
+                "fact_universe": {
+                    "enabled": True,
+                    "target_greater_china_share": 0.5,
+                    "minimum_stratum_coverage": 1.0,
+                    "minimum_member_count": 9,
+                    "minimum_derived_member_count": 1,
+                }
+            },
+        )
+
+        assert report["quality_status"] == "failed"
+        assert report["is_active"] is False
+        assert report["capacity_contract"] == {
+            "minimum_member_count": 9,
+            "minimum_derived_member_count": 1,
+            "actual_member_count": 8,
+            "actual_derived_member_count": 0,
+        }
+        assert "member_count=8 < 9" in report["quality_failures"]
+        assert "derived_member_count=0 < 1" in report["quality_failures"]
+    finally:
+        db.close()

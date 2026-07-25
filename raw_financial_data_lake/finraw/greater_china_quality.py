@@ -422,7 +422,13 @@ def enforce_greater_china_quality_gates(
     expected = _expected_companies(config)
     aliases = _load_entity_aliases(db)
     raw = _load_raw_annual_coverage(db, expected)
-    candidates = _load_candidate_coverage(db)
+    statement_candidate_build_id = (
+        _latest_successful_statement_candidate_build_id(db)
+    )
+    candidates = _load_candidate_coverage(
+        db,
+        statement_candidate_build_id=statement_candidate_build_id,
+    )
     facts = _load_fact_coverage(db)
     official = _official_publication_coverage(db, config, contract)
 
@@ -671,6 +677,7 @@ def enforce_greater_china_quality_gates(
                 "excluded_until_authoritative_source_and_entity_contract_are_available"
             ),
         },
+        "statement_candidate_build_id": statement_candidate_build_id,
         "configured_company_count": len(company_rows),
         "configured_a_share_company_count": len(a_share_rows),
         "configured_hkex_company_count": len(hkex_rows),
@@ -891,16 +898,39 @@ def _load_raw_annual_coverage(
     return dict(coverage)
 
 
-def _load_candidate_coverage(db: DBProtocol) -> dict[str, dict[str, Any]]:
+def _latest_successful_statement_candidate_build_id(
+    db: DBProtocol,
+) -> str | None:
+    row = db.fetchone(
+        """
+        SELECT build_id
+        FROM pipeline_builds
+        WHERE command = ?
+          AND status = ?
+        ORDER BY started_at DESC, build_id DESC
+        LIMIT 1
+        """,
+        ("refresh-cn-financial-statements", "success"),
+    )
+    return str(row["build_id"]) if row and row["build_id"] else None
+
+
+def _load_candidate_coverage(
+    db: DBProtocol,
+    *,
+    statement_candidate_build_id: str | None,
+) -> dict[str, dict[str, Any]]:
+    if not statement_candidate_build_id:
+        return {}
     rows = db.fetchall(
         "SELECT cf.entity_id, cf.raw_object_id, cf.candidate_state, "
         "cf.promotion_status, cf.evidence_status, cf.statement_type, "
         "cf.matched_metric_id "
         "FROM candidate_facts cf JOIN raw_objects ro "
         "ON ro.raw_object_id = cf.raw_object_id "
-        "WHERE COALESCE(cf.is_active, 1) = 1 "
+        "WHERE cf.build_id = ? "
         "AND ro.source_id IN (?, ?, ?)",
-        tuple(DISCLOSURE_SOURCES),
+        (statement_candidate_build_id, *DISCLOSURE_SOURCES),
     )
     coverage: dict[str, dict[str, Any]] = defaultdict(
         lambda: {

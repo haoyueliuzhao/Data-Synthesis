@@ -1,0 +1,74 @@
+{
+  "extends": "prod_qa_deepseek_v4_greater_china_1600_v3.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 0,
+      "single_fact_worldbank": 0,
+      "single_fact_imf": 0,
+      "single_fact_fred": 0,
+      "single_fact_greater_china": 324
+    },
+    "derived_quotas": {
+      "difference": 100,
+      "yoy_growth": 145,
+      "ratio": 70,
+      "multi_year_argmax": 55,
+      "multi_year_argmin": 55
+    },
+    "graph_patterns": {
+      "quotas": {
+        "pairwise_entity_metric_comparison": 60,
+        "entity_cross_metric_comparison": 40,
+        "entity_metric_temporal_average": 80,
+        "temporal_argmax_then_metric_lookup": 75,
+        "industry_growth_filter_then_margin_rank": 65,
+        "industry_revenue_rank_then_assets_lookup": 12,
+        "industry_multi_factor_screening": 65
+      }
+    },
+    "pattern_mining": {
+      "max_candidates_per_proposal": 13,
+      "max_candidates_per_typed_walk_proposal": 30,
+      "max_candidates_per_proposal_by_family": {
+        "cross_metric_comparison": 10,
+        "temporal_aggregation": 15,
+        "temporal_extrema_followup": 22,
+        "scope_rank_followup": 22,
+        "walk_temporal_followup": 30,
+        "walk_scope_analysis": 30
+      }
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "single_fact": 260,
+        "yoy_growth": 110,
+        "ratio": 50,
+        "filter_then_rank": 40,
+        "multi_factor_screening": 40
+      },
+      "minimum_graph_pattern_samples": {
+        "pairwise_entity_metric_comparison": 45,
+        "entity_cross_metric_comparison": 25,
+        "entity_metric_temporal_average": 50,
+        "temporal_argmax_then_metric_lookup": 45,
+        "industry_growth_filter_then_margin_rank": 38,
+        "industry_revenue_rank_then_assets_lookup": 6,
+        "industry_multi_factor_screening": 38
+      },
+      "minimum_difficulty_samples": {
+        "expert": 75,
+        "research": 45
+      },
+      "minimum_generation_pipeline_samples": {
+        "automatic_pattern_mining": 155,
+        "typed_edge_walk": 70
+      },
+      "minimum_generation_pipeline_ratios": {
+        "automatic_pattern_mining": 0.105,
+        "typed_edge_walk": 0.045
+      },
+      "minimum_advanced_automatic_pipeline_ratio": 0.16
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "extends": "prod_cn_authoritative_800.json",
+  "greater_china_expansion": {
+    "coverage_contract": {
+      "minimum_a_share_companies": 800,
+      "minimum_hkex_companies": 40
+    },
+    "qa_generation_enabled": false
+  },
+  "document_extraction": {
+    "cn_financial_statements": {
+      "parser_workers": 8,
+      "parser_progress_interval": 100,
+      "max_objects": 0
+    }
+  },
+  "fact_universe": {
+    "minimum_member_count": 250000,
+    "minimum_derived_member_count": 300000
+  }
+}

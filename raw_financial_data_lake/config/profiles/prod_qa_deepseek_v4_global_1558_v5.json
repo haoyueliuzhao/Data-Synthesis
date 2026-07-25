@@ -1,0 +1,18 @@
+{
+  "extends": "prod_qa_deepseek_v4_global_1700_v4.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 200,
+      "single_fact_worldbank": 79,
+      "single_fact_imf": 61,
+      "single_fact_fred": 70,
+      "single_fact_greater_china": 0
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "single_fact": 320
+      }
+    }
+  }
+}

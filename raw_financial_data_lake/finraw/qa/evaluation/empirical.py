@@ -31,12 +31,14 @@ from finraw.qa.store import insert_rows, json_value
 
 EMPIRICAL_SYSTEM_VERSION = "financial_qa_empirical.v3.0"
 
-EMPIRICAL_MODES = frozenset({
-    "gold_plan_given",
-    "evidence_only",
-    "evidence_pool",
-    "retrieval_tool",
-})
+EMPIRICAL_MODES = frozenset(
+    {
+        "gold_plan_given",
+        "evidence_only",
+        "evidence_pool",
+        "retrieval_tool",
+    }
+)
 MODE_ALIASES = {"evidence_given": "gold_plan_given"}
 
 RUN_COLUMNS = [
@@ -119,21 +121,18 @@ def run_empirical_model_evaluation(
         bundle
         for bundle in bundles
         if bundle.get("deterministic_gate_status") == "passed"
-        and (
-            "*" in supported
-            or str(bundle["sample"].get("answer_type")) in supported
-        )
+        and ("*" in supported or str(bundle["sample"].get("answer_type")) in supported)
         and _answer_contract_supported(bundle["sample"])
     ]
+    market_target_shares = _empirical_market_target_shares(quality)
     selected = _stratified_sample(
         eligible,
         max(int(limit), 1),
         str(empirical.get("sample_seed") or "qa-l3-v1"),
+        market_target_shares=market_target_shares,
     )
     if not selected:
-        raise RuntimeError(
-            "No supported deterministic QA samples are available for L3"
-        )
+        raise RuntimeError("No supported deterministic QA samples are available for L3")
 
     run_id = _new_run_id()
     model_manifest = {
@@ -143,6 +142,18 @@ def run_empirical_model_evaluation(
     sample_manifest = {
         "sample_count": len(selected),
         "qa_ids": [str(bundle["qa_id"]) for bundle in selected],
+        "market_target_shares": market_target_shares,
+        "market_counts": dict(
+            sorted(
+                Counter(
+                    str(
+                        (bundle.get("distribution_label") or {}).get("market_subset")
+                        or "unknown"
+                    )
+                    for bundle in selected
+                ).items()
+            )
+        ),
         "strata": dict(
             sorted(Counter(_stratum(bundle) for bundle in selected).items())
         ),
@@ -212,9 +223,7 @@ def run_empirical_model_evaluation(
     factory = client_factory or OpenAICompatibleJsonClient
     retrieval_db_lock = Lock()
 
-    def invoke(
-        bundle: dict[str, Any], spec: dict[str, Any]
-    ) -> dict[str, Any]:
+    def invoke(bundle: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
         qa_id = str(bundle["qa_id"])
         role = str(spec.get("model_role") or spec.get("model") or "model")
         model_config = {**dict(quality.get("llm") or {}), **spec}
@@ -226,9 +235,7 @@ def run_empirical_model_evaluation(
             prompt_evidence[qa_id],
             trial_mode,
         )
-        trial_id = "qaempiricaltrial_" + _hash(
-            (run_id, qa_id, role, trial_mode)
-        )[:24]
+        trial_id = "qaempiricaltrial_" + _hash((run_id, qa_id, role, trial_mode))[:24]
         state: dict[str, Any] = {
             "api_call_success": False,
             "json_contract_success": False,
@@ -302,8 +309,7 @@ def run_empirical_model_evaluation(
                 "qa_build_id": bundle["qa_build_id"],
                 "qa_id": qa_id,
                 "model_role": role,
-                "provider": telemetry.get("provider")
-                or model_config.get("provider"),
+                "provider": telemetry.get("provider") or model_config.get("provider"),
                 "requested_model": model_config.get("model"),
                 "response_model": telemetry.get("response_model")
                 or telemetry.get("model_selected"),
@@ -341,8 +347,7 @@ def run_empirical_model_evaluation(
                 "qa_build_id": bundle["qa_build_id"],
                 "qa_id": qa_id,
                 "model_role": role,
-                "provider": telemetry.get("provider")
-                or model_config.get("provider"),
+                "provider": telemetry.get("provider") or model_config.get("provider"),
                 "requested_model": model_config.get("model"),
                 "response_model": telemetry.get("response_model"),
                 "trial_mode": trial_mode,
@@ -369,10 +374,7 @@ def run_empirical_model_evaluation(
         trials = [invoke(bundle, spec) for bundle, spec in tasks]
     else:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [
-                executor.submit(invoke, bundle, spec)
-                for bundle, spec in tasks
-            ]
+            futures = [executor.submit(invoke, bundle, spec) for bundle, spec in tasks]
             for future in as_completed(futures):
                 trials.append(future.result())
     insert_rows(
@@ -388,9 +390,7 @@ def run_empirical_model_evaluation(
             "telemetry",
         },
     )
-    failed_trials = sum(
-        not row["json_contract_success"] for row in trials
-    )
+    failed_trials = sum(not row["json_contract_success"] for row in trials)
     db.execute(
         "UPDATE qa_empirical_runs SET status = ?, completed_at = ? "
         "WHERE empirical_run_id = ?",
@@ -523,12 +523,10 @@ def build_empirical_report(
             f"- Mode: {mode}",
             f"- Samples: {report['sample_count']}",
             f"- Trials: {report['trial_count']}",
-            f"- Contract success: "
-            f"{report['overall']['contract_success_rate']}",
+            f"- Contract success: {report['overall']['contract_success_rate']}",
             f"- Semantic accuracy given valid contract: "
             f"{report['overall']['semantic_accuracy_given_valid_contract']}",
-            f"- End-to-end accuracy: "
-            f"{report['overall']['end_to_end_accuracy']}",
+            f"- End-to-end accuracy: {report['overall']['end_to_end_accuracy']}",
             f"- Model disagreements: {disagreement_count}",
             "",
             "## Models",
@@ -640,8 +638,7 @@ def _build_empirical_prompt(
                 "No evidence is supplied initially.",
                 "Use registered tools to retrieve evidence before answering.",
                 "Return a tool call as action=tool_call, tool, and arguments.",
-                "Return the final answer with action=final and "
-                "selected_evidence_ids.",
+                "Return the final answer with action=final and selected_evidence_ids.",
             ]
         )
     return "Solve this financial QA trial.\n" + json.dumps(
@@ -655,22 +652,22 @@ def _build_empirical_prompt(
 def _answer_payload_contract(
     answer_type: str, rubric: dict[str, Any]
 ) -> dict[str, Any]:
-    schema = resolve_answer_schema(
-        answer_type, {"type": answer_type}, rubric
-    )
+    schema = resolve_answer_schema(answer_type, {"type": answer_type}, rubric)
     return registry_model_contract(schema)["answer_payload"]
 
 
-def _contract_repair_prompt(
-    prompt: str, failures: list[dict[str, Any]]
-) -> str:
+def _contract_repair_prompt(prompt: str, failures: list[dict[str, Any]]) -> str:
     if not failures:
         return prompt
     failure = failures[-1]
     return (
         prompt
         + "\n\nCONTRACT REPAIR REQUIRED. The previous response was rejected: "
-        + str(failure.get("message") or failure.get("error_type") or "invalid JSON contract")
+        + str(
+            failure.get("message")
+            or failure.get("error_type")
+            or "invalid JSON contract"
+        )
         + ". Return exactly one JSON object with both non-empty answer_text and "
         + "answer_payload fields. Do not use a flat answer object, markdown, or commentary."
     )
@@ -689,9 +686,7 @@ def match_empirical_answer(
     observed: dict[str, Any],
     rubric: dict[str, Any],
 ) -> tuple[bool, dict[str, Any]]:
-    schema = resolve_answer_schema(
-        answer_type, {"type": answer_type}, rubric
-    )
+    schema = resolve_answer_schema(answer_type, {"type": answer_type}, rubric)
     return registry_match_answer(schema, expected, observed, rubric)
 
 
@@ -711,16 +706,12 @@ def _numeric_tolerance(target: Decimal, rubric: dict[str, Any]) -> Decimal:
     )
     places = rubric.get("requested_decimal_places")
     if places is not None:
-        absolute = max(
-            absolute, Decimal("0.5") * Decimal("1").scaleb(-int(places))
-        )
+        absolute = max(absolute, Decimal("0.5") * Decimal("1").scaleb(-int(places)))
     relative = _decimal(rubric.get("relative_tolerance")) or Decimal("0")
     return max(absolute, abs(target) * relative, Decimal("0.000001"))
 
 
-def _numeric_field_match(
-    expected: Any, observed: Any, rubric: dict[str, Any]
-) -> bool:
+def _numeric_field_match(expected: Any, observed: Any, rubric: dict[str, Any]) -> bool:
     target = _decimal(expected)
     value = _decimal(observed)
     if target is None or value is None:
@@ -741,9 +732,7 @@ def _table_match(
     if len(expected_rows) != len(observed_rows):
         return False
 
-    def row_matches(
-        expected_row: dict[str, Any], observed_row: dict[str, Any]
-    ) -> bool:
+    def row_matches(expected_row: dict[str, Any], observed_row: dict[str, Any]) -> bool:
         if not isinstance(observed_row, dict):
             return False
         for key, expected_value in expected_row.items():
@@ -871,7 +860,6 @@ def _load_evidence_facts(
     return result
 
 
-
 def _infer_legacy_trial_metrics(
     row: dict[str, Any],
     evaluation_mode: str,
@@ -971,16 +959,13 @@ def _complete_answer_contract(
             }
             return completion.payload, telemetry
         except Exception as exc:
-            failure_telemetry = dict(
-                getattr(exc, "telemetry", {}) or {}
-            )
+            failure_telemetry = dict(getattr(exc, "telemetry", {}) or {})
             state["telemetry"] = {
                 **dict(state.get("telemetry") or {}),
                 **failure_telemetry,
             }
             state["api_call_success"] = bool(
-                state["api_call_success"]
-                or failure_telemetry.get("http_success")
+                state["api_call_success"] or failure_telemetry.get("http_success")
             )
             failures.append(
                 {
@@ -1085,11 +1070,7 @@ def _semantic_answer_correct(details: dict[str, Any]) -> bool:
     if "numeric_error" in details and "tolerance" in details:
         error = _decimal(details.get("numeric_error"))
         tolerance = _decimal(details.get("tolerance"))
-        return bool(
-            error is not None
-            and tolerance is not None
-            and error <= tolerance
-        )
+        return bool(error is not None and tolerance is not None and error <= tolerance)
     checks = details.get("checks")
     if isinstance(checks, dict):
         semantic_checks = [
@@ -1140,10 +1121,7 @@ def _unit_currency_correct(
         True
         if not requested_currency
         else bool(observed_currencies)
-        and any(
-            _same_token(requested_currency, item)
-            for item in observed_currencies
-        )
+        and any(_same_token(requested_currency, item) for item in observed_currencies)
     )
     return unit_ok and currency_ok
 
@@ -1224,19 +1202,11 @@ def _row_identity(row: Any) -> tuple[str, ...]:
 def _trial_metric_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     count = len(rows)
     api_count = sum(bool(row.get("api_call_success")) for row in rows)
-    contract_count = sum(
-        bool(row.get("json_contract_success")) for row in rows
-    )
-    semantic_count = sum(
-        bool(row.get("semantic_answer_correct")) for row in rows
-    )
-    end_to_end_count = sum(
-        bool(row.get("end_to_end_correct")) for row in rows
-    )
+    contract_count = sum(bool(row.get("json_contract_success")) for row in rows)
+    semantic_count = sum(bool(row.get("semantic_answer_correct")) for row in rows)
+    end_to_end_count = sum(bool(row.get("end_to_end_correct")) for row in rows)
     evidence_rows = [
-        row
-        for row in rows
-        if row.get("evidence_selection_correct") is not None
+        row for row in rows if row.get("evidence_selection_correct") is not None
     ]
     evidence_count = sum(
         bool(row.get("evidence_selection_correct")) for row in evidence_rows
@@ -1270,15 +1240,11 @@ def _trial_metric_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "evidence_selection_applicable_count": len(evidence_rows),
         "evidence_selection_correct_rate": (
-            _rate(evidence_count, len(evidence_rows))
-            if evidence_rows
-            else None
+            _rate(evidence_count, len(evidence_rows)) if evidence_rows else None
         ),
         "end_to_end_correct_count": end_to_end_count,
         "end_to_end_accuracy": _rate(end_to_end_count, count),
-        "answer_pass_count": sum(
-            row.get("match_status") == "passed" for row in rows
-        ),
+        "answer_pass_count": sum(row.get("match_status") == "passed" for row in rows),
         "answer_pass_rate": _rate(
             sum(row.get("match_status") == "passed" for row in rows),
             contract_count,
@@ -1310,9 +1276,7 @@ def _load_distractor_facts(
         if str(row["fact_id"]) not in excluded_fact_ids
     ]
     candidates.sort(
-        key=lambda fact_id: _hash(
-            (seed, bundle["qa_id"], "distractor", fact_id)
-        )
+        key=lambda fact_id: _hash((seed, bundle["qa_id"], "distractor", fact_id))
     )
     return _load_evidence_facts(
         db,
@@ -1480,9 +1444,7 @@ def _execute_registered_tool(
         entity_id = str(arguments.get("entity_id") or "").strip()
         metric_id = str(arguments.get("metric_id") or "").strip()
         if not entity_id or not metric_id:
-            raise ValueError(
-                "search_facts requires entity_id and metric_id"
-            )
+            raise ValueError("search_facts requires entity_id and metric_id")
         conditions = [
             "build_id = ?",
             "entity_id = ?",
@@ -1540,9 +1502,7 @@ def _calculator(arguments: dict[str, Any]) -> dict[str, str]:
     elif operation == "mean":
         result = sum(numbers, Decimal("0")) / Decimal(len(numbers))
     else:
-        raise ValueError(
-            "Unsupported calculator operation or argument cardinality"
-        )
+        raise ValueError("Unsupported calculator operation or argument cardinality")
     return {"value": format(result, "f")}
 
 
@@ -1558,9 +1518,7 @@ def _merge_telemetry(
         "estimated_cost",
     ):
         if accumulated.get(key) is not None or current.get(key) is not None:
-            out[key] = float(accumulated.get(key) or 0) + float(
-                current.get(key) or 0
-            )
+            out[key] = float(accumulated.get(key) or 0) + float(current.get(key) or 0)
     return out
 
 
@@ -1626,10 +1584,14 @@ def _accuracy_slices(
 
 
 def _stratified_sample(
-    bundles: list[dict[str, Any]], limit: int, seed: str
+    bundles: list[dict[str, Any]],
+    limit: int,
+    seed: str,
+    *,
+    market_target_shares: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
-    markets: dict[str, dict[str, dict[str, list[dict[str, Any]]]]] = (
-        defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    markets: dict[str, dict[str, dict[str, list[dict[str, Any]]]]] = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(list))
     )
     for bundle in bundles:
         label = bundle.get("distribution_label") or {}
@@ -1655,19 +1617,25 @@ def _stratified_sample(
             )
             stratum_cursor[pair] = 0
 
+    target = min(limit, len(bundles))
+    market_targets = _market_target_counts(markets, target, market_target_shares)
+    market_selected = Counter()
     selected: list[dict[str, Any]] = []
     market_order = sorted(markets, key=lambda key: _hash((seed, key)))
-    target = min(limit, len(bundles))
     while len(selected) < target:
         progressed = False
         for market in market_order:
+            if market_selected[market] >= market_targets[market]:
+                continue
             tasks = task_order[market]
             chosen_task = None
             for _ in tasks:
                 task_index = task_cursor[market] % len(tasks)
                 task_cursor[market] += 1
                 task = tasks[task_index]
-                if any(markets[market][task][key] for key in stratum_order[(market, task)]):
+                if any(
+                    markets[market][task][key] for key in stratum_order[(market, task)]
+                ):
                     chosen_task = task
                     break
             if chosen_task is None:
@@ -1680,6 +1648,7 @@ def _stratified_sample(
                 key = keys[index]
                 if markets[market][chosen_task][key]:
                     selected.append(markets[market][chosen_task][key].pop(0))
+                    market_selected[market] += 1
                     progressed = True
                     break
             if len(selected) >= target:
@@ -1687,6 +1656,80 @@ def _stratified_sample(
         if not progressed:
             break
     return selected
+
+
+def _empirical_market_target_shares(
+    quality: dict[str, Any],
+) -> dict[str, float]:
+    contract = dict(quality.get("dataset_role_contract") or {})
+    distributions = list(contract.get("target_distributions") or [])
+    task_market = next(
+        (
+            dict(item)
+            for item in distributions
+            if str(item.get("name")) == "benchmark_task_market"
+        ),
+        {},
+    )
+    shares = Counter()
+    for key, raw_share in dict(task_market.get("shares") or {}).items():
+        parts = str(key).split("|")
+        if len(parts) == 2:
+            shares[parts[1]] += float(raw_share)
+    total = sum(shares.values())
+    if total <= 0:
+        return {}
+    return {
+        market: value / total for market, value in sorted(shares.items()) if value > 0
+    }
+
+
+def _market_target_counts(
+    markets: dict[str, Any],
+    target: int,
+    requested_shares: dict[str, float] | None,
+) -> dict[str, int]:
+    if not requested_shares:
+        market_names = sorted(markets)
+        base, remainder = divmod(target, len(market_names))
+        return {
+            market: base + (index < remainder)
+            for index, market in enumerate(market_names)
+        }
+
+    normalized = {
+        str(market): float(share)
+        for market, share in requested_shares.items()
+        if float(share) > 0
+    }
+    missing_markets = sorted(set(normalized) - set(markets))
+    if missing_markets:
+        raise RuntimeError(
+            "L3 market quota has no eligible supply: " + ",".join(missing_markets)
+        )
+    total_share = sum(normalized.values())
+    raw = {market: target * share / total_share for market, share in normalized.items()}
+    counts = {market: int(value) for market, value in raw.items()}
+    remainder = target - sum(counts.values())
+    order = sorted(
+        raw,
+        key=lambda market: (-(raw[market] - counts[market]), market),
+    )
+    for market in order[:remainder]:
+        counts[market] += 1
+
+    for market, count in counts.items():
+        available = sum(
+            len(rows)
+            for task_groups in markets[market].values()
+            for rows in task_groups.values()
+        )
+        if available < count:
+            raise RuntimeError(
+                "L3 market quota supply is insufficient: "
+                f"market={market}, required={count}, available={available}"
+            )
+    return counts
 
 
 def _stratum(bundle: dict[str, Any]) -> str:
@@ -1739,7 +1782,11 @@ def _sum_telemetry(rows: list[dict[str, Any]], key: str) -> float | int | None:
     if not values:
         return None
     total = sum(float(item) for item in values)
-    return round(total, 8) if any(isinstance(item, float) for item in values) else int(total)
+    return (
+        round(total, 8)
+        if any(isinstance(item, float) for item in values)
+        else int(total)
+    )
 
 
 def _rate(numerator: int, denominator: int) -> float:
@@ -1752,8 +1799,10 @@ def _new_run_id() -> str:
 
 
 def _hash(value: Any) -> str:
-    payload = value if isinstance(value, str) else json.dumps(
-        value, ensure_ascii=False, sort_keys=True, default=str
+    payload = (
+        value
+        if isinstance(value, str)
+        else json.dumps(value, ensure_ascii=False, sort_keys=True, default=str)
     )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 

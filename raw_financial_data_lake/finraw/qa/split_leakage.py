@@ -98,7 +98,17 @@ def latest_year(time_scope: Any) -> int | None:
                 years.append(int(value))
             except (TypeError, ValueError):
                 pass
-    for key in ("period_start", "period_end", "as_of_date", "report_date"):
+    for key in (
+        "period_start",
+        "period_end",
+        "start_date",
+        "end_date",
+        "as_of_date",
+        "report_date",
+        "observation_date",
+        "trading_date",
+        "filing_date",
+    ):
         value = scope.get(key)
         if value:
             match = re.match(r"(\d{4})", str(value))
@@ -247,7 +257,9 @@ def strict_holdout_clusters(
         temporal_holdouts = _component_holdouts(
             rows,
             clusters,
-            key_fn=entity_metric_series_keys,
+            key_fn=lambda row: (
+                entity_metric_series_keys(row) | entity_metric_period_keys(row)
+            ),
             seed_fn=lambda row: (latest_year(row.get("time_scope")) or 0)
             >= cutoff_year,
         )

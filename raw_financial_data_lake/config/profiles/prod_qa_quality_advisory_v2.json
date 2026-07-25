@@ -1,0 +1,11 @@
+{
+  "extends": "prod_qa_quality_advisory.json",
+  "qa": {
+    "quality_evaluation": {
+      "judge_routing": {
+        "secondary_review_scope": "routed",
+        "random_high_score_audit_ratio": 0.05
+      }
+    }
+  }
+}

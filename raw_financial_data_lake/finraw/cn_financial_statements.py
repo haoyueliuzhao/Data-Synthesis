@@ -5,6 +5,8 @@ import json
 import logging
 import re
 from collections import Counter, defaultdict
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from dataclasses import dataclass
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
@@ -14,8 +16,8 @@ from typing import Any
 from finraw.builds import finish_build, start_build, versioned_id
 from finraw.db.client import DBProtocol
 
-PARSER_VERSION = "1.33.0"
-EVIDENCE_POLICY_VERSION = "1.33.0"
+PARSER_VERSION = "1.34.1"
+EVIDENCE_POLICY_VERSION = "1.34.1"
 SOURCE_ID = "cninfo_announcements"
 RECORD_TYPE = "cninfo_pdf_announcement"
 CN_DISCLOSURE_RECORD_TYPES = {
@@ -102,6 +104,101 @@ class ParsedDocument:
     candidates: list[dict[str, Any]]
     diagnostics: dict[str, Any]
 
+_PARSER_WORKER_CONTEXT: dict[str, Any] = {}
+
+
+def _initialize_parser_worker(
+    config: dict[str, Any],
+    aliases_by_source: dict[str, dict[str, str]],
+    entities_by_source: dict[str, dict[str, str]],
+    metric_statement_types: dict[str, str],
+    policy: dict[str, Any],
+) -> None:
+    global _PARSER_WORKER_CONTEXT
+    _PARSER_WORKER_CONTEXT = {
+        "config": config,
+        "aliases_by_source": aliases_by_source,
+        "entities_by_source": entities_by_source,
+        "metric_statement_types": metric_statement_types,
+        "policy": policy,
+    }
+    logging.getLogger("pdfminer.pdfinterp").setLevel(logging.ERROR)
+
+
+def _parse_document_object(
+    obj: dict[str, Any],
+) -> tuple[dict[str, Any], ParsedDocument | None, str | None, str | None]:
+    context = _PARSER_WORKER_CONTEXT
+    config = context["config"]
+    aliases_by_source = context["aliases_by_source"]
+    entities_by_source = context["entities_by_source"]
+    metric_statement_types = context["metric_statement_types"]
+    policy = context["policy"]
+    metadata = _json_value(obj.get("record_json"))
+    if not isinstance(metadata, dict):
+        metadata = {}
+    metadata = {
+        **metadata,
+        "source_id": obj.get("source_id"),
+        "source_publish_date": _iso_date_value(obj.get("source_publish_date")),
+        "record_period_hint": obj.get("period_hint"),
+    }
+    source_id = str(obj["source_id"])
+    entity_id = _entity_id_for_object(
+        obj,
+        metadata,
+        entities_by_source.get(source_id, {}),
+    )
+    if not entity_id:
+        return (
+            obj,
+            None,
+            "missing_canonical_entity",
+            f"No active {source_id} entity alias matched the document stock code.",
+        )
+    path = _resolve_storage_path(obj.get("storage_uri"), config)
+    if not path or not path.exists():
+        return (
+            obj,
+            None,
+            "missing_pdf",
+            f"Storage path does not exist: {obj.get('storage_uri')}",
+        )
+    try:
+        parsed = parse_cninfo_pdf(
+            path,
+            raw_object_id=str(obj["raw_object_id"]),
+            entity_id=entity_id,
+            metadata=metadata,
+            metric_aliases=aliases_by_source.get(source_id, {}),
+            metric_statement_types=metric_statement_types,
+            maximum_statement_pages=int(
+                policy.get("maximum_statement_pages") or 20
+            ),
+            maximum_unit_carry_pages=int(
+                policy.get("maximum_unit_carry_pages") or 12
+            ),
+            maximum_statement_carry_pages=int(
+                policy.get("maximum_statement_carry_pages") or 4
+            ),
+            source_id=source_id,
+        )
+    except Exception as exc:
+        return (
+            obj,
+            None,
+            "pdf_parse_error",
+            f"{type(exc).__name__}: {exc}",
+        )
+    if not parsed.tables:
+        return (
+            obj,
+            None,
+            "no_consolidated_statement_tables",
+            "No eligible consolidated statement page with an explicit unit was found.",
+        )
+    return obj, parsed, None, None
+
 
 def refresh_cn_financial_statements(
     db: DBProtocol,
@@ -137,6 +234,8 @@ def refresh_cn_financial_statements(
         else configured_limit
     )
     allow_single = bool(policy.get("allow_single_official_source", True))
+    parser_workers = max(1, int(policy.get("parser_workers") or 1))
+    progress_interval = max(0, int(policy.get("parser_progress_interval") or 100))
     build_id = start_build(
         db,
         layer="fact_build",
@@ -149,6 +248,7 @@ def refresh_cn_financial_statements(
                 "source_ids": selected_source_ids,
                 "report_types": selected_report_types,
                 "allow_single_official_source": allow_single,
+                "parser_workers": parser_workers,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -168,6 +268,7 @@ def refresh_cn_financial_statements(
         "candidate_count": 0,
         "evidence_verified_count": 0,
         "promotion_approved_count": 0,
+        "parser_workers": parser_workers,
         "source_object_counts": Counter(),
         "source_candidate_counts": Counter(),
         "cross_check_counts": Counter(),
@@ -209,86 +310,64 @@ def refresh_cn_financial_statements(
         )
         entities_by_source = _load_entity_aliases(db, selected_source_ids)
         parsed_documents: list[tuple[dict[str, Any], ParsedDocument]] = []
-        for obj in objects:
-            metadata = _json_value(obj.get("record_json"))
-            if not isinstance(metadata, dict):
-                metadata = {}
-            metadata = {
-                **metadata,
-                "source_id": obj.get("source_id"),
-                "source_publish_date": _iso_date_value(
-                    obj.get("source_publish_date")
-                ),
-                "record_period_hint": obj.get("period_hint"),
-            }
-            source_id = str(obj["source_id"])
-            entity_id = _entity_id_for_object(
-                obj,
-                metadata,
-                entities_by_source.get(source_id, {}),
-            )
-            if not entity_id:
-                _record_failure(
-                    report,
-                    obj,
-                    "missing_canonical_entity",
-                    f"No active {source_id} entity alias matched the document stock code.",
+
+        worker_args = (
+            {"storage_root": config.get("storage_root")},
+            aliases_by_source,
+            entities_by_source,
+            metric_statement_types,
+            policy,
+        )
+        pdfminer_logger = logging.getLogger("pdfminer.pdfinterp")
+        previous_pdfminer_level = pdfminer_logger.level
+        pdfminer_logger.setLevel(logging.ERROR)
+        try:
+            if parser_workers == 1:
+                _initialize_parser_worker(*worker_args)
+                parsed_results = map(_parse_document_object, objects)
+                executor = None
+            else:
+                executor = ProcessPoolExecutor(
+                    max_workers=parser_workers,
+                    mp_context=get_context("spawn"),
+                    initializer=_initialize_parser_worker,
+                    initargs=worker_args,
                 )
-                continue
-            path = _resolve_storage_path(obj.get("storage_uri"), config)
-            if not path or not path.exists():
-                _record_failure(
-                    report,
-                    obj,
-                    "missing_pdf",
-                    f"Storage path does not exist: {obj.get('storage_uri')}",
+                parsed_results = executor.map(
+                    _parse_document_object,
+                    objects,
+                    chunksize=1,
                 )
-                continue
             try:
-                pdfminer_logger = logging.getLogger("pdfminer.pdfinterp")
-                previous_pdfminer_level = pdfminer_logger.level
-                pdfminer_logger.setLevel(logging.ERROR)
-                parsed = parse_cninfo_pdf(
-                    path,
-                    raw_object_id=str(obj["raw_object_id"]),
-                    entity_id=entity_id,
-                    metadata=metadata,
-                    metric_aliases=aliases_by_source.get(source_id, {}),
-                    metric_statement_types=metric_statement_types,
-                    maximum_statement_pages=int(
-                        policy.get("maximum_statement_pages") or 20
-                    ),
-                    maximum_unit_carry_pages=int(
-                        policy.get("maximum_unit_carry_pages") or 12
-                    ),
-                    maximum_statement_carry_pages=int(
-                        policy.get("maximum_statement_carry_pages") or 4
-                    ),
-                    source_id=source_id,
-                )
-                pdfminer_logger.setLevel(previous_pdfminer_level)
-            except Exception as exc:
-                if "previous_pdfminer_level" in locals():
-                    pdfminer_logger.setLevel(previous_pdfminer_level)
-                _record_failure(
-                    report,
-                    obj,
-                    "pdf_parse_error",
-                    f"{type(exc).__name__}: {exc}",
-                )
-                continue
-            if not parsed.tables:
-                _record_failure(
-                    report,
-                    obj,
-                    "no_consolidated_statement_tables",
-                    "No eligible consolidated statement page with an explicit unit was found.",
-                )
-                continue
-            parsed_documents.append((obj, parsed))
-            report["parsed_object_count"] += 1
-            report["statement_page_count"] += len(parsed.chunks)
-            report["table_count"] += len(parsed.tables)
+                for index, (obj, parsed, failure_code, detail) in enumerate(
+                    parsed_results,
+                    start=1,
+                ):
+                    if parsed is None:
+                        _record_failure(
+                            report,
+                            obj,
+                            str(failure_code or "unknown_parse_failure"),
+                            str(detail or "Document parsing failed."),
+                        )
+                    else:
+                        parsed_documents.append((obj, parsed))
+                        report["parsed_object_count"] += 1
+                        report["statement_page_count"] += len(parsed.chunks)
+                        report["table_count"] += len(parsed.tables)
+                    if progress_interval and index % progress_interval == 0:
+                        print(
+                            "CN statement parsing progress: "
+                            f"{index}/{len(objects)} objects; "
+                            f"parsed={report['parsed_object_count']}; "
+                            f"failed={report['failed_object_count']}",
+                            flush=True,
+                        )
+            finally:
+                if executor is not None:
+                    executor.shutdown(wait=True, cancel_futures=False)
+        finally:
+            pdfminer_logger.setLevel(previous_pdfminer_level)
 
         all_candidates = [
             candidate
@@ -402,6 +481,11 @@ def parse_cninfo_pdf(
         raise RuntimeError(
             "PDF parsing requires the project 'pdf' extra: pip install -e '.[pdf]'"
         ) from exc
+
+    # Malformed public PDFs are recorded through parser diagnostics; suppress the
+    # underlying MuPDF xref flood so one document cannot overwhelm build logs.
+    fitz.TOOLS.mupdf_display_errors(False)
+    fitz.TOOLS.mupdf_display_warnings(False)
 
     chunks: list[dict[str, Any]] = []
     tables: list[dict[str, Any]] = []

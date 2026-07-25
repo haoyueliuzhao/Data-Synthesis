@@ -1,0 +1,13 @@
+{
+  "extends": "prod_qa_deepseek_v4_greater_china_1442_v4.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 0,
+      "single_fact_worldbank": 0,
+      "single_fact_imf": 0,
+      "single_fact_fred": 0,
+      "single_fact_greater_china": 310
+    }
+  }
+}

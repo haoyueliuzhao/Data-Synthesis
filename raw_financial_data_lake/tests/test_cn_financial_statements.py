@@ -1084,7 +1084,7 @@ def test_approved_candidate_is_promoted_by_atomic_fact_build(
             matched_metric_id, evidence_status, cross_check_status,
             promotion_status, qa_eligible, kg_eligible
         ) VALUES (
-            ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0
         )
         """,
@@ -1119,6 +1119,19 @@ def test_approved_candidate_is_promoted_by_atomic_fact_build(
             "verified",
             "single_official_document",
             "approved_for_atomic_fact",
+        ],
+    )
+    db.execute(
+        "INSERT INTO pipeline_builds "
+        "(build_id, layer, command, status, started_at, completed_at) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        [
+            "candidate_build_1",
+            "fact_build",
+            "refresh-cn-financial-statements",
+            "success",
+            "2026-01-01T00:00:00+00:00",
+            "2026-01-01T00:01:00+00:00",
         ],
     )
     db.execute(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -92,23 +93,33 @@ def test_quality_evaluation_dual_judge_and_report(tmp_path: Path) -> None:
     assert report["decision_counts"] == {"accepted": 1}
     assert report["subjective_quality"]["mean"] == pytest.approx(86.25)
     assert report["telemetry"]["total_tokens"] == 300
-    assert report["issue_codes_by_role"]["surface_financial_analyst"][
-        "issue_counts"
-    ]["time_scope_awkward"] == 1
-    assert report["issue_codes_by_role"]["grounded_qa_auditor"][
-        "issue_counts"
-    ]["weak_followup_logic"] == 1
-    assert report["issue_code_consensus"]["flagged_by_any_judge"][
-        "output_instruction_slightly_formulaic"
-    ] == 1
-    assert report["issue_code_consensus"]["flagged_by_two_or_more"][
-        "output_instruction_slightly_formulaic"
-    ] == 1
+    assert (
+        report["issue_codes_by_role"]["surface_financial_analyst"]["issue_counts"][
+            "time_scope_awkward"
+        ]
+        == 1
+    )
+    assert (
+        report["issue_codes_by_role"]["grounded_qa_auditor"]["issue_counts"][
+            "weak_followup_logic"
+        ]
+        == 1
+    )
+    assert (
+        report["issue_code_consensus"]["flagged_by_any_judge"][
+            "output_instruction_slightly_formulaic"
+        ]
+        == 1
+    )
+    assert (
+        report["issue_code_consensus"]["flagged_by_two_or_more"][
+            "output_instruction_slightly_formulaic"
+        ]
+        == 1
+    )
     assert report["issue_code_consensus"]["confirmed_by_adjudicator"] == {}
     feedback = report["generation_feedback"]
-    formulaic = feedback["issue_summary"][
-        "output_instruction_slightly_formulaic"
-    ]
+    formulaic = feedback["issue_summary"]["output_instruction_slightly_formulaic"]
     assert formulaic["target_component"] == "output_contract_verbalizer"
     assert formulaic["flagged_by_any_judge"] == 1
     assert formulaic["flagged_by_two_or_more"] == 1
@@ -244,18 +255,20 @@ def _config() -> dict[str, Any]:
     }
 
 
-def _judge_payload(
-    score: int, role: str | None = None
-) -> dict[str, Any]:
-    dimensions = ROLE_DIMENSIONS.get(role) if role else (
-        "task_authenticity",
-        "standalone_financial_value",
-        "financial_semantic_validity",
-        "clarity_unambiguity",
-        "reasoning_necessity",
-        "evidence_scope_fit",
-        "answer_rubric_fit",
-        "language_quality",
+def _judge_payload(score: int, role: str | None = None) -> dict[str, Any]:
+    dimensions = (
+        ROLE_DIMENSIONS.get(role)
+        if role
+        else (
+            "task_authenticity",
+            "standalone_financial_value",
+            "financial_semantic_validity",
+            "clarity_unambiguity",
+            "reasoning_necessity",
+            "evidence_scope_fit",
+            "answer_rubric_fit",
+            "language_quality",
+        )
     )
     return {
         "rubric_version": "financial_qa_quality.v2",
@@ -297,8 +310,7 @@ def _db_with_sample(tmp_path: Path, *, failed_l0: bool) -> MetadataDB:
         ("AAPL_US", "Apple", "company", "entity_build_eval"),
     )
     db.execute(
-        "INSERT INTO metrics (metric_id, canonical_name, build_id) "
-        "VALUES (?, ?, ?)",
+        "INSERT INTO metrics (metric_id, canonical_name, build_id) VALUES (?, ?, ?)",
         ("revenue", "Revenue", "metric_build_eval"),
     )
     db.execute(
@@ -387,9 +399,7 @@ def _db_with_sample(tmp_path: Path, *, failed_l0: bool) -> MetadataDB:
             "candidate_eval",
             "single_fact",
             1,
-            json.dumps(
-                {"operators": [{"step_id": "lookup", "operator": "lookup"}]}
-            ),
+            json.dumps({"operators": [{"step_id": "lookup", "operator": "lookup"}]}),
             json.dumps({}),
             json.dumps([]),
             json.dumps({"type": "numeric"}),
@@ -498,7 +508,6 @@ def _db_with_sample(tmp_path: Path, *, failed_l0: bool) -> MetadataDB:
     return db
 
 
-
 def test_llm_secondary_review_replaces_pending_manual_step(tmp_path: Path) -> None:
     db = _db_with_sample(tmp_path, failed_l0=False)
     config = _config()
@@ -521,12 +530,13 @@ def test_llm_secondary_review_replaces_pending_manual_step(tmp_path: Path) -> No
         judge_function=base_with_one_dispute,
     )
     assert first["decision_counts"] == {"manual_review": 1}
-    assert first["risk_router"]["status_counts"] == {
-        "adversarial_challenge_pending": 1
-    }
-    assert first["judge_disagreement"]["unresolved_sources"][
-        "reason_counts"
-    ]["adjudicator_pending"] == 1
+    assert first["risk_router"]["status_counts"] == {"adversarial_challenge_pending": 1}
+    assert (
+        first["judge_disagreement"]["unresolved_sources"]["reason_counts"][
+            "adjudicator_pending"
+        ]
+        == 1
+    )
     assert first["adjudication"]["required_count"] == 1
     assert first["adjudication"]["pending_count"] == 1
 
@@ -565,23 +575,22 @@ def test_llm_secondary_review_replaces_pending_manual_step(tmp_path: Path) -> No
     )
     assert final["decision_counts"] == {"accepted": 1}
     assert final["population"]["judge_call_success_count"] == 3
-    assert final["issue_code_consensus"]["confirmed_by_adjudicator"][
-        "output_instruction_slightly_formulaic"
-    ] == 1
+    assert (
+        final["issue_code_consensus"]["confirmed_by_adjudicator"][
+            "output_instruction_slightly_formulaic"
+        ]
+        == 1
+    )
     assert final["adjudication"]["completed_count"] == 1
     assert final["adjudication"]["pending_count"] == 0
-    assert final["adjudication"]["resolution_decision_counts"] == {
-        "uphold": 1
-    }
+    assert final["adjudication"]["resolution_decision_counts"] == {"uphold": 1}
     assert final["adjudication"]["score_delta"]["mean"] == 0
     stored = db.fetchone(
         "SELECT judge_disagreement FROM qa_evaluation_items "
         "WHERE evaluation_run_id = ?",
         (initialized["evaluation_run_id"],),
     )
-    trace = json.loads(stored["judge_disagreement"])[
-        "adjudication_trace"
-    ]
+    trace = json.loads(stored["judge_disagreement"])["adjudication_trace"]
     assert trace["base_threshold_decision"] == "accepted"
     assert trace["final_decision"] == "accepted"
     assert trace["score_delta"] == 0
@@ -666,7 +675,6 @@ def test_l3_dual_model_trials_are_scored_by_gold(tmp_path: Path) -> None:
     db.close()
 
 
-
 def test_l3_small_sample_balances_markets_before_substrata() -> None:
     bundles = []
     for market in ("global", "greater_china"):
@@ -685,22 +693,25 @@ def test_l3_small_sample_balances_markets_before_substrata() -> None:
                 }
             )
 
-    selected = _stratified_sample(bundles, 6, "balanced-seed")
+    selected = _stratified_sample(
+        bundles,
+        6,
+        "balanced-seed",
+        market_target_shares={"global": 2 / 3, "greater_china": 1 / 3},
+    )
     counts = {
         market: sum(
-            row["distribution_label"]["market_subset"] == market
-            for row in selected
+            row["distribution_label"]["market_subset"] == market for row in selected
         )
         for market in ("global", "greater_china")
     }
-    assert counts == {"global": 3, "greater_china": 3}
+    assert counts == {"global": 4, "greater_china": 2}
     for market in ("global", "greater_china"):
         assert {
             row["distribution_label"]["benchmark_task"]
             for row in selected
             if row["distribution_label"]["market_subset"] == market
         } == {"T2", "T3"}
-
 
 
 @pytest.mark.parametrize(
@@ -749,15 +760,11 @@ def test_l3_small_sample_balances_markets_before_substrata() -> None:
             "ranked_table",
             {"table": [{"rank": 1, "entity_id": "A", "value": "7.322"}]},
             {
-                "ranking_table": [
-                    {"rank": 1, "entity_id": "A", "value": "7.32"}
-                ],
+                "ranking_table": [{"rank": 1, "entity_id": "A", "value": "7.32"}],
                 "unit": "percent",
             },
             {
-                "target_rows": [
-                    {"rank": 1, "entity_id": "A", "value": "7.322"}
-                ],
+                "target_rows": [{"rank": 1, "entity_id": "A", "value": "7.322"}],
                 "requested_unit": "percent",
                 "unit_must_match": True,
                 "requested_decimal_places": 2,
@@ -796,9 +803,7 @@ def test_l3_structured_answer_contracts(
     observed: dict[str, Any],
     rubric: dict[str, Any],
 ) -> None:
-    matched, details = match_empirical_answer(
-        answer_type, expected, observed, rubric
-    )
+    matched, details = match_empirical_answer(answer_type, expected, observed, rubric)
     assert matched is True, details
 
 
@@ -839,7 +844,6 @@ def test_l3_table_contract_rejects_missing_scope_row() -> None:
     )
     assert matched is False
     assert details["checks"]["screening_table"] is False
-
 
 
 def test_l3_comparison_rows_are_order_independent() -> None:
@@ -894,7 +898,6 @@ def test_l3_ranked_table_remains_order_sensitive() -> None:
     assert details["checks"]["ranking_table"] is False
 
 
-
 def test_l3_contract_retry_includes_failure_feedback() -> None:
     prompt = _contract_repair_prompt(
         "ORIGINAL",
@@ -904,7 +907,6 @@ def test_l3_contract_retry_includes_failure_feedback() -> None:
     assert "missing answer_payload" in prompt
     assert "answer_text" in prompt
     assert "answer_payload" in prompt
-
 
 
 def test_l0_missing_required_check_fails_closed(tmp_path: Path) -> None:
@@ -970,14 +972,10 @@ def test_adversarial_contract_reviews_only_disputed_dimensions() -> None:
             "main_weakness": "The reasoning chain is inflated.",
         },
     }
-    normalized = normalize_adversarial_payload(
-        payload, ["reasoning_necessity"]
-    )
+    normalized = normalize_adversarial_payload(payload, ["reasoning_necessity"])
     assert normalized["scores"] == {}
     assert normalized["issue_codes"] == ["gratuitous_complexity"]
-    assert normalized["resolutions"]["reasoning_necessity"][
-        "resolved_score"
-    ] == 2
+    assert normalized["resolutions"]["reasoning_necessity"]["resolved_score"] == 2
     with pytest.raises(JudgeContractError, match="Reviewed dimensions mismatch"):
         normalize_adversarial_payload(
             payload, ["reasoning_necessity", "financial_semantic_validity"]
@@ -991,10 +989,7 @@ def test_l3_evidence_is_pinned_to_qa_build_versions(tmp_path: Path) -> None:
     assert facts[0]["fact_build_id"] == "fact_build_eval"
     assert facts[0]["entity_build_id"] == "entity_build_eval"
     assert facts[0]["metric_build_id"] == "metric_build_eval"
-    assert (
-        facts[0]["source_definition_build_id"]
-        == "source_definition_build_eval"
-    )
+    assert facts[0]["source_definition_build_id"] == "source_definition_build_eval"
     db.close()
 
 
@@ -1037,9 +1032,7 @@ def test_filtered_rank_followup_uses_sectioned_schema_contract() -> None:
             {"rank": 1, "entity_id": "A", "value": "20"},
             {"rank": 2, "entity_id": "B", "value": "15"},
         ],
-        "followup_table": [
-            {"rank": 1, "entity_id": "A", "value": "35"}
-        ],
+        "followup_table": [{"rank": 1, "entity_id": "A", "value": "35"}],
         "metadata": {
             "top_k": 3,
             "followup_rank": 1,
@@ -1059,6 +1052,7 @@ def test_filtered_rank_followup_uses_sectioned_schema_contract() -> None:
             },
             schema,
         )
+
 
 def test_quality_release_selects_only_accepted_training_items(
     tmp_path: Path,
@@ -1201,9 +1195,7 @@ def test_unresolved_adversarial_challenge_is_quarantined(
         judge_function=escalating_adversarial,
     )
 
-    assert report["decision_counts"] == {
-        "quarantined_judge_disagreement": 1
-    }
+    assert report["decision_counts"] == {"quarantined_judge_disagreement": 1}
     assert report["risk_router"]["status_counts"] == {
         "quarantined_judge_disagreement": 1
     }
@@ -1213,6 +1205,7 @@ def test_unresolved_adversarial_challenge_is_quarantined(
     release = build_quality_release(db, initialized["evaluation_run_id"])
     assert release["selected_count"] == 0
     db.close()
+
 
 def _l3_mode_config(mode: str) -> dict[str, Any]:
     config = _config()
@@ -1296,21 +1289,12 @@ def test_l3_modes_a_to_c_have_distinct_inputs_and_fixed_metrics(
     assert report["evaluation_mode"] == mode
     assert report["overall"]["api_call_success_rate"] == 1.0
     assert report["overall"]["contract_success_rate"] == 1.0
-    assert (
-        report["overall"]["semantic_accuracy_given_valid_contract"]
-        == 1.0
-    )
+    assert report["overall"]["semantic_accuracy_given_valid_contract"] == 1.0
     assert report["overall"]["end_to_end_accuracy"] == 1.0
     if mode == "evidence_pool":
-        assert (
-            report["overall"]["evidence_selection_correct_rate"]
-            == 1.0
-        )
+        assert report["overall"]["evidence_selection_correct_rate"] == 1.0
     else:
-        assert (
-            report["overall"]["evidence_selection_correct_rate"]
-            is None
-        )
+        assert report["overall"]["evidence_selection_correct_rate"] is None
     db.close()
 
 
@@ -1319,8 +1303,7 @@ def test_l3_mode_d_executes_registered_tools_before_answering(
 ) -> None:
     db = _db_with_sample(tmp_path, failed_l0=False)
     db.execute(
-        "UPDATE standardized_facts SET graph_ready = 1 "
-        "WHERE fact_id = 'fact_secret'"
+        "UPDATE standardized_facts SET graph_ready = 1 WHERE fact_id = 'fact_secret'"
     )
 
     class ToolClient:
@@ -1402,8 +1385,7 @@ def test_l3_mode_d_executes_registered_tools_before_answering(
     assert len(trials) == 2
     assert all(len(json.loads(row["tool_trace"])) == 3 for row in trials)
     assert all(
-        json.loads(row["selected_evidence_ids"]) == ["fact_secret"]
-        for row in trials
+        json.loads(row["selected_evidence_ids"]) == ["fact_secret"] for row in trials
     )
     assert all(bool(row["end_to_end_correct"]) for row in trials)
     db.close()
@@ -1444,13 +1426,11 @@ def test_l3_separates_api_success_from_json_contract_success(
 
     assert report["overall"]["api_call_success_rate"] == 1.0
     assert report["overall"]["contract_success_rate"] == 0.0
-    assert (
-        report["overall"]["semantic_accuracy_given_valid_contract"]
-        == 0.0
-    )
+    assert report["overall"]["semantic_accuracy_given_valid_contract"] == 0.0
     assert report["overall"]["end_to_end_accuracy"] == 0.0
     assert report["status"] == "partial"
     db.close()
+
 
 def test_l3_http_success_survives_json_contract_exception(
     tmp_path: Path,
@@ -1546,10 +1526,7 @@ def test_l3_semantic_correctness_is_separate_from_unit_currency(
         client_factory=WrongUnitClient,
     )
 
-    assert (
-        report["overall"]["semantic_accuracy_given_valid_contract"]
-        == 1.0
-    )
+    assert report["overall"]["semantic_accuracy_given_valid_contract"] == 1.0
     assert report["overall"]["unit_currency_correct_rate"] == 0.0
     assert report["overall"]["end_to_end_accuracy"] == 0.0
     db.close()

@@ -1,0 +1,13 @@
+{
+  "extends": "prod_qa_deepseek_v4_global_1558_v5.json",
+  "qa": {
+    "quality_gate": {
+      "minimum_graph_pattern_samples": {
+        "temporal_argmax_then_metric_lookup": 50
+      },
+      "minimum_generation_pipeline_samples": {
+        "automatic_pattern_mining": 200
+      }
+    }
+  }
+}

@@ -541,14 +541,6 @@
         "allowed_metric_pairs": [
           [
             "revenue",
-            "gross_profit"
-          ],
-          [
-            "revenue",
-            "operating_income"
-          ],
-          [
-            "revenue",
             "net_income"
           ],
           [

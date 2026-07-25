@@ -15,11 +15,31 @@ TEMPLATES: list[dict[str, Any]] = [
         "difficulty_base": "easy",
     },
     {
+        "template_id": "single_fact_flow_en_02",
+        "task_family": "single_fact",
+        "period_type": "period_flow",
+        "language": "en",
+        "template_text": "For {period}, what {metric} did {entity} report?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "easy",
+    },
+    {
         "template_id": "single_fact_instant_en_01",
         "task_family": "single_fact",
         "period_type": "point_in_time",
         "language": "en",
         "template_text": "What was {entity}'s {metric} as of {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "easy",
+    },
+    {
+        "template_id": "single_fact_instant_en_02",
+        "task_family": "single_fact",
+        "period_type": "point_in_time",
+        "language": "en",
+        "template_text": "What {metric} did {entity} report at the end of {period}?",
         "required_slots": ["entity", "metric", "period"],
         "answer_type": "numeric",
         "difficulty_base": "easy",
@@ -35,6 +55,16 @@ TEMPLATES: list[dict[str, Any]] = [
         "difficulty_base": "easy",
     },
     {
+        "template_id": "single_fact_observation_en_02",
+        "task_family": "single_fact",
+        "period_type": "observation",
+        "language": "en",
+        "template_text": "For {period}, what {metric} value was recorded for {entity}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "easy",
+    },
+    {
         "template_id": "difference_en_01",
         "task_family": "calculation",
         "language": "en",
@@ -44,10 +74,28 @@ TEMPLATES: list[dict[str, Any]] = [
         "difficulty_base": "medium",
     },
     {
+        "template_id": "difference_en_02",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "Calculate the change in {entity}'s {metric} between {previous_period} and {period}.",
+        "required_slots": ["entity", "metric", "previous_period", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
         "template_id": "yoy_growth_en_01",
         "task_family": "calculation",
         "language": "en",
         "template_text": "What was the year-over-year growth rate of {entity}'s {metric} in {period}?",
+        "required_slots": ["entity", "metric", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "yoy_growth_en_02",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "How did {entity}'s {metric} change year over year in {period}?",
         "required_slots": ["entity", "metric", "period"],
         "answer_type": "numeric",
         "difficulty_base": "medium",
@@ -66,6 +114,15 @@ TEMPLATES: list[dict[str, Any]] = [
         "task_family": "calculation",
         "language": "en",
         "template_text": "What was {entity}'s {ratio} in {period}?",
+        "required_slots": ["entity", "ratio", "period"],
+        "answer_type": "numeric",
+        "difficulty_base": "medium",
+    },
+    {
+        "template_id": "ratio_en_02",
+        "task_family": "calculation",
+        "language": "en",
+        "template_text": "Calculate {entity}'s {ratio} for {period}.",
         "required_slots": ["entity", "ratio", "period"],
         "answer_type": "numeric",
         "difficulty_base": "medium",
@@ -164,7 +221,7 @@ TEMPLATES: list[dict[str, Any]] = [
         "template_id": "multi_period_average_en_01",
         "task_family": "graph_temporal_aggregation",
         "language": "en",
-        "template_text": "Across {observation_count} comparable {frequency} observations from {start_period} through {end_period}, what was the average {metric} for {entity}?",
+        "template_text": "From {start_period} through {end_period}, using one comparable {frequency} observation per period ({observation_count} in total), what was {entity}'s average {metric}?",
         "required_slots": [
             "entity",
             "metric",
@@ -180,7 +237,7 @@ TEMPLATES: list[dict[str, Any]] = [
         "template_id": "multi_period_average_en_02",
         "task_family": "graph_temporal_aggregation",
         "language": "en",
-        "template_text": "Using the {observation_count} comparable {frequency} observations from {start_period} to {end_period}, what arithmetic mean did {entity} report for {metric}?",
+        "template_text": "Over {start_period}-{end_period}, what was the arithmetic mean of {entity}'s {metric} across the {observation_count} comparable {frequency} observations?",
         "required_slots": [
             "entity",
             "metric",
@@ -196,7 +253,7 @@ TEMPLATES: list[dict[str, Any]] = [
         "template_id": "temporal_peak_followup_en_01",
         "task_family": "graph_multi_stage",
         "language": "en",
-        "template_text": "Between {start_period} and {end_period}, when did {entity}'s {primary_metric} peak, and what was its {secondary_metric} in that same period?",
+        "template_text": "Between {start_period} and {end_period}, identify the period when {entity}'s {primary_metric} was highest, then use that same period to report {secondary_metric}.",
         "required_slots": [
             "entity",
             "primary_metric",
@@ -211,7 +268,7 @@ TEMPLATES: list[dict[str, Any]] = [
         "template_id": "temporal_peak_followup_en_02",
         "task_family": "graph_multi_stage",
         "language": "en",
-        "template_text": "Identify {entity}'s highest {primary_metric} from {start_period} through {end_period}, then report {secondary_metric} for the selected period.",
+        "template_text": "Which period from {start_period} through {end_period} had {entity}'s highest {primary_metric}, and what {secondary_metric} did it report in that period?",
         "required_slots": [
             "entity",
             "primary_metric",
@@ -402,12 +459,18 @@ TEMPLATES: list[dict[str, Any]] = [
 
 _ZH_TEMPLATE_TEXTS = {
     "single_fact_flow_en_01": "{entity}在{period}报告的{metric}是多少？",
+    "single_fact_flow_en_02": "{entity}在{period}披露的{metric}为多少？",
     "single_fact_instant_en_01": "截至{period}，{entity}的{metric}是多少？",
+    "single_fact_instant_en_02": "{entity}在{period}期末的{metric}为多少？",
     "single_fact_observation_en_01": "{entity}在{period}的{metric}观测值是多少？",
+    "single_fact_observation_en_02": "{period}记录的{entity}{metric}数值为多少？",
     "difference_en_01": "从{previous_period}到{period}，{entity}的{metric}变化了多少？",
+    "difference_en_02": "计算{entity}的{metric}在{previous_period}与{period}之间的变化额。",
     "yoy_growth_en_01": "{entity}的{metric}在{period}的同比增长率是多少？",
+    "yoy_growth_en_02": "{period}，{entity}的{metric}较上年同期变化了多少？",
     "qoq_growth_en_01": "{entity}的{metric}在{period}的环比增长率是多少？",
     "ratio_en_01": "{entity}在{period}的{ratio}是多少？",
+    "ratio_en_02": "计算{entity}在{period}的{ratio}。",
     "share_en_01": "在{scope}中，{entity}在{period}的{metric}占总量的比例是多少？",
     "temporal_extrema_en_01": "在{start_period}至{end_period}期间，{entity}的{metric}何时达到{extreme}，对应数值是多少？",
     "ranking_en_01": "在{scope}中，按{period}的{metric}从高到低列出前{top_k}个实体。",
@@ -418,10 +481,10 @@ _ZH_TEMPLATE_TEXTS = {
     "pairwise_entity_comparison_en_02": "比较{entity_a}与{entity_b}在{period}的{metric}，指出较高者及差额。",
     "cross_metric_comparison_en_01": "对{entity}而言，{period}的{metric_a}和{metric_b}哪一个更高，相差多少？",
     "cross_metric_comparison_en_02": "比较{entity}在{period}的{metric_a}与{metric_b}，并给出绝对差额。",
-    "multi_period_average_en_01": "基于{start_period}至{end_period}的{observation_count}个可比{frequency}观测，{entity}的{metric}平均值是多少？",
-    "multi_period_average_en_02": "使用{start_period}至{end_period}的{observation_count}个可比{frequency}观测，计算{entity}的{metric}算术平均值。",
-    "temporal_peak_followup_en_01": "在{start_period}至{end_period}期间，找出{entity}的{primary_metric}最高时期，并报告同一期的{secondary_metric}。",
-    "temporal_peak_followup_en_02": "找出{entity}在{start_period}至{end_period}间{primary_metric}最高的期间，并报告该期的{secondary_metric}。",
+    "multi_period_average_en_01": "从{start_period}到{end_period}，按每期一个可比{frequency}观测（共{observation_count}个）计算，{entity}的{metric}平均值是多少？",
+    "multi_period_average_en_02": "在{start_period}至{end_period}的{observation_count}个可比{frequency}观测中，{entity}的{metric}算术平均值是多少？",
+    "temporal_peak_followup_en_01": "在{start_period}至{end_period}期间，先确定{entity}的{primary_metric}最高的时期，再查询该时期的{secondary_metric}。",
+    "temporal_peak_followup_en_02": "{entity}在{start_period}至{end_period}的哪个时期{primary_metric}最高？该时期的{secondary_metric}是多少？",
     "filter_then_rank_en_01": "在{scope}中，筛选{period}的{growth_metric}增长超过{growth_threshold}%的公司，再按{ranking_metric}列出前{top_k}名。",
     "filter_then_rank_en_02": "针对{period}，从{scope}筛选{growth_metric}增幅高于{growth_threshold}%的公司，再按{ranking_metric}排名并列出前{top_k}家。",
     "rank_then_secondary_lookup_en_01": "在{scope}中，按{period}的{primary_metric}排名取前{top_k}家公司，再报告每家公司的{secondary_metric}。",
@@ -443,9 +506,7 @@ for _english_template in list(TEMPLATES):
         TEMPLATES.append(
             {
                 **_english_template,
-                "template_id": _english_template["template_id"].replace(
-                    "_en_", "_zh_"
-                ),
+                "template_id": _english_template["template_id"].replace("_en_", "_zh_"),
                 "language": "zh",
                 "template_text": _text,
             }
@@ -457,10 +518,7 @@ for _english_template in list(TEMPLATES):
                     "_en_", "_mixed_"
                 ),
                 "language": "mixed",
-                "template_text": (
-                    "根据已披露数据 / Based on the reported data, "
-                    + _english_template["template_text"]
-                ),
+                "template_text": ("Based on reported data（根据已披露数据），" + _text),
             }
         )
 
@@ -473,10 +531,11 @@ def template_for(
     language: str = "en",
 ) -> dict[str, Any]:
     if task_subtype == "single_fact":
-        template_id = {
-            "point_in_time": "single_fact_instant_en_01",
-            "period_flow": "single_fact_flow_en_01",
-        }.get(period_type, "single_fact_observation_en_01")
+        prefix = {
+            "point_in_time": "single_fact_instant_en_",
+            "period_flow": "single_fact_flow_en_",
+        }.get(period_type, "single_fact_observation_en_")
+        return _select_template_variant(prefix, variant_seed or task_subtype, language)
     elif task_subtype in {
         "derived_input_trace",
         "provenance_trace",
@@ -538,14 +597,31 @@ def template_for(
         index = sum(seed.encode("utf-8")) % len(options)
         return _template_in_language(options[index], language)
     else:
+        prefix = f"{task_subtype}_en_"
+        options = [item for item in TEMPLATES if item["template_id"].startswith(prefix)]
+        if options:
+            return _select_template_variant(
+                prefix, variant_seed or task_subtype, language
+            )
         template_id = f"{task_subtype}_en_01"
     template = next(item for item in TEMPLATES if item["template_id"] == template_id)
     return _template_in_language(template, language)
 
 
-def _template_in_language(
-    template: dict[str, Any], language: str
+def _select_template_variant(
+    prefix: str, variant_seed: str, language: str
 ) -> dict[str, Any]:
+    options = sorted(
+        (item for item in TEMPLATES if item["template_id"].startswith(prefix)),
+        key=lambda item: item["template_id"],
+    )
+    if not options:
+        raise ValueError(f"No templates registered for prefix {prefix}")
+    index = sum(str(variant_seed).encode("utf-8")) % len(options)
+    return _template_in_language(options[index], language)
+
+
+def _template_in_language(template: dict[str, Any], language: str) -> dict[str, Any]:
     normalized = str(language or "en").casefold()
     if normalized == "en":
         return template

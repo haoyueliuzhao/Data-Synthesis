@@ -1,0 +1,75 @@
+{
+  "extends": "prod_qa_deepseek_v4_global_1038_v3.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 210,
+      "single_fact_worldbank": 79,
+      "single_fact_imf": 61,
+      "single_fact_fred": 70,
+      "single_fact_greater_china": 0
+    },
+    "derived_quotas": {
+      "difference": 122,
+      "yoy_growth": 192,
+      "ratio": 87,
+      "multi_year_argmax": 78,
+      "multi_year_argmin": 78
+    },
+    "graph_patterns": {
+      "quotas": {
+        "pairwise_entity_metric_comparison": 105,
+        "entity_cross_metric_comparison": 70,
+        "entity_metric_temporal_average": 122,
+        "temporal_argmax_then_metric_lookup": 105,
+        "industry_revenue_rank_then_assets_lookup": 40
+      }
+    },
+    "pattern_mining": {
+      "max_candidates_per_proposal": 18,
+      "max_candidates_per_typed_walk_proposal": 40,
+      "compiled_max_per_stratum": 12,
+      "max_candidates_per_proposal_by_family": {
+        "cross_metric_comparison": 14,
+        "temporal_aggregation": 20,
+        "temporal_extrema_followup": 28,
+        "scope_rank_followup": 28,
+        "walk_temporal_followup": 40,
+        "walk_scope_analysis": 40
+      }
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "single_fact": 330,
+        "yoy_growth": 150,
+        "ratio": 65
+      },
+      "minimum_graph_pattern_samples": {
+        "pairwise_entity_metric_comparison": 80,
+        "entity_cross_metric_comparison": 45,
+        "entity_metric_temporal_average": 85,
+        "temporal_argmax_then_metric_lookup": 70,
+        "industry_revenue_rank_then_assets_lookup": 20
+      },
+      "minimum_difficulty_samples": {
+        "expert": 95,
+        "research": 25
+      },
+      "minimum_generation_pipeline_samples": {
+        "automatic_pattern_mining": 210,
+        "typed_edge_walk": 8
+      },
+      "minimum_generation_pipeline_ratios": {
+        "automatic_pattern_mining": 0.12,
+        "typed_edge_walk": 0.004
+      },
+      "minimum_advanced_automatic_pipeline_ratio": 0.14,
+      "maximum_generation_pipeline_ratios": {
+        "fact_qa": 0.27
+      },
+      "maximum_task_ratios": {
+        "single_fact": 0.27
+      }
+    }
+  }
+}

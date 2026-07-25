@@ -52,9 +52,7 @@ class _SequenceRewriteProvider(_RewriteProvider):
         return payload if isinstance(payload, list) else [payload]
 
 
-def _rewrite_case(
-    provider, *, style_variant_id="analyst", llm_selects_variants=False
-):
+def _rewrite_case(provider, *, style_variant_id="analyst", llm_selects_variants=False):
     canonical = (
         "Within Technology, filter companies whose Revenue growth exceeded 10% "
         "in 2023, then rank the top 3 by net margin."
@@ -178,9 +176,7 @@ def test_protected_rewrite_ignores_unconsumed_provider_metadata():
     assert result.generation_method == "controlled_llm_protected_rewrite"
     assert result.validation["rewrite_valid"] is True
     assert result.validation["rewrite_errors"] == []
-    assert result.validation["rewrite_warnings"] == [
-        "rewrite_unknown_fields_ignored"
-    ]
+    assert result.validation["rewrite_warnings"] == ["rewrite_unknown_fields_ignored"]
     assert "provider-added" not in result.question
 
 
@@ -246,7 +242,7 @@ def test_surface_variation_is_deterministic_and_manifested():
     assert first != slots
     assert first["entity"] in {"Apple Inc.", "Apple"}
     assert first["metric"] in {"Revenue", "revenue", "sales"}
-    assert first["period"] in {"2023", "FY2023"}
+    assert first["period"] in {"2023", "FY2023", "FY 2023"}
     assert surface_variation_manifest(policy)["surface_variation_manifest_hash"]
 
 
@@ -413,7 +409,23 @@ def test_surface_slot_variants_naturalize_fiscal_ytd_periods():
         {"surface_variation": {"enabled": True}},
     )
 
-    assert "FY2020 Q2 YTD" in variants["period"].values()
+    assert "FY2020 Q2 YTD" not in variants["period"].values()
+    assert "the first six months of FY2020" in variants["period"].values()
+
+
+def test_surface_variants_support_modern_ytd_and_reject_dangling_ampersand():
+    variants = surface_slot_variants(
+        {"entity": "ELI LILLY & CO", "period": "Q2 year-to-date of FY2020"},
+        {"time_scope": {"basis": "fiscal_year"}},
+        {
+            "surface_variation": {
+                "enabled": True,
+                "entity_suffix_shortening": True,
+            }
+        },
+    )
+
+    assert "ELI LILLY &" not in variants["entity"].values()
     assert "the first six months of FY2020" in variants["period"].values()
 
 
@@ -440,8 +452,9 @@ def test_llm_surface_selection_requires_a_noncanonical_variant_when_available():
     result = _rewrite_case(provider, llm_selects_variants=True)
 
     assert result.generation_method == "deterministic_surface_fallback"
-    assert "rewrite_surface_variant_diversity_insufficient" in (
-        result.validation["rewrite_errors"]
+    assert (
+        "rewrite_surface_variant_diversity_insufficient"
+        in (result.validation["rewrite_errors"])
     )
 
 
@@ -603,18 +616,14 @@ def test_llm_client_forwards_non_thinking_storage_and_custom_headers(monkeypatch
                 {
                     "id": "response",
                     "model": "gpt-5.6-sol",
-                    "choices": [
-                        {"message": {"content": json.dumps({"ok": True})}}
-                    ],
+                    "choices": [{"message": {"content": json.dumps({"ok": True})}}],
                     "usage": {"prompt_tokens": 5, "completion_tokens": 2},
                 }
             ).encode()
 
     def fake_urlopen(request, timeout):
         captured["body"] = json.loads(request.data.decode())
-        captured["actor_header"] = request.get_header(
-            "X-openai-actor-authorization"
-        )
+        captured["actor_header"] = request.get_header("X-openai-actor-authorization")
         captured["authorization"] = request.get_header("Authorization")
         return Response()
 
@@ -628,9 +637,7 @@ def test_llm_client_forwards_non_thinking_storage_and_custom_headers(monkeypatch
             "thinking": {"type": "disabled"},
             "store": False,
             "max_output_tokens": 777,
-            "http_headers": {
-                "x-openai-actor-authorization": "local-image-extension"
-            },
+            "http_headers": {"x-openai-actor-authorization": "local-image-extension"},
         }
     )
 
@@ -711,7 +718,6 @@ def test_protected_rewrite_allows_single_imperative_financial_task():
     )
 
     assert result["passed"] is True
-
 
 
 def test_llm_client_strict_model_does_not_reuse_endpoint_success_cache(monkeypatch):

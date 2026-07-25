@@ -449,6 +449,58 @@ def test_chinese_output_contract_accepts_localized_unit_and_currency_aliases():
         assert result["passed"], (question, result)
 
 
+def test_output_contract_accepts_natural_precision_and_complete_ranking_phrases():
+    numeric = _validate_benchmark_output_contract(
+        {
+            "question": "请按百分比报告结果，数值四舍五入至2位小数。",
+            "rubric": {
+                "benchmark_alignment": "finsearchcomp",
+                "unit_must_match": True,
+                "requested_unit": "percent",
+                "requested_currency": "",
+                "precision_must_match": True,
+                "requested_decimal_places": 2,
+                "complete_output_required": False,
+            },
+        }
+    )
+    structured = _validate_benchmark_output_contract(
+        {
+            "question": "Return the complete ranking with one row per entity.",
+            "rubric": {
+                "benchmark_alignment": "finsearchcomp",
+                "unit_must_match": False,
+                "precision_must_match": False,
+                "complete_output_required": True,
+            },
+        }
+    )
+
+    assert numeric["passed"], numeric
+    assert structured["passed"], structured
+
+
+def test_output_contract_accepts_computed_result_with_raw_source_reference():
+    result = _validate_benchmark_output_contract(
+        {
+            "question": (
+                "For evidence review, provide the computed result and its "
+                "raw-source reference; use CNY millions for numeric values."
+            ),
+            "rubric": {
+                "benchmark_alignment": "finsearchcomp",
+                "unit_must_match": True,
+                "requested_unit": "million CNY",
+                "requested_currency": "CNY",
+                "precision_must_match": False,
+                "complete_output_required": True,
+            },
+        }
+    )
+
+    assert result["passed"], result
+
+
 def test_chinese_output_contract_rejects_wrong_localized_currency():
     result = _validate_benchmark_output_contract(
         {

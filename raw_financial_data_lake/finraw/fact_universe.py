@@ -23,7 +23,7 @@ from finraw.regional_share_audit import (
 )
 
 
-FACT_UNIVERSE_POLICY_VERSION = "1.2.0"
+FACT_UNIVERSE_POLICY_VERSION = "1.3.0"
 BROAD_INTERNATIONAL_REGIONS = {INTERNATIONAL, MIXED_GLOBAL}
 MEMBER_COLUMNS = [
     "membership_id",
@@ -335,12 +335,27 @@ def build_fact_universe(
         priority_report["derived_member_count"] = derived_membership[
             "member_distribution"
         ]["total"]
+        minimum_member_count = max(0, int(policy.get("minimum_member_count") or 0))
+        minimum_derived_member_count = max(
+            0,
+            int(policy.get("minimum_derived_member_count") or 0),
+        )
+        derived_member_count = int(priority_report.get("derived_member_count") or 0)
         stratum_coverage = (
             len(selected_strata & set(broad_stratum_counts)) / len(broad_stratum_counts)
             if broad_stratum_counts
             else 1.0
         )
         quality_failures = []
+        if member_count < minimum_member_count:
+            quality_failures.append(
+                f"member_count={member_count} < {minimum_member_count}"
+            )
+        if derived_member_count < minimum_derived_member_count:
+            quality_failures.append(
+                "derived_member_count="
+                f"{derived_member_count} < {minimum_derived_member_count}"
+            )
         if selected_greater_china != greater_china_count:
             quality_failures.append(
                 "not_all_greater_china_facts_selected="
@@ -443,6 +458,12 @@ def build_fact_universe(
             "derived_universe_membership": derived_membership,
             "quality_status": quality_status,
             "quality_failures": quality_failures,
+            "capacity_contract": {
+                "minimum_member_count": minimum_member_count,
+                "minimum_derived_member_count": minimum_derived_member_count,
+                "actual_member_count": member_count,
+                "actual_derived_member_count": derived_member_count,
+            },
             "is_active": not quality_failures,
             "notes": [
                 "All eligible Greater China facts are retained.",
@@ -456,7 +477,7 @@ def build_fact_universe(
             paths = write_fact_universe_report(report, output_dir)
             report["written_files"] = [str(path) for path in paths]
         return report
-    except Exception as exc:
+    except (Exception, KeyboardInterrupt) as exc:
         _update_universe_build(
             db,
             universe_build_id,
@@ -594,22 +615,26 @@ def select_derived_chain_priority(
     seed_chains: list[DerivedChain] = []
     closed_broad_count = 0
     interval = max(1, evaluation_interval)
+    remaining_inputs = [len(chain.input_fact_ids) for chain in broad_chains]
+    chains_by_input: dict[str, list[int]] = defaultdict(list)
+    for chain_index, candidate in enumerate(broad_chains):
+        for fact_id in candidate.input_fact_ids:
+            chains_by_input[fact_id].append(chain_index)
+    closed_broad_count = sum(remaining == 0 for remaining in remaining_inputs)
     for chain in broad_chains:
         additional = chain.input_fact_ids - selected_fact_ids
         if len(selected_fact_ids) + len(additional) > broad_fact_budget:
             continue
         selected_fact_ids.update(additional)
         seed_chains.append(chain)
+        for fact_id in additional:
+            for chain_index in chains_by_input.get(fact_id, ()):
+                remaining_inputs[chain_index] -= 1
+                if remaining_inputs[chain_index] == 0:
+                    closed_broad_count += 1
         if len(seed_chains) % interval == 0 or len(seed_chains) == len(broad_chains):
-            closed_broad_count = sum(
-                candidate.input_fact_ids.issubset(selected_fact_ids)
-                for candidate in broad_chains
-            )
             if closed_broad_count >= priority_closure_target:
                 break
-    closed_broad_count = sum(
-        chain.input_fact_ids.issubset(selected_fact_ids) for chain in broad_chains
-    )
     report = {
         "enabled": True,
         "target_fraction": target_fraction,

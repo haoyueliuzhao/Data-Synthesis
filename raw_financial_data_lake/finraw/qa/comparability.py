@@ -6,11 +6,9 @@ from typing import Any
 
 
 DEFAULT_ALLOWED_METRIC_PAIRS: tuple[tuple[str, str], ...] = (
+    ("revenue", "net_income"),
     ("gross_profit", "operating_income"),
     ("operating_income", "net_income"),
-    ("revenue", "gross_profit"),
-    ("revenue", "net_income"),
-    ("revenue", "operating_income"),
     ("total_assets", "total_liabilities"),
 )
 

@@ -15,8 +15,14 @@ from finraw.qa.binding_executor import MetricFactCache
 from finraw.qa.binding_executor import _binding_hash
 from finraw.qa.difficulty import _graph_shape, assess_difficulty, graph_features
 from finraw.qa.diversity import build_qa_diversity_report
-from finraw.qa.comparability import annual_duration_valid, latest_contiguous_window, metric_pair_allowed, comparability_policy
+from finraw.qa.comparability import (
+    annual_duration_valid,
+    latest_contiguous_window,
+    metric_pair_allowed,
+    comparability_policy,
+)
 from finraw.qa.graph_matcher import discover_pattern_matches
+from finraw.qa.scope_matchers import _complete_scope_entities
 from finraw.qa.graph_binding_ir import (
     _graph_root_score,
     _load_facts,
@@ -132,19 +138,14 @@ def test_question_parser_and_template_registry_have_bidirectional_contract():
     for template in TEMPLATES:
         support = validate_question_parser_support(template, manifest)
         assert support["passed"], template["template_id"]
-        slots = {
-            slot: f"value_{slot}"
-            for slot in template.get("required_slots") or []
-        }
+        slots = {slot: f"value_{slot}" for slot in template.get("required_slots") or []}
         question = template["template_text"].format(**slots)
         contract = build_question_contract(
             {"operation": "lookup"},
             slots,
             list(template.get("required_slots") or []),
         )
-        parsed = validate_question_roundtrip(
-            question, contract, trusted_contract=True
-        )
+        parsed = validate_question_roundtrip(question, contract, trusted_contract=True)
         assert parsed["passed"], {
             "template_id": template["template_id"],
             "errors": parsed["contract_errors"],
@@ -231,7 +232,15 @@ def _graph_fixture(tmp_path):
     )
     db.execute(
         "INSERT INTO raw_objects (raw_object_id, source_id, object_type, storage_uri, original_url, content_sha256, validation_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        ("raw_graph", "sec_companyfacts", "json", "raw.json", "https://example.test/raw", "hash", "passed"),
+        (
+            "raw_graph",
+            "sec_companyfacts",
+            "json",
+            "raw.json",
+            "https://example.test/raw",
+            "hash",
+            "passed",
+        ),
     )
     for entity_id, name in [("A_US", "Company A"), ("B_US", "Company B")]:
         db.execute(
@@ -241,37 +250,80 @@ def _graph_fixture(tmp_path):
     for metric_id, name in [("revenue", "Revenue"), ("net_income", "Net Income")]:
         db.execute(
             "INSERT INTO metrics (metric_id, canonical_name, metric_category, statement_type, period_type, build_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (metric_id, name, "financial_statement", "income_statement", "period_flow", metric_build, 1),
+            (
+                metric_id,
+                name,
+                "financial_statement",
+                "income_statement",
+                "period_flow",
+                metric_build,
+                1,
+            ),
         )
         db.execute(
             "INSERT INTO source_metric_definitions (definition_id, source_id, metric_id, raw_concept_name, build_id, is_active) VALUES (?, ?, ?, ?, ?, ?)",
-            (f"def_{metric_id}", "sec_companyfacts", metric_id, metric_id, "definitions_1", 1),
+            (
+                f"def_{metric_id}",
+                "sec_companyfacts",
+                metric_id,
+                metric_id,
+                "definitions_1",
+                1,
+            ),
         )
     db.execute(
         "INSERT INTO kg_builds (kg_build_id, graph_schema_version, input_fact_build_id, input_qa_build_id, input_entity_build_id, input_metric_build_id, input_source_definition_build_id, status, quality_status, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (kg_build, "3.0", fact_build, "derived_1", entity_build, metric_build, "definitions_1", "success", "passed", 1),
+        (
+            kg_build,
+            "3.0",
+            fact_build,
+            "derived_1",
+            entity_build,
+            metric_build,
+            "definitions_1",
+            "success",
+            "passed",
+            1,
+        ),
     )
 
     entity_nodes = {
-        entity_id: _insert_node(db, kg_build, f"entity:{entity_id}", "Entity", entity_id)
+        entity_id: _insert_node(
+            db, kg_build, f"entity:{entity_id}", "Entity", entity_id
+        )
         for entity_id in ["A_US", "B_US"]
     }
     metric_nodes = {
-        metric_id: _insert_node(db, kg_build, f"metric:{metric_id}", "Metric", metric_id)
+        metric_id: _insert_node(
+            db, kg_build, f"metric:{metric_id}", "Metric", metric_id
+        )
         for metric_id in ["revenue", "net_income"]
     }
     period_nodes = {
         year: _insert_node(db, kg_build, f"time:{year}-FY", "TimePeriod", f"{year}-FY")
         for year in [2021, 2022, 2023]
     }
-    source_node = _insert_node(db, kg_build, "source:sec_companyfacts", "DataSource", "sec_companyfacts")
-    raw_node = _insert_node(db, kg_build, "raw_object:raw_graph", "RawObject", "raw_graph")
+    source_node = _insert_node(
+        db, kg_build, "source:sec_companyfacts", "DataSource", "sec_companyfacts"
+    )
+    raw_node = _insert_node(
+        db, kg_build, "raw_object:raw_graph", "RawObject", "raw_graph"
+    )
     definition_nodes = {
-        metric_id: _insert_node(db, kg_build, f"source_definition:def_{metric_id}", "SourceDefinition", f"def_{metric_id}")
+        metric_id: _insert_node(
+            db,
+            kg_build,
+            f"source_definition:def_{metric_id}",
+            "SourceDefinition",
+            f"def_{metric_id}",
+        )
         for metric_id in ["revenue", "net_income"]
     }
     values = {
-        "A_US": {"revenue": {2021: 100, 2022: 120, 2023: 150}, "net_income": {2021: 10, 2022: 20, 2023: 30}},
+        "A_US": {
+            "revenue": {2021: 100, 2022: 120, 2023: 150},
+            "net_income": {2021: 10, 2022: 20, 2023: 30},
+        },
         "B_US": {"revenue": {2021: 90, 2022: 130, 2023: 140}},
     }
     for entity_id, metrics in values.items():
@@ -289,9 +341,38 @@ def _graph_fixture(tmp_path):
                         seasonal_adjustment, vintage_policy, comparability_level
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
-                    (fact_id, fact_id, fact_build, 1, entity_id, metric_id, str(value), "million USD", "USD", f"{year}-01-01", f"{year}-12-31", year, "FY", "fiscal_year", "period_flow", f"def_{metric_id}", "sec_companyfacts", "raw_graph", "single_source", 1, "ready", 0, "annual", "not_applicable", "latest_filing", "strict"),
+                    (
+                        fact_id,
+                        fact_id,
+                        fact_build,
+                        1,
+                        entity_id,
+                        metric_id,
+                        str(value),
+                        "million USD",
+                        "USD",
+                        f"{year}-01-01",
+                        f"{year}-12-31",
+                        year,
+                        "FY",
+                        "fiscal_year",
+                        "period_flow",
+                        f"def_{metric_id}",
+                        "sec_companyfacts",
+                        "raw_graph",
+                        "single_source",
+                        1,
+                        "ready",
+                        0,
+                        "annual",
+                        "not_applicable",
+                        "latest_filing",
+                        "strict",
+                    ),
                 )
-                fact_node = _insert_node(db, kg_build, f"fact:{fact_id}", "Fact", fact_id)
+                fact_node = _insert_node(
+                    db, kg_build, f"fact:{fact_id}", "Fact", fact_id
+                )
                 edges = [
                     (entity_nodes[entity_id], fact_node, "HAS_FACT"),
                     (fact_node, metric_nodes[metric_id], "MEASURES"),
@@ -301,10 +382,17 @@ def _graph_fixture(tmp_path):
                     (fact_node, definition_nodes[metric_id], "USES_SOURCE_DEFINITION"),
                 ]
                 for index, (src, dst, relation) in enumerate(edges):
-                    _insert_edge(db, kg_build, f"edge_{fact_id}_{index}", src, dst, relation)
+                    _insert_edge(
+                        db, kg_build, f"edge_{fact_id}_{index}", src, dst, relation
+                    )
     config = {
         "qa": {
-            "quotas": {"single_fact_financial": 0, "single_fact_worldbank": 0, "single_fact_imf": 0, "single_fact_fred": 0},
+            "quotas": {
+                "single_fact_financial": 0,
+                "single_fact_worldbank": 0,
+                "single_fact_imf": 0,
+                "single_fact_fred": 0,
+            },
             "derived_quotas": {},
             "graph_patterns": {
                 "enabled": True,
@@ -316,7 +404,11 @@ def _graph_fixture(tmp_path):
                 },
             },
             "temporal_split": {"cutoff_year": 3000},
-            "quality_gate": {"minimum_overall_pass_rate": 1.0, "critical_tasks": {}, "max_critical_check_failures": 0},
+            "quality_gate": {
+                "minimum_overall_pass_rate": 1.0,
+                "critical_tasks": {},
+                "max_critical_check_failures": 0,
+            },
         }
     }
     return db, kg_build, config
@@ -361,10 +453,7 @@ def test_extra_evidence_nodes_exclude_orphans_but_keep_connected_nodes(tmp_path)
 
 
 def test_graph_shape_is_linear_for_large_evidence_star():
-    edges = [
-        {"src": "center", "dst": f"leaf_{index}"}
-        for index in range(5000)
-    ]
+    edges = [{"src": "center", "dst": f"leaf_{index}"} for index in range(5000)]
 
     assert _graph_shape(edges) == (2, 1)
 
@@ -460,7 +549,9 @@ def test_static_pattern_binding_requires_exact_semantic_digest():
 
 def test_static_pattern_compiler_rejects_unpinned_or_changed_snapshot():
     proposal = _published_static_proposal("entity_cross_metric_comparison")
-    assert compile_pattern_proposal(proposal).pattern_id == proposal["static_pattern_id"]
+    assert (
+        compile_pattern_proposal(proposal).pattern_id == proposal["static_pattern_id"]
+    )
 
     missing_hash = {**proposal, "static_pattern_hash": None}
     with pytest.raises(ValueError, match="missing snapshot fields"):
@@ -497,10 +588,31 @@ def test_pattern_registry_separates_pattern_plan_and_answer_schema():
 
 def test_operation_plan_replays_intermediate_results():
     facts = {
-        "a": {"fact_id": "a", "entity_id": "A", "normalized_value": "100", "normalized_unit": "million USD", "normalized_currency": "USD"},
-        "b": {"fact_id": "b", "entity_id": "B", "normalized_value": "125", "normalized_unit": "million USD", "normalized_currency": "USD"},
+        "a": {
+            "fact_id": "a",
+            "entity_id": "A",
+            "normalized_value": "100",
+            "normalized_unit": "million USD",
+            "normalized_currency": "USD",
+        },
+        "b": {
+            "fact_id": "b",
+            "entity_id": "B",
+            "normalized_value": "125",
+            "normalized_unit": "million USD",
+            "normalized_currency": "USD",
+        },
     }
-    plan = {"operators": [{"step_id": "answer", "operator": "compare", "inputs": [{"binding": "left"}, {"binding": "right"}]}], "output_step": "answer"}
+    plan = {
+        "operators": [
+            {
+                "step_id": "answer",
+                "operator": "compare",
+                "inputs": [{"binding": "left"}, {"binding": "right"}],
+            }
+        ],
+        "output_step": "answer",
+    }
     execution = execute_plan(plan, {"left": "a", "right": "b"}, facts)
     assert execution.status == "passed"
     assert execution.output["winner_id"] == "B"
@@ -509,8 +621,16 @@ def test_operation_plan_replays_intermediate_results():
 
 
 def test_operator_rejects_incompatible_units():
-    left = {"normalized_value": "1", "normalized_unit": "USD", "normalized_currency": "USD"}
-    right = {"normalized_value": "1", "normalized_unit": "percent", "normalized_currency": None}
+    left = {
+        "normalized_value": "1",
+        "normalized_unit": "USD",
+        "normalized_currency": "USD",
+    }
+    right = {
+        "normalized_value": "1",
+        "normalized_unit": "percent",
+        "normalized_currency": None,
+    }
     try:
         execute_operator("compare", [left, right])
     except OperatorError as exc:
@@ -563,16 +683,20 @@ def test_ranked_secondary_lookup_rejects_mixed_units_and_currencies():
 
 def test_metric_pair_policy_and_temporal_continuity_are_explicit():
     policy = comparability_policy()
-    assert metric_pair_allowed("revenue", "net_income", policy)
-    assert not metric_pair_allowed("revenue", "total_assets", policy)
+    assert metric_pair_allowed("operating_income", "net_income", policy)
+    assert not metric_pair_allowed("revenue", "gross_profit", policy)
+    assert metric_pair_allowed("total_assets", "total_liabilities", policy)
     rows = [
         {"fact_id": "f2020", "fiscal_year": 2020},
         {"fact_id": "f2022", "fiscal_year": 2022},
         {"fact_id": "f2023", "fiscal_year": 2023},
     ]
-    assert latest_contiguous_window(
-        rows, frequency="annual", minimum=3, maximum=5, require_contiguous=True
-    ) == []
+    assert (
+        latest_contiguous_window(
+            rows, frequency="annual", minimum=3, maximum=5, require_contiguous=True
+        )
+        == []
+    )
     assert annual_duration_valid(
         {
             "frequency": "annual",
@@ -615,9 +739,21 @@ def test_semantic_constraint_validator_executes_metric_roles_and_compatibility()
         }
 
     ontology = {
-        "revenue": {"metric_id": "revenue", "statement_type": "income_statement", "period_type": "period_flow"},
-        "net_income": {"metric_id": "net_income", "statement_type": "income_statement", "period_type": "period_flow"},
-        "total_assets": {"metric_id": "total_assets", "statement_type": "balance_sheet", "period_type": "point_in_time"},
+        "revenue": {
+            "metric_id": "revenue",
+            "statement_type": "income_statement",
+            "period_type": "period_flow",
+        },
+        "net_income": {
+            "metric_id": "net_income",
+            "statement_type": "income_statement",
+            "period_type": "period_flow",
+        },
+        "total_assets": {
+            "metric_id": "total_assets",
+            "statement_type": "balance_sheet",
+            "period_type": "point_in_time",
+        },
     }
     policy = comparability_policy()
     cross = get_pattern("entity_cross_metric_comparison")
@@ -627,7 +763,11 @@ def test_semantic_constraint_validator_executes_metric_roles_and_compatibility()
     }
     allowed = validate_semantic_constraints(
         cross,
-        {"fact_ids": ["r", "n"], "input_bindings": {"left": "r", "right": "n"}, "metric_ids": ["revenue", "net_income"]},
+        {
+            "fact_ids": ["r", "n"],
+            "input_bindings": {"left": "r", "right": "n"},
+            "metric_ids": ["revenue", "net_income"],
+        },
         allowed_facts,
         ontology,
         policy,
@@ -640,7 +780,11 @@ def test_semantic_constraint_validator_executes_metric_roles_and_compatibility()
     }
     disallowed = validate_semantic_constraints(
         cross,
-        {"fact_ids": ["r", "a"], "input_bindings": {"left": "r", "right": "a"}, "metric_ids": ["revenue", "total_assets"]},
+        {
+            "fact_ids": ["r", "a"],
+            "input_bindings": {"left": "r", "right": "a"},
+            "metric_ids": ["revenue", "total_assets"],
+        },
         disallowed_facts,
         ontology,
         policy,
@@ -883,9 +1027,7 @@ def test_semantic_registry_recomputes_count_continuity_and_period_coverage():
 
     facts = {}
     for year, revenue in [(2021, 100), (2022, 200), (2023, 150)]:
-        facts[f"r{year}"] = _semantic_fact(
-            f"r{year}", "revenue", year, value=revenue
-        )
+        facts[f"r{year}"] = _semantic_fact(f"r{year}", "revenue", year, value=revenue)
     for year in [2021, 2022]:
         facts[f"n{year}"] = _semantic_fact(
             f"n{year}", "net_income", year, value=year - 2000
@@ -902,11 +1044,14 @@ def test_semantic_registry_recomputes_count_continuity_and_period_coverage():
         "primary_metric_id": "revenue",
         "secondary_metric_id": "net_income",
     }
-    assert execute_plan(
-        followup.operator_template,
-        followup_binding["input_bindings"],
-        facts,
-    ).status == "passed"
+    assert (
+        execute_plan(
+            followup.operator_template,
+            followup_binding["input_bindings"],
+            facts,
+        ).status
+        == "passed"
+    )
     followup_result = validate_semantic_constraints(
         followup,
         followup_binding,
@@ -1060,9 +1205,7 @@ def test_seasonal_adjustment_inference_is_limited_to_annual_or_statement_facts()
     for row in annual.values():
         row["seasonal_adjustment"] = None
     constraint = {
-        "semantic_constraints": [
-            {"field": "seasonal_adjustment", "operator": "same"}
-        ]
+        "semantic_constraints": [{"field": "seasonal_adjustment", "operator": "same"}]
     }
     assert validate_semantic_constraints(
         constraint,
@@ -1285,14 +1428,22 @@ def test_temporal_argmax_then_lookup_replays_two_steps():
     facts = {}
     for year, revenue, income in [(2021, 100, 10), (2022, 140, 12), (2023, 120, 15)]:
         facts[f"r{year}"] = {
-            "fact_id": f"r{year}", "metric_id": "revenue",
-            "normalized_value": str(revenue), "normalized_unit": "USD",
-            "normalized_currency": "USD", "fiscal_year": year, "time_basis": "fiscal_year",
+            "fact_id": f"r{year}",
+            "metric_id": "revenue",
+            "normalized_value": str(revenue),
+            "normalized_unit": "USD",
+            "normalized_currency": "USD",
+            "fiscal_year": year,
+            "time_basis": "fiscal_year",
         }
         facts[f"n{year}"] = {
-            "fact_id": f"n{year}", "metric_id": "net_income",
-            "normalized_value": str(income), "normalized_unit": "USD",
-            "normalized_currency": "USD", "fiscal_year": year, "time_basis": "fiscal_year",
+            "fact_id": f"n{year}",
+            "metric_id": "net_income",
+            "normalized_value": str(income),
+            "normalized_unit": "USD",
+            "normalized_currency": "USD",
+            "fiscal_year": year,
+            "time_basis": "fiscal_year",
         }
     pattern = get_pattern("temporal_argmax_then_metric_lookup")
     execution = execute_plan(
@@ -1390,9 +1541,7 @@ def test_temporal_followup_rejects_cross_financial_scope(tmp_path):
         "WHERE entity_id = ? AND metric_id = ?",
         ("A_US_SEGMENT", "segment", "A_US", "net_income"),
     )
-    kg = dict(
-        db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,))
-    )
+    kg = dict(db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,)))
     matches = discover_pattern_matches(
         db,
         kg,
@@ -1410,9 +1559,7 @@ def test_graph_matchers_exclude_forecast_facts(tmp_path):
         "UPDATE standardized_facts SET is_forecast = 1 WHERE fact_id = ?",
         (forecast_id,),
     )
-    kg = dict(
-        db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,))
-    )
+    kg = dict(db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,)))
     matches = discover_pattern_matches(
         db,
         kg,
@@ -1431,8 +1578,22 @@ def test_difficulty_uses_graph_and_operation_features():
         entity_ids=["A", "B", "C"],
         metric_ids=["revenue", "margin"],
         facts=[{"fiscal_year": year, "source_id": "sec"} for year in range(2019, 2024)],
-        evidence={"node_ids": ["a", "b", "c"], "edge_ids": ["e1", "e2"], "evidence_edges": [{"src": "a", "dst": "b"}, {"src": "b", "dst": "c"}]},
-        operation_plan={"operators": [{"step_id": "filter", "operator": "filter", "inputs": [{"binding": "facts"}]}, {"step_id": "rank", "operator": "rank", "inputs": [{"step": "filter"}]}], "output_step": "rank"},
+        evidence={
+            "node_ids": ["a", "b", "c"],
+            "edge_ids": ["e1", "e2"],
+            "evidence_edges": [{"src": "a", "dst": "b"}, {"src": "b", "dst": "c"}],
+        },
+        operation_plan={
+            "operators": [
+                {
+                    "step_id": "filter",
+                    "operator": "filter",
+                    "inputs": [{"binding": "facts"}],
+                },
+                {"step_id": "rank", "operator": "rank", "inputs": [{"step": "filter"}]},
+            ],
+            "output_step": "rank",
+        },
         answer_payload={"table": [{"entity_id": "A"}, {"entity_id": "B"}]},
         semantic_constraint_count=5,
     )
@@ -1445,7 +1606,13 @@ def test_difficulty_uses_graph_and_operation_features():
 
 def test_graph_pattern_build_discovers_and_validates_multi_hop_qa(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
-    report = build_qa(db, config, kg_build_id=kg_build, output_dir=str(tmp_path / "audit"), batch_size=10)
+    report = build_qa(
+        db,
+        config,
+        kg_build_id=kg_build,
+        output_dir=str(tmp_path / "audit"),
+        batch_size=10,
+    )
     assert report["candidate"]["eligible_candidate_count"] == 4
     assert report["quality"]["passed_count"] == 4
     assert report["split"]["build_gate_status"] == "passed"
@@ -1539,9 +1706,7 @@ def test_final_verifier_reparses_persisted_question_independently(tmp_path):
     metadata = json.loads(sample["source_metadata"])
     assert metadata["question_generation"]["passed"]
     tampered = (
-        str(sample["question"])
-        .replace("peak", "trough")
-        .replace("highest", "lowest")
+        str(sample["question"]).replace("peak", "trough").replace("highest", "lowest")
     )
     assert tampered != sample["question"]
     db.execute(
@@ -1562,9 +1727,9 @@ def test_final_verifier_reparses_persisted_question_independently(tmp_path):
     )
     assert check["check_status"] == "failed"
     observed = json.loads(check["observed_value"])
-    assert "question_semantics:extreme_direction_mismatch" in observed[
-        "contract_errors"
-    ]
+    assert (
+        "question_semantics:extreme_direction_mismatch" in observed["contract_errors"]
+    )
 
 
 def test_final_verifier_rejects_question_parser_manifest_drift(tmp_path):
@@ -1582,8 +1747,7 @@ def test_final_verifier_rejects_question_parser_manifest_drift(tmp_path):
         (report["qa_build_id"],),
     )
     db.execute(
-        "UPDATE qa_builds SET question_parser_manifest_hash = ? "
-        "WHERE qa_build_id = ?",
+        "UPDATE qa_builds SET question_parser_manifest_hash = ? WHERE qa_build_id = ?",
         ("0" * 64, report["qa_build_id"]),
     )
     db.execute(
@@ -1683,9 +1847,7 @@ def test_pattern_mining_discovers_scores_and_compiles_executable_motifs(tmp_path
     assert report["approved_count"] == report["proposal_count"]
     assert report["run_status"] == "success"
     with pytest.raises(RuntimeError, match="expected approved_for_qa"):
-        load_approved_proposals(
-            db, kg_build, report["mining_run_id"], limit=100
-        )
+        load_approved_proposals(db, kg_build, report["mining_run_id"], limit=100)
     approved_run = _approve_mining_run(db, report["mining_run_id"])
     assert approved_run["status"] == "approved_for_qa"
     assert [event["stage"] for event in approved_run["lifecycle_events"]] == [
@@ -1736,7 +1898,9 @@ def test_pattern_mining_discovers_scores_and_compiles_executable_motifs(tmp_path
         for item in cross_proposals
     )
     followup_proposals = [
-        item for item in proposals if item["motif_family"] == "temporal_extrema_followup"
+        item
+        for item in proposals
+        if item["motif_family"] == "temporal_extrema_followup"
     ]
     assert all(
         item["pattern_spec"]["node_constraints"][2]["values"]
@@ -1754,8 +1918,11 @@ def test_pattern_mining_discovers_scores_and_compiles_executable_motifs(tmp_path
     )
     assert len(motif_rows) == 5
     assert {row["motif_family"] for row in motif_rows} == {
-        "derived_fact_composition", "entity_set_scope", "time_hierarchy",
-        "fact_provenance", "cross_source_reconciliation",
+        "derived_fact_composition",
+        "entity_set_scope",
+        "time_hierarchy",
+        "fact_provenance",
+        "cross_source_reconciliation",
     }
     assert report["graph_native_motifs"]["observation_count"] == 5
     proposal = next(
@@ -1764,9 +1931,7 @@ def test_pattern_mining_discovers_scores_and_compiles_executable_motifs(tmp_path
         if item["motif_family"] == "temporal_extrema_followup"
     )
     pattern = compile_pattern_proposal(proposal)
-    kg = dict(
-        db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,))
-    )
+    kg = dict(db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,)))
     compile_policy = {
         **mining_policy(config),
         "semantic_policy": comparability_policy(),
@@ -1792,9 +1957,7 @@ def test_pattern_mining_discovers_scores_and_compiles_executable_motifs(tmp_path
             match["fact_ids"],
         )
     }
-    execution = execute_plan(
-        pattern.operator_template, match["input_bindings"], facts
-    )
+    execution = execute_plan(pattern.operator_template, match["input_bindings"], facts)
     assert execution.status == "passed"
     assert len(execution.intermediate_results) == 2
     assert proposal["proposal_hash"] == match["pattern_proposal_hash"]
@@ -1876,9 +2039,10 @@ def test_qa_build_reuses_metric_fact_scans_across_proposals(tmp_path, monkeypatc
         summary["metric_fact_cache"] for summary in compilation_summaries
     ]
     assert sum(item["fact_query_count"] for item in compilation_cache) == 2
-    assert sum(item["hit_count"] for item in compilation_cache) == cache_summary[
-        "hit_count"
-    ]
+    assert (
+        sum(item["hit_count"] for item in compilation_cache)
+        == cache_summary["hit_count"]
+    )
     build_notes = json.loads(
         db.fetchone(
             "SELECT notes FROM qa_builds WHERE qa_build_id = ?",
@@ -1917,9 +2081,7 @@ def test_qa_build_reuses_metric_fact_scans_across_proposals(tmp_path, monkeypatc
     assert disabled_summary["scanned_key_count"] == 1
     assert disabled_summary["fact_query_count"] == 1
     assert disabled_summary["loaded_fact_count"] == 1
-    assert cache.fact_key(kg, "revenue", 100) != cache.fact_key(
-        kg, "revenue", 1000
-    )
+    assert cache.fact_key(kg, "revenue", 100) != cache.fact_key(kg, "revenue", 1000)
 
 
 def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path):
@@ -1942,9 +2104,9 @@ def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path)
     }
     mining = mine_qa_patterns(db, config, kg_build_id=kg_build)
     _approve_mining_run(db, mining["mining_run_id"])
-    proposal = load_approved_proposals(
-        db, kg_build, mining["mining_run_id"], limit=10
-    )[0]
+    proposal = load_approved_proposals(db, kg_build, mining["mining_run_id"], limit=10)[
+        0
+    ]
     proposal = copy.deepcopy(proposal)
     proposal["binding_examples"] = [
         {
@@ -1953,9 +2115,7 @@ def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path)
         }
     ]
     proposal["heldout_bindings"] = []
-    kg = dict(
-        db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,))
-    )
+    kg = dict(db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,)))
     policy = {
         **mining_policy(config),
         "semantic_policy": comparability_policy(),
@@ -2023,9 +2183,7 @@ def test_logical_compiler_rediscovers_and_persists_production_bindings(tmp_path)
 
 def test_declared_complete_case_ir_executes_without_family_dispatch(tmp_path):
     db, kg_build, config = _graph_fixture(tmp_path)
-    kg = dict(
-        db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,))
-    )
+    kg = dict(db.fetchone("SELECT * FROM kg_builds WHERE kg_build_id = ?", (kg_build,)))
     policy = {
         **mining_policy(config),
         "minimum_scope_entities": 1,
@@ -2048,9 +2206,10 @@ def test_declared_complete_case_ir_executes_without_family_dispatch(tmp_path):
     }
     logical_plan = compile_logical_pattern(proposal, kg, policy)
     assert logical_plan.motif_family == "fifth_declarative_scope_motif"
-    assert [operation["op"] for operation in logical_plan.relational_ops][
-        2:4
-    ] == ["group", "complete_case_metric_join"]
+    assert [operation["op"] for operation in logical_plan.relational_ops][2:4] == [
+        "group",
+        "complete_case_metric_join",
+    ]
 
     matches = compile_proposal_matches(
         db,
@@ -2063,8 +2222,7 @@ def test_declared_complete_case_ir_executes_without_family_dispatch(tmp_path):
     assert len(matches) == 1
     assert matches[0]["entity_ids"] == ["A_US"]
     compilation = db.fetchone(
-        "SELECT sampling_summary FROM qa_pattern_compilations "
-        "WHERE compilation_id = ?",
+        "SELECT sampling_summary FROM qa_pattern_compilations WHERE compilation_id = ?",
         (matches[0]["pattern_compilation_id"],),
     )
     trace = json.loads(compilation["sampling_summary"])["operator_trace"]
@@ -2118,9 +2276,7 @@ def test_pattern_proposal_requires_execution_validation_and_manual_publication(
             reviewer="run-approver",
         )
     with pytest.raises(RuntimeError, match="expected approved_for_qa"):
-        load_approved_proposals(
-            db, kg_build, report["mining_run_id"], limit=10
-        )
+        load_approved_proposals(db, kg_build, report["mining_run_id"], limit=10)
     with pytest.raises(ValueError, match="Only published"):
         compile_pattern_proposal(proposal)
 
@@ -2135,9 +2291,7 @@ def test_pattern_proposal_requires_execution_validation_and_manual_publication(
     assert reviewed["status"] == "reviewed_approved"
     assert reviewed["manual_review_status"] == "approved"
     with pytest.raises(RuntimeError, match="expected approved_for_qa"):
-        load_approved_proposals(
-            db, kg_build, report["mining_run_id"], limit=10
-        )
+        load_approved_proposals(db, kg_build, report["mining_run_id"], limit=10)
     reviewed = review_pattern_proposal(
         db,
         proposal["proposal_id"],
@@ -2149,12 +2303,16 @@ def test_pattern_proposal_requires_execution_validation_and_manual_publication(
     assert approved_run["approved_count"] == 1
     assert len(approved_run["published_proposal_manifest_hash"]) == 64
     assert approved_run["published_proposal_manifest"]["published_count"] == 1
-    assert approved_run["published_proposal_manifest"]["proposals"][0][
-        "proposal_id"
-    ] == proposal["proposal_id"]
-    assert load_approved_proposals(
-        db, kg_build, report["mining_run_id"], limit=10
-    )[0]["status"] == "published"
+    assert (
+        approved_run["published_proposal_manifest"]["proposals"][0]["proposal_id"]
+        == proposal["proposal_id"]
+    )
+    assert (
+        load_approved_proposals(db, kg_build, report["mining_run_id"], limit=10)[0][
+            "status"
+        ]
+        == "published"
+    )
 
 
 def test_manual_rejection_is_terminal_and_zero_publication_blocks_run(tmp_path):
@@ -2269,9 +2427,10 @@ def test_run_approval_validates_rates_and_freezes_published_manifest(tmp_path):
         reviewer="run-approver",
     )
     assert approved["approved_count"] == 1
-    assert approved["published_proposal_manifest"]["proposals"][0][
-        "proposal_id"
-    ] == proposal_id
+    assert (
+        approved["published_proposal_manifest"]["proposals"][0]["proposal_id"]
+        == proposal_id
+    )
     assert len(approved["published_proposal_manifest_hash"]) == 64
 
     db.execute(
@@ -2449,9 +2608,7 @@ def test_pattern_mining_does_not_join_temporal_definition_changes(tmp_path):
     report = mine_qa_patterns(db, config, kg_build_id=kg_build)
     assert report["approved_count"] == 1
     _approve_mining_run(db, report["mining_run_id"])
-    proposals = load_approved_proposals(
-        db, kg_build, report["mining_run_id"], limit=10
-    )
+    proposals = load_approved_proposals(db, kg_build, report["mining_run_id"], limit=10)
     assert len(proposals) == 1
     assert proposals[0]["pattern_spec"]["node_constraints"][2]["values"] == [
         "net_income"
@@ -2522,12 +2679,9 @@ def test_controlled_llm_verbalizer_rejects_freeform_question_output():
     )
     assert result.question == canonical
     assert result.generation_method == "deterministic_template_fallback"
-    assert "sentence_plan_not_object" in result.validation[
-        "sentence_plan_errors"
-    ]
+    assert "sentence_plan_not_object" in result.validation["sentence_plan_errors"]
     assert (
-        result.validation["fallback_reason"]
-        == "no_llm_sentence_plan_passed_validation"
+        result.validation["fallback_reason"] == "no_llm_sentence_plan_passed_validation"
     )
 
 
@@ -2537,8 +2691,18 @@ def test_structured_roundtrip_rejects_operator_or_constraint_changes():
         "required_slots": ["scope", "top_k"],
         "operator_id": "filter_then_rank",
         "constraints": [
-            {"position": 0, "step_id": "screen", "operator": "filter", "params": {"op": "gt", "value": 10}},
-            {"position": 1, "step_id": "rank", "operator": "rank", "params": {"direction": "desc", "top_k": 3}},
+            {
+                "position": 0,
+                "step_id": "screen",
+                "operator": "filter",
+                "params": {"op": "gt", "value": 10},
+            },
+            {
+                "position": 1,
+                "step_id": "rank",
+                "operator": "rank",
+                "params": {"direction": "desc", "top_k": 3},
+            },
         ],
     }
     variant = {
@@ -2589,10 +2753,7 @@ def test_roundtrip_reparses_question_instead_of_trusting_matching_contract():
     result = validate_question_roundtrip(variant, contract)
     assert not result["passed"]
     assert result["question_semantics"]["observed_comparisons"][0]["observed"] == "lt"
-    assert (
-        "question_semantics:filter_comparison_mismatch"
-        in result["contract_errors"]
-    )
+    assert "question_semantics:filter_comparison_mismatch" in result["contract_errors"]
 
 
 def test_roundtrip_rejects_natural_language_operator_reordering():
@@ -2630,10 +2791,37 @@ def test_roundtrip_rejects_natural_language_operator_reordering():
     }
     result = validate_question_roundtrip(variant, contract)
     assert not result["passed"]
-    assert (
-        "question_semantics:operator_order_mismatch"
-        in result["contract_errors"]
+    assert "question_semantics:operator_order_mismatch" in result["contract_errors"]
+
+
+def test_roundtrip_ignores_output_instruction_that_repeats_ranking():
+    contract = {
+        "slot_map": {"top_k": "3", "primary_metric": "revenue"},
+        "required_slots": ["top_k", "primary_metric"],
+        "operator_id": "rank_then_lookup_ranked_entities",
+        "constraints": [
+            {
+                "position": 0,
+                "step_id": "rank",
+                "operator": "rank",
+                "params": {"direction": "desc", "top_k": 3},
+            },
+            {
+                "position": 1,
+                "step_id": "followup",
+                "operator": "lookup_ranked_entities",
+                "params": {"target_ranks": [1, 2, 3]},
+            },
+        ],
+    }
+    question = (
+        "Rank the top 3 companies by revenue, then report total assets for each. "
+        "Return the complete ranking with one row per entity."
     )
+
+    result = validate_question_roundtrip(question, contract, trusted_contract=True)
+
+    assert result["passed"], result
 
 
 def test_roundtrip_rejects_rank_direction_and_top_k_changes():
@@ -2660,9 +2848,10 @@ def test_roundtrip_rejects_rank_direction_and_top_k_changes():
         trusted_contract=True,
     )
     assert not wrong_direction["passed"]
-    assert "question_semantics:rank_direction_mismatch" in wrong_direction[
-        "contract_errors"
-    ]
+    assert (
+        "question_semantics:rank_direction_mismatch"
+        in wrong_direction["contract_errors"]
+    )
 
     wrong_top_k = validate_question_roundtrip(
         "Within Technology, rank the top 5 companies for fiscal year 2023.",
@@ -2670,9 +2859,7 @@ def test_roundtrip_rejects_rank_direction_and_top_k_changes():
         trusted_contract=True,
     )
     assert not wrong_top_k["passed"]
-    assert "question_semantics:rank_top_k_mismatch" in wrong_top_k[
-        "contract_errors"
-    ]
+    assert "question_semantics:rank_top_k_mismatch" in wrong_top_k["contract_errors"]
 
 
 def test_roundtrip_parser_rejects_chinese_comparison_reversal():
@@ -2706,9 +2893,7 @@ def test_roundtrip_parser_rejects_chinese_comparison_reversal():
     )
     assert not result["passed"]
     assert result["question_semantics"]["observed_comparisons"][0]["observed"] == "lt"
-    assert "question_semantics:filter_comparison_mismatch" in result[
-        "contract_errors"
-    ]
+    assert "question_semantics:filter_comparison_mismatch" in result["contract_errors"]
 
 
 def test_sentence_plan_deterministically_renders_multi_step_question():
@@ -2809,22 +2994,16 @@ def test_sentence_plan_rejects_any_freeform_semantic_payload():
     )
     assert result.question == canonical
     assert result.generation_method == "deterministic_template_fallback"
-    assert "sentence_plan_unknown_fields" in result.validation[
-        "sentence_plan_errors"
-    ]
+    assert "sentence_plan_unknown_fields" in result.validation["sentence_plan_errors"]
 
 
 def test_scope_completeness_requires_exact_entity_set():
     semantics = {"entity_ids": ["A_US", "B_US", "C_US"]}
-    assert _scope_is_complete(
-        "filter_then_rank", semantics, ["C_US", "A_US", "B_US"]
-    )
+    assert _scope_is_complete("filter_then_rank", semantics, ["C_US", "A_US", "B_US"])
     assert not _scope_is_complete(
         "filter_then_rank", semantics, ["A_US", "B_US", "D_US"]
     )
-    assert not _scope_is_complete(
-        "filter_then_rank", semantics, ["A_US", "B_US"]
-    )
+    assert not _scope_is_complete("filter_then_rank", semantics, ["A_US", "B_US"])
 
 
 def test_mined_quarter_period_has_structured_scope_and_split_year():
@@ -2878,9 +3057,7 @@ def test_qa_build_requires_and_persists_explicit_approved_mining_run(tmp_path):
 
     _approve_mining_run(db, mining_run_id)
     with pytest.raises(ValueError, match="belongs to"):
-        load_approved_proposals(
-            db, "kg_different", mining_run_id, limit=10
-        )
+        load_approved_proposals(db, "kg_different", mining_run_id, limit=10)
     report = build_qa(
         db,
         config,
@@ -2979,9 +3156,10 @@ def test_mined_patterns_flow_through_candidate_plan_and_verifier(tmp_path):
     )
     assert report["candidate"]["eligible_candidate_count"] >= 3
     assert report["quality"]["rejected_count"] == 0
-    assert report["candidate"]["pattern_compilation_summary"][
-        "compiled_binding_count"
-    ] >= 3
+    assert (
+        report["candidate"]["pattern_compilation_summary"]["compiled_binding_count"]
+        >= 3
+    )
     compilation_rows = db.fetchall(
         "SELECT logical_plan, sampling_summary FROM qa_pattern_compilations "
         "WHERE qa_build_id = ? AND status = 'success'",
@@ -3092,8 +3270,7 @@ def test_mined_patterns_flow_through_candidate_plan_and_verifier(tmp_path):
         (candidate["pattern_compilation_id"],),
     )
     db.execute(
-        "UPDATE qa_samples SET validation_status = 'pending' "
-        "WHERE candidate_id = ?",
+        "UPDATE qa_samples SET validation_status = 'pending' WHERE candidate_id = ?",
         (candidate["candidate_id"],),
     )
     validate_qa_samples(db, report["qa_build_id"], batch_size=10)
@@ -3105,17 +3282,31 @@ def test_mined_patterns_flow_through_candidate_plan_and_verifier(tmp_path):
     )
     assert tampered_plan_check["check_status"] == "failed"
     db.execute(
-        "UPDATE qa_pattern_compilations SET logical_plan = ? "
-        "WHERE compilation_id = ?",
+        "UPDATE qa_pattern_compilations SET logical_plan = ? WHERE compilation_id = ?",
         (compilation["logical_plan"], candidate["pattern_compilation_id"]),
     )
 
 
 def test_metric_pool_balances_business_value_and_support():
     rows = [
-        {"metric_id": "dense_a", "metric_category": "macro", "statement_type": None, "fact_count": 50000},
-        {"metric_id": "dense_b", "metric_category": "macro", "statement_type": None, "fact_count": 40000},
-        {"metric_id": "valuable_tail", "metric_category": "financial_statement", "statement_type": "income_statement", "fact_count": 12},
+        {
+            "metric_id": "dense_a",
+            "metric_category": "macro",
+            "statement_type": None,
+            "fact_count": 50000,
+        },
+        {
+            "metric_id": "dense_b",
+            "metric_category": "macro",
+            "statement_type": None,
+            "fact_count": 40000,
+        },
+        {
+            "metric_id": "valuable_tail",
+            "metric_category": "financial_statement",
+            "statement_type": "income_statement",
+            "fact_count": 12,
+        },
     ]
     selected = _select_metric_pool(
         rows,
@@ -3131,16 +3322,20 @@ def test_metric_pool_balances_business_value_and_support():
 
 def test_fact_pool_sampling_is_stratified_and_deterministic():
     rows = []
-    for index, (source, industry, year, frequency) in enumerate([
-        ("sec", "Technology", 2018, "annual"),
-        ("sec", "Healthcare", 2023, "annual"),
-        ("fred", "macro", 2018, "monthly"),
-        ("worldbank", "macro", 2023, "annual"),
-    ]):
+    for index, (source, industry, year, frequency) in enumerate(
+        [
+            ("sec", "Technology", 2018, "annual"),
+            ("sec", "Healthcare", 2023, "annual"),
+            ("fred", "macro", 2018, "monthly"),
+            ("worldbank", "macro", 2023, "annual"),
+        ]
+    ):
         rows.append(
             {
                 "fact_id": f"fact_{index}",
-                "metric_category": "financial_statement" if source == "sec" else "macro",
+                "metric_category": "financial_statement"
+                if source == "sec"
+                else "macro",
                 "statement_type": "income_statement" if source == "sec" else None,
                 "source_id": source,
                 "industry": industry,
@@ -3253,9 +3448,7 @@ def test_graph_native_root_scan_supports_full_and_stratified_modes(tmp_path):
         node_id = f"fact:root_{index:02d}@@{kg_build}"
         properties = {
             "source_id": "sec_companyfacts" if first_stratum else "fred",
-            "financial_scope_type": "consolidated"
-            if first_stratum
-            else "country",
+            "financial_scope_type": "consolidated" if first_stratum else "country",
             "fiscal_year": 2021 if first_stratum else 2026,
         }
         db.execute(
@@ -3348,12 +3541,18 @@ def test_graph_native_root_scan_supports_full_and_stratified_modes(tmp_path):
         {"stable_node_id": "fact:stable", "node_id": "fact:stable@@kg_two"}
     )
 
-    assert mining_policy(
-        {"qa": {"pattern_mining": {"compiled_graph_scan_rows": 0}}}
-    )["compiled_graph_scan_rows"] == 0
-    assert mining_policy(
-        {"qa": {"pattern_mining": {"compiled_graph_evaluation_rows": 0}}}
-    )["compiled_graph_evaluation_rows"] == 0
+    assert (
+        mining_policy({"qa": {"pattern_mining": {"compiled_graph_scan_rows": 0}}})[
+            "compiled_graph_scan_rows"
+        ]
+        == 0
+    )
+    assert (
+        mining_policy(
+            {"qa": {"pattern_mining": {"compiled_graph_evaluation_rows": 0}}}
+        )["compiled_graph_evaluation_rows"]
+        == 0
+    )
 
 
 def test_graph_native_fact_loader_uses_cross_backend_integer_flags():
@@ -3403,9 +3602,7 @@ def test_graph_native_provenance_observation_becomes_executable_qa(tmp_path):
     }
     mining = mine_qa_patterns(db, config, kg_build_id=kg_build)
     _approve_mining_run(db, mining["mining_run_id"])
-    proposals = load_approved_proposals(
-        db, kg_build, mining["mining_run_id"], limit=10
-    )
+    proposals = load_approved_proposals(db, kg_build, mining["mining_run_id"], limit=10)
     assert [item["motif_family"] for item in proposals] == ["fact_provenance"]
     proposal = proposals[0]
     assert proposal["pattern_spec"]["binding_query"]["scan_kind"] == "graph"
@@ -3434,8 +3631,7 @@ def test_graph_native_provenance_observation_becomes_executable_qa(tmp_path):
     assert scan_summary["total_root_count"] >= scan_summary["scanned_root_count"]
     assert 0 < scan_summary["root_coverage_rate"] <= 1
     assert all(
-        "stratum_coverage" in item
-        for item in scan_summary["graph_scan_coverage"]
+        "stratum_coverage" in item for item in scan_summary["graph_scan_coverage"]
     )
     rows = db.fetchall(
         "SELECT task_subtype, answer_value FROM qa_samples "
@@ -3482,9 +3678,10 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
         )["catalog_release_id"]
         == release["catalog_release_id"]
     )
-    assert load_pattern_catalog_release(
-        db, release["catalog_release_id"]
-    )["entry_count"] > 0
+    assert (
+        load_pattern_catalog_release(db, release["catalog_release_id"])["entry_count"]
+        > 0
+    )
     compatibility_contract = release["compatibility_contract"]
     assert compatibility_contract["contract_version"] == 2
     assert compatibility_contract["graph_schema_version"] == "3.0"
@@ -3510,18 +3707,19 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
             (source_kg,),
         )
     )
-    assert validate_catalog_target_compatibility(
-        db,
-        release,
-        source_kg_row,
-        target_runtime_contract=target_runtime,
-    )["status"] == "passed"
+    assert (
+        validate_catalog_target_compatibility(
+            db,
+            release,
+            source_kg_row,
+            target_runtime_contract=target_runtime,
+        )["status"]
+        == "passed"
+    )
     for field_name in sorted(runtime_fields):
         incompatible_runtime = copy.deepcopy(target_runtime)
         incompatible_runtime[field_name] = (
-            "9.9.9"
-            if field_name.endswith("_version")
-            else "0" * 64
+            "9.9.9" if field_name.endswith("_version") else "0" * 64
         )
         with pytest.raises(RuntimeError, match=field_name):
             validate_catalog_target_compatibility(
@@ -3560,9 +3758,9 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
         )
     }
     policy_drift_config = copy.deepcopy(config)
-    policy_drift_config["qa"]["graph_patterns"].setdefault(
-        "comparability", {}
-    )["require_same_source"] = False
+    policy_drift_config["qa"]["graph_patterns"].setdefault("comparability", {})[
+        "require_same_source"
+    ] = False
     with pytest.raises(RuntimeError, match="comparability_policy_hash"):
         build_qa_candidates(
             db,
@@ -3638,14 +3836,16 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
     assert build["fact_build_id"] == target_fact_build
     assert build["entity_build_id"] == target_entity_build
     assert build["metric_build_id"] == target_metric_build
-    assert json.loads(build["notes"])["pattern_mining"][
-        "catalog_compatibility"
-    ]["status"] == "passed"
-    assert json.loads(build["notes"])["pattern_mining"][
-        "catalog_runtime_contract"
-    ]["comparability_policy_hash"] == compatibility_contract[
-        "comparability_policy_hash"
-    ]
+    assert (
+        json.loads(build["notes"])["pattern_mining"]["catalog_compatibility"]["status"]
+        == "passed"
+    )
+    assert (
+        json.loads(build["notes"])["pattern_mining"]["catalog_runtime_contract"][
+            "comparability_policy_hash"
+        ]
+        == compatibility_contract["comparability_policy_hash"]
+    )
     compilation = db.fetchone(
         "SELECT source_kg_build_id, target_kg_build_id, "
         "pattern_catalog_release_id, pattern_catalog_entry_hash, "
@@ -3658,8 +3858,9 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
     assert compilation["pattern_catalog_release_id"] == release["catalog_release_id"]
     assert compilation["pattern_catalog_entry_hash"]
     assert compilation["catalog_pattern_id"].startswith("qacatpat_")
-    assert json.loads(compilation["logical_plan"])["catalog_pattern_id"] == (
-        compilation["catalog_pattern_id"]
+    assert (
+        json.loads(compilation["logical_plan"])["catalog_pattern_id"]
+        == (compilation["catalog_pattern_id"])
     )
 
     generate_qa_samples(db, qa_build_id)
@@ -3701,8 +3902,7 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
     )
     assert candidate["catalog_pattern_id"] == compilation["catalog_pattern_id"]
     db.execute(
-        "UPDATE qa_candidates SET catalog_pattern_id = ? "
-        "WHERE candidate_id = ?",
+        "UPDATE qa_candidates SET catalog_pattern_id = ? WHERE candidate_id = ?",
         ("tampered-catalog-pattern", candidate["candidate_id"]),
     )
     db.execute(
@@ -3710,8 +3910,7 @@ def test_pattern_catalog_recompiles_across_kg_and_rejects_identity_tamper(
         (qa_build_id,),
     )
     db.execute(
-        "UPDATE qa_samples SET validation_status = 'pending' "
-        "WHERE qa_build_id = ?",
+        "UPDATE qa_samples SET validation_status = 'pending' WHERE qa_build_id = ?",
         (qa_build_id,),
     )
     tampered = validate_qa_samples(db, qa_build_id)
@@ -3851,9 +4050,7 @@ def test_all_supported_graph_observations_publish_and_execute(tmp_path):
     }
     mining = mine_qa_patterns(db, config, kg_build_id=kg_build)
     _approve_mining_run(db, mining["mining_run_id"])
-    proposals = load_approved_proposals(
-        db, kg_build, mining["mining_run_id"], limit=20
-    )
+    proposals = load_approved_proposals(db, kg_build, mining["mining_run_id"], limit=20)
     assert {
         "derived_fact_composition",
         "fact_provenance",
@@ -3861,8 +4058,7 @@ def test_all_supported_graph_observations_publish_and_execute(tmp_path):
         "entity_set_scope",
     }.issubset({proposal["motif_family"] for proposal in proposals})
     assert all(
-        proposal["operation_execution_pass_rate"] == 1.0
-        for proposal in proposals
+        proposal["operation_execution_pass_rate"] == 1.0 for proposal in proposals
     )
 
     report = build_qa(
@@ -3898,10 +4094,18 @@ def test_semantic_scenario_thresholds_are_dynamic_but_policy_bounded():
             f"prev_{entity_id}", "revenue", 2022, entity_id=entity_id, value=100
         )
         facts[f"curr_{entity_id}"] = _semantic_fact(
-            f"curr_{entity_id}", "revenue", 2023, entity_id=entity_id, value=120 - index * 5
+            f"curr_{entity_id}",
+            "revenue",
+            2023,
+            entity_id=entity_id,
+            value=120 - index * 5,
         )
         facts[f"net_{entity_id}"] = _semantic_fact(
-            f"net_{entity_id}", "net_income", 2023, entity_id=entity_id, value=20 - index
+            f"net_{entity_id}",
+            "net_income",
+            2023,
+            entity_id=entity_id,
+            value=20 - index,
         )
     binding = {
         "fact_ids": sorted(facts),
@@ -3948,10 +4152,18 @@ def test_scope_followup_aligns_fiscal_period_without_equating_time_basis():
     entities = ["A_US", "B_US", "C_US"]
     for index, entity_id in enumerate(entities):
         revenue = _semantic_fact(
-            f"revenue_{entity_id}", "revenue", 2023, entity_id=entity_id, value=120 - index
+            f"revenue_{entity_id}",
+            "revenue",
+            2023,
+            entity_id=entity_id,
+            value=120 - index,
         )
         asset = _semantic_fact(
-            f"assets_{entity_id}", "total_assets", 2023, entity_id=entity_id, value=300 + index
+            f"assets_{entity_id}",
+            "total_assets",
+            2023,
+            entity_id=entity_id,
+            value=300 + index,
         )
         asset["time_basis"] = "as_of_date"
         asset["metric_period_type"] = "point_in_time"
@@ -4011,9 +4223,10 @@ def test_temporal_followup_coverage_uses_fiscal_identity_not_exact_date():
         comparability_policy(),
     )
     assert result.passed, (result.errors, result.checks)
-    assert result.checks["secondary_period_coverage_equals"]["observed"][
-        "coverage"
-    ] == "1"
+    assert (
+        result.checks["secondary_period_coverage_equals"]["observed"]["coverage"] == "1"
+    )
+
 
 def test_roundtrip_accepts_filtering_modifier_and_highest_to_lowest_ranking():
     contract = {
@@ -4132,3 +4345,54 @@ def test_roundtrip_accepts_chinese_filter_rank_then_followup_lookup():
         "rank",
         "lookup",
     ]
+
+
+def test_complete_scope_excludes_zero_revenue_when_margin_is_required():
+    def fact(metric_id, value):
+        return {
+            "fact_id": f"fact_{metric_id}_{value}",
+            "metric_id": metric_id,
+            "normalized_value": str(value),
+            "normalized_unit": "million CNY",
+            "normalized_currency": "CNY",
+            "source_definition_id": "definition_1",
+            "entity_id": "COMPANY_CN",
+            "entity_scope_id": "COMPANY_CN",
+            "financial_scope_type": "consolidated_entity",
+        }
+
+    current = {
+        "COMPANY_CN": {
+            "revenue": fact("revenue", 0),
+            "net_income": fact("net_income", 10),
+        }
+    }
+    previous = {"COMPANY_CN": {"revenue": fact("revenue", 100)}}
+
+    assert _complete_scope_entities(current, previous, {"revenue", "net_income"}) == []
+
+
+def test_roundtrip_accepts_chinese_extreme_then_lookup_as_question_form():
+    contract = {
+        "slot_map": {
+            "entity": "九华旅游",
+            "primary_metric": "收入",
+            "secondary_metric": "经营利润",
+        },
+        "required_slots": ["entity", "primary_metric", "secondary_metric"],
+        "operator_id": "argmax_then_select_by_period",
+        "constraints": [
+            {"position": 0, "step_id": "peak", "operator": "argmax", "params": {}},
+            {
+                "position": 1,
+                "step_id": "followup",
+                "operator": "select_by_period",
+                "params": {},
+            },
+        ],
+    }
+    question = "九华旅游在哪个时期收入最高？该时期的经营利润是多少？"
+
+    result = validate_question_roundtrip(question, contract, trusted_contract=True)
+
+    assert result["passed"], result

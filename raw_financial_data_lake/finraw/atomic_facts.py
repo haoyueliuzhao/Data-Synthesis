@@ -73,11 +73,15 @@ def refresh_atomic_facts(
     ]:
         deactivate_active_rows(db, table, build_id)
     context = _load_context(db)
+    statement_candidate_build_id = (
+        _latest_successful_statement_candidate_build_id(db)
+    )
     report = {
         "build_id": build_id,
         "inserted_count": 0,
         "source_document_count": 0,
         "promoted_document_candidate_count": 0,
+        "statement_candidate_build_id": statement_candidate_build_id,
         "source_counts": Counter(),
         "metric_counts": Counter(),
         "skipped_counts": Counter(),
@@ -91,7 +95,12 @@ def refresh_atomic_facts(
 
     batch: list[dict[str, Any]] = []
     promotion_updates: list[tuple[str, str]] = []
-    for fact in _iter_atomic_facts(db, context, report):
+    for fact in _iter_atomic_facts(
+        db,
+        context,
+        report,
+        statement_candidate_build_id=statement_candidate_build_id,
+    ):
         candidate_id = fact.pop("_candidate_id", None)
         fact = _with_build(fact, build_id)
         if candidate_id:
@@ -115,6 +124,7 @@ def refresh_atomic_facts(
         "build_id": build_id,
         "inserted_count": report["inserted_count"],
         "source_document_count": report["source_document_count"],
+        "statement_candidate_build_id": statement_candidate_build_id,
         "promoted_document_candidate_count": report[
             "promoted_document_candidate_count"
         ],
@@ -261,7 +271,11 @@ def _entity_alias_context(rows: list[dict[str, Any]]) -> dict[str, dict[str, str
 
 
 def _iter_atomic_facts(
-    db: DBProtocol, context: dict[str, Any], report: dict[str, Any]
+    db: DBProtocol,
+    context: dict[str, Any],
+    report: dict[str, Any],
+    *,
+    statement_candidate_build_id: str | None,
 ) -> Iterable[dict[str, Any]]:
     rows = db.fetchall(
         """
@@ -296,7 +310,12 @@ def _iter_atomic_facts(
             yield from _extract_imf_datamapper(record, context, report)
 
     yield from _extract_official_publication_facts(db, context, report)
-    yield from _extract_approved_document_candidates(db, context, report)
+    yield from _extract_approved_document_candidates(
+        db,
+        context,
+        report,
+        statement_candidate_build_id=statement_candidate_build_id,
+    )
 
 
 def _extract_official_publication_facts(
@@ -346,11 +365,33 @@ def _extract_official_publication_facts(
         yield fact
 
 
+def _latest_successful_statement_candidate_build_id(
+    db: DBProtocol,
+) -> str | None:
+    row = db.fetchone(
+        """
+        SELECT build_id
+        FROM pipeline_builds
+        WHERE command = ?
+          AND status = ?
+        ORDER BY started_at DESC, build_id DESC
+        LIMIT 1
+        """,
+        ("refresh-cn-financial-statements", "success"),
+    )
+    return str(row["build_id"]) if row and row["build_id"] else None
+
+
 def _extract_approved_document_candidates(
     db: DBProtocol,
     context: dict[str, Any],
     report: dict[str, Any],
+    *,
+    statement_candidate_build_id: str | None,
 ) -> Iterable[dict[str, Any]]:
+    if not statement_candidate_build_id:
+        report["skipped_counts"]["statement_candidate_build_missing"] += 1
+        return
     placeholders = ",".join("?" for _ in CN_DISCLOSURE_RECORD_TYPES)
     rows = db.fetchall(
         f"""
@@ -364,7 +405,7 @@ def _extract_approved_document_candidates(
                ro.source_id, ro.source_publish_date
         FROM candidate_facts cf
         JOIN raw_objects ro ON ro.raw_object_id = cf.raw_object_id
-        WHERE COALESCE(cf.is_active, 1) = 1
+        WHERE cf.build_id = ?
           AND cf.evidence_status = 'verified'
           AND cf.promotion_status IN ('approved_for_atomic_fact', 'promoted')
           AND cf.matched_metric_id IS NOT NULL
@@ -380,7 +421,7 @@ def _extract_approved_document_candidates(
                  cf.raw_object_id, cf.page_number, cf.row_index,
                  cf.column_index
         """,
-        tuple(CN_DISCLOSURE_RECORD_TYPES),
+        (statement_candidate_build_id, *CN_DISCLOSURE_RECORD_TYPES),
     )
     for raw_row in rows:
         row = dict(raw_row)

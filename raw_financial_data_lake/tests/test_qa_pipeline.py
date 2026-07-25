@@ -27,7 +27,12 @@ from finraw.qa.pipeline import (
     _intersect_entity_filters,
     _localize_question_slots,
     _normalize_question_typography,
+    _period_label,
+    _period_endpoint_label,
     _proposal_candidate_limit,
+    _question_slots,
+    _sample_fact_rows,
+    _sample_language_policy,
     _benchmark_aligned_rubric,
     _benchmark_output_instruction,
     _target_market_entity_ids,
@@ -38,6 +43,7 @@ from finraw.qa.pipeline import (
 )
 from finraw.qa.templates import TEMPLATES, template_for
 from finraw.qa.verbalizer import (
+    diversify_surface_slots,
     QUESTION_PARSER_VERSION,
     question_parser_manifest,
     question_parser_manifest_hash,
@@ -70,8 +76,6 @@ DERIVED_TYPES = [
 ]
 
 
-
-
 def test_language_distribution_is_exact_deterministic_and_market_independent():
     candidates_a = [
         {"candidate_id": f"candidate_{index}", "stable_candidate_id": f"stable_{index}"}
@@ -87,9 +91,7 @@ def test_language_distribution_is_exact_deterministic_and_market_independent():
     assert counts_b == counts_a
     assert {
         row["stable_candidate_id"]: row["_question_language"] for row in candidates_a
-    } == {
-        row["stable_candidate_id"]: row["_question_language"] for row in candidates_b
-    }
+    } == {row["stable_candidate_id"]: row["_question_language"] for row in candidates_b}
 
 
 def test_mixed_template_is_covered_by_question_parser_contract():
@@ -99,9 +101,8 @@ def test_mixed_template_is_covered_by_question_parser_contract():
     assert template["language"] == "mixed"
     assert "mixed" in manifest["supported_languages"]
     assert "根据已披露数据" in template["template_text"]
+    assert " / " not in template["template_text"]
     assert validate_question_parser_support(template, manifest)["passed"] is True
-
-
 
 
 def test_conditional_output_contract_varies_by_answer_semantics_and_seed():
@@ -181,9 +182,7 @@ def test_output_contract_aligns_instruction_answer_text_and_rubric_tolerance():
         }
     }
     answer = {"value": "123.56", "unit": "million USD", "currency": "USD"}
-    contract = _conditional_output_contract(
-        answer, "numeric", policy, "fixed_zero"
-    )
+    contract = _conditional_output_contract(answer, "numeric", policy, "fixed_zero")
     instruction = _benchmark_output_instruction(
         answer, "numeric", policy, "en", contract
     )
@@ -397,55 +396,74 @@ def _qa_fixture(tmp_path):
 
 
 def test_generation_pipeline_classifier_and_proposal_limits_are_fail_closed():
-    assert _candidate_generation_pipeline(
-        {"pattern_id": "walk_scope", "task_subtype": "walk_scope"}
-    ) == "typed_edge_walk"
-    assert _candidate_generation_pipeline(
-        {
-            "pattern_id": "mined_pattern",
-            "task_subtype": "multi_period_average",
-            "pattern_proposal_id": "proposal_1",
-        }
-    ) == "automatic_pattern_mining"
-    assert _candidate_generation_pipeline(
-        {"pattern_id": "static_pattern", "task_subtype": "comparison"}
-    ) == "static_graph_pattern"
-    assert _candidate_generation_pipeline(
-        {"task_subtype": "yoy_growth", "source_derived_ids": ["derived_1"]}
-    ) == "derived_fact_qa"
+    assert (
+        _candidate_generation_pipeline(
+            {"pattern_id": "walk_scope", "task_subtype": "walk_scope"}
+        )
+        == "typed_edge_walk"
+    )
+    assert (
+        _candidate_generation_pipeline(
+            {
+                "pattern_id": "mined_pattern",
+                "task_subtype": "multi_period_average",
+                "pattern_proposal_id": "proposal_1",
+            }
+        )
+        == "automatic_pattern_mining"
+    )
+    assert (
+        _candidate_generation_pipeline(
+            {"pattern_id": "static_pattern", "task_subtype": "comparison"}
+        )
+        == "static_graph_pattern"
+    )
+    assert (
+        _candidate_generation_pipeline(
+            {"task_subtype": "yoy_growth", "source_derived_ids": ["derived_1"]}
+        )
+        == "derived_fact_qa"
+    )
     assert _candidate_generation_pipeline({"task_subtype": "single_fact"}) == "fact_qa"
 
     policy = {
         "max_candidates_per_proposal": 5,
         "max_candidates_per_typed_walk_proposal": 12,
-        "max_candidates_per_proposal_by_family": {
-            "temporal_aggregation": 7
-        },
+        "max_candidates_per_proposal_by_family": {"temporal_aggregation": 7},
     }
-    assert _proposal_candidate_limit(
-        {
-            "motif_family": "temporal_aggregation",
-            "pattern_spec": {"task_subtype": "multi_period_average"},
-        },
-        policy,
-    ) == 7
-    assert _proposal_candidate_limit(
-        {
-            "motif_family": "walk_temporal_followup",
-            "pattern_spec": {
-                "discovery_method": "typed_walk",
-                "task_subtype": "walk_temporal_peak_followup_provenance",
+    assert (
+        _proposal_candidate_limit(
+            {
+                "motif_family": "temporal_aggregation",
+                "pattern_spec": {"task_subtype": "multi_period_average"},
             },
-        },
-        policy,
-    ) == 12
-    assert _proposal_candidate_limit(
-        {
-            "motif_family": "cross_metric_comparison",
-            "pattern_spec": {"task_subtype": "cross_metric_comparison"},
-        },
-        policy,
-    ) == 5
+            policy,
+        )
+        == 7
+    )
+    assert (
+        _proposal_candidate_limit(
+            {
+                "motif_family": "walk_temporal_followup",
+                "pattern_spec": {
+                    "discovery_method": "typed_walk",
+                    "task_subtype": "walk_temporal_peak_followup_provenance",
+                },
+            },
+            policy,
+        )
+        == 12
+    )
+    assert (
+        _proposal_candidate_limit(
+            {
+                "motif_family": "cross_metric_comparison",
+                "pattern_spec": {"task_subtype": "cross_metric_comparison"},
+            },
+            policy,
+        )
+        == 5
+    )
 
 
 def test_complex_split_policy_keeps_training_and_eval_buckets():
@@ -1300,6 +1318,40 @@ def test_difficulty_distribution_gate_blocks_underrepresented_expert_samples(
     db.close()
 
 
+def test_surface_variation_uses_one_style_for_both_period_endpoints():
+    config = {
+        "language": "en",
+        "surface_variation": {"enabled": True, "minimum_noncanonical_selections": 1},
+    }
+    categories = []
+    for index in range(40):
+        slots = diversify_surface_slots(
+            {"start_period": "2021", "end_period": "2025", "metric": "revenue"},
+            {"time_scope": {"basis": "calendar_year"}},
+            f"range_{index}",
+            config,
+        )
+        start = slots["start_period"]
+        end = slots["end_period"]
+        category = (
+            "cy"
+            if start.startswith("CY ")
+            else "calendar"
+            if start.startswith("calendar year ")
+            else "natural"
+            if start.startswith("the ")
+            else "plain"
+        )
+        categories.append(category)
+        assert (
+            (category == "cy" and end.startswith("CY "))
+            or (category == "calendar" and end.startswith("calendar year "))
+            or (category == "natural" and end.startswith("the "))
+            or (category == "plain" and end == "2025")
+        )
+    assert len(set(categories)) > 1
+
+
 def test_question_typography_removes_english_spacing_after_chinese_punctuation():
     assert (
         _normalize_question_typography("问题？  请保留2位。", "zh")
@@ -1314,7 +1366,7 @@ def test_question_typography_removes_english_spacing_after_chinese_punctuation()
 def test_question_scope_slots_hide_internal_graph_terminology():
     complete_case = (
         "the canonical 'Petroleum Refining' industry complete-case universe "
-        "(3 companies with consolidated comparable inputs)"
+        "(3 companies with unique consolidated comparable inputs)"
     )
     graph_scope = (
         "Canonical company industry '采矿业' within authoritative source "
@@ -1322,10 +1374,13 @@ def test_question_scope_slots_hide_internal_graph_terminology():
     )
 
     assert _localize_question_slots({"scope": complete_case}, "en") == {
-        "scope": "the Petroleum Refining industry peer group (3 comparable companies)"
+        "scope": (
+            "the 3 Petroleum Refining peer companies with comparable consolidated "
+            "data for the period"
+        )
     }
     assert _localize_question_slots({"scope": graph_scope}, "zh") == {
-        "scope": "采矿业行业同行范围（5家可比公司）"
+        "scope": "该期间具备可比合并数据的采矿业同行公司（共5家）"
     }
 
 
@@ -1417,21 +1472,20 @@ def test_advanced_pipeline_distribution_gate_blocks_fact_dominance(tmp_path):
         "fact_qa": 1,
     }
     assert report["advanced_automatic_pipeline_ratio"] == 0.5
-    assert "generation_pipeline_typed_edge_walk=0 < 1" in report[
-        "build_gate_failures"
-    ]
-    assert "generation_pipeline_ratio_typed_edge_walk=0.000000 < 0.100000" in report[
-        "build_gate_failures"
-    ]
-    assert "advanced_automatic_pipeline_ratio=0.500000 < 0.600000" in report[
-        "build_gate_failures"
-    ]
-    assert "generation_pipeline_ratio_fact_qa=0.500000 > 0.400000" in report[
-        "build_gate_failures"
-    ]
-    assert "task_ratio_single_fact=1.000000 > 0.500000" in report[
-        "build_gate_failures"
-    ]
+    assert "generation_pipeline_typed_edge_walk=0 < 1" in report["build_gate_failures"]
+    assert (
+        "generation_pipeline_ratio_typed_edge_walk=0.000000 < 0.100000"
+        in report["build_gate_failures"]
+    )
+    assert (
+        "advanced_automatic_pipeline_ratio=0.500000 < 0.600000"
+        in report["build_gate_failures"]
+    )
+    assert (
+        "generation_pipeline_ratio_fact_qa=0.500000 > 0.400000"
+        in report["build_gate_failures"]
+    )
+    assert "task_ratio_single_fact=1.000000 > 0.500000" in report["build_gate_failures"]
     db.close()
 
 
@@ -1479,9 +1533,10 @@ def test_language_distribution_gate_rejects_market_language_shortcut(tmp_path):
     assert report["language_counts"] == {"en": 2}
     assert "language_ratio_zh=0.000000 < 0.200000" in report["build_gate_failures"]
     assert "language_ratio_mixed=0.000000 < 0.100000" in report["build_gate_failures"]
-    assert "maximum_single_language_ratio=1.000000 > 0.800000" in report[
-        "build_gate_failures"
-    ]
+    assert (
+        "maximum_single_language_ratio=1.000000 > 0.800000"
+        in report["build_gate_failures"]
+    )
     assert "language_category_count=1 < 2" in report["build_gate_failures"]
     db.close()
 
@@ -1552,3 +1607,181 @@ def test_temporal_holdout_isolates_the_complete_entity_metric_series(tmp_path):
     assert checks["temporal_holdout_entity_metric_series"]["overlap_count"] == 0
     assert report["split_leakage"]["passed"] is True
     db.close()
+
+
+def test_question_slots_use_public_country_and_natural_period_labels():
+    slots = _question_slots(
+        {
+            "canonical_semantics": {
+                "entity_id": "MHL_COUNTRY",
+                "entity_name": "MHL",
+                "metric_id": "gdp_current_usd",
+                "metric_name": "GDP, current USD",
+            },
+            "time_scope": {"calendar_year": 1998, "basis": "calendar_year"},
+            "task_subtype": "single_fact",
+            "entity_ids": ["MHL_COUNTRY"],
+            "metric_ids": ["gdp_current_usd"],
+            "answer_payload": {"value": "1", "unit": "USD"},
+            "source_fact_ids": ["fact_1"],
+        },
+        {"MHL_COUNTRY": "MHL"},
+        {"gdp_current_usd": "GDP, current USD"},
+    )
+
+    assert slots["entity"] == "Marshall Islands"
+    assert slots["period"] == "the 1998 calendar year"
+    compatibility_slots = _question_slots(
+        {
+            "canonical_semantics": {
+                "entity_id": "MHL_COUNTRY",
+                "metric_id": "gdp_current_usd",
+            },
+            "time_scope": {
+                "start_year": "2021年",
+                "end_year": "2025自然年",
+                "basis": "calendar_year",
+            },
+            "task_subtype": "multi_period_average",
+            "entity_ids": ["MHL_COUNTRY"],
+            "metric_ids": ["gdp_current_usd"],
+            "answer_payload": {"value": "1", "unit": "USD"},
+            "source_fact_ids": ["fact_1"],
+        },
+        {"MHL_COUNTRY": "MHL"},
+        {"gdp_current_usd": "GDP, current USD"},
+    )
+    assert compatibility_slots["start_period"] == "2021"
+    assert compatibility_slots["end_period"] == "2025"
+    assert _period_label({"fiscal_year": 2023, "basis": "fiscal_year"}) == "FY2023"
+    assert (
+        _period_label(
+            {
+                "fiscal_year": 2023,
+                "fiscal_quarter": "Q2",
+                "basis": "fiscal_year",
+            }
+        )
+        == "Q2 of FY2023"
+    )
+
+
+def test_single_fact_sampling_caps_deprioritized_metrics_and_is_deterministic():
+    rows = []
+    for index in range(20):
+        rows.append(
+            {
+                "source_id": "source",
+                "metric_id": "earnings_per_share_basic",
+                "entity_id": f"EPS_{index}",
+                "frequency": "annual",
+                "period_end": "2023-12-31",
+            }
+        )
+        rows.append(
+            {
+                "source_id": "source",
+                "metric_id": "revenue",
+                "entity_id": f"REV_{index}",
+                "frequency": "annual",
+                "period_end": "2023-12-31",
+            }
+        )
+    policy = {
+        "preferred_metric_ids": ["revenue"],
+        "deprioritized_metric_ids": ["earnings_per_share_basic"],
+        "maximum_deprioritized_ratio": 0.1,
+    }
+
+    selected = _sample_fact_rows(rows, 20, policy)
+    repeated = _sample_fact_rows(list(reversed(rows)), 20, policy)
+
+    assert sum(row["metric_id"] == "earnings_per_share_basic" for row in selected) <= 2
+    assert [row["entity_id"] for row in selected] == [
+        row["entity_id"] for row in repeated
+    ]
+
+
+def test_output_instruction_v2_varies_style_without_breaking_contract_terms():
+    answer = {"value": "12.3", "unit": "percent"}
+    policy = {
+        "benchmark_alignment": {
+            "enabled": True,
+            "explicit_unit": True,
+            "output_contract": {
+                "mode": "conditional",
+                "percentage_decimal_places": [1],
+                "instruction_styles": ["direct", "compact", "formal", "analyst"],
+            },
+        }
+    }
+    instructions = set()
+    for index in range(100):
+        contract = _conditional_output_contract(
+            answer, "numeric", policy, f"style_{index}"
+        )
+        instructions.add(
+            _benchmark_output_instruction(answer, "numeric", policy, "en", contract)
+        )
+
+    assert len(instructions) == 4
+    assert all("percent" in item and "1 decimal place" in item for item in instructions)
+    assert all("1 decimal places" not in item for item in instructions)
+
+
+def test_structured_output_contracts_are_answer_type_specific():
+    policy = {
+        "benchmark_alignment": {
+            "enabled": True,
+            "explicit_unit": True,
+            "output_contract": {
+                "mode": "conditional",
+                "instruction_styles": ["direct"],
+            },
+        }
+    }
+    answer = {"rows": [], "unit": "million USD", "currency": "USD"}
+    instructions = {
+        answer_type: _benchmark_output_instruction(
+            answer,
+            answer_type,
+            policy,
+            "en",
+            _conditional_output_contract(answer, answer_type, policy, answer_type),
+        )
+        for answer_type in (
+            "ranked_table",
+            "screening_table",
+            "filtered_rank_followup",
+            "period_metric_provenance",
+        )
+    }
+
+    assert len(set(instructions.values())) == 4
+    assert "rank" in instructions["ranked_table"].casefold()
+    assert "qualifying" in instructions["screening_table"].casefold()
+    assert "follow-up" in instructions["filtered_rank_followup"].casefold()
+    assert "source" in instructions["period_metric_provenance"].casefold()
+    assert all("USD millions" in value for value in instructions.values())
+
+
+def test_period_endpoint_labels_do_not_repeat_calendar_year_in_ranges():
+    assert (
+        _period_endpoint_label("calendar year 2020", {"basis": "calendar_year"})
+        == "2020"
+    )
+    assert _period_endpoint_label("2024", {"basis": "calendar_year"}) == "2024"
+    assert _period_endpoint_label("2024", {"basis": "fiscal_year"}) == "FY2024"
+
+
+def test_sample_language_policy_overrides_market_profile_default():
+    policy = {
+        "language": "zh",
+        "surface_variation": {"enabled": True},
+    }
+
+    resolved = _sample_language_policy(policy, "en")
+
+    assert resolved["language"] == "en"
+    assert resolved["surface_variation"] == {"enabled": True}
+    assert policy["language"] == "zh"

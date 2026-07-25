@@ -11,9 +11,9 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
-QUESTION_REWRITE_VERSION = "question_rewrite.v3.1"
-SURFACE_VARIATION_VERSION = "surface_variation.v3.1"
-QUESTION_PARSER_VERSION = "1.4.0"
+QUESTION_REWRITE_VERSION = "question_rewrite.v3.2"
+SURFACE_VARIATION_VERSION = "surface_variation.v3.3"
+QUESTION_PARSER_VERSION = "1.5.2"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh", "mixed")
 
 _TONE_PREFIXES = {
@@ -103,7 +103,7 @@ _OBSERVABLE_OPERATOR_PATTERNS = {
         re.IGNORECASE,
     ),
     "lookup": re.compile(
-        r"\b(?:report|lookup|look\s+up|add\s+each|what\s+was)\b|报告|给出|查询|列出",
+        r"\b(?:report|lookup|look\s+up|add\s+each|what\s+was)\b|报告|给出|查询|列出|是多少",
         re.IGNORECASE,
     ),
 }
@@ -156,6 +156,8 @@ _ZH_METRIC_SURFACE_ALIASES = {
     "inventory": ("存货",),
     "净利率": ("净利润率",),
     "资产负债率": ("负债资产比",),
+    "gross domestic product, current usd": ("国内生产总值（现价美元）",),
+    "population, total": ("总人口",),
 }
 
 _METRIC_SURFACE_ALIASES = {
@@ -202,6 +204,8 @@ _METRIC_SURFACE_ALIASES = {
     "capital expenditures": ("capital expenditures", "capital spending", "capex"),
     "earnings per share, basic": ("basic earnings per share", "basic EPS"),
     "earnings per share, diluted": ("diluted earnings per share", "diluted EPS"),
+    "gross domestic product, current usd": ("GDP at current prices",),
+    "population, total": ("total population",),
 }
 
 
@@ -555,9 +559,7 @@ def _realize_protected_rewrite(
         variant_choices, resolved_slots
     )
     llm_selects_variants = bool(
-        dict(policy.get("surface_variation") or {}).get(
-            "llm_selects_variants", False
-        )
+        dict(policy.get("surface_variation") or {}).get("llm_selects_variants", False)
     )
     surface_policy = dict(policy.get("surface_variation") or {})
     noncanonical_slot_capacity = sum(
@@ -608,9 +610,7 @@ def _realize_protected_rewrite(
                 ),
             }
         if llm_selects_variants:
-            request["rewrite_schema"]["allowed_fields"].append(
-                "surface_variant_ids"
-            )
+            request["rewrite_schema"]["allowed_fields"].append("surface_variant_ids")
             request["rewrite_schema"]["required_fields"] = [
                 "rewrite_version",
                 "question_template",
@@ -641,9 +641,8 @@ def _realize_protected_rewrite(
         telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
         indexed_rewrites = list(enumerate(rewrites))
         if indexed_rewrites:
-            style_offset = (
-                protected_rewrite_style_ids().index(style_variant_id)
-                % len(indexed_rewrites)
+            style_offset = protected_rewrite_style_ids().index(style_variant_id) % len(
+                indexed_rewrites
             )
             indexed_rewrites = (
                 indexed_rewrites[style_offset:] + indexed_rewrites[:style_offset]
@@ -726,12 +725,8 @@ def _realize_protected_rewrite(
                             else "deterministic_variant_selection"
                         ),
                         "surface_variant_ids": selected_variant_ids,
-                        "denormalization_applied": bool(
-                            noncanonical_selection_count
-                        ),
-                        "noncanonical_selection_count": (
-                            noncanonical_selection_count
-                        ),
+                        "denormalization_applied": bool(noncanonical_selection_count),
+                        "noncanonical_selection_count": (noncanonical_selection_count),
                         "surface_variation_version": SURFACE_VARIATION_VERSION,
                         "numeric_grounding": numeric_check,
                         "fallback_reason": None,
@@ -770,12 +765,8 @@ def _realize_protected_rewrite(
                 base_validation=base_validation,
             )
             retry_validation = dict(retry_result.validation)
-            retry_telemetry = dict(
-                retry_validation.get("llm_telemetry") or {}
-            )
-            telemetry = _merge_llm_attempt_telemetry(
-                [telemetry, retry_telemetry]
-            )
+            retry_telemetry = dict(retry_validation.get("llm_telemetry") or {})
+            telemetry = _merge_llm_attempt_telemetry([telemetry, retry_telemetry])
             rewrite_attempt_count = 1 + int(
                 retry_validation.get("rewrite_attempt_count") or 1
             )
@@ -854,8 +845,7 @@ def _realize_protected_rewrite(
         deterministic_surface, surface_contract, trusted_contract=True
     )
     fallback_noncanonical_count = sum(
-        str(resolved_slots.get(name) or "")
-        != str(canonical_slots.get(name) or "")
+        str(resolved_slots.get(name) or "") != str(canonical_slots.get(name) or "")
         for name in protected_names
     )
     return VerbalizationResult(
@@ -911,9 +901,7 @@ def _merge_llm_attempt_telemetry(
                 max(int(row.get("request_count") or 1), 1) for row in rows
             ),
             "latency_ms": sum(float(row.get("latency_ms") or 0) for row in rows),
-            "prompt_tokens": sum(
-                int(row.get("prompt_tokens") or 0) for row in rows
-            ),
+            "prompt_tokens": sum(int(row.get("prompt_tokens") or 0) for row in rows),
             "completion_tokens": sum(
                 int(row.get("completion_tokens") or 0) for row in rows
             ),
@@ -1013,8 +1001,7 @@ def validate_protected_rewrite(
                 if variant_id not in allowed_surface_variants.get(slot, {}):
                     errors.append("rewrite_surface_variant_id_invalid")
             noncanonical_selection_count = sum(
-                variant_id != "canonical"
-                for variant_id in surface_variant_ids.values()
+                variant_id != "canonical" for variant_id in surface_variant_ids.values()
             )
             if noncanonical_selection_count < minimum_noncanonical_selections:
                 errors.append("rewrite_surface_variant_diversity_insufficient")
@@ -1071,9 +1058,25 @@ def diversify_surface_slots(
             f"{SURFACE_VARIATION_VERSION}|{stable_seed}|{slot}".encode("utf-8")
         ).hexdigest()
         selected_ids[slot] = option_ids[int(digest[:8], 16) % len(option_ids)]
-    minimum_noncanonical = max(
-        int(policy.get("minimum_noncanonical_selections", 1)), 0
-    )
+    # Treat a time range as one semantic unit so both endpoints use the same style.
+    for left_slot, right_slot in (
+        ("previous_period", "period"),
+        ("start_period", "end_period"),
+    ):
+        left_choices = variants.get(left_slot) or {}
+        right_choices = variants.get(right_slot) or {}
+        common_ids = sorted(set(left_choices) & set(right_choices))
+        if len(common_ids) <= 1:
+            continue
+        pair_digest = hashlib.sha256(
+            f"{SURFACE_VARIATION_VERSION}|{stable_seed}|{left_slot}|{right_slot}".encode(
+                "utf-8"
+            )
+        ).hexdigest()
+        selected_id = common_ids[int(pair_digest[:8], 16) % len(common_ids)]
+        selected_ids[left_slot] = selected_id
+        selected_ids[right_slot] = selected_id
+    minimum_noncanonical = max(int(policy.get("minimum_noncanonical_selections", 1)), 0)
     selected_noncanonical = sum(
         variant_id != "canonical" for variant_id in selected_ids.values()
     )
@@ -1090,17 +1093,33 @@ def diversify_surface_slots(
         )
         for slot in eligible_slots:
             alternatives = [
-                variant_id
-                for variant_id in variants[slot]
-                if variant_id != "canonical"
+                variant_id for variant_id in variants[slot] if variant_id != "canonical"
             ]
             selected_ids[slot] = alternatives[0]
             selected_noncanonical += 1
             if selected_noncanonical >= minimum_noncanonical:
                 break
+    # Re-apply paired period selection after the diversity fallback, which may
+    # otherwise change only one endpoint.
+    for left_slot, right_slot in (
+        ("previous_period", "period"),
+        ("start_period", "end_period"),
+    ):
+        left_choices = variants.get(left_slot) or {}
+        right_choices = variants.get(right_slot) or {}
+        common_ids = sorted(set(left_choices) & set(right_choices))
+        if len(common_ids) <= 1:
+            continue
+        pair_digest = hashlib.sha256(
+            f"{SURFACE_VARIATION_VERSION}|{stable_seed}|{left_slot}|{right_slot}".encode(
+                "utf-8"
+            )
+        ).hexdigest()
+        selected_id = common_ids[int(pair_digest[:8], 16) % len(common_ids)]
+        selected_ids[left_slot] = selected_id
+        selected_ids[right_slot] = selected_id
     return {
-        slot: variants[slot][variant_id]
-        for slot, variant_id in selected_ids.items()
+        slot: variants[slot][variant_id] for slot, variant_id in selected_ids.items()
     }
 
 
@@ -1128,10 +1147,7 @@ def surface_slot_variants(
 def resolve_surface_variant_ids(
     variants: dict[str, dict[str, str]], variant_ids: dict[str, str]
 ) -> dict[str, str]:
-    return {
-        slot: choices[variant_ids[slot]]
-        for slot, choices in variants.items()
-    }
+    return {slot: choices[variant_ids[slot]] for slot, choices in variants.items()}
 
 
 def _surface_variant_ids_for_values(
@@ -1211,14 +1227,26 @@ def _surface_options(
             value,
             flags=re.IGNORECASE,
         ).strip()
-        if shortened:
+        if shortened and not re.search(r"[&/,.-]$", shortened):
             options.append(shortened)
     if slot in {"period", "previous_period", "start_period", "end_period"}:
         quarter_match = re.fullmatch(
             r"fiscal year\s+(\d{4})\s+(Q[1-4](?:_YTD)?)", value, re.I
         )
+        modern_quarter_match = re.fullmatch(
+            r"(Q[1-4])(?:\s+year-to-date)?\s+of\s+FY\s*(\d{4})",
+            value,
+            re.I,
+        )
+        if modern_quarter_match:
+            quarter, year = modern_quarter_match.groups()
+            if "year-to-date" in value.casefold():
+                quarter += "_YTD"
+            quarter_match = (year, quarter)
+        elif quarter_match:
+            quarter_match = quarter_match.groups()
         if quarter_match:
-            year, quarter = quarter_match.groups()
+            year, quarter = quarter_match
             quarter = quarter.upper()
             if policy.get("_language") == "zh":
                 natural_quarters = {
@@ -1231,7 +1259,12 @@ def _surface_options(
                     "Q3_YTD": f"{year}财年前九个月",
                     "Q4_YTD": f"{year}完整财年",
                 }
-                options.extend([f"{year}财年{quarter.replace('_', ' ')}", natural_quarters[quarter]])
+                options.extend(
+                    [
+                        f"{year}财年{quarter.replace('_', ' ')}",
+                        natural_quarters[quarter],
+                    ]
+                )
             else:
                 natural_quarters = {
                     "Q1": f"the first quarter of FY{year}",
@@ -1243,7 +1276,10 @@ def _surface_options(
                     "Q3_YTD": f"the first nine months of FY{year}",
                     "Q4_YTD": f"the full fiscal year {year}",
                 }
-                options.extend([f"FY{year} {quarter.replace('_', ' ')}", natural_quarters[quarter]])
+                if quarter.endswith("_YTD"):
+                    options.append(natural_quarters[quarter])
+                else:
+                    options.extend([f"FY{year} {quarter}", natural_quarters[quarter]])
         match = re.fullmatch(r"(?:fiscal year\s+|FY\s*)?(\d{4})", value, re.I)
         if policy.get("_language") == "zh":
             match = match or re.fullmatch(r"(\d{4})(?:财年|财政年度|自然年|年)", value)
@@ -1263,7 +1299,9 @@ def _surface_options(
             elif "fiscal" in basis:
                 options.extend([f"FY{year}", f"FY {year}", f"the {year} fiscal year"])
             else:
-                options.extend([f"calendar year {year}", f"CY {year}", f"the {year} calendar year"])
+                options.extend(
+                    [f"calendar year {year}", f"CY {year}", f"the {year} calendar year"]
+                )
     if slot == "frequency" and normalized == "annual":
         options.append("yearly")
     if slot == "extreme":
@@ -1283,9 +1321,7 @@ def _surface_options(
         if policy.get("scope_contextualization", True) and not re.search(
             r"\b(?:scope|universe|peer|companies|entities)\b", value, re.IGNORECASE
         ):
-            options.extend(
-                [f"the {value} peer group", f"covered {value} companies"]
-            )
+            options.extend([f"the {value} peer group", f"covered {value} companies"])
     return list(dict.fromkeys(item for item in options if item))
 
 
@@ -1505,6 +1541,17 @@ def validate_question_semantics(
         operator: _operator_position(question, operator)
         for operator in dict.fromkeys(expected_order)
     }
+    if "rank" in expected_order and "lookup" in expected_order:
+        # Output instructions often repeat "ranking" after the follow-up request.
+        # For rank-then-lookup plans, use the first task anchor, not that suffix.
+        rank_matches = list(_OBSERVABLE_OPERATOR_PATTERNS["rank"].finditer(question))
+        lookup_matches = list(
+            _OBSERVABLE_OPERATOR_PATTERNS["lookup"].finditer(question)
+        )
+        if rank_matches:
+            observed_positions["rank"] = rank_matches[0].start()
+        if lookup_matches:
+            observed_positions["lookup"] = lookup_matches[0].start()
     if "filter" in expected_order and observed_positions.get("filter") is None:
         implicit_filter_positions = [
             _comparison_position_near_number(question, item.get("value"))
@@ -1660,9 +1707,7 @@ def _comparison_near_number(question: str, expected_value: Any) -> str | None:
     return min(candidates)[2]
 
 
-def _comparison_position_near_number(
-    question: str, expected_value: Any
-) -> int | None:
+def _comparison_position_near_number(question: str, expected_value: Any) -> int | None:
     expected = _decimal_key(expected_value)
     if expected is None:
         return None

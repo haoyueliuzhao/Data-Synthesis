@@ -53,6 +53,49 @@ def test_temporal_holdout_uses_complete_entity_metric_series_component():
     assert "cluster_unrelated" not in result["temporal_holdout_clusters"]
 
 
+def test_temporal_holdout_recognizes_observation_date_series():
+    policy = leakage_policy({})
+    old = _row("cluster_old", entities=["SERIES_ENTITY_1"], year=2024)
+    cutoff = _row("cluster_cutoff", entities=["SERIES_ENTITY_1"], year=2025)
+    old["time_scope"] = {
+        "observation_date": "2024-10-14",
+        "basis": "observation_date",
+    }
+    cutoff["time_scope"] = {
+        "observation_date": "2025-03-20",
+        "basis": "observation_date",
+    }
+
+    result = strict_holdout_clusters(
+        [old, cutoff], cutoff_year=2025, policy=policy
+    )
+
+    assert result["temporal_holdout_clusters"] == {
+        "cluster_old",
+        "cluster_cutoff",
+    }
+
+
+def test_temporal_holdout_closes_exact_period_across_frequency_metadata():
+    policy = leakage_policy({})
+    historical = _row("cluster_historical", year=2022)
+    comparison = _row("cluster_comparison", year=2022)
+    cutoff = _row("cluster_cutoff", year=2025)
+    historical["canonical_semantics"] = {}
+    comparison["canonical_semantics"] = {"frequency": "annual"}
+    cutoff["canonical_semantics"] = {"frequency": "annual"}
+
+    result = strict_holdout_clusters(
+        [historical, comparison, cutoff], cutoff_year=2025, policy=policy
+    )
+
+    assert result["temporal_holdout_clusters"] == {
+        "cluster_historical",
+        "cluster_comparison",
+        "cluster_cutoff",
+    }
+
+
 def test_entity_holdout_closes_over_shared_entity_components():
     policy = leakage_policy({})
     heldout = next(

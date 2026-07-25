@@ -1,0 +1,95 @@
+{
+  "extends": "prod_qa_deepseek_v4_global_1038_v2.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 120,
+      "single_fact_worldbank": 45,
+      "single_fact_imf": 35,
+      "single_fact_fred": 40,
+      "single_fact_greater_china": 0
+    },
+    "single_fact_sampling": {
+      "preferred_metric_ids": [
+        "revenue",
+        "net_income",
+        "operating_income",
+        "gross_profit",
+        "total_assets",
+        "total_liabilities",
+        "net_cash_provided_by_used_in_operating_activities",
+        "gdp_current_usd",
+        "gdp_growth_annual_pct",
+        "inflation_consumer_prices_annual_pct"
+      ],
+      "deprioritized_metric_ids": [
+        "earnings_per_share_basic",
+        "earnings_per_share_diluted",
+        "inventory",
+        "accounts_receivable_net",
+        "cash_and_cash_equivalents"
+      ],
+      "maximum_deprioritized_ratio": 0.12
+    },
+    "derived_quotas": {
+      "difference": 70,
+      "yoy_growth": 110,
+      "ratio": 50,
+      "multi_year_argmax": 45,
+      "multi_year_argmin": 45
+    },
+    "graph_patterns": {
+      "quotas": {
+        "entity_metric_temporal_average": 70,
+        "temporal_argmax_then_metric_lookup": 60,
+        "industry_revenue_rank_then_assets_lookup": 30
+      }
+    },
+    "question_generation": {
+      "benchmark_alignment": {
+        "output_contract": {
+          "version": "conditional_output_contract.v2",
+          "mode": "conditional",
+          "monetary_decimal_places": [
+            0,
+            1,
+            2
+          ],
+          "percentage_decimal_places": [
+            1,
+            2
+          ],
+          "numeric_decimal_places": [
+            1,
+            2
+          ],
+          "exact_integer_units": [
+            "count",
+            "people",
+            "persons",
+            "companies",
+            "entities",
+            "units"
+          ],
+          "instruction_styles": [
+            "direct",
+            "compact",
+            "formal",
+            "analyst"
+          ]
+        }
+      }
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "single_fact": 190
+      },
+      "maximum_generation_pipeline_ratios": {
+        "fact_qa": 0.27
+      },
+      "maximum_task_ratios": {
+        "single_fact": 0.27
+      }
+    }
+  }
+}

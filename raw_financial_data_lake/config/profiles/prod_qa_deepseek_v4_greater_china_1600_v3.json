@@ -1,0 +1,81 @@
+{
+  "extends": "prod_qa_deepseek_v4_greater_china_962_v2.json",
+  "qa": {
+    "quotas": {
+      "__replace__": true,
+      "single_fact_financial": 0,
+      "single_fact_worldbank": 0,
+      "single_fact_imf": 0,
+      "single_fact_fred": 0,
+      "single_fact_greater_china": 375
+    },
+    "derived_quotas": {
+      "difference": 114,
+      "yoy_growth": 163,
+      "ratio": 82,
+      "multi_year_argmax": 65,
+      "multi_year_argmin": 65
+    },
+    "graph_patterns": {
+      "quotas": {
+        "pairwise_entity_metric_comparison": 74,
+        "entity_cross_metric_comparison": 49,
+        "entity_metric_temporal_average": 90,
+        "temporal_argmax_then_metric_lookup": 82,
+        "industry_growth_filter_then_margin_rank": 74,
+        "industry_revenue_rank_then_assets_lookup": 16,
+        "industry_multi_factor_screening": 74
+      }
+    },
+    "pattern_mining": {
+      "max_candidates_per_proposal": 16,
+      "max_candidates_per_typed_walk_proposal": 40,
+      "compiled_max_per_stratum": 12,
+      "max_candidates_per_proposal_by_family": {
+        "cross_metric_comparison": 12,
+        "temporal_aggregation": 18,
+        "temporal_extrema_followup": 26,
+        "scope_rank_followup": 26,
+        "walk_temporal_followup": 40,
+        "walk_scope_analysis": 40
+      }
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "single_fact": 300,
+        "yoy_growth": 125,
+        "ratio": 60,
+        "filter_then_rank": 45,
+        "multi_factor_screening": 45
+      },
+      "minimum_graph_pattern_samples": {
+        "pairwise_entity_metric_comparison": 55,
+        "entity_cross_metric_comparison": 32,
+        "entity_metric_temporal_average": 60,
+        "temporal_argmax_then_metric_lookup": 55,
+        "industry_growth_filter_then_margin_rank": 45,
+        "industry_revenue_rank_then_assets_lookup": 8,
+        "industry_multi_factor_screening": 45
+      },
+      "minimum_difficulty_samples": {
+        "expert": 90,
+        "research": 55
+      },
+      "minimum_generation_pipeline_samples": {
+        "automatic_pattern_mining": 190,
+        "typed_edge_walk": 45
+      },
+      "minimum_generation_pipeline_ratios": {
+        "automatic_pattern_mining": 0.12,
+        "typed_edge_walk": 0.025
+      },
+      "minimum_advanced_automatic_pipeline_ratio": 0.16,
+      "maximum_generation_pipeline_ratios": {
+        "fact_qa": 0.27
+      },
+      "maximum_task_ratios": {
+        "single_fact": 0.27
+      }
+    }
+  }
+}

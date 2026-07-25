@@ -300,6 +300,11 @@ def _complete_scope_entities(
             and _decimal_value(current_metrics["total_assets"]) == 0
         ):
             continue
+        if (
+            "net_income" in required_current
+            and _decimal_value(current_metrics["revenue"]) == 0
+        ):
+            continue
         complete.append(entity_id)
     return complete
 

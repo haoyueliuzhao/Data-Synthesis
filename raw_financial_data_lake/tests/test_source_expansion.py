@@ -5,6 +5,7 @@ import pytest
 from finraw import bse_discovery
 from finraw import hkex_discovery
 from finraw import cninfo_discovery
+from finraw import cn_market_universe
 from finraw.cn_market_universe import (
     _stratified_select,
     _validate_annual_report_coverage,
@@ -365,3 +366,51 @@ def test_hkex_split_fiscal_year_uses_period_end_year():
         "2025",
         "fiscal_year_range_end",
     )
+
+
+def test_authoritative_universe_uses_dynamic_id_and_five_year_listing_cutoff(
+    monkeypatch,
+):
+    def companies(prefix: str, market: str, count: int):
+        return [
+            {
+                "stock_code": f"{prefix}{index:04d}",
+                "company_name": f"Company {prefix}{index}",
+                "market": market,
+                "industry_code": chr(ord("A") + index % 8),
+                "industry": f"Industry {index % 8}",
+                "listing_date": "2010-01-01" if index < count - 5 else "2999-01-01",
+            }
+            for index in range(count)
+        ]
+
+    monkeypatch.setattr(
+        cn_market_universe,
+        "discover_sse_companies",
+        lambda **_: companies("6", "SSE", 40),
+    )
+    monkeypatch.setattr(
+        cn_market_universe,
+        "discover_szse_companies",
+        lambda **_: companies("0", "SZSE", 39),
+    )
+    monkeypatch.setattr(
+        cn_market_universe,
+        "discover_bse_companies",
+        lambda: companies("9", "BSE", 38),
+    )
+
+    universe = cn_market_universe.build_a_share_universe(
+        sse_count=34,
+        szse_count=33,
+        bse_count=33,
+    )
+
+    assert universe["universe"]["universe_id"] == "cn_a_share_authoritative_100_v1"
+    assert universe["universe"]["company_count"] == 100
+    assert "listing_date_on_or_before" in universe["universe"]["eligibility_policy"]
+    selected = [
+        *universe["cninfo"]["stock_pool"],
+        *universe["bse"]["stock_pool"],
+    ]
+    assert all(row["listing_date"] == "2010-01-01" for row in selected)
