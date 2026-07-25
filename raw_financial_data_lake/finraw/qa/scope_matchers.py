@@ -7,6 +7,7 @@ from typing import Any
 from finraw.db.client import DBProtocol
 from finraw.qa.comparability import annual_duration_valid, financial_scope_key
 from finraw.qa.graph_matcher import _stratified_take, register_matcher
+from finraw.qa.scope_contract import build_scope_contract, render_scope_contract
 
 
 @register_matcher("industry_growth_filter_then_margin_rank")
@@ -321,6 +322,16 @@ def _scope_match(
     stratum: list[Any],
 ) -> dict[str, Any]:
     fact_ids = sorted({fact_id for values in bindings.values() for fact_id in values})
+    scope_contract = build_scope_contract(
+        display_name=f"{industry} peer companies",
+        source="project canonical entity registry",
+        effective_date=f"FY{year}",
+        membership_rule="entities sharing the registered canonical industry label",
+        data_eligibility="companies with complete consolidated comparable inputs required by this question",
+        size=len(entity_ids),
+        entity_ids=entity_ids,
+        authoritative_membership=False,
+    )
     return {
         "pattern_id": pattern_id,
         "input_bindings": bindings,
@@ -330,10 +341,8 @@ def _scope_match(
         "period": year,
         "frequency": "annual",
         "scope_type": "canonical_industry_complete_case",
-        "scope_definition": (
-            f"the canonical '{industry}' industry complete-case universe "
-            f"({len(entity_ids)} companies with consolidated comparable inputs)"
-        ),
+        "scope_definition": render_scope_contract(scope_contract),
+        "scope_contract": scope_contract,
         "industry": industry,
         "source_id": source_id,
         "operator_step_params": operator_step_params,

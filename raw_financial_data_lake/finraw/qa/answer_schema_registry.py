@@ -7,7 +7,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 
-ANSWER_SCHEMA_REGISTRY_VERSION = "qa_answer_schema_registry.v1"
+ANSWER_SCHEMA_REGISTRY_VERSION = "qa_answer_schema_registry.v2"
 
 SUPPORTED_ANSWER_TYPES = frozenset(
     {
@@ -44,9 +44,7 @@ def resolve_answer_schema(
     schema["requested_currency"] = rubric.get("requested_currency")
     schema["order_required"] = bool(rubric.get("order_required"))
     schema["value_tolerance"] = str(
-        rubric.get("value_tolerance")
-        or rubric.get("absolute_tolerance")
-        or "0.000001"
+        rubric.get("value_tolerance") or rubric.get("absolute_tolerance") or "0.000001"
     )
     canonical = dict(canonical_semantics or {})
     if schema_type == "filtered_rank_followup":
@@ -60,9 +58,7 @@ def resolve_answer_schema(
         schema["scope"] = canonical.get("scope") or canonical.get("entity_scope") or {}
     elif schema_type == "screening_table":
         schema["filter_metadata"] = {
-            key: rubric[key]
-            for key in sorted(rubric)
-            if key.endswith("_pct")
+            key: rubric[key] for key in sorted(rubric) if key.endswith("_pct")
         }
     return schema
 
@@ -148,12 +144,6 @@ def model_contract(schema: dict[str, Any]) -> dict[str, Any]:
                     "value": "follow-up metric numeric string",
                 }
             ],
-            "metadata": {
-                "top_k": int(schema["top_k"]),
-                "followup_rank": int(schema["followup_rank"]),
-                "thresholds": schema.get("thresholds") or {},
-                "scope": schema.get("scope") or {},
-            },
             "primary_unit": unit,
             "secondary_unit": unit,
             "currency": currency,
@@ -168,7 +158,6 @@ def model_contract(schema: dict[str, Any]) -> dict[str, Any]:
                     "debt_ratio_pct": "numeric string",
                 }
             ],
-            "filter_metadata": schema.get("filter_metadata") or {},
             "unit": unit,
             "currency": currency,
         }
@@ -181,9 +170,7 @@ def model_contract(schema: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def rubric_contract(
-    schema: dict[str, Any], rubric: dict[str, Any]
-) -> dict[str, Any]:
+def rubric_contract(schema: dict[str, Any], rubric: dict[str, Any]) -> dict[str, Any]:
     return {
         "answer_schema_registry_version": ANSWER_SCHEMA_REGISTRY_VERSION,
         "answer_schema_type": schema["type"],
@@ -193,9 +180,7 @@ def rubric_contract(
         "requested_unit": schema.get("requested_unit"),
         "requested_currency": schema.get("requested_currency"),
         "value_tolerance": schema.get("value_tolerance"),
-        "complete_output_required": bool(
-            rubric.get("complete_output_required")
-        ),
+        "complete_output_required": bool(rubric.get("complete_output_required")),
     }
 
 
@@ -223,16 +208,6 @@ def normalize_model_answer(
     for field in required_lists:
         if not isinstance(answer_payload.get(field), list):
             raise ValueError(f"{answer_type} requires answer_payload.{field}")
-    if answer_type == "filtered_rank_followup" and not isinstance(
-        answer_payload.get("metadata"), dict
-    ):
-        raise ValueError(
-            "filtered_rank_followup requires answer_payload.metadata"
-        )
-    if answer_type == "screening_table" and not isinstance(
-        answer_payload.get("filter_metadata"), dict
-    ):
-        raise ValueError("screening_table requires answer_payload.filter_metadata")
     return answer_text, answer_payload
 
 
@@ -326,8 +301,8 @@ def match_answer(
             observed.get("followup_table") or [],
             rubric,
         )
-        checks["metadata"] = _metadata_match(
-            expected["metadata"], observed.get("metadata") or {}
+        checks["audit_metadata"] = _metadata_match(
+            expected["audit_metadata"], _audit_metadata(schema)
         )
     elif answer_type == "screening_table":
         checks["screening_table"] = _table_match(
@@ -335,9 +310,8 @@ def match_answer(
             observed.get("screening_table") or [],
             rubric,
         )
-        checks["filter_metadata"] = _metadata_match(
-            expected["filter_metadata"],
-            observed.get("filter_metadata") or {},
+        checks["audit_metadata"] = _metadata_match(
+            expected["audit_metadata"], _audit_metadata(schema)
         )
     else:
         return False, {"reason": f"unsupported_answer_type:{answer_type}"}
@@ -400,15 +374,10 @@ def canonical_gold(
             for row in source_rows
             if int(row.get("rank") or 0) == followup_rank
         ]
-        out["metadata"] = {
-            "top_k": int(schema.get("top_k") or len(out["ranking_table"])),
-            "followup_rank": followup_rank,
-            "thresholds": schema.get("thresholds") or {},
-            "scope": schema.get("scope") or {},
-        }
+        out["audit_metadata"] = _audit_metadata(schema)
     elif answer_type == "screening_table":
         out["screening_table"] = rows
-        out["filter_metadata"] = schema.get("filter_metadata") or {}
+        out["audit_metadata"] = _audit_metadata(schema)
     return out
 
 
@@ -420,9 +389,7 @@ def render_answer(
         return _value_with_unit(payload.get("value"), payload.get("unit"))
     if answer_type == "comparison":
         winner = payload.get("winner_id")
-        difference = _value_with_unit(
-            payload.get("difference"), payload.get("unit")
-        )
+        difference = _value_with_unit(payload.get("difference"), payload.get("unit"))
         return (
             f"{winner} is higher by {difference}."
             if language != "zh"
@@ -457,15 +424,63 @@ def answer_schema_manifest() -> dict[str, Any]:
             "filtered_rank_followup": [
                 "ranking_table",
                 "followup_table",
-                "metadata",
             ],
-            "screening_table": ["screening_table", "filter_metadata"],
+            "screening_table": ["screening_table"],
         },
     }
     manifest["manifest_hash"] = hashlib.sha256(
         json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
     return manifest
+
+
+def oracle_contract_check(
+    schema: dict[str, Any], expected: dict[str, Any], rubric: dict[str, Any]
+) -> tuple[bool, dict[str, Any]]:
+    """Prove canonical gold survives the public model contract and matcher."""
+    gold = canonical_gold(schema, expected, rubric)
+    public_payload = {
+        key: value
+        for key, value in gold.items()
+        if key not in {"audit_metadata", "metadata", "filter_metadata"}
+    }
+    if schema.get("requested_unit"):
+        public_payload.setdefault("unit", schema["requested_unit"])
+    if schema.get("requested_currency"):
+        public_payload.setdefault("currency", schema["requested_currency"])
+    if schema.get("type") in {
+        "multi_metric_ranked_table",
+        "filtered_rank_followup",
+        "period_metric_lookup",
+        "period_metric_provenance",
+    }:
+        public_payload.setdefault("primary_unit", schema.get("requested_unit"))
+        public_payload.setdefault("secondary_unit", schema.get("requested_unit"))
+    contract_payload = {
+        "answer_text": render_answer(schema, public_payload),
+        "answer_payload": public_payload,
+    }
+    _, normalized = normalize_model_answer(contract_payload, schema)
+    matched, details = match_answer(schema, expected, normalized, rubric)
+    return matched, {
+        **details,
+        "public_payload_fields": sorted(public_payload),
+        "hidden_audit_metadata": gold.get("audit_metadata") or {},
+    }
+
+
+def _audit_metadata(schema: dict[str, Any]) -> dict[str, Any]:
+    answer_type = str(schema.get("type") or "")
+    if answer_type == "filtered_rank_followup":
+        return {
+            "top_k": int(schema.get("top_k") or 3),
+            "followup_rank": int(schema.get("followup_rank") or 1),
+            "thresholds": schema.get("thresholds") or {},
+            "scope": schema.get("scope") or {},
+        }
+    if answer_type == "screening_table":
+        return {"filter_metadata": schema.get("filter_metadata") or {}}
+    return {}
 
 
 def _match_numeric(
@@ -514,16 +529,12 @@ def _numeric_tolerance(target: Decimal, rubric: dict[str, Any]) -> Decimal:
     )
     places = rubric.get("requested_decimal_places")
     if places is not None:
-        absolute = max(
-            absolute, Decimal("0.5") * Decimal("1").scaleb(-int(places))
-        )
+        absolute = max(absolute, Decimal("0.5") * Decimal("1").scaleb(-int(places)))
     relative = _decimal(rubric.get("relative_tolerance")) or Decimal("0")
     return max(absolute, abs(target) * relative, Decimal("0.000001"))
 
 
-def _numeric_field_match(
-    expected: Any, observed: Any, rubric: dict[str, Any]
-) -> bool:
+def _numeric_field_match(expected: Any, observed: Any, rubric: dict[str, Any]) -> bool:
     target = _decimal(expected)
     value = _decimal(observed)
     if target is None or value is None:
@@ -544,9 +555,7 @@ def _table_match(
     if len(expected_rows) != len(observed_rows):
         return False
 
-    def row_matches(
-        expected_row: dict[str, Any], observed_row: dict[str, Any]
-    ) -> bool:
+    def row_matches(expected_row: dict[str, Any], observed_row: dict[str, Any]) -> bool:
         if not isinstance(observed_row, dict):
             return False
         for key, expected_value in expected_row.items():

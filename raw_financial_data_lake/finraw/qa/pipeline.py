@@ -46,6 +46,10 @@ from finraw.qa.pattern_mining import (
 )
 from finraw.qa.plans import execute_plan, materialize_plan, operation_depth
 from finraw.qa.schema import ensure_qa_schema
+from finraw.qa.scope_contract import (
+    render_scope_contract,
+    scope_contract_from_semantics,
+)
 from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.split_leakage import (
     audit_split_leakage,
@@ -993,6 +997,9 @@ def generate_qa_samples(
         "UPDATE qa_builds SET status = ?, sample_count = ? WHERE qa_build_id = ?",
         ("samples_generated", sample_count, qa_build_id),
     )
+    llm_generation = _qa_llm_generation_stats(
+        db, qa_build_id, {"question_generation": generation_policy}
+    )
     return _write_report(
         {
             "qa_build_id": qa_build_id,
@@ -1004,6 +1011,7 @@ def generate_qa_samples(
             "task_counts": persisted_task_counts,
             "emitted_task_counts": dict(sorted(task_counts.items())),
             "language_counts": persisted_language_counts,
+            "llm_generation": llm_generation,
         },
         output_dir,
         "qa_generation_report",
@@ -2732,6 +2740,7 @@ def _graph_pattern_candidate(
         "comparability": match.get("comparability") or {},
         "scope_type": match.get("scope_type"),
         "scope_definition": match.get("scope_definition"),
+        "scope_contract": match.get("scope_contract") or {},
         "observation_count": match.get("observation_count"),
         "frequency": match.get("frequency"),
         "primary_metric_id": match.get("primary_metric_id"),
@@ -2877,6 +2886,7 @@ def _graph_pattern_candidate(
             "entity_ids": entity_ids,
             "scope_type": match.get("scope_type") or "graph_pattern_binding",
             "scope_definition": match.get("scope_definition"),
+            "scope_contract": match.get("scope_contract") or {},
         },
         "source_fact_ids": fact_ids,
         "source_derived_ids": source_derived_ids,
@@ -4860,6 +4870,15 @@ def _question_slots(
     secondary_metric_id = semantics.get("secondary_metric_id") or (
         metric_ids[1] if len(metric_ids) > 1 else None
     )
+    scope_contract = scope_contract_from_semantics(
+        {
+            **semantics,
+            "entity_scope": candidate.get("entity_scope") or {},
+            "scope_entity_ids": entity_ids,
+            "scope_size": len(entity_ids),
+            "period": period,
+        }
+    )
     return {
         "entity": _public_entity_slot(
             entity_id, entity_names.get(entity_id, entity_id)
@@ -4882,8 +4901,8 @@ def _question_slots(
         if subtype.endswith("argmax")
         or subtype in {"argmax", "rolling_max", "industry_argmax"}
         else "lowest",
-        "scope": semantics.get("scope_definition")
-        or "the explicitly configured data scope",
+        "scope": render_scope_contract(scope_contract),
+        "_scope_contract": json.dumps(scope_contract, sort_keys=True),
         "top_k": str(
             semantics.get("top_k")
             or len(candidate.get("answer_payload", {}).get("ranking_table") or [])
@@ -5034,10 +5053,18 @@ def _public_scope_slot(text: str) -> str:
 
 def _localize_question_slots(slots: dict[str, str], language: str) -> dict[str, str]:
     localized = {}
+    try:
+        scope_contract = json.loads(str(slots.get("_scope_contract") or "{}"))
+    except (TypeError, ValueError, json.JSONDecodeError):
+        scope_contract = {}
     for key, value in slots.items():
         text = str(value)
         if key in {"scope", "scope_label"}:
-            text = _public_scope_slot(text)
+            text = (
+                render_scope_contract(scope_contract, language)
+                if scope_contract.get("display_name")
+                else _public_scope_slot(text)
+            )
         if language != "zh":
             localized[key] = text
             continue
@@ -5216,7 +5243,12 @@ def _conditional_output_contract(
     return {
         **contract,
         "contract_type": contract_type,
-        "precision_required": decimal_places is not None,
+        "precision_required": decimal_places is not None
+        and _stable_contract_enabled(
+            configured.get("precision_visibility_ratio", 0.35),
+            stable_seed,
+            "precision_visibility",
+        ),
         "requested_decimal_places": decimal_places,
     }
 
@@ -5227,6 +5259,14 @@ def _stable_contract_choice(values: Any, stable_seed: str, contract_field: str) 
         raise ValueError(f"Output contract field {contract_field} has no choices")
     index = int(_digest(stable_seed, "output_contract.v2", contract_field)[:8], 16)
     return choices[index % len(choices)]
+
+
+def _stable_contract_enabled(value: Any, stable_seed: str, contract_field: str) -> bool:
+    ratio = min(max(float(value), 0.0), 1.0)
+    sample = int(
+        _digest(stable_seed, "output_contract.visibility", contract_field)[:8], 16
+    )
+    return (sample / 0xFFFFFFFF) < ratio
 
 
 def _is_monetary_unit(unit_label: str) -> bool:
@@ -5407,26 +5447,26 @@ def _structured_output_instruction(
         variants = {
             "ranked": (
                 "请用表格逐行列出名次、实体和数值，并保持题目要求的排序",
-                "表格需完整包含排名、实体和对应数值，顺序不得省略",
-                "结果按有序表格呈现，每个入选实体占一行",
-                "为便于比较，请保留完整排名及各实体数值",
+                "按排名顺序列出入选实体及其对应数值",
+                "将入选实体按顺序列示，并附上各自数值",
+                "为便于比较，请把名次、实体和数值对应列出",
             ),
             "multi_metric": (
                 "请用有序表格列出排名、实体、主指标和同期补充指标",
                 "每个入选实体占一行，同时给出排名和两项指标",
-                "结果表需完整保留排名，并列示主指标与补充指标",
+                "按排名列出实体，并在相邻栏位给出两项指标",
                 "为便于交叉比较，请在同一表格中列出排名及两项数值",
             ),
             "screening": (
                 "请用表格列出全部符合条件的实体及各项筛选依据",
-                "不要遗漏符合条件的实体，并逐行给出条件对应数值",
-                "筛选结果以完整表格呈现，包含实体和全部判断字段",
+                "列出符合条件的实体，并给出用于判断的指标值",
+                "用表格展示入选实体及其筛选依据",
                 "为便于复核，请同时列示每个入选实体及其条件数值",
             ),
             "followup": (
                 "请分别列出筛选排名结果和第一名的补充指标",
-                "答案分为排名表和第一名补充信息两部分",
-                "先完整呈现筛选后的排名，再列示第一名的后续指标",
+                "先给出筛选后的名次，再报告第一名的补充指标",
+                "先列示筛选结果，随后给出排名首位实体的补充指标",
                 "为便于核对，请保留排名表及第一名对应的补充结果",
             ),
             "provenance": (
@@ -5436,36 +5476,36 @@ def _structured_output_instruction(
                 "为便于证据复核，请同时给出计算结果和原始来源",
             ),
             "default": (
-                "请用完整表格列出所有要求的行和字段",
-                "按题目顺序给出完整表格，不要省略结果",
-                "全部结果应以结构完整的表格呈现",
-                "为便于复核，请完整保留每一行及对应字段",
+                "请用清晰表格组织所需结果",
+                "按题目要求列示相关观察值",
+                "请以便于比较的表格呈现结果",
+                "为便于复核，请清楚标注相关字段",
             ),
         }
     else:
         variants = {
             "ranked": (
                 "Use a table with rank, entity, and value for every selected row, preserving the requested order",
-                "Return the complete ranking with one row per entity and no omitted values",
-                "Present an ordered table containing every requested rank, entity, and value",
-                "For comparison, retain the full selected ranking and the value for each entity",
+                "Show the selected entities in rank order with their values",
+                "List each selected rank with the corresponding entity and value",
+                "For comparison, pair each selected entity with its rank and value",
             ),
             "multi_metric": (
                 "Use an ordered table with rank, entity, primary metric, and follow-up metric",
                 "Give one row per selected entity, including its rank and both requested values",
-                "Present the full ranking with the primary and follow-up metrics in separate columns",
+                "Show the selected ranking and place the follow-up measure beside each entity",
                 "For cross-comparison, keep rank, entity, and both metric values in one table",
             ),
             "screening": (
                 "List every qualifying entity and the values used for each screening condition",
-                "Return a complete table of qualifying entities with all condition values",
-                "Present all screened-in entities and every field needed to verify eligibility",
+                "Identify the qualifying entities and show the values behind each condition",
+                "Report the entities that meet the conditions together with their screening values",
                 "For verification, include each qualifying entity and its supporting condition values",
             ),
             "followup": (
                 "Show the filtered ranking and the first-ranked follow-up result as separate labeled sections",
-                "Return the complete ranking plus the requested follow-up value for rank one",
-                "Present the filtered ranked table first, followed by the rank-one follow-up metric",
+                "Show the filtered ranking, then report the requested measure for the first-ranked entity",
+                "State the filtered order first and then give the follow-up measure for its leader",
                 "For verification, retain both the ranking output and the first-ranked follow-up result",
             ),
             "provenance": (
@@ -5475,10 +5515,10 @@ def _structured_output_instruction(
                 "For evidence review, provide the computed result and its raw-source reference",
             ),
             "default": (
-                "Use a complete table containing every requested row and field",
-                "Return all requested results as a table without omitting rows",
-                "Present every required row in a complete structured table",
-                "For verification, retain all requested rows and fields",
+                "Organize the requested results in a table with the relevant fields",
+                "Present the requested observations in a clearly labeled table",
+                "Use a structured table suited to the requested comparison",
+                "For verification, label the requested fields clearly",
             ),
         }
 
@@ -6145,6 +6185,20 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         if not re.search(
             r"complete\s+(?:table|ranking)|full\s+(?:selected\s+)?ranking|"
             r"ordered\s+table|complete\s+structured\s+table|filtered\s+ranked\s+table|"
+            r"(?:use|provide|return)\s+(?:a\s+)?(?:clear|structured)\s+table|"
+            r"show\s+the\s+selected\s+ranking|"
+            r"place\s+the\s+follow-up\s+(?:measure|value)\s+beside\s+each\s+entity|"
+            r"(?:clearly\s+)?label\s+the\s+(?:requested|relevant)\s+fields|"
+            r"organize\s+the\s+requested\s+results\s+in\s+a\s+table|"
+            r"present\s+the\s+requested\s+observations\s+in\s+a\s+clearly\s+labeled\s+table|"
+            r"table\s+(?:suited|appropriate)\s+to\s+the\s+requested\s+comparison|"
+            r"show\s+the\s+selected\s+entities\s+in\s+rank\s+order|"
+            r"list\s+each\s+selected\s+rank|pair\s+each\s+selected\s+entity\s+with\s+its\s+rank|"
+            r"(?:identify|report)\s+the\s+qualifying\s+entities.*(?:condition|screening)\s+values|"
+            r"identify\s+the\s+qualifying\s+entities.*values\s+behind\s+each\s+condition|"
+            r"report\s+the\s+entities\s+that\s+meet\s+the\s+conditions.*screening\s+values|"
+            r"state\s+the\s+filtered\s+order\s+first.*follow-up\s+measure\s+for\s+its\s+leader|"
+            r"(?:show\s+the\s+filtered\s+ranking|state\s+the\s+filtered\s+order).*first-ranked|"
             r"one\s+row\s+per\s+(?:selected\s+)?entity|"
             r"every\s+(?:selected\s+)?(?:row|rank|entity)|(?:every|each)\s+qualifying\s+entity|both\s+(?:requested\s+)?values|"
             r"rank,?\s+entity|selected\s+period.*(?:source|raw\s+(?:object|file))|"
@@ -6154,7 +6208,12 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
             r"all\s+(?:requested|qualifying|screened-in)|preserv(?:e|ing)\s+the\s+"
             r"(?:requested\s+)?(?:ranking\s+)?order|ranking\s+order|"
             r"完整.*(?:表格|排名)|顺序.*(?:表格|报告|整理)|保持(?:要求的)?顺序|"
-            r"有序表格|表格.*(?:排名|两项数值)|排名表.*(?:补充|第一名)|"
+            r"有序表格|(?:清晰|结构化)表格|表格.*(?:排名|两项数值)|排名表.*(?:补充|第一名)|"
+            r"便于比较的表格|按排名顺序列出入选实体|将入选实体按顺序列示|"
+            r"名次、实体和数值对应列出|列出符合条件的实体.*(?:指标值|判断)|"
+            r"用表格展示入选实体.*筛选依据|"
+            r"(?:先给出筛选后的名次|先列示筛选结果).*补充指标|"
+            r"(?:清楚|明确)标注(?:相关|所需|请求的)?字段|按题目要求列示相关观察值|"
             r"筛选排名结果.*补充指标|完整保留每一行|计算结果.*原始来源|"
             r"逐行(?:列出|给出|报告)|"
             r"全部(?:入选|符合条件|所求|要求)|列出.*期间.*数值.*(?:原始|来源)|"

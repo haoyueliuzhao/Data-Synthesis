@@ -1,0 +1,64 @@
+{
+  "extends": "prod_qa_deepseek_v4_global_quality_v8.json",
+  "qa": {
+    "derived_quotas": {
+      "__replace__": true,
+      "difference": 110,
+      "yoy_growth": 170,
+      "qoq_growth": 0,
+      "ratio": 80,
+      "share": 0,
+      "multi_year_argmax": 45,
+      "multi_year_argmin": 45,
+      "industry_ranking": 0,
+      "industry_argmax": 0,
+      "industry_argmin": 0,
+      "ranking": 0,
+      "argmax": 0,
+      "argmin": 0,
+      "rolling_max": 0,
+      "rolling_min": 0,
+      "macro_time_series_argmax": 0,
+      "macro_time_series_argmin": 0,
+      "time_series_argmax": 0,
+      "time_series_argmin": 0,
+      "multi_condition_screening": 0,
+      "long_window_return": 0
+    },
+    "pattern_mining": {
+      "max_candidates_per_proposal": 36,
+      "max_candidates_per_typed_walk_proposal": 70,
+      "max_candidates_per_proposal_by_family": {
+        "cross_metric_comparison": 18,
+        "temporal_aggregation": 18,
+        "temporal_extrema_followup": 60,
+        "scope_rank_followup": 60,
+        "walk_temporal_followup": 70,
+        "walk_scope_analysis": 70
+      }
+    },
+    "question_generation": {
+      "benchmark_alignment": {
+        "output_contract": {
+          "version": "conditional_output_contract.v4",
+          "mode": "conditional",
+          "precision_visibility_ratio": 0.35
+        }
+      }
+    },
+    "quality_gate": {
+      "minimum_generation_pipeline_ratios": {
+        "__replace__": true,
+        "automatic_pattern_mining": 0.12,
+        "typed_edge_walk": 0.05
+      },
+      "minimum_advanced_automatic_pipeline_ratio": 0.17,
+      "maximum_generation_pipeline_ratios": {
+        "__replace__": true,
+        "fact_qa": 0.25,
+        "derived_fact_qa": 0.30,
+        "static_graph_pattern": 0.30
+      }
+    }
+  }
+}

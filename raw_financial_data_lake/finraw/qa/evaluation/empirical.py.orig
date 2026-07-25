@@ -519,16 +519,6 @@ def build_empirical_report(
         "sample_count": int(run["sample_manifest"].get("sample_count") or 0),
         "deterministic_preflight": run["sample_manifest"].get("oracle_preflight") or {},
         "trial_count": len(trials),
-        "telemetry": {
-            "prompt_tokens": _sum_telemetry(trials, "prompt_tokens"),
-            "completion_tokens": _sum_telemetry(trials, "completion_tokens"),
-            "total_tokens": _sum_telemetry(trials, "total_tokens"),
-            "estimated_cost": _sum_telemetry(trials, "estimated_cost"),
-            "fallback_count": sum(
-                bool((row.get("telemetry") or {}).get("model_fallback_used"))
-                for row in trials
-            ),
-        },
         "overall": _trial_metric_summary(trials),
         "model_results": per_model,
         "model_disagreement_count": disagreement_count,
@@ -565,8 +555,6 @@ def build_empirical_report(
             f"- Mode: {mode}",
             f"- Samples: {report['sample_count']}",
             f"- Trials: {report['trial_count']}",
-            f"- Total tokens: {report['telemetry']['total_tokens']}",
-            f"- Configured-price estimate: {report['telemetry']['estimated_cost']}",
             f"- Contract success: {report['overall']['contract_success_rate']}",
             f"- Semantic accuracy given valid contract: "
             f"{report['overall']['semantic_accuracy_given_valid_contract']}",

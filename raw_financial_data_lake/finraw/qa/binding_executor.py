@@ -40,6 +40,7 @@ from finraw.qa.pattern_mining import (
 )
 from finraw.qa.plans import execute_plan, materialize_plan
 from finraw.qa.schema import ensure_qa_schema
+from finraw.qa.scope_contract import build_scope_contract, render_scope_contract
 from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.store import insert_rows, json_value
 
@@ -1093,6 +1094,16 @@ def _binding_from_scope_roles(
 ) -> dict[str, Any]:
     all_rows = [row for role in roles for row in role_rows[str(role["binding"])]]
     first = all_rows[0]
+    scope_contract = build_scope_contract(
+        display_name=f"{context['industry']} peer companies",
+        source="project canonical entity registry",
+        effective_date=period_label(first),
+        membership_rule="entities sharing the registered canonical industry label",
+        data_eligibility="companies with unique consolidated comparable inputs for every required role",
+        size=len(common),
+        entity_ids=common,
+        authoritative_membership=False,
+    )
     step_params = {}
     for step in state.plan.get("operator_template", {}).get("operators") or []:
         if step.get("operator") != "rank" or not step.get("step_id"):
@@ -1118,11 +1129,8 @@ def _binding_from_scope_roles(
         "period": period_label(first),
         "frequency": context["frequency"],
         "scope_type": "canonical_industry_complete_case",
-        "scope_definition": (
-            f"the canonical '{context['industry']}' industry complete-case "
-            f"universe ({len(common)} companies with unique consolidated "
-            "comparable inputs)"
-        ),
+        "scope_definition": render_scope_contract(scope_contract),
+        "scope_contract": scope_contract,
         "industry": context["industry"],
         "source_definitions": {
             str(role["binding"]): selected[index][0][1]

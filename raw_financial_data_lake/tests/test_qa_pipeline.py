@@ -1724,8 +1724,10 @@ def test_output_instruction_v2_varies_style_without_breaking_contract_terms():
             _benchmark_output_instruction(answer, "numeric", policy, "en", contract)
         )
 
-    assert len(instructions) == 4
-    assert all("percent" in item and "1 decimal place" in item for item in instructions)
+    assert len(instructions) == 8
+    assert all("percent" in item for item in instructions)
+    assert any("1 decimal place" in item for item in instructions)
+    assert any("decimal place" not in item for item in instructions)
     assert all("1 decimal places" not in item for item in instructions)
 
 

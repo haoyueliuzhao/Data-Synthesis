@@ -387,16 +387,6 @@ def _normalize_unit(value: Decimal | None, fact: dict[str, Any], metric: dict[st
         return value, unit, currency, "index_level"
     return value, unit or metric.get("default_unit"), currency, "reported"
 
-def _is_exchange_rate_metric(metric: dict[str, Any]) -> bool:
-    metric_id = str(metric.get("metric_id") or "").casefold()
-    default_unit = re.sub(
-        r"\s+", "", str(metric.get("default_unit") or "").casefold()
-    ).replace("per", "/")
-    return metric_id == "official_exchange_rate_lcu_per_usd" or default_unit in {
-        "lcu/usd",
-        "usd/lcu",
-    }
-
 
 def _basic_checks(fact: dict[str, Any], metric: dict[str, Any], value: Decimal | None, unit: str | None) -> list[dict[str, Any]]:
     checks = []

@@ -1,0 +1,660 @@
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from collections import Counter
+from pathlib import Path
+from typing import Any
+
+from finraw.config import load_config
+from finraw.db.client import create_metadata_db
+from finraw.qa.store import json_value
+
+
+ALLOWED_DECISIONS = {"accepted", "accepted_for_coverage", "manual_review"}
+MARKET_SHARES = {"global": 203 / 391, "greater_china": 188 / 391}
+REGIONAL_TARGETS = {
+    "global": {
+        "benchmark_task": {"T2": 119 / 203, "T3": 84 / 203},
+        "language": {"en": 0.80, "zh": 0.15, "mixed": 0.05},
+    },
+    "greater_china": {
+        "benchmark_task": {"T2": 100 / 188, "T3": 88 / 188},
+        "language": {"en": 0.20, "zh": 0.65, "mixed": 0.15},
+    },
+}
+PIPELINE_TARGETS = {
+    "fact_qa": 0.23,
+    "derived_fact_qa": 0.27,
+    "static_graph_pattern": 0.25,
+    "automatic_pattern_mining": 0.17,
+    "typed_edge_walk": 0.08,
+}
+ISSUE_PENALTIES = {
+    "low_standalone_value": 10.0,
+    "overly_trivial": 8.0,
+    "scope_definition_unclear": 5.0,
+    "time_scope_awkward": 4.0,
+    "mechanical_template_language": 3.0,
+    "unnatural_output_instruction": 3.0,
+    "output_instruction_slightly_formulaic": 1.0,
+}
+SEMANTIC_QUARANTINE = {
+    "official_exchange_rate_lcu_per_usd": "active fact build incorrectly scales LCU/USD as million USD",
+}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--quality-report", action="append", required=True)
+    parser.add_argument("--quality-items", action="append", required=True)
+    parser.add_argument("--empirical-report", action="append", required=True)
+    parser.add_argument("--rework-quality-report", action="append", default=[])
+    parser.add_argument("--target-size", type=int, default=3000)
+    parser.add_argument("--output-dir", required=True)
+    args = parser.parse_args()
+
+    quality_reports = [_load_json(path) for path in args.quality_report]
+    quality_items = [
+        row for path in args.quality_items for row in _load_jsonl(path)
+    ]
+    quality_by_id = {str(row["qa_id"]): row for row in quality_items}
+    eligible_ids = [
+        qa_id
+        for qa_id, row in quality_by_id.items()
+        if _quality_eligible(row)
+    ]
+    if len(eligible_ids) < args.target_size:
+        raise RuntimeError(
+            f"Only {len(eligible_ids)} quality-eligible samples are available "
+            f"for target_size={args.target_size}"
+        )
+    pre_quarantine_count = len(rows)
+    rows = [row for row in rows if _semantic_release_eligible(row)]
+    semantic_quarantined = pre_quarantine_count - len(rows)
+    if len(rows) < args.target_size:
+        raise RuntimeError(
+            f"Only {len(rows)} samples remain after semantic quarantine"
+        )
+
+    db = create_metadata_db(load_config(args.config))
+    rows = _load_release_rows(db, eligible_ids)
+    row_by_id = {str(row["qa_id"]): row for row in rows}
+    missing = sorted(set(eligible_ids) - set(row_by_id))
+    if missing:
+        raise RuntimeError(f"Missing release rows: {missing[:5]}")
+    selected = _select_release(
+        rows,
+        quality_by_id,
+        args.target_size,
+    )
+    selected_ids = [str(row["qa_id"]) for row in selected]
+
+    out = Path(args.output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    release_path = out / "qa_3000.jsonl"
+    digest = hashlib.sha256()
+    with release_path.open("w", encoding="utf-8") as handle:
+        for row in selected:
+            qa_id = str(row["qa_id"])
+            payload = _release_payload(row, quality_by_id[qa_id])
+            line = json.dumps(
+                payload, ensure_ascii=False, sort_keys=True, default=str
+            ) + "\n"
+            handle.write(line)
+            digest.update(line.encode("utf-8"))
+
+    empirical_reports = {
+        report["evaluation_mode"]: report
+        for report in (_load_json(path) for path in args.empirical_report)
+    }
+    expected_modes = {
+        "gold_plan_given",
+        "evidence_only",
+        "evidence_pool",
+        "retrieval_tool",
+    }
+    if set(empirical_reports) != expected_modes:
+        raise RuntimeError(
+            f"Expected empirical modes {sorted(expected_modes)}, "
+            f"got {sorted(empirical_reports)}"
+        )
+
+    qa_build_ids = sorted({str(row["qa_build_id"]) for row in selected})
+    generation_telemetry = _generation_telemetry(db, qa_build_ids)
+    productive_cost = _cost_summary(
+        generation_telemetry,
+        quality_reports,
+        empirical_reports.values(),
+    )
+    rework_reports = [_load_json(path) for path in args.rework_quality_report]
+    rework_cost = _sum_telemetry(
+        [dict(report.get("telemetry") or {}) for report in rework_reports]
+    )
+    all_incurred = _sum_telemetry([productive_cost["total"], rework_cost])
+
+    selected_quality = [quality_by_id[qa_id] for qa_id in selected_ids]
+    distribution = _distribution(selected)
+    market_targets = _bounded_market_targets(rows, args.target_size)
+    manifest = {
+        "release_kind": "quality_screened_diagnostic",
+        "release_id": f"qarelease_{digest.hexdigest()[:16]}",
+        "qa_build_ids": qa_build_ids,
+        "sample_count": len(selected),
+        "sha256": digest.hexdigest(),
+        "selection_policy": {
+            "allowed_decisions": sorted(ALLOWED_DECISIONS),
+            "pending_adjudication_allowed": False,
+            "confirmed_fatal_allowed": False,
+            "semantic_quarantine": SEMANTIC_QUARANTINE,
+            "target_size": args.target_size,
+            "market_target_counts_after_capacity_constraints": market_targets,
+            "regional_targets": REGIONAL_TARGETS,
+            "pipeline_targets": PIPELINE_TARGETS,
+        },
+        "production_funnel": _production_funnel(
+            quality_reports,
+            quality_items,
+            eligible_ids,
+            semantic_quarantined,
+            selected,
+        ),
+        "distribution": distribution,
+        "distribution_gap": _distribution_gap(
+            distribution, market_targets, args.target_size
+        ),
+        "quality": _quality_summary(selected_quality),
+        "cost_accounting": {
+            "currency_note": (
+                "estimated_cost uses configured static API prices and is not an "
+                "invoice amount; token counts come from persisted API responses"
+            ),
+            "productive_run": productive_cost,
+            "discarded_rework": rework_cost,
+            "all_incurred_this_regeneration": all_incurred,
+        },
+        "empirical": {
+            mode: {
+                "empirical_run_id": report["empirical_run_id"],
+                "status": report["status"],
+                "sample_count": report["sample_count"],
+                "trial_count": report["trial_count"],
+                "deterministic_preflight": report["deterministic_preflight"],
+                "telemetry": report.get("telemetry") or {},
+                "overall": report["overall"],
+                "model_results": {
+                    role: {
+                        key: value
+                        for key, value in values.items()
+                        if key != "accuracy_slices"
+                    }
+                    for role, values in report["model_results"].items()
+                },
+            }
+            for mode, report in sorted(empirical_reports.items())
+        },
+    }
+    (out / "manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (out / "qa_regeneration_quality_report.md").write_text(
+        _markdown(manifest), encoding="utf-8"
+    )
+    print(json.dumps(manifest, ensure_ascii=False, indent=2, default=str))
+
+
+def _quality_eligible(row: dict[str, Any]) -> bool:
+    disagreement = dict(row.get("judge_disagreement") or {})
+    return (
+        str(row.get("deterministic_gate_status")) == "passed"
+        and str(row.get("decision")) in ALLOWED_DECISIONS
+        and not (row.get("confirmed_fatal_flags") or [])
+        and not bool(disagreement.get("requires_adjudication"))
+    )
+
+def _semantic_release_eligible(row: dict[str, Any]) -> bool:
+    metric_ids = set(json_value(row.get("metric_ids"), []))
+    return not (metric_ids & set(SEMANTIC_QUARANTINE))
+
+
+
+def _load_release_rows(db: Any, qa_ids: list[str]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for start in range(0, len(qa_ids), 500):
+        batch = qa_ids[start : start + 500]
+        placeholders = ",".join("?" for _ in batch)
+        rows.extend(
+            dict(row)
+            for row in db.fetchall(
+                f"""
+                SELECT s.*, c.entity_ids, c.metric_ids, c.time_scope,
+                       c.entity_scope, c.source_fact_ids, c.source_derived_ids,
+                       c.source_document_ids, c.raw_object_ids,
+                       c.canonical_semantics, c.answer_payload,
+                       c.answer_schema, c.graph_features, c.operation_plan_id,
+                       c.pattern_id, c.pattern_version,
+                       l.benchmark_task, l.market_subset, l.topic, l.subtopic,
+                       l.metric_families, l.source_classes, l.frequency,
+                       l.period_count, l.time_span_months,
+                       l.operation_families,
+                       l.operation_depth AS label_operation_depth,
+                       l.scope_size, l.rubric_type, l.generation_pipeline
+                FROM qa_samples s
+                JOIN qa_candidates c
+                  ON c.qa_build_id = s.qa_build_id
+                 AND c.candidate_id = s.candidate_id
+                JOIN qa_distribution_labels l
+                  ON l.qa_build_id = s.qa_build_id AND l.qa_id = s.qa_id
+                WHERE s.qa_id IN ({placeholders})
+                """,
+                batch,
+            )
+        )
+    return rows
+
+
+def _bounded_market_targets(
+    rows: list[dict[str, Any]], target_size: int
+) -> dict[str, int]:
+    available = Counter(str(row.get("market_subset") or "unknown") for row in rows)
+    targets = {
+        market: round(target_size * share)
+        for market, share in MARKET_SHARES.items()
+    }
+    for market in targets:
+        targets[market] = min(targets[market], available.get(market, 0))
+    remaining = target_size - sum(targets.values())
+    while remaining > 0:
+        choices = [
+            market
+            for market in targets
+            if targets[market] < available.get(market, 0)
+        ]
+        if not choices:
+            raise RuntimeError("Market capacity cannot satisfy release target")
+        market = max(
+            choices,
+            key=lambda item: (
+                available[item] - targets[item],
+                MARKET_SHARES[item],
+                item,
+            ),
+        )
+        targets[market] += 1
+        remaining -= 1
+    return targets
+
+
+def _select_release(
+    rows: list[dict[str, Any]],
+    quality_by_id: dict[str, dict[str, Any]],
+    target_size: int,
+) -> list[dict[str, Any]]:
+    market_targets = _bounded_market_targets(rows, target_size)
+    selected: list[dict[str, Any]] = []
+    for market, count in sorted(market_targets.items()):
+        pool = [
+            row for row in rows if str(row.get("market_subset")) == market
+        ]
+        selected.extend(
+            _greedy_regional_selection(
+                pool, quality_by_id, market, count
+            )
+        )
+    return sorted(selected, key=lambda row: str(row["qa_id"]))
+
+
+def _greedy_regional_selection(
+    pool: list[dict[str, Any]],
+    quality_by_id: dict[str, dict[str, Any]],
+    market: str,
+    target_size: int,
+) -> list[dict[str, Any]]:
+    if len(pool) <= target_size:
+        return list(pool)
+    targets = {
+        "benchmark_task": _target_counts(
+            target_size, REGIONAL_TARGETS[market]["benchmark_task"]
+        ),
+        "language": _target_counts(
+            target_size, REGIONAL_TARGETS[market]["language"]
+        ),
+        "generation_pipeline": _target_counts(
+            target_size, PIPELINE_TARGETS
+        ),
+    }
+    counts = {dimension: Counter() for dimension in targets}
+    remaining = {str(row["qa_id"]): row for row in pool}
+    selected: list[dict[str, Any]] = []
+    while len(selected) < target_size:
+        best = max(
+            remaining.values(),
+            key=lambda row: (
+                _selection_score(row, quality_by_id[str(row["qa_id"])], targets, counts),
+                hashlib.sha256(str(row["qa_id"]).encode()).hexdigest(),
+            ),
+        )
+        selected.append(best)
+        remaining.pop(str(best["qa_id"]))
+        for dimension in targets:
+            counts[dimension][str(best.get(dimension) or "unknown")] += 1
+    return selected
+
+
+def _selection_score(
+    row: dict[str, Any],
+    quality: dict[str, Any],
+    targets: dict[str, dict[str, int]],
+    counts: dict[str, Counter[str]],
+) -> float:
+    score = float(quality.get("subjective_quality_score") or 0)
+    if quality.get("decision") in {"accepted", "accepted_for_coverage"}:
+        score += 8.0
+    difficulty = str(row.get("difficulty") or "")
+    score += {"medium": 1.0, "hard": 3.0, "expert": 5.0, "research": 6.0}.get(
+        difficulty, 0.0
+    )
+    for issue in quality.get("issue_codes") or []:
+        score -= ISSUE_PENALTIES.get(str(issue), 0.0)
+    for dimension, weight in (
+        ("benchmark_task", 28.0),
+        ("language", 18.0),
+        ("generation_pipeline", 22.0),
+    ):
+        value = str(row.get(dimension) or "unknown")
+        target = targets[dimension].get(value, 0)
+        current = counts[dimension].get(value, 0)
+        if target > current:
+            score += weight * (target - current) / max(target, 1)
+        else:
+            score -= weight * (current - target + 1) / max(target, 1)
+    return score
+
+
+def _target_counts(total: int, shares: dict[str, float]) -> dict[str, int]:
+    raw = {key: total * value for key, value in shares.items()}
+    counts = {key: int(value) for key, value in raw.items()}
+    remainder = total - sum(counts.values())
+    for key in sorted(raw, key=lambda item: (raw[item] - counts[item], item), reverse=True):
+        if remainder <= 0:
+            break
+        counts[key] += 1
+        remainder -= 1
+    return counts
+
+
+def _distribution(rows: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
+    dimensions = (
+        "market_subset",
+        "benchmark_task",
+        "language",
+        "difficulty",
+        "generation_pipeline",
+        "answer_type",
+        "task_subtype",
+    )
+    return {
+        dimension: dict(
+            sorted(
+                Counter(
+                    str(row.get(dimension) or "unknown") for row in rows
+                ).items()
+            )
+        )
+        for dimension in dimensions
+    }
+
+
+def _distribution_gap(
+    distribution: dict[str, dict[str, int]],
+    market_targets: dict[str, int],
+    sample_count: int,
+) -> dict[str, Any]:
+    return {
+        "market_target_counts": market_targets,
+        "market_actual_counts": distribution["market_subset"],
+        "market_percentage_point_gap": {
+            market: round(
+                100
+                * (
+                    distribution["market_subset"].get(market, 0) / sample_count
+                    - MARKET_SHARES[market]
+                ),
+                4,
+            )
+            for market in MARKET_SHARES
+        },
+        "pipeline_target_counts": _target_counts(sample_count, PIPELINE_TARGETS),
+        "pipeline_actual_counts": distribution["generation_pipeline"],
+    }
+
+
+def _production_funnel(
+    reports: list[dict[str, Any]],
+    quality_items: list[dict[str, Any]],
+    eligible_ids: list[str],
+    semantic_quarantined: int,
+    selected: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "candidate_attempted": sum(
+            int(report["population"]["sample_count"]) for report in reports
+        ),
+        "deterministic_passed": sum(
+            int(report["population"]["deterministic_pass_count"])
+            for report in reports
+        ),
+        "base_judge_calls": sum(
+            2 * int(report["population"]["sample_count"]) for report in reports
+        ),
+        "adversarial_required": sum(
+            int(report["adjudication"]["required_count"]) for report in reports
+        ),
+        "adversarial_completed": sum(
+            int(report["adjudication"]["completed_count"]) for report in reports
+        ),
+        "quality_eligible": len(eligible_ids),
+        "quality_excluded": len(quality_items) - len(eligible_ids),
+        "semantic_quarantined": semantic_quarantined,
+        "release_eligible_after_semantic_quarantine": len(eligible_ids)
+        - semantic_quarantined,
+        "final_released": len(selected),
+    }
+
+        "semantic_quarantined": semantic_quarantined,
+        "release_eligible_after_semantic_quarantine": len(eligible_ids)
+        - semantic_quarantined,
+
+def _quality_summary(items: list[dict[str, Any]]) -> dict[str, Any]:
+    scores = sorted(float(row.get("subjective_quality_score") or 0) for row in items)
+    issues = Counter(
+        str(issue) for row in items for issue in row.get("issue_codes") or []
+    )
+    return {
+        "decision_counts": dict(
+            sorted(Counter(str(row.get("decision")) for row in items).items())
+        ),
+        "subjective_score": {
+            "mean": round(sum(scores) / len(scores), 6) if scores else None,
+            "minimum": scores[0] if scores else None,
+            "p50": scores[len(scores) // 2] if scores else None,
+        },
+        "issue_counts": dict(sorted(issues.items())),
+    }
+
+
+def _generation_telemetry(db: Any, qa_build_ids: list[str]) -> dict[str, Any]:
+    telemetry = []
+    for build_id in qa_build_ids:
+        for raw in db.fetchall(
+            "SELECT source_metadata FROM qa_samples WHERE qa_build_id = ?",
+            (build_id,),
+        ):
+            metadata = json_value(raw["source_metadata"], {})
+            generation = dict(metadata.get("question_generation") or {})
+            telemetry.append(dict(generation.get("llm_telemetry") or {}))
+    return _sum_telemetry(telemetry)
+
+
+def _cost_summary(
+    generation: dict[str, Any],
+    quality_reports: list[dict[str, Any]],
+    empirical_reports: Any,
+) -> dict[str, Any]:
+    quality = _sum_telemetry(
+        [dict(report.get("telemetry") or {}) for report in quality_reports]
+    )
+    empirical = _sum_telemetry(
+        [dict(report.get("telemetry") or {}) for report in empirical_reports]
+    )
+    total = _sum_telemetry([generation, quality, empirical])
+    return {
+        "generation": generation,
+        "l2_quality": quality,
+        "l3_empirical": empirical,
+        "total": total,
+    }
+
+
+def _sum_telemetry(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        key: sum(float(row.get(key) or 0) for row in rows)
+        for key in (
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "estimated_cost",
+        )
+    }
+
+
+def _release_payload(
+    row: dict[str, Any], quality: dict[str, Any]
+) -> dict[str, Any]:
+    json_fields = {
+        "rubric",
+        "source_metadata",
+        "entity_ids",
+        "metric_ids",
+        "time_scope",
+        "entity_scope",
+        "source_fact_ids",
+        "source_derived_ids",
+        "source_document_ids",
+        "raw_object_ids",
+        "canonical_semantics",
+        "answer_payload",
+        "answer_schema",
+        "graph_features",
+        "metric_families",
+        "source_classes",
+        "operation_families",
+    }
+    payload = {
+        key: json_value(value, [] if key.endswith("s") else {})
+        if key in json_fields
+        else value
+        for key, value in row.items()
+    }
+    payload["quality_evaluation"] = {
+        key: quality.get(key)
+        for key in (
+            "decision",
+            "subjective_quality_score",
+            "standalone_financial_value_score",
+            "dimension_scores",
+            "issue_codes",
+            "confirmed_fatal_flags",
+        )
+    }
+    return payload
+
+
+def _markdown(manifest: dict[str, Any]) -> str:
+    funnel = manifest["production_funnel"]
+    distribution = manifest["distribution"]
+    quality = manifest["quality"]
+    cost = manifest["cost_accounting"]
+    lines = [
+        "# Cost-controlled QA Regeneration and Quality Report",
+        "",
+        "## Release",
+        "",
+        f"- Release ID: `{manifest['release_id']}`",
+        f"- Released samples: {manifest['sample_count']:,}",
+        f"- SHA-256: `{manifest['sha256']}`",
+        "",
+        "## Production Funnel",
+        "",
+    ]
+    for key, value in funnel.items():
+        lines.append(f"- {key}: {value:,}")
+    lines.extend(["", "## Distribution", ""])
+    for dimension, values in distribution.items():
+        lines.append(
+            f"- {dimension}: {json.dumps(values, ensure_ascii=False, sort_keys=True)}"
+        )
+    lines.extend(
+        [
+            "",
+            "## Quality",
+            "",
+            f"- Decisions: {json.dumps(quality['decision_counts'], ensure_ascii=False, sort_keys=True)}",
+            f"- Subjective score: {json.dumps(quality['subjective_score'], ensure_ascii=False, sort_keys=True)}",
+            f"- Issue counts: {json.dumps(quality['issue_counts'], ensure_ascii=False, sort_keys=True)}",
+            "",
+            "## L3 Empirical Evaluation",
+            "",
+            "| Mode | Contract | Semantic given valid | Evidence selection | End-to-end | Tokens |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for mode in (
+        "gold_plan_given",
+        "evidence_only",
+        "evidence_pool",
+        "retrieval_tool",
+    ):
+        report = manifest["empirical"][mode]
+        overall = report["overall"]
+        evidence = overall.get("evidence_selection_correct_rate")
+        lines.append(
+            f"| {mode} | {overall['contract_success_rate']:.2%} | "
+            f"{overall['semantic_accuracy_given_valid_contract']:.2%} | "
+            f"{'N/A' if evidence is None else f'{evidence:.2%}'} | "
+            f"{overall['end_to_end_accuracy']:.2%} | "
+            f"{int(report['telemetry'].get('total_tokens') or 0):,} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Cost Accounting",
+            "",
+            f"- Productive run: {json.dumps(cost['productive_run'], ensure_ascii=False, sort_keys=True)}",
+            f"- Discarded rework: {json.dumps(cost['discarded_rework'], ensure_ascii=False, sort_keys=True)}",
+            f"- All incurred this regeneration: {json.dumps(cost['all_incurred_this_regeneration'], ensure_ascii=False, sort_keys=True)}",
+            "",
+            "Configured-price estimates are not invoice amounts. Token totals are read from persisted API responses; provider billing, retries outside the persisted response, taxes, and exchange rates can differ.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _load_json(path: str) -> dict[str, Any]:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _load_jsonl(path: str) -> list[dict[str, Any]]:
+    return [
+        json.loads(line)
+        for line in Path(path).read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+if __name__ == "__main__":
+    main()

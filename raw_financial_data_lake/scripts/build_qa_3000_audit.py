@@ -29,6 +29,8 @@ def main() -> None:
     parser.add_argument("--empirical-run-id", required=True)
     parser.add_argument("--global-quality-report", required=True)
     parser.add_argument("--greater-china-quality-report", required=True)
+    parser.add_argument("--global-quality-items", required=True)
+    parser.add_argument("--greater-china-quality-items", required=True)
     parser.add_argument("--empirical-report", action="append", required=True)
     parser.add_argument("--output-dir", required=True)
     args = parser.parse_args()
@@ -111,6 +113,26 @@ def main() -> None:
         "global": _load_json(args.global_quality_report),
         "greater_china": _load_json(args.greater_china_quality_report),
     }
+    quality_items = _load_jsonl(args.global_quality_items) + _load_jsonl(
+        args.greater_china_quality_items
+    )
+    quality_item_by_id = {str(item["qa_id"]): item for item in quality_items}
+    missing_quality = [qa_id for qa_id in qa_ids if qa_id not in quality_item_by_id]
+    if missing_quality:
+        raise RuntimeError(f"Pinned QA quality rows are missing: {missing_quality[:5]}")
+    release_quality_items = [quality_item_by_id[qa_id] for qa_id in qa_ids]
+    release_decisions = Counter(
+        str(item.get("decision") or "unknown") for item in release_quality_items
+    )
+    training_approved_count = sum(
+        str(item.get("decision")) in {"accepted", "accepted_for_coverage"}
+        and float(
+            (item.get("dataset_role_components") or {}).get("training_release_eligible")
+            or 0
+        )
+        >= 1.0
+        for item in release_quality_items
+    )
     empirical_reports = {
         report["evaluation_mode"]: report
         for report in (_load_json(path) for path in args.empirical_report)
@@ -124,6 +146,8 @@ def main() -> None:
         raise RuntimeError("All four empirical modes are required")
 
     manifest = {
+        "release_kind": "l0_passed_diagnostic",
+        "quality_filter_applied": False,
         "release_id": f"qa3000_{digest.hexdigest()[:16]}",
         "empirical_run_id": args.empirical_run_id,
         "qa_build_ids": json_value(run["qa_build_ids"], []),
@@ -134,15 +158,15 @@ def main() -> None:
         },
         "deterministic_validation": {
             "passed": sum(
-                int(report["population"]["deterministic_pass_count"])
-                for report in quality_reports.values()
+                str(item.get("deterministic_gate_status")) == "passed"
+                for item in release_quality_items
             ),
-            "population": sum(
-                int(report["population"]["sample_count"])
-                for report in quality_reports.values()
-            ),
+            "population": len(release_quality_items),
         },
-        "quality": {
+        "release_l2_decisions": dict(sorted(release_decisions.items())),
+        "training_approved_count": training_approved_count,
+        "diagnostic_only_count": len(release_quality_items) - training_approved_count,
+        "quality_candidate_pool": {
             market: {
                 "population": report["population"],
                 "decision_counts": report["decision_counts"],
@@ -230,17 +254,29 @@ def _load_json(path: str) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def _load_jsonl(path: str) -> list[dict[str, Any]]:
+    return [
+        json.loads(line)
+        for line in Path(path).read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
 def _markdown(manifest: dict[str, Any]) -> str:
     distribution = manifest["distribution"]
-    quality = manifest["quality"]
+    quality = manifest["quality_candidate_pool"]
     empirical = manifest["empirical"]
     lines = [
-        "# QA 3000 Full Evaluation Report",
+        "# QA 3000 L0-passed Diagnostic Evaluation Report",
         "",
         "## Release",
         "",
         f"- Release ID: `{manifest['release_id']}`",
         f"- Samples: {manifest['sample_count']:,}",
+        f"- Release kind: `{manifest['release_kind']}`",
+        f"- L2 training-approved samples: {manifest['training_approved_count']:,}",
+        f"- Diagnostic-only samples: {manifest['diagnostic_only_count']:,}",
+        f"- Exact release L2 decisions: {json.dumps(manifest['release_l2_decisions'], ensure_ascii=False, sort_keys=True)}",
         f"- SHA-256: `{manifest['sha256']}`",
         f"- QA builds: {', '.join(f'`{item}`' for item in manifest['qa_build_ids'])}",
         "",
@@ -258,9 +294,7 @@ def _markdown(manifest: dict[str, Any]) -> str:
         lines.append(
             f"- {key}: {json.dumps(distribution[key], ensure_ascii=False, sort_keys=True)}"
         )
-    lines.extend(
-        ["", "## Deterministic And L2 Quality (3,217-item candidate pool)", ""]
-    )
+    lines.extend(["", "## Candidate-pool L2 Context", ""])
     for market, report in quality.items():
         lines.append(f"### {market}")
         lines.append("")

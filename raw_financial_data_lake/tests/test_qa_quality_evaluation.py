@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +10,8 @@ from finraw.db.client import MetadataDB
 from finraw.llm_client import JsonCompletion, LLMClientError
 from finraw.qa.answer_schema_registry import (
     match_answer,
+    model_contract,
+    oracle_contract_check,
     normalize_model_answer,
     resolve_answer_schema,
 )
@@ -1033,17 +1034,15 @@ def test_filtered_rank_followup_uses_sectioned_schema_contract() -> None:
             {"rank": 2, "entity_id": "B", "value": "15"},
         ],
         "followup_table": [{"rank": 1, "entity_id": "A", "value": "35"}],
-        "metadata": {
-            "top_k": 3,
-            "followup_rank": 1,
-            "thresholds": schema["thresholds"],
-            "scope": {},
-        },
         "primary_unit": "percent",
         "secondary_unit": "percent",
     }
     matched, details = match_answer(schema, expected, observed, rubric)
     assert matched is True, details
+    assert "metadata" not in model_contract(schema)["answer_payload"]
+    oracle_passed, oracle_details = oracle_contract_check(schema, expected, rubric)
+    assert oracle_passed is True, oracle_details
+    assert oracle_details["hidden_audit_metadata"]["top_k"] == 3
     with pytest.raises(ValueError, match="ranking_table"):
         normalize_model_answer(
             {

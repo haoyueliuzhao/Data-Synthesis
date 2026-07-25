@@ -729,7 +729,6 @@ FRED_ALIASES = {
     "AWHMAN": "average_weekly_hours_manufacturing",
     "FEDFUNDS": "federal_funds_rate",
     "DFF": "federal_funds_rate",
-    "WALCL": "federal_reserve_total_assets",
     "DGS1MO": "treasury_yield_1mo",
     "DGS3MO": "treasury_yield_3mo",
     "DGS2": "treasury_yield_2y",
