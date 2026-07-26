@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from trusted_synthesis.core.evaluation.mutations import MutationFamily, taxonomy_entry
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.trajectory.schema import (
     ActionType,
@@ -19,15 +20,19 @@ from trusted_synthesis.hashing import canonical_hash
 @dataclass(frozen=True)
 class MutationCase:
     mutation_type: str
+    mutation_family: MutationFamily
     source_trajectory_id: str
     trajectory: Trajectory
     expected_failure_gates: tuple[str, ...]
+    expected_failure_checks: tuple[str, ...]
+    expected_detail_tokens: tuple[str, ...] = ()
 
     @property
     def mutation_id(self) -> str:
         return canonical_hash(
             {
                 "mutation_type": self.mutation_type,
+                "mutation_family": self.mutation_family.value,
                 "source_trajectory_id": self.source_trajectory_id,
                 "trajectory_hash": self.trajectory.trajectory_hash,
             },
@@ -41,16 +46,66 @@ _EXPECTED_GATES = {
     "time_shift": ("evidence_retrieval_and_selection",),
     "predicate_mismatch": ("evidence_retrieval_and_selection",),
     "arithmetic_error": ("proof_and_operation",),
-    "wrong_answer": ("answer_citation_and_claims",),
-    "citation_mismatch": ("answer_citation_and_claims",),
-    "unsupported_claim": ("answer_citation_and_claims",),
+    "wrong_answer": ("answer_and_citation",),
+    "citation_mismatch": ("answer_and_citation",),
+    "unsupported_claim": ("domain_claims",),
     "oracle_leakage": ("public_boundary_and_tools",),
     "disallowed_tool": ("public_boundary_and_tools",),
     "failed_step": ("workflow_contract",),
+    "extra_result_field": ("answer_and_citation",),
+    "program_node_mismatch": ("proof_and_operation",),
+    "conflicting_calculation": ("proof_and_operation",),
+    "verification_result_mismatch": ("proof_and_operation",),
+    "claim_value_mismatch": ("domain_claims",),
     "multi_error": (
         "public_boundary_and_tools",
         "evidence_retrieval_and_selection",
-        "answer_citation_and_claims",
+        "answer_and_citation",
+    ),
+}
+
+_GENERIC_MUTATION_IDS = {
+    "missing_evidence": "missing_evidence",
+    "wrong_entity": "scope_mismatch",
+    "time_shift": "time_shift",
+    "predicate_mismatch": "definition_mismatch",
+    "arithmetic_error": "wrong_derivation",
+    "wrong_answer": "wrong_derivation",
+    "citation_mismatch": "citation_mismatch",
+    "unsupported_claim": "unsupported_claim",
+    "oracle_leakage": "public_oracle_leakage",
+    "disallowed_tool": "tool_or_step_contract",
+    "failed_step": "tool_or_step_contract",
+    "extra_result_field": "tool_or_step_contract",
+    "program_node_mismatch": "tool_or_step_contract",
+    "conflicting_calculation": "wrong_derivation",
+    "verification_result_mismatch": "wrong_derivation",
+    "claim_value_mismatch": "unsupported_claim",
+    "multi_error": "multi_error",
+}
+
+_EXPECTED_CHECKS = {
+    "missing_evidence": ("evidence_recall",),
+    "wrong_entity": ("evidence_recall", "evidence_precision"),
+    "time_shift": ("evidence_recall", "evidence_precision"),
+    "predicate_mismatch": ("evidence_recall", "evidence_precision"),
+    "arithmetic_error": ("program_node_alignment", "all_calculations_correct"),
+    "wrong_answer": ("answer_correctness",),
+    "citation_mismatch": ("citation_binding",),
+    "unsupported_claim": ("domain_claim_verification",),
+    "oracle_leakage": ("public_only_generation",),
+    "disallowed_tool": ("allowed_tool_compliance",),
+    "failed_step": ("step_statuses_succeeded",),
+    "extra_result_field": ("answer_schema_validity",),
+    "program_node_mismatch": ("program_node_alignment",),
+    "conflicting_calculation": ("program_node_alignment", "all_calculations_correct"),
+    "verification_result_mismatch": ("verification_step_binding",),
+    "claim_value_mismatch": ("domain_claim_verification",),
+    "multi_error": (
+        "public_only_generation",
+        "evidence_recall",
+        "answer_correctness",
+        "citation_binding",
     ),
 }
 
@@ -69,9 +124,12 @@ def generate_mutations(
         mutations.append(
             MutationCase(
                 mutation_type=mutation_type,
+                mutation_family=taxonomy_entry(_GENERIC_MUTATION_IDS[mutation_type]).family,
                 source_trajectory_id=candidate.trajectory_id,
                 trajectory=finalized,
                 expected_failure_gates=_EXPECTED_GATES[mutation_type],
+                expected_failure_checks=_EXPECTED_CHECKS[mutation_type],
+                expected_detail_tokens=_expected_detail_tokens(mutation_type, finalized),
             )
         )
     return tuple(mutations)
@@ -116,6 +174,11 @@ def _mutate(
         "oracle_leakage": _oracle_leakage,
         "disallowed_tool": _disallowed_tool,
         "failed_step": _failed_step,
+        "extra_result_field": _extra_result_field,
+        "program_node_mismatch": _program_node_mismatch,
+        "conflicting_calculation": _conflicting_calculation,
+        "verification_result_mismatch": _verification_result_mismatch,
+        "claim_value_mismatch": _claim_value_mismatch,
         "multi_error": _multi_error,
     }
     try:
@@ -288,6 +351,121 @@ def _failed_step(case: PilotTaskCase, candidate: Trajectory) -> Trajectory:
     )
 
 
+def _extra_result_field(case: PilotTaskCase, candidate: Trajectory) -> Trajectory:
+    answer = dict(candidate.final_answer)
+    result = dict(answer.get("result") or {})
+    result["recommendation"] = "Buy this security immediately."
+    answer["result"] = result
+    return candidate.model_copy(
+        update={
+            "final_answer": answer,
+            "steps": _update_steps(
+                candidate,
+                ActionType.ANSWER,
+                lambda step: step.model_copy(update={"observation": answer}),
+            ),
+        }
+    )
+
+
+def _program_node_mismatch(case: PilotTaskCase, candidate: Trajectory) -> Trajectory | None:
+    for target in candidate.steps:
+        if target.program_node_id is None:
+            continue
+        return candidate.model_copy(
+            update={
+                "steps": tuple(
+                    step.model_copy(update={"program_node_id": "mutation_unknown_node"})
+                    if step.step_index == target.step_index
+                    else step
+                    for step in candidate.steps
+                )
+            }
+        )
+    return None
+
+
+def _conflicting_calculation(case: PilotTaskCase, candidate: Trajectory) -> Trajectory | None:
+    calculations = [step for step in candidate.steps if step.action == ActionType.CALCULATE]
+    if not calculations:
+        return None
+    template = calculations[-1]
+    result = dict(template.observation.get("result") or {})
+    conflicting = template.model_copy(
+        update={
+            "step_index": 1,
+            "program_node_id": None,
+            "output_ref": "operation:mutation_conflict",
+            "observation": {"result": _increment_result(result)},
+            "rationale_summary": "Produce a conflicting unbound calculation.",
+        }
+    )
+    insertion = next(
+        index
+        for index, step in enumerate(candidate.steps)
+        if step.action in {ActionType.VERIFY, ActionType.ANSWER}
+    )
+    steps = list(candidate.steps)
+    steps.insert(insertion, conflicting)
+    return candidate.model_copy(
+        update={
+            "steps": tuple(
+                step.model_copy(update={"step_index": index})
+                for index, step in enumerate(steps, start=1)
+            )
+        }
+    )
+
+
+def _claim_value_mismatch(case: PilotTaskCase, candidate: Trajectory) -> Trajectory:
+    item = case.bundle.evidence[0]
+    payload = item.payload
+    value = getattr(payload, "value", "0")
+    claim = {
+        "claim_id": "claim:mutated_observed_value",
+        "claim_type": "observed_metric",
+        "predicate": item.predicate,
+        "evidence_ids": [item.evidence_id],
+        "subject_ids": [item.subject.subject_id],
+        "period_labels": [_time_label(item)],
+        "value": str(Decimal(str(value)) + Decimal("1")),
+        "unit": getattr(payload, "unit", None),
+        "currency": getattr(payload, "currency", None),
+    }
+    answer = {**candidate.final_answer, "claims": [claim]}
+    return candidate.model_copy(
+        update={
+            "final_answer": answer,
+            "steps": _update_steps(
+                candidate,
+                ActionType.ANSWER,
+                lambda step: step.model_copy(update={"observation": answer}),
+            ),
+        }
+    )
+
+
+def _verification_result_mismatch(case: PilotTaskCase, candidate: Trajectory) -> Trajectory | None:
+    verification = next(
+        (step for step in candidate.steps if step.action == ActionType.VERIFY),
+        None,
+    )
+    if verification is None:
+        return None
+    observed = dict(verification.observation)
+    observed["verified_result"] = _increment_result(dict(observed.get("verified_result") or {}))
+    return candidate.model_copy(
+        update={
+            "steps": tuple(
+                step.model_copy(update={"observation": observed})
+                if step.step_index == verification.step_index
+                else step
+                for step in candidate.steps
+            )
+        }
+    )
+
+
 def _multi_error(case: PilotTaskCase, candidate: Trajectory) -> Trajectory:
     mutated = _oracle_leakage(case, candidate)
     mutated = _missing_evidence(case, mutated)
@@ -345,6 +523,25 @@ def _finalize(source: Trajectory, mutated: Trajectory, mutation_type: str) -> Tr
             "generator_version": f"finance_pilot_mutation.v1:{mutation_type}",
         }
     )
+
+
+def _expected_detail_tokens(mutation_type: str, trajectory: Trajectory) -> tuple[str, ...]:
+    if mutation_type == "program_node_mismatch":
+        step = next(
+            item for item in trajectory.steps if item.program_node_id == "mutation_unknown_node"
+        )
+        return (f"step:{step.step_index}:unknown_program_node:mutation_unknown_node",)
+    if mutation_type == "conflicting_calculation":
+        step = next(
+            item for item in trajectory.steps if item.output_ref == "operation:mutation_conflict"
+        )
+        return (f"step:{step.step_index}:unbound_calculation",)
+    if mutation_type == "claim_value_mismatch":
+        return ("claim_0:claim_value_mismatch",)
+    if mutation_type == "verification_result_mismatch":
+        step = next(item for item in trajectory.steps if item.action == ActionType.VERIFY)
+        return (f"step:{step.step_index}:verified_result",)
+    return ()
 
 
 def _time_label(item: EvidenceItem) -> str:

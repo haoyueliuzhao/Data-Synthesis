@@ -19,6 +19,7 @@ __all__ = [
     "ProgramInputRef",
     "ProofGraphTaskSynthesizer",
     "TaskLevel",
+    "TaskPackageBuilder",
     "TaskOracleContract",
     "TaskPackage",
     "TaskProgram",
@@ -26,3 +27,4 @@ __all__ = [
     "TaskRequirement",
     "TaskSynthesisError",
 ]
+from trusted_synthesis.core.task.builder import TaskPackageBuilder

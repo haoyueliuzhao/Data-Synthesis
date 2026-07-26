@@ -28,20 +28,27 @@ trusted-synthesis sample-finance --config config/finance_archive.json --limit 3
 trusted-synthesis demo-finance --config config/finance_archive.json --limit 3
 trusted-synthesis finance-pilot \
   --config config/finance_archive.json \
-  --pilot-config config/finance_pilot_small.json \
-  --output-dir artifacts/finance_pilot/small_v1
+  --pilot-config config/finance_pilot_v04.json \
+  --output-dir artifacts/finance_pilot/v04_100k
+trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
 
-The v0.3 demo creates isolated public/oracle task packages and evaluates both
+The v0.4 pilot creates isolated public/oracle task packages and evaluates both
 deterministic references and public-only candidates. Candidate generators receive
 only the public task and an evidence corpus runtime. Candidate gates independently
-check retrieval, operation results, answer schemas, citations, unsupported claims,
-and oracle leakage. Workflow records contain auditable actions, tool calls,
-observations, citations, and concise summaries, never hidden chain-of-thought.
+check hard-distractor selection, source-object entailment, Program/Step alignment,
+every calculation, strict answer schemas, structured claims, citations, and oracle
+leakage. Workflow records contain auditable actions, tool calls, observations,
+citations, and concise summaries, never hidden chain-of-thought.
 
-The small Finance Pilot adds stratified evidence sampling, six distractors per
-task, four task families, controlled mutations, failure localization,
-candidate-only release selection, and full-run determinism checks. Its current
-result validates the global resolved-track architecture; it does not establish
-Greater China coverage, live-model quality, or production readiness.
+The checked-in v0.4 profile scans 100,000 facts with deterministic stratified
+reservoir sampling, verifies archived source objects, and uses ten in-scope hard
+distractors plus eight broad distractors per task. Its current result validates
+the global resolved-track architecture; it does not establish Greater China
+coverage, live-model quality, open retrieval, or production readiness.
+
+Finance is constrained as a reference plugin rather than a framework dependency. Every release
+runs the [Generalization Contract](docs/generalization_contract.md) fail-closed, and CI executes
+non-lookup Legal and Science programs to verify reuse of Task DAGs, Proof Graphs, independent replay,
+and Universal quality gates.

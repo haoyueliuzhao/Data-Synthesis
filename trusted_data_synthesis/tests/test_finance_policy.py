@@ -59,6 +59,11 @@ def test_finance_claim_verifier_rejects_forbidden_extensions(
             "claim_type": "observed_metric",
             "predicate": "revenue",
             "evidence_ids": [finance_evidence.evidence_id],
+            "subject_ids": [finance_evidence.subject.subject_id],
+            "period_labels": [finance_evidence.temporal_context.label],
+            "value": "383285",
+            "unit": "million USD",
+            "currency": "USD",
         },
         support,
     )

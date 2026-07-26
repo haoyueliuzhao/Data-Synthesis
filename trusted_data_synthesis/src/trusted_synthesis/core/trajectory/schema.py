@@ -36,6 +36,10 @@ class TrajectoryStep(BaseModel):
     tool_input: dict[str, Any] = Field(default_factory=dict)
     observation: dict[str, Any] = Field(default_factory=dict)
     evidence_ids: tuple[str, ...] = ()
+    program_node_id: str | None = None
+    operator_id: str | None = None
+    input_refs: tuple[str, ...] = ()
+    output_ref: str | None = None
     rationale_summary: str = Field(min_length=1)
     status: StepStatus
 

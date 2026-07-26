@@ -120,20 +120,19 @@ class OperationRegistry:
             )
         fields: tuple[str, ...]
         if policy == "same_unit_and_definition":
-            fields = ("predicate", "unit", "currency", "definition")
+            fields = ("predicate", "payload_context", "definition")
         elif policy == "same_series":
             fields = (
                 "subject",
                 "predicate",
-                "unit",
-                "currency",
+                "payload_context",
                 "definition",
                 "time_basis",
                 "frequency",
                 "scope_type",
             )
         elif policy == "same_metric_unit_definition":
-            fields = ("predicate", "unit", "currency", "definition")
+            fields = ("predicate", "payload_context", "definition")
         elif policy == "registered_ratio_pair":
             if len(evidence) != 2 or any(not item.definition.definition_id for item in evidence):
                 raise OperationContractError("ratio inputs require registered definitions")
@@ -146,7 +145,7 @@ class OperationRegistry:
         else:
             raise OperationContractError(f"unknown compatibility policy: {policy}")
         signatures = [_compatibility_signature(item) for item in evidence]
-        required_non_empty = set(fields) - {"currency"}
+        required_non_empty = set(fields)
         missing = [
             field
             for field in required_non_empty
@@ -186,7 +185,7 @@ class OperationRegistry:
 
 def default_registry() -> OperationRegistry:
     definitions = (
-        _definition(
+        make_operation_definition(
             "lookup",
             LookupExecutor(),
             LookupOracleVerifier(),
@@ -195,7 +194,7 @@ def default_registry() -> OperationRegistry:
             "none",
             ("arity=1",),
         ),
-        _definition(
+        make_operation_definition(
             "compare",
             CompareExecutor(),
             CompareOracleVerifier(),
@@ -204,7 +203,7 @@ def default_registry() -> OperationRegistry:
             "same_unit_and_definition",
             ("arity=2",),
         ),
-        _definition(
+        make_operation_definition(
             "difference",
             DifferenceExecutor(),
             DifferenceOracleVerifier(),
@@ -213,7 +212,7 @@ def default_registry() -> OperationRegistry:
             "same_unit_and_definition",
             ("arity=2",),
         ),
-        _definition(
+        make_operation_definition(
             "ratio",
             RatioExecutor(),
             RatioOracleVerifier(),
@@ -222,7 +221,7 @@ def default_registry() -> OperationRegistry:
             "registered_ratio_pair",
             ("arity=2", "denominator_non_zero"),
         ),
-        _definition(
+        make_operation_definition(
             "growth",
             GrowthExecutor(),
             GrowthOracleVerifier(),
@@ -234,7 +233,7 @@ def default_registry() -> OperationRegistry:
             semantic_version="1.0.1",
             formula_id="growth.relative_change_abs_base.v1",
         ),
-        _definition(
+        make_operation_definition(
             "aggregate",
             AggregateExecutor(),
             AggregateOracleVerifier(),
@@ -247,7 +246,7 @@ def default_registry() -> OperationRegistry:
     return OperationRegistry(definitions)
 
 
-def _definition(
+def make_operation_definition(
     operator_id,
     executor,
     verifier,
@@ -302,11 +301,16 @@ def _is_numeric(value: Any) -> bool:
 
 def _compatibility_signature(evidence: EvidenceItem) -> dict[str, Any]:
     payload = evidence.payload
+    payload_value = payload.model_dump(mode="json", exclude_none=True)
+    payload_context = {
+        key: value
+        for key, value in payload_value.items()
+        if key not in {"kind", "value", "precision"}
+    }
     return {
         "subject": evidence.subject.subject_id,
         "predicate": evidence.predicate,
-        "unit": payload.unit if isinstance(payload, ScalarObservation) else None,
-        "currency": payload.currency if isinstance(payload, ScalarObservation) else None,
+        "payload_context": canonical_hash(payload_context, prefix="payload_context:"),
         "definition": evidence.definition.definition_id,
         "time_basis": evidence.temporal_context.basis,
         "frequency": evidence.temporal_context.frequency,

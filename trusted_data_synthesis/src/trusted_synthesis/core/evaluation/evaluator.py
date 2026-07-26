@@ -5,6 +5,7 @@ from typing import Any
 from trusted_synthesis.core.evaluation.schema import (
     DiagnosticQualityVector,
     DimensionScore,
+    GateScope,
     HardGateResult,
     QualityAssessment,
     ReleaseDecision,
@@ -23,8 +24,8 @@ from trusted_synthesis.core.trajectory.verifier import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-REFERENCE_EVALUATOR_VERSION = "reference_quality.v3"
-CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v2"
+REFERENCE_EVALUATOR_VERSION = "reference_quality.v4"
+CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v4"
 REQUIRED_CHECK_MANIFEST = (
     "task_identity",
     "reference_workflow_kind",
@@ -47,13 +48,18 @@ CANDIDATE_REQUIRED_CHECK_MANIFEST = (
     "allowed_tool_compliance",
     "required_actions_present",
     "step_statuses_succeeded",
+    "action_sequence_valid",
     "retrieved_evidence_known",
     "retrieved_evidence_validity",
     "selected_evidence_was_retrieved",
     "selected_evidence_validity",
+    "source_grounding",
     "evidence_recall",
     "evidence_precision",
     "proof_graph_binding",
+    "program_node_alignment",
+    "all_calculations_correct",
+    "verification_step_binding",
     "operation_correctness",
     "answer_schema_validity",
     "answer_correctness",
@@ -78,9 +84,12 @@ class ReferenceQualityEvaluator:
         self,
         *,
         semantic_policy: Any | None = None,
+        source_grounding_verifier: Any | None = None,
         workflow_verifier: ReferenceWorkflowVerifier | None = None,
     ) -> None:
-        self._evidence_validator = EvidenceValidator(semantic_policy)
+        self._structural_evidence_validator = EvidenceValidator()
+        self._domain_evidence_validator = EvidenceValidator(semantic_policy)
+        self._source_grounding_verifier = source_grounding_verifier
         self._workflow_verifier = workflow_verifier or ReferenceWorkflowVerifier()
 
     def evaluate(
@@ -91,30 +100,59 @@ class ReferenceQualityEvaluator:
         trajectory: Trajectory,
     ) -> QualityAssessment:
         gold_ids = set(task.oracle.gold_evidence_ids)
-        evidence_reports = [
-            self._evidence_validator.validate(item)
+        structural_reports = [
+            self._structural_evidence_validator.validate_structural(item)
+            for item in bundle.evidence
+            if item.evidence_id in gold_ids
+        ]
+        domain_reports = [
+            self._domain_evidence_validator.validate_domain(item)
             for item in bundle.evidence
             if item.evidence_id in gold_ids
         ]
         workflow_report = self._workflow_verifier.verify(task, bundle, proof_graph, trajectory)
         checks = {check.check_id: check for check in workflow_report.checks}
         missing, failed = _check_failures(checks, REQUIRED_CHECK_MANIFEST)
-        invalid_evidence = tuple(
-            report.evidence_id for report in evidence_reports if not report.passed
+        invalid_structural_evidence = tuple(
+            report.evidence_id for report in structural_reports if not report.passed
+        )
+        invalid_domain_evidence = tuple(
+            report.evidence_id for report in domain_reports if not report.passed
+        )
+        grounding_failures = _source_grounding_failures(
+            tuple(item for item in bundle.evidence if item.evidence_id in gold_ids),
+            self._source_grounding_verifier,
         )
         hard_gates = (
             HardGateResult(
                 gate_id="required_check_manifest",
+                scope=GateScope.UNIVERSAL,
                 passed=not missing,
                 details=missing,
             ),
             HardGateResult(
-                gate_id="evidence_validity",
-                passed=not invalid_evidence and len(evidence_reports) == len(gold_ids),
-                details=invalid_evidence,
+                gate_id="structural_evidence_validity",
+                scope=GateScope.UNIVERSAL,
+                passed=(
+                    not invalid_structural_evidence and len(structural_reports) == len(gold_ids)
+                ),
+                details=invalid_structural_evidence,
+            ),
+            HardGateResult(
+                gate_id="domain_evidence_semantics",
+                scope=GateScope.DOMAIN,
+                passed=not invalid_domain_evidence and len(domain_reports) == len(gold_ids),
+                details=invalid_domain_evidence,
+            ),
+            HardGateResult(
+                gate_id="domain_source_grounding",
+                scope=GateScope.DOMAIN,
+                passed=not grounding_failures,
+                details=grounding_failures,
             ),
             HardGateResult(
                 gate_id="proof_and_lineage",
+                scope=GateScope.UNIVERSAL,
                 passed=all(
                     _check_passed(checks, item)
                     for item in (
@@ -130,6 +168,7 @@ class ReferenceQualityEvaluator:
             ),
             HardGateResult(
                 gate_id="independent_recompute",
+                scope=GateScope.UNIVERSAL,
                 passed=all(
                     _check_passed(checks, item)
                     for item in (
@@ -142,7 +181,7 @@ class ReferenceQualityEvaluator:
         )
         actions = {step.action for step in trajectory.steps}
         raw_scores = {
-            "evidence": _ratio_score(report.passed for report in evidence_reports),
+            "evidence": _ratio_score(report.passed for report in structural_reports),
             "reasoning": _boolean_score(
                 _check_passed(checks, "required_actions_present")
                 and _check_passed(checks, "step_statuses_succeeded")
@@ -174,6 +213,8 @@ class ReferenceQualityEvaluator:
                 workflow_completeness=raw_scores["reasoning"] / 100,
                 program_depth=len(task.oracle.task_program.nodes),
             ),
+            failed_check_ids=failed,
+            check_failure_details=_failure_detail_map(checks, failed),
             evaluator_version=REFERENCE_EVALUATOR_VERSION,
         )
 
@@ -194,12 +235,15 @@ class CandidateQualityEvaluator:
         *,
         semantic_policy: Any | None = None,
         claim_verifier: Any | None = None,
+        source_grounding_verifier: Any | None = None,
         workflow_verifier: CandidateWorkflowVerifier | None = None,
     ) -> None:
-        self._evidence_validator = EvidenceValidator(semantic_policy)
+        self._structural_evidence_validator = EvidenceValidator()
+        self._domain_evidence_validator = EvidenceValidator(semantic_policy)
         self._workflow_verifier = workflow_verifier or CandidateWorkflowVerifier(
             semantic_policy=semantic_policy,
             claim_verifier=claim_verifier,
+            source_grounding_verifier=source_grounding_verifier,
         )
 
     def evaluate(
@@ -212,20 +256,32 @@ class CandidateQualityEvaluator:
         report = self._workflow_verifier.verify(task, corpus, proof_graph, trajectory)
         checks = {check.check_id: check for check in report.checks}
         missing, failed = _check_failures(checks, CANDIDATE_REQUIRED_CHECK_MANIFEST)
-        gold_reports = [
-            self._evidence_validator.validate(corpus.by_id()[evidence_id])
+        gold_structural_reports = [
+            self._structural_evidence_validator.validate_structural(corpus.by_id()[evidence_id])
             for evidence_id in task.oracle.gold_evidence_ids
             if evidence_id in corpus.by_id()
         ]
-        invalid_evidence = tuple(item.evidence_id for item in gold_reports if not item.passed)
+        gold_domain_reports = [
+            self._domain_evidence_validator.validate_domain(corpus.by_id()[evidence_id])
+            for evidence_id in task.oracle.gold_evidence_ids
+            if evidence_id in corpus.by_id()
+        ]
+        invalid_structural_evidence = tuple(
+            item.evidence_id for item in gold_structural_reports if not item.passed
+        )
+        invalid_domain_evidence = tuple(
+            item.evidence_id for item in gold_domain_reports if not item.passed
+        )
         hard_gates = (
             HardGateResult(
                 gate_id="required_check_manifest",
+                scope=GateScope.UNIVERSAL,
                 passed=not missing,
                 details=missing,
             ),
             HardGateResult(
                 gate_id="workflow_contract",
+                scope=GateScope.UNIVERSAL,
                 passed=all(
                     _check_passed(checks, item)
                     for item in (
@@ -233,12 +289,14 @@ class CandidateQualityEvaluator:
                         "candidate_workflow_kind",
                         "required_actions_present",
                         "step_statuses_succeeded",
+                        "action_sequence_valid",
                     )
                 ),
                 details=failed,
             ),
             HardGateResult(
                 gate_id="public_boundary_and_tools",
+                scope=GateScope.UNIVERSAL,
                 passed=all(
                     _check_passed(checks, item)
                     for item in ("public_only_generation", "allowed_tool_compliance")
@@ -247,28 +305,46 @@ class CandidateQualityEvaluator:
             ),
             HardGateResult(
                 gate_id="evidence_retrieval_and_selection",
-                passed=not invalid_evidence
+                scope=GateScope.UNIVERSAL,
+                passed=not invalid_structural_evidence
                 and all(
                     _check_passed(checks, item)
                     for item in (
                         "retrieved_evidence_known",
                         "retrieved_evidence_validity",
                         "selected_evidence_was_retrieved",
-                        "selected_evidence_validity",
                         "evidence_recall",
                         "evidence_precision",
                     )
                 ),
-                details=invalid_evidence + failed,
+                details=invalid_structural_evidence + failed,
+            ),
+            HardGateResult(
+                gate_id="domain_evidence_semantics",
+                scope=GateScope.DOMAIN,
+                passed=not invalid_domain_evidence
+                and _check_passed(checks, "selected_evidence_validity")
+                and _check_passed(checks, "source_grounding"),
+                details=invalid_domain_evidence + failed,
             ),
             HardGateResult(
                 gate_id="proof_and_operation",
+                scope=GateScope.UNIVERSAL,
                 passed=_check_passed(checks, "proof_graph_binding")
-                and _check_passed(checks, "operation_correctness"),
+                and all(
+                    _check_passed(checks, item)
+                    for item in (
+                        "program_node_alignment",
+                        "all_calculations_correct",
+                        "verification_step_binding",
+                        "operation_correctness",
+                    )
+                ),
                 details=failed,
             ),
             HardGateResult(
-                gate_id="answer_citation_and_claims",
+                gate_id="answer_and_citation",
+                scope=GateScope.UNIVERSAL,
                 passed=all(
                     _check_passed(checks, item)
                     for item in (
@@ -276,9 +352,14 @@ class CandidateQualityEvaluator:
                         "answer_correctness",
                         "citation_binding",
                         "unsupported_claim_detection",
-                        "domain_claim_verification",
                     )
                 ),
+                details=failed,
+            ),
+            HardGateResult(
+                gate_id="domain_claims",
+                scope=GateScope.DOMAIN,
+                passed=_check_passed(checks, "domain_claim_verification"),
                 details=failed,
             ),
         )
@@ -317,6 +398,8 @@ class CandidateQualityEvaluator:
                 workflow_completeness=float(_check_passed(checks, "required_actions_present")),
                 program_depth=len(task.oracle.task_program.nodes),
             ),
+            failed_check_ids=failed,
+            check_failure_details=_failure_detail_map(checks, failed),
             evaluator_version=CANDIDATE_EVALUATOR_VERSION,
         )
 
@@ -335,6 +418,8 @@ def _assessment(
     weights: dict[str, float],
     diagnostic: DiagnosticQualityVector,
     evaluator_version: str,
+    failed_check_ids: tuple[str, ...] = (),
+    check_failure_details: dict[str, tuple[str, ...]] | None = None,
 ) -> QualityAssessment:
     dimensions = tuple(
         DimensionScore(
@@ -366,14 +451,28 @@ def _assessment(
         task_id=task.task_id,
         trajectory_id=trajectory.trajectory_id,
         hard_gates=hard_gates,
+        universal_gates=tuple(gate for gate in hard_gates if gate.scope == GateScope.UNIVERSAL),
+        domain_gates=tuple(gate for gate in hard_gates if gate.scope == GateScope.DOMAIN),
         required_check_manifest_hash=manifest_hash,
         diagnostic_vector=diagnostic,
         dimensions=dimensions,
         total_score=total,
         decision=decision,
         fatal_failures=fatal_failures,
+        failed_check_ids=failed_check_ids,
+        check_failure_details=check_failure_details or {},
         evaluator_version=evaluator_version,
     )
+
+
+def _failure_detail_map(
+    checks: dict[str, Any], failed: tuple[str, ...]
+) -> dict[str, tuple[str, ...]]:
+    return {
+        check_id: tuple(getattr(checks[check_id], "details", ()) or ())
+        for check_id in failed
+        if check_id in checks
+    }
 
 
 def _check_failures(
@@ -408,3 +507,13 @@ def _dimension_checks(dimension: str) -> tuple[str, ...]:
         "verification": ("proof_graph_binding", "independent_program_replay"),
         "answer": ("answer_correctness", "citation_binding"),
     }[dimension]
+
+
+def _source_grounding_failures(evidence: tuple[Any, ...], verifier: Any | None) -> tuple[str, ...]:
+    if verifier is None:
+        return ()
+    failures: list[str] = []
+    for item in evidence:
+        report = verifier.verify(item)
+        failures.extend(f"{item.evidence_id}:{failure}" for failure in report.failures)
+    return tuple(failures)

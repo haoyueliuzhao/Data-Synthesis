@@ -13,9 +13,9 @@ from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.release import SplitPolicy, select_candidate_release
-from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.finance_pilot.mutations import generate_mutations
 from trusted_synthesis.experiments.finance_pilot.sampler import TaskBinding
@@ -57,7 +57,7 @@ def _case(finance_evidence: EvidenceItem) -> PilotTaskCase:
         graph_build_id="kg_test",
     )
     graph = ProofGraphBuilder().build(bundle)
-    task = ProofGraphTaskSynthesizer(FinanceSemanticPolicy()).temporal_average(
+    task = FinanceTaskPlugin(allow_structured_claims=True).temporal_average(
         graph,
         bundle,
         tuple(item.evidence_id for item in observations),
@@ -128,6 +128,11 @@ def test_pilot_mutations_are_rejected_and_not_released(
             "oracle_leakage",
             "disallowed_tool",
             "failed_step",
+            "extra_result_field",
+            "program_node_mismatch",
+            "conflicting_calculation",
+            "verification_result_mismatch",
+            "claim_value_mismatch",
             "multi_error",
         ),
     )
@@ -156,5 +161,16 @@ def test_pilot_mutations_are_rejected_and_not_released(
     assert all(
         set(mutation.expected_failure_gates).issubset(assessment.fatal_failures)
         for mutation, assessment in mutated
+    )
+    assert all(
+        set(mutation.expected_failure_checks).issubset(assessment.failed_check_ids)
+        for mutation, assessment in mutated
+    )
+    assert all(
+        set(mutation.expected_detail_tokens).issubset(
+            {detail for details in assessment.check_failure_details.values() for detail in details}
+        )
+        for mutation, assessment in mutated
+        if mutation.expected_detail_tokens
     )
     assert selection.accepted_trajectory_ids == (candidate.trajectory_id,)

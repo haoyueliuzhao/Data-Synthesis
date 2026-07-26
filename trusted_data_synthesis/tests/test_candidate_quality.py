@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evaluation.evaluator import CandidateQualityEvaluator
+from trusted_synthesis.core.evaluation.leakage import OracleLeakageChecker
 from trusted_synthesis.core.evaluation.schema import ReleaseDecision
 from trusted_synthesis.core.evidence import ScalarObservation, TemporalContext
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
@@ -13,6 +14,9 @@ from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
+from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
+from trusted_synthesis.experiments.finance_pilot.sampler import TaskBinding
+from trusted_synthesis.experiments.finance_pilot.task_factory import build_task_cases
 from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
 
 
@@ -71,7 +75,7 @@ def test_unknown_selected_evidence_and_wrong_answer_are_rejected(
 
     assert assessment.decision == ReleaseDecision.REJECTED
     assert "evidence_retrieval_and_selection" in assessment.fatal_failures
-    assert "answer_citation_and_claims" in assessment.fatal_failures
+    assert "answer_and_citation" in assessment.fatal_failures
 
 
 def test_resolved_track_searches_a_corpus_with_distractors(
@@ -103,6 +107,84 @@ def test_resolved_track_searches_a_corpus_with_distractors(
     assert task.public.retrieval_track.value == "resolved"
     assert assessment.decision == ReleaseDecision.ACCEPTED
     assert candidate.steps[1].evidence_ids == (finance_evidence.evidence_id,)
+
+
+def test_hard_in_scope_distractors_are_retrieved_but_not_selected(
+    finance_evidence: EvidenceItem,
+) -> None:
+    binding = TaskBinding(
+        task_type="fact_retrieval",
+        evidence_ids=(finance_evidence.evidence_id,),
+        stratum=("global", "financial_statement", "annual", "sec", "single_source"),
+    )
+    case = build_task_cases(
+        (binding,),
+        (finance_evidence,),
+        distractors_per_task=7,
+        hard_distractor_types=(
+            "wrong_definition",
+            "stale_version",
+            "forecast",
+            "lower_authority",
+            "unit_mismatch",
+            "currency_mismatch",
+            "wrong_scope",
+        ),
+        task_synthesizer=FinanceTaskPlugin(),
+    )[0]
+
+    candidate = CandidateTrajectoryGenerator().generate(
+        case.task.public, InMemoryEvidenceToolRuntime(case.corpus)
+    )
+    assessment = CandidateQualityEvaluator().evaluate(
+        case.task, case.corpus, case.proof_graph, candidate
+    )
+
+    assert len(case.hard_distractor_ids) == 7
+    assert set(candidate.steps[1].evidence_ids) == {
+        finance_evidence.evidence_id,
+        *case.hard_distractor_ids,
+    }
+    selected = next(step for step in candidate.steps if step.action == ActionType.SELECT_EVIDENCE)
+    assert selected.evidence_ids == (finance_evidence.evidence_id,)
+    assert assessment.decision == ReleaseDecision.ACCEPTED
+
+
+def test_post_retrieval_evidence_mentions_are_not_oracle_leakage(
+    finance_evidence: EvidenceItem,
+) -> None:
+    task, _, _, candidate = _setup(finance_evidence)
+    selected = next(step for step in candidate.steps if step.action == ActionType.SELECT_EVIDENCE)
+    steps = tuple(
+        step.model_copy(
+            update={
+                "rationale_summary": (f"Select retrieved evidence {finance_evidence.evidence_id}.")
+            }
+        )
+        if step.step_index == selected.step_index
+        else step
+        for step in candidate.steps
+    )
+
+    report = OracleLeakageChecker().verify(
+        task.oracle, candidate.model_copy(update={"steps": steps})
+    )
+
+    assert report.passed
+
+
+def test_extra_result_properties_are_rejected(finance_evidence: EvidenceItem) -> None:
+    task, _, _, candidate = _setup(finance_evidence)
+    answer = dict(candidate.final_answer)
+    answer["result"] = {
+        **answer["result"],
+        "recommendation": "Buy this security immediately.",
+    }
+
+    passed, failures = CandidateAnswerNormalizer().validate_schema(task.public, answer)
+
+    assert not passed
+    assert "unexpected_result_fields:recommendation" in failures
 
 
 def test_wrong_calculation_is_rejected(finance_evidence: EvidenceItem) -> None:
@@ -171,7 +253,8 @@ def test_wrong_citation_locator_and_unsupported_claim_are_rejected(
     assessment = CandidateQualityEvaluator().evaluate(task, corpus, graph, mutated)
 
     assert assessment.decision == ReleaseDecision.REJECTED
-    assert "answer_citation_and_claims" in assessment.fatal_failures
+    assert "answer_and_citation" in assessment.fatal_failures
+    assert "domain_claims" in assessment.fatal_failures
 
 
 def test_oracle_leakage_and_disallowed_tool_are_rejected(

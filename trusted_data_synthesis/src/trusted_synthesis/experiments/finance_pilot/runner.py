@@ -22,11 +22,11 @@ from trusted_synthesis.core.release import (
     select_candidate_release,
 )
 from trusted_synthesis.core.release.split import semantic_cluster_id
-from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.finance_pilot.mutations import (
     MutationCase,
@@ -55,21 +55,33 @@ def run_finance_pilot(
         raise ValueError(f"incompatible finance archive: {inspection['errors']}")
     output_dir.mkdir(parents=True, exist_ok=True)
     policy = FinanceSemanticPolicy()
-    sample = sample_evidence(adapter, config, policy)
+    source_grounding_verifier = adapter.source_grounding_verifier()
+    sample = sample_evidence(
+        adapter,
+        config,
+        policy,
+        source_grounding_verifier,
+    )
     bindings = discover_bindings(sample.evidence, config)
     cases = build_task_cases(
         bindings,
         sample.evidence,
         distractors_per_task=config.distractors_per_task,
-        task_synthesizer=ProofGraphTaskSynthesizer(policy),
+        hard_distractors_per_task=config.hard_distractors_per_task,
+        hard_distractor_types=config.hard_distractor_types,
+        task_synthesizer=FinanceTaskPlugin(allow_structured_claims=True),
     )
 
     reference_compiler = ReferenceWorkflowCompiler()
     candidate_generator = CandidateTrajectoryGenerator()
-    reference_evaluator = ReferenceQualityEvaluator(semantic_policy=policy)
+    reference_evaluator = ReferenceQualityEvaluator(
+        semantic_policy=policy,
+        source_grounding_verifier=source_grounding_verifier,
+    )
     candidate_evaluator = CandidateQualityEvaluator(
         semantic_policy=policy,
         claim_verifier=FinanceClaimVerifier(),
+        source_grounding_verifier=source_grounding_verifier,
     )
     references: list[Trajectory] = []
     reference_assessments: list[QualityAssessment] = []
@@ -215,10 +227,39 @@ def _build_report(
     false_acceptances = len(mutation_assessments) - mutation_rejected
     false_rejections = len(clean_assessments) - clean_accepted
     per_type = _mutation_metrics(mutation_cases, mutation_assessments)
+    per_family = _mutation_family_metrics(mutation_cases, mutation_assessments)
     localization_values = [
         set(mutation.expected_failure_gates).issubset(assessment.fatal_failures)
         for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
     ]
+    check_localization_values = [
+        set(mutation.expected_failure_checks).issubset(assessment.failed_check_ids)
+        for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
+    ]
+    detail_localization_values = [
+        set(mutation.expected_detail_tokens).issubset(
+            {detail for details in assessment.check_failure_details.values() for detail in details}
+        )
+        for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
+        if mutation.expected_detail_tokens
+    ]
+    hard_retrieval_values = []
+    hard_selection_count = 0
+    for case, candidate in zip(cases, clean_candidates, strict=True):
+        retrieved = {
+            evidence_id
+            for step in candidate.steps
+            if step.action.value == "search"
+            for evidence_id in step.evidence_ids
+        }
+        selected = {
+            evidence_id
+            for step in candidate.steps
+            if step.action.value == "select_evidence"
+            for evidence_id in step.evidence_ids
+        }
+        hard_retrieval_values.append(set(case.hard_distractor_ids).issubset(retrieved))
+        hard_selection_count += len(selected & set(case.hard_distractor_ids))
     split_clusters: dict[str, set[str]] = defaultdict(set)
     for case in cases:
         split_clusters[semantic_cluster_id(case.task, split_policy)].add(
@@ -232,7 +273,16 @@ def _build_report(
     reference_rate = _rate(reference_accepted, len(reference_assessments))
     clean_rate = _rate(clean_accepted, len(clean_assessments))
     far = _rate(false_acceptances, len(mutation_assessments))
+    far_95_upper = (
+        1 - 0.05 ** (1 / len(mutation_assessments))
+        if mutation_assessments and false_acceptances == 0
+        else None
+    )
     localization_rate = _rate(sum(localization_values), len(localization_values))
+    check_localization_rate = _rate(sum(check_localization_values), len(check_localization_values))
+    detail_localization_rate = _rate(
+        sum(detail_localization_values), len(detail_localization_values)
+    )
     macro_detection = (
         mean(item["detection_rate"] for item in per_type.values()) if per_type else 0.0
     )
@@ -255,8 +305,14 @@ def _build_report(
         "reference_acceptance_rate_gte_0_995": reference_rate >= 0.995,
         "clean_candidate_acceptance_rate_gte_0_95": clean_rate >= 0.95,
         "critical_false_acceptance_rate_lte_0_01": far <= 0.01,
+        "observed_zero_far_95_upper_lte_0_01": (far_95_upper is not None and far_95_upper <= 0.01),
         "mutation_macro_detection_rate_gte_0_90": macro_detection >= 0.90,
         "failure_localization_rate_gte_0_90": localization_rate >= 0.90,
+        "check_localization_rate_gte_0_90": check_localization_rate >= 0.90,
+        "step_or_node_localization_rate_gte_0_90": detail_localization_rate >= 0.90,
+        "hard_distractors_retrieved_and_rejected": (
+            all(hard_retrieval_values) and hard_selection_count == 0
+        ),
         "hash_stability": all(reproducibility.values()),
         "split_semantic_leakage_zero": leakage_count == 0,
         "release_contains_only_clean_accepted": (
@@ -287,6 +343,20 @@ def _build_report(
             "domain_rejected_count": sample.rejected_count,
             "domain_valid_rate": _rate(sample.domain_valid_count, sample.scanned_count),
             "observed_stratum_count": len(sample.stratum_counts),
+            "sampled_count": sample.sampled_count,
+            "sampled_stratum_count": len(sample.sampled_stratum_counts),
+            "complete_stream_scan": sample.complete_stream_scan,
+            "source_grounding_checked_count": sample.source_grounding_checked_count,
+            "source_grounding_valid_count": sample.source_grounding_valid_count,
+            "source_grounding_rejected_count": sample.source_grounding_rejected_count,
+            "source_grounding_valid_rate": _rate(
+                sample.source_grounding_valid_count,
+                sample.source_grounding_checked_count,
+            ),
+            "source_grounding_failure_counts": sample.source_grounding_failure_counts,
+            "source_grounding_rejected_source_counts": (
+                sample.source_grounding_rejected_source_counts
+            ),
         },
         "task_synthesis": {
             "requested_count": sum(config.task_quotas.values()),
@@ -303,6 +373,23 @@ def _build_report(
             },
             "minimum_distractors": min((len(case.distractor_ids) for case in cases), default=0),
             "mean_distractors": (mean(len(case.distractor_ids) for case in cases) if cases else 0),
+            "minimum_hard_distractors": min(
+                (len(case.hard_distractor_ids) for case in cases), default=0
+            ),
+            "mean_hard_distractors": (
+                mean(len(case.hard_distractor_ids) for case in cases) if cases else 0
+            ),
+            "hard_distractor_kind_counts": dict(
+                sorted(
+                    Counter(
+                        kind for case in cases for kind in case.distractor_kinds.values()
+                    ).items()
+                )
+            ),
+            "hard_distractor_retrieval_rate": _rate(
+                sum(hard_retrieval_values), len(hard_retrieval_values)
+            ),
+            "selected_hard_distractor_count": hard_selection_count,
         },
         "reference_validation": {
             "attempted": len(references),
@@ -322,12 +409,17 @@ def _build_report(
             "mutation_rejected": mutation_rejected,
             "false_acceptance_count": false_acceptances,
             "critical_false_acceptance_rate": far,
+            "zero_failure_one_sided_95_far_upper": far_95_upper,
             "error_detection_precision": error_precision,
             "error_detection_recall": error_recall,
             "error_detection_f1": error_f1,
             "failure_localization_rate": localization_rate,
+            "check_localization_rate": check_localization_rate,
+            "step_or_node_localization_rate": detail_localization_rate,
+            "step_or_node_localization_count": len(detail_localization_values),
             "macro_detection_rate": macro_detection,
             "per_mutation_type": per_type,
+            "per_generic_mutation_family": per_family,
         },
         "release": {
             "release_id": manifest.release_id,
@@ -336,6 +428,7 @@ def _build_report(
             "failure_distribution": selection.failure_distribution,
             "split_counts": selection.split_counts,
             "semantic_leakage_count": leakage_count,
+            "generalization_contract": manifest.metadata,
         },
         "reproducibility": reproducibility,
         "current_boundaries": [
@@ -343,7 +436,7 @@ def _build_report(
             "deterministic candidate generator rather than a live LLM agent",
             "no human alignment sample in this small pilot",
             "advanced ratio comparison and multi-entity growth DAGs remain future work",
-            "legal and science non-lookup reasoning not evaluated",
+            "cross-domain contracts run in CI, outside this finance-only pilot",
         ],
     }
 
@@ -368,8 +461,39 @@ def _mutation_metrics(
             "detection_rate": _rate(rejected, len(items)),
             "localized": localized,
             "localization_rate": _rate(localized, len(items)),
+            "check_localized": sum(
+                set(mutation.expected_failure_checks).issubset(assessment.failed_check_ids)
+                for mutation, assessment in items
+            ),
+            "check_localization_rate": _rate(
+                sum(
+                    set(mutation.expected_failure_checks).issubset(assessment.failed_check_ids)
+                    for mutation, assessment in items
+                ),
+                len(items),
+            ),
         }
     return output
+
+
+def _mutation_family_metrics(
+    mutations: list[MutationCase],
+    assessments: list[QualityAssessment],
+) -> dict[str, dict[str, Any]]:
+    rows: dict[str, list[QualityAssessment]] = defaultdict(list)
+    for mutation, assessment in zip(mutations, assessments, strict=True):
+        rows[mutation.mutation_family.value].append(assessment)
+    return {
+        family: {
+            "count": len(items),
+            "rejected": sum(item.decision == ReleaseDecision.REJECTED for item in items),
+            "detection_rate": _rate(
+                sum(item.decision == ReleaseDecision.REJECTED for item in items),
+                len(items),
+            ),
+        }
+        for family, items in sorted(rows.items())
+    }
 
 
 def _binary_detection_metrics(
@@ -494,8 +618,11 @@ def _write_artifacts(
             {
                 "mutation_id": mutation.mutation_id,
                 "mutation_type": mutation.mutation_type,
+                "mutation_family": mutation.mutation_family.value,
                 "source_trajectory_id": mutation.source_trajectory_id,
                 "expected_failure_gates": mutation.expected_failure_gates,
+                "expected_failure_checks": mutation.expected_failure_checks,
+                "expected_detail_tokens": mutation.expected_detail_tokens,
                 "trajectory": mutation.trajectory,
                 "assessment": assessment,
             }

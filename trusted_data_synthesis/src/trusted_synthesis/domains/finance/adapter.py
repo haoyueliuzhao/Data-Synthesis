@@ -4,7 +4,7 @@ import json
 from collections.abc import Iterator
 from datetime import date
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from trusted_synthesis.core.evidence import (
     EpistemicStatus,
@@ -25,6 +25,11 @@ from trusted_synthesis.core.evidence.schema import (
 from trusted_synthesis.domains.base import AdapterCapability
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 
+if TYPE_CHECKING:
+    from trusted_synthesis.domains.finance.source_grounding import (
+        FinanceSourceGroundingVerifier,
+    )
+
 
 class FinanceArchiveError(RuntimeError):
     pass
@@ -39,6 +44,7 @@ class FinanceArchiveAdapter:
         "metrics": "metrics.parquet",
         "sources": "source_registry.parquet",
         "definitions": "source_metric_definitions.parquet",
+        "raw_objects": "raw_objects.parquet",
     }
 
     def __init__(self, config: FinanceArchiveConfig):
@@ -52,6 +58,16 @@ class FinanceArchiveAdapter:
             AdapterCapability.SOURCE_TRACE,
             AdapterCapability.ENTITY_CATALOG,
             AdapterCapability.SEMANTIC_DEFINITIONS,
+        )
+
+    def source_grounding_verifier(self) -> FinanceSourceGroundingVerifier:
+        from trusted_synthesis.domains.finance.source_grounding import (
+            FinanceSourceGroundingVerifier,
+        )
+
+        return FinanceSourceGroundingVerifier(
+            archive_root=self.config.archive_root,
+            raw_objects=self._load_catalogs()["raw_objects"],
         )
 
     def inspect(self) -> dict[str, Any]:
@@ -142,6 +158,8 @@ class FinanceArchiveAdapter:
         metric = catalogs["metrics"].get(metric_id, {})
         source = catalogs["sources"].get(source_id, {})
         definition = catalogs["definitions"].get(definition_id, {})
+        raw_object_id = str(properties.get("raw_object_id") or "")
+        raw_object = catalogs["raw_objects"].get(raw_object_id, {})
         kg_build_id = str(row["kg_build_id"])
         period_end = _date(properties.get("period_end"))
         period_start = _date(properties.get("period_start"))
@@ -196,10 +214,15 @@ class FinanceArchiveAdapter:
                 provider=_optional(source.get("provider")),
                 license_note=_optional(source.get("license_note")),
             ),
-            source_locator=SourceLocator(
-                uri=_optional(source.get("base_url")),
-                raw_object_id=_optional(properties.get("raw_object_id")),
-                json_pointer=f"/facts/{properties['fact_id']}",
+            source_locator=_source_locator(
+                source_id=source_id,
+                source=source,
+                raw_object=raw_object,
+                raw_object_id=raw_object_id,
+                definition=definition,
+                properties=properties,
+                period_start=period_start,
+                period_end=period_end,
             ),
             definition=SemanticDefinitionRef(
                 definition_id=definition_id or None,
@@ -207,6 +230,11 @@ class FinanceArchiveAdapter:
                 attributes={
                     "metric_name": str(metric.get("canonical_name") or metric_id),
                     "metric_category": _optional(metric.get("metric_category")),
+                    "statement_type": _optional(metric.get("statement_type")),
+                    "default_unit": _optional(metric.get("default_unit")),
+                    "default_currency": _optional(metric.get("default_currency")),
+                    "aggregation_rule": _optional(metric.get("aggregation_rule")),
+                    "raw_concept_name": _optional(definition.get("raw_concept_name")),
                     "period_type": _optional(
                         properties.get("metric_period_type") or metric.get("period_type")
                     ),
@@ -225,6 +253,7 @@ class FinanceArchiveAdapter:
                         (report.get("quality") or {}).get("input_fact_build_id") or "unknown"
                     ),
                 },
+                content_hash=_optional(raw_object.get("content_sha256")),
                 extraction_method="archived_graph_ready_fact",
             ),
             epistemic_status=EpistemicStatus.OBSERVED,
@@ -239,6 +268,10 @@ class FinanceArchiveAdapter:
                 "fiscal_quarter": properties.get("fiscal_quarter"),
                 "calendar_year": properties.get("calendar_year"),
                 "value_scale": properties.get("value_scale"),
+                "entity_scope_id": properties.get("entity_scope_id"),
+                "is_forecast": bool(properties.get("is_forecast")),
+                "seasonal_adjustment": properties.get("seasonal_adjustment"),
+                "vintage_policy": properties.get("vintage_policy"),
             },
         )
 
@@ -261,6 +294,7 @@ class FinanceArchiveAdapter:
             "metrics": "metric_id",
             "sources": "source_id",
             "definitions": "definition_id",
+            "raw_objects": "raw_object_id",
         }
         self._catalogs = {}
         for name, filename in self._catalog_files.items():
@@ -293,8 +327,52 @@ def _optional(value: Any) -> str | None:
 def _time_label(properties: dict[str, Any], period_end: date | None) -> str:
     fiscal_year = properties.get("fiscal_year")
     fiscal_quarter = properties.get("fiscal_quarter")
-    if fiscal_year and fiscal_quarter:
-        return f"FY{fiscal_year} {fiscal_quarter}"
-    if fiscal_year:
-        return f"FY{fiscal_year}"
+    time_basis = str(properties.get("time_basis") or "").casefold()
+    frequency = str(properties.get("frequency") or "").casefold()
+    if "fiscal" in time_basis or frequency == "filing_period":
+        if fiscal_year and fiscal_quarter:
+            return f"FY{fiscal_year} {fiscal_quarter}"
+        if fiscal_year:
+            return f"FY{fiscal_year}"
+    if frequency in {"annual", "yearly"}:
+        calendar_year = properties.get("calendar_year") or (period_end.year if period_end else None)
+        if calendar_year:
+            return f"CY{calendar_year}"
     return period_end.isoformat() if period_end else "unspecified period"
+
+
+def _source_locator(
+    *,
+    source_id: str,
+    source: dict[str, Any],
+    raw_object: dict[str, Any],
+    raw_object_id: str,
+    definition: dict[str, Any],
+    properties: dict[str, Any],
+    period_start: date | None,
+    period_end: date | None,
+) -> SourceLocator:
+    row_parts = []
+    if period_start:
+        row_parts.append(f"start={period_start.isoformat()}")
+    if period_end:
+        row_parts.append(f"end={period_end.isoformat()}")
+    if properties.get("fiscal_year"):
+        row_parts.append(f"fy={properties['fiscal_year']}")
+    if properties.get("fiscal_quarter"):
+        row_parts.append(f"fp={properties['fiscal_quarter']}")
+    table = _optional(definition.get("raw_concept_name"))
+    if source_id == "fred_observations":
+        table = "observations"
+        row_parts = [f"date={period_end.isoformat()}"] if period_end else []
+    elif source_id == "worldbank_indicators":
+        table = "indicator_observations"
+        year = properties.get("calendar_year") or properties.get("fiscal_year")
+        row_parts = [f"date={year}"] if year else []
+    return SourceLocator(
+        uri=_optional(raw_object.get("original_url")) or _optional(source.get("base_url")),
+        storage_uri=_optional(raw_object.get("storage_uri")),
+        raw_object_id=raw_object_id or None,
+        table=table,
+        row=";".join(row_parts) or None,
+    )

@@ -1,4 +1,4 @@
-# Architecture v0.3
+# Architecture v0.4
 
 ## Boundary
 
@@ -29,9 +29,10 @@ results. Subject, predicate, temporal context, scope, source, semantic definitio
 epistemic status, archive lineage, and derivation parents remain explicit.
 
 `EvidenceCorpus` is distinct from a task-local bundle and may contain distractors.
-Public tasks declare either a `resolved` or `open` retrieval track. The current
-deterministic candidate supports the resolved track; the contract leaves open-track
-entity resolution and search to future production agents.
+Public tasks declare a `resolved`, `semi_open`, or `open` retrieval track. Semi-open
+tasks carry aliases or partial constraints inside a fixed corpus boundary. The current
+deterministic candidate supports the resolved track; domain resolvers own semi-open and
+open interpretation.
 
 ## Proof Graph v3
 
@@ -83,13 +84,13 @@ implementations remain separate.
 
 ## Domain Runtime
 
-Core structural validation is composed with executable domain policy. Finance v1
+Core structural validation is composed with executable domain policy. Finance v2
 checks scalar shape, units/currency, historical status, time basis, frequency,
 scope, source definition, and cross-fact comparability. `FinanceClaimVerifier`
 permits only bounded structured claims and rejects ungrounded causal, forecast, or
-investment claims. Legal and Science currently prove schema portability through
-lookup tasks only; complex rule application and evidence synthesis remain future
-work.
+investment claims. Legal now runs condition and exception checks followed by authority
+resolution. Science aligns protocols before comparing effects and preserves uncertainty
+in its qualified result. These are compact contract fixtures, not production datasets.
 
 ## Candidate-Centered Quality
 
@@ -103,11 +104,20 @@ CandidateQualityEvaluator
   reconstructs retrieval, selection, calculation, answer, citation, and claims
 ```
 
-Candidate hard gates cover public-only generation, allowed tools, retrieved
-Evidence validity, recall and precision, operation correctness, Proof Graph hash,
-answer schema and value, exact source/locator citation binding, domain claims, and
-oracle leakage. Each task family has a frozen required-check manifest. Missing
-checks are ordinary failed gates, never dictionary exceptions.
+Candidate hard gates are explicitly divided into Universal and Domain scopes. They cover public-only generation, allowed tools, retrieved
+Evidence validity, recall and precision, raw-object source entailment, Proof Graph
+hash, Program Node to Trajectory Step alignment, DAG order, every calculation,
+VERIFY binding, strict answer schema and value, exact source/locator citation
+binding, structured domain claims, and oracle leakage. Each task family has a
+frozen required-check manifest. Missing checks are ordinary failed gates, never
+dictionary exceptions.
+
+## Generalization Boundary
+
+`generalization_contract.v1.1` is enforced in CI and every Release Manifest. Core cannot
+import a concrete domain package, branch on a domain label, or interpret domain fields.
+`TaskPackageBuilder` accepts domain-bound Evidence and Operation DAGs without knowing how
+the domain discovered them. See `docs/generalization_contract.md` for the executable rules.
 
 ## Release And Split
 

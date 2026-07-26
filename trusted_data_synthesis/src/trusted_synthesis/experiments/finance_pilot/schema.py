@@ -12,8 +12,20 @@ class FinancePilotConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     pilot_id: str = "finance_synthesis_pilot.small.v1"
-    evidence_scan_limit: int = Field(default=20_000, ge=100)
+    evidence_scan_limit: int = Field(default=20_000, ge=0)
+    evidence_sample_size: int = Field(default=20_000, ge=100)
+    stratum_reservoir_size: int = Field(default=2_500, ge=10)
     distractors_per_task: int = Field(default=6, ge=1, le=20)
+    hard_distractors_per_task: int = Field(default=7, ge=1, le=20)
+    hard_distractor_types: tuple[str, ...] = (
+        "wrong_definition",
+        "stale_version",
+        "forecast",
+        "lower_authority",
+        "unit_mismatch",
+        "currency_mismatch",
+        "wrong_scope",
+    )
     task_quotas: dict[str, int] = Field(
         default_factory=lambda: {
             "fact_retrieval": 6,
@@ -34,6 +46,11 @@ class FinancePilotConfig(BaseModel):
         "oracle_leakage",
         "disallowed_tool",
         "failed_step",
+        "extra_result_field",
+        "program_node_mismatch",
+        "conflicting_calculation",
+        "verification_result_mismatch",
+        "claim_value_mismatch",
         "multi_error",
     )
     require_full_quota: bool = True
@@ -51,6 +68,18 @@ class FinancePilotConfig(BaseModel):
             raise ValueError(f"unsupported pilot task types: {sorted(unknown)}")
         if not self.task_quotas or any(value < 1 for value in self.task_quotas.values()):
             raise ValueError("pilot task quotas must be positive")
+        supported_distractors = {
+            "wrong_definition",
+            "stale_version",
+            "forecast",
+            "lower_authority",
+            "unit_mismatch",
+            "currency_mismatch",
+            "wrong_scope",
+        }
+        unknown_distractors = set(self.hard_distractor_types) - supported_distractors
+        if unknown_distractors:
+            raise ValueError(f"unsupported hard distractors: {sorted(unknown_distractors)}")
         return self
 
     @classmethod

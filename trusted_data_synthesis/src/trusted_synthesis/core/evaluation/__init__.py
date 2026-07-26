@@ -1,6 +1,7 @@
 from trusted_synthesis.core.evaluation.schema import (
     DiagnosticQualityVector,
     DimensionScore,
+    GateScope,
     HardGateResult,
     QualityAssessment,
     ReleaseDecision,
@@ -9,6 +10,7 @@ from trusted_synthesis.core.evaluation.schema import (
 __all__ = [
     "DiagnosticQualityVector",
     "DimensionScore",
+    "GateScope",
     "HardGateResult",
     "QualityAssessment",
     "ReleaseDecision",

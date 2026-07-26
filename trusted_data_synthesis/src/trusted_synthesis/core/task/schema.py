@@ -25,6 +25,7 @@ class TaskRequirement(str, Enum):
 
 class RetrievalTrack(str, Enum):
     RESOLVED = "resolved"
+    SEMI_OPEN = "semi_open"
     OPEN = "open"
 
 
@@ -42,6 +43,23 @@ class TaskPublicSpec(BaseModel):
     retrieval_scope: dict[str, Any]
     answer_schema: dict[str, Any]
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_retrieval_contract(self) -> TaskPublicSpec:
+        if self.retrieval_track == RetrievalTrack.SEMI_OPEN:
+            has_partial = bool(
+                self.retrieval_scope.get("aliases")
+                or self.retrieval_scope.get("partial_constraints")
+            )
+            if not has_partial or not self.retrieval_scope.get("corpus_boundary"):
+                raise ValueError(
+                    "semi-open retrieval requires partial constraints and a corpus boundary"
+                )
+        if self.retrieval_track == RetrievalTrack.OPEN and not self.retrieval_scope.get(
+            "corpus_boundary"
+        ):
+            raise ValueError("open retrieval requires a corpus boundary")
+        return self
 
 
 class TaskOracleContract(BaseModel):

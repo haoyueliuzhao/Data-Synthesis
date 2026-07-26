@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from trusted_synthesis.architecture.generalization import audit_generalization_contract
 from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
@@ -19,11 +20,11 @@ from trusted_synthesis.core.release import (
     build_release_manifest,
     select_candidate_release,
 )
-from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.finance_pilot import (
     FinancePilotConfig,
@@ -36,6 +37,12 @@ from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvid
 def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
+    if args.command == "audit-generalization":
+        _emit(
+            audit_generalization_contract(args.source_root).model_dump(mode="json"),
+            args.output,
+        )
+        return 0
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
     if args.command == "inspect-finance":
         _emit(adapter.inspect(), args.output)
@@ -76,12 +83,15 @@ def _parser() -> argparse.ArgumentParser:
     pilot.add_argument("--pilot-config", required=True)
     pilot.add_argument("--output-dir", type=Path, required=True)
     pilot.add_argument("--output", type=Path)
+    audit = subparsers.add_parser("audit-generalization")
+    audit.add_argument("--source-root", type=Path, default=Path("src"))
+    audit.add_argument("--output", type=Path)
     return parser
 
 
 def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
     semantic_policy = FinanceSemanticPolicy()
-    task_synthesizer = ProofGraphTaskSynthesizer(semantic_policy)
+    task_synthesizer = FinanceTaskPlugin()
     trajectory_generator = ReferenceWorkflowCompiler()
     candidate_generator = CandidateTrajectoryGenerator()
     graph_builder = ProofGraphBuilder()

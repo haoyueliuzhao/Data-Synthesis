@@ -72,7 +72,11 @@ class DomainVerificationPlugin(Protocol):
     plugin_id: str
 
     def verify_claim(
-        self, claim: dict[str, Any], evidence: tuple[EvidenceItem, ...]
+        self,
+        claim: dict[str, Any],
+        evidence: tuple[EvidenceItem, ...],
+        *,
+        operation_outputs: dict[str, dict[str, Any]] | None = None,
     ) -> ClaimVerification: ...
 
 

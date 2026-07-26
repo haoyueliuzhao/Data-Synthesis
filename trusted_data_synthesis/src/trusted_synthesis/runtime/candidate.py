@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from trusted_synthesis.core.evaluation.answer import scalar_candidate_result
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.task.schema import TaskPublicSpec
 from trusted_synthesis.core.trajectory.schema import (
@@ -15,7 +14,7 @@ from trusted_synthesis.core.trajectory.schema import (
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-CANDIDATE_GENERATOR_VERSION = "candidate_workflow.v3"
+CANDIDATE_GENERATOR_VERSION = "candidate_workflow.v4"
 
 
 class CandidateTrajectoryGenerator:
@@ -34,7 +33,7 @@ class CandidateTrajectoryGenerator:
             for item in selected
         ]
         evidence_ids = tuple(item.evidence_id for item in selected)
-        steps = [
+        steps: list[TrajectoryStep] = [
             TrajectoryStep(
                 step_index=1,
                 action=ActionType.PLAN,
@@ -52,36 +51,24 @@ class CandidateTrajectoryGenerator:
                 rationale_summary="Search with public subject, predicate, and time constraints.",
                 status=StepStatus.SUCCEEDED,
             ),
-            TrajectoryStep(
-                step_index=3,
-                action=ActionType.SELECT_EVIDENCE,
-                observation={"selected_count": len(selected)},
-                evidence_ids=evidence_ids,
-                rationale_summary="Select evidence matching the requested task semantics.",
-                status=StepStatus.SUCCEEDED,
-            ),
         ]
-        next_index = 4
-        if any(item.value == "calculate" for item in task.requirements):
-            steps.append(
-                TrajectoryStep(
-                    step_index=next_index,
-                    action=ActionType.CALCULATE,
-                    tool_name="calculator",
-                    observation={"result": result},
-                    evidence_ids=evidence_ids,
-                    rationale_summary="Compute the requested result from selected evidence.",
-                    status=StepStatus.SUCCEEDED,
-                )
-            )
-            next_index += 1
+        operation_steps = _operation_steps(task, selected, result, start_index=3)
+        steps.extend(operation_steps)
+        next_index = len(steps) + 1
         if any(item.value == "verify_result" for item in task.requirements):
             steps.append(
                 TrajectoryStep(
                     step_index=next_index,
                     action=ActionType.VERIFY,
-                    observation={"schema_checked": True, "source_checked": True},
+                    observation={
+                        "schema_checked": True,
+                        "source_checked": True,
+                        "verified_output_ref": "operation:result",
+                        "verified_result": result,
+                    },
                     evidence_ids=evidence_ids,
+                    program_node_id="result",
+                    input_refs=("operation:result",),
                     rationale_summary=(
                         "Check answer fields and bind citations to selected evidence."
                     ),
@@ -103,7 +90,9 @@ class CandidateTrajectoryGenerator:
             trajectory_id=canonical_hash(
                 {
                     "task_id": task.task_id,
+                    "retrieved_evidence_ids": tuple(item.evidence_id for item in evidence),
                     "evidence_ids": evidence_ids,
+                    "result": result,
                     "version": CANDIDATE_GENERATOR_VERSION,
                 },
                 prefix="candidate_workflow:",
@@ -117,17 +106,15 @@ class CandidateTrajectoryGenerator:
 
     @staticmethod
     def _select(task: TaskPublicSpec, evidence):
-        if task.task_type == "fact_retrieval" and len(evidence) == 1:
+        contract = task.retrieval_scope.get("selection_contract")
+        if not isinstance(contract, dict):
             return evidence
-        return evidence
+        return tuple(item for item in evidence if _matches_selection_contract(item, contract))
 
     @staticmethod
     def _answer(task: TaskPublicSpec, evidence) -> dict[str, object]:
         if task.task_type == "fact_retrieval" and len(evidence) == 1:
             item = evidence[0]
-            scalar = scalar_candidate_result(item)
-            if scalar is not None:
-                return scalar
             return {
                 "payload": item.payload.model_dump(mode="json", exclude_none=True),
                 "source_id": item.source.source_id,
@@ -165,3 +152,129 @@ def _scalar_value(item) -> Decimal:
 def _temporal_sort_key(item):
     context = item.temporal_context
     return context.valid_to or context.observed_at or context.valid_from
+
+
+def _operation_steps(
+    task: TaskPublicSpec,
+    evidence,
+    result: dict[str, object],
+    *,
+    start_index: int,
+) -> tuple[TrajectoryStep, ...]:
+    ordered = tuple(sorted(evidence, key=_temporal_sort_key))
+    steps: list[TrajectoryStep] = []
+
+    def add_lookup(item, node_id: str) -> None:
+        steps.append(
+            TrajectoryStep(
+                step_index=start_index + len(steps),
+                action=ActionType.SELECT_EVIDENCE,
+                observation={
+                    "selected_count": 1,
+                    "result": {
+                        "selected_ref": item.evidence_id,
+                        "payload": item.payload.model_dump(mode="json", exclude_none=True),
+                    },
+                },
+                evidence_ids=(item.evidence_id,),
+                program_node_id=node_id,
+                operator_id="lookup",
+                input_refs=(f"evidence:{item.evidence_id}",),
+                output_ref=f"operation:{node_id}",
+                rationale_summary="Bind one selected observation to its lookup operation.",
+                status=StepStatus.SUCCEEDED,
+            )
+        )
+
+    if task.task_type == "fact_retrieval" and len(evidence) == 1:
+        add_lookup(evidence[0], "result")
+        return tuple(steps)
+    input_refs: tuple[str, ...]
+    operator_id: str
+    if task.task_type == "temporal_growth" and len(ordered) == 2:
+        add_lookup(ordered[0], "earlier_value")
+        add_lookup(ordered[1], "later_value")
+        input_refs = (
+            "operation:earlier_value#payload.value",
+            "operation:later_value#payload.value",
+        )
+        operator_id = "growth"
+    elif task.task_type == "temporal_average" and len(ordered) >= 3:
+        for index, item in enumerate(ordered, start=1):
+            add_lookup(item, f"value_{index}")
+        input_refs = tuple(
+            f"operation:value_{index}#payload.value" for index in range(1, len(ordered) + 1)
+        )
+        operator_id = "aggregate"
+    else:
+        steps.append(
+            TrajectoryStep(
+                step_index=start_index,
+                action=ActionType.SELECT_EVIDENCE,
+                observation={"selected_count": len(evidence)},
+                evidence_ids=tuple(item.evidence_id for item in evidence),
+                rationale_summary="Select evidence matching the public semantic contract.",
+                status=StepStatus.SUCCEEDED,
+            )
+        )
+        input_refs = tuple(f"evidence:{item.evidence_id}" for item in evidence)
+        operator_id = "compare" if task.task_type == "comparison" else "unsupported"
+    if any(item.value == "calculate" for item in task.requirements):
+        steps.append(
+            TrajectoryStep(
+                step_index=start_index + len(steps),
+                action=ActionType.CALCULATE,
+                tool_name="calculator",
+                observation={"result": result},
+                evidence_ids=tuple(item.evidence_id for item in evidence),
+                program_node_id="result",
+                operator_id=operator_id,
+                input_refs=input_refs,
+                output_ref="operation:result",
+                rationale_summary="Compute the bound operation node from its declared inputs.",
+                status=StepStatus.SUCCEEDED,
+            )
+        )
+    return tuple(steps)
+
+
+def _matches_selection_contract(item, contract: dict[str, object]) -> bool:
+    payload = item.payload.model_dump(mode="json", exclude_none=True)
+    payload_context = {
+        key: value for key, value in payload.items() if key not in {"kind", "value", "precision"}
+    }
+    checks = (
+        _allowed(item.definition.definition_id, contract.get("definition_ids")),
+        _allowed(item.source.source_id, contract.get("source_ids")),
+        _allowed(item.source.authority.value, contract.get("source_authorities")),
+        _allowed_hash(payload_context, contract.get("payload_context_hashes"), "payload_context:"),
+        _allowed_hash(
+            item.domain_context,
+            contract.get("domain_context_hashes"),
+            "domain_context:",
+        ),
+        _allowed(item.temporal_context.basis, contract.get("time_bases")),
+        _allowed(item.temporal_context.frequency, contract.get("frequencies")),
+        _allowed(item.scope.scope_type if item.scope else None, contract.get("scope_types")),
+        _allowed(item.scope.scope_id if item.scope else None, contract.get("scope_ids")),
+    )
+    if not all(checks):
+        return False
+    required_build_ids = contract.get("required_build_ids")
+    if isinstance(required_build_ids, dict):
+        for key, allowed in required_build_ids.items():
+            if not _allowed(item.provenance.build_ids.get(str(key)), allowed):
+                return False
+    return True
+
+
+def _allowed(value: object, allowed: object) -> bool:
+    if not isinstance(allowed, (list, tuple, set)) or not allowed:
+        return True
+    return value in set(allowed)
+
+
+def _allowed_hash(value: object, allowed: object, prefix: str) -> bool:
+    if not isinstance(allowed, (list, tuple, set)) or not allowed:
+        return True
+    return canonical_hash(value, prefix=prefix) in set(allowed)

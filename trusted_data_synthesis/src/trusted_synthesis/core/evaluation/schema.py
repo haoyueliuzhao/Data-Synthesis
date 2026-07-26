@@ -11,9 +11,15 @@ class ReleaseDecision(str, Enum):
     REJECTED = "rejected"
 
 
+class GateScope(str, Enum):
+    UNIVERSAL = "universal"
+    DOMAIN = "domain"
+
+
 class HardGateResult(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     gate_id: str
+    scope: GateScope = GateScope.UNIVERSAL
     passed: bool
     details: tuple[str, ...] = ()
 
@@ -42,10 +48,14 @@ class QualityAssessment(BaseModel):
     task_id: str
     trajectory_id: str
     hard_gates: tuple[HardGateResult, ...]
+    universal_gates: tuple[HardGateResult, ...] = ()
+    domain_gates: tuple[HardGateResult, ...] = ()
     required_check_manifest_hash: str
     diagnostic_vector: DiagnosticQualityVector
     dimensions: tuple[DimensionScore, ...]
     total_score: float = Field(ge=0, le=100)
     decision: ReleaseDecision
     fatal_failures: tuple[str, ...]
+    failed_check_ids: tuple[str, ...] = ()
+    check_failure_details: dict[str, tuple[str, ...]] = Field(default_factory=dict)
     evaluator_version: str

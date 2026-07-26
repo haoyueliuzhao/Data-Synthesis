@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any
 
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.graph.validation import ProofGraphValidator
+from trusted_synthesis.core.task.builder import TaskPackageBuilder
 from trusted_synthesis.core.task.program import (
     InputRefKind,
     OperationNode,
@@ -16,10 +18,7 @@ from trusted_synthesis.core.task.program import (
 from trusted_synthesis.core.task.schema import (
     RetrievalTrack,
     TaskLevel,
-    TaskOracleContract,
     TaskPackage,
-    TaskPublicSpec,
-    TaskRequirement,
 )
 from trusted_synthesis.hashing import canonical_hash
 
@@ -31,9 +30,16 @@ class TaskSynthesisError(ValueError):
 class ProofGraphTaskSynthesizer:
     """Create a public task and a separately addressable oracle contract."""
 
-    def __init__(self, semantic_policy: Any | None = None) -> None:
+    def __init__(
+        self,
+        semantic_policy: Any | None = None,
+        *,
+        allow_structured_claims: bool = False,
+    ) -> None:
         self._semantic_policy = semantic_policy
+        self._allow_structured_claims = allow_structured_claims
         self._proof_validator = ProofGraphValidator()
+        self._package_builder = TaskPackageBuilder()
 
     def fact_retrieval(
         self, proof_graph: ProofGraph, bundle: EvidenceBundle, evidence_id: str
@@ -56,6 +62,9 @@ class ProofGraphTaskSynthesizer:
             answer_schema={
                 "type": "payload_with_source",
                 "payload_kind": item.evidence_kind.value,
+                "allowed_payload_fields": sorted(
+                    item.payload.model_dump(mode="json", exclude_none=False)
+                ),
             },
         )
 
@@ -99,6 +108,7 @@ class ProofGraphTaskSynthesizer:
         earlier = self._find(bundle, earlier_evidence_id)
         later = self._find(bundle, later_evidence_id)
         self._validate_same_series(earlier, later)
+        self._validate_growth_pair(earlier, later)
         evidence_ids = (earlier_evidence_id, later_evidence_id)
         self._require_graph_evidence(proof_graph, bundle, evidence_ids)
         earlier_node = _operation_node("earlier_value", "lookup", (earlier_evidence_id,), "payload")
@@ -201,51 +211,28 @@ class ProofGraphTaskSynthesizer:
         program: TaskProgram,
         answer_schema: dict[str, Any],
     ) -> TaskPackage:
-        evidence_ids = tuple(item.evidence_id for item in evidence)
-        task_id = canonical_hash(
-            {
-                "task_type": task_type,
-                "bundle_id": bundle.bundle_id,
-                "evidence_ids": evidence_ids,
-                "program_hash": program.program_hash,
-                "schema": "task_package.v3",
-            },
-            prefix="task:",
-        )
-        public = TaskPublicSpec(
-            task_id=task_id,
-            domain=evidence[0].domain,
+        return self._package_builder.build(
+            task_domain=evidence[0].domain,
             task_type=task_type,
             level=level,
             instruction=instruction,
-            requirements=_requirements_for_program(program),
-            allowed_tools=_allowed_tools_for_program(program),
-            retrieval_track=RetrievalTrack.RESOLVED,
+            evidence=evidence,
+            bundle=bundle,
+            proof_graph=proof_graph,
+            program=program,
             retrieval_scope={
                 "subject_ids": sorted({item.subject.subject_id for item in evidence}),
                 "predicates": sorted({item.predicate for item in evidence}),
                 "temporal_labels": sorted({_time_label(item) for item in evidence}),
                 "source_authorities": sorted({item.source.authority.value for item in evidence}),
+                "selection_contract": _selection_contract(evidence),
             },
-            answer_schema=answer_schema,
-            metadata={
-                "bundle_id": bundle.bundle_id,
-                "proof_required": True,
+            answer_schema={
+                **answer_schema,
             },
+            retrieval_track=RetrievalTrack.RESOLVED,
+            allow_structured_claims=self._allow_structured_claims,
         )
-        oracle = TaskOracleContract(
-            task_id=task_id,
-            gold_evidence_ids=evidence_ids,
-            task_program=program,
-            proof_graph_id=proof_graph.graph_id,
-            proof_graph_hash=proof_graph.graph_hash,
-            quality_rubric={
-                "evidence_coverage": 1.0,
-                "operation_replay": True,
-                "source_citation": True,
-            },
-        )
-        return TaskPackage(task_id=task_id, public=public, oracle=oracle)
 
     @staticmethod
     def _find(bundle: EvidenceBundle, evidence_id: str) -> EvidenceItem:
@@ -275,14 +262,13 @@ class ProofGraphTaskSynthesizer:
                     f"evidence is not comparable: {', '.join(decision.reasons)}"
                 )
             return
-        left_payload = _require_scalar(left)
-        right_payload = _require_scalar(right)
+        _require_scalar(left)
+        _require_scalar(right)
         mismatches = []
         for field, left_value, right_value in (
             ("domain", left.domain, right.domain),
             ("predicate", left.predicate, right.predicate),
-            ("unit", left_payload.unit, right_payload.unit),
-            ("currency", left_payload.currency, right_payload.currency),
+            ("payload_context", _payload_context(left), _payload_context(right)),
             ("definition", left.definition.definition_id, right.definition.definition_id),
         ):
             if left_value != right_value:
@@ -298,6 +284,20 @@ class ProofGraphTaskSynthesizer:
         later_end = later.temporal_context.valid_to or later.temporal_context.observed_at
         if not earlier_end or not later_end or earlier_end >= later_end:
             raise TaskSynthesisError("temporal growth requires ordered, dated evidence")
+
+    def _validate_growth_pair(self, earlier: EvidenceItem, later: EvidenceItem) -> None:
+        if self._semantic_policy is not None and hasattr(
+            self._semantic_policy, "validate_growth_pair"
+        ):
+            decision = self._semantic_policy.validate_growth_pair(earlier, later)
+            if not decision.comparable:
+                raise TaskSynthesisError(
+                    f"growth semantics are invalid: {', '.join(decision.reasons)}"
+                )
+            return
+        earlier_payload = _require_scalar(earlier)
+        if Decimal(str(earlier_payload.value)) <= 0:
+            raise TaskSynthesisError("relative growth requires a strictly positive base")
 
     def _validate_temporal_series(self, evidence: tuple[EvidenceItem, ...]) -> None:
         first = evidence[0]
@@ -345,8 +345,55 @@ def _require_scalar(evidence: EvidenceItem) -> ScalarObservation:
 
 
 def _scalar_answer_schema(evidence: EvidenceItem, answer_type: str) -> dict[str, Any]:
-    payload = _require_scalar(evidence)
-    return {"type": answer_type, "unit": payload.unit, "currency": payload.currency}
+    _require_scalar(evidence)
+    return {"type": answer_type, "result_context": _payload_context(evidence)}
+
+
+def _selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, Any]:
+    return {
+        "definition_ids": sorted(
+            {item.definition.definition_id for item in evidence if item.definition.definition_id}
+        ),
+        "source_ids": sorted({item.source.source_id for item in evidence}),
+        "source_authorities": sorted({item.source.authority.value for item in evidence}),
+        "payload_context_hashes": sorted(
+            {canonical_hash(_payload_context(item), prefix="payload_context:") for item in evidence}
+        ),
+        "domain_context_hashes": sorted(
+            {canonical_hash(item.domain_context, prefix="domain_context:") for item in evidence}
+        ),
+        "time_bases": sorted(
+            {item.temporal_context.basis for item in evidence if item.temporal_context.basis}
+        ),
+        "frequencies": sorted(
+            {
+                item.temporal_context.frequency
+                for item in evidence
+                if item.temporal_context.frequency
+            }
+        ),
+        "scope_types": sorted(
+            {item.scope.scope_type for item in evidence if item.scope is not None}
+        ),
+        "scope_ids": sorted({item.scope.scope_id for item in evidence if item.scope is not None}),
+        "required_build_ids": {
+            key: sorted(
+                {
+                    value
+                    for item in evidence
+                    if (value := item.provenance.build_ids.get(key)) is not None
+                }
+            )
+            for key in sorted({key for item in evidence for key in item.provenance.build_ids})
+        },
+    }
+
+
+def _payload_context(evidence: EvidenceItem) -> dict[str, Any]:
+    payload = evidence.payload.model_dump(mode="json", exclude_none=True)
+    return {
+        key: value for key, value in payload.items() if key not in {"kind", "value", "precision"}
+    }
 
 
 def _time_label(evidence: EvidenceItem) -> str:
@@ -368,21 +415,3 @@ def _time_phrase(evidence: EvidenceItem) -> str:
 def _temporal_sort_key(evidence: EvidenceItem):
     context = evidence.temporal_context
     return context.valid_to or context.observed_at or context.valid_from
-
-
-def _requirements_for_program(program: TaskProgram) -> tuple[TaskRequirement, ...]:
-    requirements = [
-        TaskRequirement.RETRIEVE_EVIDENCE,
-        TaskRequirement.SELECT_EVIDENCE,
-        TaskRequirement.CITE_SOURCE,
-    ]
-    if any(node.operator_id != "lookup" for node in program.nodes):
-        requirements.extend((TaskRequirement.CALCULATE, TaskRequirement.VERIFY_RESULT))
-    return tuple(requirements)
-
-
-def _allowed_tools_for_program(program: TaskProgram) -> tuple[str, ...]:
-    tools = ["evidence.search"]
-    if any(node.operator_id != "lookup" for node in program.nodes):
-        tools.append("calculator")
-    return tuple(tools)

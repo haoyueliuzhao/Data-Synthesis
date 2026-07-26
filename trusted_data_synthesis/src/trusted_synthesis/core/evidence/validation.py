@@ -41,6 +41,14 @@ class EvidenceValidator:
         self._semantic_policy = semantic_policy
 
     def validate(self, evidence: EvidenceItem) -> EvidenceValidationReport:
+        structural = self.validate_structural(evidence)
+        domain = self.validate_domain(evidence)
+        return EvidenceValidationReport(
+            evidence_id=evidence.evidence_id,
+            checks=(*structural.checks, *domain.checks),
+        )
+
+    def validate_structural(self, evidence: EvidenceItem) -> EvidenceValidationReport:
         checks = [
             self._check_epistemic_status(evidence),
             self._check_version_identity(evidence),
@@ -49,18 +57,22 @@ class EvidenceValidator:
             self._check_temporal_consistency(evidence),
             self._check_source_identity(evidence),
         ]
-        if self._semantic_policy is not None:
-            report = self._semantic_policy.validate_evidence(evidence)
-            checks.extend(
-                _check(
-                    f"domain_semantic:{check_id}",
-                    passed,
-                    f"Domain semantic check passed: {check_id}",
-                    f"Domain semantic check failed: {check_id}",
-                )
-                for check_id, passed in sorted(report.checks.items())
-            )
         return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=tuple(checks))
+
+    def validate_domain(self, evidence: EvidenceItem) -> EvidenceValidationReport:
+        if self._semantic_policy is None:
+            return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=())
+        report = self._semantic_policy.validate_evidence(evidence)
+        checks = tuple(
+            _check(
+                f"domain_semantic:{check_id}",
+                passed,
+                f"Domain semantic check passed: {check_id}",
+                f"Domain semantic check failed: {check_id}",
+            )
+            for check_id, passed in sorted(report.checks.items())
+        )
+        return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=checks)
 
     @staticmethod
     def _check_epistemic_status(evidence: EvidenceItem) -> ValidationCheck:

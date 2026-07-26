@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -19,6 +20,14 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
 
     inspection = adapter.inspect()
     evidence = list(adapter.iter_evidence(limit=1))
+    grounding = adapter.source_grounding_verifier().verify(evidence[0])
+    mismatched = evidence[0].model_copy(
+        update={
+            "evidence_id": "evidence:finance:mismatched_source_value@kg_test",
+            "payload": evidence[0].payload.model_copy(update={"value": "999"}),
+        }
+    )
+    mismatched_grounding = adapter.source_grounding_verifier().verify(mismatched)
     after = sorted(path.relative_to(tmp_path) for path in tmp_path.rglob("*"))
 
     assert inspection["compatible"] is True
@@ -31,6 +40,9 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     assert evidence[0].source.authority == SourceAuthority.OFFICIAL
     assert evidence[0].epistemic_status == EpistemicStatus.OBSERVED
     assert evidence[0].provenance.build_ids["kg"] == "kg_test"
+    assert grounding.passed
+    assert not mismatched_grounding.passed
+    assert "source_entailment" in mismatched_grounding.failures
     assert before == after
 
 
@@ -56,7 +68,10 @@ def _archive_fixture(root: Path) -> FinanceArchiveConfig:
                 "metric_id": "revenue",
                 "canonical_name": "Revenue",
                 "metric_category": "financial_statement",
+                "statement_type": "income_statement",
                 "period_type": "period_flow",
+                "default_unit": "monetary",
+                "default_currency": "USD",
             }
         ],
     )
@@ -75,7 +90,52 @@ def _archive_fixture(root: Path) -> FinanceArchiveConfig:
     )
     _parquet(
         catalog_root / "source_metric_definitions.parquet",
-        [{"definition_id": "sdef_revenue", "definition_text": "GAAP revenue"}],
+        [
+            {
+                "definition_id": "sdef_revenue",
+                "definition_text": "GAAP revenue",
+                "raw_concept_name": "us-gaap:Revenue",
+            }
+        ],
+    )
+    raw_path = root / "raw" / "companyfacts.json"
+    raw_path.parent.mkdir()
+    raw_path.write_text(
+        json.dumps(
+            {
+                "facts": {
+                    "us-gaap": {
+                        "Revenue": {
+                            "units": {
+                                "USD": [
+                                    {
+                                        "start": "2023-01-01",
+                                        "end": "2023-12-31",
+                                        "fy": 2023,
+                                        "fp": "FY",
+                                        "val": 123450000,
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    _parquet(
+        catalog_root / "raw_objects.parquet",
+        [
+            {
+                "raw_object_id": "raw_example",
+                "source_id": "sec_companyfacts",
+                "original_url": "https://data.sec.gov/api/xbrl/companyfacts/example.json",
+                "storage_uri": str(raw_path),
+                "content_sha256": hashlib.sha256(raw_path.read_bytes()).hexdigest(),
+            }
+        ],
     )
     report_path = root / "kg_build_report.json"
     report_path.write_text(
@@ -128,6 +188,7 @@ def _archive_fixture(root: Path) -> FinanceArchiveConfig:
                     "is_forecast": 0,
                     "confidence_score": 0.99,
                     "comparability_level": "xbrl_concept_level",
+                    "value_scale": "million",
                 },
             }
         )

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections import defaultdict
+import heapq
+from collections import Counter, defaultdict
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date
@@ -40,24 +41,91 @@ class EvidenceSample:
     domain_valid_count: int
     rejected_count: int
     stratum_counts: dict[str, int]
+    sampled_count: int
+    sampled_stratum_counts: dict[str, int]
+    complete_stream_scan: bool
+    source_grounding_checked_count: int
+    source_grounding_valid_count: int
+    source_grounding_rejected_count: int
+    source_grounding_failure_counts: dict[str, int]
+    source_grounding_rejected_source_counts: dict[str, int]
 
 
 def sample_evidence(
     adapter: FinanceArchiveAdapter,
     config: FinancePilotConfig,
     policy: FinanceSemanticPolicy,
+    source_grounding_verifier: Any | None = None,
 ) -> EvidenceSample:
-    observed = tuple(adapter.iter_evidence(limit=config.evidence_scan_limit))
-    valid = tuple(item for item in observed if policy.validate_evidence(item).passed)
+    scan_limit = config.evidence_scan_limit or None
     strata: dict[str, int] = defaultdict(int)
+    reservoirs: dict[tuple[str, ...], list[tuple[int, str, EvidenceItem]]] = defaultdict(list)
+    scanned_count = 0
+    domain_valid_count = 0
+    for item in adapter.iter_evidence(limit=scan_limit):
+        scanned_count += 1
+        if not policy.validate_evidence(item).passed:
+            continue
+        domain_valid_count += 1
+        stratum = _evidence_stratum(item)
+        strata["|".join(stratum)] += 1
+        rank = int(canonical_hash(item.evidence_id).split(":")[-1], 16)
+        heap = reservoirs[stratum]
+        entry = (-rank, item.evidence_id, item)
+        if len(heap) < config.stratum_reservoir_size:
+            heapq.heappush(heap, entry)
+        elif rank < -heap[0][0]:
+            heapq.heapreplace(heap, entry)
+    reservoir_items = tuple(
+        item
+        for heap in reservoirs.values()
+        for _, _, item in sorted(heap, key=lambda value: (-value[0], value[1]))
+    )
+    grounding_failures: Counter[str] = Counter()
+    grounding_rejected_sources: Counter[str] = Counter()
+    if source_grounding_verifier is not None:
+        grounded = []
+        for item in reservoir_items:
+            report = source_grounding_verifier.verify(item)
+            if report.passed:
+                grounded.append(item)
+                continue
+            grounding_failures.update(report.failures)
+            grounding_rejected_sources[item.source.source_id] += 1
+        grounded_items = tuple(grounded)
+    else:
+        grounded_items = reservoir_items
+    valid = _diverse_select(
+        grounded_items,
+        config.evidence_sample_size,
+        key=_evidence_stratum,
+        identity=lambda item: canonical_hash(item.evidence_id),
+    )
+    sampled_strata: dict[str, int] = defaultdict(int)
     for item in valid:
-        strata["|".join(_evidence_stratum(item))] += 1
+        sampled_strata["|".join(_evidence_stratum(item))] += 1
     return EvidenceSample(
         evidence=valid,
-        scanned_count=len(observed),
-        domain_valid_count=len(valid),
-        rejected_count=len(observed) - len(valid),
+        scanned_count=scanned_count,
+        domain_valid_count=domain_valid_count,
+        rejected_count=scanned_count - domain_valid_count,
         stratum_counts=dict(sorted(strata.items())),
+        sampled_count=len(valid),
+        sampled_stratum_counts=dict(sorted(sampled_strata.items())),
+        complete_stream_scan=scan_limit is None,
+        source_grounding_checked_count=(
+            len(reservoir_items) if source_grounding_verifier is not None else 0
+        ),
+        source_grounding_valid_count=(
+            len(grounded_items) if source_grounding_verifier is not None else 0
+        ),
+        source_grounding_rejected_count=(
+            len(reservoir_items) - len(grounded_items)
+            if source_grounding_verifier is not None
+            else 0
+        ),
+        source_grounding_failure_counts=dict(sorted(grounding_failures.items())),
+        source_grounding_rejected_source_counts=dict(sorted(grounding_rejected_sources.items())),
     )
 
 
@@ -188,6 +256,8 @@ def _temporal_bindings(
     bindings = []
     task_type = "temporal_growth" if window == 2 else "temporal_average"
     for items in groups.values():
+        if _series_period_class(items[0]) == "unsupported_ytd":
+            continue
         by_period: dict[date, EvidenceItem] = {}
         for item in sorted(
             items,
@@ -202,8 +272,10 @@ def _temporal_bindings(
         ordered = [by_period[key] for key in sorted(by_period)]
         if len(ordered) < window:
             continue
-        selected = tuple(ordered[-window:])
-        if window == 2 and _numeric_value(selected[0]) == 0:
+        selected = _latest_contiguous_window(ordered, window)
+        if selected is None:
+            continue
+        if window == 2 and not _relative_growth_allowed(selected[0]):
             continue
         first = selected[0]
         bindings.append(
@@ -240,6 +312,7 @@ def _series_key(item: EvidenceItem) -> tuple[Any, ...]:
         item.temporal_context.frequency,
         item.scope.scope_type if item.scope else None,
         item.definition.attributes.get("period_type"),
+        _series_period_class(item),
     )
 
 
@@ -309,6 +382,81 @@ def _numeric_value(item: EvidenceItem) -> Decimal:
     if not isinstance(payload, ScalarObservation):
         raise ValueError(f"pilot requires scalar evidence: {item.evidence_id}")
     return Decimal(str(payload.value))
+
+
+def _relative_growth_allowed(item: EvidenceItem) -> bool:
+    if _numeric_value(item) <= 0:
+        return False
+    payload = item.payload
+    if not isinstance(payload, ScalarObservation):
+        return False
+    unit = str(payload.unit or "").casefold()
+    default_unit = str(item.definition.attributes.get("default_unit") or "").casefold()
+    rate_markers = ("percent", "%", "basis point", "percentage point")
+    return not any(marker in unit or marker in default_unit for marker in rate_markers)
+
+
+def _latest_contiguous_window(
+    ordered: list[EvidenceItem], window: int
+) -> tuple[EvidenceItem, ...] | None:
+    for end in range(len(ordered), window - 1, -1):
+        candidate = tuple(ordered[end - window : end])
+        if all(
+            _periods_are_adjacent(left, right)
+            for left, right in zip(candidate, candidate[1:], strict=False)
+        ):
+            return candidate
+    return None
+
+
+def _periods_are_adjacent(left: EvidenceItem, right: EvidenceItem) -> bool:
+    left_date = _time_point(left)
+    right_date = _time_point(right)
+    if left_date is None or right_date is None or left_date >= right_date:
+        return False
+    period_class = _series_period_class(left)
+    if period_class != _series_period_class(right):
+        return False
+    if period_class == "fiscal_quarter":
+        left_index = _fiscal_quarter_index(left)
+        right_index = _fiscal_quarter_index(right)
+        return left_index is not None and right_index == left_index + 1
+    if period_class in {"annual", "yearly"}:
+        return right_date.year == left_date.year + 1
+    if period_class == "quarterly":
+        return _month_index(right_date) == _month_index(left_date) + 3
+    if period_class == "monthly":
+        return _month_index(right_date) == _month_index(left_date) + 1
+    days = (right_date - left_date).days
+    if period_class == "weekly":
+        return 5 <= days <= 10
+    if period_class == "daily":
+        return 1 <= days <= 10
+    return False
+
+
+def _series_period_class(item: EvidenceItem) -> str:
+    fiscal_quarter = str(item.domain_context.get("fiscal_quarter") or "").upper()
+    if "YTD" in fiscal_quarter:
+        return "unsupported_ytd"
+    if fiscal_quarter == "FY":
+        return "annual"
+    if fiscal_quarter in {"Q1", "Q2", "Q3", "Q4"}:
+        return "fiscal_quarter"
+    return str(item.temporal_context.frequency or "unknown").casefold()
+
+
+def _fiscal_quarter_index(item: EvidenceItem) -> int | None:
+    fiscal_year = item.domain_context.get("fiscal_year")
+    fiscal_quarter = str(item.domain_context.get("fiscal_quarter") or "").upper()
+    quarter = {"Q1": 0, "Q2": 1, "Q3": 2, "Q4": 3}.get(fiscal_quarter)
+    if fiscal_year is None or quarter is None:
+        return None
+    return int(fiscal_year) * 4 + quarter
+
+
+def _month_index(value: date) -> int:
+    return value.year * 12 + value.month
 
 
 def _matches_public_scope(item: EvidenceItem, gold: tuple[EvidenceItem, ...]) -> bool:

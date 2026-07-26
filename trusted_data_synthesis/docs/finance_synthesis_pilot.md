@@ -1,5 +1,9 @@
 # Finance Synthesis Pilot
 
+> This document preserves the v0.3 small-pilot baseline. The current v0.4
+> implementation and 100,000-row pressure test are documented in
+> `docs/finance_pilot_v0_4_report.md`.
+
 ## Purpose
 
 This pilot validates the finance path before extending the framework to legal or
@@ -58,7 +62,7 @@ global financial numeric resolved track.
 
 ## Defect Found By The Pilot
 
-The first run accepted only 20 of 24 growth tasks. Executor and independent
+The first run accepted only 20 of 24 clean workflows. Executor and independent
 Verifier used algebraically equivalent growth formulas with different Decimal
 operation order. Non-terminating values such as 1.13 to 1.62 therefore differed
 in their final decimal place under an exact-output contract.

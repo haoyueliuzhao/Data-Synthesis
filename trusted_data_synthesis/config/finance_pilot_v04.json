@@ -1,13 +1,24 @@
 {
-  "pilot_id": "finance_synthesis_pilot.small.v1",
-  "evidence_scan_limit": 20000,
-  "distractors_per_task": 6,
-  "hard_distractors_per_task": 7,
+  "pilot_id": "finance_synthesis_pilot.v0.4",
+  "evidence_scan_limit": 100000,
+  "evidence_sample_size": 20000,
+  "stratum_reservoir_size": 2500,
+  "distractors_per_task": 8,
+  "hard_distractors_per_task": 10,
+  "hard_distractor_types": [
+    "wrong_definition",
+    "stale_version",
+    "forecast",
+    "lower_authority",
+    "unit_mismatch",
+    "currency_mismatch",
+    "wrong_scope"
+  ],
   "task_quotas": {
-    "fact_retrieval": 6,
-    "comparison": 6,
-    "temporal_growth": 6,
-    "temporal_average": 6
+    "fact_retrieval": 12,
+    "comparison": 12,
+    "temporal_growth": 12,
+    "temporal_average": 12
   },
   "mutation_types": [
     "missing_evidence",
