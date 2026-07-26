@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any
 
 
-RUBRIC_VERSION = "financial_qa_quality.v2"
-EVALUATION_SYSTEM_VERSION = "financial_qa_evaluation.v2.2"
+RUBRIC_VERSION = "financial_qa_quality.v4"
+EVALUATION_SYSTEM_VERSION = "financial_qa_evaluation.v2.4"
 
 DIMENSIONS = (
     "task_authenticity",
@@ -51,6 +51,17 @@ FATAL_FLAGS = frozenset(
         "unsupported_forecast_or_recommendation",
     }
 )
+
+ROLE_FATAL_FLAGS = {
+    "surface_financial_analyst": frozenset(
+        {
+            "fatal_ambiguity",
+            "unsupported_causal_claim",
+            "unsupported_forecast_or_recommendation",
+        }
+    ),
+    "grounded_qa_auditor": FATAL_FLAGS,
+}
 
 ISSUE_CODES = frozenset(
     {
@@ -99,7 +110,9 @@ def normalize_judge_payload(
     if not isinstance(payload, dict):
         raise JudgeContractError("Judge response must be a JSON object")
     if role == "adversarial_reviewer":
-        raise JudgeContractError("Adversarial reviewer must use its resolution contract")
+        raise JudgeContractError(
+            "Adversarial reviewer must use its resolution contract"
+        )
     raw_scores = payload.get("scores")
     if not isinstance(raw_scores, dict):
         raise JudgeContractError("scores must be an object")
@@ -120,9 +133,12 @@ def normalize_judge_payload(
         scores[dimension] = int(value)
 
     fatal_flags = _bounded_string_list(payload.get("fatal_flags"), "fatal_flags")
-    invalid_fatal = sorted(set(fatal_flags) - FATAL_FLAGS)
+    allowed_fatal = FATAL_FLAGS if role is None else ROLE_FATAL_FLAGS[role]
+    invalid_fatal = sorted(set(fatal_flags) - allowed_fatal)
     if invalid_fatal:
-        raise JudgeContractError(f"Unknown fatal flags: {invalid_fatal}")
+        raise JudgeContractError(
+            f"Fatal flags not allowed for {role or 'unscoped judge'}: {invalid_fatal}"
+        )
 
     issue_codes = [
         item.casefold().strip().replace(" ", "_")
@@ -267,10 +283,8 @@ def judge_response_contract(role: str) -> dict[str, Any]:
         )
     return {
         "rubric_version": RUBRIC_VERSION,
-        "scores": {
-            dimension: "integer 1-5" for dimension in dimensions_for_role(role)
-        },
-        "fatal_flags": sorted(FATAL_FLAGS),
+        "scores": {dimension: "integer 1-5" for dimension in dimensions_for_role(role)},
+        "fatal_flags": sorted(ROLE_FATAL_FLAGS[role]),
         "issue_codes": sorted(ISSUE_CODES),
         "confidence": "number 0-1",
         "brief_justification": {
@@ -287,9 +301,7 @@ def adversarial_response_contract(reviewed_dimensions: list[str]) -> dict[str, A
         "resolutions": {
             dimension: {
                 "decision": "uphold, downgrade, fatal, or escalate",
-                "resolved_score": (
-                    "integer 1-5 for uphold/downgrade; null otherwise"
-                ),
+                "resolved_score": ("integer 1-5 for uphold/downgrade; null otherwise"),
                 "reason": "one short sentence",
             }
             for dimension in reviewed_dimensions

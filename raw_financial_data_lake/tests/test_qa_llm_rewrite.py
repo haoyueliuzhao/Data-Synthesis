@@ -242,7 +242,12 @@ def test_surface_variation_is_deterministic_and_manifested():
     assert first != slots
     assert first["entity"] in {"Apple Inc.", "Apple"}
     assert first["metric"] in {"Revenue", "revenue", "sales"}
-    assert first["period"] in {"2023", "FY2023", "FY 2023"}
+    assert first["period"] in {
+        "2023",
+        "FY2023",
+        "FY 2023",
+        "the 2023 fiscal year",
+    }
     assert surface_variation_manifest(policy)["surface_variation_manifest_hash"]
 
 

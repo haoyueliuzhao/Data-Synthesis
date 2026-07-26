@@ -143,7 +143,9 @@ def init_quality_evaluation(
         )[:limit]
         sample_rows.sort(key=lambda row: str(row["qa_id"]))
     if not sample_rows:
-        raise RuntimeError(f"QA build {qa_build_id} has no eligible samples to evaluate")
+        raise RuntimeError(
+            f"QA build {qa_build_id} has no eligible samples to evaluate"
+        )
 
     evaluation_run_id = _new_run_id()
     contract_bundles = load_evaluation_bundles(
@@ -290,7 +292,9 @@ def export_manual_review_queue(
     queue_path = next(
         path
         for path in report.get("written_files", [])
-        if path.endswith(("manual_review_queue.jsonl", "llm_secondary_review_queue.jsonl"))
+        if path.endswith(
+            ("manual_review_queue.jsonl", "llm_secondary_review_queue.jsonl")
+        )
     )
     return {
         "evaluation_run_id": evaluation_run_id,
@@ -382,12 +386,23 @@ def _evaluate_roles(
             }
         else:
             view = bundle["grounded_view"]
+        reference_date = str(run.get("started_at") or "")[:10]
+        view = {
+            **view,
+            "evaluation_context": {
+                "reference_date": reference_date,
+                "period_support_policy": (
+                    "Use the pinned evidence and reference date. A period ending on or "
+                    "before the reference date is not future merely because it is recent."
+                ),
+            },
+        }
         rubric = rubric_for_task(
             bundle["distribution_label"].get("benchmark_task") or "T2"
         )
-        call_id = "qajudge_" + _hash(
-            (run["evaluation_run_id"], bundle["qa_id"], role)
-        )[:24]
+        call_id = (
+            "qajudge_" + _hash((run["evaluation_run_id"], bundle["qa_id"], role))[:24]
+        )
         try:
             if judge_function:
                 payload, telemetry = judge_function(role, view, rubric)
@@ -406,7 +421,14 @@ def _evaluate_roles(
             else:
                 payload, telemetry = judge.evaluate(role, view, rubric)
             return _call_row(
-                run, bundle["qa_id"], role, call_id, payload, telemetry, "succeeded", None
+                run,
+                bundle["qa_id"],
+                role,
+                call_id,
+                payload,
+                telemetry,
+                "succeeded",
+                None,
             )
         except Exception as exc:
             telemetry = getattr(exc, "telemetry", {})
@@ -534,9 +556,7 @@ def _call_row(
 
 
 def _assert_run_system_version(run: dict[str, Any]) -> None:
-    observed = str(
-        (run.get("notes") or {}).get("evaluation_system_version") or ""
-    )
+    observed = str((run.get("notes") or {}).get("evaluation_system_version") or "")
     if observed != EVALUATION_SYSTEM_VERSION:
         raise RuntimeError(
             "Evaluation run contract mismatch: "

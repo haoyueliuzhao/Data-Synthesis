@@ -30,12 +30,14 @@ from finraw.qa.pipeline import (
     _period_label,
     _period_endpoint_label,
     _proposal_candidate_limit,
+    _question_display_time_scope,
     _question_slots,
     _sample_fact_rows,
     _sample_language_policy,
     _benchmark_aligned_rubric,
     _benchmark_output_instruction,
     _target_market_entity_ids,
+    _validate_benchmark_output_contract,
     _validate_source_fact_coverage,
     _with_scope_inputs,
     build_qa,
@@ -100,7 +102,8 @@ def test_mixed_template_is_covered_by_question_parser_contract():
 
     assert template["language"] == "mixed"
     assert "mixed" in manifest["supported_languages"]
-    assert "根据已披露数据" in template["template_text"]
+    assert "根据已披露数据" not in template["template_text"]
+    assert "{entity}" in template["template_text"]
     assert " / " not in template["template_text"]
     assert validate_question_parser_support(template, manifest)["passed"] is True
 
@@ -201,6 +204,64 @@ def test_output_contract_aligns_instruction_answer_text_and_rubric_tolerance():
     assert rubric["absolute_tolerance"] == "0.5"
     assert rubric["display_absolute_tolerance"] == "0.5"
     assert rubric["rounding_mode"] == "half_up"
+
+
+def test_financial_minimal_output_contract_keeps_evaluator_rules_hidden() -> None:
+    policy = {
+        "benchmark_alignment": {
+            "enabled": True,
+            "explicit_unit": True,
+            "output_contract": {
+                "mode": "conditional",
+                "version": "conditional_output_contract.v5",
+                "question_visibility_mode": "financial_minimal",
+                "unit_visibility_ratio": 0,
+                "precision_visibility_ratio": 0,
+                "structured_output_visibility_ratio": 0,
+                "period_format_visibility_ratio": 0,
+                "entity_format_visibility_ratio": 0,
+                "monetary_decimal_places": [2],
+            },
+        }
+    }
+    answer = {"value": "123.45", "unit": "million USD", "currency": "USD"}
+    contract = _conditional_output_contract(answer, "numeric", policy, "hidden")
+    instruction = _benchmark_output_instruction(
+        answer, "numeric", policy, "en", contract
+    )
+    rubric = _benchmark_aligned_rubric(
+        {"match_type": "numeric_tolerance", "absolute_tolerance": "0.000001"},
+        policy,
+        answer,
+        "numeric",
+        contract,
+    )
+    assert contract["unit_required"] is True
+    assert contract["precision_required"] is True
+    assert contract["question_unit_explicit"] is False
+    assert contract["question_precision_explicit"] is False
+    assert instruction is None
+    assert rubric["unit_must_match"] is True
+    assert rubric["question_unit_explicit"] is False
+    validation = _validate_benchmark_output_contract(
+        {"question": "What was Example Corp's FY2023 revenue?", "rubric": rubric}
+    )
+    assert validation["passed"] is True
+
+    table_contract = _conditional_output_contract(
+        {"table": [{"rank": 1}], "unit": "million USD"},
+        "ranked_table",
+        policy,
+        "hidden_table",
+    )
+    assert table_contract["complete_output_required"] is True
+    assert table_contract["question_output_format_explicit"] is False
+    assert (
+        _benchmark_output_instruction(
+            answer, "ranked_table", policy, "en", table_contract
+        )
+        is None
+    )
 
 
 def test_macro_fact_time_scope_uses_calendar_or_observation_basis():
@@ -1352,6 +1413,74 @@ def test_surface_variation_uses_one_style_for_both_period_endpoints():
     assert len(set(categories)) > 1
 
 
+def test_multi_period_financial_surface_variants_remain_fiscal():
+    semantics = {
+        "time_scope": {"basis": "multi_period"},
+        "comparability": {"time_basis": "fiscal_year"},
+    }
+    display_semantics = {
+        **semantics,
+        "time_scope": _question_display_time_scope(semantics["time_scope"], semantics),
+    }
+    for index in range(40):
+        slots = diversify_surface_slots(
+            {"start_period": "FY2021", "end_period": "FY2025"},
+            display_semantics,
+            f"fiscal_range_{index}",
+            {
+                "language": "en",
+                "surface_variation": {
+                    "enabled": True,
+                    "minimum_noncanonical_selections": 1,
+                },
+            },
+        )
+        assert "calendar year" not in slots["start_period"].casefold()
+        assert "calendar year" not in slots["end_period"].casefold()
+
+
+def test_chinese_temporal_followup_templates_separate_adjacent_slots():
+    template = next(
+        item
+        for item in TEMPLATES
+        if item["template_id"] == "temporal_peak_followup_zh_02"
+    )
+    assert "{primary_metric}峰值{period_unit}" in template["template_text"]
+
+
+def test_chinese_rank_followup_template_keeps_rank_before_lookup():
+    template = next(
+        item
+        for item in TEMPLATES
+        if item["template_id"] == "rank_then_secondary_lookup_zh_01"
+    )
+    assert template["template_text"].index("排名") < template["template_text"].index(
+        "给出"
+    )
+    assert "列出前" not in template["template_text"]
+
+
+def test_point_in_time_calculation_templates_state_period_end_basis():
+    for subtype in ("difference", "yoy_growth", "ratio"):
+        template = template_for(
+            subtype,
+            "point_in_time",
+            f"{subtype}_instant",
+            language="en",
+        )
+        assert "end" in template["template_text"].casefold()
+
+
+def test_mixed_templates_do_not_use_mechanical_disclosure_prefix():
+    template = template_for(
+        "rank_then_secondary_lookup",
+        None,
+        "mixed_surface",
+        language="mixed",
+    )
+    assert not template["template_text"].startswith("Based on reported data")
+
+
 def test_question_typography_removes_english_spacing_after_chinese_punctuation():
     assert (
         _normalize_question_typography("问题？  请保留2位。", "zh")
@@ -1361,6 +1490,19 @@ def test_question_typography_removes_english_spacing_after_chinese_punctuation()
         _normalize_question_typography("What  changed? Report it.", "en")
         == "What changed? Report it."
     )
+
+
+def test_chinese_financial_ratio_slots_are_localized():
+    slots = _localize_question_slots(
+        {
+            "ratio": "operating margin",
+            "metric": "gross margin",
+            "scope": "configured entities",
+        },
+        "zh",
+    )
+    assert slots["ratio"] == "营业利润率"
+    assert slots["metric"] == "毛利率"
 
 
 def test_question_scope_slots_hide_internal_graph_terminology():

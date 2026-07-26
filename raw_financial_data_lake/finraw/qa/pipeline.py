@@ -49,6 +49,7 @@ from finraw.qa.schema import ensure_qa_schema
 from finraw.qa.scope_contract import (
     render_scope_contract,
     scope_contract_from_semantics,
+    validate_scope_contract,
 )
 from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.split_leakage import (
@@ -114,7 +115,7 @@ GRAPH_SCOPE_TASKS = {
     "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.27.0"
+GENERATOR_VERSION = "4.29.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -522,10 +523,117 @@ def build_qa_candidates(
     }
     pinned_node_cache: dict[tuple[str, str], str | None] = {}
 
+    def candidate_requested_top_k(candidate: dict[str, Any]) -> int:
+        semantics = dict(candidate.get("canonical_semantics") or {})
+        direct = semantics.get("top_k")
+        if direct is not None:
+            return max(int(direct), 0)
+        operation_plan = dict(
+            candidate.get("operation_plan") or semantics.get("operation_plan") or {}
+        )
+        for operator in operation_plan.get("operators") or []:
+            if str(operator.get("operator") or "") != "rank":
+                continue
+            top_k = dict(operator.get("params") or {}).get("top_k")
+            if top_k is not None:
+                return max(int(top_k), 0)
+        return 0
+
     def emit(candidate: dict[str, Any], plan: dict[str, Any] | None = None) -> None:
         if candidate.get("task_subtype") in excluded_task_subtypes:
             rejected["excluded_benchmark_task_subtype"] += 1
             return
+        quarantined_metrics = {
+            str(value)
+            for value in policy["benchmark_alignment"].get(
+                "quarantined_metric_ids",
+                ["official_exchange_rate_lcu_per_usd"],
+            )
+        }
+        if quarantined_metrics.intersection(candidate.get("metric_ids") or []):
+            rejected["quarantined_metric_semantics"] += 1
+            return
+        metric_pair = tuple(
+            sorted(str(value) for value in candidate.get("metric_ids") or [])
+        )
+        weak_direct_pairs = {
+            tuple(sorted(str(item) for item in pair))
+            for pair in policy["benchmark_alignment"].get(
+                "quarantined_direct_metric_pairs",
+                [],
+            )
+        }
+        if (
+            candidate.get("task_subtype") == "cross_metric_comparison"
+            and metric_pair in weak_direct_pairs
+        ):
+            rejected["low_value_direct_metric_pair"] += 1
+            return
+        if (
+            policy["benchmark_alignment"].get(
+                "quarantine_point_in_time_temporal_average", False
+            )
+            and candidate.get("task_subtype") == "multi_period_average"
+            and any(
+                str(metric_ontology.get(str(metric_id), {}).get("period_type") or "")
+                == "point_in_time"
+                for metric_id in candidate.get("metric_ids") or []
+            )
+        ):
+            rejected["point_in_time_temporal_average"] += 1
+            return
+        unresolved_region_codes = {
+            str(entity_id)
+            for entity_id in candidate.get("entity_ids") or []
+            if str(entity_id).endswith("_COUNTRY")
+            and re.fullmatch(
+                r"[A-Z]{2,4}",
+                str(
+                    dict(candidate.get("canonical_semantics") or {})
+                    .get("entity_names", {})
+                    .get(str(entity_id), "")
+                ),
+            )
+        }
+        if unresolved_region_codes:
+            rejected["unresolved_public_entity_name"] += 1
+            return
+        scope_size = len(set(str(value) for value in candidate.get("entity_ids") or []))
+        requested_top_k = candidate_requested_top_k(candidate)
+        if requested_top_k and scope_size and requested_top_k > scope_size:
+            rejected["scope_top_k_exceeds_scope_size"] += 1
+            return
+        if (
+            requested_top_k
+            and scope_size > 1
+            and requested_top_k >= scope_size
+            and candidate.get("task_subtype")
+            in {"ranking", "industry_ranking", "rank_then_secondary_lookup"}
+        ):
+            rejected["low_value_full_scope_ranking"] += 1
+            return
+        if requested_top_k == 1 and candidate.get("task_subtype") in {
+            "filter_then_rank",
+            "rank_then_secondary_lookup",
+            "walk_scope_filter_rank_followup",
+        }:
+            rejected["low_value_top_one_ranking"] += 1
+            return
+        if candidate.get("task_subtype") in {
+            "temporal_peak_followup",
+            "walk_temporal_peak_followup_provenance",
+        }:
+            observation_count = int(
+                dict(candidate.get("time_scope") or {}).get("observation_count") or 0
+            )
+            minimum_observations = int(
+                policy["benchmark_alignment"].get(
+                    "minimum_temporal_followup_observations", 3
+                )
+            )
+            if observation_count and observation_count < minimum_observations:
+                rejected["low_value_temporal_followup_window"] += 1
+                return
         if candidate.get("eligibility_status") == "eligible":
             evidence_errors = _pinned_candidate_evidence_errors(
                 db, kg_build_id, candidate, pinned_node_cache
@@ -3006,9 +3114,14 @@ def _sample_from_candidate(
     slots = _localize_question_slots(
         _question_slots(candidate, entity_names, metric_names), language
     )
+    template_period_type = semantics.get("metric_period_type")
+    if candidate["task_subtype"] == "single_fact" and str(
+        semantics.get("source_id") or ""
+    ).startswith(("fred_", "worldbank_", "imf_")):
+        template_period_type = None
     template = template_for(
         candidate["task_subtype"],
-        semantics.get("metric_period_type"),
+        template_period_type,
         candidate.get("stable_candidate_id"),
         language=language,
     )
@@ -3043,9 +3156,15 @@ def _sample_from_candidate(
     canonical_question = _normalize_question_typography(
         template_text.format(**slots), language
     )
+    surface_semantics = {
+        **semantics,
+        "time_scope": _question_display_time_scope(
+            candidate.get("time_scope") or {}, semantics
+        ),
+    }
     surface_slots = diversify_surface_slots(
         slots,
-        semantics,
+        surface_semantics,
         str(candidate.get("stable_candidate_id") or candidate["candidate_id"]),
         _sample_language_policy(generation_policy, language),
     )
@@ -3067,7 +3186,7 @@ def _sample_from_candidate(
     }
     realization = realize_question(
         canonical_question,
-        semantics=semantics,
+        semantics=surface_semantics,
         immutable_slots=slots,
         required_slots=required_slots,
         config=realization_policy,
@@ -3162,6 +3281,7 @@ def _sample_from_candidate(
             },
             "question_generation": realization.validation,
             "output_contract": output_contract,
+            "scope_contract": json.loads(slots["_scope_contract"]),
             "language_assignment": {
                 "assignment_version": "question_language_assignment.v1",
                 "selected_language": language,
@@ -3320,6 +3440,14 @@ def _validate_one(
         True,
         True,
         "Entity, metric, time, unit, and required scope must be explicit.",
+    )
+    scope_contract = _validate_scope_contract_integrity(row)
+    add(
+        "scope_contract_integrity",
+        bool(scope_contract.get("passed")),
+        scope_contract,
+        {"passed": True, "errors": []},
+        "Scope tasks require a versioned, hash-verified universe contract whose entity set exactly matches the declared scope.",
     )
     stored_binding = row.get("stored_compiled_binding") or {}
     question_generation = row.get("source_metadata", {}).get("question_generation", {})
@@ -4859,8 +4987,9 @@ def _question_slots(
         iter(candidate["entity_ids"]), "the entity"
     )
     metric_id = next(iter(candidate["metric_ids"]), "the metric")
-    period = _period_label(time_scope)
-    previous = _previous_period_label(time_scope)
+    display_time_scope = _question_display_time_scope(time_scope, semantics)
+    period = _period_label(display_time_scope)
+    previous = _previous_period_label(display_time_scope)
     subtype = candidate["task_subtype"]
     entity_ids = list(candidate.get("entity_ids") or [])
     metric_ids = list(candidate.get("metric_ids") or [])
@@ -4888,14 +5017,19 @@ def _question_slots(
             semantics.get("metric_scope", {}).get("ratio_id") or metric_id
         ).replace("_", " "),
         "period": period,
+        "period_unit": _period_unit_label(display_time_scope),
         "previous_period": previous,
         "start_period": _period_endpoint_label(
-            time_scope.get("start_year") or time_scope.get("start_date") or previous,
-            time_scope,
+            display_time_scope.get("start_year")
+            or display_time_scope.get("start_date")
+            or previous,
+            display_time_scope,
         ),
         "end_period": _period_endpoint_label(
-            time_scope.get("end_year") or time_scope.get("end_date") or period,
-            time_scope,
+            display_time_scope.get("end_year")
+            or display_time_scope.get("end_date")
+            or period,
+            display_time_scope,
         ),
         "extreme": "highest"
         if subtype.endswith("argmax")
@@ -4982,6 +5116,10 @@ _ZH_SLOT_TERMS = {
     "total assets": "总资产",
     "total liabilities": "总负债",
     "net margin": "净利率",
+    "operating margin": "营业利润率",
+    "gross margin": "毛利率",
+    "cash to assets": "现金资产比率",
+    "liabilities to assets": "资产负债率",
     "debt ratio": "资产负债率",
     "cost of revenue": "营业成本",
     "cost of sales": "销售成本",
@@ -5067,6 +5205,17 @@ def _localize_question_slots(slots: dict[str, str], language: str) -> dict[str, 
             )
         if language != "zh":
             localized[key] = text
+            continue
+        if key == "period_unit":
+            localized[key] = {
+                "fiscal year": "财年",
+                "calendar year": "自然年",
+                "fiscal quarter": "财季",
+                "quarter": "季度",
+                "month": "月份",
+                "date": "日期",
+                "period": "期间",
+            }.get(text.casefold(), text)
             continue
         localized_text = _ZH_SLOT_TERMS.get(text.casefold(), text)
         quarter_match = re.fullmatch(
@@ -5178,6 +5327,14 @@ def _conditional_output_contract(
         "period_format_required": False,
         "requested_period_format": None,
         "entity_output": None,
+        "question_unit_explicit": False,
+        "question_precision_explicit": False,
+        "question_output_format_explicit": False,
+        "question_period_format_explicit": False,
+        "question_entity_format_explicit": False,
+        "question_visibility_mode": str(
+            configured.get("question_visibility_mode") or "legacy"
+        ).casefold(),
         "instruction_style": _stable_contract_choice(
             configured.get("instruction_styles") or ["direct", "compact", "formal"],
             stable_seed,
@@ -5185,15 +5342,45 @@ def _conditional_output_contract(
         ),
     }
     if mode != "conditional":
+        unit_required = bool(base["unit_required"])
+        precision_required = (
+            bool(policy.get("explicit_precision", True)) and not structured
+        )
+        complete_output_required = (
+            bool(policy.get("explicit_output_format", True)) and structured
+        )
         return {
             **base,
             "contract_type": "structured_table" if structured else "numeric",
-            "precision_required": bool(policy.get("explicit_precision", True))
-            and not structured,
+            "precision_required": precision_required,
             "requested_decimal_places": max(int(policy.get("decimal_places", 2)), 0),
-            "complete_output_required": bool(policy.get("explicit_output_format", True))
-            and structured,
+            "complete_output_required": complete_output_required,
+            "question_unit_explicit": unit_required,
+            "question_precision_explicit": precision_required,
+            "question_output_format_explicit": complete_output_required,
         }
+    minimal_surface = (
+        str(configured.get("question_visibility_mode") or "legacy").casefold()
+        == "financial_minimal"
+    )
+    base["question_unit_explicit"] = bool(base["unit_required"]) and (
+        _stable_contract_enabled(
+            configured.get("unit_visibility_ratio", 0.25),
+            stable_seed,
+            "unit_visibility",
+        )
+        if minimal_surface
+        else True
+    )
+    base["question_output_format_explicit"] = structured and (
+        _stable_contract_enabled(
+            configured.get("structured_output_visibility_ratio", 0.0),
+            stable_seed,
+            "structured_output_visibility",
+        )
+        if minimal_surface
+        else True
+    )
     if structured:
         return {**base, "contract_type": "structured_table"}
 
@@ -5204,6 +5391,15 @@ def _conditional_output_contract(
             "contract_type": "entity_only",
             "unit_required": False,
             "entity_output": "name_only",
+            "question_entity_format_explicit": (
+                _stable_contract_enabled(
+                    configured.get("entity_format_visibility_ratio", 0.0),
+                    stable_seed,
+                    "entity_format_visibility",
+                )
+                if minimal_surface
+                else True
+            ),
         }
 
     contract = dict(base)
@@ -5213,6 +5409,15 @@ def _conditional_output_contract(
         contract["period_format_required"] = True
         contract["requested_period_format"] = _period_output_format(
             answer.get("result_period"), time_scope or {}
+        )
+        contract["question_period_format_explicit"] = (
+            _stable_contract_enabled(
+                configured.get("period_format_visibility_ratio", 0.0),
+                stable_seed,
+                "period_format_visibility",
+            )
+            if minimal_surface
+            else True
         )
 
     normalized_unit = unit.casefold()
@@ -5244,10 +5449,32 @@ def _conditional_output_contract(
         **contract,
         "contract_type": contract_type,
         "precision_required": decimal_places is not None
+        and (
+            True
+            if minimal_surface
+            else _stable_contract_enabled(
+                configured.get("precision_visibility_ratio", 0.35),
+                stable_seed,
+                "precision_visibility",
+            )
+        ),
+        "question_precision_explicit": decimal_places is not None
         and _stable_contract_enabled(
-            configured.get("precision_visibility_ratio", 0.35),
+            configured.get(
+                "precision_visibility_ratio", 0.0 if minimal_surface else 0.35
+            ),
             stable_seed,
             "precision_visibility",
+        ),
+        "question_entity_format_explicit": bool(contract.get("entity_output"))
+        and (
+            _stable_contract_enabled(
+                configured.get("entity_format_visibility_ratio", 0.0),
+                stable_seed,
+                "entity_format_visibility",
+            )
+            if minimal_surface
+            else True
         ),
         "requested_decimal_places": decimal_places,
     }
@@ -5338,18 +5565,79 @@ def _benchmark_output_instruction(
     style = str(contract.get("instruction_style") or "direct")
     contract_type = str(contract.get("contract_type") or "numeric")
     decimals = contract.get("requested_decimal_places")
+    question_unit_explicit = bool(contract.get("question_unit_explicit"))
+    question_precision_explicit = bool(contract.get("question_precision_explicit"))
+    question_output_format_explicit = bool(
+        contract.get("question_output_format_explicit")
+    )
+    question_period_format_explicit = bool(
+        contract.get("question_period_format_explicit")
+    )
+    question_entity_format_explicit = bool(
+        contract.get("question_entity_format_explicit")
+    )
+    if not any(
+        (
+            question_unit_explicit,
+            question_precision_explicit,
+            question_output_format_explicit,
+            question_period_format_explicit,
+            question_entity_format_explicit,
+        )
+    ):
+        return None
+
+    if (
+        contract.get("question_visibility_mode") == "financial_minimal"
+        and question_unit_explicit
+        and unit_label
+        and not any(
+            (
+                question_precision_explicit,
+                question_output_format_explicit,
+                question_period_format_explicit,
+                question_entity_format_explicit,
+            )
+        )
+        and contract_type != "structured_table"
+    ):
+        localized_unit = _localized_unit_label(unit_label, language)
+        if language == "zh":
+            return {
+                "direct": f"金额以{localized_unit}计。",
+                "compact": f"数值口径为{localized_unit}。",
+                "formal": f"结果按{localized_unit}列示。",
+                "analyst": f"请以{localized_unit}表示该数值。",
+            }.get(style, f"金额以{localized_unit}计。")
+        return {
+            "direct": f"Report the amount in {localized_unit}.",
+            "compact": f"Use {localized_unit} for the result.",
+            "formal": f"State the result in {localized_unit}.",
+            "analyst": f"Express the value in {localized_unit}.",
+        }.get(style, f"Report the amount in {localized_unit}.")
 
     if contract_type == "structured_table":
+        if not question_output_format_explicit:
+            if not question_unit_explicit or not unit_label:
+                return None
+            localized_unit = _localized_unit_label(unit_label, language)
+            return (
+                f"数值口径采用{localized_unit}。"
+                if language == "zh"
+                else f"State numeric values in {localized_unit}."
+            )
         return _structured_output_instruction(
             answer_type,
             language,
             unit_label,
-            bool(contract.get("unit_required")),
+            question_unit_explicit,
             style,
         )
 
     if language == "zh":
         if contract_type == "entity_only":
+            if not question_entity_format_explicit:
+                return None
             return {
                 "direct": "答案只需给出实体名称。",
                 "compact": "直接写出实体名称即可。",
@@ -5357,10 +5645,13 @@ def _benchmark_output_instruction(
                 "analyst": "请明确指出对应实体。",
             }.get(style, "直接写出实体名称即可。")
         parts = []
-        if contract.get("entity_output") == "name_and_value":
+        if (
+            question_entity_format_explicit
+            and contract.get("entity_output") == "name_and_value"
+        ):
             parts.append("实体名称及对应数值")
         period_format = contract.get("requested_period_format")
-        if contract.get("period_format_required") and period_format:
+        if question_period_format_explicit and period_format:
             labels = {
                 "YYYY-MM-DD": "日期写成YYYY-MM-DD",
                 "YYYY-MM": "月份写成YYYY-MM",
@@ -5368,11 +5659,11 @@ def _benchmark_output_instruction(
                 "calendar_year": "期间标明为自然年",
             }
             parts.append(labels[str(period_format)])
-        if contract_type == "exact_integer":
+        if contract_type == "exact_integer" and question_precision_explicit:
             parts.append("结果使用精确整数")
-        if contract.get("unit_required") and unit_label:
+        if question_unit_explicit and unit_label:
             parts.append(f"单位采用{_localized_unit_label(unit_label, language)}")
-        if contract.get("precision_required") and decimals is not None:
+        if question_precision_explicit and decimals is not None:
             parts.append(f"数值四舍五入至{decimals}位小数")
         detail = "，".join(parts or ["完整给出所求结果"])
         phrases = {
@@ -5384,6 +5675,8 @@ def _benchmark_output_instruction(
         return phrases.get(style, phrases["direct"])
 
     if contract_type == "entity_only":
+        if not question_entity_format_explicit:
+            return None
         return {
             "direct": "Report only the entity name.",
             "compact": "Give the entity name only.",
@@ -5392,10 +5685,13 @@ def _benchmark_output_instruction(
         }.get(style, "Give the entity name only.")
 
     parts = []
-    if contract.get("entity_output") == "name_and_value":
+    if (
+        question_entity_format_explicit
+        and contract.get("entity_output") == "name_and_value"
+    ):
         parts.append("the entity name with its value")
     period_format = contract.get("requested_period_format")
-    if contract.get("period_format_required") and period_format:
+    if question_period_format_explicit and period_format:
         labels = {
             "YYYY-MM-DD": "use YYYY-MM-DD for the date",
             "YYYY-MM": "use YYYY-MM for the month",
@@ -5403,14 +5699,14 @@ def _benchmark_output_instruction(
             "calendar_year": "label the selected period as a calendar year",
         }
         parts.append(labels[str(period_format)])
-    if contract_type == "exact_integer":
+    if contract_type == "exact_integer" and question_precision_explicit:
         parts.append("use an exact integer")
     value_requirement = ""
-    if contract.get("unit_required") and unit_label:
+    if question_unit_explicit and unit_label:
         value_requirement = (
             f"express the value in {_localized_unit_label(unit_label, language)}"
         )
-    if contract.get("precision_required") and decimals is not None:
+    if question_precision_explicit and decimals is not None:
         noun = "place" if int(decimals) == 1 else "places"
         rounding = f"round to {decimals} decimal {noun}"
         value_requirement = (
@@ -5751,12 +6047,20 @@ def _reparse_persisted_question(
     generation_metadata = json_value(row.get("source_metadata"), {}).get(
         "question_generation", {}
     )
+    surface_semantics = {
+        **semantics,
+        "time_scope": _question_display_time_scope(
+            candidate.get("time_scope") or {}, semantics
+        ),
+    }
     surface_slots = slots
     surface_errors: list[str] = []
     if generation_mode == "controlled_llm" and strategy == "protected_rewrite":
         source = str(generation_metadata.get("surface_realization_source") or "")
         if source == "llm_variant_selection":
-            variants = surface_slot_variants(slots, semantics, sample_generation_policy)
+            variants = surface_slot_variants(
+                slots, surface_semantics, sample_generation_policy
+            )
             variant_ids = generation_metadata.get("surface_variant_ids")
             if not isinstance(variant_ids, dict) or set(variant_ids) != set(
                 required_slots
@@ -5774,7 +6078,7 @@ def _reparse_persisted_question(
         else:
             surface_slots = diversify_surface_slots(
                 slots,
-                semantics,
+                surface_semantics,
                 str(row.get("stable_candidate_id") or row.get("candidate_id") or ""),
                 sample_generation_policy,
             )
@@ -5790,7 +6094,7 @@ def _reparse_persisted_question(
             build_protected_question(template_text, required_slots)
         ):
             surface_errors.append("protected_question_mismatch")
-    contract = build_question_contract(semantics, surface_slots, required_slots)
+    contract = build_question_contract(surface_semantics, surface_slots, required_slots)
     validation = validate_question_roundtrip(
         row.get("question") or "",
         contract,
@@ -6144,6 +6448,19 @@ def _benchmark_aligned_rubric(
         "requested_period_format": contract.get("requested_period_format"),
         "entity_output": contract.get("entity_output"),
         "instruction_style": contract.get("instruction_style"),
+        "question_unit_explicit": bool(contract.get("question_unit_explicit")),
+        "question_precision_explicit": bool(
+            contract.get("question_precision_explicit")
+        ),
+        "question_output_format_explicit": bool(
+            contract.get("question_output_format_explicit")
+        ),
+        "question_period_format_explicit": bool(
+            contract.get("question_period_format_explicit")
+        ),
+        "question_entity_format_explicit": bool(
+            contract.get("question_entity_format_explicit")
+        ),
     }
     places = contract.get("requested_decimal_places")
     if contract.get("precision_required") and places is not None:
@@ -6166,14 +6483,39 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
     errors: list[str] = []
     unit = str(rubric.get("requested_unit") or "").strip()
     currency = str(rubric.get("requested_currency") or "").strip()
-    if rubric.get("unit_must_match") and unit:
+    question_unit_explicit = bool(
+        rubric.get("question_unit_explicit")
+        if "question_unit_explicit" in rubric
+        else rubric.get("unit_must_match")
+    )
+    question_precision_explicit = bool(
+        rubric.get("question_precision_explicit")
+        if "question_precision_explicit" in rubric
+        else rubric.get("precision_must_match")
+    )
+    question_output_format_explicit = bool(
+        rubric.get("question_output_format_explicit")
+        if "question_output_format_explicit" in rubric
+        else rubric.get("complete_output_required")
+    )
+    question_period_format_explicit = bool(
+        rubric.get("question_period_format_explicit")
+        if "question_period_format_explicit" in rubric
+        else rubric.get("period_format_must_match")
+    )
+    question_entity_format_explicit = bool(
+        rubric.get("question_entity_format_explicit")
+        if "question_entity_format_explicit" in rubric
+        else rubric.get("entity_output")
+    )
+    if question_unit_explicit and unit:
         if not _output_contract_unit_present(question, unit):
             errors.append("requested_unit_missing")
-    if rubric.get("unit_must_match") and currency:
+    if question_unit_explicit and currency:
         if not _output_contract_currency_present(question, currency):
             errors.append("requested_currency_missing")
     decimal_places = max(int(rubric.get("requested_decimal_places") or 0), 0)
-    if rubric.get("precision_must_match"):
+    if question_precision_explicit:
         precision_patterns = (
             rf"\b{decimal_places}\s+decimal\s+places?\b",
             rf"保留\s*{decimal_places}\s*位小数",
@@ -6181,7 +6523,7 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         )
         if not any(re.search(pattern, normalized) for pattern in precision_patterns):
             errors.append("requested_precision_missing")
-    if rubric.get("complete_output_required"):
+    if question_output_format_explicit:
         if not re.search(
             r"complete\s+(?:table|ranking)|full\s+(?:selected\s+)?ranking|"
             r"ordered\s+table|complete\s+structured\s+table|filtered\s+ranked\s+table|"
@@ -6223,7 +6565,7 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         ):
             errors.append("structured_output_instruction_missing")
     requested_period_format = str(rubric.get("requested_period_format") or "")
-    if rubric.get("period_format_must_match") and requested_period_format:
+    if question_period_format_explicit and requested_period_format:
         period_patterns = {
             "YYYY-MM-DD": (r"yyyy-mm-dd",),
             "YYYY-MM": (r"yyyy-mm",),
@@ -6236,12 +6578,16 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         ):
             errors.append("requested_period_format_missing")
     entity_output = str(rubric.get("entity_output") or "")
-    if entity_output == "name_only" and not re.search(
-        r"entity\s+name\s+only|只返回实体名称", normalized
+    if (
+        question_entity_format_explicit
+        and entity_output == "name_only"
+        and not re.search(r"entity\s+name\s+only|只返回实体名称", normalized)
     ):
         errors.append("entity_name_only_instruction_missing")
-    if entity_output == "name_and_value" and not re.search(
-        r"entity\s+name\s+and\s+value|实体名称和数值", normalized
+    if (
+        question_entity_format_explicit
+        and entity_output == "name_and_value"
+        and not re.search(r"entity\s+name\s+and\s+value|实体名称和数值", normalized)
     ):
         errors.append("entity_name_value_instruction_missing")
     return {
@@ -6256,6 +6602,11 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
         "requested_period_format": requested_period_format,
         "period_format_required": bool(rubric.get("period_format_must_match")),
         "entity_output": entity_output or None,
+        "question_unit_explicit": question_unit_explicit,
+        "question_precision_explicit": question_precision_explicit,
+        "question_output_format_explicit": question_output_format_explicit,
+        "question_period_format_explicit": question_period_format_explicit,
+        "question_entity_format_explicit": question_entity_format_explicit,
     }
 
 
@@ -6342,6 +6693,29 @@ def _match_time_scope(match: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _question_display_time_scope(
+    time_scope: dict[str, Any], semantics: dict[str, Any]
+) -> dict[str, Any]:
+    display = dict(time_scope)
+    if str(display.get("basis") or "").casefold() != "multi_period":
+        return display
+    comparability = dict(semantics.get("comparability") or {})
+    declared_basis = str(
+        comparability.get("time_basis") or semantics.get("time_basis") or ""
+    ).casefold()
+    if "fiscal" in declared_basis:
+        display["basis"] = "fiscal_year"
+    elif "calendar" in declared_basis:
+        display["basis"] = "calendar_year"
+    elif str(
+        semantics.get("metric_period_type") or ""
+    ).casefold() == "period_flow" and dict(semantics.get("financial_scope") or {}).get(
+        "entity_scope_id"
+    ):
+        display["basis"] = "fiscal_year"
+    return display
+
+
 def _period_label(scope: dict[str, Any]) -> str:
     if scope.get("fiscal_year"):
         quarter = str(scope.get("fiscal_quarter") or "").upper()
@@ -6384,6 +6758,21 @@ def _period_endpoint_label(value: Any, scope: dict[str, Any]) -> str:
     return f"FY{year}" if is_fiscal else year
 
 
+def _period_unit_label(scope: dict[str, Any]) -> str:
+    frequency = str(scope.get("frequency") or "").casefold()
+    if scope.get("fiscal_quarter") or frequency == "quarterly":
+        return "fiscal quarter" if scope.get("basis") == "fiscal_year" else "quarter"
+    if frequency == "monthly":
+        return "month"
+    if frequency in {"daily", "business_daily", "weekly"}:
+        return "date"
+    if scope.get("basis") == "fiscal_year":
+        return "fiscal year"
+    if scope.get("basis") == "calendar_year" or frequency == "annual":
+        return "calendar year"
+    return "period"
+
+
 def _previous_period_label(scope: dict[str, Any]) -> str:
     if scope.get("previous_year"):
         return _period_endpoint_label(scope["previous_year"], scope)
@@ -6395,6 +6784,31 @@ def _previous_period_label(scope: dict[str, Any]) -> str:
         if value is not None
         else "the previous period"
     )
+
+
+def _validate_scope_contract_integrity(row: dict[str, Any]) -> dict[str, Any]:
+    applicable = row["task_subtype"] in SCOPE_DERIVED | GRAPH_SCOPE_TASKS | {"share"}
+    if not applicable:
+        return {"passed": True, "applicable": False, "errors": []}
+    semantics = dict(row.get("canonical_semantics") or {})
+    entity_scope = dict(row.get("entity_scope") or {})
+    source_metadata = dict(row.get("source_metadata") or {})
+    contract = (
+        source_metadata.get("scope_contract")
+        or semantics.get("scope_contract")
+        or entity_scope.get("scope_contract")
+        or {}
+    )
+    expected_entity_ids = list(
+        entity_scope.get("expected_entity_ids")
+        or semantics.get("scope_entity_ids")
+        or contract.get("entity_ids")
+        or []
+    )
+    result = validate_scope_contract(
+        dict(contract), expected_entity_ids=expected_entity_ids
+    )
+    return {**result, "applicable": True}
 
 
 def _semantic_slots_complete(row: dict[str, Any]) -> bool:

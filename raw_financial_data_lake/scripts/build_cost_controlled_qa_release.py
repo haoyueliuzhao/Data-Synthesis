@@ -31,6 +31,17 @@ PIPELINE_TARGETS = {
     "automatic_pattern_mining": 0.17,
     "typed_edge_walk": 0.08,
 }
+ANSWER_TYPE_TARGETS = {
+    "numeric": 0.42,
+    "comparison": 0.15,
+    "period_and_value": 0.06,
+    "period_metric_lookup": 0.06,
+    "period_metric_provenance": 0.07,
+    "multi_metric_ranked_table": 0.08,
+    "ranked_table": 0.06,
+    "screening_table": 0.06,
+    "filtered_rank_followup": 0.04,
+}
 ISSUE_PENALTIES = {
     "low_standalone_value": 10.0,
     "overly_trivial": 8.0,
@@ -57,14 +68,10 @@ def main() -> None:
     args = parser.parse_args()
 
     quality_reports = [_load_json(path) for path in args.quality_report]
-    quality_items = [
-        row for path in args.quality_items for row in _load_jsonl(path)
-    ]
+    quality_items = [row for path in args.quality_items for row in _load_jsonl(path)]
     quality_by_id = {str(row["qa_id"]): row for row in quality_items}
     eligible_ids = [
-        qa_id
-        for qa_id, row in quality_by_id.items()
-        if _quality_eligible(row)
+        qa_id for qa_id, row in quality_by_id.items() if _quality_eligible(row)
     ]
     if len(eligible_ids) < args.target_size:
         raise RuntimeError(
@@ -82,9 +89,7 @@ def main() -> None:
     rows = [row for row in rows if _semantic_release_eligible(row)]
     semantic_quarantined = pre_quarantine_count - len(rows)
     if len(rows) < args.target_size:
-        raise RuntimeError(
-            f"Only {len(rows)} samples remain after semantic quarantine"
-        )
+        raise RuntimeError(f"Only {len(rows)} samples remain after semantic quarantine")
     selected = _select_release(
         rows,
         quality_by_id,
@@ -94,15 +99,16 @@ def main() -> None:
 
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    release_path = out / "qa_3000.jsonl"
+    release_path = out / f"qa_{args.target_size}.jsonl"
     digest = hashlib.sha256()
     with release_path.open("w", encoding="utf-8") as handle:
         for row in selected:
             qa_id = str(row["qa_id"])
             payload = _release_payload(row, quality_by_id[qa_id])
-            line = json.dumps(
-                payload, ensure_ascii=False, sort_keys=True, default=str
-            ) + "\n"
+            line = (
+                json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
+                + "\n"
+            )
             handle.write(line)
             digest.update(line.encode("utf-8"))
 
@@ -138,8 +144,16 @@ def main() -> None:
     selected_quality = [quality_by_id[qa_id] for qa_id in selected_ids]
     distribution = _distribution(selected)
     market_targets = _bounded_market_targets(rows, args.target_size)
+    distribution_gap = _distribution_gap(distribution, market_targets, args.target_size)
+    quality_summary = _quality_summary(selected_quality)
+    release_readiness = _release_readiness(
+        distribution_gap, quality_summary, args.target_size
+    )
     manifest = {
         "release_kind": "quality_screened_diagnostic",
+        "release_status": release_readiness["status"],
+        "training_ready": release_readiness["training_ready"],
+        "release_readiness": release_readiness,
         "release_id": f"qarelease_{digest.hexdigest()[:16]}",
         "qa_build_ids": qa_build_ids,
         "sample_count": len(selected),
@@ -153,6 +167,7 @@ def main() -> None:
             "market_target_counts_after_capacity_constraints": market_targets,
             "regional_targets": REGIONAL_TARGETS,
             "pipeline_targets": PIPELINE_TARGETS,
+            "answer_type_targets": ANSWER_TYPE_TARGETS,
         },
         "production_funnel": _production_funnel(
             quality_reports,
@@ -162,10 +177,8 @@ def main() -> None:
             selected,
         ),
         "distribution": distribution,
-        "distribution_gap": _distribution_gap(
-            distribution, market_targets, args.target_size
-        ),
-        "quality": _quality_summary(selected_quality),
+        "distribution_gap": distribution_gap,
+        "quality": quality_summary,
         "cost_accounting": {
             "currency_note": (
                 "estimated_cost uses configured static API prices and is not an "
@@ -215,10 +228,10 @@ def _quality_eligible(row: dict[str, Any]) -> bool:
         and not bool(disagreement.get("requires_adjudication"))
     )
 
+
 def _semantic_release_eligible(row: dict[str, Any]) -> bool:
     metric_ids = set(json_value(row.get("metric_ids"), []))
     return not (metric_ids & set(SEMANTIC_QUARANTINE))
-
 
 
 def _load_release_rows(db: Any, qa_ids: list[str]) -> list[dict[str, Any]]:
@@ -261,17 +274,14 @@ def _bounded_market_targets(
 ) -> dict[str, int]:
     available = Counter(str(row.get("market_subset") or "unknown") for row in rows)
     targets = {
-        market: round(target_size * share)
-        for market, share in MARKET_SHARES.items()
+        market: round(target_size * share) for market, share in MARKET_SHARES.items()
     }
     for market in targets:
         targets[market] = min(targets[market], available.get(market, 0))
     remaining = target_size - sum(targets.values())
     while remaining > 0:
         choices = [
-            market
-            for market in targets
-            if targets[market] < available.get(market, 0)
+            market for market in targets if targets[market] < available.get(market, 0)
         ]
         if not choices:
             raise RuntimeError("Market capacity cannot satisfy release target")
@@ -296,14 +306,8 @@ def _select_release(
     market_targets = _bounded_market_targets(rows, target_size)
     selected: list[dict[str, Any]] = []
     for market, count in sorted(market_targets.items()):
-        pool = [
-            row for row in rows if str(row.get("market_subset")) == market
-        ]
-        selected.extend(
-            _greedy_regional_selection(
-                pool, quality_by_id, market, count
-            )
-        )
+        pool = [row for row in rows if str(row.get("market_subset")) == market]
+        selected.extend(_greedy_regional_selection(pool, quality_by_id, market, count))
     return sorted(selected, key=lambda row: str(row["qa_id"]))
 
 
@@ -319,12 +323,9 @@ def _greedy_regional_selection(
         "benchmark_task": _target_counts(
             target_size, REGIONAL_TARGETS[market]["benchmark_task"]
         ),
-        "language": _target_counts(
-            target_size, REGIONAL_TARGETS[market]["language"]
-        ),
-        "generation_pipeline": _target_counts(
-            target_size, PIPELINE_TARGETS
-        ),
+        "language": _target_counts(target_size, REGIONAL_TARGETS[market]["language"]),
+        "generation_pipeline": _target_counts(target_size, PIPELINE_TARGETS),
+        "answer_type": _target_counts(target_size, ANSWER_TYPE_TARGETS),
     }
     counts = {dimension: Counter() for dimension in targets}
     remaining = {str(row["qa_id"]): row for row in pool}
@@ -333,7 +334,9 @@ def _greedy_regional_selection(
         best = max(
             remaining.values(),
             key=lambda row: (
-                _selection_score(row, quality_by_id[str(row["qa_id"])], targets, counts),
+                _selection_score(
+                    row, quality_by_id[str(row["qa_id"])], targets, counts
+                ),
                 hashlib.sha256(str(row["qa_id"]).encode()).hexdigest(),
             ),
         )
@@ -363,6 +366,7 @@ def _selection_score(
         ("benchmark_task", 28.0),
         ("language", 18.0),
         ("generation_pipeline", 22.0),
+        ("answer_type", 26.0),
     ):
         value = str(row.get(dimension) or "unknown")
         target = targets[dimension].get(value, 0)
@@ -378,7 +382,9 @@ def _target_counts(total: int, shares: dict[str, float]) -> dict[str, int]:
     raw = {key: total * value for key, value in shares.items()}
     counts = {key: int(value) for key, value in raw.items()}
     remainder = total - sum(counts.values())
-    for key in sorted(raw, key=lambda item: (raw[item] - counts[item], item), reverse=True):
+    for key in sorted(
+        raw, key=lambda item: (raw[item] - counts[item], item), reverse=True
+    ):
         if remainder <= 0:
             break
         counts[key] += 1
@@ -399,9 +405,7 @@ def _distribution(rows: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
     return {
         dimension: dict(
             sorted(
-                Counter(
-                    str(row.get(dimension) or "unknown") for row in rows
-                ).items()
+                Counter(str(row.get(dimension) or "unknown") for row in rows).items()
             )
         )
         for dimension in dimensions
@@ -429,6 +433,58 @@ def _distribution_gap(
         },
         "pipeline_target_counts": _target_counts(sample_count, PIPELINE_TARGETS),
         "pipeline_actual_counts": distribution["generation_pipeline"],
+        "answer_type_target_counts": _target_counts(sample_count, ANSWER_TYPE_TARGETS),
+        "answer_type_actual_counts": distribution["answer_type"],
+        "numeric_share": round(
+            distribution["answer_type"].get("numeric", 0) / sample_count, 6
+        ),
+        "numeric_target_band": [0.35, 0.45],
+    }
+
+
+def _release_readiness(
+    distribution_gap: dict[str, Any],
+    quality: dict[str, Any],
+    sample_count: int,
+) -> dict[str, Any]:
+    reasons: list[str] = []
+    numeric_share = float(distribution_gap["numeric_share"])
+    numeric_lower, numeric_upper = distribution_gap["numeric_target_band"]
+    if not numeric_lower <= numeric_share <= numeric_upper:
+        reasons.append("numeric_answer_share_outside_target_band")
+
+    market_gap = distribution_gap["market_percentage_point_gap"]
+    if any(abs(float(value)) > 5.0 for value in market_gap.values()):
+        reasons.append("market_distribution_limited_by_eligible_capacity")
+
+    decisions = quality["decision_counts"]
+    accepted_count = sum(
+        int(decisions.get(key, 0)) for key in ("accepted", "accepted_for_coverage")
+    )
+    accepted_rate = accepted_count / max(sample_count, 1)
+    manual_review_count = int(decisions.get("manual_review", 0))
+    if accepted_rate < 0.80:
+        reasons.append("accepted_rate_below_80_percent")
+    if manual_review_count:
+        reasons.append("contains_manual_review_samples")
+
+    answer_targets = distribution_gap["answer_type_target_counts"]
+    answer_actual = distribution_gap["answer_type_actual_counts"]
+    underfilled = {
+        key: int(target) - int(answer_actual.get(key, 0))
+        for key, target in answer_targets.items()
+        if int(answer_actual.get(key, 0)) < int(target)
+    }
+    if underfilled:
+        reasons.append("answer_type_quota_underfilled")
+
+    return {
+        "status": "ready" if not reasons else "partial_not_training_ready",
+        "training_ready": not reasons,
+        "reasons": reasons,
+        "accepted_rate": round(accepted_rate, 6),
+        "manual_review_count": manual_review_count,
+        "underfilled_answer_type_counts": underfilled,
     }
 
 
@@ -444,8 +500,7 @@ def _production_funnel(
             int(report["population"]["sample_count"]) for report in reports
         ),
         "deterministic_passed": sum(
-            int(report["population"]["deterministic_pass_count"])
-            for report in reports
+            int(report["population"]["deterministic_pass_count"]) for report in reports
         ),
         "base_judge_calls": sum(
             2 * int(report["population"]["sample_count"]) for report in reports
@@ -528,9 +583,7 @@ def _sum_telemetry(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _release_payload(
-    row: dict[str, Any], quality: dict[str, Any]
-) -> dict[str, Any]:
+def _release_payload(row: dict[str, Any], quality: dict[str, Any]) -> dict[str, Any]:
     json_fields = {
         "rubric",
         "source_metadata",
@@ -583,6 +636,9 @@ def _markdown(manifest: dict[str, Any]) -> str:
         f"- Release ID: `{manifest['release_id']}`",
         f"- Released samples: {manifest['sample_count']:,}",
         f"- SHA-256: `{manifest['sha256']}`",
+        f"- Status: `{manifest['release_status']}`",
+        f"- Training ready: `{manifest['training_ready']}`",
+        f"- Readiness reasons: {json.dumps(manifest['release_readiness']['reasons'], ensure_ascii=False)}",
         "",
         "## Production Funnel",
         "",

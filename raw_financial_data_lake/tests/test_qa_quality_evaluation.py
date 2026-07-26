@@ -139,6 +139,7 @@ def test_quality_evaluation_dual_judge_and_report(tmp_path: Path) -> None:
     assert subtype_slice["confidence_intervals_95"]["accepted_rate"]["lower"] < 1
     assert all("answer_value" not in json.dumps(view) for view in views)
     assert all("answer_payload" not in json.dumps(view) for view in views)
+    assert all(view["evaluation_context"]["reference_date"] for view in views)
     assert (output_dir / "qa_quality_evaluation_report.json").exists()
     assert (output_dir / "qa_evaluation_items.jsonl").exists()
     assert (output_dir / "qa_generation_issue_feedback.json").exists()
@@ -205,8 +206,20 @@ def test_judge_contract_is_fail_closed() -> None:
 
     payload = _judge_payload(4)
     payload["fatal_flags"] = ["invented_fatal_flag"]
-    with pytest.raises(JudgeContractError, match="Unknown fatal flags"):
+    with pytest.raises(JudgeContractError, match="Fatal flags not allowed"):
         normalize_judge_payload(payload)
+
+
+def test_surface_judge_cannot_claim_missing_grounded_evidence() -> None:
+    surface = _judge_payload(4, "surface_financial_analyst")
+    surface["fatal_flags"] = ["unsupported_evidence_or_scope"]
+    with pytest.raises(JudgeContractError, match="Fatal flags not allowed"):
+        normalize_judge_payload(surface, "surface_financial_analyst")
+
+    grounded = _judge_payload(4, "grounded_qa_auditor")
+    grounded["fatal_flags"] = ["unsupported_evidence_or_scope"]
+    normalized = normalize_judge_payload(grounded, "grounded_qa_auditor")
+    assert normalized["fatal_flags"] == ["unsupported_evidence_or_scope"]
 
 
 def test_report_can_be_replayed_from_persisted_results(tmp_path: Path) -> None:

@@ -54,8 +54,10 @@ def rubric_for_task(benchmark_task: str) -> dict[str, Any]:
             "Judge whether the multi-step investigation is financially useful and "
             "whether each operation, scope restriction, and follow-up is necessary."
             if task == "T3"
-            else "Do not penalize simplicity. Reward precise historical lookup, "
-            "clear period/accounting scope, and a stable verifiable answer."
+            else "Do not penalize simplicity. A direct historical lookup is the intended "
+            "T2 capability when the entity, metric, period, and accounting context are "
+            "well specified. Use overly_trivial only when the item lacks independent "
+            "financial utility, not merely because it needs no multi-step calculation."
         ),
     }
 

@@ -1,0 +1,64 @@
+{
+  "extends": "prod_qa_deepseek_v4_greater_china_quality_v8.json",
+  "qa": {
+    "benchmark_alignment": {
+      "quarantined_direct_metric_pairs": [
+        ["revenue", "net_income"],
+        ["gross_profit", "operating_income"],
+        ["operating_income", "net_income"],
+        ["total_assets", "total_liabilities"]
+      ],
+      "minimum_temporal_followup_observations": 4,
+      "quarantine_point_in_time_temporal_average": true
+    },
+    "quotas": {
+      "single_fact_greater_china": 300
+    },
+    "derived_quotas": {
+      "difference": 85,
+      "yoy_growth": 260,
+      "ratio": 145
+    },
+    "graph_patterns": {
+      "quotas": {
+        "pairwise_entity_metric_comparison": 60,
+        "entity_cross_metric_comparison": 0,
+        "entity_metric_temporal_average": 35,
+        "temporal_argmax_then_metric_lookup": 130,
+        "industry_growth_filter_then_margin_rank": 125,
+        "industry_revenue_rank_then_assets_lookup": 100,
+        "industry_multi_factor_screening": 125
+      }
+    },
+    "question_generation": {
+      "benchmark_alignment": {
+        "output_contract": {
+          "version": "conditional_output_contract.v7",
+          "mode": "conditional",
+          "question_visibility_mode": "financial_minimal",
+          "unit_visibility_ratio": 0.0,
+          "precision_visibility_ratio": 0.0,
+          "structured_output_visibility_ratio": 0.0,
+          "period_format_visibility_ratio": 0.0,
+          "entity_format_visibility_ratio": 0.0
+        }
+      }
+    },
+    "quality_gate": {
+      "critical_tasks": {
+        "single_fact": 220,
+        "yoy_growth": 150,
+        "ratio": 80
+      },
+      "minimum_graph_pattern_samples": {
+        "__replace__": true,
+        "pairwise_entity_metric_comparison": 30,
+        "entity_metric_temporal_average": 8,
+        "temporal_argmax_then_metric_lookup": 80,
+        "industry_growth_filter_then_margin_rank": 70,
+        "industry_revenue_rank_then_assets_lookup": 50,
+        "industry_multi_factor_screening": 70
+      }
+    }
+  }
+}

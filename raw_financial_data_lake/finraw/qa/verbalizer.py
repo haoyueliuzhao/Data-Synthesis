@@ -12,7 +12,7 @@ from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
 QUESTION_REWRITE_VERSION = "question_rewrite.v3.2"
-SURFACE_VARIATION_VERSION = "surface_variation.v3.3"
+SURFACE_VARIATION_VERSION = "surface_variation.v3.4"
 QUESTION_PARSER_VERSION = "1.5.2"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh", "mixed")
 
@@ -103,7 +103,8 @@ _OBSERVABLE_OPERATOR_PATTERNS = {
         re.IGNORECASE,
     ),
     "lookup": re.compile(
-        r"\b(?:report|lookup|look\s+up|add\s+each|what\s+was)\b|报告|给出|查询|列出|是多少",
+        r"\b(?:report|give|include|pair|lookup|look\s+up|add\s+each|what\s+was)\b|"
+        r"报告|给出|查询|列出|是多少",
         re.IGNORECASE,
     ),
 }
@@ -156,6 +157,7 @@ _ZH_METRIC_SURFACE_ALIASES = {
     "inventory": ("存货",),
     "净利率": ("净利润率",),
     "资产负债率": ("负债资产比",),
+    "rd to revenue": ("研发费用占收入比", "研发投入强度"),
     "gross domestic product, current usd": ("国内生产总值（现价美元）",),
     "population, total": ("总人口",),
 }
@@ -174,6 +176,7 @@ _METRIC_SURFACE_ALIASES = {
     "operating cash flow": ("operating cash flow", "cash flow from operations"),
     "net margin": ("net margin", "net profit margin"),
     "debt ratio": ("debt ratio", "liabilities-to-assets ratio"),
+    "rd to revenue": ("R&D-to-revenue ratio", "R&D intensity"),
     "cost of revenue": ("cost of revenue", "cost of sales"),
     "research and development expense": (
         "research and development expense",

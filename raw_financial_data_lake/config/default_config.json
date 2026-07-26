@@ -517,7 +517,6 @@
         "scope_min_entities": 3,
         "scope_top_k": 3,
         "scope_top_ks": [
-          1,
           2,
           3,
           4,
@@ -525,7 +524,6 @@
         ],
         "growth_threshold_pct": 10,
         "growth_thresholds_pct": [
-          0,
           5,
           10,
           15

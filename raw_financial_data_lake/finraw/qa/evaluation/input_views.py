@@ -92,7 +92,9 @@ def load_evaluation_bundles(
             )
         pipeline = _generation_pipeline(candidate)
         required_checks = required_checks_for(pipeline, candidate)
-        missing_checks = sorted(set(required_checks) - observed_checks.get(qa_id, set()))
+        missing_checks = sorted(
+            set(required_checks) - observed_checks.get(qa_id, set())
+        )
         if missing_checks:
             l0_reasons.append("missing_quality_checks=" + ",".join(missing_checks))
         if failed_checks.get(qa_id):
@@ -149,6 +151,12 @@ def grounded_view(bundle: dict[str, Any]) -> dict[str, Any]:
         )
     source_classes = label.get("source_classes") or []
     scope = candidate.get("entity_scope") or {}
+    scope_contract = (
+        (sample.get("source_metadata") or {}).get("scope_contract")
+        or canonical.get("scope_contract")
+        or scope.get("scope_contract")
+        or {}
+    )
     return {
         "question": sample.get("question"),
         "benchmark_task": label.get("benchmark_task", "T2"),
@@ -164,6 +172,7 @@ def grounded_view(bundle: dict[str, Any]) -> dict[str, Any]:
             "scope_description": scope.get("scope_definition")
             or scope.get("description")
             or canonical.get("scope_description"),
+            "scope_contract": scope_contract,
             "constraints": _semantic_constraints(canonical),
         },
         "operation_summary": operations,
@@ -186,7 +195,11 @@ def grounded_view(bundle: dict[str, Any]) -> dict[str, Any]:
 
 
 def _decode_sample(row: dict[str, Any]) -> dict[str, Any]:
-    for key, default in {"answer_value": {}, "rubric": {}, "source_metadata": {}}.items():
+    for key, default in {
+        "answer_value": {},
+        "rubric": {},
+        "source_metadata": {},
+    }.items():
         row[key] = json_value(row.get(key), default)
     return row
 
@@ -299,7 +312,9 @@ def _rubric_summary(rubric: dict[str, Any]) -> dict[str, Any]:
         "complete_rows_required": bool(rubric.get("require_complete_rows")),
         "precision_rule": rubric.get("decimal_places")
         if "decimal_places" in rubric
-        else "tolerance" if rubric.get("value_tolerance") else None,
+        else "tolerance"
+        if rubric.get("value_tolerance")
+        else None,
     }
 
 

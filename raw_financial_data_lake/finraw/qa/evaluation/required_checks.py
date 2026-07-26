@@ -5,7 +5,7 @@ import json
 from typing import Any
 
 
-REQUIRED_CHECK_MANIFEST_VERSION = "qa_required_checks.v1"
+REQUIRED_CHECK_MANIFEST_VERSION = "qa_required_checks.v2"
 
 COMMON_CHECKS = frozenset(
     {
@@ -22,6 +22,7 @@ COMMON_CHECKS = frozenset(
         "question_semantic_reparse",
         "question_slot_roundtrip",
         "scope_fact_coverage",
+        "scope_contract_integrity",
         "semantic_slots",
         "source_fact_coverage",
         "structure",

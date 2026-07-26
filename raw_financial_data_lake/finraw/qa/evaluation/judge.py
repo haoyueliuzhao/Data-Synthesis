@@ -91,14 +91,13 @@ class QualityJudgeError(RuntimeError):
         self.telemetry = telemetry
 
 
-def build_judge_prompt(
-    role: str, view: dict[str, Any], rubric: dict[str, Any]
-) -> str:
+def build_judge_prompt(role: str, view: dict[str, Any], rubric: dict[str, Any]) -> str:
     focus = {
         "surface_financial_analyst": (
             "Assess only the user-facing question: authenticity, clarity, naturalness, "
             "standalone financial usefulness, and template artifacts. Do not guess the "
-            "answer and do not reward complexity by itself."
+            "answer, do not infer evidence availability, and do not reward complexity "
+            "by itself."
         ),
         "grounded_qa_auditor": (
             "Assess whether the financial semantics, operation sequence, evidence scope, "
@@ -131,6 +130,11 @@ def build_judge_prompt(
             "Use only listed fatal flags and issue codes.",
             "Do not disclose chain-of-thought; provide only two brief justifications.",
             "Never infer that a generation pipeline or a longer question is higher quality.",
+            "For T2, do not emit overly_trivial solely because the item is a direct lookup; reserve it for questions without standalone financial utility.",
+            "Treat answer-schema fields, precision rules, and machine matcher metadata as hidden evaluator concerns unless the user-facing financial request genuinely requires them.",
+            "Use evaluation_context.reference_date as the only current-date reference; do not classify an earlier fiscal or calendar period as future.",
+            "The Surface Judge must not emit unsupported_evidence_or_scope because its input intentionally omits evidence.",
+            "For Grounded or Adversarial review, pinned evidence takes precedence over assumptions about normal publication timing.",
         ],
     }
     return "Evaluate this financial QA item.\n" + json.dumps(

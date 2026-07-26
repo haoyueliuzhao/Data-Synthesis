@@ -92,7 +92,8 @@ def test_complex_scope_scenarios_expand_without_weakening_scope(
     for row in filter_rank + rank_lookup + multi_factor:
         assert row["entity_ids"] == ["A", "B", "C", "D", "E"]
         assert row["financial_scope"]["entity_scope_ids"] == row["entity_ids"]
-        assert "complete-case universe" in row["scope_definition"]
+        assert "complete comparable data" in row["scope_definition"]
+        assert "dataset" not in row["scope_definition"]
 
 
 def test_complex_scenario_policy_keeps_scalar_backwards_compatibility() -> None:

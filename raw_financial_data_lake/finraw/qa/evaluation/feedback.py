@@ -20,7 +20,7 @@ FEEDBACK_DIMENSIONS = (
 ISSUE_COMPONENT_TARGETS: dict[str, dict[str, Any]] = {
     "output_instruction_slightly_formulaic": {
         "target_component": "output_contract_verbalizer",
-        "recommended_action": "expand_answer_type_specific_output_contract_variants",
+        "recommended_action": "move_machine_format_rules_to_hidden_answer_schema_and retain only financially necessary unit wording",
         "action_type": "generator_fix",
     },
     "unnatural_output_instruction": {
@@ -100,8 +100,7 @@ def build_generation_feedback(
     bundle_by_qa = {str(row.get("qa_id") or ""): row for row in bundles}
     item_by_qa = {str(row.get("qa_id") or ""): row for row in items or []}
     components_by_qa = {
-        qa_id: _component_dimensions(bundle)
-        for qa_id, bundle in bundle_by_qa.items()
+        qa_id: _component_dimensions(bundle) for qa_id, bundle in bundle_by_qa.items()
     }
     exact_denominators = Counter(
         _dimension_key(components) for components in components_by_qa.values()
@@ -113,9 +112,7 @@ def build_generation_feedback(
         for dimension in FEEDBACK_DIMENSIONS
     }
 
-    issue_roles: dict[str, dict[str, set[str]]] = defaultdict(
-        lambda: defaultdict(set)
-    )
+    issue_roles: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
     confirmed: dict[str, set[str]] = defaultdict(set)
     for row in calls:
         if row.get("status") != "succeeded":
@@ -363,9 +360,7 @@ def _strength(roles: set[str], is_confirmed: bool) -> dict[str, int]:
 def _finalize_issue_summary(row: dict[str, Any], sample_count: int) -> dict[str, Any]:
     out = dict(row)
     out["affected_qa_ids"] = sorted(set(out["affected_qa_ids"]))
-    out["affected_sample_rate"] = _rate(
-        int(out["flagged_by_any_judge"]), sample_count
-    )
+    out["affected_sample_rate"] = _rate(int(out["flagged_by_any_judge"]), sample_count)
     out["correctness_gate"] = False
     return out
 
