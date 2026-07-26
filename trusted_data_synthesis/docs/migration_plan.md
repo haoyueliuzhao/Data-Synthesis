@@ -35,9 +35,9 @@ core/graph         task-local Proof Graph and proof-subgraph extraction
 core/task          isolated Public Spec, Oracle Contract, and Program DAG
 core/operations    executor/oracle registry with independent replay
 core/trajectory    separate reference and candidate workflows
-core/evaluation    hard gates and diagnostic quality vectors
-core/release       immutable manifests and semantic-cluster splits
-domains/finance    read-only archived-finance mapping
+core/evaluation    separate reference/candidate gates and diagnostics
+core/release       candidate selection, immutable manifests, semantic splits
+domains/finance    read-only mapping, semantic policy, claim verification
 domains/science    next domain extension point
 ```
 
@@ -64,13 +64,13 @@ The MVP executes:
 ```text
 Archived graph-ready Fact
 -> Finance Adapter
--> Evidence IR v2 + Proof Graph
+-> Evidence IR v2 + validated Proof Graph v3
 -> Public Task / Oracle Contract
 -> Task Program DAG
--> Reference Workflow
--> Independent Oracle Replay
--> Hard Gates + Quality Vector
--> Split + Release Manifest
+-> Reference Workflow + public-only Candidate Workflow
+-> Independent Oracle Replay + Candidate reconstruction
+-> Separate Hard Gates + Quality Vectors
+-> Candidate Selection + Split + Release Manifest
 ```
 
 The framework accepts legal RuleStatement and scientific ExperimentalResult
@@ -81,7 +81,6 @@ payloads through the same Task Program, workflow compiler, and hard gates.
 The following should not be copied wholesale from the archive:
 
 - raw acquisition and document parsing;
-- finance-specific metric comparability policies;
 - historical QA tables and templates;
 - LLM rewrite prompts and provider secrets;
 - large JSONL query serving.
@@ -93,8 +92,8 @@ They will be integrated through interfaces only when needed.
 1. Implement a read-only Finance Domain Graph loader and pattern miner.
 2. Import selected DerivedFact and Scope relations into generic derivations.
 3. Add filtering/ranking operators and graph-pattern Task Programs.
-4. Add multi-step Candidate agents and replayable production tool runtimes.
-5. Persist release catalogs and implement quality-aware selection.
+4. Extend Candidate agents beyond current lookup/comparison/growth support.
+5. Persist release catalogs around the implemented quality-aware selector.
 6. Implement legal and science archive adapters and transfer experiments.
 
 LLM generation should enter only after deterministic task and trajectory

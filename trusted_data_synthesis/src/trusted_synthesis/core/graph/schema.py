@@ -13,6 +13,7 @@ class NodeKind(str, Enum):
     PREDICATE = "predicate"
     EVIDENCE = "evidence"
     SOURCE = "source"
+    LOCATOR = "locator"
     TIME = "time"
     DEFINITION = "definition"
     SCOPE = "scope"
@@ -45,7 +46,7 @@ class ProofGraph(BaseModel):
     nodes: tuple[EvidenceNode, ...]
     edges: tuple[EvidenceEdge, ...]
     source_build_id: str | None = None
-    schema_version: str = "proof_graph.v2"
+    schema_version: str = "proof_graph.v3"
 
     @model_validator(mode="after")
     def validate_graph(self) -> ProofGraph:

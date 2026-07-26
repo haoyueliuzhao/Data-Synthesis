@@ -1,0 +1,26 @@
+{
+  "pilot_id": "finance_synthesis_pilot.small.v1",
+  "evidence_scan_limit": 20000,
+  "distractors_per_task": 6,
+  "task_quotas": {
+    "fact_retrieval": 6,
+    "comparison": 6,
+    "temporal_growth": 6,
+    "temporal_average": 6
+  },
+  "mutation_types": [
+    "missing_evidence",
+    "wrong_entity",
+    "time_shift",
+    "predicate_mismatch",
+    "arithmetic_error",
+    "wrong_answer",
+    "citation_mismatch",
+    "unsupported_claim",
+    "oracle_leakage",
+    "disallowed_tool",
+    "failed_step",
+    "multi_error"
+  ],
+  "require_full_quota": true
+}

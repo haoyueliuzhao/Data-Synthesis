@@ -1,0 +1,588 @@
+from __future__ import annotations
+
+import json
+from collections import Counter, defaultdict
+from collections.abc import Iterable
+from pathlib import Path
+from statistics import mean
+from typing import Any
+
+from pydantic import BaseModel
+
+from trusted_synthesis.core.evaluation.evaluator import (
+    CandidateQualityEvaluator,
+    ReferenceQualityEvaluator,
+)
+from trusted_synthesis.core.evaluation.schema import QualityAssessment, ReleaseDecision
+from trusted_synthesis.core.operations.registry import default_registry
+from trusted_synthesis.core.release import (
+    SplitPolicy,
+    assign_split,
+    build_release_manifest,
+    select_candidate_release,
+)
+from trusted_synthesis.core.release.split import semantic_cluster_id
+from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
+from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
+from trusted_synthesis.core.trajectory.schema import Trajectory
+from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.finance_pilot.mutations import (
+    MutationCase,
+    generate_mutations,
+)
+from trusted_synthesis.experiments.finance_pilot.sampler import (
+    discover_bindings,
+    sample_evidence,
+)
+from trusted_synthesis.experiments.finance_pilot.schema import FinancePilotConfig
+from trusted_synthesis.experiments.finance_pilot.task_factory import (
+    PilotTaskCase,
+    build_task_cases,
+)
+from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+
+
+def run_finance_pilot(
+    adapter: FinanceArchiveAdapter,
+    config: FinancePilotConfig,
+    output_dir: Path,
+) -> dict[str, Any]:
+    inspection = adapter.inspect()
+    if not inspection["compatible"]:
+        raise ValueError(f"incompatible finance archive: {inspection['errors']}")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    policy = FinanceSemanticPolicy()
+    sample = sample_evidence(adapter, config, policy)
+    bindings = discover_bindings(sample.evidence, config)
+    cases = build_task_cases(
+        bindings,
+        sample.evidence,
+        distractors_per_task=config.distractors_per_task,
+        task_synthesizer=ProofGraphTaskSynthesizer(policy),
+    )
+
+    reference_compiler = ReferenceWorkflowCompiler()
+    candidate_generator = CandidateTrajectoryGenerator()
+    reference_evaluator = ReferenceQualityEvaluator(semantic_policy=policy)
+    candidate_evaluator = CandidateQualityEvaluator(
+        semantic_policy=policy,
+        claim_verifier=FinanceClaimVerifier(),
+    )
+    references: list[Trajectory] = []
+    reference_assessments: list[QualityAssessment] = []
+    clean_candidates: list[Trajectory] = []
+    clean_assessments: list[QualityAssessment] = []
+    mutation_cases: list[MutationCase] = []
+    mutation_assessments: list[QualityAssessment] = []
+    candidate_records = []
+
+    for case in cases:
+        reference = reference_compiler.compile(case.task, case.bundle)
+        reference_assessment = reference_evaluator.evaluate(
+            case.task, case.bundle, case.proof_graph, reference
+        )
+        candidate = candidate_generator.generate(
+            case.task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
+        candidate_assessment = candidate_evaluator.evaluate(
+            case.task, case.corpus, case.proof_graph, candidate
+        )
+        references.append(reference)
+        reference_assessments.append(reference_assessment)
+        clean_candidates.append(candidate)
+        clean_assessments.append(candidate_assessment)
+        candidate_records.append((case.task, candidate, candidate_assessment))
+        for mutation in generate_mutations(case, candidate, config.mutation_types):
+            assessment = candidate_evaluator.evaluate(
+                case.task,
+                case.corpus,
+                case.proof_graph,
+                mutation.trajectory,
+            )
+            mutation_cases.append(mutation)
+            mutation_assessments.append(assessment)
+            candidate_records.append((case.task, mutation.trajectory, assessment))
+
+    split_policy = SplitPolicy(policy_id="finance_pilot_semantic_split.v1")
+    selection = select_candidate_release(candidate_records, split_policy)
+    release_id = canonical_hash(
+        {
+            "pilot_id": config.pilot_id,
+            "config_hash": config.config_hash,
+            "kg_build_id": inspection["kg_build_id"],
+            "task_ids": sorted(case.task.task_id for case in cases),
+        },
+        prefix="finance_pilot_release:",
+    )
+    manifest = build_release_manifest(
+        release_id=release_id,
+        tasks=(case.task for case in cases),
+        adapters=(adapter,),
+        registry=default_registry(),
+        split_policy=split_policy,
+        source_build_ids={"finance_kg": str(inspection["kg_build_id"])},
+        candidate_selection=selection,
+    )
+    reproducibility = _reproducibility_check(
+        cases=cases,
+        config=config,
+        reference_compiler=reference_compiler,
+        candidate_generator=candidate_generator,
+        reference_evaluator=reference_evaluator,
+        candidate_evaluator=candidate_evaluator,
+        references=references,
+        reference_assessments=reference_assessments,
+        clean_candidates=clean_candidates,
+        clean_assessments=clean_assessments,
+        mutation_cases=mutation_cases,
+        selection_id=selection.selection_id,
+        manifest_hash=manifest.manifest_hash,
+        adapter=adapter,
+        split_policy=split_policy,
+        release_id=release_id,
+        inspection=inspection,
+        candidate_records=candidate_records,
+    )
+    report = _build_report(
+        inspection=inspection,
+        config=config,
+        sample=sample,
+        cases=cases,
+        references=references,
+        reference_assessments=reference_assessments,
+        clean_candidates=clean_candidates,
+        clean_assessments=clean_assessments,
+        mutation_cases=mutation_cases,
+        mutation_assessments=mutation_assessments,
+        selection=selection,
+        manifest=manifest,
+        split_policy=split_policy,
+        reproducibility=reproducibility,
+    )
+    _write_artifacts(
+        output_dir=output_dir,
+        config=config,
+        cases=cases,
+        references=references,
+        reference_assessments=reference_assessments,
+        clean_candidates=clean_candidates,
+        clean_assessments=clean_assessments,
+        mutation_cases=mutation_cases,
+        mutation_assessments=mutation_assessments,
+        manifest=manifest,
+        report=report,
+    )
+    return report
+
+
+def _build_report(
+    *,
+    inspection: dict[str, Any],
+    config: FinancePilotConfig,
+    sample: Any,
+    cases: tuple[PilotTaskCase, ...],
+    references: list[Trajectory],
+    reference_assessments: list[QualityAssessment],
+    clean_candidates: list[Trajectory],
+    clean_assessments: list[QualityAssessment],
+    mutation_cases: list[MutationCase],
+    mutation_assessments: list[QualityAssessment],
+    selection: Any,
+    manifest: Any,
+    split_policy: SplitPolicy,
+    reproducibility: dict[str, bool],
+) -> dict[str, Any]:
+    task_counts = Counter(case.task.public.task_type for case in cases)
+    region_counts = Counter(case.binding.stratum[0] for case in cases)
+    metric_category_counts = Counter(case.binding.stratum[1] for case in cases)
+    frequency_counts = Counter(case.binding.stratum[2] for case in cases)
+    source_counts = Counter(case.binding.stratum[3] for case in cases)
+    verification_status_counts = Counter(case.binding.stratum[4] for case in cases)
+    program_depths = Counter(len(case.task.oracle.task_program.nodes) for case in cases)
+    reference_accepted = sum(
+        assessment.decision == ReleaseDecision.ACCEPTED for assessment in reference_assessments
+    )
+    clean_accepted = sum(
+        assessment.decision == ReleaseDecision.ACCEPTED for assessment in clean_assessments
+    )
+    mutation_rejected = sum(
+        assessment.decision == ReleaseDecision.REJECTED for assessment in mutation_assessments
+    )
+    false_acceptances = len(mutation_assessments) - mutation_rejected
+    false_rejections = len(clean_assessments) - clean_accepted
+    per_type = _mutation_metrics(mutation_cases, mutation_assessments)
+    localization_values = [
+        set(mutation.expected_failure_gates).issubset(assessment.fatal_failures)
+        for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
+    ]
+    split_clusters: dict[str, set[str]] = defaultdict(set)
+    for case in cases:
+        split_clusters[semantic_cluster_id(case.task, split_policy)].add(
+            assign_split(case.task, split_policy).value
+        )
+    leakage_count = sum(len(values) > 1 for values in split_clusters.values())
+    error_precision, error_recall, error_f1 = _binary_detection_metrics(
+        clean_assessments,
+        mutation_assessments,
+    )
+    reference_rate = _rate(reference_accepted, len(reference_assessments))
+    clean_rate = _rate(clean_accepted, len(clean_assessments))
+    far = _rate(false_acceptances, len(mutation_assessments))
+    localization_rate = _rate(sum(localization_values), len(localization_values))
+    macro_detection = (
+        mean(item["detection_rate"] for item in per_type.values()) if per_type else 0.0
+    )
+    theoretical_mutations = len(cases) * len(config.mutation_types)
+    coverage_warnings = []
+    if not region_counts.get("mainland_hong_kong_macau"):
+        coverage_warnings.append(
+            "No mainland/Hong Kong/Macau task was available in the pinned KG build."
+        )
+    if len(source_counts) < 4:
+        coverage_warnings.append("The pilot task pool covers fewer than four source systems.")
+    coverage_warnings.extend(
+        (
+            "No live model candidate or human-alignment judgment was evaluated.",
+            "Resolved retrieval does not validate open search or entity disambiguation.",
+        )
+    )
+    thresholds = {
+        "full_task_quota": len(cases) == sum(config.task_quotas.values()),
+        "reference_acceptance_rate_gte_0_995": reference_rate >= 0.995,
+        "clean_candidate_acceptance_rate_gte_0_95": clean_rate >= 0.95,
+        "critical_false_acceptance_rate_lte_0_01": far <= 0.01,
+        "mutation_macro_detection_rate_gte_0_90": macro_detection >= 0.90,
+        "failure_localization_rate_gte_0_90": localization_rate >= 0.90,
+        "hash_stability": all(reproducibility.values()),
+        "split_semantic_leakage_zero": leakage_count == 0,
+        "release_contains_only_clean_accepted": (
+            len(selection.accepted_trajectory_ids) == clean_accepted
+        ),
+    }
+    return {
+        "pilot_id": config.pilot_id,
+        "pilot_config_hash": config.config_hash,
+        "architecture_feasible": all(thresholds.values()),
+        "production_ready": False,
+        "feasibility_scope": "global_financial_numeric_resolved_track",
+        "coverage_warnings": coverage_warnings,
+        "thresholds": thresholds,
+        "archive": {
+            "adapter_id": inspection["adapter_id"],
+            "kg_build_id": inspection["kg_build_id"],
+            "graph_schema_version": inspection["graph_schema_version"],
+            "quality_gate_status": inspection["quality_gate_status"],
+            "read_only": inspection["read_only"],
+            "fact_node_count": inspection["fact_node_count"],
+            "node_count": inspection["node_count"],
+            "edge_count": inspection["edge_count"],
+        },
+        "evidence_mapping": {
+            "scanned_count": sample.scanned_count,
+            "domain_valid_count": sample.domain_valid_count,
+            "domain_rejected_count": sample.rejected_count,
+            "domain_valid_rate": _rate(sample.domain_valid_count, sample.scanned_count),
+            "observed_stratum_count": len(sample.stratum_counts),
+        },
+        "task_synthesis": {
+            "requested_count": sum(config.task_quotas.values()),
+            "compiled_count": len(cases),
+            "compilation_rate": _rate(len(cases), sum(config.task_quotas.values())),
+            "task_type_counts": dict(sorted(task_counts.items())),
+            "region_counts": dict(sorted(region_counts.items())),
+            "metric_category_counts": dict(sorted(metric_category_counts.items())),
+            "frequency_counts": dict(sorted(frequency_counts.items())),
+            "source_counts": dict(sorted(source_counts.items())),
+            "verification_status_counts": dict(sorted(verification_status_counts.items())),
+            "program_depth_counts": {
+                str(key): value for key, value in sorted(program_depths.items())
+            },
+            "minimum_distractors": min((len(case.distractor_ids) for case in cases), default=0),
+            "mean_distractors": (mean(len(case.distractor_ids) for case in cases) if cases else 0),
+        },
+        "reference_validation": {
+            "attempted": len(references),
+            "accepted": reference_accepted,
+            "acceptance_rate": reference_rate,
+        },
+        "candidate_validation": {
+            "clean_attempted": len(clean_candidates),
+            "clean_accepted": clean_accepted,
+            "clean_acceptance_rate": clean_rate,
+            "false_rejection_count": false_rejections,
+            "false_rejection_rate": _rate(false_rejections, len(clean_assessments)),
+            "mutation_attempted": len(mutation_cases),
+            "mutation_theoretical_attempts": theoretical_mutations,
+            "mutation_generation_rate": _rate(len(mutation_cases), theoretical_mutations),
+            "mutation_generation_shortfall": theoretical_mutations - len(mutation_cases),
+            "mutation_rejected": mutation_rejected,
+            "false_acceptance_count": false_acceptances,
+            "critical_false_acceptance_rate": far,
+            "error_detection_precision": error_precision,
+            "error_detection_recall": error_recall,
+            "error_detection_f1": error_f1,
+            "failure_localization_rate": localization_rate,
+            "macro_detection_rate": macro_detection,
+            "per_mutation_type": per_type,
+        },
+        "release": {
+            "release_id": manifest.release_id,
+            "release_manifest_hash": manifest.manifest_hash,
+            "accepted_candidate_count": len(selection.accepted_trajectory_ids),
+            "failure_distribution": selection.failure_distribution,
+            "split_counts": selection.split_counts,
+            "semantic_leakage_count": leakage_count,
+        },
+        "reproducibility": reproducibility,
+        "current_boundaries": [
+            "resolved retrieval track only",
+            "deterministic candidate generator rather than a live LLM agent",
+            "no human alignment sample in this small pilot",
+            "advanced ratio comparison and multi-entity growth DAGs remain future work",
+            "legal and science non-lookup reasoning not evaluated",
+        ],
+    }
+
+
+def _mutation_metrics(
+    mutations: list[MutationCase],
+    assessments: list[QualityAssessment],
+) -> dict[str, dict[str, Any]]:
+    rows: dict[str, list[tuple[MutationCase, QualityAssessment]]] = defaultdict(list)
+    for mutation, assessment in zip(mutations, assessments, strict=True):
+        rows[mutation.mutation_type].append((mutation, assessment))
+    output = {}
+    for mutation_type, items in sorted(rows.items()):
+        rejected = sum(assessment.decision == ReleaseDecision.REJECTED for _, assessment in items)
+        localized = sum(
+            set(mutation.expected_failure_gates).issubset(assessment.fatal_failures)
+            for mutation, assessment in items
+        )
+        output[mutation_type] = {
+            "count": len(items),
+            "rejected": rejected,
+            "detection_rate": _rate(rejected, len(items)),
+            "localized": localized,
+            "localization_rate": _rate(localized, len(items)),
+        }
+    return output
+
+
+def _binary_detection_metrics(
+    clean: list[QualityAssessment],
+    mutated: list[QualityAssessment],
+) -> tuple[float, float, float]:
+    true_positive = sum(item.decision == ReleaseDecision.REJECTED for item in mutated)
+    false_negative = len(mutated) - true_positive
+    false_positive = sum(item.decision != ReleaseDecision.ACCEPTED for item in clean)
+    precision = _rate(true_positive, true_positive + false_positive)
+    recall = _rate(true_positive, true_positive + false_negative)
+    f1 = 0.0 if precision + recall == 0 else 2 * precision * recall / (precision + recall)
+    return precision, recall, f1
+
+
+def _reproducibility_check(
+    *,
+    cases: tuple[PilotTaskCase, ...],
+    config: FinancePilotConfig,
+    reference_compiler: ReferenceWorkflowCompiler,
+    candidate_generator: CandidateTrajectoryGenerator,
+    reference_evaluator: ReferenceQualityEvaluator,
+    candidate_evaluator: CandidateQualityEvaluator,
+    references: list[Trajectory],
+    reference_assessments: list[QualityAssessment],
+    clean_candidates: list[Trajectory],
+    clean_assessments: list[QualityAssessment],
+    mutation_cases: list[MutationCase],
+    selection_id: str,
+    manifest_hash: str,
+    adapter: FinanceArchiveAdapter,
+    split_policy: SplitPolicy,
+    release_id: str,
+    inspection: dict[str, Any],
+    candidate_records: list[Any],
+) -> dict[str, bool]:
+    replay_references: list[Trajectory] = []
+    replay_reference_assessments: list[QualityAssessment] = []
+    replay_candidates: list[Trajectory] = []
+    replay_candidate_assessments: list[QualityAssessment] = []
+    replay_mutation_ids: list[str] = []
+    for case in cases:
+        reference = reference_compiler.compile(case.task, case.bundle)
+        candidate = candidate_generator.generate(
+            case.task.public, InMemoryEvidenceToolRuntime(case.corpus)
+        )
+        replay_references.append(reference)
+        replay_reference_assessments.append(
+            reference_evaluator.evaluate(case.task, case.bundle, case.proof_graph, reference)
+        )
+        replay_candidates.append(candidate)
+        replay_candidate_assessments.append(
+            candidate_evaluator.evaluate(case.task, case.corpus, case.proof_graph, candidate)
+        )
+        replay_mutation_ids.extend(
+            mutation.mutation_id
+            for mutation in generate_mutations(case, candidate, config.mutation_types)
+        )
+    selection_replay = select_candidate_release(candidate_records, split_policy)
+    manifest_replay = build_release_manifest(
+        release_id=release_id,
+        tasks=(case.task for case in cases),
+        adapters=(adapter,),
+        registry=default_registry(),
+        split_policy=split_policy,
+        source_build_ids={"finance_kg": str(inspection["kg_build_id"])},
+        candidate_selection=selection_replay,
+    )
+    return {
+        "reference_trajectory_ids": [item.trajectory_id for item in references]
+        == [item.trajectory_id for item in replay_references],
+        "reference_assessment_ids": [item.assessment_id for item in reference_assessments]
+        == [item.assessment_id for item in replay_reference_assessments],
+        "candidate_trajectory_ids": [item.trajectory_id for item in clean_candidates]
+        == [item.trajectory_id for item in replay_candidates],
+        "candidate_assessment_ids": [item.assessment_id for item in clean_assessments]
+        == [item.assessment_id for item in replay_candidate_assessments],
+        "mutation_ids": [item.mutation_id for item in mutation_cases] == replay_mutation_ids,
+        "candidate_selection_id": selection_id == selection_replay.selection_id,
+        "release_manifest_hash": manifest_hash == manifest_replay.manifest_hash,
+    }
+
+
+def _write_artifacts(
+    *,
+    output_dir: Path,
+    config: FinancePilotConfig,
+    cases: tuple[PilotTaskCase, ...],
+    references: list[Trajectory],
+    reference_assessments: list[QualityAssessment],
+    clean_candidates: list[Trajectory],
+    clean_assessments: list[QualityAssessment],
+    mutation_cases: list[MutationCase],
+    mutation_assessments: list[QualityAssessment],
+    manifest: Any,
+    report: dict[str, Any],
+) -> None:
+    config.write(output_dir / "config.json")
+    _write_jsonl(output_dir / "task_packages.jsonl", (case.task for case in cases))
+    _write_jsonl(
+        output_dir / "task_contexts.jsonl",
+        (
+            {
+                "task_id": case.task.task_id,
+                "binding_hash": case.binding.binding_hash,
+                "binding_stratum": case.binding.stratum,
+                "bundle": case.bundle,
+                "proof_graph": case.proof_graph,
+                "corpus_id": case.corpus.corpus_id,
+                "distractor_ids": case.distractor_ids,
+            }
+            for case in cases
+        ),
+    )
+    _write_jsonl(output_dir / "reference_workflows.jsonl", references)
+    _write_jsonl(output_dir / "reference_assessments.jsonl", reference_assessments)
+    _write_jsonl(output_dir / "clean_candidate_workflows.jsonl", clean_candidates)
+    _write_jsonl(output_dir / "clean_candidate_assessments.jsonl", clean_assessments)
+    _write_jsonl(
+        output_dir / "mutated_candidate_workflows.jsonl",
+        (
+            {
+                "mutation_id": mutation.mutation_id,
+                "mutation_type": mutation.mutation_type,
+                "source_trajectory_id": mutation.source_trajectory_id,
+                "expected_failure_gates": mutation.expected_failure_gates,
+                "trajectory": mutation.trajectory,
+                "assessment": assessment,
+            }
+            for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
+        ),
+    )
+    _write_json(output_dir / "release_manifest.json", manifest)
+    _write_json(output_dir / "pilot_report.json", report)
+    (output_dir / "pilot_report.md").write_text(
+        _markdown_report(report),
+        encoding="utf-8",
+    )
+
+
+def _write_json(path: Path, value: Any) -> None:
+    path.write_text(
+        json.dumps(_json_value(value), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _write_jsonl(path: Path, values: Iterable[Any]) -> None:
+    with path.open("w", encoding="utf-8") as handle:
+        for value in values:
+            handle.write(json.dumps(_json_value(value), ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def _json_value(value: Any) -> Any:
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="json", exclude_none=True)
+    if isinstance(value, dict):
+        return {key: _json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_value(item) for item in value]
+    return value
+
+
+def _markdown_report(report: dict[str, Any]) -> str:
+    task = report["task_synthesis"]
+    candidate = report["candidate_validation"]
+    reference = report["reference_validation"]
+    release = report["release"]
+    lines = [
+        "# Finance Synthesis Pilot Report",
+        "",
+        f"- Architecture feasible: **{report['architecture_feasible']}**",
+        f"- KG build: {report['archive']['kg_build_id']}",
+        f"- Evidence scanned: {report['evidence_mapping']['scanned_count']:,}",
+        f"- Tasks compiled: {task['compiled_count']} / {task['requested_count']}",
+        f"- Reference accepted: {reference['accepted']} / {reference['attempted']}",
+        (
+            f"- Clean candidates accepted: {candidate['clean_accepted']} / "
+            f"{candidate['clean_attempted']}"
+        ),
+        (
+            f"- Mutated candidates rejected: {candidate['mutation_rejected']} / "
+            f"{candidate['mutation_attempted']}"
+        ),
+        (f"- Critical false acceptance rate: {candidate['critical_false_acceptance_rate']:.4%}"),
+        f"- Failure localization rate: {candidate['failure_localization_rate']:.4%}",
+        f"- Split semantic leakage: {release['semantic_leakage_count']}",
+        "",
+        "## Task Distribution",
+        "",
+        json.dumps(task["task_type_counts"], ensure_ascii=False, indent=2),
+        "",
+        "## Mutation Detection",
+        "",
+        json.dumps(candidate["per_mutation_type"], ensure_ascii=False, indent=2),
+        "",
+        "## Thresholds",
+        "",
+    ]
+    lines.extend(
+        f"- [{'x' if passed else ' '}] {name}" for name, passed in report["thresholds"].items()
+    )
+    lines.extend(
+        [
+            "",
+            "## Current Boundaries",
+            "",
+            *(f"- {item}" for item in report["current_boundaries"]),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _rate(numerator: int, denominator: int) -> float:
+    return 0.0 if denominator == 0 else numerator / denominator

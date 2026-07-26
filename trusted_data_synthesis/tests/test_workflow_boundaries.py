@@ -30,7 +30,7 @@ def test_candidate_api_cannot_receive_an_oracle(finance_evidence: EvidenceItem) 
     assert finance_evidence.evidence_id not in public_json
     assert runtime.last_query is not None
     assert "evidence_ids" not in runtime.last_query
-    assert candidate.final_answer["value"] == "383285"
+    assert candidate.final_answer["result"]["value"] == "383285"
 
 
 def test_operation_registry_uses_separate_executor_and_oracle_modules() -> None:

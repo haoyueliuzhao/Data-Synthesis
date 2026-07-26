@@ -10,3 +10,9 @@ __all__ = [
     "ProofGraphBuilder",
     "ProofSubgraphExtractor",
 ]
+from trusted_synthesis.core.graph.validation import (
+    ProofGraphValidationReport,
+    ProofGraphValidator,
+)
+
+__all__ = ["ProofGraphValidationReport", "ProofGraphValidator"]

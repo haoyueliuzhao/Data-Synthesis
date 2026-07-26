@@ -17,6 +17,7 @@ class ProofGraphBuilder:
                 "predicate": f"predicate:{evidence.domain}:{evidence.predicate}",
                 "evidence": evidence.evidence_id,
                 "source": f"source:{evidence.domain}:{evidence.source.source_id}",
+                "locator": f"locator:{evidence.domain}:{evidence.source_locator.locator_hash}",
             }
             nodes[ids["subject"]] = EvidenceNode(
                 node_id=ids["subject"],
@@ -44,9 +45,15 @@ class ProofGraphBuilder:
                 kind=NodeKind.SOURCE,
                 properties=evidence.source.model_dump(mode="json", exclude_none=True),
             )
+            nodes[ids["locator"]] = EvidenceNode(
+                node_id=ids["locator"],
+                kind=NodeKind.LOCATOR,
+                properties=evidence.source_locator.model_dump(mode="json", exclude_none=True),
+            )
             _add_edge(edges, ids["subject"], "HAS_EVIDENCE", ids["evidence"])
             _add_edge(edges, ids["evidence"], "ASSERTS", ids["predicate"])
             _add_edge(edges, ids["evidence"], "FROM_SOURCE", ids["source"])
+            _add_edge(edges, ids["evidence"], "LOCATED_AT", ids["locator"])
 
             temporal = evidence.temporal_context.model_dump(mode="json", exclude_none=True)
             if temporal:
@@ -79,7 +86,7 @@ class ProofGraphBuilder:
 
         return ProofGraph(
             graph_id=canonical_hash(
-                {"bundle_hash": bundle.bundle_hash, "schema": "proof_graph.v2"},
+                {"bundle_hash": bundle.bundle_hash, "schema": "proof_graph.v3"},
                 prefix="proof_graph:",
             ),
             nodes=tuple(sorted(nodes.values(), key=lambda item: item.node_id)),

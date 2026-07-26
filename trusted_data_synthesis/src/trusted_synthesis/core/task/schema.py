@@ -23,6 +23,11 @@ class TaskRequirement(str, Enum):
     VERIFY_RESULT = "verify_result"
 
 
+class RetrievalTrack(str, Enum):
+    RESOLVED = "resolved"
+    OPEN = "open"
+
+
 class TaskPublicSpec(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -33,6 +38,7 @@ class TaskPublicSpec(BaseModel):
     instruction: str = Field(min_length=1)
     requirements: tuple[TaskRequirement, ...] = Field(min_length=1)
     allowed_tools: tuple[str, ...] = Field(min_length=1)
+    retrieval_track: RetrievalTrack = RetrievalTrack.RESOLVED
     retrieval_scope: dict[str, Any]
     answer_schema: dict[str, Any]
     metadata: dict[str, Any] = Field(default_factory=dict)
@@ -45,6 +51,7 @@ class TaskOracleContract(BaseModel):
     gold_evidence_ids: tuple[str, ...] = Field(min_length=1)
     task_program: TaskProgram
     proof_graph_id: str = Field(min_length=1)
+    proof_graph_hash: str = Field(min_length=1)
     expected_output: dict[str, Any] | None = None
     quality_rubric: dict[str, Any] = Field(default_factory=dict)
 

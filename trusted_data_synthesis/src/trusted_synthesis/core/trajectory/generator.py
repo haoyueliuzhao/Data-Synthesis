@@ -13,7 +13,7 @@ from trusted_synthesis.core.trajectory.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-REFERENCE_COMPILER_VERSION = "reference_workflow.v2"
+REFERENCE_COMPILER_VERSION = "reference_workflow.v3"
 
 
 class ReferenceWorkflowError(ValueError):

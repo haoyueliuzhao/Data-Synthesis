@@ -7,6 +7,18 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.hashing import canonical_hash
 
 
+class CandidateReleaseSelection(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    selection_id: str
+    accepted_task_ids: tuple[str, ...]
+    accepted_trajectory_ids: tuple[str, ...]
+    quality_assessment_ids: tuple[str, ...]
+    failure_distribution: dict[str, int]
+    domain_task_distribution: dict[str, int]
+    split_counts: dict[str, int]
+
+
 class SplitPolicy(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -19,7 +31,7 @@ class SplitPolicy(BaseModel):
         "task_type",
         "subject_ids",
         "predicates",
-        "program_hash",
+        "program_semantic_hash",
     )
 
     @model_validator(mode="after")
@@ -43,10 +55,15 @@ class ReleaseManifest(BaseModel):
     task_program_version: str
     operation_manifest_hash: str
     required_check_manifest_hash: str
+    candidate_required_check_manifest_hash: str
     split_policy_hash: str
     adapter_capabilities: dict[str, tuple[str, ...]]
     source_build_ids: dict[str, str]
     sample_counts: dict[str, int]
+    accepted_candidate_trajectory_ids: tuple[str, ...] = ()
+    quality_assessment_ids: tuple[str, ...] = ()
+    failure_distribution: dict[str, int] = Field(default_factory=dict)
+    domain_task_distribution: dict[str, int] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @property

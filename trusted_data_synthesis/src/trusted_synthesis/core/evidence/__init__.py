@@ -25,6 +25,7 @@ from trusted_synthesis.core.evidence.temporal import TemporalContext
 __all__ = [
     "DerivedResult",
     "EpistemicStatus",
+    "EvidenceCorpus",
     "EvidenceBundle",
     "EvidenceItem",
     "EvidenceKind",
@@ -43,3 +44,4 @@ __all__ = [
     "TextualClaim",
     "UncertaintyInterval",
 ]
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus

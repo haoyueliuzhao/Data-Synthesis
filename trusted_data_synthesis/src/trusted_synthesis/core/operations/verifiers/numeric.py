@@ -89,7 +89,7 @@ class GrowthOracleVerifier:
         second = _number_independent(inputs[1].value)
         if first == 0:
             return _failure("base_non_zero")
-        expected = {"value": str((second / abs(first) - first / abs(first)) * Decimal("100"))}
+        expected = {"value": str((second - first) / abs(first) * Decimal("100"))}
         return _compare(expected, observed_output)
 
 
@@ -105,9 +105,9 @@ class AggregateOracleVerifier:
         method = str(parameters.get("method") or "mean")
         values = [_number_independent(item.value) for item in inputs]
         if method == "mean":
-            result = sum(values) / Decimal(len(values))
+            result = sum(values, Decimal("0")) / Decimal(len(values))
         elif method == "sum":
-            result = sum(values)
+            result = sum(values, Decimal("0"))
         else:
             return _failure("aggregate_method_registered")
         return _compare({"method": method, "value": str(result)}, observed_output)

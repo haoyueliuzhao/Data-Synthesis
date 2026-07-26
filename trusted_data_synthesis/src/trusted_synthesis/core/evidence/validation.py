@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -36,16 +37,30 @@ class EvidenceValidationReport(BaseModel):
 class EvidenceValidator:
     """Domain-neutral structural validation; domain policies run separately."""
 
+    def __init__(self, semantic_policy: Any | None = None) -> None:
+        self._semantic_policy = semantic_policy
+
     def validate(self, evidence: EvidenceItem) -> EvidenceValidationReport:
-        checks = (
+        checks = [
             self._check_epistemic_status(evidence),
             self._check_version_identity(evidence),
             self._check_lineage(evidence),
             self._check_source_locator(evidence),
             self._check_temporal_consistency(evidence),
             self._check_source_identity(evidence),
-        )
-        return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=checks)
+        ]
+        if self._semantic_policy is not None:
+            report = self._semantic_policy.validate_evidence(evidence)
+            checks.extend(
+                _check(
+                    f"domain_semantic:{check_id}",
+                    passed,
+                    f"Domain semantic check passed: {check_id}",
+                    f"Domain semantic check failed: {check_id}",
+                )
+                for check_id, passed in sorted(report.checks.items())
+            )
+        return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=tuple(checks))
 
     @staticmethod
     def _check_epistemic_status(evidence: EvidenceItem) -> ValidationCheck:

@@ -51,6 +51,7 @@ def test_proof_graph_preserves_identity_and_lineage(finance_evidence: EvidenceIt
         "IN_TIME",
         "APPLIES_TO",
         "HAS_DEFINITION",
+        "LOCATED_AT",
     }
     assert graph.contains_evidence(finance_evidence.evidence_id)
     assert graph.graph_hash == graph.graph_hash
@@ -64,6 +65,7 @@ def test_proof_graph_preserves_identity_and_lineage(finance_evidence: EvidenceIt
         "IN_TIME",
         "APPLIES_TO",
         "HAS_DEFINITION",
+        "LOCATED_AT",
     }
 
 
@@ -129,6 +131,10 @@ def test_temporal_growth_is_a_three_node_program(finance_evidence: EvidenceItem)
         "lookup",
         "lookup",
         "growth",
+    ]
+    assert [ref.selector for ref in task.oracle.task_program.nodes[-1].input_refs] == [
+        "payload.value",
+        "payload.value",
     ]
     assert workflow.final_answer["result"]["value"] == "10.0"
 

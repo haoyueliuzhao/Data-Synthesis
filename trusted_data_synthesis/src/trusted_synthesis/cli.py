@@ -5,7 +5,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from trusted_synthesis.core.evaluation.evaluator import QualityEvaluator
+from trusted_synthesis.core.evaluation.evaluator import (
+    CandidateQualityEvaluator,
+    ReferenceQualityEvaluator,
+)
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.operations.registry import default_registry
@@ -13,12 +17,20 @@ from trusted_synthesis.core.release import (
     SplitPolicy,
     assign_split,
     build_release_manifest,
+    select_candidate_release,
 )
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.finance_pilot import (
+    FinancePilotConfig,
+    run_finance_pilot,
+)
 from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -38,6 +50,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "demo-finance":
         _emit(_demo(adapter, args.limit), args.output)
         return 0
+    if args.command == "finance-pilot":
+        report = run_finance_pilot(
+            adapter,
+            FinancePilotConfig.from_json(args.pilot_config),
+            args.output_dir,
+        )
+        _emit(report, args.output)
+        return 0
     parser.error(f"Unknown command: {args.command}")
     return 2
 
@@ -51,16 +71,28 @@ def _parser() -> argparse.ArgumentParser:
         subparser.add_argument("--output", type=Path)
         if command != "inspect-finance":
             subparser.add_argument("--limit", type=int, default=3)
+    pilot = subparsers.add_parser("finance-pilot")
+    pilot.add_argument("--config", required=True)
+    pilot.add_argument("--pilot-config", required=True)
+    pilot.add_argument("--output-dir", type=Path, required=True)
+    pilot.add_argument("--output", type=Path)
     return parser
 
 
 def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
-    task_synthesizer = ProofGraphTaskSynthesizer()
+    semantic_policy = FinanceSemanticPolicy()
+    task_synthesizer = ProofGraphTaskSynthesizer(semantic_policy)
     trajectory_generator = ReferenceWorkflowCompiler()
+    candidate_generator = CandidateTrajectoryGenerator()
     graph_builder = ProofGraphBuilder()
-    evaluator = QualityEvaluator()
+    evaluator = ReferenceQualityEvaluator(semantic_policy=semantic_policy)
+    candidate_evaluator = CandidateQualityEvaluator(
+        semantic_policy=semantic_policy,
+        claim_verifier=FinanceClaimVerifier(),
+    )
     samples = []
     tasks = []
+    candidate_records = []
     split_policy = SplitPolicy(policy_id="semantic_split.v1")
     for evidence in adapter.iter_evidence(limit=limit):
         bundle_identity = {"purpose": "finance_demo", "evidence_id": evidence.evidence_id}
@@ -75,6 +107,10 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         tasks.append(task)
         trajectory = trajectory_generator.compile(task, bundle)
         assessment = evaluator.evaluate(task, bundle, graph, trajectory)
+        corpus = EvidenceCorpus.from_bundle(bundle)
+        candidate = candidate_generator.generate(task.public, InMemoryEvidenceToolRuntime(corpus))
+        candidate_assessment = candidate_evaluator.evaluate(task, corpus, graph, candidate)
+        candidate_records.append((task, candidate, candidate_assessment))
         samples.append(
             {
                 "bundle": bundle.model_dump(mode="json", exclude_none=True),
@@ -83,10 +119,15 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
                 "oracle_contract": task.oracle.model_dump(mode="json", exclude_none=True),
                 "reference_workflow": trajectory.model_dump(mode="json", exclude_none=True),
                 "quality": assessment.model_dump(mode="json", exclude_none=True),
+                "candidate_workflow": candidate.model_dump(mode="json", exclude_none=True),
+                "candidate_quality": candidate_assessment.model_dump(
+                    mode="json", exclude_none=True
+                ),
                 "split": assign_split(task, split_policy).value,
             }
         )
     inspection = adapter.inspect()
+    candidate_selection = select_candidate_release(candidate_records, split_policy)
     manifest = build_release_manifest(
         release_id=canonical_hash(
             {
@@ -101,6 +142,7 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         registry=default_registry(),
         split_policy=split_policy,
         source_build_ids={"finance_kg": str(inspection.get("kg_build_id"))},
+        candidate_selection=candidate_selection,
     )
     return {
         "pipeline": [
@@ -110,6 +152,8 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
             "task_synthesis",
             "reference_workflow_compilation",
             "quality_evaluation",
+            "candidate_generation",
+            "candidate_quality_evaluation",
         ],
         "sample_count": len(samples),
         "release_manifest": manifest.model_dump(mode="json", exclude_none=True),

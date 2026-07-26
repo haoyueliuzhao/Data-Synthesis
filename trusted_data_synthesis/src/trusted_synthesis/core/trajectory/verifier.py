@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
+from trusted_synthesis.core.evaluation.citation import CitationVerifier
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.graph.validation import ProofGraphValidator
 from trusted_synthesis.core.operations.program import TaskProgramOracleVerifier
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
 from trusted_synthesis.core.task.schema import TaskPackage
@@ -39,6 +41,8 @@ class ReferenceWorkflowVerifier:
 
     def __init__(self, registry: OperationRegistry | None = None) -> None:
         self._oracle = TaskProgramOracleVerifier(registry or default_registry())
+        self._graph_validator = ProofGraphValidator()
+        self._citation_verifier = CitationVerifier()
 
     def verify(
         self,
@@ -64,10 +68,19 @@ class ReferenceWorkflowVerifier:
             and replay.passed
             and trajectory.final_answer.get("result") == replay.independently_computed_output
         )
+        graph_report = self._graph_validator.validate(proof_graph, bundle, gold_ids)
+        citation_report = self._citation_verifier.verify(
+            trajectory.final_answer.get("citations"), by_id, gold_ids
+        )
         checks = (
             _check("task_identity", trajectory.task_id == task.task_id),
             _check("reference_workflow_kind", trajectory.workflow_kind == WorkflowKind.REFERENCE),
-            _check("proof_graph_identity", proof_graph.graph_id == task.oracle.proof_graph_id),
+            _check(
+                "proof_graph_identity",
+                proof_graph.graph_id == task.oracle.proof_graph_id
+                and proof_graph.graph_hash == task.oracle.proof_graph_hash,
+            ),
+            _check("proof_graph_content_integrity", graph_report.passed),
             _check(
                 "proof_graph_evidence_coverage",
                 all(proof_graph.contains_evidence(item) for item in gold_ids),
@@ -96,6 +109,7 @@ class ReferenceWorkflowVerifier:
                 {item.get("evidence_id") for item in trajectory.final_answer.get("citations", [])}
                 == set(gold_ids),
             ),
+            _check("citation_binding", citation_report.passed),
         )
         return TrajectoryVerificationReport(trajectory_id=trajectory.trajectory_id, checks=checks)
 

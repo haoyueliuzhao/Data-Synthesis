@@ -1,101 +1,119 @@
-# Architecture v0.2
+# Architecture v0.3
 
 ## Boundary
 
-The active project is a domain-neutral trusted synthesis compiler. The archived
-financial lake remains a read-only producer. Domain adapters map frozen producer
-artifacts into shared contracts; they do not move domain normalization into the
-core.
+`trusted_data_synthesis` is the active domain-neutral compiler. The archived
+`raw_financial_data_lake` remains a read-only producer. Domain adapters map
+immutable producer artifacts into shared contracts and never move acquisition or
+domain normalization into the core.
 
 ```text
-Domain archive / domain KG
-        -> Adapter capability plugins
-        -> Evidence IR v2
-        -> Task-local Proof Graph
-        -> Public Task + isolated Oracle Contract
-        -> Task Program DAG
-        -> Reference Workflow / Candidate Workflow
-        -> Independent Oracle Replay
-        -> Hard Gates + Diagnostic Quality Vector
-        -> Semantic-cluster Split + Release Manifest
+Domain archive / KG
+        -> Domain Adapter
+        -> Evidence IR v2 + executable semantic policy
+        -> Proof Graph v3 + content validation
+        -> Public Task / isolated Oracle Contract
+        -> Task Program DAG v2
+        -> Reference Compiler | Candidate Agent
+        -> Independent replay and candidate reconstruction
+        -> Separate hard-gate evaluators
+        -> Candidate-aware release selector
+        -> Semantic-cluster split + immutable manifest
 ```
 
-## Evidence IR v2
+## Evidence And Corpus
 
-Evidence is a versioned assertion, not a financial scalar. `payload.kind`
-discriminates scalar observations, textual claims, rule statements, relation
-assertions, experimental results, and derived results. Shared fields cover:
+An `EvidenceItem` is a versioned assertion. Discriminated payloads support scalar
+observations, textual claims, legal rules, relations, experiments, and derived
+results. Subject, predicate, temporal context, scope, source, semantic definition,
+epistemic status, archive lineage, and derivation parents remain explicit.
 
-- generic subject and predicate;
-- multi-axis temporal context;
-- scope;
-- source and exact source locator;
-- semantic definition;
-- archive/build lineage and parent evidence;
-- epistemic status and extraction confidence.
+`EvidenceCorpus` is distinct from a task-local bundle and may contain distractors.
+Public tasks declare either a `resolved` or `open` retrieval track. The current
+deterministic candidate supports the resolved track; the contract leaves open-track
+entity resolution and search to future production agents.
 
-Finance-specific fiscal, statement, market, and comparability fields live in
-`domain_context`, `scope.attributes`, or definition attributes.
+## Proof Graph v3
 
-## Two Graphs
+The Proof Graph is a verifier-facing proof object, not a query-serving domain KG.
+In addition to Subject, Predicate, Evidence, Source, Time, Scope, and Definition,
+v3 represents `SourceLocator` as a first-class node:
 
-The framework distinguishes two graph layers:
+```text
+Subject -HAS_EVIDENCE-> Evidence -ASSERTS-> Predicate
+Evidence -FROM_SOURCE-> Source
+Evidence -LOCATED_AT-> SourceLocator
+Evidence -IN_TIME-> Time
+Evidence -APPLIES_TO-> Scope
+Evidence -HAS_DEFINITION-> Definition
+Evidence -DERIVED_FROM-> Parent Evidence
+```
 
-1. **Domain Evidence Graph**: owned by the adapter/source domain. It supports
-   discovery and domain-native relations.
-2. **Task Proof Graph**: built from the selected Evidence Bundle. It records the
-   exact subject, predicate, time, scope, definition, source, and derivation
-   relations required to prove a task.
-
-Task synthesis fails when a gold evidence item is absent from the Proof Graph.
-The graph is therefore an executable contract, not an optional export.
+`ProofGraphValidator` checks exact Evidence payload/version identity, mandatory
+relations, locator payload binding, and DerivedResult parent consistency. The
+recursive extractor follows derivation/support/qualification/contradiction edges
+and then restores every discovered Evidence node's semantic neighborhood. Oracle
+contracts bind both `proof_graph_id` and `proof_graph_hash`.
 
 ## Public And Oracle Separation
 
-`TaskPublicSpec` contains the natural-language instruction, answer schema,
-allowed tools, and retrieval scope. It contains no gold evidence IDs or program.
+`TaskPublicSpec` exposes instruction, requirements, allowed tools, retrieval track,
+retrieval scope, and answer schema. It contains no gold Evidence IDs or program.
+`TaskOracleContract` separately pins Evidence IDs, Task Program, Proof Graph ID and
+content hash, and the rubric. Candidate APIs cannot receive the Oracle type.
 
-`TaskOracleContract` separately contains gold Evidence IDs, the Task Program,
-Proof Graph identity, and rubric. `CandidateTrajectoryGenerator.generate()`
-accepts only `TaskPublicSpec` and an `EvidenceToolRuntime`; its API cannot accept
-an Oracle Contract.
+## Operation Contract
 
-## Task Program
+Task Program v2 is a topologically ordered DAG. `ProgramInputRef.selector` makes
+cross-node field selection explicit. Every operation freezes:
 
-A Task Program is a topologically ordered operation DAG. Inputs can reference
-versioned Evidence or earlier operation outputs. The registry currently includes
-lookup, compare, difference, ratio, growth, and aggregate.
+```text
+operator and verifier IDs
+input and output schemas
+compatibility and invariant policies
+executor/verifier/semantic versions
+formula, rounding, and tolerance policies
+executor + verifier implementation hash
+```
 
-Executors and Oracle Verifiers are separate classes in separate modules. The
-Oracle Verifier independently recomputes every node and never imports executor
-logic. This prevents a shared implementation defect from validating itself.
+Execution and oracle replay both validate the node contract, input cardinality and
+type, evidence-lineage compatibility, and output structure. Failures become
+node-addressed `ProgramExecutionError` records. Executor and Oracle Verifier
+implementations remain separate.
 
-## Workflows
+## Domain Runtime
 
-- **ReferenceWorkflowCompiler** may read the Oracle Contract and produces a
-  deterministic gold workflow with complete citations.
-- **CandidateTrajectoryGenerator** searches through public retrieval constraints
-  and never receives hidden IDs.
+Core structural validation is composed with executable domain policy. Finance v1
+checks scalar shape, units/currency, historical status, time basis, frequency,
+scope, source definition, and cross-fact comparability. `FinanceClaimVerifier`
+permits only bounded structured claims and rejects ungrounded causal, forecast, or
+investment claims. Legal and Science currently prove schema portability through
+lookup tasks only; complex rule application and evidence synthesis remain future
+work.
 
-Both produce the same auditable trajectory schema, tagged by `workflow_kind`.
+## Candidate-Centered Quality
 
-## Quality
+Reference and Candidate quality are deliberately separate:
 
-Release decisions use fail-closed hard gates before weighted diagnostics:
+```text
+ReferenceQualityEvaluator
+  certifies the deterministic compiler and independent oracle replay
 
-- required-check manifest completeness;
-- evidence structural validity;
-- Proof Graph and citation coverage;
-- independent program replay and final-answer agreement.
+CandidateQualityEvaluator
+  reconstructs retrieval, selection, calculation, answer, citation, and claims
+```
 
-The diagnostic vector reports evidence validity, graph coverage, operation
-replay, citation coverage, workflow completeness, and program depth. A missing
-required check is equivalent to a failed check.
+Candidate hard gates cover public-only generation, allowed tools, retrieved
+Evidence validity, recall and precision, operation correctness, Proof Graph hash,
+answer schema and value, exact source/locator citation binding, domain claims, and
+oracle leakage. Each task family has a frozen required-check manifest. Missing
+checks are ordinary failed gates, never dictionary exceptions.
 
-## Versioning And Split
+## Release And Split
 
-Release manifests freeze Evidence, Proof Graph, Task Program, operation registry,
-quality-check manifest, adapter capability, source build, and split policy
-contracts. Split assignment hashes a semantic cluster composed of domain, task
-type, subjects, predicates, and program identity so equivalent tasks cannot leak
-across train/dev/test.
+Split fields are executed from `SplitPolicy.cluster_fields`. Program clustering
+uses an Evidence-ID-independent semantic hash, while instance identity retains
+versioned Evidence IDs. `CandidateReleaseSelection` publishes only accepted
+trajectories and records assessment IDs, failure distribution, domain/task
+distribution, and split counts. Release manifests freeze both Reference and
+Candidate check manifests plus operation implementation hashes.

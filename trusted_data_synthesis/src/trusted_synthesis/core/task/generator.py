@@ -5,6 +5,7 @@ from typing import Any
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.graph.validation import ProofGraphValidator
 from trusted_synthesis.core.task.program import (
     InputRefKind,
     OperationNode,
@@ -13,6 +14,7 @@ from trusted_synthesis.core.task.program import (
     make_program,
 )
 from trusted_synthesis.core.task.schema import (
+    RetrievalTrack,
     TaskLevel,
     TaskOracleContract,
     TaskPackage,
@@ -29,11 +31,16 @@ class TaskSynthesisError(ValueError):
 class ProofGraphTaskSynthesizer:
     """Create a public task and a separately addressable oracle contract."""
 
+    def __init__(self, semantic_policy: Any | None = None) -> None:
+        self._semantic_policy = semantic_policy
+        self._proof_validator = ProofGraphValidator()
+
     def fact_retrieval(
         self, proof_graph: ProofGraph, bundle: EvidenceBundle, evidence_id: str
     ) -> TaskPackage:
         item = self._find(bundle, evidence_id)
-        self._require_graph_evidence(proof_graph, (evidence_id,))
+        self._validate_domain_evidence(item)
+        self._require_graph_evidence(proof_graph, bundle, (evidence_id,))
         node = _operation_node("result", "lookup", (evidence_id,), "payload")
         return self._package(
             task_type="fact_retrieval",
@@ -63,7 +70,7 @@ class ProofGraphTaskSynthesizer:
         right = self._find(bundle, right_evidence_id)
         self._validate_comparable(left, right)
         evidence_ids = (left_evidence_id, right_evidence_id)
-        self._require_graph_evidence(proof_graph, evidence_ids)
+        self._require_graph_evidence(proof_graph, bundle, evidence_ids)
         node = _operation_node("result", "compare", evidence_ids, "comparison")
         return self._package(
             task_type="comparison",
@@ -93,15 +100,23 @@ class ProofGraphTaskSynthesizer:
         later = self._find(bundle, later_evidence_id)
         self._validate_same_series(earlier, later)
         evidence_ids = (earlier_evidence_id, later_evidence_id)
-        self._require_graph_evidence(proof_graph, evidence_ids)
+        self._require_graph_evidence(proof_graph, bundle, evidence_ids)
         earlier_node = _operation_node("earlier_value", "lookup", (earlier_evidence_id,), "payload")
         later_node = _operation_node("later_value", "lookup", (later_evidence_id,), "payload")
         growth_node = OperationNode(
             node_id="result",
             operator_id="growth",
             input_refs=(
-                ProgramInputRef(kind=InputRefKind.OPERATION, ref_id=earlier_node.node_id),
-                ProgramInputRef(kind=InputRefKind.OPERATION, ref_id=later_node.node_id),
+                ProgramInputRef(
+                    kind=InputRefKind.OPERATION,
+                    ref_id=earlier_node.node_id,
+                    selector="payload.value",
+                ),
+                ProgramInputRef(
+                    kind=InputRefKind.OPERATION,
+                    ref_id=later_node.node_id,
+                    selector="payload.value",
+                ),
             ),
             output_schema="percentage",
             verifier_id="growth.oracle.v1",
@@ -119,6 +134,59 @@ class ProofGraphTaskSynthesizer:
             proof_graph=proof_graph,
             program=make_program((earlier_node, later_node, growth_node), "result"),
             answer_schema={"type": "percentage", "unit": "percent"},
+        )
+
+    def temporal_average(
+        self,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        evidence_ids: tuple[str, ...],
+    ) -> TaskPackage:
+        if len(evidence_ids) < 3:
+            raise TaskSynthesisError("temporal average requires at least three observations")
+        evidence = tuple(self._find(bundle, evidence_id) for evidence_id in evidence_ids)
+        ordered = tuple(sorted(evidence, key=_temporal_sort_key))
+        self._validate_temporal_series(ordered)
+        ordered_ids = tuple(item.evidence_id for item in ordered)
+        self._require_graph_evidence(proof_graph, bundle, ordered_ids)
+        lookup_nodes = tuple(
+            _operation_node(f"value_{index}", "lookup", (item.evidence_id,), "payload")
+            for index, item in enumerate(ordered, start=1)
+        )
+        result = OperationNode(
+            node_id="result",
+            operator_id="aggregate",
+            input_refs=tuple(
+                ProgramInputRef(
+                    kind=InputRefKind.OPERATION,
+                    ref_id=node.node_id,
+                    selector="payload.value",
+                )
+                for node in lookup_nodes
+            ),
+            parameters={"method": "mean"},
+            output_schema="scalar",
+            verifier_id="aggregate.oracle.v1",
+            dependencies=tuple(node.node_id for node in lookup_nodes),
+        )
+        first = ordered[0]
+        return self._package(
+            task_type="temporal_average",
+            level=TaskLevel.RESEARCH_WORKFLOW,
+            instruction=(
+                f"What was the mean {first.predicate} for {first.subject.name} across "
+                f"{_time_label(ordered[0])} through {_time_label(ordered[-1])}? "
+                "Use every listed observation and identify the sources."
+            ),
+            evidence=ordered,
+            bundle=bundle,
+            proof_graph=proof_graph,
+            program=make_program((*lookup_nodes, result), "result"),
+            answer_schema={
+                **_scalar_answer_schema(first, "aggregate"),
+                "method": "mean",
+                "required_fields": ["method", "value"],
+            },
         )
 
     def _package(
@@ -140,7 +208,7 @@ class ProofGraphTaskSynthesizer:
                 "bundle_id": bundle.bundle_id,
                 "evidence_ids": evidence_ids,
                 "program_hash": program.program_hash,
-                "schema": "task_package.v2",
+                "schema": "task_package.v3",
             },
             prefix="task:",
         )
@@ -150,14 +218,9 @@ class ProofGraphTaskSynthesizer:
             task_type=task_type,
             level=level,
             instruction=instruction,
-            requirements=(
-                TaskRequirement.RETRIEVE_EVIDENCE,
-                TaskRequirement.SELECT_EVIDENCE,
-                TaskRequirement.CALCULATE,
-                TaskRequirement.CITE_SOURCE,
-                TaskRequirement.VERIFY_RESULT,
-            ),
-            allowed_tools=("evidence.search", "calculator"),
+            requirements=_requirements_for_program(program),
+            allowed_tools=_allowed_tools_for_program(program),
+            retrieval_track=RetrievalTrack.RESOLVED,
             retrieval_scope={
                 "subject_ids": sorted({item.subject.subject_id for item in evidence}),
                 "predicates": sorted({item.predicate for item in evidence}),
@@ -165,13 +228,17 @@ class ProofGraphTaskSynthesizer:
                 "source_authorities": sorted({item.source.authority.value for item in evidence}),
             },
             answer_schema=answer_schema,
-            metadata={"bundle_id": bundle.bundle_id, "proof_required": True},
+            metadata={
+                "bundle_id": bundle.bundle_id,
+                "proof_required": True,
+            },
         )
         oracle = TaskOracleContract(
             task_id=task_id,
             gold_evidence_ids=evidence_ids,
             task_program=program,
             proof_graph_id=proof_graph.graph_id,
+            proof_graph_hash=proof_graph.graph_hash,
             quality_rubric={
                 "evidence_coverage": 1.0,
                 "operation_replay": True,
@@ -187,14 +254,27 @@ class ProofGraphTaskSynthesizer:
                 return item
         raise TaskSynthesisError(f"evidence not found in bundle: {evidence_id}")
 
-    @staticmethod
-    def _require_graph_evidence(proof_graph: ProofGraph, evidence_ids: tuple[str, ...]) -> None:
-        missing = [item for item in evidence_ids if not proof_graph.contains_evidence(item)]
-        if missing:
-            raise TaskSynthesisError(f"proof graph is missing task evidence: {missing}")
+    def _require_graph_evidence(
+        self,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        evidence_ids: tuple[str, ...],
+    ) -> None:
+        report = self._proof_validator.validate(proof_graph, bundle, evidence_ids)
+        if not report.passed:
+            failures = [check.check_id for check in report.checks if not check.passed]
+            raise TaskSynthesisError(f"proof graph is missing or invalid: {failures}")
 
-    @staticmethod
-    def _validate_comparable(left: EvidenceItem, right: EvidenceItem) -> None:
+    def _validate_comparable(self, left: EvidenceItem, right: EvidenceItem) -> None:
+        self._validate_domain_evidence(left)
+        self._validate_domain_evidence(right)
+        if self._semantic_policy is not None:
+            decision = self._semantic_policy.compare(left, right)
+            if not decision.comparable:
+                raise TaskSynthesisError(
+                    f"evidence is not comparable: {', '.join(decision.reasons)}"
+                )
+            return
         left_payload = _require_scalar(left)
         right_payload = _require_scalar(right)
         mismatches = []
@@ -210,15 +290,38 @@ class ProofGraphTaskSynthesizer:
         if mismatches:
             raise TaskSynthesisError(f"evidence is not comparable: {', '.join(mismatches)}")
 
-    @classmethod
-    def _validate_same_series(cls, earlier: EvidenceItem, later: EvidenceItem) -> None:
-        cls._validate_comparable(earlier, later)
+    def _validate_same_series(self, earlier: EvidenceItem, later: EvidenceItem) -> None:
+        self._validate_comparable(earlier, later)
         if earlier.subject.subject_id != later.subject.subject_id:
             raise TaskSynthesisError("temporal series must refer to the same subject")
         earlier_end = earlier.temporal_context.valid_to or earlier.temporal_context.observed_at
         later_end = later.temporal_context.valid_to or later.temporal_context.observed_at
         if not earlier_end or not later_end or earlier_end >= later_end:
             raise TaskSynthesisError("temporal growth requires ordered, dated evidence")
+
+    def _validate_temporal_series(self, evidence: tuple[EvidenceItem, ...]) -> None:
+        first = evidence[0]
+        observed_times = []
+        for item in evidence:
+            self._validate_domain_evidence(item)
+            if item is not first:
+                self._validate_comparable(first, item)
+            if item.subject.subject_id != first.subject.subject_id:
+                raise TaskSynthesisError("temporal series must refer to the same subject")
+            observed_times.append(_temporal_sort_key(item))
+        if any(value is None for value in observed_times):
+            raise TaskSynthesisError("temporal average requires dated evidence")
+        if len(set(observed_times)) != len(observed_times):
+            raise TaskSynthesisError("temporal average contains duplicate periods")
+
+    def _validate_domain_evidence(self, evidence: EvidenceItem) -> None:
+        if self._semantic_policy is None:
+            return
+        report = self._semantic_policy.validate_evidence(evidence)
+        if not report.passed:
+            raise TaskSynthesisError(
+                f"domain semantic validation failed: {', '.join(report.issues)}"
+            )
 
 
 def _operation_node(
@@ -260,3 +363,26 @@ def _time_label(evidence: EvidenceItem) -> str:
 def _time_phrase(evidence: EvidenceItem) -> str:
     label = _time_label(evidence)
     return "" if label == "the stated period" else f" for {label}"
+
+
+def _temporal_sort_key(evidence: EvidenceItem):
+    context = evidence.temporal_context
+    return context.valid_to or context.observed_at or context.valid_from
+
+
+def _requirements_for_program(program: TaskProgram) -> tuple[TaskRequirement, ...]:
+    requirements = [
+        TaskRequirement.RETRIEVE_EVIDENCE,
+        TaskRequirement.SELECT_EVIDENCE,
+        TaskRequirement.CITE_SOURCE,
+    ]
+    if any(node.operator_id != "lookup" for node in program.nodes):
+        requirements.extend((TaskRequirement.CALCULATE, TaskRequirement.VERIFY_RESULT))
+    return tuple(requirements)
+
+
+def _allowed_tools_for_program(program: TaskProgram) -> tuple[str, ...]:
+    tools = ["evidence.search"]
+    if any(node.operator_id != "lookup" for node in program.nodes):
+        tools.append("calculator")
+    return tuple(tools)

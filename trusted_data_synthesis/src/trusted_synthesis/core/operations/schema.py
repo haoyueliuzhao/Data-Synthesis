@@ -44,9 +44,17 @@ class OperationDefinition:
     """In-process registry record; only its manifest is serialized."""
 
     operator_id: str
+    verifier_id: str
     executor: OperationExecutor
     oracle_verifier: OperationOracleVerifier
     input_schema: str
     output_schema: str
     compatibility_policy: str
     invariant_checks: tuple[str, ...]
+    executor_version: str
+    verifier_version: str
+    semantic_version: str
+    formula_id: str
+    rounding_policy: str
+    tolerance_policy: str
+    implementation_hash: str
