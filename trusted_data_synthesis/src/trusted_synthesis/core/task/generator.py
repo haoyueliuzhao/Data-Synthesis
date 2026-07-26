@@ -7,6 +7,8 @@ from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.graph.validation import ProofGraphValidator
+from trusted_synthesis.core.operations.registry import default_registry
+from trusted_synthesis.core.plugins import SemanticPolicyProtocol
 from trusted_synthesis.core.task.builder import TaskPackageBuilder
 from trusted_synthesis.core.task.program import (
     InputRefKind,
@@ -19,6 +21,7 @@ from trusted_synthesis.core.task.schema import (
     RetrievalTrack,
     TaskLevel,
     TaskPackage,
+    VerifierRequirement,
 )
 from trusted_synthesis.hashing import canonical_hash
 
@@ -32,14 +35,16 @@ class ProofGraphTaskSynthesizer:
 
     def __init__(
         self,
-        semantic_policy: Any | None = None,
+        semantic_policy: SemanticPolicyProtocol | None = None,
         *,
         allow_structured_claims: bool = False,
+        source_grounding_requirement: VerifierRequirement = VerifierRequirement.NOT_APPLICABLE,
     ) -> None:
         self._semantic_policy = semantic_policy
         self._allow_structured_claims = allow_structured_claims
+        self._source_grounding_requirement = source_grounding_requirement
         self._proof_validator = ProofGraphValidator()
-        self._package_builder = TaskPackageBuilder()
+        self._package_builder = TaskPackageBuilder(default_registry())
 
     def fact_retrieval(
         self, proof_graph: ProofGraph, bundle: EvidenceBundle, evidence_id: str
@@ -224,14 +229,15 @@ class ProofGraphTaskSynthesizer:
                 "subject_ids": sorted({item.subject.subject_id for item in evidence}),
                 "predicates": sorted({item.predicate for item in evidence}),
                 "temporal_labels": sorted({_time_label(item) for item in evidence}),
-                "source_authorities": sorted({item.source.authority.value for item in evidence}),
-                "selection_contract": _selection_contract(evidence),
+                "semantic_constraints": _public_semantic_constraints(evidence),
             },
+            oracle_selection_contract=_oracle_selection_contract(evidence),
             answer_schema={
                 **answer_schema,
             },
             retrieval_track=RetrievalTrack.RESOLVED,
             allow_structured_claims=self._allow_structured_claims,
+            source_grounding_requirement=self._source_grounding_requirement,
         )
 
     @staticmethod
@@ -349,19 +355,15 @@ def _scalar_answer_schema(evidence: EvidenceItem, answer_type: str) -> dict[str,
     return {"type": answer_type, "result_context": _payload_context(evidence)}
 
 
-def _selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, Any]:
+def _public_semantic_constraints(evidence: tuple[EvidenceItem, ...]) -> dict[str, Any]:
     return {
         "definition_ids": sorted(
             {item.definition.definition_id for item in evidence if item.definition.definition_id}
         ),
-        "source_ids": sorted({item.source.source_id for item in evidence}),
         "source_authorities": sorted({item.source.authority.value for item in evidence}),
-        "payload_context_hashes": sorted(
-            {canonical_hash(_payload_context(item), prefix="payload_context:") for item in evidence}
-        ),
-        "domain_context_hashes": sorted(
-            {canonical_hash(item.domain_context, prefix="domain_context:") for item in evidence}
-        ),
+        "payload_contexts": _unique_payload_contexts(evidence),
+        "epistemic_statuses": sorted({item.epistemic_status.value for item in evidence}),
+        "historical_only": all(not item.domain_context.get("is_forecast") for item in evidence),
         "time_bases": sorted(
             {item.temporal_context.basis for item in evidence if item.temporal_context.basis}
         ),
@@ -375,7 +377,26 @@ def _selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, Any]:
         "scope_types": sorted(
             {item.scope.scope_type for item in evidence if item.scope is not None}
         ),
-        "scope_ids": sorted({item.scope.scope_id for item in evidence if item.scope is not None}),
+        "scope_ids": sorted(
+            {
+                item.scope.scope_id
+                for item in evidence
+                if item.scope is not None and item.scope.scope_id
+            }
+        ),
+    }
+
+
+def _oracle_selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, Any]:
+    return {
+        "evidence_version_ids": sorted({item.evidence_version_id for item in evidence}),
+        "source_ids": sorted({item.source.source_id for item in evidence}),
+        "payload_context_hashes": sorted(
+            {canonical_hash(_payload_context(item), prefix="payload_context:") for item in evidence}
+        ),
+        "domain_context_hashes": sorted(
+            {canonical_hash(item.domain_context, prefix="domain_context:") for item in evidence}
+        ),
         "required_build_ids": {
             key: sorted(
                 {
@@ -387,6 +408,16 @@ def _selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, Any]:
             for key in sorted({key for item in evidence for key in item.provenance.build_ids})
         },
     }
+
+
+def _unique_payload_contexts(evidence: tuple[EvidenceItem, ...]) -> list[dict[str, Any]]:
+    contexts = {
+        canonical_hash(_payload_context(item), prefix="public_payload_context:"): _payload_context(
+            item
+        )
+        for item in evidence
+    }
+    return [contexts[key] for key in sorted(contexts)]
 
 
 def _payload_context(evidence: EvidenceItem) -> dict[str, Any]:

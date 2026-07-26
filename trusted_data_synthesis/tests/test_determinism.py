@@ -5,7 +5,10 @@ from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
-from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
+from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
 
 def test_candidate_pipeline_is_deterministic(finance_evidence: EvidenceItem) -> None:
@@ -22,7 +25,7 @@ def test_candidate_pipeline_is_deterministic(finance_evidence: EvidenceItem) -> 
         task = ProofGraphTaskSynthesizer().fact_retrieval(
             graph, bundle, finance_evidence.evidence_id
         )
-        candidate = CandidateTrajectoryGenerator().generate(
+        candidate = FinanceNumericCandidateGenerator().generate(
             task.public, InMemoryEvidenceToolRuntime(corpus)
         )
         quality = CandidateQualityEvaluator().evaluate(task, corpus, graph, candidate)

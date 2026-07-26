@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from trusted_synthesis.core.evaluation.grounding import (
+    evaluate_source_grounding,
+    grounding_requirement,
+)
 from trusted_synthesis.core.evaluation.schema import (
     DiagnosticQualityVector,
     DimensionScore,
@@ -14,6 +18,11 @@ from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.evidence.validation import EvidenceValidator
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.plugins import (
+    ClaimVerifierProtocol,
+    SemanticPolicyProtocol,
+    SourceGroundingVerifierProtocol,
+)
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.core.trajectory.candidate_verifier import (
     CandidateWorkflowVerifier,
@@ -24,8 +33,8 @@ from trusted_synthesis.core.trajectory.verifier import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-REFERENCE_EVALUATOR_VERSION = "reference_quality.v4"
-CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v4"
+REFERENCE_EVALUATOR_VERSION = "reference_quality.v5"
+CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v5"
 REQUIRED_CHECK_MANIFEST = (
     "task_identity",
     "reference_workflow_kind",
@@ -83,8 +92,8 @@ class ReferenceQualityEvaluator:
     def __init__(
         self,
         *,
-        semantic_policy: Any | None = None,
-        source_grounding_verifier: Any | None = None,
+        semantic_policy: SemanticPolicyProtocol | None = None,
+        source_grounding_verifier: SourceGroundingVerifierProtocol | None = None,
         workflow_verifier: ReferenceWorkflowVerifier | None = None,
     ) -> None:
         self._structural_evidence_validator = EvidenceValidator()
@@ -119,8 +128,9 @@ class ReferenceQualityEvaluator:
         invalid_domain_evidence = tuple(
             report.evidence_id for report in domain_reports if not report.passed
         )
-        grounding_failures = _source_grounding_failures(
+        grounding = evaluate_source_grounding(
             tuple(item for item in bundle.evidence if item.evidence_id in gold_ids),
+            grounding_requirement(task.public.metadata),
             self._source_grounding_verifier,
         )
         hard_gates = (
@@ -147,8 +157,8 @@ class ReferenceQualityEvaluator:
             HardGateResult(
                 gate_id="domain_source_grounding",
                 scope=GateScope.DOMAIN,
-                passed=not grounding_failures,
-                details=grounding_failures,
+                passed=grounding.passed,
+                details=(f"status={grounding.status.value}", *grounding.failures),
             ),
             HardGateResult(
                 gate_id="proof_and_lineage",
@@ -233,9 +243,9 @@ class CandidateQualityEvaluator:
     def __init__(
         self,
         *,
-        semantic_policy: Any | None = None,
-        claim_verifier: Any | None = None,
-        source_grounding_verifier: Any | None = None,
+        semantic_policy: SemanticPolicyProtocol | None = None,
+        claim_verifier: ClaimVerifierProtocol | None = None,
+        source_grounding_verifier: SourceGroundingVerifierProtocol | None = None,
         workflow_verifier: CandidateWorkflowVerifier | None = None,
     ) -> None:
         self._structural_evidence_validator = EvidenceValidator()
@@ -507,13 +517,3 @@ def _dimension_checks(dimension: str) -> tuple[str, ...]:
         "verification": ("proof_graph_binding", "independent_program_replay"),
         "answer": ("answer_correctness", "citation_binding"),
     }[dimension]
-
-
-def _source_grounding_failures(evidence: tuple[Any, ...], verifier: Any | None) -> tuple[str, ...]:
-    if verifier is None:
-        return ()
-    failures: list[str] = []
-    for item in evidence:
-        report = verifier.verify(item)
-        failures.extend(f"{item.evidence_id}:{failure}" for failure in report.failures)
-    return tuple(failures)

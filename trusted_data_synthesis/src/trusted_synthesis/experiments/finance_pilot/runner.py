@@ -22,12 +22,20 @@ from trusted_synthesis.core.release import (
     select_candidate_release,
 )
 from trusted_synthesis.core.release.split import semantic_cluster_id
+from trusted_synthesis.core.task.schema import VerifierRequirement
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.cross_domain_contract_suite import (
+    run_cross_domain_contract_suite,
+)
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
 from trusted_synthesis.experiments.finance_pilot.mutations import (
     MutationCase,
     generate_mutations,
@@ -42,7 +50,7 @@ from trusted_synthesis.experiments.finance_pilot.task_factory import (
     build_task_cases,
 )
 from trusted_synthesis.hashing import canonical_hash
-from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
 
 def run_finance_pilot(
@@ -69,11 +77,14 @@ def run_finance_pilot(
         distractors_per_task=config.distractors_per_task,
         hard_distractors_per_task=config.hard_distractors_per_task,
         hard_distractor_types=config.hard_distractor_types,
-        task_synthesizer=FinanceTaskPlugin(allow_structured_claims=True),
+        task_synthesizer=FinanceTaskPlugin(
+            allow_structured_claims=True,
+            source_grounding_requirement=VerifierRequirement.REQUIRED,
+        ),
     )
 
     reference_compiler = ReferenceWorkflowCompiler()
-    candidate_generator = CandidateTrajectoryGenerator()
+    candidate_generator = FinanceNumericCandidateGenerator()
     reference_evaluator = ReferenceQualityEvaluator(
         semantic_policy=policy,
         source_grounding_verifier=source_grounding_verifier,
@@ -121,6 +132,12 @@ def run_finance_pilot(
 
     split_policy = SplitPolicy(policy_id="finance_pilot_semantic_split.v1")
     selection = select_candidate_release(candidate_records, split_policy)
+    registry = default_registry()
+    cross_domain_contracts = run_cross_domain_contract_suite()
+    release_plugin_sets = (
+        finance_plugin_set(adapter, registry, source_grounding_verifier),
+        *cross_domain_contracts.plugin_sets,
+    )
     release_id = canonical_hash(
         {
             "pilot_id": config.pilot_id,
@@ -134,10 +151,13 @@ def run_finance_pilot(
         release_id=release_id,
         tasks=(case.task for case in cases),
         adapters=(adapter,),
-        registry=default_registry(),
+        registry=registry,
         split_policy=split_policy,
         source_build_ids={"finance_kg": str(inspection["kg_build_id"])},
         candidate_selection=selection,
+        domain_plugin_sets=release_plugin_sets,
+        source_grounding_verifiers=(source_grounding_verifier,),
+        cross_domain_contract_suite=cross_domain_contracts.result,
     )
     reproducibility = _reproducibility_check(
         cases=cases,
@@ -514,7 +534,7 @@ def _reproducibility_check(
     cases: tuple[PilotTaskCase, ...],
     config: FinancePilotConfig,
     reference_compiler: ReferenceWorkflowCompiler,
-    candidate_generator: CandidateTrajectoryGenerator,
+    candidate_generator: FinanceNumericCandidateGenerator,
     reference_evaluator: ReferenceQualityEvaluator,
     candidate_evaluator: CandidateQualityEvaluator,
     references: list[Trajectory],
@@ -553,14 +573,23 @@ def _reproducibility_check(
             for mutation in generate_mutations(case, candidate, config.mutation_types)
         )
     selection_replay = select_candidate_release(candidate_records, split_policy)
+    replay_source_grounding = adapter.source_grounding_verifier()
+    replay_registry = default_registry()
+    replay_cross_domain_contracts = run_cross_domain_contract_suite()
     manifest_replay = build_release_manifest(
         release_id=release_id,
         tasks=(case.task for case in cases),
         adapters=(adapter,),
-        registry=default_registry(),
+        registry=replay_registry,
         split_policy=split_policy,
         source_build_ids={"finance_kg": str(inspection["kg_build_id"])},
         candidate_selection=selection_replay,
+        domain_plugin_sets=(
+            finance_plugin_set(adapter, replay_registry, replay_source_grounding),
+            *replay_cross_domain_contracts.plugin_sets,
+        ),
+        source_grounding_verifiers=(replay_source_grounding,),
+        cross_domain_contract_suite=replay_cross_domain_contracts.result,
     )
     return {
         "reference_trajectory_ids": [item.trajectory_id for item in references]

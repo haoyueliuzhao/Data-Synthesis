@@ -1,45 +1,132 @@
-# Generalization Validation Report
+# Generalization Validation Report v0.4.1
 
 ## Scope
 
-This report validates architecture portability, not legal or scientific dataset readiness. Finance
-remains the large-scale reference implementation; Legal and Science are small, manually controlled
-contract fixtures.
+This report validates architecture and contract portability, not legal or scientific production
+readiness. Finance remains the scale reference implementation. Legal and Science are compact,
+versioned contract fixtures with controlled candidate workflows and mutations.
+
+The strongest justified claim is:
+
+> The framework enforces domain generality as an executable architecture and release contract and
+> validates contract-level portability across finance, legal, and scientific evidence regimes.
+
+It does not yet establish real-model, real-corpus cross-domain transfer.
+
+## Remediated Findings
+
+The v0.4.1 hardening closes the review findings as follows:
+
+| Finding | Resolution |
+| --- | --- |
+| Missing Legal/Science node output passed | Empty or missing observed output now fails strict equality |
+| Executor and Oracle shared helpers | Legal/Science execution and oracle paths are independent; defect mutation is tested |
+| Structured output lacked a contract | Pydantic output models reject missing, mistyped, and extra fields |
+| Candidate required hidden node IDs | Explicit `PLAN_GIVEN` and semantic `PLAN_HIDDEN` tracks were added |
+| Public scope exposed exact Oracle selection | Public semantic constraints and hidden exact selection are separate |
+| Runtime candidate was finance-specific | Concrete generator moved to `experiments/finance_pilot`; Runtime exposes a protocol |
+| Audit covered only Core | It now scans `core`, `runtime`, and `architecture` |
+| AST audit bypasses | Relative/dynamic import, aliases, dict dispatch, and subscript access are detected |
+| Plugin protocols lived under Domains | Protocols moved to `core/plugins.py`; old module re-exports them |
+| Tools defaulted to calculator | Operations declare tool capability, action type, and execution mode |
+| Mixed-domain evidence was implicit | Builder requires all evidence to match the single task domain |
+| Helper changes escaped implementation hash | Registered helper dependencies are included in the operation hash |
+| Missing source verifier passed silently | Required missing verifier fails; not-applicable is explicit |
+| Release omitted portability artifacts | Plugin, verifier, mutation, fixture, and suite manifests are frozen |
 
 ## Static Architecture Audit
 
-`generalization_contract.v1.1` scanned the complete `trusted_synthesis/core` package. Its audit
-identity includes the rule manifest and content digest of every scanned Core source file.
+`generalization_contract.v1.2` scans every Python module in the three declared common packages:
 
-| Metric | Result | Contract |
-| --- | ---: | ---: |
-| Core domain imports | 0 | 0 |
-| Core concrete-domain branches | 0 | 0 |
-| Core domain-field interpretation accesses | 0 | 0 |
+```text
+trusted_synthesis/core
+trusted_synthesis/runtime
+trusted_synthesis/architecture
+```
 
-The Release Manifest now runs this audit fail-closed and freezes its hash.
+Concrete domains are discovered from `trusted_synthesis/domains`. The audit implementation is
+explicitly exempted from judging its own rule vocabulary but remains part of the file-hash identity.
 
-The finance production entry points now instantiate `FinanceTaskPlugin`; Core retains only the
-generic package builder and compatibility examples. The package and release manifest versions were
-advanced together to `0.4.0`, so a release cannot report the earlier framework contract after using
-the new boundary rules.
+| Metric | Required |
+| --- | ---: |
+| Common-package domain imports | 0 |
+| Concrete-domain branches | 0 |
+| Domain-field interpretation accesses | 0 |
+| Dynamic domain imports | 0 |
+| Dictionary domain dispatches | 0 |
 
-## Reasoning Contracts
+The release process runs this audit fail-closed and freezes its complete result and hash.
 
-| Domain | Program | Depth | Result |
-| --- | --- | ---: | --- |
-| Legal | condition/exception checks -> authority resolution | 3 | passed |
-| Science | protocol alignment -> qualified effect comparison | 2 | passed |
+## Public And Oracle Isolation
 
-Both contracts passed structural Evidence checks, domain semantic checks, Proof Graph validation,
-independent operation replay, citation binding, and separate Universal/Domain hard gates. A mutated
-legal operation output was rejected by `independent_recompute` while all domain gates remained valid,
-which confirms that the generic replay gate detects a non-financial derivation error.
+Public tasks now contain only semantic retrieval constraints. Exact evidence versions, source IDs,
+build IDs, context hashes, gold bindings, expected outputs, and Proof Graph identities are held in
+the Oracle contract. Recursive leakage checks reject these keys if they appear in public JSON.
+
+`PLAN_GIVEN` exposes a public program skeleton without gold evidence or outputs. `PLAN_HIDDEN`
+accepts candidate-local node IDs and aligns the produced DAG semantically. Tests cover both a valid
+local plan and an operator mutation that must be rejected.
+
+## Operation And Grounding Contracts
+
+Legal and Science operations now bind strict result models:
+
+```text
+LegalRuleDecision
+LegalAuthorityDecision
+ScienceProtocolAlignment
+ScienceEffectComparison
+```
+
+Missing node results and undeclared fields are rejected. Executor and oracle implementations use
+independent algorithms, and an executor-helper mutation is caught by independent replay. Operation
+identity includes executor, oracle, and declared helper dependencies.
+
+Source grounding is also fail-closed:
+
+```text
+required + verifier available     -> VERIFIED or FAILED
+required + verifier missing       -> MISSING_REQUIRED_VERIFIER
+declared not applicable           -> NOT_APPLICABLE
+```
+
+Only `VERIFIED` and explicitly declared `NOT_APPLICABLE` can pass.
+
+## Cross-domain Candidate Suite
+
+The current deterministic suite executes one Legal and one Science candidate against hard in-scope
+distractors, then applies seven mutation classes to each:
+
+```text
+missing evidence
+time shift
+scope mismatch
+definition mismatch
+wrong derivation
+citation mismatch
+unsupported claim
+```
+
+Expected deterministic result:
+
+| Metric | Result |
+| --- | ---: |
+| Domains | 2 |
+| Tasks | 2 |
+| Clean candidates | 2 |
+| Mutated candidates | 14 |
+| Reference acceptance | 100% |
+| Clean candidate acceptance | 100% |
+| Mutation rejection | 100% |
+
+The candidate sees only the public task and searchable corpus boundary. It does not read the Oracle
+contract when selecting evidence or constructing its trace. These fixtures test contract behavior,
+not natural-language model competence.
 
 ## Finance Regression
 
-The deterministic small finance pilot was rerun after moving production task construction behind
-the finance plugin.
+The deterministic finance pilot was rerun against pinned KG
+`kg_20260711_062123_bc4b4394` after the v0.4.1 changes:
 
 | Metric | Result |
 | --- | ---: |
@@ -50,58 +137,59 @@ the finance plugin.
 | Critical false acceptances | 0 |
 | Error-detection F1 | 1.00 |
 | Failure localization rate | 1.00 |
+| Check localization rate | 0.9689 |
 | Step/node localization rate | 1.00 |
 | Semantic split leakage | 0 |
+| Release hash replay | passed |
 
-The mutation run exercised nine generic families: evidence, temporal, scope, definition,
-trajectory, citation, derivation, claim, and composite. Every realized family had a 100% detection
-rate. The generic `provenance` family is registered but was not independently realized by this
-small finance configuration; source-object entailment remains covered by the ordinary quality
-pipeline rather than this mutation count.
+All 24 tasks retrieved seven hard distractor classes while selecting none of them. Source grounding
+accepted 4,147 of 5,103 checked facts; the 956 rejected facts were FRED source-entailment failures,
+so the architecture still exposes upstream data defects rather than normalizing them away.
 
-The generated Release Manifest embedded the same passing architecture audit:
+The generated Release Manifest uses framework `0.4.1`, embeds all three plugin sets, records the
+Finance source-grounding verifier, and freezes the passing two-domain Candidate Contract Suite.
+These are deterministic architecture results and must not be presented as a real-model evaluation.
 
-```text
-core_domain_import_count       = 0
-core_domain_branch_count       = 0
-core_domain_field_access_count = 0
-```
+## Automated Verification
 
-This regression shows that enforcing the plugin boundary did not weaken the existing finance
-reference implementation.
-
-## Automated Gates
-
-The validation suite currently requires:
+The v0.4.1 local gate consists of:
 
 ```text
-Ruff lint and format
-Mypy over the complete package
-45 unit and integration tests
+Ruff format and lint
+Mypy over the package
+55 unit and integration tests
 Python bytecode compilation
-Generalization Contract audit
-Finance deterministic pilot regression
+Generalization Contract v1.2 audit
+Cross-domain Candidate Contract Suite
+Finance deterministic pilot regression when archive data is available
 ```
 
-The cross-domain tests deliberately include non-lookup Legal and Science programs. They establish
-reasoning-contract reuse, rather than merely proving that different payloads can pass through a
-shared schema.
+Release reproducibility tests rebuild the manifest and require stable hashes for the audit, plugin
+sets, source-grounding verifier, mutation taxonomy, fixture suite, and operation implementations.
 
-## Current Interpretation
+## Remaining Boundary
 
 The project now demonstrates:
 
 ```text
 Schema generality
 + Task Program generality
-+ Universal quality-gate reuse
-+ Domain operation-registry extension
++ public/oracle isolation across planning tracks
++ universal quality-gate reuse
++ domain operation and grounding extension
++ controlled cross-domain candidate/mutation portability
 ```
 
-It does not yet demonstrate model-level cross-domain transfer. Legal and Science use controlled
-fixtures, not production corpora or live candidates. Leave-one-domain-out Quality Critic experiments
-remain a later milestone and must not be inferred from these contract results.
+It still does not demonstrate:
 
-The next generalization milestone is therefore not a large second data lake. It is a compact,
-versioned Legal/Science contract corpus with hard distractors and domain mutations, followed by a
-leave-one-domain-out critic experiment. Finance remains the scale and stress-test domain throughout.
+```text
+real Legal/Science agent candidates
+production Legal/Science corpora
+learned cross-domain Quality Critic
+leave-one-domain-out transfer
+real multi-domain release quality
+```
+
+The next evidence milestone should therefore use real model candidates on the compact Legal and
+Science suite, followed by leave-one-domain-out critic experiments. Finance remains the primary
+scale and stress-test domain while those tests constrain every common-layer evolution.

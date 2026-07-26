@@ -17,10 +17,13 @@ from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompile
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
 from trusted_synthesis.experiments.finance_pilot.mutations import generate_mutations
 from trusted_synthesis.experiments.finance_pilot.sampler import TaskBinding
 from trusted_synthesis.experiments.finance_pilot.task_factory import PilotTaskCase
-from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
 
 def _case(finance_evidence: EvidenceItem) -> PilotTaskCase:
@@ -83,7 +86,7 @@ def test_temporal_average_reference_and_candidate_are_accepted(
 ) -> None:
     case = _case(finance_evidence)
     reference = ReferenceWorkflowCompiler().compile(case.task, case.bundle)
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         case.task.public,
         InMemoryEvidenceToolRuntime(case.corpus),
     )
@@ -107,7 +110,7 @@ def test_pilot_mutations_are_rejected_and_not_released(
     finance_evidence: EvidenceItem,
 ) -> None:
     case = _case(finance_evidence)
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         case.task.public,
         InMemoryEvidenceToolRuntime(case.corpus),
     )

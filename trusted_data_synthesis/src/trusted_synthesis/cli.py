@@ -20,18 +20,26 @@ from trusted_synthesis.core.release import (
     build_release_manifest,
     select_candidate_release,
 )
+from trusted_synthesis.core.task.schema import VerifierRequirement
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.cross_domain_contract_suite import (
+    run_cross_domain_contract_suite,
+)
 from trusted_synthesis.experiments.finance_pilot import (
     FinancePilotConfig,
     run_finance_pilot,
 )
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
 from trusted_synthesis.hashing import canonical_hash
-from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -91,14 +99,19 @@ def _parser() -> argparse.ArgumentParser:
 
 def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
     semantic_policy = FinanceSemanticPolicy()
-    task_synthesizer = FinanceTaskPlugin()
+    source_grounding_verifier = adapter.source_grounding_verifier()
+    task_synthesizer = FinanceTaskPlugin(source_grounding_requirement=VerifierRequirement.REQUIRED)
     trajectory_generator = ReferenceWorkflowCompiler()
-    candidate_generator = CandidateTrajectoryGenerator()
+    candidate_generator = FinanceNumericCandidateGenerator()
     graph_builder = ProofGraphBuilder()
-    evaluator = ReferenceQualityEvaluator(semantic_policy=semantic_policy)
+    evaluator = ReferenceQualityEvaluator(
+        semantic_policy=semantic_policy,
+        source_grounding_verifier=source_grounding_verifier,
+    )
     candidate_evaluator = CandidateQualityEvaluator(
         semantic_policy=semantic_policy,
         claim_verifier=FinanceClaimVerifier(),
+        source_grounding_verifier=source_grounding_verifier,
     )
     samples = []
     tasks = []
@@ -138,6 +151,8 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         )
     inspection = adapter.inspect()
     candidate_selection = select_candidate_release(candidate_records, split_policy)
+    registry = default_registry()
+    cross_domain_contracts = run_cross_domain_contract_suite()
     manifest = build_release_manifest(
         release_id=canonical_hash(
             {
@@ -149,10 +164,16 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         ),
         tasks=tasks,
         adapters=(adapter,),
-        registry=default_registry(),
+        registry=registry,
         split_policy=split_policy,
         source_build_ids={"finance_kg": str(inspection.get("kg_build_id"))},
         candidate_selection=candidate_selection,
+        domain_plugin_sets=(
+            finance_plugin_set(adapter, registry, source_grounding_verifier),
+            *cross_domain_contracts.plugin_sets,
+        ),
+        source_grounding_verifiers=(source_grounding_verifier,),
+        cross_domain_contract_suite=cross_domain_contracts.result,
     )
     return {
         "pipeline": [

@@ -24,6 +24,11 @@ class OracleLeakageChecker:
         "program_id",
         "proof_graph_id",
         "proof_graph_hash",
+        "evidence_version_ids",
+        "source_ids",
+        "required_build_ids",
+        "domain_context_hashes",
+        "payload_context_hashes",
     }
 
     def verify(self, oracle: TaskOracleContract, candidate: Trajectory) -> LeakageVerification:

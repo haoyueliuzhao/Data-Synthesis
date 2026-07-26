@@ -51,6 +51,10 @@ class OperationDefinition:
     output_schema: str
     compatibility_policy: str
     invariant_checks: tuple[str, ...]
+    output_model: type[BaseModel] | None
+    tool_capability: str | None
+    action_type: str
+    execution_mode: str
     executor_version: str
     verifier_version: str
     semantic_version: str
@@ -58,3 +62,4 @@ class OperationDefinition:
     rounding_policy: str
     tolerance_policy: str
     implementation_hash: str
+    implementation_dependency_ids: tuple[str, ...]

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
 from trusted_synthesis.core.evidence.epistemic import EpistemicStatus
 from trusted_synthesis.core.evidence.schema import EvidenceItem
+from trusted_synthesis.core.plugins import SemanticPolicyProtocol
 
 
 class CheckStatus(str, Enum):
@@ -37,7 +37,7 @@ class EvidenceValidationReport(BaseModel):
 class EvidenceValidator:
     """Domain-neutral structural validation; domain policies run separately."""
 
-    def __init__(self, semantic_policy: Any | None = None) -> None:
+    def __init__(self, semantic_policy: SemanticPolicyProtocol | None = None) -> None:
         self._semantic_policy = semantic_policy
 
     def validate(self, evidence: EvidenceItem) -> EvidenceValidationReport:
@@ -51,13 +51,26 @@ class EvidenceValidator:
     def validate_structural(self, evidence: EvidenceItem) -> EvidenceValidationReport:
         checks = [
             self._check_epistemic_status(evidence),
+            *self._retrievable_checks(evidence),
+        ]
+        return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=tuple(checks))
+
+    def validate_retrievable(self, evidence: EvidenceItem) -> EvidenceValidationReport:
+        """Validate corpus integrity without requiring an item to be answer-eligible."""
+
+        return EvidenceValidationReport(
+            evidence_id=evidence.evidence_id,
+            checks=tuple(self._retrievable_checks(evidence)),
+        )
+
+    def _retrievable_checks(self, evidence: EvidenceItem) -> list[ValidationCheck]:
+        return [
             self._check_version_identity(evidence),
             self._check_lineage(evidence),
             self._check_source_locator(evidence),
             self._check_temporal_consistency(evidence),
             self._check_source_identity(evidence),
         ]
-        return EvidenceValidationReport(evidence_id=evidence.evidence_id, checks=tuple(checks))
 
     def validate_domain(self, evidence: EvidenceItem) -> EvidenceValidationReport:
         if self._semantic_policy is None:

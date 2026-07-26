@@ -4,7 +4,10 @@ from datetime import date
 from decimal import Decimal
 
 from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
-from trusted_synthesis.core.evaluation.evaluator import CandidateQualityEvaluator
+from trusted_synthesis.core.evaluation.evaluator import (
+    CandidateQualityEvaluator,
+    ReferenceQualityEvaluator,
+)
 from trusted_synthesis.core.evaluation.leakage import OracleLeakageChecker
 from trusted_synthesis.core.evaluation.schema import ReleaseDecision
 from trusted_synthesis.core.evidence import ScalarObservation, TemporalContext
@@ -12,12 +15,17 @@ from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
+from trusted_synthesis.core.task.schema import PlanningTrack, VerifierRequirement
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
+from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
 from trusted_synthesis.experiments.finance_pilot.sampler import TaskBinding
 from trusted_synthesis.experiments.finance_pilot.task_factory import build_task_cases
-from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
 
 def _setup(finance_evidence: EvidenceItem):
@@ -30,7 +38,7 @@ def _setup(finance_evidence: EvidenceItem):
     graph = ProofGraphBuilder().build(bundle)
     task = ProofGraphTaskSynthesizer().fact_retrieval(graph, bundle, finance_evidence.evidence_id)
     corpus = EvidenceCorpus.from_bundle(bundle)
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         task.public, InMemoryEvidenceToolRuntime(corpus)
     )
     return task, corpus, graph, candidate
@@ -98,7 +106,7 @@ def test_resolved_track_searches_a_corpus_with_distractors(
         evidence=(finance_evidence, distractor),
         build_id="kg_test",
     )
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         task.public, InMemoryEvidenceToolRuntime(corpus)
     )
 
@@ -133,7 +141,7 @@ def test_hard_in_scope_distractors_are_retrieved_but_not_selected(
         task_synthesizer=FinanceTaskPlugin(),
     )[0]
 
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         case.task.public, InMemoryEvidenceToolRuntime(case.corpus)
     )
     assessment = CandidateQualityEvaluator().evaluate(
@@ -219,7 +227,7 @@ def test_wrong_calculation_is_rejected(finance_evidence: EvidenceItem) -> None:
         graph, bundle, finance_evidence.evidence_id, later.evidence_id
     )
     corpus = EvidenceCorpus.from_bundle(bundle)
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         task.public, InMemoryEvidenceToolRuntime(corpus)
     )
     mutated_steps = tuple(
@@ -335,6 +343,81 @@ def test_claim_field_is_only_allowed_by_answer_contract(
     assert allowed_failures == ()
 
 
+def test_plan_hidden_candidate_uses_local_node_ids_and_semantic_alignment(
+    finance_evidence: EvidenceItem,
+) -> None:
+    task, corpus, graph, candidate = _setup(finance_evidence)
+    hidden_public = task.public.model_copy(
+        update={
+            "planning_track": PlanningTrack.PLAN_HIDDEN,
+            "program_skeleton": None,
+        }
+    )
+    hidden_task = task.model_copy(update={"public": hidden_public})
+    local_candidate = _rename_program_nodes(candidate, {"result": "candidate_lookup_1"})
+
+    accepted = CandidateQualityEvaluator().evaluate(hidden_task, corpus, graph, local_candidate)
+    wrong_steps = tuple(
+        step.model_copy(update={"operator_id": "compare"})
+        if step.program_node_id == "candidate_lookup_1"
+        else step
+        for step in local_candidate.steps
+    )
+    rejected = CandidateQualityEvaluator().evaluate(
+        hidden_task,
+        corpus,
+        graph,
+        local_candidate.model_copy(update={"steps": wrong_steps}),
+    )
+
+    assert hidden_task.public.program_skeleton is None
+    assert accepted.decision == ReleaseDecision.ACCEPTED
+    assert rejected.decision == ReleaseDecision.REJECTED
+    assert "proof_and_operation" in rejected.fatal_failures
+
+
+def test_source_grounding_requirement_is_explicit_and_fails_closed(
+    finance_evidence: EvidenceItem,
+) -> None:
+    default_task, corpus, graph, candidate = _setup(finance_evidence)
+    default_assessment = CandidateQualityEvaluator().evaluate(
+        default_task, corpus, graph, candidate
+    )
+    not_applicable = next(
+        check
+        for check in CandidateWorkflowVerifier()
+        .verify(default_task, corpus, graph, candidate)
+        .checks
+        if check.check_id == "source_grounding"
+    )
+
+    bundle = EvidenceBundle(
+        bundle_id="bundle_required_grounding",
+        evidence=(finance_evidence,),
+        purpose="required source grounding",
+        graph_build_id="kg_test",
+    )
+    required_graph = ProofGraphBuilder().build(bundle)
+    required_task = FinanceTaskPlugin(
+        source_grounding_requirement=VerifierRequirement.REQUIRED
+    ).fact_retrieval(required_graph, bundle, finance_evidence.evidence_id)
+    reference = ReferenceWorkflowCompiler().compile(required_task, bundle)
+    required_assessment = ReferenceQualityEvaluator().evaluate(
+        required_task, bundle, required_graph, reference
+    )
+
+    assert default_assessment.decision == ReleaseDecision.ACCEPTED
+    assert not_applicable.passed
+    assert not_applicable.details == ("status=not_applicable",)
+    assert required_assessment.decision == ReleaseDecision.REJECTED
+    grounding_gate = next(
+        gate
+        for gate in required_assessment.domain_gates
+        if gate.gate_id == "domain_source_grounding"
+    )
+    assert grounding_gate.details[0] == "status=missing_required_verifier"
+
+
 def _mutate_step_evidence(
     candidate: Trajectory, action: ActionType, evidence_ids: tuple[str, ...]
 ) -> Trajectory:
@@ -348,3 +431,30 @@ def _mutate_step_evidence(
             )
         }
     )
+
+
+def _rename_program_nodes(candidate: Trajectory, mapping: dict[str, str]) -> Trajectory:
+    def replace_ref(value: str) -> str:
+        for original, replacement in mapping.items():
+            value = value.replace(f"operation:{original}", f"operation:{replacement}")
+        return value
+
+    steps = []
+    for step in candidate.steps:
+        observation = dict(step.observation)
+        verified_ref = observation.get("verified_output_ref")
+        if isinstance(verified_ref, str):
+            observation["verified_output_ref"] = replace_ref(verified_ref)
+        steps.append(
+            step.model_copy(
+                update={
+                    "program_node_id": mapping.get(step.program_node_id, step.program_node_id),
+                    "input_refs": tuple(replace_ref(item) for item in step.input_refs),
+                    "output_ref": (
+                        replace_ref(step.output_ref) if step.output_ref is not None else None
+                    ),
+                    "observation": observation,
+                }
+            )
+        )
+    return candidate.model_copy(update={"steps": tuple(steps)})

@@ -34,6 +34,15 @@ GENERIC_MUTATION_TAXONOMY = {
             description="A predicate or measurement definition is incompatible.",
         ),
         MutationTaxonomyEntry(
+            mutation_id="source_provenance_mismatch",
+            family=MutationFamily.PROVENANCE,
+            universal_error=True,
+            description=(
+                "A source locator, source identity, content hash, or archived object "
+                "does not support the selected evidence."
+            ),
+        ),
+        MutationTaxonomyEntry(
             mutation_id="wrong_derivation",
             family=MutationFamily.DERIVATION,
             universal_error=True,

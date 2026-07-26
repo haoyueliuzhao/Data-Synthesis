@@ -7,6 +7,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evaluation.citation import CitationVerifier
+from trusted_synthesis.core.evaluation.grounding import (
+    evaluate_source_grounding,
+    grounding_requirement,
+)
 from trusted_synthesis.core.evaluation.leakage import OracleLeakageChecker
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.validation import EvidenceValidator
@@ -17,8 +21,13 @@ from trusted_synthesis.core.operations.program import (
     TaskProgramOracleVerifier,
 )
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.plugins import (
+    ClaimVerifierProtocol,
+    SemanticPolicyProtocol,
+    SourceGroundingVerifierProtocol,
+)
 from trusted_synthesis.core.task.program import InputRefKind
-from trusted_synthesis.core.task.schema import TaskPackage, TaskRequirement
+from trusted_synthesis.core.task.schema import PlanningTrack, TaskPackage, TaskRequirement
 from trusted_synthesis.core.trajectory.schema import (
     ActionType,
     StepStatus,
@@ -58,9 +67,9 @@ class CandidateWorkflowVerifier:
     def __init__(
         self,
         registry: OperationRegistry | None = None,
-        semantic_policy: Any | None = None,
-        claim_verifier: Any | None = None,
-        source_grounding_verifier: Any | None = None,
+        semantic_policy: SemanticPolicyProtocol | None = None,
+        claim_verifier: ClaimVerifierProtocol | None = None,
+        source_grounding_verifier: SourceGroundingVerifierProtocol | None = None,
     ) -> None:
         self._oracle = TaskProgramOracleVerifier(registry or default_registry())
         self._normalizer = CandidateAnswerNormalizer()
@@ -90,7 +99,7 @@ class CandidateWorkflowVerifier:
         precision = len(selected_set & gold_set) / len(selected_set) if selected_set else 0.0
         retrieved_valid = all(
             item in evidence_by_id
-            and self._retrieved_evidence_validator.validate(evidence_by_id[item]).passed
+            and self._retrieved_evidence_validator.validate_retrievable(evidence_by_id[item]).passed
             for item in retrieved_set
         )
         selected_valid = all(
@@ -131,14 +140,15 @@ class CandidateWorkflowVerifier:
         )
         graph_report = self._graph_validator.validate(proof_graph, corpus.as_bundle(), gold_ids)
         action_sequence_failures = _verify_action_sequence(candidate, task)
-        trace_failures = _verify_program_trace(
+        trace_failures, node_mapping = _verify_program_trace(
             task,
             candidate,
             expected_node_outputs,
         )
-        verification_failures = _verify_result_step(task, candidate, expected_output)
-        source_grounding_failures = _verify_source_grounding(
+        verification_failures = _verify_result_step(task, candidate, expected_output, node_mapping)
+        source_grounding = evaluate_source_grounding(
             tuple(evidence_by_id[item] for item in selected_ids if item in evidence_by_id),
+            grounding_requirement(task.public.metadata),
             self._source_grounding_verifier,
         )
         operation_correct = not operation_error and not trace_failures
@@ -175,8 +185,11 @@ class CandidateWorkflowVerifier:
             _check("selected_evidence_validity", selected_valid),
             _check(
                 "source_grounding",
-                not source_grounding_failures,
-                source_grounding_failures,
+                source_grounding.passed,
+                (
+                    f"status={source_grounding.status.value}",
+                    *source_grounding.failures,
+                ),
             ),
             _check("evidence_recall", recall == 1.0, (f"recall={recall:.6f}",)),
             _check("evidence_precision", precision == 1.0, (f"precision={precision:.6f}",)),
@@ -262,7 +275,7 @@ def _unsupported_claims(final_answer: dict[str, Any]) -> tuple[str, ...]:
 def _verify_claims(
     final_answer: dict[str, Any],
     evidence: tuple,
-    claim_verifier: Any | None,
+    claim_verifier: ClaimVerifierProtocol | None,
     operation_outputs: dict[str, dict[str, Any]],
 ) -> tuple[str, ...]:
     claims = final_answer.get("claims") or ()
@@ -315,6 +328,17 @@ def _verify_action_sequence(candidate: Trajectory, task: TaskPackage) -> tuple[s
 
 
 def _verify_program_trace(
+    task: TaskPackage,
+    candidate: Trajectory,
+    expected_outputs: dict[str, dict[str, Any]],
+) -> tuple[tuple[str, ...], dict[str, str]]:
+    if task.public.planning_track == PlanningTrack.PLAN_HIDDEN:
+        return _verify_plan_hidden_trace(task, candidate, expected_outputs)
+    failures = _verify_plan_given_trace(task, candidate, expected_outputs)
+    return failures, {node.node_id: node.node_id for node in task.oracle.task_program.nodes}
+
+
+def _verify_plan_given_trace(
     task: TaskPackage,
     candidate: Trajectory,
     expected_outputs: dict[str, dict[str, Any]],
@@ -377,6 +401,86 @@ def _verify_program_trace(
     return tuple(failures)
 
 
+def _verify_plan_hidden_trace(
+    task: TaskPackage,
+    candidate: Trajectory,
+    expected_outputs: dict[str, dict[str, Any]],
+) -> tuple[tuple[str, ...], dict[str, str]]:
+    program = task.oracle.task_program
+    candidate_steps = tuple(
+        step
+        for step in candidate.steps
+        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+        and step.program_node_id is not None
+    )
+    failures: list[str] = []
+    mapping: dict[str, str] = {}
+    mapped_step_indexes: dict[str, int] = {}
+    used_step_indexes: set[int] = set()
+    used_program_node_ids: set[str] = set()
+    for node in program.nodes:
+        expected_action = (
+            ActionType.SELECT_EVIDENCE if node.operator_id == "lookup" else ActionType.CALCULATE
+        )
+        expected_refs = _translated_program_refs(node, mapping)
+        candidates = [
+            step
+            for step in candidate_steps
+            if step.step_index not in used_step_indexes
+            and step.action == expected_action
+            and step.operator_id == node.operator_id
+            and step.input_refs == expected_refs
+        ]
+        if len(candidates) != 1:
+            failures.append(f"node:{node.node_id}:semantic_execution_count={len(candidates)}")
+            continue
+        step = candidates[0]
+        assert step.program_node_id is not None
+        if step.program_node_id in used_program_node_ids:
+            failures.append(f"node:{node.node_id}:duplicate_candidate_node_id")
+            continue
+        dependency_indexes = [
+            mapped_step_indexes[item] for item in node.dependencies if item in mapped_step_indexes
+        ]
+        if dependency_indexes and step.step_index <= max(dependency_indexes):
+            failures.append(f"node:{node.node_id}:dependency_order")
+            continue
+        mapping[node.node_id] = step.program_node_id
+        mapped_step_indexes[node.node_id] = step.step_index
+        used_step_indexes.add(step.step_index)
+        used_program_node_ids.add(step.program_node_id)
+        if step.output_ref != f"operation:{step.program_node_id}":
+            failures.append(f"node:{node.node_id}:step:{step.step_index}:output_ref")
+        if not _values_equivalent(
+            step.observation.get("result"), expected_outputs.get(node.node_id)
+        ):
+            failures.append(f"node:{node.node_id}:step:{step.step_index}:output_mismatch")
+        expected_evidence = {
+            ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
+        }
+        if expected_evidence and set(step.evidence_ids) != expected_evidence:
+            failures.append(f"node:{node.node_id}:step:{step.step_index}:evidence_binding")
+    unused = [
+        step.step_index for step in candidate_steps if step.step_index not in used_step_indexes
+    ]
+    if unused:
+        failures.append(f"unmapped_candidate_steps:{','.join(str(item) for item in unused)}")
+    return tuple(failures), mapping
+
+
+def _translated_program_refs(node, mapping: dict[str, str]) -> tuple[str, ...]:
+    refs = []
+    for ref in node.input_refs:
+        ref_id = ref.ref_id
+        if ref.kind == InputRefKind.OPERATION:
+            if ref_id not in mapping:
+                return ()
+            ref_id = mapping[ref_id]
+        value = f"{ref.kind.value}:{ref_id}"
+        refs.append(f"{value}#{ref.selector}" if ref.selector else value)
+    return tuple(refs)
+
+
 def _program_ref(ref) -> str:
     value = f"{ref.kind.value}:{ref.ref_id}"
     return f"{value}#{ref.selector}" if ref.selector else value
@@ -386,6 +490,7 @@ def _verify_result_step(
     task: TaskPackage,
     candidate: Trajectory,
     expected_output: dict[str, Any],
+    node_mapping: dict[str, str],
 ) -> tuple[str, ...]:
     if TaskRequirement.VERIFY_RESULT not in task.public.requirements:
         return ()
@@ -393,9 +498,13 @@ def _verify_result_step(
     if len(steps) != 1:
         return (f"verify_step_count={len(steps)}",)
     step = steps[0]
-    expected_ref = f"operation:{task.oracle.task_program.output_node_id}"
+    oracle_output_node = task.oracle.task_program.output_node_id
+    candidate_output_node = node_mapping.get(oracle_output_node)
+    if candidate_output_node is None:
+        return ("verify_output_node_unmapped",)
+    expected_ref = f"operation:{candidate_output_node}"
     failures = []
-    if step.program_node_id != task.oracle.task_program.output_node_id:
+    if step.program_node_id != candidate_output_node:
         failures.append(f"step:{step.step_index}:verify_program_node")
     if step.input_refs != (expected_ref,):
         failures.append(f"step:{step.step_index}:verify_input_ref")
@@ -403,19 +512,6 @@ def _verify_result_step(
         failures.append(f"step:{step.step_index}:verified_output_ref")
     if not _values_equivalent(step.observation.get("verified_result"), expected_output):
         failures.append(f"step:{step.step_index}:verified_result")
-    return tuple(failures)
-
-
-def _verify_source_grounding(
-    evidence: tuple,
-    verifier: Any | None,
-) -> tuple[str, ...]:
-    if verifier is None:
-        return ()
-    failures: list[str] = []
-    for item in evidence:
-        report = verifier.verify(item)
-        failures.extend(f"{item.evidence_id}:{failure}" for failure in report.failures)
     return tuple(failures)
 
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.task.builder import TaskPackageBuilder
 from trusted_synthesis.core.task.program import (
     InputRefKind,
@@ -10,13 +11,19 @@ from trusted_synthesis.core.task.program import (
     make_program,
 )
 from trusted_synthesis.core.task.schema import RetrievalTrack, TaskLevel, TaskPackage
+from trusted_synthesis.domains.legal.operations import legal_operation_registry
 
 
 class LegalTaskPlugin:
     plugin_id = "legal_tasks.v1"
+    task_family_ids = ("legal_rule_application",)
 
     def __init__(self) -> None:
-        self._builder = TaskPackageBuilder()
+        self._builder = TaskPackageBuilder(legal_operation_registry())
+
+    @staticmethod
+    def operation_registry() -> OperationRegistry:
+        return legal_operation_registry()
 
     def rule_application(
         self,
@@ -71,6 +78,7 @@ class LegalTaskPlugin:
             program=program,
             retrieval_track=RetrievalTrack.RESOLVED,
             retrieval_scope=_retrieval_scope(rules),
+            oracle_selection_contract=_oracle_selection_contract(rules),
             answer_schema={
                 "type": "legal_rule_decision",
                 "required_fields": [
@@ -92,7 +100,7 @@ def _retrieval_scope(evidence: tuple[EvidenceItem, ...]) -> dict[str, object]:
             {item.temporal_context.label for item in evidence if item.temporal_context.label}
         ),
         "source_authorities": sorted({item.source.authority.value for item in evidence}),
-        "selection_contract": {
+        "semantic_constraints": {
             "definition_ids": sorted(
                 {
                     item.definition.definition_id
@@ -100,6 +108,29 @@ def _retrieval_scope(evidence: tuple[EvidenceItem, ...]) -> dict[str, object]:
                     if item.definition.definition_id
                 }
             ),
-            "source_ids": sorted({item.source.source_id for item in evidence}),
+            "scope_ids": sorted(
+                {
+                    item.scope.scope_id
+                    for item in evidence
+                    if item.scope is not None and item.scope.scope_id
+                }
+            ),
+        },
+    }
+
+
+def _oracle_selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, object]:
+    return {
+        "evidence_version_ids": sorted({item.evidence_version_id for item in evidence}),
+        "source_ids": sorted({item.source.source_id for item in evidence}),
+        "required_build_ids": {
+            key: sorted(
+                {
+                    value
+                    for item in evidence
+                    if (value := item.provenance.build_ids.get(key)) is not None
+                }
+            )
+            for key in sorted({key for item in evidence for key in item.provenance.build_ids})
         },
     }

@@ -1,8 +1,8 @@
-from trusted_synthesis.runtime.candidate import CandidateTrajectoryGenerator
+from trusted_synthesis.runtime.agent import CandidateAgent
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime, InMemoryEvidenceToolRuntime
 
 __all__ = [
-    "CandidateTrajectoryGenerator",
+    "CandidateAgent",
     "EvidenceToolRuntime",
     "InMemoryEvidenceToolRuntime",
 ]

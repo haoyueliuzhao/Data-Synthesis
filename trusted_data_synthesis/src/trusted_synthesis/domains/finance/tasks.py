@@ -4,7 +4,7 @@ from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
-from trusted_synthesis.core.task.schema import TaskPackage
+from trusted_synthesis.core.task.schema import TaskPackage, VerifierRequirement
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 
 
@@ -12,11 +12,23 @@ class FinanceTaskPlugin:
     """Finance binding policy over reusable scalar task patterns."""
 
     plugin_id = "finance_tasks.v1"
+    task_family_ids = (
+        "fact_retrieval",
+        "comparison",
+        "temporal_growth",
+        "temporal_average",
+    )
 
-    def __init__(self, *, allow_structured_claims: bool = False) -> None:
+    def __init__(
+        self,
+        *,
+        allow_structured_claims: bool = False,
+        source_grounding_requirement: VerifierRequirement = VerifierRequirement.NOT_APPLICABLE,
+    ) -> None:
         self._patterns = ProofGraphTaskSynthesizer(
             FinanceSemanticPolicy(),
             allow_structured_claims=allow_structured_claims,
+            source_grounding_requirement=source_grounding_requirement,
         )
 
     def operation_registry(self) -> OperationRegistry:

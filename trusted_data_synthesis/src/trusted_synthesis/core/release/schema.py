@@ -4,6 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from trusted_synthesis.core.plugins import DomainPluginSet
 from trusted_synthesis.hashing import canonical_hash
 
 
@@ -45,6 +46,40 @@ class SplitPolicy(BaseModel):
         return canonical_hash(self, prefix="split_policy:")
 
 
+class CrossDomainContractSuiteResult(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    suite_id: str
+    suite_version: str
+    fixture_manifest_hash: str
+    domains: tuple[str, ...]
+    task_count: int = Field(ge=0)
+    clean_candidate_count: int = Field(ge=0)
+    mutation_count: int = Field(ge=0)
+    reference_pass_rate: float = Field(ge=0, le=1)
+    clean_candidate_pass_rate: float = Field(ge=0, le=1)
+    mutation_rejection_rate: float = Field(ge=0, le=1)
+    status: str
+    failure_details: tuple[str, ...] = ()
+
+    @property
+    def passed(self) -> bool:
+        return (
+            self.status == "passed"
+            and not self.failure_details
+            and self.task_count > 0
+            and self.clean_candidate_count > 0
+            and self.mutation_count > 0
+            and self.reference_pass_rate == 1
+            and self.clean_candidate_pass_rate == 1
+            and self.mutation_rejection_rate == 1
+        )
+
+    @property
+    def result_hash(self) -> str:
+        return canonical_hash(self, prefix="cross_domain_contract_suite:")
+
+
 class ReleaseManifest(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -56,7 +91,12 @@ class ReleaseManifest(BaseModel):
     operation_manifest_hash: str
     required_check_manifest_hash: str
     candidate_required_check_manifest_hash: str
+    mutation_taxonomy_manifest_hash: str
     split_policy_hash: str
+    domain_plugin_sets: tuple[DomainPluginSet, ...]
+    source_grounding_verifiers: dict[str, str]
+    cross_domain_contract_suite: CrossDomainContractSuiteResult
+    cross_domain_contract_suite_hash: str
     adapter_capabilities: dict[str, tuple[str, ...]]
     source_build_ids: dict[str, str]
     sample_counts: dict[str, int]

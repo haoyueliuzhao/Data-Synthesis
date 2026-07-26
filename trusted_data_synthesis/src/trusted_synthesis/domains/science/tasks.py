@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.task.builder import TaskPackageBuilder
 from trusted_synthesis.core.task.program import (
     InputRefKind,
@@ -10,13 +11,19 @@ from trusted_synthesis.core.task.program import (
     make_program,
 )
 from trusted_synthesis.core.task.schema import RetrievalTrack, TaskLevel, TaskPackage
+from trusted_synthesis.domains.science.operations import science_operation_registry
 
 
 class ScienceTaskPlugin:
     plugin_id = "science_tasks.v1"
+    task_family_ids = ("science_protocol_effect_comparison",)
 
     def __init__(self) -> None:
-        self._builder = TaskPackageBuilder()
+        self._builder = TaskPackageBuilder(science_operation_registry())
+
+    @staticmethod
+    def operation_registry() -> OperationRegistry:
+        return science_operation_registry()
 
     def compare_experiments(
         self,
@@ -69,6 +76,41 @@ class ScienceTaskPlugin:
                     "definition_id": left.definition.definition_id,
                 },
                 "corpus_boundary": bundle.bundle_id,
+                "semantic_constraints": {
+                    "scope_ids": sorted(
+                        {
+                            item.scope.scope_id
+                            for item in evidence
+                            if item.scope is not None and item.scope.scope_id
+                        }
+                    ),
+                    "temporal_labels": sorted(
+                        {
+                            item.temporal_context.label
+                            for item in evidence
+                            if item.temporal_context.label
+                        }
+                    ),
+                    "source_authorities": sorted(
+                        {item.source.authority.value for item in evidence}
+                    ),
+                },
+            },
+            oracle_selection_contract={
+                "evidence_version_ids": sorted(item.evidence_version_id for item in evidence),
+                "source_ids": sorted(item.source.source_id for item in evidence),
+                "required_build_ids": {
+                    key: sorted(
+                        {
+                            value
+                            for item in evidence
+                            if (value := item.provenance.build_ids.get(key)) is not None
+                        }
+                    )
+                    for key in sorted(
+                        {key for item in evidence for key in item.provenance.build_ids}
+                    )
+                },
             },
             answer_schema={
                 "type": "science_effect_comparison",

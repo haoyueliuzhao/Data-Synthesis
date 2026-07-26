@@ -1,4 +1,3 @@
-from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer, TaskSynthesisError
 from trusted_synthesis.core.task.program import (
     InputRefKind,
     OperationNode,
@@ -27,4 +26,21 @@ __all__ = [
     "TaskRequirement",
     "TaskSynthesisError",
 ]
-from trusted_synthesis.core.task.builder import TaskPackageBuilder
+
+
+def __getattr__(name: str):
+    if name == "TaskPackageBuilder":
+        from trusted_synthesis.core.task.builder import TaskPackageBuilder
+
+        return TaskPackageBuilder
+    if name in {"ProofGraphTaskSynthesizer", "TaskSynthesisError"}:
+        from trusted_synthesis.core.task.generator import (
+            ProofGraphTaskSynthesizer,
+            TaskSynthesisError,
+        )
+
+        return {
+            "ProofGraphTaskSynthesizer": ProofGraphTaskSynthesizer,
+            "TaskSynthesisError": TaskSynthesisError,
+        }[name]
+    raise AttributeError(name)

@@ -114,10 +114,14 @@ dictionary exceptions.
 
 ## Generalization Boundary
 
-`generalization_contract.v1.1` is enforced in CI and every Release Manifest. Core cannot
-import a concrete domain package, branch on a domain label, or interpret domain fields.
-`TaskPackageBuilder` accepts domain-bound Evidence and Operation DAGs without knowing how
-the domain discovered them. See `docs/generalization_contract.md` for the executable rules.
+`generalization_contract.v1.2` is enforced in CI and every Release Manifest. All declared
+common packages (`core`, `runtime`, and `architecture`) cannot import a concrete domain,
+branch or dispatch on a discovered domain label, or interpret domain fields. The audit also
+detects relative and dynamic imports, aliased labels, and subscript field access.
+`TaskPackageBuilder` accepts domain-bound Evidence and Operation DAGs through typed plugin
+protocols without knowing how the domain discovered them. Public tasks expose semantic retrieval
+constraints and an optional program skeleton; exact Evidence selection and expected execution
+remain isolated in the Oracle. See `docs/generalization_contract.md` for the executable rules.
 
 ## Release And Split
 
@@ -125,5 +129,6 @@ Split fields are executed from `SplitPolicy.cluster_fields`. Program clustering
 uses an Evidence-ID-independent semantic hash, while instance identity retains
 versioned Evidence IDs. `CandidateReleaseSelection` publishes only accepted
 trajectories and records assessment IDs, failure distribution, domain/task
-distribution, and split counts. Release manifests freeze both Reference and
-Candidate check manifests plus operation implementation hashes.
+distribution, and split counts. Release manifests freeze both Reference and Candidate check
+manifests, operation implementation hashes, domain plugin and source-grounding identities,
+mutation taxonomy, and the versioned cross-domain Candidate Contract Suite result.

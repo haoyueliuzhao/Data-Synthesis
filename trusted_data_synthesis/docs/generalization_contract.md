@@ -1,85 +1,139 @@
-# Generalization Contract v1.1
+# Generalization Contract v1.2
 
 ## Position
 
-Finance is the first reference implementation and the primary stress-test domain. It is not the
-specification of the framework. Generalization is a release constraint, not a later benchmark.
+Finance is the first reference implementation and the primary scale and stress-test domain. It is
+not the specification of the framework. Domain generality is enforced as an architecture and
+release contract, not deferred to a later benchmark.
 
 ```text
 Core Framework
   Evidence identity, Proof Graph, Task Program, trajectories, universal gates, release
 
 Domain Plugin
-  semantic policy, task binding, domain operations, domain claims, domain gates
+  semantic policy, task families, domain operations, claims, grounding, domain gates
 
 Experiment
-  sources, sampling, prompts, model configuration, quotas, target distribution
+  sources, sampling, prompts, models, quotas, target distributions
 ```
 
-The common contract is the compilation and verification interface. Domains do not have to share a
-lowest-common-denominator fact model or all operation semantics.
+The shared abstraction is the compilation, execution, verification, and release interface. Domains
+do not need to share one lowest-common-denominator fact schema or identical operation semantics.
 
 ## Enforced Boundaries
 
-Every release and CI run executes `generalization_contract.v1.1`.
+Every release and CI run executes `generalization_contract.v1.2`.
 
-1. `core/` cannot import `trusted_synthesis.domains` or a concrete domain package.
-2. `core/` cannot branch on `finance`, `legal`, or `science`.
-3. `core/` cannot interpret domain fields such as fiscal period, currency, jurisdiction, or
-   confidence interval. It may carry their serialized context opaquely.
-4. New task families belong to a domain plugin. Core only packages an Evidence binding, Operation
-   DAG, public contract, and isolated oracle.
-5. A Core capability must be structurally generic or have a non-finance complex contract test.
-6. A Release Manifest embeds the Generalization Contract version, audit hash, and violation counts.
-   The hash covers the protected rule manifest and every scanned Core source file's content digest.
+1. Domain-neutral packages `core/`, `runtime/`, and `architecture/` cannot import
+   `trusted_synthesis.domains` or a concrete domain package.
+2. Those packages cannot branch or dispatch on any concrete domain discovered under `domains/`.
+3. They cannot interpret domain fields such as fiscal period, currency, jurisdiction, protocol, or
+   confidence interval. They may carry serialized domain context opaquely.
+4. New task families, source rules, semantic policies, and domain claims belong to a plugin.
+5. A common capability must be structural, workflow-oriented, mathematical, or covered by a
+   non-finance complex contract test.
+6. A release embeds the complete architecture audit and rejects any violation.
 
-The audit is available directly:
+The AST audit resolves relative imports, direct and dynamic imports, module-level constant aliases,
+dictionary dispatch, branch expressions, and both attribute and subscript field access. Concrete
+domains are discovered from the repository rather than maintained in a fixed allowlist. Its hash
+covers the protected rule manifest and every scanned source file, including the explicitly exempted
+audit implementation itself.
 
 ```bash
 trusted-synthesis audit-generalization --source-root src
 ```
 
-## Operation Boundary
+## Plugin Contract
 
-Core owns mathematical and workflow primitives such as lookup, comparison, difference, ratio,
-aggregation, DAG execution, and independent replay. A mathematical operator does not decide when a
-domain permits its use.
-
-Domain registries extend the Core registry:
+Common plugin protocols live in `core/plugins.py`; `domains/contracts.py` is only a compatibility
+re-export. A domain can provide:
 
 ```text
-Finance: period alignment, financial growth eligibility, financial ratios
+EvidenceAdapterProtocol
+SemanticPolicyProtocol
+ClaimVerifierProtocol
+SourceGroundingVerifierProtocol
+OperationRegistryProvider
+TaskFamilyPluginProtocol
+```
+
+`DomainPluginSet` freezes the concrete plugin IDs and versions used by a release. Core consumes
+these protocols without importing or selecting a domain implementation. A required verifier that is
+not supplied fails closed; an intentionally unsupported check must be declared `NOT_APPLICABLE`.
+
+## Operation Boundary
+
+Core owns mathematical and workflow primitives such as lookup, filter, comparison, difference,
+ratio, aggregation, selection, DAG execution, and independent replay. A mathematical operator does
+not decide when a domain permits its use.
+
+Domain registries extend this set:
+
+```text
+Finance: financial period alignment, growth eligibility, financial ratios
 Legal: rule applicability, exception handling, authority resolution
 Science: protocol alignment, effect comparison, uncertainty preservation
 ```
 
-`growth` remains a pure mathematical implementation. `FinanceSemanticPolicy` decides whether a
-financial series has compatible definitions and a valid base.
+Every operation declares its tool capability, action type, execution mode, strict output model, and
+implementation dependencies. Structured outputs reject missing fields, wrong types, and undeclared
+extra fields. The implementation hash includes executor, independent oracle, and registered helper
+dependencies, so helper changes cannot silently retain an old contract identity.
 
-## Task Boundary
+Executor and oracle implementations must be independent enough for a helper-defect mutation in the
+executor path to be caught by replay. A missing observed node output is always a failure.
+
+## Task And Oracle Boundary
 
 `TaskPackageBuilder` is the universal compiler boundary:
 
 ```text
 Domain Evidence Binding + Domain Operation DAG
                     -> TaskPackageBuilder
-                    -> Public Task + Oracle Contract
+                    -> Public Task + Isolated Oracle Contract
 ```
 
-Domain plugins own task discovery and language:
+The builder derives allowed tools from operation definitions and rejects implicit mixed-domain
+evidence. Cross-domain tasks require a future explicit multi-domain policy.
+
+The public and hidden contracts are deliberately different:
 
 ```text
-LegalTaskPlugin.rule_application
-ScienceTaskPlugin.compare_experiments
-Finance task factories and pilots
+Public semantic scope
+  subject, predicate, time, authority, requested definition, aliases
+
+Hidden exact selection
+  evidence/version/source/build IDs, context hashes, gold bindings, expected outputs
 ```
 
-The older `ProofGraphTaskSynthesizer` remains a compatibility convenience for generic scalar
-retrieval/comparison/temporal examples. New domain task families must not be added there.
+Exact evidence identity must never appear in model-visible retrieval scope. The leakage gate rejects
+oracle-only keys recursively.
+
+Two planning tracks are supported:
+
+```text
+PLAN_GIVEN
+  Public program skeleton exposes operators, dependencies, role references, and public node IDs.
+  Gold evidence IDs, outputs, and Proof Graph remain hidden.
+
+PLAN_HIDDEN
+  Candidate creates local node IDs and a local plan. Verification aligns operators, dependencies,
+  references, and outputs semantically rather than requiring Oracle node identity.
+```
+
+Domain plugins own task discovery and language. The generic builder only packages evidence
+bindings, operation DAGs, public contracts, and isolated oracle state.
+
+## Candidate Runtime Boundary
+
+`runtime/` contains only generic agent, tool-runtime, trace, and execution protocols. It must not
+branch on finance task types or assume scalar financial observations. The deterministic finance
+numeric candidate is an experiment implementation under `experiments/finance_pilot/`.
 
 ## Quality Gates
 
-Every `HardGateResult` has an explicit scope. Every `QualityAssessment` publishes both lists:
+Every `HardGateResult` has an explicit scope. Every assessment publishes separate gate groups:
 
 ```json
 {
@@ -90,17 +144,27 @@ Every `HardGateResult` has an explicit scope. Every `QualityAssessment` publishe
 }
 ```
 
-Universal gates cover identity, public/oracle isolation, tools, structural Evidence validity,
+Universal gates cover identity, public/oracle isolation, allowed tools, structural evidence,
 retrieval coverage, Proof Graph integrity, operation replay, answer schema, and citation binding.
-Domain gates cover semantic Evidence validity, source-grounding policy, domain comparability, and
-domain claim boundaries. A domain failure cannot be hidden inside a generic answer gate.
+Domain gates cover semantic evidence validity, source grounding, comparability, and claim boundaries.
+A domain failure cannot be hidden inside a generic answer check.
+
+Source grounding has three explicit outcomes relevant to release decisions:
+
+```text
+VERIFIED
+NOT_APPLICABLE
+MISSING_REQUIRED_VERIFIER / FAILED
+```
+
+Only the first two can pass, and `NOT_APPLICABLE` must be declared by the task contract.
 
 ## Retrieval Tracks
 
-All domains use the same three track contracts:
+All domains use the same retrieval-track meanings:
 
 ```text
-resolved   normalized constraints
+resolved   normalized semantic constraints
 semi_open  aliases or partial constraints + fixed corpus boundary
 open       natural-language task + fixed corpus boundary
 ```
@@ -117,47 +181,69 @@ evidence, temporal, scope, definition, provenance, trajectory,
 citation, derivation, claim, composite
 ```
 
-Experiments implement concrete mutations and map them to this taxonomy. For example, a wrong fiscal
-year, wrong effective date, and wrong study version all map to `temporal`; their construction remains
-domain-specific.
+The taxonomy includes a concrete `source_provenance_mismatch` entry. Experiments implement domain
+mutations and map them to these shared labels; for example, a wrong fiscal year, effective date, and
+study version all map to `temporal`.
 
 ## Cross-domain Contract Suite
 
-Schema portability is insufficient. CI therefore includes non-lookup programs:
+Schema portability alone is insufficient. The versioned suite therefore executes non-lookup
+candidate workflows with hard in-scope distractors:
 
 ```text
 Legal
-  retrieve rules -> check conditions/exceptions -> resolve authority -> legal effect
+  search -> condition/exception application -> authority resolution -> supported claim
 
 Science
-  retrieve results -> align protocol -> compare effect -> preserve uncertainty
+  search -> protocol alignment -> qualified effect comparison -> uncertainty preservation
 ```
 
-Both programs use the shared Evidence/Proof Graph/Task Program/Reference Workflow/Quality Assessment
-pipeline and their own policy and operation registries. A mutated legal operation output must be
-rejected by the same universal replay gate used for finance.
+For each domain, a public-only clean candidate must pass and mutations of evidence, time, scope,
+definition, derivation, citation, and claim must be rejected. The suite result and fixture manifest
+hash are frozen in every release alongside plugin sets, source-grounding verifiers, operation
+registries, and mutation taxonomy.
+
+This proves contract-level portability. It does not prove transfer to production legal/scientific
+corpora or real model agents.
 
 ## Pull Request Rule
 
-A Core change is admissible only when at least one condition holds:
+A common-layer change is admissible only when at least one condition holds:
 
 1. it is pure structure, workflow, or mathematics;
 2. it has real use in two domains;
 3. it includes one finance and one non-finance complex contract test.
 
-Otherwise the capability starts in a Domain Plugin. Promotion to Core requires evidence of reuse.
+Otherwise it starts in a domain plugin. Promotion requires evidence of reuse.
 
-## Release Metrics
+## Release Contract
 
-The following are hard targets:
+Each release freezes at least:
 
 ```text
-core_domain_import_count        = 0
-core_domain_branch_count        = 0
-core_domain_field_access_count  = 0
-cross_domain_contract_pass_rate = 100%
+generalization audit version/hash/result
+scanned common packages and discovered domains
+DomainPluginSet IDs and versions
+operation and implementation manifests
+source-grounding verifier IDs and versions
+mutation taxonomy manifest hash
+cross-domain fixture/result hash
+public/oracle and planning-track contract versions
+```
+
+Hard targets are:
+
+```text
+core_domain_import_count          = 0
+core_domain_branch_count          = 0
+core_domain_field_access_count    = 0
+dynamic_domain_import_count       = 0
+domain_dispatch_count             = 0
+cross_domain_reference_pass_rate  = 100%
+cross_domain_candidate_pass_rate  = 100%
+cross_domain_mutation_reject_rate = 100%
 ```
 
 Future learned quality critics must additionally report leave-one-domain-out error F1, critical
 false acceptance rate, step localization, and calibration. Those metrics are not claimed by the
-current deterministic Contract Suite.
+current deterministic contract suite.

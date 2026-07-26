@@ -10,10 +10,18 @@ from trusted_synthesis.core.evaluation.schema import ReleaseDecision
 from trusted_synthesis.core.evidence import ScalarObservation, TemporalContext
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
-from trusted_synthesis.core.operations.program import ProgramExecutionError
-from trusted_synthesis.core.operations.registry import default_registry
+from trusted_synthesis.core.operations.program import (
+    ProgramExecutionError,
+    TaskProgramOracleVerifier,
+)
+from trusted_synthesis.core.operations.registry import OperationContractError, default_registry
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
+from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
+from trusted_synthesis.domains.science import operations as science_operations
+from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
+    build_contract_cases,
+)
 
 
 def _task(finance_evidence: EvidenceItem):
@@ -113,3 +121,58 @@ def test_growth_replay_uses_the_frozen_decimal_operation_order(
     )
     assert growth["verifier_version"] == "1.0.1"
     assert growth["formula_id"] == "growth.relative_change_abs_base.v1"
+
+
+def test_non_finance_oracle_rejects_missing_observed_node_output() -> None:
+    for case in build_contract_cases():
+        oracle = TaskProgramOracleVerifier(case.registry)
+        evidence_by_id = {item.evidence_id: item for item in case.bundle.evidence}
+        expected = oracle.derive_expected(case.task.oracle.task_program, evidence_by_id)
+        observed = dict(expected.node_outputs)
+        observed.pop(case.task.oracle.task_program.nodes[0].node_id)
+
+        report = oracle.verify(case.task.oracle.task_program, evidence_by_id, observed)
+
+        assert not report.passed
+        assert not report.node_statuses[case.task.oracle.task_program.nodes[0].node_id]
+
+
+def test_structured_operation_outputs_are_strict_and_helpers_are_hashed() -> None:
+    for case in build_contract_cases():
+        oracle = TaskProgramOracleVerifier(case.registry)
+        evidence_by_id = {item.evidence_id: item for item in case.bundle.evidence}
+        expected = oracle.derive_expected(case.task.oracle.task_program, evidence_by_id)
+        first_node = case.task.oracle.task_program.nodes[0]
+        definition = case.registry.require(first_node.operator_id)
+        extra = {**expected.node_outputs[first_node.node_id], "unexpected": True}
+
+        with pytest.raises(OperationContractError, match="output schema mismatch"):
+            case.registry.validate_output(definition, extra)
+
+        manifest = next(
+            item
+            for item in case.registry.manifest()
+            if item["operator_id"] == first_node.operator_id
+        )
+        assert manifest["output_model_schema"]["additionalProperties"] is False
+        assert manifest["implementation_dependency_ids"]
+
+
+def test_science_executor_helper_defect_is_caught_by_independent_oracle(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    case = next(item for item in build_contract_cases() if item.domain == "science")
+    monkeypatch.setattr(
+        science_operations,
+        "_executor_intervals_overlap",
+        lambda left, right: False,
+    )
+    reference = ReferenceWorkflowCompiler(case.registry).compile(case.task, case.bundle)
+
+    assessment = ReferenceQualityEvaluator(
+        semantic_policy=case.semantic_policy,
+        workflow_verifier=ReferenceWorkflowVerifier(case.registry),
+    ).evaluate(case.task, case.bundle, case.proof_graph, reference)
+
+    assert assessment.decision == ReleaseDecision.REJECTED
+    assert "independent_recompute" in assessment.fatal_failures

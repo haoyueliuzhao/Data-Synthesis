@@ -14,11 +14,11 @@ from trusted_synthesis.core.trajectory.schema import (
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-CANDIDATE_GENERATOR_VERSION = "candidate_workflow.v4"
+CANDIDATE_GENERATOR_VERSION = "finance_numeric_candidate.v5"
 
 
-class CandidateTrajectoryGenerator:
-    """Generate from public task data only; the oracle type cannot be supplied."""
+class FinanceNumericCandidateGenerator:
+    """Resolved, plan-given finance candidate used only by the numeric pilot."""
 
     def generate(self, task: TaskPublicSpec, runtime: EvidenceToolRuntime) -> Trajectory:
         evidence = runtime.search(task.retrieval_scope)
@@ -37,8 +37,11 @@ class CandidateTrajectoryGenerator:
             TrajectoryStep(
                 step_index=1,
                 action=ActionType.PLAN,
-                observation={"task_type": task.task_type},
-                rationale_summary="Infer the required evidence from the public instruction.",
+                observation={
+                    "task_type": task.task_type,
+                    "planning_track": task.planning_track.value,
+                },
+                rationale_summary="Read the public program skeleton and retrieval constraints.",
                 status=StepStatus.SUCCEEDED,
             ),
             TrajectoryStep(
@@ -56,6 +59,9 @@ class CandidateTrajectoryGenerator:
         steps.extend(operation_steps)
         next_index = len(steps) + 1
         if any(item.value == "verify_result" for item in task.requirements):
+            output_node_id = (
+                task.program_skeleton.output_node_id if task.program_skeleton else "result"
+            )
             steps.append(
                 TrajectoryStep(
                     step_index=next_index,
@@ -63,12 +69,12 @@ class CandidateTrajectoryGenerator:
                     observation={
                         "schema_checked": True,
                         "source_checked": True,
-                        "verified_output_ref": "operation:result",
+                        "verified_output_ref": f"operation:{output_node_id}",
                         "verified_result": result,
                     },
                     evidence_ids=evidence_ids,
-                    program_node_id="result",
-                    input_refs=("operation:result",),
+                    program_node_id=output_node_id,
+                    input_refs=(f"operation:{output_node_id}",),
                     rationale_summary=(
                         "Check answer fields and bind citations to selected evidence."
                     ),
@@ -106,10 +112,10 @@ class CandidateTrajectoryGenerator:
 
     @staticmethod
     def _select(task: TaskPublicSpec, evidence):
-        contract = task.retrieval_scope.get("selection_contract")
+        contract = task.retrieval_scope.get("semantic_constraints")
         if not isinstance(contract, dict):
             return evidence
-        return tuple(item for item in evidence if _matches_selection_contract(item, contract))
+        return tuple(item for item in evidence if _matches_semantic_constraints(item, contract))
 
     @staticmethod
     def _answer(task: TaskPublicSpec, evidence) -> dict[str, object]:
@@ -161,6 +167,15 @@ def _operation_steps(
     *,
     start_index: int,
 ) -> tuple[TrajectoryStep, ...]:
+    if task.program_skeleton is None:
+        raise ValueError("finance pilot candidate requires a public program skeleton")
+    skeleton_nodes = task.program_skeleton.nodes
+    lookup_nodes = tuple(node for node in skeleton_nodes if node.operator_id == "lookup")
+    output_node = next(
+        node
+        for node in skeleton_nodes
+        if node.public_node_id == task.program_skeleton.output_node_id
+    )
     ordered = tuple(sorted(evidence, key=_temporal_sort_key))
     steps: list[TrajectoryStep] = []
 
@@ -187,25 +202,22 @@ def _operation_steps(
         )
 
     if task.task_type == "fact_retrieval" and len(evidence) == 1:
-        add_lookup(evidence[0], "result")
+        add_lookup(evidence[0], output_node.public_node_id)
         return tuple(steps)
     input_refs: tuple[str, ...]
     operator_id: str
     if task.task_type == "temporal_growth" and len(ordered) == 2:
-        add_lookup(ordered[0], "earlier_value")
-        add_lookup(ordered[1], "later_value")
-        input_refs = (
-            "operation:earlier_value#payload.value",
-            "operation:later_value#payload.value",
-        )
-        operator_id = "growth"
+        for item, node in zip(ordered, lookup_nodes, strict=True):
+            add_lookup(item, node.public_node_id)
+        input_refs = (*(f"operation:{node.public_node_id}#payload.value" for node in lookup_nodes),)
+        operator_id = output_node.operator_id
     elif task.task_type == "temporal_average" and len(ordered) >= 3:
-        for index, item in enumerate(ordered, start=1):
-            add_lookup(item, f"value_{index}")
+        for item, node in zip(ordered, lookup_nodes, strict=True):
+            add_lookup(item, node.public_node_id)
         input_refs = tuple(
-            f"operation:value_{index}#payload.value" for index in range(1, len(ordered) + 1)
+            f"operation:{node.public_node_id}#payload.value" for node in lookup_nodes
         )
-        operator_id = "aggregate"
+        operator_id = output_node.operator_id
     else:
         steps.append(
             TrajectoryStep(
@@ -218,19 +230,19 @@ def _operation_steps(
             )
         )
         input_refs = tuple(f"evidence:{item.evidence_id}" for item in evidence)
-        operator_id = "compare" if task.task_type == "comparison" else "unsupported"
+        operator_id = output_node.operator_id
     if any(item.value == "calculate" for item in task.requirements):
         steps.append(
             TrajectoryStep(
                 step_index=start_index + len(steps),
                 action=ActionType.CALCULATE,
-                tool_name="calculator",
+                tool_name=output_node.tool_capability,
                 observation={"result": result},
                 evidence_ids=tuple(item.evidence_id for item in evidence),
-                program_node_id="result",
+                program_node_id=output_node.public_node_id,
                 operator_id=operator_id,
                 input_refs=input_refs,
-                output_ref="operation:result",
+                output_ref=f"operation:{output_node.public_node_id}",
                 rationale_summary="Compute the bound operation node from its declared inputs.",
                 status=StepStatus.SUCCEEDED,
             )
@@ -238,21 +250,20 @@ def _operation_steps(
     return tuple(steps)
 
 
-def _matches_selection_contract(item, contract: dict[str, object]) -> bool:
+def _matches_semantic_constraints(item, contract: dict[str, object]) -> bool:
     payload = item.payload.model_dump(mode="json", exclude_none=True)
     payload_context = {
         key: value for key, value in payload.items() if key not in {"kind", "value", "precision"}
     }
+    payload_contexts = contract.get("payload_contexts")
+    payload_context_match = True
+    if isinstance(payload_contexts, list) and payload_contexts:
+        payload_context_match = payload_context in payload_contexts
     checks = (
         _allowed(item.definition.definition_id, contract.get("definition_ids")),
-        _allowed(item.source.source_id, contract.get("source_ids")),
         _allowed(item.source.authority.value, contract.get("source_authorities")),
-        _allowed_hash(payload_context, contract.get("payload_context_hashes"), "payload_context:"),
-        _allowed_hash(
-            item.domain_context,
-            contract.get("domain_context_hashes"),
-            "domain_context:",
-        ),
+        payload_context_match,
+        _allowed(item.epistemic_status.value, contract.get("epistemic_statuses")),
         _allowed(item.temporal_context.basis, contract.get("time_bases")),
         _allowed(item.temporal_context.frequency, contract.get("frequencies")),
         _allowed(item.scope.scope_type if item.scope else None, contract.get("scope_types")),
@@ -260,21 +271,10 @@ def _matches_selection_contract(item, contract: dict[str, object]) -> bool:
     )
     if not all(checks):
         return False
-    required_build_ids = contract.get("required_build_ids")
-    if isinstance(required_build_ids, dict):
-        for key, allowed in required_build_ids.items():
-            if not _allowed(item.provenance.build_ids.get(str(key)), allowed):
-                return False
-    return True
+    return not (contract.get("historical_only") is True and item.domain_context.get("is_forecast"))
 
 
 def _allowed(value: object, allowed: object) -> bool:
     if not isinstance(allowed, (list, tuple, set)) or not allowed:
         return True
     return value in set(allowed)
-
-
-def _allowed_hash(value: object, allowed: object, prefix: str) -> bool:
-    if not isinstance(allowed, (list, tuple, set)) or not allowed:
-        return True
-    return canonical_hash(value, prefix=prefix) in set(allowed)

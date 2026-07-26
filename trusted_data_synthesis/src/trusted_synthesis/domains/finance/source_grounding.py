@@ -29,6 +29,7 @@ class FinanceSourceGroundingVerifier:
     """Dereference archived objects and verify that their raw values support evidence."""
 
     verifier_id = "finance_source_grounding.v1"
+    verifier_version = "1.0.0"
 
     def __init__(
         self,

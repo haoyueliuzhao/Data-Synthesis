@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
+from trusted_synthesis.core.evidence.epistemic import EpistemicStatus
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import (
     EvidenceBundle,
@@ -153,6 +154,7 @@ def _mutate_semantic_contract(base: EvidenceItem, kind: str, identity: str) -> E
         )
     elif kind == "stale_version":
         updates["evidence_version_id"] = f"version:stale:{identity.split(':')[-1]}"
+        updates["epistemic_status"] = EpistemicStatus.SUPERSEDED
         updates["provenance"] = base.provenance.model_copy(
             update={
                 "source_record_id": f"stale:{identity.split(':')[-1]}",

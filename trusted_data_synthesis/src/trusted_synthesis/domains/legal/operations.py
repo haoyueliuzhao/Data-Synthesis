@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from trusted_synthesis.core.operations.registry import (
     OperationRegistry,
@@ -10,6 +10,25 @@ from trusted_synthesis.core.operations.registry import (
     make_operation_definition,
 )
 from trusted_synthesis.core.operations.schema import OperationInput, OperationVerification
+
+
+class LegalRuleDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    applicable: bool
+    authority: str | None
+    legal_effect: str | None
+    missing_conditions: list[str]
+    triggered_exceptions: list[str]
+
+
+class LegalAuthorityDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    applicable: bool
+    selected_ref: str | None
+    authority: str | None
+    legal_effect: str | None
 
 
 class LegalRuleApplicabilityExecutor:
@@ -48,7 +67,7 @@ class LegalRuleApplicabilityVerifier:
         present = {str(item) for item in parameters.get("present_exceptions") or ()}
         missing = sorted({str(item) for item in rule.get("conditions") or ()} - conditions)
         triggered = sorted({str(item) for item in rule.get("exceptions") or ()} & present)
-        expected = {
+        expected: dict[str, Any] = {
             "applicable": not missing and not triggered,
             "authority": rule.get("authority"),
             "legal_effect": rule.get("legal_effect"),
@@ -62,7 +81,41 @@ class LegalAuthorityResolverExecutor:
     def execute(
         self, inputs: tuple[OperationInput, ...], parameters: dict[str, Any]
     ) -> dict[str, Any]:
-        return _resolve_authority(inputs, parameters)
+        if not inputs:
+            raise ValueError("legal authority resolution requires rule decisions")
+        priority = {
+            str(authority): index
+            for index, authority in enumerate(parameters.get("authority_priority") or ())
+        }
+        eligible = [item for item in inputs if bool(_mapping(item.value).get("applicable"))]
+        if not eligible:
+            return {
+                "applicable": False,
+                "selected_ref": None,
+                "authority": None,
+                "legal_effect": None,
+            }
+        unknown = [
+            str(_mapping(item.value).get("authority"))
+            for item in eligible
+            if str(_mapping(item.value).get("authority")) not in priority
+        ]
+        if unknown:
+            raise ValueError(f"authority priority is incomplete: {sorted(unknown)}")
+        selected = min(
+            eligible,
+            key=lambda item: (
+                priority[str(_mapping(item.value).get("authority"))],
+                item.ref_id,
+            ),
+        )
+        value = _mapping(selected.value)
+        return {
+            "applicable": True,
+            "selected_ref": selected.ref_id,
+            "authority": value.get("authority"),
+            "legal_effect": value.get("legal_effect"),
+        }
 
 
 class LegalAuthorityResolverVerifier:
@@ -74,7 +127,36 @@ class LegalAuthorityResolverVerifier:
     ) -> OperationVerification:
         if not inputs:
             return _verification(None, observed_output, "legal_authority_non_empty")
-        expected = _resolve_authority(inputs, parameters)
+        priority_order = tuple(str(item) for item in parameters.get("authority_priority") or ())
+        priority = {authority: index for index, authority in enumerate(priority_order)}
+        applicable_inputs = tuple(
+            item for item in inputs if _mapping(item.value).get("applicable") is True
+        )
+        if not applicable_inputs:
+            expected: dict[str, Any] = {
+                "applicable": False,
+                "selected_ref": None,
+                "authority": None,
+                "legal_effect": None,
+            }
+            return _verification(expected, observed_output, "legal_authority_output")
+        authorities = tuple(
+            str(_mapping(item.value).get("authority")) for item in applicable_inputs
+        )
+        if any(authority not in priority for authority in authorities):
+            return _verification(None, observed_output, "legal_authority_priority_complete")
+        selected_index = min(
+            range(len(applicable_inputs)),
+            key=lambda index: (priority[authorities[index]], applicable_inputs[index].ref_id),
+        )
+        selected = applicable_inputs[selected_index]
+        selected_value = _mapping(selected.value)
+        expected = {
+            "applicable": True,
+            "selected_ref": selected.ref_id,
+            "authority": selected_value.get("authority"),
+            "legal_effect": selected_value.get("legal_effect"),
+        }
         return _verification(expected, observed_output, "legal_authority_output")
 
 
@@ -89,6 +171,9 @@ def legal_operation_registry() -> OperationRegistry:
             "structured",
             "none",
             ("conditions_complete", "exceptions_checked"),
+            output_model=LegalRuleDecision,
+            tool_capability="rule_engine",
+            implementation_dependencies=(_mapping,),
         )
     )
     registry.register(
@@ -100,49 +185,12 @@ def legal_operation_registry() -> OperationRegistry:
             "structured",
             "none",
             ("applicable_only", "authority_priority_registered"),
+            output_model=LegalAuthorityDecision,
+            tool_capability="rule_engine",
+            implementation_dependencies=(_mapping,),
         )
     )
     return registry
-
-
-def _resolve_authority(
-    inputs: tuple[OperationInput, ...], parameters: dict[str, Any]
-) -> dict[str, Any]:
-    if not inputs:
-        raise ValueError("legal authority resolution requires rule decisions")
-    priority = {
-        str(authority): index
-        for index, authority in enumerate(parameters.get("authority_priority") or ())
-    }
-    eligible = [item for item in inputs if bool(_mapping(item.value).get("applicable"))]
-    if not eligible:
-        return {
-            "applicable": False,
-            "selected_ref": None,
-            "authority": None,
-            "legal_effect": None,
-        }
-    unknown = [
-        str(_mapping(item.value).get("authority"))
-        for item in eligible
-        if str(_mapping(item.value).get("authority")) not in priority
-    ]
-    if unknown:
-        raise ValueError(f"authority priority is incomplete: {sorted(unknown)}")
-    selected = min(
-        eligible,
-        key=lambda item: (
-            priority[str(_mapping(item.value).get("authority"))],
-            item.ref_id,
-        ),
-    )
-    value = _mapping(selected.value)
-    return {
-        "applicable": True,
-        "selected_ref": selected.ref_id,
-        "authority": value.get("authority"),
-        "legal_effect": value.get("legal_effect"),
-    }
 
 
 def _mapping(value: Any) -> dict[str, Any]:
@@ -158,7 +206,7 @@ def _verification(
     observed: dict[str, Any],
     invariant: str,
 ) -> OperationVerification:
-    passed = expected is not None and (not observed or observed == expected)
+    passed = expected is not None and observed == expected
     return OperationVerification(
         passed=passed,
         expected_output=expected,

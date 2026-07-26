@@ -34,7 +34,7 @@ trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
 
-The v0.4 pilot creates isolated public/oracle task packages and evaluates both
+The v0.4.1 pilot creates isolated public/oracle task packages and evaluates both
 deterministic references and public-only candidates. Candidate generators receive
 only the public task and an evidence corpus runtime. Candidate gates independently
 check hard-distractor selection, source-object entailment, Program/Step alignment,
@@ -49,6 +49,7 @@ the global resolved-track architecture; it does not establish Greater China
 coverage, live-model quality, open retrieval, or production readiness.
 
 Finance is constrained as a reference plugin rather than a framework dependency. Every release
-runs the [Generalization Contract](docs/generalization_contract.md) fail-closed, and CI executes
-non-lookup Legal and Science programs to verify reuse of Task DAGs, Proof Graphs, independent replay,
-and Universal quality gates.
+runs the [Generalization Contract](docs/generalization_contract.md) fail-closed across Core, Runtime,
+and Architecture, and must freeze a passing cross-domain Candidate Contract Suite. That suite
+executes non-lookup Legal and Science programs with hard distractors and domain mutations to verify
+reuse of Task DAGs, Proof Graphs, independent replay, and Universal quality gates.

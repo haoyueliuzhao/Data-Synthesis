@@ -15,7 +15,10 @@ from trusted_synthesis.core.release import (
 )
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.core.task.program import InputRefKind
-from trusted_synthesis.runtime import CandidateTrajectoryGenerator, InMemoryEvidenceToolRuntime
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
+from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
 
 def test_surface_variants_share_a_semantic_split(finance_evidence: EvidenceItem) -> None:
@@ -99,7 +102,7 @@ def test_candidate_release_selects_only_quality_accepted_records(
     graph = ProofGraphBuilder().build(bundle)
     task = ProofGraphTaskSynthesizer().fact_retrieval(graph, bundle, finance_evidence.evidence_id)
     corpus = EvidenceCorpus.from_bundle(bundle)
-    candidate = CandidateTrajectoryGenerator().generate(
+    candidate = FinanceNumericCandidateGenerator().generate(
         task.public, InMemoryEvidenceToolRuntime(corpus)
     )
     accepted = CandidateQualityEvaluator().evaluate(task, corpus, graph, candidate)

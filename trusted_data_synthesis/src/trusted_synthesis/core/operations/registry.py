@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import inspect
 from decimal import Decimal, InvalidOperation
-from typing import Any
+from typing import Any, cast
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceItem
@@ -31,6 +31,33 @@ from trusted_synthesis.hashing import canonical_hash
 
 class OperationContractError(ValueError):
     """A program node does not satisfy its frozen registry contract."""
+
+
+class LookupOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    selected_ref: str
+    payload: Any
+
+
+class ComparisonOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    higher_ref: str | None
+    difference: str
+
+
+class ScalarOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    value: str
+
+
+class AggregateOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    method: str
+    value: str
 
 
 class OperationRegistry:
@@ -88,6 +115,14 @@ class OperationRegistry:
 
     @staticmethod
     def validate_output(definition: OperationDefinition, output: dict[str, Any]) -> None:
+        if definition.output_model is not None:
+            try:
+                definition.output_model.model_validate(output)
+            except ValidationError as exc:
+                raise OperationContractError(
+                    f"{definition.operator_id} output schema mismatch: {exc}"
+                ) from exc
+            return
         required_fields = {
             "payload": {"selected_ref", "payload"},
             "comparison": {"higher_ref", "difference"},
@@ -169,6 +204,15 @@ class OperationRegistry:
                 "output_schema": item.output_schema,
                 "compatibility_policy": item.compatibility_policy,
                 "invariant_checks": item.invariant_checks,
+                "output_model": (
+                    item.output_model.__name__ if item.output_model is not None else None
+                ),
+                "output_model_schema": (
+                    item.output_model.model_json_schema() if item.output_model is not None else None
+                ),
+                "tool_capability": item.tool_capability,
+                "action_type": item.action_type,
+                "execution_mode": item.execution_mode,
                 "executor": type(item.executor).__name__,
                 "oracle_verifier": type(item.oracle_verifier).__name__,
                 "executor_version": item.executor_version,
@@ -178,6 +222,7 @@ class OperationRegistry:
                 "rounding_policy": item.rounding_policy,
                 "tolerance_policy": item.tolerance_policy,
                 "implementation_hash": item.implementation_hash,
+                "implementation_dependency_ids": item.implementation_dependency_ids,
             }
             for item in sorted(self._definitions.values(), key=lambda value: value.operator_id)
         )
@@ -193,6 +238,8 @@ def default_registry() -> OperationRegistry:
             "payload",
             "none",
             ("arity=1",),
+            output_model=LookupOutput,
+            action_type="select_evidence",
         ),
         make_operation_definition(
             "compare",
@@ -202,6 +249,8 @@ def default_registry() -> OperationRegistry:
             "comparison",
             "same_unit_and_definition",
             ("arity=2",),
+            output_model=ComparisonOutput,
+            tool_capability="calculator",
         ),
         make_operation_definition(
             "difference",
@@ -211,6 +260,8 @@ def default_registry() -> OperationRegistry:
             "scalar",
             "same_unit_and_definition",
             ("arity=2",),
+            output_model=ScalarOutput,
+            tool_capability="calculator",
         ),
         make_operation_definition(
             "ratio",
@@ -220,6 +271,8 @@ def default_registry() -> OperationRegistry:
             "scalar",
             "registered_ratio_pair",
             ("arity=2", "denominator_non_zero"),
+            output_model=ScalarOutput,
+            tool_capability="calculator",
         ),
         make_operation_definition(
             "growth",
@@ -229,6 +282,8 @@ def default_registry() -> OperationRegistry:
             "percentage",
             "same_series",
             ("arity=2", "base_non_zero"),
+            output_model=ScalarOutput,
+            tool_capability="calculator",
             verifier_version="1.0.1",
             semantic_version="1.0.1",
             formula_id="growth.relative_change_abs_base.v1",
@@ -241,6 +296,8 @@ def default_registry() -> OperationRegistry:
             "scalar",
             "same_metric_unit_definition",
             ("non_empty", "method_registered"),
+            output_model=AggregateOutput,
+            tool_capability="calculator",
         ),
     )
     return OperationRegistry(definitions)
@@ -255,16 +312,23 @@ def make_operation_definition(
     compatibility_policy,
     invariants,
     *,
+    output_model: type[BaseModel] | None = None,
+    tool_capability: str | None = None,
+    action_type: str = "calculate",
+    execution_mode: str = "deterministic_local",
+    implementation_dependencies: tuple[object, ...] = (),
     executor_version="1.0.0",
     verifier_version="1.0.0",
     semantic_version="1.0.0",
     formula_id=None,
 ) -> OperationDefinition:
+    dependencies = (type(executor), type(verifier), *implementation_dependencies)
+    dependency_sources = {
+        _implementation_id(dependency): inspect.getsource(cast(Any, dependency))
+        for dependency in dependencies
+    }
     implementation_hash = canonical_hash(
-        {
-            "executor": inspect.getsource(type(executor)),
-            "verifier": inspect.getsource(type(verifier)),
-        },
+        dependency_sources,
         prefix="operation_implementation:",
     )
     return OperationDefinition(
@@ -276,6 +340,10 @@ def make_operation_definition(
         output_schema=output_schema,
         compatibility_policy=compatibility_policy,
         invariant_checks=invariants,
+        output_model=output_model,
+        tool_capability=tool_capability,
+        action_type=action_type,
+        execution_mode=execution_mode,
         executor_version=executor_version,
         verifier_version=verifier_version,
         semantic_version=semantic_version,
@@ -283,7 +351,14 @@ def make_operation_definition(
         rounding_policy="decimal_exact_no_implicit_rounding",
         tolerance_policy="exact_decimal_and_exact_structure",
         implementation_hash=implementation_hash,
+        implementation_dependency_ids=tuple(sorted(dependency_sources)),
     )
+
+
+def _implementation_id(value: object) -> str:
+    module = getattr(value, "__module__", type(value).__module__)
+    qualname = getattr(value, "__qualname__", type(value).__qualname__)
+    return f"{module}.{qualname}"
 
 
 def _is_numeric(value: Any) -> bool:

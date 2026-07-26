@@ -4,6 +4,8 @@ from copy import deepcopy
 from datetime import date
 from decimal import Decimal
 
+import pytest
+
 from trusted_synthesis.core.evaluation.evaluator import ReferenceQualityEvaluator
 from trusted_synthesis.core.evaluation.schema import GateScope, ReleaseDecision
 from trusted_synthesis.core.evidence import (
@@ -38,6 +40,9 @@ from trusted_synthesis.domains.science import (
     ScienceTaskPlugin,
     science_operation_registry,
 )
+from trusted_synthesis.experiments.cross_domain_contract_suite import (
+    run_cross_domain_contract_suite,
+)
 
 
 def test_legal_rule_exception_and_authority_program_replays() -> None:
@@ -67,6 +72,18 @@ def test_legal_rule_exception_and_authority_program_replays() -> None:
         "legal_apply_rule",
         "legal_resolve_authority",
     ]
+    assert task.public.allowed_tools == ("evidence.search", "rule_engine")
+    role_constraints = [
+        item.semantic_constraints
+        for node in task.public.program_skeleton.nodes
+        for item in node.inputs
+        if item.kind.value == "evidence"
+    ]
+    assert {item["source_name"] for item in role_constraints} == {
+        "Agency Guidance",
+        "Example Act",
+    }
+    assert all("source_id" not in item and "evidence_id" not in item for item in role_constraints)
     assert workflow.final_answer["result"] == {
         "applicable": True,
         "selected_ref": "apply_2",
@@ -94,6 +111,7 @@ def test_science_protocol_alignment_effect_and_uncertainty_program_replays() -> 
         "science_align_protocol",
         "science_compare_effect",
     ]
+    assert task.public.allowed_tools == ("evidence.search", "protocol_analyzer")
     assert workflow.final_answer["result"] == {
         "higher_ref": right.evidence_id,
         "difference": "0.8",
@@ -132,6 +150,39 @@ def test_non_finance_operation_mutation_is_rejected_by_universal_replay() -> Non
     assert assessment.decision == ReleaseDecision.REJECTED
     assert "independent_recompute" in assessment.fatal_failures
     assert all(gate.passed for gate in assessment.domain_gates)
+
+
+def test_cross_domain_candidate_contract_suite_passes_with_distractors_and_mutations() -> None:
+    artifacts = run_cross_domain_contract_suite()
+
+    assert artifacts.result.passed
+    assert artifacts.result.domains == ("legal", "science")
+    assert artifacts.result.task_count == 2
+    assert artifacts.result.clean_candidate_pass_rate == 1
+    assert artifacts.result.mutation_count == 14
+    assert artifacts.result.mutation_rejection_rate == 1
+    assert {item.domain for item in artifacts.plugin_sets} == {"legal", "science"}
+
+
+def test_task_builder_rejects_implicit_cross_domain_evidence() -> None:
+    rules = (
+        _legal_rule("guidance", "Agency Guidance", "administrative filing"),
+        _legal_rule("statute", "Example Act", "statutory filing").model_copy(
+            update={"domain": "science"}
+        ),
+    )
+    bundle = _bundle("mixed", rules)
+    graph = ProofGraphBuilder().build(bundle)
+
+    with pytest.raises(ValueError, match="evidence domains must exactly match"):
+        LegalTaskPlugin().rule_application(
+            graph,
+            bundle,
+            rules,
+            satisfied_conditions=("threshold exceeded",),
+            present_exceptions=(),
+            authority_priority=("Example Act", "Agency Guidance"),
+        )
 
 
 def _assert_cross_domain_assessment(assessment) -> None:
