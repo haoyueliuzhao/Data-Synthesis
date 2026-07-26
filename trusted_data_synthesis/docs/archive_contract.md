@@ -32,13 +32,14 @@ The adapter rejects an archive when:
 
 | Finance archive | Shared contract |
 | --- | --- |
-| canonical entity | EntityRef |
-| metric ontology | PropertyRef |
+| canonical entity | SubjectRef |
+| metric ontology | predicate + SemanticDefinitionRef |
 | standardized Fact node | EvidenceItem |
-| period fields | TimeRef |
+| normalized value | ScalarObservation payload |
+| period fields | TemporalContext |
 | source registry | SourceRef |
-| source metric definition | DefinitionRef |
-| raw object + build IDs | ProvenanceRef |
+| raw object / URL | SourceLocator |
+| build IDs | ProvenanceRef |
 
 The current archive contains 658,535 graph-ready Fact nodes in KG schema 3.0.
 The adapter streams these records and loads only small catalogs in memory. No

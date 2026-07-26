@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from datetime import date
-from decimal import Decimal
 from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from trusted_synthesis.core.evidence.epistemic import EpistemicStatus
+from trusted_synthesis.core.evidence.locator import SourceLocator
+from trusted_synthesis.core.evidence.payloads import EvidenceKind, EvidencePayload
+from trusted_synthesis.core.evidence.scope import EvidenceScope
+from trusted_synthesis.core.evidence.temporal import TemporalContext
 from trusted_synthesis.hashing import canonical_hash
 
 
@@ -15,45 +18,19 @@ class FrozenModel(BaseModel):
 
 
 class SourceAuthority(str, Enum):
+    PRIMARY = "primary"
     OFFICIAL = "official"
+    PEER_REVIEWED = "peer_reviewed"
     CURATED_DATABASE = "curated_database"
-    SECONDARY_WEB = "secondary_web"
+    SECONDARY = "secondary"
+    UNKNOWN = "unknown"
 
 
-class EvidenceStatus(str, Enum):
-    ACCEPTED = "accepted"
-    CONFLICT = "conflict"
-    CANDIDATE = "candidate"
-    REJECTED = "rejected"
-
-
-class EntityRef(FrozenModel):
-    entity_id: str = Field(min_length=1)
+class SubjectRef(FrozenModel):
+    subject_id: str = Field(min_length=1)
     name: str = Field(min_length=1)
-    entity_type: str = Field(min_length=1)
-    market: str | None = None
-    country: str | None = None
-
-
-class PropertyRef(FrozenModel):
-    property_id: str = Field(min_length=1)
-    name: str = Field(min_length=1)
-    category: str | None = None
-    period_type: str | None = None
-
-
-class TimeRef(FrozenModel):
-    label: str = Field(min_length=1)
-    start: date | None = None
-    end: date | None = None
-    basis: str | None = None
-    frequency: str | None = None
-
-    @model_validator(mode="after")
-    def validate_range(self) -> TimeRef:
-        if self.start and self.end and self.start > self.end:
-            raise ValueError("time start must not be after end")
-        return self
+    subject_type: str = Field(min_length=1)
+    attributes: dict[str, Any] = Field(default_factory=dict)
 
 
 class SourceRef(FrozenModel):
@@ -61,54 +38,65 @@ class SourceRef(FrozenModel):
     name: str = Field(min_length=1)
     authority: SourceAuthority
     provider: str | None = None
-    uri: str | None = None
     license_note: str | None = None
+    attributes: dict[str, Any] = Field(default_factory=dict)
 
 
-class DefinitionRef(FrozenModel):
+class SemanticDefinitionRef(FrozenModel):
     definition_id: str | None = None
     text: str | None = None
-    comparability_level: str | None = None
-    vintage_policy: str | None = None
+    attributes: dict[str, Any] = Field(default_factory=dict)
 
 
 class ProvenanceRef(FrozenModel):
     adapter_id: str = Field(min_length=1)
     archive_id: str = Field(min_length=1)
     source_record_id: str = Field(min_length=1)
-    raw_object_id: str | None = None
-    source_document_id: str | None = None
     build_ids: dict[str, str] = Field(default_factory=dict)
     content_hash: str | None = None
     extraction_method: str | None = None
+    parent_evidence_ids: tuple[str, ...] = ()
 
 
 class EvidenceItem(FrozenModel):
     evidence_id: str = Field(min_length=1)
+    assertion_id: str = Field(min_length=1)
+    evidence_version_id: str = Field(min_length=1)
     domain: str = Field(min_length=1)
-    entity: EntityRef
-    property: PropertyRef
-    value: Decimal | int | float | str | bool
-    unit: str | None = None
-    currency: str | None = None
-    time: TimeRef
+    evidence_kind: EvidenceKind
+    subject: SubjectRef
+    predicate: str = Field(min_length=1)
+    payload: EvidencePayload
+    temporal_context: TemporalContext = Field(default_factory=TemporalContext)
+    scope: EvidenceScope | None = None
     source: SourceRef
-    definition: DefinitionRef = Field(default_factory=DefinitionRef)
+    source_locator: SourceLocator
+    definition: SemanticDefinitionRef = Field(default_factory=SemanticDefinitionRef)
     provenance: ProvenanceRef
-    status: EvidenceStatus
-    confidence: float = Field(ge=0, le=1)
-    attributes: dict[str, Any] = Field(default_factory=dict)
+    epistemic_status: EpistemicStatus
+    extraction_confidence: float = Field(ge=0, le=1)
+    domain_context: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_kind(self) -> EvidenceItem:
+        if self.payload.kind != self.evidence_kind:
+            raise ValueError("evidence_kind must match payload kind")
+        return self
 
     @property
     def semantic_key(self) -> str:
         return canonical_hash(
             {
                 "domain": self.domain,
-                "entity_id": self.entity.entity_id,
-                "property_id": self.property.property_id,
-                "time": self.time.model_dump(mode="json"),
-                "unit": self.unit,
-                "currency": self.currency,
+                "subject_id": self.subject.subject_id,
+                "predicate": self.predicate,
+                "evidence_kind": self.evidence_kind,
+                "temporal_context": self.temporal_context.model_dump(
+                    mode="json", exclude_none=True
+                ),
+                "scope": (
+                    self.scope.model_dump(mode="json", exclude_none=True) if self.scope else None
+                ),
                 "definition_id": self.definition.definition_id,
             },
             prefix="evidence_semantic:",

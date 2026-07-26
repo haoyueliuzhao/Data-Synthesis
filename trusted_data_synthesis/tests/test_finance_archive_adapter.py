@@ -6,7 +6,8 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from trusted_synthesis.core.evidence.schema import EvidenceStatus, SourceAuthority
+from trusted_synthesis.core.evidence import EpistemicStatus, ScalarObservation
+from trusted_synthesis.core.evidence.schema import SourceAuthority
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 
@@ -24,10 +25,11 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     assert inspection["read_only"] is True
     assert inspection["fact_node_count"] == 1
     assert len(evidence) == 1
-    assert evidence[0].entity.name == "Example Company"
-    assert evidence[0].property.name == "Revenue"
+    assert evidence[0].subject.name == "Example Company"
+    assert evidence[0].predicate == "revenue"
+    assert isinstance(evidence[0].payload, ScalarObservation)
     assert evidence[0].source.authority == SourceAuthority.OFFICIAL
-    assert evidence[0].status == EvidenceStatus.ACCEPTED
+    assert evidence[0].epistemic_status == EpistemicStatus.OBSERVED
     assert evidence[0].provenance.build_ids["kg"] == "kg_test"
     assert before == after
 
@@ -116,6 +118,8 @@ def _archive_fixture(root: Path) -> FinanceArchiveConfig:
                     "time_basis": "fiscal_period",
                     "frequency": "annual",
                     "metric_period_type": "period_flow",
+                    "financial_scope_type": "consolidated_company",
+                    "entity_scope_id": "EXAMPLE_US",
                     "source_id": "sec_companyfacts",
                     "source_definition_id": "sdef_revenue",
                     "raw_object_id": "raw_example",

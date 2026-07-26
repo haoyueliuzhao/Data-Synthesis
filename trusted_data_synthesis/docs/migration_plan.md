@@ -22,7 +22,7 @@ quality-passed KG build through a read-only adapter.
 | Source connectors and raw storage | Remain archived; not generalized |
 | Entity and metric normalization | Remain Finance Adapter inputs |
 | Standardized graph-ready facts | Map to shared EvidenceItem |
-| Finance KG nodes and edges | Source for Evidence Graph construction |
+| Finance KG nodes and edges | Evidence stream today; future Domain Graph loader input |
 | Derived facts and QA operation plans | Future task-pattern inputs |
 | QA evidence and quality checks | Design reference, not imported runtime code |
 | LLM rewrite and judge clients | Deferred behind core deterministic gates |
@@ -31,10 +31,12 @@ quality-passed KG build through a read-only adapter.
 
 ```text
 core/evidence      universal assertion and provenance contracts
-core/graph         universal evidence graph and reasoning paths
-core/task          public instruction plus hidden executable contract
-core/trajectory    auditable action trace and deterministic replay
-core/evaluation    weighted quality dimensions and release decision
+core/graph         task-local Proof Graph and proof-subgraph extraction
+core/task          isolated Public Spec, Oracle Contract, and Program DAG
+core/operations    executor/oracle registry with independent replay
+core/trajectory    separate reference and candidate workflows
+core/evaluation    hard gates and diagnostic quality vectors
+core/release       immutable manifests and semantic-cluster splits
 domains/finance    read-only archived-finance mapping
 domains/science    next domain extension point
 ```
@@ -62,17 +64,17 @@ The MVP executes:
 ```text
 Archived graph-ready Fact
 -> Finance Adapter
--> Evidence Bundle
--> Evidence Graph
--> Retrieval or Comparison Task
--> Deterministic Trajectory
--> Independent Operation Replay
--> Five-dimension Quality Assessment
+-> Evidence IR v2 + Proof Graph
+-> Public Task / Oracle Contract
+-> Task Program DAG
+-> Reference Workflow
+-> Independent Oracle Replay
+-> Hard Gates + Quality Vector
+-> Split + Release Manifest
 ```
 
-The framework already accepts a science Evidence object through the same core
-pipeline, demonstrating that task, trajectory, and quality code is not finance
-specific.
+The framework accepts legal RuleStatement and scientific ExperimentalResult
+payloads through the same Task Program, workflow compiler, and hard gates.
 
 ## Deliberately Deferred
 
@@ -88,12 +90,12 @@ They will be integrated through interfaces only when needed.
 
 ## Next Build Order
 
-1. Add an operation registry for ratio, growth, aggregation, filtering, and ranking.
-2. Import selected DerivedFact and Scope graph structures into generic derivations.
-3. Add graph-pattern Task mining and task-level evidence completeness gates.
-4. Add an isolated tool runtime for replayable search and calculation trajectories.
-5. Add release storage, split leakage controls, and quality-aware selection.
-6. Implement a small science adapter and cross-domain transfer experiment.
+1. Implement a read-only Finance Domain Graph loader and pattern miner.
+2. Import selected DerivedFact and Scope relations into generic derivations.
+3. Add filtering/ranking operators and graph-pattern Task Programs.
+4. Add multi-step Candidate agents and replayable production tool runtimes.
+5. Persist release catalogs and implement quality-aware selection.
+6. Implement legal and science archive adapters and transfer experiments.
 
 LLM generation should enter only after deterministic task and trajectory
 contracts are stable. It may diversify instructions or propose plans, but it may

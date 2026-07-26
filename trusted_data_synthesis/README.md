@@ -5,11 +5,12 @@ knowledge-intensive agents. It is intentionally domain-agnostic:
 
 ```text
 Domain Adapter
--> Evidence Construction
--> Evidence Graph
--> Task Synthesis
--> Trajectory Generation
--> Quality Evaluation
+-> Evidence IR v2
+-> Task-local Proof Graph
+-> Public Task + Oracle Contract
+-> Task Program DAG
+-> Reference / Candidate Workflows
+-> Hard Gates + Quality Diagnostics
 -> Release Selection
 ```
 
@@ -28,6 +29,7 @@ trusted-synthesis demo-finance --config config/finance_archive.json --limit 3
 pytest -q
 ```
 
-The demo creates deterministic retrieval tasks and auditable trajectories. It
-does not call an LLM and does not expose hidden chain-of-thought; trajectory
-steps store actions, tool inputs, observations, and concise rationale summaries.
+The v0.2 demo creates isolated public/oracle task packages and independently
+verified reference workflows. Candidate generators receive only the public task
+and a tool runtime. It does not expose hidden chain-of-thought; workflow steps
+store actions, tool calls, observations, citations, and concise summaries.

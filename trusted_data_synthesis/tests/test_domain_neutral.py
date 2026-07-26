@@ -5,62 +5,101 @@ from decimal import Decimal
 
 from trusted_synthesis.core.evaluation.evaluator import QualityEvaluator
 from trusted_synthesis.core.evaluation.schema import ReleaseDecision
+from trusted_synthesis.core.evidence import (
+    EpistemicStatus,
+    EvidenceKind,
+    ExperimentalResult,
+    RuleStatement,
+    SourceLocator,
+    TemporalContext,
+    UncertaintyInterval,
+)
 from trusted_synthesis.core.evidence.schema import (
-    EntityRef,
     EvidenceBundle,
     EvidenceItem,
-    EvidenceStatus,
-    PropertyRef,
     ProvenanceRef,
     SourceAuthority,
     SourceRef,
-    TimeRef,
+    SubjectRef,
 )
-from trusted_synthesis.core.task.generator import EvidenceTaskSynthesizer
-from trusted_synthesis.core.trajectory.generator import DeterministicTrajectoryGenerator
+from trusted_synthesis.core.graph.builder import ProofGraphBuilder
+from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
+from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 
 
-def test_core_pipeline_accepts_science_evidence_without_finance_code() -> None:
-    evidence = EvidenceItem(
-        evidence_id="evidence:science:experiment_accuracy",
-        domain="science",
-        entity=EntityRef(
-            entity_id="paper_001",
-            name="Example Paper",
-            entity_type="paper",
+def _bundle(item: EvidenceItem) -> EvidenceBundle:
+    return EvidenceBundle(
+        bundle_id=f"bundle:{item.domain}", evidence=(item,), purpose="cross-domain contract"
+    )
+
+
+def _base(domain: str, payload, kind: EvidenceKind, predicate: str) -> EvidenceItem:
+    return EvidenceItem(
+        evidence_id=f"evidence:{domain}:001@v1",
+        assertion_id=f"assertion:{domain}:001",
+        evidence_version_id=f"version:{domain}:001@v1",
+        domain=domain,
+        evidence_kind=kind,
+        subject=SubjectRef(
+            subject_id=f"{domain}_subject", name=f"{domain.title()} Subject", subject_type=domain
         ),
-        property=PropertyRef(
-            property_id="test_accuracy",
-            name="Test Accuracy",
-            category="experiment_result",
-            period_type="point_in_time",
-        ),
-        value=Decimal("92.4"),
-        unit="percent",
-        time=TimeRef(label="experiment run 1", end=date(2025, 1, 2)),
+        predicate=predicate,
+        payload=payload,
+        temporal_context=TemporalContext(label="effective 2025", valid_to=date(2025, 1, 2)),
         source=SourceRef(
-            source_id="paper_pdf",
-            name="Paper PDF",
-            authority=SourceAuthority.OFFICIAL,
+            source_id=f"{domain}_primary",
+            name=f"{domain.title()} Primary",
+            authority=SourceAuthority.PRIMARY,
         ),
+        source_locator=SourceLocator(uri=f"https://example.org/{domain}", text_span="section 1"),
         provenance=ProvenanceRef(
-            adapter_id="science_memory.v1",
-            archive_id="science_test",
-            source_record_id="table_2_row_1",
-            build_ids={"evidence": "science_build_1"},
+            adapter_id=f"{domain}.v1",
+            archive_id=f"{domain}_archive",
+            source_record_id=f"{domain}_record_1",
+            build_ids={"evidence": "build_1"},
         ),
-        status=EvidenceStatus.ACCEPTED,
-        confidence=1,
+        epistemic_status=EpistemicStatus.OBSERVED,
+        extraction_confidence=1,
     )
-    bundle = EvidenceBundle(
-        bundle_id="bundle_science",
-        evidence=(evidence,),
-        purpose="domain transfer test",
-    )
-    task = EvidenceTaskSynthesizer().fact_retrieval(bundle, evidence.evidence_id)
-    trajectory = DeterministicTrajectoryGenerator().generate(task, bundle)
 
-    assert task.domain == "science"
-    assert (
-        QualityEvaluator().evaluate(task, bundle, trajectory).decision == ReleaseDecision.ACCEPTED
+
+def test_same_lookup_program_handles_legal_and_science_payloads() -> None:
+    legal = _base(
+        "legal",
+        RuleStatement(
+            rule_text="A filing is required when the threshold is exceeded.",
+            conditions=("threshold exceeded",),
+            exceptions=("registered exemption",),
+            authority="Example Act section 10",
+            legal_effect="filing duty",
+        ),
+        EvidenceKind.RULE,
+        "filing_requirement",
     )
+    science = _base(
+        "science",
+        ExperimentalResult(
+            metric="test_accuracy",
+            value=Decimal("92.4"),
+            unit="percent",
+            dataset="held-out benchmark",
+            method="controlled experiment",
+            comparator="baseline",
+            uncertainty=UncertaintyInterval(lower=Decimal("91.8"), upper=Decimal("93.0")),
+            sample_size=500,
+        ),
+        EvidenceKind.EXPERIMENTAL_RESULT,
+        "experiment_result",
+    )
+
+    programs = []
+    for item in (legal, science):
+        bundle = _bundle(item)
+        graph = ProofGraphBuilder().build(bundle)
+        task = ProofGraphTaskSynthesizer().fact_retrieval(graph, bundle, item.evidence_id)
+        workflow = ReferenceWorkflowCompiler().compile(task, bundle)
+        assessment = QualityEvaluator().evaluate(task, bundle, graph, workflow)
+        programs.append([node.operator_id for node in task.oracle.task_program.nodes])
+        assert assessment.decision == ReleaseDecision.ACCEPTED
+
+    assert programs == [["lookup"], ["lookup"]]

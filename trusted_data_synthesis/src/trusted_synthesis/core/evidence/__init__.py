@@ -1,25 +1,45 @@
+from trusted_synthesis.core.evidence.epistemic import EpistemicStatus
+from trusted_synthesis.core.evidence.locator import SourceLocator
+from trusted_synthesis.core.evidence.payloads import (
+    DerivedResult,
+    EvidenceKind,
+    ExperimentalResult,
+    RelationAssertion,
+    RuleStatement,
+    ScalarObservation,
+    TextualClaim,
+    UncertaintyInterval,
+)
 from trusted_synthesis.core.evidence.schema import (
-    DefinitionRef,
-    EntityRef,
     EvidenceBundle,
     EvidenceItem,
-    EvidenceStatus,
-    PropertyRef,
     ProvenanceRef,
+    SemanticDefinitionRef,
     SourceAuthority,
     SourceRef,
-    TimeRef,
+    SubjectRef,
 )
+from trusted_synthesis.core.evidence.scope import EvidenceScope
+from trusted_synthesis.core.evidence.temporal import TemporalContext
 
 __all__ = [
-    "DefinitionRef",
-    "EntityRef",
+    "DerivedResult",
+    "EpistemicStatus",
     "EvidenceBundle",
     "EvidenceItem",
-    "EvidenceStatus",
-    "PropertyRef",
+    "EvidenceKind",
+    "EvidenceScope",
+    "ExperimentalResult",
     "ProvenanceRef",
+    "RelationAssertion",
+    "RuleStatement",
+    "ScalarObservation",
+    "SemanticDefinitionRef",
     "SourceAuthority",
+    "SourceLocator",
     "SourceRef",
-    "TimeRef",
+    "SubjectRef",
+    "TemporalContext",
+    "TextualClaim",
+    "UncertaintyInterval",
 ]

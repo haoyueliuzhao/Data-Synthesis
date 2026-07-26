@@ -9,12 +9,12 @@ from trusted_synthesis.hashing import canonical_hash
 
 
 class NodeKind(str, Enum):
-    ENTITY = "entity"
-    PROPERTY = "property"
+    SUBJECT = "subject"
+    PREDICATE = "predicate"
     EVIDENCE = "evidence"
     SOURCE = "source"
     TIME = "time"
-    DERIVATION = "derivation"
+    DEFINITION = "definition"
     SCOPE = "scope"
 
 
@@ -36,16 +36,19 @@ class EvidenceEdge(BaseModel):
     properties: dict[str, Any] = Field(default_factory=dict)
 
 
-class EvidenceGraph(BaseModel):
+class ProofGraph(BaseModel):
+    """Task-local proof graph; distinct from an adapter-owned domain KG."""
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     graph_id: str = Field(min_length=1)
     nodes: tuple[EvidenceNode, ...]
     edges: tuple[EvidenceEdge, ...]
     source_build_id: str | None = None
+    schema_version: str = "proof_graph.v2"
 
     @model_validator(mode="after")
-    def validate_graph(self) -> EvidenceGraph:
+    def validate_graph(self) -> ProofGraph:
         node_ids = [node.node_id for node in self.nodes]
         if len(node_ids) != len(set(node_ids)):
             raise ValueError("graph contains duplicate node IDs")
@@ -61,9 +64,14 @@ class EvidenceGraph(BaseModel):
 
     @property
     def graph_hash(self) -> str:
-        return canonical_hash(self, prefix="graph:")
+        return canonical_hash(self, prefix="proof_graph:")
 
     def neighbors(self, node_id: str) -> tuple[EvidenceEdge, ...]:
         return tuple(
             edge for edge in self.edges if edge.source_id == node_id or edge.target_id == node_id
+        )
+
+    def contains_evidence(self, evidence_id: str) -> bool:
+        return any(
+            node.node_id == evidence_id and node.kind == NodeKind.EVIDENCE for node in self.nodes
         )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from trusted_synthesis.core.graph.schema import EvidenceGraph
+from trusted_synthesis.core.graph.schema import ProofGraph
 
 
 class ReasoningPath(BaseModel):
@@ -20,7 +20,7 @@ class ReasoningPath(BaseModel):
             raise ValueError("reasoning path must not repeat nodes")
         return self
 
-    def validate_against(self, graph: EvidenceGraph) -> None:
+    def validate_against(self, graph: ProofGraph) -> None:
         graph_nodes = {node.node_id for node in graph.nodes}
         graph_edges = {edge.edge_id for edge in graph.edges}
         if self.graph_id != graph.graph_id:

@@ -1,78 +1,101 @@
-# Architecture
+# Architecture v0.2
 
-## Positioning
+## Boundary
 
-The active project is a trusted training-data synthesis framework, not a second
-financial data lake. Finance is the first domain adapter and validation domain.
-The framework owns Evidence, Task, Trajectory, and Quality contracts; it does
-not own SEC, FRED, CNInfo, financial normalization, or finance KG construction.
-
-## Project Boundary
+The active project is a domain-neutral trusted synthesis compiler. The archived
+financial lake remains a read-only producer. Domain adapters map frozen producer
+artifacts into shared contracts; they do not move domain normalization into the
+core.
 
 ```text
-raw_financial_data_lake/            trusted_data_synthesis/
--------------------------           -----------------------
-raw objects                         domain-neutral contracts
-canonical finance entities          evidence graph
-metric ontology                     task synthesis
-standardized facts        ------>   trajectory generation
-versioned finance KG       read      independent verification
-historical QA builds       only      quality-aware release
+Domain archive / domain KG
+        -> Adapter capability plugins
+        -> Evidence IR v2
+        -> Task-local Proof Graph
+        -> Public Task + isolated Oracle Contract
+        -> Task Program DAG
+        -> Reference Workflow / Candidate Workflow
+        -> Independent Oracle Replay
+        -> Hard Gates + Diagnostic Quality Vector
+        -> Semantic-cluster Split + Release Manifest
 ```
 
-The only supported handoff is a frozen, quality-passed archive artifact. The
-active project never imports `finraw` modules and never writes into the archive.
+## Evidence IR v2
 
-## Core Objects
+Evidence is a versioned assertion, not a financial scalar. `payload.kind`
+discriminates scalar observations, textual claims, rule statements, relation
+assertions, experimental results, and derived results. Shared fields cover:
 
-### Evidence
+- generic subject and predicate;
+- multi-axis temporal context;
+- scope;
+- source and exact source locator;
+- semantic definition;
+- archive/build lineage and parent evidence;
+- epistemic status and extraction confidence.
 
-An Evidence item represents one verifiable assertion in any domain:
+Finance-specific fiscal, statement, market, and comparability fields live in
+`domain_context`, `scope.attributes`, or definition attributes.
 
-```text
-Entity + Property + Value + Time + Source + Definition + Provenance
-```
+## Two Graphs
 
-Finance maps Company/Metric/Fact into these fields. A future science adapter can
-map Paper/Experiment/Result without changing Task or Quality code.
+The framework distinguishes two graph layers:
 
-### Evidence Graph
+1. **Domain Evidence Graph**: owned by the adapter/source domain. It supports
+   discovery and domain-native relations.
+2. **Task Proof Graph**: built from the selected Evidence Bundle. It records the
+   exact subject, predicate, time, scope, definition, source, and derivation
+   relations required to prove a task.
 
-Evidence is connected to Entity, Property, Source, and Time nodes. Derivation
-and Scope nodes are first-class extensions. Graph identity is content-addressed,
-so paths and tasks can bind to a stable graph version.
+Task synthesis fails when a gold evidence item is absent from the Proof Graph.
+The graph is therefore an executable contract, not an optional export.
 
-### Task
+## Public And Oracle Separation
 
-Task is separate from answer realization. It contains a public instruction and
-a hidden contract: Evidence Bundle, operation, answer schema, and requirements.
-The MVP supports direct retrieval and comparable-evidence comparison.
+`TaskPublicSpec` contains the natural-language instruction, answer schema,
+allowed tools, and retrieval scope. It contains no gold evidence IDs or program.
 
-### Trajectory
+`TaskOracleContract` separately contains gold Evidence IDs, the Task Program,
+Proof Graph identity, and rubric. `CandidateTrajectoryGenerator.generate()`
+accepts only `TaskPublicSpec` and an `EvidenceToolRuntime`; its API cannot accept
+an Oracle Contract.
 
-A trajectory stores an auditable workflow:
+## Task Program
 
-```text
-Plan -> Search -> Select Evidence -> Calculate -> Verify -> Answer
-```
+A Task Program is a topologically ordered operation DAG. Inputs can reference
+versioned Evidence or earlier operation outputs. The registry currently includes
+lookup, compare, difference, ratio, growth, and aggregate.
 
-It stores actions, tool inputs, observations, evidence IDs, and concise
-rationale summaries. It deliberately does not persist hidden chain-of-thought.
+Executors and Oracle Verifiers are separate classes in separate modules. The
+Oracle Verifier independently recomputes every node and never imports executor
+logic. This prevents a shared implementation defect from validating itself.
 
-### Quality
+## Workflows
 
-Quality is evaluated on five independent dimensions:
+- **ReferenceWorkflowCompiler** may read the Oracle Contract and produces a
+  deterministic gold workflow with complete citations.
+- **CandidateTrajectoryGenerator** searches through public retrieval constraints
+  and never receives hidden IDs.
 
-```text
-Evidence 30% + Reasoning 20% + Tool Use 15% + Verification 20% + Answer 15%
-```
+Both produce the same auditable trajectory schema, tagged by `workflow_kind`.
 
-Evidence and answer correctness are fail-closed. Operation results are replayed
-with deterministic arithmetic rather than accepted from the generator.
+## Quality
 
-## Evolution
+Release decisions use fail-closed hard gates before weighted diagnostics:
 
-1. Current: schemas, Finance Adapter, deterministic retrieval workflow.
-2. Next: operation registry, graph-pattern task mining, trajectory tool runtime.
-3. Then: science adapter and cross-domain contract tests.
-4. Later: model-generated surface forms and trajectories behind deterministic gates.
+- required-check manifest completeness;
+- evidence structural validity;
+- Proof Graph and citation coverage;
+- independent program replay and final-answer agreement.
+
+The diagnostic vector reports evidence validity, graph coverage, operation
+replay, citation coverage, workflow completeness, and program depth. A missing
+required check is equivalent to a failed check.
+
+## Versioning And Split
+
+Release manifests freeze Evidence, Proof Graph, Task Program, operation registry,
+quality-check manifest, adapter capability, source build, and split policy
+contracts. Split assignment hashes a semantic cluster composed of domain, task
+type, subjects, predicates, and program identity so equivalent tasks cannot leak
+across train/dev/test.

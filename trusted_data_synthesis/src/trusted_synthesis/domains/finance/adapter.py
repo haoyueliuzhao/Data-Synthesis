@@ -6,17 +6,23 @@ from datetime import date
 from decimal import Decimal
 from typing import Any
 
+from trusted_synthesis.core.evidence import (
+    EpistemicStatus,
+    EvidenceKind,
+    EvidenceScope,
+    ScalarObservation,
+    SourceLocator,
+    TemporalContext,
+)
 from trusted_synthesis.core.evidence.schema import (
-    DefinitionRef,
-    EntityRef,
     EvidenceItem,
-    EvidenceStatus,
-    PropertyRef,
     ProvenanceRef,
+    SemanticDefinitionRef,
     SourceAuthority,
     SourceRef,
-    TimeRef,
+    SubjectRef,
 )
+from trusted_synthesis.domains.base import AdapterCapability
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 
 
@@ -39,6 +45,14 @@ class FinanceArchiveAdapter:
         self.config = config
         self._report: dict[str, Any] | None = None
         self._catalogs: dict[str, dict[str, dict[str, Any]]] | None = None
+
+    def capability_manifest(self) -> tuple[AdapterCapability, ...]:
+        return (
+            AdapterCapability.EVIDENCE_STREAM,
+            AdapterCapability.SOURCE_TRACE,
+            AdapterCapability.ENTITY_CATALOG,
+            AdapterCapability.SEMANTIC_DEFINITIONS,
+        )
 
     def inspect(self) -> dict[str, Any]:
         paths = {
@@ -135,51 +149,75 @@ class FinanceArchiveAdapter:
             evidence_id=(
                 f"evidence:finance:{properties['stable_fact_id']}@{self.config.required_kg_build_id}"
             ),
+            assertion_id=f"assertion:finance:{properties['stable_fact_id']}",
+            evidence_version_id=(
+                f"evidence_version:finance:{properties['stable_fact_id']}@{kg_build_id}"
+            ),
             domain=self.domain,
-            entity=EntityRef(
-                entity_id=entity_id,
+            evidence_kind=EvidenceKind.SCALAR,
+            subject=SubjectRef(
+                subject_id=entity_id,
                 name=str(entity.get("canonical_name") or entity_id),
-                entity_type=str(entity.get("entity_type") or "unknown"),
-                market=_optional(entity.get("market")),
-                country=_optional(entity.get("country")),
+                subject_type=str(entity.get("entity_type") or "unknown"),
+                attributes={
+                    "market": _optional(entity.get("market")),
+                    "country": _optional(entity.get("country")),
+                    "exchange": _optional(entity.get("exchange")),
+                    "ticker": _optional(entity.get("ticker")),
+                },
             ),
-            property=PropertyRef(
-                property_id=metric_id,
-                name=str(metric.get("canonical_name") or metric_id),
-                category=_optional(metric.get("metric_category")),
-                period_type=_optional(
-                    properties.get("metric_period_type") or metric.get("period_type")
-                ),
+            predicate=metric_id,
+            payload=ScalarObservation(
+                value=Decimal(str(properties["normalized_value"])),
+                unit=_optional(properties.get("normalized_unit")),
+                currency=_optional(properties.get("normalized_currency")),
             ),
-            value=Decimal(str(properties["normalized_value"])),
-            unit=_optional(properties.get("normalized_unit")),
-            currency=_optional(properties.get("normalized_currency")),
-            time=TimeRef(
+            temporal_context=TemporalContext(
                 label=_time_label(properties, period_end),
-                start=period_start,
-                end=period_end,
+                valid_from=period_start,
+                valid_to=period_end,
+                observed_at=period_end if not period_start else None,
                 basis=_optional(properties.get("time_basis")),
                 frequency=_optional(properties.get("frequency")),
+            ),
+            scope=EvidenceScope(
+                scope_type=str(properties.get("financial_scope_type") or "financial_fact"),
+                scope_id=_optional(properties.get("entity_scope_id")) or entity_id,
+                label=_optional(properties.get("financial_scope_type")),
+                attributes={
+                    "market": _optional(entity.get("market")),
+                    "country": _optional(entity.get("country")),
+                },
             ),
             source=SourceRef(
                 source_id=source_id,
                 name=str(source.get("source_name") or source_id),
                 authority=_authority(source.get("authority_level")),
                 provider=_optional(source.get("provider")),
-                uri=_optional(source.get("base_url")),
                 license_note=_optional(source.get("license_note")),
             ),
-            definition=DefinitionRef(
+            source_locator=SourceLocator(
+                uri=_optional(source.get("base_url")),
+                raw_object_id=_optional(properties.get("raw_object_id")),
+                json_pointer=f"/facts/{properties['fact_id']}",
+            ),
+            definition=SemanticDefinitionRef(
                 definition_id=definition_id or None,
                 text=_optional(definition.get("definition_text")),
-                comparability_level=_optional(properties.get("comparability_level")),
-                vintage_policy=_optional(properties.get("vintage_policy")),
+                attributes={
+                    "metric_name": str(metric.get("canonical_name") or metric_id),
+                    "metric_category": _optional(metric.get("metric_category")),
+                    "period_type": _optional(
+                        properties.get("metric_period_type") or metric.get("period_type")
+                    ),
+                    "comparability_level": _optional(properties.get("comparability_level")),
+                    "vintage_policy": _optional(properties.get("vintage_policy")),
+                },
             ),
             provenance=ProvenanceRef(
                 adapter_id=self.adapter_id,
                 archive_id=f"finance_kg:{kg_build_id}",
                 source_record_id=str(properties["fact_id"]),
-                raw_object_id=_optional(properties.get("raw_object_id")),
                 build_ids={
                     "kg": kg_build_id,
                     "standardized_fact": str(properties.get("build_id") or "unknown"),
@@ -189,9 +227,9 @@ class FinanceArchiveAdapter:
                 },
                 extraction_method="archived_graph_ready_fact",
             ),
-            status=EvidenceStatus.ACCEPTED,
-            confidence=float(properties.get("confidence_score") or 0),
-            attributes={
+            epistemic_status=EpistemicStatus.OBSERVED,
+            extraction_confidence=float(properties.get("confidence_score") or 0),
+            domain_context={
                 "verification_status": status,
                 "source_definition_id": definition_id or None,
                 "semantic_equivalence_group_id": properties.get("semantic_equivalence_group_id"),
@@ -239,7 +277,7 @@ def _authority(value: Any) -> SourceAuthority:
         return SourceAuthority.OFFICIAL
     if normalized.startswith("s2") or "database" in normalized:
         return SourceAuthority.CURATED_DATABASE
-    return SourceAuthority.SECONDARY_WEB
+    return SourceAuthority.SECONDARY
 
 
 def _date(value: Any) -> date | None:

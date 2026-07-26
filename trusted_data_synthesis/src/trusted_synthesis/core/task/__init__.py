@@ -1,8 +1,28 @@
+from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer, TaskSynthesisError
+from trusted_synthesis.core.task.program import (
+    InputRefKind,
+    OperationNode,
+    ProgramInputRef,
+    TaskProgram,
+)
 from trusted_synthesis.core.task.schema import (
-    OperationSpec,
     TaskLevel,
+    TaskOracleContract,
+    TaskPackage,
+    TaskPublicSpec,
     TaskRequirement,
-    TaskSpec,
 )
 
-__all__ = ["OperationSpec", "TaskLevel", "TaskRequirement", "TaskSpec"]
+__all__ = [
+    "InputRefKind",
+    "OperationNode",
+    "ProgramInputRef",
+    "ProofGraphTaskSynthesizer",
+    "TaskLevel",
+    "TaskOracleContract",
+    "TaskPackage",
+    "TaskProgram",
+    "TaskPublicSpec",
+    "TaskRequirement",
+    "TaskSynthesisError",
+]

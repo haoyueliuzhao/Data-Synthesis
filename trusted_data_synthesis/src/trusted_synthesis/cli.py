@@ -7,9 +7,15 @@ from typing import Any
 
 from trusted_synthesis.core.evaluation.evaluator import QualityEvaluator
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
-from trusted_synthesis.core.graph.builder import EvidenceGraphBuilder
-from trusted_synthesis.core.task.generator import EvidenceTaskSynthesizer
-from trusted_synthesis.core.trajectory.generator import DeterministicTrajectoryGenerator
+from trusted_synthesis.core.graph.builder import ProofGraphBuilder
+from trusted_synthesis.core.operations.registry import default_registry
+from trusted_synthesis.core.release import (
+    SplitPolicy,
+    assign_split,
+    build_release_manifest,
+)
+from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
+from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.hashing import canonical_hash
@@ -49,11 +55,13 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
-    task_synthesizer = EvidenceTaskSynthesizer()
-    trajectory_generator = DeterministicTrajectoryGenerator()
-    graph_builder = EvidenceGraphBuilder()
+    task_synthesizer = ProofGraphTaskSynthesizer()
+    trajectory_generator = ReferenceWorkflowCompiler()
+    graph_builder = ProofGraphBuilder()
     evaluator = QualityEvaluator()
     samples = []
+    tasks = []
+    split_policy = SplitPolicy(policy_id="semantic_split.v1")
     for evidence in adapter.iter_evidence(limit=limit):
         bundle_identity = {"purpose": "finance_demo", "evidence_id": evidence.evidence_id}
         bundle = EvidenceBundle(
@@ -63,28 +71,48 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
             graph_build_id=evidence.provenance.build_ids.get("kg"),
         )
         graph = graph_builder.build(bundle)
-        task = task_synthesizer.fact_retrieval(bundle, evidence.evidence_id)
-        trajectory = trajectory_generator.generate(task, bundle)
-        assessment = evaluator.evaluate(task, bundle, trajectory)
+        task = task_synthesizer.fact_retrieval(graph, bundle, evidence.evidence_id)
+        tasks.append(task)
+        trajectory = trajectory_generator.compile(task, bundle)
+        assessment = evaluator.evaluate(task, bundle, graph, trajectory)
         samples.append(
             {
                 "bundle": bundle.model_dump(mode="json", exclude_none=True),
                 "graph": graph.model_dump(mode="json", exclude_none=True),
-                "task": task.model_dump(mode="json", exclude_none=True),
-                "trajectory": trajectory.model_dump(mode="json", exclude_none=True),
+                "task_public": task.public.model_dump(mode="json", exclude_none=True),
+                "oracle_contract": task.oracle.model_dump(mode="json", exclude_none=True),
+                "reference_workflow": trajectory.model_dump(mode="json", exclude_none=True),
                 "quality": assessment.model_dump(mode="json", exclude_none=True),
+                "split": assign_split(task, split_policy).value,
             }
         )
+    inspection = adapter.inspect()
+    manifest = build_release_manifest(
+        release_id=canonical_hash(
+            {
+                "purpose": "finance_demo_v2",
+                "kg_build_id": inspection.get("kg_build_id"),
+                "task_ids": [task.task_id for task in tasks],
+            },
+            prefix="release:",
+        ),
+        tasks=tasks,
+        adapters=(adapter,),
+        registry=default_registry(),
+        split_policy=split_policy,
+        source_build_ids={"finance_kg": str(inspection.get("kg_build_id"))},
+    )
     return {
         "pipeline": [
             "finance_adapter",
             "evidence_bundle",
-            "evidence_graph",
+            "proof_graph",
             "task_synthesis",
-            "trajectory_generation",
+            "reference_workflow_compilation",
             "quality_evaluation",
         ],
         "sample_count": len(samples),
+        "release_manifest": manifest.model_dump(mode="json", exclude_none=True),
         "samples": samples,
     }
 

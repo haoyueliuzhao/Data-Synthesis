@@ -1,149 +1,114 @@
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
-
-from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
-from trusted_synthesis.core.task.schema import TaskSpec
+from trusted_synthesis.core.evidence.schema import EvidenceBundle
+from trusted_synthesis.core.operations.program import TaskProgramExecutor
+from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.core.trajectory.schema import (
     ActionType,
     StepStatus,
     Trajectory,
     TrajectoryStep,
+    WorkflowKind,
 )
 from trusted_synthesis.hashing import canonical_hash
 
-GENERATOR_VERSION = "deterministic_trajectory.v1"
+REFERENCE_COMPILER_VERSION = "reference_workflow.v2"
 
 
-class TrajectoryGenerationError(ValueError):
+class ReferenceWorkflowError(ValueError):
     pass
 
 
-class DeterministicTrajectoryGenerator:
-    def generate(self, task: TaskSpec, bundle: EvidenceBundle) -> Trajectory:
-        evidence = self._bind_inputs(task, bundle)
-        answer = execute_operation(task.operation.operator_id, evidence)
-        evidence_ids = tuple(item.evidence_id for item in evidence)
-        steps = [
+class ReferenceWorkflowCompiler:
+    """Compile the hidden oracle into a deterministic reference workflow."""
+
+    def __init__(self, registry: OperationRegistry | None = None) -> None:
+        self._executor = TaskProgramExecutor(registry or default_registry())
+
+    def compile(self, task: TaskPackage, bundle: EvidenceBundle) -> Trajectory:
+        by_id = {item.evidence_id: item for item in bundle.evidence}
+        missing = [item for item in task.oracle.gold_evidence_ids if item not in by_id]
+        if missing:
+            raise ReferenceWorkflowError(f"missing oracle evidence: {missing}")
+        execution = self._executor.execute(task.oracle.task_program, by_id)
+        evidence_ids = task.oracle.gold_evidence_ids
+        citations = [
+            {
+                "evidence_id": item,
+                "source_id": by_id[item].source.source_id,
+                "source_locator": by_id[item].source_locator.model_dump(
+                    mode="json", exclude_none=True
+                ),
+            }
+            for item in evidence_ids
+        ]
+        steps = (
             TrajectoryStep(
                 step_index=1,
                 action=ActionType.PLAN,
-                observation={"operator_id": task.operation.operator_id},
-                rationale_summary="Identify the required evidence and deterministic operation.",
+                observation={"program_id": task.oracle.task_program.program_id},
+                rationale_summary="Compile the pinned oracle program and its dependencies.",
                 status=StepStatus.SUCCEEDED,
             ),
             TrajectoryStep(
                 step_index=2,
                 action=ActionType.SEARCH,
-                tool_name="evidence_archive.search",
-                tool_input={"evidence_ids": list(task.hidden_evidence_ids)},
-                observation={"matched_evidence_ids": list(evidence_ids)},
+                tool_name="oracle_evidence.read",
+                tool_input={"oracle_contract": task.oracle.task_id},
+                observation={"matched_count": len(evidence_ids)},
                 evidence_ids=evidence_ids,
-                rationale_summary="Retrieve only evidence pinned by the task contract.",
+                rationale_summary="Read the exact evidence pinned by the oracle contract.",
                 status=StepStatus.SUCCEEDED,
             ),
             TrajectoryStep(
                 step_index=3,
                 action=ActionType.SELECT_EVIDENCE,
-                observation={"selected_count": len(evidence)},
+                observation={"selected_count": len(evidence_ids)},
                 evidence_ids=evidence_ids,
-                rationale_summary="Select the complete input set required by the operation.",
+                rationale_summary="Bind every program input to its versioned evidence item.",
                 status=StepStatus.SUCCEEDED,
             ),
-        ]
-        if task.operation.operator_id != "lookup":
-            steps.append(
-                TrajectoryStep(
-                    step_index=len(steps) + 1,
-                    action=ActionType.CALCULATE,
-                    tool_name="deterministic_calculator",
-                    tool_input={
-                        "operator_id": task.operation.operator_id,
-                        "values": [str(item.value) for item in evidence],
-                    },
-                    observation=answer,
-                    evidence_ids=evidence_ids,
-                    rationale_summary="Execute the registered operation with Decimal arithmetic.",
-                    status=StepStatus.SUCCEEDED,
-                )
-            )
-        steps.extend(
-            [
-                TrajectoryStep(
-                    step_index=len(steps) + 1,
-                    action=ActionType.VERIFY,
-                    tool_name="trajectory_verifier.recompute",
-                    observation={"recomputed": True, "result": answer},
-                    evidence_ids=evidence_ids,
-                    rationale_summary="Independently recompute the operation before answering.",
-                    status=StepStatus.SUCCEEDED,
-                ),
-                TrajectoryStep(
-                    step_index=len(steps) + 2,
-                    action=ActionType.ANSWER,
-                    observation=answer,
-                    evidence_ids=evidence_ids,
-                    rationale_summary="Return the verified result with its source lineage.",
-                    status=StepStatus.SUCCEEDED,
-                ),
-            ]
+            TrajectoryStep(
+                step_index=4,
+                action=ActionType.CALCULATE,
+                tool_name="operation_program.execute",
+                tool_input={"program_id": execution.program_id},
+                observation=execution.model_dump(mode="json"),
+                evidence_ids=evidence_ids,
+                rationale_summary="Execute the registered operation DAG in topological order.",
+                status=StepStatus.SUCCEEDED,
+            ),
+            TrajectoryStep(
+                step_index=5,
+                action=ActionType.VERIFY,
+                tool_name="operation_oracle.verify",
+                observation={"verification_requested": True},
+                evidence_ids=evidence_ids,
+                rationale_summary="Request independent replay through oracle implementations.",
+                status=StepStatus.SUCCEEDED,
+            ),
+            TrajectoryStep(
+                step_index=6,
+                action=ActionType.ANSWER,
+                observation={"result": execution.final_output, "citations": citations},
+                evidence_ids=evidence_ids,
+                rationale_summary="Return the computed result with complete source lineage.",
+                status=StepStatus.SUCCEEDED,
+            ),
         )
         identity = {
             "task_id": task.task_id,
             "bundle_hash": bundle.bundle_hash,
-            "generator_version": GENERATOR_VERSION,
+            "program_hash": task.oracle.task_program.program_hash,
+            "version": REFERENCE_COMPILER_VERSION,
         }
         return Trajectory(
-            trajectory_id=canonical_hash(identity, prefix="trajectory:"),
+            trajectory_id=canonical_hash(identity, prefix="reference_workflow:"),
             task_id=task.task_id,
-            steps=tuple(steps),
-            final_answer=answer,
-            generator_version=GENERATOR_VERSION,
+            workflow_kind=WorkflowKind.REFERENCE,
+            steps=steps,
+            program_execution=execution.model_dump(mode="json"),
+            final_answer={"result": execution.final_output, "citations": citations},
+            generator_version=REFERENCE_COMPILER_VERSION,
         )
-
-    @staticmethod
-    def _bind_inputs(task: TaskSpec, bundle: EvidenceBundle) -> tuple[EvidenceItem, ...]:
-        by_id = {item.evidence_id: item for item in bundle.evidence}
-        missing = [item for item in task.operation.input_evidence_ids if item not in by_id]
-        if missing:
-            raise TrajectoryGenerationError(f"Missing operation inputs: {missing}")
-        return tuple(by_id[item] for item in task.operation.input_evidence_ids)
-
-
-def execute_operation(operator_id: str, evidence: tuple[EvidenceItem, ...]) -> dict[str, object]:
-    if operator_id == "lookup" and len(evidence) == 1:
-        item = evidence[0]
-        return {
-            "value": str(item.value),
-            "unit": item.unit,
-            "currency": item.currency,
-            "source_id": item.source.source_id,
-            "evidence_ids": [item.evidence_id],
-        }
-    if operator_id == "compare" and len(evidence) == 2:
-        left, right = evidence
-        left_value = _decimal(left)
-        right_value = _decimal(right)
-        if left_value == right_value:
-            higher = None
-        else:
-            higher = left.evidence_id if left_value > right_value else right.evidence_id
-        return {
-            "higher_evidence_id": higher,
-            "difference": str(abs(left_value - right_value)),
-            "unit": left.unit,
-            "currency": left.currency,
-            "evidence_ids": [left.evidence_id, right.evidence_id],
-        }
-    raise TrajectoryGenerationError(
-        f"Unsupported operation or arity: {operator_id}/{len(evidence)}"
-    )
-
-
-def _decimal(evidence: EvidenceItem) -> Decimal:
-    try:
-        return Decimal(str(evidence.value))
-    except InvalidOperation as exc:
-        raise TrajectoryGenerationError(
-            f"Evidence value is not numeric: {evidence.evidence_id}"
-        ) from exc

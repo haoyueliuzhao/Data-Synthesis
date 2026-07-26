@@ -8,6 +8,11 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.hashing import canonical_hash
 
 
+class WorkflowKind(str, Enum):
+    REFERENCE = "reference"
+    CANDIDATE = "candidate"
+
+
 class ActionType(str, Enum):
     PLAN = "plan"
     SEARCH = "search"
@@ -40,7 +45,9 @@ class Trajectory(BaseModel):
 
     trajectory_id: str = Field(min_length=1)
     task_id: str = Field(min_length=1)
+    workflow_kind: WorkflowKind
     steps: tuple[TrajectoryStep, ...] = Field(min_length=1)
+    program_execution: dict[str, Any] | None = None
     final_answer: dict[str, Any]
     generator_version: str
 
