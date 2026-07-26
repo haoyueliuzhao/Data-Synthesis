@@ -1,0 +1,15 @@
+{
+  "adapter_version": "finance_archive.v1",
+  "archive_root": "../../raw_financial_data_lake",
+  "kg_nodes_path": "data/kg_exports/jsonl/kg_nodes.jsonl",
+  "kg_edges_path": "data/kg_exports/jsonl/kg_edges.jsonl",
+  "kg_report_path": "data/kg_exports/jsonl/kg_build_report.json",
+  "catalog_root": "data/prod_exports/parquet",
+  "exclude_forecasts": true,
+  "accepted_verification_statuses": [
+    "single_source",
+    "cross_verified"
+  ],
+  "required_kg_build_id": "kg_20260711_062123_bc4b4394",
+  "required_graph_schema_version": "3.0"
+}
