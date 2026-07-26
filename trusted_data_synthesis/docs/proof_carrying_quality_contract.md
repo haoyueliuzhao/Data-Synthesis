@@ -2,10 +2,11 @@
 
 ## Purpose
 
-Version 0.5 turns task construction and task-specific verification into one compilation flow:
+Version 0.6 turns task construction and task-specific verification into one compilation flow:
 
 ```text
-Domain-instantiated Task Package
+Task Pattern + Evidence Binding
+        -> Domain-instantiated Task Package
         + Evidence Bundle
         + Proof Graph
         + Operation Registry
@@ -68,6 +69,10 @@ compiler and schema versions
 
 The certificate prevents an Evidence Bundle, graph, program, evaluator, policy, or answer from being
 silently replaced while retaining the old sample identity.
+
+Certificate v2 also binds the Task Pattern hash, Evidence Binding hash, and Pattern Compiler
+version. Binding identity remains private even though the public proof artifact exposes the Pattern
+identity.
 
 ### Proof-Carrying Sample
 
@@ -184,21 +189,23 @@ explicit task payload, so architecture portability remains part of every release
 
 ## Current Validation
 
-The v0.5 small finance run on the immutable archive produced:
+The v0.6 finance run on the immutable archive produced:
 
 ```text
-compiled tasks                       24 / 24
-accepted references                  24 / 24
-accepted clean candidates            24 / 24
-rejected counterfactual mutations   386 / 386
-compiled Quality Contracts           24 / 24
-compiled Proof Certificates          24 / 24
-dual-track decisions matched        410 / 410
-contract clause range                36..54
+compiled tasks                       50 / 50
+accepted references                  50 / 50
+accepted clean candidates            50 / 50
+rejected counterfactual mutations   803 / 803
+compiled Quality Contracts           50 / 50
+compiled Proof Certificates          50 / 50
+dual-track decisions matched        853 / 853
+Pattern/Binding clauses              50 / 50
+difficulty clauses                   50 / 50
 ```
 
-The Legal and Science Contract Suite produced two independent contracts and certificates, evaluated
-two clean and fourteen mutated candidates, and achieved complete decision parity. These results
+The extended Legal and Science Pattern validation compiled ten tasks per domain, produced twenty
+unique Binding identities, and achieved complete clean-candidate and Contract Runtime parity. The
+smaller mutation Contract Suite remains a separate release gate. These results
 validate compiler/runtime portability for the controlled suite; they do not claim production-scale
 legal/scientific data or real-agent quality.
 
@@ -207,7 +214,6 @@ legal/scientific data or real-agent quality.
 This milestone does not implement:
 
 ```text
-Task Pattern IR or automatic Evidence Binding
 Contract-derived typed counterfactual generation
 failure-closure calibration and minimality scoring
 learned Contract-aware quality critics
@@ -216,5 +222,5 @@ dataset-level utility/diversity optimization
 
 Those capabilities build on this contract DAG. They should not be added by expanding the fixed
 manifest or by placing finance-specific logic in Core. The next method milestone is typed
-counterfactual planning from clause targets and dependencies; Task Pattern IR remains a separate task
-discovery concern.
+counterfactual planning from Pattern roles, clause targets, and Program dependencies. Automatic
+Pattern discovery remains a separate domain task-discovery concern.

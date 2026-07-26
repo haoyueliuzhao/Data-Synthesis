@@ -29,8 +29,11 @@ class ProofCertificate(BaseModel):
     operation_manifest_hash: str
     domain_plugin_manifest_hash: str
     source_grounding_manifest_hash: str | None = None
+    task_pattern_hash: str | None = None
+    evidence_binding_hash: str | None = None
+    task_pattern_compiler_version: str | None = None
     compiler_version: str
-    schema_version: str = "proof_certificate.v1"
+    schema_version: str = "proof_certificate.v2"
 
     @model_validator(mode="after")
     def validate_certificate(self) -> ProofCertificate:
@@ -46,6 +49,9 @@ class ProofCertificate(BaseModel):
             operation_manifest_hash=self.operation_manifest_hash,
             domain_plugin_manifest_hash=self.domain_plugin_manifest_hash,
             source_grounding_manifest_hash=self.source_grounding_manifest_hash,
+            task_pattern_hash=self.task_pattern_hash,
+            evidence_binding_hash=self.evidence_binding_hash,
+            task_pattern_compiler_version=self.task_pattern_compiler_version,
             compiler_version=self.compiler_version,
             schema_version=self.schema_version,
         )
@@ -73,9 +79,12 @@ class ProofCarryingSample(BaseModel):
     certificate: ProofCertificate
     pattern_id: str
     binding_id: str
+    pattern_hash: str | None = None
+    binding_hash: str | None = None
+    task_pattern_compiler_version: str | None = None
     difficulty_profile: dict[str, float] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "proof_carrying_sample.v1"
+    schema_version: str = "proof_carrying_sample.v2"
 
     @model_validator(mode="after")
     def validate_sample(self) -> ProofCarryingSample:
@@ -94,6 +103,17 @@ class ProofCarryingSample(BaseModel):
         }
         if observed != expected:
             raise ValueError("proof certificate does not bind the sample artifacts")
+        pattern_expected = {
+            "task_pattern_hash": self.pattern_hash,
+            "evidence_binding_hash": self.binding_hash,
+            "task_pattern_compiler_version": self.task_pattern_compiler_version,
+        }
+        if any(value is not None for value in pattern_expected.values()):
+            pattern_observed = {
+                key: getattr(self.certificate, key) for key in pattern_expected
+            }
+            if pattern_observed != pattern_expected:
+                raise ValueError("proof certificate does not bind pattern compilation artifacts")
         identity = proof_carrying_sample_identity(
             task_id=self.task_id,
             task_package_hash=self.task_package_hash,
@@ -110,6 +130,9 @@ class ProofCarryingSample(BaseModel):
             certificate_hash=self.certificate.certificate_hash,
             pattern_id=self.pattern_id,
             binding_id=self.binding_id,
+            pattern_hash=self.pattern_hash,
+            binding_hash=self.binding_hash,
+            task_pattern_compiler_version=self.task_pattern_compiler_version,
             difficulty_profile=self.difficulty_profile,
             metadata=self.metadata,
             schema_version=self.schema_version,
@@ -129,6 +152,8 @@ class ProofCarryingPublicArtifact(BaseModel):
     certificate_id: str
     certificate_hash: str
     pattern_id: str
+    pattern_hash: str | None = None
+    task_pattern_compiler_version: str | None = None
     difficulty_profile: dict[str, float] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
@@ -159,6 +184,9 @@ def make_proof_certificate(
     operation_manifest_hash: str,
     domain_plugin_manifest_hash: str,
     source_grounding_manifest_hash: str | None,
+    task_pattern_hash: str | None,
+    evidence_binding_hash: str | None,
+    task_pattern_compiler_version: str | None,
     compiler_version: str,
 ) -> ProofCertificate:
     certificate_id, certificate_hash = proof_certificate_hashes(
@@ -173,8 +201,11 @@ def make_proof_certificate(
         operation_manifest_hash=operation_manifest_hash,
         domain_plugin_manifest_hash=domain_plugin_manifest_hash,
         source_grounding_manifest_hash=source_grounding_manifest_hash,
+        task_pattern_hash=task_pattern_hash,
+        evidence_binding_hash=evidence_binding_hash,
+        task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
-        schema_version="proof_certificate.v1",
+        schema_version="proof_certificate.v2",
     )
     return ProofCertificate(
         certificate_id=certificate_id,
@@ -190,6 +221,9 @@ def make_proof_certificate(
         operation_manifest_hash=operation_manifest_hash,
         domain_plugin_manifest_hash=domain_plugin_manifest_hash,
         source_grounding_manifest_hash=source_grounding_manifest_hash,
+        task_pattern_hash=task_pattern_hash,
+        evidence_binding_hash=evidence_binding_hash,
+        task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
     )
 

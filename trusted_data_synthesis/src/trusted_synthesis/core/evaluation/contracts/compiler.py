@@ -25,7 +25,7 @@ from trusted_synthesis.core.plugins import DomainQualityClauseProviderProtocol
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.hashing import canonical_hash
 
-QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v1"
+QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v2"
 
 
 @dataclass(frozen=True)
@@ -128,6 +128,51 @@ class QualityContractCompiler:
             )
             base_clause_ids[f"{field}_compliance"] = clause.clause_id
 
+        pattern_identity = task.public.metadata.get("task_pattern")
+        binding_identity = task.oracle.selection_contract.get("pattern_binding")
+        difficulty_profile = task.public.metadata.get("difficulty_profile")
+        if (pattern_identity is None) != (binding_identity is None):
+            raise ValueError("task pattern and evidence binding identities must be frozen together")
+        if pattern_identity is None:
+            if difficulty_profile is not None:
+                raise ValueError("task difficulty profile requires a task pattern identity")
+        elif (
+            not isinstance(pattern_identity, dict)
+            or not isinstance(binding_identity, dict)
+            or not isinstance(difficulty_profile, dict)
+        ):
+            raise ValueError(
+                "task pattern, evidence binding, and difficulty profile must be typed mappings"
+            )
+        else:
+            pattern_clause = add(
+                make_quality_clause(
+                    task_id=task.task_id,
+                    clause_kind="task_pattern_binding_integrity",
+                    scope=ClauseScope.UNIVERSAL,
+                    severity=ClauseSeverity.FATAL,
+                    target=ClauseTarget(target_type="task_pattern", target_ref=task.task_id),
+                    verifier_id="task_pattern_binding.v1",
+                    verifier_version="1.0.0",
+                    expected_ref=canonical_hash(
+                        {
+                            "pattern": pattern_identity,
+                            "binding": binding_identity,
+                        },
+                        prefix="task_pattern_binding_contract:",
+                    ),
+                    parameters={
+                        "pattern": pattern_identity,
+                        "binding": binding_identity,
+                    },
+                    dependencies=(identity.clause_id,),
+                    failure_family="task_pattern_binding",
+                    diagnostic_dimensions=("pattern", "binding", "evidence"),
+                ),
+                "workflow_contract",
+            )
+            base_clause_ids["task_pattern_binding_integrity"] = pattern_clause.clause_id
+
         for check_id in ("public_only_generation", "allowed_tool_compliance"):
             clause = add(
                 _candidate_check_clause(
@@ -217,6 +262,34 @@ class QualityContractCompiler:
                 "evidence_retrieval_and_selection",
             )
             base_clause_ids[check_id] = clause.clause_id
+
+        if isinstance(difficulty_profile, dict):
+            difficulty_clause = add(
+                make_quality_clause(
+                    task_id=task.task_id,
+                    clause_kind="difficulty_profile_integrity",
+                    scope=ClauseScope.UNIVERSAL,
+                    severity=ClauseSeverity.DIAGNOSTIC,
+                    target=ClauseTarget(target_type="task_difficulty", target_ref=task.task_id),
+                    verifier_id="task_difficulty.v1",
+                    verifier_version="1.0.0",
+                    expected_ref=canonical_hash(
+                        difficulty_profile,
+                        prefix="task_difficulty_profile:",
+                    ),
+                    parameters={"expected_profile": difficulty_profile},
+                    dependencies=(
+                        base_clause_ids.get(
+                            "task_pattern_binding_integrity",
+                            identity.clause_id,
+                        ),
+                    ),
+                    failure_family="difficulty_profile",
+                    diagnostic_dimensions=("difficulty", "curriculum"),
+                ),
+                "proof_and_operation",
+            )
+            base_clause_ids["difficulty_profile_integrity"] = difficulty_clause.clause_id
 
         for check_id in ("selected_evidence_validity", "source_grounding"):
             clause = add(

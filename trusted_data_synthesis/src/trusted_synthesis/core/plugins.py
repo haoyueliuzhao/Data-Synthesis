@@ -12,7 +12,15 @@ if TYPE_CHECKING:
         QualityClauseCompilationContext,
     )
     from trusted_synthesis.core.evaluation.contracts.schema import QualityClause
+    from trusted_synthesis.core.evidence.schema import EvidenceBundle
+    from trusted_synthesis.core.graph.schema import ProofGraph
     from trusted_synthesis.core.operations.registry import OperationRegistry
+    from trusted_synthesis.core.task.binding import EvidenceBinding
+    from trusted_synthesis.core.task.pattern import (
+        PatternBindingValidationReport,
+        TaskPatternMaterialization,
+        TaskPatternSpec,
+    )
 
 
 class SemanticValidationReport(BaseModel):
@@ -134,6 +142,31 @@ class OperationRegistryProvider(Protocol):
 
 class TaskFamilyPluginProtocol(OperationRegistryProvider, Protocol):
     task_family_ids: tuple[str, ...]
+
+
+class TaskPatternRuntimeProtocol(Protocol):
+    """Domain-owned semantics and language for a universal task-pattern compiler."""
+
+    runtime_id: str
+    runtime_version: str
+    domain: str
+    renderer_ids: tuple[str, ...]
+
+    def validate_binding(
+        self,
+        pattern: TaskPatternSpec,
+        binding: EvidenceBinding,
+        evidence_by_role: dict[str, tuple[EvidenceItem, ...]],
+    ) -> PatternBindingValidationReport: ...
+
+    def materialize(
+        self,
+        pattern: TaskPatternSpec,
+        binding: EvidenceBinding,
+        evidence_by_role: dict[str, tuple[EvidenceItem, ...]],
+        bundle: EvidenceBundle,
+        proof_graph: ProofGraph,
+    ) -> TaskPatternMaterialization: ...
 
 
 class DomainQualityClauseProviderProtocol(Protocol):

@@ -5,12 +5,15 @@ from trusted_synthesis.core.plugins import (
     ClaimVerifierProtocol,
     ComparabilityDecision,
     DomainPluginSet,
+    DomainQualityClauseProviderProtocol,
     EvidenceAdapterProtocol,
     OperationRegistryProvider,
     SemanticPolicyProtocol,
     SemanticSignature,
     SemanticValidationReport,
     SourceGroundingVerifierProtocol,
+    TaskFamilyPluginProtocol,
+    TaskPatternRuntimeProtocol,
 )
 
 DomainValidationReport = SemanticValidationReport
@@ -24,10 +27,13 @@ __all__ = [
     "ComparabilityDecision",
     "DomainEvidenceAdapter",
     "DomainPluginSet",
+    "DomainQualityClauseProviderProtocol",
     "DomainSemanticPolicy",
     "DomainTaskPlugin",
     "DomainValidationReport",
     "DomainVerificationPlugin",
     "SemanticSignature",
     "SourceGroundingVerifierProtocol",
+    "TaskFamilyPluginProtocol",
+    "TaskPatternRuntimeProtocol",
 ]

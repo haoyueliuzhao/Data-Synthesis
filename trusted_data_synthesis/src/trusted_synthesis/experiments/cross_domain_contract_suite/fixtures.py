@@ -65,6 +65,14 @@ def build_contract_cases() -> tuple[ContractCase, ...]:
     return (_legal_case(), _science_case())
 
 
+def build_pattern_validation_cases(*, per_domain: int = 10) -> tuple[ContractCase, ...]:
+    if per_domain < 1:
+        raise ValueError("pattern validation requires at least one case per domain")
+    return tuple(_legal_case(index) for index in range(1, per_domain + 1)) + tuple(
+        _science_case(index) for index in range(1, per_domain + 1)
+    )
+
+
 def fixture_manifest_hash(cases: tuple[ContractCase, ...]) -> str:
     return canonical_hash(
         {
@@ -81,18 +89,29 @@ def fixture_manifest_hash(cases: tuple[ContractCase, ...]) -> str:
     )
 
 
-def _legal_case() -> ContractCase:
+def _legal_case(index: int | None = None) -> ContractCase:
+    suffix = "" if index is None else f"_{index:02d}"
     rules = (
-        _legal_rule("guidance", "Agency Guidance", "administrative filing"),
-        _legal_rule("statute", "Example Act", "statutory filing"),
+        _legal_rule(f"guidance{suffix}", "Agency Guidance", "administrative filing"),
+        _legal_rule(f"statute{suffix}", "Example Act", "statutory filing"),
     )
     distractors = (
-        _legal_rule("wrong_definition", "Other Act", "unrelated filing", definition="other"),
-        _legal_rule("wrong_scope", "Local Rule", "local filing", scope_id="other_jdx"),
-        _legal_rule("wrong_time", "Expired Act", "expired filing", year=2024),
+        _legal_rule(
+            f"wrong_definition{suffix}",
+            "Other Act",
+            "unrelated filing",
+            definition="other",
+        ),
+        _legal_rule(
+            f"wrong_scope{suffix}",
+            "Local Rule",
+            "local filing",
+            scope_id="other_jdx",
+        ),
+        _legal_rule(f"wrong_time{suffix}", "Expired Act", "expired filing", year=2024),
     )
-    bundle = _bundle("legal", rules)
-    corpus = _corpus("legal", (*rules, *distractors))
+    bundle = _bundle("legal", rules, case_key=suffix or "base")
+    corpus = _corpus("legal", (*rules, *distractors), case_key=suffix or "base")
     graph = ProofGraphBuilder().build(bundle)
     registry = legal_operation_registry()
     plugin = LegalTaskPlugin()
@@ -124,23 +143,36 @@ def _legal_case() -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            versions={"fixture": "1.1.0"},
+            versions={"fixture": "1.2.0"},
         ),
     )
 
 
-def _science_case() -> ContractCase:
+def _science_case(index: int | None = None) -> ContractCase:
+    suffix = "" if index is None else f"_{index:02d}"
     results = (
-        _science_result("method_a", "10.2", "9.7", "10.7"),
-        _science_result("method_b", "11.0", "10.4", "11.6"),
+        _science_result(f"method_a{suffix}", "10.2", "9.7", "10.7"),
+        _science_result(f"method_b{suffix}", "11.0", "10.4", "11.6"),
     )
     distractors = (
-        _science_result("wrong_definition", "12.0", "11.5", "12.5", definition="other"),
-        _science_result("wrong_scope", "8.0", "7.5", "8.5", scope_id="other_dataset"),
-        _science_result("wrong_time", "9.0", "8.5", "9.5", year=2024),
+        _science_result(
+            f"wrong_definition{suffix}",
+            "12.0",
+            "11.5",
+            "12.5",
+            definition="other",
+        ),
+        _science_result(
+            f"wrong_scope{suffix}",
+            "8.0",
+            "7.5",
+            "8.5",
+            scope_id="other_dataset",
+        ),
+        _science_result(f"wrong_time{suffix}", "9.0", "8.5", "9.5", year=2024),
     )
-    bundle = _bundle("science", results)
-    corpus = _corpus("science", (*results, *distractors))
+    bundle = _bundle("science", results, case_key=suffix or "base")
+    corpus = _corpus("science", (*results, *distractors), case_key=suffix or "base")
     graph = ProofGraphBuilder().build(bundle)
     registry = science_operation_registry()
     plugin = ScienceTaskPlugin()
@@ -165,23 +197,33 @@ def _science_case() -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            versions={"fixture": "1.1.0"},
+            versions={"fixture": "1.2.0"},
         ),
     )
 
 
-def _bundle(domain: str, evidence: tuple[EvidenceItem, ...]) -> EvidenceBundle:
+def _bundle(
+    domain: str,
+    evidence: tuple[EvidenceItem, ...],
+    *,
+    case_key: str = "base",
+) -> EvidenceBundle:
     return EvidenceBundle(
-        bundle_id=f"bundle:{domain}:complex_contract",
+        bundle_id=f"bundle:{domain}:complex_contract:{case_key}",
         evidence=evidence,
         purpose=f"{domain} non-lookup reasoning contract",
         graph_build_id=f"{domain}_contract_build",
     )
 
 
-def _corpus(domain: str, evidence: tuple[EvidenceItem, ...]) -> EvidenceCorpus:
+def _corpus(
+    domain: str,
+    evidence: tuple[EvidenceItem, ...],
+    *,
+    case_key: str = "base",
+) -> EvidenceCorpus:
     return EvidenceCorpus(
-        corpus_id=f"corpus:{domain}:contract_with_distractors",
+        corpus_id=f"corpus:{domain}:contract_with_distractors:{case_key}",
         evidence=evidence,
         build_id=f"{domain}_contract_build",
     )

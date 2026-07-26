@@ -75,10 +75,45 @@ def build_release_manifest(
     if certificate_task_ids != task_ids:
         raise ValueError("release proof certificates do not exactly cover release tasks")
     contracts_by_task = {item.task_id: item for item in contract_items}
+    certificates_by_task = {item.task_id: item for item in certificate_items}
     for certificate in certificate_items:
         contract_hash = contracts_by_task[certificate.task_id].contract_hash
         if certificate.quality_contract_hash != contract_hash:
             raise ValueError("release certificate does not bind its task quality contract")
+    pattern_identities: list[dict[str, object]] = []
+    binding_identities: list[dict[str, object]] = []
+    difficulty_identities: list[dict[str, object]] = []
+    for task in task_items:
+        pattern_identity = task.public.metadata.get("task_pattern")
+        binding_identity = task.oracle.selection_contract.get("pattern_binding")
+        difficulty_identity = task.public.metadata.get("difficulty_profile")
+        if (pattern_identity is None) != (binding_identity is None):
+            raise ValueError("release task has an incomplete pattern compilation identity")
+        if pattern_identity is None and difficulty_identity is not None:
+            raise ValueError("release task has difficulty metadata without a task pattern")
+        if not isinstance(pattern_identity, dict) or not isinstance(binding_identity, dict):
+            continue
+        if not isinstance(difficulty_identity, dict):
+            raise ValueError("release pattern task is missing its difficulty profile")
+        certificate = certificates_by_task[task.task_id]
+        if (
+            certificate.task_pattern_hash != pattern_identity.get("pattern_hash")
+            or certificate.evidence_binding_hash != binding_identity.get("binding_hash")
+            or certificate.task_pattern_compiler_version
+            != pattern_identity.get("compiler_version")
+        ):
+            raise ValueError("release certificate does not bind task pattern compilation")
+        pattern_identities.append(pattern_identity)
+        binding_identities.append(binding_identity)
+        difficulty_identities.append(difficulty_identity)
+    pattern_runtimes: dict[str, str] = {}
+    for identity in pattern_identities:
+        runtime_id = str(identity["runtime_id"])
+        runtime_version = str(identity["runtime_version"])
+        registered_version = pattern_runtimes.get(runtime_id)
+        if registered_version is not None and registered_version != runtime_version:
+            raise ValueError("release task pattern runtime ID has conflicting versions")
+        pattern_runtimes[runtime_id] = runtime_version
     grounding_items = tuple(source_grounding_verifiers)
     grounding_versions = {item.verifier_id: item.verifier_version for item in grounding_items}
     if len(grounding_versions) != len(grounding_items):
@@ -132,6 +167,28 @@ def build_release_manifest(
         evidence_schema_version="evidence_ir.v2",
         proof_graph_schema_version="proof_graph.v3",
         task_program_version="task_program.v2",
+        task_pattern_schema_versions=tuple(
+            sorted({str(item["schema_version"]) for item in pattern_identities})
+        ),
+        task_pattern_compiler_versions=tuple(
+            sorted({str(item["compiler_version"]) for item in pattern_identities})
+        ),
+        task_pattern_runtimes=dict(sorted(pattern_runtimes.items())),
+        task_pattern_quality_profile_ids=tuple(
+            sorted({str(item["quality_profile_id"]) for item in pattern_identities})
+        ),
+        task_pattern_hashes=tuple(
+            sorted({str(item["pattern_hash"]) for item in pattern_identities})
+        ),
+        evidence_binding_schema_versions=tuple(
+            sorted({str(item["schema_version"]) for item in binding_identities})
+        ),
+        evidence_binding_hashes=tuple(
+            sorted({str(item["binding_hash"]) for item in binding_identities})
+        ),
+        task_difficulty_policy_versions=tuple(
+            sorted({str(item["policy_version"]) for item in difficulty_identities})
+        ),
         operation_manifest_hash=canonical_hash(registry.manifest(), prefix="operation_manifest:"),
         required_check_manifest_hash=canonical_hash(
             REQUIRED_CHECK_MANIFEST, prefix="check_manifest:"

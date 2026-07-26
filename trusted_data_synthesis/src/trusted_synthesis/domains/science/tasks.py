@@ -3,27 +3,33 @@ from __future__ import annotations
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry
-from trusted_synthesis.core.task.builder import TaskPackageBuilder
-from trusted_synthesis.core.task.program import (
-    InputRefKind,
-    OperationNode,
-    ProgramInputRef,
-    make_program,
-)
-from trusted_synthesis.core.task.schema import RetrievalTrack, TaskLevel, TaskPackage
+from trusted_synthesis.core.task.binding import make_evidence_binding
+from trusted_synthesis.core.task.pattern import TaskPatternSpec
+from trusted_synthesis.core.task.pattern_compiler import TaskPatternCompiler
+from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.domains.science.operations import science_operation_registry
+from trusted_synthesis.domains.science.pattern_runtime import ScienceTaskPatternRuntime
+from trusted_synthesis.domains.science.patterns import SCIENCE_PROTOCOL_COMPARISON_PATTERN
 
 
 class ScienceTaskPlugin:
-    plugin_id = "science_tasks.v1"
+    plugin_id = "science_tasks.v2"
     task_family_ids = ("science_protocol_effect_comparison",)
 
     def __init__(self) -> None:
-        self._builder = TaskPackageBuilder(science_operation_registry())
+        self._pattern = SCIENCE_PROTOCOL_COMPARISON_PATTERN
+        self._compiler = TaskPatternCompiler(
+            science_operation_registry(),
+            ScienceTaskPatternRuntime(),
+        )
 
     @staticmethod
     def operation_registry() -> OperationRegistry:
         return science_operation_registry()
+
+    @property
+    def pattern_manifest(self) -> tuple[TaskPatternSpec, ...]:
+        return (self._pattern,)
 
     def compare_experiments(
         self,
@@ -32,94 +38,17 @@ class ScienceTaskPlugin:
         left: EvidenceItem,
         right: EvidenceItem,
     ) -> TaskPackage:
-        evidence = (left, right)
-        alignment = OperationNode(
-            node_id="align_protocol",
-            operator_id="science_align_protocol",
-            input_refs=tuple(
-                ProgramInputRef(kind=InputRefKind.EVIDENCE, ref_id=item.evidence_id)
-                for item in evidence
-            ),
-            output_schema="structured",
-            verifier_id="science_align_protocol.oracle.v1",
+        binding = make_evidence_binding(
+            pattern_id=self._pattern.pattern_id,
+            pattern_version=self._pattern.pattern_version,
+            pattern_hash=self._pattern.pattern_hash,
+            role_bindings={"experiments": (left.evidence_id, right.evidence_id)},
+            source_graph_id=proof_graph.graph_id,
+            domain_snapshot_id=proof_graph.source_build_id,
         )
-        result = OperationNode(
-            node_id="result",
-            operator_id="science_compare_effect",
-            input_refs=(
-                ProgramInputRef(kind=InputRefKind.OPERATION, ref_id=alignment.node_id),
-                ProgramInputRef(kind=InputRefKind.EVIDENCE, ref_id=left.evidence_id),
-                ProgramInputRef(kind=InputRefKind.EVIDENCE, ref_id=right.evidence_id),
-            ),
-            output_schema="structured",
-            verifier_id="science_compare_effect.oracle.v1",
-            dependencies=(alignment.node_id,),
-        )
-        program = make_program((alignment, result), "result")
-        return self._builder.build(
-            task_domain="science",
-            task_type="science_protocol_effect_comparison",
-            level=TaskLevel.RESEARCH_WORKFLOW,
-            instruction=(
-                "Determine whether the two experimental results use comparable protocols, then "
-                "compare their observed effects while preserving uncertainty in the conclusion."
-            ),
-            evidence=evidence,
-            bundle=bundle,
-            proof_graph=proof_graph,
-            program=program,
-            retrieval_track=RetrievalTrack.SEMI_OPEN,
-            retrieval_scope={
-                "aliases": sorted({left.subject.name, right.subject.name}),
-                "partial_constraints": {
-                    "predicate": left.predicate,
-                    "definition_id": left.definition.definition_id,
-                },
-                "corpus_boundary": bundle.bundle_id,
-                "semantic_constraints": {
-                    "scope_ids": sorted(
-                        {
-                            item.scope.scope_id
-                            for item in evidence
-                            if item.scope is not None and item.scope.scope_id
-                        }
-                    ),
-                    "temporal_labels": sorted(
-                        {
-                            item.temporal_context.label
-                            for item in evidence
-                            if item.temporal_context.label
-                        }
-                    ),
-                    "source_authorities": sorted(
-                        {item.source.authority.value for item in evidence}
-                    ),
-                },
-            },
-            oracle_selection_contract={
-                "evidence_version_ids": sorted(item.evidence_version_id for item in evidence),
-                "source_ids": sorted(item.source.source_id for item in evidence),
-                "required_build_ids": {
-                    key: sorted(
-                        {
-                            value
-                            for item in evidence
-                            if (value := item.provenance.build_ids.get(key)) is not None
-                        }
-                    )
-                    for key in sorted(
-                        {key for item in evidence for key in item.provenance.build_ids}
-                    )
-                },
-            },
-            answer_schema={
-                "type": "science_effect_comparison",
-                "required_fields": [
-                    "higher_ref",
-                    "difference",
-                    "uncertainty_intervals_overlap",
-                    "qualified_conclusion",
-                ],
-            },
-            metadata={"domain_plugin_id": self.plugin_id},
-        )
+        return self._compiler.compile(
+            self._pattern,
+            binding,
+            bundle,
+            proof_graph,
+        ).task

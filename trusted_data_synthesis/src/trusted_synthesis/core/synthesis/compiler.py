@@ -27,7 +27,7 @@ from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.hashing import canonical_hash
 
-PROOF_CARRYING_COMPILER_VERSION = "proof_carrying_compiler.v1"
+PROOF_CARRYING_COMPILER_VERSION = "proof_carrying_compiler.v2"
 
 
 class ProofCarryingSampleCompiler:
@@ -97,8 +97,24 @@ class ProofCarryingSampleCompiler:
             source_grounding_verifier=self._source_grounding_verifier,
             compiler_version=PROOF_CARRYING_COMPILER_VERSION,
         )
-        pattern = pattern_id or task.public.task_type
-        binding = binding_id or canonical_hash(
+        pattern_identity = task.public.metadata.get("task_pattern")
+        binding_identity = task.oracle.selection_contract.get("pattern_binding")
+        declared_pattern_id = (
+            str(pattern_identity.get("pattern_id"))
+            if isinstance(pattern_identity, dict)
+            else None
+        )
+        declared_binding_id = (
+            str(binding_identity.get("binding_id"))
+            if isinstance(binding_identity, dict)
+            else None
+        )
+        if pattern_id is not None and declared_pattern_id not in (None, pattern_id):
+            raise ValueError("sample pattern ID disagrees with the compiled task pattern")
+        if binding_id is not None and declared_binding_id not in (None, binding_id):
+            raise ValueError("sample binding ID disagrees with the compiled evidence binding")
+        pattern = pattern_id or declared_pattern_id or task.public.task_type
+        binding = binding_id or declared_binding_id or canonical_hash(
             {
                 "task_id": task.task_id,
                 "evidence_semantic_keys": sorted(
@@ -109,11 +125,35 @@ class ProofCarryingSampleCompiler:
             },
             prefix="evidence_binding:",
         )
-        difficulty = difficulty_profile or {
-            "evidence_count": float(len(task.oracle.gold_evidence_ids)),
-            "program_node_count": float(len(task.oracle.task_program.nodes)),
-            "program_depth": float(_program_depth(task)),
-        }
+        declared_difficulty = task.public.metadata.get("difficulty_profile")
+        difficulty = difficulty_profile or (
+            {
+                key: float(value)
+                for key, value in declared_difficulty.items()
+                if isinstance(value, (int, float))
+            }
+            if isinstance(declared_difficulty, dict)
+            else {
+                "evidence_count": float(len(task.oracle.gold_evidence_ids)),
+                "program_node_count": float(len(task.oracle.task_program.nodes)),
+                "program_depth": float(_program_depth(task)),
+            }
+        )
+        pattern_hash = (
+            str(pattern_identity.get("pattern_hash"))
+            if isinstance(pattern_identity, dict)
+            else None
+        )
+        binding_hash = (
+            str(binding_identity.get("binding_hash"))
+            if isinstance(binding_identity, dict)
+            else None
+        )
+        task_pattern_compiler_version = (
+            str(pattern_identity.get("compiler_version"))
+            if isinstance(pattern_identity, dict)
+            else None
+        )
         sample_metadata = metadata or {}
         identity = proof_carrying_sample_identity(
             task_id=task.task_id,
@@ -131,9 +171,12 @@ class ProofCarryingSampleCompiler:
             certificate_hash=certificate.certificate_hash,
             pattern_id=pattern,
             binding_id=binding,
+            pattern_hash=pattern_hash,
+            binding_hash=binding_hash,
+            task_pattern_compiler_version=task_pattern_compiler_version,
             difficulty_profile=difficulty,
             metadata=sample_metadata,
-            schema_version="proof_carrying_sample.v1",
+            schema_version="proof_carrying_sample.v2",
         )
         sample = ProofCarryingSample(
             sample_id=canonical_hash(identity, prefix="proof_carrying_sample:"),
@@ -152,6 +195,9 @@ class ProofCarryingSampleCompiler:
             certificate=certificate,
             pattern_id=pattern,
             binding_id=binding,
+            pattern_hash=pattern_hash,
+            binding_hash=binding_hash,
+            task_pattern_compiler_version=task_pattern_compiler_version,
             difficulty_profile=difficulty,
             metadata=sample_metadata,
         )
@@ -161,6 +207,8 @@ class ProofCarryingSampleCompiler:
             certificate_id=certificate.certificate_id,
             certificate_hash=certificate.certificate_hash,
             pattern_id=pattern,
+            pattern_hash=pattern_hash,
+            task_pattern_compiler_version=task_pattern_compiler_version,
             difficulty_profile=difficulty,
             metadata={"schema_version": sample.schema_version},
         )

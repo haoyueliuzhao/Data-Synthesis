@@ -35,6 +35,17 @@ def build_proof_certificate(
             },
             prefix="source_grounding_manifest:",
         )
+    pattern_identity = task.public.metadata.get("task_pattern")
+    binding_identity = task.oracle.selection_contract.get("pattern_binding")
+    task_pattern_hash = None
+    evidence_binding_hash = None
+    task_pattern_compiler_version = None
+    if isinstance(pattern_identity, dict) and isinstance(binding_identity, dict):
+        task_pattern_hash = str(pattern_identity.get("pattern_hash") or "") or None
+        evidence_binding_hash = str(binding_identity.get("binding_hash") or "") or None
+        task_pattern_compiler_version = (
+            str(pattern_identity.get("compiler_version") or "") or None
+        )
     return make_proof_certificate(
         task_id=task.task_id,
         task_package_hash=task.task_hash,
@@ -53,5 +64,8 @@ def build_proof_certificate(
             domain_plugin_set, prefix="domain_plugin_manifest:"
         ),
         source_grounding_manifest_hash=grounding_hash,
+        task_pattern_hash=task_pattern_hash,
+        evidence_binding_hash=evidence_binding_hash,
+        task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
     )

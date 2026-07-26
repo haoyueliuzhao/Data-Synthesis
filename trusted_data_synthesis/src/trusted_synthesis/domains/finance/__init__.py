@@ -1,4 +1,6 @@
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.pattern_runtime import FinanceTaskPatternRuntime
+from trusted_synthesis.domains.finance.patterns import finance_task_patterns
 from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
@@ -16,6 +18,8 @@ __all__ = [
     "FinanceClaimVerifier",
     "FinanceSemanticPolicy",
     "FinanceSourceGroundingVerifier",
+    "FinanceTaskPatternRuntime",
     "FinanceTaskPlugin",
     "SourceGroundingReport",
+    "finance_task_patterns",
 ]

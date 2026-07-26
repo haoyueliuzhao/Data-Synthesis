@@ -45,6 +45,9 @@ from trusted_synthesis.experiments.finance_pilot import (
 from trusted_synthesis.experiments.finance_pilot.candidate import (
     FinanceNumericCandidateGenerator,
 )
+from trusted_synthesis.experiments.task_pattern_validation import (
+    run_task_pattern_validation,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
 
@@ -58,6 +61,12 @@ def main(argv: list[str] | None = None) -> int:
             args.output,
         )
         return 0
+    if args.command == "validate-task-patterns":
+        pattern_report = run_task_pattern_validation(
+            tasks_per_domain=args.tasks_per_domain
+        )
+        _emit(pattern_report.model_dump(mode="json"), args.output)
+        return 0 if pattern_report.status == "passed" else 1
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
     if args.command == "inspect-finance":
         _emit(adapter.inspect(), args.output)
@@ -73,12 +82,12 @@ def main(argv: list[str] | None = None) -> int:
         _emit(_demo(adapter, args.limit), args.output)
         return 0
     if args.command == "finance-pilot":
-        report = run_finance_pilot(
+        finance_report = run_finance_pilot(
             adapter,
             FinancePilotConfig.from_json(args.pilot_config),
             args.output_dir,
         )
-        _emit(report, args.output)
+        _emit(finance_report, args.output)
         return 0
     parser.error(f"Unknown command: {args.command}")
     return 2
@@ -101,6 +110,9 @@ def _parser() -> argparse.ArgumentParser:
     audit = subparsers.add_parser("audit-generalization")
     audit.add_argument("--source-root", type=Path, default=Path("src"))
     audit.add_argument("--output", type=Path)
+    pattern_validation = subparsers.add_parser("validate-task-patterns")
+    pattern_validation.add_argument("--tasks-per-domain", type=int, default=10)
+    pattern_validation.add_argument("--output", type=Path)
     return parser
 
 

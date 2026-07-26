@@ -1,3 +1,19 @@
+from trusted_synthesis.core.task.binding import EvidenceBinding, make_evidence_binding
+from trusted_synthesis.core.task.difficulty import TaskDifficultyLevel, TaskDifficultyProfile
+from trusted_synthesis.core.task.pattern import (
+    EvidenceRoleSpec,
+    PatternBindingValidationReport,
+    PatternInputKind,
+    PatternInputRef,
+    ProgramNodeTemplate,
+    TaskPatternMaterialization,
+    TaskPatternSpec,
+)
+from trusted_synthesis.core.task.pattern_compiler import (
+    TASK_PATTERN_COMPILER_VERSION,
+    TaskPatternCompiler,
+    TaskPatternInstantiation,
+)
 from trusted_synthesis.core.task.program import (
     InputRefKind,
     OperationNode,
@@ -13,18 +29,32 @@ from trusted_synthesis.core.task.schema import (
 )
 
 __all__ = [
+    "EvidenceBinding",
+    "EvidenceRoleSpec",
     "InputRefKind",
     "OperationNode",
+    "PatternBindingValidationReport",
+    "PatternInputKind",
+    "PatternInputRef",
     "ProgramInputRef",
+    "ProgramNodeTemplate",
     "ProofGraphTaskSynthesizer",
+    "TaskDifficultyLevel",
+    "TaskDifficultyProfile",
     "TaskLevel",
-    "TaskPackageBuilder",
     "TaskOracleContract",
     "TaskPackage",
+    "TaskPackageBuilder",
+    "TaskPatternCompiler",
+    "TaskPatternInstantiation",
+    "TaskPatternMaterialization",
+    "TaskPatternSpec",
+    "TASK_PATTERN_COMPILER_VERSION",
     "TaskProgram",
     "TaskPublicSpec",
     "TaskRequirement",
     "TaskSynthesisError",
+    "make_evidence_binding",
 ]
 
 

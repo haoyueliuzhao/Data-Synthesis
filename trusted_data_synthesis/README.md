@@ -7,8 +7,10 @@ knowledge-intensive agents. It is intentionally domain-agnostic:
 Domain Adapter
 -> Evidence IR v2
 -> Validated Proof Graph v3 + recursive proof closure
--> Public Task + Oracle Contract
+-> Task Pattern IR + content-addressed Evidence Binding
 -> Task Program DAG
+-> compiled structural Difficulty Profile
+-> Public Task + Oracle Contract
 -> Reference Workflow + independent replay
 -> Proof-Carrying Sample + Proof Certificate
 -> Sample-specific Quality Contract compilation
@@ -31,13 +33,17 @@ trusted-synthesis sample-finance --config config/finance_archive.json --limit 3
 trusted-synthesis demo-finance --config config/finance_archive.json --limit 3
 trusted-synthesis finance-pilot \
   --config config/finance_archive.json \
-  --pilot-config config/finance_pilot_v04.json \
-  --output-dir artifacts/finance_pilot/v04_100k
+  --pilot-config config/finance_pilot_v06_pattern_50.json \
+  --output-dir artifacts/finance_pilot/v06_pattern_50
+trusted-synthesis validate-task-patterns --tasks-per-domain 10
 trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
 
-The v0.5.0 compiler binds each task, Evidence Bundle, Proof Graph, Task Program,
+The v0.6.0 compiler first binds a versioned declarative Task Pattern to a content-addressed
+Evidence Binding. It deterministically expands the Task Program, computes a structural difficulty
+profile, and packages the domain-rendered Public/Oracle contracts. The proof compiler then binds
+each task, Evidence Bundle, Proof Graph, Task Program,
 reference execution, domain plugin, and sample-specific Quality Contract into a
 reproducible Proof Certificate. Public artifacts expose only the task and certificate
 identity; Oracle content, gold Evidence IDs, and reference answers remain hidden.
@@ -48,8 +54,10 @@ and domain policy. Missing verifiers and blocked dependencies fail closed. Durin
 migration, the fixed evaluator and Contract Runtime run in parallel, and a decision
 parity failure blocks release. See
 [Proof-Carrying Quality Contracts](docs/proof_carrying_quality_contract.md).
+The Pattern and Binding boundary is specified in
+[Task Pattern IR and Binding Compiler](docs/task_pattern_ir.md).
 
-The checked-in v0.4 profile scans 100,000 facts with deterministic stratified
+The checked-in v0.6 profile scans 100,000 facts with deterministic stratified
 reservoir sampling, verifies archived source objects, and uses ten in-scope hard
 distractors plus eight broad distractors per task. Its current result validates
 the global resolved-track architecture; it does not establish Greater China

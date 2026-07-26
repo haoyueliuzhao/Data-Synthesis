@@ -1,0 +1,43 @@
+{
+  "pilot_id": "finance_task_pattern_pilot.v0.6",
+  "evidence_scan_limit": 100000,
+  "evidence_sample_size": 25000,
+  "stratum_reservoir_size": 3000,
+  "distractors_per_task": 8,
+  "hard_distractors_per_task": 10,
+  "hard_distractor_types": [
+    "wrong_definition",
+    "stale_version",
+    "forecast",
+    "lower_authority",
+    "unit_mismatch",
+    "currency_mismatch",
+    "wrong_scope"
+  ],
+  "task_quotas": {
+    "fact_retrieval": 13,
+    "comparison": 13,
+    "temporal_growth": 12,
+    "temporal_average": 12
+  },
+  "mutation_types": [
+    "missing_evidence",
+    "wrong_entity",
+    "time_shift",
+    "predicate_mismatch",
+    "arithmetic_error",
+    "wrong_answer",
+    "citation_mismatch",
+    "unsupported_claim",
+    "oracle_leakage",
+    "disallowed_tool",
+    "failed_step",
+    "extra_result_field",
+    "program_node_mismatch",
+    "conflicting_calculation",
+    "verification_result_mismatch",
+    "claim_value_mismatch",
+    "multi_error"
+  ],
+  "require_full_quota": true
+}

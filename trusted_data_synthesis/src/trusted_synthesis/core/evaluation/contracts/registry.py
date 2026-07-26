@@ -8,6 +8,11 @@ from trusted_synthesis.core.evaluation.contracts.observation import CandidateObs
 from trusted_synthesis.core.evaluation.contracts.schema import QualityClause
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.task.difficulty import (
+    difficulty_level,
+    difficulty_score,
+    task_structure_features,
+)
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateVerificationReport
 from trusted_synthesis.core.trajectory.schema import Trajectory
@@ -191,6 +196,126 @@ class _TrackVerifier:
         )
 
 
+class _TaskPatternBindingVerifier:
+    verifier_id = "task_pattern_binding.v1"
+    verifier_version = "1.0.0"
+
+    def verify(
+        self, clause: QualityClause, context: ClauseVerificationContext
+    ) -> ClauseVerificationOutcome:
+        observed_pattern = context.task.public.metadata.get("task_pattern")
+        observed_binding = context.task.oracle.selection_contract.get("pattern_binding")
+        expected_pattern = clause.parameters.get("pattern")
+        expected_binding = clause.parameters.get("binding")
+        if (
+            not isinstance(observed_pattern, dict)
+            or not isinstance(observed_binding, dict)
+            or not isinstance(expected_pattern, dict)
+            or not isinstance(expected_binding, dict)
+        ):
+            return ClauseVerificationOutcome(
+                passed=False,
+                failure_code="task_pattern_binding_missing",
+            )
+        role_bindings = observed_binding.get("role_bindings")
+        if not isinstance(role_bindings, dict):
+            return ClauseVerificationOutcome(
+                passed=False,
+                failure_code="task_pattern_roles_missing",
+            )
+        flattened = [
+            str(evidence_id)
+            for evidence_ids in role_bindings.values()
+            if isinstance(evidence_ids, (list, tuple))
+            for evidence_id in evidence_ids
+        ]
+        gold_ids = tuple(context.task.oracle.gold_evidence_ids)
+        checks = {
+            "pattern_identity": observed_pattern == expected_pattern,
+            "binding_identity": observed_binding == expected_binding,
+            "role_coverage": len(flattened) == len(gold_ids)
+            and set(flattened) == set(gold_ids),
+            "role_uniqueness": len(flattened) == len(set(flattened)),
+            "source_graph": observed_binding.get("source_graph_id")
+            == context.proof_graph.graph_id,
+            "contract_hash": clause.expected_ref
+            == canonical_hash(
+                {
+                    "pattern": observed_pattern,
+                    "binding": observed_binding,
+                },
+                prefix="task_pattern_binding_contract:",
+            ),
+        }
+        passed = all(checks.values())
+        return ClauseVerificationOutcome(
+            passed=passed,
+            observed=checks,
+            expected={key: True for key in checks},
+            failure_code=None if passed else "task_pattern_binding_mismatch",
+            details=tuple(key for key, value in checks.items() if not value),
+        )
+
+
+class _TaskDifficultyVerifier:
+    verifier_id = "task_difficulty.v1"
+    verifier_version = "1.0.0"
+
+    def verify(
+        self, clause: QualityClause, context: ClauseVerificationContext
+    ) -> ClauseVerificationOutcome:
+        observed = context.task.public.metadata.get("difficulty_profile")
+        expected = clause.parameters.get("expected_profile")
+        pattern = context.task.public.metadata.get("task_pattern")
+        if not isinstance(observed, dict) or not isinstance(expected, dict):
+            return ClauseVerificationOutcome(
+                passed=False,
+                failure_code="difficulty_profile_missing",
+            )
+        if not isinstance(pattern, dict):
+            return ClauseVerificationOutcome(
+                passed=False,
+                failure_code="difficulty_pattern_identity_missing",
+            )
+        structural = task_structure_features(
+            context.task.oracle.task_program,
+            context.proof_graph,
+            context.task.oracle.gold_evidence_ids,
+        )
+        semantic_constraint_count = float(pattern.get("semantic_constraint_count", -1))
+        semantic_alignment_cost = float(observed.get("semantic_alignment_cost", -1))
+        pattern_base_cost = float(pattern.get("difficulty_base_cost", -1))
+        score = difficulty_score(
+            **structural,
+            semantic_constraint_count=semantic_constraint_count,
+            semantic_alignment_cost=semantic_alignment_cost,
+            pattern_base_cost=pattern_base_cost,
+        )
+        level = difficulty_level(score, str(pattern.get("difficulty_base"))).value
+        checks = {
+            "profile_frozen": observed == expected,
+            "profile_hash": clause.expected_ref
+            == canonical_hash(observed, prefix="task_difficulty_profile:"),
+            "structural_features": all(
+                observed.get(key) == value for key, value in structural.items()
+            ),
+            "semantic_constraint_count": observed.get("semantic_constraint_count")
+            == semantic_constraint_count,
+            "pattern_base_cost": observed.get("pattern_base_cost") == pattern_base_cost,
+            "total_score": observed.get("total_score") == score,
+            "difficulty_level": observed.get("level") == level,
+            "policy_version": observed.get("policy_version") == "task_difficulty.v1",
+        }
+        passed = all(checks.values())
+        return ClauseVerificationOutcome(
+            passed=passed,
+            observed=checks,
+            expected={key: True for key in checks},
+            failure_code=None if passed else "difficulty_profile_mismatch",
+            details=tuple(key for key, value in checks.items() if not value),
+        )
+
+
 class _ProgramNodeVerifier:
     verifier_id = "program_node_trace.v1"
     verifier_version = "1.0.0"
@@ -276,6 +401,8 @@ def default_clause_verifier_registry() -> ClauseVerifierRegistry:
             _EvidenceSelectedVerifier(),
             _ProofEvidenceVerifier(),
             _TrackVerifier(),
+            _TaskPatternBindingVerifier(),
+            _TaskDifficultyVerifier(),
             _ProgramNodeVerifier(),
             _AnswerFieldVerifier(),
             _CitationEvidenceVerifier(),

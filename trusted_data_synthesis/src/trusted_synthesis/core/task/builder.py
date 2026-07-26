@@ -50,6 +50,7 @@ class TaskPackageBuilder:
         allow_structured_claims: bool = False,
         metadata: dict[str, Any] | None = None,
         quality_rubric: dict[str, Any] | None = None,
+        identity_context: dict[str, Any] | None = None,
     ) -> TaskPackage:
         if not evidence:
             raise ValueError("task package requires evidence")
@@ -72,7 +73,8 @@ class TaskPackageBuilder:
                 "bundle_id": bundle.bundle_id,
                 "evidence_ids": evidence_ids,
                 "program_hash": program.program_hash,
-                "schema": "task_package.v4",
+                "identity_context": identity_context or {},
+                "schema": "task_package.v5",
             },
             prefix="task:",
         )

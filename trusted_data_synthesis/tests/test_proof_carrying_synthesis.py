@@ -104,8 +104,18 @@ def test_release_freezes_contracts_and_certificates_and_requires_exact_coverage(
 
     assert artifacts.quality_contract.contract_hash in manifest.quality_contract_hashes
     assert artifacts.sample.certificate.certificate_hash in manifest.proof_certificate_hashes
-    assert "quality_contract_compiler.v1" in manifest.quality_contract_compiler_versions
-    assert "proof_carrying_compiler.v1" in manifest.proof_compiler_versions
+    assert "quality_contract_compiler.v2" in manifest.quality_contract_compiler_versions
+    assert "proof_carrying_compiler.v2" in manifest.proof_compiler_versions
+    assert manifest.task_pattern_schema_versions == ("task_pattern.v1",)
+    assert manifest.task_pattern_compiler_versions == ("task_pattern_compiler.v1",)
+    assert manifest.task_pattern_runtimes == {
+        "legal_task_pattern_runtime.v1": "1.0.0"
+    }
+    assert manifest.task_pattern_quality_profile_ids == (
+        "legal.rule_application.quality.v1",
+    )
+    assert manifest.task_difficulty_policy_versions == ("task_difficulty.v1",)
+    assert len(manifest.evidence_binding_hashes) == 1
 
     with pytest.raises(ValueError, match="quality contracts do not exactly cover"):
         build_release_manifest(

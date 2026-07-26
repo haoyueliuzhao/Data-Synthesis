@@ -156,8 +156,6 @@ def run_finance_pilot(
             case.task,
             case.bundle,
             case.proof_graph,
-            pattern_id=case.task.public.task_type,
-            binding_id=case.binding.binding_hash,
             reference_trajectory=reference,
             reference_assessment=reference_assessment,
         )
@@ -331,6 +329,30 @@ def _build_report(
     source_counts = Counter(case.binding.stratum[3] for case in cases)
     verification_status_counts = Counter(case.binding.stratum[4] for case in cases)
     program_depths = Counter(len(case.task.oracle.task_program.nodes) for case in cases)
+    pattern_identities: list[dict[str, Any]] = []
+    binding_identities: list[dict[str, Any]] = []
+    difficulty_profiles: list[dict[str, Any]] = []
+    for case in cases:
+        pattern_identity = case.task.public.metadata.get("task_pattern")
+        if isinstance(pattern_identity, dict):
+            pattern_identities.append(pattern_identity)
+        binding_identity = case.task.oracle.selection_contract.get("pattern_binding")
+        if isinstance(binding_identity, dict):
+            binding_identities.append(binding_identity)
+        difficulty_profile = case.task.public.metadata.get("difficulty_profile")
+        if isinstance(difficulty_profile, dict):
+            difficulty_profiles.append(difficulty_profile)
+    pattern_counts = Counter(str(item["pattern_id"]) for item in pattern_identities)
+    difficulty_level_counts = Counter(str(item["level"]) for item in difficulty_profiles)
+    binding_hashes = {str(item["binding_hash"]) for item in binding_identities}
+    pattern_clause_count = sum(
+        any(clause.clause_kind == "task_pattern_binding_integrity" for clause in contract.clauses)
+        for contract in quality_contracts
+    )
+    difficulty_clause_count = sum(
+        any(clause.clause_kind == "difficulty_profile_integrity" for clause in contract.clauses)
+        for contract in quality_contracts
+    )
     reference_accepted = sum(
         assessment.decision == ReleaseDecision.ACCEPTED for assessment in reference_assessments
     )
@@ -446,6 +468,12 @@ def _build_report(
         "quality_contract_coverage": len(quality_contracts) == len(cases),
         "proof_certificate_coverage": len(proof_certificates) == len(cases),
         "contract_runtime_decision_parity": parity_rate == 1,
+        "task_pattern_identity_coverage": len(pattern_identities) == len(cases),
+        "evidence_binding_identity_coverage": len(binding_identities) == len(cases),
+        "evidence_binding_identity_unique": len(binding_hashes) == len(cases),
+        "difficulty_profile_coverage": len(difficulty_profiles) == len(cases),
+        "pattern_binding_clause_coverage": pattern_clause_count == len(cases),
+        "difficulty_clause_coverage": difficulty_clause_count == len(cases),
     }
     return {
         "pilot_id": config.pilot_id,
@@ -499,6 +527,15 @@ def _build_report(
             "program_depth_counts": {
                 str(key): value for key, value in sorted(program_depths.items())
             },
+            "task_pattern_counts": dict(sorted(pattern_counts.items())),
+            "task_pattern_hashes": sorted(
+                {str(item["pattern_hash"]) for item in pattern_identities}
+            ),
+            "task_pattern_compiler_versions": sorted(
+                {str(item["compiler_version"]) for item in pattern_identities}
+            ),
+            "unique_evidence_binding_count": len(binding_hashes),
+            "difficulty_level_counts": dict(sorted(difficulty_level_counts.items())),
             "minimum_distractors": min((len(case.distractor_ids) for case in cases), default=0),
             "mean_distractors": (mean(len(case.distractor_ids) for case in cases) if cases else 0),
             "minimum_hard_distractors": min(
@@ -573,6 +610,8 @@ def _build_report(
             "clause_verifier_manifest_hashes": sorted(
                 {item.verifier_manifest_hash for item in quality_contracts}
             ),
+            "pattern_binding_clause_count": pattern_clause_count,
+            "difficulty_clause_count": difficulty_clause_count,
         },
         "release": {
             "release_id": manifest.release_id,
@@ -707,8 +746,6 @@ def _reproducibility_check(
             case.task,
             case.bundle,
             case.proof_graph,
-            pattern_id=case.task.public.task_type,
-            binding_id=case.binding.binding_hash,
             reference_trajectory=reference,
             reference_assessment=reference_assessment,
         )
@@ -864,6 +901,7 @@ def _markdown_report(report: dict[str, Any]) -> str:
     task = report["task_synthesis"]
     candidate = report["candidate_validation"]
     reference = report["reference_validation"]
+    proof = report["proof_carrying_quality_contract"]
     release = report["release"]
     lines = [
         "# Finance Synthesis Pilot Report",
@@ -888,6 +926,21 @@ def _markdown_report(report: dict[str, Any]) -> str:
         "## Task Distribution",
         "",
         json.dumps(task["task_type_counts"], ensure_ascii=False, indent=2),
+        "",
+        "## Task Pattern Compilation",
+        "",
+        json.dumps(task["task_pattern_counts"], ensure_ascii=False, indent=2),
+        "",
+        f"- Unique Evidence Bindings: {task['unique_evidence_binding_count']}",
+        (
+            "- Pattern/Binding quality clauses: "
+            f"{proof['pattern_binding_clause_count']}"
+        ),
+        f"- Difficulty quality clauses: {proof['difficulty_clause_count']}",
+        "",
+        "## Difficulty Distribution",
+        "",
+        json.dumps(task["difficulty_level_counts"], ensure_ascii=False, indent=2),
         "",
         "## Mutation Detection",
         "",

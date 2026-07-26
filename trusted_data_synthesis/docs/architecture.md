@@ -1,4 +1,4 @@
-# Architecture v0.5
+# Architecture v0.6
 
 ## Boundary
 
@@ -12,8 +12,10 @@ Domain archive / KG
         -> Domain Adapter
         -> Evidence IR v2 + executable semantic policy
         -> Proof Graph v3 + content validation
+        -> Task Pattern IR + Evidence Binding
         -> Public Task / isolated Oracle Contract
         -> Task Program DAG v2
+        -> compiled structural Difficulty Profile
         -> Reference Workflow + independent replay
         -> Proof-Carrying Sample + Proof Certificate
         -> Sample-specific Quality Contract
@@ -108,7 +110,18 @@ investment claims. Legal now runs condition and exception checks followed by aut
 resolution. Science aligns protocols before comparing effects and preserves uncertainty
 in its qualified result. These are compact contract fixtures, not production datasets.
 
-## Compiled Quality Contracts
+## Task Pattern Compiler
+
+Domain catalogs declare typed Evidence roles, cardinalities, semantic constraints, Program node
+templates, answer schemas, renderer identities, quality profiles, and base difficulty. A concrete
+`EvidenceBinding` assigns exact Evidence versions to those roles and pins the Proof Graph. Core
+validates structure and compiles the Program; a domain Runtime validates meaning and renders public
+language without exposing the hidden Binding.
+
+Pattern, Binding, Runtime, and difficulty identities flow into task hashes, task-local quality
+clauses, Proof Certificates, and Release Manifests. See `docs/task_pattern_ir.md`.
+
+## Compiled Quality Contracts v2
 
 Reference and Candidate quality remain deliberately separate:
 
@@ -125,6 +138,10 @@ come from Public/Oracle separation and planning/retrieval tracks; Evidence and P
 created for every gold Evidence item; Program clauses are created for every DAG node; answer and
 citation clauses are derived from the answer schema and evidence bindings. A domain clause provider
 adds finance, legal, or scientific semantic checks through a protocol consumed by Core.
+
+Pattern tasks add fail-closed clauses for exact Pattern/Binding integrity and complete difficulty
+profiles. A missing role, stale graph pin, duplicate role Evidence, changed difficulty policy, or
+incomplete compilation identity therefore blocks release.
 
 `QualityContractRuntime` indexes the candidate trajectory once, executes clauses in dependency
 order through a versioned verifier registry, and aggregates Universal and Domain gates. Unknown

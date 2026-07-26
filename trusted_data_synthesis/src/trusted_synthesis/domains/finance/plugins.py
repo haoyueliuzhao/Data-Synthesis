@@ -34,6 +34,6 @@ def finance_plugin_set(
         ),
         versions={
             "source_grounding": source_grounding_verifier.verifier_version,
-            "plugin_set": "1.1.0",
+            "plugin_set": "1.2.0",
         },
     )

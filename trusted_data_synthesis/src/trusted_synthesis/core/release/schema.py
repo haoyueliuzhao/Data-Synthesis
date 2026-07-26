@@ -107,6 +107,14 @@ class ReleaseManifest(BaseModel):
     evidence_schema_version: str
     proof_graph_schema_version: str
     task_program_version: str
+    task_pattern_schema_versions: tuple[str, ...]
+    task_pattern_compiler_versions: tuple[str, ...]
+    task_pattern_runtimes: dict[str, str]
+    task_pattern_quality_profile_ids: tuple[str, ...]
+    task_pattern_hashes: tuple[str, ...]
+    evidence_binding_schema_versions: tuple[str, ...]
+    evidence_binding_hashes: tuple[str, ...]
+    task_difficulty_policy_versions: tuple[str, ...]
     operation_manifest_hash: str
     required_check_manifest_hash: str
     candidate_required_check_manifest_hash: str
