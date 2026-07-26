@@ -4,17 +4,19 @@ from trusted_synthesis.core.evaluation.contracts.compiler import (
     QualityClauseCompilationContext,
 )
 from trusted_synthesis.core.evaluation.contracts.schema import (
+    ClauseMutationSpec,
     ClauseScope,
     ClauseSeverity,
     ClauseTarget,
     QualityClause,
     make_quality_clause,
 )
+from trusted_synthesis.core.evaluation.mutations import MutationFamily
 
 
 class ScienceQualityClauseProvider:
-    provider_id = "science_quality_clauses.v1"
-    provider_version = "1.0.0"
+    provider_id = "science_quality_clauses.v2"
+    provider_version = "2.0.0"
 
     def compile_evidence_clauses(
         self, context: QualityClauseCompilationContext
@@ -26,8 +28,9 @@ class ScienceQualityClauseProvider:
                 "evidence",
                 evidence_id,
                 "selected_evidence_validity",
-                context.evidence_clause_ids[evidence_id][1],
+                context.base_clause_ids["selected_evidence_validity"],
                 "scientific_protocol_population_metric_uncertainty",
+                mutation_specs=_science_evidence_mutations(),
             )
             for evidence_id in context.task.oracle.gold_evidence_ids
         )
@@ -42,10 +45,10 @@ class ScienceQualityClauseProvider:
                 "program_node",
                 node_id,
                 "operation_correctness",
-                clause_id,
+                context.base_clause_ids["operation_correctness"],
                 "scientific_comparability_and_uncertainty_preservation",
             )
-            for node_id, clause_id in context.program_clause_ids.items()
+            for node_id in context.program_clause_ids
         )
 
     def compile_claim_clauses(
@@ -77,6 +80,7 @@ def _clause(
     check_id: str,
     dependency: str,
     failure_family: str,
+    mutation_specs: tuple[ClauseMutationSpec, ...] = (),
 ) -> QualityClause:
     return make_quality_clause(
         task_id=context.task.task_id,
@@ -91,4 +95,22 @@ def _clause(
         dependencies=(dependency,),
         failure_family=failure_family,
         diagnostic_dimensions=("domain_semantics",),
+        mutation_specs=mutation_specs,
+    )
+
+
+def _science_evidence_mutations() -> tuple[ClauseMutationSpec, ...]:
+    definitions = (
+        ("science_replace_observation_version", MutationFamily.TEMPORAL),
+        ("science_replace_population", MutationFamily.SCOPE),
+        ("science_replace_outcome_definition", MutationFamily.DEFINITION),
+    )
+    return tuple(
+        ClauseMutationSpec(
+            operator_id=operator_id,
+            operator_version="1.0.0",
+            mutation_family=family,
+            root_clause_kind="gold_evidence_selected",
+        )
+        for operator_id, family in definitions
     )

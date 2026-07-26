@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
 
+from trusted_synthesis.core.evaluation.counterfactual import (
+    CounterfactualOperatorRegistry,
+)
 from trusted_synthesis.core.evidence import (
     EpistemicStatus,
     EvidenceKind,
@@ -37,12 +40,14 @@ from trusted_synthesis.domains.legal import (
     LegalQualityClauseProvider,
     LegalSemanticPolicy,
     LegalTaskPlugin,
+    legal_counterfactual_registry,
     legal_operation_registry,
 )
 from trusted_synthesis.domains.science import (
     ScienceQualityClauseProvider,
     ScienceSemanticPolicy,
     ScienceTaskPlugin,
+    science_counterfactual_registry,
     science_operation_registry,
 )
 from trusted_synthesis.hashing import canonical_hash
@@ -59,6 +64,7 @@ class ContractCase:
     semantic_policy: SemanticPolicyProtocol
     quality_clause_provider: DomainQualityClauseProviderProtocol
     plugin_set: DomainPluginSet
+    counterfactual_registry: CounterfactualOperatorRegistry
 
 
 def build_contract_cases() -> tuple[ContractCase, ...]:
@@ -114,6 +120,7 @@ def _legal_case(index: int | None = None) -> ContractCase:
     corpus = _corpus("legal", (*rules, *distractors), case_key=suffix or "base")
     graph = ProofGraphBuilder().build(bundle)
     registry = legal_operation_registry()
+    counterfactual_registry = legal_counterfactual_registry()
     plugin = LegalTaskPlugin()
     policy = LegalSemanticPolicy()
     task = plugin.rule_application(
@@ -143,8 +150,12 @@ def _legal_case(index: int | None = None) -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            versions={"fixture": "1.2.0"},
+            counterfactual_operator_manifest_hash=(
+                counterfactual_registry.manifest_hash
+            ),
+            versions={"fixture": "1.3.0"},
         ),
+        counterfactual_registry=counterfactual_registry,
     )
 
 
@@ -175,6 +186,7 @@ def _science_case(index: int | None = None) -> ContractCase:
     corpus = _corpus("science", (*results, *distractors), case_key=suffix or "base")
     graph = ProofGraphBuilder().build(bundle)
     registry = science_operation_registry()
+    counterfactual_registry = science_counterfactual_registry()
     plugin = ScienceTaskPlugin()
     policy = ScienceSemanticPolicy()
     task = plugin.compare_experiments(graph, bundle, *results)
@@ -197,8 +209,12 @@ def _science_case(index: int | None = None) -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            versions={"fixture": "1.2.0"},
+            counterfactual_operator_manifest_hash=(
+                counterfactual_registry.manifest_hash
+            ),
+            versions={"fixture": "1.3.0"},
         ),
+        counterfactual_registry=counterfactual_registry,
     )
 
 

@@ -27,13 +27,14 @@ class ProofCertificate(BaseModel):
     expected_output_hash: str
     reference_execution_hash: str
     operation_manifest_hash: str
+    counterfactual_operator_manifest_hash: str
     domain_plugin_manifest_hash: str
     source_grounding_manifest_hash: str | None = None
     task_pattern_hash: str | None = None
     evidence_binding_hash: str | None = None
     task_pattern_compiler_version: str | None = None
     compiler_version: str
-    schema_version: str = "proof_certificate.v2"
+    schema_version: str = "proof_certificate.v3"
 
     @model_validator(mode="after")
     def validate_certificate(self) -> ProofCertificate:
@@ -47,6 +48,9 @@ class ProofCertificate(BaseModel):
             expected_output_hash=self.expected_output_hash,
             reference_execution_hash=self.reference_execution_hash,
             operation_manifest_hash=self.operation_manifest_hash,
+            counterfactual_operator_manifest_hash=(
+                self.counterfactual_operator_manifest_hash
+            ),
             domain_plugin_manifest_hash=self.domain_plugin_manifest_hash,
             source_grounding_manifest_hash=self.source_grounding_manifest_hash,
             task_pattern_hash=self.task_pattern_hash,
@@ -84,7 +88,7 @@ class ProofCarryingSample(BaseModel):
     task_pattern_compiler_version: str | None = None
     difficulty_profile: dict[str, float] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "proof_carrying_sample.v2"
+    schema_version: str = "proof_carrying_sample.v3"
 
     @model_validator(mode="after")
     def validate_sample(self) -> ProofCarryingSample:
@@ -182,6 +186,7 @@ def make_proof_certificate(
     expected_output_hash: str,
     reference_execution_hash: str,
     operation_manifest_hash: str,
+    counterfactual_operator_manifest_hash: str,
     domain_plugin_manifest_hash: str,
     source_grounding_manifest_hash: str | None,
     task_pattern_hash: str | None,
@@ -199,13 +204,14 @@ def make_proof_certificate(
         expected_output_hash=expected_output_hash,
         reference_execution_hash=reference_execution_hash,
         operation_manifest_hash=operation_manifest_hash,
+        counterfactual_operator_manifest_hash=counterfactual_operator_manifest_hash,
         domain_plugin_manifest_hash=domain_plugin_manifest_hash,
         source_grounding_manifest_hash=source_grounding_manifest_hash,
         task_pattern_hash=task_pattern_hash,
         evidence_binding_hash=evidence_binding_hash,
         task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
-        schema_version="proof_certificate.v2",
+        schema_version="proof_certificate.v3",
     )
     return ProofCertificate(
         certificate_id=certificate_id,
@@ -219,12 +225,14 @@ def make_proof_certificate(
         expected_output_hash=expected_output_hash,
         reference_execution_hash=reference_execution_hash,
         operation_manifest_hash=operation_manifest_hash,
+        counterfactual_operator_manifest_hash=counterfactual_operator_manifest_hash,
         domain_plugin_manifest_hash=domain_plugin_manifest_hash,
         source_grounding_manifest_hash=source_grounding_manifest_hash,
         task_pattern_hash=task_pattern_hash,
         evidence_binding_hash=evidence_binding_hash,
         task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
+        schema_version="proof_certificate.v3",
     )
 
 

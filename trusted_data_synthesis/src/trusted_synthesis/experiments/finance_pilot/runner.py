@@ -17,6 +17,12 @@ from trusted_synthesis.core.evaluation.contracts import (
     QualityContractRuntime,
     compare_decisions,
 )
+from trusted_synthesis.core.evaluation.counterfactual import (
+    CounterfactualCalibrationReport,
+    CounterfactualCase,
+    CounterfactualContext,
+    calibrate_counterfactuals,
+)
 from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
@@ -40,6 +46,9 @@ from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkfl
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.counterfactual import (
+    finance_counterfactual_registry,
+)
 from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
@@ -145,6 +154,7 @@ def run_finance_pilot(
     clean_contract_assessments: list[ContractQualityAssessment] = []
     mutation_contract_assessments: list[ContractQualityAssessment] = []
     decision_parities: list[DecisionParityReport] = []
+    counterfactual_contexts: list[CounterfactualContext] = []
     candidate_records = []
 
     for case in cases:
@@ -182,6 +192,16 @@ def run_finance_pilot(
         proof_certificates.append(compiled.sample.certificate)
         clean_contract_assessments.append(contract_assessment)
         decision_parities.append(compare_decisions(candidate_assessment, contract_assessment))
+        counterfactual_contexts.append(
+            CounterfactualContext(
+                source_sample=compiled.sample,
+                task=case.task,
+                contract=compiled.quality_contract,
+                corpus=case.corpus,
+                proof_graph=case.proof_graph,
+                source_trajectory=candidate,
+            )
+        )
         candidate_records.append((case.task, candidate, candidate_assessment))
         for mutation in generate_mutations(case, candidate, config.mutation_types):
             assessment = candidate_evaluator.evaluate(
@@ -202,6 +222,19 @@ def run_finance_pilot(
             mutation_contract_assessments.append(contract_assessment)
             decision_parities.append(compare_decisions(assessment, contract_assessment))
             candidate_records.append((case.task, mutation.trajectory, assessment))
+
+    counterfactual_registry = finance_counterfactual_registry()
+    counterfactual_report, counterfactual_cases = calibrate_counterfactuals(
+        counterfactual_contexts,
+        counterfactual_registry,
+        lambda context, trajectory: contract_runtime.evaluate(
+            context.contract,
+            context.task,
+            context.corpus,
+            context.proof_graph,
+            trajectory,
+        ),
+    )
 
     split_policy = SplitPolicy(policy_id="finance_pilot_semantic_split.v1")
     selection = select_candidate_release(candidate_records, split_policy)
@@ -277,6 +310,8 @@ def run_finance_pilot(
         clean_contract_assessments=clean_contract_assessments,
         mutation_contract_assessments=mutation_contract_assessments,
         decision_parities=decision_parities,
+        counterfactual_report=counterfactual_report,
+        counterfactual_cases=counterfactual_cases,
     )
     _write_artifacts(
         output_dir=output_dir,
@@ -295,6 +330,8 @@ def run_finance_pilot(
         clean_contract_assessments=clean_contract_assessments,
         mutation_contract_assessments=mutation_contract_assessments,
         decision_parities=decision_parities,
+        counterfactual_report=counterfactual_report,
+        counterfactual_cases=counterfactual_cases,
     )
     return report
 
@@ -321,6 +358,8 @@ def _build_report(
     clean_contract_assessments: list[ContractQualityAssessment],
     mutation_contract_assessments: list[ContractQualityAssessment],
     decision_parities: list[DecisionParityReport],
+    counterfactual_report: CounterfactualCalibrationReport,
+    counterfactual_cases: tuple[CounterfactualCase, ...],
 ) -> dict[str, Any]:
     task_counts = Counter(case.task.public.task_type for case in cases)
     region_counts = Counter(case.binding.stratum[0] for case in cases)
@@ -474,6 +513,8 @@ def _build_report(
         "difficulty_profile_coverage": len(difficulty_profiles) == len(cases),
         "pattern_binding_clause_coverage": pattern_clause_count == len(cases),
         "difficulty_clause_coverage": difficulty_clause_count == len(cases),
+        "counterfactual_calibration_passed": counterfactual_report.status == "passed",
+        "counterfactual_case_coverage": len(counterfactual_cases) > 0,
     }
     return {
         "pilot_id": config.pilot_id,
@@ -613,6 +654,7 @@ def _build_report(
             "pattern_binding_clause_count": pattern_clause_count,
             "difficulty_clause_count": difficulty_clause_count,
         },
+        "counterfactual_calibration": counterfactual_report.model_dump(mode="json"),
         "release": {
             "release_id": manifest.release_id,
             "release_manifest_hash": manifest.manifest_hash,
@@ -817,6 +859,8 @@ def _write_artifacts(
     clean_contract_assessments: list[ContractQualityAssessment],
     mutation_contract_assessments: list[ContractQualityAssessment],
     decision_parities: list[DecisionParityReport],
+    counterfactual_report: CounterfactualCalibrationReport,
+    counterfactual_cases: tuple[CounterfactualCase, ...],
 ) -> None:
     config.write(output_dir / "config.json")
     _write_jsonl(output_dir / "task_packages.jsonl", (case.task for case in cases))
@@ -866,6 +910,11 @@ def _write_artifacts(
         mutation_contract_assessments,
     )
     _write_jsonl(output_dir / "decision_parity.jsonl", decision_parities)
+    _write_jsonl(output_dir / "counterfactual_cases.jsonl", counterfactual_cases)
+    _write_json(
+        output_dir / "counterfactual_calibration_report.json",
+        counterfactual_report,
+    )
     _write_json(output_dir / "release_manifest.json", manifest)
     _write_json(output_dir / "pilot_report.json", report)
     (output_dir / "pilot_report.md").write_text(

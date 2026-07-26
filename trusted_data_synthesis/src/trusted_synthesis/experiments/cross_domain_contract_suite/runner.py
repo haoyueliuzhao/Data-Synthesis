@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from statistics import mean
 
 from trusted_synthesis.core.evaluation.contracts import (
+    ContractQualityAssessment,
     DecisionParityReport,
     QualityContract,
     QualityContractCompiler,
     QualityContractRuntime,
     compare_decisions,
+)
+from trusted_synthesis.core.evaluation.counterfactual import (
+    CounterfactualCalibrationReport,
+    CounterfactualCase,
+    CounterfactualContext,
+    calibrate_counterfactuals,
 )
 from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
@@ -21,6 +29,7 @@ from trusted_synthesis.core.synthesis import (
     ProofCertificate,
 )
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
+from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.experiments.cross_domain_contract_suite.candidate import (
     PlanGivenContractCandidate,
 )
@@ -34,7 +43,7 @@ from trusted_synthesis.experiments.cross_domain_contract_suite.mutations import 
 from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 
 SUITE_ID = "cross_domain_candidate_contract_suite.v1"
-SUITE_VERSION = "1.1.0"
+SUITE_VERSION = "1.2.0"
 
 
 @dataclass(frozen=True)
@@ -45,6 +54,8 @@ class CrossDomainContractArtifacts:
     quality_contracts: tuple[QualityContract, ...]
     proof_certificates: tuple[ProofCertificate, ...]
     parity_reports: tuple[DecisionParityReport, ...]
+    counterfactual_reports: tuple[CounterfactualCalibrationReport, ...]
+    counterfactual_cases: tuple[CounterfactualCase, ...]
 
 
 def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
@@ -60,6 +71,8 @@ def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
     proof_certificates = []
     parity_reports = []
     failures = []
+    counterfactual_reports: list[CounterfactualCalibrationReport] = []
+    counterfactual_cases: list[CounterfactualCase] = []
     for case in cases:
         contract_compiler = QualityContractCompiler(
             case.registry,
@@ -121,6 +134,39 @@ def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
             candidate_passed += 1
         else:
             failures.append(f"{case.domain}:clean_candidate")
+        counterfactual_context = CounterfactualContext(
+            source_sample=compiled.sample,
+            task=case.task,
+            contract=compiled.quality_contract,
+            corpus=case.corpus,
+            proof_graph=case.proof_graph,
+            source_trajectory=candidate,
+        )
+        def evaluate_counterfactual(
+            context: CounterfactualContext,
+            trajectory: Trajectory,
+            runtime: QualityContractRuntime = contract_runtime,
+        ) -> ContractQualityAssessment:
+            return runtime.evaluate(
+                context.contract,
+                context.task,
+                context.corpus,
+                context.proof_graph,
+                trajectory,
+            )
+
+        counterfactual_report, generated_counterfactuals = calibrate_counterfactuals(
+            (counterfactual_context,),
+            case.counterfactual_registry,
+            evaluate_counterfactual,
+        )
+        counterfactual_reports.append(counterfactual_report)
+        counterfactual_cases.extend(generated_counterfactuals)
+        if counterfactual_report.status != "passed":
+            failures.append(
+                f"{case.domain}:counterfactual_calibration:"
+                f"{','.join(counterfactual_report.failures)}"
+            )
         for mutation_type, mutation in generate_contract_mutations(candidate, case.corpus.evidence):
             mutation_count += 1
             assessment = candidate_evaluator.evaluate(
@@ -175,6 +221,45 @@ def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
         clause_verifier_manifest_hashes=tuple(
             sorted({item.verifier_manifest_hash for item in quality_contracts})
         ),
+        counterfactual_calibration_count=len(counterfactual_reports),
+        counterfactual_case_count=len(counterfactual_cases),
+        counterfactual_clean_false_positive_count=sum(
+            item.clean_false_positive_count for item in counterfactual_reports
+        ),
+        counterfactual_mutation_validity_rate=_mean_report_value(
+            counterfactual_reports,
+            "mutation_validity_rate",
+        ),
+        counterfactual_minimality_pass_rate=_mean_report_value(
+            counterfactual_reports,
+            "minimality_pass_rate",
+        ),
+        counterfactual_detection_f1=_mean_report_value(
+            counterfactual_reports,
+            "detection_f1",
+        ),
+        counterfactual_root_cause_f1=_mean_report_value(
+            counterfactual_reports,
+            "root_cause_f1",
+        ),
+        counterfactual_failure_closure_f1=_mean_report_value(
+            counterfactual_reports,
+            "failure_closure_f1",
+        ),
+        counterfactual_clause_coverage_rate=_mean_report_value(
+            counterfactual_reports,
+            "clause_coverage_rate",
+        ),
+        counterfactual_operator_coverage_rate=_mean_report_value(
+            counterfactual_reports,
+            "operator_coverage_rate",
+        ),
+        counterfactual_operator_manifest_hashes=tuple(
+            sorted(item.operator_manifest_hash for item in counterfactual_reports)
+        ),
+        counterfactual_calibration_ids=tuple(
+            item.calibration_id for item in counterfactual_reports
+        ),
         status="passed" if not failures else "failed",
         failure_details=tuple(failures),
     )
@@ -185,4 +270,13 @@ def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
         quality_contracts=tuple(quality_contracts),
         proof_certificates=tuple(proof_certificates),
         parity_reports=tuple(parity_reports),
+        counterfactual_reports=tuple(counterfactual_reports),
+        counterfactual_cases=tuple(counterfactual_cases),
     )
+
+
+def _mean_report_value(
+    reports: list[CounterfactualCalibrationReport],
+    field: str,
+) -> float:
+    return mean(float(getattr(item, field)) for item in reports) if reports else 0.0

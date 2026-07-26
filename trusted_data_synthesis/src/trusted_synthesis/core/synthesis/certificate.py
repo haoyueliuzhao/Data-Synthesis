@@ -60,6 +60,10 @@ def build_proof_certificate(
         operation_manifest_hash=canonical_hash(
             operation_registry.manifest(), prefix="operation_manifest:"
         ),
+        counterfactual_operator_manifest_hash=(
+            domain_plugin_set.counterfactual_operator_manifest_hash
+            or canonical_hash((), prefix="counterfactual_operator_manifest:")
+        ),
         domain_plugin_manifest_hash=canonical_hash(
             domain_plugin_set, prefix="domain_plugin_manifest:"
         ),

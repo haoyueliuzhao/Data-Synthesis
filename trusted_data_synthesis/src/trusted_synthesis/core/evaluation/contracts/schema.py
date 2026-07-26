@@ -5,6 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from trusted_synthesis.core.evaluation.mutations.schema import MutationFamily
 from trusted_synthesis.core.evaluation.schema import ReleaseDecision
 from trusted_synthesis.hashing import canonical_hash
 
@@ -34,6 +35,18 @@ class ClauseTarget(BaseModel):
     json_path: str | None = None
 
 
+class ClauseMutationSpec(BaseModel):
+    """A versioned, executable way to violate one quality clause."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    operator_id: str = Field(min_length=1)
+    operator_version: str = Field(min_length=1)
+    mutation_family: MutationFamily
+    root_clause_kind: str | None = None
+    parameters: dict[str, Any] = Field(default_factory=dict)
+
+
 class QualityClause(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -49,6 +62,17 @@ class QualityClause(BaseModel):
     dependencies: tuple[str, ...] = ()
     failure_family: str = Field(min_length=1)
     diagnostic_dimensions: tuple[str, ...] = ()
+    mutation_specs: tuple[ClauseMutationSpec, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_mutation_specs(self) -> QualityClause:
+        identities = [
+            (item.operator_id, item.operator_version, canonical_hash(item.parameters))
+            for item in self.mutation_specs
+        ]
+        if len(identities) != len(set(identities)):
+            raise ValueError("quality clause contains duplicate mutation specifications")
+        return self
 
 
 class QualityGateSpec(BaseModel):
@@ -81,7 +105,7 @@ class QualityContract(BaseModel):
     verifier_manifest_hash: str = Field(min_length=1)
     domain_provider_id: str | None = None
     domain_provider_version: str | None = None
-    schema_version: str = "quality_contract.v1"
+    schema_version: str = "quality_contract.v2"
 
     @model_validator(mode="after")
     def validate_contract(self) -> QualityContract:
@@ -204,6 +228,7 @@ def make_quality_clause(
     dependencies: tuple[str, ...] = (),
     failure_family: str,
     diagnostic_dimensions: tuple[str, ...] = (),
+    mutation_specs: tuple[ClauseMutationSpec, ...] = (),
 ) -> QualityClause:
     identity = {
         "task_id": task_id,
@@ -218,6 +243,7 @@ def make_quality_clause(
         "dependencies": dependencies,
         "failure_family": failure_family,
         "diagnostic_dimensions": diagnostic_dimensions,
+        "mutation_specs": [item.model_dump(mode="json") for item in mutation_specs],
     }
     return QualityClause(
         clause_id=canonical_hash(identity, prefix="quality_clause:"),
@@ -232,6 +258,7 @@ def make_quality_clause(
         dependencies=dependencies,
         failure_family=failure_family,
         diagnostic_dimensions=diagnostic_dimensions,
+        mutation_specs=mutation_specs,
     )
 
 
@@ -253,7 +280,7 @@ def make_quality_contract(
         verifier_manifest_hash=verifier_manifest_hash,
         domain_provider_id=domain_provider_id,
         domain_provider_version=domain_provider_version,
-        schema_version="quality_contract.v1",
+        schema_version="quality_contract.v2",
     )
     return QualityContract(
         contract_id=contract_id,
@@ -265,6 +292,7 @@ def make_quality_contract(
         verifier_manifest_hash=verifier_manifest_hash,
         domain_provider_id=domain_provider_id,
         domain_provider_version=domain_provider_version,
+        schema_version="quality_contract.v2",
     )
 
 

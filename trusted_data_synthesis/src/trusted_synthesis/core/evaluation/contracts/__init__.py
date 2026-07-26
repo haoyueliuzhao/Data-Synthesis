@@ -13,6 +13,7 @@ from trusted_synthesis.core.evaluation.contracts.runtime import (
     compare_decisions,
 )
 from trusted_synthesis.core.evaluation.contracts.schema import (
+    ClauseMutationSpec,
     ClauseResult,
     ClauseScope,
     ClauseSeverity,
@@ -30,6 +31,7 @@ from trusted_synthesis.core.evaluation.contracts.schema import (
 __all__ = [
     "QUALITY_CONTRACT_COMPILER_VERSION",
     "QUALITY_CONTRACT_RUNTIME_VERSION",
+    "ClauseMutationSpec",
     "ClauseResult",
     "ClauseScope",
     "ClauseSeverity",

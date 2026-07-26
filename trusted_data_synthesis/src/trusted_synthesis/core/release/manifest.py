@@ -190,6 +190,15 @@ def build_release_manifest(
             sorted({str(item["policy_version"]) for item in difficulty_identities})
         ),
         operation_manifest_hash=canonical_hash(registry.manifest(), prefix="operation_manifest:"),
+        counterfactual_operator_manifest_hashes=tuple(
+            sorted(
+                {
+                    item.counterfactual_operator_manifest_hash
+                    for item in plugin_items
+                    if item.counterfactual_operator_manifest_hash
+                }
+            )
+        ),
         required_check_manifest_hash=canonical_hash(
             REQUIRED_CHECK_MANIFEST, prefix="check_manifest:"
         ),

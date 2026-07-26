@@ -8,6 +8,7 @@ from trusted_synthesis.core.evaluation.contracts.registry import (
     default_clause_verifier_registry,
 )
 from trusted_synthesis.core.evaluation.contracts.schema import (
+    ClauseMutationSpec,
     ClauseScope,
     ClauseSeverity,
     ClauseTarget,
@@ -18,6 +19,7 @@ from trusted_synthesis.core.evaluation.contracts.schema import (
     make_quality_clause,
     make_quality_contract,
 )
+from trusted_synthesis.core.evaluation.mutations import MutationFamily
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry
@@ -25,7 +27,9 @@ from trusted_synthesis.core.plugins import DomainQualityClauseProviderProtocol
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.hashing import canonical_hash
 
-QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v2"
+QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v3"
+
+_COUNTERFACTUAL_OPERATOR_VERSION = "1.0.0"
 
 
 @dataclass(frozen=True)
@@ -218,6 +222,12 @@ class QualityContractCompiler:
                     dependencies=(present.clause_id,),
                     failure_family="evidence_selection",
                     diagnostic_dimensions=("evidence", "retrieval"),
+                    mutation_specs=(
+                        _mutation_spec(
+                            "remove_selected_evidence",
+                            MutationFamily.EVIDENCE,
+                        ),
+                    ),
                 ),
                 "evidence_retrieval_and_selection",
             )
@@ -244,6 +254,7 @@ class QualityContractCompiler:
                 proof.clause_id,
             )
 
+        evidence_set_dependencies = tuple(evidence_root_ids)
         for check_id in (
             "retrieved_evidence_known",
             "retrieved_evidence_validity",
@@ -257,7 +268,16 @@ class QualityContractCompiler:
                     check_id,
                     "evidence_set",
                     task.task_id,
-                    dependencies=(identity.clause_id,),
+                    dependencies=(
+                        evidence_set_dependencies
+                        if check_id
+                        in {
+                            "selected_evidence_was_retrieved",
+                            "evidence_recall",
+                            "evidence_precision",
+                        }
+                        else (identity.clause_id,)
+                    ),
                 ),
                 "evidence_retrieval_and_selection",
             )
@@ -352,6 +372,20 @@ class QualityContractCompiler:
                     ),
                     failure_family="operation_trace",
                     diagnostic_dimensions=("reasoning", "operation"),
+                    mutation_specs=(
+                        _mutation_spec(
+                            "perturb_program_output",
+                            MutationFamily.DERIVATION,
+                        ),
+                        _mutation_spec(
+                            "replace_program_operator",
+                            MutationFamily.DERIVATION,
+                        ),
+                        _mutation_spec(
+                            "break_program_dependency",
+                            MutationFamily.DERIVATION,
+                        ),
+                    ),
                 ),
                 "proof_and_operation",
             )
@@ -370,7 +404,7 @@ class QualityContractCompiler:
                     check_id,
                     "task_program",
                     task.oracle.task_program.program_id,
-                    dependencies=(proof_binding.clause_id,),
+                    dependencies=(proof_binding.clause_id, *prior_program_clauses),
                 ),
                 "proof_and_operation",
             )
@@ -445,7 +479,10 @@ class QualityContractCompiler:
                     verifier_id="citation_evidence.v1",
                     verifier_version="1.0.0",
                     expected_ref=evidence_id,
-                    dependencies=(evidence_clause_ids[evidence_id][1],),
+                    dependencies=(
+                        base_clause_ids["citation_binding"],
+                        evidence_clause_ids[evidence_id][1],
+                    ),
                     failure_family="citation_binding",
                     diagnostic_dimensions=("answer", "citation"),
                 ),
@@ -541,6 +578,65 @@ def _candidate_check_clause(
         dependencies=dependencies,
         failure_family=check_id,
         diagnostic_dimensions=_diagnostic_dimensions(check_id),
+        mutation_specs=_candidate_mutation_specs(task, check_id),
+    )
+
+
+def _candidate_mutation_specs(
+    task: TaskPackage,
+    check_id: str,
+) -> tuple[ClauseMutationSpec, ...]:
+    policies = {
+        "step_statuses_succeeded": (
+            "set_step_failed",
+            MutationFamily.TRAJECTORY,
+        ),
+        "public_only_generation": (
+            "inject_oracle_reference",
+            MutationFamily.TRAJECTORY,
+        ),
+        "allowed_tool_compliance": (
+            "replace_tool",
+            MutationFamily.TRAJECTORY,
+        ),
+        "answer_correctness": (
+            "perturb_answer_result",
+            MutationFamily.DERIVATION,
+        ),
+        "citation_binding": (
+            "replace_citation_source",
+            MutationFamily.CITATION,
+        ),
+        "domain_claim_verification": (
+            "append_unsupported_claim",
+            MutationFamily.CLAIM,
+        ),
+    }
+    policy = policies.get(check_id)
+    if policy is None:
+        return ()
+    root_clause_kind = None
+    if (
+        check_id == "domain_claim_verification"
+        and task.public.answer_schema.get("allow_claims") is not True
+    ):
+        root_clause_kind = "answer_schema_validity"
+    return (_mutation_spec(*policy, root_clause_kind=root_clause_kind),)
+
+
+def _mutation_spec(
+    operator_id: str,
+    mutation_family: MutationFamily,
+    *,
+    root_clause_kind: str | None = None,
+    parameters: dict[str, object] | None = None,
+) -> ClauseMutationSpec:
+    return ClauseMutationSpec(
+        operator_id=operator_id,
+        operator_version=_COUNTERFACTUAL_OPERATOR_VERSION,
+        mutation_family=mutation_family,
+        root_clause_kind=root_clause_kind,
+        parameters=parameters or {},
     )
 
 

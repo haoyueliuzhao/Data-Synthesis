@@ -9,11 +9,6 @@ from trusted_synthesis.core.task.pattern import (
     TaskPatternMaterialization,
     TaskPatternSpec,
 )
-from trusted_synthesis.core.task.pattern_compiler import (
-    TASK_PATTERN_COMPILER_VERSION,
-    TaskPatternCompiler,
-    TaskPatternInstantiation,
-)
 from trusted_synthesis.core.task.program import (
     InputRefKind,
     OperationNode,
@@ -59,6 +54,22 @@ __all__ = [
 
 
 def __getattr__(name: str):
+    if name in {
+        "TASK_PATTERN_COMPILER_VERSION",
+        "TaskPatternCompiler",
+        "TaskPatternInstantiation",
+    }:
+        from trusted_synthesis.core.task.pattern_compiler import (
+            TASK_PATTERN_COMPILER_VERSION,
+            TaskPatternCompiler,
+            TaskPatternInstantiation,
+        )
+
+        return {
+            "TASK_PATTERN_COMPILER_VERSION": TASK_PATTERN_COMPILER_VERSION,
+            "TaskPatternCompiler": TaskPatternCompiler,
+            "TaskPatternInstantiation": TaskPatternInstantiation,
+        }[name]
     if name == "TaskPackageBuilder":
         from trusted_synthesis.core.task.builder import TaskPackageBuilder
 

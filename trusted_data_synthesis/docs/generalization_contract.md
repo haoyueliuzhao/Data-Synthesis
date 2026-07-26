@@ -158,7 +158,7 @@ retrieval coverage, Proof Graph integrity, operation replay, answer schema, and 
 Domain gates cover semantic evidence validity, source grounding, comparability, and claim boundaries.
 A domain failure cannot be hidden inside a generic answer check.
 
-In v0.6, these requirements are compiled into a task-local `QualityContract`. Universal clauses are
+In v0.7, these requirements are compiled into a task-local `QualityContract`. Universal clauses are
 derived from the Public/Oracle boundary, Evidence Bundle, Proof Graph, Program DAG, answer schema,
 and citations. Domain clauses are injected through the frozen provider protocol. Every clause has a
 typed target and dependency set, so failures can be localized without Core interpreting domain

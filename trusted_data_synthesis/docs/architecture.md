@@ -1,4 +1,4 @@
-# Architecture v0.6
+# Architecture v0.7
 
 ## Boundary
 
@@ -18,7 +18,8 @@ Domain archive / KG
         -> compiled structural Difficulty Profile
         -> Reference Workflow + independent replay
         -> Proof-Carrying Sample + Proof Certificate
-        -> Sample-specific Quality Contract
+        -> Sample-specific Quality Contract v2
+        -> Typed Counterfactual + Failure Closure Calibration
         -> Candidate Agent + observation reconstruction
         -> Contract Runtime + legacy parity gate
         -> Candidate-aware release selector
@@ -154,6 +155,19 @@ Pilot and cross-domain contract case is evaluated through both paths; any decisi
 release failure. This preserves current behavior while moving task-specific check selection out of
 the global manifest.
 
+## Typed Counterfactual Calibration
+
+Mutable Quality Clauses declare versioned Mutation Specs. Core compiles them into concrete
+opportunities, resolves expected roots and dependency closures, applies Universal or
+domain-provided operators, and rejects changes outside each operator's minimal edit envelope.
+Calibration replays the Contract Runtime on clean and mutated candidates and reports detection,
+root localization, closure, Clause coverage, and operator coverage.
+
+Counterfactual operator manifests are frozen in domain plugin sets, Proof Certificates, and Release
+Manifests. The release-blocking cross-domain suite runs this calibration for Finance, Legal, and
+Science. Core owns only structural mutation mechanics; domain plugins own typed semantic
+distractor selectors. See `docs/typed_counterfactual_engine.md`.
+
 ## Generalization Boundary
 
 `generalization_contract.v1.2` is enforced in CI and every Release Manifest. All declared
@@ -175,5 +189,6 @@ distribution, and split counts. Release manifests freeze both Reference and Cand
 manifests, operation implementation hashes, domain plugin and source-grounding identities,
 mutation taxonomy, Quality Contract compiler/runtime/verifier manifests, every task contract hash,
 Proof-Carrying compiler versions, every certificate hash, and the versioned cross-domain Candidate
-Contract Suite result. For a non-empty task release, Contract and Certificate coverage must exactly
-equal the released task set.
+Contract Suite result. Counterfactual operator manifests and calibration identities are part of the
+same frozen release contract. For a non-empty task release, Contract and Certificate coverage must
+exactly equal the released task set.

@@ -104,8 +104,10 @@ def test_release_freezes_contracts_and_certificates_and_requires_exact_coverage(
 
     assert artifacts.quality_contract.contract_hash in manifest.quality_contract_hashes
     assert artifacts.sample.certificate.certificate_hash in manifest.proof_certificate_hashes
-    assert "quality_contract_compiler.v2" in manifest.quality_contract_compiler_versions
-    assert "proof_carrying_compiler.v2" in manifest.proof_compiler_versions
+    assert "quality_contract_compiler.v3" in manifest.quality_contract_compiler_versions
+    assert "proof_carrying_compiler.v3" in manifest.proof_compiler_versions
+    assert artifacts.sample.certificate.counterfactual_operator_manifest_hash
+    assert manifest.counterfactual_operator_manifest_hashes
     assert manifest.task_pattern_schema_versions == ("task_pattern.v1",)
     assert manifest.task_pattern_compiler_versions == ("task_pattern_compiler.v1",)
     assert manifest.task_pattern_runtimes == {

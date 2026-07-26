@@ -13,7 +13,10 @@ Domain Adapter
 -> Public Task + Oracle Contract
 -> Reference Workflow + independent replay
 -> Proof-Carrying Sample + Proof Certificate
--> Sample-specific Quality Contract compilation
+-> Sample-specific Quality Contract v2 compilation
+-> Contract-driven Violation Space
+-> Typed Counterfactual Generation + Minimality Validation
+-> Root Cause / Failure Closure Calibration
 -> Candidate Agent Workflow
 -> Legacy Evaluator + Contract Runtime parity gate
 -> Candidate-aware Release Selection
@@ -36,11 +39,14 @@ trusted-synthesis finance-pilot \
   --pilot-config config/finance_pilot_v06_pattern_50.json \
   --output-dir artifacts/finance_pilot/v06_pattern_50
 trusted-synthesis validate-task-patterns --tasks-per-domain 10
+trusted-synthesis validate-counterfactuals \
+  --tasks-per-domain 10 \
+  --output artifacts/counterfactual_validation/v07_contract_30.json
 trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
 
-The v0.6.0 compiler first binds a versioned declarative Task Pattern to a content-addressed
+The v0.7.0 compiler first binds a versioned declarative Task Pattern to a content-addressed
 Evidence Binding. It deterministically expands the Task Program, computes a structural difficulty
 profile, and packages the domain-rendered Public/Oracle contracts. The proof compiler then binds
 each task, Evidence Bundle, Proof Graph, Task Program,
@@ -54,10 +60,14 @@ and domain policy. Missing verifiers and blocked dependencies fail closed. Durin
 migration, the fixed evaluator and Contract Runtime run in parallel, and a decision
 parity failure blocks release. See
 [Proof-Carrying Quality Contracts](docs/proof_carrying_quality_contract.md).
+Each mutable clause now declares versioned mutation operators. The counterfactual
+planner mines executable opportunities, generates one-factor failures, validates
+structural minimality, and measures detection, root-cause localization, and transitive
+failure closure. See [Typed Counterfactual Engine](docs/typed_counterfactual_engine.md).
 The Pattern and Binding boundary is specified in
 [Task Pattern IR and Binding Compiler](docs/task_pattern_ir.md).
 
-The checked-in v0.6 profile scans 100,000 facts with deterministic stratified
+The checked-in finance profile scans 100,000 facts with deterministic stratified
 reservoir sampling, verifies archived source objects, and uses ten in-scope hard
 distractors plus eight broad distractors per task. Its current result validates
 the global resolved-track architecture; it does not establish Greater China

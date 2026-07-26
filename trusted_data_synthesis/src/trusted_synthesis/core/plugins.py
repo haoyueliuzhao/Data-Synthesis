@@ -69,6 +69,7 @@ class DomainPluginSet(BaseModel):
     quality_clause_provider_id: str | None = None
     quality_clause_provider_version: str | None = None
     operation_registry_manifest_hash: str | None = None
+    counterfactual_operator_manifest_hash: str | None = None
     versions: dict[str, str] = Field(default_factory=dict)
 
     @model_validator(mode="after")
@@ -77,6 +78,13 @@ class DomainPluginSet(BaseModel):
             self.quality_clause_provider_version is None
         ):
             raise ValueError("quality clause provider ID and version must be frozen together")
+        if (
+            self.quality_clause_provider_id is not None
+            and self.counterfactual_operator_manifest_hash is None
+        ):
+            raise ValueError(
+                "quality-enabled domain plugins must freeze counterfactual operators"
+            )
         return self
 
     @property

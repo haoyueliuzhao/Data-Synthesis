@@ -68,6 +68,18 @@ class CrossDomainContractSuiteResult(BaseModel):
     quality_contract_compiler_versions: tuple[str, ...] = ()
     proof_compiler_versions: tuple[str, ...] = ()
     clause_verifier_manifest_hashes: tuple[str, ...] = ()
+    counterfactual_calibration_count: int = Field(default=0, ge=0)
+    counterfactual_case_count: int = Field(default=0, ge=0)
+    counterfactual_clean_false_positive_count: int = Field(default=0, ge=0)
+    counterfactual_mutation_validity_rate: float = Field(default=0, ge=0, le=1)
+    counterfactual_minimality_pass_rate: float = Field(default=0, ge=0, le=1)
+    counterfactual_detection_f1: float = Field(default=0, ge=0, le=1)
+    counterfactual_root_cause_f1: float = Field(default=0, ge=0, le=1)
+    counterfactual_failure_closure_f1: float = Field(default=0, ge=0, le=1)
+    counterfactual_clause_coverage_rate: float = Field(default=0, ge=0, le=1)
+    counterfactual_operator_coverage_rate: float = Field(default=0, ge=0, le=1)
+    counterfactual_operator_manifest_hashes: tuple[str, ...] = ()
+    counterfactual_calibration_ids: tuple[str, ...] = ()
     status: str
     failure_details: tuple[str, ...] = ()
 
@@ -92,6 +104,19 @@ class CrossDomainContractSuiteResult(BaseModel):
             and bool(self.quality_contract_compiler_versions)
             and bool(self.proof_compiler_versions)
             and bool(self.clause_verifier_manifest_hashes)
+            and self.counterfactual_calibration_count == self.task_count
+            and self.counterfactual_case_count > 0
+            and self.counterfactual_clean_false_positive_count == 0
+            and self.counterfactual_mutation_validity_rate > 0.95
+            and self.counterfactual_minimality_pass_rate > 0.95
+            and self.counterfactual_detection_f1 > 0.95
+            and self.counterfactual_root_cause_f1 > 0.9
+            and self.counterfactual_failure_closure_f1 > 0.85
+            and self.counterfactual_clause_coverage_rate > 0.95
+            and self.counterfactual_operator_coverage_rate > 0.95
+            and bool(self.counterfactual_operator_manifest_hashes)
+            and len(self.counterfactual_calibration_ids)
+            == self.counterfactual_calibration_count
         )
 
     @property
@@ -116,6 +141,7 @@ class ReleaseManifest(BaseModel):
     evidence_binding_hashes: tuple[str, ...]
     task_difficulty_policy_versions: tuple[str, ...]
     operation_manifest_hash: str
+    counterfactual_operator_manifest_hashes: tuple[str, ...]
     required_check_manifest_hash: str
     candidate_required_check_manifest_hash: str
     quality_contract_compiler_versions: tuple[str, ...]

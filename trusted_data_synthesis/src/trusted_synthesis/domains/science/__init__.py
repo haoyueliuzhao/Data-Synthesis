@@ -14,4 +14,6 @@ __all__ = [
     "ScienceTaskPlugin",
     "SCIENCE_PROTOCOL_COMPARISON_PATTERN",
     "science_operation_registry",
+    "science_counterfactual_registry",
 ]
+from trusted_synthesis.domains.science.counterfactual import science_counterfactual_registry

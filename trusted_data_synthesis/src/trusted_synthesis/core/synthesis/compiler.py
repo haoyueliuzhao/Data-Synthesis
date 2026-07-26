@@ -27,7 +27,7 @@ from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.hashing import canonical_hash
 
-PROOF_CARRYING_COMPILER_VERSION = "proof_carrying_compiler.v2"
+PROOF_CARRYING_COMPILER_VERSION = "proof_carrying_compiler.v3"
 
 
 class ProofCarryingSampleCompiler:
@@ -176,7 +176,7 @@ class ProofCarryingSampleCompiler:
             task_pattern_compiler_version=task_pattern_compiler_version,
             difficulty_profile=difficulty,
             metadata=sample_metadata,
-            schema_version="proof_carrying_sample.v2",
+            schema_version="proof_carrying_sample.v3",
         )
         sample = ProofCarryingSample(
             sample_id=canonical_hash(identity, prefix="proof_carrying_sample:"),

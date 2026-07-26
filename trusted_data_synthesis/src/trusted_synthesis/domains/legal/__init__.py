@@ -12,4 +12,6 @@ __all__ = [
     "LegalTaskPlugin",
     "LEGAL_RULE_APPLICATION_PATTERN",
     "legal_operation_registry",
+    "legal_counterfactual_registry",
 ]
+from trusted_synthesis.domains.legal.counterfactual import legal_counterfactual_registry

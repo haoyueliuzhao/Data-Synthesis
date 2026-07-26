@@ -3,6 +3,9 @@ from __future__ import annotations
 from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.plugins import DomainPluginSet
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.counterfactual import (
+    finance_counterfactual_registry,
+)
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
 from trusted_synthesis.domains.finance.source_grounding import (
@@ -32,8 +35,11 @@ def finance_plugin_set(
         operation_registry_manifest_hash=canonical_hash(
             registry.manifest(), prefix="operation_manifest:"
         ),
+        counterfactual_operator_manifest_hash=(
+            finance_counterfactual_registry().manifest_hash
+        ),
         versions={
             "source_grounding": source_grounding_verifier.verifier_version,
-            "plugin_set": "1.2.0",
+            "plugin_set": "1.3.0",
         },
     )

@@ -35,6 +35,9 @@ from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClau
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.counterfactual_validation import (
+    run_counterfactual_validation,
+)
 from trusted_synthesis.experiments.cross_domain_contract_suite import (
     run_cross_domain_contract_suite,
 )
@@ -67,6 +70,12 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(pattern_report.model_dump(mode="json"), args.output)
         return 0 if pattern_report.status == "passed" else 1
+    if args.command == "validate-counterfactuals":
+        counterfactual_report = run_counterfactual_validation(
+            tasks_per_domain=args.tasks_per_domain
+        )
+        _emit(counterfactual_report.model_dump(mode="json"), args.output)
+        return 0 if counterfactual_report.status == "passed" else 1
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
     if args.command == "inspect-finance":
         _emit(adapter.inspect(), args.output)
@@ -113,6 +122,9 @@ def _parser() -> argparse.ArgumentParser:
     pattern_validation = subparsers.add_parser("validate-task-patterns")
     pattern_validation.add_argument("--tasks-per-domain", type=int, default=10)
     pattern_validation.add_argument("--output", type=Path)
+    counterfactual_validation = subparsers.add_parser("validate-counterfactuals")
+    counterfactual_validation.add_argument("--tasks-per-domain", type=int, default=10)
+    counterfactual_validation.add_argument("--output", type=Path)
     return parser
 
 
