@@ -59,6 +59,15 @@ class CrossDomainContractSuiteResult(BaseModel):
     reference_pass_rate: float = Field(ge=0, le=1)
     clean_candidate_pass_rate: float = Field(ge=0, le=1)
     mutation_rejection_rate: float = Field(ge=0, le=1)
+    quality_contract_count: int = Field(default=0, ge=0)
+    proof_certificate_count: int = Field(default=0, ge=0)
+    contract_evaluation_count: int = Field(default=0, ge=0)
+    contract_decision_parity_rate: float = Field(default=0, ge=0, le=1)
+    quality_contract_hashes: tuple[str, ...] = ()
+    proof_certificate_hashes: tuple[str, ...] = ()
+    quality_contract_compiler_versions: tuple[str, ...] = ()
+    proof_compiler_versions: tuple[str, ...] = ()
+    clause_verifier_manifest_hashes: tuple[str, ...] = ()
     status: str
     failure_details: tuple[str, ...] = ()
 
@@ -70,9 +79,19 @@ class CrossDomainContractSuiteResult(BaseModel):
             and self.task_count > 0
             and self.clean_candidate_count > 0
             and self.mutation_count > 0
+            and self.quality_contract_count == self.task_count
+            and self.proof_certificate_count == self.task_count
+            and self.contract_evaluation_count
+            == self.clean_candidate_count + self.mutation_count
             and self.reference_pass_rate == 1
             and self.clean_candidate_pass_rate == 1
             and self.mutation_rejection_rate == 1
+            and self.contract_decision_parity_rate == 1
+            and len(self.quality_contract_hashes) == self.quality_contract_count
+            and len(self.proof_certificate_hashes) == self.proof_certificate_count
+            and bool(self.quality_contract_compiler_versions)
+            and bool(self.proof_compiler_versions)
+            and bool(self.clause_verifier_manifest_hashes)
         )
 
     @property
@@ -91,6 +110,12 @@ class ReleaseManifest(BaseModel):
     operation_manifest_hash: str
     required_check_manifest_hash: str
     candidate_required_check_manifest_hash: str
+    quality_contract_compiler_versions: tuple[str, ...]
+    quality_contract_runtime_version: str
+    clause_verifier_manifest_hashes: tuple[str, ...]
+    quality_contract_hashes: tuple[str, ...]
+    proof_compiler_versions: tuple[str, ...]
+    proof_certificate_hashes: tuple[str, ...]
     mutation_taxonomy_manifest_hash: str
     split_policy_hash: str
     domain_plugin_sets: tuple[DomainPluginSet, ...]

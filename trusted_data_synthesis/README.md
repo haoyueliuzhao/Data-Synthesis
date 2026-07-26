@@ -9,8 +9,11 @@ Domain Adapter
 -> Validated Proof Graph v3 + recursive proof closure
 -> Public Task + Oracle Contract
 -> Task Program DAG
--> Reference Compiler / Candidate Agent Workflows
--> Separate Reference and Candidate Hard Gates
+-> Reference Workflow + independent replay
+-> Proof-Carrying Sample + Proof Certificate
+-> Sample-specific Quality Contract compilation
+-> Candidate Agent Workflow
+-> Legacy Evaluator + Contract Runtime parity gate
 -> Candidate-aware Release Selection
 ```
 
@@ -34,13 +37,17 @@ trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
 
-The v0.4.1 pilot creates isolated public/oracle task packages and evaluates both
-deterministic references and public-only candidates. Candidate generators receive
-only the public task and an evidence corpus runtime. Candidate gates independently
-check hard-distractor selection, source-object entailment, Program/Step alignment,
-every calculation, strict answer schemas, structured claims, citations, and oracle
-leakage. Workflow records contain auditable actions, tool calls, observations,
-citations, and concise summaries, never hidden chain-of-thought.
+The v0.5.0 compiler binds each task, Evidence Bundle, Proof Graph, Task Program,
+reference execution, domain plugin, and sample-specific Quality Contract into a
+reproducible Proof Certificate. Public artifacts expose only the task and certificate
+identity; Oracle content, gold Evidence IDs, and reference answers remain hidden.
+Candidate generators receive only the public task and an evidence corpus runtime.
+
+Quality clauses are compiled per Evidence item, Program node, answer field, citation,
+and domain policy. Missing verifiers and blocked dependencies fail closed. During the
+migration, the fixed evaluator and Contract Runtime run in parallel, and a decision
+parity failure blocks release. See
+[Proof-Carrying Quality Contracts](docs/proof_carrying_quality_contract.md).
 
 The checked-in v0.4 profile scans 100,000 facts with deterministic stratified
 reservoir sampling, verifies archived source objects, and uses ten in-scope hard
@@ -52,4 +59,5 @@ Finance is constrained as a reference plugin rather than a framework dependency.
 runs the [Generalization Contract](docs/generalization_contract.md) fail-closed across Core, Runtime,
 and Architecture, and must freeze a passing cross-domain Candidate Contract Suite. That suite
 executes non-lookup Legal and Science programs with hard distractors and domain mutations to verify
-reuse of Task DAGs, Proof Graphs, independent replay, and Universal quality gates.
+reuse of Task DAGs, Proof Graphs, independent replay, sample-specific contracts, and the shared
+Contract Runtime.

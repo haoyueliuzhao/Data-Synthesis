@@ -4,6 +4,7 @@ from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.plugins import DomainPluginSet
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
 from trusted_synthesis.domains.finance.source_grounding import (
     FinanceSourceGroundingVerifier,
 )
@@ -26,11 +27,13 @@ def finance_plugin_set(
             FinanceClaimVerifier.plugin_id,
             source_grounding_verifier.verifier_id,
         ),
+        quality_clause_provider_id=FinanceQualityClauseProvider.provider_id,
+        quality_clause_provider_version=FinanceQualityClauseProvider.provider_version,
         operation_registry_manifest_hash=canonical_hash(
             registry.manifest(), prefix="operation_manifest:"
         ),
         versions={
             "source_grounding": source_grounding_verifier.verifier_version,
-            "plugin_set": "1.0.0",
+            "plugin_set": "1.1.0",
         },
     )

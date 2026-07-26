@@ -3,11 +3,15 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, Protocol
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 
 if TYPE_CHECKING:
+    from trusted_synthesis.core.evaluation.contracts.compiler import (
+        QualityClauseCompilationContext,
+    )
+    from trusted_synthesis.core.evaluation.contracts.schema import QualityClause
     from trusted_synthesis.core.operations.registry import OperationRegistry
 
 
@@ -54,8 +58,26 @@ class DomainPluginSet(BaseModel):
     semantic_policy_id: str | None = None
     task_plugin_ids: tuple[str, ...] = ()
     verification_plugin_ids: tuple[str, ...] = ()
+    quality_clause_provider_id: str | None = None
+    quality_clause_provider_version: str | None = None
     operation_registry_manifest_hash: str | None = None
     versions: dict[str, str] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_quality_provider_identity(self) -> DomainPluginSet:
+        if (self.quality_clause_provider_id is None) != (
+            self.quality_clause_provider_version is None
+        ):
+            raise ValueError("quality clause provider ID and version must be frozen together")
+        return self
+
+    @property
+    def quality_provider_identity(self) -> tuple[str, str] | None:
+        if self.quality_clause_provider_id is None:
+            return None
+        if self.quality_clause_provider_version is None:
+            raise ValueError("quality clause provider version is not frozen")
+        return self.quality_clause_provider_id, self.quality_clause_provider_version
 
 
 class EvidenceAdapterProtocol(Protocol):
@@ -112,3 +134,26 @@ class OperationRegistryProvider(Protocol):
 
 class TaskFamilyPluginProtocol(OperationRegistryProvider, Protocol):
     task_family_ids: tuple[str, ...]
+
+
+class DomainQualityClauseProviderProtocol(Protocol):
+    """Compile domain clauses without exposing concrete domain logic to Core."""
+
+    provider_id: str
+    provider_version: str
+
+    def compile_evidence_clauses(
+        self, context: QualityClauseCompilationContext
+    ) -> tuple[QualityClause, ...]: ...
+
+    def compile_program_clauses(
+        self, context: QualityClauseCompilationContext
+    ) -> tuple[QualityClause, ...]: ...
+
+    def compile_claim_clauses(
+        self, context: QualityClauseCompilationContext
+    ) -> tuple[QualityClause, ...]: ...
+
+    def compile_selection_clauses(
+        self, context: QualityClauseCompilationContext
+    ) -> tuple[QualityClause, ...]: ...

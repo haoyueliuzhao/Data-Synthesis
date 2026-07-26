@@ -56,11 +56,14 @@ ClaimVerifierProtocol
 SourceGroundingVerifierProtocol
 OperationRegistryProvider
 TaskFamilyPluginProtocol
+DomainQualityClauseProviderProtocol
 ```
 
 `DomainPluginSet` freezes the concrete plugin IDs and versions used by a release. Core consumes
 these protocols without importing or selecting a domain implementation. A required verifier that is
 not supplied fails closed; an intentionally unsupported check must be declared `NOT_APPLICABLE`.
+Quality-clause providers may contribute only domain clauses; dependency ordering, gate aggregation,
+runtime execution, and release decisions remain common-layer responsibilities.
 
 ## Operation Boundary
 
@@ -149,6 +152,16 @@ retrieval coverage, Proof Graph integrity, operation replay, answer schema, and 
 Domain gates cover semantic evidence validity, source grounding, comparability, and claim boundaries.
 A domain failure cannot be hidden inside a generic answer check.
 
+In v0.5, these requirements are compiled into a task-local `QualityContract`. Universal clauses are
+derived from the Public/Oracle boundary, Evidence Bundle, Proof Graph, Program DAG, answer schema,
+and citations. Domain clauses are injected through the frozen provider protocol. Every clause has a
+typed target and dependency set, so failures can be localized without Core interpreting domain
+payloads. Unknown verifier identities and missing observations fail closed.
+
+The fixed evaluator remains a temporary compatibility path. Finance, Legal, and Science execute both
+the fixed evaluator and Contract Runtime, and release requires exact decision parity. Removing the
+fixed manifest is a later migration step, after production parity remains stable.
+
 Source grounding has three explicit outcomes relevant to release decisions:
 
 ```text
@@ -199,9 +212,11 @@ Science
 ```
 
 For each domain, a public-only clean candidate must pass and mutations of evidence, time, scope,
-definition, derivation, citation, and claim must be rejected. The suite result and fixture manifest
-hash are frozen in every release alongside plugin sets, source-grounding verifiers, operation
-registries, and mutation taxonomy.
+definition, derivation, citation, and claim must be rejected. Every suite task must also compile an
+independent Quality Contract and Proof Certificate, and every clean or mutated candidate must have
+the same decision under the fixed evaluator and Contract Runtime. The suite result and fixture
+manifest hash are frozen in every release alongside plugin sets, source-grounding verifiers,
+operation registries, contract/verifier identities, certificates, and mutation taxonomy.
 
 This proves contract-level portability. It does not prove transfer to production legal/scientific
 corpora or real model agents.
@@ -242,6 +257,9 @@ domain_dispatch_count             = 0
 cross_domain_reference_pass_rate  = 100%
 cross_domain_candidate_pass_rate  = 100%
 cross_domain_mutation_reject_rate = 100%
+cross_domain_contract_coverage    = 100%
+cross_domain_certificate_coverage = 100%
+cross_domain_decision_parity      = 100%
 ```
 
 Future learned quality critics must additionally report leave-one-domain-out error F1, critical

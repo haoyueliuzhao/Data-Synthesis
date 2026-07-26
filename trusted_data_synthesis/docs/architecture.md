@@ -1,4 +1,4 @@
-# Architecture v0.4
+# Architecture v0.5
 
 ## Boundary
 
@@ -14,9 +14,11 @@ Domain archive / KG
         -> Proof Graph v3 + content validation
         -> Public Task / isolated Oracle Contract
         -> Task Program DAG v2
-        -> Reference Compiler | Candidate Agent
-        -> Independent replay and candidate reconstruction
-        -> Separate hard-gate evaluators
+        -> Reference Workflow + independent replay
+        -> Proof-Carrying Sample + Proof Certificate
+        -> Sample-specific Quality Contract
+        -> Candidate Agent + observation reconstruction
+        -> Contract Runtime + legacy parity gate
         -> Candidate-aware release selector
         -> Semantic-cluster split + immutable manifest
 ```
@@ -63,6 +65,20 @@ retrieval scope, and answer schema. It contains no gold Evidence IDs or program.
 `TaskOracleContract` separately pins Evidence IDs, Task Program, Proof Graph ID and
 content hash, and the rubric. Candidate APIs cannot receive the Oracle type.
 
+## Proof-Carrying Sample
+
+`ProofCarryingSampleCompiler` is the common compilation boundary after a domain task has been
+instantiated. It does not discover finance, legal, or scientific tasks. It binds the already-built
+Task Package, Evidence Bundle, Proof Graph, Task Program, accepted Reference Workflow, compiled
+Quality Contract, operation manifest, domain plugin identity, and optional source-grounding
+manifest into one deterministic `ProofCertificate`.
+
+The certificate detects partial replacement or stale compilation: changing Evidence, graph,
+program, expected output, reference execution, verifier implementation, domain policy, or source
+grounding changes the sample identity. `ProofCarryingPublicArtifact` exposes only the Public Task,
+sample identity, and certificate hash. It excludes Oracle state, exact Evidence IDs, and the
+reference answer.
+
 ## Operation Contract
 
 Task Program v2 is a topologically ordered DAG. `ProgramInputRef.selector` makes
@@ -92,9 +108,9 @@ investment claims. Legal now runs condition and exception checks followed by aut
 resolution. Science aligns protocols before comparing effects and preserves uncertainty
 in its qualified result. These are compact contract fixtures, not production datasets.
 
-## Candidate-Centered Quality
+## Compiled Quality Contracts
 
-Reference and Candidate quality are deliberately separate:
+Reference and Candidate quality remain deliberately separate:
 
 ```text
 ReferenceQualityEvaluator
@@ -104,13 +120,22 @@ CandidateQualityEvaluator
   reconstructs retrieval, selection, calculation, answer, citation, and claims
 ```
 
-Candidate hard gates are explicitly divided into Universal and Domain scopes. They cover public-only generation, allowed tools, retrieved
-Evidence validity, recall and precision, raw-object source entailment, Proof Graph
-hash, Program Node to Trajectory Step alignment, DAG order, every calculation,
-VERIFY binding, strict answer schema and value, exact source/locator citation
-binding, structured domain claims, and oracle leakage. Each task family has a
-frozen required-check manifest. Missing checks are ordinary failed gates, never
-dictionary exceptions.
+`QualityContractCompiler` derives a different executable contract for each task. Boundary clauses
+come from Public/Oracle separation and planning/retrieval tracks; Evidence and Proof clauses are
+created for every gold Evidence item; Program clauses are created for every DAG node; answer and
+citation clauses are derived from the answer schema and evidence bindings. A domain clause provider
+adds finance, legal, or scientific semantic checks through a protocol consumed by Core.
+
+`QualityContractRuntime` indexes the candidate trajectory once, executes clauses in dependency
+order through a versioned verifier registry, and aggregates Universal and Domain gates. Unknown
+verifiers, missing observations, and blocked dependencies fail closed and remain locatable by
+clause, Evidence ID, Program node, answer field, or citation. The runtime publishes unexecuted
+clauses and root failures rather than reducing all failures to one global check name.
+
+The previous fixed `CandidateQualityEvaluator` remains active only as a migration oracle. Every
+Pilot and cross-domain contract case is evaluated through both paths; any decision mismatch is a
+release failure. This preserves current behavior while moving task-specific check selection out of
+the global manifest.
 
 ## Generalization Boundary
 
@@ -131,4 +156,7 @@ versioned Evidence IDs. `CandidateReleaseSelection` publishes only accepted
 trajectories and records assessment IDs, failure distribution, domain/task
 distribution, and split counts. Release manifests freeze both Reference and Candidate check
 manifests, operation implementation hashes, domain plugin and source-grounding identities,
-mutation taxonomy, and the versioned cross-domain Candidate Contract Suite result.
+mutation taxonomy, Quality Contract compiler/runtime/verifier manifests, every task contract hash,
+Proof-Carrying compiler versions, every certificate hash, and the versioned cross-domain Candidate
+Contract Suite result. For a non-empty task release, Contract and Certificate coverage must exactly
+equal the released task set.

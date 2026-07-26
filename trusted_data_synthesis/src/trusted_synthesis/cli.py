@@ -6,6 +6,10 @@ from pathlib import Path
 from typing import Any
 
 from trusted_synthesis.architecture.generalization import audit_generalization_contract
+from trusted_synthesis.core.evaluation.contracts import (
+    QualityContractCompiler,
+    QualityContractRuntime,
+)
 from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
@@ -20,11 +24,14 @@ from trusted_synthesis.core.release import (
     build_release_manifest,
     select_candidate_release,
 )
+from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.core.task.schema import VerifierRequirement
+from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
@@ -101,21 +108,47 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
     semantic_policy = FinanceSemanticPolicy()
     source_grounding_verifier = adapter.source_grounding_verifier()
     task_synthesizer = FinanceTaskPlugin(source_grounding_requirement=VerifierRequirement.REQUIRED)
-    trajectory_generator = ReferenceWorkflowCompiler()
+    registry = default_registry()
+    trajectory_generator = ReferenceWorkflowCompiler(registry)
     candidate_generator = FinanceNumericCandidateGenerator()
     graph_builder = ProofGraphBuilder()
     evaluator = ReferenceQualityEvaluator(
         semantic_policy=semantic_policy,
         source_grounding_verifier=source_grounding_verifier,
     )
-    candidate_evaluator = CandidateQualityEvaluator(
+    plugin_set = finance_plugin_set(adapter, registry, source_grounding_verifier)
+    quality_contract_compiler = QualityContractCompiler(
+        registry,
+        domain_provider=FinanceQualityClauseProvider(),
+    )
+    proof_compiler = ProofCarryingSampleCompiler(
+        registry,
+        quality_contract_compiler,
+        plugin_set,
+        semantic_policy=semantic_policy,
+        source_grounding_verifier=source_grounding_verifier,
+    )
+    workflow_verifier = CandidateWorkflowVerifier(
+        registry,
         semantic_policy=semantic_policy,
         claim_verifier=FinanceClaimVerifier(),
         source_grounding_verifier=source_grounding_verifier,
     )
+    candidate_evaluator = CandidateQualityEvaluator(
+        semantic_policy=semantic_policy,
+        claim_verifier=FinanceClaimVerifier(),
+        source_grounding_verifier=source_grounding_verifier,
+        workflow_verifier=workflow_verifier,
+    )
+    contract_runtime = QualityContractRuntime(
+        workflow_verifier,
+        verifier_registry=quality_contract_compiler.verifier_registry,
+    )
     samples = []
     tasks = []
     candidate_records = []
+    quality_contracts = []
+    proof_certificates = []
     split_policy = SplitPolicy(policy_id="semantic_split.v1")
     for evidence in adapter.iter_evidence(limit=limit):
         bundle_identity = {"purpose": "finance_demo", "evidence_id": evidence.evidence_id}
@@ -130,9 +163,25 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         tasks.append(task)
         trajectory = trajectory_generator.compile(task, bundle)
         assessment = evaluator.evaluate(task, bundle, graph, trajectory)
+        compiled = proof_compiler.compile(
+            task,
+            bundle,
+            graph,
+            reference_trajectory=trajectory,
+            reference_assessment=assessment,
+        )
         corpus = EvidenceCorpus.from_bundle(bundle)
         candidate = candidate_generator.generate(task.public, InMemoryEvidenceToolRuntime(corpus))
         candidate_assessment = candidate_evaluator.evaluate(task, corpus, graph, candidate)
+        contract_assessment = contract_runtime.evaluate(
+            compiled.quality_contract,
+            task,
+            corpus,
+            graph,
+            candidate,
+        )
+        quality_contracts.append(compiled.quality_contract)
+        proof_certificates.append(compiled.sample.certificate)
         candidate_records.append((task, candidate, candidate_assessment))
         samples.append(
             {
@@ -146,12 +195,20 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
                 "candidate_quality": candidate_assessment.model_dump(
                     mode="json", exclude_none=True
                 ),
+                "proof_carrying_public": compiled.public_artifact.model_dump(
+                    mode="json", exclude_none=True
+                ),
+                "quality_contract": compiled.quality_contract.model_dump(
+                    mode="json", exclude_none=True
+                ),
+                "contract_quality": contract_assessment.model_dump(
+                    mode="json", exclude_none=True
+                ),
                 "split": assign_split(task, split_policy).value,
             }
         )
     inspection = adapter.inspect()
     candidate_selection = select_candidate_release(candidate_records, split_policy)
-    registry = default_registry()
     cross_domain_contracts = run_cross_domain_contract_suite()
     manifest = build_release_manifest(
         release_id=canonical_hash(
@@ -169,11 +226,13 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         source_build_ids={"finance_kg": str(inspection.get("kg_build_id"))},
         candidate_selection=candidate_selection,
         domain_plugin_sets=(
-            finance_plugin_set(adapter, registry, source_grounding_verifier),
+            plugin_set,
             *cross_domain_contracts.plugin_sets,
         ),
         source_grounding_verifiers=(source_grounding_verifier,),
         cross_domain_contract_suite=cross_domain_contracts.result,
+        quality_contracts=quality_contracts,
+        proof_certificates=proof_certificates,
     )
     return {
         "pipeline": [

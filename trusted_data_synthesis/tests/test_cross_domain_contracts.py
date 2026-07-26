@@ -161,6 +161,13 @@ def test_cross_domain_candidate_contract_suite_passes_with_distractors_and_mutat
     assert artifacts.result.clean_candidate_pass_rate == 1
     assert artifacts.result.mutation_count == 14
     assert artifacts.result.mutation_rejection_rate == 1
+    assert artifacts.result.quality_contract_count == artifacts.result.task_count
+    assert artifacts.result.proof_certificate_count == artifacts.result.task_count
+    assert artifacts.result.contract_evaluation_count == 16
+    assert artifacts.result.contract_decision_parity_rate == 1
+    assert len(artifacts.quality_contracts) == artifacts.result.task_count
+    assert len(artifacts.proof_certificates) == artifacts.result.task_count
+    assert len(artifacts.parity_reports) == artifacts.result.contract_evaluation_count
     assert {item.domain for item in artifacts.plugin_sets} == {"legal", "science"}
 
 

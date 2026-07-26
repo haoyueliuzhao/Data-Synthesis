@@ -122,12 +122,18 @@ def test_release_manifest_freezes_passing_generalization_audit() -> None:
         cross_domain_contract_suite=contracts.result,
     )
 
-    assert manifest.framework_version == __version__ == "0.4.1"
+    assert manifest.framework_version == __version__ == "0.5.0"
     assert manifest.metadata["generalization_contract_version"] == "generalization_contract.v1.2"
     assert manifest.metadata["core_domain_import_count"] == 0
     assert manifest.metadata["core_domain_branch_count"] == 0
     assert manifest.metadata["core_domain_field_access_count"] == 0
     assert manifest.mutation_taxonomy_manifest_hash
+    assert manifest.quality_contract_runtime_version == "quality_contract_runtime.v1"
+    assert manifest.quality_contract_compiler_versions == ("quality_contract_compiler.v1",)
+    assert manifest.proof_compiler_versions == ("proof_carrying_compiler.v1",)
+    assert set(manifest.quality_contract_hashes) == set(contracts.result.quality_contract_hashes)
+    assert set(manifest.proof_certificate_hashes) == set(contracts.result.proof_certificate_hashes)
+    assert manifest.clause_verifier_manifest_hashes
     assert {item.domain for item in manifest.domain_plugin_sets} == {"legal", "science"}
     assert manifest.source_grounding_verifiers == {}
 
@@ -147,6 +153,9 @@ def test_release_manifest_freezes_executed_cross_domain_contract_suite() -> None
 
     assert manifest.cross_domain_contract_suite == contracts.result
     assert manifest.cross_domain_contract_suite_hash == contracts.result.result_hash
+    assert manifest.cross_domain_contract_suite.contract_decision_parity_rate == 1
+    assert manifest.cross_domain_contract_suite.quality_contract_count == 2
+    assert manifest.cross_domain_contract_suite.proof_certificate_count == 2
     assert {item.domain for item in manifest.domain_plugin_sets} == {"legal", "science"}
 
     with pytest.raises(ValueError, match="did not pass"):

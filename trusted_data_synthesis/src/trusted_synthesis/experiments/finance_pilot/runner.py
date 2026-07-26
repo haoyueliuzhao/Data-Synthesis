@@ -9,6 +9,14 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from trusted_synthesis.core.evaluation.contracts import (
+    ContractQualityAssessment,
+    DecisionParityReport,
+    QualityContract,
+    QualityContractCompiler,
+    QualityContractRuntime,
+    compare_decisions,
+)
 from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
@@ -22,12 +30,19 @@ from trusted_synthesis.core.release import (
     select_candidate_release,
 )
 from trusted_synthesis.core.release.split import semantic_cluster_id
+from trusted_synthesis.core.synthesis import (
+    ProofCarryingSample,
+    ProofCarryingSampleCompiler,
+    ProofCertificate,
+)
 from trusted_synthesis.core.task.schema import VerifierRequirement
+from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.cross_domain_contract_suite import (
@@ -89,10 +104,34 @@ def run_finance_pilot(
         semantic_policy=policy,
         source_grounding_verifier=source_grounding_verifier,
     )
+    registry = default_registry()
+    plugin_set = finance_plugin_set(adapter, registry, source_grounding_verifier)
+    quality_contract_compiler = QualityContractCompiler(
+        registry,
+        domain_provider=FinanceQualityClauseProvider(),
+    )
+    proof_compiler = ProofCarryingSampleCompiler(
+        registry,
+        quality_contract_compiler,
+        plugin_set,
+        semantic_policy=policy,
+        source_grounding_verifier=source_grounding_verifier,
+    )
+    candidate_workflow_verifier = CandidateWorkflowVerifier(
+        registry,
+        semantic_policy=policy,
+        claim_verifier=FinanceClaimVerifier(),
+        source_grounding_verifier=source_grounding_verifier,
+    )
     candidate_evaluator = CandidateQualityEvaluator(
         semantic_policy=policy,
         claim_verifier=FinanceClaimVerifier(),
         source_grounding_verifier=source_grounding_verifier,
+        workflow_verifier=candidate_workflow_verifier,
+    )
+    contract_runtime = QualityContractRuntime(
+        candidate_workflow_verifier,
+        verifier_registry=quality_contract_compiler.verifier_registry,
     )
     references: list[Trajectory] = []
     reference_assessments: list[QualityAssessment] = []
@@ -100,12 +139,27 @@ def run_finance_pilot(
     clean_assessments: list[QualityAssessment] = []
     mutation_cases: list[MutationCase] = []
     mutation_assessments: list[QualityAssessment] = []
+    proof_samples: list[ProofCarryingSample] = []
+    quality_contracts: list[QualityContract] = []
+    proof_certificates: list[ProofCertificate] = []
+    clean_contract_assessments: list[ContractQualityAssessment] = []
+    mutation_contract_assessments: list[ContractQualityAssessment] = []
+    decision_parities: list[DecisionParityReport] = []
     candidate_records = []
 
     for case in cases:
         reference = reference_compiler.compile(case.task, case.bundle)
         reference_assessment = reference_evaluator.evaluate(
             case.task, case.bundle, case.proof_graph, reference
+        )
+        compiled = proof_compiler.compile(
+            case.task,
+            case.bundle,
+            case.proof_graph,
+            pattern_id=case.task.public.task_type,
+            binding_id=case.binding.binding_hash,
+            reference_trajectory=reference,
+            reference_assessment=reference_assessment,
         )
         candidate = candidate_generator.generate(
             case.task.public,
@@ -114,10 +168,22 @@ def run_finance_pilot(
         candidate_assessment = candidate_evaluator.evaluate(
             case.task, case.corpus, case.proof_graph, candidate
         )
+        contract_assessment = contract_runtime.evaluate(
+            compiled.quality_contract,
+            case.task,
+            case.corpus,
+            case.proof_graph,
+            candidate,
+        )
         references.append(reference)
         reference_assessments.append(reference_assessment)
         clean_candidates.append(candidate)
         clean_assessments.append(candidate_assessment)
+        proof_samples.append(compiled.sample)
+        quality_contracts.append(compiled.quality_contract)
+        proof_certificates.append(compiled.sample.certificate)
+        clean_contract_assessments.append(contract_assessment)
+        decision_parities.append(compare_decisions(candidate_assessment, contract_assessment))
         candidate_records.append((case.task, candidate, candidate_assessment))
         for mutation in generate_mutations(case, candidate, config.mutation_types):
             assessment = candidate_evaluator.evaluate(
@@ -126,16 +192,24 @@ def run_finance_pilot(
                 case.proof_graph,
                 mutation.trajectory,
             )
+            contract_assessment = contract_runtime.evaluate(
+                compiled.quality_contract,
+                case.task,
+                case.corpus,
+                case.proof_graph,
+                mutation.trajectory,
+            )
             mutation_cases.append(mutation)
             mutation_assessments.append(assessment)
+            mutation_contract_assessments.append(contract_assessment)
+            decision_parities.append(compare_decisions(assessment, contract_assessment))
             candidate_records.append((case.task, mutation.trajectory, assessment))
 
     split_policy = SplitPolicy(policy_id="finance_pilot_semantic_split.v1")
     selection = select_candidate_release(candidate_records, split_policy)
-    registry = default_registry()
     cross_domain_contracts = run_cross_domain_contract_suite()
     release_plugin_sets = (
-        finance_plugin_set(adapter, registry, source_grounding_verifier),
+        plugin_set,
         *cross_domain_contracts.plugin_sets,
     )
     release_id = canonical_hash(
@@ -158,6 +232,8 @@ def run_finance_pilot(
         domain_plugin_sets=release_plugin_sets,
         source_grounding_verifiers=(source_grounding_verifier,),
         cross_domain_contract_suite=cross_domain_contracts.result,
+        quality_contracts=quality_contracts,
+        proof_certificates=proof_certificates,
     )
     reproducibility = _reproducibility_check(
         cases=cases,
@@ -178,6 +254,9 @@ def run_finance_pilot(
         release_id=release_id,
         inspection=inspection,
         candidate_records=candidate_records,
+        proof_compiler=proof_compiler,
+        quality_contracts=quality_contracts,
+        proof_certificates=proof_certificates,
     )
     report = _build_report(
         inspection=inspection,
@@ -194,6 +273,12 @@ def run_finance_pilot(
         manifest=manifest,
         split_policy=split_policy,
         reproducibility=reproducibility,
+        proof_samples=proof_samples,
+        quality_contracts=quality_contracts,
+        proof_certificates=proof_certificates,
+        clean_contract_assessments=clean_contract_assessments,
+        mutation_contract_assessments=mutation_contract_assessments,
+        decision_parities=decision_parities,
     )
     _write_artifacts(
         output_dir=output_dir,
@@ -207,6 +292,11 @@ def run_finance_pilot(
         mutation_assessments=mutation_assessments,
         manifest=manifest,
         report=report,
+        proof_samples=proof_samples,
+        quality_contracts=quality_contracts,
+        clean_contract_assessments=clean_contract_assessments,
+        mutation_contract_assessments=mutation_contract_assessments,
+        decision_parities=decision_parities,
     )
     return report
 
@@ -227,6 +317,12 @@ def _build_report(
     manifest: Any,
     split_policy: SplitPolicy,
     reproducibility: dict[str, bool],
+    proof_samples: list[ProofCarryingSample],
+    quality_contracts: list[QualityContract],
+    proof_certificates: list[ProofCertificate],
+    clean_contract_assessments: list[ContractQualityAssessment],
+    mutation_contract_assessments: list[ContractQualityAssessment],
+    decision_parities: list[DecisionParityReport],
 ) -> dict[str, Any]:
     task_counts = Counter(case.task.public.task_type for case in cases)
     region_counts = Counter(case.binding.stratum[0] for case in cases)
@@ -307,6 +403,14 @@ def _build_report(
         mean(item["detection_rate"] for item in per_type.values()) if per_type else 0.0
     )
     theoretical_mutations = len(cases) * len(config.mutation_types)
+    parity_matches = sum(item.decisions_match for item in decision_parities)
+    parity_rate = _rate(parity_matches, len(decision_parities))
+    contract_clean_accepted = sum(
+        item.decision == ReleaseDecision.ACCEPTED for item in clean_contract_assessments
+    )
+    contract_mutation_rejected = sum(
+        item.decision == ReleaseDecision.REJECTED for item in mutation_contract_assessments
+    )
     coverage_warnings = []
     if not region_counts.get("mainland_hong_kong_macau"):
         coverage_warnings.append(
@@ -338,6 +442,10 @@ def _build_report(
         "release_contains_only_clean_accepted": (
             len(selection.accepted_trajectory_ids) == clean_accepted
         ),
+        "proof_carrying_sample_coverage": len(proof_samples) == len(cases),
+        "quality_contract_coverage": len(quality_contracts) == len(cases),
+        "proof_certificate_coverage": len(proof_certificates) == len(cases),
+        "contract_runtime_decision_parity": parity_rate == 1,
     }
     return {
         "pilot_id": config.pilot_id,
@@ -440,6 +548,31 @@ def _build_report(
             "macro_detection_rate": macro_detection,
             "per_mutation_type": per_type,
             "per_generic_mutation_family": per_family,
+        },
+        "proof_carrying_quality_contract": {
+            "proof_sample_count": len(proof_samples),
+            "quality_contract_count": len(quality_contracts),
+            "proof_certificate_count": len(proof_certificates),
+            "contract_clause_count_min": min(
+                (len(item.clauses) for item in quality_contracts), default=0
+            ),
+            "contract_clause_count_max": max(
+                (len(item.clauses) for item in quality_contracts), default=0
+            ),
+            "contract_clean_accepted": contract_clean_accepted,
+            "contract_mutation_rejected": contract_mutation_rejected,
+            "dual_track_evaluation_count": len(decision_parities),
+            "dual_track_decision_match_count": parity_matches,
+            "dual_track_decision_parity_rate": parity_rate,
+            "quality_contract_compiler_versions": sorted(
+                {item.compiler_version for item in quality_contracts}
+            ),
+            "proof_compiler_versions": sorted(
+                {item.compiler_version for item in proof_certificates}
+            ),
+            "clause_verifier_manifest_hashes": sorted(
+                {item.verifier_manifest_hash for item in quality_contracts}
+            ),
         },
         "release": {
             "release_id": manifest.release_id,
@@ -549,21 +682,38 @@ def _reproducibility_check(
     release_id: str,
     inspection: dict[str, Any],
     candidate_records: list[Any],
+    proof_compiler: ProofCarryingSampleCompiler,
+    quality_contracts: list[QualityContract],
+    proof_certificates: list[ProofCertificate],
 ) -> dict[str, bool]:
     replay_references: list[Trajectory] = []
     replay_reference_assessments: list[QualityAssessment] = []
     replay_candidates: list[Trajectory] = []
     replay_candidate_assessments: list[QualityAssessment] = []
     replay_mutation_ids: list[str] = []
+    replay_quality_contracts: list[QualityContract] = []
+    replay_proof_certificates: list[ProofCertificate] = []
     for case in cases:
         reference = reference_compiler.compile(case.task, case.bundle)
         candidate = candidate_generator.generate(
             case.task.public, InMemoryEvidenceToolRuntime(case.corpus)
         )
         replay_references.append(reference)
-        replay_reference_assessments.append(
-            reference_evaluator.evaluate(case.task, case.bundle, case.proof_graph, reference)
+        reference_assessment = reference_evaluator.evaluate(
+            case.task, case.bundle, case.proof_graph, reference
         )
+        replay_reference_assessments.append(reference_assessment)
+        compiled = proof_compiler.compile(
+            case.task,
+            case.bundle,
+            case.proof_graph,
+            pattern_id=case.task.public.task_type,
+            binding_id=case.binding.binding_hash,
+            reference_trajectory=reference,
+            reference_assessment=reference_assessment,
+        )
+        replay_quality_contracts.append(compiled.quality_contract)
+        replay_proof_certificates.append(compiled.sample.certificate)
         replay_candidates.append(candidate)
         replay_candidate_assessments.append(
             candidate_evaluator.evaluate(case.task, case.corpus, case.proof_graph, candidate)
@@ -590,6 +740,8 @@ def _reproducibility_check(
         ),
         source_grounding_verifiers=(replay_source_grounding,),
         cross_domain_contract_suite=replay_cross_domain_contracts.result,
+        quality_contracts=replay_quality_contracts,
+        proof_certificates=replay_proof_certificates,
     )
     return {
         "reference_trajectory_ids": [item.trajectory_id for item in references]
@@ -601,6 +753,10 @@ def _reproducibility_check(
         "candidate_assessment_ids": [item.assessment_id for item in clean_assessments]
         == [item.assessment_id for item in replay_candidate_assessments],
         "mutation_ids": [item.mutation_id for item in mutation_cases] == replay_mutation_ids,
+        "quality_contract_hashes": [item.contract_hash for item in quality_contracts]
+        == [item.contract_hash for item in replay_quality_contracts],
+        "proof_certificate_hashes": [item.certificate_hash for item in proof_certificates]
+        == [item.certificate_hash for item in replay_proof_certificates],
         "candidate_selection_id": selection_id == selection_replay.selection_id,
         "release_manifest_hash": manifest_hash == manifest_replay.manifest_hash,
     }
@@ -619,6 +775,11 @@ def _write_artifacts(
     mutation_assessments: list[QualityAssessment],
     manifest: Any,
     report: dict[str, Any],
+    proof_samples: list[ProofCarryingSample],
+    quality_contracts: list[QualityContract],
+    clean_contract_assessments: list[ContractQualityAssessment],
+    mutation_contract_assessments: list[ContractQualityAssessment],
+    decision_parities: list[DecisionParityReport],
 ) -> None:
     config.write(output_dir / "config.json")
     _write_jsonl(output_dir / "task_packages.jsonl", (case.task for case in cases))
@@ -639,8 +800,13 @@ def _write_artifacts(
     )
     _write_jsonl(output_dir / "reference_workflows.jsonl", references)
     _write_jsonl(output_dir / "reference_assessments.jsonl", reference_assessments)
+    _write_jsonl(output_dir / "proof_carrying_samples.jsonl", proof_samples)
+    _write_jsonl(output_dir / "quality_contracts.jsonl", quality_contracts)
     _write_jsonl(output_dir / "clean_candidate_workflows.jsonl", clean_candidates)
     _write_jsonl(output_dir / "clean_candidate_assessments.jsonl", clean_assessments)
+    _write_jsonl(
+        output_dir / "clean_contract_assessments.jsonl", clean_contract_assessments
+    )
     _write_jsonl(
         output_dir / "mutated_candidate_workflows.jsonl",
         (
@@ -658,6 +824,11 @@ def _write_artifacts(
             for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
         ),
     )
+    _write_jsonl(
+        output_dir / "mutated_contract_assessments.jsonl",
+        mutation_contract_assessments,
+    )
+    _write_jsonl(output_dir / "decision_parity.jsonl", decision_parities)
     _write_json(output_dir / "release_manifest.json", manifest)
     _write_json(output_dir / "pilot_report.json", report)
     (output_dir / "pilot_report.md").write_text(

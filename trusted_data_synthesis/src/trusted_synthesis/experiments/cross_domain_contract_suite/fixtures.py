@@ -27,14 +27,20 @@ from trusted_synthesis.core.evidence.schema import (
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry
-from trusted_synthesis.core.plugins import DomainPluginSet, SemanticPolicyProtocol
+from trusted_synthesis.core.plugins import (
+    DomainPluginSet,
+    DomainQualityClauseProviderProtocol,
+    SemanticPolicyProtocol,
+)
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.domains.legal import (
+    LegalQualityClauseProvider,
     LegalSemanticPolicy,
     LegalTaskPlugin,
     legal_operation_registry,
 )
 from trusted_synthesis.domains.science import (
+    ScienceQualityClauseProvider,
     ScienceSemanticPolicy,
     ScienceTaskPlugin,
     science_operation_registry,
@@ -51,6 +57,7 @@ class ContractCase:
     task: TaskPackage
     registry: OperationRegistry
     semantic_policy: SemanticPolicyProtocol
+    quality_clause_provider: DomainQualityClauseProviderProtocol
     plugin_set: DomainPluginSet
 
 
@@ -106,15 +113,18 @@ def _legal_case() -> ContractCase:
         task=task,
         registry=registry,
         semantic_policy=policy,
+        quality_clause_provider=LegalQualityClauseProvider(),
         plugin_set=DomainPluginSet(
             domain="legal",
             evidence_adapter_id="legal_contract_fixture.v1",
             semantic_policy_id=policy.policy_id,
             task_plugin_ids=(plugin.plugin_id,),
+            quality_clause_provider_id=LegalQualityClauseProvider.provider_id,
+            quality_clause_provider_version=LegalQualityClauseProvider.provider_version,
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            versions={"fixture": "1.0.0"},
+            versions={"fixture": "1.1.0"},
         ),
     )
 
@@ -144,15 +154,18 @@ def _science_case() -> ContractCase:
         task=task,
         registry=registry,
         semantic_policy=policy,
+        quality_clause_provider=ScienceQualityClauseProvider(),
         plugin_set=DomainPluginSet(
             domain="science",
             evidence_adapter_id="science_contract_fixture.v1",
             semantic_policy_id=policy.policy_id,
             task_plugin_ids=(plugin.plugin_id,),
+            quality_clause_provider_id=ScienceQualityClauseProvider.provider_id,
+            quality_clause_provider_version=ScienceQualityClauseProvider.provider_version,
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            versions={"fixture": "1.0.0"},
+            versions={"fixture": "1.1.0"},
         ),
     )
 
