@@ -1,5 +1,7 @@
 # v0.8 Training Utility MVP
 
+> Current capacity and Prompt-v3 status: `docs/v08_gap_closure_report.md`.
+
 ## Purpose
 
 This experiment asks one narrow causal question:
@@ -22,14 +24,14 @@ refinement profile is `config/training_utility_v08_qwen3_8b.json`:
 | Model revision | resolved and frozen before an actual run |
 | Training | BF16 LoRA SFT |
 | Train records | 600 per cohort, 200 per domain |
-| Hidden evaluation | 150 tasks, 50 per domain |
+| Hidden evaluation | 600 tasks, 200 per domain |
 | Context | 8,192 tokens; truncation forbidden |
 | Optimizer budget | 600 steps, batch 1, accumulation 4 |
 | Seed | 20260726 |
 | Retrieval/planning track | resolved / plan-given |
 
-The offline D2 reference preflight materialized all 600 training records and all 150 evaluation
-records with 200/200/200 and 50/50/50 domain balance respectively. Training/evaluation task overlap
+The offline D2 reference preflight materialized all 600 training records and all 600 evaluation
+records with 200/200/200 and 200/200/200 domain balance respectively. Training/evaluation task overlap
 is zero. This is a data-contract preflight, not an SFT result.
 
 The historical Qwen2.5 tokenizer preflight covers 48 deterministic reference and evaluation tasks.
@@ -153,7 +155,7 @@ resumable: a failed cohort does not erase completed adapters or predictions.
 
 ## Interpretation Boundary
 
-The expansion contract has one seed, 600 examples per cohort, 150 evaluation tasks, and three
+The expansion contract has one seed, 600 examples per cohort, 600 evaluation tasks, and three
 domains. The current repository contains only its D2 reference-data preflight; it does not contain
 trained adapters or utility scores. A higher D5 score would be evidence that the end-to-end
 experiment works and motivates a larger study; it would not be enough to claim general superiority.

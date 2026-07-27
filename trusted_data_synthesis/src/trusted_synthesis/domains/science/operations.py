@@ -29,6 +29,16 @@ class ScienceEffectComparison(BaseModel):
     qualified_conclusion: str
 
 
+class ScienceDescriptiveSynthesis(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    weighted_value: str
+    total_sample_size: int
+    uncertainty_lower: str
+    uncertainty_upper: str
+    qualified_conclusion: str
+
+
 class ProtocolAlignmentExecutor:
     def execute(
         self, inputs: tuple[OperationInput, ...], parameters: dict[str, Any]
@@ -126,6 +136,77 @@ class EffectComparisonVerifier:
         return _verification(expected, observed_output, "science_effect_comparison")
 
 
+class DescriptiveSynthesisExecutor:
+    def execute(
+        self, inputs: tuple[OperationInput, ...], parameters: dict[str, Any]
+    ) -> dict[str, Any]:
+        del parameters
+        if len(inputs) < 3:
+            raise ValueError("descriptive synthesis requires at least three results")
+        results = tuple(_mapping(item.value) for item in inputs)
+        _require_same_protocol(results)
+        total_sample_size = sum(int(item["sample_size"]) for item in results)
+        if total_sample_size <= 0:
+            raise ValueError("descriptive synthesis requires positive sample sizes")
+        weighted = sum(
+            Decimal(str(item["value"])) * int(item["sample_size"]) for item in results
+        ) / Decimal(total_sample_size)
+        intervals = tuple(_mapping(item["uncertainty"]) for item in results)
+        return {
+            "weighted_value": _decimal_text(weighted),
+            "total_sample_size": total_sample_size,
+            "uncertainty_lower": _decimal_text(
+                min(Decimal(str(item["lower"])) for item in intervals)
+            ),
+            "uncertainty_upper": _decimal_text(
+                max(Decimal(str(item["upper"])) for item in intervals)
+            ),
+            "qualified_conclusion": "descriptive_sample_size_weighted_summary_not_meta_analysis",
+        }
+
+
+class DescriptiveSynthesisVerifier:
+    def verify(
+        self,
+        inputs: tuple[OperationInput, ...],
+        parameters: dict[str, Any],
+        observed_output: dict[str, Any],
+    ) -> OperationVerification:
+        del parameters
+        if len(inputs) < 3:
+            return _verification(None, observed_output, "science_synthesis_minimum_inputs")
+        results = tuple(_mapping(item.value) for item in inputs)
+        signature_fields = ("metric", "unit", "dataset", "method", "protocol")
+        first = results[0]
+        if any(
+            any(item.get(field) != first.get(field) for field in signature_fields)
+            for item in results[1:]
+        ):
+            return _verification(None, observed_output, "science_synthesis_protocol_alignment")
+        sample_sizes = tuple(int(item["sample_size"]) for item in results)
+        total = sum(sample_sizes)
+        if total <= 0:
+            return _verification(None, observed_output, "science_synthesis_sample_size")
+        numerator = sum(
+            Decimal(str(result["value"])) * sample_size
+            for result, sample_size in zip(results, sample_sizes, strict=True)
+        )
+        lower_values = tuple(
+            Decimal(str(_mapping(item["uncertainty"])["lower"])) for item in results
+        )
+        upper_values = tuple(
+            Decimal(str(_mapping(item["uncertainty"])["upper"])) for item in results
+        )
+        expected = {
+            "weighted_value": _decimal_text(numerator / Decimal(total)),
+            "total_sample_size": total,
+            "uncertainty_lower": _decimal_text(min(lower_values)),
+            "uncertainty_upper": _decimal_text(max(upper_values)),
+            "qualified_conclusion": "descriptive_sample_size_weighted_summary_not_meta_analysis",
+        }
+        return _verification(expected, observed_output, "science_descriptive_synthesis")
+
+
 def science_operation_registry() -> OperationRegistry:
     registry = default_registry()
     registry.register(
@@ -160,6 +241,29 @@ def science_operation_registry() -> OperationRegistry:
             ),
         )
     )
+    registry.register(
+        make_operation_definition(
+            "science_summarize_effects",
+            DescriptiveSynthesisExecutor(),
+            DescriptiveSynthesisVerifier(),
+            "many:any",
+            "structured",
+            "none",
+            (
+                "protocol_comparable",
+                "sample_size_positive",
+                "uncertainty_preserved",
+                "descriptive_not_causal",
+            ),
+            output_model=ScienceDescriptiveSynthesis,
+            tool_capability="protocol_analyzer",
+            implementation_dependencies=(
+                _mapping,
+                _require_same_protocol,
+                _decimal_text,
+            ),
+        )
+    )
     return registry
 
 
@@ -179,6 +283,22 @@ def _oracle_intervals_overlap(first: Any, second: Any) -> bool:
     second_lower = Decimal(str(second["lower"]))
     second_upper = Decimal(str(second["upper"]))
     return max(first_lower, second_lower) <= min(first_upper, second_upper)
+
+
+def _require_same_protocol(results: tuple[dict[str, Any], ...]) -> None:
+    first = results[0]
+    fields = ("metric", "unit", "dataset", "method", "protocol")
+    mismatches = [
+        field
+        for field in fields
+        if any(item.get(field) != first.get(field) for item in results[1:])
+    ]
+    if mismatches:
+        raise ValueError(f"results are not protocol-compatible: {mismatches}")
+
+
+def _decimal_text(value: Decimal) -> str:
+    return format(value.normalize(), "f")
 
 
 def _mapping(value: Any) -> dict[str, Any]:

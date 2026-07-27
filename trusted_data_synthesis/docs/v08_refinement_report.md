@@ -1,5 +1,7 @@
 # v0.8 Refinement Report
 
+> Historical refinement snapshot. Current capacity and Prompt-v3 status are recorded in `docs/v08_gap_closure_report.md`.
+
 ## Scope
 
 This change refines v0.8 only. It does not introduce a v0.9 namespace, schema release, or claim of

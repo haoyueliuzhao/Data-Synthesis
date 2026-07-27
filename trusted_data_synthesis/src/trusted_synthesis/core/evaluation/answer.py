@@ -147,7 +147,7 @@ def _allowed_result_fields(
     if answer_type == "payload_with_source":
         return {"payload", "source_id"}
     registered = {
-        "comparison": {"higher_ref", "difference"},
+        "comparison": {"higher_ref", "difference", "result_context"},
         "percentage": {"value"},
         "aggregate": {"method", "value"},
     }

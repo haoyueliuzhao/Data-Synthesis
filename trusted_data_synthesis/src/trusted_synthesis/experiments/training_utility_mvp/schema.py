@@ -9,7 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v2"
+TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v3"
+VALIDATION_DOMAINS = ("finance", "legal", "science")
 
 
 class TrainingUtilityMVPConfig(BaseModel):
@@ -19,7 +20,10 @@ class TrainingUtilityMVPConfig(BaseModel):
     model_revision: str | None = None
     candidate_tasks_per_domain: int = Field(default=10, ge=2, le=2000)
     evaluation_tasks_per_domain: int = Field(default=6, ge=1, le=500)
+    candidate_task_targets: dict[str, int] = Field(default_factory=dict)
+    evaluation_task_targets: dict[str, int] = Field(default_factory=dict)
     cohort_size: int = Field(default=24, ge=6, le=5000)
+    minimum_real_candidate_completion_rate: float = Field(default=0.8, gt=0, le=1)
     d1_counterfactual_fraction: float = Field(default=0.5, ge=0, le=1)
     d4_repair_fraction: float = Field(default=0.5, ge=0, le=1)
     max_seq_length: int = Field(default=8192, ge=512, le=16384)
@@ -43,7 +47,7 @@ class TrainingUtilityMVPConfig(BaseModel):
         "down_proj",
     )
     seed: int = 20260726
-    prompt_version: str = "training_utility_agent_prompt.v2"
+    prompt_version: str = "training_utility_agent_prompt.v3"
 
     @classmethod
     def from_json(cls, path: str | Path) -> TrainingUtilityMVPConfig:
@@ -51,10 +55,30 @@ class TrainingUtilityMVPConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_balanced_cohort(self) -> TrainingUtilityMVPConfig:
+        expected_domains = set(VALIDATION_DOMAINS)
+        for field_name, targets, upper_bound in (
+            ("candidate_task_targets", self.candidate_task_targets, 5000),
+            ("evaluation_task_targets", self.evaluation_task_targets, 2000),
+        ):
+            if targets and set(targets) != expected_domains:
+                raise ValueError(f"{field_name} must define finance, legal, and science")
+            if any(
+                not isinstance(value, int) or value < 1 or value > upper_bound
+                for value in targets.values()
+            ):
+                raise ValueError(f"{field_name} values must be integers from 1 to {upper_bound}")
         if self.cohort_size % 3:
             raise ValueError("cohort_size must be divisible by the three validation domains")
-        if self.cohort_size > self.candidate_tasks_per_domain * 3:
-            raise ValueError("cohort_size exceeds the real candidate task pool")
+        required_per_domain = self.cohort_size // len(VALIDATION_DOMAINS)
+        shortfalls = {
+            domain: target
+            for domain, target in self.resolved_candidate_task_targets.items()
+            if target < required_per_domain
+        }
+        if shortfalls:
+            raise ValueError(
+                f"cohort_size exceeds at least one real candidate task pool: {shortfalls}"
+            )
         d1_negative_count = round(self.cohort_size * self.d1_counterfactual_fraction)
         d4_repair_count = round(self.cohort_size * self.d4_repair_fraction)
         for label, count in (
@@ -66,6 +90,20 @@ class TrainingUtilityMVPConfig(BaseModel):
             if count % 3:
                 raise ValueError(f"{label} count must be divisible by three")
         return self
+
+    def candidate_task_target(self, domain: str) -> int:
+        return self.candidate_task_targets.get(domain, self.candidate_tasks_per_domain)
+
+    def evaluation_task_target(self, domain: str) -> int:
+        return self.evaluation_task_targets.get(domain, self.evaluation_tasks_per_domain)
+
+    @property
+    def resolved_candidate_task_targets(self) -> dict[str, int]:
+        return {domain: self.candidate_task_target(domain) for domain in VALIDATION_DOMAINS}
+
+    @property
+    def resolved_evaluation_task_targets(self) -> dict[str, int]:
+        return {domain: self.evaluation_task_target(domain) for domain in VALIDATION_DOMAINS}
 
     @property
     def config_hash(self) -> str:
@@ -100,6 +138,9 @@ class CohortDatasetManifest(BaseModel):
     record_count: int = Field(ge=1)
     domain_counts: dict[str, int]
     source_kind_counts: dict[str, int]
+    pattern_counts: dict[str, int] = Field(default_factory=dict)
+    program_signature_counts: dict[str, int] = Field(default_factory=dict)
+    structural_group_count: int = Field(default=0, ge=0)
     counterfactual_repair_count: int = Field(ge=0)
     record_ids: tuple[str, ...]
     dataset_hash: str
@@ -119,6 +160,9 @@ class TrainingUtilityDataManifest(BaseModel):
     cohorts: tuple[CohortDatasetManifest, ...]
     evaluation_record_count: int = Field(ge=1)
     evaluation_domain_counts: dict[str, int]
+    evaluation_pattern_counts: dict[str, int] = Field(default_factory=dict)
+    evaluation_program_signature_counts: dict[str, int] = Field(default_factory=dict)
+    evaluation_worst_case_95ci_half_width: dict[str, float] = Field(default_factory=dict)
     evaluation_record_ids: tuple[str, ...]
     evaluation_dataset_hash: str
     training_task_ids: tuple[str, ...]
@@ -145,7 +189,7 @@ class TrainingUtilityReadinessReport(BaseModel):
     observed_real_candidate_count: int = Field(ge=0)
     accepted_real_candidate_count: int = Field(ge=0)
     critic_reviewed_accepted_count: int = Field(ge=0)
-    required_per_domain: dict[str, int]
+    required_per_domain: dict[str, dict[str, int]]
     observed_per_domain: dict[str, dict[str, int]]
     blockers: tuple[str, ...]
     status: Literal["ready", "blocked"]

@@ -1,5 +1,7 @@
 # v0.8 Training Utility MVP Preflight Report
 
+> Historical smoke snapshot. The current Prompt-v3 acceptance protocol is recorded in `docs/v08_gap_closure_report.md`.
+
 ## Status
 
 Run date: 2026-07-27 UTC.

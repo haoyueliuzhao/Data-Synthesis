@@ -10,6 +10,80 @@ from trusted_synthesis.core.task.pattern import (
 )
 from trusted_synthesis.core.task.schema import TaskLevel
 
+
+def _single_rule_pattern(
+    *,
+    pattern_id: str,
+    task_type: str,
+    renderer_id: str,
+    quality_profile_id: str,
+    semantic_constraint: str,
+) -> TaskPatternSpec:
+    return TaskPatternSpec(
+        pattern_id=pattern_id,
+        pattern_version="1.0.0",
+        domain="legal",
+        task_type=task_type,
+        level=TaskLevel.EVIDENCE_INTEGRATION,
+        evidence_roles=(
+            EvidenceRoleSpec(
+                role_id="rule",
+                accepted_kinds=(EvidenceKind.RULE,),
+                semantic_constraints=("legal_evidence_valid", semantic_constraint),
+                temporal_constraints=("effective_time_present",),
+                scope_constraints=("jurisdiction_scope_present",),
+            ),
+        ),
+        program_template=(
+            ProgramNodeTemplate(
+                node_role_id="result",
+                operator_id="legal_apply_rule",
+                input_refs=(
+                    PatternInputRef(
+                        kind=PatternInputKind.EVIDENCE_ROLE,
+                        ref_id="rule",
+                    ),
+                ),
+                output_schema="structured",
+            ),
+        ),
+        output_node_role_id="result",
+        answer_schema={
+            "type": "legal_rule_applicability",
+            "required_fields": [
+                "applicable",
+                "authority",
+                "legal_effect",
+                "missing_conditions",
+                "triggered_exceptions",
+            ],
+        },
+        instruction_renderer_id=renderer_id,
+        quality_profile_id=quality_profile_id,
+        cross_role_constraints=("conditions_and_exceptions_explicit",),
+        difficulty_base="hard",
+        difficulty_base_cost=4.0,
+        metadata={"pattern_catalog": "legal_contract_patterns.v2"},
+    )
+
+
+LEGAL_CONDITION_APPLICATION_PATTERN = _single_rule_pattern(
+    pattern_id="legal.condition_application",
+    task_type="legal_condition_application",
+    renderer_id="legal.condition_application.v1",
+    quality_profile_id="legal.condition_application.quality.v1",
+    semantic_constraint="registered_conditions_explicit",
+)
+
+
+LEGAL_EXCEPTION_APPLICATION_PATTERN = _single_rule_pattern(
+    pattern_id="legal.exception_application",
+    task_type="legal_exception_application",
+    renderer_id="legal.exception_application.v1",
+    quality_profile_id="legal.exception_application.quality.v1",
+    semantic_constraint="registered_exceptions_explicit",
+)
+
 LEGAL_RULE_APPLICATION_PATTERN = TaskPatternSpec(
     pattern_id="legal.rule_application",
     pattern_version="1.0.0",
@@ -70,5 +144,12 @@ LEGAL_RULE_APPLICATION_PATTERN = TaskPatternSpec(
     ),
     difficulty_base="expert",
     difficulty_base_cost=6.0,
-    metadata={"pattern_catalog": "legal_contract_patterns.v1"},
+    metadata={"pattern_catalog": "legal_contract_patterns.v2"},
+)
+
+
+LEGAL_TASK_PATTERNS = (
+    LEGAL_CONDITION_APPLICATION_PATTERN,
+    LEGAL_EXCEPTION_APPLICATION_PATTERN,
+    LEGAL_RULE_APPLICATION_PATTERN,
 )

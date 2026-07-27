@@ -102,6 +102,7 @@ def audit_agent_validation_capacity(
         domain: len({item.task.task_id for item in cases if item.domain == domain})
         for domain in targets
     }
+    structures = tuple(_task_structure(item.task.public) for item in cases)
     blockers = []
     for domain, target in targets.items():
         if materialized.get(domain, 0) != target:
@@ -133,6 +134,10 @@ def audit_agent_validation_capacity(
         target_task_counts=targets,
         materialized_task_counts=dict(sorted(materialized.items())),
         unique_task_counts=unique,
+        pattern_counts=dict(sorted(Counter(item["pattern_id"] for item in structures).items())),
+        program_signature_counts=dict(
+            sorted(Counter(item["program_signature"] for item in structures).items())
+        ),
         retrieval_track_count=retrieval_count,
         planning_track_count=planning_count,
         planned_candidate_count=planned_candidates,
@@ -178,6 +183,7 @@ def run_agent_validation(
                     sample_identity,
                     prefix="agent_validation_sample:",
                 )
+                structure = _task_structure(task.public)
                 try:
                     compiled, runtime = _compile_runtime(case, task)
                     reference_sample_ids.append(compiled.sample.sample_id)
@@ -208,6 +214,7 @@ def run_agent_validation(
                         metadata={
                             "model_config_hash": config.model.public_manifest_hash,
                             "generation_audit_id": solve_result.audit.audit_id,
+                            **structure,
                         },
                     )
                     critic_examples.append(example)
@@ -235,6 +242,9 @@ def run_agent_validation(
                             sample_id=sample_id,
                             task_id=task.task_id,
                             domain=case.domain,
+                            task_type=structure["task_type"],
+                            pattern_id=structure["pattern_id"],
+                            program_signature=structure["program_signature"],
                             retrieval_track=retrieval_track,
                             planning_track=planning_track,
                             generation_status="normalized",
@@ -253,6 +263,9 @@ def run_agent_validation(
                             sample_id=sample_id,
                             task_id=task.task_id,
                             domain=case.domain,
+                            task_type=structure["task_type"],
+                            pattern_id=structure["pattern_id"],
+                            program_signature=structure["program_signature"],
                             retrieval_track=retrieval_track,
                             planning_track=planning_track,
                             generation_status="model_failed",
@@ -267,6 +280,9 @@ def run_agent_validation(
                             sample_id=sample_id,
                             task_id=task.task_id,
                             domain=case.domain,
+                            task_type=structure["task_type"],
+                            pattern_id=structure["pattern_id"],
+                            program_signature=structure["program_signature"],
                             retrieval_track=retrieval_track,
                             planning_track=planning_track,
                             generation_status="infrastructure_failed",
@@ -588,6 +604,16 @@ def _build_report(
         domain: count * track_multiplier for domain, count in requested_task_counts.items()
     }
     normalized_by_domain = Counter(item.domain for item in samples if item.trajectory is not None)
+    pattern_counts = Counter(item.pattern_id for item in samples)
+    normalized_by_pattern = Counter(
+        item.pattern_id for item in samples if item.trajectory is not None
+    )
+    accepted_by_pattern = Counter(
+        item.pattern_id
+        for item in samples
+        if item.contract_assessment is not None
+        and item.contract_assessment.decision == ReleaseDecision.ACCEPTED
+    )
     domain_completion_rates = {
         domain: normalized_by_domain.get(domain, 0) / requested
         for domain, requested in requested_candidate_counts.items()
@@ -618,8 +644,15 @@ def _build_report(
         attempted_count=len(samples),
         api_success_count=sum(item.generation_audit is not None for item in samples),
         normalized_trajectory_count=normalized_count,
+        normalized_trajectory_rate=(normalized_count / len(samples) if samples else 0),
         contract_evaluated_count=len(assessments),
         accepted_count=sum(item.decision == ReleaseDecision.ACCEPTED for item in assessments),
+        contract_acceptance_rate=(
+            sum(item.decision == ReleaseDecision.ACCEPTED for item in assessments)
+            / len(assessments)
+            if assessments
+            else 0
+        ),
         quarantined_count=sum(item.decision == ReleaseDecision.QUARANTINED for item in assessments),
         rejected_count=sum(item.decision == ReleaseDecision.REJECTED for item in assessments),
         counterfactual_count=len(counterfactual_assessments),
@@ -632,6 +665,19 @@ def _build_report(
             / len(counterfactual_assessments)
         ),
         domain_counts=dict(sorted(Counter(item.domain for item in samples).items())),
+        task_type_counts=dict(sorted(Counter(item.task_type for item in samples).items())),
+        pattern_counts=dict(sorted(pattern_counts.items())),
+        program_signature_counts=dict(
+            sorted(Counter(item.program_signature for item in samples).items())
+        ),
+        pattern_completion_rates={
+            key: normalized_by_pattern.get(key, 0) / count
+            for key, count in sorted(pattern_counts.items())
+        },
+        pattern_acceptance_rates={
+            key: accepted_by_pattern.get(key, 0) / count
+            for key, count in sorted(pattern_counts.items())
+        },
         retrieval_planning_counts=dict(sorted(track_counts.items())),
         retrieval_planning_acceptance_rates={
             key: track_accepted.get(key, 0) / count for key, count in sorted(track_counts.items())
@@ -682,6 +728,27 @@ def _build_report(
         ),
         samples=samples,
     )
+
+
+def _task_structure(task) -> dict[str, str]:
+    pattern = task.metadata.get("task_pattern") or {}
+    nodes = tuple(task.program_skeleton.nodes) if task.program_skeleton is not None else ()
+    program_signature = canonical_hash(
+        tuple(
+            (
+                node.operator_id,
+                tuple(node.dependencies),
+                node.parameters,
+            )
+            for node in nodes
+        ),
+        prefix="agent_program_signature:",
+    )
+    return {
+        "task_type": task.task_type,
+        "pattern_id": str(pattern.get("pattern_id") or task.task_type),
+        "program_signature": program_signature,
+    }
 
 
 def write_agent_validation_artifacts(

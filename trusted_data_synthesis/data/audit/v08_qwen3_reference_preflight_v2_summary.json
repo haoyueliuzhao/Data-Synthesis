@@ -1,0 +1,107 @@
+{
+  "candidate_pool_domain_counts": {
+    "finance": 1000,
+    "legal": 500,
+    "science": 500
+  },
+  "candidate_pool_pattern_counts": {
+    "finance.comparison": 250,
+    "finance.fact_retrieval": 250,
+    "finance.temporal_average": 250,
+    "finance.temporal_growth": 250,
+    "legal.condition_application": 167,
+    "legal.exception_application": 167,
+    "legal.rule_application": 166,
+    "science.descriptive_effect_synthesis": 166,
+    "science.protocol_compatibility": 167,
+    "science.protocol_effect_comparison": 167
+  },
+  "candidate_pool_program_signature_counts": {
+    "training_utility_program_signature:2dae2676adffdc4155533eadb9f357f526ca3b83474d5d0157d0f05fdcfbb966": 250,
+    "training_utility_program_signature:40e92a79c59573e18e0fc0600a77f5a9fc3f372f1a8dd962f55176c146cb451e": 166,
+    "training_utility_program_signature:57b76e7e3af343673652c4c3a12c0dbd7c31192497c1f47b7104e94df82e7949": 167,
+    "training_utility_program_signature:5f1511a84b4b189448937107b3ba80d3668c7ee936fe98903efe701dcba989f2": 84,
+    "training_utility_program_signature:73fab666f6f5ce551ad5eb2aec52d29bcf7fa33e5de69334de6cd1dcad9bff5a": 166,
+    "training_utility_program_signature:94b645564298183857454631b3a40c19170c8fba91fc9919ad372a3c72141a7d": 250,
+    "training_utility_program_signature:d49464e1707112f92eb852ca07d9099b9b12affadd3e0dd9c71b79e1231ee285": 250,
+    "training_utility_program_signature:d8264ee064a2e29d437c8590e1792db022eb4e2a0ddf2a4b1a01f6858761e222": 167,
+    "training_utility_program_signature:e893e792b80f96e66af7f49ba20c7275eaac00c726d36608bb4ee11979d2080b": 250,
+    "training_utility_program_signature:f77ddb2e1b8d7e83c1f8489e0333d8afc351d80342c91931cfb9557e80441fed": 83,
+    "training_utility_program_signature:ff8f2b8fb4fea3c2101057ee3887f766e778a76cc21b12c43a7c190e89ecb86b": 167
+  },
+  "candidate_pool_record_count": 2000,
+  "candidate_pool_structural_group_count": 11,
+  "cohort": "D2_reference_workflow",
+  "cohort_dataset_hash": "training_utility_cohort_dataset:37482cc4d74fbc9684740dfd8992afd72daf60472e758db569c17c74fc357b11",
+  "cohort_domain_counts": {
+    "finance": 200,
+    "legal": 200,
+    "science": 200
+  },
+  "cohort_pattern_counts": {
+    "finance.comparison": 50,
+    "finance.fact_retrieval": 50,
+    "finance.temporal_average": 50,
+    "finance.temporal_growth": 50,
+    "legal.condition_application": 67,
+    "legal.exception_application": 67,
+    "legal.rule_application": 66,
+    "science.descriptive_effect_synthesis": 67,
+    "science.protocol_compatibility": 67,
+    "science.protocol_effect_comparison": 66
+  },
+  "cohort_program_signature_counts": {
+    "training_utility_program_signature:2dae2676adffdc4155533eadb9f357f526ca3b83474d5d0157d0f05fdcfbb966": 50,
+    "training_utility_program_signature:40e92a79c59573e18e0fc0600a77f5a9fc3f372f1a8dd962f55176c146cb451e": 67,
+    "training_utility_program_signature:57b76e7e3af343673652c4c3a12c0dbd7c31192497c1f47b7104e94df82e7949": 67,
+    "training_utility_program_signature:5f1511a84b4b189448937107b3ba80d3668c7ee936fe98903efe701dcba989f2": 33,
+    "training_utility_program_signature:73fab666f6f5ce551ad5eb2aec52d29bcf7fa33e5de69334de6cd1dcad9bff5a": 66,
+    "training_utility_program_signature:94b645564298183857454631b3a40c19170c8fba91fc9919ad372a3c72141a7d": 50,
+    "training_utility_program_signature:d49464e1707112f92eb852ca07d9099b9b12affadd3e0dd9c71b79e1231ee285": 50,
+    "training_utility_program_signature:d8264ee064a2e29d437c8590e1792db022eb4e2a0ddf2a4b1a01f6858761e222": 67,
+    "training_utility_program_signature:e893e792b80f96e66af7f49ba20c7275eaac00c726d36608bb4ee11979d2080b": 50,
+    "training_utility_program_signature:f77ddb2e1b8d7e83c1f8489e0333d8afc351d80342c91931cfb9557e80441fed": 34,
+    "training_utility_program_signature:ff8f2b8fb4fea3c2101057ee3887f766e778a76cc21b12c43a7c190e89ecb86b": 66
+  },
+  "cohort_record_count": 600,
+  "config_hash": "training_utility_mvp_config:bdd35946c3f493e16cd61c9b28593179b37b03555ebade10bd49de9cc490de51",
+  "evaluation_dataset_hash": "training_utility_evaluation_dataset:aed3ffb5db5a7520ecf946db2180429309709c6b2542d51e8525ff6cfbb68ea8",
+  "evaluation_domain_counts": {
+    "finance": 200,
+    "legal": 200,
+    "science": 200
+  },
+  "evaluation_pattern_counts": {
+    "finance.comparison": 50,
+    "finance.fact_retrieval": 50,
+    "finance.temporal_average": 50,
+    "finance.temporal_growth": 50,
+    "legal.condition_application": 67,
+    "legal.exception_application": 66,
+    "legal.rule_application": 67,
+    "science.descriptive_effect_synthesis": 67,
+    "science.protocol_compatibility": 66,
+    "science.protocol_effect_comparison": 67
+  },
+  "evaluation_program_signature_counts": {
+    "training_utility_program_signature:2dae2676adffdc4155533eadb9f357f526ca3b83474d5d0157d0f05fdcfbb966": 50,
+    "training_utility_program_signature:40e92a79c59573e18e0fc0600a77f5a9fc3f372f1a8dd962f55176c146cb451e": 67,
+    "training_utility_program_signature:57b76e7e3af343673652c4c3a12c0dbd7c31192497c1f47b7104e94df82e7949": 66,
+    "training_utility_program_signature:5f1511a84b4b189448937107b3ba80d3668c7ee936fe98903efe701dcba989f2": 33,
+    "training_utility_program_signature:73fab666f6f5ce551ad5eb2aec52d29bcf7fa33e5de69334de6cd1dcad9bff5a": 67,
+    "training_utility_program_signature:94b645564298183857454631b3a40c19170c8fba91fc9919ad372a3c72141a7d": 50,
+    "training_utility_program_signature:d49464e1707112f92eb852ca07d9099b9b12affadd3e0dd9c71b79e1231ee285": 50,
+    "training_utility_program_signature:d8264ee064a2e29d437c8590e1792db022eb4e2a0ddf2a4b1a01f6858761e222": 66,
+    "training_utility_program_signature:e893e792b80f96e66af7f49ba20c7275eaac00c726d36608bb4ee11979d2080b": 50,
+    "training_utility_program_signature:f77ddb2e1b8d7e83c1f8489e0333d8afc351d80342c91931cfb9557e80441fed": 34,
+    "training_utility_program_signature:ff8f2b8fb4fea3c2101057ee3887f766e778a76cc21b12c43a7c190e89ecb86b": 67
+  },
+  "evaluation_record_count": 600,
+  "evaluation_worst_case_95ci_half_width": {
+    "finance": 0.06929646455628166,
+    "legal": 0.06929646455628166,
+    "science": 0.06929646455628166
+  },
+  "kind": "reference_training_preflight",
+  "training_evaluation_overlap_count": 0
+}

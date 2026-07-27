@@ -1,0 +1,100 @@
+{
+  "accepted_real_candidate_count": 0,
+  "blockers": [
+    "finance:d1_counterfactual=0<2",
+    "finance:d3_accepted=0<4",
+    "finance:d4_direct=0<2",
+    "finance:d4_repair=0<2",
+    "finance:d5_critic_reviewed=0<4",
+    "finance:real_candidates=4<9",
+    "legal:d1_counterfactual=0<2",
+    "legal:d1_real=0<2",
+    "legal:d3_accepted=0<4",
+    "legal:d4_direct=0<2",
+    "legal:d4_repair=0<2",
+    "legal:d5_critic_reviewed=0<4",
+    "legal:real_candidates=0<9",
+    "science:d1_counterfactual=0<2",
+    "science:d3_accepted=0<4",
+    "science:d4_direct=0<2",
+    "science:d4_repair=0<2",
+    "science:d5_critic_reviewed=0<4",
+    "science:real_candidates=5<9"
+  ],
+  "config_hash": "training_utility_mvp_config:52980a617289421b62dc3feed77f9a989527c5cd955223226146a16fd1eefb91",
+  "critic_reviewed_accepted_count": 0,
+  "expected_real_candidate_count": 36,
+  "observed_per_domain": {
+    "finance": {
+      "accepted": 0,
+      "attempted_tasks": 12,
+      "counterfactuals": 0,
+      "critic_reviewed_accepted": 0,
+      "expected_tasks": 12,
+      "real_candidates": 4,
+      "repairable_tasks": 0,
+      "representable_counterfactual": 0,
+      "representable_real": 4
+    },
+    "legal": {
+      "accepted": 0,
+      "attempted_tasks": 12,
+      "counterfactuals": 0,
+      "critic_reviewed_accepted": 0,
+      "expected_tasks": 12,
+      "real_candidates": 0,
+      "repairable_tasks": 0,
+      "representable_counterfactual": 0,
+      "representable_real": 0
+    },
+    "science": {
+      "accepted": 0,
+      "attempted_tasks": 12,
+      "counterfactuals": 0,
+      "critic_reviewed_accepted": 0,
+      "expected_tasks": 12,
+      "real_candidates": 5,
+      "repairable_tasks": 0,
+      "representable_counterfactual": 0,
+      "representable_real": 5
+    }
+  },
+  "observed_real_candidate_count": 9,
+  "readiness_hash": "training_utility_readiness:6e5b0be7f0991f5131be44f532f093141266acffca6d28deb9bc0bd4526d8670",
+  "required_per_domain": {
+    "finance": {
+      "d1_counterfactual": 2,
+      "d1_real": 2,
+      "d3_accepted": 4,
+      "d4_direct": 2,
+      "d4_repair": 2,
+      "d5_critic_reviewed": 4,
+      "expected_tasks": 12,
+      "real_candidates": 9
+    },
+    "legal": {
+      "d1_counterfactual": 2,
+      "d1_real": 2,
+      "d3_accepted": 4,
+      "d4_direct": 2,
+      "d4_repair": 2,
+      "d5_critic_reviewed": 4,
+      "expected_tasks": 12,
+      "real_candidates": 9
+    },
+    "science": {
+      "d1_counterfactual": 2,
+      "d1_real": 2,
+      "d3_accepted": 4,
+      "d4_direct": 2,
+      "d4_repair": 2,
+      "d5_critic_reviewed": 4,
+      "expected_tasks": 12,
+      "real_candidates": 9
+    }
+  },
+  "source_agent_run_id": "agent_validation_run:9d0642169c81cf986ecd0ff64aeb85ae6eb20b7d7196b7fa14229cd790f59d80",
+  "source_critic_dataset_id": "quality_critic_dataset:a596c079eee157a5fc1d3b6eddcab4416ff7fd975378bbb0e14dd94a4f740014",
+  "status": "blocked",
+  "version": "training_utility_mvp.v3"
+}

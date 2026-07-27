@@ -1,0 +1,52 @@
+{
+  "blockers": [],
+  "config_hash": "agent_validation_config:ce36b23a83fd845d1f3a4777b6013f67846cfb9f3a8005f506065616441994a9",
+  "fixture_manifest_hash": "agent_capacity_fixtures:543f59b44dcdecada950607576c856acc3710d9cec6a678fafb57cb574ce858f",
+  "materialized_task_counts": {
+    "finance": 1000,
+    "legal": 500,
+    "science": 500
+  },
+  "pattern_counts": {
+    "finance.comparison": 250,
+    "finance.fact_retrieval": 250,
+    "finance.temporal_average": 250,
+    "finance.temporal_growth": 250,
+    "legal.condition_application": 167,
+    "legal.exception_application": 167,
+    "legal.rule_application": 166,
+    "science.descriptive_effect_synthesis": 166,
+    "science.protocol_compatibility": 167,
+    "science.protocol_effect_comparison": 167
+  },
+  "planned_agent_api_call_floor": 2000,
+  "planned_candidate_count": 2000,
+  "planned_critic_api_call_ceiling": 1200,
+  "planning_track_count": 1,
+  "program_signature_counts": {
+    "agent_program_signature:03b96a8f2f69ffcbb7dee5ac656d023d2d930423a15198f6bbf2e35ffe371ea7": 250,
+    "agent_program_signature:06ef772bd00a4d813eb9341e54fd05040fa0fd7c3787b4b1ccbf70a57ba919ef": 84,
+    "agent_program_signature:0f7c44e0ca9972d3cae1415a0b49732e367ced6269839db7db12919f74556eba": 166,
+    "agent_program_signature:2e404b1a0b6fb5fb73269332a80dbf32525c8cf0a9e5a0a4b3edd2eaf82f76a3": 166,
+    "agent_program_signature:392113aa74afabdb11f149a5854328f33d2f66e8224918e1e2c84c612f2e33fa": 167,
+    "agent_program_signature:4aecc83eb994c0f3a77d40bce42c891086fc8faa74292c4b3405e7c004e18a53": 250,
+    "agent_program_signature:6524e65f008467739c9bbe35d7b02aa479c8e4b9f5789507cf5816c4ccabc889": 167,
+    "agent_program_signature:a25db54d1b8968fa2a90fcb4c03a0972af26a2dbd84a01be30bf19e995386a9e": 83,
+    "agent_program_signature:ab3b64d033f9319a4fc820206f517bf905b6be04be27b8a780976733369d4d8c": 250,
+    "agent_program_signature:aba587ec6ceabcf444f5d00ec990418d779c37ede6a3c01984daed289e4bcae4": 250,
+    "agent_program_signature:efb7aac9acf00c92e9064b3b9cb626dc29105a77f0c87ac4e3ff933ddeea7190": 167
+  },
+  "retrieval_track_count": 1,
+  "status": "ready",
+  "target_task_counts": {
+    "finance": 1000,
+    "legal": 500,
+    "science": 500
+  },
+  "unique_task_counts": {
+    "finance": 1000,
+    "legal": 500,
+    "science": 500
+  },
+  "version": "agent_capacity_audit.v2"
+}

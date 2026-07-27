@@ -13,10 +13,14 @@ from trusted_synthesis.domains.science.policy import ScienceSemanticPolicy
 
 
 class ScienceTaskPatternRuntime:
-    runtime_id = "science_task_pattern_runtime.v1"
-    runtime_version = "1.0.0"
+    runtime_id = "science_task_pattern_runtime.v2"
+    runtime_version = "2.0.0"
     domain = "science"
-    renderer_ids: tuple[str, ...] = ("science.protocol_effect_comparison.v1",)
+    renderer_ids: tuple[str, ...] = (
+        "science.protocol_compatibility.v1",
+        "science.protocol_effect_comparison.v1",
+        "science.descriptive_effect_synthesis.v1",
+    )
 
     def __init__(self) -> None:
         self._policy = ScienceSemanticPolicy()
@@ -27,17 +31,29 @@ class ScienceTaskPatternRuntime:
         binding: EvidenceBinding,
         evidence_by_role: dict[str, tuple[EvidenceItem, ...]],
     ) -> PatternBindingValidationReport:
-        del pattern, binding
+        del binding
         experiments = evidence_by_role["experiments"]
-        comparison = self._policy.compare(experiments[0], experiments[1])
         checks = {
             "all_evidence_valid": all(
                 self._policy.validate_evidence(item).passed for item in experiments
             ),
-            "protocol_comparable": comparison.comparable,
         }
-        issues = [check_id for check_id, passed in checks.items() if not passed]
-        issues.extend(comparison.reasons)
+        issues: list[str] = []
+        if pattern.task_type == "science_protocol_compatibility":
+            first = experiments[0]
+            checks["same_metric_definition"] = all(
+                item.predicate == first.predicate
+                and item.definition.definition_id == first.definition.definition_id
+                and item.scope == first.scope
+                for item in experiments[1:]
+            )
+        else:
+            comparisons = tuple(
+                self._policy.compare(experiments[0], item) for item in experiments[1:]
+            )
+            checks["protocol_comparable"] = all(item.comparable for item in comparisons)
+            issues.extend(reason for item in comparisons for reason in item.reasons)
+        issues.extend(check_id for check_id, passed in checks.items() if not passed)
         unique_issues = tuple(dict.fromkeys(issues))
         return PatternBindingValidationReport(
             passed=not unique_issues,
@@ -54,16 +70,31 @@ class ScienceTaskPatternRuntime:
         bundle: EvidenceBundle,
         proof_graph: ProofGraph,
     ) -> TaskPatternMaterialization:
-        del pattern, binding, proof_graph
-        left, right = evidence_by_role["experiments"]
-        evidence = (left, right)
-        return TaskPatternMaterialization(
-            instruction=(
+        del binding, proof_graph
+        evidence = evidence_by_role["experiments"]
+        left, right = evidence[:2]
+        if pattern.task_type == "science_protocol_compatibility":
+            instruction = (
+                "Determine whether the two experimental results use compatible metrics, "
+                "datasets, methods, and protocols. Report every protocol field that differs."
+            )
+        elif pattern.task_type == "science_protocol_effect_comparison":
+            instruction = (
                 "Determine whether the two experimental results use comparable protocols, then "
                 "compare their observed effects while preserving uncertainty in the conclusion."
-            ),
+            )
+        elif pattern.task_type == "science_descriptive_effect_synthesis":
+            instruction = (
+                "Using all protocol-compatible studies, compute the sample-size-weighted "
+                "observed effect and report the full uncertainty envelope. Treat this as a "
+                "descriptive synthesis, not a causal estimate or formal meta-analysis."
+            )
+        else:
+            raise ValueError(f"unsupported science task pattern: {pattern.task_type}")
+        return TaskPatternMaterialization(
+            instruction=instruction,
             retrieval_scope={
-                "aliases": sorted({left.subject.name, right.subject.name}),
+                "aliases": sorted({item.subject.name for item in evidence}),
                 "partial_constraints": {
                     "predicate": left.predicate,
                     "definition_id": left.definition.definition_id,
@@ -90,5 +121,5 @@ class ScienceTaskPatternRuntime:
                 },
             },
             oracle_selection_contract=oracle_selection_contract(evidence),
-            metadata={"domain_plugin_id": "science_tasks.v2"},
+            metadata={"domain_plugin_id": "science_tasks.v3"},
         )

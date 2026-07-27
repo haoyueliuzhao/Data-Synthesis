@@ -237,3 +237,38 @@ def test_reference_training_preflight_is_balanced_and_disjoint(tmp_path: Path) -
     assert manifest["training_evaluation_overlap_count"] == 0
     assert (tmp_path / "D2_reference_workflow.jsonl").is_file()
     assert (tmp_path / "evaluation.jsonl").is_file()
+
+
+def test_training_utility_supports_oversupplied_per_domain_pools() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        candidate_task_targets={"finance": 8, "legal": 6, "science": 9},
+        evaluation_task_targets={"finance": 2, "legal": 3, "science": 4},
+        cohort_size=6,
+        max_steps=1,
+    )
+
+    training, evaluation = _reference_and_evaluation_records(config)
+
+    assert config.resolved_candidate_task_targets == {
+        "finance": 8,
+        "legal": 6,
+        "science": 9,
+    }
+    assert config.resolved_evaluation_task_targets == {
+        "finance": 2,
+        "legal": 3,
+        "science": 4,
+    }
+    assert {
+        domain: sum(item.domain == domain for item in training)
+        for domain in config.resolved_candidate_task_targets
+    } == config.resolved_candidate_task_targets
+    assert {
+        domain: sum(item.domain == domain for item in evaluation)
+        for domain in config.resolved_evaluation_task_targets
+    } == config.resolved_evaluation_task_targets
+    assert all(item.metadata["pattern_id"] for item in (*training, *evaluation))
+    assert all(item.metadata["program_signature"] for item in (*training, *evaluation))
+    assert all(item.metadata["structural_group_id"] for item in (*training, *evaluation))

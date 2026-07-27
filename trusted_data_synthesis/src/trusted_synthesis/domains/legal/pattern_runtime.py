@@ -14,10 +14,14 @@ from trusted_synthesis.domains.legal.policy import LegalSemanticPolicy
 
 
 class LegalTaskPatternRuntime:
-    runtime_id = "legal_task_pattern_runtime.v1"
-    runtime_version = "1.0.0"
+    runtime_id = "legal_task_pattern_runtime.v2"
+    runtime_version = "2.0.0"
     domain = "legal"
-    renderer_ids: tuple[str, ...] = ("legal.rule_application.v1",)
+    renderer_ids: tuple[str, ...] = (
+        "legal.condition_application.v1",
+        "legal.exception_application.v1",
+        "legal.rule_application.v1",
+    )
 
     def __init__(self) -> None:
         self._policy = LegalSemanticPolicy()
@@ -28,18 +32,15 @@ class LegalTaskPatternRuntime:
         binding: EvidenceBinding,
         evidence_by_role: dict[str, tuple[EvidenceItem, ...]],
     ) -> PatternBindingValidationReport:
-        del pattern
-        rules = evidence_by_role["rules"]
+        role_id = "rules" if pattern.task_type == "legal_rule_application" else "rule"
+        rules = evidence_by_role[role_id]
         first = rules[0]
         comparisons = tuple(self._policy.compare(first, item) for item in rules[1:])
         authorities = {
             item.payload.authority for item in rules if isinstance(item.payload, RuleStatement)
         }
-        authority_priority = tuple(
-            str(item)
-            for item in binding.node_parameters.get("result", {}).get("authority_priority", ())
-        )
-        apply_parameters = binding.node_parameters.get("apply", {})
+        apply_node = "apply" if pattern.task_type == "legal_rule_application" else "result"
+        apply_parameters = binding.node_parameters.get(apply_node, {})
         checks = {
             "all_evidence_valid": all(
                 self._policy.validate_evidence(item).passed for item in rules
@@ -47,8 +48,17 @@ class LegalTaskPatternRuntime:
             "same_legal_question_and_scope": all(item.comparable for item in comparisons),
             "conditions_explicit": "satisfied_conditions" in apply_parameters,
             "exceptions_explicit": "present_exceptions" in apply_parameters,
-            "authority_priority_complete": authorities.issubset(set(authority_priority)),
         }
+        if pattern.task_type == "legal_rule_application":
+            authority_priority = tuple(
+                str(item)
+                for item in binding.node_parameters.get("result", {}).get("authority_priority", ())
+            )
+            checks["authority_priority_complete"] = authorities.issubset(set(authority_priority))
+        if pattern.task_type == "legal_exception_application":
+            checks["registered_exception_present"] = bool(
+                apply_parameters.get("present_exceptions")
+            )
         issues = [check_id for check_id, passed in checks.items() if not passed]
         issues.extend(reason for item in comparisons for reason in item.reasons)
         unique_issues = tuple(dict.fromkeys(issues))
@@ -67,13 +77,40 @@ class LegalTaskPatternRuntime:
         bundle: EvidenceBundle,
         proof_graph: ProofGraph,
     ) -> TaskPatternMaterialization:
-        del pattern, binding, bundle, proof_graph
-        rules = evidence_by_role["rules"]
-        return TaskPatternMaterialization(
-            instruction=(
+        del bundle, proof_graph
+        role_id = "rules" if pattern.task_type == "legal_rule_application" else "rule"
+        rules = evidence_by_role[role_id]
+        apply_node = "apply" if pattern.task_type == "legal_rule_application" else "result"
+        apply_parameters = binding.node_parameters.get(apply_node, {})
+        conditions = tuple(apply_parameters.get("satisfied_conditions") or ())
+        exceptions = tuple(apply_parameters.get("present_exceptions") or ())
+        facts = (
+            f"Stated conditions: {conditions or ('none',)}. "
+            f"Present exceptions: {exceptions or ('none',)}."
+        )
+        if pattern.task_type == "legal_condition_application":
+            instruction = (
+                "Apply the effective rule to the stated facts and identify any unsatisfied "
+                f"condition before stating whether the rule applies. {facts}"
+            )
+        elif pattern.task_type == "legal_exception_application":
+            instruction = (
+                "Apply the effective rule after checking the stated facts and every registered "
+                f"exception. State whether an exception prevents the legal effect. {facts}"
+            )
+        elif pattern.task_type == "legal_rule_application":
+            authority_priority = tuple(
+                binding.node_parameters.get("result", {}).get("authority_priority") or ()
+            )
+            instruction = (
                 "Apply the effective rules to the stated conditions, check every registered "
-                "exception, and resolve any conflict by authority before stating the legal effect."
-            ),
+                "exception, and resolve any conflict by authority before stating the legal effect. "
+                f"{facts} Authority priority: {authority_priority}."
+            )
+        else:
+            raise ValueError(f"unsupported legal task pattern: {pattern.task_type}")
+        return TaskPatternMaterialization(
+            instruction=instruction,
             retrieval_scope={
                 "subject_ids": sorted({item.subject.subject_id for item in rules}),
                 "predicates": sorted({item.predicate for item in rules}),
@@ -99,5 +136,5 @@ class LegalTaskPatternRuntime:
                 },
             },
             oracle_selection_contract=oracle_selection_contract(rules),
-            metadata={"domain_plugin_id": "legal_tasks.v2"},
+            metadata={"domain_plugin_id": "legal_tasks.v3"},
         )

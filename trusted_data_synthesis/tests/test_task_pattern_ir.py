@@ -12,8 +12,12 @@ from trusted_synthesis.core.task.pattern_compiler import TaskPatternCompiler
 from trusted_synthesis.domains.legal.operations import legal_operation_registry
 from trusted_synthesis.domains.legal.pattern_runtime import LegalTaskPatternRuntime
 from trusted_synthesis.domains.legal.patterns import LEGAL_RULE_APPLICATION_PATTERN
+from trusted_synthesis.experiments.counterfactual_finance_fixture import (
+    build_finance_counterfactual_cases,
+)
 from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
     build_contract_cases,
+    build_pattern_validation_cases,
 )
 
 
@@ -151,3 +155,25 @@ def test_task_pattern_compilation_is_deterministic() -> None:
     assert [
         case.task.oracle.selection_contract["pattern_binding"]["binding_hash"] for case in first
     ] == [case.task.oracle.selection_contract["pattern_binding"]["binding_hash"] for case in second]
+
+
+def test_fixture_capacity_contains_distinct_patterns_and_programs_per_domain() -> None:
+    cases = (
+        *build_finance_counterfactual_cases(count=12),
+        *build_pattern_validation_cases(per_domain=12),
+    )
+    expected_pattern_counts = {"finance": 4, "legal": 3, "science": 3}
+    expected_program_counts = {"finance": 4, "legal": 2, "science": 3}
+
+    for domain in ("finance", "legal", "science"):
+        domain_cases = tuple(item for item in cases if item.domain == domain)
+        pattern_ids = {
+            item.task.public.metadata["task_pattern"]["pattern_id"] for item in domain_cases
+        }
+        program_signatures = {
+            tuple(node.operator_id for node in item.task.oracle.task_program.nodes)
+            for item in domain_cases
+        }
+        assert len(pattern_ids) == expected_pattern_counts[domain]
+        assert len(program_signatures) == expected_program_counts[domain]
+        assert len({item.task.task_id for item in domain_cases}) == 12

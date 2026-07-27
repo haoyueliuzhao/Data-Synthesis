@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import random
 from collections import Counter, defaultdict
 from collections.abc import Iterable
@@ -17,7 +18,7 @@ from trusted_synthesis.core.evaluation.critic.schema import (
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
 from trusted_synthesis.core.task.program import InputRefKind
-from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
+from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack, TaskPublicSpec
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
 from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
 from trusted_synthesis.experiments.agent_validation.tracks import materialize_track_variant
@@ -42,8 +43,9 @@ SYSTEM_PROMPT = (
     "You are a proof-carrying evidence agent. Use only the supplied public task and "
     "evidence. Return one JSON object with schema_version, plan_summary, "
     "selected_evidence_ids, execution_trace, verification_result, and final_answer. "
-    "Do not emit markdown or hidden reasoning. Bind concrete executions to public "
-    "plan node IDs and parameters when a plan is given."
+    "Do not emit markdown or hidden reasoning. Create a fresh execution_id for every "
+    "concrete tool call. When a plan is given, use planned_node_id only to align that "
+    "execution with the public skeleton; never copy a planned node ID into execution_id."
 )
 
 
@@ -115,8 +117,7 @@ def audit_training_utility_readiness(
 
     d1_counterfactual = round(config.cohort_size * config.d1_counterfactual_fraction)
     d4_repairs = round(config.cohort_size * config.d4_repair_fraction)
-    required = {
-        "expected_tasks": config.candidate_tasks_per_domain,
+    shared_required = {
         "d1_real": (config.cohort_size - d1_counterfactual) // 3,
         "d1_counterfactual": d1_counterfactual // 3,
         "d3_accepted": config.cohort_size // 3,
@@ -124,14 +125,30 @@ def audit_training_utility_readiness(
         "d4_repair": d4_repairs // 3,
         "d5_critic_reviewed": config.cohort_size // 3,
     }
+    required = {
+        domain: {
+            "expected_tasks": config.candidate_task_target(domain),
+            "real_candidates": math.ceil(
+                config.candidate_task_target(domain) * config.minimum_real_candidate_completion_rate
+            ),
+            **shared_required,
+        }
+        for domain in ("finance", "legal", "science")
+    }
     observed: dict[str, dict[str, int]] = {}
     blockers: list[str] = []
+    attempted_task_ids = {
+        item.task_id
+        for item in report.samples
+        if item.retrieval_track == RetrievalTrack.RESOLVED
+        and item.planning_track == PlanningTrack.PLAN_GIVEN
+    }
     real_task_ids = [item.task_id for item in real_examples]
-    missing = sorted(expected_task_ids - set(real_task_ids))
-    unexpected = sorted(set(real_task_ids) - expected_task_ids)
+    missing = sorted(expected_task_ids - attempted_task_ids)
+    unexpected = sorted(attempted_task_ids - expected_task_ids)
     duplicate_count = len(real_task_ids) - len(set(real_task_ids))
     if missing:
-        blockers.append(f"missing_real_candidate_tasks={len(missing)}")
+        blockers.append(f"missing_attempted_candidate_tasks={len(missing)}")
     if unexpected:
         blockers.append(f"unexpected_real_candidate_tasks={len(unexpected)}")
     if duplicate_count:
@@ -148,6 +165,12 @@ def audit_training_utility_readiness(
     for domain in ("finance", "legal", "science"):
         domain_counts = {
             "expected_tasks": sum(item.domain == domain for item in reference_records),
+            "attempted_tasks": sum(
+                item.domain == domain
+                and item.retrieval_track == RetrievalTrack.RESOLVED
+                and item.planning_track == PlanningTrack.PLAN_GIVEN
+                for item in report.samples
+            ),
             **{
                 name: sum(item.domain == domain for item in records)
                 for name, records in record_groups.items()
@@ -158,7 +181,8 @@ def audit_training_utility_readiness(
         }
         observed[domain] = domain_counts
         checks = {
-            "expected_tasks": domain_counts["real_candidates"],
+            "expected_tasks": domain_counts["attempted_tasks"],
+            "real_candidates": domain_counts["real_candidates"],
             "d1_real": domain_counts["representable_real"],
             "d1_counterfactual": domain_counts["representable_counterfactual"],
             "d3_accepted": domain_counts["accepted"],
@@ -167,7 +191,7 @@ def audit_training_utility_readiness(
             "d5_critic_reviewed": domain_counts["critic_reviewed_accepted"],
         }
         for requirement, observed_count in checks.items():
-            required_count = required[requirement]
+            required_count = required[domain][requirement]
             if observed_count < required_count:
                 blockers.append(f"{domain}:{requirement}={observed_count}<{required_count}")
     identity = {
@@ -213,11 +237,11 @@ def build_training_utility_datasets(
         item for item in critic_dataset.examples if item.task_id in expected_task_ids
     )
     real_examples = tuple(item for item in pool_examples if item.candidate_source == "real_agent")
-    if {item.task_id for item in real_examples} != expected_task_ids:
+    if not {item.task_id for item in real_examples}.issubset(expected_task_ids):
         raise ValueError(
-            "real Agent artifacts must cover the exact resolved/plan-given candidate task pool"
+            "real Agent artifacts contain tasks outside the pinned candidate task pool"
         )
-    if len(real_examples) != len(expected_task_ids):
+    if len(real_examples) != len({item.task_id for item in real_examples}):
         raise ValueError("real Agent artifacts must contain exactly one candidate per task")
     clean_examples = tuple(
         item
@@ -347,6 +371,11 @@ def build_training_utility_datasets(
         evaluation_domain_counts=dict(
             sorted(Counter(item.domain for item in evaluation_records).items())
         ),
+        evaluation_pattern_counts=_metadata_counts(evaluation_records, "pattern_id"),
+        evaluation_program_signature_counts=_metadata_counts(
+            evaluation_records, "program_signature"
+        ),
+        evaluation_worst_case_95ci_half_width=_evaluation_ci_by_domain(evaluation_records),
         evaluation_record_ids=tuple(item.record_id for item in evaluation_records),
         evaluation_dataset_hash=evaluation_hash,
         training_task_ids=training_task_ids,
@@ -396,9 +425,22 @@ def write_reference_training_preflight(
     manifest = {
         "kind": "reference_training_preflight",
         "config_hash": config.config_hash,
+        "candidate_pool_record_count": len(reference_records),
+        "candidate_pool_domain_counts": dict(
+            sorted(Counter(item.domain for item in reference_records).items())
+        ),
+        "candidate_pool_pattern_counts": _metadata_counts(reference_records, "pattern_id"),
+        "candidate_pool_program_signature_counts": _metadata_counts(
+            reference_records, "program_signature"
+        ),
+        "candidate_pool_structural_group_count": len(
+            {item.metadata["structural_group_id"] for item in reference_records}
+        ),
         "cohort": UtilityCohort.REFERENCE_WORKFLOW.value,
         "cohort_record_count": len(selected),
         "cohort_domain_counts": dict(sorted(Counter(item.domain for item in selected).items())),
+        "cohort_pattern_counts": _metadata_counts(selected, "pattern_id"),
+        "cohort_program_signature_counts": _metadata_counts(selected, "program_signature"),
         "cohort_dataset_hash": canonical_hash(
             tuple(item.record_hash for item in selected),
             prefix="training_utility_cohort_dataset:",
@@ -407,6 +449,11 @@ def write_reference_training_preflight(
         "evaluation_domain_counts": dict(
             sorted(Counter(item.domain for item in evaluation_records).items())
         ),
+        "evaluation_pattern_counts": _metadata_counts(evaluation_records, "pattern_id"),
+        "evaluation_program_signature_counts": _metadata_counts(
+            evaluation_records, "program_signature"
+        ),
+        "evaluation_worst_case_95ci_half_width": _evaluation_ci_by_domain(evaluation_records),
         "evaluation_dataset_hash": canonical_hash(
             tuple(item.record_hash for item in evaluation_records),
             prefix="training_utility_evaluation_dataset:",
@@ -420,6 +467,19 @@ def write_reference_training_preflight(
         encoding="utf-8",
     )
     return manifest
+
+
+def _metadata_counts(records: tuple[SFTRecord, ...], key: str) -> dict[str, int]:
+    return dict(
+        sorted(Counter(str(item.metadata.get(key) or "unknown") for item in records).items())
+    )
+
+
+def _evaluation_ci_by_domain(records: tuple[SFTRecord, ...]) -> dict[str, float]:
+    counts = Counter(item.domain for item in records)
+    return {
+        domain: 1.96 * (0.25 / count) ** 0.5 for domain, count in sorted(counts.items()) if count
+    }
 
 
 def load_sft_records(path: Path) -> tuple[SFTRecord, ...]:
@@ -543,6 +603,7 @@ def _record_from_example(
     trajectory = Trajectory.model_validate(example.critic_input["trajectory"])
     target = target_override or trajectory_to_response(trajectory)
     task = dict(example.critic_input["task"])
+    public_task = TaskPublicSpec.model_validate(task)
     evidence = list(example.critic_input["evidence_corpus"])
     return _make_record(
         cohort=cohort,
@@ -552,7 +613,11 @@ def _record_from_example(
         source_kind=example.candidate_source,
         contract_label=example.contract_annotation.acceptability.value,
         candidate_attempt=candidate_attempt,
-        metadata={"example_id": example.example_id, **(metadata or {})},
+        metadata={
+            **_task_structure_metadata(public_task),
+            "example_id": example.example_id,
+            **(metadata or {}),
+        },
     )
 
 
@@ -699,10 +764,15 @@ def _d4_counterfactual_calibrated_records(
 def _reference_and_evaluation_records(
     config: TrainingUtilityMVPConfig,
 ) -> tuple[tuple[SFTRecord, ...], tuple[SFTRecord, ...]]:
-    total = config.candidate_tasks_per_domain + config.evaluation_tasks_per_domain
+    totals = {
+        domain: config.candidate_task_target(domain) + config.evaluation_task_target(domain)
+        for domain in ("finance", "legal", "science")
+    }
+    non_finance = build_pattern_validation_cases(per_domain=max(totals["legal"], totals["science"]))
     cases = (
-        *build_finance_counterfactual_cases(count=total),
-        *build_pattern_validation_cases(per_domain=total),
+        *build_finance_counterfactual_cases(count=totals["finance"]),
+        *tuple(item for item in non_finance if item.domain == "legal")[: totals["legal"]],
+        *tuple(item for item in non_finance if item.domain == "science")[: totals["science"]],
     )
     domain_seen: Counter[str] = Counter()
     train: list[SFTRecord] = []
@@ -710,6 +780,7 @@ def _reference_and_evaluation_records(
     for case in cases:
         ordinal = domain_seen[case.domain]
         domain_seen[case.domain] += 1
+        candidate_target = config.candidate_task_target(case.domain)
         task = materialize_track_variant(
             case.task,
             case.corpus,
@@ -718,9 +789,7 @@ def _reference_and_evaluation_records(
         )
         record = _make_record(
             cohort=(
-                UtilityCohort.REFERENCE_WORKFLOW
-                if ordinal < config.candidate_tasks_per_domain
-                else "evaluation"
+                UtilityCohort.REFERENCE_WORKFLOW if ordinal < candidate_target else "evaluation"
             ),
             task=task.public.model_dump(mode="json", exclude_none=True),
             evidence=[
@@ -729,10 +798,47 @@ def _reference_and_evaluation_records(
             target=_reference_response(task, case.bundle, case.registry),
             source_kind="deterministic_reference_workflow",
             contract_label="accept",
-            metadata={"fixture_ordinal": ordinal + 1},
+            metadata={
+                "fixture_ordinal": ordinal + 1,
+                **_task_structure_metadata(task.public),
+            },
         )
-        (train if ordinal < config.candidate_tasks_per_domain else evaluation).append(record)
+        (train if ordinal < candidate_target else evaluation).append(record)
     return tuple(train), tuple(evaluation)
+
+
+def _task_structure_metadata(task) -> dict[str, Any]:
+    pattern = task.metadata.get("task_pattern") or {}
+    nodes = tuple(task.program_skeleton.nodes) if task.program_skeleton is not None else ()
+    program_contract = tuple(
+        (
+            node.operator_id,
+            tuple(node.dependencies),
+            tuple(sorted(node.parameters.items())),
+        )
+        for node in nodes
+    )
+    answer_type = str(task.answer_schema.get("type") or "unknown")
+    pattern_id = str(pattern.get("pattern_id") or task.task_type)
+    return {
+        "pattern_id": pattern_id,
+        "task_type": task.task_type,
+        "operation_sequence": [node.operator_id for node in nodes],
+        "program_signature": canonical_hash(
+            program_contract,
+            prefix="training_utility_program_signature:",
+        ),
+        "answer_type": answer_type,
+        "structural_group_id": canonical_hash(
+            {
+                "domain": task.domain,
+                "pattern_id": pattern_id,
+                "program_contract": program_contract,
+                "answer_type": answer_type,
+            },
+            prefix="training_utility_structural_group:",
+        ),
+    }
 
 
 def _reference_response(task, bundle, registry) -> dict[str, Any]:
@@ -835,10 +941,7 @@ def _balanced_take(
     output: list[SFTRecord] = []
     for domain in ("finance", "legal", "science"):
         domain_records = [item for item in records if item.domain == domain]
-        rng.shuffle(domain_records)
-        if len(domain_records) < per_domain:
-            raise ValueError(f"insufficient {domain} records: {len(domain_records)} < {per_domain}")
-        output.extend(domain_records[:per_domain])
+        output.extend(_structural_take(domain_records, per_domain, rng=rng))
     rng.shuffle(output)
     return tuple(output)
 
@@ -853,10 +956,55 @@ def _balanced_ranked_take(
     output: list[SFTRecord] = []
     for domain in ("finance", "legal", "science"):
         domain_records = [item for item in records if item.domain == domain]
-        if len(domain_records) < per_domain:
-            raise ValueError(f"insufficient ranked {domain} records")
-        output.extend(domain_records[:per_domain])
+        output.extend(_structural_take(domain_records, per_domain))
     return tuple(output)
+
+
+def _structural_take(
+    records: list[SFTRecord],
+    count: int,
+    *,
+    rng: random.Random | None = None,
+) -> tuple[SFTRecord, ...]:
+    if len(records) < count:
+        domain = records[0].domain if records else "unknown"
+        raise ValueError(f"insufficient {domain} records: {len(records)} < {count}")
+    pattern_groups: dict[str, dict[str, list[SFTRecord]]] = defaultdict(lambda: defaultdict(list))
+    for item in records:
+        pattern_id = str(item.metadata.get("pattern_id") or item.task_id)
+        structural_id = str(
+            item.metadata.get("structural_group_id")
+            or item.metadata.get("program_signature")
+            or item.task_id
+        )
+        pattern_groups[pattern_id][structural_id].append(item)
+    if rng is not None:
+        for structural_groups in pattern_groups.values():
+            for group in structural_groups.values():
+                rng.shuffle(group)
+    pattern_sequences = {
+        pattern_id: _round_robin_groups(structural_groups)
+        for pattern_id, structural_groups in pattern_groups.items()
+    }
+    selected = _round_robin_groups(pattern_sequences)[:count]
+    if len(selected) < count:
+        raise ValueError("structural round-robin could not satisfy the requested count")
+    return tuple(selected)
+
+
+def _round_robin_groups(groups: dict[str, list[SFTRecord]]) -> list[SFTRecord]:
+    output: list[SFTRecord] = []
+    index = 0
+    while True:
+        emitted = False
+        for group_id in sorted(groups):
+            group = groups[group_id]
+            if index < len(group):
+                output.append(group[index])
+                emitted = True
+        if not emitted:
+            return output
+        index += 1
 
 
 def _cohort_manifest(
@@ -869,6 +1017,11 @@ def _cohort_manifest(
         record_count=len(records),
         domain_counts=dict(sorted(Counter(item.domain for item in records).items())),
         source_kind_counts=dict(sorted(Counter(item.source_kind for item in records).items())),
+        pattern_counts=_metadata_counts(records, "pattern_id"),
+        program_signature_counts=_metadata_counts(records, "program_signature"),
+        structural_group_count=len(
+            {str(item.metadata.get("structural_group_id") or "unknown") for item in records}
+        ),
         counterfactual_repair_count=sum(item.counterfactual_repair for item in records),
         record_ids=record_ids,
         dataset_hash=canonical_hash(

@@ -3,7 +3,18 @@
   "model_revision": null,
   "candidate_tasks_per_domain": 200,
   "evaluation_tasks_per_domain": 50,
+  "candidate_task_targets": {
+    "finance": 1000,
+    "legal": 500,
+    "science": 500
+  },
+  "evaluation_task_targets": {
+    "finance": 200,
+    "legal": 200,
+    "science": 200
+  },
   "cohort_size": 600,
+  "minimum_real_candidate_completion_rate": 0.8,
   "d1_counterfactual_fraction": 0.5,
   "d4_repair_fraction": 0.5,
   "max_seq_length": 8192,
@@ -27,5 +38,5 @@
     "down_proj"
   ],
   "seed": 20260726,
-  "prompt_version": "training_utility_agent_prompt.v2"
+  "prompt_version": "training_utility_agent_prompt.v3"
 }

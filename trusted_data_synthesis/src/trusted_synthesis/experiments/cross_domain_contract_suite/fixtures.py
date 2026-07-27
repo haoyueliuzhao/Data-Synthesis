@@ -81,8 +81,9 @@ def build_pattern_validation_cases(*, per_domain: int = 10) -> tuple[ContractCas
 
 def fixture_manifest_hash(cases: tuple[ContractCase, ...]) -> str:
     return canonical_hash(
-        {
-            case.domain: {
+        tuple(
+            {
+                "domain": case.domain,
                 "bundle_hash": case.bundle.bundle_hash,
                 "corpus_ids": tuple(item.evidence_version_id for item in case.corpus.evidence),
                 "task_hash": case.task.task_hash,
@@ -90,17 +91,32 @@ def fixture_manifest_hash(cases: tuple[ContractCase, ...]) -> str:
                 "plugin_set": case.plugin_set.model_dump(mode="json"),
             }
             for case in cases
-        },
+        ),
         prefix="cross_domain_fixture_manifest:",
     )
 
 
 def _legal_case(index: int | None = None) -> ContractCase:
-    suffix = "" if index is None else f"_{index:02d}"
-    rules = (
-        _legal_rule(f"guidance{suffix}", "Agency Guidance", "administrative filing"),
-        _legal_rule(f"statute{suffix}", "Example Act", "statutory filing"),
-    )
+    ordinal = index or 3
+    variant = 2 if index is None else (index - 1) % 3
+    suffix = "" if index is None else f"_{index:04d}"
+    statute = _legal_rule(f"statute{suffix}", "Example Act", "statutory filing")
+    rules: tuple[EvidenceItem, ...]
+    if variant == 0:
+        rules = (statute,)
+        satisfied_conditions = ("threshold exceeded",) if (ordinal // 3) % 2 else ()
+        present_exceptions: tuple[str, ...] = ()
+    elif variant == 1:
+        rules = (statute,)
+        satisfied_conditions = ("threshold exceeded",)
+        present_exceptions = ("registered exemption",)
+    else:
+        rules = (
+            _legal_rule(f"guidance{suffix}", "Agency Guidance", "administrative filing"),
+            statute,
+        )
+        satisfied_conditions = ("threshold exceeded",)
+        present_exceptions = ()
     distractors = (
         _legal_rule(
             f"wrong_definition{suffix}",
@@ -123,14 +139,30 @@ def _legal_case(index: int | None = None) -> ContractCase:
     counterfactual_registry = legal_counterfactual_registry()
     plugin = LegalTaskPlugin()
     policy = LegalSemanticPolicy()
-    task = plugin.rule_application(
-        graph,
-        bundle,
-        rules,
-        satisfied_conditions=("threshold exceeded",),
-        present_exceptions=(),
-        authority_priority=("Example Act", "Agency Guidance"),
-    )
+    if variant == 0:
+        task = plugin.condition_application(
+            graph,
+            bundle,
+            rules[0],
+            satisfied_conditions=satisfied_conditions,
+        )
+    elif variant == 1:
+        task = plugin.exception_application(
+            graph,
+            bundle,
+            rules[0],
+            satisfied_conditions=satisfied_conditions,
+            present_exceptions=present_exceptions,
+        )
+    else:
+        task = plugin.rule_application(
+            graph,
+            bundle,
+            rules,
+            satisfied_conditions=satisfied_conditions,
+            present_exceptions=present_exceptions,
+            authority_priority=("Example Act", "Agency Guidance"),
+        )
     return ContractCase(
         domain="legal",
         bundle=bundle,
@@ -142,7 +174,7 @@ def _legal_case(index: int | None = None) -> ContractCase:
         quality_clause_provider=LegalQualityClauseProvider(),
         plugin_set=DomainPluginSet(
             domain="legal",
-            evidence_adapter_id="legal_contract_fixture.v1",
+            evidence_adapter_id="legal_contract_fixture.v2",
             semantic_policy_id=policy.policy_id,
             task_plugin_ids=(plugin.plugin_id,),
             quality_clause_provider_id=LegalQualityClauseProvider.provider_id,
@@ -151,18 +183,51 @@ def _legal_case(index: int | None = None) -> ContractCase:
                 registry.manifest(), prefix="operation_manifest:"
             ),
             counterfactual_operator_manifest_hash=(counterfactual_registry.manifest_hash),
-            versions={"fixture": "1.3.0"},
+            versions={"fixture": "2.0.0"},
         ),
         counterfactual_registry=counterfactual_registry,
     )
 
 
 def _science_case(index: int | None = None) -> ContractCase:
-    suffix = "" if index is None else f"_{index:02d}"
-    results = (
-        _science_result(f"method_a{suffix}", "10.2", "9.7", "10.7"),
-        _science_result(f"method_b{suffix}", "11.0", "10.4", "11.6"),
-    )
+    ordinal = index or 1
+    variant = 0 if index is None else (index - 1) % 3
+    suffix = "" if index is None else f"_{index:04d}"
+    offset = Decimal(ordinal % 17) / Decimal(100)
+
+    def value(base: str) -> str:
+        return str(Decimal(base) + offset)
+
+    results: tuple[EvidenceItem, ...]
+    if variant == 0:
+        results = (
+            _science_result(f"method_a{suffix}", value("10.2"), value("9.7"), value("10.7")),
+            _science_result(f"method_b{suffix}", value("11.0"), value("10.4"), value("11.6")),
+        )
+    elif variant == 1:
+        results = (
+            _science_result(f"protocol_a{suffix}", value("10.2"), value("9.7"), value("10.7")),
+            _science_result(
+                f"protocol_b{suffix}",
+                value("10.8"),
+                value("10.1"),
+                value("11.5"),
+                method="observational_protocol",
+                protocol_seed_policy="variable",
+            ),
+        )
+    else:
+        results = (
+            _science_result(
+                f"study_a{suffix}", value("9.8"), value("9.2"), value("10.4"), sample_size=400
+            ),
+            _science_result(
+                f"study_b{suffix}", value("10.5"), value("9.9"), value("11.1"), sample_size=500
+            ),
+            _science_result(
+                f"study_c{suffix}", value("11.1"), value("10.4"), value("11.8"), sample_size=600
+            ),
+        )
     distractors = (
         _science_result(
             f"wrong_definition{suffix}",
@@ -187,7 +252,12 @@ def _science_case(index: int | None = None) -> ContractCase:
     counterfactual_registry = science_counterfactual_registry()
     plugin = ScienceTaskPlugin()
     policy = ScienceSemanticPolicy()
-    task = plugin.compare_experiments(graph, bundle, *results)
+    if variant == 0:
+        task = plugin.compare_experiments(graph, bundle, *results)
+    elif variant == 1:
+        task = plugin.check_protocol_compatibility(graph, bundle, *results)
+    else:
+        task = plugin.synthesize_experiments(graph, bundle, results)
     return ContractCase(
         domain="science",
         bundle=bundle,
@@ -199,7 +269,7 @@ def _science_case(index: int | None = None) -> ContractCase:
         quality_clause_provider=ScienceQualityClauseProvider(),
         plugin_set=DomainPluginSet(
             domain="science",
-            evidence_adapter_id="science_contract_fixture.v1",
+            evidence_adapter_id="science_contract_fixture.v2",
             semantic_policy_id=policy.policy_id,
             task_plugin_ids=(plugin.plugin_id,),
             quality_clause_provider_id=ScienceQualityClauseProvider.provider_id,
@@ -208,7 +278,7 @@ def _science_case(index: int | None = None) -> ContractCase:
                 registry.manifest(), prefix="operation_manifest:"
             ),
             counterfactual_operator_manifest_hash=(counterfactual_registry.manifest_hash),
-            versions={"fixture": "1.3.0"},
+            versions={"fixture": "2.0.0"},
         ),
         counterfactual_registry=counterfactual_registry,
     )
@@ -296,6 +366,9 @@ def _science_result(
     definition: str = "accuracy_gain",
     scope_id: str = "held_out_dataset",
     year: int = 2025,
+    method: str = "randomized_controlled_protocol",
+    protocol_seed_policy: str = "fixed",
+    sample_size: int = 500,
 ) -> EvidenceItem:
     return EvidenceItem(
         evidence_id=f"evidence:science:{key}@v1",
@@ -310,13 +383,16 @@ def _science_result(
             value=Decimal(value),
             unit="percentage_point",
             dataset="held_out_dataset",
-            method="randomized_controlled_protocol",
+            method=method,
             comparator="shared_baseline",
             uncertainty=UncertaintyInterval(
                 lower=Decimal(lower), upper=Decimal(upper), confidence_level=0.95
             ),
-            sample_size=500,
-            protocol={"seed_policy": "fixed", "evaluation_split": "held_out"},
+            sample_size=sample_size,
+            protocol={
+                "seed_policy": protocol_seed_policy,
+                "evaluation_split": "held_out",
+            },
         ),
         temporal_context=TemporalContext(
             label=f"study version {year}", observed_at=date(year, 2, 1)
@@ -330,7 +406,7 @@ def _science_result(
         source_locator=SourceLocator(uri=f"https://example.org/papers/{key}", text_span="table 2"),
         definition=SemanticDefinitionRef(definition_id=f"science_definition:{definition}"),
         provenance=ProvenanceRef(
-            adapter_id="science_contract.v1",
+            adapter_id="science_contract.v2",
             archive_id="science_contract_archive",
             source_record_id=key,
             build_ids={"evidence": "science_contract_build"},
