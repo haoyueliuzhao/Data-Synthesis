@@ -11,6 +11,7 @@ class FinanceArchiveConfig(BaseModel):
 
     adapter_version: str
     archive_root: Path
+    legacy_archive_roots: tuple[Path, ...] = ()
     kg_nodes_path: Path
     kg_edges_path: Path
     kg_report_path: Path
@@ -26,6 +27,13 @@ class FinanceArchiveConfig(BaseModel):
         payload = json.loads(config_path.read_text(encoding="utf-8"))
         archive_root = (config_path.parent / payload["archive_root"]).resolve()
         payload["archive_root"] = archive_root
+        legacy_roots = []
+        for value in payload.get("legacy_archive_roots", ()):
+            legacy_root = Path(value).expanduser()
+            if not legacy_root.is_absolute():
+                legacy_root = config_path.parent / legacy_root
+            legacy_roots.append(legacy_root.resolve())
+        payload["legacy_archive_roots"] = legacy_roots
         for field in ("kg_nodes_path", "kg_edges_path", "kg_report_path", "catalog_root"):
             payload[field] = (archive_root / payload[field]).resolve()
         return cls.model_validate(payload)

@@ -29,16 +29,18 @@ class FinanceSourceGroundingVerifier:
     """Dereference archived objects and verify that their raw values support evidence."""
 
     verifier_id = "finance_source_grounding.v1"
-    verifier_version = "1.0.0"
+    verifier_version = "1.1.0"
 
     def __init__(
         self,
         *,
         archive_root: Path,
+        legacy_archive_roots: tuple[Path, ...] = (),
         raw_objects: dict[str, dict[str, Any]],
         cache_size: int = 16,
     ) -> None:
         self._archive_root = archive_root.resolve()
+        self._legacy_archive_roots = tuple(path.resolve() for path in legacy_archive_roots)
         self._raw_objects = raw_objects
         self._cache_size = cache_size
         self._byte_cache: OrderedDict[str, bytes] = OrderedDict()
@@ -68,7 +70,7 @@ class FinanceSourceGroundingVerifier:
         checks["raw_object_source_match"] = metadata.get("source_id") == evidence.source.source_id
         storage_uri = str(metadata.get("storage_uri") or "")
         checks["storage_uri_match"] = bool(storage_uri) and locator.storage_uri == storage_uri
-        path = Path(storage_uri).resolve() if storage_uri else None
+        path = self._resolve_storage_path(storage_uri) if storage_uri else None
         checks["storage_path_confined"] = bool(
             path is not None and path.is_relative_to(self._archive_root)
         )
@@ -93,6 +95,23 @@ class FinanceSourceGroundingVerifier:
             return self._report(evidence, checks)
         checks["source_entailment"] = _source_entails(evidence, payload)
         return self._report(evidence, checks)
+
+    def _resolve_storage_path(self, storage_uri: str) -> Path:
+        source_path = Path(storage_uri).expanduser()
+        candidate = (
+            source_path.resolve()
+            if source_path.is_absolute()
+            else (self._archive_root / source_path).resolve()
+        )
+        if candidate.is_relative_to(self._archive_root):
+            return candidate
+        for legacy_root in self._legacy_archive_roots:
+            if not candidate.is_relative_to(legacy_root):
+                continue
+            remapped = (self._archive_root / candidate.relative_to(legacy_root)).resolve()
+            if remapped.is_relative_to(self._archive_root):
+                return remapped
+        return candidate
 
     def _read_bytes(self, raw_object_id: str, path: Path) -> bytes:
         cached = self._byte_cache.pop(raw_object_id, None)

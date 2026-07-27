@@ -67,6 +67,7 @@ class FinanceArchiveAdapter:
 
         return FinanceSourceGroundingVerifier(
             archive_root=self.config.archive_root,
+            legacy_archive_roots=self.config.legacy_archive_roots,
             raw_objects=self._load_catalogs()["raw_objects"],
         )
 
@@ -96,6 +97,7 @@ class FinanceArchiveAdapter:
             "adapter_id": self.adapter_id,
             "domain": self.domain,
             "archive_root": str(self.config.archive_root),
+            "legacy_archive_roots": [str(path) for path in self.config.legacy_archive_roots],
             "read_only": True,
             "paths": {name: str(path) for name, path in paths.items()},
             "path_exists": existence,

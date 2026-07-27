@@ -412,24 +412,6 @@ CREATE INDEX IF NOT EXISTS idx_fact_universe_members_region
 ON fact_universe_members(universe_build_id, region_bucket);
 
 
-CREATE TABLE IF NOT EXISTS fact_universe_derived_members (
-    membership_id       TEXT PRIMARY KEY,
-    universe_build_id   TEXT NOT NULL REFERENCES fact_universe_builds(universe_build_id),
-    derived_id          TEXT NOT NULL REFERENCES derived_facts(derived_id),
-    region_bucket       TEXT NOT NULL,
-    stratum_key         TEXT NOT NULL,
-    selection_rank      INTEGER NOT NULL,
-    selection_reason    TEXT NOT NULL,
-    created_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_fact_universe_derived_unique
-ON fact_universe_derived_members(universe_build_id, derived_id);
-CREATE INDEX IF NOT EXISTS idx_fact_universe_derived_id
-ON fact_universe_derived_members(derived_id, universe_build_id);
-CREATE INDEX IF NOT EXISTS idx_fact_universe_derived_region
-ON fact_universe_derived_members(universe_build_id, region_bucket);
-
 CREATE TABLE IF NOT EXISTS fact_quality_checks (
     check_id            TEXT PRIMARY KEY,
     fact_id             TEXT REFERENCES atomic_facts(fact_id),
@@ -475,9 +457,23 @@ CREATE TABLE IF NOT EXISTS derived_facts (
 CREATE INDEX IF NOT EXISTS idx_derived_facts_type ON derived_facts(derived_type);
 CREATE INDEX IF NOT EXISTS idx_derived_facts_status ON derived_facts(verification_status);
 
+CREATE TABLE IF NOT EXISTS fact_universe_derived_members (
+    membership_id       TEXT PRIMARY KEY,
+    universe_build_id   TEXT NOT NULL REFERENCES fact_universe_builds(universe_build_id),
+    derived_id          TEXT NOT NULL REFERENCES derived_facts(derived_id),
+    region_bucket       TEXT NOT NULL,
+    stratum_key         TEXT NOT NULL,
+    selection_rank      INTEGER NOT NULL,
+    selection_reason    TEXT NOT NULL,
+    created_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
 
-
-
+CREATE UNIQUE INDEX IF NOT EXISTS idx_fact_universe_derived_unique
+ON fact_universe_derived_members(universe_build_id, derived_id);
+CREATE INDEX IF NOT EXISTS idx_fact_universe_derived_id
+ON fact_universe_derived_members(derived_id, universe_build_id);
+CREATE INDEX IF NOT EXISTS idx_fact_universe_derived_region
+ON fact_universe_derived_members(universe_build_id, region_bucket);
 
 CREATE TABLE IF NOT EXISTS document_text_chunks (
     chunk_id            TEXT PRIMARY KEY,

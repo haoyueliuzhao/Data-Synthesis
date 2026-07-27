@@ -14,4 +14,6 @@ through a read-only Finance Adapter; it does not import or mutate `finraw`
 internals.
 
 See [Architecture](trusted_data_synthesis/docs/architecture.md) and
-[Archive Contract](trusted_data_synthesis/docs/archive_contract.md).
+[Archive Contract](trusted_data_synthesis/docs/archive_contract.md). After a
+server migration, use the checked recovery procedure in
+[Migrated Server Recovery](trusted_data_synthesis/docs/server_recovery.md).

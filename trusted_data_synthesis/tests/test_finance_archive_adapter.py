@@ -46,6 +46,24 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     assert before == after
 
 
+def test_finance_adapter_remaps_registered_legacy_archive_root(tmp_path: Path) -> None:
+    config = _archive_fixture(tmp_path)
+    raw_objects_path = config.catalog_root / "raw_objects.parquet"
+    rows = pq.read_table(raw_objects_path).to_pylist()
+    legacy_root = Path("/workspace/Data Synthesis/raw_financial_data_lake")
+    rows[0]["storage_uri"] = str(legacy_root / "raw" / "companyfacts.json")
+    _parquet(raw_objects_path, rows)
+    config = config.model_copy(update={"legacy_archive_roots": (legacy_root,)})
+
+    adapter = FinanceArchiveAdapter(config)
+    evidence = next(adapter.iter_evidence(limit=1))
+    grounding = adapter.source_grounding_verifier().verify(evidence)
+
+    assert evidence.source_locator.storage_uri == rows[0]["storage_uri"]
+    assert grounding.passed
+    assert all(grounding.checks.values())
+
+
 def _archive_fixture(root: Path) -> FinanceArchiveConfig:
     catalog_root = root / "catalog"
     catalog_root.mkdir()
