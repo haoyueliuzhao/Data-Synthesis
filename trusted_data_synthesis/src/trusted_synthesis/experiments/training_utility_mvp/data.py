@@ -539,7 +539,7 @@ def trajectory_to_response(trajectory: Trajectory) -> dict[str, Any]:
     )
     assert output_node_id is not None
     payload = {
-        "schema_version": "agent_response.v2",
+        "schema_version": "agent_response.v3",
         "plan_summary": "Select grounded evidence and execute the typed operation program.",
         "selected_evidence_ids": list(selected_evidence_ids),
         "execution_trace": {
@@ -638,7 +638,7 @@ def _make_record(
         "public_task": task,
         "evidence_corpus": evidence,
         "output_contract": {
-            "schema_version": "agent_response.v2",
+            "schema_version": "agent_response.v3",
             "selected_evidence_ids": "array of supplied evidence IDs",
             "execution_trace": (
                 "topologically ordered concrete executions with evidence and observations"
@@ -894,7 +894,7 @@ def _reference_response(task, bundle, registry) -> dict[str, Any]:
         for evidence_id in task.oracle.gold_evidence_ids
     ]
     response = {
-        "schema_version": "agent_response.v2",
+        "schema_version": "agent_response.v3",
         "plan_summary": "Select grounded evidence and execute the typed operation program.",
         "selected_evidence_ids": list(task.oracle.gold_evidence_ids),
         "execution_trace": {

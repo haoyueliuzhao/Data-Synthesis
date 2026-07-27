@@ -14,8 +14,8 @@ from trusted_synthesis.domains.legal.policy import LegalSemanticPolicy
 
 
 class LegalTaskPatternRuntime:
-    runtime_id = "legal_task_pattern_runtime.v2"
-    runtime_version = "2.0.0"
+    runtime_id = "legal_task_pattern_runtime.v3"
+    runtime_version = "3.0.0"
     domain = "legal"
     renderer_ids: tuple[str, ...] = (
         "legal.condition_application.v1",
@@ -136,5 +136,61 @@ class LegalTaskPatternRuntime:
                 },
             },
             oracle_selection_contract=oracle_selection_contract(rules),
-            metadata={"domain_plugin_id": "legal_tasks.v3"},
+            metadata={
+                "domain_plugin_id": "legal_tasks.v3",
+                "agent_contract_guidance": _legal_agent_contract_guidance(
+                    pattern.task_type
+                ),
+            },
         )
+
+
+def _legal_agent_contract_guidance(task_type: str) -> dict[str, object]:
+    guidance: dict[str, object] = {
+        "legal_apply_rule": {
+            "exact_result_fields": (
+                "applicable",
+                "authority",
+                "legal_effect",
+                "missing_conditions",
+                "triggered_exceptions",
+            ),
+            "field_rules": {
+                "missing_conditions": (
+                    "sorted rule.conditions absent from satisfied_conditions"
+                ),
+                "triggered_exceptions": (
+                    "sorted intersection of rule.exceptions and present_exceptions"
+                ),
+                "applicable": (
+                    "true only when both lists are empty"
+                ),
+                "authority": "copy the rule authority exactly",
+                "legal_effect": "copy the rule legal_effect exactly",
+            },
+        },
+        "general_rules": (
+            "Do not replace missing_conditions with a prose explanation.",
+            "Do not infer unstated facts, conditions, exceptions, or legal effects.",
+            "Preserve every exact string and list element from the rule evidence.",
+        ),
+    }
+    if task_type == "legal_rule_application":
+        guidance["legal_resolve_authority"] = {
+            "exact_result_fields": (
+                "applicable",
+                "selected_ref",
+                "authority",
+                "legal_effect",
+            ),
+            "field_rules": {
+                "eligible_inputs": "only prior legal_apply_rule results with applicable=true",
+                "selected_ref": (
+                    "the prior operation result reference selected by authority_priority"
+                ),
+                "no_eligible_rule": (
+                    "return applicable=false and null selected_ref, authority, legal_effect"
+                ),
+            },
+        }
+    return guidance

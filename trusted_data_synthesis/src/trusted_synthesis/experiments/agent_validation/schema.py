@@ -22,7 +22,7 @@ from trusted_synthesis.runtime.agent.schema import (
     ModelCallTelemetry,
 )
 
-AGENT_VALIDATION_VERSION = "agent_validation.v3"
+AGENT_VALIDATION_VERSION = "agent_validation.v4"
 AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v2"
 
 
@@ -47,6 +47,10 @@ class AgentValidationConfig(BaseModel):
     selection_target: int = Field(default=10, ge=1)
     training_base_model: str = "Qwen2.5-7B"
     random_seed: int = 20260726
+    maximum_concurrency: int = Field(default=1, ge=1, le=32)
+    checkpoint_enabled: bool = True
+    resume_from_checkpoints: bool = True
+    retry_failed_checkpoints: bool = False
 
     @model_validator(mode="after")
     def validate_tracks(self) -> AgentValidationConfig:
@@ -116,6 +120,7 @@ class AgentValidationSample(BaseModel):
     planning_track: PlanningTrack
     generation_status: str
     generation_audit: AgentGenerationAudit | None = None
+    agent_telemetry: tuple[ModelCallTelemetry, ...] = ()
     trajectory: Trajectory | None = None
     contract_assessment: ContractQualityAssessment | None = None
     quality_vector: QualityVector | None = None
@@ -163,6 +168,13 @@ class AgentValidationReport(BaseModel):
     critic_attempted_count: int = Field(ge=0)
     critic_success_count: int = Field(ge=0)
     critic_failure_count: int = Field(ge=0)
+    maximum_concurrency: int = Field(ge=1)
+    agent_checkpoint_loaded_count: int = Field(default=0, ge=0)
+    agent_checkpoint_written_count: int = Field(default=0, ge=0)
+    critic_checkpoint_loaded_count: int = Field(default=0, ge=0)
+    critic_checkpoint_written_count: int = Field(default=0, ge=0)
+    agent_failure_type_counts: dict[str, int] = Field(default_factory=dict)
+    agent_contract_error_counts: dict[str, int] = Field(default_factory=dict)
     agent_prompt_manifest_hashes: tuple[str, ...]
     critic_prompt_manifest_hashes: tuple[str, ...]
     quality_vector_policy_hashes: tuple[str, ...]

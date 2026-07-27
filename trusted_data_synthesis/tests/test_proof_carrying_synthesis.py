@@ -110,7 +110,7 @@ def test_release_freezes_contracts_and_certificates_and_requires_exact_coverage(
     assert manifest.counterfactual_operator_manifest_hashes
     assert manifest.task_pattern_schema_versions == ("task_pattern.v1",)
     assert manifest.task_pattern_compiler_versions == ("task_pattern_compiler.v1",)
-    assert manifest.task_pattern_runtimes == {"legal_task_pattern_runtime.v2": "2.0.0"}
+    assert manifest.task_pattern_runtimes == {"legal_task_pattern_runtime.v3": "3.0.0"}
     assert manifest.task_pattern_quality_profile_ids == ("legal.rule_application.quality.v1",)
     assert manifest.task_difficulty_policy_versions == ("task_difficulty.v1",)
     assert len(manifest.evidence_binding_hashes) == 1

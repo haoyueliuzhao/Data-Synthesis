@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -34,6 +35,7 @@ class OpenAICompatibleJsonClient:
     def __init__(self, config: AgentModelConfig) -> None:
         self._config = config
         self._discovered_models: tuple[str, ...] | None = None
+        self._discovery_lock = threading.Lock()
         self._api_key = os.environ.get(config.api_key_env, "")
         if not self._api_key:
             raise ValueError(f"missing model credential environment variable: {config.api_key_env}")
@@ -45,26 +47,34 @@ class OpenAICompatibleJsonClient:
     def discover_models(self) -> tuple[str, ...]:
         if self._discovered_models is not None:
             return self._discovered_models
-        endpoint = self._config.models_endpoint or _derive_models_endpoint(self._config.endpoint)
-        request = urllib.request.Request(
-            endpoint,
-            headers=self._headers(),
-            method="GET",
-        )
-        try:
-            with urllib.request.urlopen(request, timeout=self._config.timeout_seconds) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-        except Exception as exc:
-            raise LLMClientError(f"model discovery failed: {type(exc).__name__}") from exc
-        self._discovered_models = tuple(
-            sorted(
-                {
-                    str(item.get("id")).strip()
-                    for item in payload.get("data") or ()
-                    if isinstance(item, dict) and str(item.get("id") or "").strip()
-                }
+        with self._discovery_lock:
+            if self._discovered_models is not None:
+                return self._discovered_models
+            endpoint = self._config.models_endpoint or _derive_models_endpoint(
+                self._config.endpoint
             )
-        )
+            request = urllib.request.Request(
+                endpoint,
+                headers=self._headers(),
+                method="GET",
+            )
+            try:
+                with urllib.request.urlopen(
+                    request,
+                    timeout=self._config.timeout_seconds,
+                ) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+            except Exception as exc:
+                raise LLMClientError(f"model discovery failed: {type(exc).__name__}") from exc
+            self._discovered_models = tuple(
+                sorted(
+                    {
+                        str(item.get("id")).strip()
+                        for item in payload.get("data") or ()
+                        if isinstance(item, dict) and str(item.get("id") or "").strip()
+                    }
+                )
+            )
         return self._discovered_models
 
     def complete_json(self, prompt: str) -> tuple[dict[str, Any], ModelCallTelemetry]:
@@ -137,6 +147,7 @@ class OpenAICompatibleJsonClient:
         )
         started = time.perf_counter()
         status: int | None = None
+        content: str | None = None
         try:
             with urllib.request.urlopen(request, timeout=self._config.timeout_seconds) as response:
                 status = int(getattr(response, "status", 200))
@@ -187,6 +198,11 @@ class OpenAICompatibleJsonClient:
                 model_requested=self._config.model,
                 model_selected=model,
                 request_hash=request_hash,
+                response_hash=(
+                    hashlib.sha256(content.encode("utf-8")).hexdigest()
+                    if content is not None
+                    else None
+                ),
                 http_status=status,
                 http_success=False,
                 json_contract_success=False,
@@ -195,6 +211,7 @@ class OpenAICompatibleJsonClient:
                 discovery_attempted=discovery_attempted,
                 discovered_model_count=discovered_count,
                 error_type=type(exc).__name__,
+                error_message=_safe_error_message(exc),
             )
             raise LLMClientError(str(exc), (telemetry,)) from exc
 
@@ -244,3 +261,7 @@ def _estimate_cost(
         prompt_tokens * config.input_cost_per_million
         + completion_tokens * config.output_cost_per_million
     ) / 1_000_000
+
+
+def _safe_error_message(exc: Exception) -> str:
+    return " ".join(f"{type(exc).__name__}: {exc}".split())[:500]

@@ -1,0 +1,43 @@
+{
+  "model": {
+    "provider": "deepseek",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "models_endpoint": "https://api.deepseek.com/models",
+    "model": "deepseek-v4-pro",
+    "fallback_models": [],
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "timeout_seconds": 180,
+    "max_output_tokens": 4096,
+    "temperature": 0,
+    "maximum_model_attempts": 1,
+    "contract_repair_attempts": 1,
+    "auto_discover_models": true,
+    "require_requested_model": true,
+    "preferred_model_patterns": [],
+    "input_cost_per_million": 0,
+    "output_cost_per_million": 0,
+    "extra_headers": {}
+  },
+  "tasks_per_domain": 1,
+  "domain_task_targets": {
+    "finance": 4,
+    "legal": 3,
+    "science": 3
+  },
+  "retrieval_tracks": [
+    "resolved"
+  ],
+  "planning_tracks": [
+    "plan_given"
+  ],
+  "run_model_critic": false,
+  "model_critic_max_examples": 1,
+  "generate_counterfactuals": true,
+  "selection_target": 4,
+  "training_base_model": "Qwen/Qwen3-8B",
+  "random_seed": 20260727,
+  "maximum_concurrency": 4,
+  "checkpoint_enabled": true,
+  "resume_from_checkpoints": true,
+  "retry_failed_checkpoints": false
+}

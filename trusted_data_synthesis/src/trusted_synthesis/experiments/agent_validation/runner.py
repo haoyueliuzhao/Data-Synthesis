@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import json
+import os
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict
 
 from trusted_synthesis.core.evaluation.contracts import (
     ContractQualityAssessment,
@@ -63,8 +68,16 @@ from trusted_synthesis.runtime.agent import (
     LLMAgentSolver,
     LLMClientError,
 )
-from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
+from trusted_synthesis.runtime.agent.llm_agent import (
+    LLM_AGENT_PROMPT_VERSION,
+    LLM_AGENT_SOLVER_VERSION,
+)
+from trusted_synthesis.runtime.agent.schema import (
+    AGENT_RESPONSE_SCHEMA_VERSION,
+    ModelCallTelemetry,
+)
 from trusted_synthesis.runtime.critic import LLMQualityCritic
+from trusted_synthesis.runtime.critic.llm_critic import LLM_CRITIC_PROMPT_VERSION
 from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 
 
@@ -72,6 +85,42 @@ from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 class AgentValidationArtifacts:
     report: AgentValidationReport
     critic_dataset: QualityCriticDataset
+
+
+AGENT_SAMPLE_CHECKPOINT_VERSION = "agent_sample_checkpoint.v2"
+CRITIC_CHECKPOINT_VERSION = "critic_checkpoint.v2"
+
+
+@dataclass(frozen=True)
+class _AgentJob:
+    index: int
+    case: ContractCase
+    task: Any
+    sample_id: str
+    structure: dict[str, str]
+
+
+class _AgentJobResult(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    sample: AgentValidationSample
+    critic_examples: tuple[QualityCriticExample, ...] = ()
+    accepted_example_ids: tuple[str, ...] = ()
+    reference_sample_ids: tuple[str, ...] = ()
+    counterfactual_ids: tuple[str, ...] = ()
+    counterfactual_assessments: tuple[ContractQualityAssessment, ...] = ()
+    telemetry: tuple[ModelCallTelemetry, ...] = ()
+    infrastructure_failures: tuple[str, ...] = ()
+
+
+class _CriticJobResult(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    example_id: str
+    prediction: QualityCriticPrediction | None = None
+    prompt_manifest_hash: str | None = None
+    telemetry: tuple[ModelCallTelemetry, ...] = ()
+    failure: str | None = None
 
 
 def _build_validation_cases(
@@ -155,9 +204,62 @@ def audit_agent_validation_capacity(
 def run_agent_validation(
     config: AgentValidationConfig,
     client: JsonCompletionClient,
+    *,
+    checkpoint_dir: Path | None = None,
 ) -> AgentValidationArtifacts:
     cases = _build_validation_cases(config)
-    samples: list[AgentValidationSample] = []
+    jobs = _agent_jobs(config, cases)
+    checkpoint_root = checkpoint_dir if config.checkpoint_enabled else None
+    results_by_index: dict[int, _AgentJobResult] = {}
+    pending_jobs: list[_AgentJob] = []
+    agent_checkpoint_loaded_count = 0
+    agent_checkpoint_written_count = 0
+    for job in jobs:
+        checkpoint_path = _checkpoint_path(checkpoint_root, "agent", job.sample_id)
+        if checkpoint_path is not None and config.resume_from_checkpoints:
+            checkpoint = _load_checkpoint(
+                checkpoint_path,
+                config_hash=_agent_job_checkpoint_hash(config, job),
+                version=AGENT_SAMPLE_CHECKPOINT_VERSION,
+                model=_AgentJobResult,
+            )
+            if checkpoint is not None and not (
+                config.retry_failed_checkpoints
+                and checkpoint.sample.generation_status != "normalized"
+            ):
+                results_by_index[job.index] = checkpoint
+                agent_checkpoint_loaded_count += 1
+                continue
+        pending_jobs.append(job)
+
+    def record(job: _AgentJob, result: _AgentJobResult) -> None:
+        nonlocal agent_checkpoint_written_count
+        results_by_index[job.index] = result
+        checkpoint_path = _checkpoint_path(checkpoint_root, "agent", job.sample_id)
+        if checkpoint_path is not None:
+            _write_checkpoint(
+                checkpoint_path,
+                config_hash=_agent_job_checkpoint_hash(config, job),
+                version=AGENT_SAMPLE_CHECKPOINT_VERSION,
+                payload=result,
+            )
+            agent_checkpoint_written_count += 1
+
+    if config.maximum_concurrency == 1:
+        for job in pending_jobs:
+            record(job, _execute_agent_job(config, client, job))
+    else:
+        with ThreadPoolExecutor(max_workers=config.maximum_concurrency) as executor:
+            futures = {
+                executor.submit(_execute_agent_job, config, client, job): job
+                for job in pending_jobs
+            }
+            for future in as_completed(futures):
+                job = futures[future]
+                record(job, future.result())
+
+    ordered_results = tuple(results_by_index[index] for index in range(len(jobs)))
+    samples = [item.sample for item in ordered_results]
     critic_examples: list[QualityCriticExample] = []
     accepted_example_ids: list[str] = []
     reference_sample_ids: list[str] = []
@@ -165,136 +267,20 @@ def run_agent_validation(
     counterfactual_assessments: list[ContractQualityAssessment] = []
     all_telemetry: list[ModelCallTelemetry] = []
     infrastructure_failures: list[str] = []
-    for case in cases:
-        for retrieval_track in config.retrieval_tracks:
-            for planning_track in config.planning_tracks:
-                task = materialize_track_variant(
-                    case.task,
-                    case.corpus,
-                    retrieval_track=retrieval_track,
-                    planning_track=planning_track,
-                )
-                sample_identity = {
-                    "task_id": task.task_id,
-                    "model_config_hash": config.model.public_manifest_hash,
-                    "validation_version": AGENT_VALIDATION_VERSION,
-                }
-                sample_id = canonical_hash(
-                    sample_identity,
-                    prefix="agent_validation_sample:",
-                )
-                structure = _task_structure(task.public)
-                try:
-                    compiled, runtime = _compile_runtime(case, task)
-                    reference_sample_ids.append(compiled.sample.sample_id)
-                    solve_result = LLMAgentSolver(client, case.registry).solve_with_audit(
-                        task.public,
-                        InMemoryEvidenceToolRuntime(case.corpus),
-                    )
-                    all_telemetry.extend(solve_result.audit.telemetry)
-                    assessment = runtime.evaluate(
-                        compiled.quality_contract,
-                        task,
-                        case.corpus,
-                        case.proof_graph,
-                        solve_result.trajectory,
-                    )
-                    vector = QualityVectorCompiler().compile(
-                        compiled.quality_contract,
-                        assessment,
-                    )
-                    example = build_quality_critic_example(
-                        task=task,
-                        corpus=case.corpus,
-                        contract=compiled.quality_contract,
-                        trajectory=solve_result.trajectory,
-                        assessment=assessment,
-                        quality_vector=vector,
-                        candidate_source="real_agent",
-                        metadata={
-                            "model_config_hash": config.model.public_manifest_hash,
-                            "generation_audit_id": solve_result.audit.audit_id,
-                            **structure,
-                        },
-                    )
-                    critic_examples.append(example)
-                    if assessment.decision == ReleaseDecision.ACCEPTED:
-                        accepted_example_ids.append(example.example_id)
-                    generated_count = 0
-                    if (
-                        config.generate_counterfactuals
-                        and assessment.decision == ReleaseDecision.ACCEPTED
-                    ):
-                        generated = _counterfactual_examples(
-                            case=case,
-                            task=task,
-                            compiled=compiled,
-                            runtime=runtime,
-                            source_trajectory=solve_result.trajectory,
-                        )
-                        generated_count = len(generated)
-                        for generated_example, generated_assessment, counterfactual_id in generated:
-                            critic_examples.append(generated_example)
-                            counterfactual_assessments.append(generated_assessment)
-                            counterfactual_ids.append(counterfactual_id)
-                    samples.append(
-                        AgentValidationSample(
-                            sample_id=sample_id,
-                            task_id=task.task_id,
-                            domain=case.domain,
-                            task_type=structure["task_type"],
-                            pattern_id=structure["pattern_id"],
-                            program_signature=structure["program_signature"],
-                            retrieval_track=retrieval_track,
-                            planning_track=planning_track,
-                            generation_status="normalized",
-                            generation_audit=solve_result.audit,
-                            trajectory=solve_result.trajectory,
-                            contract_assessment=assessment,
-                            quality_vector=vector,
-                            critic_example_id=example.example_id,
-                            counterfactual_count=generated_count,
-                        )
-                    )
-                except LLMClientError as exc:
-                    all_telemetry.extend(exc.telemetry)
-                    samples.append(
-                        AgentValidationSample(
-                            sample_id=sample_id,
-                            task_id=task.task_id,
-                            domain=case.domain,
-                            task_type=structure["task_type"],
-                            pattern_id=structure["pattern_id"],
-                            program_signature=structure["program_signature"],
-                            retrieval_track=retrieval_track,
-                            planning_track=planning_track,
-                            generation_status="model_failed",
-                            error_type=type(exc).__name__,
-                            error_message=str(exc),
-                        )
-                    )
-                except Exception as exc:
-                    infrastructure_failures.append(f"{task.task_id}:{type(exc).__name__}:{exc}")
-                    samples.append(
-                        AgentValidationSample(
-                            sample_id=sample_id,
-                            task_id=task.task_id,
-                            domain=case.domain,
-                            task_type=structure["task_type"],
-                            pattern_id=structure["pattern_id"],
-                            program_signature=structure["program_signature"],
-                            retrieval_track=retrieval_track,
-                            planning_track=planning_track,
-                            generation_status="infrastructure_failed",
-                            error_type=type(exc).__name__,
-                            error_message=str(exc),
-                        )
-                    )
+    for result in ordered_results:
+        critic_examples.extend(result.critic_examples)
+        accepted_example_ids.extend(result.accepted_example_ids)
+        reference_sample_ids.extend(result.reference_sample_ids)
+        counterfactual_ids.extend(result.counterfactual_ids)
+        counterfactual_assessments.extend(result.counterfactual_assessments)
+        all_telemetry.extend(result.telemetry)
+        infrastructure_failures.extend(result.infrastructure_failures)
     critic_predictions: tuple[QualityCriticPrediction, ...] = ()
     critic_prompt_hashes: dict[str, str] = {}
     critic_telemetry: dict[str, tuple[ModelCallTelemetry, ...]] = {}
     critic_failures: tuple[str, ...] = ()
     critic_attempted_count = 0
+    critic_checkpoint_stats = {"loaded": 0, "written": 0}
     if config.run_model_critic:
         (
             critic_examples,
@@ -307,6 +293,12 @@ def run_agent_validation(
             client,
             tuple(critic_examples),
             config.model_critic_max_examples,
+            maximum_concurrency=config.maximum_concurrency,
+            checkpoint_dir=checkpoint_root,
+            checkpoint_config_hash=config.config_hash,
+            resume_from_checkpoints=config.resume_from_checkpoints,
+            retry_failed_checkpoints=config.retry_failed_checkpoints,
+            checkpoint_stats=critic_checkpoint_stats,
         )
         all_telemetry.extend(call for calls in critic_telemetry.values() for call in calls)
         prediction_by_example = {item.example_id: item for item in critic_predictions}
@@ -367,8 +359,176 @@ def run_agent_validation(
         critic_failures=critic_failures,
         critic_attempted_count=critic_attempted_count,
         critic_prompt_hashes=tuple(sorted(set(critic_prompt_hashes.values()))),
+        agent_checkpoint_loaded_count=agent_checkpoint_loaded_count,
+        agent_checkpoint_written_count=agent_checkpoint_written_count,
+        critic_checkpoint_loaded_count=critic_checkpoint_stats["loaded"],
+        critic_checkpoint_written_count=critic_checkpoint_stats["written"],
     )
     return AgentValidationArtifacts(report=report, critic_dataset=dataset)
+
+
+def _agent_jobs(
+    config: AgentValidationConfig,
+    cases: tuple[ContractCase, ...],
+) -> tuple[_AgentJob, ...]:
+    jobs: list[_AgentJob] = []
+    for case in cases:
+        for retrieval_track in config.retrieval_tracks:
+            for planning_track in config.planning_tracks:
+                task = materialize_track_variant(
+                    case.task,
+                    case.corpus,
+                    retrieval_track=retrieval_track,
+                    planning_track=planning_track,
+                )
+                sample_identity = {
+                    "task_id": task.task_id,
+                    "retrieval_track": retrieval_track.value,
+                    "planning_track": planning_track.value,
+                    "model_config_hash": config.model.public_manifest_hash,
+                    "validation_version": AGENT_VALIDATION_VERSION,
+                }
+                jobs.append(
+                    _AgentJob(
+                        index=len(jobs),
+                        case=case,
+                        task=task,
+                        sample_id=canonical_hash(
+                            sample_identity,
+                            prefix="agent_validation_sample:",
+                        ),
+                        structure=_task_structure(task.public),
+                    )
+                )
+    return tuple(jobs)
+
+
+def _execute_agent_job(
+    config: AgentValidationConfig,
+    client: JsonCompletionClient,
+    job: _AgentJob,
+) -> _AgentJobResult:
+    case = job.case
+    task = job.task
+    reference_sample_ids: tuple[str, ...] = ()
+    try:
+        compiled, runtime = _compile_runtime(case, task)
+        reference_sample_ids = (compiled.sample.sample_id,)
+        solve_result = LLMAgentSolver(client, case.registry).solve_with_audit(
+            task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
+        assessment = runtime.evaluate(
+            compiled.quality_contract,
+            task,
+            case.corpus,
+            case.proof_graph,
+            solve_result.trajectory,
+        )
+        vector = QualityVectorCompiler().compile(
+            compiled.quality_contract,
+            assessment,
+        )
+        example = build_quality_critic_example(
+            task=task,
+            corpus=case.corpus,
+            contract=compiled.quality_contract,
+            trajectory=solve_result.trajectory,
+            assessment=assessment,
+            quality_vector=vector,
+            candidate_source="real_agent",
+            metadata={
+                "model_config_hash": config.model.public_manifest_hash,
+                "generation_audit_id": solve_result.audit.audit_id,
+                **job.structure,
+            },
+        )
+        examples = [example]
+        accepted_ids = (
+            (example.example_id,)
+            if assessment.decision == ReleaseDecision.ACCEPTED
+            else ()
+        )
+        generated_count = 0
+        counterfactual_ids: list[str] = []
+        counterfactual_assessments: list[ContractQualityAssessment] = []
+        if config.generate_counterfactuals and assessment.decision == ReleaseDecision.ACCEPTED:
+            generated = _counterfactual_examples(
+                case=case,
+                task=task,
+                compiled=compiled,
+                runtime=runtime,
+                source_trajectory=solve_result.trajectory,
+            )
+            generated_count = len(generated)
+            for generated_example, generated_assessment, counterfactual_id in generated:
+                examples.append(generated_example)
+                counterfactual_assessments.append(generated_assessment)
+                counterfactual_ids.append(counterfactual_id)
+        return _AgentJobResult(
+            sample=AgentValidationSample(
+                sample_id=job.sample_id,
+                task_id=task.task_id,
+                domain=case.domain,
+                task_type=job.structure["task_type"],
+                pattern_id=job.structure["pattern_id"],
+                program_signature=job.structure["program_signature"],
+                retrieval_track=task.public.retrieval_track,
+                planning_track=task.public.planning_track,
+                generation_status="normalized",
+                generation_audit=solve_result.audit,
+                agent_telemetry=solve_result.audit.telemetry,
+                trajectory=solve_result.trajectory,
+                contract_assessment=assessment,
+                quality_vector=vector,
+                critic_example_id=example.example_id,
+                counterfactual_count=generated_count,
+            ),
+            critic_examples=tuple(examples),
+            accepted_example_ids=accepted_ids,
+            reference_sample_ids=reference_sample_ids,
+            counterfactual_ids=tuple(counterfactual_ids),
+            counterfactual_assessments=tuple(counterfactual_assessments),
+            telemetry=solve_result.audit.telemetry,
+        )
+    except LLMClientError as exc:
+        return _AgentJobResult(
+            sample=AgentValidationSample(
+                sample_id=job.sample_id,
+                task_id=task.task_id,
+                domain=case.domain,
+                task_type=job.structure["task_type"],
+                pattern_id=job.structure["pattern_id"],
+                program_signature=job.structure["program_signature"],
+                retrieval_track=task.public.retrieval_track,
+                planning_track=task.public.planning_track,
+                generation_status="model_failed",
+                agent_telemetry=exc.telemetry,
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            ),
+            reference_sample_ids=reference_sample_ids,
+            telemetry=exc.telemetry,
+        )
+    except Exception as exc:
+        failure = f"{task.task_id}:{type(exc).__name__}:{exc}"
+        return _AgentJobResult(
+            sample=AgentValidationSample(
+                sample_id=job.sample_id,
+                task_id=task.task_id,
+                domain=case.domain,
+                task_type=job.structure["task_type"],
+                pattern_id=job.structure["pattern_id"],
+                program_signature=job.structure["program_signature"],
+                retrieval_track=task.public.retrieval_track,
+                planning_track=task.public.planning_track,
+                generation_status="infrastructure_failed",
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            ),
+            reference_sample_ids=reference_sample_ids,
+            infrastructure_failures=(failure,),
+        )
 
 
 def _compile_runtime(case: ContractCase, task):
@@ -455,6 +615,13 @@ def _run_model_critic(
     client: JsonCompletionClient,
     examples: tuple[QualityCriticExample, ...],
     maximum_examples: int,
+    *,
+    maximum_concurrency: int = 1,
+    checkpoint_dir: Path | None = None,
+    checkpoint_config_hash: str | None = None,
+    resume_from_checkpoints: bool = True,
+    retry_failed_checkpoints: bool = False,
+    checkpoint_stats: dict[str, int] | None = None,
 ) -> tuple[
     list[QualityCriticExample],
     tuple[QualityCriticPrediction, ...],
@@ -464,22 +631,69 @@ def _run_model_critic(
     int,
 ]:
     selected = _stratified_critic_examples(examples, maximum_examples)
-    prediction_by_example: dict[str, QualityCriticPrediction] = {}
-    prompt_hash_by_example: dict[str, str] = {}
-    telemetry_by_example: dict[str, tuple[ModelCallTelemetry, ...]] = {}
-    failures: list[str] = []
-    critic = LLMQualityCritic(client)
+    base_config_hash = checkpoint_config_hash or client.config.public_manifest_hash
+    result_by_example: dict[str, _CriticJobResult] = {}
+    pending: list[QualityCriticExample] = []
+    stats = checkpoint_stats if checkpoint_stats is not None else {}
+    stats.setdefault("loaded", 0)
+    stats.setdefault("written", 0)
     for example in selected:
-        try:
-            result = critic.predict_with_audit(example)
-            prediction_by_example[example.example_id] = result.prediction
-            prompt_hash_by_example[example.example_id] = result.prompt_manifest_hash
-            telemetry_by_example[example.example_id] = result.telemetry
-        except LLMClientError as exc:
-            telemetry_by_example[example.example_id] = exc.telemetry
-            failures.append(f"{example.example_id}:{type(exc).__name__}:{exc}")
-        except Exception as exc:
-            failures.append(f"{example.example_id}:{type(exc).__name__}:{exc}")
+        checkpoint_path = _checkpoint_path(checkpoint_dir, "critic", example.example_id)
+        if checkpoint_path is not None and resume_from_checkpoints:
+            checkpoint = _load_checkpoint(
+                checkpoint_path,
+                config_hash=_critic_job_checkpoint_hash(base_config_hash, example),
+                version=CRITIC_CHECKPOINT_VERSION,
+                model=_CriticJobResult,
+            )
+            if checkpoint is not None and not (
+                retry_failed_checkpoints and checkpoint.prediction is None
+            ):
+                result_by_example[example.example_id] = checkpoint
+                stats["loaded"] += 1
+                continue
+        pending.append(example)
+
+    def record(example: QualityCriticExample, result: _CriticJobResult) -> None:
+        result_by_example[example.example_id] = result
+        checkpoint_path = _checkpoint_path(checkpoint_dir, "critic", example.example_id)
+        if checkpoint_path is not None:
+            _write_checkpoint(
+                checkpoint_path,
+                config_hash=_critic_job_checkpoint_hash(base_config_hash, example),
+                version=CRITIC_CHECKPOINT_VERSION,
+                payload=result,
+            )
+            stats["written"] += 1
+
+    if maximum_concurrency == 1:
+        for example in pending:
+            record(example, _execute_critic_job(client, example))
+    else:
+        with ThreadPoolExecutor(max_workers=maximum_concurrency) as executor:
+            futures = {
+                executor.submit(_execute_critic_job, client, example): example
+                for example in pending
+            }
+            for future in as_completed(futures):
+                example = futures[future]
+                record(example, future.result())
+
+    ordered_results = tuple(result_by_example[item.example_id] for item in selected)
+    prediction_by_example = {
+        item.example_id: item.prediction
+        for item in ordered_results
+        if item.prediction is not None
+    }
+    prompt_hash_by_example = {
+        item.example_id: item.prompt_manifest_hash
+        for item in ordered_results
+        if item.prompt_manifest_hash is not None
+    }
+    telemetry_by_example = {
+        item.example_id: item.telemetry for item in ordered_results if item.telemetry
+    }
+    failures = tuple(item.failure for item in ordered_results if item.failure is not None)
     updated = [
         example.model_copy(
             update={
@@ -502,9 +716,34 @@ def _run_model_critic(
         predictions,
         prompt_hash_by_example,
         telemetry_by_example,
-        tuple(failures),
+        failures,
         len(selected),
     )
+
+
+def _execute_critic_job(
+    client: JsonCompletionClient,
+    example: QualityCriticExample,
+) -> _CriticJobResult:
+    try:
+        result = LLMQualityCritic(client).predict_with_audit(example)
+        return _CriticJobResult(
+            example_id=example.example_id,
+            prediction=result.prediction,
+            prompt_manifest_hash=result.prompt_manifest_hash,
+            telemetry=result.telemetry,
+        )
+    except LLMClientError as exc:
+        return _CriticJobResult(
+            example_id=example.example_id,
+            telemetry=exc.telemetry,
+            failure=f"{example.example_id}:{type(exc).__name__}:{exc}",
+        )
+    except Exception as exc:
+        return _CriticJobResult(
+            example_id=example.example_id,
+            failure=f"{example.example_id}:{type(exc).__name__}:{exc}",
+        )
 
 
 def _stratified_critic_examples(
@@ -552,6 +791,10 @@ def _build_report(
     critic_failures: tuple[str, ...],
     critic_attempted_count: int,
     critic_prompt_hashes: tuple[str, ...],
+    agent_checkpoint_loaded_count: int,
+    agent_checkpoint_written_count: int,
+    critic_checkpoint_loaded_count: int,
+    critic_checkpoint_written_count: int,
 ) -> AgentValidationReport:
     assessments = tuple(
         item.contract_assessment for item in samples if item.contract_assessment is not None
@@ -596,6 +839,18 @@ def _build_report(
         if annotation.model_id is not None
     )
     critic_success_count = sum(critic_model_counts.values())
+    agent_failure_types = Counter(
+        call.error_type
+        for item in samples
+        for call in item.agent_telemetry
+        if call.error_type is not None
+    )
+    agent_contract_errors = Counter(
+        error
+        for item in samples
+        for call in item.agent_telemetry
+        for error in call.contract_errors
+    )
     total_costs = [item.estimated_cost for item in telemetry if item.estimated_cost is not None]
     normalized_count = sum(item.trajectory is not None for item in samples)
     requested_task_counts = config.resolved_domain_task_targets
@@ -687,6 +942,13 @@ def _build_report(
         critic_attempted_count=critic_attempted_count,
         critic_success_count=critic_success_count,
         critic_failure_count=len(critic_failures),
+        maximum_concurrency=config.maximum_concurrency,
+        agent_checkpoint_loaded_count=agent_checkpoint_loaded_count,
+        agent_checkpoint_written_count=agent_checkpoint_written_count,
+        critic_checkpoint_loaded_count=critic_checkpoint_loaded_count,
+        critic_checkpoint_written_count=critic_checkpoint_written_count,
+        agent_failure_type_counts=dict(sorted(agent_failure_types.items())),
+        agent_contract_error_counts=dict(sorted(agent_contract_errors.items())),
         agent_prompt_manifest_hashes=tuple(
             sorted(
                 {
@@ -751,6 +1013,93 @@ def _task_structure(task) -> dict[str, str]:
     }
 
 
+def _checkpoint_path(
+    checkpoint_root: Path | None,
+    kind: str,
+    identity: str,
+) -> Path | None:
+    if checkpoint_root is None:
+        return None
+    token = canonical_hash(
+        {"kind": kind, "identity": identity},
+        prefix="validation_checkpoint_path:",
+    ).split(":", 1)[1]
+    return checkpoint_root / kind / f"{token}.json"
+
+
+def _agent_job_checkpoint_hash(
+    config: AgentValidationConfig,
+    job: _AgentJob,
+) -> str:
+    return canonical_hash(
+        {
+            "config_hash": config.config_hash,
+            "agent_validation_version": AGENT_VALIDATION_VERSION,
+            "agent_solver_version": LLM_AGENT_SOLVER_VERSION,
+            "agent_prompt_version": LLM_AGENT_PROMPT_VERSION,
+            "agent_response_schema_version": AGENT_RESPONSE_SCHEMA_VERSION,
+            "public_task": job.task.public,
+            "operation_registry_manifest": job.case.registry.manifest(),
+        },
+        prefix="agent_job_checkpoint_contract:",
+    )
+
+
+def _critic_job_checkpoint_hash(
+    base_config_hash: str,
+    example: QualityCriticExample,
+) -> str:
+    return canonical_hash(
+        {
+            "base_config_hash": base_config_hash,
+            "critic_prompt_version": LLM_CRITIC_PROMPT_VERSION,
+            "critic_example": example,
+        },
+        prefix="critic_job_checkpoint_contract:",
+    )
+
+
+def _load_checkpoint(
+    path: Path,
+    *,
+    config_hash: str,
+    version: str,
+    model: type[BaseModel],
+) -> Any | None:
+    if not path.exists():
+        return None
+    wrapper = json.loads(path.read_text(encoding="utf-8"))
+    if wrapper.get("version") != version or wrapper.get("config_hash") != config_hash:
+        return None
+    payload = wrapper.get("payload")
+    expected_hash = canonical_hash(payload, prefix="validation_checkpoint_payload:")
+    if wrapper.get("payload_hash") != expected_hash:
+        raise ValueError(f"checkpoint integrity failure: {path}")
+    return model.model_validate(payload)
+
+
+def _write_checkpoint(
+    path: Path,
+    *,
+    config_hash: str,
+    version: str,
+    payload: BaseModel,
+) -> None:
+    serialized = payload.model_dump(mode="json", exclude_none=True)
+    _write_json(
+        path,
+        {
+            "version": version,
+            "config_hash": config_hash,
+            "payload_hash": canonical_hash(
+                serialized,
+                prefix="validation_checkpoint_payload:",
+            ),
+            "payload": serialized,
+        },
+    )
+
+
 def write_agent_validation_artifacts(
     artifacts: AgentValidationArtifacts,
     output_dir: Path,
@@ -798,14 +1147,24 @@ def write_agent_validation_artifacts(
 
 
 def _write_json(path: Path, payload) -> None:
-    path.write_text(
+    _atomic_write_text(
+        path,
         json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
     )
 
 
 def _write_jsonl(path: Path, rows) -> None:
-    path.write_text(
+    _atomic_write_text(
+        path,
         "".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows),
-        encoding="utf-8",
     )
+
+
+def _atomic_write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(content, encoding="utf-8")
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)

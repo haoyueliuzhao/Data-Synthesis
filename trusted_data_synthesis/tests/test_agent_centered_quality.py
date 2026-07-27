@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import copy
+import json
 import os
 import subprocess
 import sys
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -94,6 +97,38 @@ class ScriptedJsonClient:
             completion_tokens=50,
             total_tokens=150,
         )
+
+
+class ThreadSafeScriptedJsonClient(ScriptedJsonClient):
+    def __init__(self, payloads: list[dict[str, Any]]) -> None:
+        super().__init__(payloads)
+        self._lock = threading.Lock()
+
+    def complete_json(self, prompt: str):
+        with self._lock:
+            return super().complete_json(prompt)
+
+
+class PromptRoutingJsonClient(ScriptedJsonClient):
+    def __init__(self, payload_by_task_id: dict[str, dict[str, Any]]) -> None:
+        super().__init__([])
+        self._payload_by_task_id = payload_by_task_id
+        self._lock = threading.Lock()
+
+    def complete_json(self, prompt: str):
+        with self._lock:
+            task_id = next(
+                (
+                    key
+                    for key in self._payload_by_task_id
+                    if f'"task_id": "{key}"' in prompt
+                ),
+                None,
+            )
+            if task_id is None:
+                raise AssertionError("unexpected API call or unknown task prompt")
+            self._payloads.append(copy.deepcopy(self._payload_by_task_id[task_id]))
+            return super().complete_json(prompt)
 
 
 def test_llm_agent_plan_given_is_independently_verified() -> None:
@@ -280,6 +315,117 @@ def test_agent_contract_repair_rejects_unresolvable_evidence_ref() -> None:
     assert result.audit.telemetry[1].json_contract_success is True
 
 
+def test_failed_agent_contract_preserves_redacted_diagnostics() -> None:
+    case = next(
+        item for item in build_pattern_validation_cases(per_domain=1) if item.domain == "legal"
+    )
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    payload = _response_from_trajectory(deterministic)
+    payload["final_answer"] = {"payload": {"applicable": True}}
+
+    with pytest.raises(LLMClientError) as captured:
+        LLMAgentSolver(ScriptedJsonClient([payload]), case.registry).solve(
+            task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
+
+    telemetry = captured.value.telemetry[0]
+    assert telemetry.json_contract_success is False
+    assert telemetry.contract_errors
+    assert telemetry.error_message == telemetry.contract_errors[0]
+    final_shape = telemetry.response_shape["properties"]["final_answer"]
+    assert final_shape["keys"] == ["payload"]
+    assert "applicable" not in str(telemetry.contract_errors)
+
+
+def test_legal_prompt_exposes_exact_plugin_owned_contract() -> None:
+    case = next(
+        item for item in build_pattern_validation_cases(per_domain=1) if item.domain == "legal"
+    )
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    client = ScriptedJsonClient([_response_from_trajectory(deterministic)])
+
+    LLMAgentSolver(client, case.registry).solve(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+
+    prompt = client.prompts[0]
+    assert '"domain_contract_guidance"' in prompt
+    assert '"missing_conditions"' in prompt
+    assert '"required_top_level_fields"' in prompt
+    assert '"required_tool_name": "rule_engine"' in prompt
+
+
+def test_agent_contract_rejects_non_output_verification_payload() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    payload = _response_from_trajectory(deterministic)
+    payload["verification_result"] = {"status": "verified"}
+
+    with pytest.raises(LLMClientError) as captured:
+        LLMAgentSolver(ScriptedJsonClient([payload]), case.registry).solve(
+            task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
+
+    assert any(
+        "verification_result must exactly equal" in error
+        for error in captured.value.telemetry[0].contract_errors
+    )
+
+
+def test_agent_parameters_compare_after_json_round_trip() -> None:
+    case = next(
+        item for item in build_pattern_validation_cases(per_domain=1) if item.domain == "legal"
+    )
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    payload = json.loads(json.dumps(_response_from_trajectory(deterministic)))
+
+    trajectory = LLMAgentSolver(ScriptedJsonClient([payload]), case.registry).solve(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+
+    assert trajectory.task_id == task.task_id
+
+
 @pytest.mark.parametrize("retrieval_track", [RetrievalTrack.SEMI_OPEN, RetrievalTrack.OPEN])
 def test_agent_controls_non_resolved_search_without_oracle_ids(
     retrieval_track: RetrievalTrack,
@@ -345,7 +491,9 @@ def test_agent_capacity_audit_supports_domain_specific_targets() -> None:
     assert report.planned_critic_api_call_ceiling == 4
 
 
-def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks() -> None:
+def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks(
+    tmp_path: Path,
+) -> None:
     cases = (
         *build_finance_counterfactual_cases(count=1),
         *build_pattern_validation_cases(per_domain=1),
@@ -447,18 +595,37 @@ def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks()
             for item in critic_slice
         ]
     )
+    critic_checkpoint_stats: dict[str, int] = {}
     reviewed, predictions, _, _, failures, attempted = _run_model_critic(
         critic_client,
         artifacts.critic_dataset.examples,
         6,
+        checkpoint_dir=tmp_path / "critic_checkpoints",
+        checkpoint_config_hash="critic-test-config",
+        checkpoint_stats=critic_checkpoint_stats,
     )
     alignment = evaluate_annotation_alignment(reviewed)
     assert attempted == 6
     assert len(predictions) == 6
     assert failures == ()
+    assert critic_checkpoint_stats == {"loaded": 0, "written": 6}
     assert alignment.model_contract_acceptability_agreement == 1.0
     assert report.alignment_report.human_annotation_count == 0
     assert report.alignment_report.human_contract_acceptability_agreement is None
+
+    resume_stats: dict[str, int] = {}
+    _, resumed_predictions, _, _, resumed_failures, resumed_attempted = _run_model_critic(
+        ScriptedJsonClient([]),
+        artifacts.critic_dataset.examples,
+        6,
+        checkpoint_dir=tmp_path / "critic_checkpoints",
+        checkpoint_config_hash="critic-test-config",
+        checkpoint_stats=resume_stats,
+    )
+    assert resumed_attempted == 6
+    assert resumed_failures == ()
+    assert len(resumed_predictions) == 6
+    assert resume_stats == {"loaded": 6, "written": 0}
 
     repair_client = ScriptedJsonClient(
         [
@@ -487,6 +654,67 @@ def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks()
     assert calls[0].json_contract_success is False
     assert calls[0].error_type == "QualityCriticContractError"
     assert calls[1].json_contract_success is True
+
+
+def test_agent_runner_concurrency_checkpoints_and_zero_call_resume(tmp_path: Path) -> None:
+    cases = (
+        *build_finance_counterfactual_cases(count=1),
+        *build_pattern_validation_cases(per_domain=1),
+    )
+    payload_by_task_id = {}
+    for case in cases:
+        task = materialize_track_variant(
+            case.task,
+            case.corpus,
+            retrieval_track=RetrievalTrack.RESOLVED,
+            planning_track=PlanningTrack.PLAN_GIVEN,
+        )
+        if case.domain == "finance":
+            deterministic = FinanceNumericCandidateGenerator().generate(
+                task.public,
+                InMemoryEvidenceToolRuntime(case.bundle),
+            )
+        else:
+            deterministic = PlanGivenContractCandidate(case.registry).generate(
+                task.public,
+                InMemoryEvidenceToolRuntime(case.corpus),
+            )
+        payload_by_task_id[task.task_id] = _response_from_trajectory(deterministic)
+    client = PromptRoutingJsonClient(payload_by_task_id)
+    config = AgentValidationConfig(
+        model=client.config,
+        tasks_per_domain=1,
+        retrieval_tracks=(RetrievalTrack.RESOLVED,),
+        planning_tracks=(PlanningTrack.PLAN_GIVEN,),
+        generate_counterfactuals=False,
+        selection_target=3,
+        maximum_concurrency=2,
+    )
+    checkpoint_dir = tmp_path / "checkpoints"
+
+    first = run_agent_validation(config, client, checkpoint_dir=checkpoint_dir)
+
+    assert first.report.status == "completed"
+    assert client.call_count == 3
+    assert first.report.maximum_concurrency == 2
+    assert first.report.agent_checkpoint_loaded_count == 0
+    assert first.report.agent_checkpoint_written_count == 3
+    assert len(tuple((checkpoint_dir / "agent").glob("*.json"))) == 3
+
+    resumed_client = PromptRoutingJsonClient({})
+    resumed = run_agent_validation(
+        config,
+        resumed_client,
+        checkpoint_dir=checkpoint_dir,
+    )
+
+    assert resumed_client.call_count == 0
+    assert resumed.report.agent_checkpoint_loaded_count == 3
+    assert resumed.report.agent_checkpoint_written_count == 0
+    assert tuple(item.sample_id for item in resumed.report.samples) == tuple(
+        item.sample_id for item in first.report.samples
+    )
+    assert resumed.critic_dataset.dataset_id == first.critic_dataset.dataset_id
 
 
 def test_model_advisory_cannot_be_declared_as_human_annotation() -> None:
@@ -636,7 +864,7 @@ def _response_from_trajectory(
     )
     assert output_node_id is not None
     return {
-        "schema_version": "agent_response.v2",
+        "schema_version": "agent_response.v3",
         "plan_summary": "Select matching evidence and execute a typed operation DAG.",
         "selected_evidence_ids": list(selected_evidence_ids),
         "execution_trace": {

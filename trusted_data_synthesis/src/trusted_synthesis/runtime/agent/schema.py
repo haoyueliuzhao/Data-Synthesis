@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.hashing import canonical_hash
 
-AGENT_RESPONSE_SCHEMA_VERSION = "agent_response.v2"
+AGENT_RESPONSE_SCHEMA_VERSION = "agent_response.v3"
 AGENT_EXECUTION_TRACE_VERSION = "agent_execution_trace.v1"
 AGENT_SEARCH_SCHEMA_VERSION = "agent_search.v1"
 AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v2"
@@ -76,6 +76,9 @@ class ModelCallTelemetry(BaseModel):
     discovery_attempted: bool = False
     discovered_model_count: int = Field(default=0, ge=0)
     error_type: str | None = None
+    error_message: str | None = None
+    contract_errors: tuple[str, ...] = ()
+    response_shape: dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentExecutionStep(BaseModel):
@@ -152,17 +155,38 @@ class AgentSearchResponseContract(BaseModel):
     search_query: AgentSearchQuery
 
 
+class AgentCitation(BaseModel):
+    """A citation copied from one retrieved evidence item."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    evidence_id: str = Field(min_length=1)
+    source_id: str = Field(min_length=1)
+    source_locator: dict[str, Any]
+
+
+class AgentFinalAnswer(BaseModel):
+    """Universal answer envelope; task schemas constrain the result payload."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    result: dict[str, Any]
+    citations: tuple[AgentCitation, ...]
+    status: Any | None = None
+    claims: tuple[dict[str, Any], ...] | None = None
+
+
 class AgentResponseContract(BaseModel):
     """The model's decisions; normalization must not repair their semantics."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    schema_version: Literal["agent_response.v2"] = "agent_response.v2"
+    schema_version: Literal["agent_response.v3"] = "agent_response.v3"
     plan_summary: str = Field(min_length=1)
     selected_evidence_ids: tuple[str, ...] = Field(min_length=1)
     execution_trace: AgentExecutionTrace
     verification_result: dict[str, Any] | None = None
-    final_answer: dict[str, Any]
+    final_answer: AgentFinalAnswer
 
 
 class AgentGenerationAudit(BaseModel):

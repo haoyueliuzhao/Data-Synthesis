@@ -5,6 +5,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.task.schema import (
@@ -31,8 +32,8 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v2"
-LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v3"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v4"
+LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v5"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
 
 
@@ -46,7 +47,6 @@ class LLMAgentSolver:
     ) -> None:
         self._client = client
         self._registry = operation_registry
-        self._operation_catalog = _public_operation_catalog(operation_registry)
 
     def solve(self, task: TaskPublicSpec, environment: EvidenceToolRuntime) -> Trajectory:
         return self.solve_with_audit(task, environment).trajectory
@@ -85,7 +85,7 @@ class LLMAgentSolver:
         base_prompt, answer_prompt_manifest_hash = _build_prompt(
             task,
             retrieved,
-            self._operation_catalog,
+            _public_operation_catalog(self._registry, task),
             executed_search_query,
         )
         response, answer_telemetry, answer_repairs = _request_agent_response(
@@ -175,9 +175,15 @@ def _request_search_response(
             telemetry.append(call_telemetry)
             break
         except ValidationError as exc:
-            validation_error = str(exc)
+            contract_errors = _contract_errors(exc)
+            validation_error = "; ".join(contract_errors)
             telemetry.append(
-                _invalid_contract_telemetry(call_telemetry, "AgentSearchContractError")
+                _invalid_contract_telemetry(
+                    call_telemetry,
+                    "AgentSearchContractError",
+                    contract_errors=contract_errors,
+                    payload=payload,
+                )
             )
     if response is None:
         raise LLMClientError("model failed the agent search contract", tuple(telemetry))
@@ -210,11 +216,14 @@ def _request_agent_response(
             telemetry.append(call_telemetry)
             break
         except (ValidationError, ValueError) as exc:
-            validation_error = str(exc)
+            contract_errors = _contract_errors(exc)
+            validation_error = "; ".join(contract_errors)
             telemetry.append(
                 _invalid_contract_telemetry(
                     call_telemetry,
                     "AgentContractValidationError",
+                    contract_errors=contract_errors,
+                    payload=payload,
                 )
             )
     if response is None:
@@ -225,13 +234,60 @@ def _request_agent_response(
 def _invalid_contract_telemetry(
     telemetry: ModelCallTelemetry,
     error_type: str,
+    *,
+    contract_errors: tuple[str, ...] = (),
+    payload: dict[str, Any] | None = None,
 ) -> ModelCallTelemetry:
     return telemetry.model_copy(
         update={
             "json_contract_success": False,
             "error_type": error_type,
+            "error_message": contract_errors[0] if contract_errors else None,
+            "contract_errors": contract_errors,
+            "response_shape": _response_shape(payload),
         }
     )
+
+
+def _contract_errors(exc: ValidationError | ValueError) -> tuple[str, ...]:
+    if isinstance(exc, ValidationError):
+        return tuple(
+            ":".join(
+                (
+                    ".".join(str(item) for item in error.get("loc") or ("root",)),
+                    str(error.get("type") or "validation_error"),
+                    str(error.get("msg") or "invalid value"),
+                )
+            )
+            for error in exc.errors(include_input=False, include_url=False)
+        )
+    message = " ".join(str(exc).split())
+    return (message[:1000] or type(exc).__name__,)
+
+
+def _response_shape(payload: dict[str, Any] | None) -> dict[str, Any]:
+    if payload is None:
+        return {}
+
+    def shape(value: Any, depth: int) -> dict[str, Any]:
+        if depth >= 4:
+            return {"type": type(value).__name__}
+        if isinstance(value, dict):
+            keys = sorted(str(key) for key in value)[:50]
+            return {
+                "type": "object",
+                "keys": keys,
+                "properties": {key: shape(value[key], depth + 1) for key in keys},
+            }
+        if isinstance(value, (list, tuple)):
+            return {
+                "type": "array",
+                "length": len(value),
+                "item_shapes": [shape(item, depth + 1) for item in value[:3]],
+            }
+        return {"type": type(value).__name__}
+
+    return shape(payload, 0)
 
 
 def _validate_agent_response_contract(
@@ -240,14 +296,45 @@ def _validate_agent_response_contract(
     response: AgentResponseContract,
     registry: OperationRegistry,
 ) -> None:
-    retrieved_ids = {item.evidence_id for item in retrieved}
+    retrieved_by_id = {item.evidence_id: item for item in retrieved}
+    retrieved_ids = set(retrieved_by_id)
+    if len(response.selected_evidence_ids) != len(set(response.selected_evidence_ids)):
+        raise ValueError("selected_evidence_ids must be unique")
     unknown_selected = set(response.selected_evidence_ids) - retrieved_ids
     if unknown_selected:
         raise ValueError(f"selected evidence was not retrieved: {sorted(unknown_selected)}")
+    final_answer = response.final_answer.model_dump(mode="json", exclude_none=True)
+    answer_schema_passed, answer_schema_failures = CandidateAnswerNormalizer().validate_schema(
+        task,
+        final_answer,
+    )
+    if not answer_schema_passed:
+        raise ValueError(
+            "final_answer violates the task answer schema: "
+            + "; ".join(answer_schema_failures)
+        )
+    citations = response.final_answer.citations
+    citation_ids = tuple(item.evidence_id for item in citations)
+    if len(citation_ids) != len(set(citation_ids)):
+        raise ValueError("final_answer citations must be unique")
+    if set(citation_ids) != set(response.selected_evidence_ids):
+        raise ValueError("final_answer citations must exactly cover selected_evidence_ids")
+    for citation in citations:
+        evidence = retrieved_by_id[citation.evidence_id]
+        expected_locator = evidence.source_locator.model_dump(mode="json", exclude_none=True)
+        if citation.source_id != evidence.source.source_id:
+            raise ValueError("citation source_id does not match retrieved evidence")
+        if citation.source_locator != expected_locator:
+            raise ValueError("citation source_locator does not match retrieved evidence")
     executions = response.execution_trace.steps
     for execution in executions:
         definition = registry.require(execution.operator_id)
         registry.validate_output(definition, execution.observation["result"])
+        if execution.tool_name != definition.tool_capability:
+            raise ValueError(
+                f"execution tool_name must equal registered tool_capability for "
+                f"{execution.operator_id}: {definition.tool_capability!r}"
+            )
         unknown_lineage = set(execution.evidence_ids) - retrieved_ids
         if unknown_lineage:
             raise ValueError(
@@ -266,6 +353,18 @@ def _validate_agent_response_contract(
                 )
     if TaskRequirement.VERIFY_RESULT in task.requirements and response.verification_result is None:
         raise ValueError("verification_result is required by the public task")
+    output_execution = next(
+        item
+        for item in executions
+        if item.execution_id == response.execution_trace.output_execution_id
+    )
+    if (
+        TaskRequirement.VERIFY_RESULT in task.requirements
+        and response.verification_result != output_execution.observation["result"]
+    ):
+        raise ValueError(
+            "verification_result must exactly equal the output execution observation.result"
+        )
     if task.planning_track != PlanningTrack.PLAN_GIVEN:
         if any(item.planned_node_id is not None for item in executions):
             raise ValueError("plan-hidden executions cannot claim hidden planned node IDs")
@@ -282,13 +381,16 @@ def _validate_agent_response_contract(
             raise ValueError("execution IDs must be distinct from public plan node IDs")
         if execution.operator_id != node.operator_id:
             raise ValueError("agent executions must preserve public plan operators")
-        if execution.parameters != node.parameters:
-            raise ValueError("agent executions must preserve public plan parameters")
-    output_execution = next(
-        item
-        for item in executions
-        if item.execution_id == response.execution_trace.output_execution_id
-    )
+        if canonical_hash(
+            execution.parameters,
+            prefix="agent_execution_parameters:",
+        ) != canonical_hash(node.parameters, prefix="agent_execution_parameters:"):
+            raise ValueError(
+                "agent executions must preserve public plan parameters: "
+                f"node={node.public_node_id}, "
+                f"expected={json.dumps(node.parameters, ensure_ascii=False, sort_keys=True)}, "
+                f"observed={json.dumps(execution.parameters, ensure_ascii=False, sort_keys=True)}"
+            )
     if output_execution.planned_node_id != task.program_skeleton.output_node_id:
         raise ValueError("execution trace output must bind to the public output node")
 
@@ -351,11 +453,26 @@ def _build_prompt(
     executed_search_query: dict[str, Any],
 ) -> tuple[str, str]:
     response_schema = AgentResponseContract.model_json_schema()
+    task_execution_contract = _task_execution_contract(task, operation_catalog)
+    final_answer_contract = _final_answer_contract(task)
+    domain_contract_guidance = task.metadata.get("agent_contract_guidance") or {}
     manifest = {
         "prompt_version": LLM_AGENT_PROMPT_VERSION,
         "response_schema_hash": canonical_hash(response_schema, prefix="agent_response_schema:"),
         "operation_catalog_hash": canonical_hash(
             operation_catalog, prefix="agent_operation_catalog:"
+        ),
+        "task_execution_contract_hash": canonical_hash(
+            task_execution_contract,
+            prefix="agent_task_execution_contract:",
+        ),
+        "final_answer_contract_hash": canonical_hash(
+            final_answer_contract,
+            prefix="agent_final_answer_contract:",
+        ),
+        "domain_contract_guidance_hash": canonical_hash(
+            domain_contract_guidance,
+            prefix="agent_domain_contract_guidance:",
         ),
     }
     payload = {
@@ -364,7 +481,26 @@ def _build_prompt(
         "retrieved_evidence": [
             item.model_dump(mode="json", exclude_none=True) for item in evidence
         ],
+        "evidence_identifier_contract": {
+            "exact_evidence_ids": [item.evidence_id for item in evidence],
+            "raw_id_fields": (
+                "selected_evidence_ids",
+                "execution_trace.steps[].evidence_ids",
+                "final_answer.citations[].evidence_id",
+                "operation result reference fields such as selected_ref and higher_ref",
+            ),
+            "input_ref_examples": {
+                item.evidence_id: f"evidence:{item.evidence_id}" for item in evidence
+            },
+            "rule": (
+                "Only input_refs add the evidence: reference prefix. Every raw ID field "
+                "copies exact_evidence_ids without adding a prefix."
+            ),
+        },
         "operation_catalog": operation_catalog,
+        "task_execution_contract": task_execution_contract,
+        "final_answer_contract": final_answer_contract,
+        "domain_contract_guidance": domain_contract_guidance,
         "execution_contract": {
             "program_skeleton": (
                 "a non-executed specification; never copy its node records as results"
@@ -376,6 +512,9 @@ def _build_prompt(
                 "evidence:<full evidence_id>",
                 "execution:<earlier execution_id>",
             ),
+            "verification_result": (
+                "when required, an exact copy of output execution observation.result"
+            ),
         },
         "response_json_schema": response_schema,
     }
@@ -386,17 +525,25 @@ def _build_prompt(
         "program_skeleton is a plan, not an execution result: do not copy its inputs, "
         "dependencies, or output schema into execution_trace. Execute each operation "
         "against concrete retrieved evidence or an earlier execution result. Give every "
-        "execution a fresh execution_id, the actual catalog tool_name, concrete "
+        "execution a fresh execution_id, set tool_name exactly to the operation catalog's "
+        "tool_capability (including null), and provide concrete "
         "input_refs, direct evidence_ids, status, and a structured observation.result. "
         "Evidence refs use evidence:<full evidence_id>; when the full ID is "
-        "evidence:finance:item@v1, write evidence:evidence:finance:item@v1. Execution "
+        "evidence:finance:item@v1, write evidence:evidence:finance:item@v1. "
+        "This double prefix applies only inside input_refs. In selected_evidence_ids, "
+        "execution evidence_ids, citations, selected_ref, and higher_ref, copy the raw "
+        "retrieved evidence_id exactly once. "
+        "Execution "
         "refs use execution:<earlier execution_id> with an optional #selector. For "
         "plan_given, bind planned_node_id to the corresponding public node while keeping "
         "execution_id distinct; preserve operator order and parameters. For plan_hidden, "
         "planned_node_id must be null and the trace must be topologically valid. Set "
-        "output_execution_id to the execution producing the answer. Select only evidence "
-        "used by the execution, copy citation fields exactly, include verification_result "
-        "when required, and include no commentary outside JSON."
+        "output_execution_id to the execution producing the answer. Follow every exact "
+        "result field and enum in task_execution_contract; do not rename semantic fields. "
+        "Select only evidence used by the execution and copy citation fields exactly. The "
+        "final_answer top level must contain result and citations, never raw payload fields. "
+        "When verification_result is required, copy output observation.result exactly, not "
+        "a status or notes wrapper. Include no commentary outside JSON."
     )
     prompt = (
         f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
@@ -413,8 +560,10 @@ def _repair_prompt(
         "previous_response": previous_payload,
         "contract_error": validation_error,
         "repair_rule": (
-            "Repair only JSON shape and graph ordering. Preserve your factual and "
-            "reasoning decisions; do not substitute a hidden or externally supplied answer."
+            "Repair JSON shape, exact typed result fields, citations, tool binding, and graph "
+            "ordering. Recompute only from the same retrieved evidence and public operators "
+            "when required by the contract error. Never substitute a hidden or externally "
+            "supplied answer."
         ),
     }
     return (
@@ -425,7 +574,21 @@ def _repair_prompt(
 
 def _public_operation_catalog(
     registry: OperationRegistry,
+    task: TaskPublicSpec,
 ) -> tuple[dict[str, Any], ...]:
+    manifest = registry.manifest()
+    if task.program_skeleton is not None:
+        allowed_operator_ids = {
+            node.operator_id for node in task.program_skeleton.nodes
+        }
+    else:
+        allowed_tools = set(task.allowed_tools)
+        allowed_operator_ids = {
+            str(item["operator_id"])
+            for item in manifest
+            if item["action_type"] == "select_evidence"
+            or item["tool_capability"] in allowed_tools
+        }
     return tuple(
         {
             "operator_id": item["operator_id"],
@@ -436,8 +599,130 @@ def _public_operation_catalog(
             "action_type": item["action_type"],
             "invariant_checks": item["invariant_checks"],
         }
-        for item in registry.manifest()
+        for item in manifest
+        if item["operator_id"] in allowed_operator_ids
     )
+
+
+def _task_execution_contract(
+    task: TaskPublicSpec,
+    operation_catalog: tuple[dict[str, Any], ...],
+) -> dict[str, Any]:
+    by_operator = {str(item["operator_id"]): item for item in operation_catalog}
+    node_contracts = []
+    if task.program_skeleton is not None:
+        for node in task.program_skeleton.nodes:
+            operation = by_operator[node.operator_id]
+            node_contracts.append(
+                {
+                    "public_node_id": node.public_node_id,
+                    "operator_id": node.operator_id,
+                    "required_tool_name": operation["tool_capability"],
+                    "exact_parameters": node.parameters,
+                    "observation_result_json_schema": operation["output_model_schema"],
+                    "exact_result_field_rules": _operation_field_rules(node.operator_id),
+                }
+            )
+    return {
+        "planning_track": task.planning_track.value,
+        "node_contracts": node_contracts,
+        "allowed_operator_ids": [item["operator_id"] for item in operation_catalog],
+        "output_public_node_id": (
+            task.program_skeleton.output_node_id
+            if task.program_skeleton is not None
+            else None
+        ),
+        "verification_required": TaskRequirement.VERIFY_RESULT in task.requirements,
+        "verification_rule": (
+            "verification_result == output execution observation.result"
+            if TaskRequirement.VERIFY_RESULT in task.requirements
+            else "verification_result may be null"
+        ),
+        "machine_output_rule": (
+            "Operation results are machine values. Do not append units, percent signs, "
+            "explanations, display labels, or nested field names unless the exact output "
+            "schema and field rules require them."
+        ),
+    }
+
+
+def _operation_field_rules(operator_id: str) -> tuple[str, ...]:
+    registered = {
+        "lookup": (
+            "selected_ref is the exact raw evidence_id of the selected input",
+            "payload is an exact copy of that evidence payload",
+        ),
+        "compare": (
+            "higher_ref is the exact raw input evidence_id with the greater value, or null",
+            "difference is an unsigned plain decimal string with no unit text",
+        ),
+        "difference": (
+            "value is a plain decimal string with no unit text",
+        ),
+        "ratio": (
+            "value is a plain decimal string with no unit or percent suffix",
+        ),
+        "growth": (
+            "value is the unrounded percentage number as a plain decimal string",
+            "never append a percent sign or descriptive text",
+        ),
+        "aggregate": (
+            "method is the exact registered method parameter",
+            "value is the unrounded aggregate as a plain decimal string",
+        ),
+    }
+    return registered.get(
+        operator_id,
+        (
+            "Use only exact machine values allowed by the output JSON schema",
+            "Do not replace registered enum strings with prose",
+        ),
+    )
+
+
+def _final_answer_contract(task: TaskPublicSpec) -> dict[str, Any]:
+    answer_type = str(task.answer_schema.get("type") or "")
+    registered_fields = {
+        "payload_with_source": ("payload", "source_id"),
+        "comparison": ("higher_ref", "difference"),
+        "percentage": ("value",),
+        "aggregate": ("method", "value"),
+    }
+    required_result_fields = tuple(
+        registered_fields.get(
+            answer_type,
+            tuple(task.answer_schema.get("required_fields") or ()),
+        )
+    )
+    optional_result_fields = tuple(task.answer_schema.get("optional_fields") or ())
+    allowed_top_level = ["result", "citations"]
+    if task.answer_schema.get("allow_status") is True:
+        allowed_top_level.append("status")
+    if task.answer_schema.get("allow_claims") is True:
+        allowed_top_level.append("claims")
+    return {
+        "answer_type": answer_type,
+        "required_top_level_fields": ["result", "citations"],
+        "allowed_top_level_fields": allowed_top_level,
+        "required_result_fields": required_result_fields,
+        "allowed_result_fields": tuple(
+            dict.fromkeys((*required_result_fields, *optional_result_fields))
+        ),
+        "allowed_payload_fields": tuple(task.answer_schema.get("allowed_payload_fields") or ()),
+        "additional_result_properties": False,
+        "citation_fields": ("evidence_id", "source_id", "source_locator"),
+        "citation_coverage": "exactly one citation per selected evidence ID",
+        "envelope_example": {
+            "result": {field: f"<{field}>" for field in required_result_fields},
+            "citations": [
+                {
+                    "evidence_id": "<retrieved evidence_id>",
+                    "source_id": "<exact source_id>",
+                    "source_locator": {"<exact locator field>": "<exact locator value>"},
+                }
+            ],
+        },
+    }
 
 
 def _normalize_trajectory(
@@ -450,6 +735,7 @@ def _normalize_trajectory(
     search_plan_summary: str | None,
 ) -> Trajectory:
     selected_ids = tuple(dict.fromkeys(response.selected_evidence_ids))
+    final_answer = response.final_answer.model_dump(mode="json", exclude_none=True)
     retrieved_ids = tuple(item.evidence_id for item in retrieved)
     executions = response.execution_trace.steps
     execution_node_ids = {
@@ -539,7 +825,7 @@ def _normalize_trajectory(
         TrajectoryStep(
             step_index=len(steps) + 1,
             action=ActionType.ANSWER,
-            observation=response.final_answer,
+            observation=final_answer,
             evidence_ids=selected_ids,
             rationale_summary="Return the model's structured answer and citations.",
             status=StepStatus.SUCCEEDED,
@@ -564,7 +850,7 @@ def _normalize_trajectory(
                 for item in executions
             },
         },
-        final_answer=response.final_answer,
+        final_answer=final_answer,
         generator_version=LLM_AGENT_SOLVER_VERSION,
     )
 

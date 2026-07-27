@@ -109,6 +109,7 @@ def main(argv: list[str] | None = None) -> int:
         agent_artifacts = run_agent_validation(
             agent_config,
             OpenAICompatibleJsonClient(agent_config.model),
+            checkpoint_dir=args.output_dir / "checkpoints",
         )
         write_agent_validation_artifacts(agent_artifacts, args.output_dir)
         _emit(agent_artifacts.report.model_dump(mode="json"), args.output)

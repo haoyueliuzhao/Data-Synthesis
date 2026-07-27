@@ -13,8 +13,8 @@ from trusted_synthesis.domains.science.policy import ScienceSemanticPolicy
 
 
 class ScienceTaskPatternRuntime:
-    runtime_id = "science_task_pattern_runtime.v2"
-    runtime_version = "2.0.0"
+    runtime_id = "science_task_pattern_runtime.v3"
+    runtime_version = "3.0.0"
     domain = "science"
     renderer_ids: tuple[str, ...] = (
         "science.protocol_compatibility.v1",
@@ -121,5 +121,62 @@ class ScienceTaskPatternRuntime:
                 },
             },
             oracle_selection_contract=oracle_selection_contract(evidence),
-            metadata={"domain_plugin_id": "science_tasks.v3"},
+            metadata={
+                "domain_plugin_id": "science_tasks.v3",
+                "agent_contract_guidance": _science_agent_contract_guidance(
+                    pattern.task_type
+                ),
+            },
         )
+
+
+def _science_agent_contract_guidance(task_type: str) -> dict[str, object]:
+    guidance: dict[str, object] = {
+        "science_align_protocol": {
+            "exact_result_fields": ("comparable", "mismatches"),
+            "mismatch_vocabulary": ("metric", "unit", "dataset", "method", "protocol"),
+            "field_rules": {
+                "mismatches": (
+                    "list only differing top-level registered field names in registry order; "
+                    "never emit nested paths such as protocol.seed_policy"
+                ),
+                "comparable": "true only when mismatches is empty",
+            },
+        },
+        "general_rules": (
+            "All numeric strings are machine decimals without units or prose.",
+            "All reference fields copy exact raw evidence IDs.",
+            "Registered conclusion values are enums, not natural-language summaries.",
+        ),
+    }
+    if task_type == "science_protocol_effect_comparison":
+        guidance["science_compare_effect"] = {
+            "exact_result_fields": (
+                "higher_ref",
+                "difference",
+                "uncertainty_intervals_overlap",
+                "qualified_conclusion",
+            ),
+            "qualified_conclusion_enum": (
+                "observed_difference_with_overlapping_uncertainty",
+                "observed_difference_with_separated_uncertainty",
+            ),
+            "field_rules": {
+                "higher_ref": "exact raw evidence_id with the larger observed value",
+                "difference": "absolute unrounded plain decimal string",
+            },
+        }
+    if task_type == "science_descriptive_effect_synthesis":
+        guidance["science_descriptive_synthesis"] = {
+            "exact_result_fields": (
+                "weighted_value",
+                "total_sample_size",
+                "uncertainty_lower",
+                "uncertainty_upper",
+                "qualified_conclusion",
+            ),
+            "qualified_conclusion_enum": (
+                "descriptive_sample_size_weighted_summary_not_meta_analysis",
+            ),
+        }
+    return guidance
