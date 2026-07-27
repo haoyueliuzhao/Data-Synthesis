@@ -89,6 +89,7 @@ class PlanGivenContractCandidate:
                     step_index=len(steps) + 1,
                     action=ActionType(definition.action_type),
                     tool_name=definition.tool_capability,
+                    tool_input={"parameters": node.parameters},
                     observation={"result": execution.node_outputs[node.node_id]},
                     evidence_ids=direct_evidence_ids,
                     program_node_id=node.node_id,

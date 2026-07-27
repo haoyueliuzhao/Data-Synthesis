@@ -1,0 +1,639 @@
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+import pytest
+
+from trusted_synthesis.core.evaluation.critic import (
+    AcceptabilityLabel,
+    AnnotationSource,
+    QualityAnnotation,
+    QualityAwareSelector,
+    QualityCriticPrediction,
+    QualitySelectionPolicy,
+    evaluate_annotation_alignment,
+)
+from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
+from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
+from trusted_synthesis.experiments.agent_validation import (
+    AgentValidationConfig,
+    run_agent_validation,
+)
+from trusted_synthesis.experiments.agent_validation.runner import (
+    _compile_runtime,
+    _run_model_critic,
+    _stratified_critic_examples,
+)
+from trusted_synthesis.experiments.agent_validation.tracks import (
+    materialize_track_variant,
+)
+from trusted_synthesis.experiments.counterfactual_finance_fixture import (
+    build_finance_counterfactual_cases,
+)
+from trusted_synthesis.experiments.cross_domain_contract_suite.candidate import (
+    PlanGivenContractCandidate,
+)
+from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
+    build_pattern_validation_cases,
+)
+from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FinanceNumericCandidateGenerator,
+)
+from trusted_synthesis.runtime.agent import (
+    AgentModelConfig,
+    LLMAgentSolver,
+    ModelCallTelemetry,
+)
+from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
+
+
+class ScriptedJsonClient:
+    def __init__(self, payloads: list[dict[str, Any]], *, repair_attempts: int = 0) -> None:
+        self._payloads = list(payloads)
+        self._config = AgentModelConfig(
+            provider="scripted",
+            endpoint="https://models.example.test/v1/chat/completions",
+            models_endpoint="https://models.example.test/v1/models",
+            model="deepseek-v4-pro",
+            api_key_env="TEST_ONLY_KEY",
+            auto_discover_models=False,
+            require_requested_model=True,
+            contract_repair_attempts=repair_attempts,
+        )
+        self.call_count = 0
+
+    @property
+    def config(self) -> AgentModelConfig:
+        return self._config
+
+    def complete_json(self, prompt: str):
+        assert '"oracle_contract":' not in prompt
+        self.call_count += 1
+        payload = self._payloads.pop(0)
+        return payload, ModelCallTelemetry(
+            provider="scripted",
+            endpoint_host="models.example.test",
+            model_requested="deepseek-v4-pro",
+            model_selected="deepseek-v4-pro",
+            response_model="deepseek-v4-pro",
+            request_hash=f"request-{self.call_count}",
+            response_hash=f"response-{self.call_count}",
+            http_status=200,
+            http_success=True,
+            json_contract_success=True,
+            prompt_tokens=100,
+            completion_tokens=50,
+            total_tokens=150,
+        )
+
+
+def test_llm_agent_plan_given_is_independently_verified() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    client = ScriptedJsonClient([_response_from_trajectory(deterministic)])
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    compiled, runtime = _compile_runtime(case, task)
+    assessment = runtime.evaluate(
+        compiled.quality_contract,
+        task,
+        case.corpus,
+        case.proof_graph,
+        result.trajectory,
+    )
+
+    assert assessment.decision.value == "accepted"
+    assert result.audit.selected_model == "deepseek-v4-pro"
+    assert result.audit.contract_repair_count == 0
+
+
+def test_plan_hidden_candidate_node_ids_are_semantically_normalized() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    visible_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    hidden_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_HIDDEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        visible_task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    payload = _response_from_trajectory(deterministic, rename_nodes=True)
+
+    trajectory = LLMAgentSolver(
+        ScriptedJsonClient([payload]),
+        case.registry,
+    ).solve(hidden_task.public, InMemoryEvidenceToolRuntime(case.corpus))
+    compiled, runtime = _compile_runtime(case, hidden_task)
+    assessment = runtime.evaluate(
+        compiled.quality_contract,
+        hidden_task,
+        case.corpus,
+        case.proof_graph,
+        trajectory,
+    )
+
+    assert assessment.decision.value == "accepted", assessment.model_dump(mode="json")
+    assert all(
+        step.program_node_id is None or step.program_node_id.startswith("candidate_")
+        for step in trajectory.steps
+        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    )
+
+
+def test_agent_contract_repair_feeds_a_new_request() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[1]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.SEMI_OPEN,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    client = ScriptedJsonClient(
+        [
+            _search_response(task.public.retrieval_scope),
+            {"schema_version": "agent_response.v1"},
+            _response_from_trajectory(deterministic),
+        ],
+        repair_attempts=1,
+    )
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+
+    assert client.call_count == 3
+    assert result.audit.contract_repair_count == 1
+    assert result.audit.telemetry[0].json_contract_success is True
+    assert result.audit.telemetry[1].json_contract_success is False
+    assert result.audit.telemetry[2].json_contract_success is True
+
+
+def test_agent_contract_repair_rejects_unresolvable_evidence_ref() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    valid = _response_from_trajectory(deterministic)
+    invalid = {
+        **valid,
+        "operations": [
+            {
+                **operation,
+                "input_refs": [
+                    (
+                        ref.removeprefix("evidence:")
+                        if ref.startswith("evidence:evidence:")
+                        else ref
+                    )
+                    for ref in operation["input_refs"]
+                ],
+            }
+            for operation in valid["operations"]
+        ],
+    }
+    client = ScriptedJsonClient([invalid, valid], repair_attempts=1)
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+
+    assert client.call_count == 2
+    assert result.audit.contract_repair_count == 1
+    assert result.audit.telemetry[0].json_contract_success is False
+    assert result.audit.telemetry[0].error_type == "AgentContractValidationError"
+    assert result.audit.telemetry[1].json_contract_success is True
+
+
+@pytest.mark.parametrize("retrieval_track", [RetrievalTrack.SEMI_OPEN, RetrievalTrack.OPEN])
+def test_agent_controls_non_resolved_search_without_oracle_ids(
+    retrieval_track: RetrievalTrack,
+) -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=retrieval_track,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    resolved_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        resolved_task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    client = ScriptedJsonClient(
+        [
+            _search_response(task.public.retrieval_scope),
+            _response_from_trajectory(deterministic),
+        ]
+    )
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    search_step = next(
+        step for step in result.trajectory.steps if step.action == ActionType.SEARCH
+    )
+
+    assert result.audit.model_search_used is True
+    assert result.audit.search_prompt_manifest_hash is not None
+    assert len(result.audit.telemetry) == 2
+    assert search_step.tool_input["corpus_boundary"] == case.corpus.corpus_id
+    assert "evidence_ids" not in search_step.tool_input
+
+
+def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks() -> None:
+    cases = (
+        *build_finance_counterfactual_cases(count=1),
+        *build_pattern_validation_cases(per_domain=1),
+    )
+    payloads = []
+    for case in cases:
+        visible_task = materialize_track_variant(
+            case.task,
+            case.corpus,
+            retrieval_track=RetrievalTrack.RESOLVED,
+            planning_track=PlanningTrack.PLAN_GIVEN,
+        )
+        if case.domain == "finance":
+            deterministic = FinanceNumericCandidateGenerator().generate(
+                visible_task.public,
+                InMemoryEvidenceToolRuntime(case.bundle),
+            )
+            payloads.append(_response_from_trajectory(deterministic))
+            payloads.append(_response_from_trajectory(deterministic, rename_nodes=True))
+        else:
+            deterministic = PlanGivenContractCandidate(case.registry).generate(
+                visible_task.public,
+                InMemoryEvidenceToolRuntime(case.corpus),
+            )
+            payloads.append(_response_from_trajectory(deterministic))
+            payloads.append(_response_from_trajectory(deterministic, rename_nodes=True))
+    client = ScriptedJsonClient(payloads)
+    config = AgentValidationConfig(
+        model=client.config,
+        tasks_per_domain=1,
+        retrieval_tracks=(RetrievalTrack.RESOLVED,),
+        planning_tracks=(PlanningTrack.PLAN_GIVEN, PlanningTrack.PLAN_HIDDEN),
+        generate_counterfactuals=True,
+        selection_target=3,
+    )
+
+    artifacts = run_agent_validation(config, client)
+    report = artifacts.report
+
+    assert report.status == "completed", [
+        (item.domain, item.planning_track.value, item.generation_status, item.error_type)
+        for item in report.samples
+    ]
+    assert report.attempted_count == 6
+    assert report.accepted_count == 6, [
+        (
+            item.domain,
+            item.planning_track.value,
+            item.contract_assessment.decision.value
+            if item.contract_assessment is not None
+            else None,
+            tuple(
+                result.failure_code
+                for result in item.contract_assessment.clause_results
+                if not result.passed
+            )
+            if item.contract_assessment is not None
+            else None,
+        )
+        for item in report.samples
+    ]
+    assert report.domain_counts == {"finance": 2, "legal": 2, "science": 2}
+    assert report.retrieval_planning_counts == {
+        "resolved|plan_given": 3,
+        "resolved|plan_hidden": 3,
+    }
+    assert report.quality_selection is not None
+    assert report.quality_selection.status == "complete"
+    assert report.training_utility_protocol.status == "planned"
+    d1 = report.training_utility_protocol.cohorts[0]
+    assert d1.cohort.value == "D1_random_synthetic"
+    assert d1.materialization_status == "planned"
+    assert d1.sample_ids == ()
+    assert artifacts.critic_dataset.real_agent_count == 6
+    assert artifacts.critic_dataset.counterfactual_count > 0
+    critic_slice = _stratified_critic_examples(artifacts.critic_dataset.examples, 6)
+    assert {item.domain for item in critic_slice} == {"finance", "legal", "science"}
+    assert {item.candidate_source for item in critic_slice} == {
+        "real_agent",
+        "typed_counterfactual",
+    }
+    critic_client = ScriptedJsonClient(
+        [
+            {
+                "schema_version": "quality_critic_response.v1",
+                "accept_probability": (
+                    0.95
+                    if item.contract_annotation.acceptability == AcceptabilityLabel.ACCEPT
+                    else 0.05
+                ),
+                "predicted_acceptability": item.contract_annotation.acceptability.value,
+                "failure_families": list(item.contract_annotation.failure_families),
+                "root_locations": [
+                    location.model_dump(mode="json")
+                    for location in item.contract_annotation.root_locations
+                ],
+                "dimension_scores": {},
+            }
+            for item in critic_slice
+        ]
+    )
+    reviewed, predictions, _, _, failures, attempted = _run_model_critic(
+        critic_client,
+        artifacts.critic_dataset.examples,
+        6,
+    )
+    alignment = evaluate_annotation_alignment(reviewed)
+    assert attempted == 6
+    assert len(predictions) == 6
+    assert failures == ()
+    assert alignment.model_contract_acceptability_agreement == 1.0
+    assert report.alignment_report.human_annotation_count == 0
+    assert report.alignment_report.human_contract_acceptability_agreement is None
+
+    repair_client = ScriptedJsonClient(
+        [
+            {"schema_version": "quality_critic_response.v1"},
+            {
+                "schema_version": "quality_critic_response.v1",
+                "accept_probability": 0.95,
+                "predicted_acceptability": "accept",
+                "failure_families": [],
+                "root_locations": [],
+                "dimension_scores": {},
+            },
+        ],
+        repair_attempts=1,
+    )
+    _, repaired_predictions, _, repaired_telemetry, failures, attempted = (
+        _run_model_critic(
+            repair_client,
+            (critic_slice[0],),
+            1,
+        )
+    )
+    calls = repaired_telemetry[critic_slice[0].example_id]
+    assert attempted == 1
+    assert failures == ()
+    assert len(repaired_predictions) == 1
+    assert len(calls) == 2
+    assert calls[0].json_contract_success is False
+    assert calls[0].error_type == "QualityCriticContractError"
+    assert calls[1].json_contract_success is True
+
+
+def test_model_advisory_cannot_be_declared_as_human_annotation() -> None:
+    with pytest.raises(ValueError, match="human annotations require"):
+        QualityAnnotation(
+            annotation_id="annotation:test",
+            source=AnnotationSource.HUMAN,
+            acceptability=AcceptabilityLabel.ACCEPT,
+            model_id="deepseek-v4-pro",
+        )
+
+
+def test_unreviewed_candidate_receives_neutral_critic_prior() -> None:
+    cases = (
+        *build_finance_counterfactual_cases(count=1),
+        *build_pattern_validation_cases(per_domain=1),
+    )
+    payloads = []
+    for case in cases:
+        visible_task = materialize_track_variant(
+            case.task,
+            case.corpus,
+            retrieval_track=RetrievalTrack.RESOLVED,
+            planning_track=PlanningTrack.PLAN_GIVEN,
+        )
+        if case.domain == "finance":
+            deterministic = FinanceNumericCandidateGenerator().generate(
+                visible_task.public,
+                InMemoryEvidenceToolRuntime(case.bundle),
+            )
+        else:
+            deterministic = PlanGivenContractCandidate(case.registry).generate(
+                visible_task.public,
+                InMemoryEvidenceToolRuntime(case.corpus),
+            )
+        payloads.append(_response_from_trajectory(deterministic))
+    artifacts = run_agent_validation(
+        AgentValidationConfig(
+            model=ScriptedJsonClient(payloads).config,
+            tasks_per_domain=1,
+            retrieval_tracks=(RetrievalTrack.RESOLVED,),
+            planning_tracks=(PlanningTrack.PLAN_GIVEN,),
+            generate_counterfactuals=False,
+            selection_target=1,
+        ),
+        ScriptedJsonClient(payloads),
+    )
+    examples = artifacts.critic_dataset.examples
+    reviewed = examples[-1]
+    prediction = QualityCriticPrediction(
+        prediction_id="critic:reviewed",
+        example_id=reviewed.example_id,
+        model_id="deepseek-v4-pro",
+        model_manifest_hash="model-manifest:test",
+        accept_probability=0.99,
+        predicted_acceptability=AcceptabilityLabel.ACCEPT,
+    )
+
+    selected = QualityAwareSelector().select(
+        examples,
+        QualitySelectionPolicy(target_size=1),
+        (prediction,),
+    )
+
+    assert selected.selected_example_ids == (reviewed.example_id,)
+
+
+def test_model_config_rejects_inline_credentials() -> None:
+    with pytest.raises(ValueError, match="api_key_env"):
+        AgentModelConfig(
+            provider="test",
+            endpoint="https://models.example.test/v1/chat/completions",
+            model="deepseek-v4-pro",
+            api_key_env="DEEPSEEK_API_KEY",
+            extra_headers={"Authorization": "Bearer must-not-be-stored"},
+        )
+
+
+def test_public_agent_imports_work_in_a_cold_python_process() -> None:
+    repository_root = Path(__file__).resolve().parents[1]
+    environment = {**os.environ, "PYTHONPATH": str(repository_root / "src")}
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from trusted_synthesis.runtime.agent import AgentModelConfig; "
+                "from trusted_synthesis.core.trajectory import CandidateWorkflowVerifier; "
+                "from trusted_synthesis.core.evaluation import QualityContract; "
+                "assert AgentModelConfig and CandidateWorkflowVerifier and QualityContract"
+            ),
+        ],
+        cwd=repository_root,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
+def _response_from_trajectory(
+    trajectory: Trajectory,
+    *,
+    rename_nodes: bool = False,
+) -> dict[str, Any]:
+    operation_steps = [
+        step
+        for step in trajectory.steps
+        if step.program_node_id is not None
+        and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    ]
+    mapping = {
+        step.program_node_id: (
+            f"candidate_{index}" if rename_nodes else step.program_node_id
+        )
+        for index, step in enumerate(operation_steps, start=1)
+        if step.program_node_id is not None
+    }
+    selected_step = next(
+        (
+            step
+            for step in trajectory.steps
+            if step.action == ActionType.SELECT_EVIDENCE
+            and step.program_node_id is None
+        ),
+        None,
+    )
+    selected_evidence_ids = (
+        selected_step.evidence_ids
+        if selected_step is not None
+        else tuple(
+            dict.fromkeys(
+                evidence_id
+                for step in operation_steps
+                for evidence_id in step.evidence_ids
+            )
+        )
+    )
+    verify_step = next(
+        (step for step in trajectory.steps if step.action == ActionType.VERIFY),
+        None,
+    )
+    return {
+        "schema_version": "agent_response.v1",
+        "plan_summary": "Select the matching evidence and execute a typed operation DAG.",
+        "selected_evidence_ids": list(selected_evidence_ids),
+        "operations": [
+            {
+                "node_id": mapping[step.program_node_id],
+                "operator_id": step.operator_id,
+                "input_refs": [
+                    _translate_ref(ref, mapping) for ref in step.input_refs
+                ],
+                "parameters": step.tool_input.get("parameters", {}),
+                "result": _translate_value(step.observation["result"], mapping),
+                "rationale_summary": "Execute the selected typed operation.",
+            }
+            for step in operation_steps
+            if step.program_node_id is not None
+        ],
+        "verification_result": (
+            None
+            if verify_step is None
+            else _translate_value(
+                verify_step.observation.get("verified_result"),
+                mapping,
+            )
+        ),
+        "final_answer": _translate_value(trajectory.final_answer, mapping),
+    }
+
+
+def _translate_ref(value: str, mapping: dict[str, str]) -> str:
+    if not value.startswith("operation:"):
+        return value
+    node_id, separator, selector = value.removeprefix("operation:").partition("#")
+    suffix = f"#{selector}" if separator else ""
+    return f"operation:{mapping.get(node_id, node_id)}{suffix}"
+
+
+def _translate_value(value: Any, mapping: dict[str, str]) -> Any:
+    if isinstance(value, dict):
+        return {key: _translate_value(item, mapping) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_translate_value(item, mapping) for item in value]
+    if isinstance(value, tuple):
+        return [_translate_value(item, mapping) for item in value]
+    if isinstance(value, str):
+        return _translate_ref(value, mapping)
+    return value
+
+
+def _search_response(scope: dict[str, Any]) -> dict[str, Any]:
+    allowed = {
+        "subject_ids",
+        "predicates",
+        "temporal_labels",
+        "aliases",
+        "source_authorities",
+        "semantic_constraints",
+        "partial_constraints",
+    }
+    return {
+        "schema_version": "agent_search.v1",
+        "plan_summary": "Search the bounded corpus using public semantic constraints.",
+        "search_query": {key: value for key, value in scope.items() if key in allowed},
+    }

@@ -17,9 +17,12 @@ Domain Adapter
 -> Contract-driven Violation Space
 -> Typed Counterfactual Generation + Minimality Validation
 -> Root Cause / Failure Closure Calibration
--> Candidate Agent Workflow
+-> Real LLM Candidate Agent (Resolved / Semi-open / Open)
+-> PLAN_GIVEN / PLAN_HIDDEN trajectory normalization
 -> Legacy Evaluator + Contract Runtime parity gate
--> Candidate-aware Release Selection
+-> five-dimensional Quality Vector
+-> advisory Quality Critic + Contract-authoritative selection
+-> executable D1-D5 Training Utility MVP
 ```
 
 Finance is the first validation domain. The adapter reads immutable artifacts
@@ -42,11 +45,29 @@ trusted-synthesis validate-task-patterns --tasks-per-domain 10
 trusted-synthesis validate-counterfactuals \
   --tasks-per-domain 10 \
   --output artifacts/counterfactual_validation/v07_contract_30.json
+trusted-synthesis validate-agents \
+  --agent-config config/deepseek_v4_pro_agent_smoke.json \
+  --output-dir artifacts/agent_validation/v08_deepseek_smoke \
+  --output artifacts/agent_validation/v08_deepseek_smoke_report.json
+trusted-synthesis prepare-training-utility \
+  --training-config config/training_utility_mvp.json \
+  --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates \
+  --output-dir artifacts/training_utility_mvp/pilot/data
+
+# Fail closed on per-domain D1-D5 capacity before spending GPU time.
+trusted-synthesis audit-training-utility-readiness \
+  --training-config config/training_utility_mvp.json \
+  --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates
 trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
 
-The v0.7.0 compiler first binds a versioned declarative Task Pattern to a content-addressed
+`validate-agents` reads credentials only from the environment variable declared by the
+configuration. The checked-in smoke profile requires `DEEPSEEK_API_KEY`, pins
+`deepseek-v4-pro`, performs provider model discovery, and does not silently fall back to
+another model. No API key is serialized into prompts, telemetry, reports, or manifests.
+
+The v0.8.0 compiler first binds a versioned declarative Task Pattern to a content-addressed
 Evidence Binding. It deterministically expands the Task Program, computes a structural difficulty
 profile, and packages the domain-rendered Public/Oracle contracts. The proof compiler then binds
 each task, Evidence Bundle, Proof Graph, Task Program,
@@ -64,6 +85,17 @@ Each mutable clause now declares versioned mutation operators. The counterfactua
 planner mines executable opportunities, generates one-factor failures, validates
 structural minimality, and measures detection, root-cause localization, and transitive
 failure closure. See [Typed Counterfactual Engine](docs/typed_counterfactual_engine.md).
+Real model candidates are now generated from public task state, normalized without semantic
+repair, independently replayed, projected to a Quality Vector, and optionally reviewed by an
+advisory model critic. Semi-open and open tracks use a separate model-generated bounded search
+request before answer generation. See
+[Agent-Centered Quality Validation](docs/agent_centered_quality_validation.md).
+The implementation audit and current validation boundary are recorded in
+[v0.8 Agent Validation Report](docs/v08_agent_validation_report.md).
+The controlled Qwen2.5-7B D1-D5 experiment and its interpretation boundary are specified in
+[v0.8 Training Utility MVP](docs/v08_training_utility_mvp.md).
+The first real Qwen resource and integration run is recorded in the
+[v0.8 Training Utility MVP Preflight Report](docs/v08_training_utility_mvp_preflight_report.md).
 The Pattern and Binding boundary is specified in
 [Task Pattern IR and Binding Compiler](docs/task_pattern_ir.md).
 

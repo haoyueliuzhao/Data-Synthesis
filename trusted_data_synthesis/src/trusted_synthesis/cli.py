@@ -14,6 +14,7 @@ from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
 )
+from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
@@ -35,6 +36,11 @@ from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClau
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
+from trusted_synthesis.experiments.agent_validation import (
+    AgentValidationConfig,
+    run_agent_validation,
+    write_agent_validation_artifacts,
+)
 from trusted_synthesis.experiments.counterfactual_validation import (
     run_counterfactual_validation,
 )
@@ -51,8 +57,26 @@ from trusted_synthesis.experiments.finance_pilot.candidate import (
 from trusted_synthesis.experiments.task_pattern_validation import (
     run_task_pattern_validation,
 )
+from trusted_synthesis.experiments.training_utility_mvp import (
+    TrainingUtilityDataManifest,
+    TrainingUtilityMVPConfig,
+    audit_training_utility_readiness,
+    build_training_utility_datasets,
+    build_training_utility_report,
+    evaluate_sft_model,
+    load_agent_artifacts,
+    load_evaluation_result,
+    load_training_result,
+    train_sft_cohort,
+    write_reference_training_preflight,
+    write_training_utility_datasets,
+    write_training_utility_report,
+)
 from trusted_synthesis.hashing import canonical_hash
-from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
+from trusted_synthesis.runtime import (
+    InMemoryEvidenceToolRuntime,
+    OpenAICompatibleJsonClient,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -76,6 +100,80 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(counterfactual_report.model_dump(mode="json"), args.output)
         return 0 if counterfactual_report.status == "passed" else 1
+    if args.command == "validate-agents":
+        agent_config = AgentValidationConfig.from_json(args.agent_config)
+        agent_artifacts = run_agent_validation(
+            agent_config,
+            OpenAICompatibleJsonClient(agent_config.model),
+        )
+        write_agent_validation_artifacts(agent_artifacts, args.output_dir)
+        _emit(agent_artifacts.report.model_dump(mode="json"), args.output)
+        return 0 if agent_artifacts.report.status == "completed" else 1
+    if args.command == "prepare-training-utility":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        agent_report, critic_dataset = load_agent_artifacts(args.agent_artifacts)
+        cohorts, evaluation, manifest = build_training_utility_datasets(
+            utility_config,
+            agent_report,
+            critic_dataset,
+        )
+        write_training_utility_datasets(args.output_dir, cohorts, evaluation, manifest)
+        _emit(manifest.model_dump(mode="json"), args.output)
+        return 0
+    if args.command == "audit-training-utility-readiness":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        agent_report, critic_dataset = load_agent_artifacts(args.agent_artifacts)
+        readiness = audit_training_utility_readiness(
+            utility_config,
+            agent_report,
+            critic_dataset,
+        )
+        _emit(readiness.model_dump(mode="json"), args.output)
+        return 0 if readiness.status == "ready" else 1
+    if args.command == "prepare-training-utility-reference":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        preflight_manifest = write_reference_training_preflight(
+            utility_config,
+            args.output_dir,
+        )
+        _emit(preflight_manifest, args.output)
+        return 0
+    if args.command == "train-training-utility":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        training_result = train_sft_cohort(
+            utility_config,
+            UtilityCohort(args.cohort),
+            args.dataset,
+            args.output_dir,
+        )
+        _emit(training_result.model_dump(mode="json"), args.output)
+        return 0
+    if args.command == "evaluate-training-utility":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        evaluation_result = evaluate_sft_model(
+            utility_config,
+            args.cohort,
+            args.evaluation_dataset,
+            args.output_dir,
+            adapter_dir=args.adapter_dir,
+        )
+        _emit(evaluation_result.model_dump(mode="json"), args.output)
+        return 0
+    if args.command == "summarize-training-utility":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        data_manifest = TrainingUtilityDataManifest.model_validate_json(
+            args.data_manifest.read_text(encoding="utf-8")
+        )
+        utility_report = build_training_utility_report(
+            utility_config,
+            data_manifest,
+            load_evaluation_result(args.base_evaluation),
+            tuple(load_training_result(path) for path in args.training_result),
+            tuple(load_evaluation_result(path) for path in args.cohort_evaluation),
+        )
+        write_training_utility_report(args.output_dir, utility_report, data_manifest)
+        _emit(utility_report.model_dump(mode="json"), args.output)
+        return 0
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
     if args.command == "inspect-finance":
         _emit(adapter.inspect(), args.output)
@@ -125,6 +223,58 @@ def _parser() -> argparse.ArgumentParser:
     counterfactual_validation = subparsers.add_parser("validate-counterfactuals")
     counterfactual_validation.add_argument("--tasks-per-domain", type=int, default=10)
     counterfactual_validation.add_argument("--output", type=Path)
+    agent_validation = subparsers.add_parser("validate-agents")
+    agent_validation.add_argument("--agent-config", type=Path, required=True)
+    agent_validation.add_argument("--output-dir", type=Path, required=True)
+    agent_validation.add_argument("--output", type=Path)
+    utility_prepare = subparsers.add_parser("prepare-training-utility")
+    utility_prepare.add_argument("--training-config", type=Path, required=True)
+    utility_prepare.add_argument("--agent-artifacts", type=Path, required=True)
+    utility_prepare.add_argument("--output-dir", type=Path, required=True)
+    utility_prepare.add_argument("--output", type=Path)
+    utility_readiness = subparsers.add_parser("audit-training-utility-readiness")
+    utility_readiness.add_argument("--training-config", type=Path, required=True)
+    utility_readiness.add_argument("--agent-artifacts", type=Path, required=True)
+    utility_readiness.add_argument("--output", type=Path)
+    utility_reference = subparsers.add_parser("prepare-training-utility-reference")
+    utility_reference.add_argument("--training-config", type=Path, required=True)
+    utility_reference.add_argument("--output-dir", type=Path, required=True)
+    utility_reference.add_argument("--output", type=Path)
+    utility_train = subparsers.add_parser("train-training-utility")
+    utility_train.add_argument("--training-config", type=Path, required=True)
+    utility_train.add_argument(
+        "--cohort",
+        choices=tuple(item.value for item in UtilityCohort),
+        required=True,
+    )
+    utility_train.add_argument("--dataset", type=Path, required=True)
+    utility_train.add_argument("--output-dir", type=Path, required=True)
+    utility_train.add_argument("--output", type=Path)
+    utility_eval = subparsers.add_parser("evaluate-training-utility")
+    utility_eval.add_argument("--training-config", type=Path, required=True)
+    utility_eval.add_argument("--cohort", required=True)
+    utility_eval.add_argument("--evaluation-dataset", type=Path, required=True)
+    utility_eval.add_argument("--adapter-dir", type=Path)
+    utility_eval.add_argument("--output-dir", type=Path, required=True)
+    utility_eval.add_argument("--output", type=Path)
+    utility_summary = subparsers.add_parser("summarize-training-utility")
+    utility_summary.add_argument("--training-config", type=Path, required=True)
+    utility_summary.add_argument("--data-manifest", type=Path, required=True)
+    utility_summary.add_argument("--base-evaluation", type=Path, required=True)
+    utility_summary.add_argument(
+        "--training-result",
+        type=Path,
+        action="append",
+        required=True,
+    )
+    utility_summary.add_argument(
+        "--cohort-evaluation",
+        type=Path,
+        action="append",
+        required=True,
+    )
+    utility_summary.add_argument("--output-dir", type=Path, required=True)
+    utility_summary.add_argument("--output", type=Path)
     return parser
 
 

@@ -7,7 +7,13 @@ from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
 
+class AgentSolver(Protocol):
+    """Stable public-only solver boundary for real and deterministic candidates."""
+
+    def solve(self, task: TaskPublicSpec, environment: EvidenceToolRuntime) -> Trajectory: ...
+
+
 class CandidateAgent(Protocol):
-    """Public-only agent boundary; concrete behavior belongs to a domain or experiment."""
+    """Backward-compatible candidate boundary used by existing experiments."""
 
     def generate(self, task: TaskPublicSpec, runtime: EvidenceToolRuntime) -> Trajectory: ...

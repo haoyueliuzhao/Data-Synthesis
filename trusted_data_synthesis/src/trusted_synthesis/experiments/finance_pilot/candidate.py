@@ -179,7 +179,7 @@ def _operation_steps(
     ordered = tuple(sorted(evidence, key=_temporal_sort_key))
     steps: list[TrajectoryStep] = []
 
-    def add_lookup(item, node_id: str) -> None:
+    def add_lookup(item, node) -> None:
         steps.append(
             TrajectoryStep(
                 step_index=start_index + len(steps),
@@ -192,28 +192,29 @@ def _operation_steps(
                     },
                 },
                 evidence_ids=(item.evidence_id,),
-                program_node_id=node_id,
+                program_node_id=node.public_node_id,
                 operator_id="lookup",
+                tool_input={"parameters": node.parameters},
                 input_refs=(f"evidence:{item.evidence_id}",),
-                output_ref=f"operation:{node_id}",
+                output_ref=f"operation:{node.public_node_id}",
                 rationale_summary="Bind one selected observation to its lookup operation.",
                 status=StepStatus.SUCCEEDED,
             )
         )
 
     if task.task_type == "fact_retrieval" and len(evidence) == 1:
-        add_lookup(evidence[0], output_node.public_node_id)
+        add_lookup(evidence[0], output_node)
         return tuple(steps)
     input_refs: tuple[str, ...]
     operator_id: str
     if task.task_type == "temporal_growth" and len(ordered) == 2:
         for item, node in zip(ordered, lookup_nodes, strict=True):
-            add_lookup(item, node.public_node_id)
+            add_lookup(item, node)
         input_refs = (*(f"operation:{node.public_node_id}#payload.value" for node in lookup_nodes),)
         operator_id = output_node.operator_id
     elif task.task_type == "temporal_average" and len(ordered) >= 3:
         for item, node in zip(ordered, lookup_nodes, strict=True):
-            add_lookup(item, node.public_node_id)
+            add_lookup(item, node)
         input_refs = tuple(
             f"operation:{node.public_node_id}#payload.value" for node in lookup_nodes
         )
@@ -237,6 +238,7 @@ def _operation_steps(
                 step_index=start_index + len(steps),
                 action=ActionType.CALCULATE,
                 tool_name=output_node.tool_capability,
+                tool_input={"parameters": output_node.parameters},
                 observation={"result": result},
                 evidence_ids=tuple(item.evidence_id for item in evidence),
                 program_node_id=output_node.public_node_id,

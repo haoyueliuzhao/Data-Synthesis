@@ -145,6 +145,10 @@ class CandidateWorkflowVerifier:
             candidate,
             expected_node_outputs,
         )
+        normalized_candidate_for_comparison = _translate_operation_refs(
+            normalized_candidate,
+            {candidate_id: oracle_id for oracle_id, candidate_id in node_mapping.items()},
+        )
         verification_failures = _verify_result_step(task, candidate, expected_output, node_mapping)
         source_grounding = evaluate_source_grounding(
             tuple(evidence_by_id[item] for item in selected_ids if item in evidence_by_id),
@@ -218,7 +222,10 @@ class CandidateWorkflowVerifier:
             _check("answer_schema_validity", schema_passed, schema_failures),
             _check(
                 "answer_correctness",
-                self._normalizer.equivalent(normalized_candidate, normalized_oracle),
+                self._normalizer.equivalent(
+                    normalized_candidate_for_comparison,
+                    normalized_oracle,
+                ),
             ),
             _check("citation_binding", citations.passed, citations.failures),
             _check(
@@ -235,7 +242,7 @@ class CandidateWorkflowVerifier:
             selected_evidence_ids=selected_ids,
             evidence_recall=recall,
             evidence_precision=precision,
-            normalized_candidate_answer=normalized_candidate,
+            normalized_candidate_answer=normalized_candidate_for_comparison,
             normalized_oracle_answer=normalized_oracle,
         )
 
@@ -379,6 +386,8 @@ def _verify_plan_given_trace(
         expected_refs = tuple(_program_ref(ref) for ref in node.input_refs)
         if step.input_refs != expected_refs:
             failures.append(f"node:{node.node_id}:step:{step.step_index}:input_refs")
+        if step.tool_input.get("parameters", {}) != node.parameters:
+            failures.append(f"node:{node.node_id}:step:{step.step_index}:parameters")
         if step.output_ref != f"operation:{node.node_id}":
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_ref")
         observed = step.observation.get("result")
@@ -451,9 +460,13 @@ def _verify_plan_hidden_trace(
         used_program_node_ids.add(step.program_node_id)
         if step.output_ref != f"operation:{step.program_node_id}":
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_ref")
-        if not _values_equivalent(
-            step.observation.get("result"), expected_outputs.get(node.node_id)
-        ):
+        if step.tool_input.get("parameters", {}) != node.parameters:
+            failures.append(f"node:{node.node_id}:step:{step.step_index}:parameters")
+        expected_output = _translate_operation_refs(
+            expected_outputs.get(node.node_id),
+            mapping,
+        )
+        if not _values_equivalent(step.observation.get("result"), expected_output):
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_mismatch")
         expected_evidence = {
             ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
@@ -510,7 +523,11 @@ def _verify_result_step(
         failures.append(f"step:{step.step_index}:verify_input_ref")
     if step.observation.get("verified_output_ref") != expected_ref:
         failures.append(f"step:{step.step_index}:verified_output_ref")
-    if not _values_equivalent(step.observation.get("verified_result"), expected_output):
+    candidate_expected_output = _translate_operation_refs(expected_output, node_mapping)
+    if not _values_equivalent(
+        step.observation.get("verified_result"),
+        candidate_expected_output,
+    ):
         failures.append(f"step:{step.step_index}:verified_result")
     return tuple(failures)
 
@@ -528,6 +545,24 @@ def _values_equivalent(left: Any, right: Any) -> bool:
         return Decimal(str(left)).normalize() == Decimal(str(right)).normalize()
     except (InvalidOperation, TypeError, ValueError):
         return left == right
+
+
+def _translate_operation_refs(value: Any, mapping: dict[str, str]) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _translate_operation_refs(item, mapping)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_translate_operation_refs(item, mapping) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_translate_operation_refs(item, mapping) for item in value)
+    if isinstance(value, str) and value.startswith("operation:"):
+        node_id, separator, selector = value.removeprefix("operation:").partition("#")
+        translated = mapping.get(node_id, node_id)
+        suffix = f"#{selector}" if separator else ""
+        return f"operation:{translated}{suffix}"
+    return value
 
 
 def _check(check_id: str, passed: bool, details: tuple[str, ...] = ()) -> CandidateCheck:
