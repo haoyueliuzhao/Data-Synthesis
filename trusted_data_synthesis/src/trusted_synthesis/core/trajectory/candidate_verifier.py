@@ -44,6 +44,20 @@ class CandidateCheck(BaseModel):
     details: tuple[str, ...] = ()
 
 
+class ProgramNodeExecutionStatus(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    program_node_id: str
+    candidate_node_id: str | None = None
+    planned: bool = True
+    executed: bool = False
+    observed: bool = False
+    grounded: bool = False
+    verified: bool = False
+    tool_bound: bool = False
+    details: tuple[str, ...] = ()
+
+
 class CandidateVerificationReport(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -53,6 +67,14 @@ class CandidateVerificationReport(BaseModel):
     selected_evidence_ids: tuple[str, ...]
     evidence_recall: float = Field(ge=0, le=1)
     evidence_precision: float = Field(ge=0, le=1)
+    required_program_node_count: int = Field(ge=0)
+    executed_program_node_count: int = Field(ge=0)
+    execution_coverage: float = Field(ge=0, le=1)
+    grounded_operation_count: int = Field(ge=0)
+    operation_grounding_score: float = Field(ge=0, le=1)
+    tool_bound_operation_count: int = Field(ge=0)
+    tool_necessity_score: float = Field(ge=0, le=1)
+    program_node_statuses: tuple[ProgramNodeExecutionStatus, ...]
     normalized_candidate_answer: dict[str, Any]
     normalized_oracle_answer: dict[str, Any]
 
@@ -71,7 +93,9 @@ class CandidateWorkflowVerifier:
         claim_verifier: ClaimVerifierProtocol | None = None,
         source_grounding_verifier: SourceGroundingVerifierProtocol | None = None,
     ) -> None:
-        self._oracle = TaskProgramOracleVerifier(registry or default_registry())
+        resolved_registry = registry or default_registry()
+        self._registry = resolved_registry
+        self._oracle = TaskProgramOracleVerifier(resolved_registry)
         self._normalizer = CandidateAnswerNormalizer()
         self._citation_verifier = CitationVerifier()
         self._leakage_checker = OracleLeakageChecker()
@@ -145,6 +169,36 @@ class CandidateWorkflowVerifier:
             candidate,
             expected_node_outputs,
         )
+        node_statuses = _program_execution_statuses(
+            task,
+            candidate,
+            expected_node_outputs,
+            node_mapping,
+            selected_set,
+            self._registry,
+        )
+        required_node_count = len(node_statuses)
+        executed_node_count = sum(item.executed for item in node_statuses)
+        grounded_operation_count = sum(item.grounded for item in node_statuses)
+        tool_bound_operation_count = sum(
+            item.executed and item.tool_bound for item in node_statuses
+        )
+        execution_coverage = _ratio(executed_node_count, required_node_count)
+        operation_grounding_score = _ratio(
+            grounded_operation_count,
+            required_node_count,
+        )
+        search_required = TaskRequirement.RETRIEVE_EVIDENCE in task.public.requirements
+        search_tool_bound = any(
+            step.action == ActionType.SEARCH
+            and step.status == StepStatus.SUCCEEDED
+            and step.tool_name == "evidence.search"
+            for step in candidate.steps
+        )
+        tool_necessity_score = _ratio(
+            tool_bound_operation_count + int(search_required and search_tool_bound),
+            required_node_count + int(search_required),
+        )
         normalized_candidate_for_comparison = _translate_operation_refs(
             normalized_candidate,
             {candidate_id: oracle_id for oracle_id, candidate_id in node_mapping.items()},
@@ -204,6 +258,42 @@ class CandidateWorkflowVerifier:
                 and graph_report.passed,
             ),
             _check(
+                "execution_coverage",
+                execution_coverage == 1.0,
+                (
+                    f"coverage={execution_coverage:.6f}",
+                    *(
+                        f"node:{item.program_node_id}:not_executed"
+                        for item in node_statuses
+                        if not item.executed
+                    ),
+                ),
+            ),
+            _check(
+                "operation_grounding",
+                operation_grounding_score == 1.0,
+                (
+                    f"score={operation_grounding_score:.6f}",
+                    *(
+                        f"node:{item.program_node_id}:{','.join(item.details)}"
+                        for item in node_statuses
+                        if not item.grounded
+                    ),
+                ),
+            ),
+            _check(
+                "tool_necessity",
+                tool_necessity_score == 1.0,
+                (
+                    f"score={tool_necessity_score:.6f}",
+                    *(
+                        f"node:{item.program_node_id}:tool_binding"
+                        for item in node_statuses
+                        if item.executed and not item.tool_bound
+                    ),
+                ),
+            ),
+            _check(
                 "program_node_alignment",
                 not trace_failures,
                 trace_failures,
@@ -242,9 +332,143 @@ class CandidateWorkflowVerifier:
             selected_evidence_ids=selected_ids,
             evidence_recall=recall,
             evidence_precision=precision,
+            required_program_node_count=required_node_count,
+            executed_program_node_count=executed_node_count,
+            execution_coverage=execution_coverage,
+            grounded_operation_count=grounded_operation_count,
+            operation_grounding_score=operation_grounding_score,
+            tool_bound_operation_count=tool_bound_operation_count,
+            tool_necessity_score=tool_necessity_score,
+            program_node_statuses=node_statuses,
             normalized_candidate_answer=normalized_candidate_for_comparison,
             normalized_oracle_answer=normalized_oracle,
         )
+
+
+def _program_execution_statuses(
+    task: TaskPackage,
+    candidate: Trajectory,
+    expected_outputs: dict[str, dict[str, Any]],
+    node_mapping: dict[str, str],
+    selected_evidence_ids: set[str],
+    registry: OperationRegistry,
+) -> tuple[ProgramNodeExecutionStatus, ...]:
+    operation_steps = tuple(
+        step
+        for step in candidate.steps
+        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+        and step.program_node_id is not None
+    )
+    step_indexes = {
+        step.program_node_id: step.step_index
+        for step in operation_steps
+        if step.program_node_id is not None
+    }
+    statuses = []
+    for node in task.oracle.task_program.nodes:
+        candidate_node_id = node_mapping.get(node.node_id)
+        matches = tuple(
+            step
+            for step in operation_steps
+            if candidate_node_id is not None and step.program_node_id == candidate_node_id
+        )
+        details: list[str] = []
+        if len(matches) != 1:
+            details.append(f"execution_count={len(matches)}")
+            statuses.append(
+                ProgramNodeExecutionStatus(
+                    program_node_id=node.node_id,
+                    candidate_node_id=candidate_node_id,
+                    details=tuple(details),
+                )
+            )
+            continue
+        step = matches[0]
+        executed = step.status == StepStatus.SUCCEEDED
+        if not executed:
+            details.append("status_failed")
+        observed = isinstance(step.observation.get("result"), dict)
+        if not observed:
+            details.append("observation_missing")
+        expected_action = (
+            ActionType.SELECT_EVIDENCE if node.operator_id == "lookup" else ActionType.CALCULATE
+        )
+        if step.action != expected_action:
+            details.append("action_mismatch")
+        if step.operator_id != node.operator_id:
+            details.append("operator_mismatch")
+        expected_refs = (
+            _translated_program_refs(node, node_mapping)
+            if task.public.planning_track == PlanningTrack.PLAN_HIDDEN
+            else tuple(_program_ref(ref) for ref in node.input_refs)
+        )
+        if step.input_refs != expected_refs:
+            details.append("input_ref_mismatch")
+        if step.tool_input.get("parameters", {}) != node.parameters:
+            details.append("parameter_mismatch")
+        if step.output_ref != f"operation:{candidate_node_id}":
+            details.append("output_ref_mismatch")
+        expected_evidence = {
+            ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
+        }
+        if set(step.evidence_ids) != expected_evidence:
+            details.append("evidence_binding_mismatch")
+        if not set(step.evidence_ids).issubset(selected_evidence_ids):
+            details.append("evidence_not_selected")
+        for dependency in node.dependencies:
+            dependency_candidate_id = node_mapping.get(dependency)
+            dependency_index = (
+                None
+                if dependency_candidate_id is None
+                else step_indexes.get(dependency_candidate_id)
+            )
+            if dependency_index is None or dependency_index >= step.step_index:
+                details.append(f"dependency_order:{dependency}")
+        definition = registry.require(node.operator_id)
+        tool_bound = step.tool_name == definition.tool_capability
+        if not tool_bound:
+            details.append("tool_binding_mismatch")
+        grounding_failures = {
+            "status_failed",
+            "observation_missing",
+            "action_mismatch",
+            "operator_mismatch",
+            "input_ref_mismatch",
+            "parameter_mismatch",
+            "output_ref_mismatch",
+            "evidence_binding_mismatch",
+            "evidence_not_selected",
+        }
+        grounded = executed and not any(
+            detail in grounding_failures or detail.startswith("dependency_order:")
+            for detail in details
+        )
+        expected_output = expected_outputs.get(node.node_id)
+        if task.public.planning_track == PlanningTrack.PLAN_HIDDEN:
+            expected_output = _translate_operation_refs(expected_output, node_mapping)
+        verified = observed and _values_equivalent(
+            step.observation.get("result"),
+            expected_output,
+        )
+        if not verified:
+            details.append("output_mismatch")
+        statuses.append(
+            ProgramNodeExecutionStatus(
+                program_node_id=node.node_id,
+                candidate_node_id=candidate_node_id,
+                executed=executed,
+                observed=observed,
+                grounded=grounded,
+                verified=verified,
+                tool_bound=tool_bound,
+                details=tuple(details),
+            )
+        )
+    return tuple(statuses)
+
+
+def _ratio(numerator: int, denominator: int) -> float:
+    return numerator / denominator if denominator else 1.0
 
 
 def _action_evidence(candidate: Trajectory, action: ActionType) -> tuple[str, ...]:
@@ -549,10 +773,7 @@ def _values_equivalent(left: Any, right: Any) -> bool:
 
 def _translate_operation_refs(value: Any, mapping: dict[str, str]) -> Any:
     if isinstance(value, dict):
-        return {
-            key: _translate_operation_refs(item, mapping)
-            for key, item in value.items()
-        }
+        return {key: _translate_operation_refs(item, mapping) for key, item in value.items()}
     if isinstance(value, list):
         return [_translate_operation_refs(item, mapping) for item in value]
     if isinstance(value, tuple):

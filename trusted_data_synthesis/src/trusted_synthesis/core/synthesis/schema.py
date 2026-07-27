@@ -48,9 +48,7 @@ class ProofCertificate(BaseModel):
             expected_output_hash=self.expected_output_hash,
             reference_execution_hash=self.reference_execution_hash,
             operation_manifest_hash=self.operation_manifest_hash,
-            counterfactual_operator_manifest_hash=(
-                self.counterfactual_operator_manifest_hash
-            ),
+            counterfactual_operator_manifest_hash=(self.counterfactual_operator_manifest_hash),
             domain_plugin_manifest_hash=self.domain_plugin_manifest_hash,
             source_grounding_manifest_hash=self.source_grounding_manifest_hash,
             task_pattern_hash=self.task_pattern_hash,
@@ -102,9 +100,7 @@ class ProofCarryingSample(BaseModel):
             "quality_contract_hash": self.quality_contract_hash,
             "reference_execution_hash": self.reference_trajectory_hash,
         }
-        observed = {
-            key: getattr(self.certificate, key) for key in expected
-        }
+        observed = {key: getattr(self.certificate, key) for key in expected}
         if observed != expected:
             raise ValueError("proof certificate does not bind the sample artifacts")
         pattern_expected = {
@@ -113,9 +109,7 @@ class ProofCarryingSample(BaseModel):
             "task_pattern_compiler_version": self.task_pattern_compiler_version,
         }
         if any(value is not None for value in pattern_expected.values()):
-            pattern_observed = {
-                key: getattr(self.certificate, key) for key in pattern_expected
-            }
+            pattern_observed = {key: getattr(self.certificate, key) for key in pattern_expected}
             if pattern_observed != pattern_expected:
                 raise ValueError("proof certificate does not bind pattern compilation artifacts")
         identity = proof_carrying_sample_identity(

@@ -885,9 +885,7 @@ def _write_artifacts(
     _write_jsonl(output_dir / "quality_contracts.jsonl", quality_contracts)
     _write_jsonl(output_dir / "clean_candidate_workflows.jsonl", clean_candidates)
     _write_jsonl(output_dir / "clean_candidate_assessments.jsonl", clean_assessments)
-    _write_jsonl(
-        output_dir / "clean_contract_assessments.jsonl", clean_contract_assessments
-    )
+    _write_jsonl(output_dir / "clean_contract_assessments.jsonl", clean_contract_assessments)
     _write_jsonl(
         output_dir / "mutated_candidate_workflows.jsonl",
         (
@@ -981,10 +979,7 @@ def _markdown_report(report: dict[str, Any]) -> str:
         json.dumps(task["task_pattern_counts"], ensure_ascii=False, indent=2),
         "",
         f"- Unique Evidence Bindings: {task['unique_evidence_binding_count']}",
-        (
-            "- Pattern/Binding quality clauses: "
-            f"{proof['pattern_binding_clause_count']}"
-        ),
+        (f"- Pattern/Binding quality clauses: {proof['pattern_binding_clause_count']}"),
         f"- Difficulty quality clauses: {proof['difficulty_clause_count']}",
         "",
         "## Difficulty Distribution",

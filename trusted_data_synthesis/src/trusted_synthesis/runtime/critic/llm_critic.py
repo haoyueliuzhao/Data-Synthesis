@@ -175,7 +175,4 @@ def _critic_prompt(
         "critic_input": critic_input,
         "response_json_schema": response_schema,
     }
-    return (
-        f"{instructions}\n\n"
-        f"PAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
-    )
+    return f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"

@@ -145,13 +145,9 @@ def test_task_pattern_compilation_is_deterministic() -> None:
     second = build_contract_cases()
 
     assert [case.task.task_hash for case in first] == [case.task.task_hash for case in second]
-    assert [
-        case.task.public.metadata["task_pattern"]["pattern_hash"] for case in first
-    ] == [case.task.public.metadata["task_pattern"]["pattern_hash"] for case in second]
-    assert [
-        case.task.oracle.selection_contract["pattern_binding"]["binding_hash"]
-        for case in first
-    ] == [
-        case.task.oracle.selection_contract["pattern_binding"]["binding_hash"]
-        for case in second
+    assert [case.task.public.metadata["task_pattern"]["pattern_hash"] for case in first] == [
+        case.task.public.metadata["task_pattern"]["pattern_hash"] for case in second
     ]
+    assert [
+        case.task.oracle.selection_contract["pattern_binding"]["binding_hash"] for case in first
+    ] == [case.task.oracle.selection_contract["pattern_binding"]["binding_hash"] for case in second]

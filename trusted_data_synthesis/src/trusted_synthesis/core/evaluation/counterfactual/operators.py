@@ -70,11 +70,7 @@ class RemoveSelectedEvidenceOperator(_UniversalOperator):
         target = str(opportunity.parameters["target_evidence_id"])
         steps = tuple(
             step.model_copy(
-                update={
-                    "evidence_ids": tuple(
-                        item for item in step.evidence_ids if item != target
-                    )
-                }
+                update={"evidence_ids": tuple(item for item in step.evidence_ids if item != target)}
             )
             if step.action == ActionType.SELECT_EVIDENCE and target in step.evidence_ids
             else step
@@ -114,9 +110,7 @@ class SetStepFailedOperator(_UniversalOperator):
     ) -> Trajectory:
         target_index = int(opportunity.parameters["step_index"])
         steps = tuple(
-            step.model_copy(update={"status": StepStatus.FAILED})
-            if index == target_index
-            else step
+            step.model_copy(update={"status": StepStatus.FAILED}) if index == target_index else step
             for index, step in enumerate(context.source_trajectory.steps)
         )
         return context.source_trajectory.model_copy(update={"steps": steps})
@@ -147,9 +141,7 @@ class InjectOracleReferenceOperator(_UniversalOperator):
                     "step_index": plan_index,
                     "gold_evidence_ids": context.task.oracle.gold_evidence_ids,
                 },
-                allowed_json_path_prefixes=(
-                    f"steps[{plan_index}].tool_input.gold_evidence_ids",
-                ),
+                allowed_json_path_prefixes=(f"steps[{plan_index}].tool_input.gold_evidence_ids",),
             ),
         )
 
@@ -165,9 +157,7 @@ class InjectOracleReferenceOperator(_UniversalOperator):
                 steps.append(step)
                 continue
             tool_input = deepcopy(step.tool_input)
-            tool_input["gold_evidence_ids"] = list(
-                opportunity.parameters["gold_evidence_ids"]
-            )
+            tool_input["gold_evidence_ids"] = list(opportunity.parameters["gold_evidence_ids"])
             steps.append(step.model_copy(update={"tool_input": tool_input}))
         return context.source_trajectory.model_copy(update={"steps": tuple(steps)})
 
@@ -211,9 +201,7 @@ class ReplaceToolOperator(_UniversalOperator):
         target_index = int(opportunity.parameters["step_index"])
         replacement = str(opportunity.parameters["replacement_tool"])
         steps = tuple(
-            step.model_copy(update={"tool_name": replacement})
-            if index == target_index
-            else step
+            step.model_copy(update={"tool_name": replacement}) if index == target_index else step
             for index, step in enumerate(context.source_trajectory.steps)
         )
         return context.source_trajectory.model_copy(update={"steps": steps})
@@ -305,9 +293,7 @@ class ReplaceProgramOperatorOperator(_UniversalOperator):
         target_index = int(opportunity.parameters["step_index"])
         replacement = str(opportunity.parameters["replacement_operator_id"])
         steps = tuple(
-            step.model_copy(update={"operator_id": replacement})
-            if index == target_index
-            else step
+            step.model_copy(update={"operator_id": replacement}) if index == target_index else step
             for index, step in enumerate(context.source_trajectory.steps)
         )
         return context.source_trajectory.model_copy(update={"steps": steps})

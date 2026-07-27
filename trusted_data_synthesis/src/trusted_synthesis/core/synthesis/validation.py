@@ -38,8 +38,7 @@ def validate_compiled_artifacts(artifacts: CompiledProofCarryingArtifacts) -> No
             or sample.pattern_hash != pattern_identity.get("pattern_hash")
             or sample.binding_id != binding_identity.get("binding_id")
             or sample.binding_hash != binding_identity.get("binding_hash")
-            or sample.task_pattern_compiler_version
-            != pattern_identity.get("compiler_version")
+            or sample.task_pattern_compiler_version != pattern_identity.get("compiler_version")
         ):
             raise ValueError("proof-carrying sample does not bind task pattern compilation")
     public_json = json.dumps(

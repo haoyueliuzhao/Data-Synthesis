@@ -1,0 +1,20 @@
+{
+  "cohort": "D2_reference_workflow",
+  "cohort_dataset_hash": "training_utility_cohort_dataset:b0905e0e03b45b8c3fde7b452574e07fc24564646dfdbdef04b279f95815b832",
+  "cohort_domain_counts": {
+    "finance": 200,
+    "legal": 200,
+    "science": 200
+  },
+  "cohort_record_count": 600,
+  "config_hash": "training_utility_mvp_config:f864f086958eab552eb14feb4d859c0e4d69b215e3301415da9c866506788a19",
+  "evaluation_dataset_hash": "training_utility_evaluation_dataset:5ea5301756e30e30365a12635aa265e7f66bef2e5e99e4a0ac1f7ce1a8bcba18",
+  "evaluation_domain_counts": {
+    "finance": 50,
+    "legal": 50,
+    "science": 50
+  },
+  "evaluation_record_count": 150,
+  "kind": "reference_training_preflight",
+  "training_evaluation_overlap_count": 0
+}

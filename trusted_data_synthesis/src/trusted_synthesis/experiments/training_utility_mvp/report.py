@@ -18,6 +18,9 @@ _DELTA_METRICS = (
     "response_contract_rate",
     "evidence_recall",
     "evidence_precision",
+    "execution_coverage",
+    "operation_grounding_score",
+    "tool_necessity_score",
     "operation_exact_rate",
     "answer_exact_rate",
     "citation_exact_rate",
@@ -37,9 +40,7 @@ def build_training_utility_report(
     expected = set(UtilityCohort)
     if {item.cohort for item in training_results} != expected:
         raise ValueError("training report requires D1 through D5")
-    if {item.cohort for item in cohort_evaluations} != {
-        item.value for item in expected
-    }:
+    if {item.cohort for item in cohort_evaluations} != {item.value for item in expected}:
         raise ValueError("evaluation report requires D1 through D5")
     if any(item.config_hash != config.config_hash for item in training_results):
         raise ValueError("cohort training config hashes do not match")
@@ -49,20 +50,14 @@ def build_training_utility_report(
     }
     if evaluation_hashes != {data_manifest.evaluation_dataset_hash}:
         raise ValueError("all models must use the same frozen evaluation set")
-    cohort_manifest_hashes = {
-        item.cohort: item.dataset_hash for item in data_manifest.cohorts
-    }
-    if any(
-        cohort_manifest_hashes[item.cohort] != item.dataset_hash
-        for item in training_results
-    ):
+    cohort_manifest_hashes = {item.cohort: item.dataset_hash for item in data_manifest.cohorts}
+    if any(cohort_manifest_hashes[item.cohort] != item.dataset_hash for item in training_results):
         raise ValueError("training result does not match the frozen cohort dataset")
     deltas = {
         item.cohort: {
             metric: _delta(item, base_evaluation, metric)
             for metric in _DELTA_METRICS
-            if getattr(item, metric) is not None
-            and getattr(base_evaluation, metric) is not None
+            if getattr(item, metric) is not None and getattr(base_evaluation, metric) is not None
         }
         for item in cohort_evaluations
     }
@@ -93,9 +88,7 @@ def build_training_utility_report(
         "data_manifest_id": data_manifest.manifest_id,
         "base_result_hash": base_evaluation.result_hash,
         "training_result_hashes": tuple(item.result_hash for item in training_results),
-        "evaluation_result_hashes": tuple(
-            item.result_hash for item in cohort_evaluations
-        ),
+        "evaluation_result_hashes": tuple(item.result_hash for item in cohort_evaluations),
     }
     return TrainingUtilityMVPReport(
         report_id=canonical_hash(identity, prefix="training_utility_mvp_report:"),
@@ -103,9 +96,7 @@ def build_training_utility_report(
         data_manifest_id=data_manifest.manifest_id,
         base_evaluation=base_evaluation,
         cohort_training=tuple(sorted(training_results, key=lambda item: item.cohort.value)),
-        cohort_evaluations=tuple(
-            sorted(cohort_evaluations, key=lambda item: item.cohort)
-        ),
+        cohort_evaluations=tuple(sorted(cohort_evaluations, key=lambda item: item.cohort)),
         best_cohort_by_end_to_end=best.cohort,
         best_end_to_end_rate=best.end_to_end_rate,
         cohort_deltas_vs_base=deltas,
@@ -163,14 +154,17 @@ def _render_markdown(
         f"- Critic models: {', '.join(manifest.critic_model_ids)}",
         f"- Training records: {manifest.cohorts[0].record_count} per cohort",
         f"- Held-out records: {manifest.evaluation_record_count}",
-        "- Model and method: Qwen2.5-7B-Instruct, BF16 LoRA SFT, identical settings for D1-D5",
+        (
+            f"- Model and method: {report.cohort_training[0].base_model}, "
+            "BF16 LoRA SFT, identical settings for D1-D5"
+        ),
         "- Evaluation track: evidence-given + plan-given; strict structured replay matching",
         "",
         "## Main Results",
         "",
-        "| Dataset | Contract | Evidence R | Operation | Answer | Citation | "
-        "Multi-hop | Distractor | End-to-end |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Dataset | Contract | Evidence R | Exec Cov | Grounding | Tool | Operation | "
+        "Answer | Citation | Multi-hop | Distractor | End-to-end |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for evaluation in evaluations:
         lines.append(
@@ -180,6 +174,9 @@ def _render_markdown(
                     evaluation.cohort,
                     _pct(evaluation.response_contract_rate),
                     _pct(evaluation.evidence_recall),
+                    _pct(evaluation.execution_coverage),
+                    _pct(evaluation.operation_grounding_score),
+                    _pct(evaluation.tool_necessity_score),
                     _pct(evaluation.operation_exact_rate),
                     _pct(evaluation.answer_exact_rate),
                     _pct(evaluation.citation_exact_rate),

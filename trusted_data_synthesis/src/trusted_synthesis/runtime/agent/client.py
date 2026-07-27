@@ -36,9 +36,7 @@ class OpenAICompatibleJsonClient:
         self._discovered_models: tuple[str, ...] | None = None
         self._api_key = os.environ.get(config.api_key_env, "")
         if not self._api_key:
-            raise ValueError(
-                f"missing model credential environment variable: {config.api_key_env}"
-            )
+            raise ValueError(f"missing model credential environment variable: {config.api_key_env}")
 
     @property
     def config(self) -> AgentModelConfig:
@@ -47,18 +45,14 @@ class OpenAICompatibleJsonClient:
     def discover_models(self) -> tuple[str, ...]:
         if self._discovered_models is not None:
             return self._discovered_models
-        endpoint = self._config.models_endpoint or _derive_models_endpoint(
-            self._config.endpoint
-        )
+        endpoint = self._config.models_endpoint or _derive_models_endpoint(self._config.endpoint)
         request = urllib.request.Request(
             endpoint,
             headers=self._headers(),
             method="GET",
         )
         try:
-            with urllib.request.urlopen(
-                request, timeout=self._config.timeout_seconds
-            ) as response:
+            with urllib.request.urlopen(request, timeout=self._config.timeout_seconds) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except Exception as exc:
             raise LLMClientError(f"model discovery failed: {type(exc).__name__}") from exc
@@ -100,9 +94,7 @@ class OpenAICompatibleJsonClient:
         available = set(discovered)
         requested_available = not discovered or self._config.model in available
         if self._config.require_requested_model and not requested_available:
-            raise LLMClientError(
-                f"requested model is not listed by provider: {self._config.model}"
-            )
+            raise LLMClientError(f"requested model is not listed by provider: {self._config.model}")
         ordered: list[str] = []
 
         def add(model: str) -> None:
@@ -146,9 +138,7 @@ class OpenAICompatibleJsonClient:
         started = time.perf_counter()
         status: int | None = None
         try:
-            with urllib.request.urlopen(
-                request, timeout=self._config.timeout_seconds
-            ) as response:
+            with urllib.request.urlopen(request, timeout=self._config.timeout_seconds) as response:
                 status = int(getattr(response, "status", 200))
                 response_body = json.loads(response.read().decode("utf-8"))
             content = str(response_body["choices"][0]["message"]["content"])
@@ -156,18 +146,12 @@ class OpenAICompatibleJsonClient:
             if not isinstance(parsed, dict):
                 raise TypeError("model response must be a JSON object")
             usage = dict(response_body.get("usage") or {})
-            prompt_tokens = _optional_int(
-                usage.get("prompt_tokens", usage.get("input_tokens"))
-            )
+            prompt_tokens = _optional_int(usage.get("prompt_tokens", usage.get("input_tokens")))
             completion_tokens = _optional_int(
                 usage.get("completion_tokens", usage.get("output_tokens"))
             )
             total_tokens = _optional_int(usage.get("total_tokens"))
-            if (
-                total_tokens is None
-                and prompt_tokens is not None
-                and completion_tokens is not None
-            ):
+            if total_tokens is None and prompt_tokens is not None and completion_tokens is not None:
                 total_tokens = prompt_tokens + completion_tokens
             telemetry = ModelCallTelemetry(
                 provider=self._config.provider,

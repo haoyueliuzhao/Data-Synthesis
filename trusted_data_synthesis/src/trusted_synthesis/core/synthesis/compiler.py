@@ -100,30 +100,30 @@ class ProofCarryingSampleCompiler:
         pattern_identity = task.public.metadata.get("task_pattern")
         binding_identity = task.oracle.selection_contract.get("pattern_binding")
         declared_pattern_id = (
-            str(pattern_identity.get("pattern_id"))
-            if isinstance(pattern_identity, dict)
-            else None
+            str(pattern_identity.get("pattern_id")) if isinstance(pattern_identity, dict) else None
         )
         declared_binding_id = (
-            str(binding_identity.get("binding_id"))
-            if isinstance(binding_identity, dict)
-            else None
+            str(binding_identity.get("binding_id")) if isinstance(binding_identity, dict) else None
         )
         if pattern_id is not None and declared_pattern_id not in (None, pattern_id):
             raise ValueError("sample pattern ID disagrees with the compiled task pattern")
         if binding_id is not None and declared_binding_id not in (None, binding_id):
             raise ValueError("sample binding ID disagrees with the compiled evidence binding")
         pattern = pattern_id or declared_pattern_id or task.public.task_type
-        binding = binding_id or declared_binding_id or canonical_hash(
-            {
-                "task_id": task.task_id,
-                "evidence_semantic_keys": sorted(
-                    item.semantic_key
-                    for item in evidence_bundle.evidence
-                    if item.evidence_id in set(task.oracle.gold_evidence_ids)
-                ),
-            },
-            prefix="evidence_binding:",
+        binding = (
+            binding_id
+            or declared_binding_id
+            or canonical_hash(
+                {
+                    "task_id": task.task_id,
+                    "evidence_semantic_keys": sorted(
+                        item.semantic_key
+                        for item in evidence_bundle.evidence
+                        if item.evidence_id in set(task.oracle.gold_evidence_ids)
+                    ),
+                },
+                prefix="evidence_binding:",
+            )
         )
         declared_difficulty = task.public.metadata.get("difficulty_profile")
         difficulty = difficulty_profile or (

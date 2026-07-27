@@ -77,4 +77,3 @@ SCIENCE_PROTOCOL_COMPARISON_PATTERN = TaskPatternSpec(
     difficulty_base_cost=6.0,
     metadata={"pattern_catalog": "science_contract_patterns.v1"},
 )
-

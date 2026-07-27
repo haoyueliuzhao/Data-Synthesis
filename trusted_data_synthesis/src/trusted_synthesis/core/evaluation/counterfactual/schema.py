@@ -42,9 +42,7 @@ class CounterfactualOpportunity(BaseModel):
     @model_validator(mode="after")
     def validate_identity(self) -> CounterfactualOpportunity:
         identity = counterfactual_opportunity_identity(self)
-        if self.opportunity_id != canonical_hash(
-            identity, prefix="counterfactual_opportunity:"
-        ):
+        if self.opportunity_id != canonical_hash(identity, prefix="counterfactual_opportunity:"):
             raise ValueError("counterfactual opportunity identity is invalid")
         if self.expected_root_clause_id not in self.expected_failed_clause_ids:
             raise ValueError("expected failure closure must include its root clause")

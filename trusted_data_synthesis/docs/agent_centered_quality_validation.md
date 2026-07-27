@@ -22,13 +22,15 @@ Task Release
 
 `AgentSolver` receives only `TaskPublicSpec` and an `EvidenceToolRuntime`. The model never
 receives the Oracle Contract, gold Evidence IDs, reference answer, Contract decision, or
-Quality Vector. The normalized trajectory preserves model-selected Evidence, reported
-operation outputs, final answer, and citations. Normalization adds stable workflow fields;
-it does not replace a wrong answer with the oracle answer.
+Quality Vector. The public Task Program is a Program Skeleton, not an execution log. The model
+returns `agent_response.v2` with a separate `agent_execution_trace.v1`, fresh execution IDs,
+concrete tools, direct Evidence bindings, observations, final answer, and citations.
 
-The response contract rejects unknown operators, non-retrieved Evidence IDs, invalid
-operation output shapes, non-topological references, and PLAN_GIVEN parameter drift.
-Financial or domain-semantic mistakes remain visible and are judged by independent replay.
+Normalization adds stable workflow fields but does not execute missing operations or replace a wrong
+answer with the oracle answer. The response contract rejects skeleton-copy identities, unknown
+operators, non-retrieved Evidence IDs, invalid output shapes, non-topological references, and
+PLAN_GIVEN parameter drift. Independent replay computes Execution Coverage, Operation Grounding,
+and Tool Necessity; financial or domain-semantic mistakes remain visible.
 
 ## Retrieval And Planning Tracks
 
@@ -37,8 +39,8 @@ Financial or domain-semantic mistakes remain visible and are judged by independe
 | Resolved | normalized entity, predicate, time, bounded corpus | host executes the frozen public query |
 | Semi-open | aliases, partial constraints, bounded corpus | model emits a typed search query, then answers |
 | Open | natural-language task and bounded corpus | model formulates a typed query, selects Evidence, then answers |
-| PLAN_GIVEN | public operation skeleton | model preserves nodes, operators, parameters, and dependencies |
-| PLAN_HIDDEN | public operation catalog only | model proposes a topological operation DAG |
+| PLAN_GIVEN | public non-executed Program Skeleton | model reports a fresh concrete Execution Trace aligned to every required node |
+| PLAN_HIDDEN | public operation catalog only | model plans and executes a topological trace without claiming public node identity |
 
 Search and answer are separate contracts for Semi-open and Open. The host always restores
 the immutable corpus boundary. Search responses cannot represent Evidence IDs or oracle

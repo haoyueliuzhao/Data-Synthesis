@@ -233,11 +233,9 @@ class _TaskPatternBindingVerifier:
         checks = {
             "pattern_identity": observed_pattern == expected_pattern,
             "binding_identity": observed_binding == expected_binding,
-            "role_coverage": len(flattened) == len(gold_ids)
-            and set(flattened) == set(gold_ids),
+            "role_coverage": len(flattened) == len(gold_ids) and set(flattened) == set(gold_ids),
             "role_uniqueness": len(flattened) == len(set(flattened)),
-            "source_graph": observed_binding.get("source_graph_id")
-            == context.proof_graph.graph_id,
+            "source_graph": observed_binding.get("source_graph_id") == context.proof_graph.graph_id,
             "contract_hash": clause.expected_ref
             == canonical_hash(
                 {

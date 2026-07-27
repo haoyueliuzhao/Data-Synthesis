@@ -18,9 +18,11 @@ from trusted_synthesis.core.evaluation.critic import (
     evaluate_annotation_alignment,
 )
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
+from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
 from trusted_synthesis.experiments.agent_validation import (
     AgentValidationConfig,
+    audit_agent_validation_capacity,
     run_agent_validation,
 )
 from trusted_synthesis.experiments.agent_validation.runner import (
@@ -46,6 +48,7 @@ from trusted_synthesis.experiments.finance_pilot.candidate import (
 from trusted_synthesis.runtime.agent import (
     AgentModelConfig,
     LLMAgentSolver,
+    LLMClientError,
     ModelCallTelemetry,
 )
 from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
@@ -65,6 +68,7 @@ class ScriptedJsonClient:
             contract_repair_attempts=repair_attempts,
         )
         self.call_count = 0
+        self.prompts: list[str] = []
 
     @property
     def config(self) -> AgentModelConfig:
@@ -72,6 +76,7 @@ class ScriptedJsonClient:
 
     def complete_json(self, prompt: str):
         assert '"oracle_contract":' not in prompt
+        self.prompts.append(prompt)
         self.call_count += 1
         payload = self._payloads.pop(0)
         return payload, ModelCallTelemetry(
@@ -121,6 +126,37 @@ def test_llm_agent_plan_given_is_independently_verified() -> None:
     assert assessment.decision.value == "accepted"
     assert result.audit.selected_model == "deepseek-v4-pro"
     assert result.audit.contract_repair_count == 0
+    verification = CandidateWorkflowVerifier(
+        case.registry,
+        semantic_policy=case.semantic_policy,
+    ).verify(task, case.corpus, case.proof_graph, result.trajectory)
+    assert verification.execution_coverage == 1
+    assert verification.operation_grounding_score == 1
+    assert verification.tool_necessity_score == 1
+    assert "program_skeleton is a plan, not an execution result" in client.prompts[0]
+
+
+def test_public_skeleton_copy_is_rejected_as_execution() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    payload = _response_from_trajectory(deterministic)
+    first = payload["execution_trace"]["steps"][0]
+    first["execution_id"] = first["planned_node_id"]
+
+    with pytest.raises(LLMClientError, match="response contract"):
+        LLMAgentSolver(ScriptedJsonClient([payload]), case.registry).solve(
+            task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
 
 
 def test_plan_hidden_candidate_node_ids_are_semantically_normalized() -> None:
@@ -212,20 +248,23 @@ def test_agent_contract_repair_rejects_unresolvable_evidence_ref() -> None:
     valid = _response_from_trajectory(deterministic)
     invalid = {
         **valid,
-        "operations": [
-            {
-                **operation,
-                "input_refs": [
-                    (
-                        ref.removeprefix("evidence:")
-                        if ref.startswith("evidence:evidence:")
-                        else ref
-                    )
-                    for ref in operation["input_refs"]
-                ],
-            }
-            for operation in valid["operations"]
-        ],
+        "execution_trace": {
+            **valid["execution_trace"],
+            "steps": [
+                {
+                    **execution,
+                    "input_refs": [
+                        (
+                            ref.removeprefix("evidence:")
+                            if ref.startswith("evidence:evidence:")
+                            else ref
+                        )
+                        for ref in execution["input_refs"]
+                    ],
+                }
+                for execution in valid["execution_trace"]["steps"]
+            ],
+        },
     }
     client = ScriptedJsonClient([invalid, valid], repair_attempts=1)
 
@@ -273,15 +312,37 @@ def test_agent_controls_non_resolved_search_without_oracle_ids(
         task.public,
         InMemoryEvidenceToolRuntime(case.corpus),
     )
-    search_step = next(
-        step for step in result.trajectory.steps if step.action == ActionType.SEARCH
-    )
+    search_step = next(step for step in result.trajectory.steps if step.action == ActionType.SEARCH)
 
     assert result.audit.model_search_used is True
     assert result.audit.search_prompt_manifest_hash is not None
     assert len(result.audit.telemetry) == 2
     assert search_step.tool_input["corpus_boundary"] == case.corpus.corpus_id
     assert "evidence_ids" not in search_step.tool_input
+
+
+def test_agent_capacity_audit_supports_domain_specific_targets() -> None:
+    config = AgentValidationConfig(
+        model=ScriptedJsonClient([]).config,
+        domain_task_targets={"finance": 3, "legal": 2, "science": 1},
+        retrieval_tracks=(RetrievalTrack.RESOLVED,),
+        planning_tracks=(PlanningTrack.PLAN_GIVEN,),
+        run_model_critic=True,
+        model_critic_max_examples=4,
+    )
+
+    report = audit_agent_validation_capacity(config)
+
+    assert report.status == "ready"
+    assert report.materialized_task_counts == {
+        "finance": 3,
+        "legal": 2,
+        "science": 1,
+    }
+    assert report.unique_task_counts == report.materialized_task_counts
+    assert report.planned_candidate_count == 6
+    assert report.planned_agent_api_call_floor == 6
+    assert report.planned_critic_api_call_ceiling == 4
 
 
 def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks() -> None:
@@ -413,12 +474,10 @@ def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks()
         ],
         repair_attempts=1,
     )
-    _, repaired_predictions, _, repaired_telemetry, failures, attempted = (
-        _run_model_critic(
-            repair_client,
-            (critic_slice[0],),
-            1,
-        )
+    _, repaired_predictions, _, repaired_telemetry, failures, attempted = _run_model_critic(
+        repair_client,
+        (critic_slice[0],),
+        1,
     )
     calls = repaired_telemetry[critic_slice[0].example_id]
     assert attempted == 1
@@ -541,19 +600,19 @@ def _response_from_trajectory(
         if step.program_node_id is not None
         and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
     ]
-    mapping = {
-        step.program_node_id: (
-            f"candidate_{index}" if rename_nodes else step.program_node_id
-        )
+    execution_ids = {
+        step.program_node_id: (f"candidate_{index}" if rename_nodes else f"exec_{index:03d}")
         for index, step in enumerate(operation_steps, start=1)
         if step.program_node_id is not None
+    }
+    result_mapping = {
+        node_id: (execution_ids[node_id] if rename_nodes else node_id) for node_id in execution_ids
     }
     selected_step = next(
         (
             step
             for step in trajectory.steps
-            if step.action == ActionType.SELECT_EVIDENCE
-            and step.program_node_id is None
+            if step.action == ActionType.SELECT_EVIDENCE and step.program_node_id is None
         ),
         None,
     )
@@ -562,9 +621,7 @@ def _response_from_trajectory(
         if selected_step is not None
         else tuple(
             dict.fromkeys(
-                evidence_id
-                for step in operation_steps
-                for evidence_id in step.evidence_ids
+                evidence_id for step in operation_steps for evidence_id in step.evidence_ids
             )
         )
     )
@@ -572,34 +629,61 @@ def _response_from_trajectory(
         (step for step in trajectory.steps if step.action == ActionType.VERIFY),
         None,
     )
+    output_node_id = (
+        verify_step.program_node_id
+        if verify_step is not None
+        else operation_steps[-1].program_node_id
+    )
+    assert output_node_id is not None
     return {
-        "schema_version": "agent_response.v1",
-        "plan_summary": "Select the matching evidence and execute a typed operation DAG.",
+        "schema_version": "agent_response.v2",
+        "plan_summary": "Select matching evidence and execute a typed operation DAG.",
         "selected_evidence_ids": list(selected_evidence_ids),
-        "operations": [
-            {
-                "node_id": mapping[step.program_node_id],
-                "operator_id": step.operator_id,
-                "input_refs": [
-                    _translate_ref(ref, mapping) for ref in step.input_refs
-                ],
-                "parameters": step.tool_input.get("parameters", {}),
-                "result": _translate_value(step.observation["result"], mapping),
-                "rationale_summary": "Execute the selected typed operation.",
-            }
-            for step in operation_steps
-            if step.program_node_id is not None
-        ],
+        "execution_trace": {
+            "trace_version": "agent_execution_trace.v1",
+            "steps": [
+                {
+                    "execution_id": execution_ids[step.program_node_id],
+                    "planned_node_id": None if rename_nodes else step.program_node_id,
+                    "operator_id": step.operator_id,
+                    "tool_name": step.tool_name,
+                    "input_refs": [
+                        _translate_execution_ref(ref, execution_ids) for ref in step.input_refs
+                    ],
+                    "parameters": step.tool_input.get("parameters", {}),
+                    "evidence_ids": list(step.evidence_ids),
+                    "observation": {
+                        "result": _translate_value(
+                            step.observation["result"],
+                            result_mapping,
+                        )
+                    },
+                    "status": step.status.value,
+                    "rationale_summary": "Execute the selected typed operation.",
+                }
+                for step in operation_steps
+                if step.program_node_id is not None
+            ],
+            "output_execution_id": execution_ids[output_node_id],
+        },
         "verification_result": (
             None
             if verify_step is None
             else _translate_value(
                 verify_step.observation.get("verified_result"),
-                mapping,
+                result_mapping,
             )
         ),
-        "final_answer": _translate_value(trajectory.final_answer, mapping),
+        "final_answer": _translate_value(trajectory.final_answer, result_mapping),
     }
+
+
+def _translate_execution_ref(value: str, execution_ids: dict[str, str]) -> str:
+    if not value.startswith("operation:"):
+        return value
+    node_id, separator, selector = value.removeprefix("operation:").partition("#")
+    suffix = f"#{selector}" if separator else ""
+    return f"execution:{execution_ids[node_id]}{suffix}"
 
 
 def _translate_ref(value: str, mapping: dict[str, str]) -> str:

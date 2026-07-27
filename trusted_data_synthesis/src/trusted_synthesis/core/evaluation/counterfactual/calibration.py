@@ -60,9 +60,7 @@ def calibrate_counterfactuals(
         clean = evaluate(context, context.source_trajectory)
         clean_false_positives += int(clean.decision != ReleaseDecision.ACCEPTED)
         mutable_clause_ids.update(
-            clause.clause_id
-            for clause in context.contract.clauses
-            if clause.mutation_specs
+            clause.clause_id for clause in context.contract.clauses if clause.mutation_specs
         )
         opportunities = planner.plan(context)
         generated_source_clauses.update(
@@ -118,8 +116,7 @@ def calibrate_counterfactuals(
     )
     root_precision, root_recall, root_f1 = _macro_set_metrics(
         tuple(
-            (item.expected_root_clause_ids, item.observed_root_clause_ids)
-            for item in evaluations
+            (item.expected_root_clause_ids, item.observed_root_clause_ids) for item in evaluations
         )
     )
     closure_precision, closure_recall, closure_f1 = _macro_set_metrics(
@@ -145,26 +142,20 @@ def calibrate_counterfactuals(
             len(generated_source_clauses), len(mutable_clause_ids)
         )
         > 0.95,
-        "operator_coverage_gt_0_95": _rate(
-            len(exercised_operator_ids), len(registry.operator_ids)
-        )
+        "operator_coverage_gt_0_95": _rate(len(exercised_operator_ids), len(registry.operator_ids))
         > 0.95,
     }
     failures = tuple(key for key, passed in thresholds.items() if not passed)
     identity = {
         "version": COUNTERFACTUAL_CALIBRATION_VERSION,
         "operator_manifest_hash": registry.manifest_hash,
-        "source_sample_ids": tuple(
-            sorted(item.source_sample.sample_id for item in context_items)
-        ),
+        "source_sample_ids": tuple(sorted(item.source_sample.sample_id for item in context_items)),
         "counterfactual_ids": tuple(item.counterfactual_id for item in cases),
         "evaluation_ids": tuple(item.assessment_id for item in evaluations),
     }
     report = CounterfactualCalibrationReport(
         calibration_id=canonical_hash(identity, prefix="counterfactual_calibration:"),
-        engine_version=(
-            f"{COUNTERFACTUAL_GENERATOR_VERSION}+{COUNTERFACTUAL_CALIBRATION_VERSION}"
-        ),
+        engine_version=(f"{COUNTERFACTUAL_GENERATOR_VERSION}+{COUNTERFACTUAL_CALIBRATION_VERSION}"),
         operator_manifest_hash=registry.manifest_hash,
         source_sample_count=len(context_items),
         clean_false_positive_count=clean_false_positives,
@@ -197,9 +188,7 @@ def calibrate_counterfactuals(
         mutation_family_counts=dict(
             sorted(Counter(item.mutation_family.value for item in cases).items())
         ),
-        operator_counts=dict(
-            sorted(Counter(item.mutation_operator_id for item in cases).items())
-        ),
+        operator_counts=dict(sorted(Counter(item.mutation_operator_id for item in cases).items())),
         mutation_family_metrics=_slice_reports(
             cases,
             evaluations,
@@ -270,10 +259,7 @@ def _slice_reports(
     ] = {}
     for case, evaluation in zip(cases, evaluations, strict=True):
         grouped.setdefault(key_fn(case), []).append((case, evaluation))
-    return {
-        key: _slice_metrics(items)
-        for key, items in sorted(grouped.items())
-    }
+    return {key: _slice_metrics(items) for key, items in sorted(grouped.items())}
 
 
 def _slice_metrics(
@@ -282,10 +268,7 @@ def _slice_metrics(
     generated = len(items)
     detected = sum(evaluation.detected for _, evaluation in items)
     minimal = sum(case.minimality.passed for case, _ in items)
-    valid = sum(
-        case.minimality.passed and evaluation.detected
-        for case, evaluation in items
-    )
+    valid = sum(case.minimality.passed and evaluation.detected for case, evaluation in items)
     return CounterfactualSliceMetrics(
         generated_case_count=generated,
         valid_case_count=valid,
@@ -293,12 +276,8 @@ def _slice_metrics(
         mutation_validity_rate=_rate(valid, generated),
         detection_rate=_rate(detected, generated),
         minimality_pass_rate=_rate(minimal, generated),
-        mean_minimality_score=(
-            mean(case.minimality_score for case, _ in items) if items else 0.0
-        ),
-        root_cause_f1=(
-            mean(evaluation.root_f1 for _, evaluation in items) if items else 0.0
-        ),
+        mean_minimality_score=(mean(case.minimality_score for case, _ in items) if items else 0.0),
+        root_cause_f1=(mean(evaluation.root_f1 for _, evaluation in items) if items else 0.0),
         failure_closure_f1=(
             mean(evaluation.closure_f1 for _, evaluation in items) if items else 0.0
         ),

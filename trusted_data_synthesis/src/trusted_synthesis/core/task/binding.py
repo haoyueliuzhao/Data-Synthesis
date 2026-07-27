@@ -28,8 +28,7 @@ class EvidenceBinding(BaseModel):
     @model_validator(mode="after")
     def validate_identity(self) -> EvidenceBinding:
         if any(
-            not role_id or not evidence_ids
-            for role_id, evidence_ids in self.role_bindings.items()
+            not role_id or not evidence_ids for role_id, evidence_ids in self.role_bindings.items()
         ):
             raise ValueError("every evidence binding role must be non-empty")
         if any(len(set(ids)) != len(ids) for ids in self.role_bindings.values()):

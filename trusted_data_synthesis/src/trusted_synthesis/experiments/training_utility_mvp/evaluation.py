@@ -96,10 +96,7 @@ def evaluate_sft_model(
         )
     prediction_path = output_dir / "predictions.jsonl"
     prediction_path.write_text(
-        "".join(
-            json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n"
-            for item in outcomes
-        ),
+        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in outcomes),
         encoding="utf-8",
     )
     result = aggregate_evaluation_outcomes(
@@ -160,11 +157,17 @@ def score_generated_response(
         if observed_evidence
         else 0.0
     )
+    gold_steps = gold["execution_trace"]["steps"]
+    predicted_steps = (
+        predicted["execution_trace"]["steps"] if response_contract and predicted is not None else []
+    )
+    execution_coverage, operation_grounding_score, tool_necessity_score = _execution_alignment(
+        predicted_steps, gold_steps
+    )
     operation_exact = bool(
         response_contract
         and predicted is not None
-        and _operation_signature(predicted["operations"])
-        == _operation_signature(gold["operations"])
+        and _execution_signature(predicted_steps) == _execution_signature(gold_steps)
     )
     answer_exact = bool(
         response_contract
@@ -189,6 +192,9 @@ def score_generated_response(
     end_to_end = bool(
         response_contract
         and evidence_exact
+        and execution_coverage == 1.0
+        and operation_grounding_score == 1.0
+        and tool_necessity_score == 1.0
         and operation_exact
         and answer_exact
         and citation_exact
@@ -196,12 +202,15 @@ def score_generated_response(
     )
     user_payload = json.loads(record.user_prompt)
     has_distractors = len(user_payload["evidence_corpus"]) > len(expected_evidence)
-    is_multi_hop = len(gold["operations"]) > 1
+    is_multi_hop = len(gold_steps) > 1
     failures = []
     for label, passed in (
         ("valid_json", valid_json),
         ("response_contract", response_contract),
         ("evidence_exact", evidence_exact),
+        ("execution_coverage", execution_coverage == 1.0),
+        ("operation_grounding", operation_grounding_score == 1.0),
+        ("tool_necessity", tool_necessity_score == 1.0),
         ("operation_exact", operation_exact),
         ("answer_exact", answer_exact),
         ("citation_exact", citation_exact),
@@ -218,6 +227,9 @@ def score_generated_response(
         "evidence_recall": evidence_recall,
         "evidence_precision": evidence_precision,
         "evidence_exact": evidence_exact,
+        "execution_coverage": execution_coverage,
+        "operation_grounding_score": operation_grounding_score,
+        "tool_necessity_score": tool_necessity_score,
         "operation_exact": operation_exact,
         "answer_exact": answer_exact,
         "citation_exact": citation_exact,
@@ -250,15 +262,12 @@ def aggregate_evaluation_outcomes(
         tuple(item.record_hash for item in records),
         prefix="training_utility_evaluation_dataset:",
     )
-    failure_counts = Counter(
-        reason for item in outcomes for reason in item["failure_reasons"]
-    )
+    failure_counts = Counter(reason for item in outcomes for reason in item["failure_reasons"])
     domain_rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for item in outcomes:
         domain_rows[item["domain"]].append(item)
     domain_metrics = {
-        domain: _outcome_metrics(tuple(rows))
-        for domain, rows in sorted(domain_rows.items())
+        domain: _outcome_metrics(tuple(rows)) for domain, rows in sorted(domain_rows.items())
     }
     metrics = _outcome_metrics(outcomes)
     identity = {
@@ -277,6 +286,9 @@ def aggregate_evaluation_outcomes(
         response_contract_rate=metrics["response_contract_rate"],
         evidence_recall=metrics["evidence_recall"],
         evidence_precision=metrics["evidence_precision"],
+        execution_coverage=metrics["execution_coverage"],
+        operation_grounding_score=metrics["operation_grounding_score"],
+        tool_necessity_score=metrics["tool_necessity_score"],
         operation_exact_rate=metrics["operation_exact_rate"],
         answer_exact_rate=metrics["answer_exact_rate"],
         citation_exact_rate=metrics["citation_exact_rate"],
@@ -305,6 +317,10 @@ def _outcome_metrics(outcomes: tuple[dict[str, Any], ...]) -> dict[str, Any]:
         "response_contract_rate": _mean_bool(outcomes, "response_contract"),
         "evidence_recall": sum(item["evidence_recall"] for item in outcomes) / count,
         "evidence_precision": sum(item["evidence_precision"] for item in outcomes) / count,
+        "execution_coverage": sum(item["execution_coverage"] for item in outcomes) / count,
+        "operation_grounding_score": sum(item["operation_grounding_score"] for item in outcomes)
+        / count,
+        "tool_necessity_score": sum(item["tool_necessity_score"] for item in outcomes) / count,
         "operation_exact_rate": _mean_bool(outcomes, "operation_exact"),
         "answer_exact_rate": _mean_bool(outcomes, "answer_exact"),
         "citation_exact_rate": _mean_bool(outcomes, "citation_exact"),
@@ -324,18 +340,89 @@ def _mean_bool(rows: tuple[dict[str, Any], ...], key: str) -> float:
     return sum(bool(item[key]) for item in rows) / len(rows)
 
 
-def _operation_signature(operations: Any) -> str:
+def _execution_alignment(
+    observed_steps: Any,
+    expected_steps: Any,
+) -> tuple[float, float, float]:
+    expected = tuple(expected_steps)
+    observed = tuple(observed_steps)
+    if not expected:
+        return 1.0, 1.0, 1.0
+    observed_by_node: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for item in observed:
+        node_id = item.get("planned_node_id")
+        if isinstance(node_id, str):
+            observed_by_node[node_id].append(item)
+    expected_execution_ids = {
+        item.get("execution_id"): item.get("planned_node_id") for item in expected
+    }
+    observed_execution_ids = {
+        item.get("execution_id"): item.get("planned_node_id") for item in observed
+    }
+    covered = 0
+    grounded = 0
+    tool_bound = 0
+    for expected_step in expected:
+        node_id = expected_step.get("planned_node_id")
+        matches = observed_by_node.get(node_id, [])
+        if len(matches) != 1:
+            continue
+        observed_step = matches[0]
+        succeeded = observed_step.get("status") == "succeeded"
+        covered += int(succeeded)
+        expected_grounding = _execution_grounding_signature(
+            expected_step,
+            expected_execution_ids,
+        )
+        observed_grounding = _execution_grounding_signature(
+            observed_step,
+            observed_execution_ids,
+        )
+        grounded += int(succeeded and observed_grounding == expected_grounding)
+        tool_bound += int(
+            succeeded and observed_step.get("tool_name") == expected_step.get("tool_name")
+        )
+    denominator = len(expected)
+    return covered / denominator, grounded / denominator, tool_bound / denominator
+
+
+def _execution_signature(steps: Any) -> str:
+    observed = tuple(steps)
+    execution_ids = {item.get("execution_id"): item.get("planned_node_id") for item in observed}
     normalized = [
         {
-            "node_id": item.get("node_id"),
-            "operator_id": item.get("operator_id"),
-            "input_refs": item.get("input_refs"),
-            "parameters": item.get("parameters"),
-            "result": item.get("result"),
+            **_execution_grounding_signature(item, execution_ids),
+            "observation": item.get("observation"),
+            "status": item.get("status"),
         }
-        for item in operations
+        for item in observed
     ]
-    return canonical_hash(normalized, prefix="training_utility_operation_signature:")
+    return canonical_hash(normalized, prefix="training_utility_execution_signature:")
+
+
+def _execution_grounding_signature(
+    step: dict[str, Any],
+    execution_ids: dict[Any, Any],
+) -> dict[str, Any]:
+    return {
+        "planned_node_id": step.get("planned_node_id"),
+        "operator_id": step.get("operator_id"),
+        "tool_name": step.get("tool_name"),
+        "input_refs": [
+            _normalize_execution_ref(ref, execution_ids) for ref in step.get("input_refs", ())
+        ],
+        "parameters": step.get("parameters"),
+        "evidence_ids": step.get("evidence_ids"),
+    }
+
+
+def _normalize_execution_ref(ref: Any, execution_ids: dict[Any, Any]) -> Any:
+    if not isinstance(ref, str) or not ref.startswith("execution:"):
+        return ref
+    execution_id, separator, selector = ref.removeprefix("execution:").partition("#")
+    node_id = execution_ids.get(execution_id, execution_id)
+    suffix = f"#{selector}" if separator else ""
+    return f"operation:{node_id}{suffix}"
 
 
 def _citation_signature(citations: Any) -> str:

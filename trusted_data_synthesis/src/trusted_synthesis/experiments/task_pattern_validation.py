@@ -74,9 +74,7 @@ def run_task_pattern_validation(*, tasks_per_domain: int = 10) -> TaskPatternVal
             binding_hashes.add(compiled.sample.binding_hash)
         if compiled.sample.pattern_hash is not None:
             pattern_hashes.add(compiled.sample.pattern_hash)
-        references_passed += int(
-            compiled.reference_assessment.decision == ReleaseDecision.ACCEPTED
-        )
+        references_passed += int(compiled.reference_assessment.decision == ReleaseDecision.ACCEPTED)
         clause_kinds = {clause.clause_kind for clause in compiled.quality_contract.clauses}
         pattern_clause_count += int("task_pattern_binding_integrity" in clause_kinds)
         difficulty_clause_count += int("difficulty_profile_integrity" in clause_kinds)
@@ -144,4 +142,3 @@ def run_task_pattern_validation(*, tasks_per_domain: int = 10) -> TaskPatternVal
         status="passed" if not failures else "failed",
         failures=tuple(failures),
     )
-

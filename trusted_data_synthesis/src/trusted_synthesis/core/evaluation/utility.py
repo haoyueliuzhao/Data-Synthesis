@@ -108,9 +108,7 @@ def make_training_utility_protocol(
         UtilityCohort.CONTRACT_COUNTERFACTUAL: (
             "contract_accepted_candidates_with_typed_counterfactual_negatives"
         ),
-        UtilityCohort.CRITIC_SELECTED: (
-            "quality_critic_ranked_after_authoritative_contract_gates"
-        ),
+        UtilityCohort.CRITIC_SELECTED: ("quality_critic_ranked_after_authoritative_contract_gates"),
     }
     if set(policies) != set(UtilityCohort):
         raise ValueError("cohort construction policies must contain D1 through D5")
@@ -119,22 +117,16 @@ def make_training_utility_protocol(
             cohort=cohort,
             sample_ids=cohort_samples[cohort],
             negative_sample_ids=(
-                counterfactual_ids
-                if cohort == UtilityCohort.CONTRACT_COUNTERFACTUAL
-                else ()
+                counterfactual_ids if cohort == UtilityCohort.CONTRACT_COUNTERFACTUAL else ()
             ),
             construction_policy=policies[cohort],
-            materialization_status=(
-                "prepared" if cohort_samples[cohort] else "planned"
-            ),
+            materialization_status=("prepared" if cohort_samples[cohort] else "planned"),
             selection_manifest_hash=canonical_hash(
                 {
                     "cohort": cohort.value,
                     "sample_ids": cohort_samples[cohort],
                     "construction_policy": policies[cohort],
-                    "materialization_status": (
-                        "prepared" if cohort_samples[cohort] else "planned"
-                    ),
+                    "materialization_status": ("prepared" if cohort_samples[cohort] else "planned"),
                     "negative_sample_ids": (
                         counterfactual_ids
                         if cohort == UtilityCohort.CONTRACT_COUNTERFACTUAL

@@ -129,26 +129,17 @@ def test_release_manifest_freezes_passing_generalization_audit() -> None:
     assert manifest.metadata["core_domain_field_access_count"] == 0
     assert manifest.mutation_taxonomy_manifest_hash
     assert manifest.quality_contract_runtime_version == "quality_contract_runtime.v1"
-    assert manifest.quality_contract_compiler_versions == ("quality_contract_compiler.v3",)
+    assert manifest.quality_contract_compiler_versions == ("quality_contract_compiler.v4",)
     assert manifest.proof_compiler_versions == ("proof_carrying_compiler.v3",)
     assert set(manifest.quality_contract_hashes) == set(contracts.result.quality_contract_hashes)
     assert set(manifest.proof_certificate_hashes) == set(contracts.result.proof_certificate_hashes)
     assert manifest.clause_verifier_manifest_hashes
     assert manifest.counterfactual_operator_manifest_hashes
     assert manifest.cross_domain_contract_suite.counterfactual_case_count > 0
-    assert (
-        manifest.cross_domain_contract_suite.counterfactual_clean_false_positive_count
-        == 0
-    )
+    assert manifest.cross_domain_contract_suite.counterfactual_clean_false_positive_count == 0
     assert manifest.cross_domain_contract_suite.counterfactual_detection_f1 > 0.95
-    assert (
-        manifest.cross_domain_contract_suite.counterfactual_clause_coverage_rate
-        == 1.0
-    )
-    assert (
-        manifest.cross_domain_contract_suite.counterfactual_operator_coverage_rate
-        == 1.0
-    )
+    assert manifest.cross_domain_contract_suite.counterfactual_clause_coverage_rate == 1.0
+    assert manifest.cross_domain_contract_suite.counterfactual_operator_coverage_rate == 1.0
     assert {item.domain for item in manifest.domain_plugin_sets} == {"legal", "science"}
     assert manifest.source_grounding_verifiers == {}
 

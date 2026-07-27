@@ -80,8 +80,7 @@ class TaskPatternCompiler:
         report = self._runtime.validate_binding(pattern, binding, evidence_by_role)
         if not report.passed:
             raise ValueError(
-                "task pattern binding failed domain semantics: "
-                + ", ".join(report.issues)
+                "task pattern binding failed domain semantics: " + ", ".join(report.issues)
             )
         program, concrete_node_roles = _instantiate_program(
             pattern,
@@ -100,9 +99,7 @@ class TaskPatternCompiler:
             materialized.answer_schema,
         )
         evidence = tuple(
-            item
-            for role in pattern.evidence_roles
-            for item in evidence_by_role[role.role_id]
+            item for role in pattern.evidence_roles for item in evidence_by_role[role.role_id]
         )
         difficulty = assess_task_difficulty(
             pattern=pattern,
@@ -180,9 +177,7 @@ def _merge_answer_schema(
     materialized: dict[str, object],
 ) -> dict[str, object]:
     conflicts = sorted(
-        key
-        for key in set(declared) & set(materialized)
-        if declared[key] != materialized[key]
+        key for key in set(declared) & set(materialized) if declared[key] != materialized[key]
     )
     if conflicts:
         raise ValueError(
@@ -236,9 +231,7 @@ def _validate_and_resolve_binding(
             item.evidence_id for item in items if item.evidence_kind not in role.accepted_kinds
         ]
         if invalid_kinds:
-            raise ValueError(
-                f"evidence role kind mismatch for {role.role_id}: {invalid_kinds}"
-            )
+            raise ValueError(f"evidence role kind mismatch for {role.role_id}: {invalid_kinds}")
         invalid_domains = [item.evidence_id for item in items if item.domain != pattern.domain]
         if invalid_domains:
             raise ValueError(
@@ -250,9 +243,7 @@ def _validate_and_resolve_binding(
     if not pattern.allow_shared_evidence and len(all_ids) != len(set(all_ids)):
         raise ValueError("task pattern binding reuses evidence across roles")
     missing_graph = [
-        evidence_id
-        for evidence_id in all_ids
-        if not proof_graph.contains_evidence(evidence_id)
+        evidence_id for evidence_id in all_ids if not proof_graph.contains_evidence(evidence_id)
     ]
     if missing_graph:
         raise ValueError(f"bound evidence is absent from the proof graph: {missing_graph}")

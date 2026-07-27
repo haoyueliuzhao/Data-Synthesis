@@ -49,6 +49,9 @@ trusted-synthesis validate-agents \
   --agent-config config/deepseek_v4_pro_agent_smoke.json \
   --output-dir artifacts/agent_validation/v08_deepseek_smoke \
   --output artifacts/agent_validation/v08_deepseek_smoke_report.json
+trusted-synthesis audit-agent-capacity \
+  --agent-config config/deepseek_v4_pro_agent_v08_capacity.json \
+  --output data/audit/v08_agent_capacity_preflight.json
 trusted-synthesis prepare-training-utility \
   --training-config config/training_utility_mvp.json \
   --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates \
@@ -92,10 +95,12 @@ request before answer generation. See
 [Agent-Centered Quality Validation](docs/agent_centered_quality_validation.md).
 The implementation audit and current validation boundary are recorded in
 [v0.8 Agent Validation Report](docs/v08_agent_validation_report.md).
-The controlled Qwen2.5-7B D1-D5 experiment and its interpretation boundary are specified in
+The controlled D1-D5 experiment and the Qwen3-8B expansion profile are specified in
 [v0.8 Training Utility MVP](docs/v08_training_utility_mvp.md).
 The first real Qwen resource and integration run is recorded in the
 [v0.8 Training Utility MVP Preflight Report](docs/v08_training_utility_mvp_preflight_report.md).
+The Program Skeleton/Execution Trace correction, capacity audit, and current execution boundary
+are summarized in [v0.8 Refinement Report](docs/v08_refinement_report.md).
 The Pattern and Binding boundary is specified in
 [Task Pattern IR and Binding Compiler](docs/task_pattern_ir.md).
 

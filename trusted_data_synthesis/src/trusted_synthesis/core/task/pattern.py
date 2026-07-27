@@ -105,19 +105,13 @@ class TaskPatternSpec(BaseModel):
         for node in self.program_template:
             if node.foreach_evidence_role is not None:
                 if node.foreach_evidence_role not in known_roles:
-                    raise ValueError(
-                        f"foreach role is not declared: {node.foreach_evidence_role}"
-                    )
+                    raise ValueError(f"foreach role is not declared: {node.foreach_evidence_role}")
             for ref in node.input_refs:
                 if ref.kind == PatternInputKind.CURRENT_EVIDENCE:
                     if node.foreach_evidence_role is None:
-                        raise ValueError(
-                            "current_evidence inputs are only valid on foreach nodes"
-                        )
+                        raise ValueError("current_evidence inputs are only valid on foreach nodes")
                     if ref.ref_id != node.foreach_evidence_role:
-                        raise ValueError(
-                            "current_evidence must refer to the node foreach role"
-                        )
+                        raise ValueError("current_evidence must refer to the node foreach role")
                 elif ref.kind == PatternInputKind.EVIDENCE_ROLE:
                     if ref.ref_id not in known_roles:
                         raise ValueError(f"unknown evidence role reference: {ref.ref_id}")
@@ -134,9 +128,7 @@ class TaskPatternSpec(BaseModel):
                     if target is None:
                         raise ValueError(f"operation group reference is not prior: {ref.ref_id}")
                     if target.foreach_evidence_role is None:
-                        raise ValueError(
-                            "operation_group must refer to a foreach program template"
-                        )
+                        raise ValueError("operation_group must refer to a foreach program template")
             seen_nodes[node.node_role_id] = node
         output = seen_nodes.get(self.output_node_role_id)
         if output is None:
@@ -179,4 +171,3 @@ class TaskPatternMaterialization(BaseModel):
     oracle_selection_contract: dict[str, Any] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
     quality_rubric: dict[str, Any] = Field(default_factory=dict)
-

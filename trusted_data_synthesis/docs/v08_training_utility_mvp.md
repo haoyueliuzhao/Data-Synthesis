@@ -13,21 +13,28 @@ evaluation set.
 
 ## Frozen Contract
 
+The original 24-record Qwen2.5 profile remains a plumbing/reproducibility smoke. The current v0.8
+refinement profile is `config/training_utility_v08_qwen3_8b.json`:
+
 | Item | Value |
 | --- | --- |
-| Base model | Qwen/Qwen2.5-7B-Instruct |
-| Model revision | a09a35458c702b33eeacc393d103063234e8bc28 |
+| Base model | Qwen/Qwen3-8B |
+| Model revision | resolved and frozen before an actual run |
 | Training | BF16 LoRA SFT |
-| Train records | 24 per cohort, 8 per domain |
-| Hidden evaluation | 18 tasks, 6 per domain |
+| Train records | 600 per cohort, 200 per domain |
+| Hidden evaluation | 150 tasks, 50 per domain |
 | Context | 8,192 tokens; truncation forbidden |
-| Optimizer budget | 32 steps, batch 1, accumulation 4 |
+| Optimizer budget | 600 steps, batch 1, accumulation 4 |
 | Seed | 20260726 |
 | Retrieval/planning track | resolved / plan-given |
 
-The tokenizer preflight covers 48 deterministic reference and evaluation tasks. Complete sequences
-range from 3,891 to 6,540 tokens; the longest supervised response is 586 tokens. No record is
-truncated.
+The offline D2 reference preflight materialized all 600 training records and all 150 evaluation
+records with 200/200/200 and 50/50/50 domain balance respectively. Training/evaluation task overlap
+is zero. This is a data-contract preflight, not an SFT result.
+
+The historical Qwen2.5 tokenizer preflight covers 48 deterministic reference and evaluation tasks.
+Complete sequences range from 3,891 to 6,540 tokens; the longest supervised response is 586 tokens.
+No record is truncated. Qwen3 token lengths must be recomputed and frozen before training.
 
 ## D1-D5 Construction
 
@@ -47,12 +54,12 @@ the model receives the attempted response and must return the independently acce
 
 Preparation fails closed unless:
 
-- the real-Agent artifacts cover exactly the 30 candidate task IDs;
+- the real-Agent artifacts cover exactly the configured candidate task IDs for every domain;
 - there is exactly one real candidate per candidate task;
-- at least 24 candidates pass the Quality Contract;
-- at least 24 accepted candidates have a Quality Critic prediction;
-- every D1-D5 cohort contains exactly eight Finance, eight Legal, and eight Science records;
-- all 18 evaluation task IDs are disjoint from every training task ID;
+- every D1-D5 source pool can fill its configured per-domain cohort quota;
+- D5 has enough accepted candidates with a Quality Critic prediction;
+- every D1-D5 cohort satisfies the exact configured Finance/Legal/Science balance;
+- every evaluation task ID is disjoint from every training task ID;
 - every data, model, Agent run, Critic dataset, and evaluation identity is content hashed.
 
 ## Evaluation
@@ -76,6 +83,9 @@ Generation is deterministic. The evaluator requires a strict JSON object and ind
 - exact structured answer;
 - exact source citations;
 - exact verification result;
+- required Program-node execution coverage;
+- independently verified operation grounding;
+- admissible concrete tool binding and tool necessity;
 - multi-hop end-to-end correctness;
 - distractor-resistant evidence selection;
 - complete end-to-end correctness.
@@ -93,15 +103,15 @@ secret value.
 export DEEPSEEK_API_KEY=...
 
 trusted-synthesis validate-agents \
-  --agent-config config/deepseek_v4_pro_training_utility_candidates.json \
+  --agent-config config/deepseek_v4_pro_agent_v08_capacity.json \
   --output-dir artifacts/agent_validation/v08_training_utility_candidates
 
 trusted-synthesis audit-training-utility-readiness \
-  --training-config config/training_utility_mvp.json \
+  --training-config config/training_utility_v08_qwen3_8b.json \
   --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates
 
 trusted-synthesis prepare-training-utility \
-  --training-config config/training_utility_mvp.json \
+  --training-config config/training_utility_v08_qwen3_8b.json \
   --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates \
   --output-dir artifacts/training_utility_mvp/pilot/data
 ~~~
@@ -131,7 +141,7 @@ Train each cohort in an isolated process:
 
 ~~~bash
 trusted-synthesis train-training-utility \
-  --training-config config/training_utility_mvp.json \
+  --training-config config/training_utility_v08_qwen3_8b.json \
   --cohort D2_reference_workflow \
   --dataset artifacts/training_utility_mvp/pilot/data/D2_reference_workflow.jsonl \
   --output-dir artifacts/training_utility_mvp/pilot/models/D2_reference_workflow
@@ -143,7 +153,9 @@ resumable: a failed cohort does not erase completed adapters or predictions.
 
 ## Interpretation Boundary
 
-The MVP has one seed, 24 examples per cohort, 18 evaluation tasks, and three task families. A higher
-D5 score is evidence that the end-to-end experiment works and motivates a larger study; it is not
-enough to claim general superiority. A production study needs multiple seeds, larger task-family
-coverage, plan-hidden and retrieval tracks, confidence intervals, and a held-out external benchmark.
+The expansion contract has one seed, 600 examples per cohort, 150 evaluation tasks, and three
+domains. The current repository contains only its D2 reference-data preflight; it does not contain
+trained adapters or utility scores. A higher D5 score would be evidence that the end-to-end
+experiment works and motivates a larger study; it would not be enough to claim general superiority.
+A production study needs multiple seeds, larger task-family coverage, plan-hidden and retrieval
+tracks, confidence intervals, and a held-out external benchmark.

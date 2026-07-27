@@ -33,14 +33,11 @@ class LegalTaskPatternRuntime:
         first = rules[0]
         comparisons = tuple(self._policy.compare(first, item) for item in rules[1:])
         authorities = {
-            item.payload.authority
-            for item in rules
-            if isinstance(item.payload, RuleStatement)
+            item.payload.authority for item in rules if isinstance(item.payload, RuleStatement)
         }
         authority_priority = tuple(
-            str(item) for item in binding.node_parameters.get("result", {}).get(
-                "authority_priority", ()
-            )
+            str(item)
+            for item in binding.node_parameters.get("result", {}).get("authority_priority", ())
         )
         apply_parameters = binding.node_parameters.get("apply", {})
         checks = {
@@ -81,15 +78,9 @@ class LegalTaskPatternRuntime:
                 "subject_ids": sorted({item.subject.subject_id for item in rules}),
                 "predicates": sorted({item.predicate for item in rules}),
                 "temporal_labels": sorted(
-                    {
-                        item.temporal_context.label
-                        for item in rules
-                        if item.temporal_context.label
-                    }
+                    {item.temporal_context.label for item in rules if item.temporal_context.label}
                 ),
-                "source_authorities": sorted(
-                    {item.source.authority.value for item in rules}
-                ),
+                "source_authorities": sorted({item.source.authority.value for item in rules}),
                 "semantic_constraints": {
                     "definition_ids": sorted(
                         {

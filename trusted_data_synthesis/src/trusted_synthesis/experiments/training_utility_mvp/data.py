@@ -5,7 +5,7 @@ import random
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evaluation.critic.dataset import make_quality_critic_dataset
@@ -41,9 +41,9 @@ from .schema import (
 SYSTEM_PROMPT = (
     "You are a proof-carrying evidence agent. Use only the supplied public task and "
     "evidence. Return one JSON object with schema_version, plan_summary, "
-    "selected_evidence_ids, operations, verification_result, and final_answer. "
-    "Do not emit markdown or hidden reasoning. Preserve public plan node IDs and "
-    "parameters when a plan is given."
+    "selected_evidence_ids, execution_trace, verification_result, and final_answer. "
+    "Do not emit markdown or hidden reasoning. Bind concrete executions to public "
+    "plan node IDs and parameters when a plan is given."
 )
 
 
@@ -62,9 +62,7 @@ def load_agent_artifacts(
     )
     dataset = make_quality_critic_dataset(examples)
     if report.critic_dataset_id != dataset.dataset_id:
-        raise ValueError(
-            "agent report and Quality Critic dataset identities do not match"
-        )
+        raise ValueError("agent report and Quality Critic dataset identities do not match")
     return report, dataset
 
 
@@ -81,9 +79,7 @@ def audit_training_utility_readiness(
     pool_examples = tuple(
         item for item in critic_dataset.examples if item.task_id in expected_task_ids
     )
-    real_examples = tuple(
-        item for item in pool_examples if item.candidate_source == "real_agent"
-    )
+    real_examples = tuple(item for item in pool_examples if item.candidate_source == "real_agent")
     accepted = tuple(
         item
         for item in real_examples
@@ -92,13 +88,9 @@ def audit_training_utility_readiness(
     prediction_task_ids = {
         item.task_id for item in report.samples if item.critic_prediction is not None
     }
-    reviewed_accepted = tuple(
-        item for item in accepted if item.task_id in prediction_task_ids
-    )
+    reviewed_accepted = tuple(item for item in accepted if item.task_id in prediction_task_ids)
     counterfactuals = tuple(
-        item
-        for item in pool_examples
-        if item.candidate_source == "typed_counterfactual"
+        item for item in pool_examples if item.candidate_source == "typed_counterfactual"
     )
     representable_real = _representable_example_records(
         real_examples,
@@ -121,9 +113,7 @@ def audit_training_utility_readiness(
             continue
         repairable_task_ids.add(item.task_id)
 
-    d1_counterfactual = round(
-        config.cohort_size * config.d1_counterfactual_fraction
-    )
+    d1_counterfactual = round(config.cohort_size * config.d1_counterfactual_fraction)
     d4_repairs = round(config.cohort_size * config.d4_repair_fraction)
     required = {
         "expected_tasks": config.candidate_tasks_per_domain,
@@ -157,16 +147,13 @@ def audit_training_utility_readiness(
     }
     for domain in ("finance", "legal", "science"):
         domain_counts = {
-            "expected_tasks": sum(
-                item.domain == domain for item in reference_records
-            ),
+            "expected_tasks": sum(item.domain == domain for item in reference_records),
             **{
                 name: sum(item.domain == domain for item in records)
                 for name, records in record_groups.items()
             },
             "repairable_tasks": sum(
-                expected_by_task[task_id].domain == domain
-                for task_id in repairable_task_ids
+                expected_by_task[task_id].domain == domain for task_id in repairable_task_ids
             ),
         }
         observed[domain] = domain_counts
@@ -182,9 +169,7 @@ def audit_training_utility_readiness(
         for requirement, observed_count in checks.items():
             required_count = required[requirement]
             if observed_count < required_count:
-                blockers.append(
-                    f"{domain}:{requirement}={observed_count}<{required_count}"
-                )
+                blockers.append(f"{domain}:{requirement}={observed_count}<{required_count}")
     identity = {
         "config_hash": config.config_hash,
         "source_agent_run_id": report.run_id,
@@ -220,18 +205,14 @@ def build_training_utility_datasets(
 ]:
     readiness = audit_training_utility_readiness(config, report, critic_dataset)
     if readiness.status != "ready":
-        raise ValueError(
-            "training utility readiness blocked: " + "; ".join(readiness.blockers)
-        )
+        raise ValueError("training utility readiness blocked: " + "; ".join(readiness.blockers))
     reference_records, evaluation_records = _reference_and_evaluation_records(config)
     reference_by_task = {item.task_id: item for item in reference_records}
     expected_task_ids = set(reference_by_task)
     pool_examples = tuple(
         item for item in critic_dataset.examples if item.task_id in expected_task_ids
     )
-    real_examples = tuple(
-        item for item in pool_examples if item.candidate_source == "real_agent"
-    )
+    real_examples = tuple(item for item in pool_examples if item.candidate_source == "real_agent")
     if {item.task_id for item in real_examples} != expected_task_ids:
         raise ValueError(
             "real Agent artifacts must cover the exact resolved/plan-given candidate task pool"
@@ -253,9 +234,7 @@ def build_training_utility_datasets(
             f"D3 requires {config.cohort_size} accepted real candidates; "
             f"observed {len(clean_examples)}"
         )
-    reviewed_clean = tuple(
-        item for item in clean_examples if item.task_id in prediction_by_task
-    )
+    reviewed_clean = tuple(item for item in clean_examples if item.task_id in prediction_by_task)
     if len(reviewed_clean) < config.cohort_size:
         raise ValueError(
             f"D5 requires {config.cohort_size} Critic-reviewed accepted candidates; "
@@ -270,8 +249,7 @@ def build_training_utility_datasets(
     )
     selected_clean = _balanced_take(
         tuple(
-            _record_from_example(item, UtilityCohort.CONTRACT_FILTERED)
-            for item in clean_examples
+            _record_from_example(item, UtilityCohort.CONTRACT_FILTERED) for item in clean_examples
         ),
         config.cohort_size,
         config.seed + 3,
@@ -319,8 +297,7 @@ def build_training_utility_datasets(
     for cohort, records in cohorts.items():
         if len(records) != config.cohort_size:
             raise ValueError(
-                f"{cohort.value} has {len(records)} records, "
-                f"expected {config.cohort_size}"
+                f"{cohort.value} has {len(records)} records, expected {config.cohort_size}"
             )
         expected_per_domain = config.cohort_size // 3
         counts = Counter(item.domain for item in records)
@@ -361,8 +338,7 @@ def build_training_utility_datasets(
                 {
                     prediction.model_id
                     for prediction in prediction_by_task.values()
-                    if prediction.example_id
-                    in {item.example_id for item in reviewed_clean}
+                    if prediction.example_id in {item.example_id for item in reviewed_clean}
                 }
             )
         ),
@@ -422,9 +398,7 @@ def write_reference_training_preflight(
         "config_hash": config.config_hash,
         "cohort": UtilityCohort.REFERENCE_WORKFLOW.value,
         "cohort_record_count": len(selected),
-        "cohort_domain_counts": dict(
-            sorted(Counter(item.domain for item in selected).items())
-        ),
+        "cohort_domain_counts": dict(sorted(Counter(item.domain for item in selected).items())),
         "cohort_dataset_hash": canonical_hash(
             tuple(item.record_hash for item in selected),
             prefix="training_utility_cohort_dataset:",
@@ -438,8 +412,7 @@ def write_reference_training_preflight(
             prefix="training_utility_evaluation_dataset:",
         ),
         "training_evaluation_overlap_count": len(
-            {item.task_id for item in selected}
-            & {item.task_id for item in evaluation_records}
+            {item.task_id for item in selected} & {item.task_id for item in evaluation_records}
         ),
     }
     (output_dir / "reference_preflight_manifest.json").write_text(
@@ -479,39 +452,84 @@ def trajectory_to_response(trajectory: Trajectory) -> dict[str, Any]:
         if selected_step is not None
         else tuple(
             dict.fromkeys(
-                evidence_id
-                for step in operation_steps
-                for evidence_id in step.evidence_ids
+                evidence_id for step in operation_steps for evidence_id in step.evidence_ids
             )
         )
     )
     if not selected_evidence_ids:
         raise ValueError("trajectory has no evidence selection lineage")
+    plan_step = next(step for step in trajectory.steps if step.action == ActionType.PLAN)
+    planning_track = plan_step.observation.get(
+        "planning_track",
+        PlanningTrack.PLAN_GIVEN.value,
+    )
+    execution_ids = {
+        step.program_node_id: f"exec_{ordinal:03d}"
+        for ordinal, step in enumerate(operation_steps, start=1)
+        if step.program_node_id is not None
+    }
     verify_step = next(
         (step for step in trajectory.steps if step.action == ActionType.VERIFY),
         None,
     )
+    output_node_id = (
+        verify_step.program_node_id
+        if verify_step is not None
+        else operation_steps[-1].program_node_id
+    )
+    assert output_node_id is not None
     payload = {
-        "schema_version": "agent_response.v1",
+        "schema_version": "agent_response.v2",
         "plan_summary": "Select grounded evidence and execute the typed operation program.",
         "selected_evidence_ids": list(selected_evidence_ids),
-        "operations": [
-            {
-                "node_id": step.program_node_id,
-                "operator_id": step.operator_id,
-                "input_refs": list(step.input_refs),
-                "parameters": step.tool_input.get("parameters", {}),
-                "result": step.observation.get("result", {}),
-                "rationale_summary": step.rationale_summary,
-            }
-            for step in operation_steps
-        ],
+        "execution_trace": {
+            "trace_version": "agent_execution_trace.v1",
+            "steps": [
+                {
+                    "execution_id": execution_ids[cast(str, step.program_node_id)],
+                    "planned_node_id": (
+                        step.program_node_id
+                        if planning_track == PlanningTrack.PLAN_GIVEN.value
+                        else None
+                    ),
+                    "operator_id": step.operator_id,
+                    "tool_name": step.tool_name,
+                    "input_refs": [
+                        _operation_ref_to_execution_ref(ref, execution_ids)
+                        for ref in step.input_refs
+                    ],
+                    "parameters": step.tool_input.get("parameters", {}),
+                    "evidence_ids": list(step.evidence_ids),
+                    "observation": {"result": step.observation.get("result", {})},
+                    "status": step.status.value,
+                    "rationale_summary": step.rationale_summary,
+                }
+                for step in operation_steps
+            ],
+            "output_execution_id": execution_ids[output_node_id],
+        },
         "verification_result": (
             None if verify_step is None else verify_step.observation.get("verified_result")
         ),
         "final_answer": trajectory.final_answer,
     }
+    AgentResponseContract.model_validate(payload)
     return payload
+
+
+def _operation_ref_to_execution_ref(
+    ref: str,
+    execution_ids: dict[str, str],
+) -> str:
+    if not ref.startswith("operation:"):
+        return ref
+    node_id, separator, selector = ref.removeprefix("operation:").partition("#")
+    try:
+        execution_id = execution_ids[node_id]
+    except KeyError as exc:
+        raise ValueError(f"unresolved operation ref in trajectory: {ref}") from exc
+    suffix = f"#{selector}" if separator else ""
+    return f"execution:{execution_id}{suffix}"
 
 
 def _record_from_example(
@@ -555,9 +573,11 @@ def _make_record(
         "public_task": task,
         "evidence_corpus": evidence,
         "output_contract": {
-            "schema_version": "agent_response.v1",
+            "schema_version": "agent_response.v2",
             "selected_evidence_ids": "array of supplied evidence IDs",
-            "operations": "topologically ordered typed operation array",
+            "execution_trace": (
+                "topologically ordered concrete executions with evidence and observations"
+            ),
             "verification_result": "required when requested by the task",
             "final_answer": "structured result with grounded citations",
         },
@@ -601,9 +621,7 @@ def _d1_random_records(
         UtilityCohort.RANDOM_SYNTHETIC,
     )
     negative = _representable_example_records(
-        tuple(
-            item for item in examples if item.candidate_source == "typed_counterfactual"
-        ),
+        tuple(item for item in examples if item.candidate_source == "typed_counterfactual"),
         UtilityCohort.RANDOM_SYNTHETIC,
     )
     negative_count = round(config.cohort_size * config.d1_counterfactual_fraction)
@@ -651,9 +669,7 @@ def _d4_counterfactual_calibrated_records(
             if negative.task_id in used_tasks:
                 continue
             clean = clean_by_task[negative.task_id]
-            negative_trajectory = Trajectory.model_validate(
-                negative.critic_input["trajectory"]
-            )
+            negative_trajectory = Trajectory.model_validate(negative.critic_input["trajectory"])
             clean_trajectory = Trajectory.model_validate(clean.critic_input["trajectory"])
             try:
                 candidate_attempt = trajectory_to_response(negative_trajectory)
@@ -708,8 +724,7 @@ def _reference_and_evaluation_records(
             ),
             task=task.public.model_dump(mode="json", exclude_none=True),
             evidence=[
-                item.model_dump(mode="json", exclude_none=True)
-                for item in case.corpus.evidence
+                item.model_dump(mode="json", exclude_none=True) for item in case.corpus.evidence
             ],
             target=_reference_response(task, case.bundle, case.registry),
             source_kind="deterministic_reference_workflow",
@@ -721,27 +736,40 @@ def _reference_and_evaluation_records(
 
 
 def _reference_response(task, bundle, registry) -> dict[str, Any]:
-    """Render the hidden deterministic program as the public Agent response contract."""
+    """Render the deterministic program as a concrete Agent execution trace."""
 
     evidence_by_id = {item.evidence_id: item for item in bundle.evidence}
     execution = TaskProgramExecutor(registry).execute(
         task.oracle.task_program,
         evidence_by_id,
     )
-    operations = []
+    execution_ids = {
+        node.node_id: f"exec_{ordinal:03d}"
+        for ordinal, node in enumerate(task.oracle.task_program.nodes, start=1)
+    }
+    execution_steps = []
     for node in task.oracle.task_program.nodes:
         input_refs = []
         for ref in node.input_refs:
             prefix = "evidence:" if ref.kind == InputRefKind.EVIDENCE else "operation:"
             selector = f"#{ref.selector}" if ref.selector else ""
             input_refs.append(f"{prefix}{ref.ref_id}{selector}")
-        operations.append(
+        definition = registry.require(node.operator_id)
+        execution_steps.append(
             {
-                "node_id": node.node_id,
+                "execution_id": execution_ids[node.node_id],
+                "planned_node_id": node.node_id,
                 "operator_id": node.operator_id,
-                "input_refs": input_refs,
+                "tool_name": definition.tool_capability,
+                "input_refs": [
+                    _operation_ref_to_execution_ref(ref, execution_ids) for ref in input_refs
+                ],
                 "parameters": node.parameters,
-                "result": execution.node_outputs[node.node_id],
+                "evidence_ids": [
+                    ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
+                ],
+                "observation": {"result": execution.node_outputs[node.node_id]},
+                "status": "succeeded",
                 "rationale_summary": "Execute the pinned typed operation node.",
             }
         )
@@ -760,10 +788,14 @@ def _reference_response(task, bundle, registry) -> dict[str, Any]:
         for evidence_id in task.oracle.gold_evidence_ids
     ]
     response = {
-        "schema_version": "agent_response.v1",
+        "schema_version": "agent_response.v2",
         "plan_summary": "Select grounded evidence and execute the typed operation program.",
         "selected_evidence_ids": list(task.oracle.gold_evidence_ids),
-        "operations": operations,
+        "execution_trace": {
+            "trace_version": "agent_execution_trace.v1",
+            "steps": execution_steps,
+            "output_execution_id": execution_ids[task.oracle.task_program.output_node_id],
+        },
         "verification_result": execution.final_output,
         "final_answer": {
             "result": CandidateAnswerNormalizer().normalize_oracle(
@@ -849,8 +881,7 @@ def _cohort_manifest(
 def _write_jsonl(path: Path, records: Iterable[SFTRecord]) -> None:
     path.write_text(
         "".join(
-            json.dumps(item.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
-            + "\n"
+            json.dumps(item.model_dump(mode="json"), ensure_ascii=False, sort_keys=True) + "\n"
             for item in records
         ),
         encoding="utf-8",

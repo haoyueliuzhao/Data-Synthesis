@@ -31,8 +31,8 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v1"
-LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v2"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v2"
+LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v3"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
 
 
@@ -244,35 +244,53 @@ def _validate_agent_response_contract(
     unknown_selected = set(response.selected_evidence_ids) - retrieved_ids
     if unknown_selected:
         raise ValueError(f"selected evidence was not retrieved: {sorted(unknown_selected)}")
-    for operation in response.operations:
-        definition = registry.require(operation.operator_id)
-        registry.validate_output(definition, operation.result)
-        for ref in operation.input_refs:
-            if not ref.startswith("evidence:"):
+    executions = response.execution_trace.steps
+    for execution in executions:
+        definition = registry.require(execution.operator_id)
+        registry.validate_output(definition, execution.observation["result"])
+        unknown_lineage = set(execution.evidence_ids) - retrieved_ids
+        if unknown_lineage:
+            raise ValueError(
+                "execution lineage contains evidence that was not retrieved: "
+                f"{sorted(unknown_lineage)}"
+            )
+        for ref in execution.input_refs:
+            if ref.startswith("execution:"):
                 continue
             evidence_id = _evidence_id_from_ref(ref)
             if evidence_id not in retrieved_ids:
                 raise ValueError(
-                    "operation evidence ref does not resolve to retrieved evidence: "
+                    "execution evidence ref does not resolve to retrieved evidence: "
                     f"{ref}; use evidence:<full evidence_id>, for example "
                     "evidence:evidence:domain:item@version"
                 )
     if TaskRequirement.VERIFY_RESULT in task.requirements and response.verification_result is None:
         raise ValueError("verification_result is required by the public task")
     if task.planning_track != PlanningTrack.PLAN_GIVEN:
+        if any(item.planned_node_id is not None for item in executions):
+            raise ValueError("plan-hidden executions cannot claim hidden planned node IDs")
         return
     if task.program_skeleton is None:
         raise ValueError("plan_given task is missing its public program skeleton")
     expected = task.program_skeleton.nodes
-    if len(response.operations) != len(expected):
-        raise ValueError("agent operation count does not match the public program skeleton")
-    for operation, node in zip(response.operations, expected, strict=True):
-        if operation.node_id != node.public_node_id:
-            raise ValueError("agent node IDs must preserve the public plan")
-        if operation.operator_id != node.operator_id:
-            raise ValueError("agent operators must preserve the public plan")
-        if operation.parameters != node.parameters:
-            raise ValueError("agent parameters must preserve the public plan")
+    if len(executions) != len(expected):
+        raise ValueError("agent execution count does not cover the public program skeleton")
+    for execution, node in zip(executions, expected, strict=True):
+        if execution.planned_node_id != node.public_node_id:
+            raise ValueError("each concrete execution must bind to its public plan node")
+        if execution.execution_id == node.public_node_id:
+            raise ValueError("execution IDs must be distinct from public plan node IDs")
+        if execution.operator_id != node.operator_id:
+            raise ValueError("agent executions must preserve public plan operators")
+        if execution.parameters != node.parameters:
+            raise ValueError("agent executions must preserve public plan parameters")
+    output_execution = next(
+        item
+        for item in executions
+        if item.execution_id == response.execution_trace.output_execution_id
+    )
+    if output_execution.planned_node_id != task.program_skeleton.output_node_id:
+        raise ValueError("execution trace output must bind to the public output node")
 
 
 def _build_search_prompt(task: TaskPublicSpec) -> tuple[str, str]:
@@ -308,8 +326,7 @@ def _build_search_prompt(task: TaskPublicSpec) -> tuple[str, str]:
         "corpus boundary. Do not answer the task in this phase."
     )
     prompt = (
-        f"{instructions}\n\n"
-        f"PAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+        f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_search_prompt_manifest:")
 
@@ -336,9 +353,7 @@ def _build_prompt(
     response_schema = AgentResponseContract.model_json_schema()
     manifest = {
         "prompt_version": LLM_AGENT_PROMPT_VERSION,
-        "response_schema_hash": canonical_hash(
-            response_schema, prefix="agent_response_schema:"
-        ),
+        "response_schema_hash": canonical_hash(response_schema, prefix="agent_response_schema:"),
         "operation_catalog_hash": canonical_hash(
             operation_catalog, prefix="agent_operation_catalog:"
         ),
@@ -350,27 +365,41 @@ def _build_prompt(
             item.model_dump(mode="json", exclude_none=True) for item in evidence
         ],
         "operation_catalog": operation_catalog,
+        "execution_contract": {
+            "program_skeleton": (
+                "a non-executed specification; never copy its node records as results"
+            ),
+            "execution_trace": (
+                "concrete tool calls with bound evidence, observations, and outputs"
+            ),
+            "input_ref_kinds": (
+                "evidence:<full evidence_id>",
+                "execution:<earlier execution_id>",
+            ),
+        },
         "response_json_schema": response_schema,
     }
     instructions = (
         "You are an evidence-grounded agent candidate. Use only the public task and "
         "retrieved evidence below. Never infer hidden gold IDs or an oracle answer. "
-        "Select only evidence needed for the answer. Return exactly one JSON object "
-        "that validates against response_json_schema. Every operation result and the "
-        "final answer must be your own computed decision; no later component will "
-        "repair it. Input refs must use evidence:<full evidence_id> or "
-        "operation:<earlier node_id>, with an optional #selector suffix. For "
-        "plan_given, preserve public node IDs, operators, input ordering, parameters, "
-        "and dependencies. Evidence input refs have a kind prefix in addition to the "
-        "full evidence ID: if an ID is evidence:finance:item@v1, write the input ref "
-        "as evidence:evidence:finance:item@v1. For plan_hidden, construct a valid "
-        "topological operation plan from the catalog. Copy citation evidence_id, source_id, and "
-        "source_locator exactly from selected evidence. Include verification_result "
-        "when verify_result is required. Do not include commentary outside JSON."
+        "Return exactly one JSON object matching response_json_schema. A public "
+        "program_skeleton is a plan, not an execution result: do not copy its inputs, "
+        "dependencies, or output schema into execution_trace. Execute each operation "
+        "against concrete retrieved evidence or an earlier execution result. Give every "
+        "execution a fresh execution_id, the actual catalog tool_name, concrete "
+        "input_refs, direct evidence_ids, status, and a structured observation.result. "
+        "Evidence refs use evidence:<full evidence_id>; when the full ID is "
+        "evidence:finance:item@v1, write evidence:evidence:finance:item@v1. Execution "
+        "refs use execution:<earlier execution_id> with an optional #selector. For "
+        "plan_given, bind planned_node_id to the corresponding public node while keeping "
+        "execution_id distinct; preserve operator order and parameters. For plan_hidden, "
+        "planned_node_id must be null and the trace must be topologically valid. Set "
+        "output_execution_id to the execution producing the answer. Select only evidence "
+        "used by the execution, copy citation fields exactly, include verification_result "
+        "when required, and include no commentary outside JSON."
     )
     prompt = (
-        f"{instructions}\n\n"
-        f"PAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+        f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_prompt_manifest:")
 
@@ -422,6 +451,10 @@ def _normalize_trajectory(
 ) -> Trajectory:
     selected_ids = tuple(dict.fromkeys(response.selected_evidence_ids))
     retrieved_ids = tuple(item.evidence_id for item in retrieved)
+    executions = response.execution_trace.steps
+    execution_node_ids = {
+        item.execution_id: item.planned_node_id or item.execution_id for item in executions
+    }
     steps = [
         TrajectoryStep(
             step_index=1,
@@ -431,6 +464,7 @@ def _normalize_trajectory(
                 "planning_track": task.planning_track.value,
                 "search_plan_summary": search_plan_summary,
                 "model_plan_summary": response.plan_summary,
+                "execution_trace_version": response.execution_trace.trace_version,
             },
             rationale_summary=response.plan_summary,
             status=StepStatus.SUCCEEDED,
@@ -454,32 +488,38 @@ def _normalize_trajectory(
             status=StepStatus.SUCCEEDED,
         ),
     ]
-    for operation in response.operations:
-        definition = registry.require(operation.operator_id)
-        direct_evidence_ids = tuple(
-            _evidence_id_from_ref(ref)
-            for ref in operation.input_refs
-            if ref.startswith("evidence:")
+    for execution in executions:
+        definition = registry.require(execution.operator_id)
+        node_id = execution_node_ids[execution.execution_id]
+        input_refs = tuple(
+            _execution_ref_to_program_ref(ref, execution_node_ids) for ref in execution.input_refs
         )
         steps.append(
             TrajectoryStep(
                 step_index=len(steps) + 1,
                 action=ActionType(definition.action_type),
-                tool_name=definition.tool_capability,
-                tool_input={"parameters": operation.parameters},
-                observation={"result": operation.result},
-                evidence_ids=direct_evidence_ids,
-                program_node_id=operation.node_id,
-                operator_id=operation.operator_id,
-                input_refs=operation.input_refs,
-                output_ref=f"operation:{operation.node_id}",
-                rationale_summary=operation.rationale_summary,
-                status=StepStatus.SUCCEEDED,
+                tool_name=execution.tool_name,
+                tool_input={
+                    "execution_id": execution.execution_id,
+                    "parameters": execution.parameters,
+                },
+                observation={
+                    **execution.observation,
+                    "execution_id": execution.execution_id,
+                },
+                evidence_ids=execution.evidence_ids,
+                program_node_id=node_id,
+                operator_id=execution.operator_id,
+                input_refs=input_refs,
+                output_ref=f"operation:{node_id}",
+                rationale_summary=execution.rationale_summary,
+                status=StepStatus(execution.status),
             )
         )
+    output_execution_id = response.execution_trace.output_execution_id
+    output_node_id = execution_node_ids[output_execution_id]
+    output_ref = f"operation:{output_node_id}"
     if TaskRequirement.VERIFY_RESULT in task.requirements:
-        output_node_id = response.operations[-1].node_id
-        output_ref = f"operation:{output_node_id}"
         steps.append(
             TrajectoryStep(
                 step_index=len(steps) + 1,
@@ -491,7 +531,7 @@ def _normalize_trajectory(
                 evidence_ids=selected_ids,
                 program_node_id=output_node_id,
                 input_refs=(output_ref,),
-                rationale_summary="Verify the model-reported final operation result.",
+                rationale_summary="Verify the model-reported final execution result.",
                 status=StepStatus.SUCCEEDED,
             )
         )
@@ -517,9 +557,11 @@ def _normalize_trajectory(
         workflow_kind=WorkflowKind.CANDIDATE,
         steps=tuple(steps),
         program_execution={
-            "source": "model_reported",
+            "source": "model_reported_execution_trace",
+            "trace_version": response.execution_trace.trace_version,
             "operation_outputs": {
-                item.node_id: item.result for item in response.operations
+                execution_node_ids[item.execution_id]: item.observation["result"]
+                for item in executions
             },
         },
         final_answer=response.final_answer,
@@ -529,3 +571,15 @@ def _normalize_trajectory(
 
 def _evidence_id_from_ref(ref: str) -> str:
     return ref.removeprefix("evidence:").split("#", 1)[0]
+
+
+def _execution_ref_to_program_ref(
+    ref: str,
+    execution_node_ids: dict[str, str],
+) -> str:
+    if not ref.startswith("execution:"):
+        return ref
+    execution_id, separator, selector = ref.removeprefix("execution:").partition("#")
+    node_id = execution_node_ids[execution_id]
+    suffix = f"#{selector}" if separator else ""
+    return f"operation:{node_id}{suffix}"

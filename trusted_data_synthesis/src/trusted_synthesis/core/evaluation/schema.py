@@ -31,6 +31,9 @@ class DiagnosticQualityVector(BaseModel):
     operation_replay: float = Field(ge=0, le=1)
     citation_coverage: float = Field(ge=0, le=1)
     workflow_completeness: float = Field(ge=0, le=1)
+    execution_coverage: float = Field(default=1.0, ge=0, le=1)
+    operation_grounding: float = Field(default=1.0, ge=0, le=1)
+    tool_necessity: float = Field(default=1.0, ge=0, le=1)
     program_depth: int = Field(ge=1)
 
 

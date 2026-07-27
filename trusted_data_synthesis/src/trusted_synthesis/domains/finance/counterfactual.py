@@ -16,8 +16,7 @@ class _FinanceDistractorSelector:
 
     def __call__(self, target: EvidenceItem, candidate: EvidenceItem) -> bool:
         return (
-            candidate.domain_context.get("synthetic_distractor_kind")
-            == self.distractor_kind
+            candidate.domain_context.get("synthetic_distractor_kind") == self.distractor_kind
             and candidate.subject.subject_id == target.subject.subject_id
             and candidate.predicate == target.predicate
         )

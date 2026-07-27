@@ -22,14 +22,16 @@ from trusted_synthesis.runtime.agent.schema import (
     ModelCallTelemetry,
 )
 
-AGENT_VALIDATION_VERSION = "agent_validation.v1"
+AGENT_VALIDATION_VERSION = "agent_validation.v2"
+AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v1"
 
 
 class AgentValidationConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     model: AgentModelConfig
-    tasks_per_domain: int = Field(default=1, ge=1, le=20)
+    tasks_per_domain: int = Field(default=1, ge=1, le=2000)
+    domain_task_targets: dict[str, int] = Field(default_factory=dict)
     retrieval_tracks: tuple[RetrievalTrack, ...] = (
         RetrievalTrack.RESOLVED,
         RetrievalTrack.SEMI_OPEN,
@@ -40,7 +42,7 @@ class AgentValidationConfig(BaseModel):
         PlanningTrack.PLAN_HIDDEN,
     )
     run_model_critic: bool = False
-    model_critic_max_examples: int = Field(default=24, ge=1, le=500)
+    model_critic_max_examples: int = Field(default=24, ge=1, le=5000)
     generate_counterfactuals: bool = True
     selection_target: int = Field(default=10, ge=1)
     training_base_model: str = "Qwen2.5-7B"
@@ -48,6 +50,15 @@ class AgentValidationConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_tracks(self) -> AgentValidationConfig:
+        if self.domain_task_targets:
+            expected_domains = {"finance", "legal", "science"}
+            if set(self.domain_task_targets) != expected_domains:
+                raise ValueError("domain_task_targets must define finance, legal, and science")
+            if any(
+                not isinstance(value, int) or value < 1 or value > 5000
+                for value in self.domain_task_targets.values()
+            ):
+                raise ValueError("domain task targets must be integers from 1 to 5000")
         if not self.retrieval_tracks or not self.planning_tracks:
             raise ValueError("agent validation requires retrieval and planning tracks")
         if len(set(self.retrieval_tracks)) != len(self.retrieval_tracks):
@@ -56,6 +67,13 @@ class AgentValidationConfig(BaseModel):
             raise ValueError("planning tracks must be unique")
         return self
 
+    def task_target(self, domain: str) -> int:
+        return self.domain_task_targets.get(domain, self.tasks_per_domain)
+
+    @property
+    def resolved_domain_task_targets(self) -> dict[str, int]:
+        return {domain: self.task_target(domain) for domain in ("finance", "legal", "science")}
+
     @classmethod
     def from_json(cls, path: str | Path) -> AgentValidationConfig:
         return cls.model_validate(json.loads(Path(path).read_text(encoding="utf-8")))
@@ -63,6 +81,24 @@ class AgentValidationConfig(BaseModel):
     @property
     def config_hash(self) -> str:
         return canonical_hash(self, prefix="agent_validation_config:")
+
+
+class AgentValidationCapacityReport(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    config_hash: str
+    target_task_counts: dict[str, int]
+    materialized_task_counts: dict[str, int]
+    unique_task_counts: dict[str, int]
+    retrieval_track_count: int = Field(ge=1)
+    planning_track_count: int = Field(ge=1)
+    planned_candidate_count: int = Field(ge=1)
+    planned_agent_api_call_floor: int = Field(ge=1)
+    planned_critic_api_call_ceiling: int = Field(ge=0)
+    fixture_manifest_hash: str
+    blockers: tuple[str, ...] = ()
+    status: str
+    version: str = AGENT_CAPACITY_AUDIT_VERSION
 
 
 class AgentValidationSample(BaseModel):
@@ -95,6 +131,9 @@ class AgentValidationReport(BaseModel):
     config_hash: str
     model_config_hash: str
     requested_model: str
+    requested_domain_task_counts: dict[str, int] = Field(default_factory=dict)
+    requested_domain_candidate_counts: dict[str, int] = Field(default_factory=dict)
+    domain_completion_rates: dict[str, float] = Field(default_factory=dict)
     attempted_count: int = Field(ge=0)
     api_success_count: int = Field(ge=0)
     normalized_trajectory_count: int = Field(ge=0)

@@ -6,9 +6,10 @@ from trusted_synthesis.runtime.agent.client import (
 )
 from trusted_synthesis.runtime.agent.llm_agent import LLMAgentSolver
 from trusted_synthesis.runtime.agent.schema import (
+    AgentExecutionStep,
+    AgentExecutionTrace,
     AgentGenerationAudit,
     AgentModelConfig,
-    AgentOperationProposal,
     AgentResponseContract,
     AgentSearchQuery,
     AgentSearchResponseContract,
@@ -17,9 +18,10 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 
 __all__ = [
+    "AgentExecutionStep",
+    "AgentExecutionTrace",
     "AgentGenerationAudit",
     "AgentModelConfig",
-    "AgentOperationProposal",
     "AgentResponseContract",
     "AgentSearchQuery",
     "AgentSearchResponseContract",

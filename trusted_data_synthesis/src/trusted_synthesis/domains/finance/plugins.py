@@ -35,9 +35,7 @@ def finance_plugin_set(
         operation_registry_manifest_hash=canonical_hash(
             registry.manifest(), prefix="operation_manifest:"
         ),
-        counterfactual_operator_manifest_hash=(
-            finance_counterfactual_registry().manifest_hash
-        ),
+        counterfactual_operator_manifest_hash=(finance_counterfactual_registry().manifest_hash),
         versions={
             "source_grounding": source_grounding_verifier.verifier_version,
             "plugin_set": "1.3.0",

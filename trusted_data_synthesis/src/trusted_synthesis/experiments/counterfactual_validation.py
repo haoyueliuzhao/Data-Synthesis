@@ -70,8 +70,8 @@ def run_counterfactual_validation(
         *build_finance_counterfactual_cases(count=tasks_per_domain),
         *build_pattern_validation_cases(per_domain=tasks_per_domain),
     )
-    grouped: dict[str, list[tuple[CounterfactualContext, QualityContractRuntime]]] = (
-        defaultdict(list)
+    grouped: dict[str, list[tuple[CounterfactualContext, QualityContractRuntime]]] = defaultdict(
+        list
     )
     registries = {}
     for case in cases:
@@ -81,9 +81,7 @@ def run_counterfactual_validation(
 
     reports = {}
     for domain, items in sorted(grouped.items()):
-        runtime_by_task = {
-            context.task.task_id: runtime for context, runtime in items
-        }
+        runtime_by_task = {context.task.task_id: runtime for context, runtime in items}
 
         def evaluate_counterfactual(
             context: CounterfactualContext,
@@ -105,24 +103,18 @@ def run_counterfactual_validation(
         )
         reports[domain] = report
     failures = tuple(
-        f"{domain}:{failure}"
-        for domain, report in reports.items()
-        for failure in report.failures
+        f"{domain}:{failure}" for domain, report in reports.items() for failure in report.failures
     )
     identity = {
         "suite_version": COUNTERFACTUAL_VALIDATION_SUITE_VERSION,
         "tasks_per_domain": tasks_per_domain,
-        "calibration_ids": {
-            domain: report.calibration_id for domain, report in reports.items()
-        },
+        "calibration_ids": {domain: report.calibration_id for domain, report in reports.items()},
     }
     return CounterfactualValidationSuiteReport(
         suite_id=canonical_hash(identity, prefix="counterfactual_validation_suite:"),
         suite_version=COUNTERFACTUAL_VALIDATION_SUITE_VERSION,
         tasks_per_domain=tasks_per_domain,
-        domain_task_counts={
-            domain: len(items) for domain, items in sorted(grouped.items())
-        },
+        domain_task_counts={domain: len(items) for domain, items in sorted(grouped.items())},
         source_sample_count=sum(item.source_sample_count for item in reports.values()),
         generated_case_count=sum(item.generated_case_count for item in reports.values()),
         mutation_validity_rate=_mean(reports, "mutation_validity_rate"),

@@ -93,8 +93,7 @@ class CrossDomainContractSuiteResult(BaseModel):
             and self.mutation_count > 0
             and self.quality_contract_count == self.task_count
             and self.proof_certificate_count == self.task_count
-            and self.contract_evaluation_count
-            == self.clean_candidate_count + self.mutation_count
+            and self.contract_evaluation_count == self.clean_candidate_count + self.mutation_count
             and self.reference_pass_rate == 1
             and self.clean_candidate_pass_rate == 1
             and self.mutation_rejection_rate == 1
@@ -115,8 +114,7 @@ class CrossDomainContractSuiteResult(BaseModel):
             and self.counterfactual_clause_coverage_rate > 0.95
             and self.counterfactual_operator_coverage_rate > 0.95
             and bool(self.counterfactual_operator_manifest_hashes)
-            and len(self.counterfactual_calibration_ids)
-            == self.counterfactual_calibration_count
+            and len(self.counterfactual_calibration_ids) == self.counterfactual_calibration_count
         )
 
     @property

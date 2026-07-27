@@ -64,9 +64,11 @@ evidence ID:  evidence:finance:item@v1
 operation ref: evidence:evidence:finance:item@v1
 ```
 
-The Agent prompt is now version 2, operation refs are checked against retrieved evidence before
-trajectory normalization, and a failed ref receives contract-repair feedback. This fix requires a
-new DeepSeek run; historical prompt-v1 artifacts are not reinterpreted as passing candidates.
+At the time of this historical preflight the Agent prompt was version 2. It checked operation refs
+before trajectory normalization and returned contract-repair feedback. Prompt v3 now supersedes that
+contract by separating the non-executed Program Skeleton from `agent_execution_trace.v1`, requiring
+fresh execution identities, direct Evidence grounding, and concrete tool observations. Historical
+prompt-v1/v2 artifacts are not reinterpreted as passing candidates.
 
 ## D1-D5 Readiness Gate
 

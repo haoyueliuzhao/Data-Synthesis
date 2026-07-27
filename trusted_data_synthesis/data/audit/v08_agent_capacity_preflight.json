@@ -1,0 +1,27 @@
+{
+  "blockers": [],
+  "config_hash": "agent_validation_config:8eef5e9bd248ea0972ba3145e87fc189b692f719c0097e22ba18550d890b226e",
+  "fixture_manifest_hash": "agent_capacity_fixtures:6fb77e7156bce956a148684245ff0fb399d5eed717da408c344504f50ac93679",
+  "materialized_task_counts": {
+    "finance": 1000,
+    "legal": 200,
+    "science": 200
+  },
+  "planned_agent_api_call_floor": 1400,
+  "planned_candidate_count": 1400,
+  "planned_critic_api_call_ceiling": 600,
+  "planning_track_count": 1,
+  "retrieval_track_count": 1,
+  "status": "ready",
+  "target_task_counts": {
+    "finance": 1000,
+    "legal": 200,
+    "science": 200
+  },
+  "unique_task_counts": {
+    "finance": 1000,
+    "legal": 200,
+    "science": 200
+  },
+  "version": "agent_capacity_audit.v1"
+}

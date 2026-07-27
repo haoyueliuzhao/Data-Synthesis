@@ -41,11 +41,7 @@ class InMemoryEvidenceToolRuntime:
             if (not subjects or item.subject.subject_id in subjects)
             and (not predicates or item.predicate in predicates)
             and (not temporal_labels or _time_label(item) in temporal_labels)
-            and (
-                not aliases
-                or item.subject.subject_id in aliases
-                or item.subject.name in aliases
-            )
+            and (not aliases or item.subject.subject_id in aliases or item.subject.name in aliases)
             and (not authorities or item.source.authority.value in authorities)
             and (
                 not apply_semantic_filters
@@ -69,10 +65,7 @@ class InMemoryEvidenceToolRuntime:
                 or item.source.authority.value in semantic_authorities
             )
             and (partial_predicate is None or item.predicate == partial_predicate)
-            and (
-                partial_definition is None
-                or item.definition.definition_id == partial_definition
-            )
+            and (partial_definition is None or item.definition.definition_id == partial_definition)
         )
 
 

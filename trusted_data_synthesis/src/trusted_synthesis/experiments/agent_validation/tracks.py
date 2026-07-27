@@ -31,9 +31,7 @@ def materialize_track_variant(
             "retrieval_track": retrieval_track,
             "planning_track": planning_track,
             "program_skeleton": (
-                task.public.program_skeleton
-                if planning_track == PlanningTrack.PLAN_GIVEN
-                else None
+                task.public.program_skeleton if planning_track == PlanningTrack.PLAN_GIVEN else None
             ),
             "retrieval_scope": scope,
             "metadata": {
@@ -53,9 +51,7 @@ def _retrieval_scope(
     track: RetrievalTrack,
 ) -> dict[str, object]:
     gold_ids = set(task.oracle.gold_evidence_ids)
-    target_evidence = tuple(
-        item for item in corpus.evidence if item.evidence_id in gold_ids
-    )
+    target_evidence = tuple(item for item in corpus.evidence if item.evidence_id in gold_ids)
     if not target_evidence:
         raise ValueError("track materialization requires oracle evidence in the corpus")
     if track == RetrievalTrack.RESOLVED:
@@ -69,9 +65,7 @@ def _retrieval_scope(
                     if item.temporal_context.label
                 }
             ),
-            "source_authorities": sorted(
-                {item.source.authority.value for item in target_evidence}
-            ),
+            "source_authorities": sorted({item.source.authority.value for item in target_evidence}),
             "semantic_constraints": {
                 "definition_ids": sorted(
                     {

@@ -93,9 +93,7 @@ def _finance_case(index: int) -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            counterfactual_operator_manifest_hash=(
-                counterfactual_registry.manifest_hash
-            ),
+            counterfactual_operator_manifest_hash=(counterfactual_registry.manifest_hash),
             versions={"fixture": "1.0.0"},
         ),
         counterfactual_registry=counterfactual_registry,

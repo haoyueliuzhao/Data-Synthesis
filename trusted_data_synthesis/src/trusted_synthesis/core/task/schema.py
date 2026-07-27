@@ -133,9 +133,7 @@ class TaskPublicSpec(BaseModel):
         }
         leaked_keys = _find_keys(public_contract) & _ORACLE_ONLY_PUBLIC_KEYS
         if leaked_keys:
-            raise ValueError(
-                f"public contract contains oracle-only keys: {sorted(leaked_keys)}"
-            )
+            raise ValueError(f"public contract contains oracle-only keys: {sorted(leaked_keys)}")
         return self
 
 

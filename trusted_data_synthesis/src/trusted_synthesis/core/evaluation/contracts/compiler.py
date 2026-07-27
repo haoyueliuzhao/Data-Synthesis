@@ -27,7 +27,7 @@ from trusted_synthesis.core.plugins import DomainQualityClauseProviderProtocol
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.hashing import canonical_hash
 
-QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v3"
+QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v4"
 
 _COUNTERFACTUAL_OPERATOR_VERSION = "1.0.0"
 
@@ -345,9 +345,7 @@ class QualityContractCompiler:
                 for ref in node.input_refs
                 if ref.ref_id in evidence_clause_ids
             )
-            operation_dependencies = tuple(
-                program_clause_ids[item] for item in node.dependencies
-            )
+            operation_dependencies = tuple(program_clause_ids[item] for item in node.dependencies)
             clause = add(
                 make_quality_clause(
                     task_id=task.task_id,
@@ -393,6 +391,9 @@ class QualityContractCompiler:
             prior_program_clauses.append(clause.clause_id)
 
         for check_id in (
+            "execution_coverage",
+            "operation_grounding",
+            "tool_necessity",
             "program_node_alignment",
             "all_calculations_correct",
             "verification_step_binding",
@@ -542,9 +543,7 @@ class QualityContractCompiler:
             for gate_id in gate_members
         )
         provider_id = self._domain_provider.provider_id if self._domain_provider else None
-        provider_version = (
-            self._domain_provider.provider_version if self._domain_provider else None
-        )
+        provider_version = self._domain_provider.provider_version if self._domain_provider else None
         return make_quality_contract(
             task_id=task.task_id,
             compiler_version=QUALITY_CONTRACT_COMPILER_VERSION,

@@ -150,9 +150,7 @@ def _legal_case(index: int | None = None) -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            counterfactual_operator_manifest_hash=(
-                counterfactual_registry.manifest_hash
-            ),
+            counterfactual_operator_manifest_hash=(counterfactual_registry.manifest_hash),
             versions={"fixture": "1.3.0"},
         ),
         counterfactual_registry=counterfactual_registry,
@@ -209,9 +207,7 @@ def _science_case(index: int | None = None) -> ContractCase:
             operation_registry_manifest_hash=canonical_hash(
                 registry.manifest(), prefix="operation_manifest:"
             ),
-            counterfactual_operator_manifest_hash=(
-                counterfactual_registry.manifest_hash
-            ),
+            counterfactual_operator_manifest_hash=(counterfactual_registry.manifest_hash),
             versions={"fixture": "1.3.0"},
         ),
         counterfactual_registry=counterfactual_registry,

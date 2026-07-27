@@ -42,6 +42,7 @@ from trusted_synthesis.core.trajectory.candidate_verifier import (
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.agent_validation.schema import (
     AGENT_VALIDATION_VERSION,
+    AgentValidationCapacityReport,
     AgentValidationConfig,
     AgentValidationReport,
     AgentValidationSample,
@@ -73,14 +74,84 @@ class AgentValidationArtifacts:
     critic_dataset: QualityCriticDataset
 
 
+def _build_validation_cases(
+    config: AgentValidationConfig,
+) -> tuple[ContractCase, ...]:
+    targets = config.resolved_domain_task_targets
+    non_finance = build_pattern_validation_cases(
+        per_domain=max(targets["legal"], targets["science"])
+    )
+    legal = tuple(item for item in non_finance if item.domain == "legal")[: targets["legal"]]
+    science = tuple(item for item in non_finance if item.domain == "science")[: targets["science"]]
+    return (
+        *build_finance_counterfactual_cases(count=targets["finance"]),
+        *legal,
+        *science,
+    )
+
+
+def audit_agent_validation_capacity(
+    config: AgentValidationConfig,
+) -> AgentValidationCapacityReport:
+    """Materialize task contracts and estimate calls without invoking a model API."""
+
+    cases = _build_validation_cases(config)
+    targets = config.resolved_domain_task_targets
+    materialized = Counter(item.domain for item in cases)
+    unique = {
+        domain: len({item.task.task_id for item in cases if item.domain == domain})
+        for domain in targets
+    }
+    blockers = []
+    for domain, target in targets.items():
+        if materialized.get(domain, 0) != target:
+            blockers.append(f"{domain}:materialized={materialized.get(domain, 0)},target={target}")
+        if unique[domain] != target:
+            blockers.append(f"{domain}:unique={unique[domain]},target={target}")
+    retrieval_count = len(config.retrieval_tracks)
+    planning_count = len(config.planning_tracks)
+    base_task_count = sum(targets.values())
+    planned_candidates = base_task_count * retrieval_count * planning_count
+    model_search_tracks = sum(track.value != "resolved" for track in config.retrieval_tracks)
+    agent_call_floor = base_task_count * planning_count * (retrieval_count + model_search_tracks)
+    critic_call_ceiling = (
+        min(config.model_critic_max_examples, planned_candidates) if config.run_model_critic else 0
+    )
+    fixture_identity = tuple(
+        sorted(
+            (
+                item.domain,
+                item.task.task_id,
+                item.task.task_hash,
+                item.bundle.bundle_hash,
+            )
+            for item in cases
+        )
+    )
+    return AgentValidationCapacityReport(
+        config_hash=config.config_hash,
+        target_task_counts=targets,
+        materialized_task_counts=dict(sorted(materialized.items())),
+        unique_task_counts=unique,
+        retrieval_track_count=retrieval_count,
+        planning_track_count=planning_count,
+        planned_candidate_count=planned_candidates,
+        planned_agent_api_call_floor=agent_call_floor,
+        planned_critic_api_call_ceiling=critic_call_ceiling,
+        fixture_manifest_hash=canonical_hash(
+            fixture_identity,
+            prefix="agent_capacity_fixtures:",
+        ),
+        blockers=tuple(blockers),
+        status="ready" if not blockers else "blocked",
+    )
+
+
 def run_agent_validation(
     config: AgentValidationConfig,
     client: JsonCompletionClient,
 ) -> AgentValidationArtifacts:
-    cases = (
-        *build_finance_counterfactual_cases(count=config.tasks_per_domain),
-        *build_pattern_validation_cases(per_domain=config.tasks_per_domain),
-    )
+    cases = _build_validation_cases(config)
     samples: list[AgentValidationSample] = []
     critic_examples: list[QualityCriticExample] = []
     accepted_example_ids: list[str] = []
@@ -190,9 +261,7 @@ def run_agent_validation(
                         )
                     )
                 except Exception as exc:
-                    infrastructure_failures.append(
-                        f"{task.task_id}:{type(exc).__name__}:{exc}"
-                    )
+                    infrastructure_failures.append(f"{task.task_id}:{type(exc).__name__}:{exc}")
                     samples.append(
                         AgentValidationSample(
                             sample_id=sample_id,
@@ -223,11 +292,7 @@ def run_agent_validation(
             tuple(critic_examples),
             config.model_critic_max_examples,
         )
-        all_telemetry.extend(
-            call
-            for calls in critic_telemetry.values()
-            for call in calls
-        )
+        all_telemetry.extend(call for calls in critic_telemetry.values() for call in calls)
         prediction_by_example = {item.example_id: item for item in critic_predictions}
         updated_samples: list[AgentValidationSample] = []
         for item in samples:
@@ -267,9 +332,7 @@ def run_agent_validation(
             UtilityCohort.RANDOM_SYNTHETIC: (),
             UtilityCohort.REFERENCE_WORKFLOW: tuple(sorted(reference_sample_ids)),
             UtilityCohort.CONTRACT_FILTERED: tuple(sorted(accepted_example_ids)),
-            UtilityCohort.CONTRACT_COUNTERFACTUAL: tuple(
-                sorted(accepted_example_ids)
-            ),
+            UtilityCohort.CONTRACT_COUNTERFACTUAL: tuple(sorted(accepted_example_ids)),
             UtilityCohort.CRITIC_SELECTED: selection.selected_example_ids,
         },
         counterfactual_ids=tuple(sorted(counterfactual_ids)),
@@ -368,9 +431,7 @@ def _counterfactual_examples(
                 "minimality_score": counterfactual.minimality_score,
             },
         )
-        output.append(
-            (example, assessment, counterfactual.counterfactual_id)
-        )
+        output.append((example, assessment, counterfactual.counterfactual_id))
     return tuple(output)
 
 
@@ -477,13 +538,9 @@ def _build_report(
     critic_prompt_hashes: tuple[str, ...],
 ) -> AgentValidationReport:
     assessments = tuple(
-        item.contract_assessment
-        for item in samples
-        if item.contract_assessment is not None
+        item.contract_assessment for item in samples if item.contract_assessment is not None
     )
-    vectors = tuple(
-        item.quality_vector for item in samples if item.quality_vector is not None
-    )
+    vectors = tuple(item.quality_vector for item in samples if item.quality_vector is not None)
     track_counts = Counter(
         f"{item.retrieval_track.value}|{item.planning_track.value}" for item in samples
     )
@@ -493,9 +550,7 @@ def _build_report(
             item.contract_assessment is not None
             and item.contract_assessment.decision == ReleaseDecision.ACCEPTED
         ):
-            track_accepted[
-                f"{item.retrieval_track.value}|{item.planning_track.value}"
-            ] += 1
+            track_accepted[f"{item.retrieval_track.value}|{item.planning_track.value}"] += 1
     contract_annotations = [
         item.contract_annotation
         for item in dataset.examples
@@ -505,9 +560,7 @@ def _build_report(
         family for item in contract_annotations for family in item.failure_families
     )
     root_types = Counter(
-        location.location_type
-        for item in contract_annotations
-        for location in item.root_locations
+        location.location_type for item in contract_annotations for location in item.root_locations
     )
     dimension_values: dict[str, list[float]] = defaultdict(list)
     for vector in vectors:
@@ -518,8 +571,7 @@ def _build_report(
     agent_model_counts = Counter(
         item.generation_audit.selected_model
         for item in samples
-        if item.generation_audit is not None
-        and item.generation_audit.selected_model is not None
+        if item.generation_audit is not None and item.generation_audit.selected_model is not None
     )
     critic_model_counts = Counter(
         annotation.model_id
@@ -530,13 +582,21 @@ def _build_report(
     critic_success_count = sum(critic_model_counts.values())
     total_costs = [item.estimated_cost for item in telemetry if item.estimated_cost is not None]
     normalized_count = sum(item.trajectory is not None for item in samples)
+    requested_task_counts = config.resolved_domain_task_targets
+    track_multiplier = len(config.retrieval_tracks) * len(config.planning_tracks)
+    requested_candidate_counts = {
+        domain: count * track_multiplier for domain, count in requested_task_counts.items()
+    }
+    normalized_by_domain = Counter(item.domain for item in samples if item.trajectory is not None)
+    domain_completion_rates = {
+        domain: normalized_by_domain.get(domain, 0) / requested
+        for domain, requested in requested_candidate_counts.items()
+    }
     status = (
         "failed"
         if not normalized_count
         else "partial"
-        if infrastructure_failures
-        or critic_failures
-        or normalized_count != len(samples)
+        if infrastructure_failures or critic_failures or normalized_count != len(samples)
         else "completed"
     )
     identity = {
@@ -552,34 +612,29 @@ def _build_report(
         config_hash=config.config_hash,
         model_config_hash=config.model.public_manifest_hash,
         requested_model=config.model.model,
+        requested_domain_task_counts=requested_task_counts,
+        requested_domain_candidate_counts=requested_candidate_counts,
+        domain_completion_rates=domain_completion_rates,
         attempted_count=len(samples),
         api_success_count=sum(item.generation_audit is not None for item in samples),
         normalized_trajectory_count=normalized_count,
         contract_evaluated_count=len(assessments),
-        accepted_count=sum(
-            item.decision == ReleaseDecision.ACCEPTED for item in assessments
-        ),
-        quarantined_count=sum(
-            item.decision == ReleaseDecision.QUARANTINED for item in assessments
-        ),
-        rejected_count=sum(
-            item.decision == ReleaseDecision.REJECTED for item in assessments
-        ),
+        accepted_count=sum(item.decision == ReleaseDecision.ACCEPTED for item in assessments),
+        quarantined_count=sum(item.decision == ReleaseDecision.QUARANTINED for item in assessments),
+        rejected_count=sum(item.decision == ReleaseDecision.REJECTED for item in assessments),
         counterfactual_count=len(counterfactual_assessments),
         counterfactual_rejection_rate=(
             None
             if not counterfactual_assessments
             else sum(
-                item.decision == ReleaseDecision.REJECTED
-                for item in counterfactual_assessments
+                item.decision == ReleaseDecision.REJECTED for item in counterfactual_assessments
             )
             / len(counterfactual_assessments)
         ),
         domain_counts=dict(sorted(Counter(item.domain for item in samples).items())),
         retrieval_planning_counts=dict(sorted(track_counts.items())),
         retrieval_planning_acceptance_rates={
-            key: track_accepted.get(key, 0) / count
-            for key, count in sorted(track_counts.items())
+            key: track_accepted.get(key, 0) / count for key, count in sorted(track_counts.items())
         },
         agent_selected_model_counts=dict(sorted(agent_model_counts.items())),
         critic_selected_model_counts=dict(sorted(critic_model_counts.items())),
@@ -596,9 +651,7 @@ def _build_report(
             )
         ),
         critic_prompt_manifest_hashes=critic_prompt_hashes,
-        quality_vector_policy_hashes=tuple(
-            sorted({item.policy_hash for item in vectors})
-        ),
+        quality_vector_policy_hashes=tuple(sorted({item.policy_hash for item in vectors})),
         quality_selection_policy_hash=selection.policy_hash,
         failure_family_counts=dict(sorted(failure_families.items())),
         root_location_type_counts=dict(sorted(root_types.items())),
@@ -642,10 +695,7 @@ def write_agent_validation_artifacts(
     )
     _write_jsonl(
         output_dir / "agent_validation_samples.jsonl",
-        (
-            item.model_dump(mode="json", exclude_none=True)
-            for item in artifacts.report.samples
-        ),
+        (item.model_dump(mode="json", exclude_none=True) for item in artifacts.report.samples),
     )
     _write_jsonl(
         output_dir / "quality_critic_dataset.jsonl",
@@ -672,18 +722,10 @@ def write_agent_validation_artifacts(
                 artifacts.report.training_utility_protocol.protocol_hash
             ),
             "model_config_hash": artifacts.report.model_config_hash,
-            "agent_prompt_manifest_hashes": (
-                artifacts.report.agent_prompt_manifest_hashes
-            ),
-            "critic_prompt_manifest_hashes": (
-                artifacts.report.critic_prompt_manifest_hashes
-            ),
-            "quality_vector_policy_hashes": (
-                artifacts.report.quality_vector_policy_hashes
-            ),
-            "quality_selection_policy_hash": (
-                artifacts.report.quality_selection_policy_hash
-            ),
+            "agent_prompt_manifest_hashes": (artifacts.report.agent_prompt_manifest_hashes),
+            "critic_prompt_manifest_hashes": (artifacts.report.critic_prompt_manifest_hashes),
+            "quality_vector_policy_hashes": (artifacts.report.quality_vector_policy_hashes),
+            "quality_selection_policy_hash": (artifacts.report.quality_selection_policy_hash),
         },
     )
 
@@ -697,9 +739,6 @@ def _write_json(path: Path, payload) -> None:
 
 def _write_jsonl(path: Path, rows) -> None:
     path.write_text(
-        "".join(
-            json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n"
-            for row in rows
-        ),
+        "".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows),
         encoding="utf-8",
     )

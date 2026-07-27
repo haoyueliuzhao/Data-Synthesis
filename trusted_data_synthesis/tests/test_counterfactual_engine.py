@@ -89,8 +89,7 @@ def test_cross_domain_counterfactual_calibration_meets_v07_thresholds() -> None:
         assert report.operator_coverage_rate == 1.0
         assert set(report.operator_metrics) == set(registry.operator_ids)
         assert all(
-            metrics.mutation_validity_rate == 1.0
-            for metrics in report.operator_metrics.values()
+            metrics.mutation_validity_rate == 1.0 for metrics in report.operator_metrics.values()
         )
 
 
@@ -112,9 +111,7 @@ def test_counterfactual_generation_is_deterministic() -> None:
     first = generator.generate(context, opportunities)
     second = generator.generate(context, planner.plan(context))
 
-    assert [item.counterfactual_id for item in first] == [
-        item.counterfactual_id for item in second
-    ]
+    assert [item.counterfactual_id for item in first] == [item.counterfactual_id for item in second]
     assert [item.mutated_hash for item in first] == [item.mutated_hash for item in second]
 
 
@@ -131,8 +128,7 @@ def test_validation_suite_calibrates_finance_legal_and_science() -> None:
     assert report.root_cause_f1 > 0.9
     assert report.failure_closure_f1 > 0.85
     assert all(
-        domain_report.clause_coverage_rate == 1.0
-        and domain_report.operator_coverage_rate == 1.0
+        domain_report.clause_coverage_rate == 1.0 and domain_report.operator_coverage_rate == 1.0
         for domain_report in report.domain_reports.values()
     )
 

@@ -41,9 +41,7 @@ def build_observation_index(
         checks={item.check_id: item.passed for item in report.checks},
         check_details={item.check_id: item.details for item in report.checks},
         steps_by_action={key: tuple(value) for key, value in steps_by_action.items()},
-        steps_by_program_node={
-            key: tuple(value) for key, value in steps_by_program_node.items()
-        },
+        steps_by_program_node={key: tuple(value) for key, value in steps_by_program_node.items()},
         retrieved_evidence_ids=report.retrieved_evidence_ids,
         selected_evidence_ids=report.selected_evidence_ids,
         citation_evidence_ids=citation_ids,

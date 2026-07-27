@@ -73,8 +73,7 @@ class QualityAwareSelector:
             prediction = prediction_by_example.get(example.example_id)
             if (
                 prediction is not None
-                and prediction.accept_probability
-                < policy.minimum_critic_accept_probability
+                and prediction.accept_probability < policy.minimum_critic_accept_probability
             ):
                 rejected_critic += 1
                 continue
@@ -130,6 +129,5 @@ def _stratum(
         "candidate_source": example.candidate_source,
     }
     return "|".join(
-        str(values.get(field, example.metadata.get(field, "")))
-        for field in policy.stratum_fields
+        str(values.get(field, example.metadata.get(field, ""))) for field in policy.stratum_fields
     )

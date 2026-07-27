@@ -38,6 +38,7 @@ from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.agent_validation import (
     AgentValidationConfig,
+    audit_agent_validation_capacity,
     run_agent_validation,
     write_agent_validation_artifacts,
 )
@@ -89,9 +90,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.command == "validate-task-patterns":
-        pattern_report = run_task_pattern_validation(
-            tasks_per_domain=args.tasks_per_domain
-        )
+        pattern_report = run_task_pattern_validation(tasks_per_domain=args.tasks_per_domain)
         _emit(pattern_report.model_dump(mode="json"), args.output)
         return 0 if pattern_report.status == "passed" else 1
     if args.command == "validate-counterfactuals":
@@ -100,6 +99,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(counterfactual_report.model_dump(mode="json"), args.output)
         return 0 if counterfactual_report.status == "passed" else 1
+    if args.command == "audit-agent-capacity":
+        capacity_config = AgentValidationConfig.from_json(args.agent_config)
+        capacity_report = audit_agent_validation_capacity(capacity_config)
+        _emit(capacity_report.model_dump(mode="json"), args.output)
+        return 0 if capacity_report.status == "ready" else 1
     if args.command == "validate-agents":
         agent_config = AgentValidationConfig.from_json(args.agent_config)
         agent_artifacts = run_agent_validation(
@@ -223,6 +227,9 @@ def _parser() -> argparse.ArgumentParser:
     counterfactual_validation = subparsers.add_parser("validate-counterfactuals")
     counterfactual_validation.add_argument("--tasks-per-domain", type=int, default=10)
     counterfactual_validation.add_argument("--output", type=Path)
+    agent_capacity = subparsers.add_parser("audit-agent-capacity")
+    agent_capacity.add_argument("--agent-config", type=Path, required=True)
+    agent_capacity.add_argument("--output", type=Path)
     agent_validation = subparsers.add_parser("validate-agents")
     agent_validation.add_argument("--agent-config", type=Path, required=True)
     agent_validation.add_argument("--output-dir", type=Path, required=True)
@@ -375,9 +382,7 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
                 "quality_contract": compiled.quality_contract.model_dump(
                     mode="json", exclude_none=True
                 ),
-                "contract_quality": contract_assessment.model_dump(
-                    mode="json", exclude_none=True
-                ),
+                "contract_quality": contract_assessment.model_dump(mode="json", exclude_none=True),
                 "split": assign_split(task, split_policy).value,
             }
         )

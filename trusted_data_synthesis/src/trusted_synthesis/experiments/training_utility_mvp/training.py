@@ -81,9 +81,7 @@ def train_sft_cohort(
         ),
     )
     trainable_count = sum(
-        parameter.numel()
-        for parameter in model.parameters()
-        if parameter.requires_grad
+        parameter.numel() for parameter in model.parameters() if parameter.requires_grad
     )
     total_count = sum(parameter.numel() for parameter in model.parameters())
     arguments = TrainingArguments(

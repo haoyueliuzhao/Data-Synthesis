@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v1"
+TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v2"
 
 
 class TrainingUtilityMVPConfig(BaseModel):
@@ -17,14 +17,14 @@ class TrainingUtilityMVPConfig(BaseModel):
 
     base_model: str = "Qwen/Qwen2.5-7B-Instruct"
     model_revision: str | None = None
-    candidate_tasks_per_domain: int = Field(default=10, ge=2, le=50)
-    evaluation_tasks_per_domain: int = Field(default=6, ge=1, le=20)
-    cohort_size: int = Field(default=24, ge=6, le=500)
+    candidate_tasks_per_domain: int = Field(default=10, ge=2, le=2000)
+    evaluation_tasks_per_domain: int = Field(default=6, ge=1, le=500)
+    cohort_size: int = Field(default=24, ge=6, le=5000)
     d1_counterfactual_fraction: float = Field(default=0.5, ge=0, le=1)
     d4_repair_fraction: float = Field(default=0.5, ge=0, le=1)
     max_seq_length: int = Field(default=8192, ge=512, le=16384)
     max_new_tokens: int = Field(default=1024, ge=64, le=4096)
-    max_steps: int = Field(default=32, ge=1, le=2000)
+    max_steps: int = Field(default=32, ge=1, le=10000)
     per_device_train_batch_size: int = Field(default=1, ge=1, le=16)
     gradient_accumulation_steps: int = Field(default=4, ge=1, le=128)
     learning_rate: float = Field(default=2e-4, gt=0)
@@ -43,7 +43,7 @@ class TrainingUtilityMVPConfig(BaseModel):
         "down_proj",
     )
     seed: int = 20260726
-    prompt_version: str = "training_utility_agent_prompt.v1"
+    prompt_version: str = "training_utility_agent_prompt.v2"
 
     @classmethod
     def from_json(cls, path: str | Path) -> TrainingUtilityMVPConfig:
@@ -86,7 +86,7 @@ class SFTRecord(BaseModel):
     contract_label: str | None = None
     counterfactual_repair: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "training_utility_sft_record.v1"
+    schema_version: str = "training_utility_sft_record.v2"
 
     @property
     def record_hash(self) -> str:
@@ -185,6 +185,9 @@ class CohortEvaluationResult(BaseModel):
     response_contract_rate: float = Field(ge=0, le=1)
     evidence_recall: float = Field(ge=0, le=1)
     evidence_precision: float = Field(ge=0, le=1)
+    execution_coverage: float = Field(ge=0, le=1)
+    operation_grounding_score: float = Field(ge=0, le=1)
+    tool_necessity_score: float = Field(ge=0, le=1)
     operation_exact_rate: float = Field(ge=0, le=1)
     answer_exact_rate: float = Field(ge=0, le=1)
     citation_exact_rate: float = Field(ge=0, le=1)

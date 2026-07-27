@@ -82,9 +82,7 @@ class DomainPluginSet(BaseModel):
             self.quality_clause_provider_id is not None
             and self.counterfactual_operator_manifest_hash is None
         ):
-            raise ValueError(
-                "quality-enabled domain plugins must freeze counterfactual operators"
-            )
+            raise ValueError("quality-enabled domain plugins must freeze counterfactual operators")
         return self
 
     @property

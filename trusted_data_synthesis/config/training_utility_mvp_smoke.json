@@ -27,5 +27,5 @@
     "down_proj"
   ],
   "seed": 20260726,
-  "prompt_version": "training_utility_agent_prompt.v1"
+  "prompt_version": "training_utility_agent_prompt.v2"
 }

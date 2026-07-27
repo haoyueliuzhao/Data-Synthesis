@@ -31,10 +31,7 @@ class TypedCounterfactualGenerator:
         context: CounterfactualContext,
         opportunities: tuple[CounterfactualOpportunity, ...],
     ) -> tuple[CounterfactualCase, ...]:
-        return tuple(
-            self.generate_one(context, opportunity)
-            for opportunity in opportunities
-        )
+        return tuple(self.generate_one(context, opportunity) for opportunity in opportunities)
 
     def generate_one(
         self,
@@ -55,8 +52,7 @@ class TypedCounterfactualGenerator:
             "source_trajectory_id": context.source_trajectory.trajectory_id,
             "opportunity_id": opportunity.opportunity_id,
             "steps": [
-                item.model_dump(mode="json", exclude_none=True)
-                for item in raw_mutated.steps
+                item.model_dump(mode="json", exclude_none=True) for item in raw_mutated.steps
             ],
             "final_answer": raw_mutated.final_answer,
             "version": COUNTERFACTUAL_GENERATOR_VERSION,
@@ -68,8 +64,7 @@ class TypedCounterfactualGenerator:
                     prefix="typed_counterfactual_trajectory:",
                 ),
                 "generator_version": (
-                    f"{COUNTERFACTUAL_GENERATOR_VERSION}:"
-                    f"{opportunity.mutation_operator_id}"
+                    f"{COUNTERFACTUAL_GENERATOR_VERSION}:{opportunity.mutation_operator_id}"
                 ),
             }
         )

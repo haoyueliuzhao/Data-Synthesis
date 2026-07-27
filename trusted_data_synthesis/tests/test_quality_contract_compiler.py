@@ -38,9 +38,7 @@ class _UnknownVerifierProvider:
     provider_id = "unknown_verifier_provider.v1"
     provider_version = "1.0.0"
 
-    def compile_evidence_clauses(
-        self, context: QualityClauseCompilationContext
-    ) -> tuple:
+    def compile_evidence_clauses(self, context: QualityClauseCompilationContext) -> tuple:
         evidence_id = context.task.oracle.gold_evidence_ids[0]
         return (
             make_quality_clause(
@@ -146,9 +144,7 @@ def test_contract_runtime_matches_legacy_for_clean_and_mutated_candidates() -> N
             *(item for _, item in generate_contract_mutations(candidate, case.corpus.evidence)),
         )
         for trajectory in trajectories:
-            legacy_result = legacy.evaluate(
-                case.task, case.corpus, case.proof_graph, trajectory
-            )
+            legacy_result = legacy.evaluate(case.task, case.corpus, case.proof_graph, trajectory)
             contract_result = runtime.evaluate(
                 contract, case.task, case.corpus, case.proof_graph, trajectory
             )

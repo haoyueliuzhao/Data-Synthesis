@@ -48,9 +48,7 @@ class CounterfactualOperatorRegistry:
 
     def register(self, operator: CounterfactualOperatorProtocol) -> None:
         if operator.operator_id in self._operators:
-            raise ValueError(
-                f"counterfactual operator already registered: {operator.operator_id}"
-            )
+            raise ValueError(f"counterfactual operator already registered: {operator.operator_id}")
         self._operators[operator.operator_id] = operator
 
     def require(
@@ -63,8 +61,7 @@ class CounterfactualOperatorRegistry:
             raise ValueError(f"unknown counterfactual operator: {operator_id}")
         if operator_version is not None and operator.operator_version != operator_version:
             raise ValueError(
-                "counterfactual operator version is unavailable: "
-                f"{operator_id}@{operator_version}"
+                f"counterfactual operator version is unavailable: {operator_id}@{operator_version}"
             )
         return operator
 

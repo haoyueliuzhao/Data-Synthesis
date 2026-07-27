@@ -109,4 +109,3 @@ def oracle_selection_contract(evidence: tuple[EvidenceItem, ...]) -> dict[str, A
             for key in sorted({key for item in evidence for key in item.provenance.build_ids})
         },
     }
-

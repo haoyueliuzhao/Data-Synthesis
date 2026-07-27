@@ -142,6 +142,7 @@ def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
             proof_graph=case.proof_graph,
             source_trajectory=candidate,
         )
+
         def evaluate_counterfactual(
             context: CounterfactualContext,
             trajectory: Trajectory,

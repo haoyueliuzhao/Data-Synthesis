@@ -43,9 +43,7 @@ def build_proof_certificate(
     if isinstance(pattern_identity, dict) and isinstance(binding_identity, dict):
         task_pattern_hash = str(pattern_identity.get("pattern_hash") or "") or None
         evidence_binding_hash = str(binding_identity.get("binding_hash") or "") or None
-        task_pattern_compiler_version = (
-            str(pattern_identity.get("compiler_version") or "") or None
-        )
+        task_pattern_compiler_version = str(pattern_identity.get("compiler_version") or "") or None
     return make_proof_certificate(
         task_id=task.task_id,
         task_package_hash=task.task_hash,

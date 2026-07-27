@@ -146,10 +146,7 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
 
     assert readiness.status == "ready"
     assert readiness.blockers == ()
-    assert all(
-        counts["accepted"] == 2
-        for counts in readiness.observed_per_domain.values()
-    )
+    assert all(counts["accepted"] == 2 for counts in readiness.observed_per_domain.values())
     assert set(cohorts) == set(UtilityCohort)
     assert all(len(records) == 6 for records in cohorts.values())
     assert all(
@@ -161,10 +158,10 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
     assert manifest.accepted_real_candidate_count == 6
     assert manifest.critic_reviewed_accepted_count == 6
     assert manifest.critic_model_ids == ("deepseek-v4-pro",)
-    assert sum(
-        item.counterfactual_repair
-        for item in cohorts[UtilityCohort.CONTRACT_COUNTERFACTUAL]
-    ) == 3
+    assert (
+        sum(item.counterfactual_repair for item in cohorts[UtilityCohort.CONTRACT_COUNTERFACTUAL])
+        == 3
+    )
 
 
 def test_training_utility_scorer_separates_contract_and_answer_accuracy(
@@ -192,6 +189,9 @@ def test_training_utility_scorer_separates_contract_and_answer_accuracy(
     assert result.end_to_end_rate == 1
     assert result.evidence_recall == 1
     assert result.operation_exact_rate == 1
+    assert result.execution_coverage == 1
+    assert result.operation_grounding_score == 1
+    assert result.tool_necessity_score == 1
 
     mutated = json.loads(evaluation[0].assistant_target)
     mutated["final_answer"]["result"] = {"unsupported": "answer"}

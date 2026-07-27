@@ -7,9 +7,10 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.hashing import canonical_hash
 
-AGENT_RESPONSE_SCHEMA_VERSION = "agent_response.v1"
+AGENT_RESPONSE_SCHEMA_VERSION = "agent_response.v2"
+AGENT_EXECUTION_TRACE_VERSION = "agent_execution_trace.v1"
 AGENT_SEARCH_SCHEMA_VERSION = "agent_search.v1"
-AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v1"
+AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v2"
 
 
 class AgentModelConfig(BaseModel):
@@ -77,15 +78,56 @@ class ModelCallTelemetry(BaseModel):
     error_type: str | None = None
 
 
-class AgentOperationProposal(BaseModel):
+class AgentExecutionStep(BaseModel):
+    """One concrete tool or operation execution, not a copy of a plan node."""
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    node_id: str = Field(min_length=1)
+    execution_id: str = Field(min_length=1)
+    planned_node_id: str | None = None
     operator_id: str = Field(min_length=1)
+    tool_name: str | None = None
     input_refs: tuple[str, ...] = Field(min_length=1)
     parameters: dict[str, Any] = Field(default_factory=dict)
-    result: dict[str, Any]
+    evidence_ids: tuple[str, ...] = ()
+    observation: dict[str, Any]
+    status: Literal["succeeded", "failed"]
     rationale_summary: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_observation(self) -> AgentExecutionStep:
+        if "result" not in self.observation or not isinstance(self.observation["result"], dict):
+            raise ValueError("execution observation must contain a structured result")
+        return self
+
+
+class AgentExecutionTrace(BaseModel):
+    """Concrete executions bound to evidence and earlier execution outputs."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    trace_version: Literal["agent_execution_trace.v1"] = "agent_execution_trace.v1"
+    steps: tuple[AgentExecutionStep, ...] = Field(min_length=1)
+    output_execution_id: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_execution_graph(self) -> AgentExecutionTrace:
+        execution_ids = [item.execution_id for item in self.steps]
+        if len(execution_ids) != len(set(execution_ids)):
+            raise ValueError("agent execution trace contains duplicate execution IDs")
+        known_executions: set[str] = set()
+        for step in self.steps:
+            for ref in step.input_refs:
+                if ref.startswith("execution:"):
+                    execution_id = ref.removeprefix("execution:").split("#", 1)[0]
+                    if execution_id not in known_executions:
+                        raise ValueError("agent execution refs must be topologically ordered")
+                elif not ref.startswith("evidence:"):
+                    raise ValueError(f"unsupported agent execution input ref: {ref}")
+            known_executions.add(step.execution_id)
+        if self.output_execution_id not in known_executions:
+            raise ValueError("execution trace output does not reference an executed step")
+        return self
 
 
 class AgentSearchQuery(BaseModel):
@@ -115,31 +157,12 @@ class AgentResponseContract(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    schema_version: Literal["agent_response.v1"] = "agent_response.v1"
+    schema_version: Literal["agent_response.v2"] = "agent_response.v2"
     plan_summary: str = Field(min_length=1)
     selected_evidence_ids: tuple[str, ...] = Field(min_length=1)
-    operations: tuple[AgentOperationProposal, ...] = Field(min_length=1)
+    execution_trace: AgentExecutionTrace
     verification_result: dict[str, Any] | None = None
     final_answer: dict[str, Any]
-
-    @model_validator(mode="after")
-    def validate_operation_graph(self) -> AgentResponseContract:
-        node_ids = [item.node_id for item in self.operations]
-        if len(node_ids) != len(set(node_ids)):
-            raise ValueError("agent response contains duplicate operation node IDs")
-        known_nodes: set[str] = set()
-        for operation in self.operations:
-            for ref in operation.input_refs:
-                if ref.startswith("operation:"):
-                    node_id = ref.removeprefix("operation:").split("#", 1)[0]
-                    if node_id not in known_nodes:
-                        raise ValueError(
-                            "agent response operation refs must be topologically ordered"
-                        )
-                elif not ref.startswith("evidence:"):
-                    raise ValueError(f"unsupported agent input ref: {ref}")
-            known_nodes.add(operation.node_id)
-        return self
 
 
 class AgentGenerationAudit(BaseModel):

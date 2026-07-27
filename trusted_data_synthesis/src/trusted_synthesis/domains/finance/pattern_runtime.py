@@ -41,9 +41,7 @@ class FinanceTaskPatternRuntime:
     ) -> PatternBindingValidationReport:
         del binding
         all_evidence = tuple(
-            item
-            for role in pattern.evidence_roles
-            for item in evidence_by_role[role.role_id]
+            item for role in pattern.evidence_roles for item in evidence_by_role[role.role_id]
         )
         checks: dict[str, bool] = {
             "all_evidence_valid": all(
@@ -69,9 +67,7 @@ class FinanceTaskPatternRuntime:
             checks["same_financial_series"] = decision.comparable
             checks["same_subject"] = earlier.subject.subject_id == later.subject.subject_id
             checks["strict_temporal_order"] = bool(
-                earlier_time is not None
-                and later_time is not None
-                and earlier_time < later_time
+                earlier_time is not None and later_time is not None and earlier_time < later_time
             )
             issues.extend(decision.reasons)
         elif pattern.task_type == "temporal_average":
@@ -80,9 +76,7 @@ class FinanceTaskPatternRuntime:
             comparisons = tuple(self._policy.compare(first, item) for item in series[1:])
             times = tuple(temporal_sort_key(item) for item in series)
             checks["same_financial_series"] = all(item.comparable for item in comparisons)
-            checks["same_subject"] = len(
-                {item.subject.subject_id for item in series}
-            ) == 1
+            checks["same_subject"] = len({item.subject.subject_id for item in series}) == 1
             checks["strictly_ordered_unique_periods"] = bool(
                 all(item is not None for item in times)
                 and len(set(times)) == len(times)
@@ -110,9 +104,7 @@ class FinanceTaskPatternRuntime:
     ) -> TaskPatternMaterialization:
         del binding, bundle, proof_graph
         evidence = tuple(
-            item
-            for role in pattern.evidence_roles
-            for item in evidence_by_role[role.role_id]
+            item for role in pattern.evidence_roles for item in evidence_by_role[role.role_id]
         )
         if pattern.task_type == "fact_retrieval":
             item = evidence_by_role["fact"][0]

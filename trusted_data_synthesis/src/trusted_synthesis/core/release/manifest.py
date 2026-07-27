@@ -99,8 +99,7 @@ def build_release_manifest(
         if (
             certificate.task_pattern_hash != pattern_identity.get("pattern_hash")
             or certificate.evidence_binding_hash != binding_identity.get("binding_hash")
-            or certificate.task_pattern_compiler_version
-            != pattern_identity.get("compiler_version")
+            or certificate.task_pattern_compiler_version != pattern_identity.get("compiler_version")
         ):
             raise ValueError("release certificate does not bind task pattern compilation")
         pattern_identities.append(pattern_identity)

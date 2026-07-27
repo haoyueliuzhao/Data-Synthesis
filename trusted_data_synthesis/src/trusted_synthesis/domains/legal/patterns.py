@@ -72,4 +72,3 @@ LEGAL_RULE_APPLICATION_PATTERN = TaskPatternSpec(
     difficulty_base_cost=6.0,
     metadata={"pattern_catalog": "legal_contract_patterns.v1"},
 )
-

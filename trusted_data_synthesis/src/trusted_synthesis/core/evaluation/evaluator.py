@@ -34,7 +34,7 @@ from trusted_synthesis.core.trajectory.verifier import (
 from trusted_synthesis.hashing import canonical_hash
 
 REFERENCE_EVALUATOR_VERSION = "reference_quality.v5"
-CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v5"
+CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v6"
 REQUIRED_CHECK_MANIFEST = (
     "task_identity",
     "reference_workflow_kind",
@@ -66,6 +66,9 @@ CANDIDATE_REQUIRED_CHECK_MANIFEST = (
     "evidence_recall",
     "evidence_precision",
     "proof_graph_binding",
+    "execution_coverage",
+    "operation_grounding",
+    "tool_necessity",
     "program_node_alignment",
     "all_calculations_correct",
     "verification_step_binding",
@@ -344,6 +347,9 @@ class CandidateQualityEvaluator:
                 and all(
                     _check_passed(checks, item)
                     for item in (
+                        "execution_coverage",
+                        "operation_grounding",
+                        "tool_necessity",
                         "program_node_alignment",
                         "all_calculations_correct",
                         "verification_step_binding",
@@ -373,19 +379,21 @@ class CandidateQualityEvaluator:
                 details=failed,
             ),
         )
-        actions = {step.action for step in trajectory.steps}
         raw_scores = {
             "evidence": round(50 * report.evidence_recall + 50 * report.evidence_precision, 4),
-            "reasoning": _boolean_score(
-                _check_passed(checks, "required_actions_present")
-                and _check_passed(checks, "operation_correctness")
-            ),
-            "tool_use": _boolean_score(
-                ActionType.SEARCH in actions and _check_passed(checks, "allowed_tool_compliance")
-            ),
+            "reasoning": round(
+                50 * (report.execution_coverage + report.operation_grounding_score),
+                4,
+            )
+            if _check_passed(checks, "operation_correctness")
+            else 0.0,
+            "tool_use": round(100 * report.tool_necessity_score, 4)
+            if _check_passed(checks, "allowed_tool_compliance")
+            else 0.0,
             "verification": _boolean_score(
                 _check_passed(checks, "proof_graph_binding")
                 and _check_passed(checks, "public_only_generation")
+                and all(item.verified for item in report.program_node_statuses)
             ),
             "answer": _boolean_score(
                 _check_passed(checks, "answer_schema_validity")
@@ -406,6 +414,9 @@ class CandidateQualityEvaluator:
                 operation_replay=float(_check_passed(checks, "operation_correctness")),
                 citation_coverage=float(_check_passed(checks, "citation_binding")),
                 workflow_completeness=float(_check_passed(checks, "required_actions_present")),
+                execution_coverage=report.execution_coverage,
+                operation_grounding=report.operation_grounding_score,
+                tool_necessity=report.tool_necessity_score,
                 program_depth=len(task.oracle.task_program.nodes),
             ),
             failed_check_ids=failed,
@@ -512,8 +523,13 @@ def _boolean_score(value: bool) -> float:
 def _dimension_checks(dimension: str) -> tuple[str, ...]:
     return {
         "evidence": ("evidence_validity", "evidence_recall", "evidence_precision"),
-        "reasoning": ("required_actions_present", "operation_correctness"),
-        "tool_use": ("allowed_tool_compliance", "search_action_present"),
+        "reasoning": (
+            "required_actions_present",
+            "execution_coverage",
+            "operation_grounding",
+            "operation_correctness",
+        ),
+        "tool_use": ("allowed_tool_compliance", "tool_necessity", "search_action_present"),
         "verification": ("proof_graph_binding", "independent_program_replay"),
         "answer": ("answer_correctness", "citation_binding"),
     }[dimension]

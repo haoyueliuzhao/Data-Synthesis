@@ -188,9 +188,7 @@ class QualityVectorCompiler:
             )
         total_weight = sum(self._severity_weight(clause.severity) for clause, _ in items)
         passed_weight = sum(
-            self._severity_weight(clause.severity)
-            for clause, result in items
-            if result.passed
+            self._severity_weight(clause.severity) for clause, result in items if result.passed
         )
         failures = tuple(result.clause_id for _, result in items if not result.passed)
         return QualityDimensionScore(
@@ -199,9 +197,7 @@ class QualityVectorCompiler:
             score=passed_weight / total_weight,
             clause_count=len(items),
             passed_clause_count=sum(result.passed for _, result in items),
-            direct_failure_count=sum(
-                not result.passed and result.executed for _, result in items
-            ),
+            direct_failure_count=sum(not result.passed and result.executed for _, result in items),
             blocked_clause_count=sum(not result.executed for _, result in items),
             failed_clause_ids=failures,
             root_failure_clause_ids=tuple(item for item in failures if item in root_ids),

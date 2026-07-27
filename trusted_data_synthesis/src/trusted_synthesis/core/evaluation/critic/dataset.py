@@ -29,9 +29,7 @@ def build_contract_annotation(
 ) -> QualityAnnotation:
     clauses = {item.clause_id: item for item in contract.clauses}
     root_clauses = tuple(
-        clauses[item]
-        for item in assessment.root_failure_clause_ids
-        if item in clauses
+        clauses[item] for item in assessment.root_failure_clause_ids if item in clauses
     )
     acceptability = {
         "accepted": AcceptabilityLabel.ACCEPT,
@@ -129,12 +127,10 @@ def make_quality_critic_dataset(
         dataset_id=canonical_hash(identity, prefix="quality_critic_dataset:"),
         examples=ordered,
         contract_positive_count=sum(
-            item.contract_annotation.acceptability == AcceptabilityLabel.ACCEPT
-            for item in ordered
+            item.contract_annotation.acceptability == AcceptabilityLabel.ACCEPT for item in ordered
         ),
         contract_negative_count=sum(
-            item.contract_annotation.acceptability != AcceptabilityLabel.ACCEPT
-            for item in ordered
+            item.contract_annotation.acceptability != AcceptabilityLabel.ACCEPT for item in ordered
         ),
         real_agent_count=sum(item.candidate_source == "real_agent" for item in ordered),
         counterfactual_count=sum(
@@ -162,19 +158,13 @@ def evaluate_annotation_alignment(
     )
     for example in ordered:
         for annotation in example.advisory_annotations:
-            by_source[annotation.source].append(
-                (example.contract_annotation, annotation)
-            )
+            by_source[annotation.source].append((example.contract_annotation, annotation))
     human = tuple(by_source[AnnotationSource.HUMAN])
     model = tuple(by_source[AnnotationSource.MODEL_ADVISORY])
     identity = {
         "example_ids": tuple(sorted(item.example_id for item in ordered)),
-        "human_annotation_ids": tuple(
-            sorted(right.annotation_id for _, right in human)
-        ),
-        "model_annotation_ids": tuple(
-            sorted(right.annotation_id for _, right in model)
-        ),
+        "human_annotation_ids": tuple(sorted(right.annotation_id for _, right in human)),
+        "model_annotation_ids": tuple(sorted(right.annotation_id for _, right in model)),
     }
     human_agreement = _acceptability_agreement(human)
     model_agreement = _acceptability_agreement(model)
@@ -201,16 +191,12 @@ def evaluate_annotation_alignment(
         human_target_met=(
             None
             if human_agreement is None or human_failure_f1 is None or human_location is None
-            else human_agreement > 0.9
-            and human_failure_f1 > 0.85
-            and human_location > 0.8
+            else human_agreement > 0.9 and human_failure_f1 > 0.85 and human_location > 0.8
         ),
         model_advisory_target_met=(
             None
             if model_agreement is None or model_failure_f1 is None or model_location is None
-            else model_agreement > 0.9
-            and model_failure_f1 > 0.85
-            and model_location > 0.8
+            else model_agreement > 0.9 and model_failure_f1 > 0.85 and model_location > 0.8
         ),
         notes=tuple(notes),
     )
@@ -230,9 +216,7 @@ def _failure_f1(
     if not pairs:
         return None
     expected = {
-        (index, family)
-        for index, (left, _) in enumerate(pairs)
-        for family in left.failure_families
+        (index, family) for index, (left, _) in enumerate(pairs) for family in left.failure_families
     }
     observed = {
         (index, family)
@@ -249,12 +233,8 @@ def _root_localization(
         return None
     scored = []
     for left, right in pairs:
-        expected = {
-            (item.location_type, item.location_ref) for item in left.root_locations
-        }
-        observed = {
-            (item.location_type, item.location_ref) for item in right.root_locations
-        }
+        expected = {(item.location_type, item.location_ref) for item in left.root_locations}
+        observed = {(item.location_type, item.location_ref) for item in right.root_locations}
         scored.append(_set_f1(expected, observed))
     return sum(scored) / len(scored)
 

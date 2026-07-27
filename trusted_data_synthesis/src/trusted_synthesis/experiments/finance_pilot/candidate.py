@@ -232,6 +232,11 @@ def _operation_steps(
         )
         input_refs = tuple(f"evidence:{item.evidence_id}" for item in evidence)
         operator_id = output_node.operator_id
+    direct_evidence_ids = tuple(
+        ref.removeprefix("evidence:").split("#", 1)[0]
+        for ref in input_refs
+        if ref.startswith("evidence:")
+    )
     if any(item.value == "calculate" for item in task.requirements):
         steps.append(
             TrajectoryStep(
@@ -240,7 +245,7 @@ def _operation_steps(
                 tool_name=output_node.tool_capability,
                 tool_input={"parameters": output_node.parameters},
                 observation={"result": result},
-                evidence_ids=tuple(item.evidence_id for item in evidence),
+                evidence_ids=direct_evidence_ids,
                 program_node_id=output_node.public_node_id,
                 operator_id=operator_id,
                 input_refs=input_refs,
