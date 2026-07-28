@@ -57,6 +57,11 @@ trusted-synthesis prepare-training-utility \
   --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates \
   --output-dir artifacts/training_utility_mvp/pilot/data
 
+# Export flat question/reference-answer JSONL plus per-cohort Markdown review books.
+trusted-synthesis export-training-utility-review \
+  --input-dir artifacts/training_utility_mvp/pilot/data \
+  --output-dir artifacts/training_utility_mvp/pilot/review
+
 # Fail closed on per-domain D1-D5 capacity before spending GPU time.
 trusted-synthesis audit-training-utility-readiness \
   --training-config config/training_utility_mvp.json \

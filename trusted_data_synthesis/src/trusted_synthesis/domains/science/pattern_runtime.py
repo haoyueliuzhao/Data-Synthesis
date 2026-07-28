@@ -145,6 +145,8 @@ def _science_agent_contract_guidance(task_type: str) -> dict[str, object]:
         },
         "general_rules": (
             "All numeric strings are machine decimals without units or prose.",
+            "Never round or truncate a computed decimal unless the task explicitly "
+            "declares a rounding policy; preserve the full normalized decimal result.",
             "All reference fields copy exact raw evidence IDs.",
             "Registered conclusion values are enums, not natural-language summaries.",
         ),
@@ -177,6 +179,11 @@ def _science_agent_contract_guidance(task_type: str) -> dict[str, object]:
             ),
             "qualified_conclusion_enum": (
                 "descriptive_sample_size_weighted_summary_not_meta_analysis",
+            ),
+            "arithmetic_contract": (
+                "weighted_value = sum(value_i * sample_size_i) / "
+                "sum(sample_size_i), evaluated with exact decimal arithmetic; "
+                "emit the full normalized quotient without rounding"
             ),
         }
     return guidance

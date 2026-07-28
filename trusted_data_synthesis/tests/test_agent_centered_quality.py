@@ -422,8 +422,55 @@ def test_agent_parameters_compare_after_json_round_trip() -> None:
         task.public,
         InMemoryEvidenceToolRuntime(case.corpus),
     )
+    compiled, runtime = _compile_runtime(case, task)
+    assessment = runtime.evaluate(
+        compiled.quality_contract,
+        task,
+        case.corpus,
+        case.proof_graph,
+        trajectory,
+    )
+    operation_step = next(
+        step
+        for step in trajectory.steps
+        if step.program_node_id is not None
+        and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    )
 
     assert trajectory.task_id == task.task_id
+    assert task.public.program_skeleton is not None
+    assert operation_step.tool_input == {
+        "parameters": task.public.program_skeleton.nodes[0].parameters
+    }
+    assert assessment.decision.value == "accepted", assessment.model_dump(mode="json")
+
+
+def test_science_synthesis_prompt_requires_unrounded_decimal_output() -> None:
+    case = next(
+        item
+        for item in build_pattern_validation_cases(per_domain=3)
+        if item.task.public.task_type == "science_descriptive_effect_synthesis"
+    )
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    client = ScriptedJsonClient([_response_from_trajectory(deterministic)])
+
+    LLMAgentSolver(client, case.registry).solve(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+
+    prompt = client.prompts[0]
+    assert "full normalized decimal result" in prompt
+    assert "emit the full normalized quotient without rounding" in prompt
 
 
 @pytest.mark.parametrize("retrieval_track", [RetrievalTrack.SEMI_OPEN, RetrievalTrack.OPEN])
@@ -571,6 +618,25 @@ def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks(
     assert artifacts.critic_dataset.counterfactual_count > 0
     critic_slice = _stratified_critic_examples(artifacts.critic_dataset.examples, 6)
     assert {item.domain for item in critic_slice} == {"finance", "legal", "science"}
+    for domain in ("finance", "legal", "science"):
+        assert sum(
+            item.domain == domain
+            and item.candidate_source == "real_agent"
+            and item.contract_annotation.acceptability.value == "accept"
+            for item in critic_slice
+        ) == 1
+
+    buffered_slice = _stratified_critic_examples(artifacts.critic_dataset.examples, 9)
+    assert len(buffered_slice) == 9
+    for domain in ("finance", "legal", "science"):
+        assert sum(
+            item.domain == domain
+            and item.candidate_source == "real_agent"
+            and item.contract_annotation.acceptability.value == "accept"
+            for item in buffered_slice
+        ) == 2
+    assert any(item.candidate_source == "typed_counterfactual" for item in buffered_slice)
+
     assert {item.candidate_source for item in critic_slice} == {
         "real_agent",
         "typed_counterfactual",
@@ -949,3 +1015,57 @@ def _search_response(scope: dict[str, Any]) -> dict[str, Any]:
         "plan_summary": "Search the bounded corpus using public semantic constraints.",
         "search_query": {key: value for key, value in scope.items() if key in allowed},
     }
+
+
+def test_plan_given_result_execution_refs_are_canonicalized_before_replay() -> None:
+    case = next(
+        item
+        for item in build_pattern_validation_cases(per_domain=3)
+        if item.task.public.metadata["task_pattern"]["pattern_id"]
+        == "legal.rule_application"
+    )
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    payload = _response_from_trajectory(deterministic)
+    execution_ids = {
+        step["planned_node_id"]: step["execution_id"]
+        for step in payload["execution_trace"]["steps"]
+    }
+
+    def to_execution_refs(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {key: to_execution_refs(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [to_execution_refs(item) for item in value]
+        if isinstance(value, str) and value in execution_ids:
+            return f"execution:{execution_ids[value]}"
+        return value
+
+    for step in payload["execution_trace"]["steps"]:
+        step["observation"]["result"] = to_execution_refs(
+            step["observation"]["result"]
+        )
+    payload["verification_result"] = to_execution_refs(payload["verification_result"])
+    payload["final_answer"]["result"] = to_execution_refs(
+        payload["final_answer"]["result"]
+    )
+
+    result = LLMAgentSolver(ScriptedJsonClient([payload]), case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    compiled, runtime = _compile_runtime(case, task)
+    assessment = runtime.evaluate(
+        compiled.quality_contract, task, case.corpus, case.proof_graph, result.trajectory
+    )
+
+    assert assessment.decision.value == "accepted"
+    assert result.trajectory.final_answer["result"]["selected_ref"] == "apply_2"

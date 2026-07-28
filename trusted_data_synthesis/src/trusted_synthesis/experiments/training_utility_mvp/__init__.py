@@ -18,6 +18,13 @@ from trusted_synthesis.experiments.training_utility_mvp.report import (
     load_training_result,
     write_training_utility_report,
 )
+from trusted_synthesis.experiments.training_utility_mvp.review_export import (
+    QAReviewEvidence,
+    QAReviewExportManifest,
+    QAReviewRecord,
+    build_qa_review_record,
+    export_training_utility_review,
+)
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     CohortEvaluationResult,
     CohortTrainingResult,
@@ -32,6 +39,9 @@ from trusted_synthesis.experiments.training_utility_mvp.training import train_sf
 __all__ = [
     "CohortEvaluationResult",
     "CohortTrainingResult",
+    "QAReviewEvidence",
+    "QAReviewExportManifest",
+    "QAReviewRecord",
     "SFTRecord",
     "TrainingUtilityDataManifest",
     "TrainingUtilityMVPConfig",
@@ -41,7 +51,9 @@ __all__ = [
     "audit_training_utility_readiness",
     "build_training_utility_datasets",
     "build_training_utility_report",
+    "build_qa_review_record",
     "evaluate_sft_model",
+    "export_training_utility_review",
     "load_agent_artifacts",
     "load_sft_records",
     "load_evaluation_result",

@@ -750,8 +750,45 @@ def _stratified_critic_examples(
     examples: tuple[QualityCriticExample, ...],
     maximum_examples: int,
 ) -> tuple[QualityCriticExample, ...]:
-    groups: dict[str, list[QualityCriticExample]] = defaultdict(list)
-    for example in sorted(examples, key=lambda item: item.example_id):
+    ordered = tuple(sorted(examples, key=lambda item: item.example_id))
+    limit = min(maximum_examples, len(ordered))
+    if limit <= 0:
+        return ()
+
+    domains = tuple(sorted({item.domain for item in ordered}))
+    if domains:
+        # D5 needs Critic-reviewed accepted candidates, so reserve roughly two
+        # thirds of a production Critic budget for accepted real trajectories.
+        # Keep at least one slot per domain for diagnostic examples in tiny runs.
+        desired_accepted_per_domain = (
+            2 * limit + 3 * len(domains) - 1
+        ) // (3 * len(domains))
+        diagnostic_cap = max(limit // len(domains) - 1, 0)
+        accepted_reserve_per_domain = min(
+            desired_accepted_per_domain,
+            diagnostic_cap,
+        )
+    else:
+        accepted_reserve_per_domain = 0
+    output: list[QualityCriticExample] = []
+    selected_ids: set[str] = set()
+    for domain in domains:
+        accepted = tuple(
+            item
+            for item in ordered
+            if item.domain == domain
+            and item.candidate_source == "real_agent"
+            and item.contract_annotation.acceptability.value == "accept"
+        )
+        for example in accepted[:accepted_reserve_per_domain]:
+            output.append(example)
+            selected_ids.add(example.example_id)
+
+    diagnostic_groups: dict[str, list[QualityCriticExample]] = defaultdict(list)
+    accepted_overflow_groups: dict[str, list[QualityCriticExample]] = defaultdict(list)
+    for example in ordered:
+        if example.example_id in selected_ids:
+            continue
         key = "|".join(
             (
                 example.domain,
@@ -759,21 +796,29 @@ def _stratified_critic_examples(
                 example.contract_annotation.acceptability.value,
             )
         )
-        groups[key].append(example)
-    output: list[QualityCriticExample] = []
-    group_keys = sorted(groups)
-    index = 0
-    while len(output) < min(maximum_examples, len(examples)):
-        emitted = False
-        for key in group_keys:
-            if index < len(groups[key]):
-                output.append(groups[key][index])
-                emitted = True
-                if len(output) >= maximum_examples:
-                    break
-        if not emitted:
+        is_accepted_real = (
+            example.candidate_source == "real_agent"
+            and example.contract_annotation.acceptability.value == "accept"
+        )
+        target = accepted_overflow_groups if is_accepted_real else diagnostic_groups
+        target[key].append(example)
+
+    for groups in (diagnostic_groups, accepted_overflow_groups):
+        group_keys = sorted(groups)
+        index = 0
+        while len(output) < limit:
+            emitted = False
+            for key in group_keys:
+                if index < len(groups[key]):
+                    output.append(groups[key][index])
+                    emitted = True
+                    if len(output) >= limit:
+                        break
+            if not emitted:
+                break
+            index += 1
+        if len(output) >= limit:
             break
-        index += 1
     return tuple(output)
 
 
@@ -1033,7 +1078,8 @@ def _agent_job_checkpoint_hash(
 ) -> str:
     return canonical_hash(
         {
-            "config_hash": config.config_hash,
+            "model_config_hash": config.model.public_manifest_hash,
+            "generate_counterfactuals": config.generate_counterfactuals,
             "agent_validation_version": AGENT_VALIDATION_VERSION,
             "agent_solver_version": LLM_AGENT_SOLVER_VERSION,
             "agent_prompt_version": LLM_AGENT_PROMPT_VERSION,

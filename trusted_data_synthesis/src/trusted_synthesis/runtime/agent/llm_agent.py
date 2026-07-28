@@ -32,8 +32,8 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v4"
-LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v5"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v6"
+LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v6"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
 
 
@@ -741,6 +741,23 @@ def _normalize_trajectory(
     execution_node_ids = {
         item.execution_id: item.planned_node_id or item.execution_id for item in executions
     }
+    canonical_execution_results = {
+        item.execution_id: _canonicalize_execution_refs(
+            item.observation["result"], execution_node_ids
+        )
+        for item in executions
+    }
+    final_answer["result"] = _canonicalize_execution_refs(
+        final_answer["result"], execution_node_ids
+    )
+    canonical_verification_result = _canonicalize_execution_refs(
+        response.verification_result, execution_node_ids
+    )
+    canonical_node_parameters = (
+        {item.public_node_id: item.parameters for item in task.program_skeleton.nodes}
+        if task.program_skeleton is not None
+        else {}
+    )
     steps = [
         TrajectoryStep(
             step_index=1,
@@ -785,12 +802,15 @@ def _normalize_trajectory(
                 step_index=len(steps) + 1,
                 action=ActionType(definition.action_type),
                 tool_name=execution.tool_name,
+                # Execution identity belongs to the trace envelope and observation.
+                # Keep tool_input identical to deterministic candidate workflows so
+                # replay uses the frozen plan's canonical Python representation.
                 tool_input={
-                    "execution_id": execution.execution_id,
-                    "parameters": execution.parameters,
+                    "parameters": canonical_node_parameters.get(node_id, execution.parameters)
                 },
                 observation={
                     **execution.observation,
+                    "result": canonical_execution_results[execution.execution_id],
                     "execution_id": execution.execution_id,
                 },
                 evidence_ids=execution.evidence_ids,
@@ -812,7 +832,7 @@ def _normalize_trajectory(
                 action=ActionType.VERIFY,
                 observation={
                     "verified_output_ref": output_ref,
-                    "verified_result": response.verification_result or {},
+                    "verified_result": canonical_verification_result or {},
                 },
                 evidence_ids=selected_ids,
                 program_node_id=output_node_id,
@@ -846,7 +866,9 @@ def _normalize_trajectory(
             "source": "model_reported_execution_trace",
             "trace_version": response.execution_trace.trace_version,
             "operation_outputs": {
-                execution_node_ids[item.execution_id]: item.observation["result"]
+                execution_node_ids[item.execution_id]: canonical_execution_results[
+                    item.execution_id
+                ]
                 for item in executions
             },
         },
@@ -869,3 +891,21 @@ def _execution_ref_to_program_ref(
     node_id = execution_node_ids[execution_id]
     suffix = f"#{selector}" if separator else ""
     return f"operation:{node_id}{suffix}"
+
+
+def _canonicalize_execution_refs(value: Any, execution_node_ids: dict[str, str]) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _canonicalize_execution_refs(item, execution_node_ids)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_canonicalize_execution_refs(item, execution_node_ids) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_canonicalize_execution_refs(item, execution_node_ids) for item in value)
+    if isinstance(value, str) and value.startswith("execution:"):
+        execution_id, separator, selector = value.removeprefix("execution:").partition("#")
+        node_id = execution_node_ids[execution_id]
+        suffix = f"#{selector}" if separator else ""
+        return f"{node_id}{suffix}"
+    return value

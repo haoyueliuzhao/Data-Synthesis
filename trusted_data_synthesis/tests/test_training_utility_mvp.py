@@ -30,12 +30,20 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     aggregate_evaluation_outcomes,
     audit_training_utility_readiness,
     build_training_utility_datasets,
+    export_training_utility_review,
     score_generated_response,
     write_reference_training_preflight,
 )
 from trusted_synthesis.experiments.training_utility_mvp.data import (
+    _cohort_manifest,
     _reference_and_evaluation_records,
     _reference_response,
+)
+from trusted_synthesis.experiments.training_utility_mvp.evaluation import (
+    _ensure_evaluation_contract,
+    _evaluation_shard_from_environment,
+    _load_evaluation_checkpoints,
+    _write_evaluation_checkpoint,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent import AgentModelConfig, ModelCallTelemetry
@@ -79,9 +87,10 @@ class ScriptedCandidateClient:
 
 def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
     utility_config = TrainingUtilityMVPConfig(
-        candidate_tasks_per_domain=2,
+        candidate_tasks_per_domain=3,
         evaluation_tasks_per_domain=1,
         cohort_size=6,
+        minimum_real_candidate_completion_rate=2 / 3,
         max_steps=1,
     )
     cases = (
@@ -239,6 +248,69 @@ def test_reference_training_preflight_is_balanced_and_disjoint(tmp_path: Path) -
     assert (tmp_path / "evaluation.jsonl").is_file()
 
 
+def test_training_utility_review_export_flattens_question_answer_and_evidence(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "data"
+    output_dir = tmp_path / "review"
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+    )
+    write_reference_training_preflight(config, input_dir)
+
+    manifest = export_training_utility_review(input_dir, output_dir)
+
+    rows = [
+        json.loads(line)
+        for line in (output_dir / "qa_review.jsonl").read_text(encoding="utf-8").splitlines()
+        if line
+    ]
+    assert manifest.record_count == 9
+    assert manifest.cohort_counts == {"D2_reference_workflow": 6, "evaluation": 3}
+    assert manifest.domain_counts == {"finance": 3, "legal": 3, "science": 3}
+    assert len(rows) == 9
+    assert all(row["question"] for row in rows)
+    assert all("reference_answer" in row for row in rows)
+    assert all(row["reference_answer_text"] for row in rows)
+    assert all(row["selected_evidence_ids"] for row in rows)
+    assert all(
+        set(row["selected_evidence_ids"]).issubset(row["available_evidence_ids"]) for row in rows
+    )
+    assert all(any(item["selected"] for item in row["evidence"]) for row in rows)
+    assert (output_dir / "qa_review.md").is_file()
+    assert (output_dir / "markdown" / "D2_reference_workflow.md").is_file()
+    assert (output_dir / "markdown" / "evaluation.md").is_file()
+    assert "### Question" in (output_dir / "markdown" / "D2_reference_workflow.md").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_training_utility_review_export_fails_on_invalid_embedded_json(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "data"
+    input_dir.mkdir()
+    records, _ = _reference_and_evaluation_records(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=2,
+            evaluation_tasks_per_domain=1,
+            cohort_size=6,
+            max_steps=1,
+        )
+    )
+    broken = records[0].model_copy(update={"user_prompt": "{"})
+    (input_dir / "D2_reference_workflow.jsonl").write_text(
+        broken.model_dump_json() + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="invalid JSON in user_prompt"):
+        export_training_utility_review(input_dir, tmp_path / "review")
+
+
 def test_training_utility_supports_oversupplied_per_domain_pools() -> None:
     config = TrainingUtilityMVPConfig(
         candidate_tasks_per_domain=2,
@@ -272,3 +344,65 @@ def test_training_utility_supports_oversupplied_per_domain_pools() -> None:
     assert all(item.metadata["pattern_id"] for item in (*training, *evaluation))
     assert all(item.metadata["program_signature"] for item in (*training, *evaluation))
     assert all(item.metadata["structural_group_id"] for item in (*training, *evaluation))
+
+
+def test_cohort_manifest_rejects_duplicate_content_addressed_records() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+    )
+    reference, _ = _reference_and_evaluation_records(config)
+    record = reference[0]
+
+    with pytest.raises(ValueError, match="duplicate record IDs"):
+        _cohort_manifest(record.cohort, (record, record))
+
+
+def test_evaluation_checkpoints_are_atomic_and_contract_bound(tmp_path: Path) -> None:
+    _, evaluation = _reference_and_evaluation_records(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=2,
+            evaluation_tasks_per_domain=1,
+            cohort_size=6,
+            max_steps=1,
+        )
+    )
+    checkpoint_dir = tmp_path / "prediction_checkpoints"
+    checkpoint_dir.mkdir()
+    outcome = score_generated_response(
+        evaluation[0],
+        evaluation[0].assistant_target,
+    )
+
+    _write_evaluation_checkpoint(checkpoint_dir / "000000.json", outcome)
+    loaded = _load_evaluation_checkpoints(evaluation, checkpoint_dir)
+
+    assert loaded == {evaluation[0].record_id: outcome}
+    assert not tuple(checkpoint_dir.glob("*.tmp"))
+
+    contract_path = tmp_path / "evaluation_contract.json"
+    contract = {
+        "cohort": "base",
+        "config_hash": "config:test",
+        "evaluation_dataset_hash": "dataset:test",
+        "adapter_dir": None,
+    }
+    _ensure_evaluation_contract(contract_path, contract)
+    _ensure_evaluation_contract(contract_path, contract)
+    with pytest.raises(ValueError, match="different evaluation contract"):
+        _ensure_evaluation_contract(
+            contract_path,
+            {**contract, "cohort": "other"},
+        )
+
+
+def test_evaluation_shard_environment_is_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert _evaluation_shard_from_environment() == (0, 1)
+    monkeypatch.setenv("TRAINING_UTILITY_EVAL_SHARD_COUNT", "2")
+    monkeypatch.setenv("TRAINING_UTILITY_EVAL_SHARD_INDEX", "1")
+    assert _evaluation_shard_from_environment() == (1, 2)
+    monkeypatch.setenv("TRAINING_UTILITY_EVAL_SHARD_INDEX", "2")
+    with pytest.raises(ValueError, match="within the shard count"):
+        _evaluation_shard_from_environment()

@@ -65,6 +65,7 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     build_training_utility_datasets,
     build_training_utility_report,
     evaluate_sft_model,
+    export_training_utility_review,
     load_agent_artifacts,
     load_evaluation_result,
     load_training_result,
@@ -142,6 +143,14 @@ def main(argv: list[str] | None = None) -> int:
             args.output_dir,
         )
         _emit(preflight_manifest, args.output)
+        return 0
+    if args.command == "export-training-utility-review":
+        review_manifest = export_training_utility_review(
+            args.input_dir,
+            args.output_dir,
+            markdown_limit_per_cohort=args.markdown_limit_per_cohort,
+        )
+        _emit(review_manifest.model_dump(mode="json"), args.output)
         return 0
     if args.command == "train-training-utility":
         utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
@@ -248,6 +257,11 @@ def _parser() -> argparse.ArgumentParser:
     utility_reference.add_argument("--training-config", type=Path, required=True)
     utility_reference.add_argument("--output-dir", type=Path, required=True)
     utility_reference.add_argument("--output", type=Path)
+    utility_review = subparsers.add_parser("export-training-utility-review")
+    utility_review.add_argument("--input-dir", type=Path, required=True)
+    utility_review.add_argument("--output-dir", type=Path, required=True)
+    utility_review.add_argument("--markdown-limit-per-cohort", type=int, default=0)
+    utility_review.add_argument("--output", type=Path)
     utility_train = subparsers.add_parser("train-training-utility")
     utility_train.add_argument("--training-config", type=Path, required=True)
     utility_train.add_argument(

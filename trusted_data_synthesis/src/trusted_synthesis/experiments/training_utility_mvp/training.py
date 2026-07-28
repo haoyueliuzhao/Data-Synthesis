@@ -31,6 +31,7 @@ def train_sft_cohort(
             TrainingArguments,
             set_seed,
         )
+        from transformers.trainer_utils import get_last_checkpoint
     except ImportError as exc:  # pragma: no cover - exercised only without the extra
         raise RuntimeError(
             "training dependencies are missing; install the project training extra"
@@ -42,6 +43,28 @@ def train_sft_cohort(
     if not records or {item.cohort for item in records} != {cohort}:
         raise ValueError(f"dataset does not contain only {cohort.value}")
     output_dir.mkdir(parents=True, exist_ok=True)
+    dataset_hash = canonical_hash(
+        tuple(item.record_hash for item in records),
+        prefix="training_utility_cohort_dataset:",
+    )
+    completed_result_path = output_dir / "training_result.json"
+    adapter_dir = output_dir / "adapter"
+    if completed_result_path.is_file() and adapter_dir.is_dir():
+        completed = CohortTrainingResult.model_validate_json(
+            completed_result_path.read_text(encoding="utf-8")
+        )
+        if (
+            completed.status == "completed"
+            and completed.cohort == cohort
+            and completed.config_hash == config.config_hash
+            and completed.dataset_hash == dataset_hash
+            and completed.completed_steps == config.max_steps
+        ):
+            return completed
+        raise ValueError(
+            "output directory contains a completed result for a different "
+            "training contract"
+        )
     set_seed(config.seed)
     tokenizer = AutoTokenizer.from_pretrained(
         config.base_model,
@@ -84,8 +107,10 @@ def train_sft_cohort(
         parameter.numel() for parameter in model.parameters() if parameter.requires_grad
     )
     total_count = sum(parameter.numel() for parameter in model.parameters())
+    trainer_state_dir = output_dir / "trainer_state"
+    checkpoint_interval = max(1, min(100, config.max_steps // 6 or 1))
     arguments = TrainingArguments(
-        output_dir=str(output_dir / "trainer_state"),
+        output_dir=str(trainer_state_dir),
         max_steps=config.max_steps,
         per_device_train_batch_size=config.per_device_train_batch_size,
         gradient_accumulation_steps=config.gradient_accumulation_steps,
@@ -97,7 +122,9 @@ def train_sft_cohort(
         gradient_checkpointing=True,
         logging_strategy="steps",
         logging_steps=1,
-        save_strategy="no",
+        save_strategy="steps",
+        save_steps=checkpoint_interval,
+        save_total_limit=2,
         report_to=[],
         remove_unused_columns=False,
         dataloader_num_workers=2,
@@ -114,20 +141,18 @@ def train_sft_cohort(
     )
     torch.cuda.reset_peak_memory_stats()
     started = time.monotonic()
-    train_output = trainer.train()
+    last_checkpoint = (
+        get_last_checkpoint(str(trainer_state_dir)) if trainer_state_dir.is_dir() else None
+    )
+    train_output = trainer.train(resume_from_checkpoint=last_checkpoint)
     runtime = time.monotonic() - started
     peak_memory = int(torch.cuda.max_memory_allocated())
-    adapter_dir = output_dir / "adapter"
     trainer.save_model(str(adapter_dir))
     tokenizer.save_pretrained(adapter_dir)
     resolved_revision = (
         getattr(model.config, "_commit_hash", None)
         or tokenizer.init_kwargs.get("_commit_hash")
         or config.model_revision
-    )
-    dataset_hash = canonical_hash(
-        tuple(item.record_hash for item in records),
-        prefix="training_utility_cohort_dataset:",
     )
     identity = {
         "cohort": cohort.value,

@@ -55,13 +55,13 @@ def load_agent_artifacts(
     report = AgentValidationReport.model_validate_json(
         (artifact_dir / "agent_validation_report.json").read_text(encoding="utf-8")
     )
-    examples = tuple(
-        QualityCriticExample.model_validate_json(line)
-        for line in (artifact_dir / "quality_critic_dataset.jsonl")
-        .read_text(encoding="utf-8")
-        .splitlines()
-        if line.strip()
-    )
+    critic_path = artifact_dir / "quality_critic_dataset.jsonl"
+    with critic_path.open(encoding="utf-8") as critic_file:
+        examples = tuple(
+            QualityCriticExample.model_validate_json(line)
+            for line in critic_file
+            if line.strip()
+        )
     dataset = make_quality_critic_dataset(examples)
     if report.critic_dataset_id != dataset.dataset_id:
         raise ValueError("agent report and Quality Critic dataset identities do not match")
@@ -127,9 +127,14 @@ def audit_training_utility_readiness(
     }
     required = {
         domain: {
-            "expected_tasks": config.candidate_task_target(domain),
+            "candidate_pool_tasks": config.candidate_task_target(domain),
+            "attempted_tasks": math.ceil(
+                config.candidate_task_target(domain)
+                * config.minimum_real_candidate_completion_rate
+            ),
             "real_candidates": math.ceil(
-                config.candidate_task_target(domain) * config.minimum_real_candidate_completion_rate
+                config.candidate_task_target(domain)
+                * config.minimum_real_candidate_completion_rate
             ),
             **shared_required,
         }
@@ -144,11 +149,8 @@ def audit_training_utility_readiness(
         and item.planning_track == PlanningTrack.PLAN_GIVEN
     }
     real_task_ids = [item.task_id for item in real_examples]
-    missing = sorted(expected_task_ids - attempted_task_ids)
     unexpected = sorted(attempted_task_ids - expected_task_ids)
     duplicate_count = len(real_task_ids) - len(set(real_task_ids))
-    if missing:
-        blockers.append(f"missing_attempted_candidate_tasks={len(missing)}")
     if unexpected:
         blockers.append(f"unexpected_real_candidate_tasks={len(unexpected)}")
     if duplicate_count:
@@ -179,9 +181,12 @@ def audit_training_utility_readiness(
                 expected_by_task[task_id].domain == domain for task_id in repairable_task_ids
             ),
         }
+        domain_counts["unattempted_tasks"] = (
+            domain_counts["expected_tasks"] - domain_counts["attempted_tasks"]
+        )
         observed[domain] = domain_counts
         checks = {
-            "expected_tasks": domain_counts["attempted_tasks"],
+            "attempted_tasks": domain_counts["attempted_tasks"],
             "real_candidates": domain_counts["real_candidates"],
             "d1_real": domain_counts["representable_real"],
             "d1_counterfactual": domain_counts["representable_counterfactual"],
@@ -920,13 +925,15 @@ def _representable_example_records(
     examples: tuple[QualityCriticExample, ...],
     cohort: UtilityCohort,
 ) -> tuple[SFTRecord, ...]:
-    records = []
+    records_by_id: dict[str, SFTRecord] = {}
     for example in examples:
         try:
-            records.append(_record_from_example(example, cohort))
+            record = _record_from_example(example, cohort)
         except ValueError:
             continue
-    return tuple(records)
+        # Distinct annotations can collapse to the same public prompt and target.
+        records_by_id.setdefault(record.record_id, record)
+    return tuple(records_by_id.values())
 
 
 def _balanced_take(
@@ -1012,6 +1019,9 @@ def _cohort_manifest(
     records: tuple[SFTRecord, ...],
 ) -> CohortDatasetManifest:
     record_ids = tuple(item.record_id for item in records)
+    duplicate_ids = sorted(item for item, count in Counter(record_ids).items() if count > 1)
+    if duplicate_ids:
+        raise ValueError(f"cohort {cohort.value} contains duplicate record IDs: {duplicate_ids}")
     return CohortDatasetManifest(
         cohort=cohort,
         record_count=len(records),

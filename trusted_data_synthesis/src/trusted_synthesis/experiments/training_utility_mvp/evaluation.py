@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -37,6 +38,42 @@ def evaluate_sft_model(
     if not records or {item.cohort for item in records} != {"evaluation"}:
         raise ValueError("evaluation file must contain only evaluation records")
     output_dir.mkdir(parents=True, exist_ok=True)
+    evaluation_hash = canonical_hash(
+        tuple(item.record_hash for item in records),
+        prefix="training_utility_evaluation_dataset:",
+    )
+    resolved_adapter_dir = str(adapter_dir.resolve()) if adapter_dir else None
+    evaluation_contract = {
+        "cohort": cohort,
+        "config_hash": config.config_hash,
+        "evaluation_dataset_hash": evaluation_hash,
+        "adapter_dir": resolved_adapter_dir,
+    }
+    _ensure_evaluation_contract(
+        output_dir / "evaluation_contract.json",
+        evaluation_contract,
+    )
+    prediction_path = output_dir / "predictions.jsonl"
+    result_path = output_dir / "evaluation_result.json"
+    if result_path.is_file() and prediction_path.is_file():
+        completed = CohortEvaluationResult.model_validate_json(
+            result_path.read_text(encoding="utf-8")
+        )
+        if (
+            completed.status == "completed"
+            and completed.cohort == cohort
+            and completed.adapter_dir == resolved_adapter_dir
+            and completed.evaluation_dataset_hash == evaluation_hash
+            and completed.sample_count == len(records)
+        ):
+            return completed
+        raise ValueError(
+            "output directory contains a completed result for a different "
+            "evaluation contract"
+        )
+    checkpoint_dir = output_dir / "prediction_checkpoints"
+    outcomes_by_record_id = _load_evaluation_checkpoints(records, checkpoint_dir)
+    shard_index, shard_count = _evaluation_shard_from_environment()
     set_seed(config.seed)
     tokenizer_source = str(adapter_dir) if adapter_dir else config.base_model
     tokenizer = AutoTokenizer.from_pretrained(
@@ -57,8 +94,14 @@ def evaluate_sft_model(
     model.to("cuda")
     model.eval()
     model.config.use_cache = True
-    outcomes = []
-    for record in records:
+    model.generation_config.temperature = None
+    model.generation_config.top_p = None
+    model.generation_config.top_k = None
+    for index, record in enumerate(records):
+        if index % shard_count != shard_index:
+            continue
+        if record.record_id in outcomes_by_record_id:
+            continue
         prompt = tokenizer.apply_chat_template(
             [
                 {"role": "system", "content": record.system_prompt},
@@ -86,15 +129,31 @@ def evaluate_sft_model(
         latency_ms = (time.monotonic() - started) * 1000
         new_tokens = generated[0, encoded["input_ids"].shape[1] :]
         raw_text = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
-        outcomes.append(
-            score_generated_response(
-                record,
-                raw_text,
-                generated_tokens=int(new_tokens.numel()),
-                latency_ms=latency_ms,
-            )
+        outcome = score_generated_response(
+            record,
+            raw_text,
+            generated_tokens=int(new_tokens.numel()),
+            latency_ms=latency_ms,
         )
-    prediction_path = output_dir / "predictions.jsonl"
+        outcomes_by_record_id[record.record_id] = outcome
+        _write_evaluation_checkpoint(
+            checkpoint_dir / f"{index:06d}.json",
+            outcome,
+        )
+    if shard_count > 1:
+        if shard_index:
+            return _wait_for_sharded_evaluation_result(
+                result_path,
+                cohort=cohort,
+                adapter_dir=resolved_adapter_dir,
+                evaluation_hash=evaluation_hash,
+                sample_count=len(records),
+            )
+        outcomes_by_record_id = _wait_for_all_evaluation_checkpoints(
+            records,
+            checkpoint_dir,
+        )
+    outcomes = tuple(outcomes_by_record_id[item.record_id] for item in records)
     prediction_path.write_text(
         "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in outcomes),
         encoding="utf-8",
@@ -103,14 +162,127 @@ def evaluate_sft_model(
         cohort=cohort,
         adapter_dir=adapter_dir,
         records=records,
-        outcomes=tuple(outcomes),
+        outcomes=outcomes,
         prediction_path=prediction_path,
     )
-    (output_dir / "evaluation_result.json").write_text(
-        json.dumps(result.model_dump(mode="json"), indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+    _atomic_write_json(
+        result_path,
+        result.model_dump(mode="json"),
+        indent=2,
     )
     return result
+
+
+def _evaluation_shard_from_environment() -> tuple[int, int]:
+    try:
+        shard_count = int(os.environ.get("TRAINING_UTILITY_EVAL_SHARD_COUNT", "1"))
+        shard_index = int(os.environ.get("TRAINING_UTILITY_EVAL_SHARD_INDEX", "0"))
+    except ValueError as exc:
+        raise ValueError("evaluation shard index and count must be integers") from exc
+    if shard_count < 1:
+        raise ValueError("evaluation shard count must be at least one")
+    if shard_index < 0 or shard_index >= shard_count:
+        raise ValueError("evaluation shard index must be within the shard count")
+    return shard_index, shard_count
+
+
+def _wait_for_all_evaluation_checkpoints(
+    records: tuple[SFTRecord, ...],
+    checkpoint_dir: Path,
+    *,
+    timeout_seconds: float = 12 * 60 * 60,
+) -> dict[str, dict[str, Any]]:
+    deadline = time.monotonic() + timeout_seconds
+    while True:
+        outcomes = _load_evaluation_checkpoints(records, checkpoint_dir)
+        if len(outcomes) == len(records):
+            return outcomes
+        if time.monotonic() >= deadline:
+            raise TimeoutError("timed out waiting for evaluation shards")
+        time.sleep(2)
+
+
+def _wait_for_sharded_evaluation_result(
+    result_path: Path,
+    *,
+    cohort: str,
+    adapter_dir: str | None,
+    evaluation_hash: str,
+    sample_count: int,
+    timeout_seconds: float = 12 * 60 * 60,
+) -> CohortEvaluationResult:
+    deadline = time.monotonic() + timeout_seconds
+    while True:
+        if result_path.is_file():
+            result = CohortEvaluationResult.model_validate_json(
+                result_path.read_text(encoding="utf-8")
+            )
+            if (
+                result.status != "completed"
+                or result.cohort != cohort
+                or result.adapter_dir != adapter_dir
+                or result.evaluation_dataset_hash != evaluation_hash
+                or result.sample_count != sample_count
+            ):
+                raise ValueError("primary shard wrote an incompatible evaluation result")
+            return result
+        if time.monotonic() >= deadline:
+            raise TimeoutError("timed out waiting for the primary evaluation shard")
+        time.sleep(2)
+
+
+def _ensure_evaluation_contract(path: Path, expected: dict[str, Any]) -> None:
+    if path.is_file():
+        observed = json.loads(path.read_text(encoding="utf-8"))
+        if observed != expected:
+            raise ValueError(
+                "output directory contains checkpoints for a different "
+                "evaluation contract"
+            )
+        return
+    _atomic_write_json(path, expected, indent=2)
+
+
+def _load_evaluation_checkpoints(
+    records: tuple[SFTRecord, ...],
+    checkpoint_dir: Path,
+) -> dict[str, dict[str, Any]]:
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    expected_names = {f"{index:06d}.json" for index in range(len(records))}
+    unexpected = sorted(
+        item.name for item in checkpoint_dir.glob("*.json") if item.name not in expected_names
+    )
+    if unexpected:
+        raise ValueError(f"unexpected evaluation checkpoint files: {unexpected[:5]}")
+    output: dict[str, dict[str, Any]] = {}
+    for index, record in enumerate(records):
+        path = checkpoint_dir / f"{index:06d}.json"
+        if not path.is_file():
+            continue
+        outcome = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            outcome.get("record_id") != record.record_id
+            or outcome.get("task_id") != record.task_id
+            or outcome.get("domain") != record.domain
+        ):
+            raise ValueError(f"evaluation checkpoint {path} does not match its record")
+        if record.record_id in output:
+            raise ValueError(f"duplicate evaluation checkpoint for {record.record_id}")
+        output[record.record_id] = outcome
+    return output
+
+
+def _write_evaluation_checkpoint(path: Path, outcome: dict[str, Any]) -> None:
+    _atomic_write_json(path, outcome)
+
+
+def _atomic_write_json(path: Path, payload: Any, *, indent: int | None = None) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=indent, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
 
 
 def score_generated_response(
