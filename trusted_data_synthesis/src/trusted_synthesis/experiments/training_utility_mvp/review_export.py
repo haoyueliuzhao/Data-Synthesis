@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,6 +15,13 @@ from .schema import SFTRecord
 
 QA_REVIEW_SCHEMA_VERSION = "training_utility_qa_review.v1"
 QA_REVIEW_EXPORT_VERSION = "training_utility_qa_review_export.v1"
+TargetInterpretation = Literal[
+    "gold_reference",
+    "quality_accepted_candidate",
+    "quality_rejected_candidate",
+    "intentionally_faulty_counterfactual",
+    "counterfactual_repair_target",
+]
 
 
 class QAReviewEvidence(BaseModel):
@@ -53,8 +60,11 @@ class QAReviewRecord(BaseModel):
     pattern_id: str | None = None
     answer_type: str | None = None
     answer_schema: dict[str, Any] = Field(default_factory=dict)
-    reference_answer: Any
-    reference_answer_text: str
+    target_interpretation: TargetInterpretation
+    is_gold_reference: bool
+    is_quality_approved: bool
+    assistant_target_answer: Any
+    assistant_target_answer_text: str
     selected_evidence_ids: tuple[str, ...]
     available_evidence_ids: tuple[str, ...]
     evidence: tuple[QAReviewEvidence, ...]
@@ -117,8 +127,8 @@ def export_training_utility_review(
         for path, record in source_records
     )
     grouped: dict[str, list[QAReviewRecord]] = defaultdict(list)
-    for record in reviews:
-        grouped[record.cohort].append(record)
+    for review in reviews:
+        grouped[review.cohort].append(review)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     markdown_dir = output_dir / "markdown"
@@ -274,8 +284,11 @@ def build_qa_review_record(
         pattern_id=_text(record.metadata.get("pattern_id")),
         answer_type=_text(record.metadata.get("answer_type")),
         answer_schema=dict(answer_schema),
-        reference_answer=answer,
-        reference_answer_text=_answer_text(answer),
+        target_interpretation=_target_interpretation(record),
+        is_gold_reference=record.source_kind == "deterministic_reference_workflow",
+        is_quality_approved=record.contract_label == "accept",
+        assistant_target_answer=answer,
+        assistant_target_answer_text=_answer_text(answer),
         selected_evidence_ids=selected,
         available_evidence_ids=tuple(evidence_ids),
         evidence=tuple(evidence_rows),
@@ -319,20 +332,26 @@ def _text(value: Any) -> str | None:
     return text or None
 
 
+def _target_interpretation(record: SFTRecord) -> TargetInterpretation:
+    if record.source_kind == "deterministic_reference_workflow":
+        return "gold_reference"
+    if record.counterfactual_repair:
+        return "counterfactual_repair_target"
+    if record.source_kind == "typed_counterfactual":
+        return "intentionally_faulty_counterfactual"
+    if record.contract_label == "accept":
+        return "quality_accepted_candidate"
+    return "quality_rejected_candidate"
+
+
 def _compact_evidence(evidence: dict[str, Any], selected: bool) -> QAReviewEvidence:
-    subject = evidence.get("subject") if isinstance(evidence.get("subject"), dict) else {}
-    temporal = (
-        evidence.get("temporal_context")
-        if isinstance(evidence.get("temporal_context"), dict)
-        else {}
-    )
-    scope = evidence.get("scope") if isinstance(evidence.get("scope"), dict) else {}
-    source = evidence.get("source") if isinstance(evidence.get("source"), dict) else {}
-    locator = (
-        evidence.get("source_locator") if isinstance(evidence.get("source_locator"), dict) else {}
-    )
-    definition = evidence.get("definition") if isinstance(evidence.get("definition"), dict) else {}
-    payload = evidence.get("payload") if isinstance(evidence.get("payload"), dict) else {}
+    subject = _optional_mapping(evidence.get("subject"))
+    temporal = _optional_mapping(evidence.get("temporal_context"))
+    scope = _optional_mapping(evidence.get("scope"))
+    source = _optional_mapping(evidence.get("source"))
+    locator = _optional_mapping(evidence.get("source_locator"))
+    definition = _optional_mapping(evidence.get("definition"))
+    payload = _optional_mapping(evidence.get("payload"))
     return QAReviewEvidence(
         evidence_id=str(evidence["evidence_id"]),
         selected=selected,
@@ -345,6 +364,10 @@ def _compact_evidence(evidence: dict[str, Any], selected: bool) -> QAReviewEvide
         source_uri=_text(locator.get("uri")),
         definition=_text(definition.get("text") or definition.get("definition_id")),
     )
+
+
+def _optional_mapping(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
 
 
 def _answer_text(answer: Any) -> str:
@@ -430,12 +453,16 @@ def _render_record(ordinal: int, record: QAReviewRecord) -> list[str]:
         "",
         record.question,
         "",
-        "### Reference Answer",
+        f"- Target interpretation: `{record.target_interpretation}`",
+        f"- Gold reference: `{'yes' if record.is_gold_reference else 'no'}`",
+        f"- Quality approved: `{'yes' if record.is_quality_approved else 'no'}`",
         "",
-        record.reference_answer_text,
+        "### Assistant Target Answer",
+        "",
+        record.assistant_target_answer_text,
         "",
         "```json",
-        json.dumps(record.reference_answer, ensure_ascii=False, indent=2, sort_keys=True),
+        json.dumps(record.assistant_target_answer, ensure_ascii=False, indent=2, sort_keys=True),
         "```",
         "",
         "### Evidence",

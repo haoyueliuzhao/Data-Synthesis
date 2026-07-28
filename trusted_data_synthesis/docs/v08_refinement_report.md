@@ -1,6 +1,6 @@
 # v0.8 Refinement Report
 
-> Historical refinement snapshot. Current capacity and Prompt-v3 status are recorded in `docs/v08_gap_closure_report.md`.
+> Historical refinement snapshot. Superseded by `docs/v08_audit_remediation_report.md`.
 
 ## Scope
 

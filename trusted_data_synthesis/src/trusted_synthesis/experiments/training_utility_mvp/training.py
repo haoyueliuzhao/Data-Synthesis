@@ -144,10 +144,12 @@ def train_sft_cohort(
     last_checkpoint = (
         get_last_checkpoint(str(trainer_state_dir)) if trainer_state_dir.is_dir() else None
     )
-    train_output = trainer.train(resume_from_checkpoint=last_checkpoint)
+    train_output = trainer.train(  # type: ignore[attr-defined]
+        resume_from_checkpoint=last_checkpoint
+    )
     runtime = time.monotonic() - started
     peak_memory = int(torch.cuda.max_memory_allocated())
-    trainer.save_model(str(adapter_dir))
+    trainer.save_model(str(adapter_dir))  # type: ignore[attr-defined]
     tokenizer.save_pretrained(adapter_dir)
     resolved_revision = (
         getattr(model.config, "_commit_hash", None)

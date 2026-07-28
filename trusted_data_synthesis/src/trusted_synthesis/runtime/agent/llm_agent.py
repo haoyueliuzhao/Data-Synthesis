@@ -23,7 +23,13 @@ from trusted_synthesis.core.trajectory.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.client import JsonCompletionClient, LLMClientError
+from trusted_synthesis.runtime.agent.host_execution import execute_action_plan
 from trusted_synthesis.runtime.agent.schema import (
+    AgentActionPlanContract,
+    AgentAnswerDecisionContract,
+    AgentCitation,
+    AgentExecutionTrace,
+    AgentFinalAnswer,
     AgentGenerationAudit,
     AgentResponseContract,
     AgentSearchResponseContract,
@@ -32,8 +38,11 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v6"
-LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v6"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v7"
+LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v7"
+LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v6"
+LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v1"
+LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v1"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
 
 
@@ -63,6 +72,8 @@ class LLMAgentSolver:
         repair_count = 0
         model_search_used = task.retrieval_track != RetrievalTrack.RESOLVED
         search_prompt_manifest_hash: str | None = None
+        action_prompt_manifest_hash: str | None = None
+        final_answer_prompt_manifest_hash: str | None = None
         search_plan_summary: str | None = None
         executed_search_query = dict(task.retrieval_scope)
         if model_search_used:
@@ -82,21 +93,67 @@ class LLMAgentSolver:
                 ),
             )
         retrieved = environment.search(executed_search_query)
-        base_prompt, answer_prompt_manifest_hash = _build_prompt(
-            task,
-            retrieved,
-            _public_operation_catalog(self._registry, task),
-            executed_search_query,
-        )
-        response, answer_telemetry, answer_repairs = _request_agent_response(
-            self._client,
-            base_prompt,
-            task,
-            retrieved,
-            self._registry,
-        )
-        telemetry.extend(answer_telemetry)
-        repair_count += answer_repairs
+        operation_catalog = _public_operation_catalog(self._registry, task)
+        if self._client.config.interaction_protocol == "host_instrumented":
+            action_prompt, action_prompt_manifest_hash = _build_action_prompt(
+                task,
+                retrieved,
+                operation_catalog,
+                executed_search_query,
+            )
+            action_plan, execution_trace, action_telemetry, action_repairs = (
+                _request_host_action_plan(
+                    self._client,
+                    action_prompt,
+                    task,
+                    retrieved,
+                    self._registry,
+                )
+            )
+            telemetry.extend(action_telemetry)
+            repair_count += action_repairs
+            final_prompt, final_answer_prompt_manifest_hash = _build_final_answer_prompt(
+                task,
+                retrieved,
+                action_plan,
+                execution_trace,
+            )
+            response, final_telemetry, final_repairs = _request_host_answer(
+                self._client,
+                final_prompt,
+                task,
+                retrieved,
+                action_plan,
+                execution_trace,
+                self._registry,
+            )
+            telemetry.extend(final_telemetry)
+            repair_count += final_repairs
+            answer_prompt_manifest_hash = canonical_hash(
+                {
+                    "action_prompt_manifest_hash": action_prompt_manifest_hash,
+                    "final_answer_prompt_manifest_hash": final_answer_prompt_manifest_hash,
+                },
+                prefix="agent_host_prompt_bundle:",
+            )
+            execution_source = "host_instrumented_execution"
+        else:
+            base_prompt, answer_prompt_manifest_hash = _build_prompt(
+                task,
+                retrieved,
+                operation_catalog,
+                executed_search_query,
+            )
+            response, answer_telemetry, answer_repairs = _request_agent_response(
+                self._client,
+                base_prompt,
+                task,
+                retrieved,
+                self._registry,
+            )
+            telemetry.extend(answer_telemetry)
+            repair_count += answer_repairs
+            execution_source = "model_reported_execution_trace"
         trajectory = _normalize_trajectory(
             task,
             retrieved,
@@ -104,6 +161,7 @@ class LLMAgentSolver:
             self._registry,
             executed_search_query=executed_search_query,
             search_plan_summary=search_plan_summary,
+            execution_source=execution_source,
         )
         response_hash = canonical_hash(response, prefix="agent_response:")
         prompt_manifest_hash = canonical_hash(
@@ -144,6 +202,9 @@ class LLMAgentSolver:
             prompt_manifest_hash=prompt_manifest_hash,
             search_prompt_manifest_hash=search_prompt_manifest_hash,
             answer_prompt_manifest_hash=answer_prompt_manifest_hash,
+            action_prompt_manifest_hash=action_prompt_manifest_hash,
+            final_answer_prompt_manifest_hash=final_answer_prompt_manifest_hash,
+            interaction_protocol=self._client.config.interaction_protocol,
             executed_search_query_hash=executed_search_query_hash,
             model_search_used=model_search_used,
             response_contract_hash=response_hash,
@@ -229,6 +290,157 @@ def _request_agent_response(
     if response is None:
         raise LLMClientError("model failed the agent response contract", tuple(telemetry))
     return response, tuple(telemetry), max(len(telemetry) - 1, 0)
+
+
+def _request_host_action_plan(
+    client: JsonCompletionClient,
+    base_prompt: str,
+    task: TaskPublicSpec,
+    retrieved: tuple[EvidenceItem, ...],
+    registry: OperationRegistry,
+) -> tuple[
+    AgentActionPlanContract,
+    AgentExecutionTrace,
+    tuple[ModelCallTelemetry, ...],
+    int,
+]:
+    telemetry: list[ModelCallTelemetry] = []
+    previous_payload: dict[str, Any] | None = None
+    validation_error = ""
+    accepted_plan: AgentActionPlanContract | None = None
+    execution_trace: AgentExecutionTrace | None = None
+    for attempt in range(client.config.contract_repair_attempts + 1):
+        prompt = (
+            base_prompt
+            if attempt == 0
+            else _repair_prompt(base_prompt, previous_payload, validation_error)
+        )
+        payload, call_telemetry = client.complete_json(prompt)
+        previous_payload = payload
+        try:
+            candidate = AgentActionPlanContract.model_validate(payload)
+            trace = execute_action_plan(task, retrieved, candidate, registry)
+            accepted_plan = candidate
+            execution_trace = trace
+            telemetry.append(call_telemetry)
+            break
+        except (ValidationError, ValueError) as exc:
+            contract_errors = _contract_errors(exc)
+            validation_error = "; ".join(contract_errors)
+            telemetry.append(
+                _invalid_contract_telemetry(
+                    call_telemetry,
+                    "AgentActionContractError",
+                    contract_errors=contract_errors,
+                    payload=payload,
+                )
+            )
+    if accepted_plan is None or execution_trace is None:
+        raise LLMClientError("model failed the host action contract", tuple(telemetry))
+    return (
+        accepted_plan,
+        execution_trace,
+        tuple(telemetry),
+        max(len(telemetry) - 1, 0),
+    )
+
+
+def _request_host_answer(
+    client: JsonCompletionClient,
+    base_prompt: str,
+    task: TaskPublicSpec,
+    retrieved: tuple[EvidenceItem, ...],
+    action_plan: AgentActionPlanContract,
+    execution_trace: AgentExecutionTrace,
+    registry: OperationRegistry,
+) -> tuple[AgentResponseContract, tuple[ModelCallTelemetry, ...], int]:
+    telemetry: list[ModelCallTelemetry] = []
+    previous_payload: dict[str, Any] | None = None
+    validation_error = ""
+    response: AgentResponseContract | None = None
+    for attempt in range(client.config.contract_repair_attempts + 1):
+        prompt = (
+            base_prompt
+            if attempt == 0
+            else _repair_prompt(base_prompt, previous_payload, validation_error)
+        )
+        payload, call_telemetry = client.complete_json(prompt)
+        previous_payload = payload
+        try:
+            answer = AgentAnswerDecisionContract.model_validate(payload)
+            candidate = _assemble_host_response(
+                task,
+                retrieved,
+                action_plan,
+                execution_trace,
+                answer,
+            )
+            _validate_agent_response_contract(task, retrieved, candidate, registry)
+            response = candidate
+            telemetry.append(call_telemetry)
+            break
+        except (ValidationError, ValueError) as exc:
+            contract_errors = _contract_errors(exc)
+            validation_error = "; ".join(contract_errors)
+            telemetry.append(
+                _invalid_contract_telemetry(
+                    call_telemetry,
+                    "AgentAnswerContractError",
+                    contract_errors=contract_errors,
+                    payload=payload,
+                )
+            )
+    if response is None:
+        raise LLMClientError("model failed the host answer contract", tuple(telemetry))
+    return response, tuple(telemetry), max(len(telemetry) - 1, 0)
+
+
+def _assemble_host_response(
+    task: TaskPublicSpec,
+    retrieved: tuple[EvidenceItem, ...],
+    action_plan: AgentActionPlanContract,
+    execution_trace: AgentExecutionTrace,
+    answer: AgentAnswerDecisionContract,
+) -> AgentResponseContract:
+    if set(answer.cited_evidence_ids) != set(action_plan.selected_evidence_ids):
+        raise ValueError("answer citations must exactly cover selected evidence")
+    retrieved_by_id = {item.evidence_id: item for item in retrieved}
+    try:
+        citations = tuple(
+            AgentCitation(
+                evidence_id=evidence_id,
+                source_id=retrieved_by_id[evidence_id].source.source_id,
+                source_locator=retrieved_by_id[evidence_id].source_locator.model_dump(
+                    mode="json",
+                    exclude_none=True,
+                ),
+            )
+            for evidence_id in answer.cited_evidence_ids
+        )
+    except KeyError as exc:
+        raise ValueError(f"answer cited evidence was not retrieved: {exc.args[0]}") from exc
+    output_execution = next(
+        item
+        for item in execution_trace.steps
+        if item.execution_id == execution_trace.output_execution_id
+    )
+    verification_result = (
+        output_execution.observation["result"]
+        if TaskRequirement.VERIFY_RESULT in task.requirements
+        else None
+    )
+    return AgentResponseContract(
+        plan_summary=action_plan.plan_summary,
+        selected_evidence_ids=action_plan.selected_evidence_ids,
+        execution_trace=execution_trace,
+        verification_result=verification_result,
+        final_answer=AgentFinalAnswer(
+            result=answer.result,
+            citations=citations,
+            status=answer.status,
+            claims=answer.claims,
+        ),
+    )
 
 
 def _invalid_contract_telemetry(
@@ -446,6 +658,154 @@ def _bounded_search_query(
     return query
 
 
+def _build_action_prompt(
+    task: TaskPublicSpec,
+    evidence: tuple[EvidenceItem, ...],
+    operation_catalog: tuple[dict[str, Any], ...],
+    executed_search_query: dict[str, Any],
+) -> tuple[str, str]:
+    response_schema = AgentActionPlanContract.model_json_schema()
+    task_execution_contract = _task_execution_contract(task, operation_catalog)
+    manifest = {
+        "prompt_version": LLM_AGENT_ACTION_PROMPT_VERSION,
+        "response_schema_hash": canonical_hash(
+            response_schema,
+            prefix="agent_action_plan_schema:",
+        ),
+        "operation_catalog_hash": canonical_hash(
+            operation_catalog,
+            prefix="agent_operation_catalog:",
+        ),
+        "task_execution_contract_hash": canonical_hash(
+            task_execution_contract,
+            prefix="agent_task_execution_contract:",
+        ),
+    }
+    payload = {
+        "task_public_spec": task.model_dump(mode="json", exclude_none=True),
+        "executed_search_query": executed_search_query,
+        "retrieved_evidence": [
+            item.model_dump(mode="json", exclude_none=True) for item in evidence
+        ],
+        "operation_catalog": operation_catalog,
+        "task_execution_contract": task_execution_contract,
+        "action_input_contract": {
+            "evidence": {
+                "source": "evidence",
+                "evidence_id": "copy one exact retrieved evidence_id",
+                "step_index": None,
+                "selector": "optional payload path",
+            },
+            "step": {
+                "source": "step",
+                "evidence_id": None,
+                "step_index": "one-based index of an earlier execution decision",
+                "selector": "optional operation-result path",
+            },
+            "host_owned_fields": (
+                "execution_id",
+                "tool_name",
+                "observation",
+                "status",
+                "source_locator",
+                "evidence_lineage",
+            ),
+        },
+        "response_json_schema": response_schema,
+    }
+    instructions = (
+        "Choose the evidence and operations needed to solve the public task. Return only "
+        "one JSON object matching response_json_schema. You decide selected evidence, "
+        "operator IDs, semantic inputs, parameters, and the output step. The host executes "
+        "those decisions and records immutable IDs, tool observations, source locators, and "
+        "lineage; never emit those host-owned fields. Evidence inputs copy an exact retrieved "
+        "evidence_id. Step inputs use the one-based index of an earlier decision. For "
+        "plan_given tasks, preserve the public node order, operator, input kind, selector, "
+        "dependency, and exact parameters. For plan_hidden tasks, use only registered "
+        "operators allowed by the public tool policy. selected_evidence_ids must be unique "
+        "and exactly equal the evidence used by all decisions. The output step must be the "
+        "last execution. Do not answer the task in this phase and include no text outside JSON."
+    )
+    prompt = (
+        f"{instructions}\n\nPAYLOAD:\n"
+        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+    )
+    return prompt, canonical_hash(manifest, prefix="agent_action_prompt_manifest:")
+
+
+def _build_final_answer_prompt(
+    task: TaskPublicSpec,
+    evidence: tuple[EvidenceItem, ...],
+    action_plan: AgentActionPlanContract,
+    execution_trace: AgentExecutionTrace,
+) -> tuple[str, str]:
+    response_schema = AgentAnswerDecisionContract.model_json_schema()
+    final_answer_contract = _final_answer_contract(task)
+    output_execution = next(
+        item
+        for item in execution_trace.steps
+        if item.execution_id == execution_trace.output_execution_id
+    )
+    selected = set(action_plan.selected_evidence_ids)
+    selected_evidence = tuple(item for item in evidence if item.evidence_id in selected)
+    manifest = {
+        "prompt_version": LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION,
+        "response_schema_hash": canonical_hash(
+            response_schema,
+            prefix="agent_answer_decision_schema:",
+        ),
+        "final_answer_contract_hash": canonical_hash(
+            final_answer_contract,
+            prefix="agent_final_answer_contract:",
+        ),
+        "action_plan_hash": canonical_hash(action_plan, prefix="agent_action_plan:"),
+    }
+    payload = {
+        "task_public_spec": task.model_dump(mode="json", exclude_none=True),
+        "selected_evidence": [
+            item.model_dump(mode="json", exclude_none=True) for item in selected_evidence
+        ],
+        "host_execution": {
+            "steps": [
+                {
+                    "step_index": index,
+                    "operator_id": item.operator_id,
+                    "parameters": item.parameters,
+                    "result": item.observation["result"],
+                    "evidence_ids": item.evidence_ids,
+                }
+                for index, item in enumerate(execution_trace.steps, start=1)
+            ],
+            "output_step_index": action_plan.output_step_index,
+            "output_result": output_execution.observation["result"],
+        },
+        "final_answer_contract": final_answer_contract,
+        "domain_contract_guidance": task.metadata.get("agent_contract_guidance") or {},
+        "citation_contract": {
+            "required_evidence_ids": action_plan.selected_evidence_ids,
+            "rule": (
+                "cited_evidence_ids must contain every required raw evidence ID exactly once; "
+                "the host attaches source IDs and locators"
+            ),
+        },
+        "response_json_schema": response_schema,
+    }
+    instructions = (
+        "Answer the public task from the host-executed results and selected evidence. Return "
+        "only one JSON object matching response_json_schema. Keep exact machine values and "
+        "exact result field names required by final_answer_contract; do not append units or "
+        "explanations inside numeric machine fields. Copy all required evidence IDs into "
+        "cited_evidence_ids exactly once. Do not emit source locators, execution IDs, tool "
+        "observations, verification wrappers, or any commentary outside JSON. The host owns "
+        "those records and will independently bind them."
+    )
+    prompt = (
+        f"{instructions}\n\nPAYLOAD:\n"
+        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+    )
+    return prompt, canonical_hash(manifest, prefix="agent_final_answer_prompt_manifest:")
+
+
 def _build_prompt(
     task: TaskPublicSpec,
     evidence: tuple[EvidenceItem, ...],
@@ -457,7 +817,7 @@ def _build_prompt(
     final_answer_contract = _final_answer_contract(task)
     domain_contract_guidance = task.metadata.get("agent_contract_guidance") or {}
     manifest = {
-        "prompt_version": LLM_AGENT_PROMPT_VERSION,
+        "prompt_version": LLM_AGENT_LEGACY_PROMPT_VERSION,
         "response_schema_hash": canonical_hash(response_schema, prefix="agent_response_schema:"),
         "operation_catalog_hash": canonical_hash(
             operation_catalog, prefix="agent_operation_catalog:"
@@ -733,6 +1093,7 @@ def _normalize_trajectory(
     *,
     executed_search_query: dict[str, Any],
     search_plan_summary: str | None,
+    execution_source: str = "model_reported_execution_trace",
 ) -> Trajectory:
     selected_ids = tuple(dict.fromkeys(response.selected_evidence_ids))
     final_answer = response.final_answer.model_dump(mode="json", exclude_none=True)
@@ -863,7 +1224,7 @@ def _normalize_trajectory(
         workflow_kind=WorkflowKind.CANDIDATE,
         steps=tuple(steps),
         program_execution={
-            "source": "model_reported_execution_trace",
+            "source": execution_source,
             "trace_version": response.execution_trace.trace_version,
             "operation_outputs": {
                 execution_node_ids[item.execution_id]: canonical_execution_results[

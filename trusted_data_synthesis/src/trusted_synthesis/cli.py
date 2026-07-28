@@ -23,6 +23,7 @@ from trusted_synthesis.core.release import (
     SplitPolicy,
     assign_split,
     build_release_manifest,
+    build_release_validation_summary,
     select_candidate_release,
 )
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
@@ -188,6 +189,18 @@ def main(argv: list[str] | None = None) -> int:
         write_training_utility_report(args.output_dir, utility_report, data_manifest)
         _emit(utility_report.model_dump(mode="json"), args.output)
         return 0
+    if args.command == "freeze-release-validation":
+        validation_summary = build_release_validation_summary(
+            repo_root=args.repo_root,
+            artifacts=tuple(args.artifact),
+            test_command=args.test_command,
+            test_count=args.test_count,
+            test_status=args.test_status,
+            online_status=args.online_status,
+            supersedes=tuple(args.supersedes or ()),
+        )
+        _emit(validation_summary.model_dump(mode="json"), args.output)
+        return 0 if validation_summary.status == "passed" else 1
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
     if args.command == "inspect-finance":
         _emit(adapter.inspect(), args.output)
@@ -297,6 +310,23 @@ def _parser() -> argparse.ArgumentParser:
     )
     utility_summary.add_argument("--output-dir", type=Path, required=True)
     utility_summary.add_argument("--output", type=Path)
+    release_validation = subparsers.add_parser("freeze-release-validation")
+    release_validation.add_argument("--repo-root", type=Path, default=Path("."))
+    release_validation.add_argument("--artifact", type=Path, action="append", required=True)
+    release_validation.add_argument("--test-command", required=True)
+    release_validation.add_argument("--test-count", type=int, required=True)
+    release_validation.add_argument(
+        "--test-status",
+        choices=("passed", "failed", "not_run"),
+        required=True,
+    )
+    release_validation.add_argument(
+        "--online-status",
+        choices=("not_run", "offline_only", "online_passed", "online_failed"),
+        default="offline_only",
+    )
+    release_validation.add_argument("--supersedes", action="append")
+    release_validation.add_argument("--output", type=Path, required=True)
     return parser
 
 

@@ -15,6 +15,10 @@ from trusted_synthesis.core.evaluation.critic.schema import (
     QualityCriticDataset,
     QualityCriticExample,
 )
+from trusted_synthesis.core.evaluation.critic.selection import (
+    QualityAwareSelector,
+    QualitySelectionPolicy,
+)
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
 from trusted_synthesis.core.task.program import InputRefKind
@@ -103,6 +107,19 @@ def audit_training_utility_readiness(
         UtilityCohort.RANDOM_SYNTHETIC,
     )
     accepted_by_task = {item.task_id: item for item in accepted}
+    representable_accepted_task_ids = {
+        item.task_id
+        for item in _representable_example_records(
+            accepted,
+            UtilityCohort.CONTRACT_COUNTERFACTUAL,
+        )
+    }
+    feedback_task_ids = {
+        item.task_id
+        for item in counterfactuals
+        if item.task_id in accepted_by_task
+        and item.task_id in representable_accepted_task_ids
+    }
     repairable_task_ids: set[str] = set()
     for item in counterfactuals:
         clean = accepted_by_task.get(item.task_id)
@@ -115,16 +132,21 @@ def audit_training_utility_readiness(
             continue
         repairable_task_ids.add(item.task_id)
 
-    d1_counterfactual = round(config.cohort_size * config.d1_counterfactual_fraction)
-    d4_repairs = round(config.cohort_size * config.d4_repair_fraction)
     shared_required = {
-        "d1_real": (config.cohort_size - d1_counterfactual) // 3,
-        "d1_counterfactual": d1_counterfactual // 3,
+        "d1_real": config.cohort_size // 3,
         "d3_accepted": config.cohort_size // 3,
-        "d4_direct": (config.cohort_size - d4_repairs) // 3,
-        "d4_repair": d4_repairs // 3,
+        "d4_feedback_clean": config.cohort_size // 3,
         "d5_critic_reviewed": config.cohort_size // 3,
     }
+    if config.d1_construction_mode == "legacy_counterfactual_mix":
+        d1_counterfactual = round(config.cohort_size * config.d1_counterfactual_fraction)
+        shared_required["d1_real"] = (config.cohort_size - d1_counterfactual) // 3
+        shared_required["d1_counterfactual"] = d1_counterfactual // 3
+    if config.d4_training_format == "legacy_mixed_repair":
+        d4_repairs = round(config.cohort_size * config.d4_repair_fraction)
+        shared_required.pop("d4_feedback_clean")
+        shared_required["d4_direct"] = (config.cohort_size - d4_repairs) // 3
+        shared_required["d4_repair"] = d4_repairs // 3
     required = {
         domain: {
             "candidate_pool_tasks": config.candidate_task_target(domain),
@@ -180,6 +202,9 @@ def audit_training_utility_readiness(
             "repairable_tasks": sum(
                 expected_by_task[task_id].domain == domain for task_id in repairable_task_ids
             ),
+            "feedback_clean_tasks": sum(
+                expected_by_task[task_id].domain == domain for task_id in feedback_task_ids
+            ),
         }
         domain_counts["unattempted_tasks"] = (
             domain_counts["expected_tasks"] - domain_counts["attempted_tasks"]
@@ -189,12 +214,16 @@ def audit_training_utility_readiness(
             "attempted_tasks": domain_counts["attempted_tasks"],
             "real_candidates": domain_counts["real_candidates"],
             "d1_real": domain_counts["representable_real"],
-            "d1_counterfactual": domain_counts["representable_counterfactual"],
             "d3_accepted": domain_counts["accepted"],
-            "d4_direct": domain_counts["accepted"],
-            "d4_repair": domain_counts["repairable_tasks"],
+            "d4_feedback_clean": domain_counts["feedback_clean_tasks"],
             "d5_critic_reviewed": domain_counts["critic_reviewed_accepted"],
         }
+        if config.d1_construction_mode == "legacy_counterfactual_mix":
+            checks["d1_counterfactual"] = domain_counts["representable_counterfactual"]
+        if config.d4_training_format == "legacy_mixed_repair":
+            checks.pop("d4_feedback_clean")
+            checks["d4_direct"] = domain_counts["accepted"]
+            checks["d4_repair"] = domain_counts["repairable_tasks"]
         for requirement, observed_count in checks.items():
             required_count = required[domain][requirement]
             if observed_count < required_count:
@@ -288,30 +317,27 @@ def build_training_utility_datasets(
         clean_examples,
         pool_examples,
     )
-    ranked_reviewed = tuple(
-        sorted(
-            reviewed_clean,
-            key=lambda item: (
-                -float(prediction_by_task[item.task_id].accept_probability),
-                item.example_id,
-            ),
-        )
+    d5_examples, d5_selection = _select_d5_examples(
+        config,
+        reviewed_clean,
+        prediction_by_task,
     )
-    d5_records = _balanced_ranked_take(
-        tuple(
-            _record_from_example(
-                item,
-                UtilityCohort.CRITIC_SELECTED,
-                metadata={
-                    "critic_accept_probability": prediction_by_task[
-                        item.task_id
-                    ].accept_probability,
-                    "critic_prediction_id": prediction_by_task[item.task_id].prediction_id,
-                },
-            )
-            for item in ranked_reviewed
-        ),
-        config.cohort_size,
+    d5_records = tuple(
+        _record_from_example(
+            item,
+            UtilityCohort.CRITIC_SELECTED,
+            metadata={
+                "critic_accept_probability": prediction_by_task[
+                    item.task_id
+                ].accept_probability,
+                "critic_prediction_id": prediction_by_task[item.task_id].prediction_id,
+                "quality_selection_id": d5_selection["selection_id"],
+                "quality_selection_policy_hash": d5_selection["policy_hash"],
+                "quality_vector_interpretation": "diagnostic_uncalibrated",
+                "critic_role": "advisory_ranking_only",
+            },
+        )
+        for item in d5_examples
     )
     cohorts = {
         UtilityCohort.RANDOM_SYNTHETIC: d1_records,
@@ -341,6 +367,8 @@ def build_training_utility_datasets(
     )
     evaluation_task_ids = tuple(sorted(item.task_id for item in evaluation_records))
     overlap = len(set(training_task_ids) & set(evaluation_task_ids))
+    training_records = tuple(item for records in cohorts.values() for item in records)
+    isolation = _evaluation_isolation(training_records, evaluation_records)
     cohort_manifests = tuple(_cohort_manifest(cohort, cohorts[cohort]) for cohort in UtilityCohort)
     evaluation_hash = canonical_hash(
         tuple(item.record_hash for item in evaluation_records),
@@ -353,6 +381,7 @@ def build_training_utility_datasets(
         "source_critic_dataset_id": critic_dataset.dataset_id,
         "cohort_hashes": tuple(item.dataset_hash for item in cohort_manifests),
         "evaluation_hash": evaluation_hash,
+        "evaluation_isolation": isolation,
     }
     manifest = TrainingUtilityDataManifest(
         manifest_id=canonical_hash(identity, prefix="training_utility_data_manifest:"),
@@ -386,6 +415,21 @@ def build_training_utility_datasets(
         training_task_ids=training_task_ids,
         evaluation_task_ids=evaluation_task_ids,
         train_evaluation_overlap_count=overlap,
+        train_evaluation_subject_overlap_count=isolation["subject_overlap_count"],
+        train_evaluation_evidence_overlap_count=isolation["evidence_overlap_count"],
+        train_evaluation_evidence_version_overlap_count=(
+            isolation["evidence_version_overlap_count"]
+        ),
+        train_evaluation_source_record_overlap_count=(
+            isolation["source_record_overlap_count"]
+        ),
+        train_evaluation_binding_overlap_count=isolation["binding_overlap_count"],
+        train_evaluation_program_signature_overlap_count=(
+            isolation["program_signature_overlap_count"]
+        ),
+        d5_selection_id=d5_selection["selection_id"],
+        d5_selection_policy_hash=d5_selection["policy_hash"],
+        d5_selection_status=d5_selection["status"],
     )
     return cohorts, evaluation_records, manifest
 
@@ -422,6 +466,7 @@ def write_reference_training_preflight(
             config.seed + 2,
         )
     )
+    isolation = _evaluation_isolation(selected, evaluation_records)
     output_dir.mkdir(parents=True, exist_ok=True)
     cohort_path = output_dir / f"{UtilityCohort.REFERENCE_WORKFLOW.value}.jsonl"
     evaluation_path = output_dir / "evaluation.jsonl"
@@ -466,6 +511,9 @@ def write_reference_training_preflight(
         "training_evaluation_overlap_count": len(
             {item.task_id for item in selected} & {item.task_id for item in evaluation_records}
         ),
+        "training_evaluation_identity_overlap": isolation,
+        "evaluation_track": "internal_iid_contract",
+        "external_benchmark_status": "not_executed",
     }
     (output_dir / "reference_preflight_manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -478,6 +526,72 @@ def _metadata_counts(records: tuple[SFTRecord, ...], key: str) -> dict[str, int]
     return dict(
         sorted(Counter(str(item.metadata.get(key) or "unknown") for item in records).items())
     )
+
+
+def _evaluation_isolation(
+    training_records: tuple[SFTRecord, ...],
+    evaluation_records: tuple[SFTRecord, ...],
+) -> dict[str, int]:
+    training = _dataset_identity_sets(training_records)
+    evaluation = _dataset_identity_sets(evaluation_records)
+    return {
+        f"{key}_overlap_count": len(training[key] & evaluation[key])
+        for key in (
+            "subject",
+            "evidence",
+            "evidence_version",
+            "source_record",
+            "binding",
+            "program_signature",
+        )
+    }
+
+
+def _dataset_identity_sets(records: tuple[SFTRecord, ...]) -> dict[str, set[str]]:
+    identities: dict[str, set[str]] = {
+        "subject": set(),
+        "evidence": set(),
+        "evidence_version": set(),
+        "source_record": set(),
+        "binding": set(),
+        "program_signature": set(),
+    }
+    for record in records:
+        program_signature = str(record.metadata.get("program_signature") or "")
+        if program_signature:
+            identities["program_signature"].add(program_signature)
+        payload = json.loads(record.user_prompt)
+        for evidence in payload.get("evidence_corpus") or ():
+            subject_id = str((evidence.get("subject") or {}).get("subject_id") or "")
+            evidence_id = str(evidence.get("evidence_id") or "")
+            evidence_version_id = str(evidence.get("evidence_version_id") or "")
+            source_record_id = str(
+                (evidence.get("provenance") or {}).get("source_record_id") or ""
+            )
+            if subject_id:
+                identities["subject"].add(subject_id)
+            if evidence_id:
+                identities["evidence"].add(evidence_id)
+            if evidence_version_id:
+                identities["evidence_version"].add(evidence_version_id)
+            if source_record_id:
+                identities["source_record"].add(source_record_id)
+            identities["binding"].add(
+                canonical_hash(
+                    {
+                        "domain": evidence.get("domain"),
+                        "subject_id": subject_id,
+                        "predicate": evidence.get("predicate"),
+                        "temporal_context": evidence.get("temporal_context"),
+                        "scope": evidence.get("scope"),
+                        "definition_id": (evidence.get("definition") or {}).get(
+                            "definition_id"
+                        ),
+                    },
+                    prefix="training_utility_binding_identity:",
+                )
+            )
+    return identities
 
 
 def _evaluation_ci_by_domain(records: tuple[SFTRecord, ...]) -> dict[str, float]:
@@ -686,10 +800,13 @@ def _d1_random_records(
     config: TrainingUtilityMVPConfig,
     examples: tuple[QualityCriticExample, ...],
 ) -> tuple[SFTRecord, ...]:
-    positive = _representable_example_records(
+    real_records = _representable_example_records(
         tuple(item for item in examples if item.candidate_source == "real_agent"),
         UtilityCohort.RANDOM_SYNTHETIC,
     )
+    if config.d1_construction_mode == "unfiltered_real_agent":
+        return _balanced_take(real_records, config.cohort_size, config.seed + 101)
+
     negative = _representable_example_records(
         tuple(item for item in examples if item.candidate_source == "typed_counterfactual"),
         UtilityCohort.RANDOM_SYNTHETIC,
@@ -698,13 +815,68 @@ def _d1_random_records(
     positive_count = config.cohort_size - negative_count
     return tuple(
         (
-            *_balanced_take(positive, positive_count, config.seed + 101),
+            *_balanced_take(real_records, positive_count, config.seed + 101),
             *_balanced_take(negative, negative_count, config.seed + 102),
         )
     )
 
 
 def _d4_counterfactual_calibrated_records(
+    config: TrainingUtilityMVPConfig,
+    clean_examples: tuple[QualityCriticExample, ...],
+    all_examples: tuple[QualityCriticExample, ...],
+) -> tuple[SFTRecord, ...]:
+    if config.d4_training_format == "legacy_mixed_repair":
+        return _d4_legacy_mixed_repair_records(config, clean_examples, all_examples)
+
+    counterfactuals_by_task: dict[str, list[QualityCriticExample]] = defaultdict(list)
+    for item in all_examples:
+        if item.candidate_source == "typed_counterfactual":
+            counterfactuals_by_task[item.task_id].append(item)
+    ranked_clean = []
+    for clean in clean_examples:
+        counterfactuals = counterfactuals_by_task.get(clean.task_id, [])
+        if not counterfactuals:
+            continue
+        failure_families = tuple(
+            sorted(
+                {
+                    family
+                    for item in counterfactuals
+                    for family in item.contract_annotation.failure_families
+                }
+            )
+        )
+        record = _record_from_example(
+            clean,
+            UtilityCohort.CONTRACT_COUNTERFACTUAL,
+            metadata={
+                "feedback_policy": "typed_counterfactual_to_clean_solve_allocation",
+                "feedback_failure_families": failure_families,
+                "feedback_counterfactual_example_ids": tuple(
+                    sorted(item.example_id for item in counterfactuals)
+                ),
+                "feedback_failure_family_count": len(failure_families),
+                "training_mode": "solve",
+            },
+        )
+        ranked_clean.append((len(failure_families), record))
+    ranked_clean.sort(
+        key=lambda item: (
+            -item[0],
+            canonical_hash(
+                {"seed": config.seed + 401, "record_id": item[1].record_id},
+                prefix="counterfactual_guided_clean_order:",
+            ),
+        )
+    )
+    return _balanced_ranked_take(
+        tuple(item[1] for item in ranked_clean),
+        config.cohort_size,
+    )
+
+
+def _d4_legacy_mixed_repair_records(
     config: TrainingUtilityMVPConfig,
     clean_examples: tuple[QualityCriticExample, ...],
     all_examples: tuple[QualityCriticExample, ...],
@@ -764,6 +936,60 @@ def _d4_counterfactual_calibrated_records(
         if len(used_tasks) < per_domain:
             raise ValueError(f"D4 lacks counterfactual repairs for {domain}")
     return tuple((*direct, *repairs))
+
+
+def _select_d5_examples(
+    config: TrainingUtilityMVPConfig,
+    reviewed_clean: tuple[QualityCriticExample, ...],
+    prediction_by_task: dict[str, Any],
+) -> tuple[tuple[QualityCriticExample, ...], dict[str, str]]:
+    selected: list[QualityCriticExample] = []
+    domain_results = []
+    per_domain = config.cohort_size // len(("finance", "legal", "science"))
+    selector = QualityAwareSelector()
+    for domain in ("finance", "legal", "science"):
+        domain_examples = tuple(item for item in reviewed_clean if item.domain == domain)
+        predictions = tuple(prediction_by_task[item.task_id] for item in domain_examples)
+        for example, prediction in zip(domain_examples, predictions, strict=True):
+            if prediction.example_id != example.example_id:
+                raise ValueError(
+                    f"D5 Critic prediction identity mismatch for {example.task_id}"
+                )
+        policy = QualitySelectionPolicy(
+            policy_id=f"training_utility.d5.{domain}.v2",
+            target_size=per_domain,
+            minimum_overall_score=config.d5_minimum_overall_score,
+            minimum_dimension_score=config.d5_minimum_dimension_score,
+            minimum_critic_accept_probability=(
+                config.d5_minimum_critic_accept_probability
+            ),
+            stratum_fields=("candidate_source",),
+        )
+        result = selector.select(domain_examples, policy, predictions)
+        if result.shortfall:
+            raise ValueError(
+                f"D5 QualityAwareSelector shortfall for {domain}: {result.shortfall}"
+            )
+        example_by_id = {item.example_id: item for item in domain_examples}
+        selected.extend(example_by_id[item] for item in result.selected_example_ids)
+        domain_results.append(result)
+    policy_hash = canonical_hash(
+        tuple(item.policy_hash for item in domain_results),
+        prefix="training_utility_d5_policy_bundle:",
+    )
+    selection_id = canonical_hash(
+        {
+            "policy_hash": policy_hash,
+            "domain_selection_ids": tuple(item.selection_id for item in domain_results),
+            "selected_example_ids": tuple(item.example_id for item in selected),
+        },
+        prefix="training_utility_d5_selection:",
+    )
+    return tuple(selected), {
+        "selection_id": selection_id,
+        "policy_hash": policy_hash,
+        "status": "complete",
+    }
 
 
 def _reference_and_evaluation_records(

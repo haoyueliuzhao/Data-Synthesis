@@ -10,7 +10,9 @@ from trusted_synthesis.hashing import canonical_hash
 AGENT_RESPONSE_SCHEMA_VERSION = "agent_response.v3"
 AGENT_EXECUTION_TRACE_VERSION = "agent_execution_trace.v1"
 AGENT_SEARCH_SCHEMA_VERSION = "agent_search.v1"
-AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v2"
+AGENT_ACTION_PLAN_SCHEMA_VERSION = "agent_action_plan.v1"
+AGENT_ANSWER_DECISION_SCHEMA_VERSION = "agent_answer_decision.v1"
+AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v3"
 
 
 class AgentModelConfig(BaseModel):
@@ -35,6 +37,7 @@ class AgentModelConfig(BaseModel):
     input_cost_per_million: float = Field(default=0, ge=0)
     output_cost_per_million: float = Field(default=0, ge=0)
     extra_headers: dict[str, str] = Field(default_factory=dict)
+    interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
 
     @model_validator(mode="after")
     def validate_credential_boundary(self) -> AgentModelConfig:
@@ -155,6 +158,77 @@ class AgentSearchResponseContract(BaseModel):
     search_query: AgentSearchQuery
 
 
+class AgentActionInput(BaseModel):
+    """A model-selected evidence input or earlier host-executed step."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    source: Literal["evidence", "step"]
+    evidence_id: str | None = None
+    step_index: int | None = Field(default=None, ge=1)
+    selector: str | None = None
+
+    @model_validator(mode="after")
+    def validate_source_reference(self) -> AgentActionInput:
+        if self.source == "evidence":
+            if not self.evidence_id or self.step_index is not None:
+                raise ValueError("evidence inputs require only evidence_id")
+        elif self.step_index is None or self.evidence_id is not None:
+            raise ValueError("step inputs require only step_index")
+        return self
+
+
+class AgentActionDecision(BaseModel):
+    """Semantic execution choice; immutable execution records are host-owned."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    operator_id: str = Field(min_length=1)
+    inputs: tuple[AgentActionInput, ...] = Field(min_length=1)
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    rationale_summary: str = Field(min_length=1)
+
+
+class AgentActionPlanContract(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    schema_version: Literal["agent_action_plan.v1"] = "agent_action_plan.v1"
+    plan_summary: str = Field(min_length=1)
+    selected_evidence_ids: tuple[str, ...] = Field(min_length=1)
+    executions: tuple[AgentActionDecision, ...] = Field(min_length=1)
+    output_step_index: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def validate_action_graph(self) -> AgentActionPlanContract:
+        if len(self.selected_evidence_ids) != len(set(self.selected_evidence_ids)):
+            raise ValueError("selected_evidence_ids must be unique")
+        if self.output_step_index > len(self.executions):
+            raise ValueError("output_step_index does not reference an execution")
+        for current_index, execution in enumerate(self.executions, start=1):
+            for item in execution.inputs:
+                if item.source == "step" and (item.step_index or 0) >= current_index:
+                    raise ValueError("step inputs must reference an earlier execution")
+        return self
+
+
+class AgentAnswerDecisionContract(BaseModel):
+    """Model-owned answer content with host-owned citation metadata omitted."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    schema_version: Literal["agent_answer_decision.v1"] = "agent_answer_decision.v1"
+    result: dict[str, Any]
+    cited_evidence_ids: tuple[str, ...] = Field(min_length=1)
+    status: Any | None = None
+    claims: tuple[dict[str, Any], ...] | None = None
+
+    @model_validator(mode="after")
+    def validate_citations(self) -> AgentAnswerDecisionContract:
+        if len(self.cited_evidence_ids) != len(set(self.cited_evidence_ids)):
+            raise ValueError("cited_evidence_ids must be unique")
+        return self
+
+
 class AgentCitation(BaseModel):
     """A citation copied from one retrieved evidence item."""
 
@@ -201,6 +275,9 @@ class AgentGenerationAudit(BaseModel):
     prompt_manifest_hash: str
     search_prompt_manifest_hash: str | None = None
     answer_prompt_manifest_hash: str
+    action_prompt_manifest_hash: str | None = None
+    final_answer_prompt_manifest_hash: str | None = None
+    interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
     executed_search_query_hash: str
     model_search_used: bool = False
     response_contract_hash: str

@@ -320,6 +320,8 @@ def _legal_rule(
     scope_id: str = "example_jdx",
     year: int = 2025,
 ) -> EvidenceItem:
+    _, separator, suffix = key.rpartition("_")
+    case_key = suffix if separator and len(suffix) == 4 and suffix.isdigit() else "base"
     return EvidenceItem(
         evidence_id=f"evidence:legal:{key}@v1",
         assertion_id=f"assertion:legal:{key}",
@@ -327,7 +329,9 @@ def _legal_rule(
         domain="legal",
         evidence_kind=EvidenceKind.RULE,
         subject=SubjectRef(
-            subject_id="filing_case", name="Example filing case", subject_type="legal_matter"
+            subject_id=f"filing_case_{case_key}",
+            name=f"Example filing case {case_key}",
+            subject_type="legal_matter",
         ),
         predicate="filing_requirement",
         payload=RuleStatement(

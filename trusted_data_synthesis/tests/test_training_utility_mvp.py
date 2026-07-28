@@ -29,6 +29,7 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     TrainingUtilityMVPConfig,
     aggregate_evaluation_outcomes,
     audit_training_utility_readiness,
+    build_qa_review_record,
     build_training_utility_datasets,
     export_training_utility_review,
     score_generated_response,
@@ -164,12 +165,34 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
     )
     assert len(evaluation) == 3
     assert manifest.train_evaluation_overlap_count == 0
+    assert manifest.train_evaluation_subject_overlap_count == 0
+    assert manifest.train_evaluation_evidence_overlap_count == 0
+    assert manifest.train_evaluation_evidence_version_overlap_count == 0
+    assert manifest.train_evaluation_source_record_overlap_count == 0
+    assert manifest.train_evaluation_binding_overlap_count == 0
+    assert manifest.train_evaluation_program_signature_overlap_count > 0
+    assert manifest.internal_evaluation_isolation_status == "passed"
+    assert manifest.evaluation_track == "internal_iid_contract"
+    assert manifest.external_benchmark_status == "not_executed"
     assert manifest.accepted_real_candidate_count == 6
     assert manifest.critic_reviewed_accepted_count == 6
     assert manifest.critic_model_ids == ("deepseek-v4-pro",)
-    assert (
-        sum(item.counterfactual_repair for item in cohorts[UtilityCohort.CONTRACT_COUNTERFACTUAL])
-        == 3
+    assert manifest.d5_selection_status == "complete"
+    assert manifest.d5_selection_id
+    assert all(
+        item.source_kind == "real_agent"
+        for item in cohorts[UtilityCohort.RANDOM_SYNTHETIC]
+    )
+    assert all(
+        not item.counterfactual_repair
+        and item.metadata["training_mode"] == "solve"
+        and item.metadata["feedback_counterfactual_example_ids"]
+        for item in cohorts[UtilityCohort.CONTRACT_COUNTERFACTUAL]
+    )
+    assert all(
+        item.metadata["critic_role"] == "advisory_ranking_only"
+        and item.metadata["quality_selection_id"] == manifest.d5_selection_id
+        for item in cohorts[UtilityCohort.CRITIC_SELECTED]
     )
 
 
@@ -219,6 +242,7 @@ def test_training_utility_rejects_unbalanced_fraction_contract() -> None:
         TrainingUtilityMVPConfig(
             candidate_tasks_per_domain=3,
             cohort_size=9,
+            d1_construction_mode="legacy_counterfactual_mix",
             d1_counterfactual_fraction=0.5,
         )
 
@@ -273,8 +297,11 @@ def test_training_utility_review_export_flattens_question_answer_and_evidence(
     assert manifest.domain_counts == {"finance": 3, "legal": 3, "science": 3}
     assert len(rows) == 9
     assert all(row["question"] for row in rows)
-    assert all("reference_answer" in row for row in rows)
-    assert all(row["reference_answer_text"] for row in rows)
+    assert all("assistant_target_answer" in row for row in rows)
+    assert all(row["assistant_target_answer_text"] for row in rows)
+    assert {row["target_interpretation"] for row in rows} == {"gold_reference"}
+    assert all(row["is_gold_reference"] for row in rows)
+    assert all(row["is_quality_approved"] for row in rows)
     assert all(row["selected_evidence_ids"] for row in rows)
     assert all(
         set(row["selected_evidence_ids"]).issubset(row["available_evidence_ids"]) for row in rows
@@ -309,6 +336,50 @@ def test_training_utility_review_export_fails_on_invalid_embedded_json(
 
     with pytest.raises(ValueError, match="invalid JSON in user_prompt"):
         export_training_utility_review(input_dir, tmp_path / "review")
+
+
+def test_training_utility_review_labels_target_semantics() -> None:
+    records, _ = _reference_and_evaluation_records(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=2,
+            evaluation_tasks_per_domain=1,
+            cohort_size=6,
+            max_steps=1,
+        )
+    )
+    base = records[0]
+    variants = (
+        (base, "gold_reference"),
+        (
+            base.model_copy(update={"source_kind": "real_agent", "contract_label": "accept"}),
+            "quality_accepted_candidate",
+        ),
+        (
+            base.model_copy(update={"source_kind": "real_agent", "contract_label": "reject"}),
+            "quality_rejected_candidate",
+        ),
+        (
+            base.model_copy(
+                update={"source_kind": "typed_counterfactual", "contract_label": "reject"}
+            ),
+            "intentionally_faulty_counterfactual",
+        ),
+        (
+            base.model_copy(
+                update={
+                    "source_kind": "real_agent",
+                    "contract_label": "accept",
+                    "counterfactual_repair": True,
+                }
+            ),
+            "counterfactual_repair_target",
+        ),
+    )
+
+    assert tuple(
+        build_qa_review_record(record, source_dataset_file="test.jsonl").target_interpretation
+        for record, _ in variants
+    ) == tuple(expected for _, expected in variants)
 
 
 def test_training_utility_supports_oversupplied_per_domain_pools() -> None:

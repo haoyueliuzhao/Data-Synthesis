@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v3"
+TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v4"
 VALIDATION_DOMAINS = ("finance", "legal", "science")
 
 
@@ -24,8 +24,19 @@ class TrainingUtilityMVPConfig(BaseModel):
     evaluation_task_targets: dict[str, int] = Field(default_factory=dict)
     cohort_size: int = Field(default=24, ge=6, le=5000)
     minimum_real_candidate_completion_rate: float = Field(default=0.8, gt=0, le=1)
+    d1_construction_mode: Literal[
+        "unfiltered_real_agent",
+        "legacy_counterfactual_mix",
+    ] = "unfiltered_real_agent"
     d1_counterfactual_fraction: float = Field(default=0.5, ge=0, le=1)
+    d4_training_format: Literal[
+        "clean_solve_feedback",
+        "legacy_mixed_repair",
+    ] = "clean_solve_feedback"
     d4_repair_fraction: float = Field(default=0.5, ge=0, le=1)
+    d5_minimum_overall_score: float = Field(default=0, ge=0, le=1)
+    d5_minimum_dimension_score: float = Field(default=0, ge=0, le=1)
+    d5_minimum_critic_accept_probability: float = Field(default=0, ge=0, le=1)
     max_seq_length: int = Field(default=8192, ge=512, le=16384)
     max_new_tokens: int = Field(default=1024, ge=64, le=4096)
     max_steps: int = Field(default=32, ge=1, le=10000)
@@ -79,14 +90,24 @@ class TrainingUtilityMVPConfig(BaseModel):
             raise ValueError(
                 f"cohort_size exceeds at least one real candidate task pool: {shortfalls}"
             )
-        d1_negative_count = round(self.cohort_size * self.d1_counterfactual_fraction)
-        d4_repair_count = round(self.cohort_size * self.d4_repair_fraction)
-        for label, count in (
-            ("D1 counterfactual", d1_negative_count),
-            ("D1 direct", self.cohort_size - d1_negative_count),
-            ("D4 repair", d4_repair_count),
-            ("D4 direct", self.cohort_size - d4_repair_count),
-        ):
+        legacy_counts: list[tuple[str, int]] = []
+        if self.d1_construction_mode == "legacy_counterfactual_mix":
+            d1_negative_count = round(self.cohort_size * self.d1_counterfactual_fraction)
+            legacy_counts.extend(
+                (
+                    ("D1 counterfactual", d1_negative_count),
+                    ("D1 direct", self.cohort_size - d1_negative_count),
+                )
+            )
+        if self.d4_training_format == "legacy_mixed_repair":
+            d4_repair_count = round(self.cohort_size * self.d4_repair_fraction)
+            legacy_counts.extend(
+                (
+                    ("D4 repair", d4_repair_count),
+                    ("D4 direct", self.cohort_size - d4_repair_count),
+                )
+            )
+        for label, count in legacy_counts:
             if count % 3:
                 raise ValueError(f"{label} count must be divisible by three")
         return self
@@ -168,14 +189,39 @@ class TrainingUtilityDataManifest(BaseModel):
     training_task_ids: tuple[str, ...]
     evaluation_task_ids: tuple[str, ...]
     train_evaluation_overlap_count: int = Field(ge=0)
+    train_evaluation_subject_overlap_count: int = Field(default=0, ge=0)
+    train_evaluation_evidence_overlap_count: int = Field(default=0, ge=0)
+    train_evaluation_evidence_version_overlap_count: int = Field(default=0, ge=0)
+    train_evaluation_source_record_overlap_count: int = Field(default=0, ge=0)
+    train_evaluation_binding_overlap_count: int = Field(default=0, ge=0)
+    train_evaluation_program_signature_overlap_count: int = Field(default=0, ge=0)
+    internal_evaluation_isolation_status: str = "passed"
+    d5_selection_id: str | None = None
+    d5_selection_policy_hash: str | None = None
+    d5_selection_status: str | None = None
+    evaluation_track: str = "internal_iid_contract"
+    external_benchmark_status: str = "not_executed"
     version: str = TRAINING_UTILITY_MVP_VERSION
 
     @model_validator(mode="after")
     def validate_complete_design(self) -> TrainingUtilityDataManifest:
         if {item.cohort for item in self.cohorts} != set(UtilityCohort):
             raise ValueError("MVP manifest must contain D1 through D5")
-        if self.train_evaluation_overlap_count:
-            raise ValueError("training and evaluation task IDs must be disjoint")
+        hard_overlaps = {
+            "task": self.train_evaluation_overlap_count,
+            "subject": self.train_evaluation_subject_overlap_count,
+            "evidence": self.train_evaluation_evidence_overlap_count,
+            "evidence_version": self.train_evaluation_evidence_version_overlap_count,
+            "source_record": self.train_evaluation_source_record_overlap_count,
+            "binding": self.train_evaluation_binding_overlap_count,
+        }
+        observed = {key: value for key, value in hard_overlaps.items() if value}
+        if observed:
+            raise ValueError(
+                f"training and internal evaluation identities must be disjoint: {observed}"
+            )
+        if self.internal_evaluation_isolation_status != "passed":
+            raise ValueError("completed MVP manifests require passed evaluation isolation")
         return self
 
 

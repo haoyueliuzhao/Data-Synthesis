@@ -18,9 +18,10 @@ Domain Adapter
 -> Typed Counterfactual Generation + Minimality Validation
 -> Root Cause / Failure Closure Calibration
 -> Real LLM Candidate Agent (Resolved / Semi-open / Open)
+-> Host-Instrumented Action Plan + Host-Owned Execution Trace
 -> PLAN_GIVEN / PLAN_HIDDEN trajectory normalization
 -> Legacy Evaluator + Contract Runtime parity gate
--> five-dimensional Quality Vector
+-> uncalibrated five-dimensional diagnostic Quality Vector
 -> advisory Quality Critic + Contract-authoritative selection
 -> executable D1-D5 Training Utility MVP
 ```
@@ -46,9 +47,9 @@ trusted-synthesis validate-counterfactuals \
   --tasks-per-domain 10 \
   --output artifacts/counterfactual_validation/v07_contract_30.json
 trusted-synthesis validate-agents \
-  --agent-config config/deepseek_v4_pro_agent_smoke.json \
-  --output-dir artifacts/agent_validation/v08_deepseek_smoke \
-  --output artifacts/agent_validation/v08_deepseek_smoke_report.json
+  --agent-config config/deepseek_v4_pro_agent_v08_host_regression.json \
+  --output-dir artifacts/agent_validation/v08_host_regression \
+  --output artifacts/agent_validation/v08_host_regression_report.json
 trusted-synthesis audit-agent-capacity \
   --agent-config config/deepseek_v4_pro_agent_v08_capacity.json \
   --output data/audit/v08_agent_capacity_preflight.json
@@ -57,15 +58,23 @@ trusted-synthesis prepare-training-utility \
   --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates \
   --output-dir artifacts/training_utility_mvp/pilot/data
 
-# Export flat question/reference-answer JSONL plus per-cohort Markdown review books.
+# Export flat question/target JSONL plus per-cohort Markdown review books.
 trusted-synthesis export-training-utility-review \
   --input-dir artifacts/training_utility_mvp/pilot/data \
   --output-dir artifacts/training_utility_mvp/pilot/review
 
 # Fail closed on per-domain D1-D5 capacity before spending GPU time.
 trusted-synthesis audit-training-utility-readiness \
-  --training-config config/training_utility_mvp.json \
+  --training-config config/training_utility_v08_1_qwen2_5_7b.json \
   --agent-artifacts artifacts/agent_validation/v08_training_utility_candidates
+trusted-synthesis freeze-release-validation \
+  --repo-root . \
+  --artifact docs/v08_audit_remediation_report.md \
+  --test-command ".venv/bin/python -m pytest -q" \
+  --test-count 114 \
+  --test-status passed \
+  --online-status offline_only \
+  --output artifacts/release_validation/v08_1.json
 trusted-synthesis audit-generalization --source-root src
 pytest -q
 ```
@@ -75,7 +84,7 @@ configuration. The checked-in smoke profile requires `DEEPSEEK_API_KEY`, pins
 `deepseek-v4-pro`, performs provider model discovery, and does not silently fall back to
 another model. No API key is serialized into prompts, telemetry, reports, or manifests.
 
-The v0.8.0 compiler first binds a versioned declarative Task Pattern to a content-addressed
+The v0.8.1 compiler first binds a versioned declarative Task Pattern to a content-addressed
 Evidence Binding. It deterministically expands the Task Program, computes a structural difficulty
 profile, and packages the domain-rendered Public/Oracle contracts. The proof compiler then binds
 each task, Evidence Bundle, Proof Graph, Task Program,
@@ -93,19 +102,23 @@ Each mutable clause now declares versioned mutation operators. The counterfactua
 planner mines executable opportunities, generates one-factor failures, validates
 structural minimality, and measures detection, root-cause localization, and transitive
 failure closure. See [Typed Counterfactual Engine](docs/typed_counterfactual_engine.md).
-Real model candidates are now generated from public task state, normalized without semantic
-repair, independently replayed, projected to a Quality Vector, and optionally reviewed by an
-advisory model critic. Semi-open and open tracks use a separate model-generated bounded search
-request before answer generation. See
+Real model candidates are generated from public task state. In the v0.8.1 host-instrumented
+protocol the model chooses search constraints, Evidence, operators, inputs, parameters, and the
+answer; the host executes operations and owns immutable execution IDs, observations, source
+locators, and lineage. Candidates are independently replayed, projected to an explicitly
+uncalibrated diagnostic Quality Vector, and optionally reviewed by an advisory model critic.
+Semi-open and open tracks use a separate bounded search decision. See
 [Agent-Centered Quality Validation](docs/agent_centered_quality_validation.md).
 The implementation audit and current validation boundary are recorded in
 [v0.8 Agent Validation Report](docs/v08_agent_validation_report.md).
-The controlled D1-D5 experiment and the Qwen3-8B expansion profile are specified in
+The corrected D1-D5 experiment and frozen Qwen2.5-7B profile are specified in
 [v0.8 Training Utility MVP](docs/v08_training_utility_mvp.md).
 The first real Qwen resource and integration run is recorded in the
 [v0.8 Training Utility MVP Preflight Report](docs/v08_training_utility_mvp_preflight_report.md).
 The Program Skeleton/Execution Trace correction, capacity audit, and current execution boundary
 are summarized in [v0.8 Refinement Report](docs/v08_refinement_report.md).
+The audit-driven host loop, cohort corrections, evaluation isolation, and release provenance
+changes are summarized in [v0.8.1 Audit Remediation](docs/v08_audit_remediation_report.md).
 The Pattern and Binding boundary is specified in
 [Task Pattern IR and Binding Compiler](docs/task_pattern_ir.md).
 

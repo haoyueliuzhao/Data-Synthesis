@@ -1,5 +1,7 @@
 # v0.8 Agent Contract Reliability Report
 
+> Historical full-response protocol report. Superseded by `docs/v08_audit_remediation_report.md`.
+
 Generated: 2026-07-27
 
 ## 1. Scope

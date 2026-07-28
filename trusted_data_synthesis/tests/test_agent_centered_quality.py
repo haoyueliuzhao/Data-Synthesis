@@ -58,7 +58,13 @@ from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 
 
 class ScriptedJsonClient:
-    def __init__(self, payloads: list[dict[str, Any]], *, repair_attempts: int = 0) -> None:
+    def __init__(
+        self,
+        payloads: list[dict[str, Any]],
+        *,
+        repair_attempts: int = 0,
+        interaction_protocol: str = "full_response",
+    ) -> None:
         self._payloads = list(payloads)
         self._config = AgentModelConfig(
             provider="scripted",
@@ -69,6 +75,7 @@ class ScriptedJsonClient:
             auto_discover_models=False,
             require_requested_model=True,
             contract_repair_attempts=repair_attempts,
+            interaction_protocol=interaction_protocol,
         )
         self.call_count = 0
         self.prompts: list[str] = []
@@ -169,6 +176,87 @@ def test_llm_agent_plan_given_is_independently_verified() -> None:
     assert verification.operation_grounding_score == 1
     assert verification.tool_necessity_score == 1
     assert "program_skeleton is a plan, not an execution result" in client.prompts[0]
+
+
+def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_payload = _action_plan_from_trajectory(deterministic)
+    answer_payload = _answer_decision_from_trajectory(deterministic)
+    client = ScriptedJsonClient(
+        [action_payload, answer_payload],
+        interaction_protocol="host_instrumented",
+    )
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    compiled, runtime = _compile_runtime(case, task)
+    assessment = runtime.evaluate(
+        compiled.quality_contract,
+        task,
+        case.corpus,
+        case.proof_graph,
+        result.trajectory,
+    )
+
+    assert assessment.decision.value == "accepted"
+    assert result.audit.interaction_protocol == "host_instrumented"
+    assert result.audit.action_prompt_manifest_hash
+    assert result.audit.final_answer_prompt_manifest_hash
+    assert result.trajectory.program_execution["source"] == "host_instrumented_execution"
+    assert client.call_count == 2
+    assert "host_owned_fields" in client.prompts[0]
+    assert "host_execution" in client.prompts[1]
+    assert all("execution_id" not in item for item in action_payload["executions"])
+    assert "source_locator" not in answer_payload
+    host_steps = tuple(
+        step for step in result.trajectory.steps if "execution_id" in step.observation
+    )
+    assert host_steps
+    assert all(
+        str(step.observation["execution_id"]).startswith("host_agent_execution:")
+        and step.observation["execution_id"] != step.program_node_id
+        for step in host_steps
+    )
+
+
+def test_host_instrumented_agent_rejects_unretrieved_evidence() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_plan = _action_plan_from_trajectory(deterministic)
+    action_plan["selected_evidence_ids"][0] = "evidence:unknown:item@v1"
+    action_plan["executions"][0]["inputs"][0]["evidence_id"] = (
+        "evidence:unknown:item@v1"
+    )
+
+    with pytest.raises(LLMClientError, match="host action contract"):
+        LLMAgentSolver(
+            ScriptedJsonClient(
+                [action_plan],
+                interaction_protocol="host_instrumented",
+            ),
+            case.registry,
+        ).solve(task.public, InMemoryEvidenceToolRuntime(case.corpus))
 
 
 def test_public_skeleton_copy_is_rejected_as_execution() -> None:
@@ -534,8 +622,31 @@ def test_agent_capacity_audit_supports_domain_specific_targets() -> None:
     }
     assert report.unique_task_counts == report.materialized_task_counts
     assert report.planned_candidate_count == 6
+    assert report.interaction_protocol == "full_response"
+    assert report.planned_search_api_calls == 0
+    assert report.planned_action_api_calls == 0
+    assert report.planned_final_answer_api_calls == 0
+    assert report.planned_full_response_api_calls == 6
     assert report.planned_agent_api_call_floor == 6
     assert report.planned_critic_api_call_ceiling == 4
+
+
+def test_host_instrumented_capacity_counts_both_generation_phases() -> None:
+    config = AgentValidationConfig(
+        model=ScriptedJsonClient([], interaction_protocol="host_instrumented").config,
+        domain_task_targets={"finance": 3, "legal": 2, "science": 1},
+        retrieval_tracks=(RetrievalTrack.RESOLVED,),
+        planning_tracks=(PlanningTrack.PLAN_GIVEN,),
+    )
+
+    report = audit_agent_validation_capacity(config)
+
+    assert report.interaction_protocol == "host_instrumented"
+    assert report.planned_search_api_calls == 0
+    assert report.planned_action_api_calls == 6
+    assert report.planned_final_answer_api_calls == 6
+    assert report.planned_full_response_api_calls == 0
+    assert report.planned_agent_api_call_floor == 12
 
 
 def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks(
@@ -881,6 +992,84 @@ def test_public_agent_imports_work_in_a_cold_python_process() -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
+
+
+def _action_plan_from_trajectory(trajectory: Trajectory) -> dict[str, Any]:
+    operation_steps = [
+        step
+        for step in trajectory.steps
+        if step.program_node_id is not None
+        and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    ]
+    node_positions = {
+        step.program_node_id: index
+        for index, step in enumerate(operation_steps, start=1)
+        if step.program_node_id is not None
+    }
+    selected_step = next(
+        step
+        for step in trajectory.steps
+        if step.action == ActionType.SELECT_EVIDENCE and step.program_node_id is None
+    )
+    verify_step = next(
+        (step for step in trajectory.steps if step.action == ActionType.VERIFY),
+        None,
+    )
+    output_node_id = (
+        verify_step.program_node_id
+        if verify_step is not None
+        else operation_steps[-1].program_node_id
+    )
+    assert output_node_id is not None
+    return {
+        "schema_version": "agent_action_plan.v1",
+        "plan_summary": "Select matching evidence and execute a typed operation DAG.",
+        "selected_evidence_ids": list(selected_step.evidence_ids),
+        "executions": [
+            {
+                "operator_id": step.operator_id,
+                "inputs": [
+                    _action_input_from_ref(ref, node_positions) for ref in step.input_refs
+                ],
+                "parameters": step.tool_input.get("parameters", {}),
+                "rationale_summary": "Execute the selected typed operation.",
+            }
+            for step in operation_steps
+        ],
+        "output_step_index": node_positions[output_node_id],
+    }
+
+
+def _action_input_from_ref(
+    ref: str,
+    node_positions: dict[str, int],
+) -> dict[str, Any]:
+    base, separator, selector = ref.partition("#")
+    if base.startswith("evidence:"):
+        return {
+            "source": "evidence",
+            "evidence_id": base.removeprefix("evidence:"),
+            "selector": selector if separator else None,
+        }
+    node_id = base.removeprefix("operation:")
+    return {
+        "source": "step",
+        "step_index": node_positions[node_id],
+        "selector": selector if separator else None,
+    }
+
+
+def _answer_decision_from_trajectory(trajectory: Trajectory) -> dict[str, Any]:
+    final_answer = trajectory.final_answer
+    return {
+        "schema_version": "agent_answer_decision.v1",
+        "result": final_answer["result"],
+        "cited_evidence_ids": [
+            item["evidence_id"] for item in final_answer["citations"]
+        ],
+        **({"status": final_answer["status"]} if "status" in final_answer else {}),
+        **({"claims": final_answer["claims"]} if "claims" in final_answer else {}),
+    }
 
 
 def _response_from_trajectory(

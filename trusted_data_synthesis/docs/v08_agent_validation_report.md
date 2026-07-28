@@ -1,5 +1,7 @@
 # v0.8 Agent-Centered Quality Validation Report
 
+> Historical pre-online snapshot. Superseded by `docs/v08_audit_remediation_report.md`.
+
 ## Executive Summary
 
 v0.8 adds a real-model candidate boundary without weakening the v0.7 Quality Contract.

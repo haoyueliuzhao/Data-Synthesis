@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -13,7 +14,7 @@ from trusted_synthesis.core.evaluation.contracts.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-QUALITY_VECTOR_VERSION = "quality_vector.v1"
+QUALITY_VECTOR_VERSION = "quality_vector.v2"
 
 
 class QualityDimension(str, Enum):
@@ -86,6 +87,7 @@ class QualityVector(BaseModel):
     overall_score: float = Field(ge=0, le=1)
     minimum_applicable_score: float = Field(ge=0, le=1)
     accepted_by_contract: bool
+    interpretation: Literal["diagnostic_uncalibrated"] = "diagnostic_uncalibrated"
     version: str = QUALITY_VECTOR_VERSION
 
     def score_for(self, dimension: QualityDimension) -> float | None:

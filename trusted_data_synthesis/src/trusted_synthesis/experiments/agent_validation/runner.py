@@ -163,7 +163,18 @@ def audit_agent_validation_capacity(
     base_task_count = sum(targets.values())
     planned_candidates = base_task_count * retrieval_count * planning_count
     model_search_tracks = sum(track.value != "resolved" for track in config.retrieval_tracks)
-    agent_call_floor = base_task_count * planning_count * (retrieval_count + model_search_tracks)
+    search_calls = base_task_count * planning_count * model_search_tracks
+    if config.model.interaction_protocol == "host_instrumented":
+        action_calls = planned_candidates
+        final_answer_calls = planned_candidates
+        full_response_calls = 0
+    else:
+        action_calls = 0
+        final_answer_calls = 0
+        full_response_calls = planned_candidates
+    agent_call_floor = (
+        search_calls + action_calls + final_answer_calls + full_response_calls
+    )
     critic_call_ceiling = (
         min(config.model_critic_max_examples, planned_candidates) if config.run_model_critic else 0
     )
@@ -190,6 +201,11 @@ def audit_agent_validation_capacity(
         retrieval_track_count=retrieval_count,
         planning_track_count=planning_count,
         planned_candidate_count=planned_candidates,
+        interaction_protocol=config.model.interaction_protocol,
+        planned_search_api_calls=search_calls,
+        planned_action_api_calls=action_calls,
+        planned_final_answer_api_calls=final_answer_calls,
+        planned_full_response_api_calls=full_response_calls,
         planned_agent_api_call_floor=agent_call_floor,
         planned_critic_api_call_ceiling=critic_call_ceiling,
         fixture_manifest_hash=canonical_hash(
@@ -938,6 +954,7 @@ def _build_report(
         config_hash=config.config_hash,
         model_config_hash=config.model.public_manifest_hash,
         requested_model=config.model.model,
+        interaction_protocol=config.model.interaction_protocol,
         requested_domain_task_counts=requested_task_counts,
         requested_domain_candidate_counts=requested_candidate_counts,
         domain_completion_rates=domain_completion_rates,
@@ -1000,6 +1017,36 @@ def _build_report(
                     item.generation_audit.prompt_manifest_hash
                     for item in samples
                     if item.generation_audit is not None
+                }
+            )
+        ),
+        agent_search_prompt_manifest_hashes=tuple(
+            sorted(
+                {
+                    item.generation_audit.search_prompt_manifest_hash
+                    for item in samples
+                    if item.generation_audit is not None
+                    and item.generation_audit.search_prompt_manifest_hash is not None
+                }
+            )
+        ),
+        agent_action_prompt_manifest_hashes=tuple(
+            sorted(
+                {
+                    item.generation_audit.action_prompt_manifest_hash
+                    for item in samples
+                    if item.generation_audit is not None
+                    and item.generation_audit.action_prompt_manifest_hash is not None
+                }
+            )
+        ),
+        agent_final_answer_prompt_manifest_hashes=tuple(
+            sorted(
+                {
+                    item.generation_audit.final_answer_prompt_manifest_hash
+                    for item in samples
+                    if item.generation_audit is not None
+                    and item.generation_audit.final_answer_prompt_manifest_hash is not None
                 }
             )
         ),

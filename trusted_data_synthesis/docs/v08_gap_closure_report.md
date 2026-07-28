@@ -1,6 +1,6 @@
 # v0.8 Gap Closure and Prompt-v3 Calibration Report
 
-> Superseded empirical status: `docs/v08_prompt_v3_real_calibration_report.md`.
+> Historical snapshot. Superseded by `docs/v08_audit_remediation_report.md`.
 
 ## Decision
 
@@ -177,4 +177,3 @@ retained as a Critic-calibration slice rather than hidden by broadening the expe
 The authorized 36-task Prompt-v3 calibration completed with 9 normalized trajectories and zero
 Contract-accepted candidates.
 D1, D3, D4, and D5 remain unmaterialized, and the 2,000-task run is blocked pending the corrective loop in the real calibration report.
-

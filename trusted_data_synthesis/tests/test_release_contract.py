@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from trusted_synthesis.core.evaluation.evaluator import CandidateQualityEvaluator
@@ -10,6 +12,7 @@ from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.release import (
     SplitPolicy,
     assign_split,
+    build_release_validation_summary,
     select_candidate_release,
     semantic_cluster_id,
 )
@@ -19,6 +22,52 @@ from trusted_synthesis.experiments.finance_pilot.candidate import (
     FinanceNumericCandidateGenerator,
 )
 from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
+
+
+def test_release_validation_summary_freezes_artifact_and_test_identity(
+    tmp_path: Path,
+) -> None:
+    artifact = tmp_path / "manifest.json"
+    artifact.write_text('{"status":"passed"}\n', encoding="utf-8")
+
+    summary = build_release_validation_summary(
+        repo_root=tmp_path,
+        artifacts=(artifact,),
+        test_command="python -m pytest -q",
+        test_count=109,
+        test_status="passed",
+        online_status="offline_only",
+        commit_sha="abc123",
+        git_worktree_dirty=False,
+        tool_versions={"python": "3.12.0", "pytest": "9.0.0"},
+        supersedes=("legacy-validation-1",),
+    )
+
+    assert summary.status == "passed"
+    assert summary.artifact_hashes.keys() == {"manifest.json"}
+    assert len(summary.artifact_hashes["manifest.json"]) == 64
+    assert summary.supersedes == ("legacy-validation-1",)
+
+
+def test_release_validation_summary_is_partial_for_dirty_worktree(
+    tmp_path: Path,
+) -> None:
+    artifact = tmp_path / "manifest.json"
+    artifact.write_text('{"status":"passed"}\n', encoding="utf-8")
+
+    summary = build_release_validation_summary(
+        repo_root=tmp_path,
+        artifacts=(artifact,),
+        test_command="python -m pytest -q",
+        test_count=113,
+        test_status="passed",
+        online_status="offline_only",
+        commit_sha="abc123",
+        git_worktree_dirty=True,
+        tool_versions={"python": "3.12.0", "pytest": "9.0.0"},
+    )
+
+    assert summary.status == "partial"
 
 
 def test_surface_variants_share_a_semantic_split(finance_evidence: EvidenceItem) -> None:

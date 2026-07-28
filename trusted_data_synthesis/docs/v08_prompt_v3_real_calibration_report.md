@@ -1,5 +1,7 @@
 # v0.8 Prompt-v3 Real DeepSeek Calibration
 
+> Historical full-response calibration. Superseded by `docs/v08_audit_remediation_report.md`.
+
 ## Result
 
 Run date: 2026-07-27 UTC.

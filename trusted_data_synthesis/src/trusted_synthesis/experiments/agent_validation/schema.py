@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -22,8 +23,8 @@ from trusted_synthesis.runtime.agent.schema import (
     ModelCallTelemetry,
 )
 
-AGENT_VALIDATION_VERSION = "agent_validation.v4"
-AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v2"
+AGENT_VALIDATION_VERSION = "agent_validation.v5"
+AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v3"
 
 
 class AgentValidationConfig(BaseModel):
@@ -99,6 +100,11 @@ class AgentValidationCapacityReport(BaseModel):
     retrieval_track_count: int = Field(ge=1)
     planning_track_count: int = Field(ge=1)
     planned_candidate_count: int = Field(ge=1)
+    interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
+    planned_search_api_calls: int = Field(ge=0)
+    planned_action_api_calls: int = Field(ge=0)
+    planned_final_answer_api_calls: int = Field(ge=0)
+    planned_full_response_api_calls: int = Field(ge=0)
     planned_agent_api_call_floor: int = Field(ge=1)
     planned_critic_api_call_ceiling: int = Field(ge=0)
     fixture_manifest_hash: str
@@ -141,6 +147,7 @@ class AgentValidationReport(BaseModel):
     config_hash: str
     model_config_hash: str
     requested_model: str
+    interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
     requested_domain_task_counts: dict[str, int] = Field(default_factory=dict)
     requested_domain_candidate_counts: dict[str, int] = Field(default_factory=dict)
     domain_completion_rates: dict[str, float] = Field(default_factory=dict)
@@ -176,6 +183,9 @@ class AgentValidationReport(BaseModel):
     agent_failure_type_counts: dict[str, int] = Field(default_factory=dict)
     agent_contract_error_counts: dict[str, int] = Field(default_factory=dict)
     agent_prompt_manifest_hashes: tuple[str, ...]
+    agent_search_prompt_manifest_hashes: tuple[str, ...] = ()
+    agent_action_prompt_manifest_hashes: tuple[str, ...] = ()
+    agent_final_answer_prompt_manifest_hashes: tuple[str, ...] = ()
     critic_prompt_manifest_hashes: tuple[str, ...]
     quality_vector_policy_hashes: tuple[str, ...]
     quality_selection_policy_hash: str

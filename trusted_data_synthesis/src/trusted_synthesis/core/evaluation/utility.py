@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_PROTOCOL_VERSION = "training_utility_protocol.v2"
+TRAINING_UTILITY_PROTOCOL_VERSION = "training_utility_protocol.v3"
 
 
 class UtilityCohort(str, Enum):
@@ -102,13 +102,17 @@ def make_training_utility_protocol(
     if set(cohort_samples) != set(UtilityCohort):
         raise ValueError("cohort sample mapping must contain D1 through D5")
     policies = cohort_construction_policies or {
-        UtilityCohort.RANDOM_SYNTHETIC: "uniform_random_from_unfiltered_synthetic_pool",
+        UtilityCohort.RANDOM_SYNTHETIC: (
+            "uniform_random_unfiltered_real_agent_outputs_without_counterfactual_injection"
+        ),
         UtilityCohort.REFERENCE_WORKFLOW: "deterministic_reference_workflows",
         UtilityCohort.CONTRACT_FILTERED: "contract_accepted_real_agent_candidates",
         UtilityCohort.CONTRACT_COUNTERFACTUAL: (
-            "contract_accepted_candidates_with_typed_counterfactual_negatives"
+            "typed_counterfactual_failure_guided_clean_solve_allocation"
         ),
-        UtilityCohort.CRITIC_SELECTED: ("quality_critic_ranked_after_authoritative_contract_gates"),
+        UtilityCohort.CRITIC_SELECTED: (
+            "authoritative_contract_then_quality_aware_selector_with_advisory_critic"
+        ),
     }
     if set(policies) != set(UtilityCohort):
         raise ValueError("cohort construction policies must contain D1 through D5")
