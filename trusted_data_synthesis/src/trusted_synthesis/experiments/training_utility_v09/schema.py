@@ -23,7 +23,7 @@ from trusted_synthesis.experiments.training_utility_mvp.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v3"
+TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v4"
 
 CCGR_ABLATION_IDS = (
     "static_verified",
@@ -40,6 +40,19 @@ class V09Cohort(str, Enum):
     EVIDENCE_GROUNDED = "C2_evidence_grounded"
     VERIFIED_STATIC = "C3_verified_static"
     FEEDBACK_REFINED = "C4_feedback_refined_verified"
+
+
+class V09ExperimentAxis(BaseModel):
+    """Frozen interpretation boundary for one family of training contrasts."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    axis_id: Literal["co_compilation", "ccgr_refinement"]
+    members: tuple[str, ...] = Field(min_length=2)
+    primary_contrast: tuple[str, str]
+    causal_status: Literal["identified", "exploratory", "requires_materialization"]
+    controlled_variables: tuple[str, ...]
+    unresolved_confounds: tuple[str, ...] = ()
 
 
 class V09RefinementConfig(BaseModel):
@@ -59,15 +72,21 @@ class V09RefinementConfig(BaseModel):
     ccgr_gamma: float = Field(default=0.5, ge=0)
     ccgr_binding_tightening_threshold: float = Field(default=0.25, ge=0)
     ccgr_uncalibrated_reliability: float = Field(default=0.0, ge=0, le=1)
+    ccgr_minimum_cell_exposure: int = Field(default=3, ge=1)
+    ccgr_pattern_shrinkage_strength: float = Field(default=5.0, ge=0)
+    ccgr_clause_confidence_prior_count: float = Field(default=5.0, ge=0)
+    ccgr_normalize_root_mass: bool = True
+    materialization_seed: int = 20260729
+    materialization_superpool_size: int = Field(default=20_000_000, ge=10_000)
+    materialization_scan_multiplier: int = Field(default=48, ge=8)
+    finance_archive_config_path: Path | None = None
     ccgr_ablation_ids: tuple[str, ...] = CCGR_ABLATION_IDS
     domain_weights: dict[str, float] = {
         "finance": 0.8,
         "legal": 0.1,
         "science": 0.1,
     }
-    student_training_format: Literal["host_instrumented_joint"] = (
-        "host_instrumented_joint"
-    )
+    student_training_format: Literal["host_instrumented_joint"] = "host_instrumented_joint"
     allowed_refinement_controls: tuple[str, ...] = (
         "pattern_clause_weight",
         "difficulty_bucket",
@@ -96,7 +115,15 @@ class V09RefinementConfig(BaseModel):
 
     @classmethod
     def from_json(cls, path: str | Path) -> V09RefinementConfig:
-        return cls.model_validate(json.loads(Path(path).read_text(encoding="utf-8")))
+        config_path = Path(path).resolve()
+        payload = json.loads(config_path.read_text(encoding="utf-8"))
+        archive_config = payload.get("finance_archive_config_path")
+        if archive_config:
+            value = Path(archive_config).expanduser()
+            if not value.is_absolute():
+                value = config_path.parent / value
+            payload["finance_archive_config_path"] = value.resolve()
+        return cls.model_validate(payload)
 
     @model_validator(mode="after")
     def validate_experiment_contract(self) -> V09RefinementConfig:
@@ -184,6 +211,7 @@ class V09RefinementManifest(BaseModel):
     calibration_coverage_rate: float = Field(ge=0, le=1)
     ccgr_updates: tuple[PolicyUpdateResult, ...]
     primary_ccgr_update_id: str | None = None
+    experiment_axes: tuple[V09ExperimentAxis, ...] = ()
     cohort_contracts: tuple[V09CohortContract, ...]
     online_gate: V09OnlineGate
     external_benchmark_status: Literal["not_executed"] = "not_executed"
@@ -203,9 +231,7 @@ class V09RefinementManifest(BaseModel):
         }
         training_seeds = {item.training_seed for item in self.cohort_contracts}
         pattern_catalogs = {item.pattern_catalog_hash for item in self.cohort_contracts}
-        domain_weights = {
-            canonical_hash(item.domain_weights) for item in self.cohort_contracts
-        }
+        domain_weights = {canonical_hash(item.domain_weights) for item in self.cohort_contracts}
         if any(
             len(values) != 1
             for values in (
@@ -223,13 +249,25 @@ class V09RefinementManifest(BaseModel):
             )
         if self.pattern_catalog_hash not in pattern_catalogs:
             raise ValueError("manifest and cohort pattern catalog hashes must match")
-        if {item.ablation_id for item in self.ccgr_updates} != set(
-            CCGR_ABLATION_IDS
-        ):
+        if self.version == "training_utility_v09.v4":
+            axes = {item.axis_id: item for item in self.experiment_axes}
+            if set(axes) != {"co_compilation", "ccgr_refinement"}:
+                raise ValueError("v0.9.4 must freeze co-compilation and CCGR axes")
+            if axes["ccgr_refinement"].primary_contrast != (
+                V09Cohort.VERIFIED_STATIC.value,
+                V09Cohort.FEEDBACK_REFINED.value,
+            ):
+                raise ValueError("the identified CCGR contrast must be C3 versus C4")
+            if set(axes["ccgr_refinement"].members) != {
+                V09Cohort.VERIFIED_STATIC.value,
+                V09Cohort.FEEDBACK_REFINED.value,
+            }:
+                raise ValueError(
+                    "the identified CCGR axis may only contain materialized C3/C4 cohorts"
+                )
+        if {item.ablation_id for item in self.ccgr_updates} != set(CCGR_ABLATION_IDS):
             raise ValueError("v0.9 manifest must contain every frozen CCGR ablation")
-        full = next(
-            item for item in self.ccgr_updates if item.ablation_id == "full_ccgr"
-        )
+        full = next(item for item in self.ccgr_updates if item.ablation_id == "full_ccgr")
         if self.primary_ccgr_update_id != full.update_id:
             raise ValueError("the primary CCGR update must be the full algorithm")
         c3 = by_cohort[V09Cohort.VERIFIED_STATIC]
@@ -352,7 +390,7 @@ class V09CohortDatasetManifest(BaseModel):
             }
             if materialized_counts != self.synthesis_cell_counts:
                 raise ValueError("materialization report Cell counts disagree with the cohort")
-            if self.compiler_contract_hash != report.provider_contract_hash:
+            if self.compiler_contract_hash != report.compiler_contract_hash:
                 raise ValueError("cohort compiler contract is not pinned by its report")
         elif self.materialization_report is not None or self.compiler_contract_hash is not None:
             raise ValueError("selection materialization cannot attach a compiler report")
@@ -408,6 +446,12 @@ class V09TrainingDataManifest(BaseModel):
     c3_c4_evidence_version_overlap_count: int = Field(default=0, ge=0)
     c3_c4_source_pool_shared: bool
     c3_c4_compiler_contract_shared: bool = False
+    finance_source_adapter_ids: tuple[str, ...] = ()
+    finance_archive_provider_used: bool = False
+    c3_c4_candidate_superpool_shared: bool = False
+    c3_c4_sampling_partitions_disjoint: bool = False
+    c3_c4_materialization_seed_shared: bool = False
+    experiment_axes: tuple[V09ExperimentAxis, ...] = ()
     synthesis_closed_loop_status: Literal[
         "legacy_reallocation",
         "new_binding_compilation",
@@ -422,6 +466,20 @@ class V09TrainingDataManifest(BaseModel):
         by_cohort = {item.cohort: item for item in self.cohorts}
         if set(by_cohort) != set(V09Cohort):
             raise ValueError("v0.9 training data must contain C1 through C4")
+        if self.version == "training_utility_v09.v4":
+            axes = {item.axis_id: item for item in self.experiment_axes}
+            if set(axes) != {"co_compilation", "ccgr_refinement"}:
+                raise ValueError("training data must preserve both experiment axes")
+            if axes["ccgr_refinement"].causal_status != "identified":
+                raise ValueError("C3/C4 must remain the identified refinement contrast")
+            if axes["co_compilation"].causal_status != "exploratory":
+                raise ValueError("C1/C2/C3 remain an exploratory co-compilation axis")
+            if self.finance_archive_provider_used and set(self.finance_source_adapter_ids) != {
+                "finance_archive.v1"
+            }:
+                raise ValueError(
+                    "the Finance Archive Provider requires archive-backed source feedback"
+                )
         if (
             self.mapped_real_candidate_count + self.unmapped_real_candidate_count
             != self.source_real_candidate_count
@@ -429,9 +487,7 @@ class V09TrainingDataManifest(BaseModel):
             raise ValueError("mapped and unmapped candidates must cover the real source pool")
         if self.unmapped_real_candidate_count:
             raise ValueError("v0.9 cannot train with unmapped real-agent source candidates")
-        if self.semantic_migration_count != sum(
-            self.semantic_migration_domain_counts.values()
-        ):
+        if self.semantic_migration_count != sum(self.semantic_migration_domain_counts.values()):
             raise ValueError("semantic migration domain counts are inconsistent")
         if self.representable_real_candidate_count != sum(
             self.representable_real_domain_counts.values()
@@ -441,15 +497,9 @@ class V09TrainingDataManifest(BaseModel):
             raise ValueError("representable candidates cannot exceed mapped candidates")
         if self.accepted_mapped_candidate_count > self.representable_real_candidate_count:
             raise ValueError("accepted mapped candidates must be representable")
-        if any(
-            item.record_count != self.cohort_example_budget
-            for item in self.cohorts
-        ):
+        if any(item.record_count != self.cohort_example_budget for item in self.cohorts):
             raise ValueError("all v0.9 cohorts must have the frozen example budget")
-        if any(
-            item.domain_counts != self.expected_domain_counts
-            for item in self.cohorts
-        ):
+        if any(item.domain_counts != self.expected_domain_counts for item in self.cohorts):
             raise ValueError("all v0.9 cohorts must have identical domain quotas")
         hard_overlaps = {
             "task": self.train_evaluation_task_overlap_count,
@@ -485,6 +535,15 @@ class V09TrainingDataManifest(BaseModel):
                 or c3.compiler_contract_hash != c4.compiler_contract_hash
             ):
                 raise ValueError("C3 and C4 must share one frozen compiler contract")
+            if (
+                not self.c3_c4_candidate_superpool_shared
+                or not self.c3_c4_sampling_partitions_disjoint
+                or not self.c3_c4_materialization_seed_shared
+            ):
+                raise ValueError(
+                    "C3/C4 must use one candidate super-pool, one seed, "
+                    "and disjoint sampling partitions"
+                )
             overlaps = {
                 "task": self.c3_c4_task_overlap_count,
                 "binding": self.c3_c4_binding_overlap_count,
@@ -492,10 +551,7 @@ class V09TrainingDataManifest(BaseModel):
             }
             if any(overlaps.values()):
                 raise ValueError(f"newly compiled C3/C4 identities overlap: {overlaps}")
-        elif (
-            c3.materialization_mode != "selection"
-            or c4.materialization_mode != "selection"
-        ):
+        elif c3.materialization_mode != "selection" or c4.materialization_mode != "selection":
             raise ValueError("legacy reallocation may only use selected source records")
         if self.round0_real_agent_feedback:
             if self.offline_refinement_override or self.causal_status != "online_ready":

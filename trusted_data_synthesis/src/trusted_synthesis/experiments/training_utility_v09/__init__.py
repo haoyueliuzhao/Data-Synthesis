@@ -7,6 +7,9 @@ from trusted_synthesis.experiments.training_utility_v09.data import (
     load_v09_real_agent_artifacts,
     write_v09_training_datasets,
 )
+from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
+    FinanceArchiveBindingProvider,
+)
 from trusted_synthesis.experiments.training_utility_v09.pilot import (
     build_v09_offline_pilot,
     write_v09_initial_artifacts,
@@ -20,6 +23,7 @@ from trusted_synthesis.experiments.training_utility_v09.schema import (
     V09Cohort,
     V09CohortContract,
     V09CohortDatasetManifest,
+    V09ExperimentAxis,
     V09InitialBuildReport,
     V09OnlineGate,
     V09RefinementConfig,
@@ -29,10 +33,12 @@ from trusted_synthesis.experiments.training_utility_v09.schema import (
 )
 
 __all__ = [
+    "FinanceArchiveBindingProvider",
     "TRAINING_UTILITY_V09_VERSION",
     "V09Cohort",
     "V09CohortContract",
     "V09CohortDatasetManifest",
+    "V09ExperimentAxis",
     "V09InitialBuildReport",
     "V09OnlineGate",
     "V09RefinementConfig",

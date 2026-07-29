@@ -18,6 +18,7 @@ from trusted_synthesis.core.refinement import (
     aggregate_cell_feedback,
     build_observed_policy,
     build_synthesis_cell,
+    calibrate_clause_feedback,
     update_synthesis_policy,
 )
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
@@ -52,7 +53,6 @@ from trusted_synthesis.experiments.training_utility_v09.data import (
 )
 from trusted_synthesis.experiments.training_utility_v09.materialization import (
     V09FixtureBindingProvider,
-    project_policy_counts_to_domain_quotas,
 )
 
 
@@ -376,16 +376,45 @@ def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> N
     )
     task_cells = {source.task.task_id: cell}
     policy = build_observed_policy(task_cells)
+    exposure = FeedbackExposure(
+        task_id=source.task.task_id,
+        domain=source.domain,
+        pattern_id=cell.pattern_id,
+        failure_family="evidence_selection",
+    )
+    signal = make_feedback_signal(
+        task_id=source.task.task_id,
+        domain=source.domain,
+        pattern_id=cell.pattern_id,
+        clause_id="finance:selected_evidence_exact",
+        clause_kind="selected_evidence_exact",
+        failure_family="evidence_selection",
+        severity="fatal",
+        route=FeedbackRoute.AGENT_CAPABILITY_GAP,
+        source_kind="quality_contract",
+        failure_code="wrong_evidence_selected",
+        weight=1.0,
+    )
+    feedback = calibrate_clause_feedback(
+        (signal,),
+        task_cells,
+        {"selected_evidence_exact": 1.0},
+    )
+    statistics = aggregate_cell_feedback(
+        policy,
+        (exposure,),
+        feedback,
+        task_cells,
+    )
     update = update_synthesis_policy(
         policy,
-        aggregate_cell_feedback(policy, (), (), task_cells),
-        (),
+        statistics,
+        feedback,
         eta=0,
         beta=1,
         gamma=0,
         total_budget=2,
         calibration_manifest_hash="calibration:route_b_export",
-        require_calibrated_feedback=False,
     )
     artifacts, report = RefinedSynthesisMaterializer(
         V09FixtureBindingProvider(namespace="route_b_export", start_index=400_001)
@@ -407,6 +436,8 @@ def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> N
         accepted_example_ids={source.task.task_id: "critic_example:accepted"},
         materialization_report=report,
         source_kind="route_b_test",
+        clause_feedback=feedback,
+        feedback_source="quality_run:test",
     )
 
     assert len(records) == 2
@@ -414,6 +445,19 @@ def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> N
     assert all(item.metadata["new_identity_compilation"] for item in records)
     assert all(item.metadata["quality_contract_applied"] for item in records)
     assert all(item.metadata["materialization_report_id"] == report.report_id for item in records)
+    assert all(
+        item.metadata["contributing_clause_feedback_ids"] == (feedback[0].feedback_id,)
+        for item in records
+    )
+    assert all(
+        item.metadata["contributing_failure_families"] == ("evidence_selection",)
+        for item in records
+    )
+    assert all(
+        item.metadata["feedback_lineage_mode"] == "cell_policy_contribution" for item in records
+    )
+    assert all(item.metadata["cell_capability_gap_demand"] > 0 for item in records)
+    assert all(item.metadata["feedback_source"] == "quality_run:test" for item in records)
     assert _record_evidence_version_ids(records).isdisjoint(
         {item.evidence_version_id for item in source.corpus.evidence}
     )
@@ -427,7 +471,10 @@ def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> N
         materialization_report=report,
     )
     assert cohort_manifest.materialization_mode == "new_compilation"
-    assert cohort_manifest.compiler_contract_hash == report.provider_contract_hash
+    assert cohort_manifest.compiler_contract_hash == report.compiler_contract_hash
+    assert report.seed_effective
+    assert report.candidate_pool_id == "v09_fixture_superpool"
+    assert report.sampling_partition_id == "A"
     assert cohort_manifest.real_feedback_link_count == len(records)
 
     fallback_records = _materialized_records(
@@ -454,6 +501,49 @@ def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> N
     assert fallback_manifest.accepted_real_link_count == 0
     assert fallback_manifest.real_feedback_link_count == len(fallback_records)
 
+    external_signal = make_feedback_signal(
+        task_id="offline_policy_task",
+        domain=source.domain,
+        pattern_id=cell.pattern_id,
+        clause_id="finance:offline_policy_clause",
+        clause_kind="selected_evidence_exact",
+        failure_family="evidence_selection",
+        severity="fatal",
+        route=FeedbackRoute.AGENT_CAPABILITY_GAP,
+        source_kind="quality_contract",
+        failure_code="wrong_evidence_selected",
+        weight=1.0,
+    )
+    external_feedback = calibrate_clause_feedback(
+        (external_signal,),
+        {"offline_policy_task": cell},
+        {"selected_evidence_exact": 1.0},
+    )
+    external_records = _materialized_records(
+        artifacts,
+        V09Cohort.FEEDBACK_REFINED,
+        update=update,
+        source_cells_by_task={source.task.task_id: cell},
+        source_example_ids={source.task.task_id: "critic_example:evaluated"},
+        accepted_example_ids={},
+        materialization_report=report,
+        source_kind="route_b_external_policy_test",
+        clause_feedback=external_feedback,
+    )
+    assert all(
+        item.metadata["feedback_lineage_mode"] == "external_policy_cell_context"
+        for item in external_records
+    )
+    assert all(
+        item.metadata["policy_clause_feedback_ids"]
+        == (external_feedback[0].feedback_id,)
+        for item in external_records
+    )
+    assert all(
+        item.metadata["contributing_clause_feedback_ids"] == ()
+        for item in external_records
+    )
+
 
 def test_route_b_blocks_reused_evidence_and_binding_identity() -> None:
     source = build_finance_counterfactual_case(1)
@@ -476,14 +566,24 @@ def test_route_b_blocks_reused_evidence_and_binding_identity() -> None:
         require_calibrated_feedback=False,
     )
 
-    artifacts, report = RefinedSynthesisMaterializer(
-        V09FixtureBindingProvider(namespace="route_b_collision", start_index=1)
-    ).materialize(
+    provider = V09FixtureBindingProvider(
+        namespace="route_b_collision",
+        start_index=1,
+    )
+    baseline, baseline_report = RefinedSynthesisMaterializer(provider).materialize(
         update,
         seed=23,
-        forbidden_evidence_version_ids={
-            item.evidence_version_id for item in source.corpus.evidence
-        },
+    )
+    assert baseline_report.status == "passed"
+    selected_evidence = {
+        item.evidence_version_id
+        for artifact in baseline
+        for item in artifact.candidate.corpus.evidence
+    }
+    artifacts, report = RefinedSynthesisMaterializer(provider).materialize(
+        update,
+        seed=23,
+        forbidden_evidence_version_ids=selected_evidence,
     )
 
     assert artifacts == ()
@@ -491,22 +591,6 @@ def test_route_b_blocks_reused_evidence_and_binding_identity() -> None:
     assert report.successfully_materialized_count == 0
     assert report.new_evidence_identity_rate == 0
     assert report.failure_counts == {"binding_identity_collision": 1}
-
-
-def test_route_b_domain_projection_preserves_frozen_domain_quotas() -> None:
-    projected = project_policy_counts_to_domain_quotas(
-        policy_allocated_counts={"f_a": 8, "f_b": 2, "l_a": 1, "s_a": 9},
-        policy_probabilities={"f_a": 0.4, "f_b": 0.1, "l_a": 0.05, "s_a": 0.45},
-        cell_domains={
-            "f_a": "finance",
-            "f_b": "finance",
-            "l_a": "legal",
-            "s_a": "science",
-        },
-        domain_quotas={"finance": 8, "legal": 1, "science": 1},
-    )
-
-    assert projected == {"f_a": 6, "f_b": 2, "l_a": 1, "s_a": 1}
 
 
 def test_v09_training_report_preserves_offline_causal_boundary() -> None:
@@ -592,28 +676,90 @@ def test_v09_offline_pilot_builds_cross_domain_feedback_artifacts(
     assert manifest.online_gate.status == "not_run"
     assert manifest.external_benchmark_status == "not_executed"
     assert manifest.calibration_coverage_rate >= 0.6
-    full = next(
-        item for item in manifest.ccgr_updates if item.ablation_id == "full_ccgr"
-    )
+    full = next(item for item in manifest.ccgr_updates if item.ablation_id == "full_ccgr")
     random_control = next(
-        item
-        for item in manifest.ccgr_updates
-        if item.ablation_id == "random_same_shift"
+        item for item in manifest.ccgr_updates if item.ablation_id == "random_same_shift"
     )
     assert full.status == "passed"
-    assert abs(
-        full.total_variation_distance
-        - random_control.total_variation_distance
-    ) < 1e-10
+    assert abs(full.total_variation_distance - random_control.total_variation_distance) < 1e-10
     assert any(item.route == FeedbackRoute.AGENT_CAPABILITY_GAP for item in signals)
     assert (tmp_path / "feedback_exposures.jsonl").is_file()
     assert (tmp_path / "feedback_signals.jsonl").is_file()
     assert (tmp_path / "synthesis_cells.jsonl").is_file()
     assert (tmp_path / "clause_feedback.jsonl").is_file()
     assert (tmp_path / "ccgr_policy_updates.json").is_file()
-    stored = json.loads(
-        (tmp_path / "v09_initial_build_report.json").read_text(encoding="utf-8")
-    )
+    stored = json.loads((tmp_path / "v09_initial_build_report.json").read_text(encoding="utf-8"))
     assert stored["report_id"] == report.report_id
     markdown = (tmp_path / "v09_initial_build_report.md").read_text(encoding="utf-8")
     assert "Real-agent Round-0 feedback: **not executed**" in markdown
+
+
+def test_route_b_seed_changes_enumeration_and_superpool_partitions_are_disjoint() -> None:
+    source = build_finance_counterfactual_case(1)
+    cell = build_synthesis_cell(
+        source.task.public,
+        source.corpus,
+        source.task.oracle.gold_evidence_ids,
+    )
+    task_cells = {source.task.task_id: cell}
+    policy = build_observed_policy(task_cells)
+    update = update_synthesis_policy(
+        policy,
+        aggregate_cell_feedback(policy, (), (), task_cells),
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=3,
+        calibration_manifest_hash="calibration:seeded_superpool",
+        require_calibrated_feedback=False,
+    )
+    common = {
+        "start_index": 800_001,
+        "candidate_pool_id": "seed_test_superpool",
+        "candidate_pool_size": 100_000,
+        "pool_split_seed": 31,
+    }
+    provider_a = V09FixtureBindingProvider(
+        namespace="seed_test_a",
+        sampling_partition_id="A",
+        **common,
+    )
+    provider_b = V09FixtureBindingProvider(
+        namespace="seed_test_b",
+        sampling_partition_id="B",
+        **common,
+    )
+    seed_11, report_11 = RefinedSynthesisMaterializer(provider_a).materialize(
+        update,
+        seed=11,
+    )
+    seed_12, report_12 = RefinedSynthesisMaterializer(provider_a).materialize(
+        update,
+        seed=12,
+    )
+    partition_b, report_b = RefinedSynthesisMaterializer(provider_b).materialize(
+        update,
+        seed=11,
+    )
+
+    evidence_11 = {
+        item.evidence_version_id
+        for artifact in seed_11
+        for item in artifact.candidate.corpus.evidence
+    }
+    evidence_12 = {
+        item.evidence_version_id
+        for artifact in seed_12
+        for item in artifact.candidate.corpus.evidence
+    }
+    evidence_b = {
+        item.evidence_version_id
+        for artifact in partition_b
+        for item in artifact.candidate.corpus.evidence
+    }
+    assert report_11.status == report_12.status == report_b.status == "passed"
+    assert report_11.candidate_pool_contract_hash == report_b.candidate_pool_contract_hash
+    assert report_11.sampling_contract_hash != report_b.sampling_contract_hash
+    assert evidence_11 != evidence_12
+    assert evidence_11.isdisjoint(evidence_b)

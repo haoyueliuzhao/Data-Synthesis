@@ -30,7 +30,8 @@ from .schema import (
 )
 
 CLAUSE_CALIBRATION_FORMULA = (
-    "geometric_mean(mutation_validity_rate,detection_rate,root_cause_f1,failure_closure_f1)"
+    "geometric_mean(mutation_validity_rate,detection_rate,root_cause_f1,"
+    "failure_closure_f1)*valid_case_count/(valid_case_count+confidence_prior_count)"
 )
 
 
@@ -128,7 +129,15 @@ def legacy_synthesis_cells(
     return by_task
 
 
-def clause_reliability(metrics: CounterfactualSliceMetrics) -> float:
+def clause_reliability(
+    metrics: CounterfactualSliceMetrics,
+    *,
+    confidence_prior_count: float = 0.0,
+) -> float:
+    """Geometric reliability with an explicit finite-sample confidence discount."""
+
+    if confidence_prior_count < 0:
+        raise ValueError("confidence prior count cannot be negative")
     values = (
         metrics.mutation_validity_rate,
         metrics.detection_rate,
@@ -137,18 +146,29 @@ def clause_reliability(metrics: CounterfactualSliceMetrics) -> float:
     )
     if any(value <= 0 for value in values):
         return 0.0
-    return math.prod(values) ** (1.0 / len(values))
+    base = math.prod(values) ** (1.0 / len(values))
+    if confidence_prior_count == 0:
+        return base
+    confidence = metrics.valid_case_count / (metrics.valid_case_count + confidence_prior_count)
+    return base * confidence
 
 
 def clause_calibration_from_metrics(
     metrics: Mapping[str, CounterfactualSliceMetrics],
+    *,
+    confidence_prior_count: float = 0.0,
 ) -> tuple[dict[str, float], str]:
     calibration = {
-        clause_kind: clause_reliability(item) for clause_kind, item in sorted(metrics.items())
+        clause_kind: clause_reliability(
+            item,
+            confidence_prior_count=confidence_prior_count,
+        )
+        for clause_kind, item in sorted(metrics.items())
     }
     manifest_hash = canonical_hash(
         {
             "formula": CLAUSE_CALIBRATION_FORMULA,
+            "confidence_prior_count": confidence_prior_count,
             "metrics": metrics,
             "calibration": calibration,
         },
@@ -159,6 +179,8 @@ def clause_calibration_from_metrics(
 
 def clause_calibration_from_reports(
     reports: Iterable[CounterfactualCalibrationReport],
+    *,
+    confidence_prior_count: float = 0.0,
 ) -> tuple[dict[str, float], str]:
     report_items = tuple(reports)
     grouped: dict[str, list[CounterfactualSliceMetrics]] = defaultdict(list)
@@ -171,10 +193,14 @@ def clause_calibration_from_reports(
     combined = {
         clause_kind: _combine_slice_metrics(items) for clause_kind, items in sorted(grouped.items())
     }
-    calibration, _ = clause_calibration_from_metrics(combined)
+    calibration, _ = clause_calibration_from_metrics(
+        combined,
+        confidence_prior_count=confidence_prior_count,
+    )
     manifest_hash = canonical_hash(
         {
             "formula": CLAUSE_CALIBRATION_FORMULA,
+            "confidence_prior_count": confidence_prior_count,
             "report_ids": tuple(sorted(report.calibration_id for report in report_items)),
             "combined_metrics": combined,
             "calibration": calibration,
@@ -252,16 +278,66 @@ def build_observed_policy(
     task_cells: Mapping[str, SynthesisCell],
     *,
     target_probabilities: Mapping[str, float] | None = None,
+    task_groups: Mapping[str, str] | None = None,
+    fixed_group_weights: Mapping[str, float] | None = None,
     round_index: int = 0,
     label: str = "round_0_observed",
 ) -> SynthesisPolicy:
+    """Build the observed policy, optionally with frozen group marginals."""
+
     if not task_cells:
         raise ValueError("an observed synthesis policy requires task cells")
     counts = Counter(cell.cell_id for cell in task_cells.values())
-    total = sum(counts.values())
-    probabilities = {key: value / total for key, value in sorted(counts.items())}
-    targets = _normalize_distribution(target_probabilities or probabilities, set(counts))
     cells_by_id = _unique_cells(task_cells.values())
+    if task_groups is None and fixed_group_weights is None:
+        total = sum(counts.values())
+        probabilities = {key: value / total for key, value in sorted(counts.items())}
+        targets = _normalize_distribution(target_probabilities or probabilities, set(counts))
+    else:
+        if task_groups is None or fixed_group_weights is None:
+            raise ValueError("conditional observed policy requires groups and fixed weights")
+        if set(task_groups) != set(task_cells):
+            raise ValueError("task groups must cover every observed task")
+        cell_groups: dict[str, str] = {}
+        for task_id, cell in task_cells.items():
+            group = task_groups[task_id]
+            previous = cell_groups.setdefault(cell.cell_id, group)
+            if previous != group:
+                raise ValueError("one synthesis Cell cannot span conditioning groups")
+        groups = set(cell_groups.values())
+        missing_weights = groups - set(fixed_group_weights)
+        if missing_weights:
+            raise ValueError(f"fixed weights miss observed groups: {sorted(missing_weights)}")
+        represented_total = sum(fixed_group_weights[group] for group in groups)
+        if represented_total <= 0:
+            raise ValueError("represented conditioning groups require positive weight")
+        weights = {
+            group: fixed_group_weights[group] / represented_total for group in sorted(groups)
+        }
+        group_counts: Counter[str] = Counter()
+        for cell_id, count in counts.items():
+            group_counts[cell_groups[cell_id]] += count
+        probabilities = {
+            cell_id: weights[cell_groups[cell_id]]
+            * counts[cell_id]
+            / group_counts[cell_groups[cell_id]]
+            for cell_id in sorted(counts)
+        }
+        raw_targets = target_probabilities or probabilities
+        if set(raw_targets) != set(counts):
+            raise ValueError("target distribution must cover every observed Cell")
+        group_target_mass = {
+            group: sum(raw_targets[cell_id] for cell_id in counts if cell_groups[cell_id] == group)
+            for group in groups
+        }
+        if any(value <= 0 for value in group_target_mass.values()):
+            raise ValueError("every represented group needs positive target mass")
+        targets = {
+            cell_id: weights[cell_groups[cell_id]]
+            * raw_targets[cell_id]
+            / group_target_mass[cell_groups[cell_id]]
+            for cell_id in sorted(counts)
+        }
     cells = tuple(cells_by_id[key] for key in sorted(cells_by_id))
     provisional = SynthesisPolicy.model_construct(
         policy_id="pending",
@@ -288,7 +364,17 @@ def aggregate_cell_feedback(
     exposures: Iterable[FeedbackExposure],
     feedback: Iterable[ClauseFeedback],
     task_cells: Mapping[str, SynthesisCell],
+    *,
+    minimum_cell_exposure: int = 1,
+    shrinkage_strength: float = 0.0,
+    normalize_root_mass: bool = True,
 ) -> tuple[CellFeedbackStatistics, ...]:
+    """Aggregate calibrated roots with per-sample normalization and pattern shrinkage."""
+
+    if minimum_cell_exposure < 1:
+        raise ValueError("minimum Cell exposure must be positive")
+    if shrinkage_strength < 0:
+        raise ValueError("shrinkage strength cannot be negative")
     explicit_exposure_tasks = {item.task_id for item in exposures}
     unknown_tasks = explicit_exposure_tasks - set(task_cells)
     if unknown_tasks:
@@ -298,6 +384,7 @@ def aggregate_cell_feedback(
         exposed_by_cell[task_cells[task_id].cell_id].add(task_id)
     total_exposures = len(explicit_exposure_tasks)
     feedback_by_cell: dict[str, list[ClauseFeedback]] = defaultdict(list)
+    feedback_by_task: dict[str, list[ClauseFeedback]] = defaultdict(list)
     for item in feedback:
         if item.task_id not in explicit_exposure_tasks:
             raise ValueError(f"clause feedback has no task exposure: {item.task_id}")
@@ -308,17 +395,41 @@ def aggregate_cell_feedback(
                 f"{item.task_id} expected {expected_cell_id}, observed {item.cell_id}"
             )
         feedback_by_cell[item.cell_id].append(item)
-    statistics = []
+        feedback_by_task[item.task_id].append(item)
+
+    root_scale_by_task: dict[str, float] = {}
+    for task_id, items in feedback_by_task.items():
+        directional_mass = sum(
+            item.calibrated_weight
+            for item in items
+            if item.route != FeedbackRoute.INTERFACE_FAILURE
+        )
+        root_scale_by_task[task_id] = (
+            1.0 / max(1.0, directional_mass) if normalize_root_mass else 1.0
+        )
+
+    cell_rows: dict[str, dict[str, float | int]] = {}
+    cells_by_pattern: dict[str, list[str]] = defaultdict(list)
     for cell in policy.cells:
         items = feedback_by_cell.get(cell.cell_id, [])
         exposure_count = len(exposed_by_cell.get(cell.cell_id, set()))
-        defect_weight = sum(
+        defect_raw = sum(
             item.calibrated_weight
             for item in items
             if item.route == FeedbackRoute.UPSTREAM_DATA_DEFECT
         )
-        capability_weight = sum(
+        capability_raw = sum(
             item.calibrated_weight
+            for item in items
+            if item.route == FeedbackRoute.AGENT_CAPABILITY_GAP
+        )
+        defect_weight = sum(
+            item.calibrated_weight * root_scale_by_task[item.task_id]
+            for item in items
+            if item.route == FeedbackRoute.UPSTREAM_DATA_DEFECT
+        )
+        capability_weight = sum(
+            item.calibrated_weight * root_scale_by_task[item.task_id]
             for item in items
             if item.route == FeedbackRoute.AGENT_CAPABILITY_GAP
         )
@@ -327,6 +438,54 @@ def aggregate_cell_feedback(
             for item in items
             if item.route == FeedbackRoute.INTERFACE_FAILURE
         )
+        cell_rows[cell.cell_id] = {
+            "exposure_count": exposure_count,
+            "defect_raw": defect_raw,
+            "capability_raw": capability_raw,
+            "defect_weight": defect_weight,
+            "capability_weight": capability_weight,
+            "interface_weight": interface_weight,
+        }
+        cells_by_pattern[cell.pattern_id].append(cell.cell_id)
+
+    pattern_rates: dict[str, tuple[int, float, float]] = {}
+    for pattern_id, cell_ids in cells_by_pattern.items():
+        pattern_exposure = sum(int(cell_rows[cell_id]["exposure_count"]) for cell_id in cell_ids)
+        pattern_defect = sum(float(cell_rows[cell_id]["defect_weight"]) for cell_id in cell_ids)
+        pattern_capability = sum(
+            float(cell_rows[cell_id]["capability_weight"]) for cell_id in cell_ids
+        )
+        pattern_rates[pattern_id] = (
+            pattern_exposure,
+            pattern_defect / pattern_exposure if pattern_exposure else 0.0,
+            pattern_capability / pattern_exposure if pattern_exposure else 0.0,
+        )
+
+    statistics = []
+    for cell in policy.cells:
+        items = feedback_by_cell.get(cell.cell_id, [])
+        row = cell_rows[cell.cell_id]
+        exposure_count = int(row["exposure_count"])
+        defect_weight = float(row["defect_weight"])
+        capability_weight = float(row["capability_weight"])
+        cell_defect_rate = defect_weight / exposure_count if exposure_count else 0.0
+        cell_capability_rate = capability_weight / exposure_count if exposure_count else 0.0
+        (
+            pattern_exposure,
+            pattern_defect_rate,
+            pattern_capability_rate,
+        ) = pattern_rates[cell.pattern_id]
+        shrinkage_weight = (
+            exposure_count / (exposure_count + shrinkage_strength) if shrinkage_strength else 1.0
+        )
+        shrunk_defect = (
+            shrinkage_weight * cell_defect_rate + (1.0 - shrinkage_weight) * pattern_defect_rate
+        )
+        shrunk_capability = (
+            shrinkage_weight * cell_capability_rate
+            + (1.0 - shrinkage_weight) * pattern_capability_rate
+        )
+        minimum_exposure_met = exposure_count >= minimum_cell_exposure
         observed = exposure_count / total_exposures if total_exposures else 0.0
         target = policy.target_probabilities[cell.cell_id]
         statistics.append(
@@ -346,13 +505,20 @@ def aggregate_cell_feedback(
                 uncalibrated_feedback_count=sum(
                     item.calibration_status == "missing" for item in items
                 ),
-                interface_weight_sum=interface_weight,
+                interface_weight_sum=float(row["interface_weight"]),
                 synthesis_defect_weight_sum=defect_weight,
                 capability_gap_weight_sum=capability_weight,
-                synthesis_defect_risk=(defect_weight / exposure_count if exposure_count else 0.0),
-                capability_gap_demand=(
-                    capability_weight / exposure_count if exposure_count else 0.0
-                ),
+                raw_synthesis_defect_weight_sum=float(row["defect_raw"]),
+                raw_capability_gap_weight_sum=float(row["capability_raw"]),
+                pattern_exposure_count=pattern_exposure,
+                pattern_synthesis_defect_rate=pattern_defect_rate,
+                pattern_capability_gap_rate=pattern_capability_rate,
+                cell_synthesis_defect_rate=cell_defect_rate,
+                cell_capability_gap_rate=cell_capability_rate,
+                shrinkage_weight=shrinkage_weight,
+                minimum_exposure_met=minimum_exposure_met,
+                synthesis_defect_risk=shrunk_defect if minimum_exposure_met else 0.0,
+                capability_gap_demand=(shrunk_capability if minimum_exposure_met else 0.0),
                 target_share=target,
                 observed_share=observed,
                 coverage_gap=max(0.0, target - observed),

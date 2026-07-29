@@ -35,6 +35,8 @@ def update_synthesis_policy(
     require_calibrated_feedback: bool = True,
     utility_overrides: Mapping[str, float] | None = None,
     utility_mode: Literal["feedback_objective", "random_control"] = ("feedback_objective"),
+    conditioning_groups: Mapping[str, str] | None = None,
+    fixed_group_weights: Mapping[str, float] | None = None,
 ) -> PolicyUpdateResult:
     """Apply the closed-form exponentiated CCGR policy update."""
 
@@ -65,10 +67,21 @@ def update_synthesis_policy(
     )
     if set(utilities) != prior_ids:
         raise ValueError("CCGR utility overrides must cover the prior policy exactly")
+    (
+        conditioning_mode,
+        resolved_groups,
+        resolved_group_weights,
+    ) = _resolve_conditioning_contract(
+        prior_policy.probabilities,
+        conditioning_groups,
+        fixed_group_weights,
+    )
     updated_probabilities = _exponentiated_distribution(
         prior_policy.probabilities,
         utilities,
         eta,
+        conditioning_groups=resolved_groups,
+        fixed_group_weights=resolved_group_weights,
     )
     activated, unresolved = _select_binding_tightening(
         prior_policy.cells,
@@ -82,6 +95,11 @@ def update_synthesis_policy(
     next_targets = _transition_distribution(
         prior_policy.target_probabilities,
         transitions,
+    )
+    next_conditioning_groups = (
+        {transitions[cell_id]: resolved_groups[cell_id] for cell_id in sorted(resolved_groups)}
+        if resolved_groups
+        else {}
     )
     provisional_policy = SynthesisPolicy.model_construct(
         policy_id="pending",
@@ -101,10 +119,19 @@ def update_synthesis_policy(
         target_probabilities=next_targets,
         source_policy_id=prior_policy.policy_id,
     )
-    allocations = _largest_remainder_allocation(
-        next_policy.probabilities,
-        total_budget,
-    )
+    if next_conditioning_groups:
+        allocations, allocated_group_counts = _conditional_largest_remainder_allocation(
+            next_policy.probabilities,
+            total_budget,
+            next_conditioning_groups,
+            resolved_group_weights,
+        )
+    else:
+        allocations = _largest_remainder_allocation(
+            next_policy.probabilities,
+            total_budget,
+        )
+        allocated_group_counts = {}
     calibrated_directional = tuple(
         item
         for item in feedback_items
@@ -147,6 +174,10 @@ def update_synthesis_policy(
         cell_utilities=cell_utilities,
         cell_transition_map=cell_transition_map,
         allocated_counts=allocated_counts,
+        conditioning_mode=conditioning_mode,
+        conditioning_groups=dict(sorted(next_conditioning_groups.items())),
+        fixed_group_weights=dict(sorted(resolved_group_weights.items())),
+        allocated_group_counts=dict(sorted(allocated_group_counts.items())),
         activated_binding_constraints=activated_constraints,
         tightening_without_declared_option=unresolved,
         eta=eta,
@@ -176,6 +207,10 @@ def update_synthesis_policy(
         cell_utilities=cell_utilities,
         cell_transition_map=cell_transition_map,
         allocated_counts=allocated_counts,
+        conditioning_mode=conditioning_mode,
+        conditioning_groups=dict(sorted(next_conditioning_groups.items())),
+        fixed_group_weights=dict(sorted(resolved_group_weights.items())),
+        allocated_group_counts=dict(sorted(allocated_group_counts.items())),
         activated_binding_constraints=activated_constraints,
         tightening_without_declared_option=unresolved,
         eta=eta,
@@ -213,12 +248,43 @@ def random_same_shift_update(
     random_values = {
         cell.cell_id: _stable_random_value(cell.cell_id, random_seed) for cell in prior_policy.cells
     }
-    weighted_mean = sum(
-        prior_policy.probabilities[cell_id] * value for cell_id, value in random_values.items()
-    )
-    centered = {cell_id: value - weighted_mean for cell_id, value in random_values.items()}
+    if reference_update.conditioning_mode == "fixed_group_marginals":
+        prior_groups = {
+            prior_id: reference_update.conditioning_groups[
+                reference_update.cell_transition_map[prior_id]
+            ]
+            for prior_id in prior_policy.probabilities
+        }
+        centered: dict[str, float] = {}
+        for group in sorted(set(prior_groups.values())):
+            members = tuple(
+                cell_id for cell_id in prior_policy.probabilities if prior_groups[cell_id] == group
+            )
+            group_mass = sum(prior_policy.probabilities[cell_id] for cell_id in members)
+            mean = (
+                sum(
+                    prior_policy.probabilities[cell_id] * random_values[cell_id]
+                    for cell_id in members
+                )
+                / group_mass
+            )
+            centered.update({cell_id: random_values[cell_id] - mean for cell_id in members})
+        fixed_weights = reference_update.fixed_group_weights
+    else:
+        weighted_mean = sum(
+            prior_policy.probabilities[cell_id] * value for cell_id, value in random_values.items()
+        )
+        centered = {cell_id: value - weighted_mean for cell_id, value in random_values.items()}
+        prior_groups = {}
+        fixed_weights = {}
     target_tv = reference_update.total_variation_distance
-    eta = _eta_for_tv(prior_policy.probabilities, centered, target_tv)
+    eta = _eta_for_tv(
+        prior_policy.probabilities,
+        centered,
+        target_tv,
+        conditioning_groups=prior_groups,
+        fixed_group_weights=fixed_weights,
+    )
     return update_synthesis_policy(
         prior_policy,
         stats,
@@ -233,6 +299,8 @@ def random_same_shift_update(
         require_calibrated_feedback=False,
         utility_overrides=centered,
         utility_mode="random_control",
+        conditioning_groups=prior_groups or None,
+        fixed_group_weights=fixed_weights or None,
     )
 
 
@@ -315,16 +383,90 @@ def _transition_distribution(
     return dict(sorted(result.items()))
 
 
+def _resolve_conditioning_contract(
+    prior: Mapping[str, float],
+    groups: Mapping[str, str] | None,
+    fixed_weights: Mapping[str, float] | None,
+) -> tuple[
+    Literal["global", "fixed_group_marginals"],
+    dict[str, str],
+    dict[str, float],
+]:
+    if groups is None and fixed_weights is None:
+        return "global", {}, {}
+    if groups is None or fixed_weights is None:
+        raise ValueError("conditioning groups and fixed weights must be supplied together")
+    if set(groups) != set(prior):
+        raise ValueError("conditioning groups must cover every prior-policy Cell")
+    observed_groups = set(groups.values())
+    if set(fixed_weights) != observed_groups:
+        raise ValueError("fixed group weights must cover the represented groups exactly")
+    if any(value <= 0 for value in fixed_weights.values()):
+        raise ValueError("fixed group weights must be positive")
+    if not math.isclose(sum(fixed_weights.values()), 1.0, abs_tol=1e-9):
+        raise ValueError("fixed group weights must sum to one")
+    observed_mass = {
+        group: sum(prior[cell_id] for cell_id in prior if groups[cell_id] == group)
+        for group in observed_groups
+    }
+    if any(
+        not math.isclose(observed_mass[group], fixed_weights[group], abs_tol=1e-9)
+        for group in observed_groups
+    ):
+        raise ValueError("prior policy does not satisfy the fixed group marginals")
+    return (
+        "fixed_group_marginals",
+        dict(sorted(groups.items())),
+        dict(sorted(fixed_weights.items())),
+    )
+
+
+def _conditional_largest_remainder_allocation(
+    probabilities: Mapping[str, float],
+    total_budget: int,
+    groups: Mapping[str, str],
+    fixed_weights: Mapping[str, float],
+) -> tuple[dict[str, int], dict[str, int]]:
+    group_counts = _largest_remainder_allocation(fixed_weights, total_budget)
+    allocated = {cell_id: 0 for cell_id in probabilities}
+    for group, group_budget in sorted(group_counts.items()):
+        members = {
+            cell_id: probabilities[cell_id] for cell_id in probabilities if groups[cell_id] == group
+        }
+        group_mass = sum(members.values())
+        conditional = {cell_id: value / group_mass for cell_id, value in members.items()}
+        allocated.update(_largest_remainder_allocation(conditional, group_budget))
+    return dict(sorted(allocated.items())), dict(sorted(group_counts.items()))
+
+
 def _exponentiated_distribution(
     prior: Mapping[str, float],
     utilities: Mapping[str, float],
     eta: float,
+    *,
+    conditioning_groups: Mapping[str, str] | None = None,
+    fixed_group_weights: Mapping[str, float] | None = None,
 ) -> dict[str, float]:
-    log_weights = {key: math.log(value) + eta * utilities[key] for key, value in prior.items()}
-    maximum = max(log_weights.values())
-    weights = {key: math.exp(value - maximum) for key, value in log_weights.items()}
-    total = sum(weights.values())
-    return {key: weights[key] / total for key in sorted(weights)}
+    if not conditioning_groups:
+        log_weights = {key: math.log(value) + eta * utilities[key] for key, value in prior.items()}
+        maximum = max(log_weights.values())
+        weights = {key: math.exp(value - maximum) for key, value in log_weights.items()}
+        total = sum(weights.values())
+        return {key: weights[key] / total for key in sorted(weights)}
+
+    if fixed_group_weights is None:
+        raise ValueError("conditional exponentiation requires fixed group weights")
+    output: dict[str, float] = {}
+    for group, group_weight in sorted(fixed_group_weights.items()):
+        members = tuple(cell_id for cell_id in prior if conditioning_groups[cell_id] == group)
+        log_weights = {
+            cell_id: math.log(prior[cell_id]) + eta * utilities[cell_id] for cell_id in members
+        }
+        maximum = max(log_weights.values())
+        weights = {cell_id: math.exp(value - maximum) for cell_id, value in log_weights.items()}
+        total = sum(weights.values())
+        output.update({cell_id: group_weight * weights[cell_id] / total for cell_id in members})
+    return dict(sorted(output.items()))
 
 
 def _largest_remainder_allocation(
@@ -347,19 +489,34 @@ def _eta_for_tv(
     prior: Mapping[str, float],
     utilities: Mapping[str, float],
     target_tv: float,
+    *,
+    conditioning_groups: Mapping[str, str] | None = None,
+    fixed_group_weights: Mapping[str, float] | None = None,
 ) -> float:
     if target_tv <= 1e-12 or len(prior) == 1:
         return 0.0
     low = 0.0
     high = 1.0
     while high < 4096:
-        candidate = _exponentiated_distribution(prior, utilities, high)
+        candidate = _exponentiated_distribution(
+            prior,
+            utilities,
+            high,
+            conditioning_groups=conditioning_groups,
+            fixed_group_weights=fixed_group_weights,
+        )
         if _total_variation(candidate, prior) >= target_tv:
             break
         high *= 2
     for _ in range(80):
         middle = (low + high) / 2
-        candidate = _exponentiated_distribution(prior, utilities, middle)
+        candidate = _exponentiated_distribution(
+            prior,
+            utilities,
+            middle,
+            conditioning_groups=conditioning_groups,
+            fixed_group_weights=fixed_group_weights,
+        )
         if _total_variation(candidate, prior) < target_tv:
             low = middle
         else:

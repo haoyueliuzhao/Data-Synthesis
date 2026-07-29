@@ -31,6 +31,7 @@ from trusted_synthesis.hashing import canonical_hash
 from .schema import (
     V09Cohort,
     V09CohortContract,
+    V09ExperimentAxis,
     V09OnlineGate,
     V09RefinementConfig,
     V09RefinementManifest,
@@ -49,17 +50,32 @@ def compile_v09_refinement(
     clause_calibration: Mapping[str, float] | None = None,
     calibration_manifest_hash: str | None = None,
     target_probabilities: Mapping[str, float] | None = None,
+    task_domains: Mapping[str, str] | None = None,
 ) -> V09RefinementManifest:
-    resolved_cells = dict(task_cells or legacy_synthesis_cells(exposures))
-    if set(item.task_id for item in exposures) - set(resolved_cells):
+    exposure_items = tuple(exposures)
+    resolved_cells = dict(task_cells or legacy_synthesis_cells(exposure_items))
+    if set(item.task_id for item in exposure_items) - set(resolved_cells):
         raise ValueError("every feedback exposure requires a synthesis cell")
+    exposure_domains: dict[str, str] = {}
+    for item in exposure_items:
+        previous = exposure_domains.setdefault(item.task_id, item.domain)
+        if previous != item.domain:
+            raise ValueError("one feedback task cannot span domains")
+    resolved_domains = dict(task_domains or exposure_domains)
+    if set(resolved_domains) != set(resolved_cells):
+        raise ValueError("task domains must cover every synthesis Cell task")
+    cell_groups = _cell_conditioning_groups(resolved_cells, resolved_domains)
+    represented_weights = _represented_group_weights(
+        cell_groups,
+        config.domain_weights,
+    )
     unique_cells = {cell.cell_id: cell for cell in resolved_cells.values()}
     pattern_catalog_hash = canonical_hash(
         tuple(sorted({item.pattern_id for item in unique_cells.values()})),
         prefix="training_utility_v09_pattern_catalog:",
     )
     cohort_contracts = _cohort_contracts(config, pattern_catalog_hash)
-    failures = aggregate_pattern_clause_failures(exposures, signals)
+    failures = aggregate_pattern_clause_failures(exposure_items, signals)
     capability_count = sum(item.route == FeedbackRoute.AGENT_CAPABILITY_GAP for item in signals)
     allocations = (
         tuple(
@@ -92,6 +108,8 @@ def compile_v09_refinement(
     prior_policy = build_observed_policy(
         resolved_cells,
         target_probabilities=target_probabilities,
+        task_groups=resolved_domains,
+        fixed_group_weights=represented_weights,
     )
     calibrated_feedback = calibrate_clause_feedback(
         signals,
@@ -110,12 +128,18 @@ def compile_v09_refinement(
         exposures,
         calibrated_feedback,
         resolved_cells,
+        minimum_cell_exposure=config.ccgr_minimum_cell_exposure,
+        shrinkage_strength=config.ccgr_pattern_shrinkage_strength,
+        normalize_root_mass=config.ccgr_normalize_root_mass,
     )
     raw_statistics = aggregate_cell_feedback(
         prior_policy,
         exposures,
         raw_feedback,
         resolved_cells,
+        minimum_cell_exposure=config.ccgr_minimum_cell_exposure,
+        shrinkage_strength=config.ccgr_pattern_shrinkage_strength,
+        normalize_root_mass=config.ccgr_normalize_root_mass,
     )
     static = update_synthesis_policy(
         prior_policy,
@@ -130,6 +154,8 @@ def compile_v09_refinement(
         ablation_id="static_verified",
         enable_binding_tightening=False,
         require_calibrated_feedback=False,
+        conditioning_groups=cell_groups,
+        fixed_group_weights=represented_weights,
     )
     raw = update_synthesis_policy(
         prior_policy,
@@ -142,6 +168,8 @@ def compile_v09_refinement(
         calibration_manifest_hash=resolved_calibration_hash,
         binding_tightening_threshold=config.ccgr_binding_tightening_threshold,
         ablation_id="raw_failure_reweighting",
+        conditioning_groups=cell_groups,
+        fixed_group_weights=represented_weights,
     )
     no_defect = update_synthesis_policy(
         prior_policy,
@@ -154,6 +182,8 @@ def compile_v09_refinement(
         calibration_manifest_hash=resolved_calibration_hash,
         binding_tightening_threshold=config.ccgr_binding_tightening_threshold,
         ablation_id="no_defect_suppression",
+        conditioning_groups=cell_groups,
+        fixed_group_weights=represented_weights,
     )
     no_coverage = update_synthesis_policy(
         prior_policy,
@@ -166,6 +196,8 @@ def compile_v09_refinement(
         calibration_manifest_hash=resolved_calibration_hash,
         binding_tightening_threshold=config.ccgr_binding_tightening_threshold,
         ablation_id="no_coverage_regularization",
+        conditioning_groups=cell_groups,
+        fixed_group_weights=represented_weights,
     )
     full = update_synthesis_policy(
         prior_policy,
@@ -178,6 +210,8 @@ def compile_v09_refinement(
         calibration_manifest_hash=resolved_calibration_hash,
         binding_tightening_threshold=config.ccgr_binding_tightening_threshold,
         ablation_id="full_ccgr",
+        conditioning_groups=cell_groups,
+        fixed_group_weights=represented_weights,
     )
     random_control = random_same_shift_update(
         prior_policy,
@@ -214,6 +248,8 @@ def compile_v09_refinement(
         "Uncalibrated clauses are fail-closed at the configured reliability floor.",
         "Binding tightening can only activate options predeclared by a plugin or pattern.",
         "Refinement cannot add patterns, operators, contracts, or agent strategies.",
+        "Random-same-shift and raw-feedback policies are manifest-only controls until "
+        "equal-token cohorts are materialized; only C3 versus C4 is identified.",
         "Selected=used=cited evidence remains a controlled-task assumption.",
         "External native benchmarks have not been executed.",
         *(
@@ -223,10 +259,7 @@ def compile_v09_refinement(
         ),
         *(
             ()
-            if any(
-                item.route == FeedbackRoute.UPSTREAM_DATA_DEFECT
-                for item in calibrated_feedback
-            )
+            if any(item.route == FeedbackRoute.UPSTREAM_DATA_DEFECT for item in calibrated_feedback)
             else (
                 "This feedback slice contains no synthesis-defect root; beta is not "
                 "empirically identified by this run.",
@@ -235,22 +268,22 @@ def compile_v09_refinement(
         *(
             ()
             if calibration_coverage == 1.0
-            else (
-                "Uncalibrated observed root Clause kinds retain zero refinement weight.",
-            )
+            else ("Uncalibrated observed root Clause kinds retain zero refinement weight.",)
         ),
     )
     route_counts = Counter(item.route.value for item in signals)
+    experiment_axes = _experiment_axes()
     identity = {
         "config_hash": config.config_hash,
         "feedback_source": feedback_source,
         "round0_real_agent_feedback": round0_real_agent_feedback,
-        "exposures": exposures,
+        "exposures": exposure_items,
         "signals": signals,
         "allocations": allocations,
         "synthesis_cells": tuple(unique_cells.values()),
         "clause_feedback": calibrated_feedback,
         "ccgr_updates": ccgr_updates,
+        "experiment_axes": experiment_axes,
         "online_gate": gate,
         "cohorts": cohort_contracts,
     }
@@ -260,7 +293,7 @@ def compile_v09_refinement(
         pattern_catalog_hash=pattern_catalog_hash,
         feedback_source=feedback_source,
         round0_real_agent_feedback=round0_real_agent_feedback,
-        feedback_exposure_count=len(exposures),
+        feedback_exposure_count=len(exposure_items),
         feedback_signal_count=len(signals),
         feedback_route_counts=dict(sorted(route_counts.items())),
         pattern_clause_failures=failures,
@@ -273,6 +306,7 @@ def compile_v09_refinement(
         calibration_coverage_rate=calibration_coverage,
         ccgr_updates=ccgr_updates,
         primary_ccgr_update_id=full.update_id,
+        experiment_axes=experiment_axes,
         cohort_contracts=cohort_contracts,
         online_gate=gate,
         limitations=limitations,
@@ -307,7 +341,10 @@ def compile_v09_from_agent_report(
         task_domains,
         config.domain_weights,
     )
-    calibration, calibration_hash = clause_calibration_from_reports(calibration_reports)
+    calibration, calibration_hash = clause_calibration_from_reports(
+        calibration_reports,
+        confidence_prior_count=config.ccgr_clause_confidence_prior_count,
+    )
     requested = sum(report.requested_domain_candidate_counts.values())
     accepted_samples = tuple(
         item
@@ -371,7 +408,81 @@ def compile_v09_from_agent_report(
         clause_calibration=calibration,
         calibration_manifest_hash=calibration_hash,
         target_probabilities=resolved_targets or None,
+        task_domains=task_domains or None,
     )
+
+
+def _experiment_axes() -> tuple[V09ExperimentAxis, ...]:
+    return (
+        V09ExperimentAxis(
+            axis_id="co_compilation",
+            members=(
+                V09Cohort.CONVENTIONAL_SYNTHETIC.value,
+                V09Cohort.EVIDENCE_GROUNDED.value,
+                V09Cohort.VERIFIED_STATIC.value,
+            ),
+            primary_contrast=(
+                V09Cohort.EVIDENCE_GROUNDED.value,
+                V09Cohort.VERIFIED_STATIC.value,
+            ),
+            causal_status="exploratory",
+            controlled_variables=("base_model", "training_seed", "supervised_token_budget"),
+            unresolved_confounds=(
+                "program_visibility",
+                "planning_track",
+                "task_pool",
+                "proof_contract",
+                "teacher_target_source",
+            ),
+        ),
+        V09ExperimentAxis(
+            axis_id="ccgr_refinement",
+            members=(
+                V09Cohort.VERIFIED_STATIC.value,
+                V09Cohort.FEEDBACK_REFINED.value,
+            ),
+            primary_contrast=(
+                V09Cohort.VERIFIED_STATIC.value,
+                V09Cohort.FEEDBACK_REFINED.value,
+            ),
+            causal_status="identified",
+            controlled_variables=(
+                "base_model",
+                "training_seed",
+                "supervised_token_budget",
+                "fixed_group_marginals",
+                "compiler_contract",
+                "candidate_superpool",
+            ),
+        ),
+    )
+
+
+def _cell_conditioning_groups(
+    task_cells: Mapping[str, SynthesisCell],
+    task_groups: Mapping[str, str],
+) -> dict[str, str]:
+    groups: dict[str, str] = {}
+    for task_id, cell in task_cells.items():
+        group = task_groups[task_id]
+        previous = groups.setdefault(cell.cell_id, group)
+        if previous != group:
+            raise ValueError("one synthesis Cell cannot span conditioning groups")
+    return dict(sorted(groups.items()))
+
+
+def _represented_group_weights(
+    cell_groups: Mapping[str, str],
+    configured_weights: Mapping[str, float],
+) -> dict[str, float]:
+    groups = set(cell_groups.values())
+    missing = groups - set(configured_weights)
+    if missing:
+        raise ValueError(f"conditioning groups have no configured weights: {sorted(missing)}")
+    total = sum(configured_weights[group] for group in groups)
+    if total <= 0:
+        raise ValueError("represented conditioning groups require positive weight")
+    return {group: configured_weights[group] / total for group in sorted(groups)}
 
 
 def _cohort_contracts(
@@ -446,10 +557,7 @@ def _domain_weighted_targets(
 ) -> dict[str, float]:
     if not task_cells:
         return {}
-    counts = Counter(
-        (task_domains[task_id], cell.cell_id)
-        for task_id, cell in task_cells.items()
-    )
+    counts = Counter((task_domains[task_id], cell.cell_id) for task_id, cell in task_cells.items())
     domain_totals = Counter(task_domains.values())
     targets: dict[str, float] = defaultdict(float)
     for (domain, cell_id), count in counts.items():

@@ -33,7 +33,7 @@ from trusted_synthesis.hashing import canonical_hash
 from .aggregate import build_synthesis_cell
 from .schema import PolicyUpdateResult, SynthesisCell
 
-REFINED_SYNTHESIS_MATERIALIZER_VERSION = "refined_synthesis_materializer.v1"
+REFINED_SYNTHESIS_MATERIALIZER_VERSION = "refined_synthesis_materializer.v2"
 
 
 class FrozenModel(BaseModel):
@@ -66,6 +66,13 @@ class SynthesisMaterializationReport(FrozenModel):
     provider_id: str = Field(min_length=1)
     provider_version: str = Field(min_length=1)
     provider_contract_hash: str = Field(min_length=1)
+    compiler_contract_hash: str = "legacy:unknown"
+    sampling_contract_hash: str = "legacy:unknown"
+    candidate_pool_contract_hash: str = "legacy:unknown"
+    candidate_pool_id: str = "legacy:unknown"
+    sampling_partition_id: str = "legacy:unknown"
+    materialization_seed: int = 0
+    seed_effective: bool = False
     policy_allocated_counts: dict[str, int]
     requested_cell_counts: dict[str, int]
     materialized_cell_counts: dict[str, int]
@@ -107,11 +114,15 @@ class SynthesisMaterializationReport(FrozenModel):
             and self.new_task_identity_rate == 1.0
             and self.new_binding_identity_rate == 1.0
             and self.new_evidence_identity_rate == 1.0
+            and (self.seed_effective or self.version == "refined_synthesis_materializer.v1")
             else "blocked"
         )
         if self.status != expected_status:
             raise ValueError("materialization status disagrees with fail-closed gates")
-        if self.report_id != synthesis_materialization_report_id(self):
+        if self.report_id not in {
+            synthesis_materialization_report_id(self),
+            legacy_synthesis_materialization_report_id(self),
+        }:
             raise ValueError("synthesis materialization report identity is invalid")
         return self
 
@@ -140,6 +151,12 @@ class SynthesisBindingProviderProtocol(Protocol):
     provider_id: str
     provider_version: str
     provider_contract_hash: str
+    compiler_contract_hash: str
+    sampling_contract_hash: str
+    candidate_pool_contract_hash: str
+    candidate_pool_id: str
+    sampling_partition_id: str
+    seed_effective: bool
 
     def iter_candidates(
         self,
@@ -295,6 +312,13 @@ class RefinedSynthesisMaterializer:
             "provider_id": self._provider.provider_id,
             "provider_version": self._provider.provider_version,
             "provider_contract_hash": self._provider.provider_contract_hash,
+            "compiler_contract_hash": self._provider.compiler_contract_hash,
+            "sampling_contract_hash": self._provider.sampling_contract_hash,
+            "candidate_pool_contract_hash": self._provider.candidate_pool_contract_hash,
+            "candidate_pool_id": self._provider.candidate_pool_id,
+            "sampling_partition_id": self._provider.sampling_partition_id,
+            "materialization_seed": seed,
+            "seed_effective": self._provider.seed_effective,
             "policy_allocated_counts": dict(sorted(update.allocated_counts.items())),
             "requested_cell_counts": dict(sorted(resolved_counts.items())),
             "materialized_cell_counts": {
@@ -336,6 +360,7 @@ class RefinedSynthesisMaterializer:
                 and _rate(new_task_count, contract_pass_count) == 1.0
                 and _rate(new_binding_count, contract_pass_count) == 1.0
                 and _rate(new_evidence_count, contract_pass_count) == 1.0
+                and self._provider.seed_effective
                 else "blocked"
             ),
         }
@@ -384,6 +409,27 @@ def synthesis_materialization_report_id(
 ) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"report_id"}),
+        prefix="synthesis_materialization_report:",
+    )
+
+
+def legacy_synthesis_materialization_report_id(
+    value: SynthesisMaterializationReport,
+) -> str:
+    return canonical_hash(
+        value.model_dump(
+            mode="json",
+            exclude={
+                "report_id",
+                "compiler_contract_hash",
+                "sampling_contract_hash",
+                "candidate_pool_contract_hash",
+                "candidate_pool_id",
+                "sampling_partition_id",
+                "materialization_seed",
+                "seed_effective",
+            },
+        ),
         prefix="synthesis_materialization_report:",
     )
 

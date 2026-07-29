@@ -9,8 +9,8 @@ from trusted_synthesis.core.feedback import FeedbackRoute
 from trusted_synthesis.hashing import canonical_hash
 
 CCGR_ALGORITHM_ID = "calibrated_clause_guided_refinement"
-CCGR_ALGORITHM_VERSION = "ccgr.v1"
-REFINEMENT_SCHEMA_VERSION = "refinement.v1"
+CCGR_ALGORITHM_VERSION = "ccgr.v2"
+REFINEMENT_SCHEMA_VERSION = "refinement.v2"
 
 
 class FrozenModel(BaseModel):
@@ -93,6 +93,15 @@ class CellFeedbackStatistics(FrozenModel):
     interface_weight_sum: float = Field(ge=0)
     synthesis_defect_weight_sum: float = Field(ge=0)
     capability_gap_weight_sum: float = Field(ge=0)
+    raw_synthesis_defect_weight_sum: float = Field(default=0.0, ge=0)
+    raw_capability_gap_weight_sum: float = Field(default=0.0, ge=0)
+    pattern_exposure_count: int = Field(default=0, ge=0)
+    pattern_synthesis_defect_rate: float = Field(default=0.0, ge=0)
+    pattern_capability_gap_rate: float = Field(default=0.0, ge=0)
+    cell_synthesis_defect_rate: float = Field(default=0.0, ge=0)
+    cell_capability_gap_rate: float = Field(default=0.0, ge=0)
+    shrinkage_weight: float = Field(default=1.0, ge=0, le=1)
+    minimum_exposure_met: bool = True
     synthesis_defect_risk: float = Field(ge=0)
     capability_gap_demand: float = Field(ge=0)
     target_share: float = Field(ge=0, le=1)
@@ -159,6 +168,10 @@ class PolicyUpdateResult(FrozenModel):
     cell_utilities: dict[str, float] = Field(min_length=1)
     cell_transition_map: dict[str, str] = Field(min_length=1)
     allocated_counts: dict[str, int] = Field(min_length=1)
+    conditioning_mode: Literal["global", "fixed_group_marginals"] = "global"
+    conditioning_groups: dict[str, str] = Field(default_factory=dict)
+    fixed_group_weights: dict[str, float] = Field(default_factory=dict)
+    allocated_group_counts: dict[str, int] = Field(default_factory=dict)
     activated_binding_constraints: dict[str, tuple[str, ...]] = Field(default_factory=dict)
     tightening_without_declared_option: tuple[str, ...] = ()
     eta: float = Field(ge=0)
@@ -196,11 +209,39 @@ class PolicyUpdateResult(FrozenModel):
             raise ValueError("allocations must cover every next policy cell")
         if sum(self.allocated_counts.values()) != self.total_budget:
             raise ValueError("CCGR allocations must preserve the total budget")
+        if self.conditioning_mode == "fixed_group_marginals":
+            if set(self.conditioning_groups) != next_ids:
+                raise ValueError("conditioning groups must cover every next-policy Cell")
+            observed_groups = set(self.conditioning_groups.values())
+            if set(self.fixed_group_weights) != observed_groups:
+                raise ValueError("fixed group weights must cover every conditioning group")
+            if not math.isclose(sum(self.fixed_group_weights.values()), 1.0, abs_tol=1e-9):
+                raise ValueError("fixed group weights must sum to one")
+            if set(self.allocated_group_counts) != observed_groups:
+                raise ValueError("allocated group counts must cover every conditioning group")
+            observed_counts = {group: 0 for group in observed_groups}
+            observed_probability = {group: 0.0 for group in observed_groups}
+            for cell_id, group in self.conditioning_groups.items():
+                observed_counts[group] += self.allocated_counts[cell_id]
+                observed_probability[group] += self.next_policy.probabilities[cell_id]
+            if observed_counts != self.allocated_group_counts:
+                raise ValueError("Cell allocations disagree with fixed group allocations")
+            if any(
+                not math.isclose(
+                    observed_probability[group],
+                    self.fixed_group_weights[group],
+                    abs_tol=1e-9,
+                )
+                for group in observed_groups
+            ):
+                raise ValueError("next policy does not preserve fixed group marginals")
+        elif self.conditioning_groups or self.fixed_group_weights or self.allocated_group_counts:
+            raise ValueError("global policy updates cannot carry conditioning metadata")
         if self.status == "passed" and self.failures:
             raise ValueError("a passed policy update cannot contain failures")
         if self.status == "blocked" and not self.failures:
             raise ValueError("a blocked policy update requires a failure reason")
-        if self.update_id != policy_update_id(self):
+        if self.update_id not in {policy_update_id(self), legacy_policy_update_id(self)}:
             raise ValueError("policy update identity is invalid")
         return self
 
@@ -236,3 +277,33 @@ def policy_update_id(value: PolicyUpdateResult) -> str:
         value.model_dump(mode="json", exclude={"update_id"}),
         prefix="ccgr_policy_update:",
     )
+
+
+def legacy_policy_update_id(value: PolicyUpdateResult) -> str:
+    """Accept persisted ccgr.v1 artifacts after additive v2 schema evolution."""
+
+    payload = value.model_dump(
+        mode="json",
+        exclude={
+            "update_id",
+            "conditioning_mode",
+            "conditioning_groups",
+            "fixed_group_weights",
+            "allocated_group_counts",
+        },
+    )
+    added_statistic_fields = {
+        "raw_synthesis_defect_weight_sum",
+        "raw_capability_gap_weight_sum",
+        "pattern_exposure_count",
+        "pattern_synthesis_defect_rate",
+        "pattern_capability_gap_rate",
+        "cell_synthesis_defect_rate",
+        "cell_capability_gap_rate",
+        "shrinkage_weight",
+        "minimum_exposure_met",
+    }
+    for statistic in payload["statistics"]:
+        for field in added_statistic_fields:
+            statistic.pop(field, None)
+    return canonical_hash(payload, prefix="ccgr_policy_update:")

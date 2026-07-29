@@ -13,6 +13,7 @@ from trusted_synthesis.core.feedback import (
     make_feedback_signal,
 )
 from trusted_synthesis.core.refinement import (
+    PolicyUpdateResult,
     aggregate_cell_feedback,
     build_observed_policy,
     calibrate_clause_feedback,
@@ -22,6 +23,7 @@ from trusted_synthesis.core.refinement import (
     update_synthesis_policy,
 )
 from trusted_synthesis.core.refinement.update import _kl_divergence
+from trusted_synthesis.hashing import canonical_hash
 
 
 def test_ccgr_increases_capability_demand_and_suppresses_synthesis_defects() -> None:
@@ -327,8 +329,7 @@ def test_cell_feedback_counts_only_explicitly_evaluated_tasks() -> None:
     )
 
     statistics = {
-        item.cell_id: item
-        for item in aggregate_cell_feedback(policy, exposures, (), task_cells)
+        item.cell_id: item for item in aggregate_cell_feedback(policy, exposures, (), task_cells)
     }
 
     assert statistics[evaluated.cell_id].exposure_count == 1
@@ -401,3 +402,237 @@ def test_kl_divergence_clamps_only_roundoff_negative_values() -> None:
     }
 
     assert _kl_divergence(distribution, distribution) == 0
+
+
+def test_domain_conditional_ccgr_and_random_control_preserve_fixed_marginals() -> None:
+    cells = {
+        name: make_synthesis_cell(
+            pattern_id=f"{domain}.{name}",
+            binding_stratum_id=f"binding:{name}",
+            difficulty_bucket="medium",
+            distractor_profile_id="distractor:none",
+        )
+        for name, domain in (
+            ("finance_left", "finance"),
+            ("finance_right", "finance"),
+            ("science_left", "science"),
+            ("science_right", "science"),
+        )
+    }
+    task_cells = {f"task_{name}": cell for name, cell in cells.items()}
+    task_groups = {
+        "task_finance_left": "finance",
+        "task_finance_right": "finance",
+        "task_science_left": "science",
+        "task_science_right": "science",
+    }
+    fixed_weights = {"finance": 0.8, "science": 0.2}
+    policy = build_observed_policy(
+        task_cells,
+        task_groups=task_groups,
+        fixed_group_weights=fixed_weights,
+    )
+    exposures = tuple(
+        FeedbackExposure(
+            task_id=task_id,
+            domain=task_groups[task_id],
+            pattern_id=cell.pattern_id,
+            failure_family="operation",
+        )
+        for task_id, cell in task_cells.items()
+    )
+    signal = _signal(
+        task_id="task_finance_left",
+        pattern_id=cells["finance_left"].pattern_id,
+        clause_kind="operation",
+        route=FeedbackRoute.AGENT_CAPABILITY_GAP,
+    )
+    feedback = calibrate_clause_feedback((signal,), task_cells, {"operation": 1.0})
+    statistics = aggregate_cell_feedback(policy, exposures, feedback, task_cells)
+    cell_groups = {cell.cell_id: task_groups[task_id] for task_id, cell in task_cells.items()}
+    full = update_synthesis_policy(
+        policy,
+        statistics,
+        feedback,
+        eta=1,
+        beta=1,
+        gamma=0,
+        total_budget=100,
+        calibration_manifest_hash="calibration:conditional",
+        conditioning_groups=cell_groups,
+        fixed_group_weights=fixed_weights,
+    )
+    random_control = random_same_shift_update(
+        policy,
+        statistics,
+        reference_update=full,
+        total_budget=100,
+        calibration_manifest_hash="calibration:conditional",
+        random_seed=17,
+    )
+
+    assert full.conditioning_mode == "fixed_group_marginals"
+    assert full.allocated_group_counts == {"finance": 80, "science": 20}
+    for update in (full, random_control):
+        observed = {"finance": 0.0, "science": 0.0}
+        for cell_id, group in update.conditioning_groups.items():
+            observed[group] += update.next_policy.probabilities[cell_id]
+        assert observed == pytest.approx(fixed_weights)
+    assert random_control.total_variation_distance == pytest.approx(
+        full.total_variation_distance,
+        abs=1e-10,
+    )
+
+
+def test_feedback_statistics_normalize_root_mass_shrink_and_gate_low_exposure() -> None:
+    left = make_synthesis_cell(
+        pattern_id="domain.shared_pattern",
+        binding_stratum_id="binding:left",
+        difficulty_bucket="hard",
+        distractor_profile_id="distractor:none",
+    )
+    right = make_synthesis_cell(
+        pattern_id="domain.shared_pattern",
+        binding_stratum_id="binding:right",
+        difficulty_bucket="hard",
+        distractor_profile_id="distractor:none",
+    )
+    task_cells = {"left": left, "right": right}
+    exposures = (
+        FeedbackExposure(
+            task_id="left",
+            domain="domain",
+            pattern_id=left.pattern_id,
+            failure_family="operation",
+        ),
+        FeedbackExposure(
+            task_id="right",
+            domain="domain",
+            pattern_id=right.pattern_id,
+            failure_family="operation",
+        ),
+    )
+    signals = (
+        _signal(
+            task_id="left",
+            pattern_id=left.pattern_id,
+            clause_kind="operation_a",
+            route=FeedbackRoute.AGENT_CAPABILITY_GAP,
+        ),
+        _signal(
+            task_id="left",
+            pattern_id=left.pattern_id,
+            clause_kind="operation_b",
+            route=FeedbackRoute.AGENT_CAPABILITY_GAP,
+        ),
+    )
+    policy = build_observed_policy(task_cells)
+    feedback = calibrate_clause_feedback(
+        signals,
+        task_cells,
+        {"operation_a": 1.0, "operation_b": 1.0},
+    )
+    shrunk = {
+        item.cell_id: item
+        for item in aggregate_cell_feedback(
+            policy,
+            exposures,
+            feedback,
+            task_cells,
+            minimum_cell_exposure=1,
+            shrinkage_strength=1,
+        )
+    }
+    gated = {
+        item.cell_id: item
+        for item in aggregate_cell_feedback(
+            policy,
+            exposures,
+            feedback,
+            task_cells,
+            minimum_cell_exposure=2,
+            shrinkage_strength=1,
+        )
+    }
+
+    assert shrunk[left.cell_id].raw_capability_gap_weight_sum == 2
+    assert shrunk[left.cell_id].capability_gap_weight_sum == 1
+    assert shrunk[left.cell_id].cell_capability_gap_rate == 1
+    assert shrunk[left.cell_id].capability_gap_demand == pytest.approx(0.75)
+    assert shrunk[right.cell_id].capability_gap_demand == pytest.approx(0.25)
+    assert not gated[left.cell_id].minimum_exposure_met
+    assert gated[left.cell_id].capability_gap_demand == 0
+
+
+def test_clause_reliability_applies_finite_sample_confidence_discount() -> None:
+    metrics = CounterfactualSliceMetrics(
+        generated_case_count=4,
+        valid_case_count=2,
+        detected_case_count=2,
+        mutation_validity_rate=0.5,
+        detection_rate=0.5,
+        minimality_pass_rate=1.0,
+        mean_minimality_score=1.0,
+        root_cause_f1=1.0,
+        failure_closure_f1=1.0,
+    )
+
+    assert clause_reliability(
+        metrics,
+        confidence_prior_count=2,
+    ) == pytest.approx(math.sqrt(0.5) * 0.5)
+
+
+def test_ccgr_v1_policy_update_identity_remains_readable() -> None:
+    cell = make_synthesis_cell(
+        pattern_id="domain.legacy",
+        binding_stratum_id="binding:legacy",
+        difficulty_bucket="medium",
+        distractor_profile_id="distractor:none",
+    )
+    task_cells = {"legacy_task": cell}
+    policy = build_observed_policy(task_cells)
+    update = update_synthesis_policy(
+        policy,
+        aggregate_cell_feedback(policy, (), (), task_cells),
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=1,
+        calibration_manifest_hash="calibration:legacy",
+        require_calibrated_feedback=False,
+    )
+    payload = update.model_dump(mode="json")
+    payload["algorithm_version"] = "ccgr.v1"
+    payload["schema_version"] = "refinement.v1"
+    for field in (
+        "conditioning_mode",
+        "conditioning_groups",
+        "fixed_group_weights",
+        "allocated_group_counts",
+    ):
+        payload.pop(field)
+    for statistic in payload["statistics"]:
+        for field in (
+            "raw_synthesis_defect_weight_sum",
+            "raw_capability_gap_weight_sum",
+            "pattern_exposure_count",
+            "pattern_synthesis_defect_rate",
+            "pattern_capability_gap_rate",
+            "cell_synthesis_defect_rate",
+            "cell_capability_gap_rate",
+            "shrinkage_weight",
+            "minimum_exposure_met",
+        ):
+            statistic.pop(field)
+    payload["update_id"] = canonical_hash(
+        {key: value for key, value in payload.items() if key != "update_id"},
+        prefix="ccgr_policy_update:",
+    )
+
+    loaded = PolicyUpdateResult.model_validate(payload)
+
+    assert loaded.update_id == payload["update_id"]
+    assert loaded.algorithm_version == "ccgr.v1"
+    assert loaded.conditioning_mode == "global"

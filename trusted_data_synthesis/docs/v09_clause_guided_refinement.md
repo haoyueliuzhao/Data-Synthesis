@@ -70,14 +70,19 @@ tightening candidates through a refinement contract.
 Typed counterfactual results produce one reliability value per root Clause kind:
 
 ```text
-kappa_c = geometric_mean(
+base_kappa_c = geometric_mean(
     mutation_validity_rate,
     detection_rate,
     root_cause_f1,
     failure_closure_f1,
 )
+kappa_c = base_kappa_c * valid_case_count / (valid_case_count + confidence_prior_count)
 omega_c = severity_weight_c * kappa_c
 ```
+
+The finite-sample factor prevents a tiny calibration slice from receiving the same authority as a
+well-supported Clause. The prior count is frozen in the experiment config and included in the
+calibration manifest hash.
 
 Calibration is keyed by the expected root Clause kind, not merely the mutated source Clause. A
 Clause absent from the calibration manifest receives the configured fail-closed reliability floor,
@@ -87,26 +92,39 @@ ablation.
 ## Calibrated Cell Statistics
 
 Every evaluated task contributes one exposure to its Synthesis Cell. Only independently localized
-root failures contribute directional mass:
+root failures contribute directional mass. Directional root mass is first normalized per task, so
+listing several correlated roots cannot multiply one sample's influence. Cell rates are then
+empirically shrunk toward their Pattern-level rates:
 
 ```text
-D_t(a) = calibrated synthesis-defect weight / exposed samples in a
-G_t(a) = calibrated capability-gap weight / exposed samples in a
+D_cell = normalized calibrated synthesis-defect mass / exposed samples in a
+G_cell = normalized calibrated capability-gap mass / exposed samples in a
+w_a = n_a / (n_a + shrinkage_strength)
+D_t(a) = w_a * D_cell + (1 - w_a) * D_pattern
+G_t(a) = w_a * G_cell + (1 - w_a) * G_pattern
 U_t(a) = max(0, target_share(a) - observed_share(a))
 ```
 
-The legacy Pattern x Clause lambda allocator remains serialized as an engineering baseline, but it
-is not the v0.9 optimization algorithm.
+Cells below the frozen minimum exposure threshold receive zero directional `D/G` utility while
+retaining their coverage term. Reports preserve raw mass, normalized rates, Pattern rates,
+shrinkage weight, exposure count, and threshold status. The legacy Pattern x Clause lambda
+allocator remains serialized as an engineering baseline, but it is not the v0.9 optimization
+algorithm.
 
 ## Policy Update
 
-Full CCGR solves a KL-regularized objective and uses its closed-form exponentiated update:
+Full CCGR solves a KL-regularized objective. For experiments with fixed domain or other group
+marginals, it updates only the conditional distribution inside each group:
 
 ```text
-pi_next(a) = pi_t(a) * exp(eta * (G_t(a) - beta * D_t(a) + gamma * U_t(a)))
-             ------------------------------------------------------------------
-             sum_a' pi_t(a') * exp(eta * (G_t(a') - beta * D_t(a') + gamma * U_t(a')))
+pi_next(g) = frozen_group_weight(g)
+pi_next(a | g) proportional_to
+    pi_t(a | g) * exp(eta * (G_t(a) - beta * D_t(a) + gamma * U_t(a)))
+pi_next(a) = pi_next(g(a)) * pi_next(a | g(a))
 ```
+
+Integer allocation first assigns the exact frozen group budgets and then performs deterministic
+largest-remainder allocation within each group. There is no post-update quota projection.
 
 The update manifest freezes the prior and next policy, calibrated Clause feedback, `D/G/U`, utility
 per cell, KL divergence, total-variation shift, entropy, effective cell count, and deterministic
@@ -127,8 +145,12 @@ The same update engine materializes six frozen comparisons:
 | Random Same Shift | deterministic random utilities matched to Full CCGR TV distance |
 | Full CCGR | calibrated `G - beta D + gamma U` |
 
-All variants preserve the same sample budget. Random Same Shift isolates whether gains come from the
-feedback direction rather than merely perturbing the distribution.
+All variants preserve the same sample budget and fixed group marginals. Random Same Shift is solved
+after conditioning and matches Full CCGR's realized total-variation distance, isolating whether
+gains come from feedback direction rather than merely perturbing the distribution. In v0.9, these
+six policy artifacts are frozen algorithm controls; only Static Verified (C3) and Full CCGR (C4)
+are materialized as equal-token training cohorts. Claims about the remaining ablations require
+separate materialization.
 
 ## Route B: Closed Synthesis Materialization
 
@@ -157,21 +179,37 @@ Every materialization report freezes:
 - Provider candidate, Binding-feasible, Contract-attempt, and Contract-pass counts;
 - Binding feasibility and Contract pass rates;
 - new Task, Binding, and Evidence identity rates and manifest hashes;
-- Provider, Pattern Runtime, and constraint-registry contract hash;
+- separate Provider, compiler, candidate-pool, and sampling contract hashes;
+- candidate-pool ID, A/B partition, materialization seed, and whether the seed affected enumeration;
 - stage-specific failures.
 
 A cohort is blocked unless all requested samples compile, all three identity rates are 100%, and no
 stage fails. Evidence Version disjointness is part of Binding novelty because Evidence role IDs are
 included in the immutable Binding hash.
 
-C3 and C4 share the same mapped, evaluated real-candidate feedback pool and Provider/compiler
-contract. A generated Cell links to an accepted source candidate when one exists; otherwise it
-retains an explicit link to the evaluated rejected candidate that supplied the feedback. The
-manifest reports all real-feedback links and the accepted subset separately, while every newly
-compiled target must independently pass its full Quality Contract. Both cohorts compile new,
-mutually disjoint identities. C3 consumes the Static Verified
-allocation; C4 consumes Full CCGR. Their frozen domain totals and student format remain identical,
-so the intended experimental difference is the Cell allocation policy.
+C3 and C4 share the same mapped, evaluated real-candidate feedback pool, compiler contract,
+immutable candidate super-pool, and materialization seed. They use deterministic disjoint A/B
+partitions; the seed hashes candidate order inside each partition. Partition assignment crosses
+over with seed parity, preventing one cohort from permanently inheriting a privileged fixture
+range. Candidate-pool, compiler, sampling, seed, and overlap contracts are frozen in the report.
+
+A generated Cell first links to Clause feedback that actually contributed non-zero directional
+mass to its policy update. Each output freezes contributing feedback IDs, failure families, source
+tasks, and its calibrated `D/G/U`, exposure, shrinkage, and threshold state. Accepted candidates
+are context links only when no directional contributor exists. This distinguishes policy lineage
+from arbitrary same-Cell provenance.
+
+Both cohorts compile new, mutually disjoint Task, Binding, and Evidence identities. C3 consumes the
+Static Verified allocation; C4 consumes Full CCGR. Their frozen domain totals, compiler, candidate
+pool, seed, and student format remain identical, so their intended difference is the conditional
+Cell allocation policy.
+
+`V09FixtureBindingProvider` remains the cross-domain contract provider. A separate
+`FinanceArchiveBindingProvider` discovers graph-ready bindings from a pinned finance archive and
+replays the same Pattern, Proof, and Quality contracts. It is enabled only when the feedback source
+itself is archive-backed; fixture feedback is never silently rebound to unrelated archive facts.
+The composite provider keeps Finance, Legal, and Science enumeration domain-owned behind one Core
+protocol.
 
 ## Causal Cohorts
 
@@ -182,11 +220,14 @@ so the intended experimental difference is the Cell allocation policy.
 | C3 Verified Static | yes | yes | yes | yes | no |
 | C4 Feedback-Refined Verified | yes | yes | yes | yes | yes |
 
-C1-C4 freeze the same Qwen2.5-7B base model, Host-Instrumented training format, supervised Assistant
-token budget, training seed, Pattern Catalog hash, and Finance/Legal/Science distribution. The
-Qwen revision is content-addressed in the cohort contract. C4 may differ from C3 only in the
-allocation derived from calibrated, direction-aware feedback. D1-D5 remain engineering regression
-cohorts rather than the main causal labels.
+The experiment freezes two distinct interpretation axes. `co_compilation` covers C1/C2/C3 and is
+explicitly exploratory because program visibility, planning track, task pool, proof contract, and
+teacher target differ. It must not be interpreted as a monotone causal gradient. The identified
+`ccgr_refinement` axis contains only C3/C4: they share the Qwen revision, token budget, training
+seed, Host-Instrumented format, domain totals, Pattern Catalog, compiler, candidate super-pool, and
+seed, while using disjoint crossover partitions. C4 may differ from C3 only in the allocation
+derived from calibrated, direction-aware feedback. D1-D5 remain engineering regression cohorts
+rather than the main causal labels.
 
 ## Online Gate
 
@@ -269,9 +310,13 @@ trusted-synthesis audit-training-token-budget \
   --dataset artifacts/training_utility_v09/v09_training_pilot_20260729/C1_conventional_synthetic.jsonl
 ```
 
-The preparation command also writes materialization reports for C3 and C4 beside the datasets.
-The v0.9 data manifest is `training_utility_v09.v3` and rejects legacy record selection when
-`synthesis_closed_loop_status=new_binding_compilation`.
+The preparation command also writes materialization reports for C3 and C4 beside the datasets,
+plus `route_b_materialization_summary.json`. The v0.9 data manifest is
+`training_utility_v09.v4`; it rejects legacy selection, missing experiment axes, post-hoc group
+drift, shared C3/C4 partitions, ineffective seeds, identity overlap, and archive-provider/source
+provenance mismatches when `synthesis_closed_loop_status=new_binding_compilation`.
+The checked-in `docs/route_b_materialization_summary.json` records the compact 600-per-cohort
+regression result and its claim boundary without retaining the generated training JSONL files.
 
 Run the token audit for C1 through C4. Every audit must be `ready`, have zero truncation, remain
 under `max_steps`, and stay within the frozen supervised-token deviation. Train each cohort from the

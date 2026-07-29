@@ -17,14 +17,17 @@ from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.refinement import (
+    ClauseFeedback,
     PolicyUpdateResult,
     RefinedSynthesisArtifact,
     RefinedSynthesisMaterializer,
+    SynthesisBindingProviderProtocol,
     SynthesisCell,
     SynthesisMaterializationReport,
     build_synthesis_cell,
 )
 from trusted_synthesis.core.task.schema import TaskPublicSpec
+from trusted_synthesis.domains.finance import FinanceArchiveAdapter, FinanceArchiveConfig
 from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
 from trusted_synthesis.experiments.training_utility_mvp.data import (
     _evaluation_isolation,
@@ -50,10 +53,11 @@ from trusted_synthesis.runtime.agent.schema import (
     AgentAnswerDecisionContract,
 )
 
+from .finance_archive_materialization import FinanceArchiveBindingProvider
 from .materialization import (
+    V09CompositeBindingProvider,
     V09FixtureBindingProvider,
     fresh_fixture_start_index,
-    project_policy_counts_to_domain_quotas,
 )
 from .schema import (
     TRAINING_UTILITY_V09_VERSION,
@@ -126,14 +130,11 @@ def build_v09_training_datasets(
             continue
         source_signature = _task_signature(dict(item.critic_input["task"]))
         current_task_id = item.task_id if item.task_id in reference_by_task else None
-        if (
-            current_task_id is not None
-            and source_signature
-            != _record_task_signature(reference_by_task[current_task_id])
+        if current_task_id is not None and source_signature != _record_task_signature(
+            reference_by_task[current_task_id]
         ):
             raise ValueError(
-                "real-agent task ID was reused with different semantics: "
-                f"{item.task_id}"
+                f"real-agent task ID was reused with different semantics: {item.task_id}"
             )
         if current_task_id is None:
             matches = reference_by_signature.get(source_signature, [])
@@ -145,9 +146,7 @@ def build_v09_training_datasets(
     real_examples = tuple(item for item, _ in mapped_examples)
     if len(real_examples) != len({item.task_id for item in real_examples}):
         raise ValueError("v0.9 requires one real Agent candidate per source task")
-    unfiltered_records, unfiltered_example_ids = _representable_real_records(
-        real_examples
-    )
+    unfiltered_records, unfiltered_example_ids = _representable_real_records(real_examples)
     current_task_by_source = {item.task_id: task_id for item, task_id in mapped_examples}
     accepted_examples = tuple(
         item
@@ -166,20 +165,14 @@ def build_v09_training_datasets(
         current_task_id = current_task_by_source[item.task_id]
         previous = real_source_example_ids.get(current_task_id)
         if previous is not None and previous != item.example_id:
-            raise ValueError(
-                "multiple real Agent candidates map to one current task identity"
-            )
+            raise ValueError("multiple real Agent candidates map to one current task identity")
         real_source_example_ids[current_task_id] = item.example_id
 
     full_update = next(
-        item
-        for item in refinement_manifest.ccgr_updates
-        if item.ablation_id == "full_ccgr"
+        item for item in refinement_manifest.ccgr_updates if item.ablation_id == "full_ccgr"
     )
     static_update = next(
-        item
-        for item in refinement_manifest.ccgr_updates
-        if item.ablation_id == "static_verified"
+        item for item in refinement_manifest.ccgr_updates if item.ablation_id == "static_verified"
     )
     quotas = _domain_quotas(
         refinement_config.cohort_example_budget,
@@ -206,10 +199,7 @@ def build_v09_training_datasets(
         quotas,
         seed=refinement_config.training_seed + 201,
     )
-    c2 = tuple(
-        _prepare_grounded_record(item, V09Cohort.EVIDENCE_GROUNDED)
-        for item in c2_selected
-    )
+    c2 = tuple(_prepare_grounded_record(item, V09Cohort.EVIDENCE_GROUNDED) for item in c2_selected)
 
     feedback_source_records: list[SFTRecord] = []
     source_cells: dict[str, SynthesisCell] = {}
@@ -240,57 +230,102 @@ def build_v09_training_datasets(
         prefix="training_utility_v09_feedback_source_pool:",
     )
 
+    candidate_pool_id = "route_b_closed_loop_superpool"
     fixture_start = fresh_fixture_start_index(
         refinement_config,
-        cohort_namespace="route_b_closed_loop",
+        cohort_namespace=candidate_pool_id,
     )
-    c3_provider = V09FixtureBindingProvider(
+    c3_partition, c4_partition = (
+        ("A", "B") if refinement_config.materialization_seed % 2 == 0 else ("B", "A")
+    )
+    c3_fixture_provider = V09FixtureBindingProvider(
         namespace="c3_static_verified",
         start_index=fixture_start,
+        candidate_pool_id=candidate_pool_id,
+        candidate_pool_size=refinement_config.materialization_superpool_size,
+        sampling_partition_id=c3_partition,
+        pool_split_seed=refinement_config.materialization_seed,
+        maximum_scan_multiplier=refinement_config.materialization_scan_multiplier,
     )
-    c4_provider = V09FixtureBindingProvider(
+    c4_fixture_provider = V09FixtureBindingProvider(
         namespace="c4_feedback_refined",
-        start_index=fixture_start + 10_000_000,
+        start_index=fixture_start,
+        candidate_pool_id=candidate_pool_id,
+        candidate_pool_size=refinement_config.materialization_superpool_size,
+        sampling_partition_id=c4_partition,
+        pool_split_seed=refinement_config.materialization_seed,
+        maximum_scan_multiplier=refinement_config.materialization_scan_multiplier,
     )
-    static_cell_domains = {
-        cell.cell_id: c3_provider.domain_for_pattern(cell.pattern_id)
-        for cell in static_update.next_policy.cells
-    }
-    full_cell_domains = {
-        cell.cell_id: c4_provider.domain_for_pattern(cell.pattern_id)
-        for cell in full_update.next_policy.cells
-    }
-    c3_requested_counts = project_policy_counts_to_domain_quotas(
-        static_update.allocated_counts,
-        static_update.next_policy.probabilities,
-        static_cell_domains,
-        quotas,
+    finance_source_adapter_ids = _domain_evidence_adapter_ids(
+        feedback_source_pool,
+        domain="finance",
     )
-    c4_requested_counts = project_policy_counts_to_domain_quotas(
-        full_update.allocated_counts,
-        full_update.next_policy.probabilities,
-        full_cell_domains,
-        quotas,
-    )
+    finance_archive_source = finance_source_adapter_ids == {"finance_archive.v1"}
+    archive_config_path = refinement_config.finance_archive_config_path
+    c3_provider: SynthesisBindingProviderProtocol
+    c4_provider: SynthesisBindingProviderProtocol
+    if finance_archive_source:
+        if archive_config_path is None:
+            raise ValueError(
+                "archive-backed Finance feedback requires finance_archive_config_path"
+            )
+        archive_adapter = FinanceArchiveAdapter(
+            FinanceArchiveConfig.from_json(archive_config_path)
+        )
+        c3_archive_provider = FinanceArchiveBindingProvider(
+            archive_adapter,
+            candidate_pool_id="route_b_finance_archive_superpool",
+            sampling_partition_id=c3_partition,
+            pool_split_seed=refinement_config.materialization_seed,
+        )
+        c4_archive_provider = c3_archive_provider.for_partition(c4_partition)
+        c3_provider = V09CompositeBindingProvider(
+            {
+                "finance": c3_archive_provider,
+                "legal": c3_fixture_provider,
+                "science": c3_fixture_provider,
+            },
+            sampling_partition_id=c3_partition,
+        )
+        c4_provider = V09CompositeBindingProvider(
+            {
+                "finance": c4_archive_provider,
+                "legal": c4_fixture_provider,
+                "science": c4_fixture_provider,
+            },
+            sampling_partition_id=c4_partition,
+        )
+        finance_archive_provider_used = True
+    else:
+        c3_provider = c3_fixture_provider
+        c4_provider = c4_fixture_provider
+        finance_archive_provider_used = False
+    if static_update.conditioning_mode != "fixed_group_marginals":
+        raise ValueError("C3 policy must freeze group marginals before materialization")
+    if full_update.conditioning_mode != "fixed_group_marginals":
+        raise ValueError("C4 policy must freeze group marginals before materialization")
+    if static_update.allocated_group_counts != quotas:
+        raise ValueError("C3 conditional allocation does not match frozen domain quotas")
+    if full_update.allocated_group_counts != quotas:
+        raise ValueError("C4 conditional allocation does not match frozen domain quotas")
+    c3_requested_counts = static_update.allocated_counts
+    c4_requested_counts = full_update.allocated_counts
     frozen_identity_records = (*reference_records, *evaluation_records)
     forbidden_task_ids = {item.task_id for item in frozen_identity_records}
     forbidden_binding_ids = _record_binding_ids(frozen_identity_records)
-    forbidden_evidence_version_ids = _record_evidence_version_ids(
-        frozen_identity_records
-    )
+    forbidden_evidence_version_ids = _record_evidence_version_ids(frozen_identity_records)
     c3_materializer = RefinedSynthesisMaterializer(c3_provider)
     c3_artifacts, c3_materialization_report = c3_materializer.materialize(
         static_update,
         requested_counts=c3_requested_counts,
-        seed=refinement_config.training_seed + 301,
+        seed=refinement_config.materialization_seed,
         forbidden_task_ids=forbidden_task_ids,
         forbidden_binding_ids=forbidden_binding_ids,
         forbidden_evidence_version_ids=forbidden_evidence_version_ids,
     )
     if c3_materialization_report.status != "passed":
         raise ValueError(
-            "C3 fresh synthesis materialization failed: "
-            f"{c3_materialization_report.failure_counts}"
+            f"C3 fresh synthesis materialization failed: {c3_materialization_report.failure_counts}"
         )
     c3 = _materialized_records(
         c3_artifacts,
@@ -300,6 +335,7 @@ def build_v09_training_datasets(
         source_example_ids=real_source_example_ids,
         accepted_example_ids=accepted_example_ids,
         materialization_report=c3_materialization_report,
+        clause_feedback=refinement_manifest.clause_feedback,
         source_kind="quality_contract_verified_new_compilation",
     )
 
@@ -314,17 +350,14 @@ def build_v09_training_datasets(
     c4_artifacts, c4_materialization_report = c4_materializer.materialize(
         full_update,
         requested_counts=c4_requested_counts,
-        seed=refinement_config.training_seed + 401,
+        seed=refinement_config.materialization_seed,
         forbidden_task_ids=forbidden_task_ids | c3_task_ids,
         forbidden_binding_ids=forbidden_binding_ids | c3_binding_ids,
-        forbidden_evidence_version_ids=(
-            forbidden_evidence_version_ids | c3_evidence_version_ids
-        ),
+        forbidden_evidence_version_ids=(forbidden_evidence_version_ids | c3_evidence_version_ids),
     )
     if c4_materialization_report.status != "passed":
         raise ValueError(
-            "C4 fresh synthesis materialization failed: "
-            f"{c4_materialization_report.failure_counts}"
+            f"C4 fresh synthesis materialization failed: {c4_materialization_report.failure_counts}"
         )
     c4 = _materialized_records(
         c4_artifacts,
@@ -334,6 +367,7 @@ def build_v09_training_datasets(
         source_example_ids=real_source_example_ids,
         accepted_example_ids=accepted_example_ids,
         materialization_report=c4_materialization_report,
+        clause_feedback=refinement_manifest.clause_feedback,
         source_kind="ccgr_refined_verified_new_compilation",
         feedback_source=refinement_manifest.feedback_source,
     )
@@ -392,20 +426,29 @@ def build_v09_training_datasets(
     training_records = tuple(item for values in cohorts.values() for item in values)
     isolation = _evaluation_isolation(training_records, evaluation_records)
     task_overlap = len(
-        {item.task_id for item in training_records}
-        & {item.task_id for item in evaluation_records}
+        {item.task_id for item in training_records} & {item.task_id for item in evaluation_records}
     )
     causal_status = (
-        "online_ready"
-        if refinement_manifest.round0_real_agent_feedback
-        else "offline_pilot_only"
+        "online_ready" if refinement_manifest.round0_real_agent_feedback else "offline_pilot_only"
     )
     status = "ready" if causal_status == "online_ready" else "pilot_ready"
     limitations = (
         "The evaluation set is internal and contract-generated, not an external benchmark.",
         "C1 is an unfiltered real-Agent baseline; its targets may contain model errors.",
-        "C3 and C4 use one deterministic compiler contract and disjoint fresh identities; "
-        "their policy allocation is the intended variable.",
+        "C3 and C4 use one deterministic compiler, one fresh candidate super-pool, "
+        "a shared materialization seed, and disjoint cross-over partitions; "
+        "their conditional Cell allocation is the intended variable.",
+        "C1/C2/C3 form an exploratory co-compilation axis because program visibility, "
+        "planning track, task pool, and teacher target are not jointly controlled.",
+        *(
+            ()
+            if finance_archive_provider_used
+            else (
+                "This run's Finance feedback Cells are fixture-backed; the native "
+                "FinanceArchiveBindingProvider is available but was not causally linked "
+                "to this source pool.",
+            )
+        ),
         *(
             ()
             if refinement_manifest.round0_real_agent_feedback
@@ -439,6 +482,10 @@ def build_v09_training_datasets(
         "cohort_hashes": tuple(item.dataset_hash for item in cohort_manifests),
         "c3_materialization_report_id": c3_materialization_report.report_id,
         "c4_materialization_report_id": c4_materialization_report.report_id,
+        "candidate_pool_contract_hash": (c3_materialization_report.candidate_pool_contract_hash),
+        "experiment_axes": refinement_manifest.experiment_axes,
+        "finance_source_adapter_ids": tuple(sorted(finance_source_adapter_ids)),
+        "finance_archive_provider_used": finance_archive_provider_used,
         "evaluation_hash": evaluation_hash,
         "causal_status": causal_status,
     }
@@ -449,8 +496,16 @@ def build_v09_training_datasets(
     c3_record_evidence_ids = _record_evidence_version_ids(c3)
     c4_record_evidence_ids = _record_evidence_version_ids(c4)
     compiler_contract_shared = (
-        c3_materialization_report.provider_contract_hash
-        == c4_materialization_report.provider_contract_hash
+        c3_materialization_report.compiler_contract_hash
+        == c4_materialization_report.compiler_contract_hash
+    )
+    candidate_superpool_shared = (
+        c3_materialization_report.candidate_pool_contract_hash
+        == c4_materialization_report.candidate_pool_contract_hash
+    )
+    sampling_partitions_disjoint = (
+        c3_materialization_report.sampling_partition_id
+        != c4_materialization_report.sampling_partition_id
     )
     manifest = V09TrainingDataManifest(
         manifest_id=canonical_hash(
@@ -497,21 +552,22 @@ def build_v09_training_datasets(
         train_evaluation_evidence_version_overlap_count=(
             isolation["evidence_version_overlap_count"]
         ),
-        train_evaluation_source_record_overlap_count=(
-            isolation["source_record_overlap_count"]
-        ),
+        train_evaluation_source_record_overlap_count=(isolation["source_record_overlap_count"]),
         train_evaluation_binding_overlap_count=isolation["binding_overlap_count"],
-        c3_c4_task_overlap_count=len(
-            c3_task_identity_ids & c4_task_identity_ids
-        ),
-        c3_c4_binding_overlap_count=len(
-            c3_record_binding_ids & c4_record_binding_ids
-        ),
-        c3_c4_evidence_version_overlap_count=len(
-            c3_record_evidence_ids & c4_record_evidence_ids
-        ),
+        c3_c4_task_overlap_count=len(c3_task_identity_ids & c4_task_identity_ids),
+        c3_c4_binding_overlap_count=len(c3_record_binding_ids & c4_record_binding_ids),
+        c3_c4_evidence_version_overlap_count=len(c3_record_evidence_ids & c4_record_evidence_ids),
         c3_c4_source_pool_shared=True,
         c3_c4_compiler_contract_shared=compiler_contract_shared,
+        finance_source_adapter_ids=tuple(sorted(finance_source_adapter_ids)),
+        finance_archive_provider_used=finance_archive_provider_used,
+        c3_c4_candidate_superpool_shared=candidate_superpool_shared,
+        c3_c4_sampling_partitions_disjoint=sampling_partitions_disjoint,
+        c3_c4_materialization_seed_shared=(
+            c3_materialization_report.materialization_seed
+            == c4_materialization_report.materialization_seed
+        ),
+        experiment_axes=refinement_manifest.experiment_axes,
         synthesis_closed_loop_status="new_binding_compilation",
         limitations=limitations,
         status=status,
@@ -641,6 +697,66 @@ def write_v09_training_datasets(
         encoding="utf-8",
     )
 
+    cohort_summary: dict[str, dict[str, Any]] = {}
+    for cohort in V09Cohort:
+        cohort_manifest = manifests_by_cohort[cohort]
+        report = cohort_manifest.materialization_report
+        cohort_summary[cohort.value] = {
+            "record_count": cohort_manifest.record_count,
+            "dataset_hash": cohort_manifest.dataset_hash,
+            "materialization_report_id": report.report_id if report is not None else None,
+        }
+
+    materialization_contracts: dict[str, dict[str, Any]] = {}
+    for cohort in (V09Cohort.VERIFIED_STATIC, V09Cohort.FEEDBACK_REFINED):
+        report = manifests_by_cohort[cohort].materialization_report
+        if report is None:
+            continue
+        materialization_contracts[cohort.value] = {
+            "compiler_contract_hash": report.compiler_contract_hash,
+            "candidate_pool_contract_hash": report.candidate_pool_contract_hash,
+            "candidate_pool_id": report.candidate_pool_id,
+            "sampling_contract_hash": report.sampling_contract_hash,
+            "sampling_partition_id": report.sampling_partition_id,
+            "materialization_seed": report.materialization_seed,
+            "seed_effective": report.seed_effective,
+            "requested_sample_count": report.requested_sample_count,
+            "successfully_materialized_count": report.successfully_materialized_count,
+            "contract_pass_rate": report.contract_pass_rate,
+            "failure_counts": report.failure_counts,
+        }
+
+    route_b = {
+        "manifest_id": manifest.manifest_id,
+        "manifest_hash": canonical_hash(
+            manifest.model_dump(mode="json"),
+            prefix="route_b_training_manifest:",
+        ),
+        "causal_status": manifest.causal_status,
+        "synthesis_closed_loop_status": manifest.synthesis_closed_loop_status,
+        "experiment_axes": [item.model_dump(mode="json") for item in manifest.experiment_axes],
+        "fixed_group_counts": manifest.expected_domain_counts,
+        "finance_binding": {
+            "source_adapter_ids": manifest.finance_source_adapter_ids,
+            "archive_provider_used": manifest.finance_archive_provider_used,
+        },
+        "cohorts": cohort_summary,
+        "materialization_contracts": materialization_contracts,
+        "c3_c4": {
+            "task_overlap_count": manifest.c3_c4_task_overlap_count,
+            "binding_overlap_count": manifest.c3_c4_binding_overlap_count,
+            "evidence_version_overlap_count": (manifest.c3_c4_evidence_version_overlap_count),
+            "compiler_contract_shared": manifest.c3_c4_compiler_contract_shared,
+            "candidate_superpool_shared": manifest.c3_c4_candidate_superpool_shared,
+            "sampling_partitions_disjoint": (manifest.c3_c4_sampling_partitions_disjoint),
+            "materialization_seed_shared": (manifest.c3_c4_materialization_seed_shared),
+        },
+    }
+    (output_dir / "route_b_materialization_summary.json").write_text(
+        json.dumps(route_b, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
 
 def _validate_build_contract(
     refinement_config: V09RefinementConfig,
@@ -704,9 +820,7 @@ def _prepare_unverified_record(
     payload = json.loads(record.user_prompt)
     selected = set(_action_plan(record).selected_evidence_ids)
     evidence = [
-        item
-        for item in payload["evidence_corpus"]
-        if str(item.get("evidence_id")) in selected
+        item for item in payload["evidence_corpus"] if str(item.get("evidence_id")) in selected
     ]
     if len(evidence) != len(selected):
         raise ValueError("C1 selected evidence is absent from its public corpus")
@@ -869,8 +983,7 @@ def _task_signature(task: dict[str, Any]) -> str:
     fixture_slot = fixture_slot_match.group(1) if fixture_slot_match else None
     corpus_family = re.sub(r"_\d+$", "", corpus_boundary)
     retrieval_scope["subject_ids"] = [
-        re.sub(r"_\d+$", "", str(value))
-        for value in retrieval_scope.get("subject_ids") or ()
+        re.sub(r"_\d+$", "", str(value)) for value in retrieval_scope.get("subject_ids") or ()
     ]
     return canonical_hash(
         {
@@ -890,9 +1003,7 @@ def _task_signature(task: dict[str, Any]) -> str:
 def _record_cell(record: SFTRecord) -> SynthesisCell:
     payload = json.loads(record.user_prompt)
     task = TaskPublicSpec.model_validate(payload["public_task"])
-    evidence = tuple(
-        EvidenceItem.model_validate(item) for item in payload["evidence_corpus"]
-    )
+    evidence = tuple(EvidenceItem.model_validate(item) for item in payload["evidence_corpus"])
     corpus = EvidenceCorpus(
         corpus_id=canonical_hash(
             tuple(item.evidence_version_id for item in evidence),
@@ -901,8 +1012,6 @@ def _record_cell(record: SFTRecord) -> SynthesisCell:
         evidence=evidence,
     )
     return build_synthesis_cell(task, corpus, _action_plan(record).selected_evidence_ids)
-
-
 
 
 def _materialized_records(
@@ -915,10 +1024,18 @@ def _materialized_records(
     accepted_example_ids: Mapping[str, str],
     materialization_report: SynthesisMaterializationReport,
     source_kind: str,
+    clause_feedback: tuple[ClauseFeedback, ...] = (),
     feedback_source: str | None = None,
 ) -> tuple[SFTRecord, ...]:
     links_by_target_cell: dict[str, list[str]] = defaultdict(list)
     accepted_links_by_target_cell: dict[str, list[str]] = defaultdict(list)
+    policy_contributors_by_target_cell: dict[str, list[ClauseFeedback]] = defaultdict(list)
+    contributors_by_target_cell: dict[str, list[ClauseFeedback]] = defaultdict(list)
+    statistics_by_prior_cell = {item.cell_id: item for item in update.statistics}
+    prior_cell_by_target = {
+        target_cell_id: prior_cell_id
+        for prior_cell_id, target_cell_id in update.cell_transition_map.items()
+    }
     for task_id, cell in source_cells_by_task.items():
         if task_id not in source_example_ids:
             raise ValueError("feedback source Cell has no real Agent example identity")
@@ -927,34 +1044,81 @@ def _materialized_records(
             links_by_target_cell[target_cell_id].append(task_id)
             if task_id in accepted_example_ids:
                 accepted_links_by_target_cell[target_cell_id].append(task_id)
-    for values in links_by_target_cell.values():
-        values.sort()
-    for values in accepted_links_by_target_cell.values():
-        values.sort()
+    for item in clause_feedback:
+        target_cell_id = update.cell_transition_map.get(item.cell_id)
+        if (
+            target_cell_id is not None
+            and item.calibrated_weight > 0
+            and item.route.value != "interface_failure"
+        ):
+            policy_contributors_by_target_cell[target_cell_id].append(item)
+            if item.task_id in source_cells_by_task and item.task_id in source_example_ids:
+                contributors_by_target_cell[target_cell_id].append(item)
+    for link_values in links_by_target_cell.values():
+        link_values.sort()
+    for accepted_values in accepted_links_by_target_cell.values():
+        accepted_values.sort()
+    for feedback_values in policy_contributors_by_target_cell.values():
+        feedback_values.sort(key=lambda item: item.feedback_id)
+    for feedback_values in contributors_by_target_cell.values():
+        feedback_values.sort(key=lambda item: item.feedback_id)
     target_offsets: Counter[str] = Counter()
     records: list[SFTRecord] = []
     for artifact in artifacts:
         target_cell_id = artifact.request.cell.cell_id
+        policy_contributors = policy_contributors_by_target_cell.get(target_cell_id, [])
+        contributors = contributors_by_target_cell.get(target_cell_id, [])
+        contributing_task_ids = sorted({item.task_id for item in contributors})
         links = (
-            accepted_links_by_target_cell.get(target_cell_id)
+            contributing_task_ids
+            or accepted_links_by_target_cell.get(target_cell_id)
             or links_by_target_cell.get(target_cell_id)
             or []
         )
         if not links:
             raise ValueError(
-                "fresh synthesis Cell is not linked to evaluated real feedback: "
-                f"{target_cell_id}"
+                f"fresh synthesis Cell is not linked to evaluated real feedback: {target_cell_id}"
             )
         source_task_id = links[target_offsets[target_cell_id] % len(links)]
         target_offsets[target_cell_id] += 1
         source_cell = source_cells_by_task[source_task_id]
         source_candidate_accepted = source_task_id in accepted_example_ids
+        prior_cell_id = prior_cell_by_target[target_cell_id]
+        statistics = statistics_by_prior_cell[prior_cell_id]
+        linked_feedback = tuple(item for item in contributors if item.task_id == source_task_id)
         task = artifact.compiled.task
         metadata = {
             **_task_structure_metadata(task.public),
             "source_real_example_id": source_example_ids[source_task_id],
             "source_real_task_id": source_task_id,
             "source_candidate_accepted": source_candidate_accepted,
+            "feedback_lineage_mode": (
+                "cell_policy_contribution"
+                if contributors
+                else "external_policy_cell_context"
+                if policy_contributors
+                else "cell_context_only"
+            ),
+            "linked_clause_feedback_ids": tuple(item.feedback_id for item in linked_feedback),
+            "contributing_clause_feedback_ids": tuple(item.feedback_id for item in contributors),
+            "policy_clause_feedback_ids": tuple(
+                item.feedback_id for item in policy_contributors
+            ),
+            "unlinked_policy_clause_feedback_ids": tuple(
+                item.feedback_id for item in policy_contributors if item not in contributors
+            ),
+            "contributing_failure_families": tuple(
+                sorted({item.failure_family for item in contributors})
+            ),
+            "policy_failure_families": tuple(
+                sorted({item.failure_family for item in policy_contributors})
+            ),
+            "contributing_feedback_task_ids": tuple(contributing_task_ids),
+            "cell_capability_gap_demand": statistics.capability_gap_demand,
+            "cell_synthesis_defect_risk": statistics.synthesis_defect_risk,
+            "cell_coverage_gap": statistics.coverage_gap,
+            "cell_exposure_count": statistics.exposure_count,
+            "cell_minimum_exposure_met": statistics.minimum_exposure_met,
             "base_synthesis_cell_id": source_cell.cell_id,
             "synthesis_cell_id": target_cell_id,
             "selection_update_id": update.update_id,
@@ -965,9 +1129,7 @@ def _materialized_records(
             "evidence_bundle_id": artifact.candidate.bundle.bundle_id,
             "proof_graph_id": artifact.candidate.proof_graph.graph_id,
             "quality_contract_id": artifact.compiled.quality_contract.contract_id,
-            "reference_trajectory_id": (
-                artifact.compiled.reference_trajectory.trajectory_id
-            ),
+            "reference_trajectory_id": (artifact.compiled.reference_trajectory.trajectory_id),
             "proof_carrying_sample_id": artifact.compiled.sample.sample_id,
             "quality_contract_applied": True,
             "new_identity_compilation": True,
@@ -1004,12 +1166,25 @@ def _materialized_records(
     return tuple(records)
 
 
+def _domain_evidence_adapter_ids(
+    records: Iterable[SFTRecord],
+    *,
+    domain: str,
+) -> set[str]:
+    adapters: set[str] = set()
+    for record in records:
+        if record.domain != domain:
+            continue
+        payload = json.loads(record.user_prompt)
+        for evidence in payload.get("evidence_corpus") or ():
+            adapter_id = str((evidence.get("provenance") or {}).get("adapter_id") or "")
+            if adapter_id:
+                adapters.add(adapter_id)
+    return adapters
+
+
 def _record_binding_ids(records: Iterable[SFTRecord]) -> set[str]:
-    return {
-        str(item.metadata["binding_id"])
-        for item in records
-        if item.metadata.get("binding_id")
-    }
+    return {str(item.metadata["binding_id"]) for item in records if item.metadata.get("binding_id")}
 
 
 def _record_evidence_version_ids(records: Iterable[SFTRecord]) -> set[str]:
@@ -1024,9 +1199,7 @@ def _record_evidence_version_ids(records: Iterable[SFTRecord]) -> set[str]:
 
 
 def _accepted_real_link_count(records: Iterable[SFTRecord]) -> int:
-    return sum(
-        1 for item in records if item.metadata.get("source_candidate_accepted") is True
-    )
+    return sum(1 for item in records if item.metadata.get("source_candidate_accepted") is True)
 
 
 def _domain_quotas(
@@ -1171,9 +1344,7 @@ def _cohort_manifest(
             "cell_counts": dict(sorted(cell_counts.items())),
             "source_pool_hash": source_pool_hash,
             "materialization_report_id": (
-                materialization_report.report_id
-                if materialization_report is not None
-                else None
+                materialization_report.report_id if materialization_report is not None else None
             ),
         },
         prefix="training_utility_v09_selection_policy:",
@@ -1182,14 +1353,11 @@ def _cohort_manifest(
         cohort=cohort,
         record_count=len(records),
         domain_counts=dict(sorted(Counter(item.domain for item in records).items())),
-        source_kind_counts=dict(
-            sorted(Counter(item.source_kind for item in records).items())
-        ),
+        source_kind_counts=dict(sorted(Counter(item.source_kind for item in records).items())),
         pattern_counts=dict(
             sorted(
                 Counter(
-                    str(item.metadata.get("pattern_id") or "unknown")
-                    for item in records
+                    str(item.metadata.get("pattern_id") or "unknown") for item in records
                 ).items()
             )
         ),
@@ -1208,7 +1376,7 @@ def _cohort_manifest(
         ),
         materialization_report=materialization_report,
         compiler_contract_hash=(
-            materialization_report.provider_contract_hash
+            materialization_report.compiler_contract_hash
             if materialization_report is not None
             else None
         ),
@@ -1225,6 +1393,5 @@ def _write_jsonl(path: Path, records: Iterable[SFTRecord]) -> None:
     with path.open("w", encoding="utf-8") as handle:
         for item in records:
             handle.write(
-                json.dumps(item.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
-                + "\n"
+                json.dumps(item.model_dump(mode="json"), ensure_ascii=False, sort_keys=True) + "\n"
             )

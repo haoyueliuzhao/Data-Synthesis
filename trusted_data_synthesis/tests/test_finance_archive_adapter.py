@@ -9,8 +9,18 @@ import pyarrow.parquet as pq
 
 from trusted_synthesis.core.evidence import EpistemicStatus, ScalarObservation
 from trusted_synthesis.core.evidence.schema import SourceAuthority
+from trusted_synthesis.core.refinement import (
+    RefinedSynthesisMaterializer,
+    aggregate_cell_feedback,
+    build_observed_policy,
+    build_synthesis_cell,
+    update_synthesis_policy,
+)
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
+    FinanceArchiveBindingProvider,
+)
 
 
 def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -> None:
@@ -62,6 +72,56 @@ def test_finance_adapter_remaps_registered_legacy_archive_root(tmp_path: Path) -
     assert evidence.source_locator.storage_uri == rows[0]["storage_uri"]
     assert grounding.passed
     assert all(grounding.checks.values())
+
+
+def test_finance_archive_provider_materializes_a_proof_carrying_sample(
+    tmp_path: Path,
+) -> None:
+    adapter = FinanceArchiveAdapter(_archive_fixture(tmp_path))
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id="finance_archive_test_pool",
+        sampling_partition_id="A",
+        pool_split_seed=7,
+        evidence_scan_limit=100,
+        evidence_sample_size=100,
+        stratum_reservoir_size=20,
+        candidates_per_pattern=10,
+    )
+    binding = provider._bindings_by_pattern["finance.fact_retrieval"][0]
+    if provider._partition(binding) == "B":
+        provider = provider.for_partition("B")
+    source = provider._contract_case(binding)
+    cell = build_synthesis_cell(
+        source.task.public,
+        source.corpus,
+        source.task.oracle.gold_evidence_ids,
+    )
+    task_cells = {source.task.task_id: cell}
+    policy = build_observed_policy(task_cells)
+    update = update_synthesis_policy(
+        policy,
+        aggregate_cell_feedback(policy, (), (), task_cells),
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=1,
+        calibration_manifest_hash="calibration:finance_archive_provider_test",
+        require_calibrated_feedback=False,
+    )
+
+    artifacts, report = RefinedSynthesisMaterializer(provider).materialize(
+        update,
+        seed=17,
+    )
+
+    assert report.status == "passed"
+    assert report.seed_effective
+    assert report.candidate_pool_id == "finance_archive_test_pool"
+    assert len(artifacts) == 1
+    assert artifacts[0].compiled.task.public.domain == "finance"
+    assert artifacts[0].candidate.domain_plugin_set.evidence_adapter_id == "finance_archive.v1"
 
 
 def _archive_fixture(root: Path) -> FinanceArchiveConfig:

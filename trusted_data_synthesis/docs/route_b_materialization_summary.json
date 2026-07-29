@@ -1,0 +1,78 @@
+{
+  "summary_version": "route_b_materialization_summary.v1",
+  "generated_at": "2026-07-29",
+  "baseline_commit": "f7775f48242145e6e468daff1b6307371641a2c2",
+  "refinement": {
+    "manifest_id": "training_utility_v09_manifest:71aef3630571c76e833d132975b26ec4203eab7093f620c5bb9643b7cd3bdce7",
+    "config_hash": "training_utility_v09_config:ccab5e918452d8b65f4250130ad2bc7ae6c4c3f4b1781a10bc09f9bb2ddf9c55",
+    "source_task_count": 30,
+    "generated_counterfactual_count": 589,
+    "valid_counterfactual_count": 589,
+    "detected_counterfactual_count": 589,
+    "expected_root_match_count": 589,
+    "full_ccgr_total_variation_distance": 0.16537122398840526,
+    "full_ccgr_kl_divergence": 0.07859488993551511
+  },
+  "materialization": {
+    "manifest_id": "training_utility_v09_data_manifest:2f2cd3f6dd6c05175ffcce2a4a2a413d4a8c5e35be8ec16fa5b797ac3cb7df86",
+    "manifest_hash": "route_b_training_manifest:17fcde52ae92b64489ef8d162262bb638e73344c8882f62ccdec0400e0880b3e",
+    "status": "pilot_ready",
+    "causal_status": "offline_pilot_only",
+    "synthesis_closed_loop_status": "new_binding_compilation",
+    "fixed_group_counts": {
+      "finance": 480,
+      "legal": 60,
+      "science": 60
+    },
+    "c3": {
+      "record_count": 600,
+      "contract_pass_rate": 1.0,
+      "materialization_report_id": "synthesis_materialization_report:1bba40d6054aeb6209dcc98c0abd1773d2373f666ff7e72944566048f31e1b12",
+      "sampling_partition_id": "B",
+      "seed_effective": true
+    },
+    "c4": {
+      "record_count": 600,
+      "contract_pass_rate": 1.0,
+      "materialization_report_id": "synthesis_materialization_report:84dbfa23eb5ed327ec4c27d8d63710bd7d4719072f543e1d7a3f8d59d015a739",
+      "sampling_partition_id": "A",
+      "seed_effective": true,
+      "policy_feedback_lineage_count": 600,
+      "direct_feedback_lineage_count": 0,
+      "lineage_mode": "external_policy_cell_context"
+    },
+    "shared_contracts": {
+      "candidate_pool_id": "route_b_closed_loop_superpool",
+      "candidate_pool_contract_hash": "v09_binding_candidate_pool_contract:663fb1a3bd08d8fd99644d899c887994212dacd4764e0f05c2c5037deb86afd5",
+      "compiler_contract_hash": "v09_binding_compiler_contract:c0ae3b06f7a8662eb55c95c46f207a92b17145ca7e254143af0da01a6c5ddf0c",
+      "materialization_seed": 20260729,
+      "candidate_superpool_shared": true,
+      "compiler_contract_shared": true,
+      "materialization_seed_shared": true,
+      "sampling_partitions_disjoint": true
+    },
+    "identity_overlap_counts": {
+      "task": 0,
+      "binding": 0,
+      "evidence_version": 0
+    },
+    "finance_binding": {
+      "archive_provider_used": false,
+      "source_adapter_ids": [
+        "finance_counterfactual_fixture.v2"
+      ]
+    }
+  },
+  "validation": {
+    "ruff": "passed",
+    "mypy_source_file_count": 176,
+    "pytest_passed_count": 149,
+    "pytest_failed_count": 0
+  },
+  "claim_boundary": {
+    "real_agent_round0_feedback": false,
+    "external_benchmark_executed": false,
+    "gpu_training_executed": false,
+    "training_utility_identified": false
+  }
+}

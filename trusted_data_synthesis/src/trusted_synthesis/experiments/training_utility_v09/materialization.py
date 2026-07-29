@@ -32,33 +32,44 @@ from trusted_synthesis.hashing import canonical_hash
 from .schema import V09RefinementConfig
 
 V09_BINDING_PROVIDER_ID = "training_utility_v09_fixture_binding_provider"
-V09_BINDING_PROVIDER_VERSION = "v09_binding_provider.v1"
+V09_BINDING_PROVIDER_VERSION = "v09_binding_provider.v2"
 
 
 class V09FixtureBindingProvider:
-    """Cross-domain Provider that creates fresh fixture bindings for requested Cells."""
+    """Cross-domain fixture super-pool with deterministic disjoint partitions."""
 
     provider_id = V09_BINDING_PROVIDER_ID
     provider_version = V09_BINDING_PROVIDER_VERSION
+    seed_effective = True
 
     def __init__(
         self,
         *,
         namespace: str,
         start_index: int,
-        maximum_scan_multiplier: int = 12,
+        candidate_pool_id: str = "v09_fixture_superpool",
+        candidate_pool_size: int = 20_000_000,
+        sampling_partition_id: str = "A",
+        pool_split_seed: int = 20260729,
+        maximum_scan_multiplier: int = 48,
     ) -> None:
-        if not namespace:
-            raise ValueError("binding Provider namespace cannot be empty")
-        if start_index < 1 or maximum_scan_multiplier < 4:
-            raise ValueError("binding Provider index and scan multiplier are invalid")
+        if not namespace or not candidate_pool_id:
+            raise ValueError("binding Provider namespace and pool ID cannot be empty")
+        if start_index < 1 or candidate_pool_size < 10_000:
+            raise ValueError("binding Provider candidate pool range is invalid")
+        if sampling_partition_id not in {"A", "B"}:
+            raise ValueError("fixture super-pool partition must be A or B")
+        if maximum_scan_multiplier < 8:
+            raise ValueError("binding Provider scan multiplier is too small")
         self._namespace = namespace
+        self._start_index = start_index
+        self._candidate_pool_size = candidate_pool_size
+        self._sampling_partition_id = sampling_partition_id
+        self._pool_split_seed = pool_split_seed
         self._maximum_scan_multiplier = maximum_scan_multiplier
-        self._next_indexes = {
-            "finance": start_index,
-            "legal": start_index + 2_000_000,
-            "science": start_index + 4_000_000,
-        }
+        self.candidate_pool_id = candidate_pool_id
+        self.sampling_partition_id = sampling_partition_id
+
         finance = FinanceTaskPlugin(allow_structured_claims=True)
         legal = LegalTaskPlugin()
         science = ScienceTaskPlugin()
@@ -85,6 +96,10 @@ class V09FixtureBindingProvider:
             "legal": build_legal_contract_case,
             "science": build_science_contract_case,
         }
+        self._domain_offsets = {
+            domain: ordinal * candidate_pool_size
+            for ordinal, domain in enumerate(sorted(self._case_factories))
+        }
         self._constraint_validators: dict[
             str,
             Callable[[tuple[EvidenceItem, ...]], bool],
@@ -96,7 +111,7 @@ class V09FixtureBindingProvider:
             "require_same_frequency": _require_same_frequency,
             "require_same_scope": _require_same_scope,
         }
-        self.provider_contract_hash = canonical_hash(
+        self.compiler_contract_hash = canonical_hash(
             {
                 "provider_id": self.provider_id,
                 "provider_version": self.provider_version,
@@ -109,6 +124,34 @@ class V09FixtureBindingProvider:
                 },
                 "constraint_ids": tuple(sorted(self._constraint_validators)),
             },
+            prefix="v09_binding_compiler_contract:",
+        )
+        self.candidate_pool_contract_hash = canonical_hash(
+            {
+                "candidate_pool_id": candidate_pool_id,
+                "start_index": start_index,
+                "per_domain_pool_size": candidate_pool_size,
+                "domain_offsets": self._domain_offsets,
+                "pool_split_seed": pool_split_seed,
+                "partition_count": 2,
+            },
+            prefix="v09_binding_candidate_pool_contract:",
+        )
+        self.sampling_contract_hash = canonical_hash(
+            {
+                "candidate_pool_contract_hash": self.candidate_pool_contract_hash,
+                "sampling_partition_id": sampling_partition_id,
+                "maximum_scan_multiplier": maximum_scan_multiplier,
+                "seed_controls_order": True,
+            },
+            prefix="v09_binding_sampling_contract:",
+        )
+        self.provider_contract_hash = canonical_hash(
+            {
+                "namespace": namespace,
+                "compiler_contract_hash": self.compiler_contract_hash,
+                "sampling_contract_hash": self.sampling_contract_hash,
+            },
             prefix="v09_binding_provider_contract:",
         )
 
@@ -116,9 +159,7 @@ class V09FixtureBindingProvider:
         try:
             return self._pattern_domains[pattern_id]
         except KeyError as exc:
-            raise ValueError(
-                f"Pattern is absent from the Provider catalog: {pattern_id}"
-            ) from exc
+            raise ValueError(f"Pattern is absent from the Provider catalog: {pattern_id}") from exc
 
     def iter_candidates(
         self,
@@ -136,14 +177,30 @@ class V09FixtureBindingProvider:
             raise ValueError(
                 f"binding Provider cannot apply unknown constraints: {sorted(unknown_constraints)}"
             )
-        scan_limit = max(
-            120,
-            request.requested_count * self._maximum_scan_multiplier,
+        scan_limit = min(
+            self._candidate_pool_size,
+            max(512, request.requested_count * self._maximum_scan_multiplier),
+        )
+        domain_start = self._start_index + self._domain_offsets[domain]
+        indexes = [
+            domain_start + offset
+            for offset in range(scan_limit)
+            if self._partition_for_index(domain, domain_start + offset)
+            == self._sampling_partition_id
+        ]
+        indexes.sort(
+            key=lambda index: canonical_hash(
+                {
+                    "request_seed": request.seed,
+                    "cell_id": request.cell.cell_id,
+                    "candidate_index": index,
+                    "candidate_pool_contract_hash": self.candidate_pool_contract_hash,
+                },
+                prefix="v09_seeded_candidate_order:",
+            )
         )
         yielded = 0
-        for _ in range(scan_limit):
-            index = self._next_indexes[domain]
-            self._next_indexes[domain] += 1
+        for index in indexes:
             case = self._case_factories[domain](index)
             pattern_identity = case.task.public.metadata.get("task_pattern") or {}
             if pattern_identity.get("pattern_id") != request.cell.pattern_id:
@@ -172,6 +229,8 @@ class V09FixtureBindingProvider:
                     "request_id": request.request_id,
                     "fixture_task_id": case.task.task_id,
                     "source_binding_id": binding.binding_id,
+                    "candidate_pool_contract_hash": self.candidate_pool_contract_hash,
+                    "sampling_partition_id": self._sampling_partition_id,
                     "applied_constraints": request.cell.active_binding_constraints,
                 },
                 prefix="v09_synthesis_binding_candidate:",
@@ -194,33 +253,100 @@ class V09FixtureBindingProvider:
             if yielded >= request.requested_count:
                 return
 
+    def _partition_for_index(self, domain: str, index: int) -> str:
+        digest = canonical_hash(
+            {
+                "candidate_pool_id": self.candidate_pool_id,
+                "domain": domain,
+                "candidate_index": index,
+                "pool_split_seed": self._pool_split_seed,
+            },
+            prefix="v09_candidate_pool_partition:",
+        ).split(":", 1)[1]
+        return "A" if int(digest[:16], 16) % 2 == 0 else "B"
 
-def project_policy_counts_to_domain_quotas(
-    policy_allocated_counts: Mapping[str, int],
-    policy_probabilities: Mapping[str, float],
-    cell_domains: Mapping[str, str],
-    domain_quotas: Mapping[str, int],
-) -> dict[str, int]:
-    """Project policy allocation onto frozen domain totals without changing within-domain order."""
 
-    expected_cells = set(policy_allocated_counts)
-    if set(policy_probabilities) != expected_cells or set(cell_domains) != expected_cells:
-        raise ValueError("policy projection requires complete Cell metadata")
-    if set(domain_quotas) != set(cell_domains.values()):
-        raise ValueError("domain quotas must cover every Cell domain")
-    projected = {cell_id: 0 for cell_id in expected_cells}
-    for domain, quota in sorted(domain_quotas.items()):
-        cells = sorted(
-            cell_id for cell_id, cell_domain in cell_domains.items() if cell_domain == domain
+class V09CompositeBindingProvider:
+    """Dispatch domain-owned Providers behind one auditable Core protocol."""
+
+    provider_id = "training_utility_v09_composite_binding_provider"
+    provider_version = "v09_composite_binding_provider.v1"
+
+    def __init__(
+        self,
+        providers: Mapping[str, Any],
+        *,
+        sampling_partition_id: str,
+    ) -> None:
+        if not providers:
+            raise ValueError("composite Provider requires domain Providers")
+        if set(providers) != {"finance", "legal", "science"}:
+            raise ValueError("v0.9 composite Provider must cover all experiment domains")
+        if any(
+            provider.sampling_partition_id != sampling_partition_id
+            for provider in providers.values()
+        ):
+            raise ValueError("composite Provider partitions must agree")
+        self._providers = dict(providers)
+        self.sampling_partition_id = sampling_partition_id
+        self.seed_effective = all(provider.seed_effective for provider in providers.values())
+        self.candidate_pool_id = canonical_hash(
+            {domain: provider.candidate_pool_id for domain, provider in sorted(providers.items())},
+            prefix="v09_composite_candidate_pool:",
         )
-        weights = {cell_id: float(policy_allocated_counts[cell_id]) for cell_id in cells}
-        if sum(weights.values()) <= 0:
-            weights = {cell_id: policy_probabilities[cell_id] for cell_id in cells}
-        allocation = _largest_remainder(weights, quota)
-        projected.update(allocation)
-    if sum(projected.values()) != sum(domain_quotas.values()):
-        raise ValueError("domain-constrained projection did not preserve the cohort budget")
-    return dict(sorted(projected.items()))
+        self.compiler_contract_hash = canonical_hash(
+            {
+                domain: provider.compiler_contract_hash
+                for domain, provider in sorted(providers.items())
+            },
+            prefix="v09_composite_compiler_contract:",
+        )
+        self.candidate_pool_contract_hash = canonical_hash(
+            {
+                domain: provider.candidate_pool_contract_hash
+                for domain, provider in sorted(providers.items())
+            },
+            prefix="v09_composite_candidate_pool_contract:",
+        )
+        self.sampling_contract_hash = canonical_hash(
+            {
+                domain: provider.sampling_contract_hash
+                for domain, provider in sorted(providers.items())
+            },
+            prefix="v09_composite_sampling_contract:",
+        )
+        self.provider_contract_hash = canonical_hash(
+            {
+                "compiler_contract_hash": self.compiler_contract_hash,
+                "sampling_contract_hash": self.sampling_contract_hash,
+            },
+            prefix="v09_composite_provider_contract:",
+        )
+
+    def domain_for_pattern(self, pattern_id: str) -> str:
+        matches = tuple(
+            domain
+            for domain, provider in self._providers.items()
+            if _provider_has_pattern(provider, pattern_id)
+        )
+        if len(matches) != 1:
+            raise ValueError(f"Pattern must resolve to exactly one domain Provider: {pattern_id}")
+        return matches[0]
+
+    def iter_candidates(
+        self,
+        request: SynthesisCellRequest,
+    ) -> Iterable[SynthesisBindingCandidate]:
+        domain = self.domain_for_pattern(request.cell.pattern_id)
+        yield from self._providers[domain].iter_candidates(request)
+
+
+def _provider_has_pattern(provider: Any, pattern_id: str) -> bool:
+    try:
+        provider.domain_for_pattern(pattern_id)
+    except ValueError:
+        return False
+    return True
 
 
 def fresh_fixture_start_index(
@@ -232,8 +358,8 @@ def fresh_fixture_start_index(
 
     digest = canonical_hash(
         {
-            "config_hash": config.config_hash,
-            "cohort_namespace": cohort_namespace,
+            "materialization_seed": config.materialization_seed,
+            "candidate_pool_id": cohort_namespace,
             "provider_version": V09_BINDING_PROVIDER_VERSION,
         },
         prefix="v09_fresh_fixture_range:",
@@ -307,8 +433,7 @@ def _reconstruct_node_parameters(
             node = program_nodes.get(template.node_role_id)
             if node is None:
                 raise ValueError(
-                    "compiled Program is missing a logical Pattern node: "
-                    f"{template.node_role_id}"
+                    f"compiled Program is missing a logical Pattern node: {template.node_role_id}"
                 )
             if node.parameters:
                 reconstructed[template.node_role_id] = dict(node.parameters)
@@ -319,15 +444,13 @@ def _reconstruct_node_parameters(
             (
                 node
                 for node in program_nodes.values()
-                if node.node_id.startswith(prefix)
-                and node.node_id[len(prefix) :].isdigit()
+                if node.node_id.startswith(prefix) and node.node_id[len(prefix) :].isdigit()
             ),
             key=lambda node: int(node.node_id[len(prefix) :]),
         )
         if not expanded:
             raise ValueError(
-                "compiled Program is missing foreach Pattern nodes: "
-                f"{template.node_role_id}"
+                f"compiled Program is missing foreach Pattern nodes: {template.node_role_id}"
             )
         parameter_maps = [dict(node.parameters) for node in expanded]
         first = parameter_maps[0]
@@ -339,26 +462,10 @@ def _reconstruct_node_parameters(
         if shared:
             reconstructed[template.node_role_id] = shared
         for node, parameters in zip(expanded, parameter_maps, strict=True):
-            specific = {
-                key: value for key, value in parameters.items() if key not in shared
-            }
+            specific = {key: value for key, value in parameters.items() if key not in shared}
             if specific:
                 reconstructed[node.node_id] = specific
     return reconstructed
-
-
-def _largest_remainder(weights: Mapping[str, float], total: int) -> dict[str, int]:
-    if total < 0 or not weights or any(value < 0 for value in weights.values()):
-        raise ValueError("allocation weights or total are invalid")
-    weight_sum = sum(weights.values())
-    if weight_sum <= 0:
-        raise ValueError("allocation weights must contain positive mass")
-    raw = {key: total * value / weight_sum for key, value in weights.items()}
-    output = {key: int(value) for key, value in raw.items()}
-    remainder = total - sum(output.values())
-    for key in sorted(raw, key=lambda item: (-(raw[item] - output[item]), item))[:remainder]:
-        output[key] += 1
-    return dict(sorted(output.items()))
 
 
 def _exclude_forecast(evidence: tuple[EvidenceItem, ...]) -> bool:
