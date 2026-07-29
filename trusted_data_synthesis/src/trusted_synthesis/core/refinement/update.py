@@ -379,7 +379,12 @@ def _kl_divergence(
     current: Mapping[str, float],
     prior: Mapping[str, float],
 ) -> float:
-    return sum(current[key] * math.log(current[key] / prior[key]) for key in prior)
+    value = sum(current[key] * math.log(current[key] / prior[key]) for key in prior)
+    if value >= 0:
+        return value
+    if value >= -1e-12:
+        return 0.0
+    raise ValueError(f"KL divergence is materially negative: {value}")
 
 
 def _total_variation(

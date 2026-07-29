@@ -1,0 +1,979 @@
+from __future__ import annotations
+
+import json
+import math
+import re
+from collections import Counter, defaultdict
+from collections.abc import Iterable, Mapping
+from hashlib import sha256
+from pathlib import Path
+from typing import Any
+
+from trusted_synthesis.core.evaluation.critic.schema import (
+    AcceptabilityLabel,
+    QualityCriticExample,
+)
+from trusted_synthesis.core.evaluation.utility import UtilityCohort
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
+from trusted_synthesis.core.evidence.schema import EvidenceItem
+from trusted_synthesis.core.refinement import SynthesisCell, build_synthesis_cell
+from trusted_synthesis.core.task.schema import TaskPublicSpec
+from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
+from trusted_synthesis.experiments.training_utility_mvp.data import (
+    _evaluation_isolation,
+    _record_from_example,
+    _reference_and_evaluation_records,
+    _student_operation_registry,
+)
+from trusted_synthesis.experiments.training_utility_mvp.schema import (
+    SFTMessage,
+    SFTRecord,
+    TrainingUtilityMVPConfig,
+)
+from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime.agent.host_execution import (
+    execute_action_plan,
+    make_host_execution_feedback,
+)
+from trusted_synthesis.runtime.agent.schema import (
+    AgentActionPlanContract,
+    AgentAnswerDecisionContract,
+)
+
+from .schema import (
+    TRAINING_UTILITY_V09_VERSION,
+    V09Cohort,
+    V09CohortDatasetManifest,
+    V09RefinementConfig,
+    V09RefinementManifest,
+    V09TrainingDataManifest,
+)
+
+_TASK_MIGRATION_POLICY_ID = "training_utility_v09_task_migration.v2"
+_TASK_MIGRATION_POLICY = {
+    "direct_task_id_requires_semantic_signature_match": True,
+    "signature_fields": (
+        "domain",
+        "task_type",
+        "instruction",
+        "level",
+        "requirements",
+        "retrieval_scope",
+        "corpus_family",
+        "fixture_slot",
+    ),
+    "normalize_subject_numeric_suffix": True,
+    "preserve_corpus_family": True,
+    "require_unique_semantic_match": True,
+}
+_TASK_MIGRATION_POLICY_HASH = canonical_hash(
+    _TASK_MIGRATION_POLICY,
+    prefix="training_utility_v09_task_migration_policy:",
+)
+
+
+def build_v09_training_datasets(
+    refinement_config: V09RefinementConfig,
+    training_config: TrainingUtilityMVPConfig,
+    refinement_manifest: V09RefinementManifest,
+    agent_report: AgentValidationReport,
+    critic_examples: tuple[QualityCriticExample, ...],
+    source_critic_dataset_id: str,
+    source_critic_artifact_sha256: str,
+    *,
+    allow_offline_refinement_pilot: bool = False,
+    reference_cache_dir: Path | None = None,
+) -> tuple[
+    dict[V09Cohort, tuple[SFTRecord, ...]],
+    tuple[SFTRecord, ...],
+    V09TrainingDataManifest,
+]:
+    """Materialize the frozen C1-C4 causal comparison without hidden fallbacks."""
+
+    _validate_build_contract(
+        refinement_config,
+        training_config,
+        refinement_manifest,
+        allow_offline_refinement_pilot=allow_offline_refinement_pilot,
+    )
+    reference_records, evaluation_records = _cached_reference_records(
+        training_config,
+        reference_cache_dir,
+    )
+    reference_by_task = {item.task_id: item for item in reference_records}
+    reference_by_signature: dict[str, list[SFTRecord]] = defaultdict(list)
+    for record in reference_records:
+        reference_by_signature[_record_task_signature(record)].append(record)
+    mapped_examples: list[tuple[QualityCriticExample, str]] = []
+    migration_domain_counts: Counter[str] = Counter()
+    for item in critic_examples:
+        if item.candidate_source != "real_agent":
+            continue
+        source_signature = _task_signature(dict(item.critic_input["task"]))
+        current_task_id = item.task_id if item.task_id in reference_by_task else None
+        if (
+            current_task_id is not None
+            and source_signature
+            != _record_task_signature(reference_by_task[current_task_id])
+        ):
+            raise ValueError(
+                "real-agent task ID was reused with different semantics: "
+                f"{item.task_id}"
+            )
+        if current_task_id is None:
+            matches = reference_by_signature.get(source_signature, [])
+            if len(matches) == 1:
+                current_task_id = matches[0].task_id
+                migration_domain_counts[item.domain] += 1
+        if current_task_id is not None:
+            mapped_examples.append((item, current_task_id))
+    real_examples = tuple(item for item, _ in mapped_examples)
+    if len(real_examples) != len({item.task_id for item in real_examples}):
+        raise ValueError("v0.9 requires one real Agent candidate per source task")
+    unfiltered_records, unfiltered_example_ids = _representable_real_records(
+        real_examples
+    )
+    current_task_by_source = {item.task_id: task_id for item, task_id in mapped_examples}
+    accepted_examples = tuple(
+        item
+        for item in real_examples
+        if item.contract_annotation.acceptability == AcceptabilityLabel.ACCEPT
+    )
+    accepted_example_ids = {
+        current_task_by_source[item.task_id]: item.example_id
+        for item in accepted_examples
+        if item.task_id in unfiltered_records
+    }
+
+    full_update = next(
+        item
+        for item in refinement_manifest.ccgr_updates
+        if item.ablation_id == "full_ccgr"
+    )
+    static_update = next(
+        item
+        for item in refinement_manifest.ccgr_updates
+        if item.ablation_id == "static_verified"
+    )
+    quotas = _domain_quotas(
+        refinement_config.cohort_example_budget,
+        refinement_config.domain_weights,
+    )
+
+    c1_source = tuple(unfiltered_records.values())
+    c1_selected = _quota_take(
+        c1_source,
+        quotas,
+        seed=refinement_config.training_seed + 101,
+    )
+    c1 = tuple(
+        _prepare_unverified_record(
+            item,
+            V09Cohort.CONVENTIONAL_SYNTHETIC,
+            source_example_id=unfiltered_example_ids[item.task_id],
+        )
+        for item in c1_selected
+    )
+
+    c2_selected = _quota_take(
+        reference_records,
+        quotas,
+        seed=refinement_config.training_seed + 201,
+    )
+    c2 = tuple(
+        _prepare_grounded_record(item, V09Cohort.EVIDENCE_GROUNDED)
+        for item in c2_selected
+    )
+
+    verified_base_pool: list[SFTRecord] = []
+    base_cells: dict[str, SynthesisCell] = {}
+    for task_id in sorted(accepted_example_ids):
+        record = reference_by_task.get(task_id)
+        if record is None:
+            continue
+        cell = _record_cell(record)
+        if (
+            cell.cell_id not in static_update.cell_transition_map
+            or cell.cell_id not in full_update.cell_transition_map
+        ):
+            continue
+        static_cell = static_update.cell_transition_map[cell.cell_id]
+        full_cell = full_update.cell_transition_map[cell.cell_id]
+        if (
+            static_cell not in static_update.next_policy.probabilities
+            or full_cell not in full_update.next_policy.probabilities
+        ):
+            continue
+        verified_base_pool.append(record)
+        base_cells[task_id] = cell
+    verified_pool = tuple(verified_base_pool)
+    _require_pool_capacity(verified_pool, quotas, label="verified C3/C4 source pool")
+    verified_pool_hash = canonical_hash(
+        tuple((item.task_id, item.record_hash) for item in verified_pool),
+        prefix="training_utility_v09_verified_source_pool:",
+    )
+
+    c3_selected = _policy_quota_take(
+        verified_pool,
+        quotas,
+        cell_by_task={
+            task_id: static_update.cell_transition_map[cell.cell_id]
+            for task_id, cell in base_cells.items()
+        },
+        probabilities=static_update.next_policy.probabilities,
+        seed=refinement_config.training_seed + 301,
+    )
+    c3 = tuple(
+        _relabel_record(
+            item,
+            V09Cohort.VERIFIED_STATIC,
+            source_kind="quality_contract_verified_reference",
+            metadata={
+                "accepted_real_example_id": accepted_example_ids[item.task_id],
+                "base_synthesis_cell_id": base_cells[item.task_id].cell_id,
+                "synthesis_cell_id": static_update.cell_transition_map[
+                    base_cells[item.task_id].cell_id
+                ],
+                "selection_update_id": static_update.update_id,
+            },
+        )
+        for item in c3_selected
+    )
+
+    c4_selected = _policy_quota_take(
+        verified_pool,
+        quotas,
+        cell_by_task={
+            task_id: full_update.cell_transition_map[cell.cell_id]
+            for task_id, cell in base_cells.items()
+        },
+        probabilities=full_update.next_policy.probabilities,
+        seed=refinement_config.training_seed + 401,
+    )
+    c4 = tuple(
+        _relabel_record(
+            item,
+            V09Cohort.FEEDBACK_REFINED,
+            source_kind="ccgr_refined_verified_reference",
+            metadata={
+                "accepted_real_example_id": accepted_example_ids[item.task_id],
+                "base_synthesis_cell_id": base_cells[item.task_id].cell_id,
+                "synthesis_cell_id": full_update.cell_transition_map[
+                    base_cells[item.task_id].cell_id
+                ],
+                "selection_update_id": full_update.update_id,
+                "feedback_source": refinement_manifest.feedback_source,
+            },
+        )
+        for item in c4_selected
+    )
+    cohorts = {
+        V09Cohort.CONVENTIONAL_SYNTHETIC: c1,
+        V09Cohort.EVIDENCE_GROUNDED: c2,
+        V09Cohort.VERIFIED_STATIC: c3,
+        V09Cohort.FEEDBACK_REFINED: c4,
+    }
+    for cohort, records in cohorts.items():
+        if len(records) != refinement_config.cohort_example_budget:
+            raise ValueError(
+                f"{cohort.value} has {len(records)} records; expected "
+                f"{refinement_config.cohort_example_budget}"
+            )
+        observed = dict(sorted(Counter(item.domain for item in records).items()))
+        if observed != quotas:
+            raise ValueError(f"{cohort.value} domain quota mismatch: {observed}")
+
+    cohort_manifests = (
+        _cohort_manifest(
+            V09Cohort.CONVENTIONAL_SYNTHETIC,
+            c1,
+            selection_policy_id="unfiltered_real_agent_hash_sample.v1",
+            eligible_source_records=c1_source,
+            accepted_real_link_count=0,
+        ),
+        _cohort_manifest(
+            V09Cohort.EVIDENCE_GROUNDED,
+            c2,
+            selection_policy_id="deterministic_reference_hash_sample.v1",
+            eligible_source_records=reference_records,
+            accepted_real_link_count=0,
+        ),
+        _cohort_manifest(
+            V09Cohort.VERIFIED_STATIC,
+            c3,
+            selection_policy_id=static_update.update_id,
+            eligible_source_records=verified_pool,
+            eligible_source_pool_hash=verified_pool_hash,
+            accepted_real_link_count=len(c3),
+        ),
+        _cohort_manifest(
+            V09Cohort.FEEDBACK_REFINED,
+            c4,
+            selection_policy_id=full_update.update_id,
+            eligible_source_records=verified_pool,
+            eligible_source_pool_hash=verified_pool_hash,
+            accepted_real_link_count=len(c4),
+        ),
+    )
+    training_records = tuple(item for values in cohorts.values() for item in values)
+    isolation = _evaluation_isolation(training_records, evaluation_records)
+    task_overlap = len(
+        {item.task_id for item in training_records}
+        & {item.task_id for item in evaluation_records}
+    )
+    causal_status = (
+        "online_ready"
+        if refinement_manifest.round0_real_agent_feedback
+        else "offline_pilot_only"
+    )
+    status = "ready" if causal_status == "online_ready" else "pilot_ready"
+    limitations = (
+        "The evaluation set is internal and contract-generated, not an external benchmark.",
+        "C1 is an unfiltered real-Agent baseline; its targets may contain model errors.",
+        "C3 and C4 use deterministic reference targets so selection is the intended variable.",
+        *(
+            ()
+            if refinement_manifest.round0_real_agent_feedback
+            else (
+                "C4 uses offline typed-counterfactual feedback and cannot identify "
+                "real-Agent beta utility.",
+            )
+        ),
+    )
+    evaluation_hash = canonical_hash(
+        tuple(item.record_hash for item in evaluation_records),
+        prefix="training_utility_evaluation_dataset:",
+    )
+    representable_domain_counts = dict(
+        sorted(Counter(item.domain for item in unfiltered_records.values()).items())
+    )
+    identity = {
+        "version": TRAINING_UTILITY_V09_VERSION,
+        "refinement_config_hash": refinement_config.config_hash,
+        "training_config_hash": training_config.config_hash,
+        "refinement_manifest_id": refinement_manifest.manifest_id,
+        "source_agent_run_id": agent_report.run_id,
+        "source_critic_dataset_id": source_critic_dataset_id,
+        "source_critic_artifact_sha256": source_critic_artifact_sha256,
+        "task_migration_policy_hash": _TASK_MIGRATION_POLICY_HASH,
+        "source_real_candidate_count": len(critic_examples),
+        "mapped_real_candidate_count": len(mapped_examples),
+        "semantic_migration_domain_counts": dict(sorted(migration_domain_counts.items())),
+        "representable_real_domain_counts": representable_domain_counts,
+        "accepted_mapped_candidate_count": len(accepted_example_ids),
+        "cohort_hashes": tuple(item.dataset_hash for item in cohort_manifests),
+        "evaluation_hash": evaluation_hash,
+        "causal_status": causal_status,
+    }
+    manifest = V09TrainingDataManifest(
+        manifest_id=canonical_hash(
+            identity,
+            prefix="training_utility_v09_data_manifest:",
+        ),
+        refinement_config_hash=refinement_config.config_hash,
+        training_config_hash=training_config.config_hash,
+        refinement_manifest_id=refinement_manifest.manifest_id,
+        canonical_base_model=refinement_config.base_model,
+        canonical_model_revision=refinement_config.base_model_revision,
+        runtime_base_model=training_config.base_model,
+        runtime_model_revision=training_config.model_revision or "local_unversioned",
+        source_agent_run_id=agent_report.run_id,
+        source_critic_dataset_id=source_critic_dataset_id,
+        source_critic_artifact_sha256=source_critic_artifact_sha256,
+        task_migration_policy_id=_TASK_MIGRATION_POLICY_ID,
+        task_migration_policy_hash=_TASK_MIGRATION_POLICY_HASH,
+        source_real_candidate_count=len(critic_examples),
+        mapped_real_candidate_count=len(mapped_examples),
+        unmapped_real_candidate_count=len(critic_examples) - len(mapped_examples),
+        semantic_migration_count=sum(migration_domain_counts.values()),
+        semantic_migration_domain_counts=dict(sorted(migration_domain_counts.items())),
+        representable_real_candidate_count=len(unfiltered_records),
+        representable_real_domain_counts=representable_domain_counts,
+        accepted_mapped_candidate_count=len(accepted_example_ids),
+        round0_real_agent_feedback=refinement_manifest.round0_real_agent_feedback,
+        offline_refinement_override=allow_offline_refinement_pilot,
+        causal_status=causal_status,
+        full_ccgr_update_id=full_update.update_id,
+        supervised_token_budget=refinement_config.supervised_token_budget,
+        cohort_example_budget=refinement_config.cohort_example_budget,
+        expected_domain_counts=quotas,
+        cohorts=cohort_manifests,
+        evaluation_record_count=len(evaluation_records),
+        evaluation_domain_counts=dict(
+            sorted(Counter(item.domain for item in evaluation_records).items())
+        ),
+        evaluation_record_ids=tuple(item.record_id for item in evaluation_records),
+        evaluation_dataset_hash=evaluation_hash,
+        train_evaluation_task_overlap_count=task_overlap,
+        train_evaluation_subject_overlap_count=isolation["subject_overlap_count"],
+        train_evaluation_evidence_overlap_count=isolation["evidence_overlap_count"],
+        train_evaluation_evidence_version_overlap_count=(
+            isolation["evidence_version_overlap_count"]
+        ),
+        train_evaluation_source_record_overlap_count=(
+            isolation["source_record_overlap_count"]
+        ),
+        train_evaluation_binding_overlap_count=isolation["binding_overlap_count"],
+        c3_c4_task_overlap_count=len(
+            {item.task_id for item in c3} & {item.task_id for item in c4}
+        ),
+        c3_c4_source_pool_shared=True,
+        limitations=limitations,
+        status=status,
+    )
+    return cohorts, evaluation_records, manifest
+
+
+def load_v09_real_agent_artifacts(
+    artifact_dir: Path,
+) -> tuple[
+    AgentValidationReport,
+    tuple[QualityCriticExample, ...],
+    str,
+]:
+    """Stream only real Agent rows while hashing the complete immutable archive."""
+
+    report = AgentValidationReport.model_validate_json(
+        (artifact_dir / "agent_validation_report.json").read_text(encoding="utf-8")
+    )
+    critic_path = artifact_dir / "quality_critic_dataset.jsonl"
+    digest = sha256()
+    examples: list[QualityCriticExample] = []
+    with critic_path.open("rb") as handle:
+        for raw_line in handle:
+            digest.update(raw_line)
+            if (
+                b'"candidate_source": "real_agent"' not in raw_line
+                and b'"candidate_source":"real_agent"' not in raw_line
+            ):
+                continue
+            examples.append(QualityCriticExample.model_validate_json(raw_line))
+    if len(examples) != len({item.task_id for item in examples}):
+        raise ValueError("real Agent archive contains duplicate task candidates")
+    if report.critic_dataset_id is None:
+        raise ValueError("Agent report does not pin a Quality Critic dataset")
+    return report, tuple(examples), digest.hexdigest()
+
+
+def _cached_reference_records(
+    config: TrainingUtilityMVPConfig,
+    cache_dir: Path | None,
+) -> tuple[tuple[SFTRecord, ...], tuple[SFTRecord, ...]]:
+    if cache_dir is None:
+        return _reference_and_evaluation_records(config)
+    manifest_path = cache_dir / "manifest.json"
+    training_path = cache_dir / "training_pool.jsonl"
+    evaluation_path = cache_dir / "evaluation.jsonl"
+    if manifest_path.is_file() and training_path.is_file() and evaluation_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("config_hash") != config.config_hash:
+            raise ValueError("reference cache belongs to a different training config")
+        training = tuple(
+            SFTRecord.model_validate_json(line)
+            for line in training_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        )
+        evaluation = tuple(
+            SFTRecord.model_validate_json(line)
+            for line in evaluation_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        )
+        observed_hash = canonical_hash(
+            {
+                "training": tuple(item.record_hash for item in training),
+                "evaluation": tuple(item.record_hash for item in evaluation),
+            },
+            prefix="training_utility_v09_reference_cache:",
+        )
+        if observed_hash != manifest.get("cache_hash"):
+            raise ValueError("reference cache content hash is invalid")
+        return training, evaluation
+    training, evaluation = _reference_and_evaluation_records(config)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    _write_jsonl(training_path, training)
+    _write_jsonl(evaluation_path, evaluation)
+    cache_hash = canonical_hash(
+        {
+            "training": tuple(item.record_hash for item in training),
+            "evaluation": tuple(item.record_hash for item in evaluation),
+        },
+        prefix="training_utility_v09_reference_cache:",
+    )
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "config_hash": config.config_hash,
+                "training_record_count": len(training),
+                "evaluation_record_count": len(evaluation),
+                "cache_hash": cache_hash,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return training, evaluation
+
+
+def write_v09_training_datasets(
+    output_dir: Path,
+    cohorts: Mapping[V09Cohort, tuple[SFTRecord, ...]],
+    evaluation_records: tuple[SFTRecord, ...],
+    manifest: V09TrainingDataManifest,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for cohort in V09Cohort:
+        _write_jsonl(output_dir / f"{cohort.value}.jsonl", cohorts[cohort])
+    _write_jsonl(output_dir / "evaluation.jsonl", evaluation_records)
+    (output_dir / "manifest.json").write_text(
+        json.dumps(manifest.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _validate_build_contract(
+    refinement_config: V09RefinementConfig,
+    training_config: TrainingUtilityMVPConfig,
+    manifest: V09RefinementManifest,
+    *,
+    allow_offline_refinement_pilot: bool,
+) -> None:
+    failures: list[str] = []
+    if manifest.config_hash != refinement_config.config_hash:
+        failures.append("refinement_config_hash_mismatch")
+    if training_config.cohort_size != refinement_config.cohort_example_budget:
+        failures.append("cohort_example_budget_mismatch")
+    if training_config.supervised_token_budget != refinement_config.supervised_token_budget:
+        failures.append("supervised_token_budget_mismatch")
+    if training_config.seed != refinement_config.training_seed:
+        failures.append("training_seed_mismatch")
+    if training_config.model_revision != refinement_config.base_model_revision:
+        failures.append("model_revision_mismatch")
+    if training_config.student_interaction_protocol != refinement_config.student_training_format:
+        failures.append("training_protocol_mismatch")
+    if manifest.round0_real_agent_feedback:
+        if manifest.status != "initial_ready" or manifest.online_gate.status != "passed":
+            failures.append("online_round0_gate_not_passed")
+    elif not allow_offline_refinement_pilot:
+        failures.append("offline_refinement_requires_explicit_pilot_override")
+    full = next(
+        (item for item in manifest.ccgr_updates if item.ablation_id == "full_ccgr"),
+        None,
+    )
+    if full is None or full.status != "passed":
+        failures.append("full_ccgr_update_not_passed")
+    if failures:
+        raise ValueError("v0.9 training data contract blocked: " + "; ".join(failures))
+
+
+def _representable_real_records(
+    examples: tuple[QualityCriticExample, ...],
+) -> tuple[dict[str, SFTRecord], dict[str, str]]:
+    records: dict[str, SFTRecord] = {}
+    example_ids: dict[str, str] = {}
+    for example in examples:
+        try:
+            record = _record_from_example(
+                example,
+                UtilityCohort.RANDOM_SYNTHETIC,
+            )
+        except ValueError:
+            continue
+        records[record.task_id] = record
+        example_ids[record.task_id] = example.example_id
+    return records, example_ids
+
+
+def _prepare_unverified_record(
+    record: SFTRecord,
+    cohort: V09Cohort,
+    *,
+    source_example_id: str,
+) -> SFTRecord:
+    payload = json.loads(record.user_prompt)
+    selected = set(_action_plan(record).selected_evidence_ids)
+    evidence = [
+        item
+        for item in payload["evidence_corpus"]
+        if str(item.get("evidence_id")) in selected
+    ]
+    if len(evidence) != len(selected):
+        raise ValueError("C1 selected evidence is absent from its public corpus")
+    return _rebuild_record(
+        record,
+        cohort,
+        source_kind="unfiltered_real_agent",
+        evidence=evidence,
+        hide_program=True,
+        metadata={
+            "source_real_example_id": source_example_id,
+            "quality_contract_applied": False,
+            "evidence_grounding_status": "unverified_candidate",
+        },
+    )
+
+
+def _prepare_grounded_record(record: SFTRecord, cohort: V09Cohort) -> SFTRecord:
+    payload = json.loads(record.user_prompt)
+    return _rebuild_record(
+        record,
+        cohort,
+        source_kind="deterministic_evidence_grounded_reference",
+        evidence=list(payload["evidence_corpus"]),
+        hide_program=True,
+        metadata={
+            "quality_contract_applied": False,
+            "evidence_grounding_status": "deterministic_reference",
+        },
+    )
+
+
+def _rebuild_record(
+    record: SFTRecord,
+    cohort: V09Cohort,
+    *,
+    source_kind: str,
+    evidence: list[dict[str, Any]],
+    hide_program: bool,
+    metadata: Mapping[str, Any],
+) -> SFTRecord:
+    payload = json.loads(record.user_prompt)
+    task = dict(payload["public_task"])
+    if hide_program:
+        task["planning_track"] = "plan_hidden"
+        task.pop("program_skeleton", None)
+        task_metadata = dict(task.get("metadata") or {})
+        task_metadata["proof_required"] = False
+        task_metadata["quality_contract_required"] = False
+        task["metadata"] = task_metadata
+    payload["public_task"] = task
+    payload["evidence_corpus"] = evidence
+    action = _action_plan(record)
+    answer = AgentAnswerDecisionContract.model_validate_json(record.messages[4].content)
+    public_task = TaskPublicSpec.model_validate(task)
+    evidence_items = tuple(EvidenceItem.model_validate(item) for item in evidence)
+    trace = execute_action_plan(
+        public_task,
+        evidence_items,
+        action,
+        _student_operation_registry(public_task.domain),
+    )
+    host = make_host_execution_feedback(trace)
+    user_prompt = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+    action_text = action.model_dump_json()
+    host_text = host.model_dump_json()
+    answer_text = answer.model_dump_json()
+    assistant_target = json.dumps(
+        {
+            "schema_version": "host_instrumented_student_target.v1",
+            "action_plan": action.model_dump(mode="json"),
+            "answer_decision": answer.model_dump(mode="json"),
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+    )
+    messages = (
+        record.messages[0],
+        SFTMessage(role="user", content=user_prompt, phase="context"),
+        SFTMessage(
+            role="assistant",
+            content=action_text,
+            supervise=True,
+            phase="action_plan",
+        ),
+        SFTMessage(role="tool", content=host_text, phase="host_execution"),
+        SFTMessage(
+            role="assistant",
+            content=answer_text,
+            supervise=True,
+            phase="answer_decision",
+        ),
+    )
+    identity = {
+        "cohort": cohort.value,
+        "task_id": record.task_id,
+        "source_kind": source_kind,
+        "user_prompt": user_prompt,
+        "assistant_target": assistant_target,
+        "training_format": record.training_format,
+    }
+    return SFTRecord(
+        record_id=canonical_hash(identity, prefix="training_utility_record:"),
+        cohort=cohort.value,
+        task_id=record.task_id,
+        domain=record.domain,
+        system_prompt=record.system_prompt,
+        user_prompt=user_prompt,
+        assistant_target=assistant_target,
+        training_format=record.training_format,
+        messages=messages,
+        source_kind=source_kind,
+        contract_label=record.contract_label,
+        counterfactual_repair=False,
+        metadata={**record.metadata, **metadata},
+    )
+
+
+def _relabel_record(
+    record: SFTRecord,
+    cohort: V09Cohort,
+    *,
+    source_kind: str,
+    metadata: Mapping[str, Any],
+) -> SFTRecord:
+    identity = {
+        "cohort": cohort.value,
+        "task_id": record.task_id,
+        "source_kind": source_kind,
+        "user_prompt": record.user_prompt,
+        "assistant_target": record.assistant_target,
+        "training_format": record.training_format,
+    }
+    return record.model_copy(
+        update={
+            "record_id": canonical_hash(identity, prefix="training_utility_record:"),
+            "cohort": cohort.value,
+            "source_kind": source_kind,
+            "metadata": {**record.metadata, **metadata},
+        }
+    )
+
+
+def _action_plan(record: SFTRecord) -> AgentActionPlanContract:
+    if len(record.messages) != 5:
+        raise ValueError("v0.9 requires host-instrumented five-message records")
+    return AgentActionPlanContract.model_validate_json(record.messages[2].content)
+
+
+def _record_task_signature(record: SFTRecord) -> str:
+    return _task_signature(dict(json.loads(record.user_prompt)["public_task"]))
+
+
+def _task_signature(task: dict[str, Any]) -> str:
+    """Match immutable task semantics across prompt-contract metadata revisions."""
+
+    retrieval_scope = dict(task.get("retrieval_scope") or {})
+    corpus_boundary = str(retrieval_scope.pop("corpus_boundary", ""))
+    fixture_slot_match = re.search(r"(_\d+)$", corpus_boundary)
+    fixture_slot = fixture_slot_match.group(1) if fixture_slot_match else None
+    corpus_family = re.sub(r"_\d+$", "", corpus_boundary)
+    retrieval_scope["subject_ids"] = [
+        re.sub(r"_\d+$", "", str(value))
+        for value in retrieval_scope.get("subject_ids") or ()
+    ]
+    return canonical_hash(
+        {
+            "domain": task.get("domain"),
+            "task_type": task.get("task_type"),
+            "instruction": task.get("instruction"),
+            "level": task.get("level"),
+            "requirements": task.get("requirements"),
+            "retrieval_scope": retrieval_scope,
+            "corpus_family": corpus_family,
+            "fixture_slot": fixture_slot,
+        },
+        prefix="training_utility_v09_task_migration_signature:",
+    )
+
+
+def _record_cell(record: SFTRecord) -> SynthesisCell:
+    payload = json.loads(record.user_prompt)
+    task = TaskPublicSpec.model_validate(payload["public_task"])
+    evidence = tuple(
+        EvidenceItem.model_validate(item) for item in payload["evidence_corpus"]
+    )
+    corpus = EvidenceCorpus(
+        corpus_id=canonical_hash(
+            tuple(item.evidence_version_id for item in evidence),
+            prefix="training_utility_v09_corpus:",
+        ),
+        evidence=evidence,
+    )
+    return build_synthesis_cell(task, corpus, _action_plan(record).selected_evidence_ids)
+
+
+def _domain_quotas(
+    total: int,
+    weights: Mapping[str, float],
+) -> dict[str, int]:
+    if set(weights) != {"finance", "legal", "science"}:
+        raise ValueError("v0.9 domain weights must cover finance, legal, and science")
+    raw = {domain: total * value for domain, value in weights.items()}
+    quotas = {domain: math.floor(value) for domain, value in raw.items()}
+    for domain in sorted(
+        weights,
+        key=lambda item: (-(raw[item] - quotas[item]), item),
+    )[: total - sum(quotas.values())]:
+        quotas[domain] += 1
+    return dict(sorted(quotas.items()))
+
+
+def _quota_take(
+    records: tuple[SFTRecord, ...],
+    quotas: Mapping[str, int],
+    *,
+    seed: int,
+) -> tuple[SFTRecord, ...]:
+    _require_pool_capacity(records, quotas, label="cohort source pool")
+    selected: list[SFTRecord] = []
+    for domain, quota in sorted(quotas.items()):
+        domain_records = [item for item in records if item.domain == domain]
+        domain_records.sort(
+            key=lambda item: canonical_hash(
+                {"seed": seed, "record_id": item.record_id},
+                prefix="training_utility_v09_hash_sample:",
+            )
+        )
+        selected.extend(domain_records[:quota])
+    selected.sort(key=lambda item: canonical_hash(item.record_id, prefix="v09_cohort_order:"))
+    return tuple(selected)
+
+
+def _policy_quota_take(
+    records: tuple[SFTRecord, ...],
+    quotas: Mapping[str, int],
+    *,
+    cell_by_task: Mapping[str, str],
+    probabilities: Mapping[str, float],
+    seed: int,
+) -> tuple[SFTRecord, ...]:
+    _require_pool_capacity(records, quotas, label="policy source pool")
+    selected: list[SFTRecord] = []
+    for domain, quota in sorted(quotas.items()):
+        groups: dict[str, list[SFTRecord]] = defaultdict(list)
+        for record in records:
+            if record.domain != domain:
+                continue
+            cell_id = cell_by_task[record.task_id]
+            if cell_id in probabilities:
+                groups[cell_id].append(record)
+        capacities = {cell_id: len(values) for cell_id, values in groups.items()}
+        allocation = _bounded_weighted_allocation(
+            quota,
+            capacities,
+            {cell_id: probabilities[cell_id] for cell_id in groups},
+        )
+        for cell_id, count in sorted(allocation.items()):
+            values = groups[cell_id]
+            values.sort(
+                key=lambda item: canonical_hash(
+                    {"seed": seed, "cell_id": cell_id, "record_id": item.record_id},
+                    prefix="training_utility_v09_policy_sample:",
+                )
+            )
+            selected.extend(values[:count])
+    selected.sort(key=lambda item: canonical_hash(item.record_id, prefix="v09_cohort_order:"))
+    return tuple(selected)
+
+
+def _bounded_weighted_allocation(
+    total: int,
+    capacities: Mapping[str, int],
+    weights: Mapping[str, float],
+) -> dict[str, int]:
+    if total > sum(capacities.values()):
+        raise ValueError("weighted selection capacity is below the requested total")
+    selected = {cell_id: 0 for cell_id in capacities}
+    for _ in range(total):
+        available = [
+            cell_id
+            for cell_id, capacity in capacities.items()
+            if selected[cell_id] < capacity and weights.get(cell_id, 0) > 0
+        ]
+        if not available:
+            raise ValueError("positive-weight cell capacity cannot satisfy policy quota")
+        cell_id = min(
+            available,
+            key=lambda item: (
+                (selected[item] + 1) / weights[item],
+                item,
+            ),
+        )
+        selected[cell_id] += 1
+    return {key: value for key, value in sorted(selected.items()) if value}
+
+
+def _require_pool_capacity(
+    records: tuple[SFTRecord, ...],
+    quotas: Mapping[str, int],
+    *,
+    label: str,
+) -> None:
+    counts = Counter(item.domain for item in records)
+    shortfalls = {
+        domain: f"{counts[domain]}<{quota}"
+        for domain, quota in quotas.items()
+        if counts[domain] < quota
+    }
+    if shortfalls:
+        raise ValueError(f"{label} has domain shortfalls: {shortfalls}")
+
+
+def _cohort_manifest(
+    cohort: V09Cohort,
+    records: tuple[SFTRecord, ...],
+    *,
+    selection_policy_id: str,
+    eligible_source_records: tuple[SFTRecord, ...],
+    accepted_real_link_count: int,
+    eligible_source_pool_hash: str | None = None,
+) -> V09CohortDatasetManifest:
+    cell_counts = Counter(
+        str(item.metadata.get("synthesis_cell_id") or _record_cell(item).cell_id)
+        for item in records
+    )
+    source_pool_hash = eligible_source_pool_hash or canonical_hash(
+        tuple((item.task_id, item.record_hash) for item in eligible_source_records),
+        prefix="training_utility_v09_source_pool:",
+    )
+    policy_hash = canonical_hash(
+        {
+            "selection_policy_id": selection_policy_id,
+            "cell_counts": dict(sorted(cell_counts.items())),
+            "source_pool_hash": source_pool_hash,
+        },
+        prefix="training_utility_v09_selection_policy:",
+    )
+    return V09CohortDatasetManifest(
+        cohort=cohort,
+        record_count=len(records),
+        domain_counts=dict(sorted(Counter(item.domain for item in records).items())),
+        source_kind_counts=dict(
+            sorted(Counter(item.source_kind for item in records).items())
+        ),
+        pattern_counts=dict(
+            sorted(
+                Counter(
+                    str(item.metadata.get("pattern_id") or "unknown")
+                    for item in records
+                ).items()
+            )
+        ),
+        synthesis_cell_counts=dict(sorted(cell_counts.items())),
+        selection_policy_id=selection_policy_id,
+        selection_policy_hash=policy_hash,
+        eligible_source_record_count=len(eligible_source_records),
+        eligible_source_domain_counts=dict(
+            sorted(Counter(item.domain for item in eligible_source_records).items())
+        ),
+        eligible_source_pool_hash=source_pool_hash,
+        accepted_real_link_count=accepted_real_link_count,
+        record_ids=tuple(item.record_id for item in records),
+        task_ids=tuple(item.task_id for item in records),
+        dataset_hash=canonical_hash(
+            tuple(item.record_hash for item in records),
+            prefix="training_utility_cohort_dataset:",
+        ),
+    )
+
+
+def _write_jsonl(path: Path, records: Iterable[SFTRecord]) -> None:
+    with path.open("w", encoding="utf-8") as handle:
+        for item in records:
+            handle.write(
+                json.dumps(item.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
+                + "\n"
+            )

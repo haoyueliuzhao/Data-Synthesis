@@ -21,6 +21,7 @@ from trusted_synthesis.core.refinement import (
     random_same_shift_update,
     update_synthesis_policy,
 )
+from trusted_synthesis.core.refinement.update import _kl_divergence
 
 
 def test_ccgr_increases_capability_demand_and_suppresses_synthesis_defects() -> None:
@@ -390,3 +391,13 @@ def _signal(
         failure_code="test_failure",
         weight=1.0,
     )
+
+
+def test_kl_divergence_clamps_only_roundoff_negative_values() -> None:
+    distribution = {
+        "a": 0.3333333333333333,
+        "b": 0.3333333333333333,
+        "c": 0.3333333333333334,
+    }
+
+    assert _kl_divergence(distribution, distribution) == 0

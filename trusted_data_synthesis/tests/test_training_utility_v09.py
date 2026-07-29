@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from trusted_synthesis.core.feedback import (
     FeedbackExposure,
     FeedbackRoute,
@@ -11,13 +13,57 @@ from trusted_synthesis.core.feedback import (
     make_feedback_signal,
     route_failure,
 )
+from trusted_synthesis.experiments.training_utility_mvp.schema import (
+    CohortEvaluationResult,
+    CohortTrainingResult,
+    TrainingUtilityMVPConfig,
+)
 from trusted_synthesis.experiments.training_utility_v09 import (
     V09Cohort,
+    V09CohortDatasetManifest,
     V09RefinementConfig,
+    V09TrainingDataManifest,
     build_v09_offline_pilot,
+    build_v09_training_utility_report,
     compile_v09_refinement,
     write_v09_initial_artifacts,
 )
+from trusted_synthesis.experiments.training_utility_v09.data import (
+    _bounded_weighted_allocation,
+    _domain_quotas,
+    _task_signature,
+)
+
+
+def _evaluation_result(cohort: str, score: float) -> CohortEvaluationResult:
+    return CohortEvaluationResult(
+        cohort=cohort,
+        evaluation_dataset_hash="evaluation:test",
+        sample_count=1,
+        valid_json_rate=score,
+        response_contract_rate=score,
+        action_plan_contract_rate=score,
+        answer_decision_contract_rate=score,
+        host_execution_success_rate=score,
+        execution_replay_valid_rate=score,
+        evidence_recall=score,
+        evidence_precision=score,
+        execution_coverage=score,
+        operation_grounding_score=score,
+        tool_necessity_score=score,
+        operation_exact_rate=score,
+        answer_exact_rate=score,
+        citation_exact_rate=score,
+        verification_exact_rate=score,
+        end_to_end_rate=score,
+        mean_latency_ms=0,
+        generated_token_count=0,
+        failure_counts={},
+        domain_metrics={},
+        prediction_artifact="predictions.jsonl",
+        status="completed",
+        result_hash=f"evaluation:{cohort}",
+    )
 
 
 def test_feedback_router_keeps_engineering_and_synthesis_ownership_separate() -> None:
@@ -178,6 +224,125 @@ def test_v09_cohorts_freeze_the_causal_comparison_contract() -> None:
         "full_ccgr",
     }
     assert manifest.status == "ready_for_online_gate"
+
+
+def test_v09_domain_quota_and_weighted_allocation_are_exact() -> None:
+    assert _domain_quotas(
+        600,
+        {"finance": 0.8, "legal": 0.1, "science": 0.1},
+    ) == {"finance": 480, "legal": 60, "science": 60}
+
+    allocation = _bounded_weighted_allocation(
+        7,
+        capacities={"a": 2, "b": 10},
+        weights={"a": 0.8, "b": 0.2},
+    )
+
+    assert sum(allocation.values()) == 7
+    assert allocation["a"] == 2
+    assert allocation["b"] == 5
+
+
+def test_v09_task_migration_signature_ignores_legacy_subject_suffix() -> None:
+    common = {
+        "domain": "legal",
+        "task_type": "rule_application",
+        "instruction": "Apply the controlling rule.",
+        "level": "hard",
+        "requirements": ["cite evidence"],
+    }
+    legacy = {
+        **common,
+        "retrieval_scope": {
+            "subject_ids": ["filing_case"],
+            "corpus_boundary": "legal_contract_fixture_0125",
+        },
+        "prompt_contract_version": "1",
+    }
+    current = {
+        **common,
+        "retrieval_scope": {
+            "subject_ids": ["filing_case_0125"],
+            "corpus_boundary": "legal_contract_fixture_0125",
+        },
+        "prompt_contract_version": "3",
+    }
+
+    assert _task_signature(legacy) == _task_signature(current)
+    assert _task_signature(legacy) != _task_signature(
+        {**current, "instruction": "Apply a different rule."}
+    )
+    assert _task_signature(legacy) != _task_signature(
+        {
+            **current,
+            "retrieval_scope": {
+                "subject_ids": ["filing_case_0125"],
+                "corpus_boundary": "different_legal_fixture_0125",
+            },
+        }
+    )
+
+
+def test_v09_training_report_preserves_offline_causal_boundary() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+    )
+    cohort_manifests = tuple(
+        V09CohortDatasetManifest.model_construct(
+            cohort=cohort,
+            dataset_hash=f"dataset:{cohort.value}",
+        )
+        for cohort in V09Cohort
+    )
+    manifest = V09TrainingDataManifest.model_construct(
+        manifest_id="manifest:test",
+        causal_status="offline_pilot_only",
+        round0_real_agent_feedback=False,
+        cohorts=cohort_manifests,
+        evaluation_dataset_hash="evaluation:test",
+        cohort_example_budget=600,
+        supervised_token_budget=1_200_000,
+    )
+    training_results = tuple(
+        CohortTrainingResult(
+            cohort=cohort.value,
+            config_hash=config.config_hash,
+            dataset_hash=f"dataset:{cohort.value}",
+            base_model="Qwen/Qwen2.5-7B-Instruct",
+            adapter_dir=f"/tmp/{cohort.value}",
+            trainable_parameter_count=1,
+            total_parameter_count=2,
+            final_train_loss=1,
+            train_runtime_seconds=1,
+            peak_gpu_memory_bytes=1,
+            completed_steps=1,
+            dependency_versions={},
+            status="completed",
+            result_hash=f"training:{cohort.value}",
+        )
+        for cohort in V09Cohort
+    )
+    base = _evaluation_result("base", 0.1)
+    evaluations = tuple(
+        _evaluation_result(cohort.value, 0.4 + index * 0.1)
+        for index, cohort in enumerate(V09Cohort)
+    )
+
+    report = build_v09_training_utility_report(
+        config,
+        manifest,
+        base,
+        training_results,
+        evaluations,
+    )
+
+    assert report.status == "completed"
+    assert report.causal_claim_status == "not_identified"
+    assert report.c4_minus_c3["end_to_end_rate"] == pytest.approx(0.1)
+    assert any("do not identify" in item for item in report.limitations)
 
 
 def test_v09_offline_pilot_builds_cross_domain_feedback_artifacts(

@@ -1410,13 +1410,14 @@ def _round_robin_groups(groups: dict[str, list[SFTRecord]]) -> list[SFTRecord]:
 
 
 def _cohort_manifest(
-    cohort: UtilityCohort,
+    cohort: UtilityCohort | str,
     records: tuple[SFTRecord, ...],
 ) -> CohortDatasetManifest:
+    cohort_name = cohort.value if isinstance(cohort, UtilityCohort) else cohort
     record_ids = tuple(item.record_id for item in records)
     duplicate_ids = sorted(item for item, count in Counter(record_ids).items() if count > 1)
     if duplicate_ids:
-        raise ValueError(f"cohort {cohort.value} contains duplicate record IDs: {duplicate_ids}")
+        raise ValueError(f"cohort {cohort_name} contains duplicate record IDs: {duplicate_ids}")
     return CohortDatasetManifest(
         cohort=cohort,
         record_count=len(records),

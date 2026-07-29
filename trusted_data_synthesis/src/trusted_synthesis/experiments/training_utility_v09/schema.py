@@ -16,6 +16,10 @@ from trusted_synthesis.core.refinement import (
     PolicyUpdateResult,
     SynthesisCell,
 )
+from trusted_synthesis.experiments.training_utility_mvp.schema import (
+    CohortEvaluationResult,
+    CohortTrainingResult,
+)
 from trusted_synthesis.hashing import canonical_hash
 
 TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v2"
@@ -275,3 +279,190 @@ class V09InitialBuildReport(BaseModel):
     failures: tuple[str, ...] = ()
     limitations: tuple[str, ...]
     version: str = TRAINING_UTILITY_V09_VERSION
+
+
+class V09CohortDatasetManifest(BaseModel):
+    """Auditable materialization of one causal training cohort."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    cohort: V09Cohort
+    record_count: int = Field(ge=1)
+    domain_counts: dict[str, int]
+    source_kind_counts: dict[str, int]
+    pattern_counts: dict[str, int]
+    synthesis_cell_counts: dict[str, int]
+    selection_policy_id: str = Field(min_length=1)
+    selection_policy_hash: str = Field(min_length=1)
+    eligible_source_record_count: int = Field(ge=1)
+    eligible_source_domain_counts: dict[str, int]
+    eligible_source_pool_hash: str = Field(min_length=1)
+    accepted_real_link_count: int = Field(ge=0)
+    record_ids: tuple[str, ...]
+    task_ids: tuple[str, ...]
+    dataset_hash: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_dataset_identity(self) -> V09CohortDatasetManifest:
+        if len(self.record_ids) != self.record_count:
+            raise ValueError("cohort record IDs must cover every record")
+        if len(set(self.record_ids)) != self.record_count:
+            raise ValueError("cohort record IDs must be unique")
+        if len(self.task_ids) != self.record_count or len(set(self.task_ids)) != self.record_count:
+            raise ValueError("one v0.9 cohort may contain only one record per task")
+        if sum(self.domain_counts.values()) != self.record_count:
+            raise ValueError("cohort domain counts must sum to the record count")
+        if sum(self.source_kind_counts.values()) != self.record_count:
+            raise ValueError("cohort source-kind counts must sum to the record count")
+        if sum(self.pattern_counts.values()) != self.record_count:
+            raise ValueError("cohort pattern counts must sum to the record count")
+        if self.synthesis_cell_counts and (
+            sum(self.synthesis_cell_counts.values()) != self.record_count
+        ):
+            raise ValueError("cohort synthesis-cell counts must cover every record")
+        if sum(self.eligible_source_domain_counts.values()) != self.eligible_source_record_count:
+            raise ValueError("eligible source domain counts must cover the source pool")
+        return self
+
+
+class V09TrainingDataManifest(BaseModel):
+    """Frozen C1-C4 datasets and the shared held-out evaluation contract."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    manifest_id: str = Field(min_length=1)
+    refinement_config_hash: str = Field(min_length=1)
+    training_config_hash: str = Field(min_length=1)
+    refinement_manifest_id: str = Field(min_length=1)
+    canonical_base_model: str = Field(min_length=1)
+    canonical_model_revision: str = Field(min_length=1)
+    runtime_base_model: str = Field(min_length=1)
+    runtime_model_revision: str = Field(min_length=1)
+    source_agent_run_id: str = Field(min_length=1)
+    source_critic_dataset_id: str = Field(min_length=1)
+    source_critic_artifact_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task_migration_policy_id: str = Field(min_length=1)
+    task_migration_policy_hash: str = Field(min_length=1)
+    source_real_candidate_count: int = Field(ge=1)
+    mapped_real_candidate_count: int = Field(ge=0)
+    unmapped_real_candidate_count: int = Field(ge=0)
+    semantic_migration_count: int = Field(ge=0)
+    semantic_migration_domain_counts: dict[str, int]
+    representable_real_candidate_count: int = Field(ge=0)
+    representable_real_domain_counts: dict[str, int]
+    accepted_mapped_candidate_count: int = Field(ge=0)
+    round0_real_agent_feedback: bool
+    offline_refinement_override: bool
+    causal_status: Literal["online_ready", "offline_pilot_only"]
+    full_ccgr_update_id: str = Field(min_length=1)
+    supervised_token_budget: int = Field(ge=1000)
+    cohort_example_budget: int = Field(ge=1)
+    expected_domain_counts: dict[str, int]
+    cohorts: tuple[V09CohortDatasetManifest, ...]
+    evaluation_record_count: int = Field(ge=1)
+    evaluation_domain_counts: dict[str, int]
+    evaluation_record_ids: tuple[str, ...]
+    evaluation_dataset_hash: str = Field(min_length=1)
+    train_evaluation_task_overlap_count: int = Field(ge=0)
+    train_evaluation_subject_overlap_count: int = Field(ge=0)
+    train_evaluation_evidence_overlap_count: int = Field(ge=0)
+    train_evaluation_evidence_version_overlap_count: int = Field(ge=0)
+    train_evaluation_source_record_overlap_count: int = Field(ge=0)
+    train_evaluation_binding_overlap_count: int = Field(ge=0)
+    c3_c4_task_overlap_count: int = Field(ge=0)
+    c3_c4_source_pool_shared: bool
+    external_benchmark_status: Literal["not_executed"] = "not_executed"
+    limitations: tuple[str, ...]
+    status: Literal["ready", "pilot_ready", "blocked"]
+    version: str = TRAINING_UTILITY_V09_VERSION
+
+    @model_validator(mode="after")
+    def validate_causal_data_contract(self) -> V09TrainingDataManifest:
+        by_cohort = {item.cohort: item for item in self.cohorts}
+        if set(by_cohort) != set(V09Cohort):
+            raise ValueError("v0.9 training data must contain C1 through C4")
+        if (
+            self.mapped_real_candidate_count + self.unmapped_real_candidate_count
+            != self.source_real_candidate_count
+        ):
+            raise ValueError("mapped and unmapped candidates must cover the real source pool")
+        if self.unmapped_real_candidate_count:
+            raise ValueError("v0.9 cannot train with unmapped real-agent source candidates")
+        if self.semantic_migration_count != sum(
+            self.semantic_migration_domain_counts.values()
+        ):
+            raise ValueError("semantic migration domain counts are inconsistent")
+        if self.representable_real_candidate_count != sum(
+            self.representable_real_domain_counts.values()
+        ):
+            raise ValueError("representable candidate domain counts are inconsistent")
+        if self.representable_real_candidate_count > self.mapped_real_candidate_count:
+            raise ValueError("representable candidates cannot exceed mapped candidates")
+        if self.accepted_mapped_candidate_count > self.representable_real_candidate_count:
+            raise ValueError("accepted mapped candidates must be representable")
+        if any(
+            item.record_count != self.cohort_example_budget
+            for item in self.cohorts
+        ):
+            raise ValueError("all v0.9 cohorts must have the frozen example budget")
+        if any(
+            item.domain_counts != self.expected_domain_counts
+            for item in self.cohorts
+        ):
+            raise ValueError("all v0.9 cohorts must have identical domain quotas")
+        hard_overlaps = {
+            "task": self.train_evaluation_task_overlap_count,
+            "subject": self.train_evaluation_subject_overlap_count,
+            "evidence": self.train_evaluation_evidence_overlap_count,
+            "evidence_version": self.train_evaluation_evidence_version_overlap_count,
+            "source_record": self.train_evaluation_source_record_overlap_count,
+            "binding": self.train_evaluation_binding_overlap_count,
+        }
+        observed = {key: value for key, value in hard_overlaps.items() if value}
+        if observed:
+            raise ValueError(f"v0.9 train/evaluation identities overlap: {observed}")
+        c3 = by_cohort[V09Cohort.VERIFIED_STATIC]
+        c4 = by_cohort[V09Cohort.FEEDBACK_REFINED]
+        if c3.accepted_real_link_count != c3.record_count:
+            raise ValueError("every C3 record must link to an accepted real candidate")
+        if c4.accepted_real_link_count != c4.record_count:
+            raise ValueError("every C4 record must link to an accepted real candidate")
+        if (
+            not self.c3_c4_source_pool_shared
+            or c3.eligible_source_pool_hash != c4.eligible_source_pool_hash
+            or c3.eligible_source_record_count != c4.eligible_source_record_count
+        ):
+            raise ValueError("C3 and C4 must sample from the same verified source pool")
+        if self.round0_real_agent_feedback:
+            if self.offline_refinement_override or self.causal_status != "online_ready":
+                raise ValueError("real Round-0 data must use the online-ready causal status")
+            if self.status != "ready":
+                raise ValueError("online-ready data must have ready status")
+        else:
+            if not self.offline_refinement_override:
+                raise ValueError("offline refinement requires an explicit operator override")
+            if self.causal_status != "offline_pilot_only" or self.status != "pilot_ready":
+                raise ValueError("offline refinement can only produce pilot-ready data")
+        return self
+
+
+class V09TrainingUtilityReport(BaseModel):
+    """Final C1-C4 training comparison with an explicit causal boundary."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    report_id: str = Field(min_length=1)
+    config_hash: str = Field(min_length=1)
+    data_manifest_id: str = Field(min_length=1)
+    causal_status: Literal["online_ready", "offline_pilot_only"]
+    causal_claim_status: Literal["identified", "not_identified"]
+    base_evaluation: CohortEvaluationResult
+    cohort_training: tuple[CohortTrainingResult, ...]
+    cohort_evaluations: tuple[CohortEvaluationResult, ...]
+    cohort_deltas_vs_base: dict[str, dict[str, float]]
+    c4_minus_c3: dict[str, float]
+    cohort_ranking: tuple[str, ...]
+    completed_cohort_count: int = Field(ge=0, le=4)
+    external_benchmark_status: Literal["not_executed"] = "not_executed"
+    limitations: tuple[str, ...]
+    status: Literal["completed", "partial", "failed"]

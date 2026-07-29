@@ -95,7 +95,7 @@ def build_training_utility_report(
         config_hash=config.config_hash,
         data_manifest_id=data_manifest.manifest_id,
         base_evaluation=base_evaluation,
-        cohort_training=tuple(sorted(training_results, key=lambda item: item.cohort.value)),
+        cohort_training=tuple(sorted(training_results, key=lambda item: item.cohort)),
         cohort_evaluations=tuple(sorted(cohort_evaluations, key=lambda item: item.cohort)),
         best_cohort_by_end_to_end=best.cohort,
         best_end_to_end_rate=best.end_to_end_rate,
@@ -199,7 +199,7 @@ def _render_markdown(
     for training in report.cohort_training:
         loss = "n/a" if training.final_train_loss is None else f"{training.final_train_loss:.4f}"
         lines.append(
-            f"| {training.cohort.value} | {training.completed_steps} | "
+            f"| {training.cohort} | {training.completed_steps} | "
             f"{loss} | {training.train_runtime_seconds / 60:.2f} | "
             f"{training.peak_gpu_memory_bytes / 2**30:.2f} |"
         )

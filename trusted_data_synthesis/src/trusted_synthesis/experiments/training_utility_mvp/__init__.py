@@ -28,6 +28,7 @@ from trusted_synthesis.experiments.training_utility_mvp.review_export import (
 )
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     CohortEvaluationResult,
+    CohortTokenBudgetAudit,
     CohortTrainingResult,
     SFTMessage,
     SFTRecord,
@@ -36,10 +37,14 @@ from trusted_synthesis.experiments.training_utility_mvp.schema import (
     TrainingUtilityMVPReport,
     TrainingUtilityReadinessReport,
 )
-from trusted_synthesis.experiments.training_utility_mvp.training import train_sft_cohort
+from trusted_synthesis.experiments.training_utility_mvp.training import (
+    audit_sft_token_budget,
+    train_sft_cohort,
+)
 
 __all__ = [
     "CohortEvaluationResult",
+    "CohortTokenBudgetAudit",
     "CohortTrainingResult",
     "QAReviewEvidence",
     "QAReviewExportManifest",
@@ -52,6 +57,7 @@ __all__ = [
     "TrainingUtilityReadinessReport",
     "aggregate_evaluation_outcomes",
     "audit_training_utility_readiness",
+    "audit_sft_token_budget",
     "build_training_utility_datasets",
     "build_training_utility_report",
     "build_qa_review_record",

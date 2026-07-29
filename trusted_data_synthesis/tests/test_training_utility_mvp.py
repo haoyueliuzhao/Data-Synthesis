@@ -26,6 +26,7 @@ from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
     build_pattern_validation_cases,
 )
 from trusted_synthesis.experiments.training_utility_mvp import (
+    CohortTrainingResult,
     TrainingUtilityMVPConfig,
     aggregate_evaluation_outcomes,
     audit_training_utility_readiness,
@@ -51,7 +52,9 @@ from trusted_synthesis.experiments.training_utility_mvp.model_security import (
     validate_model_loading_contract,
 )
 from trusted_synthesis.experiments.training_utility_mvp.training import (
+    _completed_training_budget_matches,
     _encode_records,
+    _schedule_supervised_token_budget,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent import AgentModelConfig, ModelCallTelemetry
@@ -528,6 +531,76 @@ def test_training_utility_supports_oversupplied_per_domain_pools() -> None:
     assert all(item.metadata["pattern_id"] for item in (*training, *evaluation))
     assert all(item.metadata["program_signature"] for item in (*training, *evaluation))
     assert all(item.metadata["structural_group_id"] for item in (*training, *evaluation))
+
+
+def test_supervised_token_schedule_is_deterministic_and_step_aligned() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=10,
+    )
+    records, _ = _reference_and_evaluation_records(config)
+    records = records[:4]
+    encoded = [
+        {"input_ids": [1] * count, "attention_mask": [1] * count, "labels": [1] * count}
+        for count in (2, 3, 4, 5)
+    ]
+
+    first, first_tokens = _schedule_supervised_token_budget(
+        encoded,
+        records,
+        token_budget=18,
+        examples_per_step=2,
+        seed=7,
+    )
+    second, second_tokens = _schedule_supervised_token_budget(
+        encoded,
+        records,
+        token_budget=18,
+        examples_per_step=2,
+        seed=7,
+    )
+
+    assert first == second
+    assert first_tokens == second_tokens
+    assert len(first) % 2 == 0
+    assert first_tokens == sum(
+        label != -100 for item in first for label in item["labels"]
+    )
+
+
+def test_completed_token_budget_uses_microbatches_not_examples() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=10,
+        supervised_token_budget=1000,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,
+    )
+    result = CohortTrainingResult(
+        cohort="cohort",
+        config_hash=config.config_hash,
+        dataset_hash="dataset",
+        base_model="model",
+        adapter_dir="adapter",
+        trainable_parameter_count=1,
+        total_parameter_count=2,
+        train_runtime_seconds=1,
+        peak_gpu_memory_bytes=1,
+        completed_steps=3,
+        supervised_token_count=1000,
+        supervised_token_budget=1000,
+        token_budget_deviation_rate=0,
+        micro_batch_count=12,
+        dependency_versions={},
+        status="completed",
+        result_hash="result",
+    )
+
+    assert _completed_training_budget_matches(config, result)
 
 
 def test_cohort_manifest_rejects_duplicate_content_addressed_records() -> None:

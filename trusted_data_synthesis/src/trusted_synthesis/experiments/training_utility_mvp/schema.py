@@ -45,6 +45,8 @@ class TrainingUtilityMVPConfig(BaseModel):
     max_seq_length: int = Field(default=8192, ge=512, le=16384)
     max_new_tokens: int = Field(default=1024, ge=64, le=4096)
     max_steps: int = Field(default=32, ge=1, le=10000)
+    supervised_token_budget: int | None = Field(default=None, ge=1000)
+    maximum_token_budget_deviation_rate: float = Field(default=0.005, ge=0, le=0.05)
     per_device_train_batch_size: int = Field(default=1, ge=1, le=16)
     gradient_accumulation_steps: int = Field(default=4, ge=1, le=128)
     learning_rate: float = Field(default=2e-4, gt=0)
@@ -157,7 +159,7 @@ class SFTRecord(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     record_id: str
-    cohort: UtilityCohort | Literal["evaluation"]
+    cohort: str = Field(min_length=1)
     task_id: str
     domain: str
     system_prompt: str
@@ -313,7 +315,7 @@ class TrainingUtilityReadinessReport(BaseModel):
 class CohortTrainingResult(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    cohort: UtilityCohort
+    cohort: str = Field(min_length=1)
     config_hash: str
     dataset_hash: str
     base_model: str
@@ -325,9 +327,41 @@ class CohortTrainingResult(BaseModel):
     train_runtime_seconds: float = Field(ge=0)
     peak_gpu_memory_bytes: int = Field(ge=0)
     completed_steps: int = Field(ge=0)
+    supervised_token_count: int | None = Field(default=None, ge=0)
+    supervised_token_budget: int | None = Field(default=None, ge=1000)
+    token_budget_deviation_rate: float | None = Field(default=None, ge=0)
+    micro_batch_count: int | None = Field(default=None, ge=1)
     dependency_versions: dict[str, str]
     status: Literal["completed", "failed"]
     result_hash: str
+
+
+class CohortTokenBudgetAudit(BaseModel):
+    """CPU-only audit of the exact supervised-token schedule used by training."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    cohort: str = Field(min_length=1)
+    config_hash: str = Field(min_length=1)
+    dataset_hash: str = Field(min_length=1)
+    record_count: int = Field(ge=1)
+    raw_input_token_count: int = Field(ge=1)
+    raw_supervised_token_count: int = Field(ge=1)
+    minimum_record_tokens: int = Field(ge=1)
+    maximum_record_tokens: int = Field(ge=1)
+    maximum_target_tokens: int = Field(ge=1)
+    truncated_record_count: int = Field(ge=0)
+    scheduled_record_count: int = Field(ge=1)
+    scheduled_supervised_token_count: int = Field(ge=1)
+    supervised_token_budget: int | None = Field(default=None, ge=1000)
+    token_budget_deviation_rate: float | None = Field(default=None, ge=0)
+    examples_per_optimizer_step: int = Field(ge=1)
+    effective_optimizer_steps: int = Field(ge=1)
+    maximum_optimizer_steps: int = Field(ge=1)
+    training_format_counts: dict[str, int]
+    blockers: tuple[str, ...]
+    status: Literal["ready", "blocked"]
+    audit_hash: str = Field(min_length=1)
 
 
 class CohortEvaluationResult(BaseModel):

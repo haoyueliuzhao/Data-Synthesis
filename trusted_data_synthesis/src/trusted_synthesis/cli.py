@@ -62,6 +62,7 @@ from trusted_synthesis.experiments.task_pattern_validation import (
 from trusted_synthesis.experiments.training_utility_mvp import (
     TrainingUtilityDataManifest,
     TrainingUtilityMVPConfig,
+    audit_sft_token_budget,
     audit_training_utility_readiness,
     build_training_utility_datasets,
     build_training_utility_report,
@@ -76,9 +77,17 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     write_training_utility_report,
 )
 from trusted_synthesis.experiments.training_utility_v09 import (
+    V09Cohort,
     V09RefinementConfig,
+    V09RefinementManifest,
+    V09TrainingDataManifest,
     build_v09_offline_pilot,
+    build_v09_training_datasets,
+    build_v09_training_utility_report,
+    load_v09_real_agent_artifacts,
     write_v09_initial_artifacts,
+    write_v09_training_datasets,
+    write_v09_training_utility_report,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime import (
@@ -162,12 +171,21 @@ def main(argv: list[str] | None = None) -> int:
         utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
         training_result = train_sft_cohort(
             utility_config,
-            UtilityCohort(args.cohort),
+            args.cohort,
             args.dataset,
             args.output_dir,
         )
         _emit(training_result.model_dump(mode="json"), args.output)
         return 0
+    if args.command == "audit-training-token-budget":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        token_audit = audit_sft_token_budget(
+            utility_config,
+            args.cohort,
+            args.dataset,
+        )
+        _emit(token_audit.model_dump(mode="json"), args.output)
+        return 0 if token_audit.status == "ready" else 1
     if args.command == "evaluate-training-utility":
         utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
         evaluation_result = evaluate_sft_model(
@@ -209,6 +227,53 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(report.model_dump(mode="json"), args.output)
         return 0 if report.status == "passed" else 1
+    if args.command == "prepare-v09-training":
+        refinement_config = V09RefinementConfig.from_json(args.v09_config)
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        refinement_manifest = V09RefinementManifest.model_validate_json(
+            args.refinement_manifest.read_text(encoding="utf-8")
+        )
+        agent_report, critic_examples, critic_artifact_sha256 = (
+            load_v09_real_agent_artifacts(args.agent_artifacts)
+        )
+        cohorts, evaluation, data_manifest = build_v09_training_datasets(
+            refinement_config,
+            utility_config,
+            refinement_manifest,
+            agent_report,
+            critic_examples,
+            agent_report.critic_dataset_id,
+            critic_artifact_sha256,
+            allow_offline_refinement_pilot=args.allow_offline_refinement_pilot,
+            reference_cache_dir=args.output_dir / "_reference_cache",
+        )
+        write_v09_training_datasets(
+            args.output_dir,
+            cohorts,
+            evaluation,
+            data_manifest,
+        )
+        _emit(data_manifest.model_dump(mode="json"), args.output)
+        return 0
+    if args.command == "summarize-v09-training":
+        utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
+        data_manifest = V09TrainingDataManifest.model_validate_json(
+            args.data_manifest.read_text(encoding="utf-8")
+        )
+        utility_report = build_v09_training_utility_report(
+            utility_config,
+            data_manifest,
+            load_evaluation_result(args.base_evaluation),
+            tuple(load_training_result(path) for path in args.training_result),
+            tuple(load_evaluation_result(path) for path in args.cohort_evaluation),
+        )
+        write_v09_training_utility_report(
+            args.output_dir,
+            utility_report,
+            data_manifest,
+        )
+        _emit(utility_report.model_dump(mode="json"), args.output)
+        return 0
     if args.command == "freeze-release-validation":
         validation_summary = build_release_validation_summary(
             repo_root=args.repo_root,
@@ -295,11 +360,26 @@ def _parser() -> argparse.ArgumentParser:
     utility_review.add_argument("--output-dir", type=Path, required=True)
     utility_review.add_argument("--markdown-limit-per-cohort", type=int, default=0)
     utility_review.add_argument("--output", type=Path)
+    utility_token_audit = subparsers.add_parser("audit-training-token-budget")
+    utility_token_audit.add_argument("--training-config", type=Path, required=True)
+    utility_token_audit.add_argument(
+        "--cohort",
+        choices=(
+            *(item.value for item in UtilityCohort),
+            *(item.value for item in V09Cohort),
+        ),
+        required=True,
+    )
+    utility_token_audit.add_argument("--dataset", type=Path, required=True)
+    utility_token_audit.add_argument("--output", type=Path)
     utility_train = subparsers.add_parser("train-training-utility")
     utility_train.add_argument("--training-config", type=Path, required=True)
     utility_train.add_argument(
         "--cohort",
-        choices=tuple(item.value for item in UtilityCohort),
+        choices=(
+            *(item.value for item in UtilityCohort),
+            *(item.value for item in V09Cohort),
+        ),
         required=True,
     )
     utility_train.add_argument("--dataset", type=Path, required=True)
@@ -335,6 +415,32 @@ def _parser() -> argparse.ArgumentParser:
     v09_initial.add_argument("--tasks-per-domain", type=int, default=3)
     v09_initial.add_argument("--output-dir", type=Path, required=True)
     v09_initial.add_argument("--output", type=Path)
+    v09_training = subparsers.add_parser("prepare-v09-training")
+    v09_training.add_argument("--v09-config", type=Path, required=True)
+    v09_training.add_argument("--training-config", type=Path, required=True)
+    v09_training.add_argument("--refinement-manifest", type=Path, required=True)
+    v09_training.add_argument("--agent-artifacts", type=Path, required=True)
+    v09_training.add_argument("--output-dir", type=Path, required=True)
+    v09_training.add_argument("--allow-offline-refinement-pilot", action="store_true")
+    v09_training.add_argument("--output", type=Path)
+    v09_summary = subparsers.add_parser("summarize-v09-training")
+    v09_summary.add_argument("--training-config", type=Path, required=True)
+    v09_summary.add_argument("--data-manifest", type=Path, required=True)
+    v09_summary.add_argument("--base-evaluation", type=Path, required=True)
+    v09_summary.add_argument(
+        "--training-result",
+        type=Path,
+        action="append",
+        required=True,
+    )
+    v09_summary.add_argument(
+        "--cohort-evaluation",
+        type=Path,
+        action="append",
+        required=True,
+    )
+    v09_summary.add_argument("--output-dir", type=Path, required=True)
+    v09_summary.add_argument("--output", type=Path)
     release_validation = subparsers.add_parser("freeze-release-validation")
     release_validation.add_argument("--repo-root", type=Path, default=Path("."))
     release_validation.add_argument("--artifact", type=Path, action="append", required=True)

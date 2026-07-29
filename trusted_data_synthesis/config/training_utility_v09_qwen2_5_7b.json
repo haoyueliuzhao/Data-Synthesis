@@ -1,0 +1,50 @@
+{
+  "base_model": "/data1/zhuxinrui/models/Qwen2.5-7B-Instruct-a09a35458c702b33eeacc393d103063234e8bc28",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "candidate_tasks_per_domain": 200,
+  "evaluation_tasks_per_domain": 50,
+  "candidate_task_targets": {
+    "finance": 1000,
+    "legal": 500,
+    "science": 500
+  },
+  "evaluation_task_targets": {
+    "finance": 200,
+    "legal": 200,
+    "science": 200
+  },
+  "cohort_size": 600,
+  "minimum_real_candidate_completion_rate": 0.8,
+  "d1_construction_mode": "unfiltered_real_agent",
+  "d1_counterfactual_fraction": 0.5,
+  "d4_training_format": "clean_solve_feedback",
+  "d4_repair_fraction": 0.5,
+  "d5_minimum_overall_score": 0,
+  "d5_minimum_dimension_score": 0,
+  "d5_minimum_critic_accept_probability": 0,
+  "max_seq_length": 12288,
+  "max_new_tokens": 1536,
+  "max_steps": 3000,
+  "supervised_token_budget": 1200000,
+  "maximum_token_budget_deviation_rate": 0.005,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 4,
+  "learning_rate": 0.0002,
+  "warmup_ratio": 0.1,
+  "weight_decay": 0.01,
+  "lora_rank": 8,
+  "lora_alpha": 16,
+  "lora_dropout": 0.05,
+  "lora_target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "seed": 20260728,
+  "prompt_version": "training_utility_agent_prompt.v4",
+  "student_interaction_protocol": "host_instrumented_joint"
+}

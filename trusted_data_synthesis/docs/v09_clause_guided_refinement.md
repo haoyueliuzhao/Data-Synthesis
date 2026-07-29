@@ -204,3 +204,41 @@ counterfactual calibration reports. If it passes, use real routed roots to mater
 equal-budget C1-C4 datasets, train one pilot seed, and evaluate internal contracts before scaling to
 three seeds and native external benchmarks. A passed offline build validates Algorithm 1 execution;
 it still does not establish training utility.
+
+## Real-Training Pilot Commands
+
+An operator may train the offline-calibrated data only as an explicitly labeled engineering pilot.
+It must retain `causal_status=offline_pilot_only`; its C4-C3 delta cannot be reported as the causal
+effect of real-agent feedback. Materialize and audit the frozen datasets before allocating GPUs:
+
+```bash
+trusted-synthesis prepare-v09-training \
+  --v09-config config/training_utility_v09_initial.json \
+  --training-config config/training_utility_v09_qwen2_5_7b.json \
+  --refinement-manifest artifacts/training_utility_v09/v09_ccgr_full_catalog_20260729/v09_refinement_manifest.json \
+  --agent-artifacts artifacts/agent_validation/v08_production_v6_20260727 \
+  --output-dir artifacts/training_utility_v09/v09_training_pilot_20260729 \
+  --allow-offline-refinement-pilot
+
+trusted-synthesis audit-training-token-budget \
+  --training-config config/training_utility_v09_qwen2_5_7b.json \
+  --cohort C1_conventional_synthetic \
+  --dataset artifacts/training_utility_v09/v09_training_pilot_20260729/C1_conventional_synthetic.jsonl
+```
+
+Run the token audit for C1 through C4. Every audit must be `ready`, have zero truncation, remain
+under `max_steps`, and stay within the frozen supervised-token deviation. Train each cohort from the
+same base snapshot on an isolated GPU:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 trusted-synthesis train-training-utility \
+  --training-config config/training_utility_v09_qwen2_5_7b.json \
+  --cohort C1_conventional_synthetic \
+  --dataset artifacts/training_utility_v09/v09_training_pilot_20260729/C1_conventional_synthetic.jsonl \
+  --output-dir artifacts/training_utility_v09/v09_real_training/C1
+```
+
+After training, evaluate the base model and every adapter against the same `evaluation.jsonl`, then
+use `summarize-v09-training` to enforce dataset hashes and produce the C1-C4 comparison. The report
+records the C4-C3 delta but marks it `not_identified` until a successful Host-Instrumented online
+Round-0 rebuild supplies real feedback.
