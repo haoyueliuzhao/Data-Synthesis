@@ -72,6 +72,7 @@ def calibrate_counterfactuals(
             context_by_case[case.counterfactual_id] = context
 
     evaluations = []
+    expected_root_kind_by_case: dict[str, str] = {}
     for case in cases:
         context = context_by_case[case.counterfactual_id]
         assessment = evaluate(context, case.trajectory)
@@ -81,6 +82,11 @@ def calibrate_counterfactuals(
         observed_closure = assessment.failed_clause_ids
         root_metrics = _set_metrics(expected_roots, observed_roots)
         closure_metrics = _set_metrics(expected_closure, observed_closure)
+        clause_by_id = {clause.clause_id: clause for clause in context.contract.clauses}
+        expected_root_kinds = tuple(
+            clause_by_id[clause_id].clause_kind for clause_id in expected_roots
+        )
+        expected_root_kind_by_case[case.counterfactual_id] = expected_root_kinds[0]
         evaluations.append(
             CounterfactualCaseEvaluation(
                 counterfactual_id=case.counterfactual_id,
@@ -91,6 +97,7 @@ def calibrate_counterfactuals(
                 mutation_operator_id=case.mutation_operator_id,
                 detected=assessment.decision == ReleaseDecision.REJECTED,
                 expected_root_clause_ids=expected_roots,
+                expected_root_clause_kinds=expected_root_kinds,
                 observed_root_clause_ids=observed_roots,
                 expected_failed_clause_ids=expected_closure,
                 observed_failed_clause_ids=observed_closure,
@@ -203,6 +210,11 @@ def calibrate_counterfactuals(
             cases,
             evaluations,
             lambda case: case.source_clause_kind,
+        ),
+        expected_root_clause_kind_metrics=_slice_reports(
+            cases,
+            evaluations,
+            lambda case: expected_root_kind_by_case[case.counterfactual_id],
         ),
         case_evaluations=tuple(evaluations),
         status="passed" if not failures else "failed",

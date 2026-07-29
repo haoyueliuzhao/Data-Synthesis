@@ -7,10 +7,25 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
+from trusted_synthesis.core.evidence.schema import EvidenceItem
+from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.task.schema import TaskPublicSpec
+from trusted_synthesis.domains.legal.operations import legal_operation_registry
+from trusted_synthesis.domains.science.operations import science_operation_registry
 from trusted_synthesis.hashing import canonical_hash
-from trusted_synthesis.runtime.agent.schema import AgentResponseContract
+from trusted_synthesis.runtime.agent.host_execution import (
+    ActionPlanExecutionError,
+    execute_action_plan,
+    make_host_execution_feedback,
+)
+from trusted_synthesis.runtime.agent.schema import (
+    AgentActionPlanContract,
+    AgentAnswerDecisionContract,
+    AgentResponseContract,
+)
 
 from .data import load_sft_records
+from .model_security import validate_adapter_artifact, validate_model_loading_contract
 from .schema import CohortEvaluationResult, SFTRecord, TrainingUtilityMVPConfig
 
 
@@ -34,6 +49,9 @@ def evaluate_sft_model(
         ) from exc
     if not torch.cuda.is_available():
         raise RuntimeError("the Qwen2.5-7B MVP requires a CUDA device")
+    validate_model_loading_contract(config.base_model, config.model_revision)
+    if adapter_dir is not None:
+        validate_adapter_artifact(adapter_dir)
     records = load_sft_records(evaluation_path)
     if not records or {item.cohort for item in records} != {"evaluation"}:
         raise ValueError("evaluation file must contain only evaluation records")
@@ -80,14 +98,17 @@ def evaluate_sft_model(
         tokenizer_source,
         revision=None if adapter_dir else config.model_revision,
         use_fast=True,
+        trust_remote_code=False,
     )
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
     model = AutoModelForCausalLM.from_pretrained(
         config.base_model,
         revision=config.model_revision,
-        torch_dtype=torch.bfloat16,
+        dtype=torch.bfloat16,
         attn_implementation="sdpa",
+        trust_remote_code=False,
+        use_safetensors=True,
     )
     if adapter_dir is not None:
         model = PeftModel.from_pretrained(model, str(adapter_dir))
@@ -102,39 +123,73 @@ def evaluate_sft_model(
             continue
         if record.record_id in outcomes_by_record_id:
             continue
-        prompt = tokenizer.apply_chat_template(
-            [
-                {"role": "system", "content": record.system_prompt},
-                {"role": "user", "content": record.user_prompt},
-            ],
-            tokenize=False,
-            add_generation_prompt=True,
-        )
-        encoded = tokenizer(
-            prompt,
-            add_special_tokens=False,
-            return_tensors="pt",
-        )
-        encoded = {key: value.to("cuda") for key, value in encoded.items()}
-        started = time.monotonic()
-        with torch.inference_mode():
-            generated = model.generate(
-                **encoded,
+        if record.training_format == "host_instrumented_joint":
+            action_messages = [
+                {"role": item.role, "content": item.content}
+                for item in record.messages[:2]
+            ]
+            action_text, action_tokens, action_latency = _generate_turn(
+                tokenizer,
+                model,
+                torch,
+                action_messages,
                 max_new_tokens=config.max_new_tokens,
-                do_sample=False,
-                use_cache=True,
-                pad_token_id=tokenizer.pad_token_id,
-                eos_token_id=tokenizer.eos_token_id,
             )
-        latency_ms = (time.monotonic() - started) * 1000
-        new_tokens = generated[0, encoded["input_ids"].shape[1] :]
-        raw_text = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
-        outcome = score_generated_response(
-            record,
-            raw_text,
-            generated_tokens=int(new_tokens.numel()),
-            latency_ms=latency_ms,
-        )
+            answer_text = ""
+            answer_tokens = 0
+            answer_latency = 0.0
+            try:
+                action = AgentActionPlanContract.model_validate_json(action_text)
+                task, evidence = _host_evaluation_context(record)
+                trace = execute_action_plan(
+                    task,
+                    evidence,
+                    action,
+                    _operation_registry(record.domain),
+                )
+            except (ValueError, ActionPlanExecutionError):
+                pass
+            else:
+                host_feedback = make_host_execution_feedback(trace)
+                answer_messages = [
+                    *action_messages,
+                    {"role": "assistant", "content": action_text},
+                    {
+                        "role": "tool",
+                        "content": host_feedback.model_dump_json(),
+                    },
+                ]
+                answer_text, answer_tokens, answer_latency = _generate_turn(
+                    tokenizer,
+                    model,
+                    torch,
+                    answer_messages,
+                    max_new_tokens=config.max_new_tokens,
+                )
+            outcome = score_host_instrumented_response(
+                record,
+                action_text,
+                answer_text,
+                generated_tokens=action_tokens + answer_tokens,
+                latency_ms=action_latency + answer_latency,
+            )
+        else:
+            raw_text, generated_tokens, latency_ms = _generate_turn(
+                tokenizer,
+                model,
+                torch,
+                [
+                    {"role": "system", "content": record.system_prompt},
+                    {"role": "user", "content": record.user_prompt},
+                ],
+                max_new_tokens=config.max_new_tokens,
+            )
+            outcome = score_generated_response(
+                record,
+                raw_text,
+                generated_tokens=generated_tokens,
+                latency_ms=latency_ms,
+            )
         outcomes_by_record_id[record.record_id] = outcome
         _write_evaluation_checkpoint(
             checkpoint_dir / f"{index:06d}.json",
@@ -171,6 +226,44 @@ def evaluate_sft_model(
         indent=2,
     )
     return result
+
+
+def _generate_turn(
+    tokenizer: Any,
+    model: Any,
+    torch: Any,
+    messages: list[dict[str, str]],
+    *,
+    max_new_tokens: int,
+) -> tuple[str, int, float]:
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+    encoded = tokenizer(
+        prompt,
+        add_special_tokens=False,
+        return_tensors="pt",
+    )
+    encoded = {key: value.to("cuda") for key, value in encoded.items()}
+    started = time.monotonic()
+    with torch.inference_mode():
+        generated = model.generate(
+            **encoded,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            use_cache=True,
+            pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+    latency_ms = (time.monotonic() - started) * 1000
+    new_tokens = generated[0, encoded["input_ids"].shape[1] :]
+    return (
+        tokenizer.decode(new_tokens, skip_special_tokens=True).strip(),
+        int(new_tokens.numel()),
+        latency_ms,
+    )
 
 
 def _evaluation_shard_from_environment() -> tuple[int, int]:
@@ -292,6 +385,21 @@ def score_generated_response(
     generated_tokens: int = 0,
     latency_ms: float = 0,
 ) -> dict[str, Any]:
+    if record.training_format == "host_instrumented_joint":
+        try:
+            payload = json.loads(raw_text)
+            action_text = json.dumps(payload["action_plan"], sort_keys=True)
+            answer_text = json.dumps(payload["answer_decision"], sort_keys=True)
+        except (json.JSONDecodeError, KeyError, TypeError):
+            action_text = raw_text
+            answer_text = ""
+        return score_host_instrumented_response(
+            record,
+            action_text,
+            answer_text,
+            generated_tokens=generated_tokens,
+            latency_ms=latency_ms,
+        )
     gold = json.loads(record.assistant_target)
     valid_json = False
     response_contract = False
@@ -417,6 +525,228 @@ def score_generated_response(
         "json_error": json_error,
         "contract_error": contract_error,
         "raw_response": raw_text,
+        "action_plan_contract": response_contract,
+        "answer_decision_contract": response_contract,
+        "host_execution_success": False,
+        "host_replay_available": False,
+        "execution_replay_valid": False,
+    }
+
+
+def score_host_instrumented_response(
+    record: SFTRecord,
+    action_text: str,
+    answer_text: str,
+    *,
+    generated_tokens: int = 0,
+    latency_ms: float = 0,
+) -> dict[str, Any]:
+    gold = json.loads(record.assistant_target)
+    gold_action = AgentActionPlanContract.model_validate(gold["action_plan"])
+    gold_answer = AgentAnswerDecisionContract.model_validate(gold["answer_decision"])
+    action_valid_json = False
+    answer_valid_json = False
+    action_contract = False
+    answer_contract = False
+    predicted_action: AgentActionPlanContract | None = None
+    predicted_answer: AgentAnswerDecisionContract | None = None
+    json_errors: list[str] = []
+    contract_errors: list[str] = []
+    host_error_code: str | None = None
+    try:
+        action_payload = json.loads(action_text)
+        action_valid_json = isinstance(action_payload, dict)
+        if action_valid_json:
+            predicted_action = AgentActionPlanContract.model_validate(action_payload)
+            action_contract = True
+    except json.JSONDecodeError as exc:
+        json_errors.append(f"action:{exc}")
+    except ValueError as exc:
+        contract_errors.append(f"action:{str(exc)[:2000]}")
+    try:
+        answer_payload = json.loads(answer_text)
+        answer_valid_json = isinstance(answer_payload, dict)
+        if answer_valid_json:
+            predicted_answer = AgentAnswerDecisionContract.model_validate(answer_payload)
+            answer_contract = True
+    except json.JSONDecodeError as exc:
+        json_errors.append(f"answer:{exc}")
+    except ValueError as exc:
+        contract_errors.append(f"answer:{str(exc)[:2000]}")
+
+    host_execution_success = False
+    execution_replay_valid = False
+    if predicted_action is not None:
+        task, evidence = _host_evaluation_context(record)
+        try:
+            trace = execute_action_plan(
+                task,
+                evidence,
+                predicted_action,
+                _operation_registry(record.domain),
+            )
+        except ActionPlanExecutionError as exc:
+            host_error_code = exc.error_code
+            contract_errors.append(f"host:{exc.error_code}:{exc}")
+        else:
+            host_execution_success = True
+            actual_feedback = make_host_execution_feedback(trace)
+            gold_feedback = json.loads(record.messages[3].content)
+            execution_replay_valid = _equal(
+                actual_feedback.output_result,
+                gold_feedback["output_result"],
+            )
+
+    expected_evidence = set(gold_action.selected_evidence_ids)
+    observed_evidence = (
+        set(predicted_action.selected_evidence_ids)
+        if predicted_action is not None
+        else set()
+    )
+    evidence_recall = (
+        len(expected_evidence & observed_evidence) / len(expected_evidence)
+        if expected_evidence
+        else 1.0
+    )
+    evidence_precision = (
+        len(expected_evidence & observed_evidence) / len(observed_evidence)
+        if observed_evidence
+        else 0.0
+    )
+    evidence_exact = expected_evidence == observed_evidence
+    execution_coverage, operation_grounding_score = _action_alignment(
+        predicted_action,
+        gold_action,
+    )
+    operation_exact = bool(
+        predicted_action is not None
+        and _action_signature(predicted_action) == _action_signature(gold_action)
+    )
+    answer_exact = bool(
+        predicted_answer is not None
+        and _equal(predicted_answer.result, gold_answer.result)
+    )
+    citation_exact = bool(
+        predicted_answer is not None
+        and set(predicted_answer.cited_evidence_ids) == set(gold_answer.cited_evidence_ids)
+    )
+    response_contract = action_contract and answer_contract
+    end_to_end = bool(
+        response_contract
+        and host_execution_success
+        and execution_replay_valid
+        and evidence_exact
+        and operation_exact
+        and answer_exact
+        and citation_exact
+    )
+    user_payload = json.loads(record.user_prompt)
+    has_distractors = len(user_payload["evidence_corpus"]) > len(expected_evidence)
+    is_multi_hop = len(gold_action.executions) > 1
+    failures = []
+    for label, passed in (
+        ("action_valid_json", action_valid_json),
+        ("action_plan_contract", action_contract),
+        ("host_execution_success", host_execution_success),
+        ("execution_replay_valid", execution_replay_valid),
+        ("answer_valid_json", answer_valid_json),
+        ("answer_decision_contract", answer_contract),
+        ("evidence_exact", evidence_exact),
+        ("operation_exact", operation_exact),
+        ("answer_exact", answer_exact),
+        ("citation_exact", citation_exact),
+    ):
+        if not passed:
+            failures.append(label)
+    return {
+        "record_id": record.record_id,
+        "task_id": record.task_id,
+        "domain": record.domain,
+        "valid_json": action_valid_json and answer_valid_json,
+        "response_contract": response_contract,
+        "action_plan_contract": action_contract,
+        "answer_decision_contract": answer_contract,
+        "host_execution_success": host_execution_success,
+        "host_replay_available": host_execution_success,
+        "execution_replay_valid": execution_replay_valid,
+        "evidence_recall": evidence_recall,
+        "evidence_precision": evidence_precision,
+        "evidence_exact": evidence_exact,
+        "execution_coverage": execution_coverage,
+        "operation_grounding_score": operation_grounding_score,
+        "tool_necessity_score": 1.0 if host_execution_success else 0.0,
+        "operation_exact": operation_exact,
+        "answer_exact": answer_exact,
+        "citation_exact": citation_exact,
+        "verification_exact": execution_replay_valid,
+        "is_multi_hop": is_multi_hop,
+        "multi_hop_exact": end_to_end if is_multi_hop else None,
+        "has_distractors": has_distractors,
+        "distractor_robust": evidence_exact if has_distractors else None,
+        "end_to_end": end_to_end,
+        "generated_tokens": generated_tokens,
+        "latency_ms": latency_ms,
+        "failure_reasons": failures,
+        "json_error": "; ".join(json_errors) or None,
+        "contract_error": "; ".join(contract_errors) or None,
+        "host_error_code": host_error_code,
+        "raw_response": {
+            "action_plan": action_text,
+            "answer_decision": answer_text,
+        },
+    }
+
+
+def _host_evaluation_context(
+    record: SFTRecord,
+) -> tuple[TaskPublicSpec, tuple[EvidenceItem, ...]]:
+    payload = json.loads(record.user_prompt)
+    return (
+        TaskPublicSpec.model_validate(payload["public_task"]),
+        tuple(EvidenceItem.model_validate(item) for item in payload["evidence_corpus"]),
+    )
+
+
+def _operation_registry(domain: str) -> OperationRegistry:
+    if domain == "legal":
+        return legal_operation_registry()
+    if domain == "science":
+        return science_operation_registry()
+    return default_registry()
+
+
+def _action_alignment(
+    observed: AgentActionPlanContract | None,
+    expected: AgentActionPlanContract,
+) -> tuple[float, float]:
+    if observed is None:
+        return 0.0, 0.0
+    expected_steps = expected.executions
+    observed_steps = observed.executions
+    covered = min(len(observed_steps), len(expected_steps)) / len(expected_steps)
+    matched = sum(
+        _decision_signature(left) == _decision_signature(right)
+        for left, right in zip(observed_steps, expected_steps, strict=False)
+    )
+    return covered, matched / len(expected_steps)
+
+
+def _action_signature(plan: AgentActionPlanContract) -> str:
+    return canonical_hash(
+        {
+            "selected_evidence_ids": sorted(plan.selected_evidence_ids),
+            "executions": [_decision_signature(item) for item in plan.executions],
+            "output_step_index": plan.output_step_index,
+        },
+        prefix="training_utility_action_plan_signature:",
+    )
+
+
+def _decision_signature(value: Any) -> dict[str, Any]:
+    return {
+        "operator_id": value.operator_id,
+        "inputs": [item.model_dump(mode="json") for item in value.inputs],
+        "parameters": value.parameters,
     }
 
 
@@ -456,6 +786,11 @@ def aggregate_evaluation_outcomes(
         sample_count=len(outcomes),
         valid_json_rate=metrics["valid_json_rate"],
         response_contract_rate=metrics["response_contract_rate"],
+        action_plan_contract_rate=metrics["action_plan_contract_rate"],
+        answer_decision_contract_rate=metrics["answer_decision_contract_rate"],
+        host_execution_success_rate=metrics["host_execution_success_rate"],
+        host_replay_available_rate=metrics["host_replay_available_rate"],
+        execution_replay_valid_rate=metrics["execution_replay_valid_rate"],
         evidence_recall=metrics["evidence_recall"],
         evidence_precision=metrics["evidence_precision"],
         execution_coverage=metrics["execution_coverage"],
@@ -487,6 +822,14 @@ def _outcome_metrics(outcomes: tuple[dict[str, Any], ...]) -> dict[str, Any]:
         "sample_count": count,
         "valid_json_rate": _mean_bool(outcomes, "valid_json"),
         "response_contract_rate": _mean_bool(outcomes, "response_contract"),
+        "action_plan_contract_rate": _mean_bool(outcomes, "action_plan_contract"),
+        "answer_decision_contract_rate": _mean_bool(
+            outcomes,
+            "answer_decision_contract",
+        ),
+        "host_execution_success_rate": _mean_bool(outcomes, "host_execution_success"),
+        "host_replay_available_rate": _mean_bool(outcomes, "host_replay_available"),
+        "execution_replay_valid_rate": _mean_bool(outcomes, "execution_replay_valid"),
         "evidence_recall": sum(item["evidence_recall"] for item in outcomes) / count,
         "evidence_precision": sum(item["evidence_precision"] for item in outcomes) / count,
         "execution_coverage": sum(item["execution_coverage"] for item in outcomes) / count,

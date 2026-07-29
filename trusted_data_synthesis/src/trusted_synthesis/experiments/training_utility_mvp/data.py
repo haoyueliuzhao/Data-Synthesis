@@ -20,10 +20,14 @@ from trusted_synthesis.core.evaluation.critic.selection import (
     QualitySelectionPolicy,
 )
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
+from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
+from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
 from trusted_synthesis.core.task.program import InputRefKind
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack, TaskPublicSpec
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
+from trusted_synthesis.domains.legal.operations import legal_operation_registry
+from trusted_synthesis.domains.science.operations import science_operation_registry
 from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
 from trusted_synthesis.experiments.agent_validation.tracks import materialize_track_variant
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
@@ -33,10 +37,20 @@ from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
     build_pattern_validation_cases,
 )
 from trusted_synthesis.hashing import canonical_hash
-from trusted_synthesis.runtime.agent.schema import AgentResponseContract
+from trusted_synthesis.runtime.agent.host_execution import (
+    execute_action_plan,
+    make_host_execution_feedback,
+)
+from trusted_synthesis.runtime.agent.schema import (
+    AgentActionPlanContract,
+    AgentAnswerDecisionContract,
+    AgentResponseContract,
+    HostExecutionFeedbackContract,
+)
 
 from .schema import (
     CohortDatasetManifest,
+    SFTMessage,
     SFTRecord,
     TrainingUtilityDataManifest,
     TrainingUtilityMVPConfig,
@@ -44,12 +58,11 @@ from .schema import (
 )
 
 SYSTEM_PROMPT = (
-    "You are a proof-carrying evidence agent. Use only the supplied public task and "
-    "evidence. Return one JSON object with schema_version, plan_summary, "
-    "selected_evidence_ids, execution_trace, verification_result, and final_answer. "
-    "Do not emit markdown or hidden reasoning. Create a fresh execution_id for every "
-    "concrete tool call. When a plan is given, use planned_node_id only to align that "
-    "execution with the public skeleton; never copy a planned node ID into execution_id."
+    "You are a proof-carrying evidence agent in a host-instrumented loop. Use only the "
+    "supplied public task and evidence. First emit AgentActionPlanContract JSON. The host "
+    "executes registered operations and returns immutable results as a tool message. Then "
+    "emit AgentAnswerDecisionContract JSON. Never invent execution IDs, observations, source "
+    "locators, or host verification fields. Do not emit markdown or hidden reasoning."
 )
 
 
@@ -751,35 +764,73 @@ def _make_record(
     candidate_attempt: dict[str, Any] | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> SFTRecord:
+    action_plan, host_execution, answer_decision = _student_contracts_from_response(
+        target,
+        task=task,
+        evidence=evidence,
+    )
     mode = "repair_candidate" if candidate_attempt is not None else "solve"
     user_payload: dict[str, Any] = {
         "mode": mode,
         "public_task": task,
         "evidence_corpus": evidence,
+        "operation_catalog": _student_operation_catalog(target),
         "output_contract": {
-            "schema_version": "agent_response.v3",
+            "schema_version": "agent_action_plan.v1",
             "selected_evidence_ids": "array of supplied evidence IDs",
-            "execution_trace": (
-                "topologically ordered concrete executions with evidence and observations"
-            ),
-            "verification_result": "required when requested by the task",
-            "final_answer": "structured result with grounded citations",
+            "executions": "topologically ordered semantic operation decisions",
+            "output_step_index": "one-based final output step",
         },
     }
     if candidate_attempt is not None:
-        user_payload["candidate_attempt_to_repair"] = candidate_attempt
+        user_payload["candidate_attempt_to_repair"] = _model_owned_candidate_attempt(
+            candidate_attempt
+        )
         user_payload["repair_instruction"] = (
             "Identify and repair the candidate using only the public task and evidence. "
-            "Return the corrected Agent response contract, not a critique."
+            "Return the corrected Action Plan first; the host will execute it."
         )
     user_prompt = json.dumps(user_payload, ensure_ascii=False, sort_keys=True)
-    assistant_target = json.dumps(target, ensure_ascii=False, sort_keys=True)
+    action_text = json.dumps(action_plan, ensure_ascii=False, sort_keys=True)
+    host_text = json.dumps(host_execution, ensure_ascii=False, sort_keys=True)
+    answer_text = json.dumps(answer_decision, ensure_ascii=False, sort_keys=True)
+    assistant_target = json.dumps(
+        {
+            "schema_version": "host_instrumented_student_target.v1",
+            "action_plan": action_plan,
+            "answer_decision": answer_decision,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+    )
+    messages = (
+        SFTMessage(role="system", content=SYSTEM_PROMPT, phase="context"),
+        SFTMessage(role="user", content=user_prompt, phase="context"),
+        SFTMessage(
+            role="assistant",
+            content=action_text,
+            supervise=True,
+            phase="action_plan",
+        ),
+        SFTMessage(
+            role="tool",
+            content=host_text,
+            phase="host_execution",
+        ),
+        SFTMessage(
+            role="assistant",
+            content=answer_text,
+            supervise=True,
+            phase="answer_decision",
+        ),
+    )
     identity = {
         "cohort": cohort.value if isinstance(cohort, UtilityCohort) else cohort,
         "task_id": task["task_id"],
         "source_kind": source_kind,
         "user_prompt": user_prompt,
         "assistant_target": assistant_target,
+        "training_format": "host_instrumented_joint",
     }
     return SFTRecord(
         record_id=canonical_hash(identity, prefix="training_utility_record:"),
@@ -789,11 +840,129 @@ def _make_record(
         system_prompt=SYSTEM_PROMPT,
         user_prompt=user_prompt,
         assistant_target=assistant_target,
+        training_format="host_instrumented_joint",
+        messages=messages,
         source_kind=source_kind,
         contract_label=contract_label,
         counterfactual_repair=candidate_attempt is not None,
         metadata=dict(metadata or {}),
     )
+
+
+def _student_contracts_from_response(
+    target: dict[str, Any],
+    *,
+    task: dict[str, Any],
+    evidence: list[dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    action_plan, answer_decision = _student_model_contracts_from_response(target)
+    public_task = TaskPublicSpec.model_validate(task)
+    evidence_items = tuple(EvidenceItem.model_validate(item) for item in evidence)
+    trace = execute_action_plan(
+        public_task,
+        evidence_items,
+        AgentActionPlanContract.model_validate(action_plan),
+        _student_operation_registry(public_task.domain),
+    )
+    host_execution = make_host_execution_feedback(trace).model_dump(mode="json")
+    HostExecutionFeedbackContract.model_validate(host_execution)
+    return action_plan, host_execution, answer_decision
+
+
+def _student_model_contracts_from_response(
+    target: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    response = AgentResponseContract.model_validate(target)
+    execution_positions = {
+        item.execution_id: index
+        for index, item in enumerate(response.execution_trace.steps, start=1)
+    }
+    action_plan = {
+        "schema_version": "agent_action_plan.v1",
+        "plan_summary": response.plan_summary,
+        "selected_evidence_ids": list(response.selected_evidence_ids),
+        "executions": [
+            {
+                "operator_id": item.operator_id,
+                "inputs": [
+                    _student_action_input(ref, execution_positions) for ref in item.input_refs
+                ],
+                "parameters": item.parameters,
+                "rationale_summary": item.rationale_summary,
+            }
+            for item in response.execution_trace.steps
+        ],
+        "output_step_index": execution_positions[
+            response.execution_trace.output_execution_id
+        ],
+    }
+    final_answer = response.final_answer
+    answer_decision = {
+        "schema_version": "agent_answer_decision.v1",
+        "result": final_answer.result,
+        "cited_evidence_ids": [item.evidence_id for item in final_answer.citations],
+        **({"status": final_answer.status} if final_answer.status is not None else {}),
+        **({"claims": final_answer.claims} if final_answer.claims is not None else {}),
+    }
+    AgentActionPlanContract.model_validate(action_plan)
+    AgentAnswerDecisionContract.model_validate(answer_decision)
+    return action_plan, answer_decision
+
+
+def _student_operation_registry(domain: str) -> OperationRegistry:
+    if domain == "legal":
+        return legal_operation_registry()
+    if domain == "science":
+        return science_operation_registry()
+    return default_registry()
+
+
+def _student_action_input(
+    ref: str,
+    execution_positions: dict[str, int],
+) -> dict[str, Any]:
+    base, separator, selector = ref.partition("#")
+    suffix = selector if separator else None
+    if base.startswith("evidence:"):
+        return {
+            "source": "evidence",
+            "evidence_id": base.removeprefix("evidence:"),
+            "selector": suffix,
+        }
+    if not base.startswith("execution:"):
+        raise ValueError(f"unsupported execution input ref: {ref}")
+    execution_id = base.removeprefix("execution:")
+    try:
+        step_index = execution_positions[execution_id]
+    except KeyError as exc:
+        raise ValueError(f"unresolved execution input ref: {ref}") from exc
+    return {
+        "source": "step",
+        "step_index": step_index,
+        "selector": suffix,
+    }
+
+
+def _student_operation_catalog(target: dict[str, Any]) -> list[dict[str, Any]]:
+    response = AgentResponseContract.model_validate(target)
+    catalog: dict[str, dict[str, Any]] = {}
+    for item in response.execution_trace.steps:
+        catalog[item.operator_id] = {
+            "operator_id": item.operator_id,
+            "tool_capability": item.tool_name,
+        }
+    return [catalog[key] for key in sorted(catalog)]
+
+
+def _model_owned_candidate_attempt(candidate: dict[str, Any]) -> dict[str, Any]:
+    try:
+        action, answer = _student_model_contracts_from_response(candidate)
+    except (ValueError, KeyError, TypeError):
+        return {
+            "unrepresentable_candidate": True,
+            "instruction": "Construct a fresh action plan from the public task and evidence.",
+        }
+    return {"action_plan": action, "answer_decision": answer}
 
 
 def _d1_random_records(

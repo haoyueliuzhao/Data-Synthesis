@@ -23,17 +23,23 @@ from trusted_synthesis.core.trajectory.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.client import JsonCompletionClient, LLMClientError
-from trusted_synthesis.runtime.agent.host_execution import execute_action_plan
+from trusted_synthesis.runtime.agent.host_execution import (
+    ActionPlanExecutionError,
+    assemble_host_response,
+    execute_action_plan,
+    make_failed_action_plan,
+    model_visible_execution_result,
+)
 from trusted_synthesis.runtime.agent.schema import (
     AgentActionPlanContract,
     AgentAnswerDecisionContract,
-    AgentCitation,
     AgentExecutionTrace,
-    AgentFinalAnswer,
     AgentGenerationAudit,
     AgentResponseContract,
     AgentSearchResponseContract,
     AgentSolveResult,
+    FailedActionPlan,
+    HostInteractionProgress,
     ModelCallTelemetry,
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
@@ -74,6 +80,7 @@ class LLMAgentSolver:
         search_prompt_manifest_hash: str | None = None
         action_prompt_manifest_hash: str | None = None
         final_answer_prompt_manifest_hash: str | None = None
+        action_failure_history: tuple[FailedActionPlan, ...] = ()
         search_plan_summary: str | None = None
         executed_search_query = dict(task.retrieval_scope)
         if model_search_used:
@@ -101,7 +108,13 @@ class LLMAgentSolver:
                 operation_catalog,
                 executed_search_query,
             )
-            action_plan, execution_trace, action_telemetry, action_repairs = (
+            (
+                action_plan,
+                execution_trace,
+                action_telemetry,
+                action_repairs,
+                action_failure_history,
+            ) = (
                 _request_host_action_plan(
                     self._client,
                     action_prompt,
@@ -126,9 +139,11 @@ class LLMAgentSolver:
                 action_plan,
                 execution_trace,
                 self._registry,
+                action_contract_repair_count=action_repairs,
             )
             telemetry.extend(final_telemetry)
             repair_count += final_repairs
+            answer_repairs = final_repairs
             answer_prompt_manifest_hash = canonical_hash(
                 {
                     "action_prompt_manifest_hash": action_prompt_manifest_hash,
@@ -211,6 +226,20 @@ class LLMAgentSolver:
             telemetry=tuple(telemetry),
             selected_model=selected_model,
             contract_repair_count=repair_count,
+            search_contract_repair_count=search_repairs if model_search_used else 0,
+            action_contract_repair_count=(
+                action_repairs
+                if self._client.config.interaction_protocol == "host_instrumented"
+                else 0
+            ),
+            answer_contract_repair_count=answer_repairs,
+            action_failure_history=action_failure_history,
+            host_replay_available=(
+                self._client.config.interaction_protocol == "host_instrumented"
+            ),
+            execution_replay_valid=(
+                True if self._client.config.interaction_protocol == "host_instrumented" else None
+            ),
         )
         return AgentSolveResult(trajectory=trajectory, audit=audit)
 
@@ -303,19 +332,33 @@ def _request_host_action_plan(
     AgentExecutionTrace,
     tuple[ModelCallTelemetry, ...],
     int,
+    tuple[FailedActionPlan, ...],
 ]:
     telemetry: list[ModelCallTelemetry] = []
     previous_payload: dict[str, Any] | None = None
     validation_error = ""
     accepted_plan: AgentActionPlanContract | None = None
     execution_trace: AgentExecutionTrace | None = None
+    failed_actions: list[FailedActionPlan] = []
     for attempt in range(client.config.contract_repair_attempts + 1):
         prompt = (
             base_prompt
             if attempt == 0
             else _repair_prompt(base_prompt, previous_payload, validation_error)
         )
-        payload, call_telemetry = client.complete_json(prompt)
+        try:
+            payload, call_telemetry = client.complete_json(prompt)
+        except LLMClientError as exc:
+            raise LLMClientError(
+                "model call failed during the host action stage",
+                (*telemetry, *exc.telemetry),
+                failure_artifact=(failed_actions[-1] if failed_actions else None),
+                interaction_progress=HostInteractionProgress(
+                    action_plan_attempted=True,
+                    action_plan_contract_succeeded=bool(failed_actions),
+                    action_contract_repair_count=attempt,
+                ),
+            ) from exc
         previous_payload = payload
         try:
             candidate = AgentActionPlanContract.model_validate(payload)
@@ -324,7 +367,29 @@ def _request_host_action_plan(
             execution_trace = trace
             telemetry.append(call_telemetry)
             break
-        except (ValidationError, ValueError) as exc:
+        except ActionPlanExecutionError as exc:
+            failed_action = make_failed_action_plan(
+                task,
+                candidate,
+                exc,
+                attempt_number=attempt + 1,
+            )
+            failed_actions.append(failed_action)
+            contract_errors: tuple[str, ...] = (f"{exc.error_code}:{exc}",)
+            validation_error = "; ".join(contract_errors)
+            telemetry.append(
+                _invalid_contract_telemetry(
+                    call_telemetry,
+                    (
+                        "AgentSemanticActionError"
+                        if exc.category == "semantic_action"
+                        else "AgentActionInterfaceError"
+                    ),
+                    contract_errors=contract_errors,
+                    payload=payload,
+                )
+            )
+        except ValidationError as exc:
             contract_errors = _contract_errors(exc)
             validation_error = "; ".join(contract_errors)
             telemetry.append(
@@ -336,12 +401,22 @@ def _request_host_action_plan(
                 )
             )
     if accepted_plan is None or execution_trace is None:
-        raise LLMClientError("model failed the host action contract", tuple(telemetry))
+        raise LLMClientError(
+            "model failed the host action contract",
+            tuple(telemetry),
+            failure_artifact=(failed_actions[-1] if failed_actions else None),
+            interaction_progress=HostInteractionProgress(
+                action_plan_attempted=True,
+                action_plan_contract_succeeded=bool(failed_actions),
+                action_contract_repair_count=max(len(telemetry) - 1, 0),
+            ),
+        )
     return (
         accepted_plan,
         execution_trace,
         tuple(telemetry),
         max(len(telemetry) - 1, 0),
+        tuple(failed_actions),
     )
 
 
@@ -353,6 +428,8 @@ def _request_host_answer(
     action_plan: AgentActionPlanContract,
     execution_trace: AgentExecutionTrace,
     registry: OperationRegistry,
+    *,
+    action_contract_repair_count: int,
 ) -> tuple[AgentResponseContract, tuple[ModelCallTelemetry, ...], int]:
     telemetry: list[ModelCallTelemetry] = []
     previous_payload: dict[str, Any] | None = None
@@ -364,11 +441,25 @@ def _request_host_answer(
             if attempt == 0
             else _repair_prompt(base_prompt, previous_payload, validation_error)
         )
-        payload, call_telemetry = client.complete_json(prompt)
+        try:
+            payload, call_telemetry = client.complete_json(prompt)
+        except LLMClientError as exc:
+            raise LLMClientError(
+                "model call failed during the host answer stage",
+                (*telemetry, *exc.telemetry),
+                interaction_progress=HostInteractionProgress(
+                    action_plan_attempted=True,
+                    action_plan_contract_succeeded=True,
+                    host_execution_evaluable=True,
+                    answer_decision_attempted=True,
+                    action_contract_repair_count=action_contract_repair_count,
+                    answer_contract_repair_count=attempt,
+                ),
+            ) from exc
         previous_payload = payload
         try:
             answer = AgentAnswerDecisionContract.model_validate(payload)
-            candidate = _assemble_host_response(
+            candidate = assemble_host_response(
                 task,
                 retrieved,
                 action_plan,
@@ -391,56 +482,19 @@ def _request_host_answer(
                 )
             )
     if response is None:
-        raise LLMClientError("model failed the host answer contract", tuple(telemetry))
-    return response, tuple(telemetry), max(len(telemetry) - 1, 0)
-
-
-def _assemble_host_response(
-    task: TaskPublicSpec,
-    retrieved: tuple[EvidenceItem, ...],
-    action_plan: AgentActionPlanContract,
-    execution_trace: AgentExecutionTrace,
-    answer: AgentAnswerDecisionContract,
-) -> AgentResponseContract:
-    if set(answer.cited_evidence_ids) != set(action_plan.selected_evidence_ids):
-        raise ValueError("answer citations must exactly cover selected evidence")
-    retrieved_by_id = {item.evidence_id: item for item in retrieved}
-    try:
-        citations = tuple(
-            AgentCitation(
-                evidence_id=evidence_id,
-                source_id=retrieved_by_id[evidence_id].source.source_id,
-                source_locator=retrieved_by_id[evidence_id].source_locator.model_dump(
-                    mode="json",
-                    exclude_none=True,
-                ),
-            )
-            for evidence_id in answer.cited_evidence_ids
+        raise LLMClientError(
+            "model failed the host answer contract",
+            tuple(telemetry),
+            interaction_progress=HostInteractionProgress(
+                action_plan_attempted=True,
+                action_plan_contract_succeeded=True,
+                host_execution_evaluable=True,
+                answer_decision_attempted=True,
+                action_contract_repair_count=action_contract_repair_count,
+                answer_contract_repair_count=max(len(telemetry) - 1, 0),
+            ),
         )
-    except KeyError as exc:
-        raise ValueError(f"answer cited evidence was not retrieved: {exc.args[0]}") from exc
-    output_execution = next(
-        item
-        for item in execution_trace.steps
-        if item.execution_id == execution_trace.output_execution_id
-    )
-    verification_result = (
-        output_execution.observation["result"]
-        if TaskRequirement.VERIFY_RESULT in task.requirements
-        else None
-    )
-    return AgentResponseContract(
-        plan_summary=action_plan.plan_summary,
-        selected_evidence_ids=action_plan.selected_evidence_ids,
-        execution_trace=execution_trace,
-        verification_result=verification_result,
-        final_answer=AgentFinalAnswer(
-            result=answer.result,
-            citations=citations,
-            status=answer.status,
-            claims=answer.claims,
-        ),
-    )
+    return response, tuple(telemetry), max(len(telemetry) - 1, 0)
 
 
 def _invalid_contract_telemetry(
@@ -771,13 +825,19 @@ def _build_final_answer_prompt(
                     "step_index": index,
                     "operator_id": item.operator_id,
                     "parameters": item.parameters,
-                    "result": item.observation["result"],
+                    "result": model_visible_execution_result(
+                        execution_trace,
+                        item.observation["result"],
+                    ),
                     "evidence_ids": item.evidence_ids,
                 }
                 for index, item in enumerate(execution_trace.steps, start=1)
             ],
             "output_step_index": action_plan.output_step_index,
-            "output_result": output_execution.observation["result"],
+            "output_result": model_visible_execution_result(
+                execution_trace,
+                output_execution.observation["result"],
+            ),
         },
         "final_answer_contract": final_answer_contract,
         "domain_contract_guidance": task.metadata.get("agent_contract_guidance") or {},

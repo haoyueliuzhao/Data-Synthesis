@@ -46,6 +46,13 @@ from trusted_synthesis.experiments.training_utility_mvp.evaluation import (
     _load_evaluation_checkpoints,
     _write_evaluation_checkpoint,
 )
+from trusted_synthesis.experiments.training_utility_mvp.model_security import (
+    validate_adapter_artifact,
+    validate_model_loading_contract,
+)
+from trusted_synthesis.experiments.training_utility_mvp.training import (
+    _encode_records,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent import AgentModelConfig, ModelCallTelemetry
 
@@ -84,6 +91,50 @@ class ScriptedCandidateClient:
             completion_tokens=50,
             total_tokens=150,
         )
+
+
+class _CharacterChatTokenizer:
+    def apply_chat_template(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        tokenize: bool,
+        add_generation_prompt: bool,
+    ) -> str:
+        assert tokenize is False
+        text = "".join(
+            f"<{item['role']}>{item['content']}</{item['role']}>"
+            for item in messages
+        )
+        if add_generation_prompt:
+            text += "<assistant>"
+        return text
+
+    def __call__(self, text: str, *, add_special_tokens: bool) -> dict[str, list[int]]:
+        assert add_special_tokens is False
+        return {"input_ids": [ord(item) for item in text]}
+
+
+def test_remote_model_loading_requires_immutable_revision(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="immutable"):
+        validate_model_loading_contract("vendor/model", None)
+    with pytest.raises(ValueError, match="immutable"):
+        validate_model_loading_contract("vendor/model", "main")
+
+    validate_model_loading_contract("vendor/model", "a" * 40)
+    local_model = tmp_path / "local_model"
+    local_model.mkdir()
+    validate_model_loading_contract(str(local_model), None)
+
+
+def test_adapter_loading_requires_safetensors(tmp_path: Path) -> None:
+    adapter_dir = tmp_path / "adapter"
+    adapter_dir.mkdir()
+    with pytest.raises(ValueError, match="adapter_model.safetensors"):
+        validate_adapter_artifact(adapter_dir)
+
+    (adapter_dir / "adapter_model.safetensors").write_bytes(b"safe-test-placeholder")
+    validate_adapter_artifact(adapter_dir)
 
 
 def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
@@ -194,6 +245,28 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
         and item.metadata["quality_selection_id"] == manifest.d5_selection_id
         for item in cohorts[UtilityCohort.CRITIC_SELECTED]
     )
+    assert all(
+        item.training_format == "host_instrumented_joint"
+        and tuple(message.role for message in item.messages)
+        == ("system", "user", "assistant", "tool", "assistant")
+        for records in cohorts.values()
+        for item in records
+    )
+    for records in cohorts.values():
+        for item in records:
+            supervised = "".join(
+                message.content for message in item.messages if message.supervise
+            )
+            assert "execution_trace" not in supervised
+            assert "execution_id" not in supervised
+            assert "source_locator" not in supervised
+            host_feedback = json.loads(item.messages[3].content)
+            assert host_feedback["schema_version"] == "host_execution_feedback.v2"
+            assert "raw_output_result" in host_feedback
+            assert "execution:host_agent_execution:" not in json.dumps(
+                host_feedback["output_result"],
+                sort_keys=True,
+            )
 
 
 def test_training_utility_scorer_separates_contract_and_answer_accuracy(
@@ -226,7 +299,7 @@ def test_training_utility_scorer_separates_contract_and_answer_accuracy(
     assert result.tool_necessity_score == 1
 
     mutated = json.loads(evaluation[0].assistant_target)
-    mutated["final_answer"]["result"] = {"unsupported": "answer"}
+    mutated["answer_decision"]["result"] = {"unsupported": "answer"}
     outcome = score_generated_response(
         evaluation[0],
         json.dumps(mutated),
@@ -235,6 +308,42 @@ def test_training_utility_scorer_separates_contract_and_answer_accuracy(
     assert outcome["response_contract"] is True
     assert outcome["answer_exact"] is False
     assert outcome["end_to_end"] is False
+
+
+def test_host_transcript_masks_tool_messages_from_sft_loss() -> None:
+    records, _ = _reference_and_evaluation_records(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=2,
+            evaluation_tasks_per_domain=1,
+            cohort_size=6,
+            max_steps=1,
+        )
+    )
+    record = records[0]
+    tokenizer = _CharacterChatTokenizer()
+
+    encoded, audit = _encode_records(
+        tokenizer,
+        (record,),
+        max_seq_length=100000,
+    )
+
+    full_text = tokenizer.apply_chat_template(
+        [{"role": item.role, "content": item.content} for item in record.messages],
+        tokenize=False,
+        add_generation_prompt=False,
+    )
+    labels = encoded[0]["labels"]
+    tool_fragment = f"<tool>{record.messages[3].content}</tool>"
+    tool_start = full_text.index(tool_fragment)
+    tool_end = tool_start + len(tool_fragment)
+    action_start = full_text.index(record.messages[2].content)
+    answer_start = full_text.index(record.messages[4].content)
+
+    assert all(item == -100 for item in labels[tool_start:tool_end])
+    assert any(item != -100 for item in labels[action_start : action_start + 10])
+    assert any(item != -100 for item in labels[answer_start : answer_start + 10])
+    assert audit["training_format_counts"] == {"host_instrumented_joint": 1}
 
 
 def test_training_utility_rejects_unbalanced_fraction_contract() -> None:
@@ -328,7 +437,11 @@ def test_training_utility_review_export_fails_on_invalid_embedded_json(
             max_steps=1,
         )
     )
-    broken = records[0].model_copy(update={"user_prompt": "{"})
+    broken_messages = list(records[0].messages)
+    broken_messages[1] = broken_messages[1].model_copy(update={"content": "{"})
+    broken = records[0].model_copy(
+        update={"user_prompt": "{", "messages": tuple(broken_messages)}
+    )
     (input_dir / "D2_reference_workflow.jsonl").write_text(
         broken.model_dump_json() + "\n",
         encoding="utf-8",

@@ -40,6 +40,12 @@ from trusted_synthesis.core.evaluation.utility import (
     UtilityCohort,
     make_training_utility_protocol,
 )
+from trusted_synthesis.core.feedback import (
+    FeedbackExposure,
+    contract_feedback,
+    failed_action_feedback,
+)
+from trusted_synthesis.core.refinement import build_synthesis_cell
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.core.trajectory.candidate_verifier import (
     CandidateWorkflowVerifier,
@@ -74,6 +80,8 @@ from trusted_synthesis.runtime.agent.llm_agent import (
 )
 from trusted_synthesis.runtime.agent.schema import (
     AGENT_RESPONSE_SCHEMA_VERSION,
+    FailedActionPlan,
+    HostInteractionProgress,
     ModelCallTelemetry,
 )
 from trusted_synthesis.runtime.critic import LLMQualityCritic
@@ -87,7 +95,7 @@ class AgentValidationArtifacts:
     critic_dataset: QualityCriticDataset
 
 
-AGENT_SAMPLE_CHECKPOINT_VERSION = "agent_sample_checkpoint.v2"
+AGENT_SAMPLE_CHECKPOINT_VERSION = "agent_sample_checkpoint.v3"
 CRITIC_CHECKPOINT_VERSION = "critic_checkpoint.v2"
 
 
@@ -427,7 +435,13 @@ def _execute_agent_job(
     case = job.case
     task = job.task
     reference_sample_ids: tuple[str, ...] = ()
+    synthesis_cell = None
     try:
+        synthesis_cell = build_synthesis_cell(
+            task.public,
+            case.corpus,
+            task.oracle.gold_evidence_ids,
+        )
         compiled, runtime = _compile_runtime(case, task)
         reference_sample_ids = (compiled.sample.sample_id,)
         solve_result = LLMAgentSolver(client, case.registry).solve_with_audit(
@@ -445,6 +459,36 @@ def _execute_agent_job(
             compiled.quality_contract,
             assessment,
         )
+        feedback_exposures, feedback_signals = contract_feedback(
+            domain=case.domain,
+            pattern_id=job.structure["pattern_id"],
+            contract=compiled.quality_contract,
+            assessment=assessment,
+        )
+        if solve_result.audit.interaction_protocol == "host_instrumented":
+            feedback_exposures = (
+                *feedback_exposures,
+                FeedbackExposure(
+                    task_id=task.task_id,
+                    domain=case.domain,
+                    pattern_id=job.structure["pattern_id"],
+                    failure_family="action_execution",
+                ),
+            )
+            feedback_signals = (
+                *feedback_signals,
+                *(
+                    failed_action_feedback(
+                        task_id=task.task_id,
+                        domain=case.domain,
+                        pattern_id=job.structure["pattern_id"],
+                        failure_category=item.failure_category,
+                        error_code=item.error_code,
+                        failed_step_index=item.failed_step_index,
+                    )
+                    for item in solve_result.audit.action_failure_history
+                ),
+            )
         example = build_quality_critic_example(
             task=task,
             corpus=case.corpus,
@@ -495,7 +539,28 @@ def _execute_agent_job(
                 generation_audit=solve_result.audit,
                 agent_telemetry=solve_result.audit.telemetry,
                 trajectory=solve_result.trajectory,
+                quality_contract=compiled.quality_contract,
                 contract_assessment=assessment,
+                feedback_exposures=feedback_exposures,
+                feedback_signals=feedback_signals,
+                synthesis_cell=synthesis_cell,
+                host_interaction_progress=(
+                    HostInteractionProgress(
+                        action_plan_attempted=True,
+                        action_plan_contract_succeeded=True,
+                        host_execution_evaluable=True,
+                        answer_decision_attempted=True,
+                        answer_decision_contract_succeeded=True,
+                        action_contract_repair_count=(
+                            solve_result.audit.action_contract_repair_count
+                        ),
+                        answer_contract_repair_count=(
+                            solve_result.audit.answer_contract_repair_count
+                        ),
+                    )
+                    if solve_result.audit.interaction_protocol == "host_instrumented"
+                    else None
+                ),
                 quality_vector=vector,
                 critic_example_id=example.example_id,
                 counterfactual_count=generated_count,
@@ -508,6 +573,37 @@ def _execute_agent_job(
             telemetry=solve_result.audit.telemetry,
         )
     except LLMClientError as exc:
+        failed_action = (
+            exc.failure_artifact
+            if isinstance(exc.failure_artifact, FailedActionPlan)
+            else None
+        )
+        feedback_exposures = (
+            (
+                FeedbackExposure(
+                    task_id=task.task_id,
+                    domain=case.domain,
+                    pattern_id=job.structure["pattern_id"],
+                    failure_family="action_execution",
+                ),
+            )
+            if failed_action is not None
+            else ()
+        )
+        feedback_signals = (
+            (
+                failed_action_feedback(
+                    task_id=task.task_id,
+                    domain=case.domain,
+                    pattern_id=job.structure["pattern_id"],
+                    failure_category=failed_action.failure_category,
+                    error_code=failed_action.error_code,
+                    failed_step_index=failed_action.failed_step_index,
+                ),
+            )
+            if failed_action is not None
+            else ()
+        )
         return _AgentJobResult(
             sample=AgentValidationSample(
                 sample_id=job.sample_id,
@@ -518,8 +614,21 @@ def _execute_agent_job(
                 program_signature=job.structure["program_signature"],
                 retrieval_track=task.public.retrieval_track,
                 planning_track=task.public.planning_track,
-                generation_status="model_failed",
+                generation_status=(
+                    "semantic_action_failed"
+                    if failed_action is not None
+                    and failed_action.failure_category == "semantic_action"
+                    else "upstream_action_failed"
+                    if failed_action is not None
+                    and failed_action.failure_category == "upstream_data"
+                    else "model_failed"
+                ),
                 agent_telemetry=exc.telemetry,
+                feedback_exposures=feedback_exposures,
+                feedback_signals=feedback_signals,
+                synthesis_cell=synthesis_cell,
+                failed_action_plan=failed_action,
+                host_interaction_progress=exc.interaction_progress,
                 error_type=type(exc).__name__,
                 error_message=str(exc),
             ),
@@ -539,6 +648,7 @@ def _execute_agent_job(
                 retrieval_track=task.public.retrieval_track,
                 planning_track=task.public.planning_track,
                 generation_status="infrastructure_failed",
+                synthesis_cell=synthesis_cell,
                 error_type=type(exc).__name__,
                 error_message=str(exc),
             ),
@@ -934,6 +1044,30 @@ def _build_report(
         domain: normalized_by_domain.get(domain, 0) / requested
         for domain, requested in requested_candidate_counts.items()
     }
+    host_protocol = config.model.interaction_protocol == "host_instrumented"
+    stage_progress = tuple(
+        item.host_interaction_progress
+        for item in samples
+        if host_protocol and item.host_interaction_progress is not None
+    )
+    action_plan_attempted_count = sum(
+        item.action_plan_attempted for item in stage_progress
+    )
+    action_plan_contract_success_count = sum(
+        item.action_plan_contract_succeeded for item in stage_progress
+    )
+    host_execution_evaluable_count = sum(
+        item.host_execution_evaluable for item in stage_progress
+    )
+    answer_decision_attempted_count = sum(
+        item.answer_decision_attempted for item in stage_progress
+    )
+    answer_decision_contract_success_count = sum(
+        item.answer_decision_contract_succeeded for item in stage_progress
+    )
+    feedback_route_counts = Counter(
+        signal.route.value for item in samples for signal in item.feedback_signals
+    )
     status = (
         "failed"
         if not normalized_count
@@ -1067,6 +1201,47 @@ def _build_report(
             for item in samples
             if item.generation_audit is not None
         ),
+        action_plan_attempted_count=action_plan_attempted_count,
+        action_plan_contract_success_count=action_plan_contract_success_count,
+        action_plan_contract_success_rate=(
+            action_plan_contract_success_count / action_plan_attempted_count
+            if action_plan_attempted_count
+            else 0
+        ),
+        host_execution_evaluable_count=host_execution_evaluable_count,
+        host_execution_evaluable_rate=(
+            host_execution_evaluable_count / action_plan_attempted_count
+            if action_plan_attempted_count
+            else 0
+        ),
+        answer_decision_attempted_count=answer_decision_attempted_count,
+        answer_decision_contract_success_count=answer_decision_contract_success_count,
+        answer_decision_contract_success_rate=(
+            answer_decision_contract_success_count / answer_decision_attempted_count
+            if answer_decision_attempted_count
+            else 0
+        ),
+        action_first_call_success_count=sum(
+            item.action_plan_contract_succeeded
+            and item.action_contract_repair_count == 0
+            for item in stage_progress
+        ),
+        action_repaired_success_count=sum(
+            item.action_plan_contract_succeeded
+            and item.action_contract_repair_count > 0
+            for item in stage_progress
+        ),
+        answer_first_call_success_count=sum(
+            item.answer_decision_contract_succeeded
+            and item.answer_contract_repair_count == 0
+            for item in stage_progress
+        ),
+        answer_repaired_success_count=sum(
+            item.answer_decision_contract_succeeded
+            and item.answer_contract_repair_count > 0
+            for item in stage_progress
+        ),
+        feedback_route_counts=dict(sorted(feedback_route_counts.items())),
         critic_dataset_id=dataset.dataset_id,
         critic_example_count=len(dataset.examples),
         alignment_report=alignment,
@@ -1079,6 +1254,8 @@ def _build_report(
             "DeepSeek quality labels are model_advisory and are not reported as human agreement.",
             "D1-D5 training utility is frozen as a planned protocol; no training gain is claimed.",
             "Contract decisions remain authoritative over Quality Critic scores.",
+            "Host replay availability is an execution property, not model self-verification.",
+            "Selected, used, and cited evidence are equal by controlled-task assumption.",
         ),
         samples=samples,
     )

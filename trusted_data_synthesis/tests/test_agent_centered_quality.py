@@ -50,6 +50,7 @@ from trusted_synthesis.experiments.finance_pilot.candidate import (
 )
 from trusted_synthesis.runtime.agent import (
     AgentModelConfig,
+    FailedActionPlan,
     LLMAgentSolver,
     LLMClientError,
     ModelCallTelemetry,
@@ -214,10 +215,16 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
     assert result.audit.interaction_protocol == "host_instrumented"
     assert result.audit.action_prompt_manifest_hash
     assert result.audit.final_answer_prompt_manifest_hash
+    assert result.audit.host_replay_available is True
+    assert result.audit.execution_replay_valid is True
+    assert result.audit.action_contract_repair_count == 0
+    assert result.audit.answer_contract_repair_count == 0
+    assert result.audit.action_failure_history == ()
     assert result.trajectory.program_execution["source"] == "host_instrumented_execution"
     assert client.call_count == 2
     assert "host_owned_fields" in client.prompts[0]
     assert "host_execution" in client.prompts[1]
+    assert "execution:host_agent_execution:" not in client.prompts[1]
     assert all("execution_id" not in item for item in action_payload["executions"])
     assert "source_locator" not in answer_payload
     host_steps = tuple(
@@ -249,7 +256,7 @@ def test_host_instrumented_agent_rejects_unretrieved_evidence() -> None:
         "evidence:unknown:item@v1"
     )
 
-    with pytest.raises(LLMClientError, match="host action contract"):
+    with pytest.raises(LLMClientError, match="host action contract") as captured:
         LLMAgentSolver(
             ScriptedJsonClient(
                 [action_plan],
@@ -257,6 +264,93 @@ def test_host_instrumented_agent_rejects_unretrieved_evidence() -> None:
             ),
             case.registry,
         ).solve(task.public, InMemoryEvidenceToolRuntime(case.corpus))
+
+    assert isinstance(captured.value.failure_artifact, FailedActionPlan)
+    assert captured.value.failure_artifact.failure_category == "interface_security"
+    assert captured.value.failure_artifact.error_code == "unknown_evidence_id"
+    assert captured.value.interaction_progress is not None
+    assert captured.value.interaction_progress.action_plan_contract_succeeded is True
+    assert captured.value.interaction_progress.host_execution_evaluable is False
+
+
+def test_host_instrumented_semantic_action_failure_is_structured_feedback() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_plan = _action_plan_from_trajectory(deterministic)
+    observed_operator = action_plan["executions"][0]["operator_id"]
+    replacement = next(
+        str(item["operator_id"])
+        for item in case.registry.manifest()
+        if item["operator_id"] != observed_operator
+    )
+    action_plan["executions"][0]["operator_id"] = replacement
+
+    with pytest.raises(LLMClientError, match="host action contract") as captured:
+        LLMAgentSolver(
+            ScriptedJsonClient(
+                [action_plan],
+                interaction_protocol="host_instrumented",
+            ),
+            case.registry,
+        ).solve(task.public, InMemoryEvidenceToolRuntime(case.corpus))
+
+    failure = captured.value.failure_artifact
+    assert isinstance(failure, FailedActionPlan)
+    assert failure.failure_category == "semantic_action"
+    assert failure.error_code == "public_operator_mismatch"
+    assert failure.failed_step_index == 1
+    assert failure.action_plan.executions[0].operator_id == replacement
+    assert captured.value.telemetry[0].error_type == "AgentSemanticActionError"
+    assert captured.value.interaction_progress is not None
+    assert captured.value.interaction_progress.action_plan_contract_succeeded is True
+    assert captured.value.interaction_progress.host_execution_evaluable is False
+
+
+def test_host_instrumented_answer_failure_preserves_completed_host_stage() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_plan = _action_plan_from_trajectory(deterministic)
+
+    with pytest.raises(LLMClientError, match="host answer contract") as captured:
+        LLMAgentSolver(
+            ScriptedJsonClient(
+                [
+                    action_plan,
+                    {
+                        "schema_version": "agent_answer_decision.v1",
+                        "result": {},
+                        "cited_evidence_ids": [],
+                    },
+                ],
+                interaction_protocol="host_instrumented",
+            ),
+            case.registry,
+        ).solve(task.public, InMemoryEvidenceToolRuntime(case.corpus))
+
+    progress = captured.value.interaction_progress
+    assert progress is not None
+    assert progress.action_plan_contract_succeeded is True
+    assert progress.host_execution_evaluable is True
+    assert progress.answer_decision_attempted is True
+    assert progress.answer_decision_contract_succeeded is False
 
 
 def test_public_skeleton_copy_is_rejected_as_execution() -> None:

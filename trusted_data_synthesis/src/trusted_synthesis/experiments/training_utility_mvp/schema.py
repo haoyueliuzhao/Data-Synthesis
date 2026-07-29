@@ -8,8 +8,13 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime.agent.schema import (
+    AgentActionPlanContract,
+    AgentAnswerDecisionContract,
+    HostExecutionFeedbackContract,
+)
 
-TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v4"
+TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v5"
 VALIDATION_DOMAINS = ("finance", "legal", "science")
 
 
@@ -58,7 +63,10 @@ class TrainingUtilityMVPConfig(BaseModel):
         "down_proj",
     )
     seed: int = 20260726
-    prompt_version: str = "training_utility_agent_prompt.v3"
+    prompt_version: str = "training_utility_agent_prompt.v4"
+    student_interaction_protocol: Literal["host_instrumented_joint"] = (
+        "host_instrumented_joint"
+    )
 
     @classmethod
     def from_json(cls, path: str | Path) -> TrainingUtilityMVPConfig:
@@ -131,6 +139,20 @@ class TrainingUtilityMVPConfig(BaseModel):
         return canonical_hash(self, prefix="training_utility_mvp_config:")
 
 
+class SFTMessage(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    role: Literal["system", "user", "assistant", "tool"]
+    content: str = Field(min_length=1)
+    supervise: bool = False
+    phase: Literal[
+        "context",
+        "action_plan",
+        "host_execution",
+        "answer_decision",
+    ]
+
+
 class SFTRecord(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -141,11 +163,56 @@ class SFTRecord(BaseModel):
     system_prompt: str
     user_prompt: str
     assistant_target: str
+    training_format: Literal[
+        "legacy_full_response",
+        "host_instrumented_joint",
+    ] = "legacy_full_response"
+    messages: tuple[SFTMessage, ...] = ()
     source_kind: str
     contract_label: str | None = None
     counterfactual_repair: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "training_utility_sft_record.v2"
+    schema_version: str = "training_utility_sft_record.v3"
+
+    @model_validator(mode="after")
+    def validate_training_transcript(self) -> SFTRecord:
+        if self.training_format == "legacy_full_response":
+            if self.messages:
+                raise ValueError("legacy SFT records cannot contain a tool transcript")
+            return self
+        expected = (
+            ("system", "context", False),
+            ("user", "context", False),
+            ("assistant", "action_plan", True),
+            ("tool", "host_execution", False),
+            ("assistant", "answer_decision", True),
+        )
+        observed = tuple(
+            (item.role, item.phase, item.supervise) for item in self.messages
+        )
+        if observed != expected:
+            raise ValueError("host-instrumented SFT records require the fixed five-message loop")
+        if self.system_prompt != self.messages[0].content:
+            raise ValueError("system_prompt must mirror the transcript system message")
+        if self.user_prompt != self.messages[1].content:
+            raise ValueError("user_prompt must mirror the transcript user message")
+        try:
+            combined = json.loads(self.assistant_target)
+            action = json.loads(self.messages[2].content)
+            host_execution = json.loads(self.messages[3].content)
+            answer = json.loads(self.messages[4].content)
+        except json.JSONDecodeError as exc:
+            raise ValueError("host-instrumented SFT contracts must be valid JSON") from exc
+        if combined != {
+            "schema_version": "host_instrumented_student_target.v1",
+            "action_plan": action,
+            "answer_decision": answer,
+        }:
+            raise ValueError("assistant_target must mirror model-owned transcript turns")
+        AgentActionPlanContract.model_validate(action)
+        HostExecutionFeedbackContract.model_validate(host_execution)
+        AgentAnswerDecisionContract.model_validate(answer)
+        return self
 
     @property
     def record_hash(self) -> str:
@@ -273,6 +340,11 @@ class CohortEvaluationResult(BaseModel):
     sample_count: int = Field(ge=1)
     valid_json_rate: float = Field(ge=0, le=1)
     response_contract_rate: float = Field(ge=0, le=1)
+    action_plan_contract_rate: float = Field(default=0, ge=0, le=1)
+    answer_decision_contract_rate: float = Field(default=0, ge=0, le=1)
+    host_execution_success_rate: float = Field(default=0, ge=0, le=1)
+    host_replay_available_rate: float = Field(default=0, ge=0, le=1)
+    execution_replay_valid_rate: float = Field(default=0, ge=0, le=1)
     evidence_recall: float = Field(ge=0, le=1)
     evidence_precision: float = Field(ge=0, le=1)
     execution_coverage: float = Field(ge=0, le=1)

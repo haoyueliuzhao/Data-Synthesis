@@ -75,7 +75,7 @@ def run_counterfactual_validation(
     )
     registries = {}
     for case in cases:
-        context, runtime = _compile_context(case)
+        context, runtime = compile_counterfactual_context(case)
         grouped[case.domain].append((context, runtime))
         registries[case.domain] = case.counterfactual_registry
 
@@ -129,7 +129,7 @@ def run_counterfactual_validation(
     )
 
 
-def _compile_context(
+def compile_counterfactual_context(
     case: ContractCase,
 ) -> tuple[CounterfactualContext, QualityContractRuntime]:
     compiler = QualityContractCompiler(

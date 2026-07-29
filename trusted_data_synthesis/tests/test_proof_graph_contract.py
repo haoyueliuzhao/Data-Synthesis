@@ -102,3 +102,20 @@ def test_recursive_proof_closure_includes_parent_lineage(
         or edge.target_id == finance_evidence.evidence_id
     }
     assert {"FROM_SOURCE", "LOCATED_AT", "IN_TIME", "HAS_DEFINITION"}.issubset(parent_edges)
+
+
+def test_graph_package_exports_complete_public_contract() -> None:
+    import trusted_synthesis.core.graph as graph
+
+    expected = {
+        "EvidenceEdge",
+        "EvidenceNode",
+        "NodeKind",
+        "ProofGraph",
+        "ProofGraphBuilder",
+        "ProofGraphValidationReport",
+        "ProofGraphValidator",
+        "ProofSubgraphExtractor",
+    }
+    assert expected == set(graph.__all__)
+    assert all(hasattr(graph, name) for name in expected)

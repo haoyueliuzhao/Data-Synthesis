@@ -122,7 +122,7 @@ def test_release_manifest_freezes_passing_generalization_audit() -> None:
         cross_domain_contract_suite=contracts.result,
     )
 
-    assert manifest.framework_version == __version__ == "0.8.1"
+    assert manifest.framework_version == __version__ == "0.9.0"
     assert manifest.metadata["generalization_contract_version"] == "generalization_contract.v1.2"
     assert manifest.metadata["core_domain_import_count"] == 0
     assert manifest.metadata["core_domain_branch_count"] == 0

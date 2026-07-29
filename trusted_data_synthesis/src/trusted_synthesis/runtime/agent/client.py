@@ -11,7 +11,11 @@ import urllib.request
 from typing import Any, Protocol
 from urllib.parse import urlparse, urlunparse
 
-from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTelemetry
+from trusted_synthesis.runtime.agent.schema import (
+    AgentModelConfig,
+    HostInteractionProgress,
+    ModelCallTelemetry,
+)
 
 _CODE_FENCE = chr(96) * 3
 
@@ -24,9 +28,18 @@ class JsonCompletionClient(Protocol):
 
 
 class LLMClientError(RuntimeError):
-    def __init__(self, message: str, telemetry: tuple[ModelCallTelemetry, ...] = ()) -> None:
+    def __init__(
+        self,
+        message: str,
+        telemetry: tuple[ModelCallTelemetry, ...] = (),
+        *,
+        failure_artifact: Any | None = None,
+        interaction_progress: HostInteractionProgress | None = None,
+    ) -> None:
         super().__init__(message)
         self.telemetry = telemetry
+        self.failure_artifact = failure_artifact
+        self.interaction_progress = interaction_progress
 
 
 class OpenAICompatibleJsonClient:

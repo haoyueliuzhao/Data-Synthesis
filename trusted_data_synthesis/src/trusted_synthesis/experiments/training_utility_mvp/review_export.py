@@ -209,10 +209,37 @@ def build_qa_review_record(
     if not isinstance(corpus, list):
         raise ValueError(f"{record.record_id}: evidence_corpus must be an array")
 
-    final_answer = _mapping(target.get("final_answer"), record.record_id, "final_answer")
-    if "result" not in final_answer:
-        raise ValueError(f"{record.record_id}: final_answer.result is required")
-    selected_raw = target.get("selected_evidence_ids")
+    if record.training_format == "host_instrumented_joint":
+        action_plan = _mapping(target.get("action_plan"), record.record_id, "action_plan")
+        answer_decision = _mapping(
+            target.get("answer_decision"),
+            record.record_id,
+            "answer_decision",
+        )
+        host = _parse_object(
+            record.messages[3].content,
+            record.record_id,
+            "host_execution",
+        )
+        final_answer = {
+            "result": answer_decision.get("result"),
+            "citations": [
+                {"evidence_id": item}
+                for item in answer_decision.get("cited_evidence_ids", ())
+            ],
+            **({"status": answer_decision["status"]} if "status" in answer_decision else {}),
+            **({"claims": answer_decision["claims"]} if "claims" in answer_decision else {}),
+        }
+        selected_raw = action_plan.get("selected_evidence_ids")
+        trace = _mapping(host.get("execution_trace"), record.record_id, "execution_trace")
+        verification = host.get("output_result")
+    else:
+        final_answer = _mapping(target.get("final_answer"), record.record_id, "final_answer")
+        selected_raw = target.get("selected_evidence_ids")
+        trace = _mapping(target.get("execution_trace"), record.record_id, "execution_trace")
+        verification = target.get("verification_result")
+    if "result" not in final_answer or final_answer["result"] is None:
+        raise ValueError(f"{record.record_id}: final answer result is required")
     if not isinstance(selected_raw, list) or not all(
         isinstance(item, str) and item for item in selected_raw
     ):
@@ -234,7 +261,6 @@ def build_qa_review_record(
     if missing:
         raise ValueError(f"{record.record_id}: selected evidence absent from corpus: {missing}")
 
-    trace = _mapping(target.get("execution_trace"), record.record_id, "execution_trace")
     steps_raw = trace.get("steps")
     if not isinstance(steps_raw, list) or not all(isinstance(item, dict) for item in steps_raw):
         raise ValueError(f"{record.record_id}: execution_trace.steps must be objects")
@@ -251,9 +277,8 @@ def build_qa_review_record(
         isinstance(item, dict) for item in citations_raw
     ):
         raise ValueError(f"{record.record_id}: final_answer.citations must be objects")
-    verification = target.get("verification_result")
     if verification is not None and not isinstance(verification, dict):
-        raise ValueError(f"{record.record_id}: verification_result must be an object or null")
+        raise ValueError(f"{record.record_id}: host replay result must be an object or null")
     repair = user.get("candidate_attempt_to_repair")
     if repair is not None and not isinstance(repair, dict):
         raise ValueError(f"{record.record_id}: candidate_attempt_to_repair must be an object")

@@ -18,6 +18,9 @@ from trusted_synthesis.runtime.agent.schema import (
     AgentSearchQuery,
     AgentSearchResponseContract,
     AgentSolveResult,
+    FailedActionPlan,
+    HostExecutionFeedbackContract,
+    HostInteractionProgress,
     ModelCallTelemetry,
 )
 
@@ -28,7 +31,10 @@ __all__ = [
     "AgentAnswerDecisionContract",
     "AgentExecutionStep",
     "AgentExecutionTrace",
+    "FailedActionPlan",
     "AgentGenerationAudit",
+    "HostExecutionFeedbackContract",
+    "HostInteractionProgress",
     "AgentModelConfig",
     "AgentResponseContract",
     "AgentSearchQuery",

@@ -11,6 +11,7 @@ from trusted_synthesis.experiments.training_utility_mvp.evaluation import (
     aggregate_evaluation_outcomes,
     evaluate_sft_model,
     score_generated_response,
+    score_host_instrumented_response,
 )
 from trusted_synthesis.experiments.training_utility_mvp.report import (
     build_training_utility_report,
@@ -28,6 +29,7 @@ from trusted_synthesis.experiments.training_utility_mvp.review_export import (
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     CohortEvaluationResult,
     CohortTrainingResult,
+    SFTMessage,
     SFTRecord,
     TrainingUtilityDataManifest,
     TrainingUtilityMVPConfig,
@@ -43,6 +45,7 @@ __all__ = [
     "QAReviewExportManifest",
     "QAReviewRecord",
     "SFTRecord",
+    "SFTMessage",
     "TrainingUtilityDataManifest",
     "TrainingUtilityMVPConfig",
     "TrainingUtilityMVPReport",
@@ -59,6 +62,7 @@ __all__ = [
     "load_evaluation_result",
     "load_training_result",
     "score_generated_response",
+    "score_host_instrumented_response",
     "train_sft_cohort",
     "trajectory_to_response",
     "write_reference_training_preflight",

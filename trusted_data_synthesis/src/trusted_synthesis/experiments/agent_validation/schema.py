@@ -6,7 +6,10 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from trusted_synthesis.core.evaluation.contracts.schema import ContractQualityAssessment
+from trusted_synthesis.core.evaluation.contracts.schema import (
+    ContractQualityAssessment,
+    QualityContract,
+)
 from trusted_synthesis.core.evaluation.critic.schema import (
     AlignmentReport,
     QualityCriticPrediction,
@@ -14,16 +17,20 @@ from trusted_synthesis.core.evaluation.critic.schema import (
 from trusted_synthesis.core.evaluation.critic.selection import QualitySelectionResult
 from trusted_synthesis.core.evaluation.quality_vector import QualityVector
 from trusted_synthesis.core.evaluation.utility import TrainingUtilityProtocol
+from trusted_synthesis.core.feedback import FeedbackExposure, FeedbackSignal
+from trusted_synthesis.core.refinement import SynthesisCell
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.schema import (
     AgentGenerationAudit,
     AgentModelConfig,
+    FailedActionPlan,
+    HostInteractionProgress,
     ModelCallTelemetry,
 )
 
-AGENT_VALIDATION_VERSION = "agent_validation.v5"
+AGENT_VALIDATION_VERSION = "agent_validation.v6"
 AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v3"
 
 
@@ -128,7 +135,13 @@ class AgentValidationSample(BaseModel):
     generation_audit: AgentGenerationAudit | None = None
     agent_telemetry: tuple[ModelCallTelemetry, ...] = ()
     trajectory: Trajectory | None = None
+    quality_contract: QualityContract | None = None
     contract_assessment: ContractQualityAssessment | None = None
+    feedback_exposures: tuple[FeedbackExposure, ...] = ()
+    feedback_signals: tuple[FeedbackSignal, ...] = ()
+    synthesis_cell: SynthesisCell | None = None
+    failed_action_plan: FailedActionPlan | None = None
+    host_interaction_progress: HostInteractionProgress | None = None
     quality_vector: QualityVector | None = None
     critic_prediction: QualityCriticPrediction | None = None
     critic_telemetry: tuple[ModelCallTelemetry, ...] = ()
@@ -197,6 +210,19 @@ class AgentValidationReport(BaseModel):
     total_tokens: int = Field(ge=0)
     estimated_cost: float | None = Field(default=None, ge=0)
     contract_repair_count: int = Field(ge=0)
+    action_plan_attempted_count: int = Field(default=0, ge=0)
+    action_plan_contract_success_count: int = Field(default=0, ge=0)
+    action_plan_contract_success_rate: float = Field(default=0, ge=0, le=1)
+    host_execution_evaluable_count: int = Field(default=0, ge=0)
+    host_execution_evaluable_rate: float = Field(default=0, ge=0, le=1)
+    answer_decision_attempted_count: int = Field(default=0, ge=0)
+    answer_decision_contract_success_count: int = Field(default=0, ge=0)
+    answer_decision_contract_success_rate: float = Field(default=0, ge=0, le=1)
+    action_first_call_success_count: int = Field(default=0, ge=0)
+    action_repaired_success_count: int = Field(default=0, ge=0)
+    answer_first_call_success_count: int = Field(default=0, ge=0)
+    answer_repaired_success_count: int = Field(default=0, ge=0)
+    feedback_route_counts: dict[str, int] = Field(default_factory=dict)
     critic_dataset_id: str | None = None
     critic_example_count: int = Field(ge=0)
     alignment_report: AlignmentReport

@@ -119,6 +119,9 @@ The Program Skeleton/Execution Trace correction, capacity audit, and current exe
 are summarized in [v0.8 Refinement Report](docs/v08_refinement_report.md).
 The audit-driven host loop, cohort corrections, evaluation isolation, and release provenance
 changes are summarized in [v0.8.1 Audit Remediation](docs/v08_audit_remediation_report.md).
+The Host-Instrumented student loop, calibrated Clause feedback, CCGR synthesis-policy update,
+safe Binding tightening, six algorithm ablations, and C1-C4 causal experiment contract are
+specified in [v0.9 Calibrated Clause-Guided Refinement](docs/v09_clause_guided_refinement.md).
 The Pattern and Binding boundary is specified in
 [Task Pattern IR and Binding Compiler](docs/task_pattern_ir.md).
 

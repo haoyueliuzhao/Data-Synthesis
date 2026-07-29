@@ -115,6 +115,7 @@ class CounterfactualCaseEvaluation(BaseModel):
     mutation_operator_id: str
     detected: bool
     expected_root_clause_ids: tuple[str, ...]
+    expected_root_clause_kinds: tuple[str, ...] = ()
     observed_root_clause_ids: tuple[str, ...]
     expected_failed_clause_ids: tuple[str, ...]
     observed_failed_clause_ids: tuple[str, ...]
@@ -178,6 +179,9 @@ class CounterfactualCalibrationReport(BaseModel):
     mutation_family_metrics: dict[str, CounterfactualSliceMetrics]
     operator_metrics: dict[str, CounterfactualSliceMetrics]
     source_clause_kind_metrics: dict[str, CounterfactualSliceMetrics]
+    expected_root_clause_kind_metrics: dict[
+        str, CounterfactualSliceMetrics
+    ] = Field(default_factory=dict)
     case_evaluations: tuple[CounterfactualCaseEvaluation, ...]
     status: str
     failures: tuple[str, ...] = ()

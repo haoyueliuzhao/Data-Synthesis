@@ -75,6 +75,11 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     write_training_utility_datasets,
     write_training_utility_report,
 )
+from trusted_synthesis.experiments.training_utility_v09 import (
+    V09RefinementConfig,
+    build_v09_offline_pilot,
+    write_v09_initial_artifacts,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime import (
     InMemoryEvidenceToolRuntime,
@@ -189,6 +194,21 @@ def main(argv: list[str] | None = None) -> int:
         write_training_utility_report(args.output_dir, utility_report, data_manifest)
         _emit(utility_report.model_dump(mode="json"), args.output)
         return 0
+    if args.command == "build-v09-initial":
+        refinement_config = V09RefinementConfig.from_json(args.v09_config)
+        report, v09_manifest, exposures, signals = build_v09_offline_pilot(
+            refinement_config,
+            tasks_per_domain=args.tasks_per_domain,
+        )
+        write_v09_initial_artifacts(
+            args.output_dir,
+            report,
+            v09_manifest,
+            exposures,
+            signals,
+        )
+        _emit(report.model_dump(mode="json"), args.output)
+        return 0 if report.status == "passed" else 1
     if args.command == "freeze-release-validation":
         validation_summary = build_release_validation_summary(
             repo_root=args.repo_root,
@@ -310,6 +330,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     utility_summary.add_argument("--output-dir", type=Path, required=True)
     utility_summary.add_argument("--output", type=Path)
+    v09_initial = subparsers.add_parser("build-v09-initial")
+    v09_initial.add_argument("--v09-config", type=Path, required=True)
+    v09_initial.add_argument("--tasks-per-domain", type=int, default=3)
+    v09_initial.add_argument("--output-dir", type=Path, required=True)
+    v09_initial.add_argument("--output", type=Path)
     release_validation = subparsers.add_parser("freeze-release-validation")
     release_validation.add_argument("--repo-root", type=Path, default=Path("."))
     release_validation.add_argument("--artifact", type=Path, action="append", required=True)

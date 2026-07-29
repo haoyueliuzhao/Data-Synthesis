@@ -12,7 +12,10 @@ AGENT_EXECUTION_TRACE_VERSION = "agent_execution_trace.v1"
 AGENT_SEARCH_SCHEMA_VERSION = "agent_search.v1"
 AGENT_ACTION_PLAN_SCHEMA_VERSION = "agent_action_plan.v1"
 AGENT_ANSWER_DECISION_SCHEMA_VERSION = "agent_answer_decision.v1"
-AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v3"
+HOST_EXECUTION_FEEDBACK_SCHEMA_VERSION = "host_execution_feedback.v2"
+FAILED_ACTION_PLAN_SCHEMA_VERSION = "failed_action_plan.v1"
+HOST_INTERACTION_PROGRESS_SCHEMA_VERSION = "host_interaction_progress.v1"
+AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v4"
 
 
 class AgentModelConfig(BaseModel):
@@ -229,6 +232,111 @@ class AgentAnswerDecisionContract(BaseModel):
         return self
 
 
+class HostExecutionFeedbackContract(BaseModel):
+    """Host-owned execution feedback supplied between the two model turns."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    schema_version: Literal["host_execution_feedback.v2"] = "host_execution_feedback.v2"
+    execution_trace: AgentExecutionTrace
+    raw_output_result: dict[str, Any]
+    output_result: dict[str, Any]
+    host_replay_available: Literal[True] = True
+    execution_replay_valid: Literal[True] = True
+
+    @model_validator(mode="after")
+    def validate_output_result(self) -> HostExecutionFeedbackContract:
+        output_step = next(
+            (
+                item
+                for item in self.execution_trace.steps
+                if item.execution_id == self.execution_trace.output_execution_id
+            ),
+            None,
+        )
+        if output_step is None or output_step.observation["result"] != self.raw_output_result:
+            raise ValueError("host raw_output_result must equal the output execution result")
+        public_refs = {
+            item.execution_id: item.planned_node_id or f"step_{index}"
+            for index, item in enumerate(self.execution_trace.steps, start=1)
+        }
+        expected_visible = _replace_host_execution_refs(
+            self.raw_output_result,
+            public_refs,
+        )
+        if self.output_result != expected_visible:
+            raise ValueError("host output_result must be the normalized model-visible result")
+        return self
+
+
+class FailedActionPlan(BaseModel):
+    """A host-rejected action plan retained for feedback instead of being discarded."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    schema_version: Literal["failed_action_plan.v1"] = "failed_action_plan.v1"
+    task_id: str = Field(min_length=1)
+    failure_category: Literal[
+        "interface_security",
+        "semantic_action",
+        "upstream_data",
+        "infrastructure",
+    ]
+    error_code: str = Field(min_length=1)
+    error_message: str = Field(min_length=1)
+    failed_step_index: int | None = Field(default=None, ge=1)
+    operator_id: str | None = None
+    selected_evidence_ids: tuple[str, ...] = ()
+    step_evidence_ids: tuple[str, ...] = ()
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    action_plan: AgentActionPlanContract | None = None
+    attempt_number: int = Field(default=1, ge=1)
+
+
+class HostInteractionProgress(BaseModel):
+    """Stage-level progress retained when a Host-instrumented solve is incomplete."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    action_plan_attempted: bool = False
+    action_plan_contract_succeeded: bool = False
+    host_execution_evaluable: bool = False
+    answer_decision_attempted: bool = False
+    answer_decision_contract_succeeded: bool = False
+    action_contract_repair_count: int = Field(default=0, ge=0)
+    answer_contract_repair_count: int = Field(default=0, ge=0)
+    schema_version: str = HOST_INTERACTION_PROGRESS_SCHEMA_VERSION
+
+    @model_validator(mode="after")
+    def validate_stage_order(self) -> HostInteractionProgress:
+        if self.action_plan_contract_succeeded and not self.action_plan_attempted:
+            raise ValueError("action contract success requires an attempted action plan")
+        if self.host_execution_evaluable and not self.action_plan_contract_succeeded:
+            raise ValueError("Host execution requires a valid action plan contract")
+        if self.answer_decision_attempted and not self.host_execution_evaluable:
+            raise ValueError("answer generation requires evaluable Host execution")
+        if self.answer_decision_contract_succeeded and not self.answer_decision_attempted:
+            raise ValueError("answer contract success requires an attempted answer decision")
+        return self
+
+
+def _replace_host_execution_refs(value: Any, public_refs: dict[str, str]) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _replace_host_execution_refs(item, public_refs)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_replace_host_execution_refs(item, public_refs) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_replace_host_execution_refs(item, public_refs) for item in value)
+    if not isinstance(value, str) or not value.startswith("execution:"):
+        return value
+    execution_id, separator, selector = value.removeprefix("execution:").partition("#")
+    public_ref = public_refs.get(execution_id, value)
+    return f"{public_ref}#{selector}" if separator and public_ref != value else public_ref
+
+
 class AgentCitation(BaseModel):
     """A citation copied from one retrieved evidence item."""
 
@@ -284,6 +392,12 @@ class AgentGenerationAudit(BaseModel):
     telemetry: tuple[ModelCallTelemetry, ...]
     selected_model: str | None = None
     contract_repair_count: int = Field(default=0, ge=0)
+    search_contract_repair_count: int = Field(default=0, ge=0)
+    action_contract_repair_count: int = Field(default=0, ge=0)
+    answer_contract_repair_count: int = Field(default=0, ge=0)
+    action_failure_history: tuple[FailedActionPlan, ...] = ()
+    host_replay_available: bool = False
+    execution_replay_valid: bool | None = None
     schema_version: str = AGENT_GENERATION_SCHEMA_VERSION
 
 

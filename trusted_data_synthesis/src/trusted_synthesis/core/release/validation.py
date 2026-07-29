@@ -4,7 +4,7 @@ import hashlib
 import importlib.metadata
 import subprocess
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -94,7 +94,7 @@ def build_release_validation_summary(
         status = "passed" if artifact_hashes else "partial"
     else:
         status = "partial"
-    created_at = datetime.now(UTC).isoformat()
+    created_at = datetime.now(timezone.utc).isoformat()
     identity = {
         "commit_sha": resolved_commit,
         "git_worktree_dirty": resolved_dirty,

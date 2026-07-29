@@ -1,0 +1,47 @@
+{
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "base_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "training_seed": 20260728,
+  "cohort_example_budget": 600,
+  "supervised_token_budget": 1200000,
+  "lambda_values": [0.0, 0.5, 1.0],
+  "primary_lambda": 0.5,
+  "alpha": 1.0,
+  "epsilon": 0.01,
+  "ccgr_eta": 1.0,
+  "ccgr_beta": 1.0,
+  "ccgr_gamma": 0.5,
+  "ccgr_binding_tightening_threshold": 0.25,
+  "ccgr_uncalibrated_reliability": 0.0,
+  "ccgr_ablation_ids": [
+    "static_verified",
+    "raw_failure_reweighting",
+    "no_defect_suppression",
+    "no_coverage_regularization",
+    "random_same_shift",
+    "full_ccgr"
+  ],
+  "domain_weights": {
+    "finance": 0.8,
+    "legal": 0.1,
+    "science": 0.1
+  },
+  "student_training_format": "host_instrumented_joint",
+  "allowed_refinement_controls": [
+    "pattern_clause_weight",
+    "difficulty_bucket",
+    "distractor_type",
+    "distractor_count",
+    "binding_constraint"
+  ],
+  "external_benchmark_status": "not_executed",
+  "online_minimum_action_plan_contract_rate": 0.9,
+  "online_minimum_host_execution_evaluable_rate": 0.9,
+  "online_minimum_answer_decision_contract_rate": 0.9,
+  "online_minimum_contract_acceptance_rate": 0.6,
+  "offline_minimality_threshold": 0.9,
+  "offline_minimum_valid_case_rate": 0.95,
+  "offline_minimum_root_match_rate": 0.9,
+  "offline_minimum_calibration_coverage": 0.6,
+  "random_seed": 20260728
+}

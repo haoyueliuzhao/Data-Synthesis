@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -10,6 +11,7 @@ from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.hashing import canonical_hash
 
 from .data import load_sft_records
+from .model_security import validate_model_loading_contract
 from .schema import CohortTrainingResult, TrainingUtilityMVPConfig
 
 
@@ -38,6 +40,7 @@ def train_sft_cohort(
         ) from exc
     if not torch.cuda.is_available():
         raise RuntimeError("the Qwen2.5-7B MVP requires a CUDA device")
+    validate_model_loading_contract(config.base_model, config.model_revision)
 
     records = load_sft_records(dataset_path)
     if not records or {item.cohort for item in records} != {cohort}:
@@ -70,6 +73,7 @@ def train_sft_cohort(
         config.base_model,
         revision=config.model_revision,
         use_fast=True,
+        trust_remote_code=False,
     )
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -86,8 +90,10 @@ def train_sft_cohort(
     model = AutoModelForCausalLM.from_pretrained(
         config.base_model,
         revision=config.model_revision,
-        torch_dtype=torch.bfloat16,
+        dtype=torch.bfloat16,
         attn_implementation="sdpa",
+        trust_remote_code=False,
+        use_safetensors=True,
     )
     model.config.use_cache = False
     model.gradient_checkpointing_enable()
@@ -115,7 +121,7 @@ def train_sft_cohort(
         per_device_train_batch_size=config.per_device_train_batch_size,
         gradient_accumulation_steps=config.gradient_accumulation_steps,
         learning_rate=config.learning_rate,
-        warmup_ratio=config.warmup_ratio,
+        warmup_steps=math.ceil(config.max_steps * config.warmup_ratio),
         weight_decay=config.weight_decay,
         bf16=True,
         fp16=False,
@@ -144,12 +150,12 @@ def train_sft_cohort(
     last_checkpoint = (
         get_last_checkpoint(str(trainer_state_dir)) if trainer_state_dir.is_dir() else None
     )
-    train_output = trainer.train(  # type: ignore[attr-defined]
+    train_output = trainer.train(
         resume_from_checkpoint=last_checkpoint
     )
     runtime = time.monotonic() - started
     peak_memory = int(torch.cuda.max_memory_allocated())
-    trainer.save_model(str(adapter_dir))  # type: ignore[attr-defined]
+    trainer.save_model(str(adapter_dir))
     tokenizer.save_pretrained(adapter_dir)
     resolved_revision = (
         getattr(model.config, "_commit_hash", None)
@@ -200,6 +206,26 @@ def _encode_records(
     token_counts = []
     target_token_counts = []
     for record in records:
+        if record.training_format == "host_instrumented_joint":
+            full_ids, labels = _encode_host_transcript(tokenizer, record)
+            if len(full_ids) > max_seq_length:
+                raise ValueError(
+                    f"record {record.record_id} requires {len(full_ids)} tokens, "
+                    f"above max_seq_length={max_seq_length}"
+                )
+            supervised_count = sum(item != -100 for item in labels)
+            if not supervised_count:
+                raise ValueError(f"record {record.record_id} has no supervised target tokens")
+            encoded.append(
+                {
+                    "input_ids": full_ids,
+                    "attention_mask": [1] * len(full_ids),
+                    "labels": labels,
+                }
+            )
+            token_counts.append(len(full_ids))
+            target_token_counts.append(supervised_count)
+            continue
         prompt_messages = [
             {"role": "system", "content": record.system_prompt},
             {"role": "user", "content": record.user_prompt},
@@ -247,7 +273,54 @@ def _encode_records(
         "mean_tokens": sum(token_counts) / len(token_counts),
         "maximum_target_tokens": max(target_token_counts),
         "truncated_record_count": 0,
+        "training_format_counts": dict(
+            sorted(
+                {
+                    key: sum(item.training_format == key for item in records)
+                    for key in {item.training_format for item in records}
+                }.items()
+            )
+        ),
     }
+
+
+def _encode_host_transcript(tokenizer: Any, record: Any) -> tuple[list[int], list[int]]:
+    messages = [
+        {"role": item.role, "content": item.content}
+        for item in record.messages
+    ]
+    full_text = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=False,
+    )
+    full_ids = tokenizer(full_text, add_special_tokens=False)["input_ids"]
+    labels = [-100] * len(full_ids)
+    for index, message in enumerate(record.messages):
+        if not message.supervise:
+            continue
+        before_text = tokenizer.apply_chat_template(
+            messages[:index],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        through_text = tokenizer.apply_chat_template(
+            messages[: index + 1],
+            tokenize=False,
+            add_generation_prompt=False,
+        )
+        before_ids = tokenizer(before_text, add_special_tokens=False)["input_ids"]
+        through_ids = tokenizer(through_text, add_special_tokens=False)["input_ids"]
+        if full_ids[: len(through_ids)] != through_ids:
+            raise ValueError(
+                "chat template does not preserve the host transcript assistant prefix"
+            )
+        if through_ids[: len(before_ids)] != before_ids:
+            raise ValueError(
+                "chat template does not preserve the host transcript generation prefix"
+            )
+        labels[len(before_ids) : len(through_ids)] = through_ids[len(before_ids) :]
+    return full_ids, labels
 
 
 def _causal_collator(pad_token_id: int):
