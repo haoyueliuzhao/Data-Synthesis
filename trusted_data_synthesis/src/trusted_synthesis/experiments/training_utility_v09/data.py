@@ -16,14 +16,24 @@ from trusted_synthesis.core.evaluation.critic.schema import (
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceItem
-from trusted_synthesis.core.refinement import SynthesisCell, build_synthesis_cell
+from trusted_synthesis.core.refinement import (
+    PolicyUpdateResult,
+    RefinedSynthesisArtifact,
+    RefinedSynthesisMaterializer,
+    SynthesisCell,
+    SynthesisMaterializationReport,
+    build_synthesis_cell,
+)
 from trusted_synthesis.core.task.schema import TaskPublicSpec
 from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
 from trusted_synthesis.experiments.training_utility_mvp.data import (
     _evaluation_isolation,
+    _make_record,
     _record_from_example,
     _reference_and_evaluation_records,
+    _reference_response,
     _student_operation_registry,
+    _task_structure_metadata,
 )
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     SFTMessage,
@@ -40,6 +50,11 @@ from trusted_synthesis.runtime.agent.schema import (
     AgentAnswerDecisionContract,
 )
 
+from .materialization import (
+    V09FixtureBindingProvider,
+    fresh_fixture_start_index,
+    project_policy_counts_to_domain_quotas,
+)
 from .schema import (
     TRAINING_UTILITY_V09_VERSION,
     V09Cohort,
@@ -144,6 +159,17 @@ def build_v09_training_datasets(
         for item in accepted_examples
         if item.task_id in unfiltered_records
     }
+    real_source_example_ids: dict[str, str] = {}
+    for item in real_examples:
+        if item.task_id not in unfiltered_records:
+            continue
+        current_task_id = current_task_by_source[item.task_id]
+        previous = real_source_example_ids.get(current_task_id)
+        if previous is not None and previous != item.example_id:
+            raise ValueError(
+                "multiple real Agent candidates map to one current task identity"
+            )
+        real_source_example_ids[current_task_id] = item.example_id
 
     full_update = next(
         item
@@ -185,13 +211,13 @@ def build_v09_training_datasets(
         for item in c2_selected
     )
 
-    verified_base_pool: list[SFTRecord] = []
-    base_cells: dict[str, SynthesisCell] = {}
-    for task_id in sorted(accepted_example_ids):
-        record = reference_by_task.get(task_id)
-        if record is None:
-            continue
-        cell = _record_cell(record)
+    feedback_source_records: list[SFTRecord] = []
+    source_cells: dict[str, SynthesisCell] = {}
+    for task_id in sorted(real_source_example_ids):
+        source_record = reference_by_task.get(task_id)
+        if source_record is None:
+            raise ValueError("mapped real Agent feedback has no current reference task")
+        cell = _record_cell(source_record)
         if (
             cell.cell_id not in static_update.cell_transition_map
             or cell.cell_id not in full_update.cell_transition_map
@@ -204,68 +230,112 @@ def build_v09_training_datasets(
             or full_cell not in full_update.next_policy.probabilities
         ):
             continue
-        verified_base_pool.append(record)
-        base_cells[task_id] = cell
-    verified_pool = tuple(verified_base_pool)
-    _require_pool_capacity(verified_pool, quotas, label="verified C3/C4 source pool")
-    verified_pool_hash = canonical_hash(
-        tuple((item.task_id, item.record_hash) for item in verified_pool),
-        prefix="training_utility_v09_verified_source_pool:",
+        feedback_source_records.append(source_record)
+        source_cells[task_id] = cell
+    feedback_source_pool = tuple(feedback_source_records)
+    if not feedback_source_pool:
+        raise ValueError("C3/C4 have no mapped real feedback source records")
+    feedback_source_pool_hash = canonical_hash(
+        tuple((item.task_id, item.record_hash) for item in feedback_source_pool),
+        prefix="training_utility_v09_feedback_source_pool:",
     )
 
-    c3_selected = _policy_quota_take(
-        verified_pool,
+    fixture_start = fresh_fixture_start_index(
+        refinement_config,
+        cohort_namespace="route_b_closed_loop",
+    )
+    c3_provider = V09FixtureBindingProvider(
+        namespace="c3_static_verified",
+        start_index=fixture_start,
+    )
+    c4_provider = V09FixtureBindingProvider(
+        namespace="c4_feedback_refined",
+        start_index=fixture_start + 10_000_000,
+    )
+    static_cell_domains = {
+        cell.cell_id: c3_provider.domain_for_pattern(cell.pattern_id)
+        for cell in static_update.next_policy.cells
+    }
+    full_cell_domains = {
+        cell.cell_id: c4_provider.domain_for_pattern(cell.pattern_id)
+        for cell in full_update.next_policy.cells
+    }
+    c3_requested_counts = project_policy_counts_to_domain_quotas(
+        static_update.allocated_counts,
+        static_update.next_policy.probabilities,
+        static_cell_domains,
         quotas,
-        cell_by_task={
-            task_id: static_update.cell_transition_map[cell.cell_id]
-            for task_id, cell in base_cells.items()
-        },
-        probabilities=static_update.next_policy.probabilities,
+    )
+    c4_requested_counts = project_policy_counts_to_domain_quotas(
+        full_update.allocated_counts,
+        full_update.next_policy.probabilities,
+        full_cell_domains,
+        quotas,
+    )
+    frozen_identity_records = (*reference_records, *evaluation_records)
+    forbidden_task_ids = {item.task_id for item in frozen_identity_records}
+    forbidden_binding_ids = _record_binding_ids(frozen_identity_records)
+    forbidden_evidence_version_ids = _record_evidence_version_ids(
+        frozen_identity_records
+    )
+    c3_materializer = RefinedSynthesisMaterializer(c3_provider)
+    c3_artifacts, c3_materialization_report = c3_materializer.materialize(
+        static_update,
+        requested_counts=c3_requested_counts,
         seed=refinement_config.training_seed + 301,
+        forbidden_task_ids=forbidden_task_ids,
+        forbidden_binding_ids=forbidden_binding_ids,
+        forbidden_evidence_version_ids=forbidden_evidence_version_ids,
     )
-    c3 = tuple(
-        _relabel_record(
-            item,
-            V09Cohort.VERIFIED_STATIC,
-            source_kind="quality_contract_verified_reference",
-            metadata={
-                "accepted_real_example_id": accepted_example_ids[item.task_id],
-                "base_synthesis_cell_id": base_cells[item.task_id].cell_id,
-                "synthesis_cell_id": static_update.cell_transition_map[
-                    base_cells[item.task_id].cell_id
-                ],
-                "selection_update_id": static_update.update_id,
-            },
+    if c3_materialization_report.status != "passed":
+        raise ValueError(
+            "C3 fresh synthesis materialization failed: "
+            f"{c3_materialization_report.failure_counts}"
         )
-        for item in c3_selected
+    c3 = _materialized_records(
+        c3_artifacts,
+        V09Cohort.VERIFIED_STATIC,
+        update=static_update,
+        source_cells_by_task=source_cells,
+        source_example_ids=real_source_example_ids,
+        accepted_example_ids=accepted_example_ids,
+        materialization_report=c3_materialization_report,
+        source_kind="quality_contract_verified_new_compilation",
     )
 
-    c4_selected = _policy_quota_take(
-        verified_pool,
-        quotas,
-        cell_by_task={
-            task_id: full_update.cell_transition_map[cell.cell_id]
-            for task_id, cell in base_cells.items()
-        },
-        probabilities=full_update.next_policy.probabilities,
+    c3_task_ids = {item.compiled.task.task_id for item in c3_artifacts}
+    c3_binding_ids = {item.binding.binding_id for item in c3_artifacts}
+    c3_evidence_version_ids = {
+        evidence.evidence_version_id
+        for item in c3_artifacts
+        for evidence in item.candidate.corpus.evidence
+    }
+    c4_materializer = RefinedSynthesisMaterializer(c4_provider)
+    c4_artifacts, c4_materialization_report = c4_materializer.materialize(
+        full_update,
+        requested_counts=c4_requested_counts,
         seed=refinement_config.training_seed + 401,
+        forbidden_task_ids=forbidden_task_ids | c3_task_ids,
+        forbidden_binding_ids=forbidden_binding_ids | c3_binding_ids,
+        forbidden_evidence_version_ids=(
+            forbidden_evidence_version_ids | c3_evidence_version_ids
+        ),
     )
-    c4 = tuple(
-        _relabel_record(
-            item,
-            V09Cohort.FEEDBACK_REFINED,
-            source_kind="ccgr_refined_verified_reference",
-            metadata={
-                "accepted_real_example_id": accepted_example_ids[item.task_id],
-                "base_synthesis_cell_id": base_cells[item.task_id].cell_id,
-                "synthesis_cell_id": full_update.cell_transition_map[
-                    base_cells[item.task_id].cell_id
-                ],
-                "selection_update_id": full_update.update_id,
-                "feedback_source": refinement_manifest.feedback_source,
-            },
+    if c4_materialization_report.status != "passed":
+        raise ValueError(
+            "C4 fresh synthesis materialization failed: "
+            f"{c4_materialization_report.failure_counts}"
         )
-        for item in c4_selected
+    c4 = _materialized_records(
+        c4_artifacts,
+        V09Cohort.FEEDBACK_REFINED,
+        update=full_update,
+        source_cells_by_task=source_cells,
+        source_example_ids=real_source_example_ids,
+        accepted_example_ids=accepted_example_ids,
+        materialization_report=c4_materialization_report,
+        source_kind="ccgr_refined_verified_new_compilation",
+        feedback_source=refinement_manifest.feedback_source,
     )
     cohorts = {
         V09Cohort.CONVENTIONAL_SYNTHETIC: c1,
@@ -302,17 +372,21 @@ def build_v09_training_datasets(
             V09Cohort.VERIFIED_STATIC,
             c3,
             selection_policy_id=static_update.update_id,
-            eligible_source_records=verified_pool,
-            eligible_source_pool_hash=verified_pool_hash,
-            accepted_real_link_count=len(c3),
+            eligible_source_records=feedback_source_pool,
+            eligible_source_pool_hash=feedback_source_pool_hash,
+            accepted_real_link_count=_accepted_real_link_count(c3),
+            real_feedback_link_count=len(c3),
+            materialization_report=c3_materialization_report,
         ),
         _cohort_manifest(
             V09Cohort.FEEDBACK_REFINED,
             c4,
             selection_policy_id=full_update.update_id,
-            eligible_source_records=verified_pool,
-            eligible_source_pool_hash=verified_pool_hash,
-            accepted_real_link_count=len(c4),
+            eligible_source_records=feedback_source_pool,
+            eligible_source_pool_hash=feedback_source_pool_hash,
+            accepted_real_link_count=_accepted_real_link_count(c4),
+            real_feedback_link_count=len(c4),
+            materialization_report=c4_materialization_report,
         ),
     )
     training_records = tuple(item for values in cohorts.values() for item in values)
@@ -330,7 +404,8 @@ def build_v09_training_datasets(
     limitations = (
         "The evaluation set is internal and contract-generated, not an external benchmark.",
         "C1 is an unfiltered real-Agent baseline; its targets may contain model errors.",
-        "C3 and C4 use deterministic reference targets so selection is the intended variable.",
+        "C3 and C4 use one deterministic compiler contract and disjoint fresh identities; "
+        "their policy allocation is the intended variable.",
         *(
             ()
             if refinement_manifest.round0_real_agent_feedback
@@ -362,9 +437,21 @@ def build_v09_training_datasets(
         "representable_real_domain_counts": representable_domain_counts,
         "accepted_mapped_candidate_count": len(accepted_example_ids),
         "cohort_hashes": tuple(item.dataset_hash for item in cohort_manifests),
+        "c3_materialization_report_id": c3_materialization_report.report_id,
+        "c4_materialization_report_id": c4_materialization_report.report_id,
         "evaluation_hash": evaluation_hash,
         "causal_status": causal_status,
     }
+    c3_task_identity_ids = {item.task_id for item in c3}
+    c4_task_identity_ids = {item.task_id for item in c4}
+    c3_record_binding_ids = _record_binding_ids(c3)
+    c4_record_binding_ids = _record_binding_ids(c4)
+    c3_record_evidence_ids = _record_evidence_version_ids(c3)
+    c4_record_evidence_ids = _record_evidence_version_ids(c4)
+    compiler_contract_shared = (
+        c3_materialization_report.provider_contract_hash
+        == c4_materialization_report.provider_contract_hash
+    )
     manifest = V09TrainingDataManifest(
         manifest_id=canonical_hash(
             identity,
@@ -415,9 +502,17 @@ def build_v09_training_datasets(
         ),
         train_evaluation_binding_overlap_count=isolation["binding_overlap_count"],
         c3_c4_task_overlap_count=len(
-            {item.task_id for item in c3} & {item.task_id for item in c4}
+            c3_task_identity_ids & c4_task_identity_ids
+        ),
+        c3_c4_binding_overlap_count=len(
+            c3_record_binding_ids & c4_record_binding_ids
+        ),
+        c3_c4_evidence_version_overlap_count=len(
+            c3_record_evidence_ids & c4_record_evidence_ids
         ),
         c3_c4_source_pool_shared=True,
+        c3_c4_compiler_contract_shared=compiler_contract_shared,
+        synthesis_closed_loop_status="new_binding_compilation",
         limitations=limitations,
         status=status,
     )
@@ -524,8 +619,21 @@ def write_v09_training_datasets(
     manifest: V09TrainingDataManifest,
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
+    manifests_by_cohort = {item.cohort: item for item in manifest.cohorts}
     for cohort in V09Cohort:
         _write_jsonl(output_dir / f"{cohort.value}.jsonl", cohorts[cohort])
+        materialization = manifests_by_cohort[cohort].materialization_report
+        if materialization is not None:
+            (output_dir / f"{cohort.value}_materialization_report.json").write_text(
+                json.dumps(
+                    materialization.model_dump(mode="json"),
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
     _write_jsonl(output_dir / "evaluation.jsonl", evaluation_records)
     (output_dir / "manifest.json").write_text(
         json.dumps(manifest.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True)
@@ -795,6 +903,132 @@ def _record_cell(record: SFTRecord) -> SynthesisCell:
     return build_synthesis_cell(task, corpus, _action_plan(record).selected_evidence_ids)
 
 
+
+
+def _materialized_records(
+    artifacts: tuple[RefinedSynthesisArtifact, ...],
+    cohort: V09Cohort,
+    *,
+    update: PolicyUpdateResult,
+    source_cells_by_task: Mapping[str, SynthesisCell],
+    source_example_ids: Mapping[str, str],
+    accepted_example_ids: Mapping[str, str],
+    materialization_report: SynthesisMaterializationReport,
+    source_kind: str,
+    feedback_source: str | None = None,
+) -> tuple[SFTRecord, ...]:
+    links_by_target_cell: dict[str, list[str]] = defaultdict(list)
+    accepted_links_by_target_cell: dict[str, list[str]] = defaultdict(list)
+    for task_id, cell in source_cells_by_task.items():
+        if task_id not in source_example_ids:
+            raise ValueError("feedback source Cell has no real Agent example identity")
+        target_cell_id = update.cell_transition_map.get(cell.cell_id)
+        if target_cell_id is not None:
+            links_by_target_cell[target_cell_id].append(task_id)
+            if task_id in accepted_example_ids:
+                accepted_links_by_target_cell[target_cell_id].append(task_id)
+    for values in links_by_target_cell.values():
+        values.sort()
+    for values in accepted_links_by_target_cell.values():
+        values.sort()
+    target_offsets: Counter[str] = Counter()
+    records: list[SFTRecord] = []
+    for artifact in artifacts:
+        target_cell_id = artifact.request.cell.cell_id
+        links = (
+            accepted_links_by_target_cell.get(target_cell_id)
+            or links_by_target_cell.get(target_cell_id)
+            or []
+        )
+        if not links:
+            raise ValueError(
+                "fresh synthesis Cell is not linked to evaluated real feedback: "
+                f"{target_cell_id}"
+            )
+        source_task_id = links[target_offsets[target_cell_id] % len(links)]
+        target_offsets[target_cell_id] += 1
+        source_cell = source_cells_by_task[source_task_id]
+        source_candidate_accepted = source_task_id in accepted_example_ids
+        task = artifact.compiled.task
+        metadata = {
+            **_task_structure_metadata(task.public),
+            "source_real_example_id": source_example_ids[source_task_id],
+            "source_real_task_id": source_task_id,
+            "source_candidate_accepted": source_candidate_accepted,
+            "base_synthesis_cell_id": source_cell.cell_id,
+            "synthesis_cell_id": target_cell_id,
+            "selection_update_id": update.update_id,
+            "materialization_report_id": materialization_report.report_id,
+            "synthesis_cell_request_id": artifact.request.request_id,
+            "binding_provider_candidate_id": artifact.candidate.candidate_id,
+            "binding_id": artifact.binding.binding_id,
+            "evidence_bundle_id": artifact.candidate.bundle.bundle_id,
+            "proof_graph_id": artifact.candidate.proof_graph.graph_id,
+            "quality_contract_id": artifact.compiled.quality_contract.contract_id,
+            "reference_trajectory_id": (
+                artifact.compiled.reference_trajectory.trajectory_id
+            ),
+            "proof_carrying_sample_id": artifact.compiled.sample.sample_id,
+            "quality_contract_applied": True,
+            "new_identity_compilation": True,
+        }
+        if source_candidate_accepted:
+            metadata["accepted_real_example_id"] = accepted_example_ids[source_task_id]
+            metadata["accepted_source_task_id"] = source_task_id
+        if feedback_source is not None:
+            metadata["feedback_source"] = feedback_source
+        records.append(
+            _make_record(
+                cohort=cohort.value,
+                task=task.public.model_dump(mode="json", exclude_none=True),
+                evidence=[
+                    item.model_dump(mode="json", exclude_none=True)
+                    for item in artifact.candidate.corpus.evidence
+                ],
+                target=_reference_response(
+                    task,
+                    artifact.candidate.bundle,
+                    artifact.candidate.operation_registry,
+                ),
+                source_kind=source_kind,
+                contract_label="accept",
+                metadata=metadata,
+            )
+        )
+    records.sort(
+        key=lambda item: canonical_hash(
+            item.record_id,
+            prefix="v09_materialized_cohort_order:",
+        )
+    )
+    return tuple(records)
+
+
+def _record_binding_ids(records: Iterable[SFTRecord]) -> set[str]:
+    return {
+        str(item.metadata["binding_id"])
+        for item in records
+        if item.metadata.get("binding_id")
+    }
+
+
+def _record_evidence_version_ids(records: Iterable[SFTRecord]) -> set[str]:
+    identities: set[str] = set()
+    for record in records:
+        payload = json.loads(record.user_prompt)
+        for evidence in payload.get("evidence_corpus") or ():
+            evidence_version_id = str(evidence.get("evidence_version_id") or "")
+            if evidence_version_id:
+                identities.add(evidence_version_id)
+    return identities
+
+
+def _accepted_real_link_count(records: Iterable[SFTRecord]) -> int:
+    return sum(
+        1 for item in records if item.metadata.get("source_candidate_accepted") is True
+    )
+
+
 def _domain_quotas(
     total: int,
     weights: Mapping[str, float],
@@ -919,7 +1153,9 @@ def _cohort_manifest(
     selection_policy_id: str,
     eligible_source_records: tuple[SFTRecord, ...],
     accepted_real_link_count: int,
+    real_feedback_link_count: int = 0,
     eligible_source_pool_hash: str | None = None,
+    materialization_report: SynthesisMaterializationReport | None = None,
 ) -> V09CohortDatasetManifest:
     cell_counts = Counter(
         str(item.metadata.get("synthesis_cell_id") or _record_cell(item).cell_id)
@@ -934,6 +1170,11 @@ def _cohort_manifest(
             "selection_policy_id": selection_policy_id,
             "cell_counts": dict(sorted(cell_counts.items())),
             "source_pool_hash": source_pool_hash,
+            "materialization_report_id": (
+                materialization_report.report_id
+                if materialization_report is not None
+                else None
+            ),
         },
         prefix="training_utility_v09_selection_policy:",
     )
@@ -961,6 +1202,16 @@ def _cohort_manifest(
         ),
         eligible_source_pool_hash=source_pool_hash,
         accepted_real_link_count=accepted_real_link_count,
+        real_feedback_link_count=real_feedback_link_count,
+        materialization_mode=(
+            "new_compilation" if materialization_report is not None else "selection"
+        ),
+        materialization_report=materialization_report,
+        compiler_contract_hash=(
+            materialization_report.provider_contract_hash
+            if materialization_report is not None
+            else None
+        ),
         record_ids=tuple(item.record_id for item in records),
         task_ids=tuple(item.task_id for item in records),
         dataset_hash=canonical_hash(

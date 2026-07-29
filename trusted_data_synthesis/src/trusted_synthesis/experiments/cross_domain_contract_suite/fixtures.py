@@ -71,12 +71,31 @@ def build_contract_cases() -> tuple[ContractCase, ...]:
     return (_legal_case(), _science_case())
 
 
-def build_pattern_validation_cases(*, per_domain: int = 10) -> tuple[ContractCase, ...]:
+def build_pattern_validation_cases(
+    *,
+    per_domain: int = 10,
+    start_index: int = 1,
+) -> tuple[ContractCase, ...]:
     if per_domain < 1:
         raise ValueError("pattern validation requires at least one case per domain")
-    return tuple(_legal_case(index) for index in range(1, per_domain + 1)) + tuple(
-        _science_case(index) for index in range(1, per_domain + 1)
+    if start_index < 1:
+        raise ValueError("pattern fixture start index must be positive")
+    indexes = range(start_index, start_index + per_domain)
+    return tuple(_legal_case(index) for index in indexes) + tuple(
+        _science_case(index) for index in range(start_index, start_index + per_domain)
     )
+
+
+def build_legal_contract_case(index: int) -> ContractCase:
+    if index < 1:
+        raise ValueError("legal fixture index must be positive")
+    return _legal_case(index)
+
+
+def build_science_contract_case(index: int) -> ContractCase:
+    if index < 1:
+        raise ValueError("science fixture index must be positive")
+    return _science_case(index)
 
 
 def fixture_manifest_hash(cases: tuple[ContractCase, ...]) -> str:

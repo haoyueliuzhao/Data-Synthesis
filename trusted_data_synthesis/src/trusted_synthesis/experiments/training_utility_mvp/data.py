@@ -6,7 +6,7 @@ import random
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evaluation.critic.dataset import make_quality_critic_dataset
@@ -755,7 +755,7 @@ def _record_from_example(
 
 def _make_record(
     *,
-    cohort: UtilityCohort | Literal["evaluation"],
+    cohort: UtilityCohort | str,
     task: dict[str, Any],
     evidence: list[dict[str, Any]],
     target: dict[str, Any],

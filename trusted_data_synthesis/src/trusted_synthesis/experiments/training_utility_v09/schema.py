@@ -15,6 +15,7 @@ from trusted_synthesis.core.refinement import (
     ClauseFeedback,
     PolicyUpdateResult,
     SynthesisCell,
+    SynthesisMaterializationReport,
 )
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     CohortEvaluationResult,
@@ -22,7 +23,7 @@ from trusted_synthesis.experiments.training_utility_mvp.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v2"
+TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v3"
 
 CCGR_ABLATION_IDS = (
     "static_verified",
@@ -298,6 +299,10 @@ class V09CohortDatasetManifest(BaseModel):
     eligible_source_domain_counts: dict[str, int]
     eligible_source_pool_hash: str = Field(min_length=1)
     accepted_real_link_count: int = Field(ge=0)
+    real_feedback_link_count: int = Field(default=0, ge=0)
+    materialization_mode: Literal["selection", "new_compilation"] = "selection"
+    materialization_report: SynthesisMaterializationReport | None = None
+    compiler_contract_hash: str | None = None
     record_ids: tuple[str, ...]
     task_ids: tuple[str, ...]
     dataset_hash: str = Field(min_length=1)
@@ -322,6 +327,35 @@ class V09CohortDatasetManifest(BaseModel):
             raise ValueError("cohort synthesis-cell counts must cover every record")
         if sum(self.eligible_source_domain_counts.values()) != self.eligible_source_record_count:
             raise ValueError("eligible source domain counts must cover the source pool")
+        if self.accepted_real_link_count > self.real_feedback_link_count:
+            raise ValueError("accepted links cannot exceed all real-feedback links")
+        if self.real_feedback_link_count > self.record_count:
+            raise ValueError("real-feedback links cannot exceed the cohort size")
+        if self.materialization_mode == "new_compilation":
+            if self.materialization_report is None or self.compiler_contract_hash is None:
+                raise ValueError(
+                    "new compilation requires a materialization report and compiler contract"
+                )
+            report = self.materialization_report
+            if report.status != "passed":
+                raise ValueError("a blocked materialization report cannot back a cohort")
+            if (
+                report.policy_update_id != self.selection_policy_id
+                or report.requested_sample_count != self.record_count
+                or report.successfully_materialized_count != self.record_count
+            ):
+                raise ValueError("materialization report does not cover this cohort")
+            materialized_counts = {
+                cell_id: count
+                for cell_id, count in report.materialized_cell_counts.items()
+                if count
+            }
+            if materialized_counts != self.synthesis_cell_counts:
+                raise ValueError("materialization report Cell counts disagree with the cohort")
+            if self.compiler_contract_hash != report.provider_contract_hash:
+                raise ValueError("cohort compiler contract is not pinned by its report")
+        elif self.materialization_report is not None or self.compiler_contract_hash is not None:
+            raise ValueError("selection materialization cannot attach a compiler report")
         return self
 
 
@@ -370,7 +404,14 @@ class V09TrainingDataManifest(BaseModel):
     train_evaluation_source_record_overlap_count: int = Field(ge=0)
     train_evaluation_binding_overlap_count: int = Field(ge=0)
     c3_c4_task_overlap_count: int = Field(ge=0)
+    c3_c4_binding_overlap_count: int = Field(default=0, ge=0)
+    c3_c4_evidence_version_overlap_count: int = Field(default=0, ge=0)
     c3_c4_source_pool_shared: bool
+    c3_c4_compiler_contract_shared: bool = False
+    synthesis_closed_loop_status: Literal[
+        "legacy_reallocation",
+        "new_binding_compilation",
+    ] = "legacy_reallocation"
     external_benchmark_status: Literal["not_executed"] = "not_executed"
     limitations: tuple[str, ...]
     status: Literal["ready", "pilot_ready", "blocked"]
@@ -423,16 +464,39 @@ class V09TrainingDataManifest(BaseModel):
             raise ValueError(f"v0.9 train/evaluation identities overlap: {observed}")
         c3 = by_cohort[V09Cohort.VERIFIED_STATIC]
         c4 = by_cohort[V09Cohort.FEEDBACK_REFINED]
-        if c3.accepted_real_link_count != c3.record_count:
-            raise ValueError("every C3 record must link to an accepted real candidate")
-        if c4.accepted_real_link_count != c4.record_count:
-            raise ValueError("every C4 record must link to an accepted real candidate")
+        if c3.real_feedback_link_count != c3.record_count:
+            raise ValueError("every C3 record must link to an evaluated real candidate")
+        if c4.real_feedback_link_count != c4.record_count:
+            raise ValueError("every C4 record must link to an evaluated real candidate")
         if (
             not self.c3_c4_source_pool_shared
             or c3.eligible_source_pool_hash != c4.eligible_source_pool_hash
             or c3.eligible_source_record_count != c4.eligible_source_record_count
         ):
-            raise ValueError("C3 and C4 must sample from the same verified source pool")
+            raise ValueError("C3 and C4 must share the same mapped feedback source pool")
+        if self.synthesis_closed_loop_status == "new_binding_compilation":
+            if (
+                c3.materialization_mode != "new_compilation"
+                or c4.materialization_mode != "new_compilation"
+            ):
+                raise ValueError("the synthesis closed loop requires newly compiled C3 and C4")
+            if (
+                not self.c3_c4_compiler_contract_shared
+                or c3.compiler_contract_hash != c4.compiler_contract_hash
+            ):
+                raise ValueError("C3 and C4 must share one frozen compiler contract")
+            overlaps = {
+                "task": self.c3_c4_task_overlap_count,
+                "binding": self.c3_c4_binding_overlap_count,
+                "evidence_version": self.c3_c4_evidence_version_overlap_count,
+            }
+            if any(overlaps.values()):
+                raise ValueError(f"newly compiled C3/C4 identities overlap: {overlaps}")
+        elif (
+            c3.materialization_mode != "selection"
+            or c4.materialization_mode != "selection"
+        ):
+            raise ValueError("legacy reallocation may only use selected source records")
         if self.round0_real_agent_feedback:
             if self.offline_refinement_override or self.causal_status != "online_ready":
                 raise ValueError("real Round-0 data must use the online-ready causal status")

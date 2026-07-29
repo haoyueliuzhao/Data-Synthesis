@@ -51,7 +51,10 @@ def build_training_utility_report(
     if evaluation_hashes != {data_manifest.evaluation_dataset_hash}:
         raise ValueError("all models must use the same frozen evaluation set")
     cohort_manifest_hashes = {item.cohort: item.dataset_hash for item in data_manifest.cohorts}
-    if any(cohort_manifest_hashes[item.cohort] != item.dataset_hash for item in training_results):
+    if any(
+        cohort_manifest_hashes[UtilityCohort(item.cohort)] != item.dataset_hash
+        for item in training_results
+    ):
         raise ValueError("training result does not match the frozen cohort dataset")
     deltas = {
         item.cohort: {

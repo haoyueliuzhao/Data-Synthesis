@@ -130,6 +130,49 @@ The same update engine materializes six frozen comparisons:
 All variants preserve the same sample budget. Random Same Shift isolates whether gains come from the
 feedback direction rather than merely perturbing the distribution.
 
+## Route B: Closed Synthesis Materialization
+
+CCGR allocation now drives a real compilation loop rather than relabeling records from the verified
+source pool:
+
+```text
+PolicyUpdateResult.allocated_counts
+  -> SynthesisCellRequest
+  -> domain Binding Provider
+  -> active binding-constraint replay
+  -> TaskPatternCompiler
+  -> ProofCarryingSampleCompiler
+  -> new Task, Binding, Evidence, Proof, Quality Contract, and Reference identities
+```
+
+`RefinedSynthesisMaterializer` is domain-neutral. It owns request identity, Pattern and Cell replay,
+Binding-feasibility accounting, Quality Contract/Proof compilation, collision rejection, and the
+fail-closed materialization report. The v0.9 Provider owns only Finance, Legal, and Science Binding
+enumeration and predeclared domain constraints. Unknown constraints are rejected; Core cannot
+invent or interpret a domain rule.
+
+Every materialization report freezes:
+
+- policy-allocated, requested, and successfully materialized counts per Cell;
+- Provider candidate, Binding-feasible, Contract-attempt, and Contract-pass counts;
+- Binding feasibility and Contract pass rates;
+- new Task, Binding, and Evidence identity rates and manifest hashes;
+- Provider, Pattern Runtime, and constraint-registry contract hash;
+- stage-specific failures.
+
+A cohort is blocked unless all requested samples compile, all three identity rates are 100%, and no
+stage fails. Evidence Version disjointness is part of Binding novelty because Evidence role IDs are
+included in the immutable Binding hash.
+
+C3 and C4 share the same mapped, evaluated real-candidate feedback pool and Provider/compiler
+contract. A generated Cell links to an accepted source candidate when one exists; otherwise it
+retains an explicit link to the evaluated rejected candidate that supplied the feedback. The
+manifest reports all real-feedback links and the accepted subset separately, while every newly
+compiled target must independently pass its full Quality Contract. Both cohorts compile new,
+mutually disjoint identities. C3 consumes the Static Verified
+allocation; C4 consumes Full CCGR. Their frozen domain totals and student format remain identical,
+so the intended experimental difference is the Cell allocation policy.
+
 ## Causal Cohorts
 
 | Cohort | Evidence | Proof Graph | Executable Program | Quality Contract | Feedback allocation |
@@ -225,6 +268,10 @@ trusted-synthesis audit-training-token-budget \
   --cohort C1_conventional_synthetic \
   --dataset artifacts/training_utility_v09/v09_training_pilot_20260729/C1_conventional_synthetic.jsonl
 ```
+
+The preparation command also writes materialization reports for C3 and C4 beside the datasets.
+The v0.9 data manifest is `training_utility_v09.v3` and rejects legacy record selection when
+`synthesis_closed_loop_status=new_binding_compilation`.
 
 Run the token audit for C1 through C4. Every audit must be `ready`, have zero truncation, remain
 under `max_steps`, and stay within the frozen supervised-token deviation. Train each cohort from the

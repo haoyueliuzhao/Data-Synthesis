@@ -13,6 +13,20 @@ from trusted_synthesis.core.feedback import (
     make_feedback_signal,
     route_failure,
 )
+from trusted_synthesis.core.refinement import (
+    RefinedSynthesisMaterializer,
+    aggregate_cell_feedback,
+    build_observed_policy,
+    build_synthesis_cell,
+    update_synthesis_policy,
+)
+from trusted_synthesis.experiments.counterfactual_finance_fixture import (
+    build_finance_counterfactual_case,
+)
+from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
+    build_legal_contract_case,
+    build_science_contract_case,
+)
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     CohortEvaluationResult,
     CohortTrainingResult,
@@ -30,8 +44,15 @@ from trusted_synthesis.experiments.training_utility_v09 import (
 )
 from trusted_synthesis.experiments.training_utility_v09.data import (
     _bounded_weighted_allocation,
+    _cohort_manifest,
     _domain_quotas,
+    _materialized_records,
+    _record_evidence_version_ids,
     _task_signature,
+)
+from trusted_synthesis.experiments.training_utility_v09.materialization import (
+    V09FixtureBindingProvider,
+    project_policy_counts_to_domain_quotas,
 )
 
 
@@ -281,6 +302,211 @@ def test_v09_task_migration_signature_ignores_legacy_subject_suffix() -> None:
             },
         }
     )
+
+
+@pytest.mark.parametrize(
+    ("case_factory", "source_index", "start_index"),
+    (
+        (build_finance_counterfactual_case, 1, 100_001),
+        (build_legal_contract_case, 1, 200_001),
+        (build_legal_contract_case, 2, 210_002),
+        (build_science_contract_case, 1, 300_001),
+    ),
+)
+def test_route_b_materializes_new_cross_domain_proof_carrying_samples(
+    case_factory,
+    source_index: int,
+    start_index: int,
+) -> None:
+    source = case_factory(1)
+    cell = build_synthesis_cell(
+        source.task.public,
+        source.corpus,
+        source.task.oracle.gold_evidence_ids,
+    )
+    task_cells = {source.task.task_id: cell}
+    policy = build_observed_policy(task_cells)
+    statistics = aggregate_cell_feedback(policy, (), (), task_cells)
+    update = update_synthesis_policy(
+        policy,
+        statistics,
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=2,
+        calibration_manifest_hash="calibration:route_b_test",
+        require_calibrated_feedback=False,
+    )
+    provider = V09FixtureBindingProvider(
+        namespace=f"route_b_{source.domain}",
+        start_index=start_index,
+    )
+
+    artifacts, report = RefinedSynthesisMaterializer(provider).materialize(
+        update,
+        seed=17,
+        forbidden_task_ids={source.task.task_id},
+        forbidden_evidence_version_ids={
+            item.evidence_version_id for item in source.corpus.evidence
+        },
+    )
+
+    assert report.status == "passed"
+    assert report.requested_sample_count == 2
+    assert report.successfully_materialized_count == 2
+    assert report.binding_feasibility_rate == 1
+    assert report.contract_pass_rate == 1
+    assert report.new_task_identity_rate == 1
+    assert report.new_binding_identity_rate == 1
+    assert report.new_evidence_identity_rate == 1
+    assert len({item.compiled.task.task_id for item in artifacts}) == 2
+    assert all(
+        item.compiled.reference_assessment.decision.value == "accepted" for item in artifacts
+    )
+    assert all(item.compiled.quality_contract.clauses for item in artifacts)
+
+
+def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> None:
+    source = build_finance_counterfactual_case(1)
+    cell = build_synthesis_cell(
+        source.task.public,
+        source.corpus,
+        source.task.oracle.gold_evidence_ids,
+    )
+    task_cells = {source.task.task_id: cell}
+    policy = build_observed_policy(task_cells)
+    update = update_synthesis_policy(
+        policy,
+        aggregate_cell_feedback(policy, (), (), task_cells),
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=2,
+        calibration_manifest_hash="calibration:route_b_export",
+        require_calibrated_feedback=False,
+    )
+    artifacts, report = RefinedSynthesisMaterializer(
+        V09FixtureBindingProvider(namespace="route_b_export", start_index=400_001)
+    ).materialize(
+        update,
+        seed=19,
+        forbidden_task_ids={source.task.task_id},
+        forbidden_evidence_version_ids={
+            item.evidence_version_id for item in source.corpus.evidence
+        },
+    )
+
+    records = _materialized_records(
+        artifacts,
+        V09Cohort.VERIFIED_STATIC,
+        update=update,
+        source_cells_by_task={source.task.task_id: cell},
+        source_example_ids={source.task.task_id: "critic_example:accepted"},
+        accepted_example_ids={source.task.task_id: "critic_example:accepted"},
+        materialization_report=report,
+        source_kind="route_b_test",
+    )
+
+    assert len(records) == 2
+    assert {item.task_id for item in records}.isdisjoint({source.task.task_id})
+    assert all(item.metadata["new_identity_compilation"] for item in records)
+    assert all(item.metadata["quality_contract_applied"] for item in records)
+    assert all(item.metadata["materialization_report_id"] == report.report_id for item in records)
+    assert _record_evidence_version_ids(records).isdisjoint(
+        {item.evidence_version_id for item in source.corpus.evidence}
+    )
+    cohort_manifest = _cohort_manifest(
+        V09Cohort.VERIFIED_STATIC,
+        records,
+        selection_policy_id=update.update_id,
+        eligible_source_records=records,
+        accepted_real_link_count=len(records),
+        real_feedback_link_count=len(records),
+        materialization_report=report,
+    )
+    assert cohort_manifest.materialization_mode == "new_compilation"
+    assert cohort_manifest.compiler_contract_hash == report.provider_contract_hash
+    assert cohort_manifest.real_feedback_link_count == len(records)
+
+    fallback_records = _materialized_records(
+        artifacts,
+        V09Cohort.FEEDBACK_REFINED,
+        update=update,
+        source_cells_by_task={source.task.task_id: cell},
+        source_example_ids={source.task.task_id: "critic_example:evaluated"},
+        accepted_example_ids={},
+        materialization_report=report,
+        source_kind="route_b_evaluated_feedback_test",
+    )
+    assert all(not item.metadata["source_candidate_accepted"] for item in fallback_records)
+    assert all("accepted_real_example_id" not in item.metadata for item in fallback_records)
+    fallback_manifest = _cohort_manifest(
+        V09Cohort.FEEDBACK_REFINED,
+        fallback_records,
+        selection_policy_id=update.update_id,
+        eligible_source_records=fallback_records,
+        accepted_real_link_count=0,
+        real_feedback_link_count=len(fallback_records),
+        materialization_report=report,
+    )
+    assert fallback_manifest.accepted_real_link_count == 0
+    assert fallback_manifest.real_feedback_link_count == len(fallback_records)
+
+
+def test_route_b_blocks_reused_evidence_and_binding_identity() -> None:
+    source = build_finance_counterfactual_case(1)
+    cell = build_synthesis_cell(
+        source.task.public,
+        source.corpus,
+        source.task.oracle.gold_evidence_ids,
+    )
+    task_cells = {source.task.task_id: cell}
+    policy = build_observed_policy(task_cells)
+    update = update_synthesis_policy(
+        policy,
+        aggregate_cell_feedback(policy, (), (), task_cells),
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=1,
+        calibration_manifest_hash="calibration:route_b_collision",
+        require_calibrated_feedback=False,
+    )
+
+    artifacts, report = RefinedSynthesisMaterializer(
+        V09FixtureBindingProvider(namespace="route_b_collision", start_index=1)
+    ).materialize(
+        update,
+        seed=23,
+        forbidden_evidence_version_ids={
+            item.evidence_version_id for item in source.corpus.evidence
+        },
+    )
+
+    assert artifacts == ()
+    assert report.status == "blocked"
+    assert report.successfully_materialized_count == 0
+    assert report.new_evidence_identity_rate == 0
+    assert report.failure_counts == {"binding_identity_collision": 1}
+
+
+def test_route_b_domain_projection_preserves_frozen_domain_quotas() -> None:
+    projected = project_policy_counts_to_domain_quotas(
+        policy_allocated_counts={"f_a": 8, "f_b": 2, "l_a": 1, "s_a": 9},
+        policy_probabilities={"f_a": 0.4, "f_b": 0.1, "l_a": 0.05, "s_a": 0.45},
+        cell_domains={
+            "f_a": "finance",
+            "f_b": "finance",
+            "l_a": "legal",
+            "s_a": "science",
+        },
+        domain_quotas={"finance": 8, "legal": 1, "science": 1},
+    )
+
+    assert projected == {"f_a": 6, "f_b": 2, "l_a": 1, "s_a": 1}
 
 
 def test_v09_training_report_preserves_offline_causal_boundary() -> None:

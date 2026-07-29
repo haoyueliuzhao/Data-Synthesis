@@ -35,10 +35,22 @@ from trusted_synthesis.experiments.finance_pilot.task_factory import build_task_
 from trusted_synthesis.hashing import canonical_hash
 
 
-def build_finance_counterfactual_cases(*, count: int) -> tuple[ContractCase, ...]:
+def build_finance_counterfactual_cases(
+    *,
+    count: int,
+    start_index: int = 1,
+) -> tuple[ContractCase, ...]:
     if count < 1:
         raise ValueError("finance counterfactual validation requires at least one case")
-    return tuple(_finance_case(index) for index in range(1, count + 1))
+    if start_index < 1:
+        raise ValueError("finance fixture start index must be positive")
+    return tuple(_finance_case(index) for index in range(start_index, start_index + count))
+
+
+def build_finance_counterfactual_case(index: int) -> ContractCase:
+    if index < 1:
+        raise ValueError("finance fixture index must be positive")
+    return _finance_case(index)
 
 
 def _finance_case(index: int) -> ContractCase:

@@ -10,6 +10,16 @@ from trusted_synthesis.core.refinement.aggregate import (
     legacy_synthesis_cells,
     make_synthesis_cell,
 )
+from trusted_synthesis.core.refinement.materialization import (
+    REFINED_SYNTHESIS_MATERIALIZER_VERSION,
+    RefinedSynthesisArtifact,
+    RefinedSynthesisMaterializer,
+    SynthesisBindingCandidate,
+    SynthesisBindingProviderProtocol,
+    SynthesisCellRequest,
+    SynthesisMaterializationReport,
+    make_synthesis_cell_request,
+)
 from trusted_synthesis.core.refinement.schema import (
     CCGR_ALGORITHM_ID,
     CCGR_ALGORITHM_VERSION,
@@ -27,12 +37,19 @@ from trusted_synthesis.core.refinement.update import (
 __all__ = [
     "CCGR_ALGORITHM_ID",
     "CCGR_ALGORITHM_VERSION",
+    "REFINED_SYNTHESIS_MATERIALIZER_VERSION",
+    "RefinedSynthesisArtifact",
+    "RefinedSynthesisMaterializer",
     "CLAUSE_CALIBRATION_FORMULA",
     "CellFeedbackStatistics",
     "ClauseFeedback",
     "PolicyUpdateResult",
     "SynthesisCell",
     "SynthesisPolicy",
+    "SynthesisBindingCandidate",
+    "SynthesisBindingProviderProtocol",
+    "SynthesisCellRequest",
+    "SynthesisMaterializationReport",
     "aggregate_cell_feedback",
     "build_observed_policy",
     "build_synthesis_cell",
@@ -42,6 +59,7 @@ __all__ = [
     "clause_reliability",
     "legacy_synthesis_cells",
     "make_synthesis_cell",
+    "make_synthesis_cell_request",
     "random_same_shift_update",
     "update_synthesis_policy",
 ]

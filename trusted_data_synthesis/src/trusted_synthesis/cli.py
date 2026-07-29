@@ -236,20 +236,23 @@ def main(argv: list[str] | None = None) -> int:
         agent_report, critic_examples, critic_artifact_sha256 = (
             load_v09_real_agent_artifacts(args.agent_artifacts)
         )
-        cohorts, evaluation, data_manifest = build_v09_training_datasets(
+        critic_dataset_id = agent_report.critic_dataset_id
+        if critic_dataset_id is None:
+            raise ValueError("Agent report does not pin a Quality Critic dataset")
+        v09_cohorts, evaluation, data_manifest = build_v09_training_datasets(
             refinement_config,
             utility_config,
             refinement_manifest,
             agent_report,
             critic_examples,
-            agent_report.critic_dataset_id,
+            critic_dataset_id,
             critic_artifact_sha256,
             allow_offline_refinement_pilot=args.allow_offline_refinement_pilot,
             reference_cache_dir=args.output_dir / "_reference_cache",
         )
         write_v09_training_datasets(
             args.output_dir,
-            cohorts,
+            v09_cohorts,
             evaluation,
             data_manifest,
         )
