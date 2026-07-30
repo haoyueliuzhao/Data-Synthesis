@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 from decimal import Decimal, InvalidOperation
+from functools import cache
 from typing import Any, cast
 
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -324,7 +325,7 @@ def make_operation_definition(
 ) -> OperationDefinition:
     dependencies = (type(executor), type(verifier), *implementation_dependencies)
     dependency_sources = {
-        _implementation_id(dependency): inspect.getsource(cast(Any, dependency))
+        _implementation_id(dependency): _implementation_source(dependency)
         for dependency in dependencies
     }
     implementation_hash = canonical_hash(
@@ -353,6 +354,11 @@ def make_operation_definition(
         implementation_hash=implementation_hash,
         implementation_dependency_ids=tuple(sorted(dependency_sources)),
     )
+
+
+@cache
+def _implementation_source(value: object) -> str:
+    return inspect.getsource(cast(Any, value))
 
 
 def _implementation_id(value: object) -> str:

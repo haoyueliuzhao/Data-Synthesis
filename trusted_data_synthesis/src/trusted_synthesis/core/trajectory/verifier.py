@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
+from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evaluation.citation import CitationVerifier
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
@@ -41,6 +42,7 @@ class ReferenceWorkflowVerifier:
 
     def __init__(self, registry: OperationRegistry | None = None) -> None:
         self._oracle = TaskProgramOracleVerifier(registry or default_registry())
+        self._answer_normalizer = CandidateAnswerNormalizer()
         self._graph_validator = ProofGraphValidator()
         self._citation_verifier = CitationVerifier()
 
@@ -63,10 +65,26 @@ class ReferenceWorkflowVerifier:
         )
         actions = {step.action for step in trajectory.steps}
         referenced = {item for step in trajectory.steps for item in step.evidence_ids}
+        answer_schema_valid, _ = self._answer_normalizer.validate_schema(
+            task.public, trajectory.final_answer
+        )
+        expected_answer = (
+            self._answer_normalizer.normalize_oracle(
+                task,
+                replay.independently_computed_output,
+                tuple(by_id[item] for item in gold_ids),
+                node_outputs=replay.independently_computed_node_outputs,
+            )
+            if replay and replay.passed and complete and replay.independently_computed_output
+            else None
+        )
+        observed_answer = self._answer_normalizer.normalize_candidate(
+            task.public, trajectory.final_answer
+        )
         result_matches = bool(
-            replay
-            and replay.passed
-            and trajectory.final_answer.get("result") == replay.independently_computed_output
+            answer_schema_valid
+            and expected_answer is not None
+            and self._answer_normalizer.equivalent(observed_answer, expected_answer)
         )
         graph_report = self._graph_validator.validate(proof_graph, bundle, gold_ids)
         citation_report = self._citation_verifier.verify(

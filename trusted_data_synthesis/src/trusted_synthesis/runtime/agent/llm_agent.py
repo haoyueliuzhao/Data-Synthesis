@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.operations.registry import OperationRegistry
+from trusted_synthesis.core.task.answer_schema import required_answer_fields
 from trusted_synthesis.core.task.schema import (
     PlanningTrack,
     RetrievalTrack,
@@ -44,9 +45,9 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v7"
-LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v7"
-LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v6"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v8"
+LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v8"
+LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v7"
 LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v1"
 LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v1"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
@@ -114,14 +115,12 @@ class LLMAgentSolver:
                 action_telemetry,
                 action_repairs,
                 action_failure_history,
-            ) = (
-                _request_host_action_plan(
-                    self._client,
-                    action_prompt,
-                    task,
-                    retrieved,
-                    self._registry,
-                )
+            ) = _request_host_action_plan(
+                self._client,
+                action_prompt,
+                task,
+                retrieved,
+                self._registry,
             )
             telemetry.extend(action_telemetry)
             repair_count += action_repairs
@@ -234,9 +233,7 @@ class LLMAgentSolver:
             ),
             answer_contract_repair_count=answer_repairs,
             action_failure_history=action_failure_history,
-            host_replay_available=(
-                self._client.config.interaction_protocol == "host_instrumented"
-            ),
+            host_replay_available=(self._client.config.interaction_protocol == "host_instrumented"),
             execution_replay_valid=(
                 True if self._client.config.interaction_protocol == "host_instrumented" else None
             ),
@@ -576,8 +573,7 @@ def _validate_agent_response_contract(
     )
     if not answer_schema_passed:
         raise ValueError(
-            "final_answer violates the task answer schema: "
-            + "; ".join(answer_schema_failures)
+            "final_answer violates the task answer schema: " + "; ".join(answer_schema_failures)
         )
     citations = response.final_answer.citations
     citation_ids = tuple(item.evidence_id for item in citations)
@@ -781,8 +777,7 @@ def _build_action_prompt(
         "last execution. Do not answer the task in this phase and include no text outside JSON."
     )
     prompt = (
-        f"{instructions}\n\nPAYLOAD:\n"
-        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+        f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_action_prompt_manifest:")
 
@@ -860,8 +855,7 @@ def _build_final_answer_prompt(
         "those records and will independently bind them."
     )
     prompt = (
-        f"{instructions}\n\nPAYLOAD:\n"
-        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+        f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_final_answer_prompt_manifest:")
 
@@ -998,16 +992,13 @@ def _public_operation_catalog(
 ) -> tuple[dict[str, Any], ...]:
     manifest = registry.manifest()
     if task.program_skeleton is not None:
-        allowed_operator_ids = {
-            node.operator_id for node in task.program_skeleton.nodes
-        }
+        allowed_operator_ids = {node.operator_id for node in task.program_skeleton.nodes}
     else:
         allowed_tools = set(task.allowed_tools)
         allowed_operator_ids = {
             str(item["operator_id"])
             for item in manifest
-            if item["action_type"] == "select_evidence"
-            or item["tool_capability"] in allowed_tools
+            if item["action_type"] == "select_evidence" or item["tool_capability"] in allowed_tools
         }
     return tuple(
         {
@@ -1048,9 +1039,7 @@ def _task_execution_contract(
         "node_contracts": node_contracts,
         "allowed_operator_ids": [item["operator_id"] for item in operation_catalog],
         "output_public_node_id": (
-            task.program_skeleton.output_node_id
-            if task.program_skeleton is not None
-            else None
+            task.program_skeleton.output_node_id if task.program_skeleton is not None else None
         ),
         "verification_required": TaskRequirement.VERIFY_RESULT in task.requirements,
         "verification_rule": (
@@ -1076,12 +1065,8 @@ def _operation_field_rules(operator_id: str) -> tuple[str, ...]:
             "higher_ref is the exact raw input evidence_id with the greater value, or null",
             "difference is an unsigned plain decimal string with no unit text",
         ),
-        "difference": (
-            "value is a plain decimal string with no unit text",
-        ),
-        "ratio": (
-            "value is a plain decimal string with no unit or percent suffix",
-        ),
+        "difference": ("value is a plain decimal string with no unit text",),
+        "ratio": ("value is a plain decimal string with no unit or percent suffix",),
         "growth": (
             "value is the unrounded percentage number as a plain decimal string",
             "never append a percent sign or descriptive text",
@@ -1102,18 +1087,7 @@ def _operation_field_rules(operator_id: str) -> tuple[str, ...]:
 
 def _final_answer_contract(task: TaskPublicSpec) -> dict[str, Any]:
     answer_type = str(task.answer_schema.get("type") or "")
-    registered_fields = {
-        "payload_with_source": ("payload", "source_id"),
-        "comparison": ("higher_ref", "difference"),
-        "percentage": ("value",),
-        "aggregate": ("method", "value"),
-    }
-    required_result_fields = tuple(
-        registered_fields.get(
-            answer_type,
-            tuple(task.answer_schema.get("required_fields") or ()),
-        )
-    )
+    required_result_fields = required_answer_fields(task.answer_schema)
     optional_result_fields = tuple(task.answer_schema.get("optional_fields") or ())
     allowed_top_level = ["result", "citations"]
     if task.answer_schema.get("allow_status") is True:

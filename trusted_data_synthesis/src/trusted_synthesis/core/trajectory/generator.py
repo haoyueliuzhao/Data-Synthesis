@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
@@ -13,7 +14,7 @@ from trusted_synthesis.core.trajectory.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-REFERENCE_COMPILER_VERSION = "reference_workflow.v3"
+REFERENCE_COMPILER_VERSION = "reference_workflow.v4"
 
 
 class ReferenceWorkflowError(ValueError):
@@ -43,6 +44,12 @@ class ReferenceWorkflowCompiler:
             }
             for item in evidence_ids
         ]
+        answer_result = CandidateAnswerNormalizer().normalize_oracle(
+            task,
+            execution.final_output,
+            tuple(by_id[item] for item in evidence_ids),
+            node_outputs=execution.node_outputs,
+        )
         steps = (
             TrajectoryStep(
                 step_index=1,
@@ -91,7 +98,7 @@ class ReferenceWorkflowCompiler:
             TrajectoryStep(
                 step_index=6,
                 action=ActionType.ANSWER,
-                observation={"result": execution.final_output, "citations": citations},
+                observation={"result": answer_result, "citations": citations},
                 evidence_ids=evidence_ids,
                 rationale_summary="Return the computed result with complete source lineage.",
                 status=StepStatus.SUCCEEDED,
@@ -109,6 +116,6 @@ class ReferenceWorkflowCompiler:
             workflow_kind=WorkflowKind.REFERENCE,
             steps=steps,
             program_execution=execution.model_dump(mode="json"),
-            final_answer={"result": execution.final_output, "citations": citations},
+            final_answer={"result": answer_result, "citations": citations},
             generator_version=REFERENCE_COMPILER_VERSION,
         )

@@ -17,6 +17,7 @@ from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.experiments.finance_pilot.sampler import (
     TaskBinding,
     select_distractors,
+    select_real_distractors,
 )
 from trusted_synthesis.hashing import canonical_hash
 
@@ -40,6 +41,7 @@ def build_task_cases(
     distractors_per_task: int,
     hard_distractors_per_task: int | None = None,
     hard_distractor_types: tuple[str, ...] = (),
+    use_real_distractors: bool = False,
     task_synthesizer: FinanceTaskPlugin,
 ) -> tuple[PilotTaskCase, ...]:
     by_id = {item.evidence_id: item for item in evidence}
@@ -66,20 +68,55 @@ def build_task_cases(
             task = task_synthesizer.comparison(graph, bundle, *binding.evidence_ids)
         elif binding.task_type == "temporal_growth":
             task = task_synthesizer.temporal_growth(graph, bundle, *binding.evidence_ids)
+        elif binding.task_type == "temporal_absolute_change":
+            task = task_synthesizer.temporal_absolute_change(
+                graph,
+                bundle,
+                *binding.evidence_ids,
+            )
+        elif binding.task_type == "registered_ratio":
+            numerator = by_id[binding.evidence_ids[0]]
+            denominator = by_id[binding.evidence_ids[1]]
+            task = task_synthesizer.registered_ratio(
+                graph,
+                bundle,
+                *binding.evidence_ids,
+                registered_pair=f"{numerator.predicate}/{denominator.predicate}",
+            )
+        elif binding.task_type == "derived_growth_comparison":
+            task = task_synthesizer.derived_growth_comparison(
+                graph,
+                bundle,
+                *binding.evidence_ids,
+            )
         elif binding.task_type == "temporal_average":
             task = task_synthesizer.temporal_average(graph, bundle, binding.evidence_ids)
         else:
             raise ValueError(f"unsupported pilot task type: {binding.task_type}")
-        hard_distractors, distractor_kinds = _hard_distractors(
-            gold,
-            hard_distractor_types,
-            (
-                distractors_per_task
-                if hard_distractors_per_task is None
-                else hard_distractors_per_task
-            ),
+        hard_count = (
+            distractors_per_task if hard_distractors_per_task is None else hard_distractors_per_task
         )
-        soft_distractors = select_distractors(evidence, gold, distractors_per_task)
+        if use_real_distractors:
+            real_selection = select_real_distractors(
+                evidence,
+                gold,
+                hard_count=hard_count,
+                broad_count=distractors_per_task,
+                preferred_hard_kinds=hard_distractor_types,
+            )
+            hard_distractors = real_selection.hard
+            soft_distractors = real_selection.broad
+            distractor_kinds = {
+                item.evidence_id: real_selection.kinds[item.evidence_id]
+                for item in hard_distractors
+            }
+        else:
+            hard_distractors, distractor_kinds = _hard_distractors(
+                gold,
+                hard_distractor_types,
+                hard_count,
+            )
+            soft_distractors = select_distractors(evidence, gold, distractors_per_task)
         distractors = (*hard_distractors, *soft_distractors)
         corpus_evidence = tuple(sorted((*gold, *distractors), key=lambda item: item.evidence_id))
         corpus = EvidenceCorpus(

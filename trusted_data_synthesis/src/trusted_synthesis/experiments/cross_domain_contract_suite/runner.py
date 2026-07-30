@@ -83,7 +83,12 @@ def run_cross_domain_contract_suite() -> CrossDomainContractArtifacts:
             contract_compiler,
             case.plugin_set,
             semantic_policy=case.semantic_policy,
-        ).compile(case.task, case.bundle, case.proof_graph)
+        ).compile(
+            case.task,
+            case.bundle,
+            case.proof_graph,
+            public_corpus=case.corpus,
+        )
         reference_assessment = compiled.reference_assessment
         proof_samples.append(compiled.sample)
         quality_contracts.append(compiled.quality_contract)

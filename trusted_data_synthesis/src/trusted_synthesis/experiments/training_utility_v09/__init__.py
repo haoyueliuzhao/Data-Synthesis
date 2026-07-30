@@ -9,6 +9,7 @@ from trusted_synthesis.experiments.training_utility_v09.data import (
 )
 from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
     FinanceArchiveBindingProvider,
+    FinanceArchiveCapacityReport,
 )
 from trusted_synthesis.experiments.training_utility_v09.pilot import (
     build_v09_offline_pilot,
@@ -34,6 +35,7 @@ from trusted_synthesis.experiments.training_utility_v09.schema import (
 
 __all__ = [
     "FinanceArchiveBindingProvider",
+    "FinanceArchiveCapacityReport",
     "TRAINING_UTILITY_V09_VERSION",
     "V09Cohort",
     "V09CohortContract",

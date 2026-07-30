@@ -32,6 +32,7 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     audit_training_utility_readiness,
     build_qa_review_record,
     build_training_utility_datasets,
+    export_traditional_qa,
     export_training_utility_review,
     score_generated_response,
     write_reference_training_preflight,
@@ -105,10 +106,7 @@ class _CharacterChatTokenizer:
         add_generation_prompt: bool,
     ) -> str:
         assert tokenize is False
-        text = "".join(
-            f"<{item['role']}>{item['content']}</{item['role']}>"
-            for item in messages
-        )
+        text = "".join(f"<{item['role']}>{item['content']}</{item['role']}>" for item in messages)
         if add_generation_prompt:
             text += "<assistant>"
         return text
@@ -233,10 +231,7 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
     assert manifest.critic_model_ids == ("deepseek-v4-pro",)
     assert manifest.d5_selection_status == "complete"
     assert manifest.d5_selection_id
-    assert all(
-        item.source_kind == "real_agent"
-        for item in cohorts[UtilityCohort.RANDOM_SYNTHETIC]
-    )
+    assert all(item.source_kind == "real_agent" for item in cohorts[UtilityCohort.RANDOM_SYNTHETIC])
     assert all(
         not item.counterfactual_repair
         and item.metadata["training_mode"] == "solve"
@@ -257,9 +252,7 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
     )
     for records in cohorts.values():
         for item in records:
-            supervised = "".join(
-                message.content for message in item.messages if message.supervise
-            )
+            supervised = "".join(message.content for message in item.messages if message.supervise)
             assert "execution_trace" not in supervised
             assert "execution_id" not in supervised
             assert "source_locator" not in supervised
@@ -270,6 +263,59 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
                 host_feedback["output_result"],
                 sort_keys=True,
             )
+
+
+def test_training_prompt_v5_disambiguates_public_program_and_action_ir() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+    )
+    records, _ = _reference_and_evaluation_records(config)
+    record = records[0]
+    user_payload = json.loads(record.user_prompt)
+    action_payload = json.loads(record.messages[2].content)
+    output_contract = user_payload["output_contract"]
+
+    assert record.prompt_version == config.prompt_version
+    assert record.metadata["prompt_version"] == config.prompt_version
+    assert output_contract["prompt_version"] == config.prompt_version
+    assert "result_contract" in output_contract["second_response_after_tool"]
+    assert output_contract["first_response"]["forbidden_input_fields"] == [
+        "kind",
+        "role_id",
+        "semantic_constraints",
+        "source_id",
+    ]
+    assert "Do not copy kind, role_id, semantic_constraints, source_id" in record.system_prompt
+    assert all(
+        set(action_input) <= {"source", "evidence_id", "step_index", "selector"}
+        for execution in action_payload["executions"]
+        for action_input in execution["inputs"]
+    )
+
+
+def test_training_prompt_v5_remains_replayable() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+        prompt_version="training_utility_agent_prompt.v5",
+    )
+    records, _ = _reference_and_evaluation_records(config)
+    record = records[0]
+    output_contract = json.loads(record.user_prompt)["output_contract"]
+
+    assert record.prompt_version == "training_utility_agent_prompt.v5"
+    assert "result_contract" not in output_contract["second_response_after_tool"]
+    assert "result must exactly match public_task.answer_schema" not in record.system_prompt
+
+
+def test_training_prompt_version_fails_closed() -> None:
+    with pytest.raises(ValueError, match="unsupported training utility prompt"):
+        TrainingUtilityMVPConfig(prompt_version="training_utility_agent_prompt.unknown")
 
 
 def test_training_utility_scorer_separates_contract_and_answer_accuracy(
@@ -311,6 +357,27 @@ def test_training_utility_scorer_separates_contract_and_answer_accuracy(
     assert outcome["response_contract"] is True
     assert outcome["answer_exact"] is False
     assert outcome["end_to_end"] is False
+
+
+def test_training_utility_scorer_normalizes_numeric_answer_representation() -> None:
+    _, evaluation = _reference_and_evaluation_records(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=3,
+            evaluation_tasks_per_domain=3,
+            cohort_size=6,
+            max_steps=1,
+        )
+    )
+    record = next(item for item in evaluation if "total_sample_size" in item.assistant_target)
+    predicted = json.loads(record.assistant_target)
+    result = predicted["answer_decision"]["result"]
+    result["total_sample_size"] = int(result["total_sample_size"])
+
+    outcome = score_generated_response(record, json.dumps(predicted))
+
+    assert outcome["response_contract"] is True
+    assert outcome["answer_exact"] is True
+    assert outcome["end_to_end"] is True
 
 
 def test_host_transcript_masks_tool_messages_from_sft_loss() -> None:
@@ -442,9 +509,7 @@ def test_training_utility_review_export_fails_on_invalid_embedded_json(
     )
     broken_messages = list(records[0].messages)
     broken_messages[1] = broken_messages[1].model_copy(update={"content": "{"})
-    broken = records[0].model_copy(
-        update={"user_prompt": "{", "messages": tuple(broken_messages)}
-    )
+    broken = records[0].model_copy(update={"user_prompt": "{", "messages": tuple(broken_messages)})
     (input_dir / "D2_reference_workflow.jsonl").write_text(
         broken.model_dump_json() + "\n",
         encoding="utf-8",
@@ -452,6 +517,86 @@ def test_training_utility_review_export_fails_on_invalid_embedded_json(
 
     with pytest.raises(ValueError, match="invalid JSON in user_prompt"):
         export_training_utility_review(input_dir, tmp_path / "review")
+
+
+def test_traditional_qa_export_contains_only_question_and_answer(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "data"
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+    )
+    write_reference_training_preflight(config, input_dir)
+    (input_dir / "D2_reference_workflow.jsonl").rename(input_dir / "C3_verified_static.jsonl")
+    output_file = tmp_path / "traditional_qa.jsonl"
+
+    result = export_traditional_qa(
+        input_dir,
+        output_file,
+        cohorts=("C3_verified_static",),
+        limit=2,
+    )
+
+    rows = [json.loads(line) for line in output_file.read_text().splitlines() if line]
+    assert result.record_count == 2
+    assert result.cohort_counts == {"C3_verified_static": 2}
+    assert all(set(row) == {"question", "answer"} for row in rows)
+    assert all(isinstance(row["question"], str) and row["question"] for row in rows)
+    assert all(row["answer"] is not None for row in rows)
+
+
+def test_traditional_qa_markdown_has_no_experiment_metadata(tmp_path: Path) -> None:
+    input_dir = tmp_path / "data"
+    write_reference_training_preflight(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=2,
+            evaluation_tasks_per_domain=1,
+            cohort_size=6,
+            max_steps=1,
+        ),
+        input_dir,
+    )
+    output_file = tmp_path / "traditional_qa.md"
+
+    result = export_traditional_qa(
+        input_dir,
+        output_file,
+        cohorts=("D2_reference_workflow",),
+        limit=1,
+    )
+
+    rendered = output_file.read_text()
+    assert result.output_format == "markdown"
+    assert "**Question**" in rendered
+    assert "**Answer**" in rendered
+    assert "Evidence" not in rendered
+    assert "record_id" not in rendered
+    assert "cohort" not in rendered.lower()
+
+
+def test_traditional_qa_default_discovery_ignores_its_own_output(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "data"
+    write_reference_training_preflight(
+        TrainingUtilityMVPConfig(
+            candidate_tasks_per_domain=2,
+            evaluation_tasks_per_domain=1,
+            cohort_size=6,
+            max_steps=1,
+        ),
+        input_dir,
+    )
+    output_file = input_dir / "traditional_qa.jsonl"
+
+    first = export_traditional_qa(input_dir, output_file, limit=2)
+    second = export_traditional_qa(input_dir, output_file, limit=2)
+
+    assert first.record_count == second.record_count == 2
+    assert first.dataset_hash == second.dataset_hash
 
 
 def test_training_utility_review_labels_target_semantics() -> None:
@@ -565,9 +710,7 @@ def test_supervised_token_schedule_is_deterministic_and_step_aligned() -> None:
     assert first == second
     assert first_tokens == second_tokens
     assert len(first) % 2 == 0
-    assert first_tokens == sum(
-        label != -100 for item in first for label in item["labels"]
-    )
+    assert first_tokens == sum(label != -100 for item in first for label in item["labels"])
 
 
 def test_completed_token_budget_uses_microbatches_not_examples() -> None:

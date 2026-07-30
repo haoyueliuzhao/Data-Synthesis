@@ -98,7 +98,12 @@ def build_synthesis_cell(
         refinement.get("active_binding_constraints") or ()
     )
     pattern_id = str(pattern.get("pattern_id") or task.task_type)
-    difficulty_bucket = str(difficulty.get("level") or pattern.get("difficulty_base") or "unknown")
+    difficulty_bucket = _cell_difficulty_bucket(
+        task,
+        difficulty,
+        required,
+        distractors,
+    )
     return make_synthesis_cell(
         pattern_id=pattern_id,
         binding_stratum_id=_binding_stratum_id(required),
@@ -531,14 +536,23 @@ def _binding_stratum_id(evidence: tuple[EvidenceItem, ...]) -> str:
     definitions = sum(
         bool(item.definition.definition_id or item.definition.text) for item in evidence
     )
+    build_keys = sorted({key for item in evidence for key in item.provenance.build_ids})
     structure = {
+        "signature_version": 3,
         "evidence_count_bucket": _count_bucket(len(evidence)),
         "evidence_kinds": tuple(sorted({item.evidence_kind.value for item in evidence})),
+        "metric_categories": tuple(sorted({_metric_category(item) for item in evidence})),
         "source_authorities": tuple(sorted({item.source.authority.value for item in evidence})),
         "source_count_bucket": _count_bucket(len({item.source.source_id for item in evidence})),
         "definition_coverage": _coverage_label(definitions, len(evidence)),
+        "definition_id_cardinality": _count_bucket(
+            len({item.definition.definition_id for item in evidence})
+        ),
         "temporal_basis_cardinality": len(
             {item.temporal_context.basis for item in evidence if item.temporal_context.basis}
+        ),
+        "temporal_bases": tuple(
+            sorted({item.temporal_context.basis or "unspecified" for item in evidence})
         ),
         "frequency_cardinality": len(
             {
@@ -547,11 +561,35 @@ def _binding_stratum_id(evidence: tuple[EvidenceItem, ...]) -> str:
                 if item.temporal_context.frequency
             }
         ),
+        "frequencies": tuple(
+            sorted({item.temporal_context.frequency or "unspecified" for item in evidence})
+        ),
         "scope_types": tuple(
             sorted({item.scope.scope_type for item in evidence if item.scope is not None})
         ),
+        "payload_kinds": tuple(sorted(Counter(_payload_kind(item) for item in evidence).items())),
+        "units": tuple(sorted(Counter(_unit(item) for item in evidence).items())),
+        "currencies": tuple(sorted(Counter(_currency(item) for item in evidence).items())),
+        "epistemic_statuses": tuple(sorted({item.epistemic_status.value for item in evidence})),
+        "forecast_states": tuple(sorted({_forecast_state(item) for item in evidence})),
+        "period_types": tuple(sorted({_period_type(item) for item in evidence})),
+        "build_key_cardinalities": tuple(
+            (
+                key,
+                _count_bucket(
+                    len(
+                        {
+                            item.provenance.build_ids.get(key)
+                            for item in evidence
+                            if item.provenance.build_ids.get(key)
+                        }
+                    )
+                ),
+            )
+            for key in build_keys
+        ),
     }
-    return canonical_hash(structure, prefix="binding_stratum:")
+    return canonical_hash(structure, prefix="binding_stratum_v3:")
 
 
 def _distractor_profile_id(
@@ -560,34 +598,185 @@ def _distractor_profile_id(
 ) -> str:
     if not distractors:
         return "distractor:none"
-    signatures = Counter(_closest_distractor_signature(item, required) for item in distractors)
+    profiles = tuple(_closest_distractor_profile(item, required) for item in distractors)
     structure = {
+        "signature_version": 3,
         "count_bucket": _count_bucket(len(distractors)),
-        "signatures": tuple(sorted(signatures.items())),
+        "primary_error_families": tuple(
+            sorted(Counter(primary for primary, _ in profiles).items())
+        ),
+        "mismatch_count_buckets": tuple(
+            sorted(Counter(_count_bucket(count) for _, count in profiles).items())
+        ),
     }
-    return canonical_hash(structure, prefix="distractor_profile:")
+    return canonical_hash(structure, prefix="distractor_profile_v3:")
 
 
 def _closest_distractor_signature(
     distractor: EvidenceItem,
     required: tuple[EvidenceItem, ...],
 ) -> str:
-    signatures = []
-    for item in required:
-        signatures.append(
-            (
-                int(distractor.subject.subject_id == item.subject.subject_id),
-                int(distractor.predicate == item.predicate),
-                int(distractor.definition.definition_id == item.definition.definition_id),
-                int(
-                    (distractor.scope.scope_id if distractor.scope else None)
-                    == (item.scope.scope_id if item.scope else None)
-                ),
-                int(distractor.temporal_context.label == item.temporal_context.label),
-                int(distractor.source.source_id == item.source.source_id),
-            )
-        )
-    return "".join(str(value) for value in max(signatures))
+    return _closest_distractor_profile(distractor, required)[0]
+
+
+def _closest_distractor_profile(
+    distractor: EvidenceItem,
+    required: tuple[EvidenceItem, ...],
+) -> tuple[str, int]:
+    profiles = tuple(_evidence_mismatches(distractor, item) for item in required)
+    closest = min(profiles, key=lambda value: (len(value), value))
+    if not closest:
+        return "semantic_equivalent", 0
+    return min(closest, key=_mismatch_priority), len(closest)
+
+
+def _evidence_mismatches(distractor: EvidenceItem, item: EvidenceItem) -> tuple[str, ...]:
+    mismatches = []
+    if distractor.subject.subject_id != item.subject.subject_id:
+        mismatches.append("entity")
+    if distractor.predicate != item.predicate:
+        mismatches.append("predicate")
+    if distractor.definition.definition_id != item.definition.definition_id:
+        mismatches.append("definition")
+    if _scope_contract(distractor) != _scope_contract(item):
+        mismatches.append("scope")
+    if _temporal_contract(distractor) != _temporal_contract(item):
+        mismatches.append("period")
+    if distractor.source.source_id != item.source.source_id:
+        mismatches.append("source")
+    if distractor.source.authority != item.source.authority:
+        mismatches.append("source_authority")
+    if _payload_kind(distractor) != _payload_kind(item):
+        mismatches.append("payload_kind")
+    if _unit(distractor) != _unit(item):
+        mismatches.append("unit")
+    if _currency(distractor) != _currency(item):
+        mismatches.append("currency")
+    if distractor.epistemic_status != item.epistemic_status:
+        mismatches.append("epistemic_status")
+    if distractor.provenance.build_ids != item.provenance.build_ids:
+        mismatches.append("evidence_version")
+    if _forecast_state(distractor) != _forecast_state(item):
+        mismatches.append("forecast_state")
+    if _period_type(distractor) != _period_type(item):
+        mismatches.append("period_type")
+    return tuple(mismatches)
+
+
+def _payload_kind(item: EvidenceItem) -> str:
+    return item.evidence_kind.value
+
+
+def _unit(item: EvidenceItem) -> str:
+    payload = item.payload.model_dump(mode="json", exclude_none=True)
+    return str(payload.get("unit") or "unit:none")
+
+
+def _currency(item: EvidenceItem) -> str:
+    payload = item.payload.model_dump(mode="json", exclude_none=True)
+    return str(payload.get("currency") or "currency:none")
+
+
+def _metric_category(item: EvidenceItem) -> str:
+    return str(item.definition.attributes.get("metric_category") or "unspecified")
+
+
+def _mismatch_priority(value: str) -> int:
+    order = (
+        "definition",
+        "period",
+        "scope",
+        "entity",
+        "predicate",
+        "unit",
+        "currency",
+        "period_type",
+        "forecast_state",
+        "evidence_version",
+        "source_authority",
+        "source",
+        "payload_kind",
+        "epistemic_status",
+    )
+    return order.index(value) if value in order else len(order)
+
+
+def _scope_contract(item: EvidenceItem) -> tuple[str | None, str | None]:
+    if item.scope is None:
+        return None, None
+    return item.scope.scope_type, item.scope.scope_id
+
+
+def _temporal_contract(
+    item: EvidenceItem,
+) -> tuple[str | None, str | None, str | None, str | None, str | None, str | None]:
+    context = item.temporal_context
+    return (
+        context.label,
+        context.valid_from.isoformat() if context.valid_from else None,
+        context.valid_to.isoformat() if context.valid_to else None,
+        context.observed_at.isoformat() if context.observed_at else None,
+        context.basis,
+        context.frequency,
+    )
+
+
+def _forecast_state(item: EvidenceItem) -> str:
+    value = item.domain_context.get("is_forecast")
+    if value is True:
+        return "forecast"
+    if value is False:
+        return "actual"
+    return "unspecified"
+
+
+def _period_type(item: EvidenceItem) -> str:
+    return str(item.definition.attributes.get("period_type") or "unspecified")
+
+
+def _cell_difficulty_bucket(
+    task: TaskPublicSpec,
+    difficulty: Mapping[str, object],
+    required: tuple[EvidenceItem, ...],
+    distractors: tuple[EvidenceItem, ...],
+) -> str:
+    """Derive observed difficulty from structure and retrieval ambiguity only."""
+
+    raw_base_score = difficulty.get("structural_score", difficulty.get("total_score"))
+    try:
+        base_score = float(raw_base_score) if isinstance(raw_base_score, (str, int, float)) else 0.0
+    except ValueError:
+        base_score = 0.0
+    profiles = tuple(_closest_distractor_profile(item, required) for item in distractors)
+    hard_near_misses = sum(
+        primary == "semantic_equivalent" or mismatch_count <= 2
+        for primary, mismatch_count in profiles
+    )
+    source_count = len({item.source.source_id for item in (*required, *distractors)})
+    retrieval_cost = {
+        "resolved": 0.0,
+        "semi_open": 1.0,
+        "open": 2.0,
+    }.get(task.retrieval_track.value, 0.0)
+    adjusted_score = (
+        base_score
+        + min(hard_near_misses, 6) * 0.6
+        + min(len(distractors), 10) * 0.15
+        + max(source_count - 1, 0) * 0.4
+        + retrieval_cost
+    )
+    score_level = (
+        "easy"
+        if adjusted_score < 5
+        else "medium"
+        if adjusted_score < 9
+        else "hard"
+        if adjusted_score < 14
+        else "expert"
+        if adjusted_score < 21
+        else "research"
+    )
+    return score_level
 
 
 def _combine_slice_metrics(

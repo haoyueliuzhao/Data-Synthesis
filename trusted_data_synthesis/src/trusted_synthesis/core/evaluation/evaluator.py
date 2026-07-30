@@ -33,8 +33,8 @@ from trusted_synthesis.core.trajectory.verifier import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-REFERENCE_EVALUATOR_VERSION = "reference_quality.v5"
-CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v6"
+REFERENCE_EVALUATOR_VERSION = "reference_quality.v6"
+CANDIDATE_EVALUATOR_VERSION = "candidate_quality.v7"
 REQUIRED_CHECK_MANIFEST = (
     "task_identity",
     "reference_workflow_kind",

@@ -6,6 +6,7 @@ from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.graph.validation import ProofGraphValidator
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.task.answer_schema import complete_answer_schema
 from trusted_synthesis.core.task.program import InputRefKind, TaskProgram
 from trusted_synthesis.core.task.schema import (
     PlanningTrack,
@@ -67,14 +68,22 @@ class TaskPackageBuilder:
         if not graph_report.passed:
             failures = tuple(check.check_id for check in graph_report.checks if not check.passed)
             raise ValueError(f"proof graph is missing or invalid: {failures}")
+        public_answer_schema = complete_answer_schema(
+            {
+                **answer_schema,
+                "allow_claims": allow_structured_claims,
+                "additional_result_properties": False,
+            }
+        )
         task_id = canonical_hash(
             {
                 "task_type": task_type,
                 "bundle_id": bundle.bundle_id,
                 "evidence_ids": evidence_ids,
                 "program_hash": program.program_hash,
+                "answer_schema": public_answer_schema,
                 "identity_context": identity_context or {},
-                "schema": "task_package.v5",
+                "schema": "task_package.v6",
             },
             prefix="task:",
         )
@@ -94,11 +103,7 @@ class TaskPackageBuilder:
                 else None
             ),
             retrieval_scope=retrieval_scope,
-            answer_schema={
-                **answer_schema,
-                "allow_claims": allow_structured_claims,
-                "additional_result_properties": False,
-            },
+            answer_schema=public_answer_schema,
             metadata={
                 "proof_required": True,
                 "source_grounding_requirement": source_grounding_requirement.value,

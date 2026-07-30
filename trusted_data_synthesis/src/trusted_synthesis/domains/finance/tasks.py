@@ -24,6 +24,9 @@ class FinanceTaskPlugin:
         "comparison",
         "temporal_growth",
         "temporal_average",
+        "temporal_absolute_change",
+        "registered_ratio",
+        "derived_growth_comparison",
     )
 
     def __init__(
@@ -86,6 +89,61 @@ class FinanceTaskPlugin:
             {"earlier": (earlier_evidence_id,), "later": (later_evidence_id,)},
         ).task
 
+    def temporal_absolute_change(
+        self,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        earlier_evidence_id: str,
+        later_evidence_id: str,
+    ) -> TaskPackage:
+        return self._compile(
+            "temporal_absolute_change",
+            proof_graph,
+            bundle,
+            {"earlier": (earlier_evidence_id,), "later": (later_evidence_id,)},
+        ).task
+
+    def registered_ratio(
+        self,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        numerator_evidence_id: str,
+        denominator_evidence_id: str,
+        *,
+        registered_pair: str,
+    ) -> TaskPackage:
+        return self._compile(
+            "registered_ratio",
+            proof_graph,
+            bundle,
+            {
+                "numerator": (numerator_evidence_id,),
+                "denominator": (denominator_evidence_id,),
+            },
+            node_parameters={"result": {"registered_pair": registered_pair}},
+        ).task
+
+    def derived_growth_comparison(
+        self,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        left_earlier_evidence_id: str,
+        left_later_evidence_id: str,
+        right_earlier_evidence_id: str,
+        right_later_evidence_id: str,
+    ) -> TaskPackage:
+        return self._compile(
+            "derived_growth_comparison",
+            proof_graph,
+            bundle,
+            {
+                "left_earlier": (left_earlier_evidence_id,),
+                "left_later": (left_later_evidence_id,),
+                "right_earlier": (right_earlier_evidence_id,),
+                "right_later": (right_later_evidence_id,),
+            },
+        ).task
+
     def temporal_average(
         self,
         proof_graph: ProofGraph,
@@ -130,6 +188,8 @@ class FinanceTaskPlugin:
         proof_graph: ProofGraph,
         bundle: EvidenceBundle,
         role_bindings: dict[str, tuple[str, ...]],
+        *,
+        node_parameters: dict[str, dict[str, object]] | None = None,
     ) -> TaskPatternInstantiation:
         pattern = self._patterns[task_type]
         binding = make_evidence_binding(
@@ -139,5 +199,6 @@ class FinanceTaskPlugin:
             role_bindings=role_bindings,
             source_graph_id=proof_graph.graph_id,
             domain_snapshot_id=proof_graph.source_build_id,
+            node_parameters=node_parameters,
         )
         return self._compiler.compile(pattern, binding, bundle, proof_graph)

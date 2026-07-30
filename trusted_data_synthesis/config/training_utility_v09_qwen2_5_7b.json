@@ -45,6 +45,6 @@
     "down_proj"
   ],
   "seed": 20260728,
-  "prompt_version": "training_utility_agent_prompt.v4",
+  "prompt_version": "training_utility_agent_prompt.v6",
   "student_interaction_protocol": "host_instrumented_joint"
 }

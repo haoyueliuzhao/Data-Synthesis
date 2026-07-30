@@ -136,7 +136,7 @@ def test_temporal_growth_is_a_three_node_program(finance_evidence: EvidenceItem)
         "payload.value",
         "payload.value",
     ]
-    assert workflow.final_answer["result"]["value"] == "10.0"
+    assert workflow.final_answer["result"]["value"] == "10"
 
 
 def test_missing_proof_graph_evidence_fails_closed(finance_evidence: EvidenceItem) -> None:

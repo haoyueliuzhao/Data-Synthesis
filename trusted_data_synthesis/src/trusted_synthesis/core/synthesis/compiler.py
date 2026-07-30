@@ -5,6 +5,7 @@ from typing import Any
 from trusted_synthesis.core.evaluation.contracts.compiler import QualityContractCompiler
 from trusted_synthesis.core.evaluation.evaluator import ReferenceQualityEvaluator
 from trusted_synthesis.core.evaluation.schema import QualityAssessment, ReleaseDecision
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry
@@ -27,7 +28,7 @@ from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.hashing import canonical_hash
 
-PROOF_CARRYING_COMPILER_VERSION = "proof_carrying_compiler.v3"
+PROOF_CARRYING_COMPILER_VERSION = "proof_carrying_compiler.v4"
 
 
 class ProofCarryingSampleCompiler:
@@ -59,6 +60,7 @@ class ProofCarryingSampleCompiler:
         evidence_bundle: EvidenceBundle,
         proof_graph: ProofGraph,
         *,
+        public_corpus: EvidenceCorpus | None = None,
         pattern_id: str | None = None,
         binding_id: str | None = None,
         difficulty_profile: dict[str, float] | None = None,
@@ -68,6 +70,9 @@ class ProofCarryingSampleCompiler:
     ) -> CompiledProofCarryingArtifacts:
         if self._domain_plugin_set.domain != task.public.domain:
             raise ValueError("domain plugin set does not match the task")
+        corpus = public_corpus or EvidenceCorpus.from_bundle(evidence_bundle)
+        _validate_public_corpus(evidence_bundle, corpus)
+        _verify_public_corpus_grounding(corpus, self._source_grounding_verifier)
         quality_contract = self._quality_contract_compiler.compile(
             task, evidence_bundle, proof_graph
         )
@@ -89,6 +94,7 @@ class ProofCarryingSampleCompiler:
         certificate = build_proof_certificate(
             task=task,
             evidence_bundle=evidence_bundle,
+            public_corpus=corpus,
             proof_graph=proof_graph,
             reference_trajectory=reference,
             quality_contract=quality_contract,
@@ -160,6 +166,8 @@ class ProofCarryingSampleCompiler:
             task_package_hash=task.task_hash,
             evidence_bundle_id=evidence_bundle.bundle_id,
             evidence_bundle_hash=evidence_bundle.bundle_hash,
+            public_corpus_id=corpus.corpus_id,
+            public_corpus_hash=corpus.corpus_hash,
             proof_graph_id=proof_graph.graph_id,
             proof_graph_hash=proof_graph.graph_hash,
             task_program_id=task.oracle.task_program.program_id,
@@ -176,7 +184,7 @@ class ProofCarryingSampleCompiler:
             task_pattern_compiler_version=task_pattern_compiler_version,
             difficulty_profile=difficulty,
             metadata=sample_metadata,
-            schema_version="proof_carrying_sample.v3",
+            schema_version="proof_carrying_sample.v4",
         )
         sample = ProofCarryingSample(
             sample_id=canonical_hash(identity, prefix="proof_carrying_sample:"),
@@ -184,6 +192,8 @@ class ProofCarryingSampleCompiler:
             task_package_hash=task.task_hash,
             evidence_bundle_id=evidence_bundle.bundle_id,
             evidence_bundle_hash=evidence_bundle.bundle_hash,
+            public_corpus_id=corpus.corpus_id,
+            public_corpus_hash=corpus.corpus_hash,
             proof_graph_id=proof_graph.graph_id,
             proof_graph_hash=proof_graph.graph_hash,
             task_program_id=task.oracle.task_program.program_id,
@@ -206,6 +216,8 @@ class ProofCarryingSampleCompiler:
             task_public=task.public,
             certificate_id=certificate.certificate_id,
             certificate_hash=certificate.certificate_hash,
+            public_corpus_id=corpus.corpus_id,
+            public_corpus_hash=corpus.corpus_hash,
             pattern_id=pattern,
             pattern_hash=pattern_hash,
             task_pattern_compiler_version=task_pattern_compiler_version,
@@ -217,6 +229,7 @@ class ProofCarryingSampleCompiler:
             public_artifact=public_artifact,
             task=task,
             evidence_bundle=evidence_bundle,
+            public_corpus=corpus,
             proof_graph=proof_graph,
             reference_trajectory=reference,
             reference_assessment=assessment,
@@ -231,3 +244,36 @@ def _program_depth(task: TaskPackage) -> int:
     for node in task.oracle.task_program.nodes:
         depths[node.node_id] = 1 + max((depths[item] for item in node.dependencies), default=0)
     return max(depths.values())
+
+
+def _validate_public_corpus(
+    evidence_bundle: EvidenceBundle,
+    public_corpus: EvidenceCorpus,
+) -> None:
+    if (
+        evidence_bundle.graph_build_id is not None
+        and public_corpus.build_id is not None
+        and evidence_bundle.graph_build_id != public_corpus.build_id
+    ):
+        raise ValueError("public Corpus and Gold Bundle use different source builds")
+    corpus_by_id = public_corpus.by_id()
+    for evidence in evidence_bundle.evidence:
+        observed = corpus_by_id.get(evidence.evidence_id)
+        if observed is None:
+            raise ValueError("Gold Evidence is absent from the public Corpus")
+        if observed != evidence:
+            raise ValueError("public Corpus mutates a Gold Evidence item")
+
+
+def _verify_public_corpus_grounding(
+    public_corpus: EvidenceCorpus,
+    verifier: SourceGroundingVerifierProtocol | None,
+) -> None:
+    if verifier is None:
+        return
+    failures: list[str] = []
+    for evidence in public_corpus.evidence:
+        report = verifier.verify(evidence)
+        failures.extend(f"{evidence.evidence_id}:{failure}" for failure in report.failures)
+    if failures:
+        raise ValueError("public Corpus Source Grounding failed: " + ", ".join(failures))

@@ -16,6 +16,16 @@ def validate_compiled_artifacts(artifacts: CompiledProofCarryingArtifacts) -> No
     ):
         raise ValueError("proof-carrying sample does not bind the evidence bundle")
     if (
+        sample.public_corpus_id != artifacts.public_corpus.corpus_id
+        or sample.public_corpus_hash != artifacts.public_corpus.corpus_hash
+    ):
+        raise ValueError("proof-carrying sample does not bind the public Corpus")
+    corpus_by_id = artifacts.public_corpus.by_id()
+    if any(
+        corpus_by_id.get(item.evidence_id) != item for item in artifacts.evidence_bundle.evidence
+    ):
+        raise ValueError("public Corpus does not contain the exact Gold Evidence Bundle")
+    if (
         sample.proof_graph_id != artifacts.proof_graph.graph_id
         or sample.proof_graph_hash != artifacts.proof_graph.graph_hash
     ):

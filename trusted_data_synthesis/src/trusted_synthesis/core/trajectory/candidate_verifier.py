@@ -144,7 +144,12 @@ class CandidateWorkflowVerifier:
         normalized_candidate = self._normalizer.normalize_candidate(
             task.public, candidate.final_answer
         )
-        normalized_oracle = self._normalizer.normalize_oracle(task, expected_output, gold_evidence)
+        normalized_oracle = self._normalizer.normalize_oracle(
+            task,
+            expected_output,
+            gold_evidence,
+            node_outputs=expected_node_outputs,
+        )
         schema_passed, schema_failures = self._normalizer.validate_schema(
             task.public, candidate.final_answer
         )

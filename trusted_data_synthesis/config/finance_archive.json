@@ -1,5 +1,5 @@
 {
-  "adapter_version": "finance_archive.v1",
+  "adapter_version": "finance_archive.v2",
   "archive_root": "../../raw_financial_data_lake",
   "legacy_archive_roots": [
     "/workspace/Data Synthesis/raw_financial_data_lake"

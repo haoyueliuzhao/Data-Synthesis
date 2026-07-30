@@ -7,6 +7,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
+from trusted_synthesis.core.evaluation.answer import CandidateAnswerNormalizer
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
 from trusted_synthesis.core.task.schema import TaskPublicSpec
@@ -27,6 +28,8 @@ from trusted_synthesis.runtime.agent.schema import (
 from .data import load_sft_records
 from .model_security import validate_adapter_artifact, validate_model_loading_contract
 from .schema import CohortEvaluationResult, SFTRecord, TrainingUtilityMVPConfig
+
+TRAINING_UTILITY_EVALUATOR_VERSION = "training_utility_evaluator.v2"
 
 
 def evaluate_sft_model(
@@ -66,6 +69,7 @@ def evaluate_sft_model(
         "config_hash": config.config_hash,
         "evaluation_dataset_hash": evaluation_hash,
         "adapter_dir": resolved_adapter_dir,
+        "evaluator_version": TRAINING_UTILITY_EVALUATOR_VERSION,
     }
     _ensure_evaluation_contract(
         output_dir / "evaluation_contract.json",
@@ -86,8 +90,7 @@ def evaluate_sft_model(
         ):
             return completed
         raise ValueError(
-            "output directory contains a completed result for a different "
-            "evaluation contract"
+            "output directory contains a completed result for a different evaluation contract"
         )
     checkpoint_dir = output_dir / "prediction_checkpoints"
     outcomes_by_record_id = _load_evaluation_checkpoints(records, checkpoint_dir)
@@ -125,8 +128,7 @@ def evaluate_sft_model(
             continue
         if record.training_format == "host_instrumented_joint":
             action_messages = [
-                {"role": item.role, "content": item.content}
-                for item in record.messages[:2]
+                {"role": item.role, "content": item.content} for item in record.messages[:2]
             ]
             action_text, action_tokens, action_latency = _generate_turn(
                 tokenizer,
@@ -329,8 +331,7 @@ def _ensure_evaluation_contract(path: Path, expected: dict[str, Any]) -> None:
         observed = json.loads(path.read_text(encoding="utf-8"))
         if observed != expected:
             raise ValueError(
-                "output directory contains checkpoints for a different "
-                "evaluation contract"
+                "output directory contains checkpoints for a different evaluation contract"
             )
         return
     _atomic_write_json(path, expected, indent=2)
@@ -452,7 +453,7 @@ def score_generated_response(
     answer_exact = bool(
         response_contract
         and predicted is not None
-        and _equal(
+        and _answer_equal(
             predicted["final_answer"].get("result"),
             gold["final_answer"].get("result"),
         )
@@ -599,9 +600,7 @@ def score_host_instrumented_response(
 
     expected_evidence = set(gold_action.selected_evidence_ids)
     observed_evidence = (
-        set(predicted_action.selected_evidence_ids)
-        if predicted_action is not None
-        else set()
+        set(predicted_action.selected_evidence_ids) if predicted_action is not None else set()
     )
     evidence_recall = (
         len(expected_evidence & observed_evidence) / len(expected_evidence)
@@ -623,8 +622,7 @@ def score_host_instrumented_response(
         and _action_signature(predicted_action) == _action_signature(gold_action)
     )
     answer_exact = bool(
-        predicted_answer is not None
-        and _equal(predicted_answer.result, gold_answer.result)
+        predicted_answer is not None and _answer_equal(predicted_answer.result, gold_answer.result)
     )
     citation_exact = bool(
         predicted_answer is not None
@@ -778,9 +776,11 @@ def aggregate_evaluation_outcomes(
         "evaluation_dataset_hash": evaluation_hash,
         "prediction_hash": canonical_hash(outcomes, prefix="training_utility_predictions:"),
         "metrics": metrics,
+        "evaluator_version": TRAINING_UTILITY_EVALUATOR_VERSION,
     }
     return CohortEvaluationResult(
         cohort=cohort,
+        evaluator_version=TRAINING_UTILITY_EVALUATOR_VERSION,
         adapter_dir=str(adapter_dir.resolve()) if adapter_dir else None,
         evaluation_dataset_hash=evaluation_hash,
         sample_count=len(outcomes),
@@ -954,3 +954,7 @@ def _citation_signature(citations: Any) -> str:
 
 def _equal(left: Any, right: Any) -> bool:
     return canonical_hash(left, prefix="value:") == canonical_hash(right, prefix="value:")
+
+
+def _answer_equal(left: Any, right: Any) -> bool:
+    return CandidateAnswerNormalizer().equivalent(left, right)

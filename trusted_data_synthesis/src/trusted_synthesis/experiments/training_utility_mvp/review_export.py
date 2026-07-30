@@ -15,6 +15,7 @@ from .schema import SFTRecord
 
 QA_REVIEW_SCHEMA_VERSION = "training_utility_qa_review.v1"
 QA_REVIEW_EXPORT_VERSION = "training_utility_qa_review_export.v1"
+TRADITIONAL_QA_EXPORT_VERSION = "traditional_qa_export.v1"
 TargetInterpretation = Literal[
     "gold_reference",
     "quality_accepted_candidate",
@@ -98,6 +99,26 @@ class QAReviewExportManifest(BaseModel):
     markdown_record_counts: dict[str, int]
     markdown_limit_per_cohort: int = Field(ge=0)
     version: str = QA_REVIEW_EXPORT_VERSION
+
+
+class TraditionalQARecord(BaseModel):
+    """Minimal human-review view with no provenance or experiment metadata."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    question: str = Field(min_length=1)
+    answer: Any
+
+
+class TraditionalQAExportResult(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    output_file: str
+    output_format: Literal["jsonl", "markdown"]
+    record_count: int = Field(ge=1)
+    cohort_counts: dict[str, int]
+    dataset_hash: str
+    version: str = TRADITIONAL_QA_EXPORT_VERSION
 
 
 def export_training_utility_review(
@@ -194,6 +215,71 @@ def export_training_utility_review(
     return manifest
 
 
+def export_traditional_qa(
+    input_dir: Path,
+    output_file: Path,
+    *,
+    cohorts: tuple[str, ...] = (),
+    limit: int = 0,
+) -> TraditionalQAExportResult:
+    """Export exact question/answer pairs from immutable SFT records.
+
+    The output records deliberately omit task identity, evidence, operation traces, cohort labels,
+    and quality metadata. A JSONL answer retains its structured value so table and compound-answer
+    contracts are not flattened or truncated. Markdown renders the same value for direct review.
+    """
+
+    if limit < 0:
+        raise ValueError("limit must be non-negative")
+    suffix = output_file.suffix.lower()
+    if suffix not in {".jsonl", ".md"}:
+        raise ValueError("traditional QA output must use a .jsonl or .md suffix")
+    input_paths = _discover_dataset_paths(input_dir, cohorts=cohorts)
+    records: list[TraditionalQARecord] = []
+    cohort_counts: Counter[str] = Counter()
+    seen_ids: set[str] = set()
+    for path in input_paths:
+        for source in load_sft_records(path):
+            if source.record_id in seen_ids:
+                raise ValueError(f"duplicate SFT record_id across inputs: {source.record_id}")
+            seen_ids.add(source.record_id)
+            review = build_qa_review_record(source, source_dataset_file=path.name)
+            records.append(
+                TraditionalQARecord(
+                    question=review.question,
+                    answer=review.assistant_target_answer,
+                )
+            )
+            cohort_counts[path.stem] += 1
+            if limit and len(records) >= limit:
+                break
+        if limit and len(records) >= limit:
+            break
+    if not records:
+        raise ValueError(f"no SFT records found in {input_dir}")
+
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    if suffix == ".jsonl":
+        with output_file.open("w", encoding="utf-8") as output:
+            for record in records:
+                output.write(record.model_dump_json() + "\n")
+        output_format: Literal["jsonl", "markdown"] = "jsonl"
+    else:
+        output_file.write_text(_render_traditional_qa(tuple(records)), encoding="utf-8")
+        output_format = "markdown"
+
+    return TraditionalQAExportResult(
+        output_file=str(output_file.resolve()),
+        output_format=output_format,
+        record_count=len(records),
+        cohort_counts=dict(sorted(cohort_counts.items())),
+        dataset_hash=canonical_hash(
+            tuple(record.model_dump(mode="json") for record in records),
+            prefix="traditional_qa_dataset:",
+        ),
+    )
+
+
 def build_qa_review_record(
     record: SFTRecord,
     *,
@@ -224,8 +310,7 @@ def build_qa_review_record(
         final_answer = {
             "result": answer_decision.get("result"),
             "citations": [
-                {"evidence_id": item}
-                for item in answer_decision.get("cited_evidence_ids", ())
+                {"evidence_id": item} for item in answer_decision.get("cited_evidence_ids", ())
             ],
             **({"status": answer_decision["status"]} if "status" in answer_decision else {}),
             **({"claims": answer_decision["claims"]} if "claims" in answer_decision else {}),
@@ -326,11 +411,24 @@ def build_qa_review_record(
     )
 
 
-def _discover_dataset_paths(input_dir: Path) -> tuple[Path, ...]:
+def _discover_dataset_paths(
+    input_dir: Path,
+    *,
+    cohorts: tuple[str, ...] = (),
+) -> tuple[Path, ...]:
     if not input_dir.is_dir():
         raise ValueError(f"training utility input directory does not exist: {input_dir}")
-    names = (*(f"{cohort.value}.jsonl" for cohort in UtilityCohort), "evaluation.jsonl")
-    paths = tuple(input_dir / name for name in names if (input_dir / name).is_file())
+    available = {path.stem: path for path in input_dir.glob("*.jsonl") if path.is_file()}
+    if cohorts:
+        normalized = tuple(dict.fromkeys(item.removesuffix(".jsonl") for item in cohorts))
+        missing = tuple(name for name in normalized if name not in available)
+        if missing:
+            raise ValueError(f"requested cohorts are absent from {input_dir}: {list(missing)}")
+        paths = tuple(available[name] for name in normalized)
+    else:
+        preferred = tuple(cohort.value for cohort in UtilityCohort) + ("evaluation",)
+        ordered = tuple(name for name in preferred if name in available)
+        paths = tuple(available[name] for name in ordered)
     if not paths:
         raise ValueError(f"no recognized training utility JSONL files found in {input_dir}")
     return paths
@@ -427,6 +525,25 @@ def _write_jsonl(path: Path, records: tuple[QAReviewRecord, ...]) -> None:
     with path.open("w", encoding="utf-8") as output:
         for record in records:
             output.write(record.model_dump_json() + "\n")
+
+
+def _render_traditional_qa(records: tuple[TraditionalQARecord, ...]) -> str:
+    lines = ["# Traditional QA Review", ""]
+    for ordinal, record in enumerate(records, start=1):
+        lines.extend((f"## {ordinal}", "", "**Question**", "", record.question, ""))
+        lines.extend(("**Answer**", ""))
+        if isinstance(record.answer, str):
+            lines.extend((record.answer, ""))
+        else:
+            lines.extend(
+                (
+                    "```json",
+                    json.dumps(record.answer, ensure_ascii=False, indent=2, sort_keys=True),
+                    "```",
+                    "",
+                )
+            )
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def _render_index(manifest: QAReviewExportManifest) -> str:

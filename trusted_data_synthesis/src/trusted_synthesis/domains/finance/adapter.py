@@ -23,7 +23,10 @@ from trusted_synthesis.core.evidence.schema import (
     SubjectRef,
 )
 from trusted_synthesis.domains.base import AdapterCapability
-from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+from trusted_synthesis.domains.finance.schema import (
+    FINANCE_ARCHIVE_ADAPTER_ID,
+    FinanceArchiveConfig,
+)
 
 if TYPE_CHECKING:
     from trusted_synthesis.domains.finance.source_grounding import (
@@ -36,7 +39,7 @@ class FinanceArchiveError(RuntimeError):
 
 
 class FinanceArchiveAdapter:
-    adapter_id = "finance_archive.v1"
+    adapter_id = FINANCE_ARCHIVE_ADAPTER_ID
     domain = "finance"
 
     _catalog_files = {
@@ -84,6 +87,8 @@ class FinanceArchiveAdapter:
         }
         existence = {name: path.exists() for name, path in paths.items()}
         errors = [f"missing:{name}" for name, exists in existence.items() if not exists]
+        if self.config.adapter_version != self.adapter_id:
+            errors.append("adapter_version_mismatch")
         report = self._load_report() if self.config.kg_report_path.exists() else {}
         quality = report.get("quality") or {}
         graph_schema_version = str(quality.get("graph_schema_version") or "")
@@ -328,19 +333,29 @@ def _optional(value: Any) -> str | None:
 
 def _time_label(properties: dict[str, Any], period_end: date | None) -> str:
     fiscal_year = properties.get("fiscal_year")
-    fiscal_quarter = properties.get("fiscal_quarter")
-    time_basis = str(properties.get("time_basis") or "").casefold()
+    fiscal_quarter = str(properties.get("fiscal_quarter") or "").upper()
+    metric_period_type = str(properties.get("metric_period_type") or "").casefold()
     frequency = str(properties.get("frequency") or "").casefold()
-    if "fiscal" in time_basis or frequency == "filing_period":
-        if fiscal_year and fiscal_quarter:
-            return f"FY{fiscal_year} {fiscal_quarter}"
-        if fiscal_year:
-            return f"FY{fiscal_year}"
-    if frequency in {"annual", "yearly"}:
-        calendar_year = properties.get("calendar_year") or (period_end.year if period_end else None)
-        if calendar_year:
-            return f"CY{calendar_year}"
-    return period_end.isoformat() if period_end else "unspecified period"
+    if period_end is not None:
+        period_end_label = period_end.isoformat()
+        if fiscal_quarter == "FY" or frequency in {"annual", "yearly"}:
+            return (
+                f"as of {period_end_label}"
+                if metric_period_type == "point_in_time"
+                else f"year ended {period_end_label}"
+            )
+        if fiscal_quarter:
+            prefix = f"FY{fiscal_year} " if fiscal_year else ""
+            qualifier = "as of" if metric_period_type == "point_in_time" else "period ended"
+            return f"{prefix}{fiscal_quarter} ({qualifier} {period_end_label})"
+        if metric_period_type == "point_in_time":
+            return f"as of {period_end_label}"
+        return period_end_label
+    if fiscal_year and fiscal_quarter:
+        return f"FY{fiscal_year}" if fiscal_quarter == "FY" else f"FY{fiscal_year} {fiscal_quarter}"
+    if fiscal_year:
+        return f"FY{fiscal_year}"
+    return "unspecified period"
 
 
 def _source_locator(

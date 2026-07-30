@@ -141,7 +141,12 @@ def compile_counterfactual_context(
         compiler,
         case.plugin_set,
         semantic_policy=case.semantic_policy,
-    ).compile(case.task, case.bundle, case.proof_graph)
+    ).compile(
+        case.task,
+        case.bundle,
+        case.proof_graph,
+        public_corpus=case.corpus,
+    )
     candidate_generator = (
         FinanceNumericCandidateGenerator()
         if case.domain == "finance"

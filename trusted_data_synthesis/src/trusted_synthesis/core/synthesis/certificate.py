@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from trusted_synthesis.core.evaluation.contracts.schema import QualityContract
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry
@@ -18,6 +19,7 @@ def build_proof_certificate(
     *,
     task: TaskPackage,
     evidence_bundle: EvidenceBundle,
+    public_corpus: EvidenceCorpus,
     proof_graph: ProofGraph,
     reference_trajectory: Trajectory,
     quality_contract: QualityContract,
@@ -48,6 +50,8 @@ def build_proof_certificate(
         task_id=task.task_id,
         task_package_hash=task.task_hash,
         evidence_bundle_hash=evidence_bundle.bundle_hash,
+        public_corpus_id=public_corpus.corpus_id,
+        public_corpus_hash=public_corpus.corpus_hash,
         proof_graph_hash=proof_graph.graph_hash,
         task_program_hash=task.oracle.task_program.program_hash,
         quality_contract_hash=quality_contract.contract_hash,

@@ -9,6 +9,7 @@ from trusted_synthesis.core.evaluation.contracts.schema import QualityClause
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.task.difficulty import (
+    TASK_DIFFICULTY_POLICY_VERSION,
     difficulty_level,
     difficulty_score,
     task_structure_features,
@@ -256,8 +257,8 @@ class _TaskPatternBindingVerifier:
 
 
 class _TaskDifficultyVerifier:
-    verifier_id = "task_difficulty.v1"
-    verifier_version = "1.0.0"
+    verifier_id = "task_difficulty.v2"
+    verifier_version = "2.0.0"
 
     def verify(
         self, clause: QualityClause, context: ClauseVerificationContext
@@ -282,14 +283,13 @@ class _TaskDifficultyVerifier:
         )
         semantic_constraint_count = float(pattern.get("semantic_constraint_count", -1))
         semantic_alignment_cost = float(observed.get("semantic_alignment_cost", -1))
-        pattern_base_cost = float(pattern.get("difficulty_base_cost", -1))
+        pattern_prior_cost = float(pattern.get("difficulty_base_cost", -1))
         score = difficulty_score(
             **structural,
             semantic_constraint_count=semantic_constraint_count,
             semantic_alignment_cost=semantic_alignment_cost,
-            pattern_base_cost=pattern_base_cost,
         )
-        level = difficulty_level(score, str(pattern.get("difficulty_base"))).value
+        level = difficulty_level(score).value
         checks = {
             "profile_frozen": observed == expected,
             "profile_hash": clause.expected_ref
@@ -299,10 +299,13 @@ class _TaskDifficultyVerifier:
             ),
             "semantic_constraint_count": observed.get("semantic_constraint_count")
             == semantic_constraint_count,
-            "pattern_base_cost": observed.get("pattern_base_cost") == pattern_base_cost,
+            "pattern_prior_cost": observed.get("pattern_prior_cost") == pattern_prior_cost,
+            "pattern_prior_level": observed.get("pattern_prior_level")
+            == pattern.get("difficulty_base"),
+            "structural_score": observed.get("structural_score") == score,
             "total_score": observed.get("total_score") == score,
             "difficulty_level": observed.get("level") == level,
-            "policy_version": observed.get("policy_version") == "task_difficulty.v1",
+            "policy_version": observed.get("policy_version") == TASK_DIFFICULTY_POLICY_VERSION,
         }
         passed = all(checks.values())
         return ClauseVerificationOutcome(

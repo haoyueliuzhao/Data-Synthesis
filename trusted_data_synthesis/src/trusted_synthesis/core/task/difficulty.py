@@ -9,6 +9,8 @@ from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.task.pattern import TaskPatternSpec
 from trusted_synthesis.core.task.program import TaskProgram
 
+TASK_DIFFICULTY_POLICY_VERSION = "task_difficulty.v2"
+
 
 class TaskDifficultyLevel(str, Enum):
     EASY = "easy"
@@ -28,10 +30,12 @@ class TaskDifficultyProfile(BaseModel):
     operation_count: float = Field(ge=1)
     semantic_constraint_count: float = Field(ge=0)
     semantic_alignment_cost: float = Field(ge=0)
-    pattern_base_cost: float = Field(ge=0)
+    pattern_prior_cost: float = Field(ge=0)
+    pattern_prior_level: TaskDifficultyLevel
+    structural_score: float = Field(ge=0)
     total_score: float = Field(ge=0)
     level: TaskDifficultyLevel
-    policy_version: str = "task_difficulty.v1"
+    policy_version: str = TASK_DIFFICULTY_POLICY_VERSION
 
     def numeric_features(self) -> dict[str, float]:
         return {
@@ -64,7 +68,6 @@ def assess_task_difficulty(
         operation_count=operation_count,
         semantic_constraint_count=constraint_count,
         semantic_alignment_cost=semantic_alignment_cost,
-        pattern_base_cost=pattern.difficulty_base_cost,
     )
     return TaskDifficultyProfile(
         evidence_count=evidence_count,
@@ -74,9 +77,11 @@ def assess_task_difficulty(
         operation_count=operation_count,
         semantic_constraint_count=constraint_count,
         semantic_alignment_cost=semantic_alignment_cost,
-        pattern_base_cost=pattern.difficulty_base_cost,
+        pattern_prior_cost=pattern.difficulty_base_cost,
+        pattern_prior_level=TaskDifficultyLevel(pattern.difficulty_base),
+        structural_score=score,
         total_score=score,
-        level=difficulty_level(score, pattern.difficulty_base),
+        level=difficulty_level(score),
     )
 
 
@@ -103,11 +108,9 @@ def difficulty_score(
     operation_count: float,
     semantic_constraint_count: float,
     semantic_alignment_cost: float,
-    pattern_base_cost: float,
 ) -> float:
     score = (
-        pattern_base_cost
-        + evidence_count * 0.75
+        evidence_count * 0.75
         + max(graph_depth - 1.0, 0.0) * 0.5
         + max(program_depth - 1.0, 0.0) * 1.5
         + branch_factor * 0.5
@@ -159,8 +162,8 @@ def _graph_depth(proof_graph: ProofGraph, evidence_ids: tuple[str, ...]) -> int:
     return longest
 
 
-def difficulty_level(score: float, pattern_base: str) -> TaskDifficultyLevel:
-    score_level = (
+def difficulty_level(score: float) -> TaskDifficultyLevel:
+    return (
         TaskDifficultyLevel.EASY
         if score < 5
         else TaskDifficultyLevel.MEDIUM
@@ -171,6 +174,3 @@ def difficulty_level(score: float, pattern_base: str) -> TaskDifficultyLevel:
         if score < 21
         else TaskDifficultyLevel.RESEARCH
     )
-    base_level = TaskDifficultyLevel(pattern_base)
-    ordering = tuple(TaskDifficultyLevel)
-    return ordering[max(ordering.index(score_level), ordering.index(base_level))]

@@ -23,7 +23,10 @@ from trusted_synthesis.experiments.training_utility_mvp.review_export import (
     QAReviewEvidence,
     QAReviewExportManifest,
     QAReviewRecord,
+    TraditionalQAExportResult,
+    TraditionalQARecord,
     build_qa_review_record,
+    export_traditional_qa,
     export_training_utility_review,
 )
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
@@ -49,6 +52,8 @@ __all__ = [
     "QAReviewEvidence",
     "QAReviewExportManifest",
     "QAReviewRecord",
+    "TraditionalQAExportResult",
+    "TraditionalQARecord",
     "SFTRecord",
     "SFTMessage",
     "TrainingUtilityDataManifest",
@@ -62,6 +67,7 @@ __all__ = [
     "build_training_utility_report",
     "build_qa_review_record",
     "evaluate_sft_model",
+    "export_traditional_qa",
     "export_training_utility_review",
     "load_agent_artifacts",
     "load_sft_records",

@@ -32,7 +32,7 @@ from trusted_synthesis.hashing import canonical_hash
 from .schema import V09RefinementConfig
 
 V09_BINDING_PROVIDER_ID = "training_utility_v09_fixture_binding_provider"
-V09_BINDING_PROVIDER_VERSION = "v09_binding_provider.v2"
+V09_BINDING_PROVIDER_VERSION = "v09_binding_provider.v3"
 
 
 class V09FixtureBindingProvider:
@@ -143,6 +143,7 @@ class V09FixtureBindingProvider:
                 "sampling_partition_id": sampling_partition_id,
                 "maximum_scan_multiplier": maximum_scan_multiplier,
                 "seed_controls_order": True,
+                "enumeration_mode": "bounded_superpool_until_exhausted",
             },
             prefix="v09_binding_sampling_contract:",
         )
@@ -199,7 +200,6 @@ class V09FixtureBindingProvider:
                 prefix="v09_seeded_candidate_order:",
             )
         )
-        yielded = 0
         for index in indexes:
             case = self._case_factories[domain](index)
             pattern_identity = case.task.public.metadata.get("task_pattern") or {}
@@ -235,7 +235,6 @@ class V09FixtureBindingProvider:
                 },
                 prefix="v09_synthesis_binding_candidate:",
             )
-            yielded += 1
             yield SynthesisBindingCandidate(
                 candidate_id=candidate_id,
                 pattern=self._patterns[request.cell.pattern_id],
@@ -250,8 +249,6 @@ class V09FixtureBindingProvider:
                 domain_plugin_set=case.plugin_set,
                 applied_binding_constraints=request.cell.active_binding_constraints,
             )
-            if yielded >= request.requested_count:
-                return
 
     def _partition_for_index(self, domain: str, index: int) -> str:
         digest = canonical_hash(

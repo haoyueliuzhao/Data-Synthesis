@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict
 
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceItem
+from trusted_synthesis.hashing import canonical_hash
 
 
 class SourceGroundingReport(BaseModel):
@@ -29,7 +30,7 @@ class FinanceSourceGroundingVerifier:
     """Dereference archived objects and verify that their raw values support evidence."""
 
     verifier_id = "finance_source_grounding.v1"
-    verifier_version = "1.1.0"
+    verifier_version = "1.2.0"
 
     def __init__(
         self,
@@ -49,7 +50,11 @@ class FinanceSourceGroundingVerifier:
         self._report_cache: dict[str, SourceGroundingReport] = {}
 
     def verify(self, evidence: EvidenceItem) -> SourceGroundingReport:
-        cached = self._report_cache.get(evidence.evidence_id)
+        report_cache_key = canonical_hash(
+            evidence,
+            prefix="finance_source_grounding_evidence:",
+        )
+        cached = self._report_cache.get(report_cache_key)
         if cached is not None:
             return cached
         checks = {
@@ -65,7 +70,7 @@ class FinanceSourceGroundingVerifier:
         raw_object_id = locator.raw_object_id or ""
         metadata = self._raw_objects.get(raw_object_id)
         if metadata is None:
-            return self._report(evidence, checks)
+            return self._report(evidence, checks, report_cache_key)
         checks["raw_object_registered"] = True
         checks["raw_object_source_match"] = metadata.get("source_id") == evidence.source.source_id
         storage_uri = str(metadata.get("storage_uri") or "")
@@ -76,7 +81,7 @@ class FinanceSourceGroundingVerifier:
         )
         checks["raw_object_exists"] = bool(path is not None and path.is_file())
         if not checks["raw_object_exists"] or not checks["storage_path_confined"]:
-            return self._report(evidence, checks)
+            return self._report(evidence, checks, report_cache_key)
         assert path is not None
         raw_bytes = self._read_bytes(raw_object_id, path)
         digest = self._digest_cache.get(raw_object_id)
@@ -92,9 +97,9 @@ class FinanceSourceGroundingVerifier:
         try:
             payload = self._read_payload(raw_object_id, raw_bytes)
         except (UnicodeDecodeError, json.JSONDecodeError):
-            return self._report(evidence, checks)
+            return self._report(evidence, checks, report_cache_key)
         checks["source_entailment"] = _source_entails(evidence, payload)
-        return self._report(evidence, checks)
+        return self._report(evidence, checks, report_cache_key)
 
     def _resolve_storage_path(self, storage_uri: str) -> Path:
         source_path = Path(storage_uri).expanduser()
@@ -135,13 +140,18 @@ class FinanceSourceGroundingVerifier:
             self._payload_cache.popitem(last=False)
         return payload
 
-    def _report(self, evidence: EvidenceItem, checks: dict[str, bool]) -> SourceGroundingReport:
+    def _report(
+        self,
+        evidence: EvidenceItem,
+        checks: dict[str, bool],
+        report_cache_key: str,
+    ) -> SourceGroundingReport:
         report = SourceGroundingReport(
             evidence_id=evidence.evidence_id,
             checks=checks,
             failures=tuple(check_id for check_id, passed in checks.items() if not passed),
         )
-        self._report_cache[evidence.evidence_id] = report
+        self._report_cache[report_cache_key] = report
         return report
 
 

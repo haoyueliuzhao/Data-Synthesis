@@ -62,6 +62,9 @@ class FinancePilotConfig(BaseModel):
             "comparison",
             "temporal_growth",
             "temporal_average",
+            "temporal_absolute_change",
+            "registered_ratio",
+            "derived_growth_comparison",
         }
         unknown = set(self.task_quotas) - supported
         if unknown:

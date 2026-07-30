@@ -16,6 +16,7 @@ from trusted_synthesis.core.plugins import (
     DomainPluginSet,
     DomainQualityClauseProviderProtocol,
     SemanticPolicyProtocol,
+    SourceGroundingVerifierProtocol,
     TaskPatternRuntimeProtocol,
 )
 from trusted_synthesis.core.synthesis import (
@@ -33,7 +34,7 @@ from trusted_synthesis.hashing import canonical_hash
 from .aggregate import build_synthesis_cell
 from .schema import PolicyUpdateResult, SynthesisCell
 
-REFINED_SYNTHESIS_MATERIALIZER_VERSION = "refined_synthesis_materializer.v2"
+REFINED_SYNTHESIS_MATERIALIZER_VERSION = "refined_synthesis_materializer.v4"
 
 
 class FrozenModel(BaseModel):
@@ -81,6 +82,11 @@ class SynthesisMaterializationReport(FrozenModel):
     binding_feasible_count: int = Field(ge=0)
     contract_attempt_count: int = Field(ge=0)
     contract_pass_count: int = Field(ge=0)
+    grounding_required_sample_count: int = Field(ge=0, default=0)
+    grounding_checked_count: int = Field(ge=0, default=0)
+    grounding_pass_count: int = Field(ge=0, default=0)
+    grounding_failure_counts: dict[str, int] = Field(default_factory=dict)
+    candidate_rejection_counts: dict[str, int] = Field(default_factory=dict)
     successfully_materialized_count: int = Field(ge=0)
     new_task_identity_count: int = Field(ge=0)
     new_binding_identity_count: int = Field(ge=0)
@@ -105,18 +111,35 @@ class SynthesisMaterializationReport(FrozenModel):
             raise ValueError("materialized Cell counts do not cover successful artifacts")
         if self.successfully_materialized_count > self.requested_sample_count:
             raise ValueError("materialized samples cannot exceed requested samples")
-        expected_status = (
-            "passed"
-            if self.successfully_materialized_count == self.requested_sample_count
-            and not self.failure_counts
-            and self.binding_feasibility_rate == 1.0
-            and self.contract_pass_rate == 1.0
-            and self.new_task_identity_rate == 1.0
-            and self.new_binding_identity_rate == 1.0
-            and self.new_evidence_identity_rate == 1.0
-            and (self.seed_effective or self.version == "refined_synthesis_materializer.v1")
-            else "blocked"
+        if self.grounding_pass_count > self.grounding_checked_count:
+            raise ValueError("grounding pass count cannot exceed checked evidence")
+        grounding_passed = self.grounding_required_sample_count == 0 or (
+            self.grounding_checked_count > 0
+            and self.grounding_checked_count == self.grounding_pass_count
+            and not self.grounding_failure_counts
         )
+        if self.version == REFINED_SYNTHESIS_MATERIALIZER_VERSION:
+            expected_status = (
+                "passed"
+                if self.successfully_materialized_count == self.requested_sample_count
+                and not self.failure_counts
+                and self.seed_effective
+                else "blocked"
+            )
+        else:
+            expected_status = (
+                "passed"
+                if self.successfully_materialized_count == self.requested_sample_count
+                and not self.failure_counts
+                and self.binding_feasibility_rate == 1.0
+                and self.contract_pass_rate == 1.0
+                and self.new_task_identity_rate == 1.0
+                and self.new_binding_identity_rate == 1.0
+                and self.new_evidence_identity_rate == 1.0
+                and grounding_passed
+                and (self.seed_effective or self.version == "refined_synthesis_materializer.v1")
+                else "blocked"
+            )
         if self.status != expected_status:
             raise ValueError("materialization status disagrees with fail-closed gates")
         if self.report_id not in {
@@ -142,6 +165,7 @@ class SynthesisBindingCandidate:
     semantic_policy: SemanticPolicyProtocol
     quality_clause_provider: DomainQualityClauseProviderProtocol
     domain_plugin_set: DomainPluginSet
+    source_grounding_verifier: SourceGroundingVerifierProtocol | None = None
     applied_binding_constraints: tuple[str, ...] = ()
 
 
@@ -214,10 +238,15 @@ class RefinedSynthesisMaterializer:
         artifacts: list[RefinedSynthesisArtifact] = []
         materialized_counts: Counter[str] = Counter()
         failure_counts: Counter[str] = Counter()
+        candidate_rejection_counts: Counter[str] = Counter()
         provider_candidate_count = 0
         binding_feasible_count = 0
         contract_attempt_count = 0
         contract_pass_count = 0
+        grounding_required_sample_count = 0
+        grounding_checked_count = 0
+        grounding_pass_count = 0
+        grounding_failure_counts: Counter[str] = Counter()
         new_task_count = 0
         new_binding_count = 0
         new_evidence_count = 0
@@ -237,15 +266,16 @@ class RefinedSynthesisMaterializer:
             if requested_count == 0:
                 continue
             candidates = iter(self._provider.iter_candidates(request))
-            for ordinal in range(requested_count):
+            accepted_count = 0
+            while accepted_count < requested_count:
                 try:
                     candidate = next(candidates)
                 except StopIteration:
-                    failure_counts["binding_provider_exhausted"] += requested_count - ordinal
+                    failure_counts["binding_provider_exhausted"] += requested_count - accepted_count
                     break
                 except (TypeError, ValueError) as exc:
                     failure_counts[f"binding_provider:{type(exc).__name__}"] += (
-                        requested_count - ordinal
+                        requested_count - accepted_count
                     )
                     break
                 provider_candidate_count += 1
@@ -253,14 +283,22 @@ class RefinedSynthesisMaterializer:
                     feasible = _instantiate_candidate(request, candidate)
                     binding_feasible_count += 1
                 except (TypeError, ValueError) as exc:
-                    failure_counts[f"binding:{type(exc).__name__}"] += 1
+                    candidate_rejection_counts[f"binding:{type(exc).__name__}"] += 1
+                    continue
+                grounding = _verify_candidate_grounding(feasible)
+                grounding_required_sample_count += int(grounding.required)
+                grounding_checked_count += grounding.checked_count
+                grounding_pass_count += grounding.pass_count
+                grounding_failure_counts.update(grounding.failure_counts)
+                if not grounding.passed:
+                    candidate_rejection_counts["source_grounding_failed"] += 1
                     continue
                 contract_attempt_count += 1
                 try:
                     artifact = _compile_contract(feasible)
                     contract_pass_count += 1
                 except (TypeError, ValueError) as exc:
-                    failure_counts[f"contract:{type(exc).__name__}"] += 1
+                    candidate_rejection_counts[f"contract:{type(exc).__name__}"] += 1
                     continue
                 compiled = artifact.compiled
                 task_id = compiled.task.task_id
@@ -282,19 +320,20 @@ class RefinedSynthesisMaterializer:
                 new_binding_count += int(binding_is_new)
                 new_evidence_count += int(evidence_is_new)
                 if not task_is_new:
-                    failure_counts["task_identity_collision"] += 1
+                    candidate_rejection_counts["task_identity_collision"] += 1
                     continue
                 if not binding_is_new:
-                    failure_counts["binding_identity_collision"] += 1
+                    candidate_rejection_counts["binding_identity_collision"] += 1
                     continue
                 if not evidence_is_new:
-                    failure_counts["evidence_identity_collision"] += 1
+                    candidate_rejection_counts["evidence_identity_collision"] += 1
                     continue
                 observed_task_ids.add(task_id)
                 observed_binding_ids.add(binding_id)
                 observed_evidence_ids.update(evidence_ids)
                 artifacts.append(artifact)
                 materialized_counts[cell_id] += 1
+                accepted_count += 1
 
         requested_total = sum(resolved_counts.values())
         success_total = len(artifacts)
@@ -329,6 +368,11 @@ class RefinedSynthesisMaterializer:
             "binding_feasible_count": binding_feasible_count,
             "contract_attempt_count": contract_attempt_count,
             "contract_pass_count": contract_pass_count,
+            "grounding_required_sample_count": grounding_required_sample_count,
+            "grounding_checked_count": grounding_checked_count,
+            "grounding_pass_count": grounding_pass_count,
+            "grounding_failure_counts": dict(sorted(grounding_failure_counts.items())),
+            "candidate_rejection_counts": dict(sorted(candidate_rejection_counts.items())),
             "successfully_materialized_count": success_total,
             "new_task_identity_count": new_task_count,
             "new_binding_identity_count": new_binding_count,
@@ -355,11 +399,6 @@ class RefinedSynthesisMaterializer:
                 "passed"
                 if success_total == requested_total
                 and not failure_counts
-                and _rate(binding_feasible_count, provider_candidate_count) == 1.0
-                and _rate(contract_pass_count, contract_attempt_count) == 1.0
-                and _rate(new_task_count, contract_pass_count) == 1.0
-                and _rate(new_binding_count, contract_pass_count) == 1.0
-                and _rate(new_evidence_count, contract_pass_count) == 1.0
                 and self._provider.seed_effective
                 else "blocked"
             ),
@@ -428,6 +467,11 @@ def legacy_synthesis_materialization_report_id(
                 "sampling_partition_id",
                 "materialization_seed",
                 "seed_effective",
+                "grounding_required_sample_count",
+                "grounding_checked_count",
+                "grounding_pass_count",
+                "grounding_failure_counts",
+                "candidate_rejection_counts",
             },
         ),
         prefix="synthesis_materialization_report:",
@@ -489,10 +533,12 @@ def _compile_contract(
         quality_compiler,
         candidate.domain_plugin_set,
         semantic_policy=candidate.semantic_policy,
+        source_grounding_verifier=candidate.source_grounding_verifier,
     ).compile(
         instantiation.task,
         candidate.bundle,
         candidate.proof_graph,
+        public_corpus=candidate.corpus,
         pattern_id=candidate.pattern.pattern_id,
         binding_id=binding.binding_id,
         metadata={
@@ -508,6 +554,55 @@ def _compile_contract(
         binding=binding,
         instantiation=instantiation,
         compiled=compiled,
+    )
+
+
+@dataclass(frozen=True)
+class _GroundingResult:
+    required: bool
+    checked_count: int
+    pass_count: int
+    failure_counts: dict[str, int]
+
+    @property
+    def passed(self) -> bool:
+        return not self.required or (
+            self.checked_count > 0
+            and self.checked_count == self.pass_count
+            and not self.failure_counts
+        )
+
+
+def _verify_candidate_grounding(
+    feasible: _FeasibleSynthesisBinding,
+) -> _GroundingResult:
+    requirement = feasible.instantiation.task.public.metadata.get(
+        "source_grounding_requirement",
+        "not_applicable",
+    )
+    if requirement == "not_applicable":
+        return _GroundingResult(False, 0, 0, {})
+    if requirement != "required":
+        return _GroundingResult(True, 0, 0, {"unknown_grounding_requirement": 1})
+    verifier = feasible.candidate.source_grounding_verifier
+    if verifier is None:
+        return _GroundingResult(True, 0, 0, {"missing_required_verifier": 1})
+    failures: Counter[str] = Counter()
+    passed = 0
+    evidence = feasible.candidate.corpus.evidence
+    if not evidence:
+        return _GroundingResult(True, 0, 0, {"required_grounding_has_no_evidence": 1})
+    for item in evidence:
+        report = verifier.verify(item)
+        if report.failures:
+            failures.update(report.failures)
+        else:
+            passed += 1
+    return _GroundingResult(
+        required=True,
+        checked_count=len(evidence),
+        pass_count=passed,
+        failure_counts=dict(sorted(failures.items())),
     )
 
 

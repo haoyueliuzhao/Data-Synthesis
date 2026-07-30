@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.evaluation.contracts.schema import QualityContract
 from trusted_synthesis.core.evaluation.schema import QualityAssessment
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.task.schema import TaskPackage, TaskPublicSpec
@@ -21,6 +22,8 @@ class ProofCertificate(BaseModel):
     task_id: str
     task_package_hash: str
     evidence_bundle_hash: str
+    public_corpus_id: str
+    public_corpus_hash: str
     proof_graph_hash: str
     task_program_hash: str
     quality_contract_hash: str
@@ -34,7 +37,7 @@ class ProofCertificate(BaseModel):
     evidence_binding_hash: str | None = None
     task_pattern_compiler_version: str | None = None
     compiler_version: str
-    schema_version: str = "proof_certificate.v3"
+    schema_version: str = "proof_certificate.v4"
 
     @model_validator(mode="after")
     def validate_certificate(self) -> ProofCertificate:
@@ -42,6 +45,8 @@ class ProofCertificate(BaseModel):
             task_id=self.task_id,
             task_package_hash=self.task_package_hash,
             evidence_bundle_hash=self.evidence_bundle_hash,
+            public_corpus_id=self.public_corpus_id,
+            public_corpus_hash=self.public_corpus_hash,
             proof_graph_hash=self.proof_graph_hash,
             task_program_hash=self.task_program_hash,
             quality_contract_hash=self.quality_contract_hash,
@@ -70,6 +75,8 @@ class ProofCarryingSample(BaseModel):
     task_package_hash: str
     evidence_bundle_id: str
     evidence_bundle_hash: str
+    public_corpus_id: str
+    public_corpus_hash: str
     proof_graph_id: str
     proof_graph_hash: str
     task_program_id: str
@@ -86,7 +93,7 @@ class ProofCarryingSample(BaseModel):
     task_pattern_compiler_version: str | None = None
     difficulty_profile: dict[str, float] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "proof_carrying_sample.v3"
+    schema_version: str = "proof_carrying_sample.v4"
 
     @model_validator(mode="after")
     def validate_sample(self) -> ProofCarryingSample:
@@ -95,6 +102,8 @@ class ProofCarryingSample(BaseModel):
         expected = {
             "task_package_hash": self.task_package_hash,
             "evidence_bundle_hash": self.evidence_bundle_hash,
+            "public_corpus_id": self.public_corpus_id,
+            "public_corpus_hash": self.public_corpus_hash,
             "proof_graph_hash": self.proof_graph_hash,
             "task_program_hash": self.task_program_hash,
             "quality_contract_hash": self.quality_contract_hash,
@@ -117,6 +126,8 @@ class ProofCarryingSample(BaseModel):
             task_package_hash=self.task_package_hash,
             evidence_bundle_id=self.evidence_bundle_id,
             evidence_bundle_hash=self.evidence_bundle_hash,
+            public_corpus_id=self.public_corpus_id,
+            public_corpus_hash=self.public_corpus_hash,
             proof_graph_id=self.proof_graph_id,
             proof_graph_hash=self.proof_graph_hash,
             task_program_id=self.task_program_id,
@@ -149,6 +160,8 @@ class ProofCarryingPublicArtifact(BaseModel):
     task_public: TaskPublicSpec
     certificate_id: str
     certificate_hash: str
+    public_corpus_id: str
+    public_corpus_hash: str
     pattern_id: str
     pattern_hash: str | None = None
     task_pattern_compiler_version: str | None = None
@@ -163,6 +176,7 @@ class CompiledProofCarryingArtifacts(BaseModel):
     public_artifact: ProofCarryingPublicArtifact
     task: TaskPackage
     evidence_bundle: EvidenceBundle
+    public_corpus: EvidenceCorpus
     proof_graph: ProofGraph
     reference_trajectory: Trajectory
     reference_assessment: QualityAssessment
@@ -174,6 +188,8 @@ def make_proof_certificate(
     task_id: str,
     task_package_hash: str,
     evidence_bundle_hash: str,
+    public_corpus_id: str,
+    public_corpus_hash: str,
     proof_graph_hash: str,
     task_program_hash: str,
     quality_contract_hash: str,
@@ -192,6 +208,8 @@ def make_proof_certificate(
         task_id=task_id,
         task_package_hash=task_package_hash,
         evidence_bundle_hash=evidence_bundle_hash,
+        public_corpus_id=public_corpus_id,
+        public_corpus_hash=public_corpus_hash,
         proof_graph_hash=proof_graph_hash,
         task_program_hash=task_program_hash,
         quality_contract_hash=quality_contract_hash,
@@ -205,7 +223,7 @@ def make_proof_certificate(
         evidence_binding_hash=evidence_binding_hash,
         task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
-        schema_version="proof_certificate.v3",
+        schema_version="proof_certificate.v4",
     )
     return ProofCertificate(
         certificate_id=certificate_id,
@@ -213,6 +231,8 @@ def make_proof_certificate(
         task_id=task_id,
         task_package_hash=task_package_hash,
         evidence_bundle_hash=evidence_bundle_hash,
+        public_corpus_id=public_corpus_id,
+        public_corpus_hash=public_corpus_hash,
         proof_graph_hash=proof_graph_hash,
         task_program_hash=task_program_hash,
         quality_contract_hash=quality_contract_hash,
@@ -226,7 +246,7 @@ def make_proof_certificate(
         evidence_binding_hash=evidence_binding_hash,
         task_pattern_compiler_version=task_pattern_compiler_version,
         compiler_version=compiler_version,
-        schema_version="proof_certificate.v3",
+        schema_version="proof_certificate.v4",
     )
 
 

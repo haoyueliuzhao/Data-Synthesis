@@ -15,6 +15,15 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 
 TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v5"
+TRAINING_UTILITY_AGENT_PROMPT_VERSION = "training_utility_agent_prompt.v6"
+SUPPORTED_TRAINING_UTILITY_AGENT_PROMPT_VERSIONS = frozenset(
+    {
+        "training_utility_agent_prompt.v3",
+        "training_utility_agent_prompt.v4",
+        "training_utility_agent_prompt.v5",
+        TRAINING_UTILITY_AGENT_PROMPT_VERSION,
+    }
+)
 VALIDATION_DOMAINS = ("finance", "legal", "science")
 
 
@@ -65,10 +74,8 @@ class TrainingUtilityMVPConfig(BaseModel):
         "down_proj",
     )
     seed: int = 20260726
-    prompt_version: str = "training_utility_agent_prompt.v4"
-    student_interaction_protocol: Literal["host_instrumented_joint"] = (
-        "host_instrumented_joint"
-    )
+    prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION
+    student_interaction_protocol: Literal["host_instrumented_joint"] = "host_instrumented_joint"
 
     @classmethod
     def from_json(cls, path: str | Path) -> TrainingUtilityMVPConfig:
@@ -76,6 +83,8 @@ class TrainingUtilityMVPConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_balanced_cohort(self) -> TrainingUtilityMVPConfig:
+        if self.prompt_version not in SUPPORTED_TRAINING_UTILITY_AGENT_PROMPT_VERSIONS:
+            raise ValueError(f"unsupported training utility prompt: {self.prompt_version}")
         expected_domains = set(VALIDATION_DOMAINS)
         for field_name, targets, upper_bound in (
             ("candidate_task_targets", self.candidate_task_targets, 5000),
@@ -174,7 +183,8 @@ class SFTRecord(BaseModel):
     contract_label: str | None = None
     counterfactual_repair: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "training_utility_sft_record.v3"
+    prompt_version: str = "training_utility_agent_prompt.legacy_unspecified"
+    schema_version: str = "training_utility_sft_record.v4"
 
     @model_validator(mode="after")
     def validate_training_transcript(self) -> SFTRecord:
@@ -189,9 +199,7 @@ class SFTRecord(BaseModel):
             ("tool", "host_execution", False),
             ("assistant", "answer_decision", True),
         )
-        observed = tuple(
-            (item.role, item.phase, item.supervise) for item in self.messages
-        )
+        observed = tuple((item.role, item.phase, item.supervise) for item in self.messages)
         if observed != expected:
             raise ValueError("host-instrumented SFT records require the fixed five-message loop")
         if self.system_prompt != self.messages[0].content:
@@ -368,6 +376,7 @@ class CohortEvaluationResult(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     cohort: str
+    evaluator_version: str = "training_utility_evaluator.legacy_unversioned"
     adapter_dir: str | None = None
     evaluation_track: str = "evidence_given_plan_given"
     evaluation_dataset_hash: str

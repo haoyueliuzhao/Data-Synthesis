@@ -101,6 +101,7 @@ def run_finance_pilot(
         distractors_per_task=config.distractors_per_task,
         hard_distractors_per_task=config.hard_distractors_per_task,
         hard_distractor_types=config.hard_distractor_types,
+        use_real_distractors=True,
         task_synthesizer=FinanceTaskPlugin(
             allow_structured_claims=True,
             source_grounding_requirement=VerifierRequirement.REQUIRED,
@@ -166,6 +167,7 @@ def run_finance_pilot(
             case.task,
             case.bundle,
             case.proof_graph,
+            public_corpus=case.corpus,
             reference_trajectory=reference,
             reference_assessment=reference_assessment,
         )
@@ -788,6 +790,7 @@ def _reproducibility_check(
             case.task,
             case.bundle,
             case.proof_graph,
+            public_corpus=case.corpus,
             reference_trajectory=reference,
             reference_assessment=reference_assessment,
         )

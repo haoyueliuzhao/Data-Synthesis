@@ -26,6 +26,7 @@ class ProgramVerification(BaseModel):
     node_statuses: dict[str, bool]
     invariant_failures: tuple[str, ...]
     independently_computed_output: dict[str, Any] | None
+    independently_computed_node_outputs: dict[str, dict[str, Any]]
 
 
 class ProgramExecutionError(ValueError):
@@ -108,6 +109,7 @@ class TaskProgramOracleVerifier:
             node_statuses=statuses,
             invariant_failures=tuple(failures),
             independently_computed_output=independently_verified.get(program.output_node_id),
+            independently_computed_node_outputs=independently_verified,
         )
 
     def derive_expected(

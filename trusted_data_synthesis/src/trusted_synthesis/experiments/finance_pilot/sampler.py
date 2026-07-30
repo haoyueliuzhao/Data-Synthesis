@@ -6,14 +6,18 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from itertools import combinations
 from typing import Any, TypeVar
 
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.patterns import REGISTERED_FINANCIAL_RATIO_PAIRS
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.experiments.finance_pilot.schema import FinancePilotConfig
 from trusted_synthesis.hashing import canonical_hash
+
+FINANCE_SAMPLING_STRATUM_VERSION = "finance_sampling_stratum.v3"
 
 
 @dataclass(frozen=True)
@@ -51,6 +55,20 @@ class EvidenceSample:
     source_grounding_rejected_source_counts: dict[str, int]
 
 
+@dataclass(frozen=True)
+class RealDistractorSelection:
+    """Archive-native distractors plus hidden audit labels."""
+
+    hard: tuple[EvidenceItem, ...]
+    broad: tuple[EvidenceItem, ...]
+    kinds: dict[str, str]
+    mismatches: dict[str, tuple[str, ...]]
+
+    @property
+    def evidence(self) -> tuple[EvidenceItem, ...]:
+        return (*self.hard, *self.broad)
+
+
 def sample_evidence(
     adapter: FinanceArchiveAdapter,
     config: FinancePilotConfig,
@@ -59,7 +77,14 @@ def sample_evidence(
 ) -> EvidenceSample:
     scan_limit = config.evidence_scan_limit or None
     strata: dict[str, int] = defaultdict(int)
-    reservoirs: dict[tuple[str, ...], list[tuple[int, str, EvidenceItem]]] = defaultdict(list)
+    coherent_reservoirs: dict[tuple[str, ...], list[tuple[int, str, EvidenceItem]]] = defaultdict(
+        list
+    )
+    diverse_reservoirs: dict[tuple[str, ...], list[tuple[int, str, EvidenceItem]]] = defaultdict(
+        list
+    )
+    coherent_limit = max(1, config.stratum_reservoir_size // 2)
+    diverse_limit = config.stratum_reservoir_size - coherent_limit
     scanned_count = 0
     domain_valid_count = 0
     for item in adapter.iter_evidence(limit=scan_limit):
@@ -69,23 +94,39 @@ def sample_evidence(
         domain_valid_count += 1
         stratum = _evidence_stratum(item)
         strata["|".join(stratum)] += 1
-        rank = int(canonical_hash(item.evidence_id).split(":")[-1], 16)
-        heap = reservoirs[stratum]
-        entry = (-rank, item.evidence_id, item)
-        if len(heap) < config.stratum_reservoir_size:
-            heapq.heappush(heap, entry)
-        elif rank < -heap[0][0]:
-            heapq.heapreplace(heap, entry)
-    reservoir_items = tuple(
-        item
-        for heap in reservoirs.values()
-        for _, _, item in sorted(heap, key=lambda value: (-value[0], value[1]))
-    )
+        _push_evidence_reservoir(
+            coherent_reservoirs[stratum],
+            item,
+            _coherent_reservoir_rank(item),
+            coherent_limit,
+        )
+        _push_evidence_reservoir(
+            diverse_reservoirs[stratum],
+            item,
+            int(canonical_hash(item.evidence_id).split(":")[-1], 16),
+            diverse_limit,
+        )
+    reservoir_by_id: dict[str, EvidenceItem] = {}
+    for reservoir_group in (coherent_reservoirs, diverse_reservoirs):
+        for heap in reservoir_group.values():
+            for _, evidence_id, item in sorted(
+                heap,
+                key=lambda value: (-value[0], value[1]),
+            ):
+                reservoir_by_id.setdefault(evidence_id, item)
+    reservoir_items = tuple(reservoir_by_id[evidence_id] for evidence_id in sorted(reservoir_by_id))
     grounding_failures: Counter[str] = Counter()
     grounding_rejected_sources: Counter[str] = Counter()
     if source_grounding_verifier is not None:
         grounded = []
-        for item in reservoir_items:
+        verification_items = sorted(
+            reservoir_items,
+            key=lambda item: (
+                item.source_locator.raw_object_id or "",
+                item.evidence_id,
+            ),
+        )
+        for item in verification_items:
             report = source_grounding_verifier.verify(item)
             if report.passed:
                 grounded.append(item)
@@ -133,11 +174,31 @@ def discover_bindings(
     evidence: tuple[EvidenceItem, ...],
     config: FinancePilotConfig,
 ) -> tuple[TaskBinding, ...]:
+    temporal_growth = _temporal_bindings(
+        evidence,
+        window=2,
+        task_type="temporal_growth",
+        require_relative_growth=True,
+    )
     candidates = {
         "fact_retrieval": _lookup_bindings(evidence),
         "comparison": _comparison_bindings(evidence),
-        "temporal_growth": _temporal_bindings(evidence, window=2),
-        "temporal_average": _temporal_bindings(evidence, window=3),
+        "temporal_growth": temporal_growth,
+        "temporal_average": _temporal_bindings(
+            evidence,
+            window=3,
+            task_type="temporal_average",
+        ),
+        "temporal_absolute_change": _temporal_bindings(
+            evidence,
+            window=2,
+            task_type="temporal_absolute_change",
+        ),
+        "registered_ratio": _registered_ratio_bindings(evidence),
+        "derived_growth_comparison": _derived_growth_comparison_bindings(
+            evidence,
+            temporal_growth,
+        ),
     }
     selected: list[TaskBinding] = []
     shortfalls = {}
@@ -207,6 +268,198 @@ def select_distractors(
     return tuple(selected[:count])
 
 
+def select_real_distractors(
+    evidence: tuple[EvidenceItem, ...],
+    gold: tuple[EvidenceItem, ...],
+    *,
+    hard_count: int,
+    broad_count: int,
+    preferred_hard_kinds: tuple[str, ...] = (),
+) -> RealDistractorSelection:
+    """Select immutable near-misses from the pinned archive without mutating evidence."""
+
+    if hard_count < 0 or broad_count < 0:
+        raise ValueError("real distractor counts cannot be negative")
+    gold_ids = {item.evidence_id for item in gold}
+    profiles = []
+    for item in evidence:
+        if item.evidence_id in gold_ids:
+            continue
+        kind, mismatches = _closest_real_distractor_profile(item, gold)
+        if kind is None:
+            continue
+        profiles.append((item, kind, mismatches))
+
+    hard_profiles = [profile for profile in profiles if len(profile[2]) == 1]
+    selected: list[tuple[EvidenceItem, str, tuple[str, ...]]] = []
+    selected_ids: set[str] = set()
+    for kind in preferred_hard_kinds:
+        matches = [
+            profile
+            for profile in hard_profiles
+            if profile[1] == kind and profile[0].evidence_id not in selected_ids
+        ]
+        if not matches:
+            continue
+        chosen = min(
+            matches,
+            key=lambda profile: (
+                len(profile[2]),
+                _stable_item_key(profile[0], gold_ids),
+            ),
+        )
+        selected.append(chosen)
+        selected_ids.add(chosen[0].evidence_id)
+        if len(selected) >= hard_count:
+            break
+
+    if len(selected) < hard_count:
+        remaining = sorted(
+            (profile for profile in hard_profiles if profile[0].evidence_id not in selected_ids),
+            key=lambda profile: (
+                len(profile[2]),
+                _mismatch_priority(profile[1]),
+                _stable_item_key(profile[0], gold_ids),
+            ),
+        )
+        for profile in remaining:
+            selected.append(profile)
+            selected_ids.add(profile[0].evidence_id)
+            if len(selected) >= hard_count:
+                break
+
+    broad = sorted(
+        (profile for profile in profiles if profile[0].evidence_id not in selected_ids),
+        key=lambda profile: (
+            -len(profile[2]),
+            _stable_item_key(profile[0], gold_ids),
+        ),
+    )[:broad_count]
+    hard = tuple(profile[0] for profile in selected)
+    broad_items = tuple(profile[0] for profile in broad)
+    kinds = {profile[0].evidence_id: profile[1] for profile in (*selected, *broad)}
+    mismatch_map = {profile[0].evidence_id: profile[2] for profile in (*selected, *broad)}
+    return RealDistractorSelection(
+        hard=hard,
+        broad=broad_items,
+        kinds=dict(sorted(kinds.items())),
+        mismatches=dict(sorted(mismatch_map.items())),
+    )
+
+
+def _closest_real_distractor_profile(
+    distractor: EvidenceItem,
+    required: tuple[EvidenceItem, ...],
+) -> tuple[str | None, tuple[str, ...]]:
+    profiles = []
+    for item in required:
+        mismatches = _real_distractor_mismatches(distractor, item)
+        if not mismatches:
+            continue
+        kind = min(mismatches, key=_mismatch_priority)
+        profiles.append((kind, mismatches, item.evidence_id))
+    if not profiles:
+        return None, ()
+    kind, mismatches, _ = min(
+        profiles,
+        key=lambda profile: (
+            len(profile[1]),
+            _mismatch_priority(profile[0]),
+            profile[2],
+        ),
+    )
+    return kind, mismatches
+
+
+def _real_distractor_mismatches(
+    candidate: EvidenceItem,
+    required: EvidenceItem,
+) -> tuple[str, ...]:
+    mismatches = []
+    if candidate.subject.subject_id != required.subject.subject_id:
+        mismatches.append("wrong_entity")
+    if candidate.predicate != required.predicate:
+        mismatches.append("wrong_metric")
+    if candidate.definition.definition_id != required.definition.definition_id:
+        mismatches.append("wrong_definition")
+    if _scope_key(candidate) != _scope_key(required):
+        mismatches.append("wrong_scope")
+    if _time_label(candidate) != _time_label(required):
+        mismatches.append("wrong_period")
+    candidate_unit, candidate_currency = _unit_currency(candidate)
+    required_unit, required_currency = _unit_currency(required)
+    if candidate_unit != required_unit:
+        mismatches.append("unit_mismatch")
+    if candidate_currency != required_currency:
+        mismatches.append("currency_mismatch")
+    if candidate.temporal_context.basis != required.temporal_context.basis:
+        mismatches.append("time_basis_mismatch")
+    if candidate.temporal_context.frequency != required.temporal_context.frequency:
+        mismatches.append("frequency_mismatch")
+    if candidate.definition.attributes.get("period_type") != required.definition.attributes.get(
+        "period_type"
+    ):
+        mismatches.append("period_type_mismatch")
+    if candidate.source.source_id != required.source.source_id:
+        mismatches.append("wrong_source")
+    if candidate.source.authority != required.source.authority:
+        mismatches.append(
+            "lower_authority"
+            if _authority_rank(candidate) < _authority_rank(required)
+            else "source_authority_mismatch"
+        )
+    if (
+        candidate.epistemic_status != required.epistemic_status
+        or candidate.provenance.build_ids.get("kg") != required.provenance.build_ids.get("kg")
+    ):
+        mismatches.append("stale_version")
+    if _is_forecast(candidate) != _is_forecast(required):
+        mismatches.append("forecast")
+    return tuple(sorted(set(mismatches), key=_mismatch_priority))
+
+
+def _scope_key(item: EvidenceItem) -> tuple[str | None, str | None]:
+    if item.scope is None:
+        return None, None
+    return item.scope.scope_type, item.scope.scope_id
+
+
+def _is_forecast(item: EvidenceItem) -> bool:
+    return bool(item.domain_context.get("is_forecast", False))
+
+
+def _authority_rank(item: EvidenceItem) -> int:
+    return {
+        "unknown": 0,
+        "secondary": 1,
+        "curated_database": 2,
+        "peer_reviewed": 3,
+        "official": 4,
+        "primary": 5,
+    }.get(item.source.authority.value, 0)
+
+
+def _mismatch_priority(kind: str) -> int:
+    order = (
+        "wrong_definition",
+        "wrong_period",
+        "wrong_scope",
+        "wrong_entity",
+        "wrong_metric",
+        "unit_mismatch",
+        "currency_mismatch",
+        "period_type_mismatch",
+        "time_basis_mismatch",
+        "frequency_mismatch",
+        "forecast",
+        "stale_version",
+        "lower_authority",
+        "source_authority_mismatch",
+        "wrong_source",
+    )
+    return order.index(kind) if kind in order else len(order)
+
+
 def _lookup_bindings(evidence: tuple[EvidenceItem, ...]) -> tuple[TaskBinding, ...]:
     return tuple(
         TaskBinding(
@@ -222,39 +475,42 @@ def _comparison_bindings(evidence: tuple[EvidenceItem, ...]) -> tuple[TaskBindin
     groups: dict[tuple[Any, ...], list[EvidenceItem]] = defaultdict(list)
     for item in evidence:
         groups[_comparison_key(item)].append(item)
-    bindings = []
+    bindings: list[TaskBinding] = []
     for items in groups.values():
         by_subject: dict[str, EvidenceItem] = {}
         for item in sorted(items, key=lambda value: value.evidence_id):
             by_subject.setdefault(item.subject.subject_id, item)
         unique = sorted(by_subject.values(), key=lambda value: value.evidence_id)
-        if len(unique) < 2:
-            continue
-        left, right = unique[0], unique[-1]
-        bindings.append(
-            TaskBinding(
-                task_type="comparison",
-                evidence_ids=(left.evidence_id, right.evidence_id),
-                stratum=(
-                    _combined_region((left, right)),
-                    _metric_category(left),
-                    left.temporal_context.frequency or "unknown_frequency",
-                    left.source.source_id,
-                    str(left.domain_context.get("verification_status") or "unknown_status"),
-                ),
+        group_bindings = []
+        for left, right in combinations(unique, 2):
+            group_bindings.append(
+                TaskBinding(
+                    task_type="comparison",
+                    evidence_ids=(left.evidence_id, right.evidence_id),
+                    stratum=(
+                        _combined_region((left, right)),
+                        _metric_category(left),
+                        left.temporal_context.frequency or "unknown_frequency",
+                        left.source.source_id,
+                        str(left.domain_context.get("verification_status") or "unknown_status"),
+                    ),
+                )
             )
-        )
+        bindings.extend(_deterministic_binding_reservoir(group_bindings, 64))
     return tuple(bindings)
 
 
 def _temporal_bindings(
-    evidence: tuple[EvidenceItem, ...], *, window: int
+    evidence: tuple[EvidenceItem, ...],
+    *,
+    window: int,
+    task_type: str,
+    require_relative_growth: bool = False,
 ) -> tuple[TaskBinding, ...]:
     groups: dict[tuple[Any, ...], list[EvidenceItem]] = defaultdict(list)
     for item in evidence:
         groups[_series_key(item)].append(item)
-    bindings = []
-    task_type = "temporal_growth" if window == 2 else "temporal_average"
+    bindings: list[TaskBinding] = []
     for items in groups.values():
         if _series_period_class(items[0]) == "unsupported_ytd":
             continue
@@ -270,22 +526,127 @@ def _temporal_bindings(
             if period is not None:
                 by_period.setdefault(period, item)
         ordered = [by_period[key] for key in sorted(by_period)]
-        if len(ordered) < window:
-            continue
-        selected = _latest_contiguous_window(ordered, window)
-        if selected is None:
-            continue
-        if window == 2 and not _relative_growth_allowed(selected[0]):
-            continue
-        first = selected[0]
-        bindings.append(
-            TaskBinding(
-                task_type=task_type,
-                evidence_ids=tuple(item.evidence_id for item in selected),
-                stratum=_evidence_stratum(first),
+        group_bindings = []
+        for start in range(len(ordered) - window + 1):
+            selected = tuple(ordered[start : start + window])
+            if not all(
+                _periods_are_adjacent(left, right)
+                for left, right in zip(selected, selected[1:], strict=False)
+            ):
+                continue
+            if require_relative_growth and not _relative_growth_allowed(selected[0]):
+                continue
+            group_bindings.append(
+                TaskBinding(
+                    task_type=task_type,
+                    evidence_ids=tuple(item.evidence_id for item in selected),
+                    stratum=_evidence_stratum(selected[0]),
+                )
             )
-        )
+        bindings.extend(_deterministic_binding_reservoir(group_bindings, 32))
     return tuple(bindings)
+
+
+def _registered_ratio_bindings(
+    evidence: tuple[EvidenceItem, ...],
+) -> tuple[TaskBinding, ...]:
+    groups: dict[tuple[Any, ...], list[EvidenceItem]] = defaultdict(list)
+    for item in evidence:
+        groups[_ratio_context_key(item)].append(item)
+    bindings = []
+    for items in groups.values():
+        by_predicate: dict[str, EvidenceItem] = {}
+        for item in sorted(items, key=lambda value: value.evidence_id):
+            by_predicate.setdefault(item.predicate, item)
+        for numerator_predicate, denominator_predicate in REGISTERED_FINANCIAL_RATIO_PAIRS:
+            numerator = by_predicate.get(numerator_predicate)
+            denominator = by_predicate.get(denominator_predicate)
+            if numerator is None or denominator is None:
+                continue
+            if not numerator.definition.definition_id or not denominator.definition.definition_id:
+                continue
+            if _numeric_value(denominator) == 0:
+                continue
+            bindings.append(
+                TaskBinding(
+                    task_type="registered_ratio",
+                    evidence_ids=(numerator.evidence_id, denominator.evidence_id),
+                    stratum=(
+                        *_evidence_stratum(numerator),
+                        f"{numerator_predicate}/{denominator_predicate}",
+                    ),
+                )
+            )
+    return tuple(bindings)
+
+
+def _derived_growth_comparison_bindings(
+    evidence: tuple[EvidenceItem, ...],
+    growth_bindings: tuple[TaskBinding, ...],
+) -> tuple[TaskBinding, ...]:
+    by_id = {item.evidence_id: item for item in evidence}
+    groups: dict[tuple[Any, ...], list[TaskBinding]] = defaultdict(list)
+    for binding in growth_bindings:
+        earlier, later = (by_id[evidence_id] for evidence_id in binding.evidence_ids)
+        groups[_derived_window_key(earlier, later)].append(binding)
+    output: list[TaskBinding] = []
+    for group in groups.values():
+        by_subject: dict[str, TaskBinding] = {}
+        for binding in sorted(group, key=lambda item: item.binding_hash):
+            subject_id = by_id[binding.evidence_ids[0]].subject.subject_id
+            by_subject.setdefault(subject_id, binding)
+        group_bindings = []
+        for left, right in combinations(by_subject.values(), 2):
+            left_earlier = by_id[left.evidence_ids[0]]
+            right_earlier = by_id[right.evidence_ids[0]]
+            group_bindings.append(
+                TaskBinding(
+                    task_type="derived_growth_comparison",
+                    evidence_ids=(
+                        *left.evidence_ids,
+                        *right.evidence_ids,
+                    ),
+                    stratum=(
+                        _combined_region((left_earlier, right_earlier)),
+                        _metric_category(left_earlier),
+                        left_earlier.temporal_context.frequency or "unknown_frequency",
+                        left_earlier.source.source_id,
+                        "derived_growth_comparison",
+                    ),
+                )
+            )
+        output.extend(_deterministic_binding_reservoir(group_bindings, 64))
+    return tuple(output)
+
+
+def _ratio_context_key(item: EvidenceItem) -> tuple[Any, ...]:
+    return (
+        item.subject.subject_id,
+        _period_identity_key(item),
+        item.source.source_id,
+        item.temporal_context.basis,
+        item.temporal_context.frequency,
+        _scope_key(item),
+        _unit_currency(item),
+    )
+
+
+def _derived_window_key(
+    earlier: EvidenceItem,
+    later: EvidenceItem,
+) -> tuple[Any, ...]:
+    return (
+        earlier.predicate,
+        _time_point(earlier),
+        _time_point(later),
+        earlier.source.source_id,
+        earlier.definition.definition_id,
+        _unit_currency(earlier),
+        earlier.temporal_context.basis,
+        earlier.temporal_context.frequency,
+        earlier.scope.scope_type if earlier.scope else None,
+        earlier.definition.attributes.get("period_type"),
+    )
 
 
 def _comparison_key(item: EvidenceItem) -> tuple[Any, ...]:
@@ -323,7 +684,18 @@ def _evidence_stratum(item: EvidenceItem) -> tuple[str, ...]:
         item.temporal_context.frequency or "unknown_frequency",
         item.source.source_id,
         str(item.domain_context.get("verification_status") or "unknown_status"),
+        item.predicate,
+        item.subject.subject_type,
+        _year_bucket(item),
     )
+
+
+def _year_bucket(item: EvidenceItem) -> str:
+    point = _time_point(item)
+    if point is None:
+        return "unknown_year"
+    start = point.year - point.year % 5
+    return f"{start}-{start + 4}"
 
 
 def _metric_category(item: EvidenceItem) -> str:
@@ -362,6 +734,18 @@ def _combined_region(items: tuple[EvidenceItem, ...]) -> str:
 def _time_point(item: EvidenceItem) -> date | None:
     context = item.temporal_context
     return context.valid_to or context.observed_at or context.valid_from
+
+
+def _period_identity_key(
+    item: EvidenceItem,
+) -> tuple[str | None, str | None, str | None, str | None]:
+    context = item.temporal_context
+    return (
+        context.label,
+        context.valid_from.isoformat() if context.valid_from else None,
+        context.valid_to.isoformat() if context.valid_to else None,
+        context.observed_at.isoformat() if context.observed_at else None,
+    )
 
 
 def _time_label(item: EvidenceItem) -> str:
@@ -474,7 +858,55 @@ def _stable_item_key(item: EvidenceItem, gold_ids: set[str]) -> str:
     )
 
 
+def _deterministic_binding_reservoir(
+    bindings: Iterable[TaskBinding],
+    limit: int,
+) -> tuple[TaskBinding, ...]:
+    if limit < 1:
+        raise ValueError("binding reservoir limit must be positive")
+    unique = {binding.binding_hash: binding for binding in bindings}
+    return tuple(
+        unique[key]
+        for key in sorted(
+            unique,
+            key=lambda value: canonical_hash(
+                value,
+                prefix="finance_binding_reservoir:",
+            ),
+        )[:limit]
+    )
+
+
 T = TypeVar("T")
+
+
+def _coherent_reservoir_rank(item: EvidenceItem) -> int:
+    return int(
+        canonical_hash(
+            {
+                "subject_id": item.subject.subject_id,
+                "scope": _scope_key(item),
+                "source_id": item.source.source_id,
+            },
+            prefix="finance_coherent_evidence_reservoir:",
+        ).split(":")[-1],
+        16,
+    )
+
+
+def _push_evidence_reservoir(
+    heap: list[tuple[int, str, EvidenceItem]],
+    item: EvidenceItem,
+    rank: int,
+    limit: int,
+) -> None:
+    if limit <= 0:
+        return
+    entry = (-rank, item.evidence_id, item)
+    if len(heap) < limit:
+        heapq.heappush(heap, entry)
+    elif rank < -heap[0][0]:
+        heapq.heapreplace(heap, entry)
 
 
 def _diverse_select(

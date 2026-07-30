@@ -49,6 +49,8 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 
 from .schema import (
+    SUPPORTED_TRAINING_UTILITY_AGENT_PROMPT_VERSIONS,
+    TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     CohortDatasetManifest,
     SFTMessage,
     SFTRecord,
@@ -57,13 +59,117 @@ from .schema import (
     TrainingUtilityReadinessReport,
 )
 
-SYSTEM_PROMPT = (
+LEGACY_SYSTEM_PROMPT = (
     "You are a proof-carrying evidence agent in a host-instrumented loop. Use only the "
     "supplied public task and evidence. First emit AgentActionPlanContract JSON. The host "
     "executes registered operations and returns immutable results as a tool message. Then "
     "emit AgentAnswerDecisionContract JSON. Never invent execution IDs, observations, source "
     "locators, or host verification fields. Do not emit markdown or hidden reasoning."
 )
+
+V5_SYSTEM_PROMPT = (
+    "You are a proof-carrying evidence agent in a host-instrumented loop. Use only the "
+    "supplied public task, evidence, and operation catalog. Your first reply must be one JSON "
+    "object and nothing else. It may contain only schema_version, plan_summary, "
+    "selected_evidence_ids, executions, and output_step_index. Each execution may contain only "
+    "operator_id, inputs, parameters, and rationale_summary. Each input is either "
+    '{"source":"evidence","evidence_id":"..."} or '
+    '{"source":"step","step_index":1}; selector is the only optional input '
+    "field. Do not copy kind, role_id, semantic_constraints, source_id, or other Program "
+    "Skeleton fields into action inputs. The host executes the plan and returns an immutable "
+    "tool message. Your second reply must be one JSON object and nothing else. It may contain "
+    "only schema_version, result, cited_evidence_ids, status, and claims. Never invent execution "
+    "IDs, observations, source locators, or host verification fields. Do not emit markdown or "
+    "hidden reasoning."
+)
+SYSTEM_PROMPT = V5_SYSTEM_PROMPT + (
+    " In the second response, result must exactly match public_task.answer_schema. "
+    "Include every schema-required context field such as unit, currency, result_context, "
+    "or source_id. Transform the immutable Host output into that public answer shape; do "
+    "not copy a raw Host wrapper or omit required context."
+)
+TRAINING_UTILITY_AGENT_PROMPT_HASH = canonical_hash(
+    SYSTEM_PROMPT, prefix="training_utility_agent_prompt:"
+)
+
+
+def _system_prompt_for_version(prompt_version: str) -> str:
+    if prompt_version == TRAINING_UTILITY_AGENT_PROMPT_VERSION:
+        return SYSTEM_PROMPT
+    if prompt_version == "training_utility_agent_prompt.v5":
+        return V5_SYSTEM_PROMPT
+    if prompt_version in SUPPORTED_TRAINING_UTILITY_AGENT_PROMPT_VERSIONS:
+        return LEGACY_SYSTEM_PROMPT
+    raise ValueError(f"unsupported training utility prompt: {prompt_version}")
+
+
+def _student_output_contract(prompt_version: str) -> dict[str, Any]:
+    if prompt_version not in {
+        "training_utility_agent_prompt.v5",
+        TRAINING_UTILITY_AGENT_PROMPT_VERSION,
+    }:
+        return {
+            "schema_version": "agent_action_plan.v1",
+            "selected_evidence_ids": "array of supplied evidence IDs",
+            "executions": "topologically ordered semantic operation decisions",
+            "output_step_index": "one-based final output step",
+        }
+    return {
+        "prompt_version": prompt_version,
+        "first_response": {
+            "schema_version": "agent_action_plan.v1",
+            "allowed_fields": [
+                "schema_version",
+                "plan_summary",
+                "selected_evidence_ids",
+                "executions",
+                "output_step_index",
+            ],
+            "execution_allowed_fields": [
+                "operator_id",
+                "inputs",
+                "parameters",
+                "rationale_summary",
+            ],
+            "evidence_input": {
+                "source": "evidence",
+                "evidence_id": "a supplied evidence ID",
+                "selector": "optional selector",
+            },
+            "step_input": {
+                "source": "step",
+                "step_index": "one-based earlier execution index",
+                "selector": "optional selector",
+            },
+            "forbidden_input_fields": [
+                "kind",
+                "role_id",
+                "semantic_constraints",
+                "source_id",
+            ],
+        },
+        "second_response_after_tool": {
+            "schema_version": "agent_answer_decision.v1",
+            "allowed_fields": [
+                "schema_version",
+                "result",
+                "cited_evidence_ids",
+                "status",
+                "claims",
+            ],
+            **(
+                {
+                    "result_contract": (
+                        "exactly public_task.answer_schema, including unit, currency, "
+                        "result_context, or source_id when required; never a raw Host wrapper"
+                    )
+                }
+                if prompt_version == TRAINING_UTILITY_AGENT_PROMPT_VERSION
+                else {}
+            ),
+        },
+        "serialization": "one JSON object only; no markdown fences or commentary",
+    }
 
 
 def load_agent_artifacts(
@@ -75,9 +181,7 @@ def load_agent_artifacts(
     critic_path = artifact_dir / "quality_critic_dataset.jsonl"
     with critic_path.open(encoding="utf-8") as critic_file:
         examples = tuple(
-            QualityCriticExample.model_validate_json(line)
-            for line in critic_file
-            if line.strip()
+            QualityCriticExample.model_validate_json(line) for line in critic_file if line.strip()
         )
     dataset = make_quality_critic_dataset(examples)
     if report.critic_dataset_id != dataset.dataset_id:
@@ -114,10 +218,12 @@ def audit_training_utility_readiness(
     representable_real = _representable_example_records(
         real_examples,
         UtilityCohort.RANDOM_SYNTHETIC,
+        prompt_version=config.prompt_version,
     )
     representable_counterfactual = _representable_example_records(
         counterfactuals,
         UtilityCohort.RANDOM_SYNTHETIC,
+        prompt_version=config.prompt_version,
     )
     accepted_by_task = {item.task_id: item for item in accepted}
     representable_accepted_task_ids = {
@@ -125,13 +231,13 @@ def audit_training_utility_readiness(
         for item in _representable_example_records(
             accepted,
             UtilityCohort.CONTRACT_COUNTERFACTUAL,
+            prompt_version=config.prompt_version,
         )
     }
     feedback_task_ids = {
         item.task_id
         for item in counterfactuals
-        if item.task_id in accepted_by_task
-        and item.task_id in representable_accepted_task_ids
+        if item.task_id in accepted_by_task and item.task_id in representable_accepted_task_ids
     }
     repairable_task_ids: set[str] = set()
     for item in counterfactuals:
@@ -164,12 +270,10 @@ def audit_training_utility_readiness(
         domain: {
             "candidate_pool_tasks": config.candidate_task_target(domain),
             "attempted_tasks": math.ceil(
-                config.candidate_task_target(domain)
-                * config.minimum_real_candidate_completion_rate
+                config.candidate_task_target(domain) * config.minimum_real_candidate_completion_rate
             ),
             "real_candidates": math.ceil(
-                config.candidate_task_target(domain)
-                * config.minimum_real_candidate_completion_rate
+                config.candidate_task_target(domain) * config.minimum_real_candidate_completion_rate
             ),
             **shared_required,
         }
@@ -320,7 +424,12 @@ def build_training_utility_datasets(
     )
     selected_clean = _balanced_take(
         tuple(
-            _record_from_example(item, UtilityCohort.CONTRACT_FILTERED) for item in clean_examples
+            _record_from_example(
+                item,
+                UtilityCohort.CONTRACT_FILTERED,
+                prompt_version=config.prompt_version,
+            )
+            for item in clean_examples
         ),
         config.cohort_size,
         config.seed + 3,
@@ -339,10 +448,9 @@ def build_training_utility_datasets(
         _record_from_example(
             item,
             UtilityCohort.CRITIC_SELECTED,
+            prompt_version=config.prompt_version,
             metadata={
-                "critic_accept_probability": prediction_by_task[
-                    item.task_id
-                ].accept_probability,
+                "critic_accept_probability": prediction_by_task[item.task_id].accept_probability,
                 "critic_prediction_id": prediction_by_task[item.task_id].prediction_id,
                 "quality_selection_id": d5_selection["selection_id"],
                 "quality_selection_policy_hash": d5_selection["policy_hash"],
@@ -433,9 +541,7 @@ def build_training_utility_datasets(
         train_evaluation_evidence_version_overlap_count=(
             isolation["evidence_version_overlap_count"]
         ),
-        train_evaluation_source_record_overlap_count=(
-            isolation["source_record_overlap_count"]
-        ),
+        train_evaluation_source_record_overlap_count=(isolation["source_record_overlap_count"]),
         train_evaluation_binding_overlap_count=isolation["binding_overlap_count"],
         train_evaluation_program_signature_overlap_count=(
             isolation["program_signature_overlap_count"]
@@ -578,9 +684,7 @@ def _dataset_identity_sets(records: tuple[SFTRecord, ...]) -> dict[str, set[str]
             subject_id = str((evidence.get("subject") or {}).get("subject_id") or "")
             evidence_id = str(evidence.get("evidence_id") or "")
             evidence_version_id = str(evidence.get("evidence_version_id") or "")
-            source_record_id = str(
-                (evidence.get("provenance") or {}).get("source_record_id") or ""
-            )
+            source_record_id = str((evidence.get("provenance") or {}).get("source_record_id") or "")
             if subject_id:
                 identities["subject"].add(subject_id)
             if evidence_id:
@@ -597,9 +701,7 @@ def _dataset_identity_sets(records: tuple[SFTRecord, ...]) -> dict[str, set[str]
                         "predicate": evidence.get("predicate"),
                         "temporal_context": evidence.get("temporal_context"),
                         "scope": evidence.get("scope"),
-                        "definition_id": (evidence.get("definition") or {}).get(
-                            "definition_id"
-                        ),
+                        "definition_id": (evidence.get("definition") or {}).get("definition_id"),
                     },
                     prefix="training_utility_binding_identity:",
                 )
@@ -728,6 +830,7 @@ def _record_from_example(
     example: QualityCriticExample,
     cohort: UtilityCohort,
     *,
+    prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     candidate_attempt: dict[str, Any] | None = None,
     target_override: dict[str, Any] | None = None,
     metadata: dict[str, Any] | None = None,
@@ -744,6 +847,7 @@ def _record_from_example(
         target=target,
         source_kind=example.candidate_source,
         contract_label=example.contract_annotation.acceptability.value,
+        prompt_version=prompt_version,
         candidate_attempt=candidate_attempt,
         metadata={
             **_task_structure_metadata(public_task),
@@ -761,9 +865,11 @@ def _make_record(
     target: dict[str, Any],
     source_kind: str,
     contract_label: str | None,
+    prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     candidate_attempt: dict[str, Any] | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> SFTRecord:
+    system_prompt = _system_prompt_for_version(prompt_version)
     action_plan, host_execution, answer_decision = _student_contracts_from_response(
         target,
         task=task,
@@ -775,12 +881,7 @@ def _make_record(
         "public_task": task,
         "evidence_corpus": evidence,
         "operation_catalog": _student_operation_catalog(target),
-        "output_contract": {
-            "schema_version": "agent_action_plan.v1",
-            "selected_evidence_ids": "array of supplied evidence IDs",
-            "executions": "topologically ordered semantic operation decisions",
-            "output_step_index": "one-based final output step",
-        },
+        "output_contract": _student_output_contract(prompt_version),
     }
     if candidate_attempt is not None:
         user_payload["candidate_attempt_to_repair"] = _model_owned_candidate_attempt(
@@ -804,7 +905,7 @@ def _make_record(
         sort_keys=True,
     )
     messages = (
-        SFTMessage(role="system", content=SYSTEM_PROMPT, phase="context"),
+        SFTMessage(role="system", content=system_prompt, phase="context"),
         SFTMessage(role="user", content=user_prompt, phase="context"),
         SFTMessage(
             role="assistant",
@@ -830,6 +931,8 @@ def _make_record(
         "source_kind": source_kind,
         "user_prompt": user_prompt,
         "assistant_target": assistant_target,
+        "system_prompt": system_prompt,
+        "prompt_version": prompt_version,
         "training_format": "host_instrumented_joint",
     }
     return SFTRecord(
@@ -837,7 +940,7 @@ def _make_record(
         cohort=cohort,
         task_id=str(task["task_id"]),
         domain=str(task["domain"]),
-        system_prompt=SYSTEM_PROMPT,
+        system_prompt=system_prompt,
         user_prompt=user_prompt,
         assistant_target=assistant_target,
         training_format="host_instrumented_joint",
@@ -845,7 +948,14 @@ def _make_record(
         source_kind=source_kind,
         contract_label=contract_label,
         counterfactual_repair=candidate_attempt is not None,
-        metadata=dict(metadata or {}),
+        metadata={
+            **dict(metadata or {}),
+            "prompt_version": prompt_version,
+            "prompt_manifest_hash": canonical_hash(
+                system_prompt, prefix="training_utility_agent_prompt:"
+            ),
+        },
+        prompt_version=prompt_version,
     )
 
 
@@ -892,9 +1002,7 @@ def _student_model_contracts_from_response(
             }
             for item in response.execution_trace.steps
         ],
-        "output_step_index": execution_positions[
-            response.execution_trace.output_execution_id
-        ],
+        "output_step_index": execution_positions[response.execution_trace.output_execution_id],
     }
     final_answer = response.final_answer
     answer_decision = {
@@ -972,6 +1080,7 @@ def _d1_random_records(
     real_records = _representable_example_records(
         tuple(item for item in examples if item.candidate_source == "real_agent"),
         UtilityCohort.RANDOM_SYNTHETIC,
+        prompt_version=config.prompt_version,
     )
     if config.d1_construction_mode == "unfiltered_real_agent":
         return _balanced_take(real_records, config.cohort_size, config.seed + 101)
@@ -979,6 +1088,7 @@ def _d1_random_records(
     negative = _representable_example_records(
         tuple(item for item in examples if item.candidate_source == "typed_counterfactual"),
         UtilityCohort.RANDOM_SYNTHETIC,
+        prompt_version=config.prompt_version,
     )
     negative_count = round(config.cohort_size * config.d1_counterfactual_fraction)
     positive_count = config.cohort_size - negative_count
@@ -1019,6 +1129,7 @@ def _d4_counterfactual_calibrated_records(
         record = _record_from_example(
             clean,
             UtilityCohort.CONTRACT_COUNTERFACTUAL,
+            prompt_version=config.prompt_version,
             metadata={
                 "feedback_policy": "typed_counterfactual_to_clean_solve_allocation",
                 "feedback_failure_families": failure_families,
@@ -1059,7 +1170,11 @@ def _d4_legacy_mixed_repair_records(
     direct_count = config.cohort_size - repair_count
     direct = _balanced_take(
         tuple(
-            _record_from_example(item, UtilityCohort.CONTRACT_COUNTERFACTUAL)
+            _record_from_example(
+                item,
+                UtilityCohort.CONTRACT_COUNTERFACTUAL,
+                prompt_version=config.prompt_version,
+            )
             for item in clean_examples
         ),
         direct_count,
@@ -1091,6 +1206,7 @@ def _d4_legacy_mixed_repair_records(
                 _record_from_example(
                     clean,
                     UtilityCohort.CONTRACT_COUNTERFACTUAL,
+                    prompt_version=config.prompt_version,
                     candidate_attempt=candidate_attempt,
                     target_override=target_override,
                     metadata={
@@ -1121,24 +1237,18 @@ def _select_d5_examples(
         predictions = tuple(prediction_by_task[item.task_id] for item in domain_examples)
         for example, prediction in zip(domain_examples, predictions, strict=True):
             if prediction.example_id != example.example_id:
-                raise ValueError(
-                    f"D5 Critic prediction identity mismatch for {example.task_id}"
-                )
+                raise ValueError(f"D5 Critic prediction identity mismatch for {example.task_id}")
         policy = QualitySelectionPolicy(
             policy_id=f"training_utility.d5.{domain}.v2",
             target_size=per_domain,
             minimum_overall_score=config.d5_minimum_overall_score,
             minimum_dimension_score=config.d5_minimum_dimension_score,
-            minimum_critic_accept_probability=(
-                config.d5_minimum_critic_accept_probability
-            ),
+            minimum_critic_accept_probability=(config.d5_minimum_critic_accept_probability),
             stratum_fields=("candidate_source",),
         )
         result = selector.select(domain_examples, policy, predictions)
         if result.shortfall:
-            raise ValueError(
-                f"D5 QualityAwareSelector shortfall for {domain}: {result.shortfall}"
-            )
+            raise ValueError(f"D5 QualityAwareSelector shortfall for {domain}: {result.shortfall}")
         example_by_id = {item.example_id: item for item in domain_examples}
         selected.extend(example_by_id[item] for item in result.selected_example_ids)
         domain_results.append(result)
@@ -1198,6 +1308,7 @@ def _reference_and_evaluation_records(
             target=_reference_response(task, case.bundle, case.registry),
             source_kind="deterministic_reference_workflow",
             contract_label="accept",
+            prompt_version=config.prompt_version,
             metadata={
                 "fixture_ordinal": ordinal + 1,
                 **_task_structure_metadata(task.public),
@@ -1308,6 +1419,7 @@ def _reference_response(task, bundle, registry) -> dict[str, Any]:
                 task,
                 execution.final_output,
                 gold_evidence,
+                node_outputs=execution.node_outputs,
             ),
             "citations": citations,
         },
@@ -1319,11 +1431,13 @@ def _reference_response(task, bundle, registry) -> dict[str, Any]:
 def _representable_example_records(
     examples: tuple[QualityCriticExample, ...],
     cohort: UtilityCohort,
+    *,
+    prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION,
 ) -> tuple[SFTRecord, ...]:
     records_by_id: dict[str, SFTRecord] = {}
     for example in examples:
         try:
-            record = _record_from_example(example, cohort)
+            record = _record_from_example(example, cohort, prompt_version=prompt_version)
         except ValueError:
             continue
         # Distinct annotations can collapse to the same public prompt and target.

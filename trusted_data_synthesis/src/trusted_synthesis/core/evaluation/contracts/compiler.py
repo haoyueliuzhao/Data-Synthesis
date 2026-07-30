@@ -24,10 +24,11 @@ from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.plugins import DomainQualityClauseProviderProtocol
+from trusted_synthesis.core.task.answer_schema import required_answer_fields
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.hashing import canonical_hash
 
-QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v4"
+QUALITY_CONTRACT_COMPILER_VERSION = "quality_contract_compiler.v5"
 
 _COUNTERFACTUAL_OPERATOR_VERSION = "1.0.0"
 
@@ -291,8 +292,8 @@ class QualityContractCompiler:
                     scope=ClauseScope.UNIVERSAL,
                     severity=ClauseSeverity.DIAGNOSTIC,
                     target=ClauseTarget(target_type="task_difficulty", target_ref=task.task_id),
-                    verifier_id="task_difficulty.v1",
-                    verifier_version="1.0.0",
+                    verifier_id="task_difficulty.v2",
+                    verifier_version="2.0.0",
                     expected_ref=canonical_hash(
                         difficulty_profile,
                         prefix="task_difficulty_profile:",
@@ -652,8 +653,7 @@ def _diagnostic_dimensions(check_id: str) -> tuple[str, ...]:
 
 
 def _required_answer_fields(answer_schema: dict) -> tuple[str, ...]:
-    fields = answer_schema.get("required_fields") or ()
-    return tuple(dict.fromkeys(str(item) for item in fields if str(item)))
+    return required_answer_fields(answer_schema)
 
 
 def _operation_contract_identity(operation) -> dict[str, object]:

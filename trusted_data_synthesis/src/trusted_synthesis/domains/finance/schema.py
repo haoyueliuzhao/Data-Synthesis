@@ -5,6 +5,9 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
+FINANCE_ARCHIVE_ADAPTER_ID = "finance_archive.v2"
+ARCHIVE_BACKED_FINANCE_ADAPTER_IDS = frozenset({"finance_archive.v1", FINANCE_ARCHIVE_ADAPTER_ID})
+
 
 class FinanceArchiveConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")

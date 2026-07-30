@@ -35,6 +35,10 @@ class EvidenceCorpus(BaseModel):
     def by_id(self) -> dict[str, EvidenceItem]:
         return {item.evidence_id: item for item in self.evidence}
 
+    @property
+    def corpus_hash(self) -> str:
+        return canonical_hash(self, prefix="evidence_corpus_content:")
+
     def as_bundle(self, *, purpose: str = "candidate verification") -> EvidenceBundle:
         return EvidenceBundle(
             bundle_id=f"corpus_bundle:{self.corpus_id}",

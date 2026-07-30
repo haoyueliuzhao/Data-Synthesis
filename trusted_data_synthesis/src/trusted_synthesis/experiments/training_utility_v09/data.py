@@ -28,6 +28,7 @@ from trusted_synthesis.core.refinement import (
 )
 from trusted_synthesis.core.task.schema import TaskPublicSpec
 from trusted_synthesis.domains.finance import FinanceArchiveAdapter, FinanceArchiveConfig
+from trusted_synthesis.domains.finance.schema import ARCHIVE_BACKED_FINANCE_ADAPTER_IDS
 from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
 from trusted_synthesis.experiments.training_utility_mvp.data import (
     _evaluation_isolation,
@@ -39,6 +40,7 @@ from trusted_synthesis.experiments.training_utility_mvp.data import (
     _task_structure_metadata,
 )
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
+    TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     SFTMessage,
     SFTRecord,
     TrainingUtilityMVPConfig,
@@ -146,7 +148,9 @@ def build_v09_training_datasets(
     real_examples = tuple(item for item, _ in mapped_examples)
     if len(real_examples) != len({item.task_id for item in real_examples}):
         raise ValueError("v0.9 requires one real Agent candidate per source task")
-    unfiltered_records, unfiltered_example_ids = _representable_real_records(real_examples)
+    unfiltered_records, unfiltered_example_ids = _representable_real_records(
+        real_examples, prompt_version=training_config.prompt_version
+    )
     current_task_by_source = {item.task_id: task_id for item, task_id in mapped_examples}
     accepted_examples = tuple(
         item
@@ -260,18 +264,17 @@ def build_v09_training_datasets(
         feedback_source_pool,
         domain="finance",
     )
-    finance_archive_source = finance_source_adapter_ids == {"finance_archive.v1"}
+    finance_archive_source = (
+        len(finance_source_adapter_ids) == 1
+        and finance_source_adapter_ids <= ARCHIVE_BACKED_FINANCE_ADAPTER_IDS
+    )
     archive_config_path = refinement_config.finance_archive_config_path
     c3_provider: SynthesisBindingProviderProtocol
     c4_provider: SynthesisBindingProviderProtocol
     if finance_archive_source:
         if archive_config_path is None:
-            raise ValueError(
-                "archive-backed Finance feedback requires finance_archive_config_path"
-            )
-        archive_adapter = FinanceArchiveAdapter(
-            FinanceArchiveConfig.from_json(archive_config_path)
-        )
+            raise ValueError("archive-backed Finance feedback requires finance_archive_config_path")
+        archive_adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(archive_config_path))
         c3_archive_provider = FinanceArchiveBindingProvider(
             archive_adapter,
             candidate_pool_id="route_b_finance_archive_superpool",
@@ -337,6 +340,7 @@ def build_v09_training_datasets(
         materialization_report=c3_materialization_report,
         clause_feedback=refinement_manifest.clause_feedback,
         source_kind="quality_contract_verified_new_compilation",
+        prompt_version=training_config.prompt_version,
     )
 
     c3_task_ids = {item.compiled.task.task_id for item in c3_artifacts}
@@ -369,6 +373,7 @@ def build_v09_training_datasets(
         materialization_report=c4_materialization_report,
         clause_feedback=refinement_manifest.clause_feedback,
         source_kind="ccgr_refined_verified_new_compilation",
+        prompt_version=training_config.prompt_version,
         feedback_source=refinement_manifest.feedback_source,
     )
     cohorts = {
@@ -795,6 +800,8 @@ def _validate_build_contract(
 
 def _representable_real_records(
     examples: tuple[QualityCriticExample, ...],
+    *,
+    prompt_version: str,
 ) -> tuple[dict[str, SFTRecord], dict[str, str]]:
     records: dict[str, SFTRecord] = {}
     example_ids: dict[str, str] = {}
@@ -803,6 +810,7 @@ def _representable_real_records(
             record = _record_from_example(
                 example,
                 UtilityCohort.RANDOM_SYNTHETIC,
+                prompt_version=prompt_version,
             )
         except ValueError:
             continue
@@ -920,6 +928,8 @@ def _rebuild_record(
         "source_kind": source_kind,
         "user_prompt": user_prompt,
         "assistant_target": assistant_target,
+        "system_prompt": record.system_prompt,
+        "prompt_version": record.prompt_version,
         "training_format": record.training_format,
     }
     return SFTRecord(
@@ -936,6 +946,7 @@ def _rebuild_record(
         contract_label=record.contract_label,
         counterfactual_repair=False,
         metadata={**record.metadata, **metadata},
+        prompt_version=record.prompt_version,
     )
 
 
@@ -952,6 +963,8 @@ def _relabel_record(
         "source_kind": source_kind,
         "user_prompt": record.user_prompt,
         "assistant_target": record.assistant_target,
+        "system_prompt": record.system_prompt,
+        "prompt_version": record.prompt_version,
         "training_format": record.training_format,
     }
     return record.model_copy(
@@ -1024,6 +1037,7 @@ def _materialized_records(
     accepted_example_ids: Mapping[str, str],
     materialization_report: SynthesisMaterializationReport,
     source_kind: str,
+    prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     clause_feedback: tuple[ClauseFeedback, ...] = (),
     feedback_source: str | None = None,
 ) -> tuple[SFTRecord, ...]:
@@ -1101,9 +1115,7 @@ def _materialized_records(
             ),
             "linked_clause_feedback_ids": tuple(item.feedback_id for item in linked_feedback),
             "contributing_clause_feedback_ids": tuple(item.feedback_id for item in contributors),
-            "policy_clause_feedback_ids": tuple(
-                item.feedback_id for item in policy_contributors
-            ),
+            "policy_clause_feedback_ids": tuple(item.feedback_id for item in policy_contributors),
             "unlinked_policy_clause_feedback_ids": tuple(
                 item.feedback_id for item in policy_contributors if item not in contributors
             ),
@@ -1154,6 +1166,7 @@ def _materialized_records(
                 ),
                 source_kind=source_kind,
                 contract_label="accept",
+                prompt_version=prompt_version,
                 metadata=metadata,
             )
         )

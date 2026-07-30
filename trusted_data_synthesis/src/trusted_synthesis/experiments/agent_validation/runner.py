@@ -667,7 +667,12 @@ def _compile_runtime(case: ContractCase, task):
         compiler,
         case.plugin_set,
         semantic_policy=case.semantic_policy,
-    ).compile(task, case.bundle, case.proof_graph)
+    ).compile(
+        task,
+        case.bundle,
+        case.proof_graph,
+        public_corpus=case.corpus,
+    )
     verifier = CandidateWorkflowVerifier(
         case.registry,
         semantic_policy=case.semantic_policy,

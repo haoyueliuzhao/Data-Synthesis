@@ -14,7 +14,7 @@ from trusted_synthesis.core.trajectory.schema import (
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-CANDIDATE_GENERATOR_VERSION = "finance_numeric_candidate.v5"
+CANDIDATE_GENERATOR_VERSION = "finance_numeric_candidate.v6"
 
 
 class FinanceNumericCandidateGenerator:
@@ -24,6 +24,7 @@ class FinanceNumericCandidateGenerator:
         evidence = runtime.search(task.retrieval_scope)
         selected = self._select(task, evidence)
         result = self._answer(task, selected)
+        operation_result = _operation_result(task, result)
         citations = [
             {
                 "evidence_id": item.evidence_id,
@@ -55,7 +56,12 @@ class FinanceNumericCandidateGenerator:
                 status=StepStatus.SUCCEEDED,
             ),
         ]
-        operation_steps = _operation_steps(task, selected, result, start_index=3)
+        operation_steps = _operation_steps(
+            task,
+            selected,
+            operation_result,
+            start_index=3,
+        )
         steps.extend(operation_steps)
         next_index = len(steps) + 1
         if any(item.value == "verify_result" for item in task.requirements):
@@ -70,7 +76,7 @@ class FinanceNumericCandidateGenerator:
                         "schema_checked": True,
                         "source_checked": True,
                         "verified_output_ref": f"operation:{output_node_id}",
-                        "verified_result": result,
+                        "verified_result": operation_result,
                     },
                     evidence_ids=evidence_ids,
                     program_node_id=output_node_id,
@@ -132,14 +138,21 @@ class FinanceNumericCandidateGenerator:
                 higher = evidence[0].evidence_id
             elif values[1] > values[0]:
                 higher = evidence[1].evidence_id
-            return {"higher_ref": higher, "difference": str(abs(values[0] - values[1]))}
+            return {
+                "higher_ref": higher,
+                "difference": str(abs(values[0] - values[1])),
+                "result_context": task.answer_schema["result_context"],
+            }
         if task.task_type == "temporal_growth" and len(evidence) == 2:
             ordered = sorted(evidence, key=_temporal_sort_key)
             earlier = _scalar_value(ordered[0])
             later = _scalar_value(ordered[1])
             if earlier == 0:
                 return {"status": "insufficient_capability", "reason": "zero_base"}
-            return {"value": str((later - earlier) / abs(earlier) * Decimal("100"))}
+            return {
+                "value": str((later - earlier) / abs(earlier) * Decimal("100")),
+                "unit": task.answer_schema["unit"],
+            }
         if task.task_type == "temporal_average" and len(evidence) >= 3:
             values = [_scalar_value(item) for item in evidence]
             return {
@@ -255,6 +268,22 @@ def _operation_steps(
             )
         )
     return tuple(steps)
+
+
+def _operation_result(
+    task: TaskPublicSpec,
+    public_result: dict[str, object],
+) -> dict[str, object]:
+    """Remove presentation-only constants from the raw operator trace."""
+    if task.task_type == "comparison":
+        return {
+            key: value
+            for key, value in public_result.items()
+            if key in {"higher_ref", "difference"}
+        }
+    if task.task_type == "temporal_growth":
+        return {key: value for key, value in public_result.items() if key == "value"}
+    return public_result
 
 
 def _matches_semantic_constraints(item, contract: dict[str, object]) -> bool:

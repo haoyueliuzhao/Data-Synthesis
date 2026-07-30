@@ -51,6 +51,11 @@ from trusted_synthesis.experiments.training_utility_v09.data import (
     _record_evidence_version_ids,
     _task_signature,
 )
+from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
+    _CapacityEntry,
+    _conflict_free_counts_by_key,
+    _materialization_dry_run,
+)
 from trusted_synthesis.experiments.training_utility_v09.materialization import (
     V09FixtureBindingProvider,
 )
@@ -85,6 +90,36 @@ def _evaluation_result(cohort: str, score: float) -> CohortEvaluationResult:
         status="completed",
         result_hash=f"evaluation:{cohort}",
     )
+
+
+def test_capacity_dry_run_uses_full_corpus_disjointness() -> None:
+    entries = (
+        _CapacityEntry(
+            pattern_id="pattern_a",
+            binding_hash="binding_1",
+            cell_id="cell_a",
+            evidence_version_ids=frozenset(("version_a", "version_shared")),
+        ),
+        _CapacityEntry(
+            pattern_id="pattern_a",
+            binding_hash="binding_2",
+            cell_id="cell_a",
+            evidence_version_ids=frozenset(("version_shared", "version_b")),
+        ),
+        _CapacityEntry(
+            pattern_id="pattern_a",
+            binding_hash="binding_3",
+            cell_id="cell_a",
+            evidence_version_ids=frozenset(("version_c",)),
+        ),
+    )
+
+    conflict_free = _conflict_free_counts_by_key(entries, key=lambda item: item.pattern_id)
+    counts, collisions = _materialization_dry_run(entries, {"pattern_a": 3})
+
+    assert conflict_free == {"pattern_a": 2}
+    assert counts == {"pattern_a": 2}
+    assert collisions == 1
 
 
 def test_feedback_router_keeps_engineering_and_synthesis_ownership_separate() -> None:
@@ -535,17 +570,13 @@ def test_route_b_exports_fresh_agent_sft_records_with_compilation_lineage() -> N
         for item in external_records
     )
     assert all(
-        item.metadata["policy_clause_feedback_ids"]
-        == (external_feedback[0].feedback_id,)
+        item.metadata["policy_clause_feedback_ids"] == (external_feedback[0].feedback_id,)
         for item in external_records
     )
-    assert all(
-        item.metadata["contributing_clause_feedback_ids"] == ()
-        for item in external_records
-    )
+    assert all(item.metadata["contributing_clause_feedback_ids"] == () for item in external_records)
 
 
-def test_route_b_blocks_reused_evidence_and_binding_identity() -> None:
+def test_route_b_replenishes_reused_evidence_and_binding_identity() -> None:
     source = build_finance_counterfactual_case(1)
     cell = build_synthesis_cell(
         source.task.public,
@@ -586,11 +617,13 @@ def test_route_b_blocks_reused_evidence_and_binding_identity() -> None:
         forbidden_evidence_version_ids=selected_evidence,
     )
 
-    assert artifacts == ()
-    assert report.status == "blocked"
-    assert report.successfully_materialized_count == 0
-    assert report.new_evidence_identity_rate == 0
-    assert report.failure_counts == {"binding_identity_collision": 1}
+    assert len(artifacts) == 1
+    assert report.status == "passed"
+    assert report.successfully_materialized_count == 1
+    assert report.provider_candidate_count == 2
+    assert report.new_evidence_identity_rate == 0.5
+    assert report.candidate_rejection_counts == {"binding_identity_collision": 1}
+    assert report.failure_counts == {}
 
 
 def test_v09_training_report_preserves_offline_causal_boundary() -> None:

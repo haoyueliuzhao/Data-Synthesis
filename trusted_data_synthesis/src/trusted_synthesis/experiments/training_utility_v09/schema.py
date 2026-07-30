@@ -17,6 +17,7 @@ from trusted_synthesis.core.refinement import (
     SynthesisCell,
     SynthesisMaterializationReport,
 )
+from trusted_synthesis.domains.finance.schema import ARCHIVE_BACKED_FINANCE_ADAPTER_IDS
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     CohortEvaluationResult,
     CohortTrainingResult,
@@ -474,9 +475,10 @@ class V09TrainingDataManifest(BaseModel):
                 raise ValueError("C3/C4 must remain the identified refinement contrast")
             if axes["co_compilation"].causal_status != "exploratory":
                 raise ValueError("C1/C2/C3 remain an exploratory co-compilation axis")
-            if self.finance_archive_provider_used and set(self.finance_source_adapter_ids) != {
-                "finance_archive.v1"
-            }:
+            if self.finance_archive_provider_used and not (
+                len(set(self.finance_source_adapter_ids)) == 1
+                and set(self.finance_source_adapter_ids) <= ARCHIVE_BACKED_FINANCE_ADAPTER_IDS
+            ):
                 raise ValueError(
                     "the Finance Archive Provider requires archive-backed source feedback"
                 )

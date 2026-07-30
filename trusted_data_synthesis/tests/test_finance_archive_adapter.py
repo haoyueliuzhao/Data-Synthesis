@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import date
 from pathlib import Path
 
 import pyarrow as pa
@@ -16,11 +17,19 @@ from trusted_synthesis.core.refinement import (
     build_synthesis_cell,
     update_synthesis_policy,
 )
-from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter, _time_label
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
     FinanceArchiveBindingProvider,
 )
+
+
+def test_finance_time_label_distinguishes_quarterly_instant_and_duration() -> None:
+    instant = {"fiscal_year": 2025, "fiscal_quarter": "Q1", "metric_period_type": "point_in_time"}
+    duration = {"fiscal_year": 2025, "fiscal_quarter": "Q1", "metric_period_type": "duration"}
+
+    assert _time_label(instant, date(2025, 3, 31)) == "FY2025 Q1 (as of 2025-03-31)"
+    assert _time_label(duration, date(2025, 3, 31)) == "FY2025 Q1 (period ended 2025-03-31)"
 
 
 def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -> None:
@@ -33,8 +42,7 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     grounding = adapter.source_grounding_verifier().verify(evidence[0])
     mismatched = evidence[0].model_copy(
         update={
-            "evidence_id": "evidence:finance:mismatched_source_value@kg_test",
-            "payload": evidence[0].payload.model_copy(update={"value": "999"}),
+            "payload": evidence[0].payload.model_copy(update={"value": 999}),
         }
     )
     mismatched_grounding = adapter.source_grounding_verifier().verify(mismatched)
@@ -46,12 +54,14 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     assert len(evidence) == 1
     assert evidence[0].subject.name == "Example Company"
     assert evidence[0].predicate == "revenue"
+    assert evidence[0].temporal_context.label == "year ended 2023-12-31"
     assert isinstance(evidence[0].payload, ScalarObservation)
     assert evidence[0].source.authority == SourceAuthority.OFFICIAL
     assert evidence[0].epistemic_status == EpistemicStatus.OBSERVED
     assert evidence[0].provenance.build_ids["kg"] == "kg_test"
     assert grounding.passed
     assert not mismatched_grounding.passed
+    assert mismatched_grounding is not grounding
     assert "source_entailment" in mismatched_grounding.failures
     assert before == after
 
@@ -119,9 +129,63 @@ def test_finance_archive_provider_materializes_a_proof_carrying_sample(
     assert report.status == "passed"
     assert report.seed_effective
     assert report.candidate_pool_id == "finance_archive_test_pool"
+    assert report.grounding_required_sample_count == 1
+    assert report.grounding_checked_count == 1
+    assert report.grounding_pass_count == 1
+    assert report.grounding_failure_counts == {}
     assert len(artifacts) == 1
     assert artifacts[0].compiled.task.public.domain == "finance"
-    assert artifacts[0].candidate.domain_plugin_set.evidence_adapter_id == "finance_archive.v1"
+    assert " for as of " not in artifacts[0].compiled.task.public.instruction
+    assert artifacts[0].compiled.task.public.metadata["source_grounding_requirement"] == "required"
+    assert artifacts[0].candidate.domain_plugin_set.evidence_adapter_id == "finance_archive.v2"
+    assert (
+        provider._source_grounding_verifier.verifier_id
+        in artifacts[0].candidate.domain_plugin_set.verification_plugin_ids
+    )
+    assert (
+        artifacts[0].candidate.domain_plugin_set.versions["source_grounding"]
+        == provider._source_grounding_verifier.verifier_version
+    )
+
+
+def test_finance_archive_capacity_audit_is_distribution_and_grounding_aware(
+    tmp_path: Path,
+) -> None:
+    adapter = FinanceArchiveAdapter(_archive_fixture(tmp_path))
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id="finance_archive_capacity_pool",
+        sampling_partition_id="A",
+        pool_split_seed=13,
+        evidence_scan_limit=100,
+        evidence_sample_size=100,
+        stratum_reservoir_size=20,
+        candidates_per_pattern=10,
+    )
+    binding = provider._bindings_by_pattern["finance.fact_retrieval"][0]
+    if provider._partition(binding) == "B":
+        provider = provider.for_partition("B")
+
+    report = provider.capacity_report(
+        target_sample_count=1,
+        pattern_target_shares={"finance.fact_retrieval": 1.0},
+        distractor_evaluation_limit_per_pattern=2,
+    )
+
+    assert report.status == "ready"
+    assert report.target_counts_by_pattern["finance.fact_retrieval"] == 1
+    assert report.binding_count_by_pattern["finance.fact_retrieval"] == 1
+    assert (
+        report.partition_binding_counts[provider.sampling_partition_id]["finance.fact_retrieval"]
+        == 1
+    )
+    assert report.source_grounding_checked_count == 1
+    assert report.source_grounding_valid_count == 1
+    assert report.source_grounding_failure_counts == {}
+    assert report.evaluated_distractor_binding_count == 1
+    assert report.difficulty_distribution == {"easy": 1}
+    assert report.synthesis_cell_count == 1
+    assert report.quota_shortfalls == {}
 
 
 def _archive_fixture(root: Path) -> FinanceArchiveConfig:
@@ -276,7 +340,7 @@ def _archive_fixture(root: Path) -> FinanceArchiveConfig:
     edges_path = root / "kg_edges.jsonl"
     edges_path.write_text("", encoding="utf-8")
     return FinanceArchiveConfig(
-        adapter_version="finance_archive.v1",
+        adapter_version="finance_archive.v2",
         archive_root=root,
         kg_nodes_path=nodes_path,
         kg_edges_path=edges_path,

@@ -67,6 +67,7 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     build_training_utility_datasets,
     build_training_utility_report,
     evaluate_sft_model,
+    export_traditional_qa,
     export_training_utility_review,
     load_agent_artifacts,
     load_evaluation_result,
@@ -77,6 +78,7 @@ from trusted_synthesis.experiments.training_utility_mvp import (
     write_training_utility_report,
 )
 from trusted_synthesis.experiments.training_utility_v09 import (
+    FinanceArchiveBindingProvider,
     V09Cohort,
     V09RefinementConfig,
     V09RefinementManifest,
@@ -167,6 +169,15 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(review_manifest.model_dump(mode="json"), args.output)
         return 0
+    if args.command == "export-traditional-qa":
+        result = export_traditional_qa(
+            args.input_dir,
+            args.output_file,
+            cohorts=tuple(args.cohort),
+            limit=args.limit,
+        )
+        _emit(result.model_dump(mode="json"), args.output)
+        return 0
     if args.command == "train-training-utility":
         utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
         training_result = train_sft_cohort(
@@ -233,8 +244,8 @@ def main(argv: list[str] | None = None) -> int:
         refinement_manifest = V09RefinementManifest.model_validate_json(
             args.refinement_manifest.read_text(encoding="utf-8")
         )
-        agent_report, critic_examples, critic_artifact_sha256 = (
-            load_v09_real_agent_artifacts(args.agent_artifacts)
+        agent_report, critic_examples, critic_artifact_sha256 = load_v09_real_agent_artifacts(
+            args.agent_artifacts
         )
         critic_dataset_id = agent_report.critic_dataset_id
         if critic_dataset_id is None:
@@ -290,6 +301,23 @@ def main(argv: list[str] | None = None) -> int:
         _emit(validation_summary.model_dump(mode="json"), args.output)
         return 0 if validation_summary.status == "passed" else 1
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
+    if args.command == "audit-finance-synthesis-capacity":
+        provider = FinanceArchiveBindingProvider(
+            adapter,
+            candidate_pool_id=args.candidate_pool_id,
+            sampling_partition_id=args.sampling_partition,
+            pool_split_seed=args.pool_split_seed,
+            evidence_scan_limit=args.evidence_scan_limit,
+            evidence_sample_size=args.evidence_sample_size,
+            stratum_reservoir_size=args.stratum_reservoir_size,
+            candidates_per_pattern=args.candidates_per_pattern,
+        )
+        capacity = provider.capacity_report(
+            target_sample_count=args.target_sample_count,
+            distractor_evaluation_limit_per_pattern=(args.distractor_evaluation_limit_per_pattern),
+        )
+        _emit(capacity.model_dump(mode="json"), args.output)
+        return 0 if capacity.status == "ready" else 1
     if args.command == "inspect-finance":
         _emit(adapter.inspect(), args.output)
         return 0
@@ -329,6 +357,25 @@ def _parser() -> argparse.ArgumentParser:
     pilot.add_argument("--pilot-config", required=True)
     pilot.add_argument("--output-dir", type=Path, required=True)
     pilot.add_argument("--output", type=Path)
+    finance_capacity = subparsers.add_parser("audit-finance-synthesis-capacity")
+    finance_capacity.add_argument("--config", required=True)
+    finance_capacity.add_argument(
+        "--candidate-pool-id",
+        default="finance_archive_capacity_audit",
+    )
+    finance_capacity.add_argument("--sampling-partition", choices=("A", "B"), default="A")
+    finance_capacity.add_argument("--pool-split-seed", type=int, default=20260729)
+    finance_capacity.add_argument("--evidence-scan-limit", type=int, default=200_000)
+    finance_capacity.add_argument("--evidence-sample-size", type=int, default=50_000)
+    finance_capacity.add_argument("--stratum-reservoir-size", type=int, default=5_000)
+    finance_capacity.add_argument("--candidates-per-pattern", type=int, default=2_000)
+    finance_capacity.add_argument("--target-sample-count", type=int, default=1_000)
+    finance_capacity.add_argument(
+        "--distractor-evaluation-limit-per-pattern",
+        type=int,
+        default=50,
+    )
+    finance_capacity.add_argument("--output", type=Path)
     audit = subparsers.add_parser("audit-generalization")
     audit.add_argument("--source-root", type=Path, default=Path("src"))
     audit.add_argument("--output", type=Path)
@@ -363,6 +410,12 @@ def _parser() -> argparse.ArgumentParser:
     utility_review.add_argument("--output-dir", type=Path, required=True)
     utility_review.add_argument("--markdown-limit-per-cohort", type=int, default=0)
     utility_review.add_argument("--output", type=Path)
+    traditional_qa = subparsers.add_parser("export-traditional-qa")
+    traditional_qa.add_argument("--input-dir", type=Path, required=True)
+    traditional_qa.add_argument("--output-file", type=Path, required=True)
+    traditional_qa.add_argument("--cohort", action="append", default=[])
+    traditional_qa.add_argument("--limit", type=int, default=0)
+    traditional_qa.add_argument("--output", type=Path)
     utility_token_audit = subparsers.add_parser("audit-training-token-budget")
     utility_token_audit.add_argument("--training-config", type=Path, required=True)
     utility_token_audit.add_argument(
@@ -523,14 +576,15 @@ def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:
         tasks.append(task)
         trajectory = trajectory_generator.compile(task, bundle)
         assessment = evaluator.evaluate(task, bundle, graph, trajectory)
+        corpus = EvidenceCorpus.from_bundle(bundle)
         compiled = proof_compiler.compile(
             task,
             bundle,
             graph,
+            public_corpus=corpus,
             reference_trajectory=trajectory,
             reference_assessment=assessment,
         )
-        corpus = EvidenceCorpus.from_bundle(bundle)
         candidate = candidate_generator.generate(task.public, InMemoryEvidenceToolRuntime(corpus))
         candidate_assessment = candidate_evaluator.evaluate(task, corpus, graph, candidate)
         contract_assessment = contract_runtime.evaluate(

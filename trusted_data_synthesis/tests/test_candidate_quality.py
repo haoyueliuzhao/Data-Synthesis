@@ -19,7 +19,11 @@ from trusted_synthesis.core.task.schema import PlanningTrack, VerifierRequiremen
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory
+from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
+from trusted_synthesis.experiments.counterfactual_finance_fixture import (
+    build_finance_counterfactual_case,
+)
 from trusted_synthesis.experiments.finance_pilot.candidate import (
     FinanceNumericCandidateGenerator,
 )
@@ -193,6 +197,57 @@ def test_extra_result_properties_are_rejected(finance_evidence: EvidenceItem) ->
 
     assert not passed
     assert "unexpected_result_fields:recommendation" in failures
+
+
+def test_projected_answer_contract_is_public_complete_and_fail_closed() -> None:
+    normalizer = CandidateAnswerNormalizer()
+    cases = (
+        (
+            build_finance_counterfactual_case(2),
+            {"higher_ref", "difference", "result_context"},
+            "result_context",
+        ),
+        (
+            build_finance_counterfactual_case(3),
+            {"value", "unit"},
+            "unit",
+        ),
+    )
+
+    for case, required_fields, constant_field in cases:
+        schema = case.task.public.answer_schema
+        assert set(schema["required_fields"]) == required_fields
+        assert schema["answer_schema_contract_version"] == "answer_schema_contract.v1"
+
+        reference = ReferenceWorkflowCompiler(case.registry).compile(case.task, case.bundle)
+        assessment = ReferenceQualityEvaluator(
+            workflow_verifier=ReferenceWorkflowVerifier(case.registry)
+        ).evaluate(case.task, case.bundle, case.proof_graph, reference)
+        assert assessment.decision == ReleaseDecision.ACCEPTED
+        assert set(reference.final_answer["result"]) == required_fields
+
+        missing = {
+            **reference.final_answer,
+            "result": {
+                key: value
+                for key, value in reference.final_answer["result"].items()
+                if key != constant_field
+            },
+        }
+        passed, failures = normalizer.validate_schema(case.task.public, missing)
+        assert not passed
+        assert any(item.startswith("required_fields_missing:") for item in failures)
+
+        wrong = {
+            **reference.final_answer,
+            "result": {
+                **reference.final_answer["result"],
+                constant_field: "wrong-contract-value",
+            },
+        }
+        passed, failures = normalizer.validate_schema(case.task.public, wrong)
+        assert not passed
+        assert f"answer_schema_constant_mismatch:{constant_field}" in failures
 
 
 def test_wrong_calculation_is_rejected(finance_evidence: EvidenceItem) -> None:

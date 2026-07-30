@@ -68,7 +68,12 @@ def run_task_pattern_validation(*, tasks_per_domain: int = 10) -> TaskPatternVal
             contract_compiler,
             case.plugin_set,
             semantic_policy=case.semantic_policy,
-        ).compile(case.task, case.bundle, case.proof_graph)
+        ).compile(
+            case.task,
+            case.bundle,
+            case.proof_graph,
+            public_corpus=case.corpus,
+        )
         task_ids.add(case.task.task_id)
         if compiled.sample.binding_hash is not None:
             binding_hashes.add(compiled.sample.binding_hash)
