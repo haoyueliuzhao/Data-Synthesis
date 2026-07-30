@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -17,8 +18,12 @@ from trusted_synthesis.core.refinement import (
     build_synthesis_cell,
     update_synthesis_policy,
 )
+from trusted_synthesis.core.refinement.materialization import make_synthesis_cell_request
+from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter, _time_label
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+from trusted_synthesis.experiments.agent_validation.runner import _compile_runtime
+from trusted_synthesis.experiments.agent_validation.tracks import materialize_track_variant
 from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
     FinanceArchiveBindingProvider,
 )
@@ -186,6 +191,132 @@ def test_finance_archive_capacity_audit_is_distribution_and_grounding_aware(
     assert report.difficulty_distribution == {"easy": 1}
     assert report.synthesis_cell_count == 1
     assert report.quota_shortfalls == {}
+
+
+def test_finance_archive_contract_cases_are_deterministic_and_pinned(
+    tmp_path: Path,
+) -> None:
+    adapter = FinanceArchiveAdapter(_archive_fixture(tmp_path))
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id="finance_archive_contract_case_pool",
+        sampling_partition_id="A",
+        pool_split_seed=23,
+        evidence_scan_limit=100,
+        evidence_sample_size=100,
+        stratum_reservoir_size=20,
+        candidates_per_pattern=10,
+    )
+    binding = provider._bindings_by_pattern["finance.fact_retrieval"][0]
+    if provider._partition(binding) == "B":
+        provider = provider.for_partition("B")
+
+    first = provider.contract_cases(1, seed=31)
+    repeated = provider.contract_cases(1, seed=31)
+
+    assert provider.kg_build_id == "kg_test"
+    assert tuple(item.task.task_id for item in first) == tuple(
+        item.task.task_id for item in repeated
+    )
+    assert first[0].domain == "finance"
+    assert first[0].corpus.corpus_hash == repeated[0].corpus.corpus_hash
+    tracked_task = materialize_track_variant(
+        first[0].task,
+        first[0].corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    compiled, _ = _compile_runtime(first[0], tracked_task)
+    assert compiled.sample.task_id == tracked_task.task_id
+    assert first[0].source_grounding_verifier is not None
+
+
+def test_finance_archive_contract_cases_skip_invalid_mined_binding(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    adapter = FinanceArchiveAdapter(_archive_fixture(tmp_path))
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id="finance_archive_skip_invalid_pool",
+        sampling_partition_id="A",
+        pool_split_seed=29,
+        evidence_scan_limit=100,
+        evidence_sample_size=100,
+        stratum_reservoir_size=20,
+        candidates_per_pattern=10,
+    )
+    binding = provider._bindings_by_pattern["finance.fact_retrieval"][0]
+    alternate = replace(binding, stratum=(*binding.stratum, "retry"))
+    provider._bindings_by_pattern["finance.fact_retrieval"] = (binding, alternate)
+    monkeypatch.setattr(provider, "_partition", lambda _: provider.sampling_partition_id)
+    original_contract_case = provider._contract_case
+    calls = 0
+
+    def fail_first(candidate):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise ValueError("synthetic semantic rejection")
+        return original_contract_case(candidate)
+
+    monkeypatch.setattr(provider, "_contract_case", fail_first)
+
+    cases = provider.contract_cases(1, seed=37)
+
+    assert len(cases) == 1
+    assert calls == 2
+
+
+def test_finance_archive_refined_iterator_skips_invalid_mined_binding(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    adapter = FinanceArchiveAdapter(_archive_fixture(tmp_path))
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id="finance_archive_refined_skip_invalid_pool",
+        sampling_partition_id="A",
+        pool_split_seed=41,
+        evidence_scan_limit=100,
+        evidence_sample_size=100,
+        stratum_reservoir_size=20,
+        candidates_per_pattern=10,
+    )
+    pattern_id = "finance.fact_retrieval"
+    binding = provider._bindings_by_pattern[pattern_id][0]
+    alternate = replace(binding, stratum=(*binding.stratum, "retry"))
+    provider._bindings_by_pattern[pattern_id] = (binding, alternate)
+    monkeypatch.setattr(provider, "_partition", lambda _: provider.sampling_partition_id)
+    source_case = provider._contract_case(binding)
+    cell = build_synthesis_cell(
+        source_case.task.public,
+        source_case.corpus,
+        source_case.task.oracle.gold_evidence_ids,
+    )
+    request = make_synthesis_cell_request(
+        policy_update_id="policy:test",
+        cell=cell,
+        policy_allocated_count=1,
+        requested_count=1,
+        seed=43,
+    )
+    original_contract_case = provider._contract_case
+    calls = 0
+
+    def fail_first(candidate):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise ValueError("synthetic semantic rejection")
+        return original_contract_case(candidate)
+
+    monkeypatch.setattr(provider, "_contract_case", fail_first)
+
+    candidates = tuple(provider.iter_candidates(request))
+
+    assert len(candidates) == 1
+    assert calls == 2
 
 
 def _archive_fixture(root: Path) -> FinanceArchiveConfig:

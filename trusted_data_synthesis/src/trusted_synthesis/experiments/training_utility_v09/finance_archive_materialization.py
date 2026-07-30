@@ -31,12 +31,13 @@ from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
     ContractCase,
 )
 from trusted_synthesis.experiments.finance_pilot.sampler import (
+    FINANCE_REAL_DISTRACTOR_INDEX_VERSION,
     FINANCE_SAMPLING_STRATUM_VERSION,
+    RealDistractorIndex,
     RealDistractorSelection,
     TaskBinding,
     discover_bindings,
     sample_evidence,
-    select_real_distractors,
 )
 from trusted_synthesis.experiments.finance_pilot.schema import FinancePilotConfig
 from trusted_synthesis.experiments.finance_pilot.task_factory import (
@@ -57,8 +58,8 @@ from .materialization import (
 )
 
 FINANCE_ARCHIVE_PROVIDER_ID = "training_utility_v09_finance_archive_provider"
-FINANCE_ARCHIVE_PROVIDER_VERSION = "finance_archive_binding_provider.v4"
-FINANCE_ARCHIVE_CAPACITY_VERSION = "finance_archive_capacity.v3"
+FINANCE_ARCHIVE_PROVIDER_VERSION = "finance_archive_binding_provider.v5"
+FINANCE_ARCHIVE_CAPACITY_VERSION = "finance_archive_capacity.v4"
 FINANCE_PATTERN_TARGET_SHARES = {
     "finance.fact_retrieval": 0.05,
     "finance.comparison": 0.15,
@@ -181,6 +182,20 @@ class FinanceArchiveBindingProvider:
         self._runtime = FinanceTaskPatternRuntime()
         self._registry = default_registry()
         self._counterfactual_registry = finance_counterfactual_registry()
+        self._plugin_set = finance_plugin_set(
+            self._adapter,
+            self._registry,
+            self._source_grounding_verifier,
+        ).model_copy(
+            update={
+                "versions": {
+                    "source_grounding": self._source_grounding_verifier.verifier_version,
+                    "plugin_set": "1.3.0",
+                    "archive_kg_build": self._adapter.config.required_kg_build_id,
+                    "provider": FINANCE_ARCHIVE_PROVIDER_VERSION,
+                }
+            }
+        )
         self._patterns = {
             pattern.pattern_id: pattern for pattern in self._task_plugin.pattern_manifest
         }
@@ -224,6 +239,7 @@ class FinanceArchiveBindingProvider:
         self._sample = sample
         self._evidence = sample.evidence
         self._evidence_by_id = {item.evidence_id: item for item in self._evidence}
+        self._distractor_index = RealDistractorIndex(self._evidence)
         bindings = discover_bindings(self._evidence, pilot_config)
         self._all_bindings = bindings
         self._contract_case_cache: dict[str, ContractCase] = {}
@@ -239,6 +255,7 @@ class FinanceArchiveBindingProvider:
             "inspection": inspection,
             "sample_config_hash": pilot_config.config_hash,
             "sampling_stratum_version": FINANCE_SAMPLING_STRATUM_VERSION,
+            "real_distractor_index_version": FINANCE_REAL_DISTRACTOR_INDEX_VERSION,
             "source_grounding": {
                 "verifier_id": self._source_grounding_verifier.verifier_id,
                 "verifier_version": self._source_grounding_verifier.verifier_version,
@@ -333,6 +350,98 @@ class FinanceArchiveBindingProvider:
         if pattern_id not in self._patterns:
             raise ValueError(f"Pattern is absent from Finance Archive: {pattern_id}")
         return "finance"
+
+    @property
+    def kg_build_id(self) -> str:
+        return self._adapter.config.required_kg_build_id
+
+    def contract_cases(
+        self,
+        count: int,
+        *,
+        seed: int,
+        require_corpus_disjoint: bool = True,
+    ) -> tuple[ContractCase, ...]:
+        """Select a deterministic, prefix-stable set of real Archive tasks.
+
+        Weighted fair scheduling keeps every prefix close to the frozen Pattern mix, while
+        corpus-disjoint selection prevents train/evaluation leakage through distractors.
+        """
+
+        if count < 1:
+            raise ValueError("Finance Archive ContractCase count must be positive")
+        ordered: dict[str, tuple[TaskBinding, ...]] = {}
+        for pattern_id, values in sorted(self._bindings_by_pattern.items()):
+            partition_values = tuple(
+                binding
+                for binding in values
+                if self._partition(binding) == self.sampling_partition_id
+            )
+            ordered[pattern_id] = tuple(
+                sorted(
+                    partition_values,
+                    key=lambda binding: canonical_hash(
+                        {
+                            "seed": seed,
+                            "pattern_id": pattern_id,
+                            "binding_hash": binding.binding_hash,
+                        },
+                        prefix="finance_archive_contract_case_order:",
+                    ),
+                )
+            )
+
+        positions = {pattern_id: 0 for pattern_id in ordered}
+        selected_by_pattern = Counter({pattern_id: 0 for pattern_id in ordered})
+        available = {
+            pattern_id
+            for pattern_id, values in ordered.items()
+            if values and FINANCE_PATTERN_TARGET_SHARES.get(pattern_id, 0) > 0
+        }
+        selected: list[ContractCase] = []
+        used_evidence_versions: set[str] = set()
+        used_task_ids: set[str] = set()
+        while len(selected) < count and available:
+            pattern_id = min(
+                available,
+                key=lambda item: (
+                    (selected_by_pattern[item] + 1) / FINANCE_PATTERN_TARGET_SHARES[item],
+                    item,
+                ),
+            )
+            values = ordered[pattern_id]
+            chosen: ContractCase | None = None
+            while positions[pattern_id] < len(values):
+                binding = values[positions[pattern_id]]
+                positions[pattern_id] += 1
+                try:
+                    case = self._contract_case(binding)
+                except (KeyError, ValueError):
+                    # Mining is deliberately broader than executable task semantics.
+                    # Reject an invalid binding locally and continue the frozen order.
+                    continue
+                evidence_versions = {item.evidence_version_id for item in case.corpus.evidence}
+                if case.task.task_id in used_task_ids:
+                    continue
+                if require_corpus_disjoint and evidence_versions & used_evidence_versions:
+                    continue
+                chosen = case
+                used_task_ids.add(case.task.task_id)
+                used_evidence_versions.update(evidence_versions)
+                break
+            if chosen is None:
+                available.remove(pattern_id)
+                continue
+            selected.append(chosen)
+            selected_by_pattern[pattern_id] += 1
+
+        if len(selected) != count:
+            raise ValueError(
+                "Finance Archive lacks a corpus-disjoint ContractCase prefix: "
+                f"requested={count}, selected={len(selected)}, "
+                f"partition={self.sampling_partition_id}"
+            )
+        return tuple(selected)
 
     def capacity_report(
         self,
@@ -623,7 +732,12 @@ class FinanceArchiveBindingProvider:
             )
         )
         for source_binding in bindings:
-            case = self._contract_case(source_binding)
+            try:
+                case = self._contract_case(source_binding)
+            except (KeyError, ValueError):
+                # Discovery intentionally over-generates; one invalid mined binding
+                # must not exhaust the complete refined-Cell candidate stream.
+                continue
             source_cell = build_synthesis_cell(
                 case.task.public,
                 case.corpus,
@@ -683,8 +797,7 @@ class FinanceArchiveBindingProvider:
         cached = self._distractor_selection_cache.get(binding.binding_hash)
         if cached is not None:
             return cached
-        selection = select_real_distractors(
-            self._evidence,
+        selection = self._distractor_index.select(
             gold,
             hard_count=6,
             broad_count=2,
@@ -750,21 +863,9 @@ class FinanceArchiveBindingProvider:
             registry=self._registry,
             semantic_policy=self._policy,
             quality_clause_provider=self._quality_provider,
-            plugin_set=finance_plugin_set(
-                self._adapter,
-                self._registry,
-                self._source_grounding_verifier,
-            ).model_copy(
-                update={
-                    "versions": {
-                        "source_grounding": (self._source_grounding_verifier.verifier_version),
-                        "plugin_set": "1.3.0",
-                        "archive_kg_build": self._adapter.config.required_kg_build_id,
-                        "provider": FINANCE_ARCHIVE_PROVIDER_VERSION,
-                    }
-                }
-            ),
+            plugin_set=self._plugin_set,
             counterfactual_registry=self._counterfactual_registry,
+            source_grounding_verifier=self._source_grounding_verifier,
         )
         self._contract_case_cache[binding.binding_hash] = case
         return case

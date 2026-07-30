@@ -34,6 +34,7 @@ from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_cases,
 )
 from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
+    ContractCase,
     build_pattern_validation_cases,
 )
 from trusted_synthesis.hashing import canonical_hash
@@ -680,13 +681,16 @@ def _dataset_identity_sets(records: tuple[SFTRecord, ...]) -> dict[str, set[str]
         if program_signature:
             identities["program_signature"].add(program_signature)
         payload = json.loads(record.user_prompt)
+        public_task = payload.get("public_task") or {}
+        retrieval_scope = public_task.get("retrieval_scope") or {}
+        identities["subject"].update(
+            str(subject_id) for subject_id in retrieval_scope.get("subject_ids") or () if subject_id
+        )
         for evidence in payload.get("evidence_corpus") or ():
             subject_id = str((evidence.get("subject") or {}).get("subject_id") or "")
             evidence_id = str(evidence.get("evidence_id") or "")
             evidence_version_id = str(evidence.get("evidence_version_id") or "")
             source_record_id = str((evidence.get("provenance") or {}).get("source_record_id") or "")
-            if subject_id:
-                identities["subject"].add(subject_id)
             if evidence_id:
                 identities["evidence"].add(evidence_id)
             if evidence_version_id:
@@ -1273,14 +1277,30 @@ def _select_d5_examples(
 
 def _reference_and_evaluation_records(
     config: TrainingUtilityMVPConfig,
+    *,
+    finance_cases: tuple[ContractCase, ...] | None = None,
 ) -> tuple[tuple[SFTRecord, ...], tuple[SFTRecord, ...]]:
     totals = {
         domain: config.candidate_task_target(domain) + config.evaluation_task_target(domain)
         for domain in ("finance", "legal", "science")
     }
     non_finance = build_pattern_validation_cases(per_domain=max(totals["legal"], totals["science"]))
+    resolved_finance_cases = (
+        build_finance_counterfactual_cases(count=totals["finance"])
+        if finance_cases is None
+        else finance_cases
+    )
+    if len(resolved_finance_cases) != totals["finance"]:
+        raise ValueError(
+            "Finance reference/evaluation source count mismatch: "
+            f"expected={totals['finance']}, observed={len(resolved_finance_cases)}"
+        )
+    if any(item.domain != "finance" for item in resolved_finance_cases):
+        raise ValueError("Finance reference/evaluation source contains another domain")
+    if len({item.task.task_id for item in resolved_finance_cases}) != len(resolved_finance_cases):
+        raise ValueError("Finance reference/evaluation tasks must be unique")
     cases = (
-        *build_finance_counterfactual_cases(count=totals["finance"]),
+        *resolved_finance_cases,
         *tuple(item for item in non_finance if item.domain == "legal")[: totals["legal"]],
         *tuple(item for item in non_finance if item.domain == "science")[: totals["science"]],
     )
@@ -1310,7 +1330,10 @@ def _reference_and_evaluation_records(
             contract_label="accept",
             prompt_version=config.prompt_version,
             metadata={
-                "fixture_ordinal": ordinal + 1,
+                "source_ordinal": ordinal + 1,
+                "source_adapter_ids": sorted(
+                    {item.provenance.adapter_id for item in case.corpus.evidence}
+                ),
                 **_task_structure_metadata(task.public),
             },
         )

@@ -32,7 +32,7 @@ from trusted_synthesis.hashing import canonical_hash
 from .schema import V09RefinementConfig
 
 V09_BINDING_PROVIDER_ID = "training_utility_v09_fixture_binding_provider"
-V09_BINDING_PROVIDER_VERSION = "v09_binding_provider.v3"
+V09_BINDING_PROVIDER_VERSION = "v09_binding_provider.v4"
 
 
 class V09FixtureBindingProvider:
@@ -52,6 +52,7 @@ class V09FixtureBindingProvider:
         sampling_partition_id: str = "A",
         pool_split_seed: int = 20260729,
         maximum_scan_multiplier: int = 48,
+        enabled_domains: tuple[str, ...] = ("finance", "legal", "science"),
     ) -> None:
         if not namespace or not candidate_pool_id:
             raise ValueError("binding Provider namespace and pool ID cannot be empty")
@@ -61,6 +62,12 @@ class V09FixtureBindingProvider:
             raise ValueError("fixture super-pool partition must be A or B")
         if maximum_scan_multiplier < 8:
             raise ValueError("binding Provider scan multiplier is too small")
+        if (
+            not enabled_domains
+            or len(enabled_domains) != len(set(enabled_domains))
+            or set(enabled_domains) - {"finance", "legal", "science"}
+        ):
+            raise ValueError("fixture Provider enabled domains are invalid")
         self._namespace = namespace
         self._start_index = start_index
         self._candidate_pool_size = candidate_pool_size
@@ -73,11 +80,12 @@ class V09FixtureBindingProvider:
         finance = FinanceTaskPlugin(allow_structured_claims=True)
         legal = LegalTaskPlugin()
         science = ScienceTaskPlugin()
-        manifests = {
+        all_manifests = {
             "finance": finance.pattern_manifest,
             "legal": legal.pattern_manifest,
             "science": science.pattern_manifest,
         }
+        manifests = {domain: all_manifests[domain] for domain in enabled_domains}
         self._patterns: dict[str, TaskPatternSpec] = {}
         self._pattern_domains: dict[str, str] = {}
         for domain, patterns in manifests.items():
@@ -86,15 +94,19 @@ class V09FixtureBindingProvider:
                     raise ValueError("Pattern IDs must be globally unique for synthesis")
                 self._patterns[pattern.pattern_id] = pattern
                 self._pattern_domains[pattern.pattern_id] = domain
-        self._runtimes: dict[str, TaskPatternRuntimeProtocol] = {
+        all_runtimes: dict[str, TaskPatternRuntimeProtocol] = {
             "finance": FinanceTaskPatternRuntime(),
             "legal": LegalTaskPatternRuntime(),
             "science": ScienceTaskPatternRuntime(),
         }
-        self._case_factories: dict[str, Callable[[int], ContractCase]] = {
+        self._runtimes = {domain: all_runtimes[domain] for domain in enabled_domains}
+        all_case_factories: dict[str, Callable[[int], ContractCase]] = {
             "finance": build_finance_counterfactual_case,
             "legal": build_legal_contract_case,
             "science": build_science_contract_case,
+        }
+        self._case_factories = {
+            domain: all_case_factories[domain] for domain in enabled_domains
         }
         self._domain_offsets = {
             domain: ordinal * candidate_pool_size
@@ -115,6 +127,7 @@ class V09FixtureBindingProvider:
             {
                 "provider_id": self.provider_id,
                 "provider_version": self.provider_version,
+                "enabled_domains": tuple(sorted(enabled_domains)),
                 "patterns": {
                     key: value.pattern_hash for key, value in sorted(self._patterns.items())
                 },
@@ -132,6 +145,7 @@ class V09FixtureBindingProvider:
                 "start_index": start_index,
                 "per_domain_pool_size": candidate_pool_size,
                 "domain_offsets": self._domain_offsets,
+                "enabled_domains": tuple(sorted(enabled_domains)),
                 "pool_split_seed": pool_split_seed,
                 "partition_count": 2,
             },

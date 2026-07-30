@@ -1,6 +1,7 @@
 from trusted_synthesis.experiments.training_utility_v09.builder import (
     compile_v09_from_agent_report,
     compile_v09_refinement,
+    write_v09_real_refinement_artifacts,
 )
 from trusted_synthesis.experiments.training_utility_v09.data import (
     build_v09_training_datasets,
@@ -54,6 +55,7 @@ __all__ = [
     "compile_v09_refinement",
     "load_v09_real_agent_artifacts",
     "write_v09_initial_artifacts",
+    "write_v09_real_refinement_artifacts",
     "write_v09_training_datasets",
     "write_v09_training_utility_report",
 ]

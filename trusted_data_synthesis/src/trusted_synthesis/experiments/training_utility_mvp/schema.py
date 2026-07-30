@@ -14,7 +14,7 @@ from trusted_synthesis.runtime.agent.schema import (
     HostExecutionFeedbackContract,
 )
 
-TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v5"
+TRAINING_UTILITY_MVP_VERSION = "training_utility_mvp.v6"
 TRAINING_UTILITY_AGENT_PROMPT_VERSION = "training_utility_agent_prompt.v6"
 SUPPORTED_TRAINING_UTILITY_AGENT_PROMPT_VERSIONS = frozenset(
     {
@@ -51,7 +51,7 @@ class TrainingUtilityMVPConfig(BaseModel):
     d5_minimum_overall_score: float = Field(default=0, ge=0, le=1)
     d5_minimum_dimension_score: float = Field(default=0, ge=0, le=1)
     d5_minimum_critic_accept_probability: float = Field(default=0, ge=0, le=1)
-    max_seq_length: int = Field(default=8192, ge=512, le=16384)
+    max_seq_length: int = Field(default=8192, ge=512, le=131072)
     max_new_tokens: int = Field(default=1024, ge=64, le=4096)
     max_steps: int = Field(default=32, ge=1, le=10000)
     supervised_token_budget: int | None = Field(default=None, ge=1000)

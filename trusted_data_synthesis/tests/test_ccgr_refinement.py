@@ -282,6 +282,46 @@ def test_random_control_matches_full_ccgr_distribution_shift() -> None:
     assert random_control.utility_mode == "random_control"
 
 
+def test_score_only_control_accepts_domain_neutral_scalar_utilities() -> None:
+    left = make_synthesis_cell(
+        pattern_id="domain.left",
+        binding_stratum_id="binding:left",
+        difficulty_bucket="medium",
+        distractor_profile_id="distractor:none",
+    )
+    right = make_synthesis_cell(
+        pattern_id="domain.right",
+        binding_stratum_id="binding:right",
+        difficulty_bucket="medium",
+        distractor_profile_id="distractor:none",
+        declared_tightening_options={
+            "definition_alignment": ("require_same_definition",),
+        },
+    )
+    task_cells = {"left": left, "right": right}
+    policy = build_observed_policy(task_cells)
+    statistics = aggregate_cell_feedback(policy, (), (), task_cells)
+
+    result = update_synthesis_policy(
+        policy,
+        statistics,
+        (),
+        eta=1,
+        beta=0,
+        gamma=0,
+        total_budget=20,
+        calibration_manifest_hash="scalar_quality:test",
+        enable_binding_tightening=False,
+        require_calibrated_feedback=False,
+        utility_overrides={left.cell_id: -0.75, right.cell_id: -0.25},
+        utility_mode="score_only_control",
+    )
+
+    assert result.utility_mode == "score_only_control"
+    assert result.activated_binding_constraints == {}
+    assert result.next_policy.probabilities[right.cell_id] > policy.probabilities[right.cell_id]
+
+
 def test_clause_calibration_uses_detection_localization_and_closure() -> None:
     metrics = CounterfactualSliceMetrics(
         generated_case_count=4,

@@ -34,7 +34,11 @@ def update_synthesis_policy(
     enable_binding_tightening: bool = True,
     require_calibrated_feedback: bool = True,
     utility_overrides: Mapping[str, float] | None = None,
-    utility_mode: Literal["feedback_objective", "random_control"] = ("feedback_objective"),
+    utility_mode: Literal[
+        "feedback_objective",
+        "score_only_control",
+        "random_control",
+    ] = "feedback_objective",
     conditioning_groups: Mapping[str, str] | None = None,
     fixed_group_weights: Mapping[str, float] | None = None,
 ) -> PolicyUpdateResult:
@@ -46,7 +50,11 @@ def update_synthesis_policy(
         raise ValueError("CCGR total budget must be positive")
     if not 0 <= binding_tightening_threshold:
         raise ValueError("binding tightening threshold must be non-negative")
-    if utility_mode not in {"feedback_objective", "random_control"}:
+    if utility_mode not in {
+        "feedback_objective",
+        "score_only_control",
+        "random_control",
+    }:
         raise ValueError("unknown CCGR utility mode")
     stats = tuple(sorted(statistics, key=lambda item: item.cell_id))
     feedback_items = tuple(sorted(feedback, key=lambda item: item.feedback_id))

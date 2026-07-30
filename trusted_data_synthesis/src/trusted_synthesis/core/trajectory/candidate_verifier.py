@@ -369,6 +369,15 @@ def _program_execution_statuses(
         for step in operation_steps
         if step.program_node_id is not None
     }
+    expected_lineage_by_node: dict[str, set[str]] = {}
+    for node in task.oracle.task_program.nodes:
+        lineage = {
+            ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
+        }
+        for dependency in node.dependencies:
+            lineage.update(expected_lineage_by_node[dependency])
+        expected_lineage_by_node[node.node_id] = lineage
+
     statuses = []
     for node in task.oracle.task_program.nodes:
         candidate_node_id = node_mapping.get(node.node_id)
@@ -409,14 +418,19 @@ def _program_execution_statuses(
         )
         if step.input_refs != expected_refs:
             details.append("input_ref_mismatch")
-        if step.tool_input.get("parameters", {}) != node.parameters:
+        if not _values_equivalent(
+            step.tool_input.get("parameters", {}),
+            node.parameters,
+        ):
             details.append("parameter_mismatch")
         if step.output_ref != f"operation:{candidate_node_id}":
             details.append("output_ref_mismatch")
         expected_evidence = {
             ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
         }
-        if set(step.evidence_ids) != expected_evidence:
+        expected_lineage = expected_lineage_by_node[node.node_id]
+        observed_evidence = set(step.evidence_ids)
+        if observed_evidence not in (expected_evidence, expected_lineage):
             details.append("evidence_binding_mismatch")
         if not set(step.evidence_ids).issubset(selected_evidence_ids):
             details.append("evidence_not_selected")
@@ -615,7 +629,10 @@ def _verify_plan_given_trace(
         expected_refs = tuple(_program_ref(ref) for ref in node.input_refs)
         if step.input_refs != expected_refs:
             failures.append(f"node:{node.node_id}:step:{step.step_index}:input_refs")
-        if step.tool_input.get("parameters", {}) != node.parameters:
+        if not _values_equivalent(
+            step.tool_input.get("parameters", {}),
+            node.parameters,
+        ):
             failures.append(f"node:{node.node_id}:step:{step.step_index}:parameters")
         if step.output_ref != f"operation:{node.node_id}":
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_ref")
@@ -689,7 +706,10 @@ def _verify_plan_hidden_trace(
         used_program_node_ids.add(step.program_node_id)
         if step.output_ref != f"operation:{step.program_node_id}":
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_ref")
-        if step.tool_input.get("parameters", {}) != node.parameters:
+        if not _values_equivalent(
+            step.tool_input.get("parameters", {}),
+            node.parameters,
+        ):
             failures.append(f"node:{node.node_id}:step:{step.step_index}:parameters")
         expected_output = _translate_operation_refs(
             expected_outputs.get(node.node_id),

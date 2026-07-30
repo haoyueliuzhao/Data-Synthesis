@@ -24,10 +24,25 @@ from trusted_synthesis.experiments.training_utility_mvp.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v4"
+TRAINING_UTILITY_V09_VERSION = "training_utility_v09.v5"
+TRAINING_UTILITY_V09_HISTORICAL_VERSION = "training_utility_v09.v4"
+V09_EXPERIMENT_PROTOCOL_ID = "quality_feedback_closed_loop.finance_primary.v1"
+V09_RESEARCH_QUESTION_IDS = ("RQ1", "RQ2", "RQ3")
+V09_PRIMARY_TRAINING_DOMAIN = "finance"
+V09_CROSS_DOMAIN_VALIDATION_DOMAINS = ("legal", "science")
+V09_ENGINEERING_REGRESSION_COHORT_IDS = ("D1", "D2", "D3", "D4", "D5")
 
+CCGR_ABLATION_IDS_V4 = (
+    "static_verified",
+    "raw_failure_reweighting",
+    "no_defect_suppression",
+    "no_coverage_regularization",
+    "random_same_shift",
+    "full_ccgr",
+)
 CCGR_ABLATION_IDS = (
     "static_verified",
+    "score_only_feedback",
     "raw_failure_reweighting",
     "no_defect_suppression",
     "no_coverage_regularization",
@@ -59,6 +74,22 @@ class V09ExperimentAxis(BaseModel):
 class V09RefinementConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
+    experiment_protocol_id: Literal[
+        "quality_feedback_closed_loop.finance_primary.v1"
+    ] = "quality_feedback_closed_loop.finance_primary.v1"
+    research_question_ids: tuple[Literal["RQ1", "RQ2", "RQ3"], ...] = (
+        "RQ1",
+        "RQ2",
+        "RQ3",
+    )
+    primary_training_domain: Literal["finance"] = "finance"
+    cross_domain_validation_domains: tuple[Literal["legal", "science"], ...] = (
+        "legal",
+        "science",
+    )
+    engineering_regression_cohort_ids: tuple[
+        Literal["D1", "D2", "D3", "D4", "D5"], ...
+    ] = ("D1", "D2", "D3", "D4", "D5")
     base_model: str = "Qwen/Qwen2.5-7B-Instruct"
     base_model_revision: str = "a09a35458c702b33eeacc393d103063234e8bc28"
     training_seed: int = 20260728
@@ -83,9 +114,9 @@ class V09RefinementConfig(BaseModel):
     finance_archive_config_path: Path | None = None
     ccgr_ablation_ids: tuple[str, ...] = CCGR_ABLATION_IDS
     domain_weights: dict[str, float] = {
-        "finance": 0.8,
-        "legal": 0.1,
-        "science": 0.1,
+        "finance": 1.0,
+        "legal": 0.0,
+        "science": 0.0,
     }
     student_training_format: Literal["host_instrumented_joint"] = "host_instrumented_joint"
     allowed_refinement_controls: tuple[str, ...] = (
@@ -132,6 +163,14 @@ class V09RefinementConfig(BaseModel):
             raise ValueError("v0.9 must freeze finance, legal, and science domain weights")
         if abs(sum(self.domain_weights.values()) - 1.0) > 1e-9:
             raise ValueError("v0.9 domain weights must sum to one")
+        if self.domain_weights != {"finance": 1.0, "legal": 0.0, "science": 0.0}:
+            raise ValueError("v0.9.5 primary training cohorts must be Finance-only")
+        if self.research_question_ids != V09_RESEARCH_QUESTION_IDS:
+            raise ValueError("v0.9.5 must freeze RQ1, RQ2, and RQ3")
+        if self.cross_domain_validation_domains != V09_CROSS_DOMAIN_VALIDATION_DOMAINS:
+            raise ValueError("Legal and Science must remain cross-domain validation domains")
+        if self.engineering_regression_cohort_ids != V09_ENGINEERING_REGRESSION_COHORT_IDS:
+            raise ValueError("historical D1-D5 identities are frozen as engineering regressions")
         if set(self.lambda_values) != {0.0, 0.5, 1.0}:
             raise ValueError("v0.9 must retain lambda=0, 0.5, and 1 ablations")
         if self.primary_lambda not in set(self.lambda_values):
@@ -195,6 +234,11 @@ class V09RefinementManifest(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     manifest_id: str
+    experiment_protocol_id: str = V09_EXPERIMENT_PROTOCOL_ID
+    research_question_ids: tuple[str, ...] = V09_RESEARCH_QUESTION_IDS
+    primary_training_domain: str = V09_PRIMARY_TRAINING_DOMAIN
+    cross_domain_validation_domains: tuple[str, ...] = V09_CROSS_DOMAIN_VALIDATION_DOMAINS
+    engineering_regression_cohort_ids: tuple[str, ...] = V09_ENGINEERING_REGRESSION_COHORT_IDS
     config_hash: str
     pattern_catalog_hash: str
     feedback_source: str
@@ -202,6 +246,20 @@ class V09RefinementManifest(BaseModel):
     feedback_exposure_count: int = Field(ge=0)
     feedback_signal_count: int = Field(ge=0)
     feedback_route_counts: dict[str, int]
+    validation_task_ids: tuple[str, ...] = ()
+    validation_exposure_count: int = Field(default=0, ge=0)
+    validation_signal_count: int = Field(default=0, ge=0)
+    validation_domain_exposure_counts: dict[str, int] = Field(default_factory=dict)
+    validation_domain_signal_counts: dict[str, int] = Field(default_factory=dict)
+    refinement_task_ids: tuple[str, ...] = ()
+    refinement_exposure_count: int = Field(default=0, ge=0)
+    refinement_signal_count: int = Field(default=0, ge=0)
+    refinement_domain_exposure_counts: dict[str, int] = Field(default_factory=dict)
+    refinement_domain_signal_counts: dict[str, int] = Field(default_factory=dict)
+    score_only_quality_source: str = "historical_unavailable"
+    score_only_quality_score_count: int = Field(default=0, ge=0)
+    score_only_quality_policy_hash: str = "historical_unavailable"
+    score_only_quality_manifest_hash: str = "historical_unavailable"
     pattern_clause_failures: tuple[PatternClauseFailure, ...]
     allocations: tuple[RefinementAllocation, ...]
     primary_allocation_id: str | None = None
@@ -250,10 +308,13 @@ class V09RefinementManifest(BaseModel):
             )
         if self.pattern_catalog_hash not in pattern_catalogs:
             raise ValueError("manifest and cohort pattern catalog hashes must match")
-        if self.version == "training_utility_v09.v4":
+        if self.version in {
+            TRAINING_UTILITY_V09_HISTORICAL_VERSION,
+            TRAINING_UTILITY_V09_VERSION,
+        }:
             axes = {item.axis_id: item for item in self.experiment_axes}
             if set(axes) != {"co_compilation", "ccgr_refinement"}:
-                raise ValueError("v0.9.4 must freeze co-compilation and CCGR axes")
+                raise ValueError("v0.9 must freeze co-compilation and CCGR axes")
             if axes["ccgr_refinement"].primary_contrast != (
                 V09Cohort.VERIFIED_STATIC.value,
                 V09Cohort.FEEDBACK_REFINED.value,
@@ -266,8 +327,88 @@ class V09RefinementManifest(BaseModel):
                 raise ValueError(
                     "the identified CCGR axis may only contain materialized C3/C4 cohorts"
                 )
-        if {item.ablation_id for item in self.ccgr_updates} != set(CCGR_ABLATION_IDS):
+        expected_ablations = (
+            CCGR_ABLATION_IDS_V4
+            if self.version == TRAINING_UTILITY_V09_HISTORICAL_VERSION
+            else CCGR_ABLATION_IDS
+        )
+        if {item.ablation_id for item in self.ccgr_updates} != set(expected_ablations):
             raise ValueError("v0.9 manifest must contain every frozen CCGR ablation")
+        if self.version == TRAINING_UTILITY_V09_VERSION:
+            if self.experiment_protocol_id != V09_EXPERIMENT_PROTOCOL_ID:
+                raise ValueError("v0.9.5 manifest has an unknown experiment protocol")
+            if self.research_question_ids != V09_RESEARCH_QUESTION_IDS:
+                raise ValueError("v0.9.5 manifest must bind RQ1 through RQ3")
+            if self.primary_training_domain != V09_PRIMARY_TRAINING_DOMAIN:
+                raise ValueError("v0.9.5 primary training domain must be Finance")
+            if self.cross_domain_validation_domains != V09_CROSS_DOMAIN_VALIDATION_DOMAINS:
+                raise ValueError("v0.9.5 cross-domain validation must be Legal and Science")
+            if self.engineering_regression_cohort_ids != V09_ENGINEERING_REGRESSION_COHORT_IDS:
+                raise ValueError("D1-D5 may only remain engineering regression identities")
+            if domain_weights != {
+                canonical_hash({"finance": 1.0, "legal": 0.0, "science": 0.0})
+            }:
+                raise ValueError("v0.9.5 C1-C4 must be Finance-only training cohorts")
+            if (
+                self.feedback_exposure_count != self.validation_exposure_count
+                or self.feedback_signal_count != self.validation_signal_count
+            ):
+                raise ValueError("legacy feedback totals must alias the RQ1 validation population")
+            if self.validation_exposure_count != sum(
+                self.validation_domain_exposure_counts.values()
+            ):
+                raise ValueError("RQ1 validation exposure domain counts are inconsistent")
+            if self.validation_signal_count != sum(
+                self.validation_domain_signal_counts.values()
+            ):
+                raise ValueError("RQ1 validation signal domain counts are inconsistent")
+            if self.refinement_exposure_count != sum(
+                self.refinement_domain_exposure_counts.values()
+            ):
+                raise ValueError("RQ2 refinement exposure domain counts are inconsistent")
+            if self.refinement_signal_count != sum(
+                self.refinement_domain_signal_counts.values()
+            ):
+                raise ValueError("RQ2 refinement signal domain counts are inconsistent")
+            if set(self.refinement_domain_exposure_counts) - {"finance"}:
+                raise ValueError("RQ2 refinement exposures must be Finance-only")
+            if set(self.refinement_domain_signal_counts) - {"finance"}:
+                raise ValueError("RQ2 refinement signals must be Finance-only")
+            if not set(self.refinement_task_ids).issubset(self.validation_task_ids):
+                raise ValueError(
+                    "RQ2 refinement tasks must come from the RQ1 validation population"
+                )
+            if not {item.task_id for item in self.clause_feedback}.issubset(
+                self.refinement_task_ids
+            ):
+                raise ValueError("refinement Clause feedback contains a non-Finance task")
+            if self.score_only_quality_score_count != len(self.refinement_task_ids):
+                raise ValueError("score-only quality scores must cover every refinement task")
+            if any(
+                value == "historical_unavailable"
+                for value in (
+                    self.score_only_quality_source,
+                    self.score_only_quality_policy_hash,
+                    self.score_only_quality_manifest_hash,
+                )
+            ):
+                raise ValueError("v0.9.5 requires a frozen scalar-quality score manifest")
+            score_only_update = next(
+                item for item in self.ccgr_updates if item.ablation_id == "score_only_feedback"
+            )
+            if (
+                score_only_update.utility_mode != "score_only_control"
+                or score_only_update.calibration_manifest_hash
+                != self.score_only_quality_manifest_hash
+                or score_only_update.activated_binding_constraints
+            ):
+                raise ValueError("score-only policy is not bound to the scalar-quality manifest")
+            if self.online_gate.status == "passed" and not {
+                "finance",
+                "legal",
+                "science",
+            }.issubset(self.online_gate.accepted_domains):
+                raise ValueError("a passed RQ1 online gate must cover all three validation domains")
         full = next(item for item in self.ccgr_updates if item.ablation_id == "full_ccgr")
         if self.primary_ccgr_update_id != full.update_id:
             raise ValueError("the primary CCGR update must be the full algorithm")
@@ -290,6 +431,7 @@ class V09InitialBuildReport(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     report_id: str
+    experiment_protocol_id: str = V09_EXPERIMENT_PROTOCOL_ID
     config_hash: str
     manifest_id: str
     tasks_per_domain: int = Field(ge=1)
@@ -404,6 +546,11 @@ class V09TrainingDataManifest(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     manifest_id: str = Field(min_length=1)
+    experiment_protocol_id: str = V09_EXPERIMENT_PROTOCOL_ID
+    research_question_ids: tuple[str, ...] = V09_RESEARCH_QUESTION_IDS
+    primary_training_domain: str = V09_PRIMARY_TRAINING_DOMAIN
+    cross_domain_validation_domains: tuple[str, ...] = V09_CROSS_DOMAIN_VALIDATION_DOMAINS
+    engineering_regression_cohort_ids: tuple[str, ...] = V09_ENGINEERING_REGRESSION_COHORT_IDS
     refinement_config_hash: str = Field(min_length=1)
     training_config_hash: str = Field(min_length=1)
     refinement_manifest_id: str = Field(min_length=1)
@@ -467,7 +614,10 @@ class V09TrainingDataManifest(BaseModel):
         by_cohort = {item.cohort: item for item in self.cohorts}
         if set(by_cohort) != set(V09Cohort):
             raise ValueError("v0.9 training data must contain C1 through C4")
-        if self.version == "training_utility_v09.v4":
+        if self.version in {
+            TRAINING_UTILITY_V09_HISTORICAL_VERSION,
+            TRAINING_UTILITY_V09_VERSION,
+        }:
             axes = {item.axis_id: item for item in self.experiment_axes}
             if set(axes) != {"co_compilation", "ccgr_refinement"}:
                 raise ValueError("training data must preserve both experiment axes")
@@ -482,6 +632,23 @@ class V09TrainingDataManifest(BaseModel):
                 raise ValueError(
                     "the Finance Archive Provider requires archive-backed source feedback"
                 )
+        if self.version == TRAINING_UTILITY_V09_VERSION:
+            if self.experiment_protocol_id != V09_EXPERIMENT_PROTOCOL_ID:
+                raise ValueError("training data has an unknown experiment protocol")
+            if self.research_question_ids != V09_RESEARCH_QUESTION_IDS:
+                raise ValueError("training data must bind RQ1 through RQ3")
+            if self.primary_training_domain != V09_PRIMARY_TRAINING_DOMAIN:
+                raise ValueError("the primary training domain must be Finance")
+            if self.cross_domain_validation_domains != V09_CROSS_DOMAIN_VALIDATION_DOMAINS:
+                raise ValueError("cross-domain validation must remain Legal and Science")
+            if self.engineering_regression_cohort_ids != V09_ENGINEERING_REGRESSION_COHORT_IDS:
+                raise ValueError("D1-D5 may not replace the C1-C4 causal cohort IDs")
+            if self.expected_domain_counts != {
+                "finance": self.cohort_example_budget,
+                "legal": 0,
+                "science": 0,
+            }:
+                raise ValueError("v0.9.5 training cohorts must contain only Finance records")
         if (
             self.mapped_real_candidate_count + self.unmapped_real_candidate_count
             != self.source_real_candidate_count

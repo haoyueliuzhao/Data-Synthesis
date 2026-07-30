@@ -30,8 +30,8 @@ from trusted_synthesis.runtime.agent.schema import (
     ModelCallTelemetry,
 )
 
-AGENT_VALIDATION_VERSION = "agent_validation.v6"
-AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v3"
+AGENT_VALIDATION_VERSION = "agent_validation.v7"
+AGENT_CAPACITY_AUDIT_VERSION = "agent_capacity_audit.v4"
 
 
 class AgentValidationConfig(BaseModel):
@@ -59,6 +59,15 @@ class AgentValidationConfig(BaseModel):
     checkpoint_enabled: bool = True
     resume_from_checkpoints: bool = True
     retry_failed_checkpoints: bool = False
+    finance_task_source: Literal["fixture", "archive"] = "fixture"
+    finance_archive_config_path: Path | None = None
+    finance_candidate_pool_id: str = "agent_round0_finance_archive"
+    finance_sampling_partition: Literal["A", "B"] = "A"
+    finance_pool_split_seed: int = 20260730
+    finance_evidence_scan_limit: int = Field(default=200_000, ge=1)
+    finance_evidence_sample_size: int = Field(default=50_000, ge=1)
+    finance_stratum_reservoir_size: int = Field(default=5_000, ge=1)
+    finance_candidates_per_pattern: int = Field(default=2_000, ge=1)
 
     @model_validator(mode="after")
     def validate_tracks(self) -> AgentValidationConfig:
@@ -77,6 +86,10 @@ class AgentValidationConfig(BaseModel):
             raise ValueError("retrieval tracks must be unique")
         if len(set(self.planning_tracks)) != len(self.planning_tracks):
             raise ValueError("planning tracks must be unique")
+        if self.finance_task_source == "archive" and self.finance_archive_config_path is None:
+            raise ValueError("archive-backed Finance tasks require finance_archive_config_path")
+        if not self.finance_candidate_pool_id:
+            raise ValueError("finance_candidate_pool_id cannot be empty")
         return self
 
     def task_target(self, domain: str) -> int:
@@ -88,7 +101,15 @@ class AgentValidationConfig(BaseModel):
 
     @classmethod
     def from_json(cls, path: str | Path) -> AgentValidationConfig:
-        return cls.model_validate(json.loads(Path(path).read_text(encoding="utf-8")))
+        config_path = Path(path).resolve()
+        payload = json.loads(config_path.read_text(encoding="utf-8"))
+        archive_path = payload.get("finance_archive_config_path")
+        if archive_path is not None:
+            value = Path(str(archive_path))
+            if not value.is_absolute():
+                value = config_path.parent / value
+            payload["finance_archive_config_path"] = value.resolve()
+        return cls.model_validate(payload)
 
     @property
     def config_hash(self) -> str:
@@ -115,6 +136,10 @@ class AgentValidationCapacityReport(BaseModel):
     planned_agent_api_call_floor: int = Field(ge=1)
     planned_critic_api_call_ceiling: int = Field(ge=0)
     fixture_manifest_hash: str
+    task_source_manifest_hash: str = "legacy_fixture_source"
+    finance_task_source: Literal["fixture", "archive"] = "fixture"
+    finance_archive_kg_build_id: str | None = None
+    finance_task_source_contract: dict[str, object] = Field(default_factory=dict)
     blockers: tuple[str, ...] = ()
     status: str
     version: str = AGENT_CAPACITY_AUDIT_VERSION
@@ -161,6 +186,10 @@ class AgentValidationReport(BaseModel):
     model_config_hash: str
     requested_model: str
     interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
+    finance_task_source: Literal["fixture", "archive"] = "fixture"
+    finance_archive_kg_build_id: str | None = None
+    task_source_manifest_hash: str = "legacy_fixture_source"
+    finance_task_source_contract: dict[str, object] = Field(default_factory=dict)
     requested_domain_task_counts: dict[str, int] = Field(default_factory=dict)
     requested_domain_candidate_counts: dict[str, int] = Field(default_factory=dict)
     domain_completion_rates: dict[str, float] = Field(default_factory=dict)

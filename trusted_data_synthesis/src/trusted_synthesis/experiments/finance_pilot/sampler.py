@@ -18,6 +18,7 @@ from trusted_synthesis.experiments.finance_pilot.schema import FinancePilotConfi
 from trusted_synthesis.hashing import canonical_hash
 
 FINANCE_SAMPLING_STRATUM_VERSION = "finance_sampling_stratum.v3"
+FINANCE_REAL_DISTRACTOR_INDEX_VERSION = "finance_real_distractor_index.v1"
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,165 @@ class RealDistractorSelection:
     @property
     def evidence(self) -> tuple[EvidenceItem, ...]:
         return (*self.hard, *self.broad)
+
+
+class RealDistractorIndex:
+    """Immutable inverted index for exact near-miss and broad distractor lookup.
+
+    Each signature coordinate corresponds to exactly one semantic mismatch family.
+    Intersecting every other coordinate therefore discovers only candidates with a
+    single violation. Broad candidates use a binding-dependent deterministic probe
+    so repeated materialization does not rescan the complete Archive.
+    """
+
+    index_version = FINANCE_REAL_DISTRACTOR_INDEX_VERSION
+
+    def __init__(
+        self,
+        evidence: tuple[EvidenceItem, ...],
+        *,
+        broad_probe_limit: int = 1_024,
+    ) -> None:
+        if broad_probe_limit < 1:
+            raise ValueError("broad distractor probe limit must be positive")
+        self._evidence = evidence
+        self._broad_probe_limit = broad_probe_limit
+        self._signatures = tuple(_real_distractor_signature(item) for item in evidence)
+        field_indexes: list[dict[Any, set[int]]] = [
+            defaultdict(set) for _ in _REAL_DISTRACTOR_DIMENSIONS
+        ]
+        for index, signature in enumerate(self._signatures):
+            for field_index, value in enumerate(signature):
+                field_indexes[field_index][value].add(index)
+        self._field_indexes = tuple(field_indexes)
+        self._broad_order = tuple(
+            sorted(
+                range(len(evidence)),
+                key=lambda index: canonical_hash(
+                    evidence[index].evidence_version_id,
+                    prefix="finance_real_distractor_broad_order:",
+                ),
+            )
+        )
+
+    def select(
+        self,
+        gold: tuple[EvidenceItem, ...],
+        *,
+        hard_count: int,
+        broad_count: int,
+        preferred_hard_kinds: tuple[str, ...] = (),
+    ) -> RealDistractorSelection:
+        if hard_count < 0 or broad_count < 0:
+            raise ValueError("real distractor counts cannot be negative")
+        if not gold or not self._evidence:
+            return RealDistractorSelection(hard=(), broad=(), kinds={}, mismatches={})
+
+        gold_ids = {item.evidence_id for item in gold}
+        candidate_indexes: set[int] = set()
+        for required in gold:
+            signature = _real_distractor_signature(required)
+            for omitted_index in range(len(_REAL_DISTRACTOR_DIMENSIONS)):
+                matching_sets = [
+                    self._field_indexes[field_index].get(value, set())
+                    for field_index, value in enumerate(signature)
+                    if field_index != omitted_index
+                ]
+                if not matching_sets or any(not values for values in matching_sets):
+                    continue
+                smallest = min(matching_sets, key=len)
+                for candidate_index in smallest:
+                    candidate_signature = self._signatures[candidate_index]
+                    if candidate_signature[omitted_index] == signature[omitted_index]:
+                        continue
+                    if all(
+                        candidate_signature[field_index] == signature[field_index]
+                        for field_index in range(len(signature))
+                        if field_index != omitted_index
+                    ):
+                        candidate_indexes.add(candidate_index)
+
+        hard_profiles_by_id: dict[str, tuple[EvidenceItem, str, tuple[str, ...]]] = {}
+        for candidate_index in candidate_indexes:
+            item = self._evidence[candidate_index]
+            if item.evidence_id in gold_ids or any(
+                not _real_distractor_mismatches(item, required) for required in gold
+            ):
+                continue
+            kind, mismatches = _closest_real_distractor_profile(item, gold)
+            if kind is None or len(mismatches) != 1:
+                continue
+            hard_profiles_by_id[item.evidence_id] = (item, kind, mismatches)
+
+        selected: list[tuple[EvidenceItem, str, tuple[str, ...]]] = []
+        selected_ids: set[str] = set()
+        hard_profiles = tuple(hard_profiles_by_id.values())
+        for kind in preferred_hard_kinds:
+            matches = [
+                profile
+                for profile in hard_profiles
+                if profile[1] == kind and profile[0].evidence_id not in selected_ids
+            ]
+            if not matches:
+                continue
+            chosen = min(matches, key=lambda profile: _stable_item_key(profile[0], gold_ids))
+            selected.append(chosen)
+            selected_ids.add(chosen[0].evidence_id)
+            if len(selected) >= hard_count:
+                break
+
+        if len(selected) < hard_count:
+            remaining = sorted(
+                (
+                    profile
+                    for profile in hard_profiles
+                    if profile[0].evidence_id not in selected_ids
+                ),
+                key=lambda profile: (
+                    _mismatch_priority(profile[1]),
+                    _stable_item_key(profile[0], gold_ids),
+                ),
+            )
+            for profile in remaining:
+                selected.append(profile)
+                selected_ids.add(profile[0].evidence_id)
+                if len(selected) >= hard_count:
+                    break
+
+        broad_profiles: list[tuple[EvidenceItem, str, tuple[str, ...]]] = []
+        if broad_count and self._broad_order:
+            offset_hash = canonical_hash(
+                tuple(sorted(gold_ids)),
+                prefix="finance_real_distractor_broad_offset:",
+            ).split(":", 1)[1]
+            offset = int(offset_hash[:16], 16) % len(self._broad_order)
+            probe_count = min(len(self._broad_order), self._broad_probe_limit)
+            for position in range(probe_count):
+                candidate_index = self._broad_order[(offset + position) % len(self._broad_order)]
+                item = self._evidence[candidate_index]
+                if item.evidence_id in gold_ids or item.evidence_id in selected_ids:
+                    continue
+                if any(not _real_distractor_mismatches(item, required) for required in gold):
+                    continue
+                kind, mismatches = _closest_real_distractor_profile(item, gold)
+                if kind is None or len(mismatches) < 2:
+                    continue
+                broad_profiles.append((item, kind, mismatches))
+            broad_profiles.sort(
+                key=lambda profile: (
+                    -len(profile[2]),
+                    _stable_item_key(profile[0], gold_ids),
+                )
+            )
+
+        broad = tuple(broad_profiles[:broad_count])
+        profiles = (*selected, *broad)
+        return RealDistractorSelection(
+            hard=tuple(profile[0] for profile in selected),
+            broad=tuple(profile[0] for profile in broad),
+            kinds={profile[0].evidence_id: profile[1] for profile in profiles},
+            mismatches={profile[0].evidence_id: profile[2] for profile in profiles},
+        )
 
 
 def sample_evidence(
@@ -369,6 +529,50 @@ def _closest_real_distractor_profile(
         ),
     )
     return kind, mismatches
+
+
+_REAL_DISTRACTOR_DIMENSIONS = (
+    "wrong_entity",
+    "wrong_metric",
+    "wrong_definition",
+    "wrong_scope",
+    "wrong_period",
+    "unit_mismatch",
+    "currency_mismatch",
+    "time_basis_mismatch",
+    "frequency_mismatch",
+    "period_type_mismatch",
+    "wrong_source",
+    "source_authority_mismatch",
+    "stale_version",
+    "forecast",
+)
+
+
+def _real_distractor_signature(item: EvidenceItem) -> tuple[Any, ...]:
+    unit, currency = _unit_currency(item)
+    authority = getattr(item.source.authority, "value", str(item.source.authority))
+    epistemic_status = getattr(
+        item.epistemic_status,
+        "value",
+        str(item.epistemic_status),
+    )
+    return (
+        item.subject.subject_id,
+        item.predicate,
+        item.definition.definition_id,
+        _scope_key(item),
+        _time_label(item),
+        unit,
+        currency,
+        item.temporal_context.basis,
+        item.temporal_context.frequency,
+        item.definition.attributes.get("period_type"),
+        item.source.source_id,
+        authority,
+        (epistemic_status, item.provenance.build_ids.get("kg")),
+        _is_forecast(item),
+    )
 
 
 def _real_distractor_mismatches(

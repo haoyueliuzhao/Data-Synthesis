@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
+from pathlib import Path
+from statistics import mean
 from typing import Literal
 
 from trusted_synthesis.core.evaluation.counterfactual import (
@@ -16,6 +19,7 @@ from trusted_synthesis.core.feedback import (
 )
 from trusted_synthesis.core.refinement import (
     CLAUSE_CALIBRATION_FORMULA,
+    CellFeedbackStatistics,
     SynthesisCell,
     aggregate_cell_feedback,
     build_observed_policy,
@@ -51,6 +55,9 @@ def compile_v09_refinement(
     calibration_manifest_hash: str | None = None,
     target_probabilities: Mapping[str, float] | None = None,
     task_domains: Mapping[str, str] | None = None,
+    task_quality_scores: Mapping[str, float],
+    quality_score_policy_hash: str,
+    quality_score_source: str,
 ) -> V09RefinementManifest:
     exposure_items = tuple(exposures)
     resolved_cells = dict(task_cells or legacy_synthesis_cells(exposure_items))
@@ -64,19 +71,51 @@ def compile_v09_refinement(
     resolved_domains = dict(task_domains or exposure_domains)
     if set(resolved_domains) != set(resolved_cells):
         raise ValueError("task domains must cover every synthesis Cell task")
-    cell_groups = _cell_conditioning_groups(resolved_cells, resolved_domains)
+    training_domains = {domain for domain, weight in config.domain_weights.items() if weight > 0}
+    policy_task_ids = {
+        task_id for task_id, domain in resolved_domains.items() if domain in training_domains
+    }
+    if not policy_task_ids:
+        raise ValueError("feedback contains no task in the frozen primary training domain")
+    policy_cells = {task_id: resolved_cells[task_id] for task_id in sorted(policy_task_ids)}
+    policy_domains = {task_id: resolved_domains[task_id] for task_id in sorted(policy_task_ids)}
+    policy_exposures = tuple(item for item in exposure_items if item.task_id in policy_task_ids)
+    policy_signals = tuple(item for item in signals if item.task_id in policy_task_ids)
+    resolved_quality_scores = {
+        task_id: float(score) for task_id, score in sorted(task_quality_scores.items())
+    }
+    if set(resolved_quality_scores) != policy_task_ids:
+        raise ValueError("scalar quality scores must cover exactly the refinement tasks")
+    if any(not 0 <= score <= 1 for score in resolved_quality_scores.values()):
+        raise ValueError("scalar quality scores must be in [0, 1]")
+    if not quality_score_policy_hash or not quality_score_source:
+        raise ValueError("scalar quality scores require source and policy identities")
+    score_manifest_hash = canonical_hash(
+        {
+            "source": quality_score_source,
+            "policy_hash": quality_score_policy_hash,
+            "task_scores": resolved_quality_scores,
+            "task_cell_ids": {
+                task_id: policy_cells[task_id].cell_id for task_id in sorted(policy_cells)
+            },
+        },
+        prefix="training_utility_v09_scalar_quality_manifest:",
+    )
+    cell_groups = _cell_conditioning_groups(policy_cells, policy_domains)
     represented_weights = _represented_group_weights(
         cell_groups,
         config.domain_weights,
     )
-    unique_cells = {cell.cell_id: cell for cell in resolved_cells.values()}
+    unique_cells = {cell.cell_id: cell for cell in policy_cells.values()}
     pattern_catalog_hash = canonical_hash(
         tuple(sorted({item.pattern_id for item in unique_cells.values()})),
         prefix="training_utility_v09_pattern_catalog:",
     )
     cohort_contracts = _cohort_contracts(config, pattern_catalog_hash)
-    failures = aggregate_pattern_clause_failures(exposure_items, signals)
-    capability_count = sum(item.route == FeedbackRoute.AGENT_CAPABILITY_GAP for item in signals)
+    failures = aggregate_pattern_clause_failures(policy_exposures, policy_signals)
+    capability_count = sum(
+        item.route == FeedbackRoute.AGENT_CAPABILITY_GAP for item in policy_signals
+    )
     allocations = (
         tuple(
             allocate_refinement_budget(
@@ -106,37 +145,40 @@ def compile_v09_refinement(
         prefix="clause_calibration_manifest:",
     )
     prior_policy = build_observed_policy(
-        resolved_cells,
-        target_probabilities=target_probabilities,
-        task_groups=resolved_domains,
+        policy_cells,
+        target_probabilities=_restrict_target_probabilities(
+            target_probabilities,
+            {item.cell_id for item in policy_cells.values()},
+        ),
+        task_groups=policy_domains,
         fixed_group_weights=represented_weights,
     )
     calibrated_feedback = calibrate_clause_feedback(
-        signals,
-        resolved_cells,
+        policy_signals,
+        policy_cells,
         calibration,
         uncalibrated_reliability=config.ccgr_uncalibrated_reliability,
     )
     raw_feedback = calibrate_clause_feedback(
-        signals,
-        resolved_cells,
+        policy_signals,
+        policy_cells,
         calibration,
         force_raw_reliability=True,
     )
     calibrated_statistics = aggregate_cell_feedback(
         prior_policy,
-        exposures,
+        policy_exposures,
         calibrated_feedback,
-        resolved_cells,
+        policy_cells,
         minimum_cell_exposure=config.ccgr_minimum_cell_exposure,
         shrinkage_strength=config.ccgr_pattern_shrinkage_strength,
         normalize_root_mass=config.ccgr_normalize_root_mass,
     )
     raw_statistics = aggregate_cell_feedback(
         prior_policy,
-        exposures,
+        policy_exposures,
         raw_feedback,
-        resolved_cells,
+        policy_cells,
         minimum_cell_exposure=config.ccgr_minimum_cell_exposure,
         shrinkage_strength=config.ccgr_pattern_shrinkage_strength,
         normalize_root_mass=config.ccgr_normalize_root_mass,
@@ -168,6 +210,30 @@ def compile_v09_refinement(
         calibration_manifest_hash=resolved_calibration_hash,
         binding_tightening_threshold=config.ccgr_binding_tightening_threshold,
         ablation_id="raw_failure_reweighting",
+        conditioning_groups=cell_groups,
+        fixed_group_weights=represented_weights,
+    )
+    score_only_utilities = _score_only_cell_utilities(
+        calibrated_statistics,
+        task_quality_scores=resolved_quality_scores,
+        task_cell_ids={task_id: policy_cells[task_id].cell_id for task_id in sorted(policy_cells)},
+        gamma=config.ccgr_gamma,
+    )
+    score_only = update_synthesis_policy(
+        prior_policy,
+        calibrated_statistics,
+        (),
+        eta=config.ccgr_eta,
+        beta=0.0,
+        gamma=config.ccgr_gamma,
+        total_budget=config.cohort_example_budget,
+        calibration_manifest_hash=score_manifest_hash,
+        binding_tightening_threshold=config.ccgr_binding_tightening_threshold,
+        ablation_id="score_only_feedback",
+        enable_binding_tightening=False,
+        require_calibrated_feedback=False,
+        utility_overrides=score_only_utilities,
+        utility_mode="score_only_control",
         conditioning_groups=cell_groups,
         fixed_group_weights=represented_weights,
     )
@@ -223,6 +289,7 @@ def compile_v09_refinement(
     )
     ccgr_updates = (
         static,
+        score_only,
         raw,
         no_defect,
         no_coverage,
@@ -248,8 +315,8 @@ def compile_v09_refinement(
         "Uncalibrated clauses are fail-closed at the configured reliability floor.",
         "Binding tightening can only activate options predeclared by a plugin or pattern.",
         "Refinement cannot add patterns, operators, contracts, or agent strategies.",
-        "Random-same-shift and raw-feedback policies are manifest-only controls until "
-        "equal-token cohorts are materialized; only C3 versus C4 is identified.",
+        "Score-only, random-same-shift, and raw-feedback policies are manifest-only "
+        "controls until equal-token cohorts are materialized; only C3 versus C4 is identified.",
         "Selected=used=cited evidence remains a controlled-task assumption.",
         "External native benchmarks have not been executed.",
         *(
@@ -272,8 +339,25 @@ def compile_v09_refinement(
         ),
     )
     route_counts = Counter(item.route.value for item in signals)
+    validation_domain_exposure_counts = Counter(item.domain for item in exposure_items)
+    validation_domain_signal_counts = Counter(item.domain for item in signals)
+    refinement_domain_exposure_counts = Counter(item.domain for item in policy_exposures)
+    refinement_domain_signal_counts = Counter(item.domain for item in policy_signals)
     experiment_axes = _experiment_axes()
     identity = {
+        "experiment_protocol_id": config.experiment_protocol_id,
+        "research_question_ids": config.research_question_ids,
+        "primary_training_domain": config.primary_training_domain,
+        "cross_domain_validation_domains": config.cross_domain_validation_domains,
+        "validation_task_ids": tuple(sorted(resolved_cells)),
+        "validation_domain_exposure_counts": validation_domain_exposure_counts,
+        "validation_domain_signal_counts": validation_domain_signal_counts,
+        "refinement_task_ids": tuple(sorted(policy_task_ids)),
+        "refinement_domain_exposure_counts": refinement_domain_exposure_counts,
+        "refinement_domain_signal_counts": refinement_domain_signal_counts,
+        "score_only_quality_source": quality_score_source,
+        "score_only_quality_policy_hash": quality_score_policy_hash,
+        "score_only_quality_manifest_hash": score_manifest_hash,
         "config_hash": config.config_hash,
         "feedback_source": feedback_source,
         "round0_real_agent_feedback": round0_real_agent_feedback,
@@ -289,6 +373,11 @@ def compile_v09_refinement(
     }
     return V09RefinementManifest(
         manifest_id=canonical_hash(identity, prefix="training_utility_v09_manifest:"),
+        experiment_protocol_id=config.experiment_protocol_id,
+        research_question_ids=config.research_question_ids,
+        primary_training_domain=config.primary_training_domain,
+        cross_domain_validation_domains=config.cross_domain_validation_domains,
+        engineering_regression_cohort_ids=config.engineering_regression_cohort_ids,
         config_hash=config.config_hash,
         pattern_catalog_hash=pattern_catalog_hash,
         feedback_source=feedback_source,
@@ -296,6 +385,20 @@ def compile_v09_refinement(
         feedback_exposure_count=len(exposure_items),
         feedback_signal_count=len(signals),
         feedback_route_counts=dict(sorted(route_counts.items())),
+        validation_task_ids=tuple(sorted(resolved_cells)),
+        validation_exposure_count=len(exposure_items),
+        validation_signal_count=len(signals),
+        validation_domain_exposure_counts=dict(sorted(validation_domain_exposure_counts.items())),
+        validation_domain_signal_counts=dict(sorted(validation_domain_signal_counts.items())),
+        refinement_task_ids=tuple(sorted(policy_task_ids)),
+        refinement_exposure_count=len(policy_exposures),
+        refinement_signal_count=len(policy_signals),
+        refinement_domain_exposure_counts=dict(sorted(refinement_domain_exposure_counts.items())),
+        refinement_domain_signal_counts=dict(sorted(refinement_domain_signal_counts.items())),
+        score_only_quality_source=quality_score_source,
+        score_only_quality_score_count=len(resolved_quality_scores),
+        score_only_quality_policy_hash=quality_score_policy_hash,
+        score_only_quality_manifest_hash=score_manifest_hash,
         pattern_clause_failures=failures,
         allocations=allocations,
         primary_allocation_id=primary.allocation_id if primary is not None else None,
@@ -397,6 +500,28 @@ def compile_v09_from_agent_report(
         failures=tuple(failures),
         status="passed" if not failures else "failed",
     )
+    refinement_quality_samples = tuple(
+        item
+        for item in report.samples
+        if item.task_id in task_cells
+        and task_domains[item.task_id] == config.primary_training_domain
+    )
+    if any(item.quality_vector is None for item in refinement_quality_samples):
+        raise ValueError("every Finance refinement sample requires a QualityVector")
+    quality_scores = {
+        item.task_id: item.quality_vector.overall_score
+        for item in refinement_quality_samples
+        if item.quality_vector is not None
+    }
+    if len(quality_scores) != len(refinement_quality_samples):
+        raise ValueError("one scalar quality score is required per Finance refinement task")
+    quality_policy_hashes = {
+        item.quality_vector.policy_hash
+        for item in refinement_quality_samples
+        if item.quality_vector is not None
+    }
+    if len(quality_policy_hashes) != 1:
+        raise ValueError("Finance score-only feedback requires one QualityVector policy")
     return compile_v09_refinement(
         config,
         exposures=exposures,
@@ -409,6 +534,11 @@ def compile_v09_from_agent_report(
         calibration_manifest_hash=calibration_hash,
         target_probabilities=resolved_targets or None,
         task_domains=task_domains or None,
+        task_quality_scores=quality_scores,
+        quality_score_policy_hash=next(iter(quality_policy_hashes)),
+        quality_score_source=(
+            f"{report.run_id}:AgentValidationSample.quality_vector.overall_score"
+        ),
     )
 
 
@@ -563,3 +693,113 @@ def _domain_weighted_targets(
     for (domain, cell_id), count in counts.items():
         targets[cell_id] += domain_weights.get(domain, 0.0) * count / domain_totals[domain]
     return dict(sorted(targets.items()))
+
+
+def _restrict_target_probabilities(
+    target_probabilities: Mapping[str, float] | None,
+    cell_ids: set[str],
+) -> dict[str, float] | None:
+    if target_probabilities is None:
+        return None
+    selected = {
+        cell_id: float(target_probabilities.get(cell_id, 0.0)) for cell_id in sorted(cell_ids)
+    }
+    total = sum(selected.values())
+    if total <= 0:
+        raise ValueError("primary training Cells require positive target probability")
+    return {cell_id: value / total for cell_id, value in selected.items()}
+
+
+def _score_only_cell_utilities(
+    statistics: Iterable[CellFeedbackStatistics],
+    *,
+    task_quality_scores: Mapping[str, float],
+    task_cell_ids: Mapping[str, str],
+    gamma: float,
+) -> dict[str, float]:
+    """Use mean scalar Agent quality per Cell without Clause or route semantics."""
+
+    if gamma < 0:
+        raise ValueError("score-only coverage weight cannot be negative")
+    if set(task_quality_scores) != set(task_cell_ids):
+        raise ValueError("score-only task scores and Cell bindings must match")
+    scores_by_cell: dict[str, list[float]] = defaultdict(list)
+    for task_id, score in sorted(task_quality_scores.items()):
+        if not 0 <= score <= 1:
+            raise ValueError("score-only task quality must be in [0, 1]")
+        scores_by_cell[task_cell_ids[task_id]].append(float(score))
+    statistics_by_cell = {item.cell_id: item for item in statistics}
+    if set(scores_by_cell) != set(statistics_by_cell):
+        raise ValueError("score-only quality must cover every policy Cell")
+    return {
+        cell_id: (-(1.0 - mean(scores_by_cell[cell_id])) + gamma * item.coverage_gap)
+        for cell_id, item in sorted(statistics_by_cell.items())
+    }
+
+
+def write_v09_real_refinement_artifacts(
+    output_dir: Path,
+    manifest: V09RefinementManifest,
+    report: AgentValidationReport,
+) -> None:
+    """Freeze online CCGR inputs and outputs as a replayable artifact set."""
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    exposures = tuple(item for sample in report.samples for item in sample.feedback_exposures)
+    signals = tuple(item for sample in report.samples for item in sample.feedback_signals)
+    _write_refinement_json(output_dir / "v09_refinement_manifest.json", manifest)
+    _write_refinement_json(output_dir / "online_gate.json", manifest.online_gate)
+    _write_refinement_json(output_dir / "ccgr_policy_updates.json", manifest.ccgr_updates)
+    _write_refinement_jsonl(output_dir / "feedback_exposures.jsonl", exposures)
+    _write_refinement_jsonl(output_dir / "feedback_signals.jsonl", signals)
+    _write_refinement_jsonl(output_dir / "synthesis_cells.jsonl", manifest.synthesis_cells)
+    _write_refinement_jsonl(output_dir / "clause_feedback.jsonl", manifest.clause_feedback)
+    summary = {
+        "version": "v09_real_refinement_artifacts.v1",
+        "source_agent_run_id": report.run_id,
+        "source_agent_report_hash": report.report_hash,
+        "finance_task_source": report.finance_task_source,
+        "finance_archive_kg_build_id": report.finance_archive_kg_build_id,
+        "task_source_manifest_hash": report.task_source_manifest_hash,
+        "refinement_manifest_id": manifest.manifest_id,
+        "refinement_manifest_hash": canonical_hash(
+            manifest,
+            prefix="v09_refinement_manifest_content:",
+        ),
+        "online_gate_status": manifest.online_gate.status,
+        "feedback_exposure_count": len(exposures),
+        "feedback_signal_count": len(signals),
+        "synthesis_cell_count": len(manifest.synthesis_cells),
+        "status": manifest.status,
+    }
+    _write_refinement_json(output_dir / "real_refinement_summary.json", summary)
+
+
+def _refinement_json_payload(value: object) -> object:
+    if hasattr(value, "model_dump"):
+        return value.model_dump(mode="json")
+    if isinstance(value, dict):
+        return {str(key): _refinement_json_payload(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_refinement_json_payload(item) for item in value]
+    return value
+
+
+def _write_refinement_json(path: Path, value: object) -> None:
+    path.write_text(
+        json.dumps(
+            _refinement_json_payload(value),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _write_refinement_jsonl(path: Path, values: tuple[object, ...]) -> None:
+    with path.open("w", encoding="utf-8") as handle:
+        for value in values:
+            payload = _refinement_json_payload(value)
+            handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")

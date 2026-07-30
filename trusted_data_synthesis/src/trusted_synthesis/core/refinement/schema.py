@@ -180,7 +180,7 @@ class PolicyUpdateResult(FrozenModel):
     total_budget: int = Field(ge=1)
     calibration_manifest_hash: str = Field(min_length=1)
     feedback_manifest_hash: str = Field(min_length=1)
-    utility_mode: Literal["feedback_objective", "random_control"]
+    utility_mode: Literal["feedback_objective", "score_only_control", "random_control"]
     kl_divergence: float = Field(ge=0)
     total_variation_distance: float = Field(ge=0, le=1)
     prior_entropy: float = Field(ge=0)

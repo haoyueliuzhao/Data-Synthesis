@@ -31,6 +31,7 @@ def train_sft_cohort(
         import torch
         from peft import LoraConfig, TaskType, get_peft_model
         from transformers import (
+            AutoConfig,
             AutoModelForCausalLM,
             AutoTokenizer,
             Trainer,
@@ -45,6 +46,7 @@ def train_sft_cohort(
     if not torch.cuda.is_available():
         raise RuntimeError("the Qwen2.5-7B MVP requires a CUDA device")
     validate_model_loading_contract(config.base_model, config.model_revision)
+    _validate_model_context_window(config, AutoConfig)
 
     cohort_name = cohort.value if isinstance(cohort, UtilityCohort) else cohort
     records = load_sft_records(dataset_path)
@@ -70,8 +72,7 @@ def train_sft_cohort(
         ):
             return completed
         raise ValueError(
-            "output directory contains a completed result for a different "
-            "training contract"
+            "output directory contains a completed result for a different training contract"
         )
     set_seed(config.seed)
     tokenizer = AutoTokenizer.from_pretrained(
@@ -168,9 +169,7 @@ def train_sft_cohort(
     last_checkpoint = (
         get_last_checkpoint(str(trainer_state_dir)) if trainer_state_dir.is_dir() else None
     )
-    train_output = trainer.train(
-        resume_from_checkpoint=last_checkpoint
-    )
+    train_output = trainer.train(resume_from_checkpoint=last_checkpoint)
     runtime = time.monotonic() - started
     peak_memory = int(torch.cuda.max_memory_allocated())
     trainer.save_model(str(adapter_dir))
@@ -208,9 +207,7 @@ def train_sft_cohort(
         supervised_token_count=supervised_token_count,
         supervised_token_budget=config.supervised_token_budget,
         token_budget_deviation_rate=deviation_rate,
-        micro_batch_count=(
-            len(encoded) // config.per_device_train_batch_size
-        ),
+        micro_batch_count=(len(encoded) // config.per_device_train_batch_size),
         dependency_versions=_dependency_versions(),
         status="completed",
         result_hash=canonical_hash(identity, prefix="training_utility_train_result:"),
@@ -230,12 +227,13 @@ def audit_sft_token_budget(
     """Tokenize on CPU and replay the exact scheduler without loading model weights."""
 
     try:
-        from transformers import AutoTokenizer
+        from transformers import AutoConfig, AutoTokenizer
     except ImportError as exc:  # pragma: no cover - exercised only without the extra
         raise RuntimeError(
             "token-audit dependencies are missing; install the project training extra"
         ) from exc
     validate_model_loading_contract(config.base_model, config.model_revision)
+    _validate_model_context_window(config, AutoConfig)
     cohort_name = cohort.value if isinstance(cohort, UtilityCohort) else cohort
     records = load_sft_records(dataset_path)
     if not records or {item.cohort for item in records} != {cohort_name}:
@@ -319,12 +317,26 @@ def _completed_training_budget_matches(
         and result.supervised_token_count is not None
         and result.token_budget_deviation_rate is not None
         and result.micro_batch_count is not None
-        and result.completed_steps
-        == result.micro_batch_count
-        // config.gradient_accumulation_steps
-        and result.token_budget_deviation_rate
-        <= config.maximum_token_budget_deviation_rate
+        and result.completed_steps == result.micro_batch_count // config.gradient_accumulation_steps
+        and result.token_budget_deviation_rate <= config.maximum_token_budget_deviation_rate
     )
+
+
+def _validate_model_context_window(
+    config: TrainingUtilityMVPConfig,
+    auto_config: Any,
+) -> None:
+    model_config = auto_config.from_pretrained(
+        config.base_model,
+        revision=config.model_revision,
+        trust_remote_code=False,
+    )
+    maximum = getattr(model_config, "max_position_embeddings", None)
+    if isinstance(maximum, int) and config.max_seq_length > maximum:
+        raise ValueError(
+            "configured max_seq_length exceeds the pinned model context window: "
+            f"{config.max_seq_length} > {maximum}"
+        )
 
 
 def _prepare_supervised_token_schedule(
@@ -341,15 +353,11 @@ def _prepare_supervised_token_schedule(
     int,
     dict[str, Any],
 ]:
-    raw_supervised_tokens = sum(
-        label != -100 for item in encoded for label in item["labels"]
-    )
+    raw_supervised_tokens = sum(label != -100 for item in encoded for label in item["labels"])
     scheduled = encoded
     supervised_token_count = raw_supervised_tokens
     effective_max_steps = config.max_steps
-    examples_per_step = (
-        config.per_device_train_batch_size * config.gradient_accumulation_steps
-    )
+    examples_per_step = config.per_device_train_batch_size * config.gradient_accumulation_steps
     if config.supervised_token_budget is not None:
         scheduled, supervised_token_count = _schedule_supervised_token_budget(
             encoded,
@@ -371,10 +379,7 @@ def _prepare_supervised_token_schedule(
             "supervised token budget requires "
             f"{effective_max_steps} steps, above max_steps={config.max_steps}"
         )
-    if (
-        deviation_rate is not None
-        and deviation_rate > config.maximum_token_budget_deviation_rate
-    ):
+    if deviation_rate is not None and deviation_rate > config.maximum_token_budget_deviation_rate:
         blockers.append(
             "supervised token schedule deviation exceeds contract: "
             f"{deviation_rate:.6f} > {config.maximum_token_budget_deviation_rate:.6f}"
@@ -417,10 +422,7 @@ def _schedule_supervised_token_budget(
         raise ValueError("token scheduling requires aligned encoded records")
     if examples_per_step < 1:
         raise ValueError("examples_per_step must be positive")
-    target_counts = [
-        sum(label != -100 for label in item["labels"])
-        for item in encoded
-    ]
+    target_counts = [sum(label != -100 for label in item["labels"]) for item in encoded]
     scheduled_indices: list[int] = []
     scheduled_tokens = 0
     cycle = 0
@@ -447,10 +449,8 @@ def _schedule_supervised_token_budget(
             scheduled_tokens += sum(target_counts[index] for index in block)
             if scheduled_tokens < token_budget:
                 continue
-            if (
-                previous_count
-                and abs(previous_tokens - token_budget)
-                < abs(scheduled_tokens - token_budget)
+            if previous_count and abs(previous_tokens - token_budget) < abs(
+                scheduled_tokens - token_budget
             ):
                 del scheduled_indices[previous_count:]
                 scheduled_tokens = previous_tokens
@@ -547,10 +547,7 @@ def _encode_records(
 
 
 def _encode_host_transcript(tokenizer: Any, record: Any) -> tuple[list[int], list[int]]:
-    messages = [
-        {"role": item.role, "content": item.content}
-        for item in record.messages
-    ]
+    messages = [{"role": item.role, "content": item.content} for item in record.messages]
     full_text = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
@@ -574,9 +571,7 @@ def _encode_host_transcript(tokenizer: Any, record: Any) -> tuple[list[int], lis
         before_ids = tokenizer(before_text, add_special_tokens=False)["input_ids"]
         through_ids = tokenizer(through_text, add_special_tokens=False)["input_ids"]
         if full_ids[: len(through_ids)] != through_ids:
-            raise ValueError(
-                "chat template does not preserve the host transcript assistant prefix"
-            )
+            raise ValueError("chat template does not preserve the host transcript assistant prefix")
         if through_ids[: len(before_ids)] != before_ids:
             raise ValueError(
                 "chat template does not preserve the host transcript generation prefix"

@@ -224,6 +224,10 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
     assert client.call_count == 2
     assert "host_owned_fields" in client.prompts[0]
     assert "host_execution" in client.prompts[1]
+    assert "answer_result_seed_complete" in client.prompts[1]
+    assert "operation_results_by_public_node" in client.prompts[1]
+    assert '"citation_field": "cited_evidence_ids"' in client.prompts[1]
+    assert '"citation_fields"' not in client.prompts[1]
     assert "execution:host_agent_execution:" not in client.prompts[1]
     assert all("execution_id" not in item for item in action_payload["executions"])
     assert "source_locator" not in answer_payload
@@ -236,6 +240,99 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
         and step.observation["execution_id"] != step.program_node_id
         for step in host_steps
     )
+
+
+
+def test_host_instrumented_multistep_uses_direct_grounding_and_transitive_lineage() -> None:
+    case = next(
+        item
+        for item in build_pattern_validation_cases(per_domain=3)
+        if len(item.task.oracle.task_program.nodes) > 1
+        and any(
+            ref.kind.value == "operation"
+            for ref in item.task.oracle.task_program.nodes[-1].input_refs
+        )
+    )
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    client = ScriptedJsonClient(
+        [
+            _action_plan_from_trajectory(deterministic),
+            _answer_decision_from_trajectory(deterministic),
+        ],
+        interaction_protocol="host_instrumented",
+    )
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    report = CandidateWorkflowVerifier(
+        case.registry,
+        semantic_policy=case.semantic_policy,
+    ).verify(task, case.corpus, case.proof_graph, result.trajectory)
+
+    assert report.operation_grounding_score == 1
+    output_node_id = task.oracle.task_program.output_node_id
+    output_step = next(
+        step
+        for step in result.trajectory.steps
+        if step.program_node_id == output_node_id
+        and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    )
+    output_node = next(
+        node for node in task.oracle.task_program.nodes if node.node_id == output_node_id
+    )
+    expected_direct = {
+        ref.ref_id for ref in output_node.input_refs if ref.kind.value == "evidence"
+    }
+    assert set(output_step.evidence_ids) == expected_direct
+    expected_lineage = set(task.oracle.gold_evidence_ids)
+    assert set(result.trajectory.program_execution["operation_lineage"][output_node_id]) == (
+        expected_lineage
+    )
+
+    # Historical host traces carried exact transitive lineage on each derived step.
+    legacy_steps = tuple(
+        step.model_copy(update={"evidence_ids": tuple(sorted(expected_lineage))})
+        if step.step_index == output_step.step_index
+        else step
+        for step in result.trajectory.steps
+    )
+    legacy = result.trajectory.model_copy(update={"steps": legacy_steps})
+    legacy_report = CandidateWorkflowVerifier(
+        case.registry,
+        semantic_policy=case.semantic_policy,
+    ).verify(task, case.corpus, case.proof_graph, legacy)
+    assert legacy_report.operation_grounding_score == 1
+
+    distractor_id = next(
+        item.evidence_id
+        for item in case.corpus.evidence
+        if item.evidence_id not in expected_lineage
+    )
+    invalid_steps = tuple(
+        step.model_copy(
+            update={"evidence_ids": (*tuple(sorted(expected_lineage)), distractor_id)}
+        )
+        if step.step_index == output_step.step_index
+        else step
+        for step in result.trajectory.steps
+    )
+    invalid = result.trajectory.model_copy(update={"steps": invalid_steps})
+    invalid_report = CandidateWorkflowVerifier(
+        case.registry,
+        semantic_policy=case.semantic_policy,
+    ).verify(task, case.corpus, case.proof_graph, invalid)
+    assert invalid_report.operation_grounding_score < 1
 
 
 def test_host_instrumented_agent_rejects_unretrieved_evidence() -> None:

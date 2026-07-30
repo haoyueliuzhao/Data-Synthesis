@@ -85,7 +85,11 @@ class ProofCarryingSampleCompiler:
             task, evidence_bundle, proof_graph, reference
         )
         if assessment.decision != ReleaseDecision.ACCEPTED:
-            raise ValueError("reference workflow did not satisfy deterministic quality gates")
+            failed = ",".join(assessment.failed_check_ids) or ",".join(assessment.fatal_failures)
+            raise ValueError(
+                "reference workflow did not satisfy deterministic quality gates"
+                + (f": {failed}" if failed else "")
+            )
         if (
             assessment.task_id != task.task_id
             or assessment.trajectory_id != reference.trajectory_id

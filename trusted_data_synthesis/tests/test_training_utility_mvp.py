@@ -56,6 +56,7 @@ from trusted_synthesis.experiments.training_utility_mvp.training import (
     _completed_training_budget_matches,
     _encode_records,
     _schedule_supervised_token_budget,
+    _validate_model_context_window,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent import AgentModelConfig, ModelCallTelemetry
@@ -265,6 +266,29 @@ def test_training_utility_data_contract_builds_balanced_d1_through_d5() -> None:
             )
 
 
+def test_reference_records_accept_a_pinned_finance_case_source() -> None:
+    config = TrainingUtilityMVPConfig(
+        candidate_tasks_per_domain=2,
+        evaluation_tasks_per_domain=1,
+        cohort_size=6,
+        max_steps=1,
+    )
+    finance_cases = build_finance_counterfactual_cases(count=3, start_index=101)
+
+    training, evaluation = _reference_and_evaluation_records(
+        config,
+        finance_cases=finance_cases,
+    )
+
+    finance_records = tuple(item for item in (*training, *evaluation) if item.domain == "finance")
+    assert tuple(
+        json.loads(item.user_prompt)["public_task"]["metadata"]["base_task_id"]
+        for item in finance_records
+    ) == tuple(item.task.task_id for item in finance_cases)
+    assert all(item.metadata["source_ordinal"] >= 1 for item in finance_records)
+    assert all(item.metadata["source_adapter_ids"] for item in finance_records)
+
+
 def test_training_prompt_v5_disambiguates_public_program_and_action_ir() -> None:
     config = TrainingUtilityMVPConfig(
         candidate_tasks_per_domain=2,
@@ -378,6 +402,23 @@ def test_training_utility_scorer_normalizes_numeric_answer_representation() -> N
     assert outcome["response_contract"] is True
     assert outcome["answer_exact"] is True
     assert outcome["end_to_end"] is True
+
+
+def test_training_context_limit_is_model_aware() -> None:
+    class StubAutoConfig:
+        @staticmethod
+        def from_pretrained(*args, **kwargs):
+            return type("ModelConfig", (), {"max_position_embeddings": 32768})()
+
+    _validate_model_context_window(
+        TrainingUtilityMVPConfig(max_seq_length=24576),
+        StubAutoConfig,
+    )
+    with pytest.raises(ValueError, match="exceeds the pinned model context window"):
+        _validate_model_context_window(
+            TrainingUtilityMVPConfig(max_seq_length=65536),
+            StubAutoConfig,
+        )
 
 
 def test_host_transcript_masks_tool_messages_from_sft_loss() -> None:

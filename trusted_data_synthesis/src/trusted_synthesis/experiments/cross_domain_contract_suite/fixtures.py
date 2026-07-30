@@ -34,6 +34,7 @@ from trusted_synthesis.core.plugins import (
     DomainPluginSet,
     DomainQualityClauseProviderProtocol,
     SemanticPolicyProtocol,
+    SourceGroundingVerifierProtocol,
 )
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.domains.legal import (
@@ -65,6 +66,7 @@ class ContractCase:
     quality_clause_provider: DomainQualityClauseProviderProtocol
     plugin_set: DomainPluginSet
     counterfactual_registry: CounterfactualOperatorRegistry
+    source_grounding_verifier: SourceGroundingVerifierProtocol | None = None
 
 
 def build_contract_cases() -> tuple[ContractCase, ...]:

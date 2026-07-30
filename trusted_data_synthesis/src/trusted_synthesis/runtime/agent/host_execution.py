@@ -170,6 +170,13 @@ def execute_action_plan(
         outputs[step_index] = output
         execution_ids[step_index] = execution_id
         lineages[step_index] = lineage
+        direct_evidence_ids = tuple(
+            dict.fromkeys(
+                item.evidence_id
+                for item in decision.inputs
+                if item.source == "evidence" and item.evidence_id is not None
+            )
+        )
         planned_node_id = (
             task.program_skeleton.nodes[step_index - 1].public_node_id
             if task.program_skeleton is not None
@@ -185,7 +192,9 @@ def execute_action_plan(
                     _input_ref(item, execution_ids) for item in decision.inputs
                 ),
                 parameters=decision.parameters,
-                evidence_ids=lineage,
+                # Step grounding is intentionally direct. The complete transitive
+                # answer lineage is reconstructed and frozen in program_execution.
+                evidence_ids=direct_evidence_ids,
                 observation={"result": output},
                 status="succeeded",
                 rationale_summary=decision.rationale_summary,

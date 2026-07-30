@@ -75,7 +75,10 @@ from trusted_synthesis.runtime.agent import (
     LLMClientError,
 )
 from trusted_synthesis.runtime.agent.llm_agent import (
+    LLM_AGENT_ACTION_PROMPT_VERSION,
+    LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION,
     LLM_AGENT_PROMPT_VERSION,
+    LLM_AGENT_SEARCH_PROMPT_VERSION,
     LLM_AGENT_SOLVER_VERSION,
 )
 from trusted_synthesis.runtime.agent.schema import (
@@ -140,11 +143,95 @@ def _build_validation_cases(
     )
     legal = tuple(item for item in non_finance if item.domain == "legal")[: targets["legal"]]
     science = tuple(item for item in non_finance if item.domain == "science")[: targets["science"]]
-    return (
-        *build_finance_counterfactual_cases(count=targets["finance"]),
-        *legal,
-        *science,
+    if config.finance_task_source == "archive":
+        finance = _build_archive_finance_cases(config, targets["finance"])
+    else:
+        finance = build_finance_counterfactual_cases(count=targets["finance"])
+    return (*finance, *legal, *science)
+
+
+def _build_archive_finance_cases(
+    config: AgentValidationConfig,
+    count: int,
+) -> tuple[ContractCase, ...]:
+    from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
+    from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+    from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
+        FinanceArchiveBindingProvider,
     )
+
+    archive_path = config.finance_archive_config_path
+    if archive_path is None:
+        raise ValueError("archive-backed Finance tasks require finance_archive_config_path")
+    adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(archive_path))
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id=config.finance_candidate_pool_id,
+        sampling_partition_id=config.finance_sampling_partition,
+        pool_split_seed=config.finance_pool_split_seed,
+        evidence_scan_limit=config.finance_evidence_scan_limit,
+        evidence_sample_size=config.finance_evidence_sample_size,
+        stratum_reservoir_size=config.finance_stratum_reservoir_size,
+        candidates_per_pattern=config.finance_candidates_per_pattern,
+    )
+    return provider.contract_cases(count, seed=config.random_seed)
+
+
+def _task_source_manifest_hash(cases: tuple[ContractCase, ...]) -> str:
+    return canonical_hash(
+        tuple(
+            (
+                item.domain,
+                item.task.task_id,
+                item.task.task_hash,
+                item.bundle.bundle_hash,
+                item.corpus.corpus_hash,
+            )
+            for item in cases
+        ),
+        prefix="agent_task_source_manifest:",
+    )
+
+
+def _finance_archive_kg_build_id(config: AgentValidationConfig) -> str | None:
+    if config.finance_task_source != "archive":
+        return None
+    from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+
+    archive_path = config.finance_archive_config_path
+    if archive_path is None:
+        raise ValueError("archive-backed Finance tasks require finance_archive_config_path")
+    return FinanceArchiveConfig.from_json(archive_path).required_kg_build_id
+
+
+def _finance_task_source_contract(config: AgentValidationConfig) -> dict[str, object]:
+    if config.finance_task_source == "fixture":
+        return {"source": "fixture", "selection_seed": config.random_seed}
+    from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+
+    archive_path = config.finance_archive_config_path
+    if archive_path is None:
+        raise ValueError("archive-backed Finance tasks require finance_archive_config_path")
+    archive_config = FinanceArchiveConfig.from_json(archive_path)
+    return {
+        "source": "archive",
+        "archive_config_hash": canonical_hash(
+            archive_config,
+            prefix="finance_archive_config:",
+        ),
+        "kg_build_id": archive_config.required_kg_build_id,
+        "candidate_pool_id": config.finance_candidate_pool_id,
+        "sampling_partition": config.finance_sampling_partition,
+        "pool_split_seed": config.finance_pool_split_seed,
+        "selection_seed": config.random_seed,
+        "retrieval_tracks": tuple(item.value for item in config.retrieval_tracks),
+        "planning_tracks": tuple(item.value for item in config.planning_tracks),
+        "evidence_scan_limit": config.finance_evidence_scan_limit,
+        "evidence_sample_size": config.finance_evidence_sample_size,
+        "stratum_reservoir_size": config.finance_stratum_reservoir_size,
+        "candidates_per_pattern": config.finance_candidates_per_pattern,
+        "require_corpus_disjoint": True,
+    }
 
 
 def audit_agent_validation_capacity(
@@ -180,9 +267,7 @@ def audit_agent_validation_capacity(
         action_calls = 0
         final_answer_calls = 0
         full_response_calls = planned_candidates
-    agent_call_floor = (
-        search_calls + action_calls + final_answer_calls + full_response_calls
-    )
+    agent_call_floor = search_calls + action_calls + final_answer_calls + full_response_calls
     critic_call_ceiling = (
         min(config.model_critic_max_examples, planned_candidates) if config.run_model_critic else 0
     )
@@ -197,6 +282,7 @@ def audit_agent_validation_capacity(
             for item in cases
         )
     )
+    source_manifest_hash = _task_source_manifest_hash(cases)
     return AgentValidationCapacityReport(
         config_hash=config.config_hash,
         target_task_counts=targets,
@@ -220,6 +306,10 @@ def audit_agent_validation_capacity(
             fixture_identity,
             prefix="agent_capacity_fixtures:",
         ),
+        task_source_manifest_hash=source_manifest_hash,
+        finance_task_source=config.finance_task_source,
+        finance_archive_kg_build_id=_finance_archive_kg_build_id(config),
+        finance_task_source_contract=_finance_task_source_contract(config),
         blockers=tuple(blockers),
         status="ready" if not blockers else "blocked",
     )
@@ -232,6 +322,8 @@ def run_agent_validation(
     checkpoint_dir: Path | None = None,
 ) -> AgentValidationArtifacts:
     cases = _build_validation_cases(config)
+    task_source_manifest_hash = _task_source_manifest_hash(cases)
+    finance_archive_kg_build_id = _finance_archive_kg_build_id(config)
     jobs = _agent_jobs(config, cases)
     checkpoint_root = checkpoint_dir if config.checkpoint_enabled else None
     results_by_index: dict[int, _AgentJobResult] = {}
@@ -251,6 +343,8 @@ def run_agent_validation(
                 config.retry_failed_checkpoints
                 and checkpoint.sample.generation_status != "normalized"
             ):
+                if checkpoint.sample.generation_status == "normalized":
+                    checkpoint = _revalidate_normalized_checkpoint(config, job, checkpoint)
                 results_by_index[job.index] = checkpoint
                 agent_checkpoint_loaded_count += 1
                 continue
@@ -387,6 +481,8 @@ def run_agent_validation(
         agent_checkpoint_written_count=agent_checkpoint_written_count,
         critic_checkpoint_loaded_count=critic_checkpoint_stats["loaded"],
         critic_checkpoint_written_count=critic_checkpoint_stats["written"],
+        task_source_manifest_hash=task_source_manifest_hash,
+        finance_archive_kg_build_id=finance_archive_kg_build_id,
     )
     return AgentValidationArtifacts(report=report, critic_dataset=dataset)
 
@@ -448,135 +544,19 @@ def _execute_agent_job(
             task.public,
             InMemoryEvidenceToolRuntime(case.corpus),
         )
-        assessment = runtime.evaluate(
-            compiled.quality_contract,
-            task,
-            case.corpus,
-            case.proof_graph,
-            solve_result.trajectory,
-        )
-        vector = QualityVectorCompiler().compile(
-            compiled.quality_contract,
-            assessment,
-        )
-        feedback_exposures, feedback_signals = contract_feedback(
-            domain=case.domain,
-            pattern_id=job.structure["pattern_id"],
-            contract=compiled.quality_contract,
-            assessment=assessment,
-        )
-        if solve_result.audit.interaction_protocol == "host_instrumented":
-            feedback_exposures = (
-                *feedback_exposures,
-                FeedbackExposure(
-                    task_id=task.task_id,
-                    domain=case.domain,
-                    pattern_id=job.structure["pattern_id"],
-                    failure_family="action_execution",
-                ),
-            )
-            feedback_signals = (
-                *feedback_signals,
-                *(
-                    failed_action_feedback(
-                        task_id=task.task_id,
-                        domain=case.domain,
-                        pattern_id=job.structure["pattern_id"],
-                        failure_category=item.failure_category,
-                        error_code=item.error_code,
-                        failed_step_index=item.failed_step_index,
-                    )
-                    for item in solve_result.audit.action_failure_history
-                ),
-            )
-        example = build_quality_critic_example(
-            task=task,
-            corpus=case.corpus,
-            contract=compiled.quality_contract,
+        return _build_normalized_agent_job_result(
+            config,
+            job,
             trajectory=solve_result.trajectory,
-            assessment=assessment,
-            quality_vector=vector,
-            candidate_source="real_agent",
-            metadata={
-                "model_config_hash": config.model.public_manifest_hash,
-                "generation_audit_id": solve_result.audit.audit_id,
-                **job.structure,
-            },
-        )
-        examples = [example]
-        accepted_ids = (
-            (example.example_id,)
-            if assessment.decision == ReleaseDecision.ACCEPTED
-            else ()
-        )
-        generated_count = 0
-        counterfactual_ids: list[str] = []
-        counterfactual_assessments: list[ContractQualityAssessment] = []
-        if config.generate_counterfactuals and assessment.decision == ReleaseDecision.ACCEPTED:
-            generated = _counterfactual_examples(
-                case=case,
-                task=task,
-                compiled=compiled,
-                runtime=runtime,
-                source_trajectory=solve_result.trajectory,
-            )
-            generated_count = len(generated)
-            for generated_example, generated_assessment, counterfactual_id in generated:
-                examples.append(generated_example)
-                counterfactual_assessments.append(generated_assessment)
-                counterfactual_ids.append(counterfactual_id)
-        return _AgentJobResult(
-            sample=AgentValidationSample(
-                sample_id=job.sample_id,
-                task_id=task.task_id,
-                domain=case.domain,
-                task_type=job.structure["task_type"],
-                pattern_id=job.structure["pattern_id"],
-                program_signature=job.structure["program_signature"],
-                retrieval_track=task.public.retrieval_track,
-                planning_track=task.public.planning_track,
-                generation_status="normalized",
-                generation_audit=solve_result.audit,
-                agent_telemetry=solve_result.audit.telemetry,
-                trajectory=solve_result.trajectory,
-                quality_contract=compiled.quality_contract,
-                contract_assessment=assessment,
-                feedback_exposures=feedback_exposures,
-                feedback_signals=feedback_signals,
-                synthesis_cell=synthesis_cell,
-                host_interaction_progress=(
-                    HostInteractionProgress(
-                        action_plan_attempted=True,
-                        action_plan_contract_succeeded=True,
-                        host_execution_evaluable=True,
-                        answer_decision_attempted=True,
-                        answer_decision_contract_succeeded=True,
-                        action_contract_repair_count=(
-                            solve_result.audit.action_contract_repair_count
-                        ),
-                        answer_contract_repair_count=(
-                            solve_result.audit.answer_contract_repair_count
-                        ),
-                    )
-                    if solve_result.audit.interaction_protocol == "host_instrumented"
-                    else None
-                ),
-                quality_vector=vector,
-                critic_example_id=example.example_id,
-                counterfactual_count=generated_count,
-            ),
-            critic_examples=tuple(examples),
-            accepted_example_ids=accepted_ids,
-            reference_sample_ids=reference_sample_ids,
-            counterfactual_ids=tuple(counterfactual_ids),
-            counterfactual_assessments=tuple(counterfactual_assessments),
+            generation_audit=solve_result.audit,
             telemetry=solve_result.audit.telemetry,
+            synthesis_cell=synthesis_cell,
+            compiled=compiled,
+            runtime=runtime,
         )
     except LLMClientError as exc:
         failed_action = (
-            exc.failure_artifact
-            if isinstance(exc.failure_artifact, FailedActionPlan)
-            else None
+            exc.failure_artifact if isinstance(exc.failure_artifact, FailedActionPlan) else None
         )
         feedback_exposures = (
             (
@@ -657,6 +637,170 @@ def _execute_agent_job(
         )
 
 
+
+def _revalidate_normalized_checkpoint(
+    config: AgentValidationConfig,
+    job: _AgentJob,
+    checkpoint: _AgentJobResult,
+) -> _AgentJobResult:
+    """Treat checkpoints as model-call caches, never as cached quality decisions."""
+
+    sample = checkpoint.sample
+    if sample.trajectory is None or sample.generation_audit is None:
+        raise ValueError("normalized Agent checkpoint is missing trajectory or generation audit")
+    return _build_normalized_agent_job_result(
+        config,
+        job,
+        trajectory=sample.trajectory,
+        generation_audit=sample.generation_audit,
+        telemetry=checkpoint.telemetry,
+    )
+
+
+def _build_normalized_agent_job_result(
+    config: AgentValidationConfig,
+    job: _AgentJob,
+    *,
+    trajectory: Any,
+    generation_audit: Any,
+    telemetry: tuple[ModelCallTelemetry, ...],
+    synthesis_cell: Any | None = None,
+    compiled: Any | None = None,
+    runtime: QualityContractRuntime | None = None,
+) -> _AgentJobResult:
+    case = job.case
+    task = job.task
+    if synthesis_cell is None:
+        synthesis_cell = build_synthesis_cell(
+            task.public,
+            case.corpus,
+            task.oracle.gold_evidence_ids,
+        )
+    if compiled is None or runtime is None:
+        compiled, runtime = _compile_runtime(case, task)
+    assessment = runtime.evaluate(
+        compiled.quality_contract,
+        task,
+        case.corpus,
+        case.proof_graph,
+        trajectory,
+    )
+    vector = QualityVectorCompiler().compile(
+        compiled.quality_contract,
+        assessment,
+    )
+    feedback_exposures, feedback_signals = contract_feedback(
+        domain=case.domain,
+        pattern_id=job.structure["pattern_id"],
+        contract=compiled.quality_contract,
+        assessment=assessment,
+    )
+    if generation_audit.interaction_protocol == "host_instrumented":
+        feedback_exposures = (
+            *feedback_exposures,
+            FeedbackExposure(
+                task_id=task.task_id,
+                domain=case.domain,
+                pattern_id=job.structure["pattern_id"],
+                failure_family="action_execution",
+            ),
+        )
+        feedback_signals = (
+            *feedback_signals,
+            *(
+                failed_action_feedback(
+                    task_id=task.task_id,
+                    domain=case.domain,
+                    pattern_id=job.structure["pattern_id"],
+                    failure_category=item.failure_category,
+                    error_code=item.error_code,
+                    failed_step_index=item.failed_step_index,
+                )
+                for item in generation_audit.action_failure_history
+            ),
+        )
+    example = build_quality_critic_example(
+        task=task,
+        corpus=case.corpus,
+        contract=compiled.quality_contract,
+        trajectory=trajectory,
+        assessment=assessment,
+        quality_vector=vector,
+        candidate_source="real_agent",
+        metadata={
+            "model_config_hash": config.model.public_manifest_hash,
+            "generation_audit_id": generation_audit.audit_id,
+            **job.structure,
+        },
+    )
+    examples = [example]
+    accepted_ids = (
+        (example.example_id,) if assessment.decision == ReleaseDecision.ACCEPTED else ()
+    )
+    counterfactual_ids: list[str] = []
+    counterfactual_assessments: list[ContractQualityAssessment] = []
+    if config.generate_counterfactuals and assessment.decision == ReleaseDecision.ACCEPTED:
+        for generated_example, generated_assessment, counterfactual_id in (
+            _counterfactual_examples(
+                case=case,
+                task=task,
+                compiled=compiled,
+                runtime=runtime,
+                source_trajectory=trajectory,
+            )
+        ):
+            examples.append(generated_example)
+            counterfactual_assessments.append(generated_assessment)
+            counterfactual_ids.append(counterfactual_id)
+    return _AgentJobResult(
+        sample=AgentValidationSample(
+            sample_id=job.sample_id,
+            task_id=task.task_id,
+            domain=case.domain,
+            task_type=job.structure["task_type"],
+            pattern_id=job.structure["pattern_id"],
+            program_signature=job.structure["program_signature"],
+            retrieval_track=task.public.retrieval_track,
+            planning_track=task.public.planning_track,
+            generation_status="normalized",
+            generation_audit=generation_audit,
+            agent_telemetry=generation_audit.telemetry,
+            trajectory=trajectory,
+            quality_contract=compiled.quality_contract,
+            contract_assessment=assessment,
+            feedback_exposures=feedback_exposures,
+            feedback_signals=feedback_signals,
+            synthesis_cell=synthesis_cell,
+            host_interaction_progress=(
+                HostInteractionProgress(
+                    action_plan_attempted=True,
+                    action_plan_contract_succeeded=True,
+                    host_execution_evaluable=True,
+                    answer_decision_attempted=True,
+                    answer_decision_contract_succeeded=True,
+                    action_contract_repair_count=(
+                        generation_audit.action_contract_repair_count
+                    ),
+                    answer_contract_repair_count=(
+                        generation_audit.answer_contract_repair_count
+                    ),
+                )
+                if generation_audit.interaction_protocol == "host_instrumented"
+                else None
+            ),
+            quality_vector=vector,
+            critic_example_id=example.example_id,
+            counterfactual_count=len(counterfactual_ids),
+        ),
+        critic_examples=tuple(examples),
+        accepted_example_ids=accepted_ids,
+        reference_sample_ids=(compiled.sample.sample_id,),
+        counterfactual_ids=tuple(counterfactual_ids),
+        counterfactual_assessments=tuple(counterfactual_assessments),
+        telemetry=telemetry,
+    )
+
+
 def _compile_runtime(case: ContractCase, task):
     compiler = QualityContractCompiler(
         case.registry,
@@ -667,6 +811,7 @@ def _compile_runtime(case: ContractCase, task):
         compiler,
         case.plugin_set,
         semantic_policy=case.semantic_policy,
+        source_grounding_verifier=case.source_grounding_verifier,
     ).compile(
         task,
         case.bundle,
@@ -677,6 +822,7 @@ def _compile_runtime(case: ContractCase, task):
         case.registry,
         semantic_policy=case.semantic_policy,
         claim_verifier=FinanceClaimVerifier() if case.domain == "finance" else None,
+        source_grounding_verifier=case.source_grounding_verifier,
     )
     runtime = QualityContractRuntime(
         verifier,
@@ -812,9 +958,7 @@ def _run_model_critic(
 
     ordered_results = tuple(result_by_example[item.example_id] for item in selected)
     prediction_by_example = {
-        item.example_id: item.prediction
-        for item in ordered_results
-        if item.prediction is not None
+        item.example_id: item.prediction for item in ordered_results if item.prediction is not None
     }
     prompt_hash_by_example = {
         item.example_id: item.prompt_manifest_hash
@@ -891,9 +1035,7 @@ def _stratified_critic_examples(
         # D5 needs Critic-reviewed accepted candidates, so reserve roughly two
         # thirds of a production Critic budget for accepted real trajectories.
         # Keep at least one slot per domain for diagnostic examples in tiny runs.
-        desired_accepted_per_domain = (
-            2 * limit + 3 * len(domains) - 1
-        ) // (3 * len(domains))
+        desired_accepted_per_domain = (2 * limit + 3 * len(domains) - 1) // (3 * len(domains))
         diagnostic_cap = max(limit // len(domains) - 1, 0)
         accepted_reserve_per_domain = min(
             desired_accepted_per_domain,
@@ -971,6 +1113,8 @@ def _build_report(
     agent_checkpoint_written_count: int,
     critic_checkpoint_loaded_count: int,
     critic_checkpoint_written_count: int,
+    task_source_manifest_hash: str,
+    finance_archive_kg_build_id: str | None,
 ) -> AgentValidationReport:
     assessments = tuple(
         item.contract_assessment for item in samples if item.contract_assessment is not None
@@ -1022,10 +1166,7 @@ def _build_report(
         if call.error_type is not None
     )
     agent_contract_errors = Counter(
-        error
-        for item in samples
-        for call in item.agent_telemetry
-        for error in call.contract_errors
+        error for item in samples for call in item.agent_telemetry for error in call.contract_errors
     )
     total_costs = [item.estimated_cost for item in telemetry if item.estimated_cost is not None]
     normalized_count = sum(item.trajectory is not None for item in samples)
@@ -1055,18 +1196,12 @@ def _build_report(
         for item in samples
         if host_protocol and item.host_interaction_progress is not None
     )
-    action_plan_attempted_count = sum(
-        item.action_plan_attempted for item in stage_progress
-    )
+    action_plan_attempted_count = sum(item.action_plan_attempted for item in stage_progress)
     action_plan_contract_success_count = sum(
         item.action_plan_contract_succeeded for item in stage_progress
     )
-    host_execution_evaluable_count = sum(
-        item.host_execution_evaluable for item in stage_progress
-    )
-    answer_decision_attempted_count = sum(
-        item.answer_decision_attempted for item in stage_progress
-    )
+    host_execution_evaluable_count = sum(item.host_execution_evaluable for item in stage_progress)
+    answer_decision_attempted_count = sum(item.answer_decision_attempted for item in stage_progress)
     answer_decision_contract_success_count = sum(
         item.answer_decision_contract_succeeded for item in stage_progress
     )
@@ -1094,6 +1229,10 @@ def _build_report(
         model_config_hash=config.model.public_manifest_hash,
         requested_model=config.model.model,
         interaction_protocol=config.model.interaction_protocol,
+        finance_task_source=config.finance_task_source,
+        finance_archive_kg_build_id=finance_archive_kg_build_id,
+        task_source_manifest_hash=task_source_manifest_hash,
+        finance_task_source_contract=_finance_task_source_contract(config),
         requested_domain_task_counts=requested_task_counts,
         requested_domain_candidate_counts=requested_candidate_counts,
         domain_completion_rates=domain_completion_rates,
@@ -1227,23 +1366,19 @@ def _build_report(
             else 0
         ),
         action_first_call_success_count=sum(
-            item.action_plan_contract_succeeded
-            and item.action_contract_repair_count == 0
+            item.action_plan_contract_succeeded and item.action_contract_repair_count == 0
             for item in stage_progress
         ),
         action_repaired_success_count=sum(
-            item.action_plan_contract_succeeded
-            and item.action_contract_repair_count > 0
+            item.action_plan_contract_succeeded and item.action_contract_repair_count > 0
             for item in stage_progress
         ),
         answer_first_call_success_count=sum(
-            item.answer_decision_contract_succeeded
-            and item.answer_contract_repair_count == 0
+            item.answer_decision_contract_succeeded and item.answer_contract_repair_count == 0
             for item in stage_progress
         ),
         answer_repaired_success_count=sum(
-            item.answer_decision_contract_succeeded
-            and item.answer_contract_repair_count > 0
+            item.answer_decision_contract_succeeded and item.answer_contract_repair_count > 0
             for item in stage_progress
         ),
         feedback_route_counts=dict(sorted(feedback_route_counts.items())),
@@ -1312,6 +1447,9 @@ def _agent_job_checkpoint_hash(
             "agent_validation_version": AGENT_VALIDATION_VERSION,
             "agent_solver_version": LLM_AGENT_SOLVER_VERSION,
             "agent_prompt_version": LLM_AGENT_PROMPT_VERSION,
+            "agent_action_prompt_version": LLM_AGENT_ACTION_PROMPT_VERSION,
+            "agent_final_answer_prompt_version": LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION,
+            "agent_search_prompt_version": LLM_AGENT_SEARCH_PROMPT_VERSION,
             "agent_response_schema_version": AGENT_RESPONSE_SCHEMA_VERSION,
             "public_task": job.task.public,
             "operation_registry_manifest": job.case.registry.manifest(),

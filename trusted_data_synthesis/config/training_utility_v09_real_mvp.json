@@ -1,15 +1,32 @@
 {
   "experiment_protocol_id": "quality_feedback_closed_loop.finance_primary.v1",
-  "research_question_ids": ["RQ1", "RQ2", "RQ3"],
+  "research_question_ids": [
+    "RQ1",
+    "RQ2",
+    "RQ3"
+  ],
   "primary_training_domain": "finance",
-  "cross_domain_validation_domains": ["legal", "science"],
-  "engineering_regression_cohort_ids": ["D1", "D2", "D3", "D4", "D5"],
+  "cross_domain_validation_domains": [
+    "legal",
+    "science"
+  ],
+  "engineering_regression_cohort_ids": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5"
+  ],
   "base_model": "Qwen/Qwen2.5-7B-Instruct",
   "base_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
   "training_seed": 20260728,
-  "cohort_example_budget": 600,
-  "supervised_token_budget": 1200000,
-  "lambda_values": [0.0, 0.5, 1.0],
+  "cohort_example_budget": 18,
+  "supervised_token_budget": 50000,
+  "lambda_values": [
+    0.0,
+    0.5,
+    1.0
+  ],
   "primary_lambda": 0.5,
   "alpha": 1.0,
   "epsilon": 0.01,

@@ -35,6 +35,7 @@ from trusted_synthesis.hashing import canonical_hash
 
 from .builder import compile_v09_refinement
 from .schema import (
+    CCGR_ABLATION_IDS,
     V09InitialBuildReport,
     V09RefinementConfig,
     V09RefinementManifest,
@@ -64,6 +65,7 @@ def build_v09_offline_pilot(
     task_cells: dict[str, SynthesisCell] = {}
     task_domains: dict[str, str] = {}
     calibration_rows: dict[str, list[dict[str, float | bool]]] = defaultdict(list)
+    clean_quality_scores: dict[str, float] = {}
     domain_tasks = Counter[str]()
     domain_valid_cases = Counter[str]()
     clean_accepted_count = 0
@@ -92,6 +94,9 @@ def build_v09_offline_pilot(
             context.source_trajectory,
         )
         clean_accepted_count += int(clean_assessment.decision == ReleaseDecision.ACCEPTED)
+        clean_quality_scores[case.task.task_id] = float(
+            clean_assessment.decision == ReleaseDecision.ACCEPTED
+        )
         task_exposures, _ = contract_feedback(
             domain=case.domain,
             pattern_id=pattern_id,
@@ -177,6 +182,20 @@ def build_v09_offline_pilot(
         clause_calibration=clause_calibration,
         calibration_manifest_hash=calibration_hash,
         target_probabilities=target_probabilities,
+        task_quality_scores={
+            task_id: clean_quality_scores[task_id]
+            for task_id, domain in task_domains.items()
+            if domain == config.primary_training_domain
+        },
+        quality_score_policy_hash=canonical_hash(
+            {
+                "source": "offline_clean_contract_binary_score",
+                "accepted": 1.0,
+                "not_accepted": 0.0,
+            },
+            prefix="training_utility_v09_offline_score_policy:",
+        ),
+        quality_score_source="offline_clean_contract_binary_score.v1",
     )
     full_ccgr = next(item for item in manifest.ccgr_updates if item.ablation_id == "full_ccgr")
     clean_rate = _rate(clean_accepted_count, len(cases))
@@ -198,7 +217,7 @@ def build_v09_offline_pilot(
         ),
         "lambda_ablation_incomplete": {item.lambda_value for item in manifest.allocations}
         != {0.0, 0.5, 1.0},
-        "ccgr_ablation_incomplete": len(manifest.ccgr_updates) != 6,
+        "ccgr_ablation_incomplete": len(manifest.ccgr_updates) != len(CCGR_ABLATION_IDS),
         "full_ccgr_update_blocked": full_ccgr.status != "passed",
         "clause_calibration_coverage_below_contract": (
             manifest.calibration_coverage_rate < config.offline_minimum_calibration_coverage

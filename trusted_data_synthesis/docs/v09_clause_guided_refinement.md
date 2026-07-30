@@ -4,8 +4,10 @@
 
 v0.9 implements **Calibrated Clause-Guided Refinement (CCGR)**: root failures observed under a
 sample-specific Quality Contract update a finite synthesis policy without changing the framework,
-task language, operator set, or model strategy. Finance remains the reference implementation;
-Legal and Science remain mandatory contract domains.
+task language, operator set, or model strategy. The canonical protocol is
+`quality_feedback_closed_loop.finance_primary.v1`: Finance is the only C1-C4 training domain,
+while Legal and Science remain mandatory cross-domain Contract, calibration, and Round-0 feedback
+validation domains. See `docs/v09_experiment_protocol.md`.
 
 The initial build is a control-plane and offline-contract milestone. It does not report a trained
 model improvement, a real-Agent Round-0 distribution, or an external benchmark result.
@@ -134,21 +136,26 @@ threshold. CCGR cannot invent a new rule.
 
 ## Algorithm Ablations
 
-The same update engine materializes six frozen comparisons:
+The same update engine materializes seven frozen comparisons:
 
 | Ablation | Change |
 | --- | --- |
 | Static Verified | `eta=0` |
+| Score-Only Feedback | use Cell mean QualityVector score `-(1-q_cell)+gamma*U`; no Clause routes or binding tightening |
 | Raw Failure Reweighting | `kappa=1` |
 | No Defect Suppression | `beta=0` |
 | No Coverage Regularization | `gamma=0` |
 | Random Same Shift | deterministic random utilities matched to Full CCGR TV distance |
 | Full CCGR | calibrated `G - beta D + gamma U` |
 
-All variants preserve the same sample budget and fixed group marginals. Random Same Shift is solved
+All variants preserve the same sample budget and fixed Finance training marginal. Random Same Shift is solved
 after conditioning and matches Full CCGR's realized total-variation distance, isolating whether
-gains come from feedback direction rather than merely perturbing the distribution. In v0.9, these
-six policy artifacts are frozen algorithm controls; only Static Verified (C3) and Full CCGR (C4)
+gains come from feedback direction rather than merely perturbing the distribution. Score-Only uses
+an explicitly supplied scalar score manifest, retains coverage, and cannot inspect root Clauses,
+route polarity, or binding-tightening options. Missing real-Agent QualityVector scores fail closed.
+The offline binary clean-Contract score exercises this path but, because it is ordinarily constant,
+does not validate the score-only ablation's effect.
+In v0.9, these seven policy artifacts are frozen algorithm controls; only Static Verified (C3) and Full CCGR (C4)
 are materialized as equal-token training cohorts. Claims about the remaining ablations require
 separate materialization.
 
@@ -208,8 +215,9 @@ Cell allocation policy.
 `FinanceArchiveBindingProvider` discovers graph-ready bindings from a pinned finance archive and
 replays the same Pattern, Proof, and Quality contracts. It is enabled only when the feedback source
 itself is archive-backed; fixture feedback is never silently rebound to unrelated archive facts.
-The composite provider keeps Finance, Legal, and Science enumeration domain-owned behind one Core
-protocol.
+The cross-domain Contract suite may use the composite provider. Primary C3/C4 materialization uses
+the Finance provider directly, and its compiler hash excludes Legal and Science catalogs. Runtime
+allocation maps omit zero quotas, while manifests retain zero-filled three-domain counts.
 
 ## Causal Cohorts
 
@@ -224,7 +232,7 @@ The experiment freezes two distinct interpretation axes. `co_compilation` covers
 explicitly exploratory because program visibility, planning track, task pool, proof contract, and
 teacher target differ. It must not be interpreted as a monotone causal gradient. The identified
 `ccgr_refinement` axis contains only C3/C4: they share the Qwen revision, token budget, training
-seed, Host-Instrumented format, domain totals, Pattern Catalog, compiler, candidate super-pool, and
+seed, Host-Instrumented format, Finance-only domain totals, Pattern Catalog, compiler, candidate super-pool, and
 seed, while using disjoint crossover partitions. C4 may differ from C3 only in the allocation
 derived from calibrated, direction-aware feedback. D1-D5 remain engineering regression cohorts
 rather than the main causal labels.
@@ -262,7 +270,7 @@ trusted-synthesis build-v09-initial \
 
 The command compiles Proof-Carrying Samples and Quality Contracts in all three domains, generates
 typed one-factor counterfactuals, independently evaluates root failure closure, calibrates and
-routes the resulting feedback, and materializes both legacy lambda baselines and six CCGR
+routes the resulting feedback, and materializes both legacy lambda baselines and seven CCGR
 ablations. It writes:
 
 ```text
@@ -312,7 +320,8 @@ trusted-synthesis audit-training-token-budget \
 
 The preparation command also writes materialization reports for C3 and C4 beside the datasets,
 plus `route_b_materialization_summary.json`. The v0.9 data manifest is
-`training_utility_v09.v4`; it rejects legacy selection, missing experiment axes, post-hoc group
+`training_utility_v09.v5`; it rejects protocol drift, non-Finance training quotas, legacy selection,
+missing experiment axes, post-hoc group
 drift, shared C3/C4 partitions, ineffective seeds, identity overlap, and archive-provider/source
 provenance mismatches when `synthesis_closed_loop_status=new_binding_compilation`.
 The checked-in `docs/route_b_materialization_summary.json` records the compact 600-per-cohort

@@ -10,6 +10,9 @@ from trusted_synthesis.core.evaluation.contracts import (
     QualityContractCompiler,
     QualityContractRuntime,
 )
+from trusted_synthesis.core.evaluation.counterfactual import (
+    CounterfactualCalibrationReport,
+)
 from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
@@ -39,11 +42,13 @@ from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.agent_validation import (
     AgentValidationConfig,
+    AgentValidationReport,
     audit_agent_validation_capacity,
     run_agent_validation,
     write_agent_validation_artifacts,
 )
 from trusted_synthesis.experiments.counterfactual_validation import (
+    CounterfactualValidationSuiteReport,
     run_counterfactual_validation,
 )
 from trusted_synthesis.experiments.cross_domain_contract_suite import (
@@ -86,8 +91,10 @@ from trusted_synthesis.experiments.training_utility_v09 import (
     build_v09_offline_pilot,
     build_v09_training_datasets,
     build_v09_training_utility_report,
+    compile_v09_from_agent_report,
     load_v09_real_agent_artifacts,
     write_v09_initial_artifacts,
+    write_v09_real_refinement_artifacts,
     write_v09_training_datasets,
     write_v09_training_utility_report,
 )
@@ -238,6 +245,30 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(report.model_dump(mode="json"), args.output)
         return 0 if report.status == "passed" else 1
+    if args.command == "compile-v09-real-refinement":
+        refinement_config = V09RefinementConfig.from_json(args.v09_config)
+        report_path = args.agent_artifacts / "agent_validation_report.json"
+        if not report_path.is_file():
+            raise FileNotFoundError(f"missing Agent report: {report_path}")
+        agent_report = AgentValidationReport.model_validate_json(
+            report_path.read_text(encoding="utf-8")
+        )
+        calibration_reports = _load_counterfactual_calibration_reports(
+            tuple(args.calibration_report)
+        )
+        refinement_manifest = compile_v09_from_agent_report(
+            refinement_config,
+            agent_report,
+            resume_completed_api_call_count=0,
+            calibration_reports=calibration_reports,
+        )
+        write_v09_real_refinement_artifacts(
+            args.output_dir,
+            refinement_manifest,
+            agent_report,
+        )
+        _emit(refinement_manifest.model_dump(mode="json"), args.output)
+        return 0 if refinement_manifest.status == "initial_ready" else 1
     if args.command == "prepare-v09-training":
         refinement_config = V09RefinementConfig.from_json(args.v09_config)
         utility_config = TrainingUtilityMVPConfig.from_json(args.training_config)
@@ -471,6 +502,17 @@ def _parser() -> argparse.ArgumentParser:
     v09_initial.add_argument("--tasks-per-domain", type=int, default=3)
     v09_initial.add_argument("--output-dir", type=Path, required=True)
     v09_initial.add_argument("--output", type=Path)
+    v09_real = subparsers.add_parser("compile-v09-real-refinement")
+    v09_real.add_argument("--v09-config", type=Path, required=True)
+    v09_real.add_argument("--agent-artifacts", type=Path, required=True)
+    v09_real.add_argument(
+        "--calibration-report",
+        type=Path,
+        action="append",
+        required=True,
+    )
+    v09_real.add_argument("--output-dir", type=Path, required=True)
+    v09_real.add_argument("--output", type=Path)
     v09_training = subparsers.add_parser("prepare-v09-training")
     v09_training.add_argument("--v09-config", type=Path, required=True)
     v09_training.add_argument("--training-config", type=Path, required=True)
@@ -515,6 +557,29 @@ def _parser() -> argparse.ArgumentParser:
     release_validation.add_argument("--supersedes", action="append")
     release_validation.add_argument("--output", type=Path, required=True)
     return parser
+
+
+def _load_counterfactual_calibration_reports(
+    paths: tuple[Path, ...],
+) -> tuple[CounterfactualCalibrationReport, ...]:
+    reports: dict[str, CounterfactualCalibrationReport] = {}
+    for path in paths:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if "domain_reports" in payload:
+            suite = CounterfactualValidationSuiteReport.model_validate(payload)
+            values = tuple(suite.domain_reports.values())
+        else:
+            values = (CounterfactualCalibrationReport.model_validate(payload),)
+        for report in values:
+            previous = reports.get(report.calibration_id)
+            if previous is not None and previous != report:
+                raise ValueError(
+                    f"conflicting calibration report identity: {report.calibration_id}"
+                )
+            reports[report.calibration_id] = report
+    if not reports:
+        raise ValueError("at least one counterfactual calibration report is required")
+    return tuple(reports[key] for key in sorted(reports))
 
 
 def _demo(adapter: FinanceArchiveAdapter, limit: int) -> dict[str, Any]:

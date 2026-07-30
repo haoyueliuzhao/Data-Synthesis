@@ -26,10 +26,12 @@ from trusted_synthesis.core.refinement import (
     SynthesisMaterializationReport,
     build_synthesis_cell,
 )
-from trusted_synthesis.core.task.schema import TaskPublicSpec
+from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack, TaskPublicSpec
 from trusted_synthesis.domains.finance import FinanceArchiveAdapter, FinanceArchiveConfig
 from trusted_synthesis.domains.finance.schema import ARCHIVE_BACKED_FINANCE_ADAPTER_IDS
 from trusted_synthesis.experiments.agent_validation.schema import AgentValidationReport
+from trusted_synthesis.experiments.agent_validation.tracks import materialize_track_variant
+from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import ContractCase
 from trusted_synthesis.experiments.training_utility_mvp.data import (
     _evaluation_isolation,
     _make_record,
@@ -57,7 +59,6 @@ from trusted_synthesis.runtime.agent.schema import (
 
 from .finance_archive_materialization import FinanceArchiveBindingProvider
 from .materialization import (
-    V09CompositeBindingProvider,
     V09FixtureBindingProvider,
     fresh_fixture_start_index,
 )
@@ -120,6 +121,8 @@ def build_v09_training_datasets(
     reference_records, evaluation_records = _cached_reference_records(
         training_config,
         reference_cache_dir,
+        refinement_config=refinement_config,
+        agent_report=agent_report,
     )
     reference_by_task = {item.task_id: item for item in reference_records}
     reference_by_signature: dict[str, list[SFTRecord]] = defaultdict(list)
@@ -178,10 +181,11 @@ def build_v09_training_datasets(
     static_update = next(
         item for item in refinement_manifest.ccgr_updates if item.ablation_id == "static_verified"
     )
-    quotas = _domain_quotas(
+    declared_quotas = _domain_quotas(
         refinement_config.cohort_example_budget,
         refinement_config.domain_weights,
     )
+    quotas = _active_domain_quotas(declared_quotas)
 
     c1_source = tuple(unfiltered_records.values())
     c1_selected = _quota_take(
@@ -250,6 +254,7 @@ def build_v09_training_datasets(
         sampling_partition_id=c3_partition,
         pool_split_seed=refinement_config.materialization_seed,
         maximum_scan_multiplier=refinement_config.materialization_scan_multiplier,
+        enabled_domains=("finance",),
     )
     c4_fixture_provider = V09FixtureBindingProvider(
         namespace="c4_feedback_refined",
@@ -259,6 +264,7 @@ def build_v09_training_datasets(
         sampling_partition_id=c4_partition,
         pool_split_seed=refinement_config.materialization_seed,
         maximum_scan_multiplier=refinement_config.materialization_scan_multiplier,
+        enabled_domains=("finance",),
     )
     finance_source_adapter_ids = _domain_evidence_adapter_ids(
         feedback_source_pool,
@@ -282,22 +288,8 @@ def build_v09_training_datasets(
             pool_split_seed=refinement_config.materialization_seed,
         )
         c4_archive_provider = c3_archive_provider.for_partition(c4_partition)
-        c3_provider = V09CompositeBindingProvider(
-            {
-                "finance": c3_archive_provider,
-                "legal": c3_fixture_provider,
-                "science": c3_fixture_provider,
-            },
-            sampling_partition_id=c3_partition,
-        )
-        c4_provider = V09CompositeBindingProvider(
-            {
-                "finance": c4_archive_provider,
-                "legal": c4_fixture_provider,
-                "science": c4_fixture_provider,
-            },
-            sampling_partition_id=c4_partition,
-        )
+        c3_provider = c3_archive_provider
+        c4_provider = c4_archive_provider
         finance_archive_provider_used = True
     else:
         c3_provider = c3_fixture_provider
@@ -317,6 +309,7 @@ def build_v09_training_datasets(
     forbidden_task_ids = {item.task_id for item in frozen_identity_records}
     forbidden_binding_ids = _record_binding_ids(frozen_identity_records)
     forbidden_evidence_version_ids = _record_evidence_version_ids(frozen_identity_records)
+    evaluation_subject_ids = _record_subject_ids(evaluation_records)
     c3_materializer = RefinedSynthesisMaterializer(c3_provider)
     c3_artifacts, c3_materialization_report = c3_materializer.materialize(
         static_update,
@@ -325,6 +318,7 @@ def build_v09_training_datasets(
         forbidden_task_ids=forbidden_task_ids,
         forbidden_binding_ids=forbidden_binding_ids,
         forbidden_evidence_version_ids=forbidden_evidence_version_ids,
+        forbidden_subject_ids=evaluation_subject_ids,
     )
     if c3_materialization_report.status != "passed":
         raise ValueError(
@@ -358,6 +352,7 @@ def build_v09_training_datasets(
         forbidden_task_ids=forbidden_task_ids | c3_task_ids,
         forbidden_binding_ids=forbidden_binding_ids | c3_binding_ids,
         forbidden_evidence_version_ids=(forbidden_evidence_version_ids | c3_evidence_version_ids),
+        forbidden_subject_ids=evaluation_subject_ids,
     )
     if c4_materialization_report.status != "passed":
         raise ValueError(
@@ -472,6 +467,10 @@ def build_v09_training_datasets(
     )
     identity = {
         "version": TRAINING_UTILITY_V09_VERSION,
+        "experiment_protocol_id": refinement_config.experiment_protocol_id,
+        "research_question_ids": refinement_config.research_question_ids,
+        "primary_training_domain": refinement_config.primary_training_domain,
+        "cross_domain_validation_domains": (refinement_config.cross_domain_validation_domains),
         "refinement_config_hash": refinement_config.config_hash,
         "training_config_hash": training_config.config_hash,
         "refinement_manifest_id": refinement_manifest.manifest_id,
@@ -517,6 +516,11 @@ def build_v09_training_datasets(
             identity,
             prefix="training_utility_v09_data_manifest:",
         ),
+        experiment_protocol_id=refinement_config.experiment_protocol_id,
+        research_question_ids=refinement_config.research_question_ids,
+        primary_training_domain=refinement_config.primary_training_domain,
+        cross_domain_validation_domains=(refinement_config.cross_domain_validation_domains),
+        engineering_regression_cohort_ids=(refinement_config.engineering_regression_cohort_ids),
         refinement_config_hash=refinement_config.config_hash,
         training_config_hash=training_config.config_hash,
         refinement_manifest_id=refinement_manifest.manifest_id,
@@ -543,7 +547,7 @@ def build_v09_training_datasets(
         full_ccgr_update_id=full_update.update_id,
         supervised_token_budget=refinement_config.supervised_token_budget,
         cohort_example_budget=refinement_config.cohort_example_budget,
-        expected_domain_counts=quotas,
+        expected_domain_counts=declared_quotas,
         cohorts=cohort_manifests,
         evaluation_record_count=len(evaluation_records),
         evaluation_domain_counts=dict(
@@ -614,9 +618,17 @@ def load_v09_real_agent_artifacts(
 def _cached_reference_records(
     config: TrainingUtilityMVPConfig,
     cache_dir: Path | None,
+    *,
+    refinement_config: V09RefinementConfig,
+    agent_report: AgentValidationReport,
 ) -> tuple[tuple[SFTRecord, ...], tuple[SFTRecord, ...]]:
+    finance_cases, source_contract_hash = _finance_reference_cases(
+        config,
+        refinement_config,
+        agent_report,
+    )
     if cache_dir is None:
-        return _reference_and_evaluation_records(config)
+        return _reference_and_evaluation_records(config, finance_cases=finance_cases)
     manifest_path = cache_dir / "manifest.json"
     training_path = cache_dir / "training_pool.jsonl"
     evaluation_path = cache_dir / "evaluation.jsonl"
@@ -624,6 +636,8 @@ def _cached_reference_records(
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if manifest.get("config_hash") != config.config_hash:
             raise ValueError("reference cache belongs to a different training config")
+        if manifest.get("source_contract_hash") != source_contract_hash:
+            raise ValueError("reference cache belongs to a different task source contract")
         training = tuple(
             SFTRecord.model_validate_json(line)
             for line in training_path.read_text(encoding="utf-8").splitlines()
@@ -644,7 +658,10 @@ def _cached_reference_records(
         if observed_hash != manifest.get("cache_hash"):
             raise ValueError("reference cache content hash is invalid")
         return training, evaluation
-    training, evaluation = _reference_and_evaluation_records(config)
+    training, evaluation = _reference_and_evaluation_records(
+        config,
+        finance_cases=finance_cases,
+    )
     cache_dir.mkdir(parents=True, exist_ok=True)
     _write_jsonl(training_path, training)
     _write_jsonl(evaluation_path, evaluation)
@@ -659,6 +676,9 @@ def _cached_reference_records(
         json.dumps(
             {
                 "config_hash": config.config_hash,
+                "source_contract_hash": source_contract_hash,
+                "finance_task_source": agent_report.finance_task_source,
+                "finance_archive_kg_build_id": agent_report.finance_archive_kg_build_id,
                 "training_record_count": len(training),
                 "evaluation_record_count": len(evaluation),
                 "cache_hash": cache_hash,
@@ -671,6 +691,236 @@ def _cached_reference_records(
         encoding="utf-8",
     )
     return training, evaluation
+
+
+def _finance_reference_cases(
+    config: TrainingUtilityMVPConfig,
+    refinement_config: V09RefinementConfig,
+    agent_report: AgentValidationReport,
+) -> tuple[tuple[ContractCase, ...] | None, str]:
+    if agent_report.finance_task_source != "archive":
+        return None, canonical_hash(
+            {"source": "fixture", "config_hash": config.config_hash},
+            prefix="training_utility_v09_reference_source:",
+        )
+    archive_path = refinement_config.finance_archive_config_path
+    if archive_path is None:
+        raise ValueError("archive-backed Agent feedback requires finance_archive_config_path")
+    archive_config = FinanceArchiveConfig.from_json(archive_path)
+    if archive_config.required_kg_build_id != agent_report.finance_archive_kg_build_id:
+        raise ValueError("Agent and training reference KG builds do not match")
+    source_contract = dict(agent_report.finance_task_source_contract)
+    required_fields = {
+        "candidate_pool_id",
+        "sampling_partition",
+        "pool_split_seed",
+        "selection_seed",
+        "retrieval_tracks",
+        "planning_tracks",
+        "evidence_scan_limit",
+        "evidence_sample_size",
+        "stratum_reservoir_size",
+        "candidates_per_pattern",
+    }
+    missing = required_fields - set(source_contract)
+    if missing:
+        raise ValueError(f"Agent Archive source contract is incomplete: {sorted(missing)}")
+    if source_contract.get("source") != "archive":
+        raise ValueError("Agent task-source contract is not Archive-backed")
+    if source_contract.get("kg_build_id") != agent_report.finance_archive_kg_build_id:
+        raise ValueError("Agent task-source contract pins another KG build")
+    if source_contract.get("require_corpus_disjoint") is not True:
+        raise ValueError("Agent task-source contract must require corpus-disjoint cases")
+    retrieval_tracks = _required_contract_str_tuple(source_contract, "retrieval_tracks")
+    planning_tracks = _required_contract_str_tuple(source_contract, "planning_tracks")
+    if retrieval_tracks != (RetrievalTrack.RESOLVED.value,) or planning_tracks != (
+        PlanningTrack.PLAN_GIVEN.value,
+    ):
+        raise ValueError("v0.9 training requires resolved retrieval and plan-given Agent tracks")
+    observed_archive_hash = canonical_hash(
+        archive_config,
+        prefix="finance_archive_config:",
+    )
+    if source_contract.get("archive_config_hash") != observed_archive_hash:
+        raise ValueError("Agent and training Archive configs do not match")
+    adapter = FinanceArchiveAdapter(archive_config)
+    provider = FinanceArchiveBindingProvider(
+        adapter,
+        candidate_pool_id=_required_contract_str(source_contract, "candidate_pool_id"),
+        sampling_partition_id=_required_contract_str(source_contract, "sampling_partition"),
+        pool_split_seed=_required_contract_int(source_contract, "pool_split_seed"),
+        evidence_scan_limit=_required_contract_int(source_contract, "evidence_scan_limit"),
+        evidence_sample_size=_required_contract_int(source_contract, "evidence_sample_size"),
+        stratum_reservoir_size=_required_contract_int(source_contract, "stratum_reservoir_size"),
+        candidates_per_pattern=_required_contract_int(source_contract, "candidates_per_pattern"),
+    )
+    training_target = config.candidate_task_target("finance")
+    evaluation_target = config.evaluation_task_target("finance")
+    total = training_target + evaluation_target
+    selection_seed = _required_contract_int(source_contract, "selection_seed")
+    agent_task_ids = {item.task_id for item in agent_report.samples if item.domain == "finance"}
+    if len(agent_task_ids) > training_target:
+        raise ValueError("Finance candidate pool is smaller than the real Agent prefix")
+    cases: tuple[ContractCase, ...] | None = None
+    split_error: ValueError | None = None
+    for multiplier in (1, 2, 4, 8):
+        superpool = provider.contract_cases(total * multiplier, seed=selection_seed)
+        try:
+            cases = _subject_disjoint_finance_case_split(
+                superpool,
+                training_count=training_target,
+                evaluation_count=evaluation_target,
+                fixed_training_prefix_count=len(agent_task_ids),
+                seed=selection_seed,
+            )
+        except ValueError as error:
+            split_error = error
+            continue
+        break
+    if cases is None:
+        raise ValueError(
+            "Finance Archive cannot form a subject-disjoint train/evaluation split"
+        ) from split_error
+    expected_prefix_ids = {
+        materialize_track_variant(
+            item.task,
+            item.corpus,
+            retrieval_track=RetrievalTrack.RESOLVED,
+            planning_track=PlanningTrack.PLAN_GIVEN,
+        ).task_id
+        for item in cases[: len(agent_task_ids)]
+    }
+    if agent_task_ids != expected_prefix_ids:
+        raise ValueError(
+            "real Finance Agent tasks are not the exact prefix of the pinned Archive reference pool"
+        )
+    source_hash = canonical_hash(
+        {
+            "agent_task_source_manifest_hash": agent_report.task_source_manifest_hash,
+            "source_contract": source_contract,
+            "provider_contract_hash": provider.provider_contract_hash,
+            "reference_task_ids": tuple(item.task.task_id for item in cases),
+        },
+        prefix="training_utility_v09_reference_source:",
+    )
+    return cases, source_hash
+
+
+def _case_subject_ids(case: ContractCase) -> frozenset[str]:
+    retrieval_scope = case.task.public.retrieval_scope
+    if isinstance(retrieval_scope, Mapping):
+        subject_ids = retrieval_scope.get("subject_ids") or ()
+    else:
+        subject_ids = getattr(retrieval_scope, "subject_ids", ())
+    return frozenset(str(subject_id) for subject_id in subject_ids if subject_id)
+
+
+def _subject_disjoint_finance_case_split(
+    cases: tuple[ContractCase, ...],
+    *,
+    training_count: int,
+    evaluation_count: int,
+    fixed_training_prefix_count: int,
+    seed: int,
+) -> tuple[ContractCase, ...]:
+    if fixed_training_prefix_count > training_count:
+        raise ValueError("fixed Finance training prefix exceeds the candidate target")
+    if len(cases) < training_count + evaluation_count:
+        raise ValueError("Finance split super-pool is smaller than the requested split")
+
+    fixed_training = list(cases[:fixed_training_prefix_count])
+    fixed_subjects = (
+        set().union(
+            *(_case_subject_ids(case) for case in fixed_training),
+        )
+        if fixed_training
+        else set()
+    )
+    tail = tuple(cases[fixed_training_prefix_count:])
+    needed_training = training_count - len(fixed_training)
+    for trial in range(64):
+        evaluation_order = sorted(
+            (case for case in tail if not (_case_subject_ids(case) & fixed_subjects)),
+            key=lambda case: (
+                len(_case_subject_ids(case)),
+                canonical_hash(
+                    {
+                        "seed": seed,
+                        "trial": trial,
+                        "role": "evaluation",
+                        "task_id": case.task.task_id,
+                    },
+                    prefix="v09_finance_subject_split:",
+                ),
+            ),
+        )
+        evaluation = evaluation_order[:evaluation_count]
+        if len(evaluation) != evaluation_count:
+            continue
+        evaluation_task_ids = {case.task.task_id for case in evaluation}
+        evaluation_subjects = (
+            set().union(
+                *(_case_subject_ids(case) for case in evaluation),
+            )
+            if evaluation
+            else set()
+        )
+        training_tail = sorted(
+            (
+                case
+                for case in tail
+                if case.task.task_id not in evaluation_task_ids
+                and not (_case_subject_ids(case) & evaluation_subjects)
+            ),
+            key=lambda case: canonical_hash(
+                {
+                    "seed": seed,
+                    "trial": trial,
+                    "role": "training",
+                    "task_id": case.task.task_id,
+                },
+                prefix="v09_finance_subject_split:",
+            ),
+        )[:needed_training]
+        if len(training_tail) != needed_training:
+            continue
+        training = (*fixed_training, *training_tail)
+        observed_training_subjects = (
+            set().union(
+                *(_case_subject_ids(case) for case in training),
+            )
+            if training
+            else set()
+        )
+        if observed_training_subjects & evaluation_subjects:
+            raise AssertionError("subject-disjoint Finance split construction failed")
+        return (*training, *evaluation)
+    raise ValueError("subject-disjoint Finance split search exhausted deterministic trials")
+
+
+def _required_contract_str(contract: Mapping[str, object], key: str) -> str:
+    value = contract.get(key)
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"Archive task-source contract field {key!r} must be a string")
+    return value
+
+
+def _required_contract_str_tuple(contract: Mapping[str, object], key: str) -> tuple[str, ...]:
+    value = contract.get(key)
+    if (
+        not isinstance(value, (list, tuple))
+        or not value
+        or any(not isinstance(item, str) or not item for item in value)
+    ):
+        raise ValueError(f"Archive task-source contract field {key!r} must be a string sequence")
+    return tuple(value)
+
+
+def _required_contract_int(contract: Mapping[str, object], key: str) -> int:
+    value = contract.get(key)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"Archive task-source contract field {key!r} must be an integer")
+    return value
 
 
 def write_v09_training_datasets(
@@ -1200,6 +1450,18 @@ def _record_binding_ids(records: Iterable[SFTRecord]) -> set[str]:
     return {str(item.metadata["binding_id"]) for item in records if item.metadata.get("binding_id")}
 
 
+def _record_subject_ids(records: Iterable[SFTRecord]) -> set[str]:
+    identities: set[str] = set()
+    for record in records:
+        payload = json.loads(record.user_prompt)
+        public_task = payload.get("public_task") or {}
+        retrieval_scope = public_task.get("retrieval_scope") or {}
+        identities.update(
+            str(subject_id) for subject_id in retrieval_scope.get("subject_ids") or () if subject_id
+        )
+    return identities
+
+
 def _record_evidence_version_ids(records: Iterable[SFTRecord]) -> set[str]:
     identities: set[str] = set()
     for record in records:
@@ -1229,6 +1491,13 @@ def _domain_quotas(
     )[: total - sum(quotas.values())]:
         quotas[domain] += 1
     return dict(sorted(quotas.items()))
+
+
+def _active_domain_quotas(quotas: Mapping[str, int]) -> dict[str, int]:
+    active = {domain: quota for domain, quota in sorted(quotas.items()) if quota > 0}
+    if not active:
+        raise ValueError("v0.9 requires at least one active domain quota")
+    return active
 
 
 def _quota_take(
@@ -1332,6 +1601,11 @@ def _require_pool_capacity(
         raise ValueError(f"{label} has domain shortfalls: {shortfalls}")
 
 
+def _complete_domain_counts(records: Iterable[SFTRecord]) -> dict[str, int]:
+    counts = Counter(item.domain for item in records)
+    return {domain: counts[domain] for domain in ("finance", "legal", "science")}
+
+
 def _cohort_manifest(
     cohort: V09Cohort,
     records: tuple[SFTRecord, ...],
@@ -1365,7 +1639,7 @@ def _cohort_manifest(
     return V09CohortDatasetManifest(
         cohort=cohort,
         record_count=len(records),
-        domain_counts=dict(sorted(Counter(item.domain for item in records).items())),
+        domain_counts=_complete_domain_counts(records),
         source_kind_counts=dict(sorted(Counter(item.source_kind for item in records).items())),
         pattern_counts=dict(
             sorted(
@@ -1378,9 +1652,7 @@ def _cohort_manifest(
         selection_policy_id=selection_policy_id,
         selection_policy_hash=policy_hash,
         eligible_source_record_count=len(eligible_source_records),
-        eligible_source_domain_counts=dict(
-            sorted(Counter(item.domain for item in eligible_source_records).items())
-        ),
+        eligible_source_domain_counts=_complete_domain_counts(eligible_source_records),
         eligible_source_pool_hash=source_pool_hash,
         accepted_real_link_count=accepted_real_link_count,
         real_feedback_link_count=real_feedback_link_count,

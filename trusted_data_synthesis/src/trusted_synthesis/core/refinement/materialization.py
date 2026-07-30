@@ -34,7 +34,7 @@ from trusted_synthesis.hashing import canonical_hash
 from .aggregate import build_synthesis_cell
 from .schema import PolicyUpdateResult, SynthesisCell
 
-REFINED_SYNTHESIS_MATERIALIZER_VERSION = "refined_synthesis_materializer.v4"
+REFINED_SYNTHESIS_MATERIALIZER_VERSION = "refined_synthesis_materializer.v5"
 
 
 class FrozenModel(BaseModel):
@@ -87,6 +87,8 @@ class SynthesisMaterializationReport(FrozenModel):
     grounding_pass_count: int = Field(ge=0, default=0)
     grounding_failure_counts: dict[str, int] = Field(default_factory=dict)
     candidate_rejection_counts: dict[str, int] = Field(default_factory=dict)
+    forbidden_subject_count: int = Field(ge=0, default=0)
+    forbidden_subject_manifest_hash: str = "legacy:unknown"
     successfully_materialized_count: int = Field(ge=0)
     new_task_identity_count: int = Field(ge=0)
     new_binding_identity_count: int = Field(ge=0)
@@ -220,6 +222,7 @@ class RefinedSynthesisMaterializer:
         forbidden_task_ids: Iterable[str] = (),
         forbidden_binding_ids: Iterable[str] = (),
         forbidden_evidence_version_ids: Iterable[str] = (),
+        forbidden_subject_ids: Iterable[str] = (),
     ) -> tuple[tuple[RefinedSynthesisArtifact, ...], SynthesisMaterializationReport]:
         if update.status != "passed":
             raise ValueError("a blocked policy update cannot materialize synthesis requests")
@@ -235,6 +238,7 @@ class RefinedSynthesisMaterializer:
         forbidden_tasks = set(forbidden_task_ids)
         forbidden_bindings = set(forbidden_binding_ids)
         forbidden_evidence = set(forbidden_evidence_version_ids)
+        forbidden_subjects = {item for item in forbidden_subject_ids if item}
         artifacts: list[RefinedSynthesisArtifact] = []
         materialized_counts: Counter[str] = Counter()
         failure_counts: Counter[str] = Counter()
@@ -279,6 +283,14 @@ class RefinedSynthesisMaterializer:
                     )
                     break
                 provider_candidate_count += 1
+                candidate_subjects = {
+                    item.subject.subject_id
+                    for item in candidate.bundle.evidence
+                    if item.subject.subject_id
+                }
+                if candidate_subjects & forbidden_subjects:
+                    candidate_rejection_counts["subject_identity_collision"] += 1
+                    continue
                 try:
                     feasible = _instantiate_candidate(request, candidate)
                     binding_feasible_count += 1
@@ -373,6 +385,11 @@ class RefinedSynthesisMaterializer:
             "grounding_pass_count": grounding_pass_count,
             "grounding_failure_counts": dict(sorted(grounding_failure_counts.items())),
             "candidate_rejection_counts": dict(sorted(candidate_rejection_counts.items())),
+            "forbidden_subject_count": len(forbidden_subjects),
+            "forbidden_subject_manifest_hash": canonical_hash(
+                tuple(sorted(forbidden_subjects)),
+                prefix="refined_synthesis_forbidden_subject_manifest:",
+            ),
             "successfully_materialized_count": success_total,
             "new_task_identity_count": new_task_count,
             "new_binding_identity_count": new_binding_count,

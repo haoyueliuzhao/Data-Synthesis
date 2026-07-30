@@ -34,6 +34,7 @@ from trusted_synthesis.runtime.agent.host_execution import (
 from trusted_synthesis.runtime.agent.schema import (
     AgentActionPlanContract,
     AgentAnswerDecisionContract,
+    AgentExecutionStep,
     AgentExecutionTrace,
     AgentGenerationAudit,
     AgentResponseContract,
@@ -49,7 +50,7 @@ LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v8"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v8"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v7"
 LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v1"
-LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v1"
+LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v3"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
 
 
@@ -789,7 +790,7 @@ def _build_final_answer_prompt(
     execution_trace: AgentExecutionTrace,
 ) -> tuple[str, str]:
     response_schema = AgentAnswerDecisionContract.model_json_schema()
-    final_answer_contract = _final_answer_contract(task)
+    final_answer_contract = _final_answer_decision_contract(task)
     output_execution = next(
         item
         for item in execution_trace.steps
@@ -797,6 +798,19 @@ def _build_final_answer_prompt(
     )
     selected = set(action_plan.selected_evidence_ids)
     selected_evidence = tuple(item for item in evidence if item.evidence_id in selected)
+    visible_outputs = {
+        item.planned_node_id or f"step_{index}": model_visible_execution_result(
+            execution_trace,
+            item.observation["result"],
+        )
+        for index, item in enumerate(execution_trace.steps, start=1)
+    }
+    raw_output_result = visible_outputs[
+        output_execution.planned_node_id
+        or f"step_{execution_trace.steps.index(output_execution) + 1}"
+    ]
+    answer_result_seed = _answer_result_seed(task, raw_output_result)
+    required_fields = set(required_answer_fields(task.answer_schema))
     manifest = {
         "prompt_version": LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION,
         "response_schema_hash": canonical_hash(
@@ -829,10 +843,10 @@ def _build_final_answer_prompt(
                 for index, item in enumerate(execution_trace.steps, start=1)
             ],
             "output_step_index": action_plan.output_step_index,
-            "output_result": model_visible_execution_result(
-                execution_trace,
-                output_execution.observation["result"],
-            ),
+            "output_result": raw_output_result,
+            "answer_result_seed": answer_result_seed,
+            "answer_result_seed_complete": required_fields.issubset(answer_result_seed),
+            "operation_results_by_public_node": visible_outputs,
         },
         "final_answer_contract": final_answer_contract,
         "domain_contract_guidance": task.metadata.get("agent_contract_guidance") or {},
@@ -847,10 +861,17 @@ def _build_final_answer_prompt(
     }
     instructions = (
         "Answer the public task from the host-executed results and selected evidence. Return "
-        "only one JSON object matching response_json_schema. Keep exact machine values and "
-        "exact result field names required by final_answer_contract; do not append units or "
-        "explanations inside numeric machine fields. Copy all required evidence IDs into "
-        "cited_evidence_ids exactly once. Do not emit source locators, execution IDs, tool "
+        "only one JSON object matching response_json_schema. When "
+        "host_execution.answer_result_seed_complete is true, set result to an exact JSON "
+        "copy of host_execution.answer_result_seed. Otherwise, fill every required result "
+        "field from answer_result_seed, operation_results_by_public_node, and the declarative "
+        "public answer_schema metadata; preserve exact entity labels, constants, references, "
+        "and machine values. Never return raw output_result when its fields differ from the "
+        "required result fields, and do not add citations inside result. Copy all required "
+        "evidence IDs into cited_evidence_ids exactly once. The only citation field in this "
+        "response "
+        "is cited_evidence_ids; never emit a citations object. Do not emit source locators, "
+        "execution IDs, tool "
         "observations, verification wrappers, or any commentary outside JSON. The host owns "
         "those records and will independently bind them."
     )
@@ -1119,6 +1140,57 @@ def _final_answer_contract(task: TaskPublicSpec) -> dict[str, Any]:
     }
 
 
+
+
+def _answer_result_seed(task: TaskPublicSpec, raw_output: Any) -> dict[str, Any]:
+    """Inject public answer-schema constants without applying domain-specific logic."""
+
+    seed = dict(raw_output) if isinstance(raw_output, dict) else {}
+    for field in required_answer_fields(task.answer_schema):
+        if field in task.answer_schema:
+            seed[field] = task.answer_schema[field]
+    return seed
+
+
+def _final_answer_decision_contract(task: TaskPublicSpec) -> dict[str, Any]:
+    """Describe only model-owned fields in the host-instrumented answer turn."""
+
+    answer_type = str(task.answer_schema.get("type") or "")
+    required_result_fields = required_answer_fields(task.answer_schema)
+    optional_result_fields = tuple(task.answer_schema.get("optional_fields") or ())
+    allowed_top_level = ["schema_version", "result", "cited_evidence_ids"]
+    if task.answer_schema.get("allow_status") is True:
+        allowed_top_level.append("status")
+    if task.answer_schema.get("allow_claims") is True:
+        allowed_top_level.append("claims")
+    return {
+        "answer_type": answer_type,
+        "required_top_level_fields": [
+            "schema_version",
+            "result",
+            "cited_evidence_ids",
+        ],
+        "allowed_top_level_fields": allowed_top_level,
+        "required_result_fields": required_result_fields,
+        "allowed_result_fields": tuple(
+            dict.fromkeys((*required_result_fields, *optional_result_fields))
+        ),
+        "additional_result_properties": False,
+        "result_source": (
+            "exact answer_result_seed when complete; otherwise declarative projection from "
+            "public answer_schema and operation_results_by_public_node"
+        ),
+        "citation_field": "cited_evidence_ids",
+        "citation_coverage": "every selected raw evidence ID exactly once",
+        "forbidden_fields": ("citations", "source_id", "source_locator"),
+        "envelope_example": {
+            "schema_version": "agent_answer_decision.v1",
+            "result": {field: f"<{field}>" for field in required_result_fields},
+            "cited_evidence_ids": ["<raw retrieved evidence_id>"],
+        },
+    }
+
+
 def _normalize_trajectory(
     task: TaskPublicSpec,
     retrieved: tuple[EvidenceItem, ...],
@@ -1133,6 +1205,7 @@ def _normalize_trajectory(
     final_answer = response.final_answer.model_dump(mode="json", exclude_none=True)
     retrieved_ids = tuple(item.evidence_id for item in retrieved)
     executions = response.execution_trace.steps
+    execution_lineage = _execution_evidence_lineage(executions)
     execution_node_ids = {
         item.execution_id: item.planned_node_id or item.execution_id for item in executions
     }
@@ -1266,6 +1339,10 @@ def _normalize_trajectory(
                 ]
                 for item in executions
             },
+            "operation_lineage": {
+                execution_node_ids[item.execution_id]: execution_lineage[item.execution_id]
+                for item in executions
+            },
         },
         final_answer=final_answer,
         generator_version=LLM_AGENT_SOLVER_VERSION,
@@ -1274,6 +1351,25 @@ def _normalize_trajectory(
 
 def _evidence_id_from_ref(ref: str) -> str:
     return ref.removeprefix("evidence:").split("#", 1)[0]
+
+
+def _execution_evidence_lineage(
+    executions: tuple[AgentExecutionStep, ...],
+) -> dict[str, tuple[str, ...]]:
+    """Return deterministic transitive evidence lineage for each execution."""
+
+    lineage_by_execution: dict[str, tuple[str, ...]] = {}
+    for execution in executions:
+        lineage = list(execution.evidence_ids)
+        for ref in execution.input_refs:
+            if not ref.startswith("execution:"):
+                continue
+            dependency_id = ref.removeprefix("execution:").split("#", 1)[0]
+            if dependency_id not in lineage_by_execution:
+                raise ValueError("execution lineage references an unknown or later execution")
+            lineage.extend(lineage_by_execution[dependency_id])
+        lineage_by_execution[execution.execution_id] = tuple(dict.fromkeys(lineage))
+    return lineage_by_execution
 
 
 def _execution_ref_to_program_ref(

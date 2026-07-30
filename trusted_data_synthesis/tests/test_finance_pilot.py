@@ -26,6 +26,7 @@ from trusted_synthesis.experiments.finance_pilot.candidate import (
 )
 from trusted_synthesis.experiments.finance_pilot.mutations import generate_mutations
 from trusted_synthesis.experiments.finance_pilot.sampler import (
+    RealDistractorIndex,
     TaskBinding,
     discover_bindings,
     select_real_distractors,
@@ -185,6 +186,65 @@ def test_real_archive_hard_distractors_require_one_semantic_mismatch(
     assert selection.hard == ()
     assert selection.broad == (distant,)
     assert len(selection.mismatches[distant.evidence_id]) > 1
+
+
+def test_real_distractor_index_preserves_single_violation_contract(
+    finance_evidence: EvidenceItem,
+) -> None:
+    wrong_period = finance_evidence.model_copy(
+        update={
+            "evidence_id": "evidence:finance:index_period@kg_test",
+            "assertion_id": "assertion:finance:index_period",
+            "evidence_version_id": "version:finance:index_period@kg_test",
+            "temporal_context": finance_evidence.temporal_context.model_copy(
+                update={"label": "FY2022"}
+            ),
+        }
+    )
+    wrong_entity = finance_evidence.model_copy(
+        update={
+            "evidence_id": "evidence:finance:index_entity@kg_test",
+            "assertion_id": "assertion:finance:index_entity",
+            "evidence_version_id": "version:finance:index_entity@kg_test",
+            "subject": finance_evidence.subject.model_copy(
+                update={"subject_id": "OTHER_US", "name": "Other Company"}
+            ),
+        }
+    )
+    distant = wrong_entity.model_copy(
+        update={
+            "evidence_id": "evidence:finance:index_distant@kg_test",
+            "assertion_id": "assertion:finance:index_distant",
+            "evidence_version_id": "version:finance:index_distant@kg_test",
+            "predicate": "total_assets",
+        }
+    )
+    index = RealDistractorIndex(
+        (finance_evidence, wrong_period, wrong_entity, distant),
+        broad_probe_limit=4,
+    )
+
+    first = index.select(
+        (finance_evidence,),
+        hard_count=2,
+        broad_count=1,
+        preferred_hard_kinds=("wrong_period", "wrong_entity"),
+    )
+    second = index.select(
+        (finance_evidence,),
+        hard_count=2,
+        broad_count=1,
+        preferred_hard_kinds=("wrong_period", "wrong_entity"),
+    )
+
+    assert first == second
+    assert tuple(first.kinds[item.evidence_id] for item in first.hard) == (
+        "wrong_period",
+        "wrong_entity",
+    )
+    assert all(len(first.mismatches[item.evidence_id]) == 1 for item in first.hard)
+    assert first.broad == (distant,)
+    assert len(first.mismatches[distant.evidence_id]) == 2
 
 
 def test_synthesis_cell_signature_v3_tracks_bounded_semantic_contracts(
