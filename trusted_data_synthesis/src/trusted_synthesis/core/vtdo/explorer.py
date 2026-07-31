@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
 from itertools import islice
@@ -18,7 +19,10 @@ from trusted_synthesis.core.trajectory.validity import (
     TrajectoryValidityEvaluator,
     TrajectoryValidityReport,
 )
-from trusted_synthesis.core.vtdo.estimation import estimate_state_validity
+from trusted_synthesis.core.vtdo.estimation import (
+    estimate_state_validity,
+    make_conditional_distribution,
+)
 from trusted_synthesis.core.vtdo.exploration import allocate_exploration_budget
 from trusted_synthesis.core.vtdo.feasibility import (
     StateValidityPartition,
@@ -26,10 +30,12 @@ from trusted_synthesis.core.vtdo.feasibility import (
 )
 from trusted_synthesis.core.vtdo.schema import (
     VTDO_SCHEMA_VERSION,
+    EmpiricalDistributionEstimate,
     ExplorationDistribution,
     StateValidityEstimate,
     ValidityThresholds,
     VTDORoleContract,
+    empirical_distribution_estimate_id,
 )
 from trusted_synthesis.hashing import canonical_hash
 
@@ -61,7 +67,7 @@ class TrajectoryExplorationObservation(FrozenModel):
     validity_report: TrajectoryValidityReport
     assignment: TrajectoryStateAssignment | None = None
     on_target: bool
-    requested_state_importance_weight: float = Field(gt=0)
+    requested_state_importance_weight: float = Field(ge=0)
     mapping_error: str | None = None
     schema_version: str = VTDO_SCHEMA_VERSION
 
@@ -343,6 +349,106 @@ def estimate_exploration_state_validity(
         for _, observations in sorted(grouped.items())
     )
     return estimates, make_state_validity_partition(estimates)
+
+
+def estimate_importance_weighted_pushforward(
+    batch: StateConditionedExplorationBatch,
+    exploration: ExplorationDistribution,
+    *,
+    prior_strength: float,
+) -> EmpiricalDistributionEstimate:
+    """Estimate the realized-state push-forward under pi from samples drawn under q.
+
+    The importance ratio belongs to the requested state. This is the correct joint
+    reweighting when the state-conditioned provider induces a transition from requested
+    to realized quotient state. Failed or unmapped batches are rejected rather than
+    silently conditioning on successful generations.
+    """
+
+    if prior_strength <= 0:
+        raise ValueError("importance-weighted push-forward requires positive smoothing")
+    if batch.status != "passed":
+        raise ValueError("importance-weighted push-forward requires a complete exploration batch")
+    if batch.exploration_distribution_id != exploration.exploration_id:
+        raise ValueError("exploration batch was sampled from another q_t")
+    if batch.task_condition_id != exploration.task_condition_id:
+        raise ValueError("exploration batch crosses task conditions")
+    observations = batch.observations
+    if any(item.assignment is None for item in observations):
+        raise ValueError("importance-weighted push-forward cannot use unmapped trajectories")
+    support = set(exploration.coverage_prior.probabilities)
+    counts = {state_id: 0 for state_id in sorted(support)}
+    weights = {state_id: 0.0 for state_id in sorted(support)}
+    sum_squared_weights = 0.0
+    for observation in observations:
+        assignment = observation.assignment
+        if assignment is None:  # pragma: no cover - narrowed by the fail-closed check
+            raise AssertionError("mapped observation unexpectedly lost its assignment")
+        state_id = assignment.state.state_id
+        if state_id not in support:
+            raise ValueError("realized state is absent from the frozen state catalog")
+        expected_weight = exploration.importance_weights[observation.requested_state_id]
+        if not math.isclose(
+            observation.requested_state_importance_weight,
+            expected_weight,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("exploration observation carries another importance weight")
+        counts[state_id] += 1
+        weights[state_id] += expected_weight
+        sum_squared_weights += expected_weight**2
+    total_weight = sum(weights.values())
+    if total_weight <= 0 or sum_squared_weights <= 0:
+        raise ValueError("exploration has no positive mass under the training distribution")
+    probabilities = {
+        state_id: (
+            weights[state_id] + prior_strength * exploration.coverage_prior.probabilities[state_id]
+        )
+        / (total_weight + prior_strength)
+        for state_id in sorted(support)
+    }
+    observation_ids = tuple(sorted(item.observation_id for item in observations))
+    manifest_hash = canonical_hash(
+        {
+            "source_observation_ids": observation_ids,
+            "exploration_distribution_id": exploration.exploration_id,
+            "coverage_prior_id": exploration.coverage_prior.prior_id,
+            "prior_strength": prior_strength,
+            "estimator_kind": "importance_weighted_pushforward",
+        },
+        prefix="trajectory_pushforward_manifest:",
+    )
+    distribution = make_conditional_distribution(
+        exploration.task_condition_id,
+        probabilities,
+        round_index=exploration.training_distribution.round_index,
+        source_distribution_id=exploration.training_distribution.distribution_id,
+        estimator_manifest_hash=manifest_hash,
+    )
+    values = {
+        "task_condition_id": exploration.task_condition_id,
+        "state_exposure_counts": counts,
+        "state_exposure_weights": weights,
+        "total_exposure_count": len(observations),
+        "total_exposure_weight": total_weight,
+        "sum_squared_importance_weights": sum_squared_weights,
+        "effective_sample_size": total_weight**2 / sum_squared_weights,
+        "source_observation_ids": observation_ids,
+        "sampling_distribution_id": exploration.exploration_id,
+        "estimator_kind": "importance_weighted_pushforward",
+        "coverage_prior": exploration.coverage_prior,
+        "prior_strength": prior_strength,
+        "distribution": distribution,
+        "schema_version": VTDO_SCHEMA_VERSION,
+    }
+    provisional = EmpiricalDistributionEstimate.model_construct(
+        estimate_id="pending",
+        **values,
+    )
+    return EmpiricalDistributionEstimate(
+        estimate_id=empirical_distribution_estimate_id(provisional),
+        **values,
+    )
 
 
 def trajectory_exploration_observation_id(

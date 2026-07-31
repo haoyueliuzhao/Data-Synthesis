@@ -104,17 +104,21 @@ def estimate_pushforward_distribution(
             f"observed trajectory states are absent from coverage prior: {sorted(unknown)}"
         )
     counts = {state_id: observed.get(state_id, 0) for state_id in sorted(support)}
-    denominator = len(items) + prior_strength
+    weights = {state_id: float(counts[state_id]) for state_id in sorted(support)}
+    total_weight = float(len(items))
+    denominator = total_weight + prior_strength
     probabilities = {
-        state_id: (counts[state_id] + prior_strength * coverage_prior.probabilities[state_id])
+        state_id: (weights[state_id] + prior_strength * coverage_prior.probabilities[state_id])
         / denominator
         for state_id in sorted(support)
     }
+    observation_ids = tuple(sorted(item.assignment_id for item in items))
     manifest_hash = canonical_hash(
         {
-            "assignment_ids": tuple(sorted(item.assignment_id for item in items)),
+            "source_observation_ids": observation_ids,
             "coverage_prior_id": coverage_prior.prior_id,
             "prior_strength": prior_strength,
+            "estimator_kind": "unweighted_pushforward",
         },
         prefix="trajectory_pushforward_manifest:",
     )
@@ -127,8 +131,15 @@ def estimate_pushforward_distribution(
     values = {
         "task_condition_id": coverage_prior.task_condition_id,
         "state_exposure_counts": counts,
+        "state_exposure_weights": weights,
         "total_exposure_count": len(items),
-        "coverage_prior_id": coverage_prior.prior_id,
+        "total_exposure_weight": total_weight,
+        "sum_squared_importance_weights": total_weight,
+        "effective_sample_size": total_weight,
+        "source_observation_ids": observation_ids,
+        "sampling_distribution_id": None,
+        "estimator_kind": "unweighted_pushforward",
+        "coverage_prior": coverage_prior,
         "prior_strength": prior_strength,
         "distribution": distribution,
     }

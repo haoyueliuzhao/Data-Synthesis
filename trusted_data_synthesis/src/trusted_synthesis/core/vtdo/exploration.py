@@ -22,23 +22,25 @@ def make_exploration_distribution(
         raise ValueError("exploration rate must be strictly between zero and one")
     if training_distribution.task_condition_id != coverage_prior.task_condition_id:
         raise ValueError("exploration inputs belong to different task conditions")
-    if set(training_distribution.probabilities) != set(coverage_prior.probabilities):
-        raise ValueError("exploration inputs require the same full support")
+    training_support = set(training_distribution.probabilities)
+    coverage_support = set(coverage_prior.probabilities)
+    if not training_support <= coverage_support:
+        raise ValueError("training support must be contained in the coverage catalog")
     probabilities = {
         state_id: (
-            (1.0 - exploration_rate) * training_distribution.probabilities[state_id]
+            (1.0 - exploration_rate) * training_distribution.probabilities.get(state_id, 0.0)
             + exploration_rate * coverage_prior.probabilities[state_id]
         )
-        for state_id in sorted(training_distribution.probabilities)
+        for state_id in sorted(coverage_support)
     }
     importance = {
-        state_id: training_distribution.probabilities[state_id] / probabilities[state_id]
+        state_id: training_distribution.probabilities.get(state_id, 0.0) / probabilities[state_id]
         for state_id in sorted(probabilities)
     }
     values = {
         "task_condition_id": training_distribution.task_condition_id,
-        "training_distribution_id": training_distribution.distribution_id,
-        "coverage_prior_id": coverage_prior.prior_id,
+        "training_distribution": training_distribution,
+        "coverage_prior": coverage_prior,
         "exploration_rate": exploration_rate,
         "probabilities": probabilities,
         "importance_weights": importance,

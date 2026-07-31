@@ -1,3 +1,7 @@
+from trusted_synthesis.core.vtdo.catalog import (
+    TrajectoryStateCatalog,
+    make_trajectory_state_catalog,
+)
 from trusted_synthesis.core.vtdo.contribution import (
     ContributionProbeObservation,
     estimate_contributions_from_probes,
@@ -21,17 +25,24 @@ from trusted_synthesis.core.vtdo.explorer import (
     StateConditionedTrajectoryProviderProtocol,
     TrajectoryExplorationObservation,
     estimate_exploration_state_validity,
+    estimate_importance_weighted_pushforward,
 )
 from trusted_synthesis.core.vtdo.feasibility import (
     StateValidityPartition,
     condition_on_accepted_support,
     make_state_validity_partition,
 )
+from trusted_synthesis.core.vtdo.materialization import (
+    StateConditionedTrainingArtifact,
+    TrajectoryStateMaterializationReport,
+    ValidTrajectoryStateMaterializer,
+)
 from trusted_synthesis.core.vtdo.policy import (
     apply_conditional_updates,
     make_task_conditioned_policy,
 )
 from trusted_synthesis.core.vtdo.roles import make_vtdo_role_contract
+from trusted_synthesis.core.vtdo.round import VTDORoundArtifact, assemble_vtdo_round
 from trusted_synthesis.core.vtdo.schema import (
     VTDO_ALGORITHM_ID,
     VTDO_ALGORITHM_VERSION,
@@ -71,15 +82,22 @@ __all__ = [
     "StateValidityEstimate",
     "StateValidityPartition",
     "TaskConditionedTrajectoryPolicy",
+    "StateConditionedTrainingArtifact",
     "TrajectoryExplorationObservation",
+    "TrajectoryStateCatalog",
+    "TrajectoryStateMaterializationReport",
     "VTDORoleContract",
+    "VTDORoundArtifact",
+    "ValidTrajectoryStateMaterializer",
     "ValidityRegion",
     "ValidityThresholds",
     "allocate_exploration_budget",
     "apply_conditional_updates",
+    "assemble_vtdo_round",
     "condition_on_accepted_support",
     "estimate_centered_contributions",
     "estimate_exploration_state_validity",
+    "estimate_importance_weighted_pushforward",
     "estimate_contributions_from_probes",
     "estimate_pushforward_distribution",
     "estimate_state_validity",
@@ -89,6 +107,7 @@ __all__ = [
     "make_exploration_distribution",
     "make_state_validity_partition",
     "make_task_conditioned_policy",
+    "make_trajectory_state_catalog",
     "make_uniform_coverage_prior",
     "make_vtdo_role_contract",
     "update_valid_trajectory_distribution",

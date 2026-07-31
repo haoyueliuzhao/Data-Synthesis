@@ -8,9 +8,9 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
-VTDO_SCHEMA_VERSION = "vtdo.v2"
+VTDO_SCHEMA_VERSION = "vtdo.v3"
 VTDO_ALGORITHM_ID = "anchored_energy_valid_trajectory_distribution_refinement"
-VTDO_ALGORITHM_VERSION = "aevtdr.v1"
+VTDO_ALGORITHM_VERSION = "aevtdr.v2"
 
 
 class FrozenModel(BaseModel):
@@ -269,8 +269,8 @@ class AnchoredDistributionUpdate(FrozenModel):
     prior_distribution: ConditionalTrajectoryDistribution
     coverage_prior: CoveragePrior
     next_distribution: ConditionalTrajectoryDistribution
-    validity_estimate_ids: tuple[str, ...] = Field(min_length=1)
-    contribution_manifest_id: str = Field(min_length=1)
+    validity_estimates: tuple[StateValidityEstimate, ...] = Field(min_length=1)
+    contribution_manifest: ContributionEstimationManifest
     role_contract: VTDORoleContract
     energy_config: AnchoredEnergyConfig
     state_potentials: tuple[StateEnergyPotential, ...] = Field(min_length=1)
@@ -297,8 +297,19 @@ class AnchoredDistributionUpdate(FrozenModel):
         potentials = {item.state_id: item for item in self.state_potentials}
         if len(potentials) != len(self.state_potentials) or set(potentials) != state_ids:
             raise ValueError("state potentials do not cover the distribution support exactly")
-        if len(set(self.validity_estimate_ids)) != len(state_ids):
+        validity_by_state = {item.state_id: item for item in self.validity_estimates}
+        if (
+            len(validity_by_state) != len(self.validity_estimates)
+            or set(validity_by_state) != state_ids
+        ):
             raise ValueError("validity estimates do not cover accepted support exactly")
+        if any(item.region != ValidityRegion.ACCEPTED for item in self.validity_estimates):
+            raise ValueError("VTDO update contains a non-Accepted state")
+        if any(
+            item.task_condition_id != self.prior_distribution.task_condition_id
+            for item in self.validity_estimates
+        ):
+            raise ValueError("VTDO validity estimate crosses task conditions")
         if self.prior_distribution.task_condition_id != self.coverage_prior.task_condition_id:
             raise ValueError("VTDO coverage prior belongs to another task condition")
         if self.next_distribution.task_condition_id != self.prior_distribution.task_condition_id:
@@ -307,6 +318,21 @@ class AnchoredDistributionUpdate(FrozenModel):
             raise ValueError("VTDO update must advance exactly one round")
         if self.next_distribution.source_distribution_id != self.prior_distribution.distribution_id:
             raise ValueError("VTDO next distribution does not identify its prior")
+        if self.contribution_manifest.task_condition_id != (
+            self.prior_distribution.task_condition_id
+        ):
+            raise ValueError("VTDO contribution manifest crosses task conditions")
+        if self.contribution_manifest.distribution_id != self.prior_distribution.distribution_id:
+            raise ValueError("VTDO contribution manifest targets another distribution")
+        if self.contribution_manifest.beneficiary_model_state_id != (
+            self.role_contract.beneficiary_model_state_id
+        ):
+            raise ValueError("VTDO contribution manifest violates the role contract")
+        contribution_by_state = {
+            item.state_id: item for item in self.contribution_manifest.estimates
+        }
+        if set(contribution_by_state) != state_ids:
+            raise ValueError("VTDO contribution manifest has another state support")
         if not math.isclose(
             self.history_exponent,
             self.energy_config.history_exponent,
@@ -323,8 +349,17 @@ class AnchoredDistributionUpdate(FrozenModel):
         for state_id, potential in potentials.items():
             current = self.prior_distribution.probabilities[state_id]
             coverage = self.coverage_prior.probabilities[state_id]
+            contribution = contribution_by_state[state_id]
             if not math.isclose(potential.current_probability, current, abs_tol=1e-12):
                 raise ValueError("state potential has another current probability")
+            if not math.isclose(contribution.current_probability, current, abs_tol=1e-12):
+                raise ValueError("state contribution has another current probability")
+            if not math.isclose(
+                potential.centered_contribution,
+                contribution.centered_contribution,
+                abs_tol=1e-12,
+            ):
+                raise ValueError("state potential is detached from its contribution manifest")
             if not math.isclose(potential.coverage_probability, coverage, abs_tol=1e-12):
                 raise ValueError("state potential has another coverage probability")
             expected_novelty = max(math.log(coverage / current), 0.0)
@@ -414,8 +449,8 @@ class AnchoredDistributionUpdate(FrozenModel):
 class ExplorationDistribution(FrozenModel):
     exploration_id: str = Field(min_length=1)
     task_condition_id: str = Field(min_length=1)
-    training_distribution_id: str = Field(min_length=1)
-    coverage_prior_id: str = Field(min_length=1)
+    training_distribution: ConditionalTrajectoryDistribution
+    coverage_prior: CoveragePrior
     exploration_rate: float = Field(gt=0, lt=1)
     probabilities: dict[str, float] = Field(min_length=1)
     importance_weights: dict[str, float] = Field(min_length=1)
@@ -426,8 +461,32 @@ class ExplorationDistribution(FrozenModel):
         _validate_probability_map(self.probabilities, "exploration distribution")
         if set(self.importance_weights) != set(self.probabilities):
             raise ValueError("exploration importance weights have different support")
-        if any(value <= 0 for value in self.importance_weights.values()):
-            raise ValueError("exploration importance weights must be positive")
+        if any(value < 0 for value in self.importance_weights.values()):
+            raise ValueError("exploration importance weights cannot be negative")
+        if not any(value > 0 for value in self.importance_weights.values()):
+            raise ValueError("exploration must retain positive training-policy mass")
+        if self.training_distribution.task_condition_id != self.task_condition_id:
+            raise ValueError("exploration training distribution crosses task conditions")
+        if self.coverage_prior.task_condition_id != self.task_condition_id:
+            raise ValueError("exploration coverage prior crosses task conditions")
+        training_support = set(self.training_distribution.probabilities)
+        coverage_support = set(self.coverage_prior.probabilities)
+        if not training_support <= coverage_support:
+            raise ValueError("training support is absent from the exploration catalog")
+        if set(self.probabilities) != coverage_support:
+            raise ValueError("exploration must cover the complete coverage-prior support")
+        for state_id in coverage_support:
+            training_probability = self.training_distribution.probabilities.get(state_id, 0.0)
+            expected_probability = (
+                1.0 - self.exploration_rate
+            ) * training_probability + self.exploration_rate * self.coverage_prior.probabilities[
+                state_id
+            ]
+            if not math.isclose(self.probabilities[state_id], expected_probability, abs_tol=1e-12):
+                raise ValueError("exploration probability does not satisfy q=(1-xi)pi+xi*r")
+            expected_weight = training_probability / expected_probability
+            if not math.isclose(self.importance_weights[state_id], expected_weight, abs_tol=1e-12):
+                raise ValueError("exploration importance weight is not pi/q")
         if self.exploration_id != exploration_distribution_id(self):
             raise ValueError("exploration distribution identity is invalid")
         return self
@@ -437,8 +496,15 @@ class EmpiricalDistributionEstimate(FrozenModel):
     estimate_id: str = Field(min_length=1)
     task_condition_id: str = Field(min_length=1)
     state_exposure_counts: dict[str, int] = Field(min_length=1)
+    state_exposure_weights: dict[str, float] = Field(min_length=1)
     total_exposure_count: int = Field(ge=1)
-    coverage_prior_id: str = Field(min_length=1)
+    total_exposure_weight: float = Field(gt=0)
+    sum_squared_importance_weights: float = Field(gt=0)
+    effective_sample_size: float = Field(gt=0)
+    source_observation_ids: tuple[str, ...] = Field(min_length=1)
+    sampling_distribution_id: str | None = None
+    estimator_kind: Literal["unweighted_pushforward", "importance_weighted_pushforward"]
+    coverage_prior: CoveragePrior
     prior_strength: float = Field(ge=0)
     distribution: ConditionalTrajectoryDistribution
     schema_version: str = VTDO_SCHEMA_VERSION
@@ -449,10 +515,67 @@ class EmpiricalDistributionEstimate(FrozenModel):
             raise ValueError("empirical state exposures require named nonnegative counts")
         if sum(self.state_exposure_counts.values()) != self.total_exposure_count:
             raise ValueError("empirical state exposures do not sum to their total")
+        if len(self.source_observation_ids) != self.total_exposure_count:
+            raise ValueError("empirical estimate does not identify every observation")
+        if len(set(self.source_observation_ids)) != len(self.source_observation_ids):
+            raise ValueError("empirical estimate contains duplicate observations")
+        if set(self.state_exposure_weights) != set(self.state_exposure_counts):
+            raise ValueError("weighted and raw empirical supports differ")
+        if any(value < 0 for value in self.state_exposure_weights.values()):
+            raise ValueError("empirical state exposure weights cannot be negative")
+        if not math.isclose(
+            sum(self.state_exposure_weights.values()),
+            self.total_exposure_weight,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("empirical state weights do not sum to their total")
+        expected_effective_size = (
+            self.total_exposure_weight**2 / self.sum_squared_importance_weights
+        )
+        if not math.isclose(self.effective_sample_size, expected_effective_size, abs_tol=1e-12):
+            raise ValueError("empirical effective sample size is inconsistent")
         if set(self.state_exposure_counts) != set(self.distribution.probabilities):
             raise ValueError("empirical exposure support differs from its distribution")
         if self.distribution.task_condition_id != self.task_condition_id:
             raise ValueError("empirical distribution crosses task conditions")
+        if self.coverage_prior.task_condition_id != self.task_condition_id:
+            raise ValueError("empirical coverage prior crosses task conditions")
+        if set(self.coverage_prior.probabilities) != set(self.state_exposure_counts):
+            raise ValueError("empirical coverage prior has another support")
+        if self.estimator_kind == "unweighted_pushforward":
+            if self.sampling_distribution_id is not None:
+                raise ValueError("unweighted push-forward cannot name an exploration policy")
+            if any(
+                not math.isclose(self.state_exposure_weights[state_id], float(count), abs_tol=1e-12)
+                for state_id, count in self.state_exposure_counts.items()
+            ):
+                raise ValueError("unweighted push-forward has non-unit observation weights")
+            if not math.isclose(
+                self.sum_squared_importance_weights,
+                float(self.total_exposure_count),
+                abs_tol=1e-12,
+            ):
+                raise ValueError("unweighted push-forward has invalid squared weights")
+        elif self.sampling_distribution_id is None:
+            raise ValueError("importance-weighted push-forward requires its sampling policy")
+        denominator = self.total_exposure_weight + self.prior_strength
+        expected_probabilities = {
+            state_id: (
+                self.state_exposure_weights[state_id]
+                + self.prior_strength * self.coverage_prior.probabilities[state_id]
+            )
+            / denominator
+            for state_id in self.state_exposure_counts
+        }
+        if any(
+            not math.isclose(
+                self.distribution.probabilities[state_id],
+                expected_probabilities[state_id],
+                abs_tol=1e-12,
+            )
+            for state_id in expected_probabilities
+        ):
+            raise ValueError("empirical distribution does not replay its weighted estimate")
         if self.estimate_id != empirical_distribution_estimate_id(self):
             raise ValueError("empirical distribution estimate identity is invalid")
         return self

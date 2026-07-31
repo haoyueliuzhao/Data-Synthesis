@@ -124,7 +124,9 @@ Task/Binding/Proof/Contract materialization, and C1-C4 experiment controls are s
 [v0.9 Calibrated Clause-Guided Refinement](docs/v09_clause_guided_refinement.md). Canonical VTDO
 now optimizes a dependency-preserving quotient-state distribution `pi(z | x)` with fixed task
 marginals, feasibility-gated validity, empirical contribution, a coverage anchor, and an explicit
-Explorer/beneficiary/Student role contract; see
+Explorer/beneficiary/Student role contract. Its v3 proof contract also freezes the state catalog,
+replays importance-weighted exploration as one immutable round, and materializes only independently
+verified on-target trajectories; see
 [Valid Trajectory Distribution Optimization](docs/valid_trajectory_distribution_optimization.md).
 The frozen RQ, domain-role, cohort, and ablation interpretation is recorded in the
 [v0.9 Canonical Experiment Protocol](docs/v09_experiment_protocol.md).

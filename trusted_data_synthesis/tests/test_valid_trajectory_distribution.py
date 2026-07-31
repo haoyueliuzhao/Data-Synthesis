@@ -30,11 +30,15 @@ from trusted_synthesis.core.vtdo import (
     StateConditionedTrajectoryExplorer,
     ValidityRegion,
     ValidityThresholds,
+    ValidTrajectoryStateMaterializer,
+    VTDORoundArtifact,
     allocate_exploration_budget,
     apply_conditional_updates,
+    assemble_vtdo_round,
     condition_on_accepted_support,
     estimate_contributions_from_probes,
     estimate_exploration_state_validity,
+    estimate_importance_weighted_pushforward,
     estimate_pushforward_distribution,
     estimate_state_validity,
     make_conditional_distribution,
@@ -42,6 +46,7 @@ from trusted_synthesis.core.vtdo import (
     make_exploration_distribution,
     make_state_validity_partition,
     make_task_conditioned_policy,
+    make_trajectory_state_catalog,
     make_uniform_coverage_prior,
     make_vtdo_role_contract,
     update_valid_trajectory_distribution,
@@ -339,6 +344,20 @@ def test_update_artifact_replays_equation_instead_of_trusting_serialized_metrics
         )
 
 
+def test_update_rejects_potential_detached_from_contribution_manifest() -> None:
+    update = update_valid_trajectory_distribution(*_update_inputs("task:x"))
+    changed = update.state_potentials[0].model_copy(
+        update={"centered_contribution": (update.state_potentials[0].centered_contribution + 0.1)}
+    )
+    values = {
+        field: getattr(update, field) for field in type(update).model_fields if field != "update_id"
+    }
+    values["state_potentials"] = (changed, *update.state_potentials[1:])
+
+    with pytest.raises(ValueError, match="detached from its contribution"):
+        AnchoredDistributionUpdate(update_id=update.update_id, **values)
+
+
 def test_update_rejects_contribution_from_another_beneficiary_model() -> None:
     prior, coverage, validity, manifest, config, _ = _update_inputs("task:x")
     wrong_roles = make_vtdo_role_contract(
@@ -517,6 +536,201 @@ def test_quotient_mapper_is_shared_by_legal_and_science_contracts() -> None:
 
     assert domains == ["legal", "science"]
     assert len(set(states)) == 2
+
+
+def test_sparse_training_support_remains_explorable_under_full_catalog_q() -> None:
+    training = make_conditional_distribution(
+        "task:x",
+        {"state:accepted": 1.0},
+        round_index=3,
+    )
+    coverage = make_coverage_prior(
+        "task:x",
+        {"state:accepted": 0.5, "state:quarantined": 0.5},
+        policy="full_catalog_uniform",
+    )
+
+    exploration = make_exploration_distribution(
+        training,
+        coverage,
+        exploration_rate=0.2,
+    )
+
+    assert exploration.probabilities == pytest.approx(
+        {"state:accepted": 0.9, "state:quarantined": 0.1}
+    )
+    assert exploration.importance_weights == pytest.approx(
+        {"state:accepted": 1.0 / 0.9, "state:quarantined": 0.0}
+    )
+    assert allocate_exploration_budget(exploration, 20) == {
+        "state:accepted": 18,
+        "state:quarantined": 2,
+    }
+
+
+def test_round_artifact_replays_exploration_estimation_update_and_materialization() -> None:
+    _, _, candidate, evaluator, context = _case_runtime(0)
+    invalid = _trajectory_variant(candidate, "catalog-invalid", mutate_result=True)
+    valid_report = evaluator.evaluate(context, candidate)
+    invalid_report = evaluator.evaluate(context, invalid)
+    valid_state = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=valid_report.program_node_mapping,
+    ).state
+    invalid_state = map_trajectory_to_state(
+        context,
+        invalid,
+        program_node_aliases=invalid_report.program_node_mapping,
+    ).state
+    assert valid_report.valid
+    assert not invalid_report.valid
+    assert valid_state.state_id != invalid_state.state_id
+
+    catalog = make_trajectory_state_catalog(
+        (valid_state, invalid_state),
+        revision_reason="test_initial_state_discovery",
+    )
+    training = make_conditional_distribution(
+        context.task.task_id,
+        {valid_state.state_id: 1.0},
+        round_index=0,
+    )
+    coverage = make_uniform_coverage_prior(context.task.task_id, catalog.states)
+    exploration = make_exploration_distribution(
+        training,
+        coverage,
+        exploration_rate=0.2,
+    )
+    provider = _CatalogTrajectoryProvider(
+        {
+            valid_state.state_id: candidate,
+            invalid_state.state_id: invalid,
+        }
+    )
+    roles = _role_contract(provider.provider_id)
+    batch = StateConditionedTrajectoryExplorer(provider, evaluator).explore(
+        context,
+        catalog.states,
+        exploration,
+        roles,
+        total_budget=20,
+        seed=73,
+    )
+    assert batch.status == "passed"
+    assert batch.observed_state_counts == {
+        valid_state.state_id: 18,
+        invalid_state.state_id: 2,
+    }
+
+    pushforward = estimate_importance_weighted_pushforward(
+        batch,
+        exploration,
+        prior_strength=1.0,
+    )
+    assert pushforward.state_exposure_counts == batch.observed_state_counts
+    assert pushforward.state_exposure_weights[valid_state.state_id] == pytest.approx(20.0)
+    assert pushforward.state_exposure_weights[invalid_state.state_id] == 0.0
+    assert pushforward.effective_sample_size == pytest.approx(18.0)
+    assert pushforward.distribution.probabilities[invalid_state.state_id] > 0
+
+    estimates, partition = estimate_exploration_state_validity(
+        batch,
+        thresholds=ValidityThresholds(
+            reject_below=0.25,
+            accept_at_or_above=0.75,
+        ),
+    )
+    assert {item.region for item in estimates} == {
+        ValidityRegion.ACCEPTED,
+        ValidityRegion.REJECTED,
+    }
+    assert partition.accepted_state_ids == (valid_state.state_id,)
+    assert partition.rejected_state_ids == (invalid_state.state_id,)
+
+    round_artifact = assemble_vtdo_round(
+        state_catalog=catalog,
+        role_contract=roles,
+        exploration=exploration,
+        exploration_batch=batch,
+        pushforward_estimate=pushforward,
+        validity_partition=partition,
+        contribution_probes=(
+            _probe(
+                context.task.task_id,
+                valid_state.state_id,
+                baseline=0.5,
+                intervention=0.7,
+            ),
+        ),
+        energy_config=AnchoredEnergyConfig(
+            epsilon=0.01,
+            contribution_temperature=0.2,
+            novelty_temperature=1.0,
+            contribution_weight=0.5,
+            novelty_weight=0.5,
+            history_kl_weight=2.0,
+            coverage_kl_weight=1.0,
+        ),
+    )
+    assert round_artifact.status == "passed"
+    assert round_artifact.update.next_distribution.probabilities == {valid_state.state_id: 1.0}
+
+    wrong_probe = _probe(
+        context.task.task_id,
+        valid_state.state_id,
+        baseline=0.5,
+        intervention=0.9,
+    )
+    round_values = {
+        field: getattr(round_artifact, field)
+        for field in type(round_artifact).model_fields
+        if field != "round_id"
+    }
+    round_values["contribution_probes"] = (wrong_probe,)
+    with pytest.raises(ValueError, match="does not replay its probes"):
+        VTDORoundArtifact(round_id=round_artifact.round_id, **round_values)
+
+    artifacts, materialization = ValidTrajectoryStateMaterializer(
+        provider,
+        evaluator,
+    ).materialize(
+        context,
+        catalog,
+        round_artifact.update.next_distribution,
+        roles,
+        total_budget=3,
+        seed=91,
+    )
+    assert materialization.status == "passed"
+    assert len(artifacts) == 3
+    assert all(item.assignment.state == valid_state for item in artifacts)
+    assert all(item.context.task == context.task for item in artifacts)
+    assert all(item.context.evidence_bundle == context.evidence_bundle for item in artifacts)
+
+
+class _CatalogTrajectoryProvider:
+    provider_id = "state_catalog_provider:test"
+    provider_version = "1.0.0"
+
+    def __init__(self, sources: dict[str, Trajectory]) -> None:
+        self._sources = sources
+
+    def generate(
+        self,
+        context,
+        target_state,
+        *,
+        candidate_count: int,
+        seed: int,
+    ):
+        del context
+        source = self._sources[target_state.state_id]
+        for index in range(candidate_count):
+            yield _trajectory_variant(
+                source,
+                f"state-conditioned-{target_state.state_id}-{seed}-{index}",
+            )
 
 
 class _TrajectoryProvider:

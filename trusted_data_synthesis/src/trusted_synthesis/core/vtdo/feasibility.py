@@ -27,7 +27,7 @@ class StateValidityPartition(FrozenModel):
 
     partition_id: str = Field(min_length=1)
     task_condition_id: str = Field(min_length=1)
-    estimate_ids: tuple[str, ...] = Field(min_length=1)
+    estimates: tuple[StateValidityEstimate, ...] = Field(min_length=1)
     accepted_state_ids: tuple[str, ...] = ()
     quarantined_state_ids: tuple[str, ...] = ()
     rejected_state_ids: tuple[str, ...] = ()
@@ -47,8 +47,20 @@ class StateValidityPartition(FrozenModel):
         if not set.union(*groups):
             raise ValueError("state validity partition cannot be empty")
         state_count = sum(len(group) for group in groups)
-        if len(set(self.estimate_ids)) != state_count:
-            raise ValueError("validity estimate identities must cover every state exactly")
+        estimates_by_state = {item.state_id: item for item in self.estimates}
+        if len(estimates_by_state) != len(self.estimates) or len(self.estimates) != state_count:
+            raise ValueError("validity estimates must cover every state exactly")
+        if any(item.task_condition_id != self.task_condition_id for item in self.estimates):
+            raise ValueError("validity partition estimates cross task conditions")
+        expected_groups = {
+            ValidityRegion.ACCEPTED: set(self.accepted_state_ids),
+            ValidityRegion.QUARANTINED: set(self.quarantined_state_ids),
+            ValidityRegion.REJECTED: set(self.rejected_state_ids),
+        }
+        for region, expected_states in expected_groups.items():
+            observed_states = {item.state_id for item in self.estimates if item.region == region}
+            if observed_states != expected_states:
+                raise ValueError("validity partition region disagrees with its estimates")
         if self.partition_id != state_validity_partition_id(self):
             raise ValueError("state validity partition identity is invalid")
         return self
@@ -67,7 +79,7 @@ def make_state_validity_partition(
         raise ValueError("state validity partition crosses task conditions")
     values = {
         "task_condition_id": next(iter(conditions)),
-        "estimate_ids": tuple(item.estimate_id for item in items),
+        "estimates": items,
         "accepted_state_ids": tuple(
             item.state_id for item in items if item.region == ValidityRegion.ACCEPTED
         ),
