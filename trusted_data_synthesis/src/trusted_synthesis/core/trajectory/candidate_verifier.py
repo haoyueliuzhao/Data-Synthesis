@@ -75,6 +75,7 @@ class CandidateVerificationReport(BaseModel):
     tool_bound_operation_count: int = Field(ge=0)
     tool_necessity_score: float = Field(ge=0, le=1)
     program_node_statuses: tuple[ProgramNodeExecutionStatus, ...]
+    program_node_mapping: dict[str, str]
     normalized_candidate_answer: dict[str, Any]
     normalized_oracle_answer: dict[str, Any]
 
@@ -345,6 +346,9 @@ class CandidateWorkflowVerifier:
             tool_bound_operation_count=tool_bound_operation_count,
             tool_necessity_score=tool_necessity_score,
             program_node_statuses=node_statuses,
+            program_node_mapping={
+                candidate_id: oracle_id for oracle_id, candidate_id in sorted(node_mapping.items())
+            },
             normalized_candidate_answer=normalized_candidate_for_comparison,
             normalized_oracle_answer=normalized_oracle,
         )
@@ -371,9 +375,7 @@ def _program_execution_statuses(
     }
     expected_lineage_by_node: dict[str, set[str]] = {}
     for node in task.oracle.task_program.nodes:
-        lineage = {
-            ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
-        }
+        lineage = {ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE}
         for dependency in node.dependencies:
             lineage.update(expected_lineage_by_node[dependency])
         expected_lineage_by_node[node.node_id] = lineage

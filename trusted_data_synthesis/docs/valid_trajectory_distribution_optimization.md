@@ -1,175 +1,225 @@
 # Valid Trajectory Distribution Optimization
 
-## Method Objective
+## Method Status
 
-The framework does not optimize an undifferentiated notion of "data quality". For each public
-task `x`, it constructs and improves a finite approximation to the distribution of independently
-valid solution trajectories:
+This document defines the canonical engineering approximation to the frozen VTDO theory. The
+implementation lives in `trusted_synthesis.core.vtdo`. It supersedes the earlier approximation
+that treated a `SynthesisCell` and a bucketed trajectory attribute profile as the optimization
+state.
+
+For a fixed public task condition `x`, VTDO optimizes only the conditional trajectory-state
+distribution:
 
 ```text
-p(trajectory | x, V(trajectory, Omega_x) = 1)
+d_t(x, z) = mu(x) * pi_t(z | x)
 ```
 
-This is **Valid Trajectory Distribution Optimization (VTDO)**. Finance is a reference domain, not
-the method specification. The same objects and update apply to Legal and Science trajectories.
+The task marginal `mu(x)` is immutable. `TaskConditionedTrajectoryPolicy` enforces this identity
+and rejects partial conditional updates.
 
-VTDO is not reinforcement learning, online policy learning, free-form template discovery, or a
-claim that the framework enumerates every mathematically valid reasoning path. It is a verified,
-finite synthesis-policy update over observable trajectory configurations.
+Finance remains the main reference implementation. The quotient mapper, validity regions,
+distribution estimators, contribution contract, energy update, and Explorer are domain-neutral
+and are exercised by both Legal and Science contract cases.
 
-## Verification Boundary
+## Frozen Verification Context
 
-For a task `x`, the hidden verification context is:
+Each task freezes:
 
 ```text
 Omega_x = (E_x, P_x, G_x, Q_x)
 ```
 
-where:
+where `E` is the pinned Evidence corpus and gold bundle, `P` is the executable TaskProgram, `G` is
+the Proof Graph, and `Q` is the executable universal plus domain Quality Contract. The deterministic
+Reference Workflow is one known-valid realization, not a unique gold reasoning path.
 
-- `E_x` is the immutable Gold Evidence Bundle inside its frozen public Evidence Corpus;
-- `P_x` is the executable TaskProgram and independent operation oracle;
-- `G_x` is the pinned Proof Graph;
-- `Q_x` is the executable universal and domain Quality Contract.
+`TrajectoryValidityEvaluator` evaluates a candidate independently through the Candidate Workflow
+Verifier and Quality Contract Runtime. Missing checks, runtime failures, invalid evidence,
+operation errors, unsupported claims, or citation defects fail closed.
 
-`TrajectoryValidityEvaluator` defines `V(trajectory, Omega_x)` by jointly requiring the existing
-independent Candidate Workflow Verifier and Quality Contract Runtime to pass. It records component
-validity for identity/interface, Evidence, Proof Graph, program execution, answer/claim, citation,
-and the Quality Contract. Missing verifiers and runtime exceptions fail closed.
+## Quotient Trajectory State
 
-## Oracle Execution Specification
-
-The Reference Workflow remains useful for reproducibility, counterfactual calibration, and a
-known-good execution example. It is no longer interpreted as the unique gold chain of thought.
-
-Every newly compiled Proof-Carrying artifact freezes an `OracleExecutionSpecification` containing:
-
-- required Evidence and actions;
-- allowed tools;
-- TaskProgram, Proof Graph, Evidence, and Quality Contract hashes;
-- answer schema and Quality Clause identities;
-- one or more auditable reference examples;
-- the validity rule used for candidate trajectories.
-
-The compatibility field `reference_trajectory` remains the first reference example. Alternative
-plans, wording, and intermediate organization are valid when they satisfy the same specification.
-
-## Trajectory Attributes
-
-VTDO measures, but does not prescribe, a behavior vector `m(trajectory)`:
+The optimized state is not a raw trajectory and not an attribute bucket:
 
 ```text
-tool_call_count
-tool_depth
-reasoning_depth
-evidence_dependency_count
-verification_degree
-branching_factor
-operation_count
-capability_tags
+z = phi_x(tau) = [tau]_(~ Omega_x)
 ```
 
-Exact values are retained in feedback. A finite `TrajectoryAttributeProfile` bucketization is used
-only for policy allocation and diversity reporting. It is not a rigid behavior template, and it
-does not constrain natural-language realization.
+`map_trajectory_to_state()` constructs a typed dependency graph containing:
 
-Profile count, entropy, and normalized diversity are computed only over trajectories with
-`V(trajectory, Omega_x) = 1`. Failed trajectories still contribute to validity and failure
-statistics, but can never increase valid-solution diversity.
+- canonical Oracle operation roles and program dependencies;
+- evidence identity and evidence-to-operation lineage;
+- tool/operator semantics;
+- selected operation results and final result semantics;
+- verification and answer dependencies.
 
-The v3 optimization configuration is:
+It then performs dependency-preserving multiset graph canonicalization. Execution indices,
+rationale text, generator version, timestamps, and a valid reordering of independent operations do
+not create a new state. Changes to evidence identity, program structure, tool semantics, operation
+results, or final answer semantics do.
+
+The current canonicalizer is a finite Weisfeiler-Lehman-style graph approximation, not a claim of
+solving general graph isomorphism. Callers may provide only frozen, audited program-node and tool
+equivalence maps; no equivalence is inferred from natural-language similarity.
+
+`TrajectoryAttributes` remains an observational descriptor `m(tau)` for diagnostics. It is stored
+beside a `TrajectoryStateAssignment` but is deliberately excluded from state identity.
+
+## Push-forward Distribution
+
+Observed executions are mapped before counting:
 
 ```text
-a = (
-  task_pattern,
-  evidence_binding_stratum,
-  difficulty,
-  distractor_context,
-  trajectory_attribute_profile
-)
+pi_hat_t(z | x) = ((n_z + lambda_0 * r(z | x)) / (N + lambda_0))
 ```
 
-The distractor dimension remains an Evidence/retrieval condition. The new trajectory profile is
-the behavior dimension that turns the old task-distribution policy into a finite approximation of
-`p(trajectory | x)`.
+`estimate_pushforward_distribution()` records exact state exposure counts, assignment identities,
+the full-support coverage prior, and prior strength. Unknown observed states are rejected until the
+state catalog and its coverage prior are explicitly revised.
 
-## Structured Trajectory Feedback
+## Validity Is Feasibility
 
-Each evaluated trajectory produces a versioned `TrajectoryFeedback` record with:
+For each quotient state, independently verified member trajectories estimate:
 
 ```text
-task and trajectory identity
-configuration and verification-context identity
-binary and component validity
-observed trajectory profile
-missing target attributes
-diversity contribution
-failure type and failure location
+v_t(x, z; Omega_x) = Pr[V(tau, Omega_x) = 1 | phi_x(tau) = z]
 ```
 
-Clause feedback remains responsible for calibrated routing between interface failure, synthesis
-defect, and agent capability gap. Trajectory feedback adds execution validity and behavioral
-coverage; it does not replace root-cause calibration.
-
-## Utility and Proximal Update
-
-For each configuration `a`, the auditable utility is:
+The estimator records attempts, valid executions, component validity, a Wilson interval, the
+estimator version, and frozen thresholds. States are partitioned into:
 
 ```text
-R(a) = alpha * validity_reward(a)
-     + beta  * capability_and_distribution_coverage(a)
-     + gamma * trajectory_diversity_gain(a)
-     - lambda * synthesis_defect_risk(a)
+Accepted
+Quarantined
+Rejected
 ```
 
-The implementation freezes all four components and weights in `TrajectoryUtilityComponents`.
-The update remains the closed-form KL-proximal exponentiated update:
+`condition_on_accepted_support()` conditions both `pi_t` and the coverage prior on Accepted states.
+Quarantined states remain exploration/audit targets; Rejected states are excluded. The update also
+rejects any non-Accepted state on positive training support. Validity is never inserted into an
+energy score and therefore cannot be compensated by novelty or contribution.
+
+## Model-state-dependent Contribution
+
+Contribution is an empirical intervention estimate tied to:
+
+- one beneficiary model checkpoint;
+- one fixed target evaluation distribution;
+- one target metric;
+- one frozen probe protocol;
+- one task condition and one quotient state.
+
+`ContributionProbeObservation` stores baseline and intervention metric values, sample count, and
+confidence. It does not reuse CCGR's capability-gap heuristic. The confidence-adjusted marginal
+gains are centered under the current distribution:
 
 ```text
-pi_next(a) proportional_to pi_t(a) * exp(eta * R(a))
+C_t(x, z) = gain_t(x, z) - E_(z~pi_t)[gain_t(x, z)]
+E_(z~pi_t)[C_t(x, z)] = 0
 ```
 
-Fixed domain or experiment-group marginals are preserved exactly by conditional exponentiation and
-deterministic largest-remainder allocation. Reports include KL divergence, total-variation shift,
-configuration entropy, trajectory-profile entropy, effective profile count, and capability tags.
+The manifest fails closed if state support, beneficiary model, evaluation distribution, metric, or
+probe protocol differs.
 
-The previous CCGR objective remains callable as a historical control. The canonical trajectory
-method is `update_valid_trajectory_policy`, identified as
-`valid_trajectory_distribution_optimization@vtdo.v1`.
+## Novelty, Potential, And Anchored Update
 
-## Multiple Valid Trajectories
-
-`ValidTrajectoryMaterializer` asks a domain-neutral candidate provider for several executions of
-one frozen context, verifies every candidate, and retains only independently valid trajectories.
-It may cap repeated attribute profiles to prevent one surface strategy from dominating. The report
-separately records requested, generated, verified, valid, retained, rejected, and diversity-pruned
-counts. Provider exhaustion and an insufficient valid pool block the materialization.
-
-This produces the intended chain:
+Coverage-relative novelty is exact:
 
 ```text
-Proof-Carrying Task
-  -> Oracle Execution Specification
-  -> multiple candidate trajectories
-  -> V(trajectory, Omega_x)
-  -> valid trajectory pool
-  -> structured trajectory feedback
-  -> VTDO policy update
-  -> next synthesis allocation
+N_t(x, z) = max(log(r(z | x) / pi_t(z | x)), 0)
 ```
 
-## Experimental Metrics
+The bounded terms are:
 
-In addition to answer accuracy and Contract acceptance, experiments should report:
+```text
+C_tilde = epsilon + (1 - 2*epsilon) * sigmoid(C_t / T_c)
+N_tilde = epsilon + (1 - 2*epsilon) * (1 - exp(-N_t / T_n))
+Phi_t   = C_tilde^alpha * N_tilde^beta
+alpha + beta = 1
+```
 
-- valid trajectory rate and component validity;
-- trajectory attribute profile coverage and entropy;
-- capability-tag coverage;
-- valid alternatives per task;
-- synthesis-defect risk and missing-attribute rate;
-- KL/TV policy shift;
-- downstream training utility under equal-token, equal-model, equal-seed controls.
+The canonical update is:
 
-An increase in trajectory diversity is not itself a success criterion. It counts only when the
-additional trajectories remain independently valid and improve held-out capability or training
-utility.
+```text
+pi_(t+1)(z | x) proportional_to
+    pi_t(z | x)^rho
+    * r(z | x)^(1-rho)
+    * Phi_t(x, z)^eta
+
+rho = lambda / (lambda + kappa)
+eta = 1 / (lambda + kappa)
+```
+
+`update_valid_trajectory_distribution()` evaluates this equation in log space and records every
+state potential, exact exponents, KL divergence to history and coverage, total variation, and
+entropy. Both anchors require positive full support.
+
+## Explorer And Importance Weights
+
+Training and exploration distributions are separated:
+
+```text
+q_t(z | x) = (1 - xi) * pi_t(z | x) + xi * r(z | x)
+w_t(z | x) = pi_t(z | x) / q_t(z | x)
+```
+
+`StateConditionedTrajectoryExplorer` allocates a deterministic budget from `q_t`, asks a provider
+to attempt each requested state, independently verifies every generated trajectory, and then maps
+the realized trajectory back through `phi_x`. Requested labels are never trusted as observed
+states. The batch records provider exhaustion, duplicates, verifier failures, mapping failures,
+off-target realizations, and actual state counts.
+
+The Explorer, beneficiary model used by contribution probes, and final Student are separate roles.
+`VTDORoleContract` freezes all three identities. Its default `strict_distinct` mode rejects accidental
+reuse; an intentional shared-model ablation must use `declared_shared` and freeze a justification
+hash. Role sharing is therefore an explicit experiment choice, not an assumption in Core.
+
+## Canonical Round
+
+```text
+frozen task marginal mu(x)
+  -> q_t state-budget allocation
+  -> state-conditioned trajectory attempts
+  -> independent V(tau, Omega_x)
+  -> phi_x(tau) quotient assignment
+  -> smoothed push-forward estimate
+  -> Accepted / Quarantined / Rejected partition
+  -> beneficiary-model contribution probes on fixed evaluation data
+  -> exact coverage-relative novelty
+  -> anchored energy update on Accepted support
+  -> next pi_(t+1)(z | x), with mu(x) unchanged
+```
+
+## Relationship To CCGR
+
+CCGR remains a historical synthesis-cell feedback baseline. Its former
+`valid_trajectory_distribution_optimization@vtdo.v1` label was incorrect: it optimized a linear
+score over `SynthesisCell + TrajectoryAttributeProfile`, used validity as a compensable reward, and
+had no quotient state or coverage anchor.
+
+That baseline is now explicitly named:
+
+```text
+trajectory_attribute_profile_proxy@trajectory_profile_proxy.v1
+```
+
+and exposed as `update_trajectory_profile_proxy_policy()`. It must not be reported as VTDO. The
+canonical algorithm identity is:
+
+```text
+anchored_energy_valid_trajectory_distribution_refinement@aevtdr.v1
+```
+
+No compatibility alias is retained between these methods.
+
+## Claim Boundary
+
+The implementation establishes a testable engineering approximation and proof-carrying update
+record. It does not yet establish convergence, unbiased causal contribution estimation, complete
+state discovery, or downstream model improvement. Those claims require real Explorer trajectories,
+frozen intervention experiments, repeated seeds, and held-out training-utility evaluation.
+
+The property suite currently checks quotient invariance, false-diversity rejection, semantic state
+separation, cross-domain mapping, validity triage, push-forward smoothing, centered contribution,
+the exact anchored equation, non-compensable validity, fixed task marginals, and exploration
+importance weights.

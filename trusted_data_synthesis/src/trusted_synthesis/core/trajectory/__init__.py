@@ -35,6 +35,12 @@ if TYPE_CHECKING:
         make_oracle_execution_specification,
         make_trajectory_verification_context,
     )
+    from trusted_synthesis.core.trajectory.state import (
+        CanonicalTrajectoryGraph,
+        TrajectoryState,
+        TrajectoryStateAssignment,
+        map_trajectory_to_state,
+    )
     from trusted_synthesis.core.trajectory.validity import (
         TrajectoryValidityEvaluator,
         TrajectoryValidityReport,
@@ -58,6 +64,22 @@ _EXPORTS = {
     "TrajectoryValidityEvaluator": (
         "trusted_synthesis.core.trajectory.validity",
         "TrajectoryValidityEvaluator",
+    ),
+    "CanonicalTrajectoryGraph": (
+        "trusted_synthesis.core.trajectory.state",
+        "CanonicalTrajectoryGraph",
+    ),
+    "TrajectoryState": (
+        "trusted_synthesis.core.trajectory.state",
+        "TrajectoryState",
+    ),
+    "TrajectoryStateAssignment": (
+        "trusted_synthesis.core.trajectory.state",
+        "TrajectoryStateAssignment",
+    ),
+    "map_trajectory_to_state": (
+        "trusted_synthesis.core.trajectory.state",
+        "map_trajectory_to_state",
     ),
     "TrajectoryValidityReport": (
         "trusted_synthesis.core.trajectory.validity",

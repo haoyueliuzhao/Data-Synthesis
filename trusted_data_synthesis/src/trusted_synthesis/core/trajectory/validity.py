@@ -18,7 +18,7 @@ from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
 from trusted_synthesis.hashing import canonical_hash
 
-TRAJECTORY_VALIDITY_SCHEMA_VERSION = "trajectory_validity.v1"
+TRAJECTORY_VALIDITY_SCHEMA_VERSION = "trajectory_validity.v2"
 
 _CHECK_COMPONENTS = {
     "task_identity": "identity_and_interface",
@@ -72,6 +72,7 @@ class TrajectoryValidityReport(FrozenModel):
     failure_locations: tuple[str, ...] = ()
     workflow_report_hash: str | None = None
     contract_assessment_hash: str | None = None
+    program_node_mapping: dict[str, str] = Field(default_factory=dict)
     verifier_failures: tuple[str, ...] = ()
     schema_version: str = TRAJECTORY_VALIDITY_SCHEMA_VERSION
 
@@ -86,9 +87,7 @@ class TrajectoryValidityReport(FrozenModel):
             raise ValueError("a valid trajectory cannot retain verifier failures")
         if self.valid and not all(value == 1.0 for value in self.component_validity.values()):
             raise ValueError("a valid trajectory requires every component to pass")
-        expected_score = sum(self.component_validity.values()) / len(
-            self.component_validity
-        )
+        expected_score = sum(self.component_validity.values()) / len(self.component_validity)
         if abs(self.validity_score - expected_score) > 1e-12:
             raise ValueError("trajectory validity score must be the component mean")
         if self.report_id != trajectory_validity_report_id(self):
@@ -106,9 +105,7 @@ class TrajectoryValidityEvaluator:
         contract_runtime: QualityContractRuntime | None = None,
     ) -> None:
         self._workflow_verifier = workflow_verifier
-        self._contract_runtime = contract_runtime or QualityContractRuntime(
-            workflow_verifier
-        )
+        self._contract_runtime = contract_runtime or QualityContractRuntime(workflow_verifier)
 
     def evaluate(
         self,
@@ -147,11 +144,11 @@ class TrajectoryValidityEvaluator:
             contract_assessment is not None
             and contract_assessment.decision == ReleaseDecision.ACCEPTED
         )
-        failed_checks = tuple(
-            check.check_id
-            for check in workflow_report.checks
-            if not check.passed
-        ) if workflow_report is not None else ("workflow_verifier_unavailable",)
+        failed_checks = (
+            tuple(check.check_id for check in workflow_report.checks if not check.passed)
+            if workflow_report is not None
+            else ("workflow_verifier_unavailable",)
+        )
         failed_clauses = (
             contract_assessment.failed_clause_ids
             if contract_assessment is not None
@@ -202,6 +199,9 @@ class TrajectoryValidityEvaluator:
                 if contract_assessment is not None
                 else None
             ),
+            "program_node_mapping": (
+                workflow_report.program_node_mapping if workflow_report is not None else {}
+            ),
             "verifier_failures": tuple(verifier_failures),
             "schema_version": TRAJECTORY_VALIDITY_SCHEMA_VERSION,
         }
@@ -231,10 +231,6 @@ def _component_validity(
         component = _CHECK_COMPONENTS.get(check.check_id, "identity_and_interface")
         component_checks[component].append(check.passed)
     return {
-        component: (
-            sum(values) / len(values)
-            if values
-            else 0.0
-        )
+        component: (sum(values) / len(values) if values else 0.0)
         for component, values in sorted(component_checks.items())
     }

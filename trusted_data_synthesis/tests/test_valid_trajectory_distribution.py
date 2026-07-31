@@ -1,36 +1,58 @@
 from __future__ import annotations
 
+import math
 from copy import deepcopy
 
 import pytest
 
+import trusted_synthesis.core.refinement as refinement
 from trusted_synthesis.core.evaluation.contracts import (
     QualityContractCompiler,
     QualityContractRuntime,
 )
-from trusted_synthesis.core.feedback import (
-    FeedbackExposure,
-    make_trajectory_feedback,
-    make_trajectory_feedback_batch,
-)
-from trusted_synthesis.core.refinement import (
-    TrajectoryUtilityWeights,
-    aggregate_cell_feedback,
-    build_observed_policy,
-    make_synthesis_cell,
-    update_valid_trajectory_policy,
-)
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.core.trajectory import (
     TrajectoryValidityEvaluator,
-    ValidTrajectoryMaterializer,
     ValidTrajectoryPoolBuilder,
     make_trajectory_verification_context,
+    map_trajectory_to_state,
 )
 from trusted_synthesis.core.trajectory.candidate_verifier import (
     CandidateWorkflowVerifier,
 )
-from trusted_synthesis.core.trajectory.schema import Trajectory
+from trusted_synthesis.core.trajectory.schema import (
+    Trajectory,
+    WorkflowKind,
+)
+from trusted_synthesis.core.vtdo import (
+    AnchoredDistributionUpdate,
+    AnchoredEnergyConfig,
+    StateConditionedTrajectoryExplorer,
+    ValidityRegion,
+    ValidityThresholds,
+    allocate_exploration_budget,
+    apply_conditional_updates,
+    condition_on_accepted_support,
+    estimate_contributions_from_probes,
+    estimate_exploration_state_validity,
+    estimate_pushforward_distribution,
+    estimate_state_validity,
+    make_conditional_distribution,
+    make_contribution_probe_observation,
+    make_exploration_distribution,
+    make_state_validity_partition,
+    make_task_conditioned_policy,
+    make_uniform_coverage_prior,
+    make_vtdo_role_contract,
+    update_valid_trajectory_distribution,
+)
+from trusted_synthesis.core.vtdo.estimation import make_coverage_prior
+from trusted_synthesis.core.vtdo.schema import (
+    StateValidityEstimate,
+    anchored_distribution_update_id,
+    state_validity_estimate_id,
+    validity_region,
+)
 from trusted_synthesis.experiments.cross_domain_contract_suite.candidate import (
     PlanGivenContractCandidate,
 )
@@ -70,7 +92,7 @@ def test_oracle_specification_freezes_validity_boundary_not_unique_reasoning() -
         )
 
 
-def test_valid_pool_retains_alternative_legal_trajectories_and_rejects_bad_answer() -> None:
+def test_profile_pool_remains_an_explicit_noncanonical_baseline() -> None:
     _, _, candidate, evaluator, context = _case_runtime(0)
     alternative = _trajectory_variant(candidate, "alternative-valid")
     invalid = _trajectory_variant(candidate, "invalid-citation", remove_citations=True)
@@ -86,171 +108,415 @@ def test_valid_pool_retains_alternative_legal_trajectories_and_rejects_bad_answe
     assert pool.attempted_count == 3
     assert pool.verified_valid_count == 2
     assert pool.retained_valid_count == 1
-    assert pool.rejected_trajectory_ids == (invalid.trajectory_id,)
-    assert pool.diversity_pruned_trajectory_ids == (alternative.trajectory_id,)
-    assert set(pool.capability_coverage) == {
-        "citation",
-        "evidence_selection",
-        "multi_step_reasoning",
-        "retrieval",
-        "verification",
-    }
+    assert not hasattr(refinement, "TrajectoryConfiguration")
+    assert not hasattr(refinement, "update_valid_trajectory_policy")
+    assert refinement.TRAJECTORY_PROFILE_PROXY_ALGORITHM_ID == (
+        "trajectory_attribute_profile_proxy"
+    )
 
 
-def test_valid_trajectory_materializer_generates_and_verifies_multiple_paths() -> None:
+def test_structural_quotient_erases_order_rationale_and_execution_metadata() -> None:
     _, _, candidate, evaluator, context = _case_runtime(0)
-    alternative = _trajectory_variant(candidate, "materialized-alternative")
-    invalid = _trajectory_variant(candidate, "materialized-invalid", remove_citations=True)
-    target = evaluator.evaluate(context, candidate).attributes.profile
-    materializer = ValidTrajectoryMaterializer(
-        _TrajectoryProvider((candidate, alternative, invalid)),
-        evaluator,
+    report = evaluator.evaluate(context, candidate)
+    reordered = _reorder_independent_legal_steps(candidate)
+    surface_variant = _trajectory_variant(
+        candidate,
+        "surface-only",
+        generator_version="another-runtime-build",
     )
 
-    pool, report = materializer.materialize(
+    original_assignment = map_trajectory_to_state(
         context,
-        target,
-        candidate_count=3,
-        minimum_valid_count=1,
-        seed=19,
-        max_per_profile=1,
+        candidate,
+        program_node_aliases=report.program_node_mapping,
+    )
+    reordered_assignment = map_trajectory_to_state(
+        context,
+        reordered,
+        program_node_aliases=report.program_node_mapping,
+    )
+    surface_assignment = map_trajectory_to_state(
+        context,
+        surface_variant,
+        program_node_aliases=report.program_node_mapping,
     )
 
-    assert pool is not None
-    assert report.status == "passed"
-    assert report.generated_candidate_count == 3
-    assert report.verified_candidate_count == 3
-    assert report.retained_valid_count == 1
-    assert pool.verified_valid_count == 2
+    assert original_assignment.trajectory_hash != reordered_assignment.trajectory_hash
+    assert original_assignment.trajectory_hash != surface_assignment.trajectory_hash
+    assert original_assignment.state.state_id == reordered_assignment.state.state_id
+    assert original_assignment.state.state_id == surface_assignment.state.state_id
+    assert "attribute" not in original_assignment.state.model_dump_json().lower()
 
 
-def test_valid_trajectory_update_rewards_verified_capability_not_invalid_path() -> None:
-    reports = []
-    cells = {}
-    task_cells = {}
-    trajectory_feedback = []
+def test_structural_quotient_preserves_result_and_evidence_semantics() -> None:
+    _, _, candidate, evaluator, context = _case_runtime(0)
+    report = evaluator.evaluate(context, candidate)
+    changed_result = _trajectory_variant(candidate, "changed-result", mutate_result=True)
+    changed_evidence = _trajectory_variant(
+        candidate,
+        "changed-evidence",
+        replace_evidence=True,
+    )
+
+    original = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=report.program_node_mapping,
+    )
+    result_state = map_trajectory_to_state(
+        context,
+        changed_result,
+        program_node_aliases=report.program_node_mapping,
+    )
+    evidence_state = map_trajectory_to_state(
+        context,
+        changed_evidence,
+        program_node_aliases=report.program_node_mapping,
+    )
+
+    assert original.state.state_id != result_state.state.state_id
+    assert original.state.result_semantics_hash != result_state.state.result_semantics_hash
+    assert original.state.state_id != evidence_state.state.state_id
+    assert original.state.evidence_lineage_hash != evidence_state.state.evidence_lineage_hash
+
+
+def test_same_quotient_state_can_contain_valid_and_invalid_realizations() -> None:
+    _, _, candidate, evaluator, context = _case_runtime(0)
+    invalid = _trajectory_variant(
+        candidate,
+        "reference-kind-is-invalid-for-candidate",
+        workflow_kind=WorkflowKind.REFERENCE,
+    )
+    valid_report = evaluator.evaluate(context, candidate)
+    invalid_report = evaluator.evaluate(context, invalid)
+    valid_assignment = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=valid_report.program_node_mapping,
+    )
+    invalid_assignment = map_trajectory_to_state(
+        context,
+        invalid,
+        program_node_aliases=invalid_report.program_node_mapping,
+    )
+
+    assert valid_report.valid
+    assert not invalid_report.valid
+    assert valid_assignment.state.state_id == invalid_assignment.state.state_id
+
+    thresholds = ValidityThresholds(reject_below=0.25, accept_at_or_above=0.75)
+    mixed = estimate_state_validity(
+        (valid_assignment, invalid_assignment),
+        (valid_report, invalid_report),
+        thresholds=thresholds,
+    )
+    accepted = estimate_state_validity(
+        (valid_assignment,),
+        (valid_report,),
+        thresholds=thresholds,
+    )
+    rejected = estimate_state_validity(
+        (invalid_assignment,),
+        (invalid_report,),
+        thresholds=thresholds,
+    )
+
+    assert mixed.estimated_validity == 0.5
+    assert mixed.region == ValidityRegion.QUARANTINED
+    assert accepted.region == ValidityRegion.ACCEPTED
+    assert rejected.region == ValidityRegion.REJECTED
+
+
+def test_pushforward_estimate_counts_quotient_states_with_prior_smoothing() -> None:
+    _, _, candidate, evaluator, context = _case_runtime(0)
+    report = evaluator.evaluate(context, candidate)
+    same_state = _trajectory_variant(candidate, "same-state")
+    other_state = _trajectory_variant(candidate, "other-state", mutate_result=True)
+    assignments = tuple(
+        map_trajectory_to_state(
+            context,
+            trajectory,
+            program_node_aliases=report.program_node_mapping,
+        )
+        for trajectory in (candidate, same_state, other_state)
+    )
+    state_ids = {item.state.state_id for item in assignments}
+    assert len(state_ids) == 2
+    prior = make_uniform_coverage_prior(context.task.task_id, state_ids)
+
+    estimate = estimate_pushforward_distribution(
+        assignments,
+        prior,
+        round_index=0,
+        prior_strength=1.0,
+    )
+
+    counts = sorted(estimate.state_exposure_counts.values())
+    probabilities = sorted(estimate.distribution.probabilities.values())
+    assert counts == [1, 2]
+    assert probabilities == pytest.approx([0.375, 0.625])
+    assert all(value > 0 for value in estimate.distribution.probabilities.values())
+
+
+def test_empirical_contribution_is_model_tied_and_centered_under_current_pi() -> None:
+    distribution = make_conditional_distribution(
+        "task:x",
+        {"state:a": 0.8, "state:b": 0.2},
+        round_index=0,
+    )
+    probes = (
+        _probe("task:x", "state:a", baseline=0.50, intervention=0.60),
+        _probe("task:x", "state:b", baseline=0.50, intervention=0.90),
+    )
+
+    manifest = estimate_contributions_from_probes(distribution, probes)
+    contributions = {item.state_id: item.centered_contribution for item in manifest.estimates}
+
+    assert manifest.beneficiary_model_state_id == "model:qwen-round-3"
+    assert manifest.target_evaluation_distribution_id == "eval:fixed-v1"
+    assert manifest.weighted_centered_mean == pytest.approx(0.0, abs=1e-12)
+    assert sum(
+        distribution.probabilities[state_id] * value for state_id, value in contributions.items()
+    ) == pytest.approx(0.0, abs=1e-12)
+    assert contributions["state:b"] > contributions["state:a"]
+
+
+def test_anchored_update_matches_frozen_equation_and_exact_novelty() -> None:
+    prior, coverage, validity, manifest, config, roles = _update_inputs("task:x")
+
+    update = update_valid_trajectory_distribution(
+        prior,
+        coverage,
+        validity,
+        manifest,
+        config,
+        roles,
+    )
+
+    potential_by_state = {item.state_id: item for item in update.state_potentials}
+    assert potential_by_state["state:a"].coverage_relative_novelty == 0
+    assert potential_by_state["state:b"].coverage_relative_novelty == pytest.approx(
+        math.log(0.5 / 0.2)
+    )
+    unnormalized = {
+        state_id: (
+            prior.probabilities[state_id] ** config.history_exponent
+            * coverage.probabilities[state_id] ** (1.0 - config.history_exponent)
+            * potential_by_state[state_id].potential ** config.energy_exponent
+        )
+        for state_id in prior.probabilities
+    }
+    denominator = sum(unnormalized.values())
+    expected = {state_id: weight / denominator for state_id, weight in unnormalized.items()}
+    assert update.next_distribution.probabilities == pytest.approx(expected)
+    assert update.next_distribution.probabilities["state:b"] > 0.2
+    assert update.algorithm_id == ("anchored_energy_valid_trajectory_distribution_refinement")
+
+
+def test_update_artifact_replays_equation_instead_of_trusting_serialized_metrics() -> None:
+    inputs = _update_inputs("task:x")
+    update = update_valid_trajectory_distribution(*inputs)
+    wrong_next = make_conditional_distribution(
+        "task:x",
+        {"state:a": 0.9, "state:b": 0.1},
+        round_index=1,
+        source_distribution_id=inputs[0].distribution_id,
+        estimator_manifest_hash=inputs[3].manifest_id,
+    )
+    values = {
+        field: getattr(update, field) for field in type(update).model_fields if field != "update_id"
+    }
+    values["next_distribution"] = wrong_next
+    provisional = AnchoredDistributionUpdate.model_construct(
+        update_id="pending",
+        **values,
+    )
+
+    with pytest.raises(ValueError, match="anchored equation"):
+        AnchoredDistributionUpdate(
+            update_id=anchored_distribution_update_id(provisional),
+            **values,
+        )
+
+
+def test_update_rejects_contribution_from_another_beneficiary_model() -> None:
+    prior, coverage, validity, manifest, config, _ = _update_inputs("task:x")
+    wrong_roles = make_vtdo_role_contract(
+        explorer_provider_id="provider:explorer-v1",
+        beneficiary_model_state_id="model:another-beneficiary",
+        final_student_model_id="model:qwen-student-round-4",
+    )
+
+    with pytest.raises(ValueError, match="role contract"):
+        update_valid_trajectory_distribution(
+            prior,
+            coverage,
+            validity,
+            manifest,
+            config,
+            wrong_roles,
+        )
+
+
+def test_validity_is_a_noncompensable_gate_and_conditions_training_support() -> None:
+    prior, coverage, validity, manifest, config, roles = _update_inputs("task:x")
+    quarantined = _validity_estimate("task:x", "state:b", 0.5)
+
+    with pytest.raises(ValueError, match="non-Accepted"):
+        update_valid_trajectory_distribution(
+            prior,
+            coverage,
+            (validity[0], quarantined),
+            manifest,
+            config,
+            roles,
+        )
+
+    partition = make_state_validity_partition((validity[0], quarantined))
+    accepted_prior, accepted_coverage = condition_on_accepted_support(
+        prior,
+        coverage,
+        partition,
+    )
+    assert accepted_prior.probabilities == {"state:a": 1.0}
+    assert accepted_coverage.probabilities == {"state:a": 1.0}
+    assert partition.quarantined_state_ids == ("state:b",)
+
+
+def test_task_marginal_is_fixed_while_each_conditional_advances() -> None:
+    inputs_x = _update_inputs("task:x")
+    inputs_y = _update_inputs(
+        "task:y",
+        probabilities={"state:c": 0.3, "state:d": 0.7},
+        coverage_probabilities={"state:c": 0.5, "state:d": 0.5},
+    )
+    update_x = update_valid_trajectory_distribution(*inputs_x)
+    update_y = update_valid_trajectory_distribution(*inputs_y)
+    policy = make_task_conditioned_policy(
+        {"task:x": 0.65, "task:y": 0.35},
+        {"task:x": inputs_x[0], "task:y": inputs_y[0]},
+        round_index=0,
+    )
+
+    next_policy = apply_conditional_updates(
+        policy,
+        {"task:x": update_x, "task:y": update_y},
+    )
+
+    assert next_policy.task_marginal == policy.task_marginal
+    assert next_policy.round_index == 1
+    assert next_policy.conditionals["task:x"] == update_x.next_distribution
+    assert next_policy.conditionals["task:y"] == update_y.next_distribution
+
+
+def test_exploration_distribution_and_state_conditioned_batch_use_observed_states() -> None:
+    _, _, candidate, evaluator, context = _case_runtime(0)
+    report = evaluator.evaluate(context, candidate)
+    target = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=report.program_node_mapping,
+    ).state
+    training = make_conditional_distribution(
+        context.task.task_id,
+        {target.state_id: 1.0},
+        round_index=0,
+    )
+    coverage = make_uniform_coverage_prior(context.task.task_id, (target.state_id,))
+    exploration = make_exploration_distribution(
+        training,
+        coverage,
+        exploration_rate=0.2,
+    )
+    provider = _StateTrajectoryProvider(candidate)
+
+    batch = StateConditionedTrajectoryExplorer(provider, evaluator).explore(
+        context,
+        {target.state_id: target},
+        exploration,
+        _role_contract(provider.provider_id),
+        total_budget=2,
+        seed=41,
+    )
+
+    assert allocate_exploration_budget(exploration, 2) == {target.state_id: 2}
+    assert batch.status == "passed"
+    assert batch.mapped_candidate_count == 2
+    assert batch.on_target_candidate_count == 2
+    assert batch.observed_state_counts == {target.state_id: 2}
+    assert all(item.validity_report.valid for item in batch.observations)
+    estimates, partition = estimate_exploration_state_validity(
+        batch,
+        thresholds=ValidityThresholds(
+            reject_below=0.25,
+            accept_at_or_above=0.75,
+        ),
+    )
+    assert estimates[0].estimated_validity == 1.0
+    assert partition.accepted_state_ids == (target.state_id,)
+    assert all(item.requested_state_importance_weight == 1.0 for item in batch.observations)
+
+
+def test_vtdo_roles_are_distinct_unless_sharing_is_explicitly_declared() -> None:
+    with pytest.raises(ValueError, match="distinct"):
+        make_vtdo_role_contract(
+            explorer_provider_id="model:shared",
+            beneficiary_model_state_id="model:shared",
+            final_student_model_id="model:student",
+        )
+
+    shared = make_vtdo_role_contract(
+        explorer_provider_id="model:shared",
+        beneficiary_model_state_id="model:shared",
+        final_student_model_id="model:student",
+        separation_mode="declared_shared",
+        shared_role_justification_hash="experiment:shared-model-ablation",
+    )
+    assert shared.separation_mode == "declared_shared"
+
+
+def test_exploration_q_mixes_training_and_coverage_and_reports_importance() -> None:
+    training = make_conditional_distribution(
+        "task:x",
+        {"state:a": 0.8, "state:b": 0.2},
+        round_index=0,
+    )
+    coverage = make_coverage_prior(
+        "task:x",
+        {"state:a": 0.5, "state:b": 0.5},
+        policy="balanced",
+    )
+
+    exploration = make_exploration_distribution(
+        training,
+        coverage,
+        exploration_rate=0.25,
+    )
+
+    assert exploration.probabilities == pytest.approx({"state:a": 0.725, "state:b": 0.275})
+    assert exploration.importance_weights == pytest.approx(
+        {"state:a": 0.8 / 0.725, "state:b": 0.2 / 0.275}
+    )
+    assert sum(allocate_exploration_budget(exploration, 17).values()) == 17
+
+
+def test_quotient_mapper_is_shared_by_legal_and_science_contracts() -> None:
+    states = []
+    domains = []
     for index in (0, 1):
         case, _, candidate, evaluator, context = _case_runtime(index)
-        if index == 1:
-            candidate = _trajectory_variant(
-                candidate,
-                "invalid-answer",
-                mutate_result=True,
-            )
         report = evaluator.evaluate(context, candidate)
-        reports.append(report)
-        task_id = case.task.task_id
-        cell = make_synthesis_cell(
-            pattern_id=case.task.public.task_type,
-            binding_stratum_id=f"binding:{index}",
-            difficulty_bucket="hard",
-            distractor_profile_id="distractor:contract",
-            trajectory_attribute_profile=report.attributes.profile,
+        assignment = map_trajectory_to_state(
+            context,
+            candidate,
+            program_node_aliases=report.program_node_mapping,
         )
-        cells[index] = cell
-        task_cells[task_id] = cell
-        trajectory_feedback.append(
-            make_trajectory_feedback(
-                task_id=task_id,
-                configuration_id=cell.cell_id,
-                report=report,
-                diversity_contribution=1.0 if report.valid else 0.0,
-                target_profile=cell.trajectory_attribute_profile,
-            )
-        )
-    exposures = tuple(
-        FeedbackExposure(
-            task_id=task_id,
-            domain="contract_fixture",
-            pattern_id=cell.pattern_id,
-            failure_family="trajectory_validity",
-        )
-        for task_id, cell in task_cells.items()
-    )
-    policy = build_observed_policy(task_cells)
-    statistics = aggregate_cell_feedback(
-        policy,
-        exposures,
-        (),
-        task_cells,
-        trajectory_feedback=trajectory_feedback,
-    )
-    update = update_valid_trajectory_policy(
-        policy,
-        statistics,
-        (),
-        eta=1.0,
-        total_budget=20,
-        calibration_manifest_hash="calibration:trajectory",
-        trajectory_feedback_manifest_hash=canonical_hash(
-            tuple(item.feedback_id for item in trajectory_feedback),
-            prefix="trajectory_feedback_manifest:",
-        ),
-        weights=TrajectoryUtilityWeights(
-            alpha_validity=1.0,
-            beta_coverage=0.0,
-            gamma_diversity=0.0,
-            lambda_defect=0.0,
-        ),
-    )
+        assert report.valid
+        states.append(assignment.state.state_id)
+        domains.append(case.task.public.domain)
 
-    assert reports[0].valid
-    assert not reports[1].valid
-    assert update.algorithm_id == "valid_trajectory_distribution_optimization"
-    assert update.utility_mode == "valid_trajectory_objective"
-    assert update.cell_utility_components[cells[0].cell_id].validity_reward == 1
-    assert update.cell_utility_components[cells[1].cell_id].validity_reward == 0
-    assert update.next_policy.probabilities[cells[0].cell_id] > (
-        policy.probabilities[cells[0].cell_id]
-    )
-    assert update.prior_trajectory_metrics is not None
-    assert update.next_trajectory_metrics is not None
-    assert update.trajectory_feedback_count == 2
-
-
-def test_invalid_trajectory_profiles_do_not_inflate_valid_diversity() -> None:
-    case, _, candidate, evaluator, context = _case_runtime(0)
-    invalid = _trajectory_variant(candidate, "invalid-profile", remove_citations=True)
-    reports = (
-        evaluator.evaluate(context, candidate),
-        evaluator.evaluate(context, invalid),
-    )
-    cell = make_synthesis_cell(
-        pattern_id=case.task.public.task_type,
-        binding_stratum_id="binding:valid-diversity",
-        difficulty_bucket="hard",
-        distractor_profile_id="distractor:contract",
-        trajectory_attribute_profile=reports[0].attributes.profile,
-    )
-    task_cells = {case.task.task_id: cell}
-    exposures = (
-        FeedbackExposure(
-            task_id=case.task.task_id,
-            domain="contract_fixture",
-            pattern_id=cell.pattern_id,
-            failure_family="trajectory_validity",
-        ),
-    )
-    trajectory_ids = {item.trajectory_id for item in reports}
-    feedback = make_trajectory_feedback_batch(
-        reports,
-        task_ids={item: case.task.task_id for item in trajectory_ids},
-        configuration_ids={item: cell.cell_id for item in trajectory_ids},
-    )
-    policy = build_observed_policy(task_cells)
-    statistics = aggregate_cell_feedback(
-        policy,
-        exposures,
-        (),
-        task_cells,
-        trajectory_feedback=feedback,
-    )[0]
-
-    assert statistics.trajectory_attempt_count == 2
-    assert statistics.valid_trajectory_count == 1
-    assert statistics.trajectory_attribute_profile_count == 1
-    assert statistics.trajectory_attribute_entropy == 0
-    assert statistics.trajectory_diversity_gain == 0
+    assert domains == ["legal", "science"]
+    assert len(set(states)) == 2
 
 
 class _TrajectoryProvider:
@@ -270,6 +536,26 @@ class _TrajectoryProvider:
     ):
         del context, target_profile, candidate_count, seed
         yield from self._trajectories
+
+
+class _StateTrajectoryProvider:
+    provider_id = "state_trajectory_provider:test"
+    provider_version = "1.0.0"
+
+    def __init__(self, source: Trajectory) -> None:
+        self._source = source
+
+    def generate(
+        self,
+        context,
+        target_state,
+        *,
+        candidate_count: int,
+        seed: int,
+    ):
+        del context, target_state, seed
+        for index in range(candidate_count):
+            yield _trajectory_variant(self._source, f"exploration-{index}")
 
 
 def _case_runtime(index: int):
@@ -321,25 +607,166 @@ def _trajectory_variant(
     *,
     remove_citations: bool = False,
     mutate_result: bool = False,
+    replace_evidence: bool = False,
+    workflow_kind: WorkflowKind | None = None,
+    generator_version: str | None = None,
 ) -> Trajectory:
-    steps = tuple(
-        step.model_copy(update={"rationale_summary": f"{step.rationale_summary} {label}"})
-        for step in source.steps
-    )
+    replacement = "evidence:synthetic:semantically-different@v1"
+    steps = []
+    for step in source.steps:
+        evidence_ids = step.evidence_ids
+        input_refs = step.input_refs
+        if replace_evidence and evidence_ids:
+            original = evidence_ids[0]
+            evidence_ids = tuple(replacement if item == original else item for item in evidence_ids)
+            input_refs = tuple(item.replace(original, replacement) for item in input_refs)
+        steps.append(
+            step.model_copy(
+                update={
+                    "evidence_ids": evidence_ids,
+                    "input_refs": input_refs,
+                    "rationale_summary": f"{step.rationale_summary} {label}",
+                }
+            )
+        )
     answer = deepcopy(source.final_answer)
     if remove_citations:
         answer["citations"] = []
     if mutate_result:
         result = dict(answer["result"])
-        result[next(iter(result))] = "invalid-result"
+        result[next(iter(result))] = "semantically-different-result"
         answer["result"] = result
+    if replace_evidence:
+        for citation in answer.get("citations", []):
+            citation["evidence_id"] = replacement
     return source.model_copy(
         update={
             "trajectory_id": canonical_hash(
                 {"source": source.trajectory_id, "variant": label},
                 prefix="trajectory_variant:",
             ),
-            "steps": steps,
+            "workflow_kind": workflow_kind or source.workflow_kind,
+            "steps": tuple(steps),
             "final_answer": answer,
+            "generator_version": generator_version or source.generator_version,
         }
+    )
+
+
+def _reorder_independent_legal_steps(source: Trajectory) -> Trajectory:
+    steps = list(source.steps)
+    first = next(index for index, step in enumerate(steps) if step.program_node_id == "apply_1")
+    second = next(index for index, step in enumerate(steps) if step.program_node_id == "apply_2")
+    steps[first], steps[second] = steps[second], steps[first]
+    reindexed = tuple(
+        step.model_copy(update={"step_index": index}) for index, step in enumerate(steps, start=1)
+    )
+    return source.model_copy(
+        update={
+            "trajectory_id": canonical_hash(
+                {"source": source.trajectory_id, "variant": "dependency-reorder"},
+                prefix="trajectory_variant:",
+            ),
+            "steps": reindexed,
+        }
+    )
+
+
+def _probe(
+    condition: str,
+    state_id: str,
+    *,
+    baseline: float,
+    intervention: float,
+):
+    return make_contribution_probe_observation(
+        task_condition_id=condition,
+        state_id=state_id,
+        beneficiary_model_state_id="model:qwen-round-3",
+        target_evaluation_distribution_id="eval:fixed-v1",
+        target_metric_id="metric:task-success",
+        probe_protocol_hash="probe:paired-sft-v1",
+        baseline_metric_value=baseline,
+        intervention_metric_value=intervention,
+        confidence=0.9,
+        sample_count=8,
+    )
+
+
+def _validity_estimate(
+    condition: str,
+    state_id: str,
+    value: float,
+) -> StateValidityEstimate:
+    thresholds = ValidityThresholds(reject_below=0.25, accept_at_or_above=0.75)
+    attempted = 2 if value == 0.5 else 1
+    valid_count = 1 if value in {0.5, 1.0} else 0
+    values = {
+        "task_condition_id": condition,
+        "state_id": state_id,
+        "attempted_trajectory_count": attempted,
+        "valid_trajectory_count": valid_count,
+        "estimated_validity": value,
+        "confidence_lower": 0.0 if value < 1.0 else 0.5,
+        "confidence_upper": 1.0,
+        "mean_component_validity": {"independent_verifier": value},
+        "thresholds": thresholds,
+        "classification_statistic": "posterior_mean",
+        "region": validity_region(value, thresholds),
+        "estimator_id": "test_empirical_validity",
+        "estimator_version": "1.0.0",
+    }
+    provisional = StateValidityEstimate.model_construct(estimate_id="pending", **values)
+    return StateValidityEstimate(
+        estimate_id=state_validity_estimate_id(provisional),
+        **values,
+    )
+
+
+def _update_inputs(
+    condition: str,
+    *,
+    probabilities: dict[str, float] | None = None,
+    coverage_probabilities: dict[str, float] | None = None,
+):
+    probabilities = probabilities or {"state:a": 0.8, "state:b": 0.2}
+    coverage_probabilities = coverage_probabilities or {
+        "state:a": 0.5,
+        "state:b": 0.5,
+    }
+    prior = make_conditional_distribution(condition, probabilities, round_index=0)
+    coverage = make_coverage_prior(
+        condition,
+        coverage_probabilities,
+        policy="frozen_target_coverage",
+    )
+    state_ids = tuple(sorted(probabilities))
+    probes = tuple(
+        _probe(
+            condition,
+            state_id,
+            baseline=0.5,
+            intervention=0.6 if index == 0 else 0.9,
+        )
+        for index, state_id in enumerate(state_ids)
+    )
+    manifest = estimate_contributions_from_probes(prior, probes)
+    validity = tuple(_validity_estimate(condition, state_id, 1.0) for state_id in state_ids)
+    config = AnchoredEnergyConfig(
+        epsilon=0.01,
+        contribution_temperature=0.2,
+        novelty_temperature=1.0,
+        contribution_weight=0.5,
+        novelty_weight=0.5,
+        history_kl_weight=2.0,
+        coverage_kl_weight=1.0,
+    )
+    return prior, coverage, validity, manifest, config, _role_contract("provider:explorer-v1")
+
+
+def _role_contract(explorer_provider_id: str):
+    return make_vtdo_role_contract(
+        explorer_provider_id=explorer_provider_id,
+        beneficiary_model_state_id="model:qwen-round-3",
+        final_student_model_id="model:qwen-student-round-4",
     )

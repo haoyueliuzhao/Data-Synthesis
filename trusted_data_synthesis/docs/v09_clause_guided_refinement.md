@@ -53,25 +53,28 @@ The Feedback Router assigns one owner:
 Interface failures have zero synthesis utility. The other two routes update the policy in opposite
 directions; this distinction prevents invalid data from being amplified as training demand.
 
-## Valid-Trajectory Optimization Space
+## Historical Trajectory Profile Proxy
 
-The original v0.9 control plane optimized a distribution over task-level Synthesis Cells. The v3
-method keeps those structural dimensions and adds an observable trajectory profile:
+The v0.9 control plane optimizes a distribution over task-level Synthesis Cells. A later
+engineering baseline added an observable attribute profile:
 
 ```text
-a = (pattern, evidence_binding_stratum, difficulty, distractor_context, trajectory_profile)
-pi_t(a) = finite approximation to valid trajectory demand
+a = (pattern, evidence_binding_stratum, difficulty, distractor_context, attribute_profile)
 ```
 
-`trajectory_profile` buckets tool depth, reasoning depth, Evidence dependency, verification degree,
-branching, operation count, and capability tags. These are behavior descriptors, not prescribed
-step templates. Exact observed attributes remain in structured trajectory feedback. The canonical
-method definition and claim boundary are in
+This remains useful as a CCGR ablation, but it is not a quotient trajectory state and does not
+approximate the frozen VTDO update. Attribute buckets describe executions; they do not define
+semantic equivalence under `Omega_x`.
+
+The baseline is now named
+`trajectory_attribute_profile_proxy@trajectory_profile_proxy.v1`. The canonical VTDO method lives
+in `trusted_synthesis.core.vtdo`, maps trajectories to dependency-preserving quotient states, and
+optimizes `pi(z | x)` while preserving the fixed task marginal. See
 `docs/valid_trajectory_distribution_optimization.md`.
 
-Every task now freezes `Omega_x = (Evidence, TaskProgram, ProofGraph, QualityContract)` as an
-`OracleExecutionSpecification`. The deterministic Reference Workflow remains one auditable valid
-example, not the unique gold reasoning path.
+Every task still freezes `Omega_x = (Evidence, TaskProgram, ProofGraph, QualityContract)` as an
+`OracleExecutionSpecification`. The Reference Workflow is one auditable valid example, not the
+unique gold reasoning path.
 
 ## Counterfactual Clause Calibration
 
@@ -119,29 +122,36 @@ shrinkage weight, exposure count, and threshold status. The legacy Pattern x Cla
 allocator remains serialized as an engineering baseline, but it is not the v0.9 optimization
 algorithm.
 
-## Policy Update
+## Refinement Baselines And VTDO Separation
 
-The canonical v3 update uses four separately reported components:
+Canonical CCGR remains the calibrated Synthesis Cell control:
 
 ```text
-R_t(a) = alpha * trajectory_validity_rate(a)
-       + beta  * capability_and_distribution_coverage(a)
-       + gamma * valid_trajectory_diversity(a)
-       - lambda * calibrated_synthesis_defect_risk(a)
+R_ccgr(a) = capability_gap(a)
+          - beta * synthesis_defect_risk(a)
+          + gamma * coverage_gap(a)
 
-pi_next(a | g) proportional_to pi_t(a | g) * exp(eta * R_t(a))
+pi_next(a | g) proportional_to pi_t(a | g) * exp(eta * R_ccgr(a))
 pi_next(g) = frozen_group_weight(g)
 ```
 
-The update manifest freezes each component, coefficient, trajectory feedback manifest, behavior
-profile distribution, capability coverage, KL divergence, total-variation shift, and deterministic
-budget allocation. Missing trajectory feedback blocks the valid-trajectory objective. Binding
-tightening remains restricted to predeclared, calibrated options.
+The historical profile proxy computes a linear combination of trajectory validity, heuristic
+coverage, profile diversity, and defect risk. It is retained only as a named ablation via
+`update_trajectory_profile_proxy_policy()`; validity is compensable in that score, so the method
+must not be called VTDO.
 
-The prior `G - beta*D + gamma*U` CCGR updater remains executable as a historical control so earlier
-cohorts and ablations stay reproducible. New method claims must use
-`update_valid_trajectory_policy` and its `valid_trajectory_distribution_optimization@vtdo.v1`
-identity.
+Canonical VTDO is a separate state-space method:
+
+```text
+z = [trajectory]_(~ Omega_x)
+pi_(t+1)(z | x) proportional_to
+    pi_t(z | x)^rho * r(z | x)^(1-rho) * Phi_t(x,z)^eta
+```
+
+It conditions on independently Accepted states before optimization, uses empirical centered
+model-state contribution and exact coverage-relative novelty, and preserves `mu(x)` exactly. CCGR,
+the profile proxy, and anchored VTDO therefore have distinct schemas, functions, and algorithm
+identities; no compatibility alias is used.
 
 ## Algorithm Ablations
 

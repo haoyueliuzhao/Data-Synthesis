@@ -11,8 +11,8 @@ from trusted_synthesis.hashing import canonical_hash
 
 CCGR_ALGORITHM_ID = "calibrated_clause_guided_refinement"
 CCGR_ALGORITHM_VERSION = "ccgr.v3"
-VALID_TRAJECTORY_ALGORITHM_ID = "valid_trajectory_distribution_optimization"
-VALID_TRAJECTORY_ALGORITHM_VERSION = "vtdo.v1"
+TRAJECTORY_PROFILE_PROXY_ALGORITHM_ID = "trajectory_attribute_profile_proxy"
+TRAJECTORY_PROFILE_PROXY_ALGORITHM_VERSION = "trajectory_profile_proxy.v1"
 REFINEMENT_SCHEMA_VERSION = "refinement.v3"
 
 
@@ -55,10 +55,6 @@ class SynthesisCell(FrozenModel):
         return self
 
 
-# Public method name; SynthesisCell remains as a compatibility alias in artifacts.
-TrajectoryConfiguration = SynthesisCell
-
-
 class ClauseFeedback(FrozenModel):
     """A root failure weighted by counterfactual calibration reliability."""
 
@@ -88,8 +84,8 @@ class ClauseFeedback(FrozenModel):
         return self
 
 
-class TrajectoryUtilityWeights(FrozenModel):
-    """Frozen coefficients for the valid-trajectory utility."""
+class TrajectoryProfileProxyWeights(FrozenModel):
+    """Frozen coefficients for the noncanonical attribute-profile proxy."""
 
     alpha_validity: float = Field(ge=0)
     beta_coverage: float = Field(ge=0)
@@ -97,18 +93,18 @@ class TrajectoryUtilityWeights(FrozenModel):
     lambda_defect: float = Field(ge=0)
 
 
-class TrajectoryUtilityComponents(FrozenModel):
-    """Auditable decomposition of R(configuration)."""
+class TrajectoryProfileProxyComponents(FrozenModel):
+    """Auditable heuristic profile score; this is not VTDO contribution."""
 
     validity_reward: float = Field(ge=0, le=1)
     coverage_gain: float = Field(ge=0, le=1)
     diversity_gain: float = Field(ge=0, le=1)
     synthesis_defect_risk: float = Field(ge=0)
-    weights: TrajectoryUtilityWeights
+    weights: TrajectoryProfileProxyWeights
     utility: float
 
     @model_validator(mode="after")
-    def validate_utility(self) -> TrajectoryUtilityComponents:
+    def validate_utility(self) -> TrajectoryProfileProxyComponents:
         expected = (
             self.weights.alpha_validity * self.validity_reward
             + self.weights.beta_coverage * self.coverage_gain
@@ -192,9 +188,7 @@ class CellFeedbackStatistics(FrozenModel):
             if self.trajectory_attempt_count
             else 0.0
         )
-        if not math.isclose(
-            self.trajectory_validity_rate, expected_validity, abs_tol=1e-12
-        ):
+        if not math.isclose(self.trajectory_validity_rate, expected_validity, abs_tol=1e-12):
             raise ValueError("trajectory validity rate is inconsistent")
         if self.trajectory_attribute_profile_count > self.trajectory_attempt_count:
             raise ValueError("trajectory profile count cannot exceed attempts")
@@ -249,7 +243,7 @@ class PolicyUpdateResult(FrozenModel):
     next_policy: SynthesisPolicy
     statistics: tuple[CellFeedbackStatistics, ...] = Field(min_length=1)
     cell_utilities: dict[str, float] = Field(min_length=1)
-    cell_utility_components: dict[str, TrajectoryUtilityComponents] = Field(
+    cell_utility_components: dict[str, TrajectoryProfileProxyComponents] = Field(
         default_factory=dict
     )
     cell_transition_map: dict[str, str] = Field(min_length=1)
@@ -274,7 +268,7 @@ class PolicyUpdateResult(FrozenModel):
         "feedback_objective",
         "score_only_control",
         "random_control",
-        "valid_trajectory_objective",
+        "trajectory_profile_proxy",
     ]
     prior_trajectory_metrics: TrajectoryDistributionMetrics | None = None
     next_trajectory_metrics: TrajectoryDistributionMetrics | None = None
@@ -300,9 +294,7 @@ class PolicyUpdateResult(FrozenModel):
             raise ValueError("cell utilities must cover every prior policy cell")
         if self.cell_utility_components:
             if set(self.cell_utility_components) != prior_ids:
-                raise ValueError(
-                    "trajectory utility components must cover every prior policy cell"
-                )
+                raise ValueError("trajectory utility components must cover every prior policy cell")
             if any(
                 not math.isclose(
                     self.cell_utilities[cell_id],
@@ -312,7 +304,7 @@ class PolicyUpdateResult(FrozenModel):
                 for cell_id, component in self.cell_utility_components.items()
             ):
                 raise ValueError("cell utility disagrees with its trajectory components")
-        if self.utility_mode == "valid_trajectory_objective" and (
+        if self.utility_mode == "trajectory_profile_proxy" and (
             not self.cell_utility_components
             or self.prior_trajectory_metrics is None
             or self.next_trajectory_metrics is None
@@ -320,7 +312,7 @@ class PolicyUpdateResult(FrozenModel):
             or self.trajectory_feedback_count < 1
         ):
             raise ValueError(
-                "valid-trajectory updates require feedback, utility, and distribution components"
+                "trajectory profile proxy requires feedback and profile-score components"
             )
         if set(self.cell_transition_map) != prior_ids:
             raise ValueError("cell transitions must cover every prior policy cell")
