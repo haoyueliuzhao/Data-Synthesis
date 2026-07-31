@@ -34,12 +34,12 @@ from trusted_synthesis.experiments.agent_validation.tracks import materialize_tr
 from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import ContractCase
 from trusted_synthesis.experiments.training_utility_mvp.data import (
     _evaluation_isolation,
-    _make_record,
-    _record_from_example,
     _reference_and_evaluation_records,
     _reference_response,
     _student_operation_registry,
     _task_structure_metadata,
+    make_sft_record,
+    record_from_quality_example,
 )
 from trusted_synthesis.experiments.training_utility_mvp.schema import (
     TRAINING_UTILITY_AGENT_PROMPT_VERSION,
@@ -1057,7 +1057,7 @@ def _representable_real_records(
     example_ids: dict[str, str] = {}
     for example in examples:
         try:
-            record = _record_from_example(
+            record = record_from_quality_example(
                 example,
                 UtilityCohort.RANDOM_SYNTHETIC,
                 prompt_version=prompt_version,
@@ -1402,7 +1402,7 @@ def _materialized_records(
         if feedback_source is not None:
             metadata["feedback_source"] = feedback_source
         records.append(
-            _make_record(
+            make_sft_record(
                 cohort=cohort.value,
                 task=task.public.model_dump(mode="json", exclude_none=True),
                 evidence=[

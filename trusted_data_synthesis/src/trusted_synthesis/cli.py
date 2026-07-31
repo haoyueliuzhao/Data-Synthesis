@@ -98,6 +98,12 @@ from trusted_synthesis.experiments.training_utility_v09 import (
     write_v09_training_datasets,
     write_v09_training_utility_report,
 )
+from trusted_synthesis.experiments.vtdo_validation import (
+    VTDO_TRAINING_ARMS,
+    VTDOValidationConfig,
+    run_vtdo_validation_experiment,
+    train_vtdo_arm,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime import (
     InMemoryEvidenceToolRuntime,
@@ -124,6 +130,33 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(counterfactual_report.model_dump(mode="json"), args.output)
         return 0 if counterfactual_report.status == "passed" else 1
+    if args.command == "run-vtdo-validation":
+        vtdo_config = VTDOValidationConfig.from_json(args.vtdo_config)
+        vtdo_manifest = run_vtdo_validation_experiment(vtdo_config)
+        _emit(vtdo_manifest.model_dump(mode="json"), args.output)
+        return 0 if vtdo_manifest.status == "passed" else 1
+    if args.command == "train-vtdo-arm":
+        try:
+            result = train_vtdo_arm(
+                student_config_path=args.training_config,
+                preflight_path=args.preflight,
+                arm_manifest_path=args.arm_manifest,
+                arm_id=args.arm,
+                dataset_path=args.dataset,
+                output_dir=args.output_dir,
+            )
+        except ValueError as exc:
+            _emit(
+                {
+                    "status": "blocked",
+                    "arm_id": args.arm,
+                    "reason": str(exc),
+                },
+                args.output,
+            )
+            return 1
+        _emit(result.model_dump(mode="json"), args.output)
+        return 0
     if args.command == "audit-agent-capacity":
         capacity_config = AgentValidationConfig.from_json(args.agent_config)
         capacity_report = audit_agent_validation_capacity(capacity_config)
@@ -416,6 +449,21 @@ def _parser() -> argparse.ArgumentParser:
     counterfactual_validation = subparsers.add_parser("validate-counterfactuals")
     counterfactual_validation.add_argument("--tasks-per-domain", type=int, default=10)
     counterfactual_validation.add_argument("--output", type=Path)
+    vtdo_validation = subparsers.add_parser("run-vtdo-validation")
+    vtdo_validation.add_argument("--vtdo-config", type=Path, required=True)
+    vtdo_validation.add_argument("--output", type=Path)
+    vtdo_train = subparsers.add_parser("train-vtdo-arm")
+    vtdo_train.add_argument("--training-config", type=Path, required=True)
+    vtdo_train.add_argument("--preflight", type=Path, required=True)
+    vtdo_train.add_argument("--arm-manifest", type=Path, required=True)
+    vtdo_train.add_argument(
+        "--arm",
+        choices=VTDO_TRAINING_ARMS,
+        required=True,
+    )
+    vtdo_train.add_argument("--dataset", type=Path, required=True)
+    vtdo_train.add_argument("--output-dir", type=Path, required=True)
+    vtdo_train.add_argument("--output", type=Path)
     agent_capacity = subparsers.add_parser("audit-agent-capacity")
     agent_capacity.add_argument("--agent-config", type=Path, required=True)
     agent_capacity.add_argument("--output", type=Path)

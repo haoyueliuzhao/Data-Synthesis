@@ -184,6 +184,7 @@ class SFTRecord(BaseModel):
     counterfactual_repair: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
     prompt_version: str = "training_utility_agent_prompt.legacy_unspecified"
+    sampling_weight: float = Field(default=1.0, gt=0)
     schema_version: str = "training_utility_sft_record.v4"
 
     @model_validator(mode="after")

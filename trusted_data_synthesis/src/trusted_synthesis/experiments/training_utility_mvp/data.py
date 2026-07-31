@@ -425,7 +425,7 @@ def build_training_utility_datasets(
     )
     selected_clean = _balanced_take(
         tuple(
-            _record_from_example(
+            record_from_quality_example(
                 item,
                 UtilityCohort.CONTRACT_FILTERED,
                 prompt_version=config.prompt_version,
@@ -446,7 +446,7 @@ def build_training_utility_datasets(
         prediction_by_task,
     )
     d5_records = tuple(
-        _record_from_example(
+        record_from_quality_example(
             item,
             UtilityCohort.CRITIC_SELECTED,
             prompt_version=config.prompt_version,
@@ -830,21 +830,22 @@ def _operation_ref_to_execution_ref(
     return f"execution:{execution_id}{suffix}"
 
 
-def _record_from_example(
+def record_from_quality_example(
     example: QualityCriticExample,
-    cohort: UtilityCohort,
+    cohort: UtilityCohort | str,
     *,
     prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     candidate_attempt: dict[str, Any] | None = None,
     target_override: dict[str, Any] | None = None,
     metadata: dict[str, Any] | None = None,
+    sampling_weight: float = 1.0,
 ) -> SFTRecord:
     trajectory = Trajectory.model_validate(example.critic_input["trajectory"])
     target = target_override or trajectory_to_response(trajectory)
     task = dict(example.critic_input["task"])
     public_task = TaskPublicSpec.model_validate(task)
     evidence = list(example.critic_input["evidence_corpus"])
-    return _make_record(
+    return make_sft_record(
         cohort=cohort,
         task=task,
         evidence=evidence,
@@ -858,10 +859,11 @@ def _record_from_example(
             "example_id": example.example_id,
             **(metadata or {}),
         },
+        sampling_weight=sampling_weight,
     )
 
 
-def _make_record(
+def make_sft_record(
     *,
     cohort: UtilityCohort | str,
     task: dict[str, Any],
@@ -872,6 +874,7 @@ def _make_record(
     prompt_version: str = TRAINING_UTILITY_AGENT_PROMPT_VERSION,
     candidate_attempt: dict[str, Any] | None = None,
     metadata: dict[str, Any] | None = None,
+    sampling_weight: float = 1.0,
 ) -> SFTRecord:
     system_prompt = _system_prompt_for_version(prompt_version)
     action_plan, host_execution, answer_decision = _student_contracts_from_response(
@@ -938,6 +941,7 @@ def _make_record(
         "system_prompt": system_prompt,
         "prompt_version": prompt_version,
         "training_format": "host_instrumented_joint",
+        "sampling_weight": sampling_weight,
     }
     return SFTRecord(
         record_id=canonical_hash(identity, prefix="training_utility_record:"),
@@ -960,6 +964,7 @@ def _make_record(
             ),
         },
         prompt_version=prompt_version,
+        sampling_weight=sampling_weight,
     )
 
 
@@ -1130,7 +1135,7 @@ def _d4_counterfactual_calibrated_records(
                 }
             )
         )
-        record = _record_from_example(
+        record = record_from_quality_example(
             clean,
             UtilityCohort.CONTRACT_COUNTERFACTUAL,
             prompt_version=config.prompt_version,
@@ -1174,7 +1179,7 @@ def _d4_legacy_mixed_repair_records(
     direct_count = config.cohort_size - repair_count
     direct = _balanced_take(
         tuple(
-            _record_from_example(
+            record_from_quality_example(
                 item,
                 UtilityCohort.CONTRACT_COUNTERFACTUAL,
                 prompt_version=config.prompt_version,
@@ -1207,7 +1212,7 @@ def _d4_legacy_mixed_repair_records(
             except ValueError:
                 continue
             repairs.append(
-                _record_from_example(
+                record_from_quality_example(
                     clean,
                     UtilityCohort.CONTRACT_COUNTERFACTUAL,
                     prompt_version=config.prompt_version,
@@ -1317,7 +1322,7 @@ def _reference_and_evaluation_records(
             retrieval_track=RetrievalTrack.RESOLVED,
             planning_track=PlanningTrack.PLAN_GIVEN,
         )
-        record = _make_record(
+        record = make_sft_record(
             cohort=(
                 UtilityCohort.REFERENCE_WORKFLOW if ordinal < candidate_target else "evaluation"
             ),
@@ -1460,7 +1465,11 @@ def _representable_example_records(
     records_by_id: dict[str, SFTRecord] = {}
     for example in examples:
         try:
-            record = _record_from_example(example, cohort, prompt_version=prompt_version)
+            record = record_from_quality_example(
+                example,
+                cohort,
+                prompt_version=prompt_version,
+            )
         except ValueError:
             continue
         # Distinct annotations can collapse to the same public prompt and target.

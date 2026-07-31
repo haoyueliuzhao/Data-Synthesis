@@ -1,0 +1,29 @@
+{
+  "base_model": "/data1/zhuxinrui/models/Qwen2.5-7B-Instruct-a09a35458c702b33eeacc393d103063234e8bc28",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "max_seq_length": 24576,
+  "max_new_tokens": 1536,
+  "max_steps": 1000,
+  "supervised_token_budget": 500000,
+  "maximum_token_budget_deviation_rate": 0.04,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 4,
+  "learning_rate": 0.0002,
+  "warmup_ratio": 0.1,
+  "weight_decay": 0.01,
+  "lora_rank": 8,
+  "lora_alpha": 16,
+  "lora_dropout": 0.05,
+  "lora_target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "seed": 20260731,
+  "prompt_version": "training_utility_agent_prompt.v6",
+  "student_interaction_protocol": "host_instrumented_joint"
+}

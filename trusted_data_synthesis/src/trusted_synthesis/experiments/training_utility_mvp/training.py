@@ -5,7 +5,7 @@ import math
 import time
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from trusted_synthesis.core.evaluation.utility import UtilityCohort
 from trusted_synthesis.hashing import canonical_hash
@@ -15,12 +15,33 @@ from .model_security import validate_model_loading_contract
 from .schema import (
     CohortTokenBudgetAudit,
     CohortTrainingResult,
-    TrainingUtilityMVPConfig,
 )
 
 
+class SFTTrainingRuntimeConfig(Protocol):
+    base_model: str
+    model_revision: str | None
+    max_seq_length: int
+    max_steps: int
+    supervised_token_budget: int | None
+    maximum_token_budget_deviation_rate: float
+    per_device_train_batch_size: int
+    gradient_accumulation_steps: int
+    learning_rate: float
+    warmup_ratio: float
+    weight_decay: float
+    lora_rank: int
+    lora_alpha: int
+    lora_dropout: float
+    lora_target_modules: tuple[str, ...]
+    seed: int
+
+    @property
+    def config_hash(self) -> str: ...
+
+
 def train_sft_cohort(
-    config: TrainingUtilityMVPConfig,
+    config: SFTTrainingRuntimeConfig,
     cohort: UtilityCohort | str,
     dataset_path: Path,
     output_dir: Path,
@@ -220,7 +241,7 @@ def train_sft_cohort(
 
 
 def audit_sft_token_budget(
-    config: TrainingUtilityMVPConfig,
+    config: SFTTrainingRuntimeConfig,
     cohort: UtilityCohort | str,
     dataset_path: Path,
 ) -> CohortTokenBudgetAudit:
@@ -307,7 +328,7 @@ def audit_sft_token_budget(
 
 
 def _completed_training_budget_matches(
-    config: TrainingUtilityMVPConfig,
+    config: SFTTrainingRuntimeConfig,
     result: CohortTrainingResult,
 ) -> bool:
     if config.supervised_token_budget is None:
@@ -323,7 +344,7 @@ def _completed_training_budget_matches(
 
 
 def _validate_model_context_window(
-    config: TrainingUtilityMVPConfig,
+    config: SFTTrainingRuntimeConfig,
     auto_config: Any,
 ) -> None:
     model_config = auto_config.from_pretrained(
@@ -340,7 +361,7 @@ def _validate_model_context_window(
 
 
 def _prepare_supervised_token_schedule(
-    config: TrainingUtilityMVPConfig,
+    config: SFTTrainingRuntimeConfig,
     records: tuple[Any, ...],
     encoded: list[dict[str, list[int]]],
     token_audit: dict[str, Any],
@@ -356,15 +377,18 @@ def _prepare_supervised_token_schedule(
     raw_supervised_tokens = sum(label != -100 for item in encoded for label in item["labels"])
     scheduled = encoded
     supervised_token_count = raw_supervised_tokens
+    sampling_exposure_counts = {item.record_id: 1 for item in records}
     effective_max_steps = config.max_steps
     examples_per_step = config.per_device_train_batch_size * config.gradient_accumulation_steps
     if config.supervised_token_budget is not None:
-        scheduled, supervised_token_count = _schedule_supervised_token_budget(
-            encoded,
-            records,
-            token_budget=config.supervised_token_budget,
-            examples_per_step=examples_per_step,
-            seed=config.seed,
+        scheduled, supervised_token_count, sampling_exposure_counts = (
+            _schedule_supervised_token_budget_with_exposures(
+                encoded,
+                records,
+                token_budget=config.supervised_token_budget,
+                examples_per_step=examples_per_step,
+                seed=config.seed,
+            )
         )
         effective_max_steps = len(scheduled) // examples_per_step
     deviation_rate = (
@@ -394,6 +418,11 @@ def _prepare_supervised_token_schedule(
             "token_budget_deviation_rate": deviation_rate,
             "examples_per_optimizer_step": examples_per_step,
             "effective_max_steps": effective_max_steps,
+            "sampling_weight_manifest_hash": canonical_hash(
+                {item.record_id: item.sampling_weight for item in records},
+                prefix="training_sampling_weights:",
+            ),
+            "sampling_exposure_counts": dict(sorted(sampling_exposure_counts.items())),
             "blockers": blockers,
         }
     )
@@ -416,6 +445,24 @@ def _schedule_supervised_token_budget(
     examples_per_step: int,
     seed: int,
 ) -> tuple[list[dict[str, list[int]]], int]:
+    scheduled, token_count, _ = _schedule_supervised_token_budget_with_exposures(
+        encoded,
+        records,
+        token_budget=token_budget,
+        examples_per_step=examples_per_step,
+        seed=seed,
+    )
+    return scheduled, token_count
+
+
+def _schedule_supervised_token_budget_with_exposures(
+    encoded: list[dict[str, list[int]]],
+    records: tuple[Any, ...],
+    *,
+    token_budget: int,
+    examples_per_step: int,
+    seed: int,
+) -> tuple[list[dict[str, list[int]]], int, dict[str, int]]:
     """Build complete optimizer-step blocks nearest to the frozen token budget."""
 
     if not encoded or len(encoded) != len(records):
@@ -425,19 +472,32 @@ def _schedule_supervised_token_budget(
     target_counts = [sum(label != -100 for label in item["labels"]) for item in encoded]
     scheduled_indices: list[int] = []
     scheduled_tokens = 0
+    exposure_counts = {item.record_id: 0 for item in records}
+    weighted = any(
+        not math.isclose(item.sampling_weight, records[0].sampling_weight, abs_tol=1e-12)
+        for item in records[1:]
+    )
+    draw_index = 0
     cycle = 0
     while scheduled_tokens < token_budget:
-        order = sorted(
-            range(len(records)),
-            key=lambda index: canonical_hash(
-                {
-                    "seed": seed,
-                    "cycle": cycle,
-                    "record_id": records[index].record_id,
-                },
-                prefix="training_token_schedule:",
-            ),
-        )
+        if weighted:
+            order = [
+                _weighted_record_index(records, seed=seed, draw_index=draw_index + index)
+                for index in range(examples_per_step)
+            ]
+            draw_index += examples_per_step
+        else:
+            order = sorted(
+                range(len(records)),
+                key=lambda index: canonical_hash(
+                    {
+                        "seed": seed,
+                        "cycle": cycle,
+                        "record_id": records[index].record_id,
+                    },
+                    prefix="training_token_schedule:",
+                ),
+            )
         cycle += 1
         for offset in range(0, len(order), examples_per_step):
             block = order[offset : offset + examples_per_step]
@@ -446,16 +506,40 @@ def _schedule_supervised_token_budget(
             previous_count = len(scheduled_indices)
             previous_tokens = scheduled_tokens
             scheduled_indices.extend(block)
+            for index in block:
+                exposure_counts[records[index].record_id] += 1
             scheduled_tokens += sum(target_counts[index] for index in block)
             if scheduled_tokens < token_budget:
                 continue
             if previous_count and abs(previous_tokens - token_budget) < abs(
                 scheduled_tokens - token_budget
             ):
+                for index in scheduled_indices[previous_count:]:
+                    exposure_counts[records[index].record_id] -= 1
                 del scheduled_indices[previous_count:]
                 scheduled_tokens = previous_tokens
-            return [encoded[index] for index in scheduled_indices], scheduled_tokens
+            return (
+                [encoded[index] for index in scheduled_indices],
+                scheduled_tokens,
+                exposure_counts,
+            )
     raise AssertionError("unreachable token schedule state")
+
+
+def _weighted_record_index(records: tuple[Any, ...], *, seed: int, draw_index: int) -> int:
+    total = sum(item.sampling_weight for item in records)
+    digest = canonical_hash(
+        {"seed": seed, "draw_index": draw_index},
+        prefix="training_weighted_draw:",
+    ).rsplit(":", 1)[-1]
+    unit_interval = int(digest[:16], 16) / float(16**16)
+    target = unit_interval * total
+    cumulative = 0.0
+    for index, record in enumerate(records):
+        cumulative += record.sampling_weight
+        if target < cumulative:
+            return index
+    return len(records) - 1
 
 
 def _encode_records(

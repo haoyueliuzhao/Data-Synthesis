@@ -1,0 +1,56 @@
+{
+  "experiment_id": "vtdo_paper_validation.finance.v3",
+  "synthetic": {
+    "state_count": 200,
+    "rounds": 20,
+    "seeds": [11, 23, 37, 53, 71],
+    "reject_below": 0.3,
+    "accept_at_or_above": 0.8,
+    "coverage_epsilon": 0.0001,
+    "contribution_oracle_temperature": 1.0,
+    "contribution_temperature": 1.0,
+    "novelty_temperature": 1.0,
+    "contribution_weight": 0.5,
+    "novelty_weight": 0.5,
+    "history_kl_weight": 1.0,
+    "coverage_kl_weight": 1.0,
+    "anchor_sensitivity": [0.25, 0.5, 1.0, 2.0, 4.0],
+    "raw_variants_per_state": 3
+  },
+  "real_state": {
+    "enabled": true,
+    "agent_artifact_dir": "../artifacts/agent_validation/v09_archive_gate_v5_20260730",
+    "agent_config_path": "deepseek_v4_pro_agent_v09_archive_gate.json",
+    "include_domains": ["finance"],
+    "surface_variants_per_trajectory": 2,
+    "minimum_real_trajectory_count": 20
+  },
+  "training": {
+    "enabled": true,
+    "training_config_path": "vtdo_qwen2_5_7b_500k.json",
+    "ccgr_manifest_path": "../artifacts/training_utility_v09/real_mvp_refinement_20260730/v09_refinement_manifest.json",
+    "vtdo_materialization_path": null,
+    "external_benchmark_paths": [],
+    "target_supervised_tokens": 500000,
+    "minimum_unique_tasks_per_arm": 100,
+    "minimum_unique_states_per_arm": 50,
+    "allow_capacity_limited_pilot": true,
+    "gpu_ids": [3, 4, 5, 6, 7],
+    "seeds": [20260731]
+  },
+  "refinement_dynamics": {
+    "enabled": true,
+    "method": "full_vtdo",
+    "analysis_rounds": 5,
+    "checkpoint_rounds": [1, 3, 5],
+    "primary_training_round": 3,
+    "kl_stabilization_threshold": 0.01,
+    "utility_delta_threshold": 0.01,
+    "coverage_epsilon": 0.0001,
+    "consecutive_stable_rounds": 2,
+    "fixed_potential_rounds": 10,
+    "contraction_tolerance": 1e-9,
+    "real_round_artifact_paths": []
+  },
+  "output_dir": "../artifacts/vtdo_validation/vtdo_paper_validation_20260731_round_dynamics"
+}

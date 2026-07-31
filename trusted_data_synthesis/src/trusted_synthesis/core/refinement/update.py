@@ -722,4 +722,8 @@ def _total_variation(
 
 
 def _entropy(values: Mapping[str, float]) -> float:
-    return -sum(value * math.log(value) for value in values.values() if value > 0)
+    # Entropy is non-negative; clamp sub-ulp cancellation at degenerate support.
+    return max(
+        0.0,
+        -sum(value * math.log(value) for value in values.values() if value > 0),
+    )
