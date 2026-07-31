@@ -24,6 +24,6 @@
     "down_proj"
   ],
   "seed": 20260731,
-  "prompt_version": "training_utility_agent_prompt.v6",
+  "prompt_version": "vtdo_student_prompt.v1",
   "student_interaction_protocol": "host_instrumented_joint"
 }

@@ -156,7 +156,7 @@ def _build_archive_finance_cases(
 ) -> tuple[ContractCase, ...]:
     from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
     from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
-    from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
+    from trusted_synthesis.experiments.finance_archive import (
         FinanceArchiveBindingProvider,
     )
 

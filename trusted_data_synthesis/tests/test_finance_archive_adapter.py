@@ -24,7 +24,7 @@ from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter, _ti
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.experiments.agent_validation.runner import _compile_runtime
 from trusted_synthesis.experiments.agent_validation.tracks import materialize_track_variant
-from trusted_synthesis.experiments.training_utility_v09.finance_archive_materialization import (
+from trusted_synthesis.experiments.finance_archive import (
     FinanceArchiveBindingProvider,
 )
 
