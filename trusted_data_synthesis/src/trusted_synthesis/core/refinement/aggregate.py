@@ -15,8 +15,14 @@ from trusted_synthesis.core.feedback import (
     FeedbackExposure,
     FeedbackRoute,
     FeedbackSignal,
+    TrajectoryFeedback,
 )
+from trusted_synthesis.core.task.program import TaskProgram
 from trusted_synthesis.core.task.schema import TaskPublicSpec
+from trusted_synthesis.core.trajectory.attributes import (
+    TrajectoryAttributeProfile,
+    expected_trajectory_attributes,
+)
 from trusted_synthesis.hashing import canonical_hash
 
 from .schema import (
@@ -41,6 +47,7 @@ def make_synthesis_cell(
     binding_stratum_id: str,
     difficulty_bucket: str,
     distractor_profile_id: str,
+    trajectory_attribute_profile: TrajectoryAttributeProfile | None = None,
     declared_tightening_options: Mapping[str, Iterable[str]] | None = None,
     active_binding_constraints: Iterable[str] = (),
 ) -> SynthesisCell:
@@ -55,6 +62,7 @@ def make_synthesis_cell(
         binding_stratum_id=binding_stratum_id,
         difficulty_bucket=difficulty_bucket,
         distractor_profile_id=distractor_profile_id,
+        trajectory_attribute_profile=trajectory_attribute_profile,
         declared_tightening_options=options,
         active_binding_constraints=active,
     )
@@ -64,6 +72,7 @@ def make_synthesis_cell(
         binding_stratum_id=binding_stratum_id,
         difficulty_bucket=difficulty_bucket,
         distractor_profile_id=distractor_profile_id,
+        trajectory_attribute_profile=trajectory_attribute_profile,
         declared_tightening_options=options,
         active_binding_constraints=active,
     )
@@ -76,8 +85,9 @@ def build_synthesis_cell(
     *,
     declared_tightening_options: Mapping[str, Iterable[str]] | None = None,
     active_binding_constraints: Iterable[str] = (),
+    task_program: TaskProgram | None = None,
 ) -> SynthesisCell:
-    """Derive p/b/d/h without interpreting domain-specific field values."""
+    """Derive structural task and trajectory configuration descriptors."""
 
     required_ids = tuple(sorted(set(required_evidence_ids)))
     evidence_by_id = corpus.by_id()
@@ -109,6 +119,11 @@ def build_synthesis_cell(
         binding_stratum_id=_binding_stratum_id(required),
         difficulty_bucket=difficulty_bucket,
         distractor_profile_id=_distractor_profile_id(required, distractors),
+        trajectory_attribute_profile=(
+            expected_trajectory_attributes(task_program).profile
+            if task_program is not None
+            else None
+        ),
         declared_tightening_options=options,
         active_binding_constraints=active,
     )
@@ -373,6 +388,7 @@ def aggregate_cell_feedback(
     minimum_cell_exposure: int = 1,
     shrinkage_strength: float = 0.0,
     normalize_root_mass: bool = True,
+    trajectory_feedback: Iterable[TrajectoryFeedback] = (),
 ) -> tuple[CellFeedbackStatistics, ...]:
     """Aggregate calibrated roots with per-sample normalization and pattern shrinkage."""
 
@@ -380,7 +396,9 @@ def aggregate_cell_feedback(
         raise ValueError("minimum Cell exposure must be positive")
     if shrinkage_strength < 0:
         raise ValueError("shrinkage strength cannot be negative")
-    explicit_exposure_tasks = {item.task_id for item in exposures}
+    exposure_items = tuple(exposures)
+    trajectory_items = tuple(trajectory_feedback)
+    explicit_exposure_tasks = {item.task_id for item in exposure_items}
     unknown_tasks = explicit_exposure_tasks - set(task_cells)
     if unknown_tasks:
         raise ValueError(f"feedback exposures have no synthesis cells: {sorted(unknown_tasks)}")
@@ -390,6 +408,18 @@ def aggregate_cell_feedback(
     total_exposures = len(explicit_exposure_tasks)
     feedback_by_cell: dict[str, list[ClauseFeedback]] = defaultdict(list)
     feedback_by_task: dict[str, list[ClauseFeedback]] = defaultdict(list)
+    trajectory_by_cell: dict[str, list[TrajectoryFeedback]] = defaultdict(list)
+    for item in trajectory_items:
+        if item.task_id not in explicit_exposure_tasks:
+            raise ValueError(f"trajectory feedback has no task exposure: {item.task_id}")
+        expected_cell_id = task_cells[item.task_id].cell_id
+        if item.configuration_id != expected_cell_id:
+            raise ValueError(
+                "trajectory feedback configuration does not match its task binding: "
+                f"{item.task_id} expected {expected_cell_id}, "
+                f"observed {item.configuration_id}"
+            )
+        trajectory_by_cell[item.configuration_id].append(item)
     for item in feedback:
         if item.task_id not in explicit_exposure_tasks:
             raise ValueError(f"clause feedback has no task exposure: {item.task_id}")
@@ -443,6 +473,12 @@ def aggregate_cell_feedback(
             for item in items
             if item.route == FeedbackRoute.INTERFACE_FAILURE
         )
+        trajectory_rows = trajectory_by_cell.get(cell.cell_id, [])
+        valid_trajectory_rows = [item for item in trajectory_rows if item.valid]
+        valid_trajectory_count = len(valid_trajectory_rows)
+        profile_counts = Counter(
+            item.attribute_profile_id for item in valid_trajectory_rows
+        )
         cell_rows[cell.cell_id] = {
             "exposure_count": exposure_count,
             "defect_raw": defect_raw,
@@ -450,6 +486,25 @@ def aggregate_cell_feedback(
             "defect_weight": defect_weight,
             "capability_weight": capability_weight,
             "interface_weight": interface_weight,
+            "trajectory_attempt_count": len(trajectory_rows),
+            "valid_trajectory_count": valid_trajectory_count,
+            "mean_trajectory_validity_score": (
+                sum(item.validity_score for item in trajectory_rows) / len(trajectory_rows)
+                if trajectory_rows
+                else 0.0
+            ),
+            "trajectory_attribute_profile_count": len(profile_counts),
+            "trajectory_attribute_entropy": _counter_entropy(profile_counts),
+            "trajectory_diversity_gain": _normalized_profile_diversity(
+                profile_counts,
+                valid_trajectory_count,
+            ),
+            "missing_attribute_rate": (
+                sum(bool(item.missing_attributes) for item in trajectory_rows)
+                / len(trajectory_rows)
+                if trajectory_rows
+                else 0.0
+            ),
         }
         cells_by_pattern[cell.pattern_id].append(cell.cell_id)
 
@@ -527,9 +582,51 @@ def aggregate_cell_feedback(
                 target_share=target,
                 observed_share=observed,
                 coverage_gap=max(0.0, target - observed),
+                trajectory_attempt_count=int(row["trajectory_attempt_count"]),
+                valid_trajectory_count=int(row["valid_trajectory_count"]),
+                trajectory_validity_rate=(
+                    int(row["valid_trajectory_count"])
+                    / int(row["trajectory_attempt_count"])
+                    if int(row["trajectory_attempt_count"])
+                    else 0.0
+                ),
+                mean_trajectory_validity_score=float(
+                    row["mean_trajectory_validity_score"]
+                ),
+                trajectory_attribute_profile_count=int(
+                    row["trajectory_attribute_profile_count"]
+                ),
+                trajectory_attribute_entropy=float(
+                    row["trajectory_attribute_entropy"]
+                ),
+                trajectory_diversity_gain=float(
+                    row["trajectory_diversity_gain"]
+                ),
+                missing_attribute_rate=float(row["missing_attribute_rate"]),
             )
         )
     return tuple(sorted(statistics, key=lambda item: item.cell_id))
+
+
+def _counter_entropy(counts: Counter[str]) -> float:
+    total = sum(counts.values())
+    if total == 0:
+        return 0.0
+    return -sum(
+        (count / total) * math.log(count / total)
+        for count in counts.values()
+        if count
+    )
+
+
+def _normalized_profile_diversity(
+    counts: Counter[str],
+    valid_trajectory_count: int,
+) -> float:
+    if valid_trajectory_count <= 1:
+        return 0.0
+    effective_profile_count = math.exp(_counter_entropy(counts))
+    return (effective_profile_count - 1.0) / (valid_trajectory_count - 1.0)
 
 
 def _binding_stratum_id(evidence: tuple[EvidenceItem, ...]) -> str:

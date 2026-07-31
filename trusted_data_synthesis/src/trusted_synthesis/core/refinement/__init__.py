@@ -23,20 +23,29 @@ from trusted_synthesis.core.refinement.materialization import (
 from trusted_synthesis.core.refinement.schema import (
     CCGR_ALGORITHM_ID,
     CCGR_ALGORITHM_VERSION,
+    VALID_TRAJECTORY_ALGORITHM_ID,
+    VALID_TRAJECTORY_ALGORITHM_VERSION,
     CellFeedbackStatistics,
     ClauseFeedback,
     PolicyUpdateResult,
     SynthesisCell,
     SynthesisPolicy,
+    TrajectoryConfiguration,
+    TrajectoryDistributionMetrics,
+    TrajectoryUtilityComponents,
+    TrajectoryUtilityWeights,
 )
 from trusted_synthesis.core.refinement.update import (
     random_same_shift_update,
     update_synthesis_policy,
+    update_valid_trajectory_policy,
 )
 
 __all__ = [
     "CCGR_ALGORITHM_ID",
     "CCGR_ALGORITHM_VERSION",
+    "VALID_TRAJECTORY_ALGORITHM_ID",
+    "VALID_TRAJECTORY_ALGORITHM_VERSION",
     "REFINED_SYNTHESIS_MATERIALIZER_VERSION",
     "RefinedSynthesisArtifact",
     "RefinedSynthesisMaterializer",
@@ -46,6 +55,10 @@ __all__ = [
     "PolicyUpdateResult",
     "SynthesisCell",
     "SynthesisPolicy",
+    "TrajectoryConfiguration",
+    "TrajectoryDistributionMetrics",
+    "TrajectoryUtilityComponents",
+    "TrajectoryUtilityWeights",
     "SynthesisBindingCandidate",
     "SynthesisBindingProviderProtocol",
     "SynthesisCellRequest",
@@ -62,4 +75,5 @@ __all__ = [
     "make_synthesis_cell_request",
     "random_same_shift_update",
     "update_synthesis_policy",
+    "update_valid_trajectory_policy",
 ]

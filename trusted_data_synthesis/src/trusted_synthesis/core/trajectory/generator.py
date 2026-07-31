@@ -22,7 +22,7 @@ class ReferenceWorkflowError(ValueError):
 
 
 class ReferenceWorkflowCompiler:
-    """Compile the hidden oracle into a deterministic reference workflow."""
+    """Compile one deterministic valid example from the hidden Oracle specification."""
 
     def __init__(self, registry: OperationRegistry | None = None) -> None:
         self._executor = TaskProgramExecutor(registry or default_registry())

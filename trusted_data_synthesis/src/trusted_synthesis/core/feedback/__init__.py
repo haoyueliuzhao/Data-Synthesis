@@ -17,6 +17,11 @@ from trusted_synthesis.core.feedback.schema import (
     RefinementAllocation,
     make_feedback_signal,
 )
+from trusted_synthesis.core.feedback.trajectory import (
+    TrajectoryFeedback,
+    make_trajectory_feedback,
+    make_trajectory_feedback_batch,
+)
 
 __all__ = [
     "AllocationCell",
@@ -26,10 +31,13 @@ __all__ = [
     "FeedbackSignal",
     "PatternClauseFailure",
     "RefinementAllocation",
+    "TrajectoryFeedback",
     "aggregate_pattern_clause_failures",
     "allocate_refinement_budget",
     "contract_feedback",
     "failed_action_feedback",
     "make_feedback_signal",
+    "make_trajectory_feedback",
+    "make_trajectory_feedback_batch",
     "route_failure",
 ]

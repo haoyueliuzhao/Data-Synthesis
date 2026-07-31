@@ -523,6 +523,11 @@ def _instantiate_candidate(
         instantiation.task.oracle.gold_evidence_ids,
         declared_tightening_options=request.cell.declared_tightening_options,
         active_binding_constraints=request.cell.active_binding_constraints,
+        task_program=(
+            instantiation.task.oracle.task_program
+            if request.cell.trajectory_attribute_profile is not None
+            else None
+        ),
     )
     if observed_cell != request.cell:
         raise ValueError("compiled task does not reproduce the requested synthesis Cell")

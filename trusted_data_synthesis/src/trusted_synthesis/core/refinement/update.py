@@ -9,11 +9,18 @@ from trusted_synthesis.hashing import canonical_hash
 
 from .aggregate import make_synthesis_cell
 from .schema import (
+    CCGR_ALGORITHM_ID,
+    CCGR_ALGORITHM_VERSION,
+    VALID_TRAJECTORY_ALGORITHM_ID,
+    VALID_TRAJECTORY_ALGORITHM_VERSION,
     CellFeedbackStatistics,
     ClauseFeedback,
     PolicyUpdateResult,
     SynthesisCell,
     SynthesisPolicy,
+    TrajectoryDistributionMetrics,
+    TrajectoryUtilityComponents,
+    TrajectoryUtilityWeights,
     policy_update_id,
     synthesis_policy_id,
 )
@@ -38,22 +45,35 @@ def update_synthesis_policy(
         "feedback_objective",
         "score_only_control",
         "random_control",
+        "valid_trajectory_objective",
     ] = "feedback_objective",
+    algorithm_id: str = CCGR_ALGORITHM_ID,
+    algorithm_version: str = CCGR_ALGORITHM_VERSION,
+    alpha: float = 0.0,
+    lambda_defect: float = 0.0,
+    cell_utility_components: Mapping[str, TrajectoryUtilityComponents] | None = None,
+    trajectory_feedback_manifest_hash: str | None = None,
+    trajectory_feedback_count: int = 0,
     conditioning_groups: Mapping[str, str] | None = None,
     fixed_group_weights: Mapping[str, float] | None = None,
 ) -> PolicyUpdateResult:
     """Apply the closed-form exponentiated CCGR policy update."""
 
-    if eta < 0 or beta < 0 or gamma < 0:
-        raise ValueError("CCGR eta, beta, and gamma must be non-negative")
+    if eta < 0 or alpha < 0 or beta < 0 or gamma < 0 or lambda_defect < 0:
+        raise ValueError(
+            "policy eta and all valid-trajectory utility weights must be non-negative"
+        )
     if total_budget < 1:
-        raise ValueError("CCGR total budget must be positive")
+        raise ValueError("policy update total budget must be positive")
+    if trajectory_feedback_count < 0:
+        raise ValueError("trajectory feedback count cannot be negative")
     if not 0 <= binding_tightening_threshold:
         raise ValueError("binding tightening threshold must be non-negative")
     if utility_mode not in {
         "feedback_objective",
         "score_only_control",
         "random_control",
+        "valid_trajectory_objective",
     }:
         raise ValueError("unknown CCGR utility mode")
     stats = tuple(sorted(statistics, key=lambda item: item.cell_id))
@@ -74,7 +94,19 @@ def update_synthesis_policy(
         }
     )
     if set(utilities) != prior_ids:
-        raise ValueError("CCGR utility overrides must cover the prior policy exactly")
+        raise ValueError("policy utility overrides must cover the prior policy exactly")
+    utility_components = dict(cell_utility_components or {})
+    if utility_components and set(utility_components) != prior_ids:
+        raise ValueError(
+            "trajectory utility components must cover the prior policy exactly"
+        )
+    if any(
+        not math.isclose(utilities[cell_id], item.utility, abs_tol=1e-12)
+        for cell_id, item in utility_components.items()
+    ):
+        raise ValueError("trajectory utility components disagree with utility overrides")
+    if utility_mode == "valid_trajectory_objective" and not utility_components:
+        raise ValueError("valid-trajectory updates require utility components")
     (
         conditioning_mode,
         resolved_groups,
@@ -151,6 +183,16 @@ def update_synthesis_policy(
         else ()
     )
     prior_entropy = _entropy(prior_policy.probabilities)
+    prior_trajectory_metrics = (
+        _trajectory_distribution_metrics(prior_policy)
+        if utility_mode == "valid_trajectory_objective"
+        else None
+    )
+    next_trajectory_metrics = (
+        _trajectory_distribution_metrics(next_policy)
+        if utility_mode == "valid_trajectory_objective"
+        else None
+    )
     next_on_prior = {
         prior_id: next_policy.probabilities[next_id] for prior_id, next_id in transitions.items()
     }
@@ -175,11 +217,14 @@ def update_synthesis_policy(
     status: Literal["passed", "blocked"] = "blocked" if failures else "passed"
     provisional = PolicyUpdateResult.model_construct(
         update_id="pending",
+        algorithm_id=algorithm_id,
+        algorithm_version=algorithm_version,
         ablation_id=ablation_id,
         prior_policy=prior_policy,
         next_policy=next_policy,
         statistics=stats,
         cell_utilities=cell_utilities,
+        cell_utility_components=dict(sorted(utility_components.items())),
         cell_transition_map=cell_transition_map,
         allocated_counts=allocated_counts,
         conditioning_mode=conditioning_mode,
@@ -189,12 +234,18 @@ def update_synthesis_policy(
         activated_binding_constraints=activated_constraints,
         tightening_without_declared_option=unresolved,
         eta=eta,
+        alpha=alpha,
         beta=beta,
         gamma=gamma,
+        lambda_defect=lambda_defect,
         total_budget=total_budget,
         calibration_manifest_hash=calibration_manifest_hash,
         feedback_manifest_hash=feedback_manifest_hash,
+        trajectory_feedback_manifest_hash=trajectory_feedback_manifest_hash,
+        trajectory_feedback_count=trajectory_feedback_count,
         utility_mode=utility_mode,
+        prior_trajectory_metrics=prior_trajectory_metrics,
+        next_trajectory_metrics=next_trajectory_metrics,
         kl_divergence=kl_divergence,
         total_variation_distance=total_variation_distance,
         prior_entropy=prior_entropy,
@@ -208,11 +259,14 @@ def update_synthesis_policy(
     )
     return PolicyUpdateResult(
         update_id=policy_update_id(provisional),
+        algorithm_id=algorithm_id,
+        algorithm_version=algorithm_version,
         ablation_id=ablation_id,
         prior_policy=prior_policy,
         next_policy=next_policy,
         statistics=stats,
         cell_utilities=cell_utilities,
+        cell_utility_components=dict(sorted(utility_components.items())),
         cell_transition_map=cell_transition_map,
         allocated_counts=allocated_counts,
         conditioning_mode=conditioning_mode,
@@ -222,12 +276,18 @@ def update_synthesis_policy(
         activated_binding_constraints=activated_constraints,
         tightening_without_declared_option=unresolved,
         eta=eta,
+        alpha=alpha,
         beta=beta,
         gamma=gamma,
+        lambda_defect=lambda_defect,
         total_budget=total_budget,
         calibration_manifest_hash=calibration_manifest_hash,
         feedback_manifest_hash=feedback_manifest_hash,
+        trajectory_feedback_manifest_hash=trajectory_feedback_manifest_hash,
+        trajectory_feedback_count=trajectory_feedback_count,
         utility_mode=utility_mode,
+        prior_trajectory_metrics=prior_trajectory_metrics,
+        next_trajectory_metrics=next_trajectory_metrics,
         kl_divergence=kl_divergence,
         total_variation_distance=total_variation_distance,
         prior_entropy=prior_entropy,
@@ -238,6 +298,92 @@ def update_synthesis_policy(
         expected_utility_after=expected_after,
         status=status,
         failures=failures,
+    )
+
+
+def update_valid_trajectory_policy(
+    prior_policy: SynthesisPolicy,
+    statistics: Iterable[CellFeedbackStatistics],
+    feedback: Iterable[ClauseFeedback],
+    *,
+    eta: float,
+    total_budget: int,
+    calibration_manifest_hash: str,
+    trajectory_feedback_manifest_hash: str,
+    weights: TrajectoryUtilityWeights | None = None,
+    ablation_id: str = "valid_trajectory_distribution",
+    binding_tightening_threshold: float = 0.25,
+    enable_binding_tightening: bool = True,
+    require_calibrated_feedback: bool = False,
+    conditioning_groups: Mapping[str, str] | None = None,
+    fixed_group_weights: Mapping[str, float] | None = None,
+) -> PolicyUpdateResult:
+    """Optimize a finite approximation to p(trajectory | task).
+
+    R(a) = alpha * validity + beta * coverage + gamma * diversity
+           - lambda * synthesis_defect_risk.
+    """
+
+    stats = tuple(statistics)
+    feedback_items = tuple(feedback)
+    trajectory_attempts = sum(item.trajectory_attempt_count for item in stats)
+    if trajectory_attempts < 1:
+        raise ValueError("valid-trajectory optimization requires observed trajectories")
+    resolved_weights = weights or TrajectoryUtilityWeights(
+        alpha_validity=1.0,
+        beta_coverage=1.0,
+        gamma_diversity=1.0,
+        lambda_defect=1.0,
+    )
+    components: dict[str, TrajectoryUtilityComponents] = {}
+    for item in stats:
+        coverage_gain = min(
+            1.0,
+            item.capability_gap_demand + item.coverage_gap,
+        )
+        diversity_gain = item.trajectory_diversity_gain * (
+            1.0 - item.missing_attribute_rate
+        )
+        utility = (
+            resolved_weights.alpha_validity * item.trajectory_validity_rate
+            + resolved_weights.beta_coverage * coverage_gain
+            + resolved_weights.gamma_diversity * diversity_gain
+            - resolved_weights.lambda_defect * item.synthesis_defect_risk
+        )
+        components[item.cell_id] = TrajectoryUtilityComponents(
+            validity_reward=item.trajectory_validity_rate,
+            coverage_gain=coverage_gain,
+            diversity_gain=diversity_gain,
+            synthesis_defect_risk=item.synthesis_defect_risk,
+            weights=resolved_weights,
+            utility=utility,
+        )
+    return update_synthesis_policy(
+        prior_policy,
+        stats,
+        feedback_items,
+        eta=eta,
+        alpha=resolved_weights.alpha_validity,
+        beta=resolved_weights.beta_coverage,
+        gamma=resolved_weights.gamma_diversity,
+        lambda_defect=resolved_weights.lambda_defect,
+        total_budget=total_budget,
+        calibration_manifest_hash=calibration_manifest_hash,
+        ablation_id=ablation_id,
+        binding_tightening_threshold=binding_tightening_threshold,
+        enable_binding_tightening=enable_binding_tightening,
+        require_calibrated_feedback=require_calibrated_feedback,
+        utility_overrides={
+            cell_id: item.utility for cell_id, item in components.items()
+        },
+        utility_mode="valid_trajectory_objective",
+        algorithm_id=VALID_TRAJECTORY_ALGORITHM_ID,
+        algorithm_version=VALID_TRAJECTORY_ALGORITHM_VERSION,
+        cell_utility_components=components,
+        trajectory_feedback_manifest_hash=trajectory_feedback_manifest_hash,
+        trajectory_feedback_count=trajectory_attempts,
+        conditioning_groups=conditioning_groups,
+        fixed_group_weights=fixed_group_weights,
     )
 
 
@@ -312,6 +458,34 @@ def random_same_shift_update(
     )
 
 
+def _trajectory_distribution_metrics(
+    policy: SynthesisPolicy,
+) -> TrajectoryDistributionMetrics:
+    profile_probabilities: dict[str, float] = {}
+    capability_coverage: set[str] = set()
+    for cell in policy.cells:
+        profile = cell.trajectory_attribute_profile
+        profile_id = (
+            profile.profile_id
+            if profile is not None
+            else "trajectory_profile:unspecified"
+        )
+        profile_probabilities[profile_id] = (
+            profile_probabilities.get(profile_id, 0.0)
+            + policy.probabilities[cell.cell_id]
+        )
+        if profile is not None:
+            capability_coverage.update(profile.capability_tags)
+    normalized = dict(sorted(profile_probabilities.items()))
+    entropy = _entropy(normalized)
+    return TrajectoryDistributionMetrics(
+        profile_probabilities=normalized,
+        profile_entropy=entropy,
+        effective_profile_count=math.exp(entropy),
+        capability_coverage=tuple(sorted(capability_coverage)),
+    )
+
+
 def _select_binding_tightening(
     cells: tuple[SynthesisCell, ...],
     statistics: tuple[CellFeedbackStatistics, ...],
@@ -364,6 +538,7 @@ def _transition_cells(
                 binding_stratum_id=cell.binding_stratum_id,
                 difficulty_bucket=cell.difficulty_bucket,
                 distractor_profile_id=cell.distractor_profile_id,
+                trajectory_attribute_profile=cell.trajectory_attribute_profile,
                 declared_tightening_options=cell.declared_tightening_options,
                 active_binding_constraints=(
                     *cell.active_binding_constraints,

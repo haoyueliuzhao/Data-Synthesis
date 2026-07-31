@@ -35,6 +35,25 @@ def validate_compiled_artifacts(artifacts: CompiledProofCarryingArtifacts) -> No
         or sample.reference_trajectory_hash != artifacts.reference_trajectory.trajectory_hash
     ):
         raise ValueError("proof-carrying sample does not bind the reference trajectory")
+    specification = artifacts.oracle_execution_specification
+    if (
+        specification.task_id != task.task_id
+        or specification.evidence_bundle_hash != artifacts.evidence_bundle.bundle_hash
+        or specification.public_corpus_hash != artifacts.public_corpus.corpus_hash
+        or specification.proof_graph_hash != artifacts.proof_graph.graph_hash
+        or specification.task_program_hash != task.oracle.task_program.program_hash
+        or specification.quality_contract_hash != artifacts.quality_contract.contract_hash
+    ):
+        raise ValueError(
+            "proof-carrying artifacts do not reproduce the Oracle execution specification"
+        )
+    trajectory_contract = sample.metadata.get("trajectory_contract")
+    if (
+        not isinstance(trajectory_contract, dict)
+        or trajectory_contract.get("oracle_execution_specification_id")
+        != specification.specification_id
+    ):
+        raise ValueError("proof-carrying sample does not bind the trajectory contract")
     if (
         sample.quality_contract_id != artifacts.quality_contract.contract_id
         or sample.quality_contract_hash != artifacts.quality_contract.contract_hash

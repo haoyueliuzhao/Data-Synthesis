@@ -6,20 +6,103 @@ from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from trusted_synthesis.core.trajectory.attributes import (
+        TrajectoryAttributeProfile,
+        TrajectoryAttributes,
+        expected_trajectory_attributes,
+        extract_trajectory_attributes,
+    )
     from trusted_synthesis.core.trajectory.candidate_verifier import (
         CandidateWorkflowVerifier,
     )
     from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
+    from trusted_synthesis.core.trajectory.pool import (
+        TrajectoryCandidateProviderProtocol,
+        TrajectoryPoolMaterializationReport,
+        ValidTrajectoryMaterializer,
+        ValidTrajectoryPool,
+        ValidTrajectoryPoolBuilder,
+    )
     from trusted_synthesis.core.trajectory.schema import (
         ActionType,
         Trajectory,
         TrajectoryStep,
         WorkflowKind,
     )
+    from trusted_synthesis.core.trajectory.specification import (
+        OracleExecutionSpecification,
+        TrajectoryVerificationContext,
+        make_oracle_execution_specification,
+        make_trajectory_verification_context,
+    )
+    from trusted_synthesis.core.trajectory.validity import (
+        TrajectoryValidityEvaluator,
+        TrajectoryValidityReport,
+    )
     from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 
 _EXPORTS = {
     "ActionType": ("trusted_synthesis.core.trajectory.schema", "ActionType"),
+    "OracleExecutionSpecification": (
+        "trusted_synthesis.core.trajectory.specification",
+        "OracleExecutionSpecification",
+    ),
+    "TrajectoryAttributeProfile": (
+        "trusted_synthesis.core.trajectory.attributes",
+        "TrajectoryAttributeProfile",
+    ),
+    "TrajectoryAttributes": (
+        "trusted_synthesis.core.trajectory.attributes",
+        "TrajectoryAttributes",
+    ),
+    "TrajectoryValidityEvaluator": (
+        "trusted_synthesis.core.trajectory.validity",
+        "TrajectoryValidityEvaluator",
+    ),
+    "TrajectoryValidityReport": (
+        "trusted_synthesis.core.trajectory.validity",
+        "TrajectoryValidityReport",
+    ),
+    "TrajectoryVerificationContext": (
+        "trusted_synthesis.core.trajectory.specification",
+        "TrajectoryVerificationContext",
+    ),
+    "TrajectoryCandidateProviderProtocol": (
+        "trusted_synthesis.core.trajectory.pool",
+        "TrajectoryCandidateProviderProtocol",
+    ),
+    "TrajectoryPoolMaterializationReport": (
+        "trusted_synthesis.core.trajectory.pool",
+        "TrajectoryPoolMaterializationReport",
+    ),
+    "ValidTrajectoryMaterializer": (
+        "trusted_synthesis.core.trajectory.pool",
+        "ValidTrajectoryMaterializer",
+    ),
+    "ValidTrajectoryPool": (
+        "trusted_synthesis.core.trajectory.pool",
+        "ValidTrajectoryPool",
+    ),
+    "ValidTrajectoryPoolBuilder": (
+        "trusted_synthesis.core.trajectory.pool",
+        "ValidTrajectoryPoolBuilder",
+    ),
+    "expected_trajectory_attributes": (
+        "trusted_synthesis.core.trajectory.attributes",
+        "expected_trajectory_attributes",
+    ),
+    "extract_trajectory_attributes": (
+        "trusted_synthesis.core.trajectory.attributes",
+        "extract_trajectory_attributes",
+    ),
+    "make_oracle_execution_specification": (
+        "trusted_synthesis.core.trajectory.specification",
+        "make_oracle_execution_specification",
+    ),
+    "make_trajectory_verification_context": (
+        "trusted_synthesis.core.trajectory.specification",
+        "make_trajectory_verification_context",
+    ),
     "CandidateWorkflowVerifier": (
         "trusted_synthesis.core.trajectory.candidate_verifier",
         "CandidateWorkflowVerifier",

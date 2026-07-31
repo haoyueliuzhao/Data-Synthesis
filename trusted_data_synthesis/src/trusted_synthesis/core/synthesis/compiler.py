@@ -25,6 +25,9 @@ from trusted_synthesis.core.synthesis.validation import validate_compiled_artifa
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
+from trusted_synthesis.core.trajectory.specification import (
+    make_oracle_execution_specification,
+)
 from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.hashing import canonical_hash
 
@@ -95,6 +98,14 @@ class ProofCarryingSampleCompiler:
             or assessment.trajectory_id != reference.trajectory_id
         ):
             raise ValueError("reference assessment identity does not match compiled artifacts")
+        oracle_execution_specification = make_oracle_execution_specification(
+            task,
+            evidence_bundle,
+            corpus,
+            proof_graph,
+            quality_contract,
+            reference_examples=(reference,),
+        )
         certificate = build_proof_certificate(
             task=task,
             evidence_bundle=evidence_bundle,
@@ -164,7 +175,15 @@ class ProofCarryingSampleCompiler:
             if isinstance(pattern_identity, dict)
             else None
         )
-        sample_metadata = metadata or {}
+        sample_metadata = {
+            **(metadata or {}),
+            "trajectory_contract": {
+                "oracle_execution_specification_id": (
+                    oracle_execution_specification.specification_id
+                ),
+                "reference_semantics": "one_valid_example_not_unique_gold",
+            },
+        }
         identity = proof_carrying_sample_identity(
             task_id=task.task_id,
             task_package_hash=task.task_hash,
@@ -235,7 +254,9 @@ class ProofCarryingSampleCompiler:
             evidence_bundle=evidence_bundle,
             public_corpus=corpus,
             proof_graph=proof_graph,
+            oracle_execution_specification=oracle_execution_specification,
             reference_trajectory=reference,
+            reference_examples=(reference,),
             reference_assessment=assessment,
             quality_contract=quality_contract,
         )

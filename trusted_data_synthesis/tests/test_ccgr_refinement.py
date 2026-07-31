@@ -651,6 +651,13 @@ def test_ccgr_v1_policy_update_identity_remains_readable() -> None:
         "conditioning_groups",
         "fixed_group_weights",
         "allocated_group_counts",
+        "cell_utility_components",
+        "alpha",
+        "lambda_defect",
+        "prior_trajectory_metrics",
+        "next_trajectory_metrics",
+        "trajectory_feedback_manifest_hash",
+        "trajectory_feedback_count",
     ):
         payload.pop(field)
     for statistic in payload["statistics"]:
@@ -664,8 +671,19 @@ def test_ccgr_v1_policy_update_identity_remains_readable() -> None:
             "cell_capability_gap_rate",
             "shrinkage_weight",
             "minimum_exposure_met",
+            "trajectory_attempt_count",
+            "valid_trajectory_count",
+            "trajectory_validity_rate",
+            "mean_trajectory_validity_score",
+            "trajectory_attribute_profile_count",
+            "trajectory_attribute_entropy",
+            "trajectory_diversity_gain",
+            "missing_attribute_rate",
         ):
             statistic.pop(field)
+    for policy_key in ("prior_policy", "next_policy"):
+        for policy_cell in payload[policy_key]["cells"]:
+            policy_cell.pop("trajectory_attribute_profile")
     payload["update_id"] = canonical_hash(
         {key: value for key, value in payload.items() if key != "update_id"},
         prefix="ccgr_policy_update:",
@@ -676,3 +694,119 @@ def test_ccgr_v1_policy_update_identity_remains_readable() -> None:
     assert loaded.update_id == payload["update_id"]
     assert loaded.algorithm_version == "ccgr.v1"
     assert loaded.conditioning_mode == "global"
+
+
+
+def test_ccgr_v2_policy_update_identity_remains_readable() -> None:
+    cell = make_synthesis_cell(
+        pattern_id="domain.legacy_v2",
+        binding_stratum_id="binding:legacy_v2",
+        difficulty_bucket="hard",
+        distractor_profile_id="distractor:none",
+    )
+    task_cells = {"legacy_v2_task": cell}
+    policy = build_observed_policy(task_cells)
+    update = update_synthesis_policy(
+        policy,
+        aggregate_cell_feedback(policy, (), (), task_cells),
+        (),
+        eta=0,
+        beta=1,
+        gamma=0,
+        total_budget=1,
+        calibration_manifest_hash="calibration:legacy_v2",
+        require_calibrated_feedback=False,
+    )
+    payload = update.model_dump(mode="json")
+    payload["algorithm_version"] = "ccgr.v2"
+    payload["schema_version"] = "refinement.v2"
+
+    def downgrade_policy(
+        policy_payload: dict,
+        *,
+        source_policy_id: str | None,
+    ) -> dict[str, str]:
+        identity_map: dict[str, str] = {}
+        policy_payload["schema_version"] = "refinement.v2"
+        policy_payload["source_policy_id"] = source_policy_id
+        for policy_cell in policy_payload["cells"]:
+            current_id = policy_cell["cell_id"]
+            policy_cell.pop("trajectory_attribute_profile")
+            policy_cell["schema_version"] = "refinement.v2"
+            policy_cell["cell_id"] = canonical_hash(
+                {
+                    "pattern_id": policy_cell["pattern_id"],
+                    "binding_stratum_id": policy_cell["binding_stratum_id"],
+                    "difficulty_bucket": policy_cell["difficulty_bucket"],
+                    "distractor_profile_id": policy_cell["distractor_profile_id"],
+                    "active_binding_constraints": policy_cell[
+                        "active_binding_constraints"
+                    ],
+                    "schema_version": "refinement.v2",
+                },
+                prefix="synthesis_cell:",
+            )
+            identity_map[current_id] = policy_cell["cell_id"]
+        for field in ("probabilities", "target_probabilities"):
+            policy_payload[field] = {
+                identity_map[key]: value
+                for key, value in policy_payload[field].items()
+            }
+        policy_payload["policy_id"] = canonical_hash(
+            {
+                key: value
+                for key, value in policy_payload.items()
+                if key != "policy_id"
+            },
+            prefix="synthesis_policy:",
+        )
+        return identity_map
+
+    prior_map = downgrade_policy(payload["prior_policy"], source_policy_id=None)
+    next_map = downgrade_policy(
+        payload["next_policy"],
+        source_policy_id=payload["prior_policy"]["policy_id"],
+    )
+    for statistic in payload["statistics"]:
+        statistic["cell_id"] = prior_map[statistic["cell_id"]]
+        for field in (
+            "trajectory_attempt_count",
+            "valid_trajectory_count",
+            "trajectory_validity_rate",
+            "mean_trajectory_validity_score",
+            "trajectory_attribute_profile_count",
+            "trajectory_attribute_entropy",
+            "trajectory_diversity_gain",
+            "missing_attribute_rate",
+        ):
+            statistic.pop(field)
+    payload["cell_utilities"] = {
+        prior_map[key]: value for key, value in payload["cell_utilities"].items()
+    }
+    payload["cell_transition_map"] = {
+        prior_map[key]: next_map[value]
+        for key, value in payload["cell_transition_map"].items()
+    }
+    payload["allocated_counts"] = {
+        next_map[key]: value for key, value in payload["allocated_counts"].items()
+    }
+    for field in (
+        "cell_utility_components",
+        "alpha",
+        "lambda_defect",
+        "prior_trajectory_metrics",
+        "next_trajectory_metrics",
+        "trajectory_feedback_manifest_hash",
+        "trajectory_feedback_count",
+    ):
+        payload.pop(field)
+    payload["update_id"] = canonical_hash(
+        {key: value for key, value in payload.items() if key != "update_id"},
+        prefix="ccgr_policy_update:",
+    )
+
+    loaded = PolicyUpdateResult.model_validate(payload)
+
+    assert loaded.update_id == payload["update_id"]
+    assert loaded.algorithm_version == "ccgr.v2"
+    assert loaded.schema_version == "refinement.v2"

@@ -53,19 +53,25 @@ The Feedback Router assigns one owner:
 Interface failures have zero synthesis utility. The other two routes update the policy in opposite
 directions; this distinction prevents invalid data from being amplified as training demand.
 
-## CCGR Optimization Space
+## Valid-Trajectory Optimization Space
 
-The optimized variable is a distribution over auditable Synthesis Cells:
+The original v0.9 control plane optimized a distribution over task-level Synthesis Cells. The v3
+method keeps those structural dimensions and adds an observable trajectory profile:
 
 ```text
-a = (pattern, evidence_binding_stratum, difficulty_bucket, distractor_profile)
-pi_t(a) = probability of sampling cell a in round t
+a = (pattern, evidence_binding_stratum, difficulty, distractor_context, trajectory_profile)
+pi_t(a) = finite approximation to valid trajectory demand
 ```
 
-Binding strata and distractor profiles are structural hashes. Core may inspect Evidence kind,
-authority, definition coverage, temporal/scope cardinality, and equality relations to required
-Evidence, but it does not interpret domain-specific values. Domain plugins may expose safe
-tightening candidates through a refinement contract.
+`trajectory_profile` buckets tool depth, reasoning depth, Evidence dependency, verification degree,
+branching, operation count, and capability tags. These are behavior descriptors, not prescribed
+step templates. Exact observed attributes remain in structured trajectory feedback. The canonical
+method definition and claim boundary are in
+`docs/valid_trajectory_distribution_optimization.md`.
+
+Every task now freezes `Omega_x = (Evidence, TaskProgram, ProofGraph, QualityContract)` as an
+`OracleExecutionSpecification`. The deterministic Reference Workflow remains one auditable valid
+example, not the unique gold reasoning path.
 
 ## Counterfactual Clause Calibration
 
@@ -115,24 +121,27 @@ algorithm.
 
 ## Policy Update
 
-Full CCGR solves a KL-regularized objective. For experiments with fixed domain or other group
-marginals, it updates only the conditional distribution inside each group:
+The canonical v3 update uses four separately reported components:
 
 ```text
+R_t(a) = alpha * trajectory_validity_rate(a)
+       + beta  * capability_and_distribution_coverage(a)
+       + gamma * valid_trajectory_diversity(a)
+       - lambda * calibrated_synthesis_defect_risk(a)
+
+pi_next(a | g) proportional_to pi_t(a | g) * exp(eta * R_t(a))
 pi_next(g) = frozen_group_weight(g)
-pi_next(a | g) proportional_to
-    pi_t(a | g) * exp(eta * (G_t(a) - beta * D_t(a) + gamma * U_t(a)))
-pi_next(a) = pi_next(g(a)) * pi_next(a | g(a))
 ```
 
-Integer allocation first assigns the exact frozen group budgets and then performs deterministic
-largest-remainder allocation within each group. There is no post-update quota projection.
+The update manifest freezes each component, coefficient, trajectory feedback manifest, behavior
+profile distribution, capability coverage, KL divergence, total-variation shift, and deterministic
+budget allocation. Missing trajectory feedback blocks the valid-trajectory objective. Binding
+tightening remains restricted to predeclared, calibrated options.
 
-The update manifest freezes the prior and next policy, calibrated Clause feedback, `D/G/U`, utility
-per cell, KL divergence, total-variation shift, entropy, effective cell count, and deterministic
-largest-remainder budget allocation. A binding constraint can only be activated when the relevant
-Clause or failure family maps to a predeclared option and the calibrated defect risk exceeds the
-threshold. CCGR cannot invent a new rule.
+The prior `G - beta*D + gamma*U` CCGR updater remains executable as a historical control so earlier
+cohorts and ablations stay reproducible. New method claims must use
+`update_valid_trajectory_policy` and its `valid_trajectory_distribution_optimization@vtdo.v1`
+identity.
 
 ## Algorithm Ablations
 
