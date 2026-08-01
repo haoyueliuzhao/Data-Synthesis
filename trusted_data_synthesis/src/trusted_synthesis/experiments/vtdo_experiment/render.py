@@ -10,20 +10,25 @@ from pathlib import Path
 from .multistate import FinanceMultiStateReport
 from .schema import (
     ContributionValidationReport,
+    RefinementCheckpointTrainingPreflight,
     RefinementDynamicsReport,
     SyntheticExperimentReport,
     TrainingExperimentPreflight,
 )
 
 _COLORS = {
+    "no_feedback": "#8c8c8c",
+    "static_optimization": "#2f7ed8",
     "random": "#8c8c8c",
     "novelty_only": "#2f7ed8",
     "contribution_only": "#d95f02",
-    "no_anchor": "#7570b3",
+    "no_global_coverage_anchor": "#7570b3",
+    "no_coverage_prior": "#a6761d",
     "ccgr": "#1b9e77",
     "full_vtdo": "#c51b7d",
     "no_iteration": "#e6ab02",
-    "no_quotient": "#666666",
+    "no_quotient_exact": "#666666",
+    "no_quotient_noisy": "#b3b3b3",
 }
 
 
@@ -34,8 +39,6 @@ def write_synthetic_table(report: SyntheticExperimentReport, path: Path) -> None
             (
                 "method",
                 "run_count",
-                "kl_to_vtdo_optimum_mean",
-                "kl_ci95",
                 "joint_utility_mean",
                 "joint_utility_ci95",
                 "coverage_alignment_mean",
@@ -50,8 +53,6 @@ def write_synthetic_table(report: SyntheticExperimentReport, path: Path) -> None
                 (
                     item.method,
                     item.run_count,
-                    item.final_kl_to_vtdo_optimum.mean,
-                    item.final_kl_to_vtdo_optimum.ci95_half_width,
                     item.final_expected_utility.mean,
                     item.final_expected_utility.ci95_half_width,
                     item.final_coverage_alignment.mean,
@@ -72,9 +73,10 @@ def write_refinement_round_table(report: RefinementDynamicsReport, path: Path) -
                 "transition_from_round",
                 "kl_shift_mean",
                 "kl_shift_ci95",
-                "expected_utility_mean",
-                "expected_utility_ci95",
+                "expected_log_potential_mean",
+                "expected_log_potential_ci95",
                 "absolute_utility_delta_mean",
+                "potential_drift_mean",
                 "stabilization_score_mean",
                 "entropy_mean",
                 "coverage_count_mean",
@@ -88,13 +90,43 @@ def write_refinement_round_table(report: RefinementDynamicsReport, path: Path) -
                     item.transition_from_round,
                     item.kl_shift.mean if item.kl_shift else None,
                     item.kl_shift.ci95_half_width if item.kl_shift else None,
-                    item.expected_utility.mean,
-                    item.expected_utility.ci95_half_width,
+                    item.expected_log_potential.mean,
+                    item.expected_log_potential.ci95_half_width,
                     (item.absolute_utility_delta.mean if item.absolute_utility_delta else None),
+                    item.potential_drift.mean if item.potential_drift else None,
                     item.stabilization_score.mean if item.stabilization_score else None,
                     item.entropy.mean,
                     item.coverage_count.mean,
                     item.stable_seed_count,
+                )
+            )
+
+
+def write_moving_potential_table(report: RefinementDynamicsReport, path: Path) -> None:
+    moving = report.moving_potential_tracking
+    with path.open("w", encoding="utf-8", newline="") as output:
+        writer = csv.writer(output)
+        writer.writerow(
+            (
+                "method",
+                "run_count",
+                "mean_tracking_error",
+                "mean_tracking_error_ci95",
+                "final_tracking_error",
+                "cumulative_regret",
+                "final_anchor_objective",
+            )
+        )
+        for item in moving.method_summaries:
+            writer.writerow(
+                (
+                    item.method,
+                    item.run_count,
+                    item.mean_tracking_error.mean,
+                    item.mean_tracking_error.ci95_half_width,
+                    item.final_tracking_error.mean,
+                    item.cumulative_regret.mean,
+                    item.final_anchor_objective.mean,
                 )
             )
 
@@ -106,9 +138,9 @@ def write_refinement_checkpoint_table(report: RefinementDynamicsReport, path: Pa
             (
                 "round_index",
                 "role",
-                "expected_utility_mean",
-                "expected_utility_ci95",
-                "utility_gain_from_one_shot",
+                "expected_log_potential_mean",
+                "expected_log_potential_ci95",
+                "log_potential_difference_from_round_one",
                 "kl_shift_mean",
                 "entropy_mean",
                 "coverage_count_mean",
@@ -120,9 +152,9 @@ def write_refinement_checkpoint_table(report: RefinementDynamicsReport, path: Pa
                 (
                     item.round_index,
                     item.role,
-                    item.expected_utility.mean,
-                    item.expected_utility.ci95_half_width,
-                    item.utility_gain_from_one_shot,
+                    item.expected_log_potential.mean,
+                    item.expected_log_potential.ci95_half_width,
+                    item.log_potential_difference_from_round_one,
                     item.kl_shift.mean,
                     item.entropy.mean,
                     item.coverage_count.mean,
@@ -209,6 +241,31 @@ def write_phase_figure(
     path.write_text("\n".join(elements) + "\n", encoding="utf-8")
 
 
+def write_moving_potential_figure(
+    rows: Iterable[Mapping[str, object]],
+    path: Path,
+) -> None:
+    grouped: defaultdict[tuple[str, int], list[float]] = defaultdict(list)
+    for row in rows:
+        grouped[(str(row["method"]), _integer(row["round_index"]))].append(
+            _number(row["tracking_error"])
+        )
+    series = {
+        method: [
+            (round_index, statistics.fmean(grouped[(method, round_index)]))
+            for round_index in sorted(key[1] for key in grouped if key[0] == method)
+        ]
+        for method in ("no_feedback", "static_optimization", "full_vtdo")
+    }
+    _line_svg(
+        path,
+        series,
+        title="Moving-potential benchmark: instantaneous-optimum tracking",
+        x_label="Refinement round",
+        y_label="KL(policy || instantaneous optimum)",
+    )
+
+
 def write_refinement_dynamics_figure(
     report: RefinementDynamicsReport,
     path: Path,
@@ -222,12 +279,15 @@ def write_refinement_dynamics_figure(
                 for item in report.round_aggregates
                 if item.stabilization_score is not None
             ],
-            report.practical_convergence.stabilization_score_threshold,
+            report.practical_stabilization.stabilization_score_threshold,
         ),
         (
-            "Joint utility",
-            "E[C_t x N_t]",
-            [(item.round_index, item.expected_utility.mean) for item in report.round_aggregates],
+            "Current-potential utility",
+            "E_pi[log Phi_t]",
+            [
+                (item.round_index, item.expected_log_potential.mean)
+                for item in report.round_aggregates
+            ],
             None,
         ),
         (
@@ -250,7 +310,7 @@ def write_refinement_dynamics_figure(
     elements.append(
         f'<text x="{width / 2}" y="30" text-anchor="middle" '
         'font-size="19" font-family="sans-serif">'
-        "Moving-potential VTDO refinement dynamics</text>"
+        "Finite-step VTDO stabilization diagnostics</text>"
     )
     for (title, y_label, points, threshold), (left, top) in zip(panels, origins, strict=True):
         x_min, x_max = _extent([float(item[0]) for item in points])
@@ -295,6 +355,7 @@ def write_markdown_report(
     multi_state: FinanceMultiStateReport | None,
     contribution: ContributionValidationReport | None,
     training: TrainingExperimentPreflight | None,
+    checkpoint_training: RefinementCheckpointTrainingPreflight | None,
     limitations: tuple[str, ...],
 ) -> None:
     lines = [
@@ -307,7 +368,8 @@ def write_markdown_report(
         "- Paper logic: `Trajectory State -> Distribution Refinement -> Equal-budget Training`.",
         "- Validity is a feasibility gate; only independently accepted quotient states may "
         "enter positive-support arms.",
-        "- Strict convergence is claimed only for the fixed-potential control.",
+        "- Fixed-potential analysis verifies the update operator; it is not a claim about "
+        "closed-loop convergence.",
         "",
         "## Controlled VTDO Validation",
         "",
@@ -318,13 +380,12 @@ def write_markdown_report(
         "",
         "### Main methods",
         "",
-        "| Method | KL(pi_T || p*) | E[C x N] | Coverage alignment | Entropy |",
-        "|---|---:|---:|---:|---:|",
+        "| Method | E[C x N] | Coverage alignment | Entropy |",
+        "|---|---:|---:|---:|",
     ]
     for item in synthetic.main_method_summaries:
         lines.append(
-            f"| `{item.method}` | {item.final_kl_to_vtdo_optimum.mean:.4f} | "
-            f"{item.final_expected_utility.mean:.4f} | "
+            f"| `{item.method}` | {item.final_expected_utility.mean:.4f} | "
             f"{item.final_coverage_alignment.mean:.4f} | {item.final_entropy.mean:.4f} |"
         )
     lines.extend(
@@ -332,14 +393,13 @@ def write_markdown_report(
             "",
             "### Ablations",
             "",
-            "| Ablation | KL(pi_T || p*) | E[C x N] | Coverage alignment | Entropy |",
-            "|---|---:|---:|---:|---:|",
+            "| Ablation | E[C x N] | Coverage alignment | Entropy |",
+            "|---|---:|---:|---:|",
         ]
     )
     for item in synthetic.ablation_summaries:
         lines.append(
-            f"| `{item.method}` | {item.final_kl_to_vtdo_optimum.mean:.4f} | "
-            f"{item.final_expected_utility.mean:.4f} | "
+            f"| `{item.method}` | {item.final_expected_utility.mean:.4f} | "
             f"{item.final_coverage_alignment.mean:.4f} | {item.final_entropy.mean:.4f} |"
         )
 
@@ -375,53 +435,112 @@ def write_markdown_report(
     if contribution is None:
         lines.append("Not configured.")
     else:
-        spearman = contribution.spearman_correlation
         sign_agreement = contribution.sign_agreement_rate
+        task_rank = contribution.task_rank_correlation
+        centered = contribution.centered_global_spearman
+        concordance = contribution.pairwise_concordance_rate
         lines.extend(
             [
                 f"- Status: `{contribution.status}`",
                 f"- Observations: {contribution.observation_count}",
                 f"- Unique tasks: {contribution.unique_task_count}",
-                f"- Spearman(C_hat, delta J): {spearman if spearman is not None else 'n/a'}",
+                f"- Eligible multi-state tasks: {contribution.eligible_task_count}",
+                f"- Macro within-task Spearman: {task_rank.mean if task_rank else 'n/a'}",
+                f"- Centered global Spearman: "
+                f"{centered if centered is not None else 'n/a'}",
+                f"- Pairwise concordance: "
+                f"{concordance if concordance is not None else 'n/a'}",
                 f"- Sign agreement: {sign_agreement if sign_agreement is not None else 'n/a'}",
             ]
         )
 
-    convergence = refinement.practical_convergence
+    stabilization = refinement.practical_stabilization
+    moving = refinement.moving_potential_tracking
+    objective = moving.variational_objective
     lines.extend(
         [
             "",
             "## Refinement Dynamics",
             "",
-            f"- Fixed-potential contraction verified: "
+            f"- Fixed-potential update operator verified: "
             f"`{refinement.fixed_potential_contraction.projective_contraction_verified}`",
-            f"- Moving-potential horizon: {refinement.analysis_rounds} rounds",
+            f"- Synthetic moving-potential tracking status: `{moving.status}`",
+            f"- Potential sequence contract: {moving.potential_sequence_definition}",
+            f"- Variational objective monotonic transitions: "
+            f"{objective.monotonic_transition_count}/{objective.transition_count}",
+            f"- Minimum variational objective gain: {objective.minimum_objective_gain:.6g}",
+            f"- Maximum KL to the exact proximal optimizer: "
+            f"{objective.maximum_proximal_optimizer_kl:.6g}",
+            f"- VTDO cumulative-regret advantage over no-feedback: "
+            f"{moving.vtdo_regret_advantage_over_no_feedback.mean:.4f}",
+            f"- VTDO cumulative-regret advantage over static one-shot: "
+            f"{moving.vtdo_regret_advantage_over_static.mean:.4f}",
+            f"- Finite-step stabilization horizon: {refinement.analysis_rounds} rounds",
             f"- Practical stabilization score: "
-            f"`KL(pi_(t+1)||pi_t) + {convergence.utility_delta_weight:g} * "
-            f"|U_(t+1)-U_t| < {convergence.stabilization_score_threshold:g}` for "
-            f"{convergence.consecutive_rounds} consecutive rounds",
-            f"- Controlled seeds satisfying criterion: {convergence.converged_seed_count}/"
-            f"{convergence.evaluated_seed_count}",
+            f"`KL(pi_(t+1)||pi_t) + {stabilization.utility_delta_weight:g} * "
+            f"|E_pi_(t+1)[log Phi_t]-E_pi_t[log Phi_t]| + "
+            f"{stabilization.potential_drift_weight:g} * D_Phi(t) "
+            f"< {stabilization.stabilization_score_threshold:g}` for "
+            f"{stabilization.consecutive_rounds} consecutive rounds",
+            f"- Controlled seeds satisfying criterion: {stabilization.stabilized_seed_count}/"
+            f"{stabilization.evaluated_seed_count}",
             f"- Real financial round status: `{refinement.real_refinement.status}`",
             f"- Strict moving-potential convergence claim: "
             f"`{refinement.strict_convergence_claim_supported}`",
             "",
-            "| Round | KL shift | Joint utility | |delta U| | Stabilization score "
-            "| Entropy | Coverage |",
-            "|---:|---:|---:|---:|---:|---:|---:|",
+            "### Moving-optimum benchmark",
+            "",
+            "| Method | Mean tracking KL | Final tracking KL | Cumulative regret |",
+            "|---|---:|---:|---:|",
+        ]
+    )
+    for item in moving.method_summaries:
+        lines.append(
+            f"| `{item.method}` | {item.mean_tracking_error.mean:.4f} | "
+            f"{item.final_tracking_error.mean:.4f} | {item.cumulative_regret.mean:.4f} |"
+        )
+    real = refinement.real_refinement
+    if real.status != "not_configured":
+        lines.extend(
+            [
+                "",
+                "### Real feedback replay",
+                "",
+                f"- Variational transitions verified: "
+                f"{real.variational_monotonic_transition_count}/"
+                f"{real.variational_transition_count}",
+                f"- Exact proximal replay: `{real.variational_objective_verified}`",
+                f"- Stabilized sequences: {real.stabilized_sequence_count}/"
+                f"{real.stabilization_eligible_sequence_count}",
+                f"- Mean final tracking KL: {real.mean_final_tracking_error}",
+                f"- Mean cumulative regret: {real.mean_cumulative_regret}",
+                f"- Mean state entries/exits per transition: "
+                f"{real.mean_state_entries_per_transition}/"
+                f"{real.mean_state_exits_per_transition}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "### Finite-step stabilization",
+            "",
+            "| Round | KL shift | E[log Phi_t] | abs(delta U) | Potential drift "
+            "| Stabilization score | Entropy | Coverage |",
+            "|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
     )
     for item in refinement.round_aggregates:
         lines.append(
             f"| {item.round_index} | "
             f"{item.kl_shift.mean if item.kl_shift else 'n/a'} | "
-            f"{item.expected_utility.mean:.4f} | "
+            f"{item.expected_log_potential.mean:.4f} | "
             f"{item.absolute_utility_delta.mean if item.absolute_utility_delta else 'n/a'} | "
+            f"{item.potential_drift.mean if item.potential_drift else 'n/a'} | "
             f"{item.stabilization_score.mean if item.stabilization_score else 'n/a'} | "
             f"{item.entropy.mean:.4f} | {item.coverage_count.mean:.1f} |"
         )
 
-    lines.extend(["", "## Equal-budget B1-B5 Training Gate", ""])
+    lines.extend(["", "## Equal-supervised-token Training Arm Gate", ""])
     if training is None:
         lines.append("Not configured.")
     else:
@@ -429,18 +548,48 @@ def write_markdown_report(
             [
                 f"- Student: `{training.base_model}`",
                 f"- Supervised tokens per arm: {training.supervised_token_budget:,}",
-                f"- Formal training ready: `{training.formal_training_ready}`",
+                f"- Primary causal training ready: "
+                f"`{training.primary_causal_training_ready}`",
+                f"- Full comparison matrix ready: "
+                f"`{training.full_comparison_matrix_ready}`",
+                f"- Primary fixed task-marginal contract: "
+                f"`{training.primary_task_marginal_contract_verified}`",
                 f"- Benchmark snapshots: `{training.external_benchmark_status}`",
                 "",
-                "| Arm | Records | Tasks | States | Multi-state tasks | Status |",
-                "|---|---:|---:|---:|---:|---|",
+                "| Arm | Role | Records | Tasks | States | Multi-state tasks | "
+                "Task marginal | Status |",
+                "|---|---|---:|---:|---:|---:|---|---|",
             ]
         )
         for item in training.arms:
             lines.append(
-                f"| `{item.arm_id}` | {item.source_record_count} | "
+                f"| `{item.arm_id}` | `{item.comparison_role}` | "
+                f"{item.source_record_count} | "
                 f"{item.unique_task_count} | {item.unique_state_count} | "
-                f"{item.multi_state_task_count} | `{item.capacity_status}` |"
+                f"{item.multi_state_task_count} | `{item.task_marginal_policy}` / "
+                f"`{item.task_marginal_verified}` | `{item.capacity_status}` |"
+            )
+
+    lines.extend(["", "## One-shot vs Iterative Training Checkpoints", ""])
+    if checkpoint_training is None:
+        lines.append("Not configured.")
+    else:
+        lines.extend(
+            [
+                f"- Ready: `{checkpoint_training.ready}`",
+                "- Analysis checkpoints: "
+                f"{checkpoint_training.analysis_checkpoint_rounds}",
+                "- Training checkpoints: "
+                f"{checkpoint_training.training_checkpoint_rounds}",
+                "- Materialized training rounds: "
+                f"{checkpoint_training.materialized_training_rounds}",
+                f"- Equal supervised-token budget: {checkpoint_training.supervised_token_budget:,}",
+                f"- External benchmark status: `{checkpoint_training.external_benchmark_status}`",
+            ]
+        )
+        if checkpoint_training.blockers:
+            lines.append(
+                "- Blockers: " + ", ".join(f"`{item}`" for item in checkpoint_training.blockers)
             )
 
     lines.extend(["", "## Limitations", ""])
@@ -531,3 +680,15 @@ def _extent(values: list[float]) -> tuple[float, float]:
         return minimum - 0.5, maximum + 0.5
     padding = (maximum - minimum) * 0.05
     return minimum - padding, maximum + padding
+
+
+def _number(value: object) -> float:
+    if isinstance(value, (int, float)):
+        return float(value)
+    raise TypeError("render metric is not numeric")
+
+
+def _integer(value: object) -> int:
+    if isinstance(value, int):
+        return value
+    raise TypeError("render index is not an integer")

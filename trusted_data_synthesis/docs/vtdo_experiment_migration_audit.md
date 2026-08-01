@@ -1,151 +1,154 @@
 # VTDO Experiment Migration Audit
 
-## Decision
+## Active Protocol
 
-The active experiment surface has been reduced to one protocol:
-
-```text
-vtdo_experiment.v1
-```
-
-This migration removes ambiguity between legacy training-utility cohorts, v0.9 validation runs,
-and the frozen VTDO paper method. Legacy runtime material has been permanently removed; tracked
-source changes remain available only through Git history.
-
-## Active Components
+The repository has one active paper experiment contract:
 
 ```text
-src/trusted_synthesis/experiments/vtdo_experiment/
-src/trusted_synthesis/experiments/finance_archive.py
-src/trusted_synthesis/experiments/binding_support.py
-config/vtdo_experiment_finance.json
-config/vtdo_qwen2_5_7b_500k.json
-tests/test_vtdo_experiment.py
-tests/test_vtdo_multistate_quota.py
-docs/vtdo_experiment_protocol.md
+vtdo_experiment.v3
 ```
 
-The current experiment owns controlled state validation, real Finance multi-state materialization,
-empirical contribution validation, finite-step refinement dynamics, B1-B5 arm construction, and
-fail-closed Qwen training.
-
-## Removed Components
-
-The following families were removed from active package, configuration, test, documentation, and
-artifact discovery paths:
+Historical v0.8/v0.9 utility cohorts and v1/v2 VTDO outputs are not accepted as v3 inputs. The
+active chain is:
 
 ```text
-training_utility_mvp
-training_utility_v09
-vtdo_validation
-v0.8/v0.9 DeepSeek experiment profiles
-v0.8/v0.9 training profiles and reports
-legacy agent/training/VTDO generated artifacts
+trajectory-state validation
+-> fixed-potential operator control
+-> moving-potential tracking
+-> real feedback Round assembly
+-> fixed-task-marginal causal arms
+-> equal-supervised-token multi-seed training
+-> frozen internal and external evaluation
 ```
 
-Tracked implementations were deleted from the active tree and remain recoverable only from Git
-history. Ignored reports, checkpoints, and generated outputs were permanently deleted after
-explicit authorization; they are not valid inputs to the current experiment.
+## v3 Corrections
 
-## Semantic Migration
+The v3 revision resolves the experimental-identification problems found in the protocol audit.
 
-| Legacy concept | Active treatment |
+| Audited risk | v3 treatment |
 |---|---|
-| Synthesis cell as a trajectory state | rejected; no compatibility conversion |
-| Singleton legacy Agent result | not evidence of a conditional state distribution |
-| Surface variant | quotient/canonicalization probe only |
-| Legacy D1-D5 utility cohort | replaced by B1-B5 state-distribution arms |
-| Synthetic contribution oracle | removed |
-| KL to contribution oracle | removed |
-| Fixed moving-potential round count as convergence | replaced by finite-step stabilization score |
-| Missing real feedback | blocked empirical contribution component |
-| Missing real VTDO rounds | blocked B5/refinement component |
-| Legacy CCGR cell distribution | rejected; B3 requires a current task distribution |
+| Arm task marginals varied with states per task | every fixed-marginal arm has per-task weight exactly one |
+| CCGR was interpreted as a strict causal arm | CCGR is explicitly a nonuniform task-distribution baseline |
+| Production dynamics were ranked by an initial fixed target | the initial target is diagnostic-only; moving targets use tracking error and regret |
+| Stability used raw `C x N` | the stop score uses current-round expected log potential and projective potential drift |
+| Negative Contribution correlation could pass | signed positive thresholds are fail-closed |
+| Global Contribution rank mixed tasks | within-task macro rank, pairwise concordance, centering, and task bootstrap are used |
+| Contribution observations could mix identities | beneficiary, evaluation, probe, baseline, budget, seed, and snapshot identities are frozen |
+| Real Round support had only a reader | immutable Explorer/probe inputs can be assembled into replayable Round artifacts |
+| B5 silently selected the latest Round | the primary Round is explicit; Round 1/3 train and Round 5 is analysis-only |
+| Equal compute was claimed without control | only equal supervised tokens are claimed; prompt/processed tokens, steps, and repetition are reported |
+| Host-instrumented targets contained host outputs | targets contain model decisions and final answer, never observations or execution results |
+| External snapshots only had hash checks | FinQA, TAT-QA, and FinanceBench adapters, metrics, intervals, and leakage audit are implemented |
+| Quotient probes were incomplete | surface, independent-order, and semantic-separation probes are reported |
+| `no_quotient` mixed fragmentation and noise | exact and noisy no-quotient ablations are separate |
+| `no_anchor` had ambiguous semantics | no-global-anchor and no-coverage-prior ablations are separate |
+| Five-seed intervals used a normal approximation | aggregate metrics use two-sided Student-t intervals |
+| Main training used one seed | the frozen primary contract requires three explicit seeds |
 
-## Safety Properties
-
-- The active package contains no legacy experiment modules.
-- The current config parser rejects the legacy `real_state` section.
-- Training refuses to load a model when preflight or identity checks fail.
-- Missing benchmarks, contribution observations, CCGR distribution, or real round artifacts are
-  explicit blockers.
-- The active VTDO artifact namespace contains only the canonical `finance_v1` run.
-- Git history preserves tracked-source traceability without runtime compatibility.
-
-## Verification Contract
-
-Before release, the migration is considered complete only when:
+The primary causal matrix is now:
 
 ```text
-active-tree stale-reference scan = clean
-CLI exposes the canonical VTDO commands
-focused VTDO tests pass
-full pytest passes
-Ruff passes
-Mypy passes
-git diff --check passes
-small real Finance multi-state run completes
+B2_validity
+B2_contribution_only
+B2_novelty_only
+B4_random_state
+B5_vtdo
 ```
 
-Any unavailable empirical input remains a documented blocker rather than a mocked success.
+B1 is a controlled-corruption lower bound. B3 is the historical CCGR task-distribution baseline.
+They remain useful comparisons but do not identify the effect of changing only `pi(z|x)`.
 
-## Validation Result: 2026-07-31
+## Canonical Validation
 
-The revised active tree passed:
+The archive-backed v3 run was generated at:
 
 ```text
-focused quota/VTDO tests:   11 passed
-full active pytest suite:   169 passed
-Ruff:                      passed
-Mypy:                      191 source files passed
+artifacts/vtdo_experiment/finance_v3/
 ```
 
-The canonical archive-backed preflight was written to:
+Validation completed on 2026-08-01:
 
 ```text
-artifacts/vtdo_experiment/finance_v1/
+full pytest: 175 passed
+Ruff:       passed
+Mypy:       196 source files passed
+diff check: passed
 ```
 
-Its full task and state funnel was:
+The real Finance state funnel is:
 
 ```text
-accepted-task quota:                    100
-candidate tasks attempted:              105
-accepted tasks:                         100
-rejected tasks:                           5
-strategy attempts:                      525
-strategy verifier passes:               525
-strategy verifier failures:               0
-duplicate quotient states:               47
-accepted canonical states:              468
-states per accepted task:               3-5
-wrong-answer mutations rejected:        100
+accepted-task quota:                 100
+candidate tasks attempted:           105
+accepted tasks:                      100
+accepted canonical trajectories:     468
+states per task:                     3-5
+mean states per task:                4.68
 ```
 
-All 100 accepted tasks persist complete `Omega_x`; all 468 canonical states have distinct
-operation-graph and evidence-lineage identities. The five rejected tasks are retained in the
-aggregate denominator under `FinanceTaskCapacityError:accepted_state_capacity=2<3`. Candidate
-overprovisioning therefore fills the formal quota without hiding failed tasks.
-
-The training preflight reports:
+The quotient-state probes report:
 
 ```text
-B1_raw:          ready, 100 tasks, 468 accepted states plus 100 invalid attempts
-B2_validity:     ready, 100 tasks, 468 accepted states
-B3_ccgr:         blocked; current frozen CCGR distribution not configured
-B4_random_state: ready, 100 tasks, one deterministic state per task
-B5_vtdo:         blocked; real lineage-linked VTDO rounds not configured
-benchmarks:      blocked; frozen FinQA/TAT-QA/FinanceBench snapshots not configured
+raw probe sequences:                 1,356
+canonical states:                      468
+surface invariance:                  100%
+independent-order invariance:        100%
+semantic mutation separation:       100%
+false merges:                            0
 ```
 
-The run status is consequently `partial`, as required by the fail-closed protocol. It validates
-the controlled experiment, real multi-state construction, fixed-potential control, finite-step
-diagnostics, and arm materialization; it does not claim empirical contribution validity, real
-refinement convergence, or downstream training gain.
+The fixed-potential operator control verifies:
 
-## Permanent Cleanup
+```text
+configured history exponent:        0.5
+observed contraction factor:        0.4999999999999995
+maximum absolute factor error:      1.20e-14
+projective contraction verified:    true
+```
 
-After explicit authorization, the deprecated v0.8/v0.9 experiment tree, its approximately 10 GB
-of ignored generated artifacts, the three-task smoke run, and the underfilled 95-task attempt were
-permanently deleted. `artifacts/vtdo_experiment/finance_v1/` is the sole retained VTDO run. This
-cleanup does not affect `raw_financial_data_lake`, which remains the active read-only source archive.
+The five-seed moving-potential control verifies all 25 proximal transitions. Mean cumulative
+dynamic regret is `1.6043` for VTDO, `11.7174` for static one-shot optimization, and `22.7642`
+for no feedback. Mean tracking error is `0.3209`, `2.3435`, and `4.5528`, respectively. These
+results support update direction and moving-target tracking under the controlled potential
+sequence. They do not establish real-model downstream gain.
+
+No controlled seed satisfied the strict two-transition stabilization threshold within five
+rounds. The report records `0/5`, rather than converting finite-horizon movement into a convergence
+claim.
+
+## Current Readiness
+
+The v3 manifest is intentionally `partial`.
+
+Ready now:
+
+```text
+B1 controlled corruption: 100 tasks, fixed task marginal
+B2 validity:              100 tasks, 468 states, fixed task marginal
+B4 random state:          100 tasks, 100 states, fixed task marginal
+controlled theory and moving-potential experiments
+real Finance multi-state and quotient validation
+```
+
+Still blocked:
+
+```text
+empirical Contribution observations: not configured
+real lineage-linked VTDO Rounds:      not configured
+Contribution-only/Novelty-only arms:  require those Rounds
+B5 VTDO and Round 1/3 arms:            require those Rounds
+current CCGR task distribution:        not configured
+FinQA/TAT-QA/FinanceBench snapshots:   not configured
+GPU downstream training:               preflight is not formally ready
+```
+
+The checkpoint preflight freezes analysis rounds `(1, 3, 5)` but permits training materialization
+only for rounds `(1, 3)`. Round 5 cannot silently enter the training comparison.
+
+## Claim Boundary
+
+The current artifacts support claims about implementation correctness, real state-construction
+capacity, quotient identity, stationary-potential contraction, and controlled moving-optimum
+tracking. They do not yet support empirical Contribution validity, real feedback stabilization,
+or downstream model improvement. Those claims remain blocked until immutable observations,
+Rounds, evaluation snapshots, and multi-seed training results exist.

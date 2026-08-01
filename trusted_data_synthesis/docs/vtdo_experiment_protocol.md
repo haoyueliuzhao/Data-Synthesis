@@ -1,4 +1,4 @@
-# VTDO Experiment Protocol v1
+# VTDO Experiment Protocol v3
 
 ## 1. Purpose
 
@@ -23,12 +23,12 @@ cannot be reported as evidence for a later stage.
 The active identities are:
 
 ```text
-experiment schema:       vtdo_experiment.v1
+experiment schema:       vtdo_experiment.v3
 experiment config:       config/vtdo_experiment_finance.json
 student config:          config/vtdo_qwen2_5_7b_500k.json
 runner:                  trusted-synthesis run-vtdo-experiment
 trainer:                 trusted-synthesis train-vtdo-arm
-default output:          artifacts/vtdo_experiment/finance_v1
+default output:          artifacts/vtdo_experiment/finance_v3
 ```
 
 Every run freezes the normalized experiment configuration, all external input hashes, execution
@@ -50,7 +50,7 @@ Novelty follows the frozen density-ratio definition:
 N_t(z) = [log(r(z) / pi_t(z))]+
 ```
 
-The fixed optimum used for evaluation is:
+The initial fixed-potential target is retained only as a diagnostic:
 
 ```text
 p*(z) proportional to r(z) Phi(z)^(1 / kappa)
@@ -66,17 +66,20 @@ CCGR
 VTDO
 ```
 
-Ablations are reported separately:
+Ablations are reported separately under explicit semantics:
 
 ```text
-No Anchor
+No Global Coverage Anchor
+No Coverage Prior
 No Iteration
-No Quotient
+No Quotient with Exact Contribution
+No Quotient with Noisy Contribution
 ```
 
-Required metrics are `KL(pi_t || p*)`, joint utility `E[C x N]`, coverage alignment, entropy,
-active support, and the contribution-novelty phase trajectory. No contribution-oracle KL metric is
-used.
+The production moving-potential methods are not ranked by distance to the initial target. Their
+main diagnostics are expected log potential, coverage alignment, entropy, active support, and the
+contribution-novelty phase trajectory. Fixed-point KL and projective contraction belong only to
+the stationary-potential operator-control track. No contribution-oracle KL metric is used.
 
 This experiment validates the update implementation and controlled estimator behavior. It does
 not establish empirical causal contribution or downstream training gain.
@@ -125,20 +128,25 @@ calls.
 ## 5. Experiment 3: Empirical Contribution Validation
 
 Contribution quality is an empirical question. The active runner accepts only an immutable JSONL
-observation file containing at least 100 unique trajectory-state observations across at least 100
-tasks. Each observation binds:
+observation file containing at least 90 observations from at least 30 tasks, with at least three
+states per eligible task. Each observation binds:
 
 ```text
-task_id
+task_condition_id
 state_id
 estimated contribution C_hat
 observed downstream delta J
-training/evaluation identity
+beneficiary checkpoint and evaluation distribution
+probe protocol and baseline-distribution identity
+intervention budget and seed
+evaluation snapshot identity
 ```
 
-The primary diagnostics are Spearman correlation and sign agreement. Missing, undersized, or
-identity-inconsistent observations block this component. Synthetic observations are never created
-as a replacement.
+The primary diagnostics are within-task rank correlation, pairwise concordance, task-macro
+Spearman, centered global Spearman, sign agreement, and task-cluster bootstrap intervals. A
+negative rank relationship fails even when its absolute magnitude is large. Missing, undersized,
+single-state, or identity-inconsistent observations block this component. Synthetic observations
+are never created as a replacement.
 
 ## 6. Experiment 4: Refinement Dynamics
 
@@ -146,51 +154,111 @@ as a replacement.
 
 For fixed `Phi`, the update has a unique fixed point and a projective contraction governed by
 `rho`. The experiment runs the controlled update for ten rounds and verifies the numerical
-contraction within the configured tolerance. This is the only component that supports a strict
-convergence statement.
+contraction within the configured tolerance. Its experimental role is **update operator
+verification**: it verifies the analytic implementation under a stationary potential, but it is
+not evidence that the model-coupled VTDO loop converges to a static optimum.
 
-### Moving-potential process
+### Controlled moving-potential tracking
 
-Production VTDO recomputes contribution and novelty, so it tracks a moving optimum. The primary
-analysis horizon is five rounds, with checkpoints at rounds 1, 3, and 5. The practical
-stabilization score is:
+For each round, the implementation independently evaluates the proximal objective
 
 ```text
-S_t = KL(pi_(t+1) || pi_t) + lambda * |U_(t+1) - U_t|
+F_t(pi) = E_pi[log Phi_t]
+          - lambda KL(pi || pi_t)
+          - kappa KL(pi || r)
 ```
 
+and verifies both `F_t(pi_(t+1)) >= F_t(pi_t)` and equality with the exact proximal optimizer:
+
+```text
+pi_prox_t*(z) proportional to
+    pi_t(z)^(lambda/(lambda+kappa))
+    r(z)^(kappa/(lambda+kappa))
+    Phi_t(z)^(1/(lambda+kappa))
+```
+
+Tracking is measured against the instantaneous anchored optimum with the historical proximal term
+removed:
+
+```text
+G_t(pi) = E_pi[log Phi_t] - kappa KL(pi || r)
+pi_anchor_t*(z) proportional to r(z) Phi_t(z)^(1/kappa)
+TrackingError_t = KL(pi_(t+1) || pi_anchor_t*)
+```
+
+The five-round benchmark compares no feedback, one-shot static optimization, and full VTDO on the
+same moving-potential sequence. It reports tracking error and cumulative dynamic regret. This
+tests whether the update direction follows an evolving target, rather than merely whether the
+formula remains numerically stable.
+
+### Real feedback-loop stabilization
+
+Production VTDO recomputes contribution and novelty after model feedback, so the optimum moves.
+The primary analysis horizon is five rounds, with checkpoints at rounds 1, 3, and 5. The practical
+stabilization score uses the current round potential on both sides:
+
+```text
+S_t = KL(pi_(t+1) || pi_t)
+      + alpha * |E_pi_(t+1)[log Phi_t] - E_pi_t[log Phi_t]|
+      + zeta * D_Phi(t)
+```
+
+`D_Phi(t)` is a projective potential-drift diagnostic over pairwise log-potential ratios. The
+first transition cannot satisfy a consecutive-round stop criterion because no preceding potential
+exists for drift comparison.
+
 Practical stabilization requires `S_t < epsilon` for two consecutive transitions. The report also
-tracks utility, entropy, active coverage, and per-round distribution identity. It may state that
-updates stabilize or exhibit diminishing returns; it must not claim mathematical convergence of
-the moving-potential process.
+tracks utility, entropy, active coverage, state entries/exits, tracking error, dynamic regret, and
+per-round distribution identity. It may state that updates stabilize, track a moving optimum, or
+exhibit diminishing returns; it must not claim mathematical convergence of the moving-potential
+process.
 
 Real financial refinement is accepted only from immutable, lineage-linked `VTDORoundArtifact`
-files. Missing rounds are reported as blocked and are not replaced by the controlled run.
+files. Every round independently replays the variational objective and exact proximal optimizer.
+Missing rounds are reported as blocked and are not replaced by the controlled run.
 
-## 7. Experiment 5: Equal-Budget Downstream Training
+## 7. Experiment 5: Equal-Supervised-Token Downstream Training
 
-The frozen B1-B5 comparison is:
+The frozen training matrix is:
 
 | Arm | Definition |
 |---|---|
 | `B1_raw` | Unfiltered generated trajectories, including a controlled invalid attempt per task |
 | `B2_validity` | Independently valid trajectories |
+| `B2_contribution_only` | Same accepted support and selected Round, weighted only by normalized contribution |
+| `B2_novelty_only` | Same accepted support and selected Round, weighted only by normalized novelty |
 | `B3_ccgr` | States sampled from a current, frozen CCGR task distribution |
 | `B4_random_state` | One deterministic random accepted state per task |
 | `B5_vtdo` | States sampled from the selected real VTDO round distribution |
 
-All arms use the same Qwen2.5-7B model revision, LoRA configuration, supervised-token budget,
-optimizer schedule, number of steps, and seed. The primary contract requires at least 100 unique
-tasks and at least 50 unique accepted states per arm. Dataset size alone is not readiness.
+The primary causal arms are B2 Validity, Contribution Only, Novelty Only, B4 Random State, and B5
+VTDO. Their per-task sampling weights each sum to one, freezing the task marginal `mu(x)` and
+changing only `pi(z|x)`. B1 is a controlled-quality lower bound rather than a natural raw Explorer
+distribution. B3 is a historical task-distribution baseline with a deliberately nonuniform task
+marginal and is therefore not part of the strict causal comparison.
+
+All training runs use the same Qwen2.5-7B revision, LoRA configuration, and supervised-token
+budget. The protocol does **not** claim equal optimizer steps or equal compute. Every run records
+assistant-supervised tokens, prompt tokens, total processed tokens, optimizer steps, scheduled
+examples, unique records, and repetition rate. The three frozen primary seeds are supplied
+explicitly to the trainer. The primary capacity contract requires at least 100 unique tasks and at
+least 50 unique accepted states per arm. Dataset size alone is not readiness.
+
+The feedback-loop ablation freezes trainable B5 datasets only at one-based refinement checkpoints
+1 and 3. Every trainable checkpoint must contain all task conditions, replay a complete lineage-linked
+round sequence from Round 1, preserve exact trajectory-state support, and satisfy the same task,
+state, token, model, and benchmark contracts. Each checkpoint has an independent dataset hash and
+manifest. Missing real rounds block the comparison; controlled synthetic distributions are never
+substituted for these training datasets. Round 1 is the one-shot condition, Round 3 is the primary
+iterative condition, and Round 5 is analysis-only and is never materialized as a training arm.
 
 FinQA, TAT-QA, and FinanceBench are evaluation-only. Their exact snapshot IDs and SHA-256 hashes
 must be frozen before training. The trainer validates the serialized preflight, arm manifest,
 dataset identity, task/state capacity, token schedule, model revision, and benchmark contract
 before allocating a GPU.
 
-The one-shot versus iterative comparison uses round 1 and round 3 with identical task marginals,
-token budgets, model settings, and seeds. Round 5 is an analysis checkpoint unless separately
-declared and frozen as a training arm.
+The one-shot versus iterative comparison uses rounds 1 and 3 with identical task marginals,
+supervised-token budgets, model settings, and seeds. Round 5 remains an analysis checkpoint.
 
 ## 8. Sensitivity And Quotient Analysis
 
@@ -210,7 +278,8 @@ The full training experiment is ready only when all of the following hold:
 3. real round artifacts cover the configured refinement checkpoints with exact lineage;
 4. B3 uses a current CCGR distribution rather than a legacy synthesis-cell proxy;
 5. B5 is derived from the selected real VTDO round;
-6. every B1-B5 arm satisfies task, state, token, model, and seed parity;
+6. every primary causal arm satisfies the fixed-task-marginal, state, supervised-token, model,
+   and multi-seed contracts;
 7. all three external benchmark snapshots match their frozen hashes;
 8. no public training input contains Oracle evidence IDs, reference answers, or hidden programs.
 
@@ -226,7 +295,8 @@ trusted-synthesis run-vtdo-experiment \
   --vtdo-config config/vtdo_experiment_finance.json
 ```
 
-The run emits JSON reports, CSV tables, SVG figures, multi-state artifacts, B1-B5 datasets,
+The run emits JSON reports, CSV tables, SVG figures, multi-state artifacts, causal and secondary
+training-arm datasets,
 preflight results, an input manifest, and a final manifest. A representative artifact set is:
 
 ```text
@@ -244,11 +314,14 @@ finance_multi_state/finance_multi_state_tasks.jsonl
 contribution_validation_report.json
 refinement_dynamics_report.json
 controlled_refinement_rounds.csv
-fixed_potential_contraction_rounds.csv
+fixed_potential_operator_verification.csv
+moving_potential_tracking_rounds.csv
 real_refinement_rounds.csv
-table2_refinement_dynamics.csv
-table3_one_shot_vs_iterative.csv
-figure3_refinement_dynamics.svg
+table2_moving_potential_tracking.csv
+table3_refinement_dynamics.csv
+table4_refinement_checkpoints.csv
+figure3_moving_potential_tracking.svg
+figure4_refinement_dynamics.svg
 training_preflight.json
 training_arms/*.jsonl
 vtdo_experiment_report.md
@@ -256,7 +329,20 @@ manifest.json
 ```
 
 GPU training is invoked per ready arm with `train-vtdo-arm`. A blocked preflight exits before model
-loading or CUDA allocation.
+loading or CUDA allocation. Each invocation must include a seed from the frozen preflight.
+
+External predictions are evaluated without training-data access:
+
+```bash
+trusted-synthesis evaluate-vtdo-benchmarks \
+  --vtdo-config config/vtdo_experiment_finance.json \
+  --predictions <run>/benchmark_predictions.jsonl
+```
+
+The evaluator reports contract success, semantic accuracy conditional on a valid contract,
+end-to-end accuracy, and Wilson intervals for FinQA, TAT-QA, and FinanceBench. Training preflight
+also performs text, operation, subject, evidence, source-record, document, and binding leakage
+checks against the frozen evaluation snapshots.
 
 ## 11. Claim Discipline
 

@@ -13,12 +13,12 @@ Domain Evidence Adapter
 -> Quality Contract and typed counterfactuals
 -> Canonical trajectory state z
 -> VTDO distribution refinement pi_t(z | x)
--> Equal-budget B1-B5 training and frozen evaluation
+-> Fixed-task-marginal causal training and frozen evaluation
 ```
 
 ## Active Method Boundary
 
-The sole paper experiment is `vtdo_experiment.v1`. Its evidence chain is deliberately ordered:
+The sole paper experiment is `vtdo_experiment.v3`. Its evidence chain is deliberately ordered:
 
 ```text
 Trajectory State Validation
@@ -35,8 +35,10 @@ The five experiment components are:
 1. controlled VTDO validation on a 200-state synthetic space;
 2. real financial trajectory-state construction with 3-5 accepted states per task;
 3. empirical contribution validation against observed downstream utility changes;
-4. finite-step refinement dynamics with fixed-potential and moving-potential controls;
-5. equal-budget Qwen2.5-7B training for B1 Raw, B2 Validity, B3 CCGR, B4 Random State, and B5 VTDO.
+4. update-operator verification, moving-optimum tracking, and finite-step stabilization;
+5. equal-supervised-token Qwen2.5-7B training over fixed-task-marginal validity,
+   contribution-only, novelty-only, random-state, and VTDO arms, with controlled corruption and
+   CCGR reported separately.
 
 Missing real observations, VTDO rounds, benchmark snapshots, or arm capacity are represented as
 blocked components. They are never replaced with synthetic evidence or inferred gains.
@@ -95,16 +97,18 @@ input hashes, source-tree identity, Git state, reports, state artifacts, distrib
 training-arm manifests.
 
 GPU training is a separate fail-closed step. It is allowed only when the serialized preflight
-reports `formal_training_ready=true`:
+reports `primary_causal_training_ready=true` for a primary arm, or has no shared blockers and an
+individually ready capacity for a secondary arm:
 
 ```bash
 trusted-synthesis train-vtdo-arm \
   --training-config config/vtdo_qwen2_5_7b_500k.json \
   --preflight <run>/training_preflight.json \
-  --arm-manifest <run>/training_arms/manifest.json \
+  --arm-manifest <run>/training_arms/arm_dataset_hashes.json \
   --arm B5_vtdo \
   --dataset <run>/training_arms/B5_vtdo.jsonl \
-  --output-dir <run>/models/B5_vtdo
+  --seed 20260731 \
+  --output-dir <run>/models/B5_vtdo/seed_20260731
 ```
 
 ## Reproducibility And Safety
@@ -114,8 +118,9 @@ trusted-synthesis train-vtdo-arm \
 - Oracle content, gold evidence, and reference answers are excluded from public task inputs.
 - External benchmark snapshots are evaluation-only and must match frozen SHA-256 values.
 - API credentials are read from configured environment variables and are never serialized.
-- Strict convergence is claimed only for the fixed-potential control. Moving-potential behavior is
-  reported as finite-step practical stabilization.
+- Fixed-potential contraction is an update-operator verification, not a closed-loop convergence
+  claim. Moving-potential behavior is evaluated through objective gain, tracking error, dynamic
+  regret, state turnover, and finite-step practical stabilization.
 
 See [VTDO Experiment Protocol](docs/vtdo_experiment_protocol.md),
 [Valid Trajectory Distribution Optimization](docs/valid_trajectory_distribution_optimization.md),
@@ -127,4 +132,4 @@ See [VTDO Experiment Protocol](docs/vtdo_experiment_protocol.md),
 The v0.8/v0.9 training-utility and validation implementations, configurations, tests, reports,
 checkpoints, and generated artifacts have been permanently removed from the working tree. Tracked
 source history remains available through Git; ignored generated outputs were intentionally deleted.
-No compatibility alias maps a legacy schema or command into `vtdo_experiment.v1`.
+No compatibility alias maps a legacy schema or command into `vtdo_experiment.v3`.

@@ -1,11 +1,22 @@
 from .contribution_validation import run_contribution_validation
 from .dynamics import RefinementDynamicsExecution, run_refinement_dynamics_experiment
+from .evaluation import (
+    BenchmarkEvaluationReport,
+    BenchmarkLeakageAudit,
+    evaluate_external_benchmark_predictions,
+    load_benchmark_examples,
+)
 from .multistate import (
     FinanceMultiStateConfig,
     FinanceMultiStateReport,
     FinanceTaskStateArtifact,
     build_finance_multi_state_dataset,
     load_finance_multi_state_artifacts,
+)
+from .real_rounds import (
+    RealRoundAssemblyInput,
+    RealRoundAssemblyReport,
+    assemble_real_vtdo_rounds,
 )
 from .runner import run_vtdo_experiment
 from .schema import (
@@ -16,6 +27,7 @@ from .schema import (
     ContributionValidationObservation,
     ContributionValidationReport,
     ExternalBenchmarkSnapshot,
+    RefinementCheckpointTrainingPreflight,
     RefinementDynamicsConfig,
     RefinementDynamicsReport,
     SyntheticExperimentConfig,
@@ -30,18 +42,23 @@ from .schema import (
     VTDOTrainingRunResult,
     contribution_validation_observation_id,
     contribution_validation_report_id,
+    refinement_checkpoint_training_preflight_hash,
     refinement_dynamics_report_hash,
     training_experiment_preflight_hash,
 )
 from .synthetic import run_synthetic_experiment
 from .training import (
+    build_refinement_checkpoint_training_arms,
     build_training_experiment_preflight,
     load_training_records,
     train_vtdo_arm,
+    write_refinement_checkpoint_training_arms,
     write_training_arms,
 )
 
 __all__ = [
+    "BenchmarkEvaluationReport",
+    "BenchmarkLeakageAudit",
     "CCGRTaskDistribution",
     "ContributionValidationConfig",
     "ContributionValidationObservation",
@@ -50,6 +67,9 @@ __all__ = [
     "FinanceMultiStateConfig",
     "FinanceMultiStateReport",
     "FinanceTaskStateArtifact",
+    "RealRoundAssemblyInput",
+    "RealRoundAssemblyReport",
+    "RefinementCheckpointTrainingPreflight",
     "RefinementDynamicsConfig",
     "RefinementDynamicsExecution",
     "RefinementDynamicsReport",
@@ -66,11 +86,16 @@ __all__ = [
     "VTDOTrainingRecord",
     "VTDOTrainingRunResult",
     "build_finance_multi_state_dataset",
+    "build_refinement_checkpoint_training_arms",
     "build_training_experiment_preflight",
+    "assemble_real_vtdo_rounds",
     "contribution_validation_observation_id",
     "contribution_validation_report_id",
+    "evaluate_external_benchmark_predictions",
     "load_finance_multi_state_artifacts",
+    "load_benchmark_examples",
     "load_training_records",
+    "refinement_checkpoint_training_preflight_hash",
     "refinement_dynamics_report_hash",
     "run_contribution_validation",
     "run_refinement_dynamics_experiment",
@@ -78,5 +103,6 @@ __all__ = [
     "run_vtdo_experiment",
     "train_vtdo_arm",
     "training_experiment_preflight_hash",
+    "write_refinement_checkpoint_training_arms",
     "write_training_arms",
 ]

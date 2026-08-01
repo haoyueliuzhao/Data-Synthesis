@@ -10,11 +10,15 @@ from trusted_synthesis.hashing import canonical_hash
 
 from .multistate import FinanceMultiStateConfig
 
-VTDO_EXPERIMENT_VERSION = "vtdo_experiment.v1"
+VTDO_EXPERIMENT_VERSION = "vtdo_experiment.v3"
+
+MovingPotentialMethod = Literal["no_feedback", "static_optimization", "full_vtdo"]
 
 VTDOTrainingArm = Literal[
     "B1_raw",
     "B2_validity",
+    "B2_contribution_only",
+    "B2_novelty_only",
     "B3_ccgr",
     "B4_random_state",
     "B5_vtdo",
@@ -22,6 +26,8 @@ VTDOTrainingArm = Literal[
 VTDO_TRAINING_ARMS: tuple[VTDOTrainingArm, ...] = (
     "B1_raw",
     "B2_validity",
+    "B2_contribution_only",
+    "B2_novelty_only",
     "B3_ccgr",
     "B4_random_state",
     "B5_vtdo",
@@ -31,11 +37,13 @@ SyntheticMethod = Literal[
     "random",
     "novelty_only",
     "contribution_only",
-    "no_anchor",
+    "no_global_coverage_anchor",
+    "no_coverage_prior",
     "ccgr",
     "full_vtdo",
     "no_iteration",
-    "no_quotient",
+    "no_quotient_exact",
+    "no_quotient_noisy",
 ]
 
 
@@ -72,6 +80,18 @@ class SyntheticExperimentConfig(FrozenModel):
         return self
 
 
+class MovingPotentialBenchmarkConfig(FrozenModel):
+    """Exogenous and model-response drift used to test moving-optimum tracking."""
+
+    enabled: Literal[True] = True
+    rounds: int = Field(default=5, ge=2, le=50)
+    drift_period: int = Field(default=5, ge=2)
+    contribution_drift_scale: float = Field(default=0.75, gt=0)
+    capability_decay: float = Field(default=0.15, ge=0)
+    objective_tolerance: float = Field(default=1e-10, gt=0)
+    require_regret_advantage: bool = True
+
+
 class RefinementDynamicsConfig(FrozenModel):
     """Frozen contract for fixed-potential and moving-potential round analysis."""
 
@@ -82,10 +102,13 @@ class RefinementDynamicsConfig(FrozenModel):
     primary_training_round: int = Field(default=3, ge=1)
     stabilization_score_threshold: float = Field(default=0.01, gt=0)
     utility_delta_weight: float = Field(default=1.0, ge=0)
+    potential_drift_weight: float = Field(default=1.0, ge=0)
     coverage_epsilon: float = Field(default=1e-4, gt=0, lt=1)
     consecutive_stable_rounds: int = Field(default=2, ge=2)
     fixed_potential_rounds: int = Field(default=10, ge=2)
     contraction_tolerance: float = Field(default=1e-9, gt=0)
+    moving_potential_benchmark: MovingPotentialBenchmarkConfig = MovingPotentialBenchmarkConfig()
+    real_round_input_path: Path | None = None
     real_round_artifact_paths: tuple[Path, ...] = ()
 
     @model_validator(mode="after")
@@ -102,8 +125,12 @@ class RefinementDynamicsConfig(FrozenModel):
             raise ValueError("primary training round must be a declared checkpoint")
         if self.consecutive_stable_rounds > self.analysis_rounds:
             raise ValueError("stability window exceeds the refinement analysis window")
+        if self.moving_potential_benchmark.rounds > self.analysis_rounds:
+            raise ValueError("moving-potential benchmark exceeds the analysis window")
         if len(self.real_round_artifact_paths) != len(set(self.real_round_artifact_paths)):
             raise ValueError("real VTDO round artifact paths must be unique")
+        if self.real_round_input_path is not None and self.real_round_artifact_paths:
+            raise ValueError("configure real Round inputs or prebuilt artifacts, not both")
         return self
 
 
@@ -117,9 +144,13 @@ class ExternalBenchmarkSnapshot(FrozenModel):
 class ContributionValidationConfig(FrozenModel):
     enabled: bool = True
     observation_path: Path | None = None
-    minimum_observation_count: int = Field(default=100, ge=1)
-    minimum_unique_task_count: int = Field(default=100, ge=1)
-    minimum_absolute_spearman: float = Field(default=0.2, ge=0, le=1)
+    minimum_observation_count: int = Field(default=90, ge=3)
+    minimum_unique_task_count: int = Field(default=30, ge=2)
+    minimum_states_per_task: int = Field(default=3, ge=3)
+    minimum_macro_spearman: float = Field(default=0.2, ge=0, le=1)
+    minimum_pairwise_concordance: float = Field(default=0.55, ge=0, le=1)
+    cluster_bootstrap_samples: int = Field(default=2_000, ge=100)
+    bootstrap_seed: int = 20260731
 
 
 class TrainingExperimentConfig(FrozenModel):
@@ -131,7 +162,8 @@ class TrainingExperimentConfig(FrozenModel):
     minimum_unique_tasks_per_arm: int = Field(default=100, ge=1)
     minimum_unique_states_per_arm: int = Field(default=50, ge=1)
     gpu_ids: tuple[int, ...] = (3, 4, 5, 6, 7)
-    seeds: tuple[int, ...] = (20260731,)
+    seeds: tuple[int, ...] = (20260731, 20260801, 20260802)
+    minimum_primary_seed_count: int = Field(default=3, ge=2)
 
     @model_validator(mode="after")
     def validate_training(self) -> TrainingExperimentConfig:
@@ -139,6 +171,8 @@ class TrainingExperimentConfig(FrozenModel):
             raise ValueError("training GPU IDs must be non-empty and unique")
         if not self.seeds or len(self.seeds) != len(set(self.seeds)):
             raise ValueError("training seeds must be non-empty and unique")
+        if len(self.seeds) < self.minimum_primary_seed_count:
+            raise ValueError("primary causal training requires multiple frozen seeds")
         benchmark_ids = [item.benchmark_id for item in self.external_benchmarks]
         if len(benchmark_ids) != len(set(benchmark_ids)):
             raise ValueError("external benchmark IDs must be unique")
@@ -173,8 +207,11 @@ class VTDOStudentTrainingConfig(FrozenModel):
         "down_proj",
     )
     seed: int = 20260731
-    prompt_version: Literal["vtdo_student_prompt.v1"] = "vtdo_student_prompt.v1"
-    student_interaction_protocol: Literal["host_instrumented_joint"] = "host_instrumented_joint"
+    prompt_version: Literal["vtdo_student_prompt.v2"] = "vtdo_student_prompt.v2"
+    student_interaction_protocol: Literal["host_instrumented_decisions_v1"] = (
+        "host_instrumented_decisions_v1"
+    )
+    budget_contract: Literal["equal_supervised_tokens"] = "equal_supervised_tokens"
 
     @classmethod
     def from_json(cls, path: str | Path) -> VTDOStudentTrainingConfig:
@@ -186,7 +223,7 @@ class VTDOStudentTrainingConfig(FrozenModel):
 
 
 class VTDOExperimentConfig(FrozenModel):
-    experiment_id: str = "vtdo_experiment.finance.v1"
+    experiment_id: str = "vtdo_experiment.finance.v3"
     synthetic: SyntheticExperimentConfig = SyntheticExperimentConfig()
     multi_state: FinanceMultiStateConfig
     training: TrainingExperimentConfig
@@ -221,10 +258,14 @@ class VTDOExperimentConfig(FrozenModel):
         contribution = payload.setdefault("contribution_validation", {})
         observation_path = contribution.get("observation_path")
         if observation_path is not None:
-            contribution["observation_path"] = _resolve_relative_path(
-                source, observation_path
-            )
+            contribution["observation_path"] = _resolve_relative_path(source, observation_path)
         dynamics = payload.setdefault("refinement_dynamics", {})
+        real_round_input_path = dynamics.get("real_round_input_path")
+        if real_round_input_path is not None:
+            dynamics["real_round_input_path"] = _resolve_relative_path(
+                source,
+                real_round_input_path,
+            )
         dynamics["real_round_artifact_paths"] = [
             _resolve_relative_path(source, raw_value)
             for raw_value in dynamics.get("real_round_artifact_paths", ())
@@ -257,7 +298,7 @@ class SyntheticMetricPoint(FrozenModel):
     seed: int
     method: SyntheticMethod
     round_index: int = Field(ge=0)
-    kl_to_vtdo_optimum: float = Field(ge=0)
+    kl_to_initial_fixed_target_diagnostic: float = Field(ge=0)
     expected_contribution_novelty: float
     expected_contribution: float
     coverage_kl: float = Field(ge=0)
@@ -274,14 +315,17 @@ class AggregateMetric(FrozenModel):
     mean: float
     standard_deviation: float = Field(ge=0)
     ci95_half_width: float = Field(ge=0)
+    sample_count: int = Field(default=1, ge=1)
+    interval_method: Literal["student_t_95"] = "student_t_95"
 
 
 class RefinementRoundAggregate(FrozenModel):
     round_index: int = Field(ge=0)
     transition_from_round: int | None = Field(default=None, ge=0)
     kl_shift: AggregateMetric | None = None
-    expected_utility: AggregateMetric
+    expected_log_potential: AggregateMetric
     absolute_utility_delta: AggregateMetric | None = None
+    potential_drift: AggregateMetric | None = None
     stabilization_score: AggregateMetric | None = None
     entropy: AggregateMetric
     coverage_count: AggregateMetric
@@ -291,29 +335,110 @@ class RefinementRoundAggregate(FrozenModel):
 class RefinementCheckpointSummary(FrozenModel):
     round_index: int = Field(ge=1)
     role: Literal["one_shot", "primary_iterative", "analysis_only"]
-    expected_utility: AggregateMetric
-    utility_gain_from_one_shot: float
+    expected_log_potential: AggregateMetric
+    log_potential_difference_from_round_one: float
     kl_shift: AggregateMetric
     entropy: AggregateMetric
     coverage_count: AggregateMetric
     downstream_training_evaluated: bool = False
 
 
-class PracticalConvergenceSummary(FrozenModel):
-    criterion_id: Literal["combined_score_consecutive_rounds"] = (
-        "combined_score_consecutive_rounds"
+class RefinementCheckpointTrainingPreflight(FrozenModel):
+    training_config_hash: str
+    supervised_token_budget: int = Field(ge=1_000)
+    analysis_checkpoint_rounds: tuple[int, ...] = Field(min_length=2)
+    training_checkpoint_rounds: tuple[int, ...] = Field(min_length=2)
+    materialized_training_rounds: tuple[int, ...]
+    records_per_checkpoint: dict[str, int]
+    unique_tasks_per_checkpoint: dict[str, int]
+    unique_states_per_checkpoint: dict[str, int]
+    external_benchmark_status: Literal["ready", "not_available", "not_configured"]
+    ready: bool
+    blockers: tuple[str, ...]
+    report_hash: str
+    schema_version: str = VTDO_EXPERIMENT_VERSION
+
+    @model_validator(mode="after")
+    def validate_checkpoint_preflight(self) -> RefinementCheckpointTrainingPreflight:
+        if (
+            tuple(sorted(set(self.analysis_checkpoint_rounds)))
+            != self.analysis_checkpoint_rounds
+        ):
+            raise ValueError("analysis checkpoint rounds must be ordered and unique")
+        if (
+            tuple(sorted(set(self.training_checkpoint_rounds)))
+            != self.training_checkpoint_rounds
+        ):
+            raise ValueError("training checkpoint rounds must be ordered and unique")
+        if not set(self.training_checkpoint_rounds).issubset(
+            self.analysis_checkpoint_rounds
+        ):
+            raise ValueError("training checkpoint lies outside the analysis contract")
+        if not set(self.materialized_training_rounds).issubset(
+            self.training_checkpoint_rounds
+        ):
+            raise ValueError("materialized training round lies outside the frozen contract")
+        expected_ready = (
+            self.materialized_training_rounds == self.training_checkpoint_rounds
+            and self.external_benchmark_status == "ready"
+            and not self.blockers
+        )
+        if self.ready != expected_ready:
+            raise ValueError("checkpoint training readiness is inconsistent")
+        expected_keys = {str(value) for value in self.materialized_training_rounds}
+        if any(
+            set(values) != expected_keys
+            for values in (
+                self.records_per_checkpoint,
+                self.unique_tasks_per_checkpoint,
+                self.unique_states_per_checkpoint,
+            )
+        ):
+            raise ValueError("checkpoint training counts have incomplete round coverage")
+        if self.report_hash != refinement_checkpoint_training_preflight_hash(self):
+            raise ValueError("checkpoint training preflight identity is invalid")
+        return self
+
+
+def refinement_checkpoint_training_preflight_hash(
+    value: RefinementCheckpointTrainingPreflight,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"report_hash"}),
+        prefix="vtdo_refinement_checkpoint_training_preflight:",
+    )
+
+
+class PracticalStabilizationSummary(FrozenModel):
+    criterion_id: Literal["distribution_stabilization_consecutive_rounds"] = (
+        "distribution_stabilization_consecutive_rounds"
     )
     stabilization_score_threshold: float = Field(gt=0)
     utility_delta_weight: float = Field(ge=0)
+    potential_drift_weight: float = Field(ge=0)
     consecutive_rounds: int = Field(ge=2)
     evaluated_seed_count: int = Field(ge=1)
-    converged_seed_count: int = Field(ge=0)
-    convergence_round_by_seed: dict[str, int | None]
-    convergence_round_counts: dict[str, int]
-    practical_convergence_observed: bool
+    stabilized_seed_count: int = Field(ge=0)
+    first_stable_round_by_seed: dict[str, int | None]
+    first_stable_round_counts: dict[str, int]
+    practical_stabilization_observed: bool
+
+    @model_validator(mode="after")
+    def validate_stabilization(self) -> PracticalStabilizationSummary:
+        observed = sum(value is not None for value in self.first_stable_round_by_seed.values())
+        if len(self.first_stable_round_by_seed) != self.evaluated_seed_count:
+            raise ValueError("stabilization summary has incomplete seed coverage")
+        if observed != self.stabilized_seed_count:
+            raise ValueError("stabilized seed count is inconsistent")
+        if sum(self.first_stable_round_counts.values()) != self.evaluated_seed_count:
+            raise ValueError("stabilization round counts are incomplete")
+        if self.practical_stabilization_observed != (observed == self.evaluated_seed_count):
+            raise ValueError("practical stabilization flag is inconsistent")
+        return self
 
 
 class FixedPotentialContractionSummary(FrozenModel):
+    verification_role: Literal["update_operator_verification"] = "update_operator_verification"
     run_count: int = Field(ge=1)
     round_count: int = Field(ge=2)
     history_exponent: float = Field(gt=0, lt=1)
@@ -327,6 +452,75 @@ class FixedPotentialContractionSummary(FrozenModel):
     projective_contraction_verified: bool
 
 
+class VariationalObjectiveVerificationSummary(FrozenModel):
+    transition_count: int = Field(ge=1)
+    monotonic_transition_count: int = Field(ge=0)
+    minimum_objective_gain: float
+    maximum_proximal_optimizer_kl: float = Field(ge=0)
+    tolerance: float = Field(gt=0)
+    all_transitions_verified: bool
+
+    @model_validator(mode="after")
+    def validate_objective(self) -> VariationalObjectiveVerificationSummary:
+        if self.monotonic_transition_count > self.transition_count:
+            raise ValueError("monotonic transition count exceeds its denominator")
+        expected = (
+            self.monotonic_transition_count == self.transition_count
+            and self.minimum_objective_gain >= -self.tolerance
+            and self.maximum_proximal_optimizer_kl <= self.tolerance
+        )
+        if self.all_transitions_verified != expected:
+            raise ValueError("variational objective verification flag is inconsistent")
+        return self
+
+
+class MovingPotentialMethodSummary(FrozenModel):
+    method: MovingPotentialMethod
+    run_count: int = Field(ge=1)
+    mean_tracking_error: AggregateMetric
+    final_tracking_error: AggregateMetric
+    cumulative_regret: AggregateMetric
+    final_anchor_objective: AggregateMetric
+
+
+class MovingPotentialTrackingSummary(FrozenModel):
+    status: Literal["passed", "failed"]
+    state_count: int = Field(ge=2)
+    round_count: int = Field(ge=2)
+    seed_count: int = Field(ge=1)
+    potential_sequence_definition: str
+    instantaneous_optimum_formula: str
+    method_summaries: tuple[MovingPotentialMethodSummary, ...]
+    target_movement_kl: AggregateMetric
+    variational_objective: VariationalObjectiveVerificationSummary
+    vtdo_regret_advantage_over_no_feedback: AggregateMetric
+    vtdo_regret_advantage_over_static: AggregateMetric
+    regret_advantage_required: bool
+    optimization_direction_supported: bool
+    report_hash: str
+
+    @model_validator(mode="after")
+    def validate_tracking(self) -> MovingPotentialTrackingSummary:
+        methods = {item.method for item in self.method_summaries}
+        if methods != {"no_feedback", "static_optimization", "full_vtdo"}:
+            raise ValueError("moving-potential benchmark has an incomplete method set")
+        if any(item.run_count != self.seed_count for item in self.method_summaries):
+            raise ValueError("moving-potential method summaries have incomplete seed coverage")
+        if self.variational_objective.transition_count != self.seed_count * self.round_count:
+            raise ValueError("moving-potential objective replay has incomplete transitions")
+        expected_status = (
+            "passed"
+            if self.variational_objective.all_transitions_verified
+            and (self.optimization_direction_supported or not self.regret_advantage_required)
+            else "failed"
+        )
+        if self.status != expected_status:
+            raise ValueError("moving-potential status is inconsistent with its checks")
+        if self.report_hash != moving_potential_tracking_hash(self):
+            raise ValueError("moving-potential tracking identity is invalid")
+        return self
+
+
 class RealRefinementDynamicsSummary(FrozenModel):
     status: Literal["not_configured", "passed", "partial", "blocked"]
     configured_artifact_count: int = Field(ge=0)
@@ -334,10 +528,34 @@ class RealRefinementDynamicsSummary(FrozenModel):
     task_condition_count: int = Field(ge=0)
     complete_sequence_count: int = Field(ge=0)
     sequential_link_failure_count: int = Field(ge=0)
-    convergence_eligible_sequence_count: int = Field(ge=0)
-    converged_sequence_count: int = Field(ge=0)
+    stabilization_eligible_sequence_count: int = Field(ge=0)
+    stabilized_sequence_count: int = Field(ge=0)
     mean_final_kl_shift: float | None = Field(default=None, ge=0)
+    variational_transition_count: int = Field(default=0, ge=0)
+    variational_monotonic_transition_count: int = Field(default=0, ge=0)
+    minimum_variational_objective_gain: float | None = None
+    maximum_proximal_optimizer_kl: float | None = Field(default=None, ge=0)
+    variational_objective_verified: bool | None = None
+    mean_final_tracking_error: float | None = Field(default=None, ge=0)
+    mean_cumulative_regret: float | None = Field(default=None, ge=0)
+    mean_target_movement_kl: float | None = Field(default=None, ge=0)
+    mean_state_entries_per_transition: float | None = Field(default=None, ge=0)
+    mean_state_exits_per_transition: float | None = Field(default=None, ge=0)
     blockers: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_real_dynamics(self) -> RealRefinementDynamicsSummary:
+        if self.stabilized_sequence_count > self.stabilization_eligible_sequence_count:
+            raise ValueError("stabilized sequence count exceeds its denominator")
+        if self.variational_monotonic_transition_count > self.variational_transition_count:
+            raise ValueError("real variational transition count is inconsistent")
+        if self.status == "not_configured" and (
+            self.configured_artifact_count or self.validated_artifact_count
+        ):
+            raise ValueError("not-configured real dynamics contains artifacts")
+        if self.status == "passed" and self.variational_objective_verified is not True:
+            raise ValueError("passed real dynamics lacks exact objective verification")
+        return self
 
 
 class RefinementDynamicsReport(FrozenModel):
@@ -347,8 +565,9 @@ class RefinementDynamicsReport(FrozenModel):
     analysis_rounds: int = Field(ge=2)
     round_aggregates: tuple[RefinementRoundAggregate, ...]
     checkpoint_summaries: tuple[RefinementCheckpointSummary, ...]
-    practical_convergence: PracticalConvergenceSummary
+    practical_stabilization: PracticalStabilizationSummary
     fixed_potential_contraction: FixedPotentialContractionSummary
+    moving_potential_tracking: MovingPotentialTrackingSummary
     real_refinement: RealRefinementDynamicsSummary
     strict_convergence_claim_supported: bool = False
     interpretation: str
@@ -371,10 +590,16 @@ def refinement_dynamics_report_hash(value: RefinementDynamicsReport) -> str:
     )
 
 
+def moving_potential_tracking_hash(value: MovingPotentialTrackingSummary) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"report_hash"}),
+        prefix="moving_potential_tracking:",
+    )
+
+
 class SyntheticMethodSummary(FrozenModel):
     method: SyntheticMethod
     run_count: int = Field(ge=1)
-    final_kl_to_vtdo_optimum: AggregateMetric
     final_expected_utility: AggregateMetric
     final_coverage_kl: AggregateMetric
     final_coverage_alignment: AggregateMetric
@@ -385,7 +610,6 @@ class SyntheticMethodSummary(FrozenModel):
 
 class EtaSensitivityResult(FrozenModel):
     energy_exponent: float = Field(gt=0)
-    final_kl_to_vtdo_optimum: AggregateMetric
     final_expected_utility: AggregateMetric
     final_coverage_kl: AggregateMetric
     final_coverage_alignment: AggregateMetric
@@ -417,11 +641,14 @@ class VTDOTrainingRecord(FrozenModel):
     system_prompt: str = Field(min_length=1)
     user_prompt: str = Field(min_length=1)
     assistant_target: str = Field(min_length=1)
+    target_contract: Literal["host_instrumented_decisions.v1"] = (
+        "host_instrumented_decisions.v1"
+    )
     sampling_weight: float = Field(gt=0)
     source_artifact_id: str = Field(min_length=1)
     source_distribution_id: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
-    schema_version: Literal["vtdo_training_record.v1"] = "vtdo_training_record.v1"
+    schema_version: Literal["vtdo_training_record.v2"] = "vtdo_training_record.v2"
 
     @model_validator(mode="after")
     def validate_identity(self) -> VTDOTrainingRecord:
@@ -455,11 +682,16 @@ class ContributionValidationObservation(FrozenModel):
     beneficiary_model_state_id: str = Field(min_length=1)
     evaluation_distribution_id: str = Field(min_length=1)
     target_metric_id: str = Field(min_length=1)
+    probe_protocol_hash: str = Field(min_length=1)
+    baseline_distribution_id: str = Field(min_length=1)
+    training_intervention_budget: int = Field(ge=1)
+    seed: int
+    evaluation_snapshot_hash: str = Field(min_length=1)
     estimated_contribution: float
     observed_delta_j: float
     sample_count: int = Field(ge=1)
-    schema_version: Literal["contribution_validation_observation.v1"] = (
-        "contribution_validation_observation.v1"
+    schema_version: Literal["contribution_validation_observation.v2"] = (
+        "contribution_validation_observation.v2"
     )
 
     @model_validator(mode="after")
@@ -474,12 +706,19 @@ class ContributionValidationReport(FrozenModel):
     observation_count: int = Field(ge=0)
     unique_task_count: int = Field(ge=0)
     unique_state_count: int = Field(ge=0)
-    spearman_correlation: float | None = Field(default=None, ge=-1, le=1)
+    eligible_task_count: int = Field(ge=0)
+    task_rank_correlation: AggregateMetric | None = None
+    task_rank_bootstrap_ci95: tuple[float, float] | None = None
+    centered_global_spearman: float | None = Field(default=None, ge=-1, le=1)
+    pairwise_concordance_rate: float | None = Field(default=None, ge=0, le=1)
+    pairwise_concordance_bootstrap_ci95: tuple[float, float] | None = None
+    pair_count: int = Field(ge=0)
     sign_agreement_rate: float | None = Field(default=None, ge=0, le=1)
+    frozen_identity: dict[str, str] = Field(default_factory=dict)
     status: Literal["passed", "blocked"]
     blockers: tuple[str, ...]
-    schema_version: Literal["contribution_validation_report.v1"] = (
-        "contribution_validation_report.v1"
+    schema_version: Literal["contribution_validation_report.v2"] = (
+        "contribution_validation_report.v2"
     )
 
     @model_validator(mode="after")
@@ -497,6 +736,17 @@ class TrainingArmCapacity(FrozenModel):
     multi_state_task_count: int = Field(ge=0)
     maximum_states_per_task: int = Field(ge=0)
     accepted_only: bool
+    comparison_role: Literal[
+        "primary_fixed_task_marginal",
+        "secondary_task_marginal_baseline",
+        "controlled_quality_lower_bound",
+    ]
+    task_marginal_policy: Literal["uniform_fixed", "ccgr_nonuniform"]
+    minimum_task_weight: float = Field(ge=0)
+    maximum_task_weight: float = Field(ge=0)
+    maximum_task_weight_deviation: float = Field(ge=0)
+    task_marginal_verified: bool
+    budget_contract: Literal["equal_supervised_tokens"] = "equal_supervised_tokens"
     requested_supervised_tokens: int = Field(ge=1)
     capacity_status: Literal["ready", "pilot_only", "blocked"]
     blockers: tuple[str, ...] = ()
@@ -507,17 +757,36 @@ class TrainingExperimentPreflight(FrozenModel):
     base_model: str
     model_revision: str | None = None
     supervised_token_budget: int = Field(ge=1_000)
-    training_seed: int
+    training_seeds: tuple[int, ...] = Field(min_length=3)
     arms: tuple[TrainingArmCapacity, ...]
-    formal_training_ready: bool
+    primary_causal_arms: tuple[VTDOTrainingArm, ...]
+    secondary_comparison_arms: tuple[VTDOTrainingArm, ...]
+    primary_task_marginal_contract_verified: bool
+    primary_causal_training_ready: bool
+    full_comparison_matrix_ready: bool
     pilot_training_ready: bool
     external_benchmark_status: Literal["ready", "not_available", "not_configured"]
+    benchmark_leakage_status: Literal["passed", "failed", "not_configured"]
+    benchmark_leakage_count: int = Field(ge=0)
+    benchmark_leakage_report_hash: str | None = None
+    shared_training_blockers: tuple[str, ...]
+    primary_causal_blockers: tuple[str, ...]
+    secondary_comparison_blockers: tuple[str, ...]
     blockers: tuple[str, ...]
     report_hash: str
     schema_version: str = VTDO_EXPERIMENT_VERSION
 
     @model_validator(mode="after")
     def validate_identity(self) -> TrainingExperimentPreflight:
+        if self.primary_causal_training_ready != (
+            not self.shared_training_blockers and not self.primary_causal_blockers
+        ):
+            raise ValueError("primary-causal readiness is inconsistent with its blockers")
+        if self.full_comparison_matrix_ready != (
+            self.primary_causal_training_ready
+            and not self.secondary_comparison_blockers
+        ):
+            raise ValueError("full-matrix readiness is inconsistent with its blockers")
         if self.report_hash != training_experiment_preflight_hash(self):
             raise ValueError("VTDO training preflight identity is invalid")
         return self
@@ -537,17 +806,24 @@ class VTDOTrainingRunResult(FrozenModel):
     dataset_hash: str = Field(min_length=1)
     base_model: str = Field(min_length=1)
     model_revision: str | None = None
+    training_seed: int
     adapter_dir: str = Field(min_length=1)
     completed_steps: int = Field(ge=0)
     final_train_loss: float | None = None
     supervised_token_count: int = Field(ge=1)
     supervised_token_budget: int = Field(ge=1_000)
+    prompt_token_count: int = Field(ge=1)
+    processed_token_count: int = Field(ge=1)
+    scheduled_example_count: int = Field(ge=1)
+    unique_scheduled_record_count: int = Field(ge=1)
+    repeated_example_rate: float = Field(ge=0, le=1)
+    budget_contract: Literal["equal_supervised_tokens"] = "equal_supervised_tokens"
     token_budget_deviation_rate: float = Field(ge=0)
     train_runtime_seconds: float = Field(ge=0)
     peak_gpu_memory_bytes: int = Field(ge=0)
     dependency_versions: dict[str, str]
     status: Literal["completed"] = "completed"
-    schema_version: Literal["vtdo_training_run.v1"] = "vtdo_training_run.v1"
+    schema_version: Literal["vtdo_training_run.v3"] = "vtdo_training_run.v3"
 
     @model_validator(mode="after")
     def validate_identity(self) -> VTDOTrainingRunResult:
@@ -601,6 +877,7 @@ class VTDOExperimentManifest(FrozenModel):
     multi_state_report_id: str | None = None
     contribution_validation_report_id: str | None = None
     training_preflight_hash: str | None = None
+    refinement_checkpoint_training_preflight_hash: str | None = None
     input_manifest_hash: str
     completed_components: tuple[str, ...]
     blocked_components: tuple[str, ...]

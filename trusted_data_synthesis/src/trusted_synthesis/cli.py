@@ -62,6 +62,7 @@ from trusted_synthesis.experiments.task_pattern_validation import (
 from trusted_synthesis.experiments.vtdo_experiment import (
     VTDO_TRAINING_ARMS,
     VTDOExperimentConfig,
+    evaluate_external_benchmark_predictions,
     run_vtdo_experiment,
     train_vtdo_arm,
 )
@@ -105,6 +106,7 @@ def main(argv: list[str] | None = None) -> int:
                 arm_id=args.arm,
                 dataset_path=args.dataset,
                 output_dir=args.output_dir,
+                training_seed=args.seed,
             )
         except ValueError as exc:
             _emit(
@@ -118,6 +120,14 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         _emit(result.model_dump(mode="json"), args.output)
         return 0
+    if args.command == "evaluate-vtdo-benchmarks":
+        vtdo_config = VTDOExperimentConfig.from_json(args.vtdo_config)
+        report = evaluate_external_benchmark_predictions(
+            vtdo_config.training.external_benchmarks,
+            args.predictions,
+        )
+        _emit(report.model_dump(mode="json"), args.output)
+        return 0 if report.status == "passed" else 1
     if args.command == "audit-agent-capacity":
         capacity_config = AgentValidationConfig.from_json(args.agent_config)
         capacity_report = audit_agent_validation_capacity(capacity_config)
@@ -244,7 +254,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     vtdo_train.add_argument("--dataset", type=Path, required=True)
     vtdo_train.add_argument("--output-dir", type=Path, required=True)
+    vtdo_train.add_argument("--seed", type=int, required=True)
     vtdo_train.add_argument("--output", type=Path)
+    vtdo_evaluate = subparsers.add_parser("evaluate-vtdo-benchmarks")
+    vtdo_evaluate.add_argument("--vtdo-config", type=Path, required=True)
+    vtdo_evaluate.add_argument("--predictions", type=Path, required=True)
+    vtdo_evaluate.add_argument("--output", type=Path)
     agent_capacity = subparsers.add_parser("audit-agent-capacity")
     agent_capacity.add_argument("--agent-config", type=Path, required=True)
     agent_capacity.add_argument("--output", type=Path)

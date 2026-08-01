@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import math
 import random
-import statistics
 from collections.abc import Mapping
 from typing import Literal, cast
 
@@ -43,6 +42,7 @@ from .schema import (
     SyntheticMetricPoint,
     SyntheticState,
 )
+from .statistics import aggregate_metric
 
 _MAIN_METHODS: tuple[SyntheticMethod, ...] = (
     "random",
@@ -52,9 +52,11 @@ _MAIN_METHODS: tuple[SyntheticMethod, ...] = (
     "full_vtdo",
 )
 _ABLATION_METHODS: tuple[SyntheticMethod, ...] = (
-    "no_anchor",
+    "no_global_coverage_anchor",
+    "no_coverage_prior",
     "no_iteration",
-    "no_quotient",
+    "no_quotient_exact",
+    "no_quotient_noisy",
 )
 _METHODS = (*_MAIN_METHODS, *_ABLATION_METHODS)
 
@@ -90,22 +92,34 @@ def run_synthetic_experiment(
             initial,
             config,
         )
-        distributions: dict[SyntheticMethod, dict[str, float]] = {
-            method: dict(initial) for method in _METHODS if method != "no_quotient"
-        }
-        raw_distribution, raw_coverage, raw_contribution, raw_to_state = _raw_state_space(
-            initial,
-            coverage,
-            contribution,
-            variants=config.raw_variants_per_state,
-            seed=seed,
+        raw_methods: tuple[SyntheticMethod, ...] = (
+            "no_quotient_exact",
+            "no_quotient_noisy",
         )
-        for method in _METHODS:
-            metric_distribution = (
-                _aggregate_raw(raw_distribution, raw_to_state)
-                if method == "no_quotient"
-                else distributions[method]
+        distributions: dict[SyntheticMethod, dict[str, float]] = {
+            method: dict(initial) for method in _METHODS if method not in raw_methods
+        }
+        raw_spaces = {
+            method: _raw_state_space(
+                initial,
+                coverage,
+                contribution,
+                variants=config.raw_variants_per_state,
+                seed=seed,
+                contribution_noise_standard_deviation=(
+                    0.0 if method == "no_quotient_exact" else 0.35
+                ),
             )
+            for method in raw_methods
+        }
+        for method in _METHODS:
+            if method in raw_spaces:
+                raw_distribution, _, _, raw_to_state = raw_spaces[method]
+                metric_distribution = _aggregate_raw(raw_distribution, raw_to_state)
+                raw_size = len(raw_distribution)
+            else:
+                metric_distribution = distributions[method]
+                raw_size = None
             points.append(
                 _metric_point(
                     seed,
@@ -117,7 +131,7 @@ def run_synthetic_experiment(
                     contribution,
                     vtdo_optimum,
                     config.coverage_epsilon,
-                    raw_support_size=(len(raw_distribution) if method == "no_quotient" else None),
+                    raw_support_size=raw_size,
                 )
             )
         for round_index in range(1, config.rounds + 1):
@@ -137,12 +151,19 @@ def run_synthetic_experiment(
                 config,
                 mode="contribution_only",
             )
-            distributions["no_anchor"] = _analytic_update(
-                prior_by_method["no_anchor"],
+            distributions["no_global_coverage_anchor"] = _analytic_update(
+                prior_by_method["no_global_coverage_anchor"],
                 coverage,
                 contribution,
                 config,
-                mode="no_anchor",
+                mode="no_global_coverage_anchor",
+            )
+            distributions["no_coverage_prior"] = _analytic_update(
+                prior_by_method["no_coverage_prior"],
+                coverage,
+                contribution,
+                config,
+                mode="no_coverage_prior",
             )
             distributions["ccgr"] = _ccgr_update(
                 prior_by_method["ccgr"],
@@ -168,23 +189,35 @@ def run_synthetic_experiment(
                 )
             else:
                 distributions["no_iteration"] = prior_by_method["no_iteration"]
-            raw_prior = dict(raw_distribution)
-            raw_validity = {raw_id: validity[state_id] for raw_id, state_id in raw_to_state.items()}
-            raw_distribution, _ = _production_vtdo_update(
-                raw_distribution,
-                raw_coverage,
-                raw_contribution,
-                raw_validity,
-                config,
-                round_index=round_index - 1,
-                condition_suffix="raw",
-            )
+            raw_priors: dict[str, dict[str, float]] = {}
+            for method in raw_methods:
+                raw_distribution, raw_coverage, raw_contribution, raw_to_state = raw_spaces[method]
+                raw_priors[method] = dict(raw_distribution)
+                raw_validity = {
+                    raw_id: validity[state_id] for raw_id, state_id in raw_to_state.items()
+                }
+                next_raw, _ = _production_vtdo_update(
+                    raw_distribution,
+                    raw_coverage,
+                    raw_contribution,
+                    raw_validity,
+                    config,
+                    round_index=round_index - 1,
+                    condition_suffix=method,
+                )
+                raw_spaces[method] = (
+                    next_raw,
+                    raw_coverage,
+                    raw_contribution,
+                    raw_to_state,
+                )
             for row in full_phase:
                 phase_rows.append({"seed": seed, "round_index": round_index, **row})
             for method in _METHODS:
-                if method == "no_quotient":
+                if method in raw_spaces:
+                    raw_distribution, _, _, raw_to_state = raw_spaces[method]
                     current = _aggregate_raw(raw_distribution, raw_to_state)
-                    previous = _aggregate_raw(raw_prior, raw_to_state)
+                    previous = _aggregate_raw(raw_priors[method], raw_to_state)
                     raw_size = len(raw_distribution)
                 else:
                     current = distributions[method]
@@ -211,9 +244,7 @@ def run_synthetic_experiment(
     ablation_summaries = tuple(
         _summarize_method(method, points, config.rounds) for method in _ABLATION_METHODS
     )
-    sensitivity = tuple(
-        _eta_sensitivity(config, eta) for eta in config.eta_sensitivity
-    )
+    sensitivity = tuple(_eta_sensitivity(config, eta) for eta in config.eta_sensitivity)
     config_hash = canonical_hash(config, prefix="synthetic_vtdo_config:")
     identity = {
         "experiment_id": experiment_id,
@@ -227,9 +258,9 @@ def run_synthetic_experiment(
         experiment_id=experiment_id,
         config_hash=config_hash,
         reference_definitions={
-            "fixed_potential_vtdo_optimum": (
-                "p*(z|x) is proportional to r(z|x) * Phi_0(z)^(1/kappa), "
-                "where Phi_0 uses pi_0-centered contribution and [log(r/pi_0)]+ novelty."
+            "initial_fixed_target_diagnostic": (
+                "The initial fixed-potential target is reported only as a diagnostic. "
+                "Production methods recompute Phi_t and are not ranked by distance to Phi_0."
             ),
             "joint_utility": (
                 "U(pi)=E_(z~pi)[true_contribution(z) * max(log(r(z|x)/pi(z|x)), 0)]."
@@ -303,9 +334,7 @@ def _make_states(config: SyntheticExperimentConfig, seed: int) -> tuple[Syntheti
                 initial_weight,
             ) in raw
         ]
-    accepted_initial = _normalize(
-        {item[0]: item[5] for item in raw if item[2] == "accepted"}
-    )
+    accepted_initial = _normalize({item[0]: item[5] for item in raw if item[2] == "accepted"})
     accepted_mean = sum(
         accepted_initial[item[0]] * item[3] for item in raw if item[2] == "accepted"
     )
@@ -380,8 +409,13 @@ def _production_vtdo_update(
         phase_rows.append(
             {
                 "state_id": item.state_id,
+                "current_probability": item.current_probability,
+                "coverage_probability": item.coverage_probability,
                 "normalized_contribution": item.normalized_contribution,
                 "normalized_novelty": item.normalized_novelty,
+                "potential": item.potential,
+                "log_potential": math.log(item.potential),
+                "next_probability": update.next_distribution.probabilities[item.state_id],
                 "probability_delta": (
                     update.next_distribution.probabilities[item.state_id]
                     - update.prior_distribution.probabilities[item.state_id]
@@ -397,7 +431,12 @@ def _analytic_update(
     contribution: Mapping[str, float],
     config: SyntheticExperimentConfig,
     *,
-    mode: Literal["novelty_only", "contribution_only", "no_anchor"],
+    mode: Literal[
+        "novelty_only",
+        "contribution_only",
+        "no_global_coverage_anchor",
+        "no_coverage_prior",
+    ],
 ) -> dict[str, float]:
     energy = _energy_config(config)
     centered_mean = sum(prior[key] * contribution[key] for key in prior)
@@ -429,12 +468,16 @@ def _analytic_update(
                 + (1.0 - energy.history_exponent) * math.log(coverage[state_id])
                 + energy.energy_exponent * math.log(potential)
             )
-        else:
+        elif mode == "no_global_coverage_anchor":
             potential = (
                 normalized_c**config.contribution_weight * normalized_n**config.novelty_weight
             )
             log_weights[state_id] = math.log(prior[state_id]) + (
                 energy.energy_exponent * math.log(potential)
+            )
+        else:
+            log_weights[state_id] = math.log(prior[state_id]) + (
+                energy.energy_exponent * math.log(normalized_c)
             )
     return _softmax(log_weights)
 
@@ -580,7 +623,7 @@ def _metric_point(
         seed=seed,
         method=method,
         round_index=round_index,
-        kl_to_vtdo_optimum=_kl(current, vtdo_optimum),
+        kl_to_initial_fixed_target_diagnostic=_kl(current, vtdo_optimum),
         expected_contribution_novelty=sum(
             current[key] * contribution[key] * novelty[key] for key in current
         ),
@@ -607,9 +650,6 @@ def _summarize_method(
     return SyntheticMethodSummary(
         method=method,
         run_count=len(final),
-        final_kl_to_vtdo_optimum=_aggregate(
-            [item.kl_to_vtdo_optimum for item in final]
-        ),
         final_expected_utility=_aggregate([item.expected_contribution_novelty for item in final]),
         final_coverage_kl=_aggregate([item.coverage_kl for item in final]),
         final_coverage_alignment=_aggregate([item.coverage_alignment for item in final]),
@@ -671,9 +711,6 @@ def _eta_sensitivity(
         )
     return EtaSensitivityResult(
         energy_exponent=eta,
-        final_kl_to_vtdo_optimum=_aggregate(
-            [item.kl_to_vtdo_optimum for item in metrics]
-        ),
         final_expected_utility=_aggregate([item.expected_contribution_novelty for item in metrics]),
         final_coverage_kl=_aggregate([item.coverage_kl for item in metrics]),
         final_coverage_alignment=_aggregate([item.coverage_alignment for item in metrics]),
@@ -688,6 +725,7 @@ def _raw_state_space(
     *,
     variants: int,
     seed: int,
+    contribution_noise_standard_deviation: float,
 ) -> tuple[dict[str, float], dict[str, float], dict[str, float], dict[str, str]]:
     rng = random.Random(seed + 99_991)
     raw_initial: dict[str, float] = {}
@@ -701,7 +739,10 @@ def _raw_state_space(
             raw_to_state[raw_id] = state_id
             raw_initial[raw_id] = initial[state_id] * splits[str(index)]
             raw_coverage[raw_id] = coverage[state_id] / variants
-            raw_contribution[raw_id] = contribution[state_id] + rng.gauss(0.0, 0.35)
+            raw_contribution[raw_id] = contribution[state_id] + rng.gauss(
+                0.0,
+                contribution_noise_standard_deviation,
+            )
     return (
         _normalize(raw_initial),
         _normalize(raw_coverage),
@@ -749,8 +790,7 @@ def _fixed_potential_vtdo_optimum(
         )
     return _normalize(
         {
-            state_id: coverage[state_id]
-            * potentials[state_id] ** (1.0 / config.coverage_kl_weight)
+            state_id: coverage[state_id] * potentials[state_id] ** (1.0 / config.coverage_kl_weight)
             for state_id in coverage
         }
     )
@@ -791,12 +831,4 @@ def _entropy(values: Mapping[str, float]) -> float:
 
 
 def _aggregate(values: list[float]) -> AggregateMetric:
-    if not values:
-        raise ValueError("cannot aggregate an empty metric")
-    mean = statistics.fmean(values)
-    standard_deviation = statistics.stdev(values) if len(values) > 1 else 0.0
-    return AggregateMetric(
-        mean=mean,
-        standard_deviation=standard_deviation,
-        ci95_half_width=1.96 * standard_deviation / math.sqrt(len(values)),
-    )
+    return aggregate_metric(values)

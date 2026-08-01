@@ -14,9 +14,12 @@ from .multistate import (
     FinanceTaskStateArtifact,
     build_finance_multi_state_dataset,
 )
+from .real_rounds import assemble_real_vtdo_rounds
 from .render import (
     write_distribution_figure,
     write_markdown_report,
+    write_moving_potential_figure,
+    write_moving_potential_table,
     write_phase_figure,
     write_refinement_checkpoint_table,
     write_refinement_dynamics_figure,
@@ -24,12 +27,19 @@ from .render import (
     write_synthetic_table,
 )
 from .schema import (
+    RefinementCheckpointTrainingPreflight,
     VTDOExperimentConfig,
     VTDOExperimentManifest,
     VTDOStudentTrainingConfig,
+    refinement_checkpoint_training_preflight_hash,
 )
 from .synthetic import run_synthetic_experiment
-from .training import build_training_experiment_preflight, write_training_arms
+from .training import (
+    build_refinement_checkpoint_training_arms,
+    build_training_experiment_preflight,
+    write_refinement_checkpoint_training_arms,
+    write_training_arms,
+)
 
 
 def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
@@ -120,8 +130,31 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
             blocked.append("empirical_contribution_validation")
             limitations.extend(contribution.blockers)
 
+    effective_refinement_config = config.refinement_dynamics
+    if config.refinement_dynamics.real_round_input_path is not None:
+        real_round_output = output_dir / "real_rounds" / "vtdo_rounds.jsonl"
+        assembly_report, _ = assemble_real_vtdo_rounds(
+            config.refinement_dynamics.real_round_input_path,
+            real_round_output,
+        )
+        assembly_report_path = output_dir / "real_round_assembly_report.json"
+        _write_json(assembly_report_path, assembly_report.model_dump(mode="json"))
+        artifacts["real_round_assembly_report"] = assembly_report_path.name
+        if assembly_report.status == "passed":
+            artifacts["assembled_real_rounds"] = str(real_round_output.relative_to(output_dir))
+            completed.append("real_round_assembly")
+            effective_refinement_config = config.refinement_dynamics.model_copy(
+                update={
+                    "real_round_input_path": None,
+                    "real_round_artifact_paths": (real_round_output,),
+                }
+            )
+        else:
+            blocked.append("real_round_assembly")
+            limitations.extend(assembly_report.blockers)
+
     refinement_execution = run_refinement_dynamics_experiment(
-        config.refinement_dynamics,
+        effective_refinement_config,
         config.synthetic,
         synthetic,
         state_catalogs,
@@ -134,41 +167,64 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
     artifacts["refinement_dynamics_report"] = refinement_path.name
     for name, rows in (
         ("controlled_refinement_rounds.csv", refinement_execution.controlled_rows),
-        ("fixed_potential_contraction_rounds.csv", refinement_execution.fixed_potential_rows),
+        (
+            "fixed_potential_operator_verification.csv",
+            refinement_execution.fixed_potential_rows,
+        ),
+        ("moving_potential_tracking_rounds.csv", refinement_execution.moving_potential_rows),
         ("real_refinement_rounds.csv", refinement_execution.real_rows),
     ):
         _write_rows(output_dir / name, rows)
         artifacts[name.removesuffix(".csv")] = name
-    dynamics_table = output_dir / "table2_refinement_dynamics.csv"
+    moving_table = output_dir / "table2_moving_potential_tracking.csv"
+    write_moving_potential_table(refinement, moving_table)
+    artifacts["table2"] = moving_table.name
+    dynamics_table = output_dir / "table3_refinement_dynamics.csv"
     write_refinement_round_table(refinement, dynamics_table)
-    artifacts["table2"] = dynamics_table.name
-    checkpoint_table = output_dir / "table3_one_shot_vs_iterative.csv"
+    artifacts["table3"] = dynamics_table.name
+    checkpoint_table = output_dir / "table4_refinement_checkpoints.csv"
     write_refinement_checkpoint_table(refinement, checkpoint_table)
-    artifacts["table3"] = checkpoint_table.name
-    dynamics_figure = output_dir / "figure3_refinement_dynamics.svg"
+    artifacts["table4"] = checkpoint_table.name
+    moving_figure = output_dir / "figure3_moving_potential_tracking.svg"
+    write_moving_potential_figure(refinement_execution.moving_potential_rows, moving_figure)
+    artifacts["figure3"] = moving_figure.name
+    dynamics_figure = output_dir / "figure4_refinement_dynamics.svg"
     write_refinement_dynamics_figure(refinement, dynamics_figure)
-    artifacts["figure3"] = dynamics_figure.name
-    completed.extend(("fixed_potential_control", "finite_step_refinement_dynamics"))
+    artifacts["figure4"] = dynamics_figure.name
+    completed.extend(
+        (
+            "fixed_potential_update_operator_verification",
+            "synthetic_moving_potential_tracking",
+            "finite_step_refinement_stabilization",
+        )
+    )
     if not refinement.fixed_potential_contraction.projective_contraction_verified:
-        blocked.append("fixed_potential_control")
+        blocked.append("fixed_potential_update_operator_verification")
+    if refinement.moving_potential_tracking.status != "passed":
+        blocked.append("synthetic_moving_potential_tracking")
     if refinement.real_refinement.status != "passed":
         blocked.append("real_financial_refinement")
         limitations.extend(refinement.real_refinement.blockers)
 
     training_preflight = None
+    checkpoint_training_preflight = None
     if config.training.enabled:
         student = VTDOStudentTrainingConfig.from_json(config.training.training_config_path)
         student_path = output_dir / "student_training_config.json"
         _write_json(student_path, student.model_dump(mode="json"))
         artifacts["student_training_config"] = student_path.name
-        training_preflight, arms = build_training_experiment_preflight(
+        training_preflight, arms, benchmark_leakage = build_training_experiment_preflight(
             config.training,
             artifacts=task_artifacts,
-            vtdo_round_artifact_paths=config.refinement_dynamics.real_round_artifact_paths,
+            vtdo_round_artifact_paths=effective_refinement_config.real_round_artifact_paths,
+            primary_training_round=config.refinement_dynamics.primary_training_round,
         )
         preflight_path = output_dir / "training_preflight.json"
         _write_json(preflight_path, training_preflight.model_dump(mode="json"))
         artifacts["training_preflight"] = preflight_path.name
+        benchmark_leakage_path = output_dir / "benchmark_leakage_audit.json"
+        _write_json(benchmark_leakage_path, benchmark_leakage.model_dump(mode="json"))
+        artifacts["benchmark_leakage_audit"] = benchmark_leakage_path.name
         written = write_training_arms(output_dir / "training_arms", arms)
         artifacts.update(
             {
@@ -176,17 +232,107 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
                 for key, value in written.items()
             }
         )
-        completed.append("b1_b5_training_arm_materialization")
-        if not training_preflight.formal_training_ready:
-            blocked.append("b1_b5_equal_token_training")
-            limitations.extend(training_preflight.blockers)
+        completed.append("training_arm_artifact_materialization")
+        if not training_preflight.primary_causal_training_ready:
+            blocked.append("equal_supervised_token_training")
+            limitations.extend(training_preflight.shared_training_blockers)
+            limitations.extend(training_preflight.primary_causal_blockers)
+        if not training_preflight.full_comparison_matrix_ready:
+            blocked.append("full_comparison_matrix")
+            limitations.extend(training_preflight.secondary_comparison_blockers)
+
+        training_checkpoint_rounds = tuple(
+            sorted({1, config.refinement_dynamics.primary_training_round})
+        )
+        checkpoint_arms, checkpoint_blockers = build_refinement_checkpoint_training_arms(
+            effective_refinement_config.real_round_artifact_paths,
+            task_artifacts,
+            training_checkpoint_rounds,
+        )
+        checkpoint_blocker_values = list(checkpoint_blockers)
+        if training_preflight.external_benchmark_status != "ready":
+            checkpoint_blocker_values.append(
+                "external_benchmarks_not_ready_for_checkpoint_comparison"
+            )
+        records_per_checkpoint: dict[str, int] = {}
+        tasks_per_checkpoint: dict[str, int] = {}
+        states_per_checkpoint: dict[str, int] = {}
+        for round_index, records in sorted(checkpoint_arms.items()):
+            key = str(round_index)
+            records_per_checkpoint[key] = len(records)
+            tasks_per_checkpoint[key] = len({item.task_id for item in records})
+            states_per_checkpoint[key] = len(
+                {
+                    item.trajectory_state_id
+                    for item in records
+                    if item.trajectory_state_id is not None
+                }
+            )
+            if tasks_per_checkpoint[key] < config.training.minimum_unique_tasks_per_arm:
+                checkpoint_blocker_values.append(
+                    f"round_{round_index}_unique_tasks_below_minimum:"
+                    f"{tasks_per_checkpoint[key]}<"
+                    f"{config.training.minimum_unique_tasks_per_arm}"
+                )
+            if states_per_checkpoint[key] < config.training.minimum_unique_states_per_arm:
+                checkpoint_blocker_values.append(
+                    f"round_{round_index}_unique_states_below_minimum:"
+                    f"{states_per_checkpoint[key]}<"
+                    f"{config.training.minimum_unique_states_per_arm}"
+                )
+        materialized_rounds = tuple(sorted(checkpoint_arms))
+        checkpoint_blocker_tuple = tuple(sorted(set(checkpoint_blocker_values)))
+        checkpoint_values = {
+            "training_config_hash": student.config_hash,
+            "supervised_token_budget": config.training.target_supervised_tokens,
+            "analysis_checkpoint_rounds": config.refinement_dynamics.checkpoint_rounds,
+            "training_checkpoint_rounds": training_checkpoint_rounds,
+            "materialized_training_rounds": materialized_rounds,
+            "records_per_checkpoint": records_per_checkpoint,
+            "unique_tasks_per_checkpoint": tasks_per_checkpoint,
+            "unique_states_per_checkpoint": states_per_checkpoint,
+            "external_benchmark_status": training_preflight.external_benchmark_status,
+            "ready": (
+                materialized_rounds == training_checkpoint_rounds
+                and training_preflight.external_benchmark_status == "ready"
+                and not checkpoint_blocker_tuple
+            ),
+            "blockers": checkpoint_blocker_tuple,
+        }
+        provisional_checkpoint = RefinementCheckpointTrainingPreflight.model_construct(
+            **checkpoint_values,
+            report_hash="pending",
+        )
+        checkpoint_training_preflight = RefinementCheckpointTrainingPreflight(
+            **checkpoint_values,
+            report_hash=refinement_checkpoint_training_preflight_hash(provisional_checkpoint),
+        )
+        checkpoint_preflight_path = output_dir / "refinement_checkpoint_training_preflight.json"
+        _write_json(
+            checkpoint_preflight_path,
+            checkpoint_training_preflight.model_dump(mode="json"),
+        )
+        artifacts["refinement_checkpoint_training_preflight"] = checkpoint_preflight_path.name
+        checkpoint_paths = write_refinement_checkpoint_training_arms(
+            output_dir / "refinement_checkpoint_training_arms",
+            checkpoint_arms,
+        )
+        for key, value in checkpoint_paths.items():
+            artifacts[f"refinement_checkpoint_{key}"] = str(Path(value).relative_to(output_dir))
+        if checkpoint_training_preflight.ready:
+            completed.append("one_shot_iterative_checkpoint_training_preflight")
+        else:
+            blocked.append("one_shot_iterative_checkpoint_training")
+            limitations.extend(checkpoint_training_preflight.blockers)
 
     limitations.extend(
         (
             "Synthetic exact contribution is a controlled estimator test, not a causal "
             "empirical estimate.",
-            "Strict convergence is asserted only in the fixed-potential control. Moving-"
-            "potential rounds are described as finite-step practical stabilization.",
+            "The fixed-potential result verifies the update operator only; it is not evidence "
+            "that the moving-feedback process converges to a static optimum.",
+            "Moving-potential results are reported as instantaneous-optimum tracking, "
+            "variational-objective improvement, dynamic regret, and practical stabilization.",
             "Deterministic surface variants are quotient probes only and never expand the "
             "positive training state support.",
         )
@@ -200,6 +346,7 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
         multi_state=multi_state,
         contribution=contribution,
         training=training_preflight,
+        checkpoint_training=checkpoint_training_preflight,
         limitations=limitations_tuple,
     )
     artifacts["markdown_report"] = report_path.name
@@ -217,6 +364,9 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
         "multi_state_report_id": multi_state.report_id if multi_state else None,
         "contribution_validation_report_id": contribution.report_id if contribution else None,
         "training_preflight_hash": (training_preflight.report_hash if training_preflight else None),
+        "refinement_checkpoint_training_preflight_hash": (
+            checkpoint_training_preflight.report_hash if checkpoint_training_preflight else None
+        ),
         "input_manifest_hash": input_manifest["manifest_hash"],
         "completed_components": tuple(completed),
         "blocked_components": blocked_unique,
@@ -253,7 +403,30 @@ def _build_input_manifest(config: VTDOExperimentConfig) -> dict[str, object]:
     entries: list[dict[str, object]] = []
     repo_root = Path(__file__).resolve().parents[4]
 
-    def add_file(role: str, path: Path) -> None:
+    def add_source(role: str, path: Path) -> None:
+        if path.is_dir():
+            files = tuple(sorted(item for item in path.glob("*.json*") if item.is_file()))
+            if not files:
+                entries.append({"role": role, "path": str(path), "status": "missing"})
+                return
+            directory_values = {
+                item.name: {"size_bytes": item.stat().st_size, "sha256": _sha256(item)}
+                for item in files
+            }
+            entries.append(
+                {
+                    "role": role,
+                    "path": str(path.resolve()),
+                    "status": "present",
+                    "source_type": "directory",
+                    "file_count": len(files),
+                    "content_hash": canonical_hash(
+                        directory_values,
+                        prefix="vtdo_round_directory:",
+                    ),
+                }
+            )
+            return
         if not path.is_file():
             entries.append({"role": role, "path": str(path), "status": "missing"})
             return
@@ -262,24 +435,27 @@ def _build_input_manifest(config: VTDOExperimentConfig) -> dict[str, object]:
                 "role": role,
                 "path": str(path.resolve()),
                 "status": "present",
+                "source_type": "file",
                 "size_bytes": path.stat().st_size,
                 "sha256": _sha256(path),
             }
         )
 
-    add_file("finance_archive_config", config.multi_state.finance_archive_config_path)
-    add_file("student_training_config", config.training.training_config_path)
+    add_source("finance_archive_config", config.multi_state.finance_archive_config_path)
+    add_source("student_training_config", config.training.training_config_path)
     if config.training.ccgr_task_distribution_path is not None:
-        add_file("ccgr_task_distribution", config.training.ccgr_task_distribution_path)
+        add_source("ccgr_task_distribution", config.training.ccgr_task_distribution_path)
     if config.contribution_validation.observation_path is not None:
-        add_file(
+        add_source(
             "contribution_validation_observations",
             config.contribution_validation.observation_path,
         )
+    if config.refinement_dynamics.real_round_input_path is not None:
+        add_source("real_vtdo_round_input", config.refinement_dynamics.real_round_input_path)
     for snapshot in config.training.external_benchmarks:
-        add_file(f"external_benchmark:{snapshot.benchmark_id}", snapshot.path)
+        add_source(f"external_benchmark:{snapshot.benchmark_id}", snapshot.path)
     for index, path in enumerate(config.refinement_dynamics.real_round_artifact_paths):
-        add_file(f"real_vtdo_round:{index}", path)
+        add_source(f"real_vtdo_round:{index}", path)
     values: dict[str, object] = {
         "experiment_config_hash": config.config_hash,
         "source_tree_hash": _source_tree_hash(repo_root),

@@ -16,7 +16,7 @@ from trusted_synthesis.core.evaluation.contracts import (
 )
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
-from trusted_synthesis.core.task.program import InputRefKind
+from trusted_synthesis.core.task.program import InputRefKind, OperationNode
 from trusted_synthesis.core.task.schema import TaskPackage, TaskRequirement
 from trusted_synthesis.core.trajectory import (
     TrajectoryStateAssignment,
@@ -201,6 +201,13 @@ class FinanceMultiStateReport(FrozenModel):
     quotient_probe_raw_sequence_count: int = Field(ge=0)
     quotient_probe_state_count: int = Field(ge=0)
     quotient_merge_rate: float = Field(ge=0, le=1)
+    surface_probe_count: int = Field(ge=0)
+    surface_invariance_rate: float = Field(ge=0, le=1)
+    independent_order_probe_count: int = Field(ge=0)
+    independent_order_invariance_rate: float | None = Field(default=None, ge=0, le=1)
+    semantic_mutation_probe_count: int = Field(ge=0)
+    semantic_separation_rate: float | None = Field(default=None, ge=0, le=1)
+    quotient_false_merge_count: int = Field(ge=0)
     quotient_state_validity_variance: float | None = Field(default=None, ge=0)
     failure_counts: dict[str, int]
     status: Literal["passed", "partial", "blocked"]
@@ -313,7 +320,12 @@ def build_finance_multi_state_dataset(
         for artifact in artifacts
         for state in artifact.accepted_states
     }
-    quotient_raw, quotient_states, quotient_variance = _quotient_probe(artifacts)
+    quotient = _quotient_probe(artifacts)
+    raw_sequence_count = quotient["raw_sequence_count"]
+    state_count = quotient["state_count"]
+    quotient_raw = int(raw_sequence_count) if raw_sequence_count is not None else 0
+    quotient_states = int(state_count) if state_count is not None else 0
+    quotient_variance = quotient["state_validity_variance"]
     report_values = {
         "config_hash": canonical_hash(config, prefix="finance_multi_state_config:"),
         "kg_build_id": provider.kg_build_id,
@@ -345,6 +357,15 @@ def build_finance_multi_state_dataset(
             (quotient_raw - quotient_states) / quotient_raw if quotient_raw else 0.0
         ),
         "quotient_state_validity_variance": quotient_variance,
+        "surface_probe_count": quotient["surface_probe_count"],
+        "surface_invariance_rate": quotient["surface_invariance_rate"],
+        "independent_order_probe_count": quotient["independent_order_probe_count"],
+        "independent_order_invariance_rate": quotient[
+            "independent_order_invariance_rate"
+        ],
+        "semantic_mutation_probe_count": quotient["semantic_mutation_probe_count"],
+        "semantic_separation_rate": quotient["semantic_separation_rate"],
+        "quotient_false_merge_count": quotient["false_merge_count"],
         "failure_counts": dict(sorted(failures.items())),
         "status": (
             "passed"
@@ -711,13 +732,44 @@ def _surface_probe(source: Trajectory) -> Trajectory:
 
 def _quotient_probe(
     artifacts: list[FinanceTaskStateArtifact],
-) -> tuple[int, int, float | None]:
+) -> dict[str, int | float | None]:
     raw_hashes: set[str] = set()
     state_ids: set[str] = set()
     validity_by_state: dict[str, list[float]] = {}
+    surface_count = 0
+    surface_matches = 0
+    order_count = 0
+    order_matches = 0
+    semantic_count = 0
+    semantic_separations = 0
+    false_merges = 0
     for artifact in artifacts:
         for item in artifact.accepted_states:
-            for trajectory in (item.trajectory, _surface_probe(item.trajectory)):
+            original = map_trajectory_to_state(
+                artifact.omega,
+                item.trajectory,
+                program_node_aliases=item.validity_report.program_node_mapping,
+            )
+            surface = _surface_probe(item.trajectory)
+            surface_assignment = map_trajectory_to_state(
+                artifact.omega,
+                surface,
+                program_node_aliases=item.validity_report.program_node_mapping,
+            )
+            surface_count += 1
+            surface_matches += int(original.state.state_id == surface_assignment.state.state_id)
+            trajectories = [item.trajectory, surface]
+            order_probe = _independent_order_probe(artifact, item.trajectory)
+            if order_probe is not None:
+                order_assignment = map_trajectory_to_state(
+                    artifact.omega,
+                    order_probe,
+                    program_node_aliases=item.validity_report.program_node_mapping,
+                )
+                order_count += 1
+                order_matches += int(original.state.state_id == order_assignment.state.state_id)
+                trajectories.append(order_probe)
+            for trajectory in trajectories:
                 assignment = map_trajectory_to_state(
                     artifact.omega,
                     trajectory,
@@ -726,15 +778,98 @@ def _quotient_probe(
                 raw_hashes.add(trajectory.trajectory_hash)
                 state_ids.add(assignment.state.state_id)
                 validity_by_state.setdefault(assignment.state.state_id, []).append(1.0)
+        accepted_state_ids = {
+            item.assignment.state.state_id for item in artifact.accepted_states
+        }
+        for rejected in artifact.rejected_attempts:
+            assignment = map_trajectory_to_state(
+                artifact.omega,
+                rejected.trajectory,
+                program_node_aliases=rejected.validity_report.program_node_mapping,
+            )
+            semantic_count += 1
+            separated = assignment.state.state_id not in accepted_state_ids
+            semantic_separations += int(separated)
+            false_merges += int(not separated)
     variances = [
         statistics.pvariance(values) if len(values) > 1 else 0.0
         for values in validity_by_state.values()
     ]
-    return (
-        len(raw_hashes),
-        len(state_ids),
-        statistics.fmean(variances) if variances else None,
-    )
+    return {
+        "raw_sequence_count": len(raw_hashes),
+        "state_count": len(state_ids),
+        "state_validity_variance": statistics.fmean(variances) if variances else None,
+        "surface_probe_count": surface_count,
+        "surface_invariance_rate": surface_matches / surface_count if surface_count else 0.0,
+        "independent_order_probe_count": order_count,
+        "independent_order_invariance_rate": (
+            order_matches / order_count if order_count else None
+        ),
+        "semantic_mutation_probe_count": semantic_count,
+        "semantic_separation_rate": (
+            semantic_separations / semantic_count if semantic_count else None
+        ),
+        "false_merge_count": false_merges,
+    }
+
+
+def _independent_order_probe(
+    artifact: FinanceTaskStateArtifact,
+    source: Trajectory,
+) -> Trajectory | None:
+    nodes = {item.node_id: item for item in artifact.omega.task.oracle.task_program.nodes}
+    step_positions = {
+        step.program_node_id: index
+        for index, step in enumerate(source.steps)
+        if step.program_node_id in nodes
+    }
+    for left_id in sorted(step_positions):
+        for right_id in sorted(step_positions):
+            if left_id >= right_id:
+                continue
+            if _depends_on(nodes, left_id, right_id) or _depends_on(nodes, right_id, left_id):
+                continue
+            steps = list(source.steps)
+            left = step_positions[left_id]
+            right = step_positions[right_id]
+            steps[left], steps[right] = steps[right], steps[left]
+            reindexed = tuple(
+                step.model_copy(update={"step_index": index})
+                for index, step in enumerate(steps, start=1)
+            )
+            return source.model_copy(
+                update={
+                    "trajectory_id": canonical_hash(
+                        {
+                            "source": source.trajectory_id,
+                            "probe": "independent_operation_order",
+                            "left": left_id,
+                            "right": right_id,
+                        },
+                        prefix="trajectory_quotient_probe:",
+                    ),
+                    "steps": reindexed,
+                    "generator_version": "quotient_order_probe.v1",
+                }
+            )
+    return None
+
+
+def _depends_on(
+    nodes: dict[str, OperationNode],
+    node_id: str,
+    candidate_ancestor: str,
+) -> bool:
+    pending = list(nodes[node_id].dependencies)
+    visited: set[str] = set()
+    while pending:
+        current = pending.pop()
+        if current == candidate_ancestor:
+            return True
+        if current not in visited:
+            visited.add(current)
+            pending.extend(nodes[current].dependencies)
+    return False
 
 
 def finance_task_state_artifact_id(value: FinanceTaskStateArtifact) -> str:

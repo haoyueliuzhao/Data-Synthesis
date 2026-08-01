@@ -24,6 +24,7 @@
     "down_proj"
   ],
   "seed": 20260731,
-  "prompt_version": "vtdo_student_prompt.v1",
-  "student_interaction_protocol": "host_instrumented_joint"
+  "prompt_version": "vtdo_student_prompt.v2",
+  "student_interaction_protocol": "host_instrumented_decisions_v1",
+  "budget_contract": "equal_supervised_tokens"
 }

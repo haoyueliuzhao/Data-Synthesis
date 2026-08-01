@@ -1,5 +1,5 @@
 {
-  "experiment_id": "vtdo_experiment.finance.v1",
+  "experiment_id": "vtdo_experiment.finance.v3",
   "synthetic": {
     "state_count": 200,
     "rounds": 20,
@@ -36,9 +36,13 @@
   "contribution_validation": {
     "enabled": true,
     "observation_path": null,
-    "minimum_observation_count": 100,
-    "minimum_unique_task_count": 100,
-    "minimum_absolute_spearman": 0.2
+    "minimum_observation_count": 90,
+    "minimum_unique_task_count": 30,
+    "minimum_states_per_task": 3,
+    "minimum_macro_spearman": 0.2,
+    "minimum_pairwise_concordance": 0.55,
+    "cluster_bootstrap_samples": 2000,
+    "bootstrap_seed": 20260731
   },
   "training": {
     "enabled": true,
@@ -49,7 +53,8 @@
     "minimum_unique_tasks_per_arm": 100,
     "minimum_unique_states_per_arm": 50,
     "gpu_ids": [3, 4, 5, 6, 7],
-    "seeds": [20260731]
+    "seeds": [20260731, 20260801, 20260802],
+    "minimum_primary_seed_count": 3
   },
   "refinement_dynamics": {
     "enabled": true,
@@ -59,11 +64,22 @@
     "primary_training_round": 3,
     "stabilization_score_threshold": 0.01,
     "utility_delta_weight": 1.0,
+    "potential_drift_weight": 1.0,
     "coverage_epsilon": 0.0001,
     "consecutive_stable_rounds": 2,
     "fixed_potential_rounds": 10,
     "contraction_tolerance": 1e-9,
+    "moving_potential_benchmark": {
+      "enabled": true,
+      "rounds": 5,
+      "drift_period": 5,
+      "contribution_drift_scale": 0.75,
+      "capability_decay": 0.15,
+      "objective_tolerance": 1e-10,
+      "require_regret_advantage": true
+    },
+    "real_round_input_path": null,
     "real_round_artifact_paths": []
   },
-  "output_dir": "../artifacts/vtdo_experiment/finance_v1"
+  "output_dir": "../artifacts/vtdo_experiment/finance_v3"
 }

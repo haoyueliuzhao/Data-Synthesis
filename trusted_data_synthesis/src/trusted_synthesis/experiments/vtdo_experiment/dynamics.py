@@ -1,22 +1,20 @@
 from __future__ import annotations
 
-import json
 import math
 import statistics
 from collections import defaultdict
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from pathlib import Path
-
-from pydantic import ValidationError
 
 from trusted_synthesis.core.vtdo import VTDORoundArtifact
 from trusted_synthesis.hashing import canonical_hash
 
+from .moving_potential import run_moving_potential_tracking_experiment
+from .round_io import load_vtdo_round_artifacts
 from .schema import (
     AggregateMetric,
     FixedPotentialContractionSummary,
-    PracticalConvergenceSummary,
+    PracticalStabilizationSummary,
     RealRefinementDynamicsSummary,
     RefinementCheckpointSummary,
     RefinementDynamicsConfig,
@@ -28,6 +26,7 @@ from .schema import (
     SyntheticState,
     refinement_dynamics_report_hash,
 )
+from .statistics import aggregate_metric
 
 
 @dataclass(frozen=True)
@@ -35,6 +34,7 @@ class RefinementDynamicsExecution:
     report: RefinementDynamicsReport
     controlled_rows: tuple[dict[str, object], ...]
     fixed_potential_rows: tuple[dict[str, object], ...]
+    moving_potential_rows: tuple[dict[str, object], ...]
     real_rows: tuple[dict[str, object], ...]
 
 
@@ -47,22 +47,33 @@ def run_refinement_dynamics_experiment(
     *,
     experiment_id: str,
 ) -> RefinementDynamicsExecution:
-    """Separate fixed-potential contraction from moving-potential stabilization."""
+    """Verify the operator, moving-optimum tracking, and real feedback dynamics separately."""
 
-    controlled_rows, practical = _controlled_round_dynamics(config, synthetic_report)
+    phase_values = tuple(phase_rows)
+    controlled_rows, practical = _controlled_round_dynamics(
+        config,
+        synthetic_report,
+        phase_values,
+    )
     aggregates = _aggregate_controlled_rounds(config, controlled_rows)
     checkpoints = _checkpoint_summaries(config, aggregates)
     fixed_summary, fixed_rows = _fixed_potential_contraction(
         config,
         synthetic_config,
         state_catalogs,
-        tuple(phase_rows),
+        phase_values,
+    )
+    moving = run_moving_potential_tracking_experiment(
+        config.moving_potential_benchmark,
+        synthetic_config,
+        experiment_id=experiment_id,
     )
     real_summary, real_rows = _real_round_dynamics(config)
     interpretation = (
-        "The fixed-potential control numerically verifies the predicted projective "
-        "contraction. The production update recomputes its potential each round and is "
-        "therefore evaluated only with a finite-step practical-stability criterion."
+        "The fixed-potential control verifies only the update operator. Moving potentials "
+        "are evaluated against their instantaneous anchored optima using tracking error, "
+        "variational-objective gain, and regret. Real feedback rounds are evaluated as "
+        "finite-step tracking and stabilization, never as strict convergence."
     )
     values = {
         "experiment_id": experiment_id,
@@ -71,8 +82,9 @@ def run_refinement_dynamics_experiment(
         "analysis_rounds": config.analysis_rounds,
         "round_aggregates": aggregates,
         "checkpoint_summaries": checkpoints,
-        "practical_convergence": practical,
+        "practical_stabilization": practical,
         "fixed_potential_contraction": fixed_summary,
+        "moving_potential_tracking": moving.summary,
         "real_refinement": real_summary,
         "strict_convergence_claim_supported": False,
         "interpretation": interpretation,
@@ -86,6 +98,7 @@ def run_refinement_dynamics_experiment(
         report=report,
         controlled_rows=controlled_rows,
         fixed_potential_rows=fixed_rows,
+        moving_potential_rows=moving.rows,
         real_rows=real_rows,
     )
 
@@ -93,74 +106,106 @@ def run_refinement_dynamics_experiment(
 def _controlled_round_dynamics(
     config: RefinementDynamicsConfig,
     report: SyntheticExperimentReport,
-) -> tuple[tuple[dict[str, object], ...], PracticalConvergenceSummary]:
+    phase_rows: tuple[Mapping[str, float | int | str], ...],
+) -> tuple[tuple[dict[str, object], ...], PracticalStabilizationSummary]:
     points_by_seed: defaultdict[int, dict[int, SyntheticMetricPoint]] = defaultdict(dict)
     for point in report.metric_points:
-        if point.method == config.method and point.round_index <= config.analysis_rounds:
+        if point.method == config.method and 1 <= point.round_index <= config.analysis_rounds:
             points_by_seed[point.seed][point.round_index] = point
-    expected_rounds = set(range(config.analysis_rounds + 1))
+    phase_by_seed_round: defaultdict[tuple[int, int], list[Mapping[str, float | int | str]]] = (
+        defaultdict(list)
+    )
+    for row in phase_rows:
+        seed = int(row["seed"])
+        round_index = int(row["round_index"])
+        if 1 <= round_index <= config.analysis_rounds:
+            phase_by_seed_round[(seed, round_index)].append(row)
+    expected_rounds = set(range(1, config.analysis_rounds + 1))
     if not points_by_seed:
         raise ValueError("no controlled refinement points match the configured method")
 
     rows: list[dict[str, object]] = []
-    convergence_by_seed: dict[str, int | None] = {}
+    first_stable_round_by_seed: dict[str, int | None] = {}
     for seed, by_round in sorted(points_by_seed.items()):
         if set(by_round) != expected_rounds:
             raise ValueError(f"synthetic refinement seed {seed} has an incomplete round horizon")
         streak = 0
-        convergence_round: int | None = None
-        previous_utility: float | None = None
+        first_stable_round: int | None = None
         seed_rows: list[dict[str, object]] = []
-        for round_index in range(config.analysis_rounds + 1):
+        previous_log_potential: dict[str, float] | None = None
+        for round_index in range(1, config.analysis_rounds + 1):
             point = by_round[round_index]
-            utility = point.expected_contribution_novelty
-            utility_delta = None if previous_utility is None else abs(utility - previous_utility)
-            kl_shift = None if round_index == 0 else point.kl_to_previous
-            stabilization_score = (
-                None
-                if kl_shift is None or utility_delta is None
-                else kl_shift + config.utility_delta_weight * utility_delta
+            phase = phase_by_seed_round[(seed, round_index)]
+            if not phase:
+                raise ValueError(
+                    f"synthetic refinement seed {seed} round {round_index} has no phase data"
+                )
+            prior = {str(row["state_id"]): _as_float(row["current_probability"]) for row in phase}
+            next_distribution = {
+                str(row["state_id"]): _as_float(row["next_probability"]) for row in phase
+            }
+            log_potential = {str(row["state_id"]): _as_float(row["log_potential"]) for row in phase}
+            utility_before = sum(prior[key] * log_potential[key] for key in prior)
+            utility_after = sum(
+                next_distribution[key] * log_potential[key] for key in next_distribution
             )
-            stable = bool(
-                stabilization_score is not None
+            utility_delta = abs(utility_after - utility_before)
+            kl_shift = _kl(next_distribution, prior)
+            if not math.isclose(kl_shift, point.kl_to_previous, abs_tol=1e-10):
+                raise ValueError("phase lineage disagrees with the synthetic KL transition")
+            potential_drift = (
+                _projective_potential_drift(log_potential, previous_log_potential)
+                if previous_log_potential is not None
+                else 0.0
+            )
+            stabilization_score = (
+                kl_shift
+                + config.utility_delta_weight * utility_delta
+                + config.potential_drift_weight * potential_drift
+            )
+            stable = (
+                previous_log_potential is not None
                 and stabilization_score < config.stabilization_score_threshold
             )
             streak = streak + 1 if stable else 0
-            if streak >= config.consecutive_stable_rounds and convergence_round is None:
-                convergence_round = round_index
+            if streak >= config.consecutive_stable_rounds and first_stable_round is None:
+                first_stable_round = round_index
             seed_rows.append(
                 {
                     "seed": seed,
                     "round_index": round_index,
                     "kl_shift": kl_shift,
-                    "expected_utility": utility,
+                    "utility_before": utility_before,
+                    "expected_log_potential": utility_after,
                     "absolute_utility_delta": utility_delta,
+                    "potential_drift": potential_drift,
                     "stabilization_score": stabilization_score,
                     "entropy": point.entropy,
                     "coverage_count": point.coverage_count,
                     "stable_transition": stable,
                 }
             )
-            previous_utility = utility
-        convergence_by_seed[str(seed)] = convergence_round
-        for row in seed_rows:
-            row["first_practical_convergence_round"] = convergence_round
-            rows.append(row)
+            previous_log_potential = log_potential
+        first_stable_round_by_seed[str(seed)] = first_stable_round
+        for seed_row in seed_rows:
+            seed_row["first_practical_stabilization_round"] = first_stable_round
+            rows.append(seed_row)
 
     round_counts: dict[str, int] = {}
-    for convergence_value in convergence_by_seed.values():
-        key = "not_observed" if convergence_value is None else str(convergence_value)
+    for stable_round in first_stable_round_by_seed.values():
+        key = "not_observed" if stable_round is None else str(stable_round)
         round_counts[key] = round_counts.get(key, 0) + 1
-    converged = sum(value is not None for value in convergence_by_seed.values())
-    summary = PracticalConvergenceSummary(
+    stabilized = sum(value is not None for value in first_stable_round_by_seed.values())
+    summary = PracticalStabilizationSummary(
         stabilization_score_threshold=config.stabilization_score_threshold,
         utility_delta_weight=config.utility_delta_weight,
+        potential_drift_weight=config.potential_drift_weight,
         consecutive_rounds=config.consecutive_stable_rounds,
-        evaluated_seed_count=len(convergence_by_seed),
-        converged_seed_count=converged,
-        convergence_round_by_seed=convergence_by_seed,
-        convergence_round_counts=dict(sorted(round_counts.items())),
-        practical_convergence_observed=(converged == len(convergence_by_seed)),
+        evaluated_seed_count=len(first_stable_round_by_seed),
+        stabilized_seed_count=stabilized,
+        first_stable_round_by_seed=first_stable_round_by_seed,
+        first_stable_round_counts=dict(sorted(round_counts.items())),
+        practical_stabilization_observed=(stabilized == len(first_stable_round_by_seed)),
     )
     return tuple(rows), summary
 
@@ -170,31 +215,26 @@ def _aggregate_controlled_rounds(
     rows: tuple[dict[str, object], ...],
 ) -> tuple[RefinementRoundAggregate, ...]:
     output: list[RefinementRoundAggregate] = []
-    for round_index in range(config.analysis_rounds + 1):
+    for round_index in range(1, config.analysis_rounds + 1):
         current = tuple(row for row in rows if row["round_index"] == round_index)
         if not current:
             raise ValueError(f"refinement round {round_index} has no controlled observations")
         output.append(
             RefinementRoundAggregate(
                 round_index=round_index,
-                transition_from_round=(round_index - 1 if round_index else None),
-                kl_shift=(
-                    _aggregate([_as_float(row["kl_shift"]) for row in current])
-                    if round_index
-                    else None
+                transition_from_round=round_index - 1,
+                kl_shift=_aggregate([_as_float(row["kl_shift"]) for row in current]),
+                expected_log_potential=_aggregate(
+                    [_as_float(row["expected_log_potential"]) for row in current]
                 ),
-                expected_utility=_aggregate(
-                    [_as_float(row["expected_utility"]) for row in current]
+                absolute_utility_delta=_aggregate(
+                    [_as_float(row["absolute_utility_delta"]) for row in current]
                 ),
-                absolute_utility_delta=(
-                    _aggregate([_as_float(row["absolute_utility_delta"]) for row in current])
-                    if round_index
-                    else None
+                potential_drift=_aggregate(
+                    [_as_float(row["potential_drift"]) for row in current]
                 ),
-                stabilization_score=(
-                    _aggregate([_as_float(row["stabilization_score"]) for row in current])
-                    if round_index
-                    else None
+                stabilization_score=_aggregate(
+                    [_as_float(row["stabilization_score"]) for row in current]
                 ),
                 entropy=_aggregate([_as_float(row["entropy"]) for row in current]),
                 coverage_count=_aggregate([_as_float(row["coverage_count"]) for row in current]),
@@ -209,7 +249,7 @@ def _checkpoint_summaries(
     aggregates: tuple[RefinementRoundAggregate, ...],
 ) -> tuple[RefinementCheckpointSummary, ...]:
     by_round = {item.round_index: item for item in aggregates}
-    one_shot = by_round[1].expected_utility.mean
+    round_one = by_round[1].expected_log_potential.mean
     output = []
     for round_index in config.checkpoint_rounds:
         aggregate = by_round[round_index]
@@ -226,8 +266,10 @@ def _checkpoint_summaries(
             RefinementCheckpointSummary(
                 round_index=round_index,
                 role=role,
-                expected_utility=aggregate.expected_utility,
-                utility_gain_from_one_shot=aggregate.expected_utility.mean - one_shot,
+                expected_log_potential=aggregate.expected_log_potential,
+                log_potential_difference_from_round_one=(
+                    aggregate.expected_log_potential.mean - round_one
+                ),
                 kl_shift=aggregate.kl_shift,
                 entropy=aggregate.entropy,
                 coverage_count=aggregate.coverage_count,
@@ -344,30 +386,15 @@ def _real_round_dynamics(
                 task_condition_count=0,
                 complete_sequence_count=0,
                 sequential_link_failure_count=0,
-                convergence_eligible_sequence_count=0,
-                converged_sequence_count=0,
+                stabilization_eligible_sequence_count=0,
+                stabilized_sequence_count=0,
                 blockers=("no_real_vtdo_round_artifacts",),
             ),
             (),
         )
-    artifacts: list[VTDORoundArtifact] = []
-    blockers: list[str] = []
-    for source in config.real_round_artifact_paths:
-        paths = tuple(sorted(source.glob("*.json*"))) if source.is_dir() else (source,)
-        if not paths or any(not path.is_file() for path in paths):
-            blockers.append(f"missing_round_artifact_source:{source}")
-            continue
-        for path in paths:
-            try:
-                payloads = _read_json_records(path)
-            except (OSError, json.JSONDecodeError) as error:
-                blockers.append(f"unreadable_round_artifact:{path.name}:{type(error).__name__}")
-                continue
-            for index, payload in enumerate(payloads):
-                try:
-                    artifacts.append(VTDORoundArtifact.model_validate(payload))
-                except ValidationError:
-                    blockers.append(f"invalid_round_artifact:{path.name}:{index}")
+    loaded, load_blockers = load_vtdo_round_artifacts(config.real_round_artifact_paths)
+    artifacts = list(loaded)
+    blockers = list(load_blockers)
     if not artifacts:
         return (
             RealRefinementDynamicsSummary(
@@ -377,8 +404,8 @@ def _real_round_dynamics(
                 task_condition_count=0,
                 complete_sequence_count=0,
                 sequential_link_failure_count=0,
-                convergence_eligible_sequence_count=0,
-                converged_sequence_count=0,
+                stabilization_eligible_sequence_count=0,
+                stabilized_sequence_count=0,
                 blockers=tuple(sorted(set(blockers or ["no_valid_real_round_artifacts"]))),
             ),
             (),
@@ -386,46 +413,124 @@ def _real_round_dynamics(
 
     grouped: defaultdict[str, list[VTDORoundArtifact]] = defaultdict(list)
     rows: list[dict[str, object]] = []
+    row_by_round_id: dict[str, dict[str, object]] = {}
+    anchor_target_by_round_id: dict[str, dict[str, float]] = {}
+    log_potential_by_round_id: dict[str, dict[str, float]] = {}
+    tolerance = config.moving_potential_benchmark.objective_tolerance
     for artifact in artifacts:
         grouped[artifact.task_condition_id].append(artifact)
         potentials = {item.state_id: item for item in artifact.update.state_potentials}
-        utility_by_state = {
-            state_id: item.centered_contribution * item.coverage_relative_novelty
-            for state_id, item in potentials.items()
-        }
-        prior = artifact.update.prior_distribution.probabilities
-        next_distribution = artifact.update.next_distribution.probabilities
-        utility_before = sum(prior[key] * utility_by_state[key] for key in prior)
+        potential = {state_id: item.potential for state_id, item in potentials.items()}
+        prior = dict(artifact.update.prior_distribution.probabilities)
+        coverage = dict(artifact.update.coverage_prior.probabilities)
+        next_distribution = dict(artifact.update.next_distribution.probabilities)
+        energy = artifact.update.energy_config
+        utility_before = sum(prior[key] * math.log(potential[key]) for key in prior)
         utility_after = sum(
-            next_distribution[key] * utility_by_state[key] for key in next_distribution
+            next_distribution[key] * math.log(potential[key]) for key in next_distribution
         )
-        absolute_utility_delta = abs(utility_after - utility_before)
-        stabilization_score = (
-            artifact.update.kl_to_history
-            + config.utility_delta_weight * absolute_utility_delta
+        objective_before = _proximal_objective(
+            prior,
+            potential,
+            prior,
+            coverage,
+            energy.history_kl_weight,
+            energy.coverage_kl_weight,
         )
-        rows.append(
+        objective_after = _proximal_objective(
+            next_distribution,
+            potential,
+            prior,
+            coverage,
+            energy.history_kl_weight,
+            energy.coverage_kl_weight,
+        )
+        objective_gain = objective_after - objective_before
+        proximal_target = _normalize(
             {
-                "task_condition_id": artifact.task_condition_id,
-                "round_index": artifact.round_index,
-                "round_id": artifact.round_id,
-                "kl_shift": artifact.update.kl_to_history,
-                "utility_before": utility_before,
-                "utility_after": utility_after,
-                "absolute_utility_delta": absolute_utility_delta,
-                "stabilization_score": stabilization_score,
-                "entropy": artifact.update.next_entropy,
-                "coverage_count": sum(
-                    value > config.coverage_epsilon for value in next_distribution.values()
-                ),
+                state_id: prior[state_id] ** energy.history_exponent
+                * coverage[state_id] ** (1.0 - energy.history_exponent)
+                * potential[state_id] ** energy.energy_exponent
+                for state_id in prior
             }
         )
+        proximal_optimizer_kl = _kl(next_distribution, proximal_target)
+        anchor_target = _normalize(
+            {
+                state_id: coverage[state_id]
+                * potential[state_id] ** (1.0 / energy.coverage_kl_weight)
+                for state_id in prior
+            }
+        )
+        target_objective = _anchor_objective(
+            anchor_target,
+            potential,
+            coverage,
+            energy.coverage_kl_weight,
+        )
+        actual_anchor_objective = _anchor_objective(
+            next_distribution,
+            potential,
+            coverage,
+            energy.coverage_kl_weight,
+        )
+        instantaneous_regret = max(0.0, target_objective - actual_anchor_objective)
+        absolute_utility_delta = abs(utility_after - utility_before)
+        independently_computed_kl = _kl(next_distribution, prior)
+        if not math.isclose(
+            independently_computed_kl,
+            artifact.update.kl_to_history,
+            abs_tol=tolerance,
+        ):
+            blockers.append(f"round_history_kl_mismatch:{artifact.round_id}")
+        if objective_gain < -tolerance:
+            blockers.append(f"variational_objective_decrease:{artifact.round_id}")
+        if proximal_optimizer_kl > tolerance:
+            blockers.append(f"proximal_optimizer_mismatch:{artifact.round_id}")
+        row = {
+            "task_condition_id": artifact.task_condition_id,
+            "round_index": artifact.round_index,
+            "round_id": artifact.round_id,
+            "kl_shift": independently_computed_kl,
+            "log_potential_utility_before": utility_before,
+            "log_potential_utility_after": utility_after,
+            "absolute_utility_delta": absolute_utility_delta,
+            "potential_drift": None,
+            "stabilization_score": None,
+            "variational_objective_before": objective_before,
+            "variational_objective_after": objective_after,
+            "variational_objective_gain": objective_gain,
+            "proximal_optimizer_kl": proximal_optimizer_kl,
+            "tracking_error": _kl(next_distribution, anchor_target),
+            "instantaneous_regret": instantaneous_regret,
+            "cumulative_regret": None,
+            "target_movement_kl": None,
+            "entered_state_count": 0,
+            "exited_state_count": 0,
+            "state_turnover_observed": False,
+            "entropy": artifact.update.next_entropy,
+            "coverage_count": sum(
+                value > config.coverage_epsilon for value in next_distribution.values()
+            ),
+        }
+        if artifact.round_id in row_by_round_id:
+            blockers.append(f"duplicate_round_id:{artifact.round_id}")
+        rows.append(row)
+        row_by_round_id[artifact.round_id] = row
+        anchor_target_by_round_id[artifact.round_id] = anchor_target
+        log_potential_by_round_id[artifact.round_id] = {
+            state_id: math.log(value) for state_id, value in potential.items()
+        }
 
     complete = 0
     link_failures = 0
     eligible = 0
-    converged = 0
+    stabilized = 0
     final_kls: list[float] = []
+    final_tracking_errors: list[float] = []
+    cumulative_regrets: list[float] = []
+    state_entries: list[float] = []
+    state_exits: list[float] = []
     expected_indices = tuple(range(config.analysis_rounds))
     for condition_id, values in sorted(grouped.items()):
         ordered = sorted(values, key=lambda item: item.round_index)
@@ -434,6 +539,7 @@ def _real_round_dynamics(
             blockers.append(f"duplicate_round_index:{condition_id}")
             continue
         if not all(index in by_index for index in expected_indices):
+            blockers.append(f"incomplete_real_refinement_sequence:{condition_id}")
             continue
         sequence = tuple(by_index[index] for index in expected_indices)
         complete += 1
@@ -449,19 +555,70 @@ def _real_round_dynamics(
         eligible += 1
         streak = 0
         reached = False
+        cumulative_regret = 0.0
+        previous_support: set[str] | None = None
+        previous_target: dict[str, float] | None = None
+        previous_log_potential: dict[str, float] | None = None
         for artifact in sequence:
-            row = next(item for item in rows if item["round_id"] == artifact.round_id)
-            stable = bool(
-                _as_float(row["stabilization_score"])
-                < config.stabilization_score_threshold
-            )
+            row = row_by_round_id[artifact.round_id]
+            current_support = set(artifact.update.next_distribution.probabilities)
+            current_target = anchor_target_by_round_id[artifact.round_id]
+            current_log_potential = log_potential_by_round_id[artifact.round_id]
+            stable = False
+            if previous_support is not None:
+                entered = current_support - previous_support
+                exited = previous_support - current_support
+                row["entered_state_count"] = len(entered)
+                row["exited_state_count"] = len(exited)
+                row["state_turnover_observed"] = bool(entered or exited)
+                state_entries.append(float(len(entered)))
+                state_exits.append(float(len(exited)))
+                if current_support == previous_support and previous_target is not None:
+                    row["target_movement_kl"] = _kl(current_target, previous_target)
+                    if previous_log_potential is None:
+                        raise AssertionError("real refinement lost previous potential")
+                    potential_drift = _projective_potential_drift(
+                        current_log_potential,
+                        previous_log_potential,
+                    )
+                    row["potential_drift"] = potential_drift
+                    row["stabilization_score"] = (
+                        _as_float(row["kl_shift"])
+                        + config.utility_delta_weight
+                        * _as_float(row["absolute_utility_delta"])
+                        + config.potential_drift_weight * potential_drift
+                    )
+                    stable = bool(
+                        _as_float(row["stabilization_score"])
+                        < config.stabilization_score_threshold
+                    )
+            cumulative_regret += _as_float(row["instantaneous_regret"])
+            row["cumulative_regret"] = cumulative_regret
             streak = streak + 1 if stable else 0
             if streak >= config.consecutive_stable_rounds:
                 reached = True
-        converged += int(reached)
+            previous_support = current_support
+            previous_target = current_target
+            previous_log_potential = current_log_potential
+        stabilized += int(reached)
         final_kls.append(sequence[-1].update.kl_to_history)
+        final_row = row_by_round_id[sequence[-1].round_id]
+        final_tracking_errors.append(_as_float(final_row["tracking_error"]))
+        cumulative_regrets.append(cumulative_regret)
     if not complete:
         blockers.append("no_complete_real_refinement_sequence")
+    objective_gains = [_as_float(row["variational_objective_gain"]) for row in rows]
+    optimizer_kls = [_as_float(row["proximal_optimizer_kl"]) for row in rows]
+    target_movements = [
+        _as_float(row["target_movement_kl"])
+        for row in rows
+        if row["target_movement_kl"] is not None
+    ]
+    monotonic_count = sum(value >= -tolerance for value in objective_gains)
+    objective_verified = bool(objective_gains) and (
+        monotonic_count == len(objective_gains)
+        and max(optimizer_kls, default=math.inf) <= tolerance
+    )
     status = (
         "passed"
         if complete and not blockers and link_failures == 0
@@ -476,9 +633,25 @@ def _real_round_dynamics(
         task_condition_count=len(grouped),
         complete_sequence_count=complete,
         sequential_link_failure_count=link_failures,
-        convergence_eligible_sequence_count=eligible,
-        converged_sequence_count=converged,
+        stabilization_eligible_sequence_count=eligible,
+        stabilized_sequence_count=stabilized,
         mean_final_kl_shift=(statistics.fmean(final_kls) if final_kls else None),
+        variational_transition_count=len(objective_gains),
+        variational_monotonic_transition_count=monotonic_count,
+        minimum_variational_objective_gain=(min(objective_gains) if objective_gains else None),
+        maximum_proximal_optimizer_kl=(max(optimizer_kls) if optimizer_kls else None),
+        variational_objective_verified=objective_verified,
+        mean_final_tracking_error=(
+            statistics.fmean(final_tracking_errors) if final_tracking_errors else None
+        ),
+        mean_cumulative_regret=(
+            statistics.fmean(cumulative_regrets) if cumulative_regrets else None
+        ),
+        mean_target_movement_kl=(statistics.fmean(target_movements) if target_movements else None),
+        mean_state_entries_per_transition=(
+            statistics.fmean(state_entries) if state_entries else None
+        ),
+        mean_state_exits_per_transition=(statistics.fmean(state_exits) if state_exits else None),
         blockers=tuple(sorted(set(blockers))),
     )
     return summary, tuple(
@@ -492,37 +665,59 @@ def _real_round_dynamics(
     )
 
 
-def _read_json_records(path: Path) -> tuple[object, ...]:
-    if path.suffix == ".jsonl":
-        return tuple(
-            json.loads(line)
-            for line in path.read_text(encoding="utf-8").splitlines()
-            if line.strip()
-        )
-    value = json.loads(path.read_text(encoding="utf-8"))
-    return tuple(value) if isinstance(value, list) else (value,)
-
-
 def _aggregate(values: list[float]) -> AggregateMetric:
-    if not values:
-        raise ValueError("cannot aggregate an empty refinement metric")
-    mean = statistics.fmean(values)
-    standard_deviation = statistics.stdev(values) if len(values) > 1 else 0.0
-    return AggregateMetric(
-        mean=mean,
-        standard_deviation=standard_deviation,
-        ci95_half_width=1.96 * standard_deviation / math.sqrt(len(values)),
+    return aggregate_metric(values)
+
+
+def _projective_potential_drift(
+    current_log_potential: Mapping[str, float],
+    previous_log_potential: Mapping[str, float],
+) -> float:
+    if set(current_log_potential) != set(previous_log_potential):
+        raise ValueError("potential drift requires identical state support")
+    deltas = [
+        current_log_potential[key] - previous_log_potential[key]
+        for key in current_log_potential
+    ]
+    return max(deltas) - min(deltas)
+
+
+def _anchor_objective(
+    distribution: Mapping[str, float],
+    potential: Mapping[str, float],
+    coverage: Mapping[str, float],
+    coverage_kl_weight: float,
+) -> float:
+    return sum(distribution[key] * math.log(potential[key]) for key in distribution) - (
+        coverage_kl_weight * _kl(distribution, coverage)
+    )
+
+
+def _proximal_objective(
+    distribution: Mapping[str, float],
+    potential: Mapping[str, float],
+    prior: Mapping[str, float],
+    coverage: Mapping[str, float],
+    history_kl_weight: float,
+    coverage_kl_weight: float,
+) -> float:
+    return (
+        sum(distribution[key] * math.log(potential[key]) for key in distribution)
+        - history_kl_weight * _kl(distribution, prior)
+        - coverage_kl_weight * _kl(distribution, coverage)
     )
 
 
 def _normalize(values: Mapping[str, float]) -> dict[str, float]:
     total = sum(values.values())
     if total <= 0 or any(value <= 0 for value in values.values()):
-        raise ValueError("fixed-potential weights must be strictly positive")
+        raise ValueError("refinement weights must be strictly positive")
     return {key: values[key] / total for key in sorted(values)}
 
 
 def _kl(left: Mapping[str, float], right: Mapping[str, float]) -> float:
+    if set(left) != set(right):
+        raise ValueError("KL distributions have different support")
     return sum(left[key] * math.log(left[key] / right[key]) for key in left)
 
 
