@@ -166,9 +166,7 @@ def build_training_experiment_preflight(
         tasks,
     )
     leakage_status = (
-        "failed"
-        if config.external_benchmarks and benchmark_status != "ready"
-        else leakage.status
+        "failed" if config.external_benchmarks and benchmark_status != "ready" else leakage.status
     )
     if leakage_status == "failed":
         shared_blockers.append(f"external_benchmark_leakage:{leakage.collision_count}")
@@ -187,18 +185,17 @@ def build_training_experiment_preflight(
         for blocker in capacity_by_arm[arm_id].blockers
     ]
     primary_marginal_verified = all(
-        capacity_by_arm[arm_id].task_marginal_verified
-        for arm_id in _PRIMARY_CAUSAL_ARMS
+        capacity_by_arm[arm_id].task_marginal_verified for arm_id in _PRIMARY_CAUSAL_ARMS
     )
     shared_blocker_tuple = tuple(sorted(set(shared_blockers)))
     primary_blocker_tuple = tuple(sorted(set(primary_blockers)))
     secondary_blocker_tuple = tuple(sorted(set(secondary_blockers)))
     primary_ready = not shared_blocker_tuple and not primary_blocker_tuple
     full_matrix_ready = primary_ready and not secondary_blocker_tuple
-    pilot_ready = bool(tasks) and all(
-        item.capacity_status != "blocked"
-        for item in capacities
-        if item.arm_id in {"B1_raw", "B2_validity", "B4_random_state"}
+    permitted_arm_ids = (
+        tuple(item.arm_id for item in capacities if item.capacity_status == "ready")
+        if not shared_blocker_tuple
+        else ()
     )
     values = {
         "training_config_hash": student.config_hash,
@@ -212,7 +209,7 @@ def build_training_experiment_preflight(
         "primary_task_marginal_contract_verified": primary_marginal_verified,
         "primary_causal_training_ready": primary_ready,
         "full_comparison_matrix_ready": full_matrix_ready,
-        "pilot_training_ready": pilot_ready,
+        "permitted_arm_ids": permitted_arm_ids,
         "external_benchmark_status": benchmark_status,
         "benchmark_leakage_status": leakage_status,
         "benchmark_leakage_count": leakage.collision_count,
@@ -400,10 +397,8 @@ def train_vtdo_arm(
         raise ValueError("VTDO student config differs from the frozen preflight")
     if training_seed not in preflight.training_seeds:
         raise ValueError("training seed is outside the frozen experiment contract")
-    if preflight.shared_training_blockers:
-        raise ValueError("VTDO shared training preflight is not ready")
-    if arm_id in preflight.primary_causal_arms and not preflight.primary_causal_training_ready:
-        raise ValueError("VTDO primary causal training preflight is not ready")
+    if arm_id not in preflight.permitted_arm_ids:
+        raise ValueError(f"VTDO arm is not permitted by the frozen preflight: {arm_id}")
     capacity = next((item for item in preflight.arms if item.arm_id == arm_id), None)
     if capacity is None or capacity.capacity_status != "ready":
         raise ValueError(f"VTDO arm is not formally ready: {arm_id}")
@@ -414,6 +409,16 @@ def train_vtdo_arm(
     dataset_hash = canonical_hash(records, prefix="vtdo_training_arm:")
     if manifest.get(arm_id) != dataset_hash:
         raise ValueError("VTDO arm dataset hash differs from the frozen manifest")
+    training_input_sha256 = {
+        "student_config": _sha256(student_config_path),
+        "preflight": _sha256(preflight_path),
+        "arm_manifest": _sha256(arm_manifest_path),
+        "dataset": _sha256(dataset_path),
+    }
+    training_input_manifest_hash = canonical_hash(
+        training_input_sha256,
+        prefix="vtdo_training_input_manifest:",
+    )
     effective_student = student.model_copy(update={"seed": training_seed})
     return _train(
         effective_student,
@@ -422,6 +427,8 @@ def train_vtdo_arm(
         dataset_hash,
         output_dir,
         frozen_config_hash=student.config_hash,
+        training_input_sha256=training_input_sha256,
+        training_input_manifest_hash=training_input_manifest_hash,
     )
 
 
@@ -591,8 +598,7 @@ def _component_arm(
         log_weights = {
             state_id: (
                 update.history_exponent * math.log(potential.current_probability)
-                + (1.0 - update.history_exponent)
-                * math.log(potential.coverage_probability)
+                + (1.0 - update.history_exponent) * math.log(potential.coverage_probability)
                 + update.energy_exponent
                 * math.log(
                     potential.normalized_contribution
@@ -604,8 +610,7 @@ def _component_arm(
         }
         maximum = max(log_weights.values())
         raw_weights = {
-            state_id: math.exp(value - maximum)
-            for state_id, value in log_weights.items()
+            state_id: math.exp(value - maximum) for state_id, value in log_weights.items()
         }
         total = sum(raw_weights.values())
         probabilities = {
@@ -770,14 +775,14 @@ def _capacity(
 def _external_benchmark_status(
     config: TrainingExperimentConfig,
 ) -> tuple[str, tuple[str, ...]]:
-    required = {"finqa", "tat_qa", "financebench"}
+    required = {"finqa", "tat_qa"}
     observed = {item.benchmark_id for item in config.external_benchmarks}
     if not observed:
         return "not_configured", ("external_benchmarks:not_configured",)
     blockers: list[str] = []
-    if observed != required:
+    if not required.issubset(observed):
         blockers.append(
-            "external_benchmark_set_mismatch:"
+            "required_external_benchmark_missing:"
             f"observed={sorted(observed)},required={sorted(required)}"
         )
     for snapshot in config.external_benchmarks:
@@ -796,6 +801,8 @@ def _train(
     output_dir: Path,
     *,
     frozen_config_hash: str,
+    training_input_sha256: dict[str, str],
+    training_input_manifest_hash: str,
 ) -> VTDOTrainingRunResult:
     try:
         import torch
@@ -812,6 +819,15 @@ def _train(
     if not torch.cuda.is_available():
         raise RuntimeError("VTDO Qwen2.5-7B training requires CUDA")
     _validate_model_loading(config.base_model, config.model_revision)
+    base_model_path = Path(config.base_model).expanduser()
+    base_model_manifest_hash = (
+        _directory_manifest_hash(base_model_path, prefix="base_model_manifest:")
+        if base_model_path.is_dir()
+        else canonical_hash(
+            {"repository": config.base_model, "revision": config.model_revision},
+            prefix="remote_base_model_manifest:",
+        )
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
     set_seed(config.seed)
     tokenizer = AutoTokenizer.from_pretrained(
@@ -895,11 +911,21 @@ def _train(
     adapter_dir = output_dir / "adapter"
     trainer.save_model(str(adapter_dir))
     tokenizer.save_pretrained(adapter_dir)
+    adapter_manifest_hash = _directory_manifest_hash(
+        adapter_dir,
+        prefix="adapter_manifest:",
+    )
     values = {
         "arm_id": arm_id,
         "config_hash": frozen_config_hash,
         "dataset_hash": dataset_hash,
-        "base_model": config.base_model,
+        "training_input_sha256": training_input_sha256,
+        "training_input_manifest_hash": training_input_manifest_hash,
+        "base_model": (
+            str(base_model_path.resolve()) if base_model_path.is_dir() else config.base_model
+        ),
+        "base_model_manifest_hash": base_model_manifest_hash,
+        "adapter_manifest_hash": adapter_manifest_hash,
         "model_revision": config.model_revision,
         "training_seed": config.seed,
         "adapter_dir": str(adapter_dir.resolve()),
@@ -918,7 +944,7 @@ def _train(
         "peak_gpu_memory_bytes": int(torch.cuda.max_memory_allocated()),
         "dependency_versions": _dependency_versions(),
         "status": "completed",
-        "schema_version": "vtdo_training_run.v3",
+        "schema_version": "vtdo_training_run.v4",
     }
     provisional = VTDOTrainingRunResult.model_construct(result_id="pending", **values)
     result = VTDOTrainingRunResult(
@@ -1002,9 +1028,7 @@ def _schedule_records(
         "processed_token_count": processed_tokens,
         "scheduled_example_count": len(scheduled),
         "unique_scheduled_record_count": unique_count,
-        "repeated_example_rate": (
-            1.0 - unique_count / len(scheduled) if scheduled else 0.0
-        ),
+        "repeated_example_rate": (1.0 - unique_count / len(scheduled) if scheduled else 0.0),
     }
     return tuple(scheduled), total, audit
 
@@ -1080,6 +1104,20 @@ def _dependency_versions() -> dict[str, str]:
         except PackageNotFoundError:
             result[package] = "missing"
     return result
+
+
+def _directory_manifest_hash(path: Path, *, prefix: str) -> str:
+    files = tuple(sorted(item for item in path.rglob("*") if item.is_file()))
+    if not files:
+        raise ValueError(f"model directory has no files: {path}")
+    identity = {
+        str(item.relative_to(path)): {
+            "size": item.stat().st_size,
+            "sha256": _sha256(item),
+        }
+        for item in files
+    }
+    return canonical_hash(identity, prefix=prefix)
 
 
 def _sha256(path: Path) -> str:

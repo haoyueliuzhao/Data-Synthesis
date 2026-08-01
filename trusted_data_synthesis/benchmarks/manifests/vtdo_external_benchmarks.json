@@ -1,0 +1,34 @@
+{
+  "manifest_version": "vtdo_external_benchmarks.v1",
+  "usage": "evaluation_only",
+  "total_examples": 2810,
+  "snapshots": [
+    {
+      "benchmark_id": "finqa",
+      "path": "../finqa/frozen/test.json",
+      "sha256": "831dbfb2e785dbc227f895ce3f24046433467aec67b09db2bd6ac7692a8a30dc",
+      "source_repository": "https://github.com/czyssrs/FinQA",
+      "source_revision": "0f16e2867befa6840783e58be38c9efb9229d742",
+      "source_blob_sha": "59958c7c3bb3b21f4dff6bc912a0fe0ae710aee0",
+      "split": "test",
+      "example_count": 1147,
+      "adapter_version": "native_financial_benchmark_adapter.v4",
+      "metric_version": "native_financial_benchmark_metric.v4",
+      "usage": "evaluation_only"
+    },
+    {
+      "benchmark_id": "tat_qa",
+      "path": "../tat_qa/frozen/test_gold.json",
+      "sha256": "c4d08418359c1d76468dec420ee748a37f48c06b63cb8ec2766f19d5d314b597",
+      "source_repository": "https://github.com/NExTplusplus/TAT-QA",
+      "source_revision": "870accc41953dcde885aabeb963d94aabdc0fbc3",
+      "source_blob_sha": "3d5d3b691af572646ba9b1ac4d8f78c5dca09732",
+      "split": "test_gold",
+      "document_count": 277,
+      "example_count": 1663,
+      "adapter_version": "native_financial_benchmark_adapter.v4",
+      "metric_version": "native_financial_benchmark_metric.v4",
+      "usage": "evaluation_only"
+    }
+  ]
+}

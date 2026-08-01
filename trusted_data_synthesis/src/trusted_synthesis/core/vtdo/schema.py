@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
-VTDO_SCHEMA_VERSION = "vtdo.v3"
+VTDO_SCHEMA_VERSION = "vtdo.v6"
 VTDO_ALGORITHM_ID = "anchored_energy_valid_trajectory_distribution_refinement"
 VTDO_ALGORITHM_VERSION = "aevtdr.v2"
 
@@ -35,10 +35,12 @@ class ValidityThresholds(FrozenModel):
 
 
 class VTDORoleContract(FrozenModel):
-    """Freeze Explorer, beneficiary, and final Student identities."""
+    """Freeze Explorer, Materializer, beneficiary, and final Student identities."""
 
     contract_id: str = Field(min_length=1)
     explorer_provider_id: str = Field(min_length=1)
+    materialization_provider_id: str = Field(min_length=1)
+    materialization_policy: Literal["independent_regeneration"]
     beneficiary_model_state_id: str = Field(min_length=1)
     final_student_model_id: str = Field(min_length=1)
     separation_mode: Literal["strict_distinct", "declared_shared"] = "strict_distinct"
@@ -54,6 +56,13 @@ class VTDORoleContract(FrozenModel):
             self.beneficiary_model_state_id,
             self.final_student_model_id,
         )
+        if self.separation_mode == "strict_distinct" and self.materialization_provider_id in {
+            self.beneficiary_model_state_id,
+            self.final_student_model_id,
+        }:
+            raise ValueError(
+                "strict VTDO materialization cannot reuse beneficiary or Student identities"
+            )
         if self.separation_mode == "strict_distinct":
             if len(set(identities)) != len(identities):
                 raise ValueError("strict VTDO roles must have distinct identities")
@@ -171,17 +180,22 @@ class ContributionEstimate(FrozenModel):
     state_id: str = Field(min_length=1)
     raw_marginal_gain: float
     confidence: float = Field(ge=0, le=1)
-    confidence_adjusted_gain: float
+    standard_error: float = Field(ge=0)
     centered_contribution: float
     current_probability: float = Field(gt=0, le=1)
-    probe_sample_count: int = Field(ge=1)
+    observation_count: int = Field(ge=1)
     schema_version: str = VTDO_SCHEMA_VERSION
 
     @model_validator(mode="after")
     def validate_estimate(self) -> ContributionEstimate:
-        expected = self.raw_marginal_gain * self.confidence
-        if not math.isclose(self.confidence_adjusted_gain, expected, abs_tol=1e-12):
-            raise ValueError("confidence-adjusted contribution is inconsistent")
+        numeric = (
+            self.raw_marginal_gain,
+            self.standard_error,
+            self.centered_contribution,
+            self.current_probability,
+        )
+        if any(not math.isfinite(value) for value in numeric):
+            raise ValueError("contribution estimate values must be finite")
         if self.estimate_id != contribution_estimate_id(self):
             raise ValueError("contribution estimate identity is invalid")
         return self
@@ -192,8 +206,19 @@ class ContributionEstimationManifest(FrozenModel):
     task_condition_id: str = Field(min_length=1)
     distribution_id: str = Field(min_length=1)
     beneficiary_model_state_id: str = Field(min_length=1)
+    beneficiary_checkpoint_hash: str = Field(min_length=1)
     target_evaluation_distribution_id: str = Field(min_length=1)
     target_metric_id: str = Field(min_length=1)
+    target_metric_direction: Literal["higher_is_better"]
+    estimator_kind: Literal["synthetic_oracle", "finite_intervention", "local_probe"]
+    usage_scope: Literal[
+        "synthetic_operator_control",
+        "intervention_validation",
+        "production_distribution_update",
+    ]
+    estimation_protocol_hash: str = Field(min_length=1)
+    data_isolation_contract_id: str = Field(min_length=1)
+    final_test_set_id: str = Field(min_length=1)
     estimator_id: str = Field(min_length=1)
     estimates: tuple[ContributionEstimate, ...] = Field(min_length=1)
     weighted_centered_mean: float
@@ -201,6 +226,13 @@ class ContributionEstimationManifest(FrozenModel):
 
     @model_validator(mode="after")
     def validate_manifest(self) -> ContributionEstimationManifest:
+        expected_scope = {
+            "synthetic_oracle": "synthetic_operator_control",
+            "finite_intervention": "intervention_validation",
+            "local_probe": "production_distribution_update",
+        }[self.estimator_kind]
+        if self.usage_scope != expected_scope:
+            raise ValueError("Contribution estimator kind and usage scope disagree")
         state_ids = [item.state_id for item in self.estimates]
         if len(state_ids) != len(set(state_ids)):
             raise ValueError("contribution manifest contains duplicate states")
@@ -210,6 +242,17 @@ class ContributionEstimationManifest(FrozenModel):
             abs_tol=1e-9,
         ):
             raise ValueError("contribution probabilities must form the current distribution")
+        raw_mean = sum(item.current_probability * item.raw_marginal_gain for item in self.estimates)
+        if any(
+            not math.isclose(
+                item.centered_contribution,
+                item.raw_marginal_gain - raw_mean,
+                rel_tol=0.0,
+                abs_tol=1e-12,
+            )
+            for item in self.estimates
+        ):
+            raise ValueError("centered Contribution does not replay from raw gains and pi_t")
         expected_mean = sum(
             item.current_probability * item.centered_contribution for item in self.estimates
         )

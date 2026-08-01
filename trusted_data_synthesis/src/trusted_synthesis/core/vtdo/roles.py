@@ -9,6 +9,7 @@ from trusted_synthesis.core.vtdo.schema import (
 def make_vtdo_role_contract(
     *,
     explorer_provider_id: str,
+    materialization_provider_id: str,
     beneficiary_model_state_id: str,
     final_student_model_id: str,
     separation_mode: str = "strict_distinct",
@@ -16,6 +17,8 @@ def make_vtdo_role_contract(
 ) -> VTDORoleContract:
     values = {
         "explorer_provider_id": explorer_provider_id,
+        "materialization_provider_id": materialization_provider_id,
+        "materialization_policy": "independent_regeneration",
         "beneficiary_model_state_id": beneficiary_model_state_id,
         "final_student_model_id": final_student_model_id,
         "separation_mode": separation_mode,

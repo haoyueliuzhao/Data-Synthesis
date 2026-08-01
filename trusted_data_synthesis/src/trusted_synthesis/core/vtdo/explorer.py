@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import math
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable
 from itertools import islice
 from typing import Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.trajectory.schema import Trajectory
-from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
+from trusted_synthesis.core.trajectory.specification import (
+    TrajectoryVerificationContext,
+    make_omega_component_manifest,
+)
 from trusted_synthesis.core.trajectory.state import (
-    TrajectoryState,
     TrajectoryStateAssignment,
     map_trajectory_to_state,
 )
@@ -19,6 +21,7 @@ from trusted_synthesis.core.trajectory.validity import (
     TrajectoryValidityEvaluator,
     TrajectoryValidityReport,
 )
+from trusted_synthesis.core.vtdo.catalog import TrajectoryStateCatalog
 from trusted_synthesis.core.vtdo.estimation import (
     estimate_state_validity,
     make_conditional_distribution,
@@ -39,6 +42,13 @@ from trusted_synthesis.core.vtdo.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
+from .state_space import (
+    PublicStateGenerationRequest,
+    PublicStateLeakageAudit,
+    audit_public_state_generation_request,
+    make_public_state_generation_request,
+)
+
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -52,17 +62,14 @@ class StateConditionedTrajectoryProviderProtocol(Protocol):
 
     def generate(
         self,
-        context: TrajectoryVerificationContext,
-        target_state: TrajectoryState,
-        *,
-        candidate_count: int,
-        seed: int,
+        request: PublicStateGenerationRequest,
     ) -> Iterable[Trajectory]: ...
 
 
 class TrajectoryExplorationObservation(FrozenModel):
     observation_id: str = Field(min_length=1)
     requested_state_id: str = Field(min_length=1)
+    public_request_id: str = Field(min_length=1)
     trajectory: Trajectory
     validity_report: TrajectoryValidityReport
     assignment: TrajectoryStateAssignment | None = None
@@ -105,6 +112,12 @@ class StateConditionedExplorationBatch(FrozenModel):
     seed: int
     total_budget: int = Field(ge=1)
     requested_state_counts: dict[str, int] = Field(min_length=1)
+    public_state_requests: dict[str, PublicStateGenerationRequest] = Field(
+        default_factory=dict
+    )
+    public_state_leakage_audits: dict[str, PublicStateLeakageAudit] = Field(
+        default_factory=dict
+    )
     generated_candidate_count: int = Field(ge=0)
     evaluated_candidate_count: int = Field(ge=0)
     mapped_candidate_count: int = Field(ge=0)
@@ -127,6 +140,26 @@ class StateConditionedExplorationBatch(FrozenModel):
             <= self.total_budget
         ):
             raise ValueError("exploration stage counts are not monotonic")
+        positive_states = {
+            state_id for state_id, count in self.requested_state_counts.items() if count > 0
+        }
+        if set(self.public_state_requests) != positive_states:
+            raise ValueError("exploration public requests do not cover requested states")
+        if set(self.public_state_leakage_audits) != positive_states:
+            raise ValueError("exploration leakage audits do not cover requested states")
+        if any(not audit.passed for audit in self.public_state_leakage_audits.values()):
+            raise ValueError("exploration contains a leaking public request")
+        if any(
+            audit.request_id != self.public_state_requests[state_id].request_id
+            for state_id, audit in self.public_state_leakage_audits.items()
+        ):
+            raise ValueError("exploration leakage audit binds another public request")
+        if any(
+            item.public_request_id
+            != self.public_state_requests[item.requested_state_id].request_id
+            for item in self.observations
+        ):
+            raise ValueError("exploration observation binds another public request")
         if self.evaluated_candidate_count != len(self.observations):
             raise ValueError("exploration observation count is inconsistent")
         if any(item.validity_report.context_id != self.context_id for item in self.observations):
@@ -180,7 +213,7 @@ class StateConditionedTrajectoryExplorer:
     def explore(
         self,
         context: TrajectoryVerificationContext,
-        states: Mapping[str, TrajectoryState],
+        state_catalog: TrajectoryStateCatalog,
         exploration: ExplorationDistribution,
         role_contract: VTDORoleContract,
         *,
@@ -189,6 +222,9 @@ class StateConditionedTrajectoryExplorer:
     ) -> StateConditionedExplorationBatch:
         if self._provider.provider_id != role_contract.explorer_provider_id:
             raise ValueError("Explorer provider disagrees with the VTDO role contract")
+        states = state_catalog.states
+        if state_catalog.omega_context_id != context.context_id:
+            raise ValueError("Explorer catalog belongs to another Omega context")
         if set(states) != set(exploration.probabilities):
             raise ValueError("Explorer state catalog differs from q_t support")
         if any(key != state.state_id for key, state in states.items()):
@@ -197,32 +233,37 @@ class StateConditionedTrajectoryExplorer:
             state.task_condition_id != exploration.task_condition_id for state in states.values()
         ):
             raise ValueError("Explorer state catalog crosses task conditions")
-        if any(state.verification_context_id != context.context_id for state in states.values()):
+        if any(state.omega_context_id != context.context_id for state in states.values()):
             raise ValueError("Explorer state catalog belongs to another Omega context")
+        expected_manifest = make_omega_component_manifest(context)
+        if any(
+            state.omega_component_manifest != expected_manifest for state in states.values()
+        ):
+            raise ValueError("Explorer state catalog has another Omega component manifest")
 
         requested = allocate_exploration_budget(exploration, total_budget)
         failures: list[str] = []
         observations: list[TrajectoryExplorationObservation] = []
+        public_requests: dict[str, PublicStateGenerationRequest] = {}
+        leakage_audits: dict[str, PublicStateLeakageAudit] = {}
         generated_count = 0
         seen_trajectory_ids: set[str] = set()
         for state_id in sorted(requested):
             count = requested[state_id]
             if count == 0:
                 continue
-            target = states[state_id]
             state_seed = _state_seed(seed, state_id)
             try:
-                candidates = tuple(
-                    islice(
-                        self._provider.generate(
-                            context,
-                            target,
-                            candidate_count=count,
-                            seed=state_seed,
-                        ),
-                        count,
-                    )
+                request = make_public_state_generation_request(
+                    context,
+                    state_catalog.public_state_conditions[state_id],
+                    candidate_count=count,
+                    seed=state_seed,
                 )
+                audit = audit_public_state_generation_request(request, context)
+                public_requests[state_id] = request
+                leakage_audits[state_id] = audit
+                candidates = tuple(islice(self._provider.generate(request), count))
             except Exception as exc:
                 failures.append(f"provider:{state_id}:{type(exc).__name__}:{exc}")
                 continue
@@ -257,6 +298,7 @@ class StateConditionedTrajectoryExplorer:
                     failures.append(f"state_mapping:{trajectory.trajectory_id}:{mapping_error}")
                 observation_values = {
                     "requested_state_id": state_id,
+                    "public_request_id": public_requests[state_id].request_id,
                     "trajectory": trajectory,
                     "validity_report": report,
                     "assignment": assignment,
@@ -303,6 +345,8 @@ class StateConditionedTrajectoryExplorer:
             "seed": seed,
             "total_budget": total_budget,
             "requested_state_counts": dict(sorted(requested.items())),
+            "public_state_requests": dict(sorted(public_requests.items())),
+            "public_state_leakage_audits": dict(sorted(leakage_audits.items())),
             "generated_candidate_count": generated_count,
             "evaluated_candidate_count": len(observations),
             "mapped_candidate_count": len(mapped),

@@ -12,10 +12,16 @@ from trusted_synthesis.core.trajectory.attributes import (
     extract_trajectory_attributes,
 )
 from trusted_synthesis.core.trajectory.schema import ActionType, Trajectory, TrajectoryStep
-from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
+from trusted_synthesis.core.trajectory.specification import (
+    OmegaComponentManifest,
+    TrajectoryVerificationContext,
+    make_omega_component_manifest,
+)
 from trusted_synthesis.hashing import canonical_hash
 
-TRAJECTORY_STATE_SCHEMA_VERSION = "trajectory_quotient_state.v1"
+TRAJECTORY_STATE_SCHEMA_VERSION = "trajectory_quotient_state.v2"
+TRAJECTORY_CANONICALIZER_VERSION = "dependency_wl_canonicalizer.v2"
+TRAJECTORY_DECISION_TRACE_VERSION = "trajectory_decision_trace.v1"
 
 NodeClassKind = Literal["action", "evidence"]
 
@@ -71,17 +77,21 @@ class TrajectoryState(FrozenModel):
 
     state_id: str = Field(min_length=1)
     task_condition_id: str = Field(min_length=1)
-    verification_context_id: str = Field(min_length=1)
-    oracle_specification_id: str = Field(min_length=1)
+    omega_context_id: str = Field(min_length=1)
+    omega_component_manifest: OmegaComponentManifest
+    canonicalizer_version: str = TRAJECTORY_CANONICALIZER_VERSION
     canonical_graph: CanonicalTrajectoryGraph
     operation_graph_hash: str = Field(min_length=1)
     evidence_lineage_hash: str = Field(min_length=1)
-    program_dependency_hash: str = Field(min_length=1)
     result_semantics_hash: str = Field(min_length=1)
     schema_version: str = TRAJECTORY_STATE_SCHEMA_VERSION
 
     @model_validator(mode="after")
     def validate_identity(self) -> TrajectoryState:
+        if self.canonicalizer_version != TRAJECTORY_CANONICALIZER_VERSION:
+            raise ValueError("trajectory state uses another canonicalizer version")
+        if self.canonical_graph.schema_version != self.schema_version:
+            raise ValueError("trajectory state and canonical graph schemas disagree")
         if self.state_id != trajectory_state_id(self):
             raise ValueError("trajectory state identity is invalid")
         return self
@@ -169,12 +179,12 @@ def map_trajectory_to_state(
     )
     values = {
         "task_condition_id": condition_id,
-        "verification_context_id": context.context_id,
-        "oracle_specification_id": context.oracle_specification.specification_id,
+        "omega_context_id": context.context_id,
+        "omega_component_manifest": make_omega_component_manifest(context),
+        "canonicalizer_version": TRAJECTORY_CANONICALIZER_VERSION,
         "canonical_graph": canonical_graph,
         "operation_graph_hash": operation_graph_hash,
         "evidence_lineage_hash": evidence_lineage_hash,
-        "program_dependency_hash": context.task.oracle.task_program.semantic_hash,
         "result_semantics_hash": result_hash,
         "schema_version": TRAJECTORY_STATE_SCHEMA_VERSION,
     }
@@ -220,6 +230,77 @@ def trajectory_state_assignment_id(value: TrajectoryStateAssignment) -> str:
         value.model_dump(mode="json", exclude={"assignment_id"}),
         prefix="trajectory_state_assignment:",
     )
+
+
+def trajectory_decision_trace_hash(
+    trajectory: Trajectory,
+    *,
+    program_node_aliases: Mapping[str, str] | None = None,
+    tool_equivalence: Mapping[str, str] | None = None,
+) -> str:
+    """Hash executable decisions while erasing IDs, timestamps, and rationale text."""
+
+    aliases = dict(program_node_aliases or {})
+    tools = dict(tool_equivalence or {})
+    decisions = []
+    for step in trajectory.steps:
+        tool = step.tool_name
+        if tool is not None:
+            tool = tools.get(tool, tool)
+        if step.operator_id is not None:
+            tool = f"operator:{step.operator_id}"
+        decisions.append(
+            {
+                "action": step.action.value,
+                "tool_capability": tool,
+                "tool_parameters": _strip_execution_metadata(step.tool_input),
+                "evidence_ids": tuple(sorted(step.evidence_ids)),
+                "program_role": _canonical_program_role(step.program_node_id, aliases),
+                "operator_id": step.operator_id,
+                "input_refs": tuple(
+                    sorted(
+                        item
+                        for item in (_normalize_ref(ref, aliases) for ref in step.input_refs)
+                        if item is not None
+                    )
+                ),
+                "output_ref": _normalize_ref(step.output_ref, aliases),
+                "status": step.status.value,
+            }
+        )
+    ordered = tuple(
+        sorted(
+            decisions,
+            key=lambda item: canonical_hash(item, prefix="trajectory_decision_node:"),
+        )
+    )
+    return canonical_hash(
+        {
+            "task_id": trajectory.task_id,
+            "decisions": ordered,
+            "version": TRAJECTORY_DECISION_TRACE_VERSION,
+        },
+        prefix="trajectory_decision_trace:",
+    )
+
+
+def _strip_execution_metadata(value: Any) -> Any:
+    volatile = {
+        "call_id",
+        "execution_id",
+        "request_id",
+        "timestamp",
+        "trace_id",
+    }
+    if isinstance(value, Mapping):
+        return {
+            str(key): _strip_execution_metadata(item)
+            for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
+            if str(key).casefold() not in volatile
+        }
+    if isinstance(value, (list, tuple)):
+        return tuple(_strip_execution_metadata(item) for item in value)
+    return value
 
 
 def _dependency_graph(

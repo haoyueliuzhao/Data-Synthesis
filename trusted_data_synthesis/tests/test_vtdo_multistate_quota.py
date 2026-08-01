@@ -72,3 +72,16 @@ def test_task_count_is_an_accepted_quota_with_complete_funnel(
     assert report.failure_counts == {"FinanceTaskCapacityError:accepted_state_capacity=2<3": 1}
     assert len(artifacts) == 2
     assert len({item.omega.task.task_id for item in artifacts}) == 2
+    assert all(
+        item.state_space_compilation.joint_compilation_artifact_id
+        == item.joint_compilation.artifact_id
+        for item in artifacts
+    )
+    assert all(
+        item.state_space_compilation.omega_component_manifest
+        == item.joint_compilation.component_manifest
+        for item in artifacts
+    )
+    assert all(
+        len(item.state_space_compilation.variations) == 5 for item in artifacts
+    )

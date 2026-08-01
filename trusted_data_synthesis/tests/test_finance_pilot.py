@@ -18,6 +18,11 @@ from trusted_synthesis.core.refinement import build_synthesis_cell
 from trusted_synthesis.core.release import SplitPolicy, select_candidate_release
 from trusted_synthesis.core.task.difficulty import assess_task_difficulty
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
+from trusted_synthesis.domains.finance.pattern_runtime import (
+    _comparison_subject_noun,
+    _time_range_phrase,
+    _time_window_phrase,
+)
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
@@ -95,6 +100,54 @@ def _case(finance_evidence: EvidenceItem) -> PilotTaskCase:
         proof_graph=graph,
         task=task,
         distractor_ids=(),
+    )
+
+
+def test_finance_wording_uses_subject_type_and_natural_point_in_time_ranges(
+    finance_evidence: EvidenceItem,
+) -> None:
+    left = finance_evidence.model_copy(
+        update={
+            "subject": finance_evidence.subject.model_copy(
+                update={
+                    "subject_id": "country:a",
+                    "name": "Country A",
+                    "subject_type": "country",
+                }
+            ),
+            "temporal_context": TemporalContext(
+                label="as of 2023-12-31",
+                observed_at=date(2023, 12, 31),
+                basis="calendar_date",
+                frequency="annual",
+            ),
+        }
+    )
+    right = left.model_copy(
+        update={
+            "subject": left.subject.model_copy(
+                update={
+                    "subject_id": "country:b",
+                    "name": "Country B",
+                }
+            )
+        }
+    )
+    later = left.model_copy(
+        update={
+            "temporal_context": TemporalContext(
+                label="as of 2024-12-31",
+                observed_at=date(2024, 12, 31),
+                basis="calendar_date",
+                frequency="annual",
+            )
+        }
+    )
+
+    assert _comparison_subject_noun(left, right) == "country"
+    assert _time_range_phrase(left, later) == ("between 2023-12-31 and 2024-12-31")
+    assert _time_window_phrase(left, later) == (
+        "across all observations between 2023-12-31 and 2024-12-31"
     )
 
 
@@ -558,6 +611,52 @@ def test_registered_ratio_runtime_rejects_cross_source_binding(
     graph = ProofGraphBuilder().build(bundle)
 
     with pytest.raises(ValueError, match="same_source"):
+        FinanceTaskPlugin(allow_structured_claims=True).registered_ratio(
+            graph,
+            bundle,
+            numerator.evidence_id,
+            denominator.evidence_id,
+            registered_pair="gross_profit/revenue",
+        )
+
+
+def test_registered_ratio_runtime_rejects_missing_payload_and_definition_context(
+    finance_evidence: EvidenceItem,
+) -> None:
+    numerator = finance_evidence.model_copy(
+        update={
+            "evidence_id": "evidence:finance:gross_profit_missing_context@kg_test",
+            "assertion_id": "assertion:finance:gross_profit_missing_context",
+            "evidence_version_id": "version:finance:gross_profit_missing_context@kg_test",
+            "predicate": "gross_profit",
+            "payload": finance_evidence.payload.model_copy(update={"unit": None, "currency": None}),
+            "definition": finance_evidence.definition.model_copy(
+                update={
+                    "definition_id": "sdef_gross_profit",
+                    "text": "Gross profit with missing comparability metadata.",
+                    "attributes": {},
+                }
+            ),
+            "provenance": finance_evidence.provenance.model_copy(
+                update={"source_record_id": "gross_profit_missing_context"}
+            ),
+        }
+    )
+    denominator = finance_evidence.model_copy(
+        update={
+            "payload": finance_evidence.payload.model_copy(update={"unit": None, "currency": None}),
+            "definition": finance_evidence.definition.model_copy(update={"attributes": {}}),
+        }
+    )
+    bundle = EvidenceBundle(
+        bundle_id="bundle_ratio_missing_context",
+        evidence=(numerator, denominator),
+        purpose="ratio runtime missing context regression",
+        graph_build_id="kg_test",
+    )
+    graph = ProofGraphBuilder().build(bundle)
+
+    with pytest.raises(ValueError, match="same_payload_context"):
         FinanceTaskPlugin(allow_structured_claims=True).registered_ratio(
             graph,
             bundle,

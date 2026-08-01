@@ -9,7 +9,11 @@ from trusted_synthesis.core.evaluation.contracts import QualityContractCompiler
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.release import SplitPolicy, build_release_manifest
-from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler, ProofCertificate
+from trusted_synthesis.core.synthesis import (
+    JointCompilationArtifact,
+    ProofCarryingSampleCompiler,
+    ProofCertificate,
+)
 from trusted_synthesis.experiments.cross_domain_contract_suite import (
     run_cross_domain_contract_suite,
 )
@@ -88,6 +92,25 @@ def test_proof_certificate_binds_all_hidden_artifacts_and_public_view_is_clean()
     assert "oracle" not in public_json.casefold()
     assert "expected_output" not in public_json
     assert all(item not in public_json for item in case.task.oracle.gold_evidence_ids)
+
+
+def test_joint_compilation_persists_complete_omega_and_rejects_component_tampering() -> None:
+    case, artifacts = _compile_case()
+    joint = artifacts.joint_compilation
+
+    assert joint.omega.task == case.task
+    assert joint.omega.evidence_bundle == case.bundle
+    assert joint.omega.public_corpus == case.corpus
+    assert joint.omega.proof_graph == case.proof_graph
+    assert joint.component_manifest.task_program_hash == case.task.oracle.task_program.program_hash
+    assert joint.component_manifest.quality_contract_hash == (
+        artifacts.quality_contract.contract_hash
+    )
+
+    payload = joint.model_dump(mode="json")
+    payload["component_manifest"]["task_program_hash"] = "task_program:tampered"
+    with pytest.raises(ValueError, match="Omega component manifest identity"):
+        JointCompilationArtifact.model_validate(payload)
 
 
 def test_proof_certificate_tampering_is_rejected() -> None:

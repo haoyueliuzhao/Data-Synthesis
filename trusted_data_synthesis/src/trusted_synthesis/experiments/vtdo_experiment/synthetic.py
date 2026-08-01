@@ -19,9 +19,10 @@ from trusted_synthesis.core.vtdo import (
     VTDO_ALGORITHM_VERSION,
     AnchoredEnergyConfig,
     ValidityThresholds,
-    estimate_centered_contributions,
+    estimate_synthetic_oracle_contributions,
     make_conditional_distribution,
     make_coverage_prior,
+    make_synthetic_oracle_contribution_observation,
     make_vtdo_role_contract,
     update_valid_trajectory_distribution,
 )
@@ -130,7 +131,7 @@ def run_synthetic_experiment(
                     coverage,
                     contribution,
                     vtdo_optimum,
-                    config.coverage_epsilon,
+                    config,
                     raw_support_size=raw_size,
                 )
             )
@@ -233,7 +234,7 @@ def run_synthetic_experiment(
                         coverage,
                         contribution,
                         vtdo_optimum,
-                        config.coverage_epsilon,
+                        config,
                         raw_support_size=raw_size,
                     )
                 )
@@ -262,8 +263,13 @@ def run_synthetic_experiment(
                 "The initial fixed-potential target is reported only as a diagnostic. "
                 "Production methods recompute Phi_t and are not ranked by distance to Phi_0."
             ),
-            "joint_utility": (
-                "U(pi)=E_(z~pi)[true_contribution(z) * max(log(r(z|x)/pi(z|x)), 0)]."
+            "headline_objective": (
+                "F_t(pi)=E_pi[log Phi_t]-lambda KL(pi||pi_t)-kappa KL(pi||r); "
+                "Expected Log Potential and this anchored objective are the headline metrics."
+            ),
+            "contribution_novelty_diagnostic": (
+                "E_pi[C(z)*max(log(r(z|x)/pi(z|x)),0)] is retained only as a signed "
+                "interpretive diagnostic and is not called the optimized utility."
             ),
             "coverage_alignment": "exp(-KL(r || pi)); one is exact anchor alignment.",
         },
@@ -378,15 +384,25 @@ def _production_vtdo_update(
         coverage_values,
         policy="frozen_long_tail_coverage",
     )
-    manifest = estimate_centered_contributions(
+    oracle_protocol_hash = canonical_hash(
+        {
+            "experiment": "synthetic_controlled_contribution",
+            "condition_suffix": condition_suffix,
+        },
+        prefix="synthetic_contribution_oracle_protocol:",
+    )
+    manifest = estimate_synthetic_oracle_contributions(
         prior,
-        contributions,
-        confidences={state_id: 1.0 for state_id in prior_values},
-        probe_sample_counts={state_id: 100 for state_id in prior_values},
-        beneficiary_model_state_id="synthetic_beneficiary:v1",
-        target_evaluation_distribution_id="synthetic_eval:v1",
-        target_metric_id="synthetic_joint_utility",
-        estimator_id="synthetic_exact_marginal_probe.v1",
+        tuple(
+            make_synthetic_oracle_contribution_observation(
+                task_condition_id=condition,
+                round_index=prior.round_index,
+                state_id=state_id,
+                oracle_contribution=contributions[state_id],
+                oracle_protocol_hash=oracle_protocol_hash,
+            )
+            for state_id in sorted(prior_values)
+        ),
     )
     estimates = tuple(
         _validity_estimate(condition, state_id, validities[state_id], config)
@@ -400,7 +416,8 @@ def _production_vtdo_update(
         _energy_config(config),
         make_vtdo_role_contract(
             explorer_provider_id="synthetic_explorer:v1",
-            beneficiary_model_state_id="synthetic_beneficiary:v1",
+            materialization_provider_id="synthetic_materializer:v1",
+            beneficiary_model_state_id="synthetic_oracle",
             final_student_model_id="synthetic_student:v1",
         ),
     )
@@ -612,25 +629,55 @@ def _metric_point(
     coverage: Mapping[str, float],
     contribution: Mapping[str, float],
     vtdo_optimum: Mapping[str, float],
-    epsilon: float,
+    config: SyntheticExperimentConfig,
     *,
     raw_support_size: int | None,
 ) -> SyntheticMetricPoint:
     novelty = {
         state_id: max(math.log(coverage[state_id] / current[state_id]), 0.0) for state_id in current
     }
+    centered_mean = sum(previous[key] * contribution[key] for key in previous)
+    potential = {}
+    energy = _energy_config(config)
+    for state_id in previous:
+        centered = contribution[state_id] - centered_mean
+        prior_novelty = max(math.log(coverage[state_id] / previous[state_id]), 0.0)
+        normalized_contribution = _sigmoid_potential(
+            centered,
+            config.contribution_temperature,
+            energy.epsilon,
+        )
+        normalized_novelty = _novelty_potential(
+            prior_novelty,
+            config.novelty_temperature,
+            energy.epsilon,
+        )
+        potential[state_id] = (
+            normalized_contribution**config.contribution_weight
+            * normalized_novelty**config.novelty_weight
+        )
+    expected_log_potential = sum(
+        current[state_id] * math.log(potential[state_id]) for state_id in current
+    )
+    anchored_objective = (
+        expected_log_potential
+        - config.history_kl_weight * _kl(current, previous)
+        - config.coverage_kl_weight * _kl(current, coverage)
+    )
     return SyntheticMetricPoint(
         seed=seed,
         method=method,
         round_index=round_index,
         kl_to_initial_fixed_target_diagnostic=_kl(current, vtdo_optimum),
-        expected_contribution_novelty=sum(
+        expected_log_potential=expected_log_potential,
+        anchored_variational_objective=anchored_objective,
+        expected_contribution_novelty_diagnostic=sum(
             current[key] * contribution[key] * novelty[key] for key in current
         ),
         expected_contribution=sum(current[key] * contribution[key] for key in current),
         coverage_kl=_kl(coverage, current),
         coverage_alignment=math.exp(-_kl(coverage, current)),
-        coverage_count=sum(value > epsilon for value in current.values()),
+        coverage_count=sum(value > config.coverage_epsilon for value in current.values()),
         entropy=_entropy(current),
         kl_to_previous=_kl(current, previous),
         top_right_mass=sum(
@@ -650,7 +697,13 @@ def _summarize_method(
     return SyntheticMethodSummary(
         method=method,
         run_count=len(final),
-        final_expected_utility=_aggregate([item.expected_contribution_novelty for item in final]),
+        final_expected_log_potential=_aggregate([item.expected_log_potential for item in final]),
+        final_anchored_variational_objective=_aggregate(
+            [item.anchored_variational_objective for item in final]
+        ),
+        final_expected_contribution_novelty_diagnostic=_aggregate(
+            [item.expected_contribution_novelty_diagnostic for item in final]
+        ),
         final_coverage_kl=_aggregate([item.coverage_kl for item in final]),
         final_coverage_alignment=_aggregate([item.coverage_alignment for item in final]),
         final_coverage_count=_aggregate([float(item.coverage_count) for item in final]),
@@ -705,13 +758,19 @@ def _eta_sensitivity(
                 coverage,
                 contribution,
                 vtdo_optimum,
-                tuned.coverage_epsilon,
+                tuned,
                 raw_support_size=None,
             )
         )
     return EtaSensitivityResult(
         energy_exponent=eta,
-        final_expected_utility=_aggregate([item.expected_contribution_novelty for item in metrics]),
+        final_expected_log_potential=_aggregate([item.expected_log_potential for item in metrics]),
+        final_anchored_variational_objective=_aggregate(
+            [item.anchored_variational_objective for item in metrics]
+        ),
+        final_expected_contribution_novelty_diagnostic=_aggregate(
+            [item.expected_contribution_novelty_diagnostic for item in metrics]
+        ),
         final_coverage_kl=_aggregate([item.coverage_kl for item in metrics]),
         final_coverage_alignment=_aggregate([item.coverage_alignment for item in metrics]),
         final_entropy=_aggregate([item.entropy for item in metrics]),

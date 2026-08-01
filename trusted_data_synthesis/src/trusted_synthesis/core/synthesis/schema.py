@@ -11,7 +11,10 @@ from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.task.schema import TaskPackage, TaskPublicSpec
 from trusted_synthesis.core.trajectory.schema import Trajectory
-from trusted_synthesis.core.trajectory.specification import OracleExecutionSpecification
+from trusted_synthesis.core.trajectory.specification import (
+    JointCompilationArtifact,
+    OracleExecutionSpecification,
+)
 from trusted_synthesis.hashing import canonical_hash
 
 
@@ -180,6 +183,7 @@ class CompiledProofCarryingArtifacts(BaseModel):
     public_corpus: EvidenceCorpus
     proof_graph: ProofGraph
     oracle_execution_specification: OracleExecutionSpecification
+    joint_compilation: JointCompilationArtifact
     reference_trajectory: Trajectory
     reference_examples: tuple[Trajectory, ...] = Field(min_length=1)
     reference_assessment: QualityAssessment
@@ -187,6 +191,16 @@ class CompiledProofCarryingArtifacts(BaseModel):
 
     @model_validator(mode="after")
     def validate_trajectory_contract(self) -> CompiledProofCarryingArtifacts:
+        omega = self.joint_compilation.omega
+        if (
+            omega.task != self.task
+            or omega.evidence_bundle != self.evidence_bundle
+            or omega.public_corpus != self.public_corpus
+            or omega.proof_graph != self.proof_graph
+            or omega.quality_contract != self.quality_contract
+            or omega.oracle_specification != self.oracle_execution_specification
+        ):
+            raise ValueError("joint compilation does not bind the compiled artifacts")
         reference_ids = tuple(item.trajectory_id for item in self.reference_examples)
         reference_hashes = tuple(item.trajectory_hash for item in self.reference_examples)
         if self.reference_trajectory != self.reference_examples[0]:

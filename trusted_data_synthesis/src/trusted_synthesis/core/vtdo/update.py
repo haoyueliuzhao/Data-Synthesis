@@ -58,6 +58,13 @@ def update_valid_trajectory_distribution(
         raise ValueError("contribution manifest was estimated for another model distribution")
     if contribution_manifest.beneficiary_model_state_id != role_contract.beneficiary_model_state_id:
         raise ValueError("contribution manifest disagrees with the VTDO role contract")
+    if contribution_manifest.usage_scope not in {
+        "production_distribution_update",
+        "synthetic_operator_control",
+    }:
+        raise ValueError(
+            "finite Intervention Contribution is validation-only and cannot update pi_t"
+        )
     contributions = {item.state_id: item for item in contribution_manifest.estimates}
     if set(contributions) != support:
         raise ValueError("contribution manifest must cover the current support exactly")

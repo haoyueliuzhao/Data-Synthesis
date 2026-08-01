@@ -15,14 +15,16 @@ from trusted_synthesis.core.evaluation.contracts import (
     QualityContractRuntime,
 )
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
-from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
+from trusted_synthesis.core.synthesis import (
+    JointCompilationArtifact,
+    ProofCarryingSampleCompiler,
+)
 from trusted_synthesis.core.task.program import InputRefKind, OperationNode
 from trusted_synthesis.core.task.schema import TaskPackage, TaskRequirement
 from trusted_synthesis.core.trajectory import (
     TrajectoryStateAssignment,
     TrajectoryValidityEvaluator,
     TrajectoryValidityReport,
-    make_trajectory_verification_context,
     map_trajectory_to_state,
 )
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
@@ -34,15 +36,28 @@ from trusted_synthesis.core.trajectory.schema import (
     WorkflowKind,
 )
 from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
-from trusted_synthesis.core.vtdo import TrajectoryStateCatalog, make_trajectory_state_catalog
+from trusted_synthesis.core.vtdo import (
+    AcquisitionRequirement,
+    AdmissibleTrajectoryVariation,
+    EvidenceSupportRequirement,
+    LineageRequirement,
+    TrajectoryStateCatalog,
+    TrajectoryStateSpaceCompilation,
+    VerificationRequirement,
+    compile_trajectory_state_space,
+    make_admissible_trajectory_variation,
+    make_trajectory_state_catalog,
+)
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.finance_archive import FinanceArchiveBindingProvider
 from trusted_synthesis.hashing import canonical_hash
 
-FINANCE_MULTI_STATE_VERSION = "finance_multi_state.v2"
-MULTI_STATE_GENERATOR_VERSION = "verified_lineage_state_generator.v2"
+FINANCE_MULTI_STATE_VERSION = "finance_multi_state.v3"
+FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION = (
+    "finance_deterministic_state_fixture.v1"
+)
 
 LineageStrategy = Literal[
     "compact_direct",
@@ -59,6 +74,90 @@ _STRATEGIES: tuple[LineageStrategy, ...] = (
     "broad_full_lineage",
     "compact_output_lineage",
 )
+
+
+class FinanceDeterministicStateFixtureProvider:
+    """Controlled Finance fixture for state-space and verifier tests, not model behavior."""
+
+    fixture_provider_id = "finance_deterministic_state_fixture"
+    fixture_provider_version = FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION
+    variation_provider_id = "finance_fixture_variation_compiler"
+    variation_provider_version = "1.0.0"
+
+    def compile_variations(
+        self,
+        context: TrajectoryVerificationContext,
+    ) -> tuple[AdmissibleTrajectoryVariation, ...]:
+        del context
+        return tuple(self.variation_for(strategy) for strategy in _STRATEGIES)
+
+    def variation_for(self, strategy: LineageStrategy) -> AdmissibleTrajectoryVariation:
+        variation_values: dict[
+            LineageStrategy,
+            tuple[
+                AcquisitionRequirement,
+                EvidenceSupportRequirement,
+                VerificationRequirement,
+                LineageRequirement,
+            ],
+        ] = {
+            "compact_direct": (
+                "bounded",
+                "required_roles",
+                "full",
+                "direct",
+            ),
+            "broad_direct": (
+                "expanded",
+                "expanded_context",
+                "full",
+                "direct",
+            ),
+            "compact_verify_frontier": (
+                "bounded",
+                "required_roles",
+                "output",
+                "output_upstream",
+            ),
+            "broad_full_lineage": (
+                "expanded",
+                "expanded_context",
+                "full",
+                "full",
+            ),
+            "compact_output_lineage": (
+                "bounded",
+                "required_roles",
+                "full",
+                "output_upstream",
+            ),
+        }
+        acquisition, support, verification, lineage = variation_values[strategy]
+        return make_admissible_trajectory_variation(
+            acquisition_requirement=acquisition,
+            evidence_support_requirement=support,
+            verification_requirement=verification,
+            lineage_requirement=lineage,
+            required_capabilities=(
+                "citation",
+                "evidence_selection",
+                "multi_step_reasoning",
+                "retrieval",
+                "verification",
+            ),
+            minimum_tool_calls=1,
+            minimum_evidence_count=1,
+            minimum_reasoning_depth=1,
+            minimum_verification_degree=1.0,
+        )
+
+    def generate_fixture(
+        self,
+        context: TrajectoryVerificationContext,
+        registry,
+        strategy: LineageStrategy,
+    ) -> Trajectory:
+        return _compile_fixture_trajectory(context, registry, strategy)
 
 
 class FinanceTaskCapacityError(ValueError):
@@ -138,7 +237,10 @@ class RejectedFinanceAttempt(FrozenModel):
 
 class FinanceTaskStateArtifact(FrozenModel):
     artifact_id: str = Field(min_length=1)
-    omega: TrajectoryVerificationContext
+    joint_compilation: JointCompilationArtifact
+    state_space_compilation: TrajectoryStateSpaceCompilation
+    state_fixture_provider_id: str = Field(min_length=1)
+    state_fixture_provider_version: str = Field(min_length=1)
     pattern_id: str = Field(min_length=1)
     binding_id: str = Field(min_length=1)
     state_catalog: TrajectoryStateCatalog
@@ -153,9 +255,32 @@ class FinanceTaskStateArtifact(FrozenModel):
     program_diversity_claimed: bool = False
     schema_version: str = FINANCE_MULTI_STATE_VERSION
 
+    @property
+    def omega(self) -> TrajectoryVerificationContext:
+        return self.joint_compilation.omega
+
     @model_validator(mode="after")
     def validate_artifact(self) -> FinanceTaskStateArtifact:
         task_id = self.omega.task.task_id
+        if (
+            self.state_fixture_provider_id
+            != FinanceDeterministicStateFixtureProvider.fixture_provider_id
+            or self.state_fixture_provider_version
+            != FinanceDeterministicStateFixtureProvider.fixture_provider_version
+        ):
+            raise ValueError("Finance state artifact has another fixture provider")
+        if (
+            self.state_space_compilation.joint_compilation_artifact_id
+            != self.joint_compilation.artifact_id
+            or self.state_space_compilation.omega_context_id != self.omega.context_id
+            or self.state_space_compilation.omega_component_manifest
+            != self.joint_compilation.component_manifest
+            or self.state_space_compilation.variation_provider_id
+            != FinanceDeterministicStateFixtureProvider.variation_provider_id
+            or self.state_space_compilation.variation_provider_version
+            != FinanceDeterministicStateFixtureProvider.variation_provider_version
+        ):
+            raise ValueError("Finance state-space compilation is detached from Joint Compilation")
         states = tuple(item.assignment.state for item in self.accepted_states)
         if any(item.trajectory.task_id != task_id for item in self.accepted_states):
             raise ValueError("multi-state artifact crosses task conditions")
@@ -163,7 +288,25 @@ class FinanceTaskStateArtifact(FrozenModel):
             raise ValueError("multi-state artifact contains duplicate quotient states")
         if set(self.state_catalog.states) != {state.state_id for state in states}:
             raise ValueError("state catalog does not exactly cover accepted states")
-        if self.state_catalog.verification_context_id != self.omega.context_id:
+        witness_assignment_ids = {
+            witness.assignment_id
+            for witnesses in self.state_catalog.discovery_witnesses.values()
+            for witness in witnesses
+        }
+        if witness_assignment_ids != {
+            item.assignment.assignment_id for item in self.accepted_states
+        }:
+            raise ValueError("state catalog witnesses do not exactly cover accepted assignments")
+        witness_report_ids = {
+            witness.validity_report_id
+            for witnesses in self.state_catalog.discovery_witnesses.values()
+            for witness in witnesses
+        }
+        if witness_report_ids != {
+            item.validity_report.report_id for item in self.accepted_states
+        }:
+            raise ValueError("state catalog witnesses do not exactly cover validity reports")
+        if self.state_catalog.omega_context_id != self.omega.context_id:
             raise ValueError("state catalog belongs to another Omega context")
         if self.strategy_verifier_pass_count < len(self.accepted_states):
             raise ValueError("accepted states exceed independently verified strategies")
@@ -180,6 +323,8 @@ class FinanceMultiStateReport(FrozenModel):
     report_id: str = Field(min_length=1)
     config_hash: str = Field(min_length=1)
     kg_build_id: str = Field(min_length=1)
+    state_fixture_provider_id: str = Field(min_length=1)
+    state_fixture_provider_version: str = Field(min_length=1)
     requested_task_count: int = Field(ge=0)
     attempted_task_count: int = Field(ge=0)
     accepted_task_count: int = Field(ge=0)
@@ -216,6 +361,13 @@ class FinanceMultiStateReport(FrozenModel):
 
     @model_validator(mode="after")
     def validate_report(self) -> FinanceMultiStateReport:
+        if (
+            self.state_fixture_provider_id
+            != FinanceDeterministicStateFixtureProvider.fixture_provider_id
+            or self.state_fixture_provider_version
+            != FinanceDeterministicStateFixtureProvider.fixture_provider_version
+        ):
+            raise ValueError("Finance report has another deterministic fixture provider")
         if self.attempted_task_count != self.accepted_task_count + self.rejected_task_count:
             raise ValueError("Finance multi-state task accounting is inconsistent")
         if self.accepted_task_count > self.requested_task_count:
@@ -329,6 +481,12 @@ def build_finance_multi_state_dataset(
     report_values = {
         "config_hash": canonical_hash(config, prefix="finance_multi_state_config:"),
         "kg_build_id": provider.kg_build_id,
+        "state_fixture_provider_id": (
+            FinanceDeterministicStateFixtureProvider.fixture_provider_id
+        ),
+        "state_fixture_provider_version": (
+            FinanceDeterministicStateFixtureProvider.fixture_provider_version
+        ),
         "requested_task_count": config.task_count,
         "attempted_task_count": attempted_task_count,
         "accepted_task_count": len(artifacts),
@@ -418,14 +576,8 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
         case.proof_graph,
         public_corpus=case.corpus,
     )
-    omega = make_trajectory_verification_context(
-        compiled.task,
-        compiled.evidence_bundle,
-        compiled.public_corpus,
-        compiled.proof_graph,
-        compiled.quality_contract,
-        compiled.oracle_execution_specification,
-    )
+    joint_compilation = compiled.joint_compilation
+    omega = joint_compilation.omega
     verifier = CandidateWorkflowVerifier(
         case.registry,
         semantic_policy=case.semantic_policy,
@@ -442,6 +594,15 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
             ).verifier_registry,
         ),
     )
+    fixture_provider = FinanceDeterministicStateFixtureProvider()
+    state_space_compilation = compile_trajectory_state_space(
+        joint_compilation,
+        fixture_provider,
+    )
+    variations = dict(
+        zip(_STRATEGIES, state_space_compilation.variations, strict=True)
+    )
+    public_conditions_by_assignment_id = {}
     accepted: list[AcceptedFinanceState] = []
     seen_states: set[str] = set()
     strategy_attempt_count = 0
@@ -449,7 +610,7 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
     duplicate_state_count = 0
     for strategy in _STRATEGIES:
         strategy_attempt_count += 1
-        trajectory = _compile_candidate(omega, case.registry, strategy)
+        trajectory = fixture_provider.generate_fixture(omega, case.registry, strategy)
         validity = evaluator.evaluate(omega, trajectory)
         if not validity.valid:
             continue
@@ -471,6 +632,11 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
                 assignment=assignment,
             )
         )
+        public_conditions_by_assignment_id[assignment.assignment_id] = (
+            state_space_compilation.public_conditions_by_variation_id[
+                variations[strategy].variation_id
+            ]
+        )
         if len(accepted) >= config.maximum_states_per_task:
             break
     if len(accepted) < config.minimum_states_per_task:
@@ -489,8 +655,14 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
         validity_report=rejected_report,
     )
     catalog = make_trajectory_state_catalog(
-        (item.assignment.state for item in accepted),
-        revision_reason="verified_real_finance_multi_state_initialization",
+        (
+            (item.assignment, item.validity_report, item.trajectory)
+            for item in accepted
+        ),
+        state_space_compilation=state_space_compilation,
+        discovery_method="verified_finance_deterministic_fixture",
+        revision_reason="verified_finance_fixture_state_space_initialization",
+        public_conditions_by_assignment_id=public_conditions_by_assignment_id,
     )
     pattern = case.task.public.metadata.get("task_pattern")
     binding = case.task.oracle.selection_contract.get("pattern_binding")
@@ -499,7 +671,10 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
     )
     binding_id = str(binding.get("binding_id")) if isinstance(binding, dict) else case.task.task_id
     values = {
-        "omega": omega,
+        "joint_compilation": joint_compilation,
+        "state_space_compilation": state_space_compilation,
+        "state_fixture_provider_id": fixture_provider.fixture_provider_id,
+        "state_fixture_provider_version": fixture_provider.fixture_provider_version,
         "pattern_id": pattern_id,
         "binding_id": binding_id,
         "state_catalog": catalog,
@@ -525,7 +700,7 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
     )
 
 
-def _compile_candidate(
+def _compile_fixture_trajectory(
     omega: TrajectoryVerificationContext,
     registry,
     strategy: LineageStrategy,
@@ -651,7 +826,7 @@ def _compile_candidate(
         "strategy": strategy,
         "steps": steps,
         "final_answer": final_answer,
-        "version": MULTI_STATE_GENERATOR_VERSION,
+        "version": FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION,
     }
     return Trajectory(
         trajectory_id=canonical_hash(identity, prefix="finance_multi_state_trajectory:"),
@@ -660,7 +835,7 @@ def _compile_candidate(
         steps=tuple(steps),
         program_execution=execution.model_dump(mode="json"),
         final_answer=final_answer,
-        generator_version=MULTI_STATE_GENERATOR_VERSION,
+        generator_version=FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION,
     )
 
 
@@ -679,7 +854,7 @@ def _wrong_answer_attempt(source: Trajectory) -> Trajectory:
             ),
             "steps": tuple(steps),
             "final_answer": final_answer,
-            "generator_version": f"{MULTI_STATE_GENERATOR_VERSION}.mutation",
+            "generator_version": f"{FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION}.mutation",
         }
     )
 

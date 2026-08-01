@@ -22,6 +22,7 @@ from trusted_synthesis.core.refinement.materialization import make_synthesis_cel
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter, _time_label
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
+from trusted_synthesis.domains.finance.source_grounding import _world_bank_entails
 from trusted_synthesis.experiments.agent_validation.runner import _compile_runtime
 from trusted_synthesis.experiments.agent_validation.tracks import materialize_track_variant
 from trusted_synthesis.experiments.finance_archive import (
@@ -60,6 +61,8 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     assert evidence[0].subject.name == "Example Company"
     assert evidence[0].predicate == "revenue"
     assert evidence[0].temporal_context.label == "year ended 2023-12-31"
+    assert evidence[0].domain_context["source_report_fiscal_year"] == 2023
+    assert evidence[0].domain_context["economic_period_year"] == 2023
     assert isinstance(evidence[0].payload, ScalarObservation)
     assert evidence[0].source.authority == SourceAuthority.OFFICIAL
     assert evidence[0].epistemic_status == EpistemicStatus.OBSERVED
@@ -69,6 +72,26 @@ def test_finance_adapter_reads_only_quality_passed_graph_facts(tmp_path: Path) -
     assert mismatched_grounding is not grounding
     assert "source_entailment" in mismatched_grounding.failures
     assert before == after
+
+
+def test_world_bank_grounding_uses_economic_period_before_report_fiscal_year(
+    tmp_path: Path,
+) -> None:
+    evidence = next(FinanceArchiveAdapter(_archive_fixture(tmp_path)).iter_evidence(limit=1))
+    context = dict(evidence.domain_context)
+    context.update(
+        {
+            "economic_period_year": 2022,
+            "calendar_year": None,
+            "fiscal_year": 2023,
+        }
+    )
+    evidence = evidence.model_copy(update={"domain_context": context})
+
+    assert _world_bank_entails(
+        evidence,
+        [{}, [{"date": "2022", "value": "123450000"}]],
+    )
 
 
 def test_finance_adapter_remaps_registered_legacy_archive_root(tmp_path: Path) -> None:

@@ -26,7 +26,9 @@ from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.core.trajectory.specification import (
+    make_joint_compilation_artifact,
     make_oracle_execution_specification,
+    make_trajectory_verification_context,
 )
 from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.hashing import canonical_hash
@@ -106,6 +108,18 @@ class ProofCarryingSampleCompiler:
             quality_contract,
             reference_examples=(reference,),
         )
+        omega = make_trajectory_verification_context(
+            task,
+            evidence_bundle,
+            corpus,
+            proof_graph,
+            quality_contract,
+            oracle_execution_specification,
+        )
+        joint_compilation = make_joint_compilation_artifact(
+            omega,
+            compiler_version=PROOF_CARRYING_COMPILER_VERSION,
+        )
         certificate = build_proof_certificate(
             task=task,
             evidence_bundle=evidence_bundle,
@@ -181,6 +195,8 @@ class ProofCarryingSampleCompiler:
                 "oracle_execution_specification_id": (
                     oracle_execution_specification.specification_id
                 ),
+                "joint_compilation_artifact_id": joint_compilation.artifact_id,
+                "omega_context_id": omega.context_id,
                 "reference_semantics": "one_valid_example_not_unique_gold",
             },
         }
@@ -255,6 +271,7 @@ class ProofCarryingSampleCompiler:
             public_corpus=corpus,
             proof_graph=proof_graph,
             oracle_execution_specification=oracle_execution_specification,
+            joint_compilation=joint_compilation,
             reference_trajectory=reference,
             reference_examples=(reference,),
             reference_assessment=assessment,

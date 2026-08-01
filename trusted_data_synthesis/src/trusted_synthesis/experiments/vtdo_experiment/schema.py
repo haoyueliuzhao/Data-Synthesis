@@ -1,18 +1,28 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from trusted_synthesis.core.vtdo.contribution import (
+    ContributionInterventionObservation,
+    ContributionProbeObservation,
+)
 from trusted_synthesis.hashing import canonical_hash
 
 from .multistate import FinanceMultiStateConfig
 
-VTDO_EXPERIMENT_VERSION = "vtdo_experiment.v3"
+VTDO_EXPERIMENT_VERSION = "vtdo_experiment.v6"
 
 MovingPotentialMethod = Literal["no_feedback", "static_optimization", "full_vtdo"]
+MovingPotentialTrack = Literal[
+    "exogenous_shared",
+    "vtdo_induced_shared",
+    "method_specific_closed_loop",
+]
 
 VTDOTrainingArm = Literal[
     "B1_raw",
@@ -81,15 +91,30 @@ class SyntheticExperimentConfig(FrozenModel):
 
 
 class MovingPotentialBenchmarkConfig(FrozenModel):
-    """Exogenous and model-response drift used to test moving-optimum tracking."""
+    """Frozen tracks for method-neutral and endogenous moving-optimum analysis."""
 
     enabled: Literal[True] = True
     rounds: int = Field(default=5, ge=2, le=50)
+    tracks: tuple[MovingPotentialTrack, ...] = (
+        "exogenous_shared",
+        "vtdo_induced_shared",
+        "method_specific_closed_loop",
+    )
+    primary_track: Literal["exogenous_shared"] = "exogenous_shared"
     drift_period: int = Field(default=5, ge=2)
     contribution_drift_scale: float = Field(default=0.75, gt=0)
     capability_decay: float = Field(default=0.15, ge=0)
     objective_tolerance: float = Field(default=1e-10, gt=0)
     require_regret_advantage: bool = True
+    require_regret_ci_lower_bound_nonnegative: bool = True
+
+    @model_validator(mode="after")
+    def validate_tracks(self) -> MovingPotentialBenchmarkConfig:
+        if len(self.tracks) != len(set(self.tracks)):
+            raise ValueError("moving-potential tracks must be unique")
+        if self.primary_track not in self.tracks:
+            raise ValueError("primary moving-potential track is not enabled")
+        return self
 
 
 class RefinementDynamicsConfig(FrozenModel):
@@ -110,6 +135,7 @@ class RefinementDynamicsConfig(FrozenModel):
     moving_potential_benchmark: MovingPotentialBenchmarkConfig = MovingPotentialBenchmarkConfig()
     real_round_input_path: Path | None = None
     real_round_artifact_paths: tuple[Path, ...] = ()
+    expected_real_task_condition_ids: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def validate_dynamics(self) -> RefinementDynamicsConfig:
@@ -131,6 +157,16 @@ class RefinementDynamicsConfig(FrozenModel):
             raise ValueError("real VTDO round artifact paths must be unique")
         if self.real_round_input_path is not None and self.real_round_artifact_paths:
             raise ValueError("configure real Round inputs or prebuilt artifacts, not both")
+        expected_ids = self.expected_real_task_condition_ids
+        if tuple(sorted(set(expected_ids))) != expected_ids:
+            raise ValueError("expected real task-condition IDs must be ordered and unique")
+        real_rounds_configured = self.real_round_input_path is not None or bool(
+            self.real_round_artifact_paths
+        )
+        if real_rounds_configured != bool(expected_ids):
+            raise ValueError(
+                "real-round inputs and expected task-condition IDs must be configured together"
+            )
         return self
 
 
@@ -138,19 +174,45 @@ class ExternalBenchmarkSnapshot(FrozenModel):
     benchmark_id: Literal["finqa", "tat_qa", "financebench"]
     path: Path
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    source_repository: str = Field(min_length=1)
+    source_revision: str = Field(min_length=1)
+    split: str = Field(min_length=1)
+    adapter_version: str = Field(min_length=1)
+    metric_version: str = Field(min_length=1)
     usage: Literal["evaluation_only"] = "evaluation_only"
 
 
 class ContributionValidationConfig(FrozenModel):
     enabled: bool = True
     observation_path: Path | None = None
-    minimum_observation_count: int = Field(default=90, ge=3)
+    minimum_observation_count: int = Field(default=270, ge=6)
     minimum_unique_task_count: int = Field(default=30, ge=2)
     minimum_states_per_task: int = Field(default=3, ge=3)
-    minimum_macro_spearman: float = Field(default=0.2, ge=0, le=1)
-    minimum_pairwise_concordance: float = Field(default=0.55, ge=0, le=1)
+    minimum_seeds_per_state: int = Field(default=3, ge=2)
+    minimum_macro_spearman_ci_lower_bound: float = Field(default=0.2, ge=-1, le=1)
+    minimum_pairwise_concordance_ci_lower_bound: float = Field(default=0.55, ge=0, le=1)
     cluster_bootstrap_samples: int = Field(default=2_000, ge=100)
     bootstrap_seed: int = 20260731
+
+
+class BeneficiaryStateShiftConfig(FrozenModel):
+    """One controlled M0 -> M1 check for model-state-dependent contribution."""
+
+    enabled: bool = False
+    baseline_observation_path: Path | None = None
+    updated_observation_path: Path | None = None
+    minimum_unique_task_count: int = Field(default=10, ge=2)
+    minimum_states_per_task: int = Field(default=3, ge=3)
+    minimum_seeds_per_state: int = Field(default=3, ge=2)
+    baseline_round_index: int = Field(default=0, ge=0)
+    updated_round_index: int = Field(default=1, ge=0)
+    dependence_tolerance: float = Field(default=1e-6, ge=0)
+
+    @model_validator(mode="after")
+    def validate_rounds(self) -> BeneficiaryStateShiftConfig:
+        if self.updated_round_index <= self.baseline_round_index:
+            raise ValueError("updated beneficiary round must follow baseline round")
+        return self
 
 
 class TrainingExperimentConfig(FrozenModel):
@@ -223,11 +285,12 @@ class VTDOStudentTrainingConfig(FrozenModel):
 
 
 class VTDOExperimentConfig(FrozenModel):
-    experiment_id: str = "vtdo_experiment.finance.v3"
+    experiment_id: str = "vtdo_experiment.finance.v6"
     synthetic: SyntheticExperimentConfig = SyntheticExperimentConfig()
     multi_state: FinanceMultiStateConfig
     training: TrainingExperimentConfig
     contribution_validation: ContributionValidationConfig = ContributionValidationConfig()
+    beneficiary_state_shift: BeneficiaryStateShiftConfig = BeneficiaryStateShiftConfig()
     refinement_dynamics: RefinementDynamicsConfig = RefinementDynamicsConfig()
     output_dir: Path
     schema_version: str = VTDO_EXPERIMENT_VERSION
@@ -259,6 +322,11 @@ class VTDOExperimentConfig(FrozenModel):
         observation_path = contribution.get("observation_path")
         if observation_path is not None:
             contribution["observation_path"] = _resolve_relative_path(source, observation_path)
+        beneficiary_shift = payload.setdefault("beneficiary_state_shift", {})
+        for field in ("baseline_observation_path", "updated_observation_path"):
+            raw_path = beneficiary_shift.get(field)
+            if raw_path is not None:
+                beneficiary_shift[field] = _resolve_relative_path(source, raw_path)
         dynamics = payload.setdefault("refinement_dynamics", {})
         real_round_input_path = dynamics.get("real_round_input_path")
         if real_round_input_path is not None:
@@ -299,7 +367,9 @@ class SyntheticMetricPoint(FrozenModel):
     method: SyntheticMethod
     round_index: int = Field(ge=0)
     kl_to_initial_fixed_target_diagnostic: float = Field(ge=0)
-    expected_contribution_novelty: float
+    expected_log_potential: float
+    anchored_variational_objective: float
+    expected_contribution_novelty_diagnostic: float
     expected_contribution: float
     coverage_kl: float = Field(ge=0)
     coverage_alignment: float = Field(gt=0, le=1)
@@ -360,23 +430,13 @@ class RefinementCheckpointTrainingPreflight(FrozenModel):
 
     @model_validator(mode="after")
     def validate_checkpoint_preflight(self) -> RefinementCheckpointTrainingPreflight:
-        if (
-            tuple(sorted(set(self.analysis_checkpoint_rounds)))
-            != self.analysis_checkpoint_rounds
-        ):
+        if tuple(sorted(set(self.analysis_checkpoint_rounds))) != self.analysis_checkpoint_rounds:
             raise ValueError("analysis checkpoint rounds must be ordered and unique")
-        if (
-            tuple(sorted(set(self.training_checkpoint_rounds)))
-            != self.training_checkpoint_rounds
-        ):
+        if tuple(sorted(set(self.training_checkpoint_rounds))) != self.training_checkpoint_rounds:
             raise ValueError("training checkpoint rounds must be ordered and unique")
-        if not set(self.training_checkpoint_rounds).issubset(
-            self.analysis_checkpoint_rounds
-        ):
+        if not set(self.training_checkpoint_rounds).issubset(self.analysis_checkpoint_rounds):
             raise ValueError("training checkpoint lies outside the analysis contract")
-        if not set(self.materialized_training_rounds).issubset(
-            self.training_checkpoint_rounds
-        ):
+        if not set(self.materialized_training_rounds).issubset(self.training_checkpoint_rounds):
             raise ValueError("materialized training round lies outside the frozen contract")
         expected_ready = (
             self.materialized_training_rounds == self.training_checkpoint_rounds
@@ -484,6 +544,8 @@ class MovingPotentialMethodSummary(FrozenModel):
 
 
 class MovingPotentialTrackingSummary(FrozenModel):
+    track: MovingPotentialTrack
+    is_primary_track: bool
     status: Literal["passed", "failed"]
     state_count: int = Field(ge=2)
     round_count: int = Field(ge=2)
@@ -496,6 +558,7 @@ class MovingPotentialTrackingSummary(FrozenModel):
     vtdo_regret_advantage_over_no_feedback: AggregateMetric
     vtdo_regret_advantage_over_static: AggregateMetric
     regret_advantage_required: bool
+    regret_advantage_ci_lower_bound_required: bool
     optimization_direction_supported: bool
     report_hash: str
 
@@ -516,6 +579,8 @@ class MovingPotentialTrackingSummary(FrozenModel):
         )
         if self.status != expected_status:
             raise ValueError("moving-potential status is inconsistent with its checks")
+        if self.is_primary_track != (self.track == "exogenous_shared"):
+            raise ValueError("moving-potential primary-track flag is inconsistent")
         if self.report_hash != moving_potential_tracking_hash(self):
             raise ValueError("moving-potential tracking identity is invalid")
         return self
@@ -526,6 +591,10 @@ class RealRefinementDynamicsSummary(FrozenModel):
     configured_artifact_count: int = Field(ge=0)
     validated_artifact_count: int = Field(ge=0)
     task_condition_count: int = Field(ge=0)
+    expected_task_condition_count: int = Field(default=0, ge=0)
+    missing_task_condition_count: int = Field(default=0, ge=0)
+    unexpected_task_condition_count: int = Field(default=0, ge=0)
+    turnover_probability_threshold: float | None = Field(default=None, gt=0, lt=1)
     complete_sequence_count: int = Field(ge=0)
     sequential_link_failure_count: int = Field(ge=0)
     stabilization_eligible_sequence_count: int = Field(ge=0)
@@ -567,7 +636,8 @@ class RefinementDynamicsReport(FrozenModel):
     checkpoint_summaries: tuple[RefinementCheckpointSummary, ...]
     practical_stabilization: PracticalStabilizationSummary
     fixed_potential_contraction: FixedPotentialContractionSummary
-    moving_potential_tracking: MovingPotentialTrackingSummary
+    primary_moving_potential_track: Literal["exogenous_shared"] = "exogenous_shared"
+    moving_potential_tracks: tuple[MovingPotentialTrackingSummary, ...]
     real_refinement: RealRefinementDynamicsSummary
     strict_convergence_claim_supported: bool = False
     interpretation: str
@@ -578,6 +648,13 @@ class RefinementDynamicsReport(FrozenModel):
     def validate_identity(self) -> RefinementDynamicsReport:
         if self.strict_convergence_claim_supported:
             raise ValueError("moving-potential refinement cannot claim strict convergence")
+        tracks = {item.track for item in self.moving_potential_tracks}
+        if len(tracks) != len(self.moving_potential_tracks):
+            raise ValueError("moving-potential report contains duplicate tracks")
+        if self.primary_moving_potential_track not in tracks:
+            raise ValueError("moving-potential report lacks its primary track")
+        if sum(item.is_primary_track for item in self.moving_potential_tracks) != 1:
+            raise ValueError("moving-potential report must identify exactly one primary track")
         if self.report_hash != refinement_dynamics_report_hash(self):
             raise ValueError("refinement dynamics report identity is invalid")
         return self
@@ -600,7 +677,9 @@ def moving_potential_tracking_hash(value: MovingPotentialTrackingSummary) -> str
 class SyntheticMethodSummary(FrozenModel):
     method: SyntheticMethod
     run_count: int = Field(ge=1)
-    final_expected_utility: AggregateMetric
+    final_expected_log_potential: AggregateMetric
+    final_anchored_variational_objective: AggregateMetric
+    final_expected_contribution_novelty_diagnostic: AggregateMetric
     final_coverage_kl: AggregateMetric
     final_coverage_alignment: AggregateMetric
     final_coverage_count: AggregateMetric
@@ -610,7 +689,9 @@ class SyntheticMethodSummary(FrozenModel):
 
 class EtaSensitivityResult(FrozenModel):
     energy_exponent: float = Field(gt=0)
-    final_expected_utility: AggregateMetric
+    final_expected_log_potential: AggregateMetric
+    final_anchored_variational_objective: AggregateMetric
+    final_expected_contribution_novelty_diagnostic: AggregateMetric
     final_coverage_kl: AggregateMetric
     final_coverage_alignment: AggregateMetric
     final_entropy: AggregateMetric
@@ -641,9 +722,7 @@ class VTDOTrainingRecord(FrozenModel):
     system_prompt: str = Field(min_length=1)
     user_prompt: str = Field(min_length=1)
     assistant_target: str = Field(min_length=1)
-    target_contract: Literal["host_instrumented_decisions.v1"] = (
-        "host_instrumented_decisions.v1"
-    )
+    target_contract: Literal["host_instrumented_decisions.v1"] = "host_instrumented_decisions.v1"
     sampling_weight: float = Field(gt=0)
     source_artifact_id: str = Field(min_length=1)
     source_distribution_id: str | None = None
@@ -676,26 +755,60 @@ class CCGRTaskDistribution(FrozenModel):
 
 
 class ContributionValidationObservation(FrozenModel):
+    """Pair independent Probe and Intervention estimates on one (x, t, z, seed)."""
+
     observation_id: str = Field(min_length=1)
     task_condition_id: str = Field(min_length=1)
+    round_index: int = Field(ge=0)
     state_id: str = Field(min_length=1)
-    beneficiary_model_state_id: str = Field(min_length=1)
-    evaluation_distribution_id: str = Field(min_length=1)
-    target_metric_id: str = Field(min_length=1)
-    probe_protocol_hash: str = Field(min_length=1)
-    baseline_distribution_id: str = Field(min_length=1)
-    training_intervention_budget: int = Field(ge=1)
     seed: int
-    evaluation_snapshot_hash: str = Field(min_length=1)
-    estimated_contribution: float
-    observed_delta_j: float
-    sample_count: int = Field(ge=1)
-    schema_version: Literal["contribution_validation_observation.v2"] = (
-        "contribution_validation_observation.v2"
+    baseline_distribution_id: str = Field(min_length=1)
+    probe_observation: ContributionProbeObservation
+    intervention_observation: ContributionInterventionObservation
+    schema_version: Literal["contribution_validation_observation.v6"] = (
+        "contribution_validation_observation.v6"
     )
 
     @model_validator(mode="after")
     def validate_identity(self) -> ContributionValidationObservation:
+        probe = self.probe_observation
+        intervention = self.intervention_observation
+        if (
+            probe.task_condition_id != self.task_condition_id
+            or intervention.task_condition_id != self.task_condition_id
+            or probe.round_index != self.round_index
+            or intervention.round_index != self.round_index
+            or probe.state_id != self.state_id
+            or intervention.state_id != self.state_id
+            or probe.seed != self.seed
+            or intervention.seed != self.seed
+        ):
+            raise ValueError("Contribution validation pair has mismatched support")
+        probe_contract = probe.probe_contract
+        intervention_contract = intervention.intervention_contract
+        if (
+            probe_contract.beneficiary_model_state_id
+            != intervention_contract.beneficiary_model_state_id
+            or probe_contract.beneficiary_checkpoint_hash
+            != intervention_contract.beneficiary_checkpoint_hash
+            or probe_contract.metric_contract != intervention_contract.metric_contract
+            or probe_contract.data_isolation != intervention_contract.data_isolation
+        ):
+            raise ValueError("Contribution validation pair has mismatched frozen identity")
+        if (
+            probe.adaptation_result.adapted_model_state_id
+            == intervention.training_result.intervention_model_state_id
+            or probe.adaptation_result.adapted_checkpoint_hash
+            == intervention.training_result.intervention_checkpoint_hash
+        ):
+            raise ValueError("Contribution validation estimators reuse one trained artifact")
+        if not math.isclose(
+            probe.baseline_performance,
+            intervention.baseline_performance,
+            rel_tol=0.0,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("Contribution validation pair has mismatched baseline performance")
         if self.observation_id != contribution_validation_observation_id(self):
             raise ValueError("contribution-validation observation identity is invalid")
         return self
@@ -705,8 +818,13 @@ class ContributionValidationReport(FrozenModel):
     report_id: str = Field(min_length=1)
     observation_count: int = Field(ge=0)
     unique_task_count: int = Field(ge=0)
+    unique_round_count: int = Field(ge=0)
+    unique_task_round_count: int = Field(ge=0)
     unique_state_count: int = Field(ge=0)
-    eligible_task_count: int = Field(ge=0)
+    paired_seed_count: int = Field(ge=0)
+    aggregated_state_count: int = Field(ge=0)
+    mean_within_state_intervention_variance: float | None = Field(default=None, ge=0)
+    eligible_task_round_count: int = Field(ge=0)
     task_rank_correlation: AggregateMetric | None = None
     task_rank_bootstrap_ci95: tuple[float, float] | None = None
     centered_global_spearman: float | None = Field(default=None, ge=-1, le=1)
@@ -717,15 +835,69 @@ class ContributionValidationReport(FrozenModel):
     frozen_identity: dict[str, str] = Field(default_factory=dict)
     status: Literal["passed", "blocked"]
     blockers: tuple[str, ...]
-    schema_version: Literal["contribution_validation_report.v2"] = (
-        "contribution_validation_report.v2"
+    schema_version: Literal["contribution_validation_report.v6"] = (
+        "contribution_validation_report.v6"
     )
 
     @model_validator(mode="after")
     def validate_identity(self) -> ContributionValidationReport:
+        if self.status == "passed" and self.blockers:
+            raise ValueError("passed Contribution validation report has blockers")
+        if self.status == "blocked" and not self.blockers:
+            raise ValueError("blocked Contribution validation report lacks blockers")
         if self.report_id != contribution_validation_report_id(self):
             raise ValueError("contribution-validation report identity is invalid")
         return self
+
+
+class BeneficiaryStateShiftReport(FrozenModel):
+    report_id: str = Field(min_length=1)
+    baseline_model_state_id: str | None = None
+    updated_model_state_id: str | None = None
+    baseline_round_index: int = Field(ge=0)
+    updated_round_index: int = Field(ge=0)
+    atomic_pair_count: int = Field(ge=0)
+    unique_task_count: int = Field(ge=0)
+    aggregated_state_count: int = Field(ge=0)
+    probe_seed_count: int = Field(ge=0)
+    mean_absolute_contribution_shift: AggregateMetric | None = None
+    mean_absolute_shift_ci95_lower_bound: float | None = Field(default=None, ge=0)
+    task_rank_correlation: AggregateMetric | None = None
+    contribution_direction_change_rate: float | None = Field(default=None, ge=0, le=1)
+    model_state_dependence_observed: bool | None = None
+    dependence_tolerance: float = Field(ge=0)
+    frozen_comparison_identity: dict[str, str] = Field(default_factory=dict)
+    status: Literal["passed", "blocked"]
+    blockers: tuple[str, ...]
+    schema_version: Literal["beneficiary_state_shift_report.v4"] = (
+        "beneficiary_state_shift_report.v4"
+    )
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> BeneficiaryStateShiftReport:
+        if self.updated_round_index <= self.baseline_round_index:
+            raise ValueError("beneficiary-state shift round order is invalid")
+        if self.model_state_dependence_observed is not None:
+            expected = bool(
+                self.mean_absolute_shift_ci95_lower_bound is not None
+                and self.mean_absolute_shift_ci95_lower_bound > self.dependence_tolerance
+            )
+            if self.model_state_dependence_observed != expected:
+                raise ValueError("beneficiary-state dependence decision is inconsistent")
+        if self.status == "passed" and self.blockers:
+            raise ValueError("passed beneficiary-state shift report has blockers")
+        if self.status == "blocked" and not self.blockers:
+            raise ValueError("blocked beneficiary-state shift report lacks blockers")
+        if self.report_id != beneficiary_state_shift_report_id(self):
+            raise ValueError("beneficiary-state shift report identity is invalid")
+        return self
+
+
+def beneficiary_state_shift_report_id(value: BeneficiaryStateShiftReport) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"report_id"}),
+        prefix="beneficiary_state_shift_report:",
+    )
 
 
 class TrainingArmCapacity(FrozenModel):
@@ -764,7 +936,7 @@ class TrainingExperimentPreflight(FrozenModel):
     primary_task_marginal_contract_verified: bool
     primary_causal_training_ready: bool
     full_comparison_matrix_ready: bool
-    pilot_training_ready: bool
+    permitted_arm_ids: tuple[VTDOTrainingArm, ...]
     external_benchmark_status: Literal["ready", "not_available", "not_configured"]
     benchmark_leakage_status: Literal["passed", "failed", "not_configured"]
     benchmark_leakage_count: int = Field(ge=0)
@@ -783,10 +955,18 @@ class TrainingExperimentPreflight(FrozenModel):
         ):
             raise ValueError("primary-causal readiness is inconsistent with its blockers")
         if self.full_comparison_matrix_ready != (
-            self.primary_causal_training_ready
-            and not self.secondary_comparison_blockers
+            self.primary_causal_training_ready and not self.secondary_comparison_blockers
         ):
             raise ValueError("full-matrix readiness is inconsistent with its blockers")
+        expected_permitted = (
+            tuple(item.arm_id for item in self.arms if item.capacity_status == "ready")
+            if not self.shared_training_blockers
+            else ()
+        )
+        if self.permitted_arm_ids != expected_permitted:
+            raise ValueError("permitted training arms are inconsistent with frozen capacities")
+        if len(self.permitted_arm_ids) != len(set(self.permitted_arm_ids)):
+            raise ValueError("permitted training arms must be unique")
         if self.report_hash != training_experiment_preflight_hash(self):
             raise ValueError("VTDO training preflight identity is invalid")
         return self
@@ -804,7 +984,11 @@ class VTDOTrainingRunResult(FrozenModel):
     arm_id: VTDOTrainingArm
     config_hash: str = Field(min_length=1)
     dataset_hash: str = Field(min_length=1)
+    training_input_sha256: dict[str, str]
+    training_input_manifest_hash: str = Field(min_length=1)
     base_model: str = Field(min_length=1)
+    base_model_manifest_hash: str = Field(min_length=1)
+    adapter_manifest_hash: str = Field(min_length=1)
     model_revision: str | None = None
     training_seed: int
     adapter_dir: str = Field(min_length=1)
@@ -823,10 +1007,24 @@ class VTDOTrainingRunResult(FrozenModel):
     peak_gpu_memory_bytes: int = Field(ge=0)
     dependency_versions: dict[str, str]
     status: Literal["completed"] = "completed"
-    schema_version: Literal["vtdo_training_run.v3"] = "vtdo_training_run.v3"
+    schema_version: Literal["vtdo_training_run.v4"] = "vtdo_training_run.v4"
 
     @model_validator(mode="after")
     def validate_identity(self) -> VTDOTrainingRunResult:
+        required_inputs = {"student_config", "preflight", "arm_manifest", "dataset"}
+        if set(self.training_input_sha256) != required_inputs:
+            raise ValueError("training input SHA256 manifest is incomplete")
+        if any(
+            len(value) != 64 or any(char not in "0123456789abcdef" for char in value)
+            for value in self.training_input_sha256.values()
+        ):
+            raise ValueError("training input SHA256 manifest contains an invalid digest")
+        expected_input_hash = canonical_hash(
+            self.training_input_sha256,
+            prefix="vtdo_training_input_manifest:",
+        )
+        if self.training_input_manifest_hash != expected_input_hash:
+            raise ValueError("training input manifest identity is invalid")
         if self.result_id != vtdo_training_run_result_id(self):
             raise ValueError("VTDO training run identity is invalid")
         return self
@@ -876,6 +1074,7 @@ class VTDOExperimentManifest(FrozenModel):
     refinement_dynamics_report_hash: str | None = None
     multi_state_report_id: str | None = None
     contribution_validation_report_id: str | None = None
+    beneficiary_state_shift_report_id: str | None = None
     training_preflight_hash: str | None = None
     refinement_checkpoint_training_preflight_hash: str | None = None
     input_manifest_hash: str

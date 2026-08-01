@@ -1,3 +1,9 @@
+from .benchmark_prediction import (
+    BenchmarkGenerationConfig,
+    BenchmarkPredictionRunManifest,
+    run_benchmark_predictions,
+)
+from .beneficiary_shift import run_beneficiary_state_shift_experiment
 from .contribution_validation import run_contribution_validation
 from .dynamics import RefinementDynamicsExecution, run_refinement_dynamics_experiment
 from .evaluation import (
@@ -13,6 +19,13 @@ from .multistate import (
     build_finance_multi_state_dataset,
     load_finance_multi_state_artifacts,
 )
+from .real_feedback import (
+    RealFeedbackProductionConfig,
+    RealFeedbackProductionReport,
+    RecordedContributionProbe,
+    RecordedExplorerTrajectory,
+    produce_real_vtdo_feedback,
+)
 from .real_rounds import (
     RealRoundAssemblyInput,
     RealRoundAssemblyReport,
@@ -22,6 +35,8 @@ from .runner import run_vtdo_experiment
 from .schema import (
     VTDO_EXPERIMENT_VERSION,
     VTDO_TRAINING_ARMS,
+    BeneficiaryStateShiftConfig,
+    BeneficiaryStateShiftReport,
     CCGRTaskDistribution,
     ContributionValidationConfig,
     ContributionValidationObservation,
@@ -58,17 +73,25 @@ from .training import (
 
 __all__ = [
     "BenchmarkEvaluationReport",
+    "BenchmarkGenerationConfig",
     "BenchmarkLeakageAudit",
+    "BenchmarkPredictionRunManifest",
+    "BeneficiaryStateShiftConfig",
+    "BeneficiaryStateShiftReport",
     "CCGRTaskDistribution",
     "ContributionValidationConfig",
     "ContributionValidationObservation",
     "ContributionValidationReport",
+    "RecordedContributionProbe",
     "ExternalBenchmarkSnapshot",
     "FinanceMultiStateConfig",
     "FinanceMultiStateReport",
     "FinanceTaskStateArtifact",
     "RealRoundAssemblyInput",
     "RealRoundAssemblyReport",
+    "RealFeedbackProductionConfig",
+    "RealFeedbackProductionReport",
+    "RecordedExplorerTrajectory",
     "RefinementCheckpointTrainingPreflight",
     "RefinementDynamicsConfig",
     "RefinementDynamicsExecution",
@@ -95,9 +118,12 @@ __all__ = [
     "load_finance_multi_state_artifacts",
     "load_benchmark_examples",
     "load_training_records",
+    "produce_real_vtdo_feedback",
     "refinement_checkpoint_training_preflight_hash",
     "refinement_dynamics_report_hash",
     "run_contribution_validation",
+    "run_benchmark_predictions",
+    "run_beneficiary_state_shift_experiment",
     "run_refinement_dynamics_experiment",
     "run_synthetic_experiment",
     "run_vtdo_experiment",

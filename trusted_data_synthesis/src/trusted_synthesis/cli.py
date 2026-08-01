@@ -61,8 +61,12 @@ from trusted_synthesis.experiments.task_pattern_validation import (
 )
 from trusted_synthesis.experiments.vtdo_experiment import (
     VTDO_TRAINING_ARMS,
+    BenchmarkGenerationConfig,
+    RealFeedbackProductionConfig,
     VTDOExperimentConfig,
     evaluate_external_benchmark_predictions,
+    produce_real_vtdo_feedback,
+    run_benchmark_predictions,
     run_vtdo_experiment,
     train_vtdo_arm,
 )
@@ -97,6 +101,11 @@ def main(argv: list[str] | None = None) -> int:
         vtdo_manifest = run_vtdo_experiment(vtdo_config)
         _emit(vtdo_manifest.model_dump(mode="json"), args.output)
         return 0 if vtdo_manifest.status == "passed" else 1
+    if args.command == "generate-vtdo-real-feedback":
+        feedback_config = RealFeedbackProductionConfig.from_json(args.feedback_config)
+        feedback_report = produce_real_vtdo_feedback(feedback_config)
+        _emit(feedback_report.model_dump(mode="json"), args.output)
+        return 0 if feedback_report.status == "passed" else 1
     if args.command == "train-vtdo-arm":
         try:
             result = train_vtdo_arm(
@@ -125,9 +134,23 @@ def main(argv: list[str] | None = None) -> int:
         report = evaluate_external_benchmark_predictions(
             vtdo_config.training.external_benchmarks,
             args.predictions,
+            args.prediction_manifest,
         )
         _emit(report.model_dump(mode="json"), args.output)
         return 0 if report.status == "passed" else 1
+    if args.command == "predict-vtdo-benchmarks":
+        vtdo_config = VTDOExperimentConfig.from_json(args.vtdo_config)
+        generation = BenchmarkGenerationConfig.model_validate(
+            json.loads(args.generation_config.read_text(encoding="utf-8"))
+        )
+        manifest = run_benchmark_predictions(
+            vtdo_config.training.external_benchmarks,
+            args.training_result,
+            generation,
+            args.output_dir,
+        )
+        _emit(manifest.model_dump(mode="json"), args.output)
+        return 0 if manifest.status == "completed" else 1
     if args.command == "audit-agent-capacity":
         capacity_config = AgentValidationConfig.from_json(args.agent_config)
         capacity_report = audit_agent_validation_capacity(capacity_config)
@@ -243,6 +266,9 @@ def _parser() -> argparse.ArgumentParser:
     vtdo_experiment = subparsers.add_parser("run-vtdo-experiment")
     vtdo_experiment.add_argument("--vtdo-config", type=Path, required=True)
     vtdo_experiment.add_argument("--output", type=Path)
+    vtdo_feedback = subparsers.add_parser("generate-vtdo-real-feedback")
+    vtdo_feedback.add_argument("--feedback-config", type=Path, required=True)
+    vtdo_feedback.add_argument("--output", type=Path)
     vtdo_train = subparsers.add_parser("train-vtdo-arm")
     vtdo_train.add_argument("--training-config", type=Path, required=True)
     vtdo_train.add_argument("--preflight", type=Path, required=True)
@@ -259,7 +285,14 @@ def _parser() -> argparse.ArgumentParser:
     vtdo_evaluate = subparsers.add_parser("evaluate-vtdo-benchmarks")
     vtdo_evaluate.add_argument("--vtdo-config", type=Path, required=True)
     vtdo_evaluate.add_argument("--predictions", type=Path, required=True)
+    vtdo_evaluate.add_argument("--prediction-manifest", type=Path, required=True)
     vtdo_evaluate.add_argument("--output", type=Path)
+    vtdo_predict = subparsers.add_parser("predict-vtdo-benchmarks")
+    vtdo_predict.add_argument("--vtdo-config", type=Path, required=True)
+    vtdo_predict.add_argument("--training-result", type=Path, required=True)
+    vtdo_predict.add_argument("--generation-config", type=Path, required=True)
+    vtdo_predict.add_argument("--output-dir", type=Path, required=True)
+    vtdo_predict.add_argument("--output", type=Path)
     agent_capacity = subparsers.add_parser("audit-agent-capacity")
     agent_capacity.add_argument("--agent-config", type=Path, required=True)
     agent_capacity.add_argument("--output", type=Path)

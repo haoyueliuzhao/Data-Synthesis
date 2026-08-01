@@ -30,8 +30,12 @@ if TYPE_CHECKING:
         WorkflowKind,
     )
     from trusted_synthesis.core.trajectory.specification import (
+        JointCompilationArtifact,
+        OmegaComponentManifest,
         OracleExecutionSpecification,
         TrajectoryVerificationContext,
+        make_joint_compilation_artifact,
+        make_omega_component_manifest,
         make_oracle_execution_specification,
         make_trajectory_verification_context,
     )
@@ -40,6 +44,7 @@ if TYPE_CHECKING:
         TrajectoryState,
         TrajectoryStateAssignment,
         map_trajectory_to_state,
+        trajectory_decision_trace_hash,
     )
     from trusted_synthesis.core.trajectory.validity import (
         TrajectoryValidityEvaluator,
@@ -49,6 +54,14 @@ if TYPE_CHECKING:
 
 _EXPORTS = {
     "ActionType": ("trusted_synthesis.core.trajectory.schema", "ActionType"),
+    "JointCompilationArtifact": (
+        "trusted_synthesis.core.trajectory.specification",
+        "JointCompilationArtifact",
+    ),
+    "OmegaComponentManifest": (
+        "trusted_synthesis.core.trajectory.specification",
+        "OmegaComponentManifest",
+    ),
     "OracleExecutionSpecification": (
         "trusted_synthesis.core.trajectory.specification",
         "OracleExecutionSpecification",
@@ -80,6 +93,10 @@ _EXPORTS = {
     "map_trajectory_to_state": (
         "trusted_synthesis.core.trajectory.state",
         "map_trajectory_to_state",
+    ),
+    "trajectory_decision_trace_hash": (
+        "trusted_synthesis.core.trajectory.state",
+        "trajectory_decision_trace_hash",
     ),
     "TrajectoryValidityReport": (
         "trusted_synthesis.core.trajectory.validity",
@@ -116,6 +133,14 @@ _EXPORTS = {
     "extract_trajectory_attributes": (
         "trusted_synthesis.core.trajectory.attributes",
         "extract_trajectory_attributes",
+    ),
+    "make_joint_compilation_artifact": (
+        "trusted_synthesis.core.trajectory.specification",
+        "make_joint_compilation_artifact",
+    ),
+    "make_omega_component_manifest": (
+        "trusted_synthesis.core.trajectory.specification",
+        "make_omega_component_manifest",
     ),
     "make_oracle_execution_specification": (
         "trusted_synthesis.core.trajectory.specification",

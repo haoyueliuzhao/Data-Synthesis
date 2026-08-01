@@ -1,0 +1,9 @@
+{
+  "max_input_tokens": 16384,
+  "max_new_tokens": 256,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "seed": 20260731,
+  "device": "cuda:0",
+  "prompt_contract": "native_financial_answer_json.v2"
+}

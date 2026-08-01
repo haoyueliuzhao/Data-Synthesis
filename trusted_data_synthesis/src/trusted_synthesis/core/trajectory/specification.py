@@ -14,6 +14,8 @@ from trusted_synthesis.hashing import canonical_hash
 
 ORACLE_EXECUTION_SPECIFICATION_VERSION = "oracle_execution_specification.v1"
 VERIFICATION_CONTEXT_VERSION = "trajectory_verification_context.v1"
+OMEGA_COMPONENT_MANIFEST_VERSION = "omega_component_manifest.v1"
+JOINT_COMPILATION_ARTIFACT_VERSION = "joint_compilation_artifact.v1"
 
 
 class FrozenModel(BaseModel):
@@ -105,6 +107,51 @@ class TrajectoryVerificationContext(FrozenModel):
         return self
 
 
+class OmegaComponentManifest(FrozenModel):
+    """Explicit, replayable identity of Omega_x = (E_x, P_x, G_x, Q_x)."""
+
+    manifest_id: str = Field(min_length=1)
+    task_id: str = Field(min_length=1)
+    task_hash: str = Field(min_length=1)
+    evidence_bundle_id: str = Field(min_length=1)
+    evidence_bundle_hash: str = Field(min_length=1)
+    public_corpus_id: str = Field(min_length=1)
+    public_corpus_hash: str = Field(min_length=1)
+    task_program_id: str = Field(min_length=1)
+    task_program_hash: str = Field(min_length=1)
+    proof_graph_id: str = Field(min_length=1)
+    proof_graph_hash: str = Field(min_length=1)
+    quality_contract_id: str = Field(min_length=1)
+    quality_contract_hash: str = Field(min_length=1)
+    oracle_specification_id: str = Field(min_length=1)
+    schema_version: str = OMEGA_COMPONENT_MANIFEST_VERSION
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> OmegaComponentManifest:
+        if self.manifest_id != omega_component_manifest_id(self):
+            raise ValueError("Omega component manifest identity is invalid")
+        return self
+
+
+class JointCompilationArtifact(FrozenModel):
+    """First-class output of joint compilation, including the complete Omega_x."""
+
+    artifact_id: str = Field(min_length=1)
+    omega: TrajectoryVerificationContext
+    component_manifest: OmegaComponentManifest
+    compiler_version: str = Field(min_length=1)
+    schema_version: str = JOINT_COMPILATION_ARTIFACT_VERSION
+
+    @model_validator(mode="after")
+    def validate_compilation(self) -> JointCompilationArtifact:
+        expected = make_omega_component_manifest(self.omega)
+        if self.component_manifest != expected:
+            raise ValueError("joint compilation does not reproduce its Omega component manifest")
+        if self.artifact_id != joint_compilation_artifact_id(self):
+            raise ValueError("joint compilation artifact identity is invalid")
+        return self
+
+
 class _ReferenceIdentity:
     def __init__(self, trajectory_id: str, trajectory_hash: str) -> None:
         self.trajectory_id = trajectory_id
@@ -179,6 +226,50 @@ def make_trajectory_verification_context(
     )
 
 
+def make_omega_component_manifest(
+    context: TrajectoryVerificationContext,
+) -> OmegaComponentManifest:
+    values = {
+        "task_id": context.task.task_id,
+        "task_hash": context.task.task_hash,
+        "evidence_bundle_id": context.evidence_bundle.bundle_id,
+        "evidence_bundle_hash": context.evidence_bundle.bundle_hash,
+        "public_corpus_id": context.public_corpus.corpus_id,
+        "public_corpus_hash": context.public_corpus.corpus_hash,
+        "task_program_id": context.task.oracle.task_program.program_id,
+        "task_program_hash": context.task.oracle.task_program.program_hash,
+        "proof_graph_id": context.proof_graph.graph_id,
+        "proof_graph_hash": context.proof_graph.graph_hash,
+        "quality_contract_id": context.quality_contract.contract_id,
+        "quality_contract_hash": context.quality_contract.contract_hash,
+        "oracle_specification_id": context.oracle_specification.specification_id,
+        "schema_version": OMEGA_COMPONENT_MANIFEST_VERSION,
+    }
+    provisional = OmegaComponentManifest.model_construct(manifest_id="pending", **values)
+    return OmegaComponentManifest(
+        manifest_id=omega_component_manifest_id(provisional),
+        **values,
+    )
+
+
+def make_joint_compilation_artifact(
+    context: TrajectoryVerificationContext,
+    *,
+    compiler_version: str,
+) -> JointCompilationArtifact:
+    values = {
+        "omega": context,
+        "component_manifest": make_omega_component_manifest(context),
+        "compiler_version": compiler_version,
+        "schema_version": JOINT_COMPILATION_ARTIFACT_VERSION,
+    }
+    provisional = JointCompilationArtifact.model_construct(artifact_id="pending", **values)
+    return JointCompilationArtifact(
+        artifact_id=joint_compilation_artifact_id(provisional),
+        **values,
+    )
+
+
 def oracle_execution_specification_id(value: OracleExecutionSpecification) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"specification_id"}),
@@ -197,6 +288,20 @@ def trajectory_verification_context_id(value: TrajectoryVerificationContext) -> 
         "schema_version": value.schema_version,
     }
     return canonical_hash(identity, prefix="trajectory_verification_context:")
+
+
+def omega_component_manifest_id(value: OmegaComponentManifest) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"manifest_id"}),
+        prefix="omega_component_manifest:",
+    )
+
+
+def joint_compilation_artifact_id(value: JointCompilationArtifact) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"artifact_id"}),
+        prefix="joint_compilation_artifact:",
+    )
 
 
 def _required_actions(task: TaskPackage) -> tuple[ActionType, ...]:

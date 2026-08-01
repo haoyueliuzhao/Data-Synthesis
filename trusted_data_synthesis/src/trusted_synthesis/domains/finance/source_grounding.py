@@ -178,7 +178,7 @@ def _sec_entails(evidence: EvidenceItem, payload: Any) -> bool:
     units = concept_payload.get("units") or {}
     period_end = _period_end(evidence)
     period_start = evidence.temporal_context.valid_from
-    fiscal_year = evidence.domain_context.get("fiscal_year")
+    fiscal_year = evidence.domain_context.get("source_report_fiscal_year")
     fiscal_quarter = str(evidence.domain_context.get("fiscal_quarter") or "")
     source_fiscal_quarter = fiscal_quarter.removesuffix("_YTD")
     for rows in units.values():
@@ -219,12 +219,12 @@ def _fred_entails(evidence: EvidenceItem, payload: Any) -> bool:
 def _world_bank_entails(evidence: EvidenceItem, payload: Any) -> bool:
     if not isinstance(payload, list) or len(payload) < 2 or not isinstance(payload[1], list):
         return False
-    year = evidence.domain_context.get("calendar_year") or evidence.domain_context.get(
-        "fiscal_year"
-    )
+    year = evidence.domain_context.get("economic_period_year")
     if year is None:
         period_end = _period_end(evidence)
         year = period_end.year if period_end else None
+    if year is None:
+        year = evidence.domain_context.get("calendar_year")
     for row in payload[1]:
         if not isinstance(row, dict) or row.get("value") is None:
             continue

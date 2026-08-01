@@ -18,7 +18,7 @@ Domain Evidence Adapter
 
 ## Active Method Boundary
 
-The sole paper experiment is `vtdo_experiment.v3`. Its evidence chain is deliberately ordered:
+The sole paper experiment is `vtdo_experiment.v6`. Its evidence chain is deliberately ordered:
 
 ```text
 Trajectory State Validation
@@ -30,18 +30,22 @@ The active protocol does not reinterpret legacy synthesis cells as VTDO states a
 surface paraphrases to inflate state support. A real state must differ in retrieval scope,
 verification frontier, evidence lineage, or another independently replayable decision path.
 
-The five experiment components are:
+The six experiment components are:
 
 1. controlled VTDO validation on a 200-state synthetic space;
 2. real financial trajectory-state construction with 3-5 accepted states per task;
-3. empirical contribution validation against observed downstream utility changes;
-4. update-operator verification, moving-optimum tracking, and finite-step stabilization;
-5. equal-supervised-token Qwen2.5-7B training over fixed-task-marginal validity,
+3. multi-seed empirical contribution validation against observed downstream utility changes;
+4. update-operator verification plus exogenous, VTDO-induced, and method-specific moving-potential
+   tracks;
+5. replayable real-feedback Round production and a paired `M0 -> M1` beneficiary-state probe;
+6. equal-supervised-token Qwen2.5-7B training over fixed-task-marginal validity,
    contribution-only, novelty-only, random-state, and VTDO arms, with controlled corruption and
-   CCGR reported separately.
+   CCGR reported separately, followed by frozen native FinQA/TAT-QA evaluation.
 
-Missing real observations, VTDO rounds, benchmark snapshots, or arm capacity are represented as
-blocked components. They are never replaced with synthetic evidence or inferred gains.
+Missing recorded Explorer outputs, local Probe observations, paired finite-Intervention validation, VTDO rounds, or arm capacity are
+represented as blocked components. They are never replaced with synthetic evidence or inferred
+gains. FinQA and TAT-QA snapshots are frozen under `benchmarks/`; FinanceBench remains an optional
+extension rather than a hidden preflight requirement.
 
 ## Repository Layout
 
@@ -117,6 +121,12 @@ trusted-synthesis train-vtdo-arm \
 - Universal and domain-specific quality gates remain separate and fail closed.
 - Oracle content, gold evidence, and reference answers are excluded from public task inputs.
 - External benchmark snapshots are evaluation-only and must match frozen SHA-256 values.
+- FinQA predictions carry both answer and executable program contracts; TAT-QA predictions carry
+  answer and scale. Prediction manifests bind the arm, training result, model/adapter contents,
+  generation config, and evaluation snapshot.
+- Exact/near prompt, evidence, source-record, document, and binding collisions block evaluation;
+  unavailable required leakage channels also fail closed, while subject overlap is a soft
+  diagnostic.
 - API credentials are read from configured environment variables and are never serialized.
 - Fixed-potential contraction is an update-operator verification, not a closed-loop convergence
   claim. Moving-potential behavior is evaluated through objective gain, tracking error, dynamic
@@ -132,4 +142,4 @@ See [VTDO Experiment Protocol](docs/vtdo_experiment_protocol.md),
 The v0.8/v0.9 training-utility and validation implementations, configurations, tests, reports,
 checkpoints, and generated artifacts have been permanently removed from the working tree. Tracked
 source history remains available through Git; ignored generated outputs were intentionally deleted.
-No compatibility alias maps a legacy schema or command into `vtdo_experiment.v3`.
+No compatibility alias maps a legacy schema or command into `vtdo_experiment.v6`.

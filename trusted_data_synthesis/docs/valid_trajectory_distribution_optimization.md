@@ -37,6 +37,12 @@ Reference Workflow is one known-valid realization, not a unique gold reasoning p
 Verifier and Quality Contract Runtime. Missing checks, runtime failures, invalid evidence,
 operation errors, unsupported claims, or citation defects fail closed.
 
+ProofCarryingSampleCompiler emits a first-class JointCompilationArtifact. It carries the complete
+TrajectoryVerificationContext plus an OmegaComponentManifest that separately freezes the Task,
+Evidence Bundle, public Corpus, Task Program, Proof Graph, Quality Contract, and Oracle execution
+specification. The compilation identity also binds the compiler version. Downstream components
+consume this artifact rather than reconstructing Omega_x from loosely related files.
+
 ## Quotient Trajectory State
 
 The optimized state is not a raw trajectory and not an attribute bucket:
@@ -66,9 +72,46 @@ equivalence maps; no equivalence is inferred from natural-language similarity.
 beside a `TrajectoryStateAssignment` but is deliberately excluded from state identity.
 
 `TrajectoryStateCatalog` freezes the finite support used by one task condition: the complete state
-objects, `Omega_x`, Oracle specification, Mapper schema, canonicalizer, parent catalog, and revision
-reason. An observed state outside that catalog fails closed. Adding, retiring, or reclassifying a
-state therefore creates a new catalog identity instead of silently changing the meaning of `pi_t`.
+objects, `Omega_x` component manifest, the complete
+`TrajectoryStateSpaceCompilation`, Mapper schema, canonicalizer version, parent catalog, and
+revision reason. Catalog construction rejects public conditions absent from the compiled variation
+manifest. Every state must also carry at least one `StateDiscoveryWitness` linking a verified
+trajectory assignment to its trajectory ID, content hash, and complete content-addressed validity
+report. States cannot be registered from an unverified structural description. An observed state outside that catalog fails closed. Adding,
+retiring, reclassifying, or adding discovery evidence for a state creates a new catalog identity
+instead of silently changing the meaning of `pi_t`.
+
+## Trajectory State-Space Compilation
+
+Joint Compilation freezes one immutable `Omega_x`. A thin state-space compilation step then maps
+domain semantics into `AdmissibleTrajectoryVariation`; it does not rebuild Task, Evidence, Program,
+Proof Graph, or Quality Contract for each state. The resulting
+`TrajectoryStateSpaceCompilation` embeds the same immutable `JointCompilationArtifact`, freezes
+the variation-provider identity and version, and content-addresses the complete variation/condition
+manifest. The Core variation contract contains five domain-neutral axes:
+
+```text
+Evidence Acquisition
+Evidence Support
+Execution Realization
+Verification Policy
+Lineage Policy
+```
+
+Finance may interpret these axes using fiscal-period and metric semantics; Legal and Science
+compile their own semantics into the same contract. Finance-specific strategy names are never Core
+state kinds. Validity is deliberately absent from the condition because one quotient state may have
+both valid and invalid realizations; it remains an independently estimated property
+`v_t(x, z; Omega_x)`.
+
+State-conditioned generation has a strict Host/model boundary. The Host retains `Omega_x`, the
+exact quotient state, gold Evidence IDs, Oracle program and specification, Proof Graph, Quality
+Contract, discovery witnesses, and reference trajectories. A model-facing provider receives only a
+`PublicStateGenerationRequest`: the public task, frozen public-corpus identity, allowed tools, a
+`PublicStateCondition`, budget, and seed. Every request receives a fail-closed leakage audit before
+provider invocation. The public projection may be coarser than the exact quotient state, so the Host
+always verifies the realized trajectory and remaps it through `phi_x`; off-target outcomes are data,
+not silently relabeled successes.
 
 ## Push-forward Distribution
 
@@ -117,25 +160,88 @@ therefore cannot be compensated by novelty or contribution.
 
 ## Model-state-dependent Contribution
 
-Contribution is an empirical intervention estimate tied to:
-
-- one beneficiary model checkpoint;
-- one fixed target evaluation distribution;
-- one target metric;
-- one frozen probe protocol;
-- one task condition and one quotient state.
-
-`ContributionProbeObservation` stores baseline and intervention metric values, sample count, and
-confidence. It does not reuse CCGR's capability-gap heuristic. The confidence-adjusted marginal
-gains are centered under the current distribution:
+The theoretical object is the centered functional directional derivative:
 
 ```text
-C_t(x, z) = gain_t(x, z) - E_(z~pi_t)[gain_t(x, z)]
+C_t(x, z) =
+    < delta J_nu / delta pi(. | x), delta_z - pi_t(. | x) >
+
 E_(z~pi_t)[C_t(x, z)] = 0
 ```
 
-The manifest fails closed if state support, beneficiary model, evaluation distribution, metric, or
-probe protocol differs.
+It measures the first-order effect of moving probability mass from the current trajectory-state
+distribution to state `z` for the **beneficiary** model. It is not an Explorer score and it is not
+the CCGR capability-gap heuristic.
+
+The implementation deliberately separates three estimators:
+
+| Layer | Artifact | Permitted use |
+| --- | --- | --- |
+| synthetic oracle | `SyntheticOracleContributionObservation` | operator-control experiments only |
+| finite intervention | `ContributionInterventionObservation` | validate the production proxy |
+| local probe | `ContributionProbeObservation` | production VTDO distribution update |
+
+A finite intervention adds a frozen probability mass to one state:
+
+```text
+delta_n_z = ceil(epsilon / (1 - epsilon) * n_t(x))
+epsilon   = delta_n_z / (n_t(x) + delta_n_z)
+C_hat_int = (J(M_t^(+z)) - J(M_t)) / epsilon
+```
+
+The default validation target is `epsilon=0.05`. An Intervention manifest is marked
+`intervention_validation`; the distribution updater rejects it rather than silently treating it as
+a production estimate.
+
+The production approximation performs a local beneficiary update:
+
+```text
+theta'_z    = theta_t - eta * grad L(M_t, B_z)
+C_hat_probe = J_nu_int(M_theta'_z) - J_nu_int(M_theta_t)
+```
+
+`ProbeOptimizerContract` permits one to three steps (three by default), requires a cold-start SGD
+optimizer with zero momentum or a cold-start AdamW optimizer, and forbids reuse of the main
+training optimizer state. Runtime adapters must return the zero-state optimizer hash and the exact
+executed step count. `ContributionProbeObservation` retains that adaptation result and the adapted
+model/checkpoint; `ContributionInterventionObservation` likewise retains its frozen retraining
+result. A validation pair requires distinct adapted/intervention model and checkpoint identities;
+the local Probe cannot be reused as its own finite-Intervention target. Deserialization therefore
+replays the runtime contract instead of trusting an opaque score. The beneficiary checkpoint, not
+the Explorer checkpoint, is frozen within each task-round Probe protocol.
+
+`ContributionDataIsolationContract` freezes four disjoint objects per task condition:
+
+```text
+baseline training D_t
+state-specific Probe update sets B_z
+internal validation nu_int
+untouched final test nu_test
+```
+
+All instance identities are content-addressed. Update sets must be pairwise disjoint, and no training
+or Probe instance may occur in `nu_int` or `nu_test`. Probe and Intervention runtimes receive only
+their allowed instance IDs. The final test set is named in the manifest for leakage auditing but is
+never passed to either runtime.
+
+All performance contracts are explicitly `higher_is_better`. Loss metrics must be transformed to
+`J=-Loss` before an observation is constructed. Confidence and standard error are diagnostics;
+they do **not** multiply or shrink the observed gain. The unscaled state gains are centered under the
+current distribution:
+
+```text
+C_hat_t(x, z) = gain_t(x, z) - E_(z~pi_t)[gain_t(x, z)]
+E_(z~pi_t)[C_hat_t(x, z)] = 0
+```
+
+Empirical validation aggregates paired observations by `(task, round, state)` and reports
+task-round macro rank agreement with the independently trained finite-Intervention target. The
+configured lower confidence bounds for rank correlation and pairwise concordance, rather than
+point estimates, determine whether the proxy is eligible for a production claim.
+
+A production manifest fails closed on incomplete task-round state or seed support,
+model/checkpoint drift, metric or evaluation drift, optimizer drift, data-split drift, non-frozen
+baselines, or final-test leakage.
 
 ## Novelty, Potential, And Anchored Update
 
@@ -191,10 +297,16 @@ states. The batch records provider exhaustion, duplicates, verifier failures, ma
 off-target realizations, and actual state counts. Importance-weighted estimation refuses partial or
 unmapped batches rather than conditioning silently on generation success.
 
-The Explorer, beneficiary model used by contribution probes, and final Student are separate roles.
-`VTDORoleContract` freezes all three identities. Its default `strict_distinct` mode rejects accidental
-reuse; an intentional shared-model ablation must use `declared_shared` and freeze a justification
-hash. Role sharing is therefore an explicit experiment choice, not an assumption in Core.
+The Explorer provider is called only through the public request contract; neither the Explorer nor
+the Materializer receives `TrajectoryVerificationContext` or a serialized target state. The Host
+performs verification, quotient mapping, and state accounting.
+
+The Explorer, distribution Materializer, beneficiary model used by contribution probes, and final
+Student have separately frozen identities. `VTDORoleContract` requires an
+`independent_regeneration` materialization policy. The Materializer may deliberately use the same
+generator implementation as the Explorer, but it cannot reuse a discovery trajectory and cannot
+silently reuse the beneficiary or Student identity under `strict_distinct`. Any model-role sharing
+ablation must use `declared_shared` and freeze a justification hash.
 
 ## Canonical Round
 
@@ -218,10 +330,22 @@ complete validity estimates, Accepted support conditioning, contribution probes,
 manifest, role contract, and anchored update. Loading one artifact replays every cross-object
 identity and equation. Opaque IDs alone are insufficient to certify a round.
 
-`ValidTrajectoryStateMaterializer` converts the next distribution into deterministic state quotas.
-Every released record carries the full Task/`Omega_x`, requested `TrajectoryState`, actual
-trajectory, independent validity report, quotient assignment, source distribution, and role
-contract. Invalid, unmapped, duplicate, or off-target attempts cannot enter the released dataset.
+`ValidTrajectoryStateMaterializer` converts the next distribution into deterministic state quotas
+through a new generation phase. Every released record carries the full Task/`Omega_x`, State Catalog,
+requested `TrajectoryState`, actual trajectory, independent validity report, quotient assignment,
+source distribution, provider identity, public request identity, decision-trace hash, and role
+contract. Materialization is a fresh generation phase. Reuse is rejected by trajectory ID, content
+hash, and a normalized decision-trace hash that erases execution IDs, timestamps, generator build,
+and rationale while retaining actions, tool capabilities and parameters, evidence, program roles,
+and dependencies. Invalid, unmapped, duplicate, off-target, or discovery-reused attempts cannot
+enter the released dataset.
+
+When budget is at least the positive support size, deterministic allocation gives every state a
+minimum count of one before proportional remainder allocation. Smaller budgets explicitly report
+finite-support truncation; quotas are never reassigned after generation failure. The report replays
+per-state attempts, acceptance and off-target rates, quota fill, source/target/released distributions,
+allocation and release total variation, Jensen-Shannon divergence, and decision-trace uniqueness. A
+passed materialization requires exact target quotas and zero release divergence.
 
 ## Relationship To CCGR
 
@@ -253,6 +377,8 @@ state discovery, or downstream model improvement. Those claims require real Expl
 frozen intervention experiments, repeated seeds, and held-out training-utility evaluation.
 
 The property suite currently checks quotient invariance, false-diversity rejection, semantic state
-separation, cross-domain mapping, validity triage, direct and importance-weighted push-forward,
-centered contribution, the exact anchored equation, non-compensable validity, fixed task marginals,
-full-catalog exploration, round replay, and on-target state materialization.
+separation, public-projection leakage, decision-trace replay rejection, legal and science same-Omega
+multi-state compilation, validity triage, direct and importance-weighted push-forward, centered
+contribution, the exact anchored equation, non-compensable validity, fixed task marginals,
+full-catalog exploration, round replay, finite-budget support handling, and on-target state
+materialization.

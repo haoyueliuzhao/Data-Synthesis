@@ -35,6 +35,15 @@ def validate_compiled_artifacts(artifacts: CompiledProofCarryingArtifacts) -> No
         or sample.reference_trajectory_hash != artifacts.reference_trajectory.trajectory_hash
     ):
         raise ValueError("proof-carrying sample does not bind the reference trajectory")
+    joint_compilation = artifacts.joint_compilation
+    if (
+        joint_compilation.omega.task != task
+        or joint_compilation.omega.evidence_bundle != artifacts.evidence_bundle
+        or joint_compilation.omega.public_corpus != artifacts.public_corpus
+        or joint_compilation.omega.proof_graph != artifacts.proof_graph
+        or joint_compilation.omega.quality_contract != artifacts.quality_contract
+    ):
+        raise ValueError("compiled artifacts do not reproduce their joint compilation")
     specification = artifacts.oracle_execution_specification
     if (
         specification.task_id != task.task_id
@@ -52,6 +61,10 @@ def validate_compiled_artifacts(artifacts: CompiledProofCarryingArtifacts) -> No
         not isinstance(trajectory_contract, dict)
         or trajectory_contract.get("oracle_execution_specification_id")
         != specification.specification_id
+        or trajectory_contract.get("joint_compilation_artifact_id")
+        != joint_compilation.artifact_id
+        or trajectory_contract.get("omega_context_id")
+        != joint_compilation.omega.context_id
     ):
         raise ValueError("proof-carrying sample does not bind the trajectory contract")
     if (

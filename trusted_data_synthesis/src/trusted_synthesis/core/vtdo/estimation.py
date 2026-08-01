@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
+from typing import Literal
 
 from trusted_synthesis.core.trajectory.state import TrajectoryStateAssignment
 from trusted_synthesis.core.trajectory.validity import TrajectoryValidityReport
@@ -174,7 +175,7 @@ def estimate_state_validity(
         raise ValueError("state validity estimation requires assignments and reports")
     state_ids = {item.state.state_id for item in members}
     conditions = {item.task_condition_id for item in members}
-    contexts = {item.state.verification_context_id for item in members}
+    contexts = {item.state.omega_context_id for item in members}
     if len(state_ids) != 1 or len(conditions) != 1 or len(contexts) != 1:
         raise ValueError("state validity estimation must target one quotient state")
     assignment_by_trajectory = {item.trajectory_id: item for item in members}
@@ -237,28 +238,45 @@ def estimate_centered_contributions(
     raw_marginal_gains: Mapping[str, float],
     *,
     confidences: Mapping[str, float],
-    probe_sample_counts: Mapping[str, int],
+    observation_counts: Mapping[str, int],
+    standard_errors: Mapping[str, float],
     beneficiary_model_state_id: str,
+    beneficiary_checkpoint_hash: str,
     target_evaluation_distribution_id: str,
     target_metric_id: str,
+    target_metric_direction: Literal["higher_is_better"],
+    estimator_kind: Literal["synthetic_oracle", "finite_intervention", "local_probe"],
+    usage_scope: Literal[
+        "synthetic_operator_control",
+        "intervention_validation",
+        "production_distribution_update",
+    ],
+    estimation_protocol_hash: str,
+    data_isolation_contract_id: str,
+    final_test_set_id: str,
     estimator_id: str,
 ) -> ContributionEstimationManifest:
-    """Center model-state-dependent marginal probes on the probability simplex."""
+    """Center unscaled higher-is-better gains under the current pi_t.
+
+    Confidence and standard error are diagnostic metadata. They never shrink or
+    otherwise alter the directional derivative estimate.
+    """
 
     support = set(distribution.probabilities)
-    if set(raw_marginal_gains) != support:
-        raise ValueError("raw contribution probes must cover the current support")
-    if set(confidences) != support or set(probe_sample_counts) != support:
-        raise ValueError("contribution confidence and sample counts must cover support")
+    maps = (raw_marginal_gains, confidences, observation_counts, standard_errors)
+    if any(set(values) != support for values in maps):
+        raise ValueError("Contribution inputs must cover the current support exactly")
+    if any(not math.isfinite(value) for value in raw_marginal_gains.values()):
+        raise ValueError("Contribution marginal gains must be finite")
     if any(not 0 <= value <= 1 for value in confidences.values()):
-        raise ValueError("contribution confidence must be in [0, 1]")
-    if any(value < 1 for value in probe_sample_counts.values()):
-        raise ValueError("each contribution probe requires at least one sample")
-    adjusted = {
-        state_id: raw_marginal_gains[state_id] * confidences[state_id] for state_id in support
-    }
+        raise ValueError("Contribution confidence must be in [0, 1]")
+    if any(value < 1 for value in observation_counts.values()):
+        raise ValueError("each Contribution estimate requires at least one observation")
+    if any(value < 0 or not math.isfinite(value) for value in standard_errors.values()):
+        raise ValueError("Contribution standard errors must be finite and nonnegative")
     baseline = sum(
-        distribution.probabilities[state_id] * adjusted[state_id] for state_id in support
+        distribution.probabilities[state_id] * raw_marginal_gains[state_id]
+        for state_id in support
     )
     estimates = []
     for state_id in sorted(support):
@@ -266,10 +284,10 @@ def estimate_centered_contributions(
             "state_id": state_id,
             "raw_marginal_gain": raw_marginal_gains[state_id],
             "confidence": confidences[state_id],
-            "confidence_adjusted_gain": adjusted[state_id],
-            "centered_contribution": adjusted[state_id] - baseline,
+            "standard_error": standard_errors[state_id],
+            "centered_contribution": raw_marginal_gains[state_id] - baseline,
             "current_probability": distribution.probabilities[state_id],
-            "probe_sample_count": probe_sample_counts[state_id],
+            "observation_count": observation_counts[state_id],
         }
         provisional = ContributionEstimate.model_construct(estimate_id="pending", **values)
         estimates.append(
@@ -283,8 +301,15 @@ def estimate_centered_contributions(
         "task_condition_id": distribution.task_condition_id,
         "distribution_id": distribution.distribution_id,
         "beneficiary_model_state_id": beneficiary_model_state_id,
+        "beneficiary_checkpoint_hash": beneficiary_checkpoint_hash,
         "target_evaluation_distribution_id": target_evaluation_distribution_id,
         "target_metric_id": target_metric_id,
+        "target_metric_direction": target_metric_direction,
+        "estimator_kind": estimator_kind,
+        "usage_scope": usage_scope,
+        "estimation_protocol_hash": estimation_protocol_hash,
+        "data_isolation_contract_id": data_isolation_contract_id,
+        "final_test_set_id": final_test_set_id,
         "estimator_id": estimator_id,
         "estimates": tuple(estimates),
         "weighted_centered_mean": weighted_mean,

@@ -170,6 +170,9 @@ class FinanceArchiveAdapter:
         kg_build_id = str(row["kg_build_id"])
         period_end = _date(properties.get("period_end"))
         period_start = _date(properties.get("period_start"))
+        economic_period_year = properties.get("calendar_year") or (
+            period_end.year if period_end is not None else None
+        )
         return EvidenceItem(
             evidence_id=(
                 f"evidence:finance:{properties['stable_fact_id']}@{self.config.required_kg_build_id}"
@@ -272,6 +275,8 @@ class FinanceArchiveAdapter:
                 "raw_equivalence_group_id": properties.get("raw_equivalence_group_id"),
                 "financial_scope_type": properties.get("financial_scope_type"),
                 "fiscal_year": properties.get("fiscal_year"),
+                "source_report_fiscal_year": properties.get("fiscal_year"),
+                "economic_period_year": economic_period_year,
                 "fiscal_quarter": properties.get("fiscal_quarter"),
                 "calendar_year": properties.get("calendar_year"),
                 "value_scale": properties.get("value_scale"),
@@ -332,7 +337,11 @@ def _optional(value: Any) -> str | None:
 
 
 def _time_label(properties: dict[str, Any], period_end: date | None) -> str:
-    fiscal_year = properties.get("fiscal_year")
+    fiscal_year = (
+        properties.get("calendar_year")
+        or (period_end.year if period_end is not None else None)
+        or properties.get("fiscal_year")
+    )
     fiscal_quarter = str(properties.get("fiscal_quarter") or "").upper()
     metric_period_type = str(properties.get("metric_period_type") or "").casefold()
     frequency = str(properties.get("frequency") or "").casefold()

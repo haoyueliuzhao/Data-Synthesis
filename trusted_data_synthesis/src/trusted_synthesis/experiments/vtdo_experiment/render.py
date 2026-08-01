@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .multistate import FinanceMultiStateReport
 from .schema import (
+    BeneficiaryStateShiftReport,
     ContributionValidationReport,
     RefinementCheckpointTrainingPreflight,
     RefinementDynamicsReport,
@@ -32,6 +33,10 @@ _COLORS = {
 }
 
 
+def _format_optional_float(value: float | None, format_spec: str = ".6g") -> str:
+    return format(value, format_spec) if value is not None else "n/a"
+
+
 def write_synthetic_table(report: SyntheticExperimentReport, path: Path) -> None:
     with path.open("w", encoding="utf-8", newline="") as output:
         writer = csv.writer(output)
@@ -39,8 +44,11 @@ def write_synthetic_table(report: SyntheticExperimentReport, path: Path) -> None
             (
                 "method",
                 "run_count",
-                "joint_utility_mean",
-                "joint_utility_ci95",
+                "expected_log_potential_mean",
+                "expected_log_potential_ci95",
+                "anchored_variational_objective_mean",
+                "anchored_variational_objective_ci95",
+                "contribution_novelty_diagnostic_mean",
                 "coverage_alignment_mean",
                 "coverage_alignment_ci95",
                 "entropy_mean",
@@ -53,8 +61,11 @@ def write_synthetic_table(report: SyntheticExperimentReport, path: Path) -> None
                 (
                     item.method,
                     item.run_count,
-                    item.final_expected_utility.mean,
-                    item.final_expected_utility.ci95_half_width,
+                    item.final_expected_log_potential.mean,
+                    item.final_expected_log_potential.ci95_half_width,
+                    item.final_anchored_variational_objective.mean,
+                    item.final_anchored_variational_objective.ci95_half_width,
+                    item.final_expected_contribution_novelty_diagnostic.mean,
                     item.final_coverage_alignment.mean,
                     item.final_coverage_alignment.ci95_half_width,
                     item.final_entropy.mean,
@@ -103,11 +114,12 @@ def write_refinement_round_table(report: RefinementDynamicsReport, path: Path) -
 
 
 def write_moving_potential_table(report: RefinementDynamicsReport, path: Path) -> None:
-    moving = report.moving_potential_tracking
     with path.open("w", encoding="utf-8", newline="") as output:
         writer = csv.writer(output)
         writer.writerow(
             (
+                "track",
+                "is_primary_track",
                 "method",
                 "run_count",
                 "mean_tracking_error",
@@ -117,18 +129,21 @@ def write_moving_potential_table(report: RefinementDynamicsReport, path: Path) -
                 "final_anchor_objective",
             )
         )
-        for item in moving.method_summaries:
-            writer.writerow(
-                (
-                    item.method,
-                    item.run_count,
-                    item.mean_tracking_error.mean,
-                    item.mean_tracking_error.ci95_half_width,
-                    item.final_tracking_error.mean,
-                    item.cumulative_regret.mean,
-                    item.final_anchor_objective.mean,
+        for moving in report.moving_potential_tracks:
+            for item in moving.method_summaries:
+                writer.writerow(
+                    (
+                        moving.track,
+                        moving.is_primary_track,
+                        item.method,
+                        item.run_count,
+                        item.mean_tracking_error.mean,
+                        item.mean_tracking_error.ci95_half_width,
+                        item.final_tracking_error.mean,
+                        item.cumulative_regret.mean,
+                        item.final_anchor_objective.mean,
+                    )
                 )
-            )
 
 
 def write_refinement_checkpoint_table(report: RefinementDynamicsReport, path: Path) -> None:
@@ -167,7 +182,7 @@ def write_distribution_figure(report: SyntheticExperimentReport, path: Path) -> 
     by_method_round: defaultdict[tuple[str, int], list[float]] = defaultdict(list)
     for point in report.metric_points:
         by_method_round[(point.method, point.round_index)].append(
-            point.expected_contribution_novelty
+            point.anchored_variational_objective
         )
     series = {
         method: [
@@ -182,9 +197,9 @@ def write_distribution_figure(report: SyntheticExperimentReport, path: Path) -> 
     _line_svg(
         path,
         series,
-        title="Synthetic VTDO: joint contribution-novelty utility",
+        title="Synthetic VTDO: anchored variational objective",
         x_label="Refinement round",
-        y_label="E[C x N]",
+        y_label="F(pi; pi_previous, r, Phi)",
     )
 
 
@@ -245,16 +260,23 @@ def write_moving_potential_figure(
     rows: Iterable[Mapping[str, object]],
     path: Path,
 ) -> None:
-    grouped: defaultdict[tuple[str, int], list[float]] = defaultdict(list)
+    grouped: defaultdict[tuple[str, str, int], list[float]] = defaultdict(list)
     for row in rows:
-        grouped[(str(row["method"]), _integer(row["round_index"]))].append(
-            _number(row["tracking_error"])
-        )
+        grouped[
+            (
+                str(row["track"]),
+                str(row["method"]),
+                _integer(row["round_index"]),
+            )
+        ].append(_number(row["tracking_error"]))
     series = {
-        method: [
-            (round_index, statistics.fmean(grouped[(method, round_index)]))
-            for round_index in sorted(key[1] for key in grouped if key[0] == method)
+        f"{track}/{method}": [
+            (round_index, statistics.fmean(grouped[(track, method, round_index)]))
+            for round_index in sorted(
+                key[2] for key in grouped if key[0] == track and key[1] == method
+            )
         ]
+        for track in sorted({key[0] for key in grouped})
         for method in ("no_feedback", "static_optimization", "full_vtdo")
     }
     _line_svg(
@@ -354,6 +376,7 @@ def write_markdown_report(
     refinement: RefinementDynamicsReport,
     multi_state: FinanceMultiStateReport | None,
     contribution: ContributionValidationReport | None,
+    beneficiary_shift: BeneficiaryStateShiftReport | None,
     training: TrainingExperimentPreflight | None,
     checkpoint_training: RefinementCheckpointTrainingPreflight | None,
     limitations: tuple[str, ...],
@@ -380,12 +403,15 @@ def write_markdown_report(
         "",
         "### Main methods",
         "",
-        "| Method | E[C x N] | Coverage alignment | Entropy |",
-        "|---|---:|---:|---:|",
+        "| Method | E[log Phi] | Anchored objective | C x N diagnostic | "
+        "Coverage alignment | Entropy |",
+        "|---|---:|---:|---:|---:|---:|",
     ]
     for item in synthetic.main_method_summaries:
         lines.append(
-            f"| `{item.method}` | {item.final_expected_utility.mean:.4f} | "
+            f"| `{item.method}` | {item.final_expected_log_potential.mean:.4f} | "
+            f"{item.final_anchored_variational_objective.mean:.4f} | "
+            f"{item.final_expected_contribution_novelty_diagnostic.mean:.4f} | "
             f"{item.final_coverage_alignment.mean:.4f} | {item.final_entropy.mean:.4f} |"
         )
     lines.extend(
@@ -393,13 +419,16 @@ def write_markdown_report(
             "",
             "### Ablations",
             "",
-            "| Ablation | E[C x N] | Coverage alignment | Entropy |",
-            "|---|---:|---:|---:|",
+            "| Ablation | E[log Phi] | Anchored objective | C x N diagnostic | "
+            "Coverage alignment | Entropy |",
+            "|---|---:|---:|---:|---:|---:|",
         ]
     )
     for item in synthetic.ablation_summaries:
         lines.append(
-            f"| `{item.method}` | {item.final_expected_utility.mean:.4f} | "
+            f"| `{item.method}` | {item.final_expected_log_potential.mean:.4f} | "
+            f"{item.final_anchored_variational_objective.mean:.4f} | "
+            f"{item.final_expected_contribution_novelty_diagnostic.mean:.4f} | "
             f"{item.final_coverage_alignment.mean:.4f} | {item.final_entropy.mean:.4f} |"
         )
 
@@ -443,19 +472,51 @@ def write_markdown_report(
             [
                 f"- Status: `{contribution.status}`",
                 f"- Observations: {contribution.observation_count}",
-                f"- Unique tasks: {contribution.unique_task_count}",
-                f"- Eligible multi-state tasks: {contribution.eligible_task_count}",
+                f"- Paired Probe/Intervention seeds per state: {contribution.paired_seed_count}",
+                f"- Aggregated task-state cells: {contribution.aggregated_state_count}",
+                f"- Mean within-state Intervention variance: "
+                f"{_format_optional_float(contribution.mean_within_state_intervention_variance)}",
+                f"- Unique tasks/rounds: {contribution.unique_task_count}/"
+                f"{contribution.unique_round_count}",
+                f"- Eligible task-round cells: "
+                f"{contribution.eligible_task_round_count}/"
+                f"{contribution.unique_task_round_count}",
                 f"- Macro within-task Spearman: {task_rank.mean if task_rank else 'n/a'}",
-                f"- Centered global Spearman: "
-                f"{centered if centered is not None else 'n/a'}",
-                f"- Pairwise concordance: "
-                f"{concordance if concordance is not None else 'n/a'}",
+                f"- Centered global Spearman: {centered if centered is not None else 'n/a'}",
+                f"- Pairwise concordance: {concordance if concordance is not None else 'n/a'}",
                 f"- Sign agreement: {sign_agreement if sign_agreement is not None else 'n/a'}",
             ]
         )
 
+    lines.extend(["", "## Beneficiary Model-State Shift", ""])
+    if beneficiary_shift is None:
+        lines.append("Not configured.")
+    else:
+        mean_shift = beneficiary_shift.mean_absolute_contribution_shift
+        task_rank = beneficiary_shift.task_rank_correlation
+        lines.extend(
+            [
+                f"- Status: `{beneficiary_shift.status}`",
+                f"- Baseline model state: `{beneficiary_shift.baseline_model_state_id}`",
+                f"- Updated model state: `{beneficiary_shift.updated_model_state_id}`",
+                f"- Compared rounds: {beneficiary_shift.baseline_round_index} -> "
+                f"{beneficiary_shift.updated_round_index}",
+                f"- Atomic paired interventions: {beneficiary_shift.atomic_pair_count}",
+                f"- Aggregated task-state cells: {beneficiary_shift.aggregated_state_count}",
+                f"- Mean absolute Contribution shift: {mean_shift.mean if mean_shift else 'n/a'}",
+                f"- Mean-shift CI lower bound: "
+                f"{beneficiary_shift.mean_absolute_shift_ci95_lower_bound}",
+                f"- Task-wise C0/C1 rank correlation: {task_rank.mean if task_rank else 'n/a'}",
+                f"- Contribution direction-change rate: "
+                f"{beneficiary_shift.contribution_direction_change_rate}",
+                f"- Model-state dependence observed above tolerance: "
+                f"`{beneficiary_shift.model_state_dependence_observed}`",
+            ]
+        )
+
     stabilization = refinement.practical_stabilization
-    moving = refinement.moving_potential_tracking
+    moving_tracks = refinement.moving_potential_tracks
+    moving = next(item for item in moving_tracks if item.is_primary_track)
     objective = moving.variational_objective
     lines.extend(
         [
@@ -464,17 +525,20 @@ def write_markdown_report(
             "",
             f"- Fixed-potential update operator verified: "
             f"`{refinement.fixed_potential_contraction.projective_contraction_verified}`",
-            f"- Synthetic moving-potential tracking status: `{moving.status}`",
+            f"- Primary moving-potential track: `{moving.track}`",
+            f"- Primary moving-potential tracking status: `{moving.status}`",
             f"- Potential sequence contract: {moving.potential_sequence_definition}",
             f"- Variational objective monotonic transitions: "
             f"{objective.monotonic_transition_count}/{objective.transition_count}",
             f"- Minimum variational objective gain: {objective.minimum_objective_gain:.6g}",
             f"- Maximum KL to the exact proximal optimizer: "
             f"{objective.maximum_proximal_optimizer_kl:.6g}",
-            f"- VTDO cumulative-regret advantage over no-feedback: "
-            f"{moving.vtdo_regret_advantage_over_no_feedback.mean:.4f}",
-            f"- VTDO cumulative-regret advantage over static one-shot: "
-            f"{moving.vtdo_regret_advantage_over_static.mean:.4f}",
+            f"- VTDO cumulative-regret advantage over no-feedback (primary track): "
+            f"{moving.vtdo_regret_advantage_over_no_feedback.mean:.4f} "
+            f"+/- {moving.vtdo_regret_advantage_over_no_feedback.ci95_half_width:.4f}",
+            f"- VTDO cumulative-regret advantage over static one-shot (primary track): "
+            f"{moving.vtdo_regret_advantage_over_static.mean:.4f} "
+            f"+/- {moving.vtdo_regret_advantage_over_static.ci95_half_width:.4f}",
             f"- Finite-step stabilization horizon: {refinement.analysis_rounds} rounds",
             f"- Practical stabilization score: "
             f"`KL(pi_(t+1)||pi_t) + {stabilization.utility_delta_weight:g} * "
@@ -490,15 +554,19 @@ def write_markdown_report(
             "",
             "### Moving-optimum benchmark",
             "",
-            "| Method | Mean tracking KL | Final tracking KL | Cumulative regret |",
-            "|---|---:|---:|---:|",
+            "| Track | Role | Method | Mean tracking KL | Final tracking KL | Cumulative regret |",
+            "|---|---|---|---:|---:|---:|",
         ]
     )
-    for item in moving.method_summaries:
-        lines.append(
-            f"| `{item.method}` | {item.mean_tracking_error.mean:.4f} | "
-            f"{item.final_tracking_error.mean:.4f} | {item.cumulative_regret.mean:.4f} |"
-        )
+    for track in moving_tracks:
+        for item in track.method_summaries:
+            lines.append(
+                f"| `{track.track}` | "
+                f"{'primary' if track.is_primary_track else 'diagnostic'} | "
+                f"`{item.method}` | {item.mean_tracking_error.mean:.4f} | "
+                f"{item.final_tracking_error.mean:.4f} | "
+                f"{item.cumulative_regret.mean:.4f} |"
+            )
     real = refinement.real_refinement
     if real.status != "not_configured":
         lines.extend(
@@ -514,6 +582,10 @@ def write_markdown_report(
                 f"{real.stabilization_eligible_sequence_count}",
                 f"- Mean final tracking KL: {real.mean_final_tracking_error}",
                 f"- Mean cumulative regret: {real.mean_cumulative_regret}",
+                f"- Exact task set: expected={real.expected_task_condition_count}, "
+                f"missing={real.missing_task_condition_count}, "
+                f"unexpected={real.unexpected_task_condition_count}",
+                f"- Turnover probability threshold: {real.turnover_probability_threshold}",
                 f"- Mean state entries/exits per transition: "
                 f"{real.mean_state_entries_per_transition}/"
                 f"{real.mean_state_exits_per_transition}",
@@ -548,10 +620,9 @@ def write_markdown_report(
             [
                 f"- Student: `{training.base_model}`",
                 f"- Supervised tokens per arm: {training.supervised_token_budget:,}",
-                f"- Primary causal training ready: "
-                f"`{training.primary_causal_training_ready}`",
-                f"- Full comparison matrix ready: "
-                f"`{training.full_comparison_matrix_ready}`",
+                f"- Primary causal training ready: `{training.primary_causal_training_ready}`",
+                f"- Full comparison matrix ready: `{training.full_comparison_matrix_ready}`",
+                f"- Explicitly permitted arms: {', '.join(training.permitted_arm_ids) or 'none'}",
                 f"- Primary fixed task-marginal contract: "
                 f"`{training.primary_task_marginal_contract_verified}`",
                 f"- Benchmark snapshots: `{training.external_benchmark_status}`",
@@ -577,10 +648,8 @@ def write_markdown_report(
         lines.extend(
             [
                 f"- Ready: `{checkpoint_training.ready}`",
-                "- Analysis checkpoints: "
-                f"{checkpoint_training.analysis_checkpoint_rounds}",
-                "- Training checkpoints: "
-                f"{checkpoint_training.training_checkpoint_rounds}",
+                f"- Analysis checkpoints: {checkpoint_training.analysis_checkpoint_rounds}",
+                f"- Training checkpoints: {checkpoint_training.training_checkpoint_rounds}",
                 "- Materialized training rounds: "
                 f"{checkpoint_training.materialized_training_rounds}",
                 f"- Equal supervised-token budget: {checkpoint_training.supervised_token_budget:,}",
@@ -627,7 +696,7 @@ def _line_svg(
             x = left + (x_value - x_min) / (x_max - x_min) * plot_w
             y = top + plot_h - (y_value - y_min) / (y_max - y_min) * plot_h
             coordinates.append(f"{x:.2f},{y:.2f}")
-        color = _COLORS[method]
+        color = _series_color(method)
         elements.append(
             f'<polyline points="{" ".join(coordinates)}" fill="none" '
             f'stroke="{color}" stroke-width="2" />'
@@ -692,3 +761,20 @@ def _integer(value: object) -> int:
     if isinstance(value, int):
         return value
     raise TypeError("render index is not an integer")
+
+
+def _series_color(name: str) -> str:
+    if name in _COLORS:
+        return _COLORS[name]
+    palette = (
+        "#1b9e77",
+        "#d95f02",
+        "#7570b3",
+        "#e7298a",
+        "#66a61e",
+        "#e6ab02",
+        "#a6761d",
+        "#1f78b4",
+        "#b15928",
+    )
+    return palette[sum(name.encode("utf-8")) % len(palette)]

@@ -40,6 +40,8 @@ class RealRoundAssemblyInput(FrozenModel):
     energy_config: AnchoredEnergyConfig
     explorer_checkpoint_hash: str = Field(min_length=1)
     beneficiary_checkpoint_hash: str = Field(min_length=1)
+    probe_protocol_id: str = Field(min_length=1)
+    probe_protocol_family_hash: str = Field(min_length=1)
     probe_set_hash: str = Field(min_length=1)
     catalog_version: str = Field(min_length=1)
     schema_version: str = VTDO_EXPERIMENT_VERSION
@@ -50,6 +52,27 @@ class RealRoundAssemblyInput(FrozenModel):
             raise ValueError("real-round assembly input identity is invalid")
         if self.exploration.task_condition_id != self.state_catalog.task_condition_id:
             raise ValueError("real-round input crosses task conditions")
+        if any(
+            item.probe_contract.beneficiary_checkpoint_hash != self.beneficiary_checkpoint_hash
+            for item in self.contribution_probes
+        ):
+            raise ValueError("real-round input has another beneficiary checkpoint")
+        if any(
+            item.probe_contract.beneficiary_model_state_id
+            != self.role_contract.beneficiary_model_state_id
+            for item in self.contribution_probes
+        ):
+            raise ValueError("real-round Probe violates the beneficiary role contract")
+        protocol_ids = {item.probe_contract.protocol_id for item in self.contribution_probes}
+        if protocol_ids != {self.probe_protocol_id}:
+            raise ValueError("real-round input does not freeze one Probe protocol")
+        expected_round = self.exploration.training_distribution.round_index
+        if {item.round_index for item in self.contribution_probes} != {expected_round}:
+            raise ValueError("real-round input contains Probes from another round")
+        if self.probe_protocol_family_hash != _probe_protocol_family_hash(self.contribution_probes):
+            raise ValueError("real-round Probe family identity is invalid")
+        if self.probe_set_hash != _probe_observation_set_hash(self.contribution_probes):
+            raise ValueError("real-round Probe observation set identity is invalid")
         return self
 
 
@@ -95,6 +118,19 @@ def assemble_real_vtdo_rounds(
                 inputs.append(RealRoundAssemblyInput.model_validate_json(line))
             except ValidationError:
                 blockers.append(f"real_round_input_invalid:{index}")
+    probes = tuple(probe for item in inputs for probe in item.contribution_probes)
+    probe_artifact_fields = {
+        "observation_id": tuple(item.observation_id for item in probes),
+        "adapted_model_state_id": tuple(
+            item.adaptation_result.adapted_model_state_id for item in probes
+        ),
+        "adapted_checkpoint_hash": tuple(
+            item.adaptation_result.adapted_checkpoint_hash for item in probes
+        ),
+    }
+    for field, artifact_ids in probe_artifact_fields.items():
+        if len(artifact_ids) != len(set(artifact_ids)):
+            blockers.append(f"real_round_probe_artifact_reused:{field}")
     rounds: list[VTDORoundArtifact] = []
     for item in inputs:
         try:
@@ -142,13 +178,11 @@ def assemble_real_vtdo_rounds(
                 for item in ordered
             },
             "beneficiary_checkpoint_hash": {
-                input_by_exploration[
-                    item.exploration.exploration_id
-                ].beneficiary_checkpoint_hash
+                input_by_exploration[item.exploration.exploration_id].beneficiary_checkpoint_hash
                 for item in ordered
             },
-            "probe_set_hash": {
-                input_by_exploration[item.exploration.exploration_id].probe_set_hash
+            "probe_protocol_family_hash": {
+                input_by_exploration[item.exploration.exploration_id].probe_protocol_family_hash
                 for item in ordered
             },
             "catalog_version": {
@@ -159,9 +193,7 @@ def assemble_real_vtdo_rounds(
                 canonical_hash(item.state_catalog, prefix="real_round_state_catalog:")
                 for item in ordered
             },
-            "role_contract": {
-                item.role_contract.contract_id for item in ordered
-            },
+            "role_contract": {item.role_contract.contract_id for item in ordered},
             "energy_config": {
                 canonical_hash(item.update.energy_config, prefix="real_round_energy_config:")
                 for item in ordered
@@ -220,6 +252,51 @@ def assemble_real_vtdo_rounds(
         **report_values,
     )
     return report, ordered_rounds
+
+
+def _probe_observation_set_hash(
+    observations: tuple[ContributionProbeObservation, ...],
+) -> str:
+    return canonical_hash(
+        tuple(
+            item.observation_id
+            for item in sorted(
+                observations,
+                key=lambda item: (item.round_index, item.state_id, item.seed),
+            )
+        ),
+        prefix="real_round_probe_observation_set:",
+    )
+
+
+def _probe_protocol_family_hash(
+    observations: tuple[ContributionProbeObservation, ...],
+) -> str:
+    families = {
+        canonical_hash(
+            {
+                "metric_contract": item.probe_contract.metric_contract,
+                "optimizer": item.probe_contract.optimizer,
+                "probe_seeds": item.probe_contract.probe_seeds,
+                "data_roles": {
+                    "has_baseline_training": bool(
+                        item.probe_contract.data_isolation.baseline_training_instance_ids
+                    ),
+                    "has_internal_validation": bool(
+                        item.probe_contract.data_isolation.internal_validation_instance_ids
+                    ),
+                    "has_final_test": bool(
+                        item.probe_contract.data_isolation.final_test_instance_ids
+                    ),
+                },
+            },
+            prefix="real_round_probe_protocol_family:",
+        )
+        for item in observations
+    }
+    if len(families) != 1:
+        raise ValueError("real-round input mixes Probe protocol families")
+    return next(iter(families))
 
 
 def real_round_assembly_input_id(value: RealRoundAssemblyInput) -> str:

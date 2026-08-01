@@ -98,8 +98,11 @@ class FinanceTaskPatternRuntime:
                 and _period_identity(numerator) == _period_identity(denominator)
                 and _scope_identity(numerator) == _scope_identity(denominator)
             )
-            checks["same_payload_context"] = _payload_context(numerator) == _payload_context(
-                denominator
+            numerator_payload_context = _payload_context(numerator)
+            denominator_payload_context = _payload_context(denominator)
+            checks["same_payload_context"] = (
+                all(numerator_payload_context)
+                and numerator_payload_context == denominator_payload_context
             )
             checks["same_source"] = numerator.source.source_id == denominator.source.source_id
             checks["same_time_basis"] = (
@@ -216,8 +219,8 @@ class FinanceTaskPatternRuntime:
             earlier = evidence_by_role["earlier"][0]
             later = evidence_by_role["later"][0]
             instruction = (
-                f"How much did {earlier.subject.name}'s {earlier.predicate} change from "
-                f"{time_label(earlier)} to {time_label(later)}? Report the percentage change."
+                f"How much did {earlier.subject.name}'s {earlier.predicate} change "
+                f"{_time_range_phrase(earlier, later)}? Report the percentage change."
             )
             answer_schema = {}
         elif pattern.task_type == "temporal_absolute_change":
@@ -225,7 +228,7 @@ class FinanceTaskPatternRuntime:
             later = evidence_by_role["later"][0]
             instruction = (
                 f"Calculate the signed absolute change in {earlier.subject.name}'s "
-                f"{earlier.predicate} from {time_label(earlier)} to {time_label(later)}."
+                f"{earlier.predicate} {_time_range_phrase(earlier, later)}."
             )
             answer_schema = scalar_answer_schema(earlier, "absolute_change")
         elif pattern.task_type == "registered_ratio":
@@ -243,9 +246,10 @@ class FinanceTaskPatternRuntime:
             right_earlier = evidence_by_role["right_earlier"][0]
             instruction = (
                 f"Compare the percentage growth in {left_earlier.predicate} for "
-                f"{left_earlier.subject.name} and {right_earlier.subject.name} from "
-                f"{time_label(left_earlier)} to {time_label(left_later)}. "
-                "Which company grew faster, and by how many percentage points?"
+                f"{left_earlier.subject.name} and {right_earlier.subject.name} "
+                f"{_time_range_phrase(left_earlier, left_later)}. "
+                f"Which {_comparison_subject_noun(left_earlier, right_earlier)} recorded "
+                "the faster growth rate, and by how many percentage points?"
             )
             answer_schema = {
                 "comparison_entities": [
@@ -267,8 +271,8 @@ class FinanceTaskPatternRuntime:
             series = evidence_by_role["series"]
             first = series[0]
             instruction = (
-                f"What was the mean {first.predicate} for {first.subject.name} across "
-                f"{time_label(series[0])} through {time_label(series[-1])}? "
+                f"What was the mean {first.predicate} for {first.subject.name} "
+                f"{_time_window_phrase(series[0], series[-1])}? "
                 "Use every listed observation and identify the sources."
             )
             answer_schema = scalar_answer_schema(first, "aggregate")
@@ -300,6 +304,45 @@ class FinanceTaskPatternRuntime:
             oracle_selection_contract=selection_contract,
             metadata={"domain_plugin_id": "finance_tasks.v2"},
         )
+
+
+def _time_range_phrase(earlier: EvidenceItem, later: EvidenceItem) -> str:
+    left = time_label(earlier)
+    right = time_label(later)
+    if left.startswith("as of ") and right.startswith("as of "):
+        return f"between {left.removeprefix('as of ')} and {right.removeprefix('as of ')}"
+    if left.startswith("year ended ") and right.startswith("year ended "):
+        left_date = left.removeprefix("year ended ")
+        right_date = right.removeprefix("year ended ")
+        return f"between the years ended {left_date} and {right_date}"
+    return f"from {left} to {right}"
+
+
+def _time_window_phrase(first: EvidenceItem, last: EvidenceItem) -> str:
+    left = time_label(first)
+    right = time_label(last)
+    if left.startswith("as of ") and right.startswith("as of "):
+        left_date = left.removeprefix("as of ")
+        right_date = right.removeprefix("as of ")
+        return f"across all observations between {left_date} and {right_date}"
+    if left.startswith("year ended ") and right.startswith("year ended "):
+        left_date = left.removeprefix("year ended ")
+        right_date = right.removeprefix("year ended ")
+        return f"over the years ended {left_date} through {right_date}"
+    return f"across {left} through {right}"
+
+
+def _comparison_subject_noun(left: EvidenceItem, right: EvidenceItem) -> str:
+    subject_types = {left.subject.subject_type.casefold(), right.subject.subject_type.casefold()}
+    if subject_types <= {"company", "corporation", "issuer"}:
+        return "company"
+    if subject_types <= {"country", "economy", "sovereign"}:
+        return "country"
+    if subject_types == {"index"}:
+        return "index"
+    if subject_types == {"fund"}:
+        return "fund"
+    return "entity"
 
 
 def _finance_time_phrase(item: EvidenceItem) -> str:
@@ -346,6 +389,8 @@ def _ratio_definitions_compatible(left: EvidenceItem, right: EvidenceItem) -> bo
     for field in fields:
         left_value = left.definition.attributes.get(field) or left.domain_context.get(field)
         right_value = right.definition.attributes.get(field) or right.domain_context.get(field)
+        if field == "comparability_level" and (not left_value or not right_value):
+            return False
         if left_value != right_value:
             return False
     return left.domain_context.get("seasonal_adjustment") == right.domain_context.get(
@@ -401,7 +446,9 @@ def _period_class(item: EvidenceItem) -> str:
 
 
 def _fiscal_quarter_index(item: EvidenceItem) -> int | None:
-    fiscal_year = item.domain_context.get("fiscal_year")
+    fiscal_year = item.domain_context.get("economic_period_year") or item.domain_context.get(
+        "fiscal_year"
+    )
     quarter = {"Q1": 0, "Q2": 1, "Q3": 2, "Q4": 3}.get(
         str(item.domain_context.get("fiscal_quarter") or "").upper()
     )
@@ -411,5 +458,9 @@ def _fiscal_quarter_index(item: EvidenceItem) -> int | None:
 
 
 def _period_year(item: EvidenceItem, fallback: int) -> int:
-    value = item.domain_context.get("fiscal_year") or item.domain_context.get("calendar_year")
+    value = (
+        item.domain_context.get("economic_period_year")
+        or item.domain_context.get("calendar_year")
+        or item.domain_context.get("fiscal_year")
+    )
     return int(value) if value is not None else fallback

@@ -8,6 +8,7 @@ from pathlib import Path
 
 from trusted_synthesis.hashing import canonical_hash
 
+from .beneficiary_shift import run_beneficiary_state_shift_experiment
 from .contribution_validation import run_contribution_validation
 from .dynamics import run_refinement_dynamics_experiment
 from .multistate import (
@@ -130,6 +131,25 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
             blocked.append("empirical_contribution_validation")
             limitations.extend(contribution.blockers)
 
+    beneficiary_shift = None
+    if config.beneficiary_state_shift.enabled:
+        beneficiary_shift = run_beneficiary_state_shift_experiment(
+            config.beneficiary_state_shift
+        )
+        beneficiary_shift_path = output_dir / "beneficiary_state_shift_report.json"
+        _write_json(beneficiary_shift_path, beneficiary_shift.model_dump(mode="json"))
+        artifacts["beneficiary_state_shift_report"] = beneficiary_shift_path.name
+        if beneficiary_shift.status == "passed":
+            completed.append("beneficiary_model_state_shift_experiment")
+            if beneficiary_shift.model_state_dependence_observed is not True:
+                limitations.append(
+                    "The controlled M0-to-M1 probe was valid but did not observe a "
+                    "Contribution shift above the frozen tolerance."
+                )
+        else:
+            blocked.append("beneficiary_model_state_shift_experiment")
+            limitations.extend(beneficiary_shift.blockers)
+
     effective_refinement_config = config.refinement_dynamics
     if config.refinement_dynamics.real_round_input_path is not None:
         real_round_output = output_dir / "real_rounds" / "vtdo_rounds.jsonl"
@@ -194,14 +214,24 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
     completed.extend(
         (
             "fixed_potential_update_operator_verification",
-            "synthetic_moving_potential_tracking",
-            "finite_step_refinement_stabilization",
+            "finite_step_refinement_diagnostics",
         )
     )
+    if refinement.practical_stabilization.practical_stabilization_observed:
+        completed.append("practical_refinement_stabilization_observed")
+    else:
+        limitations.append(
+            "No controlled seed met the frozen practical-stabilization criterion within "
+            "the finite analysis horizon."
+        )
     if not refinement.fixed_potential_contraction.projective_contraction_verified:
         blocked.append("fixed_potential_update_operator_verification")
-    if refinement.moving_potential_tracking.status != "passed":
-        blocked.append("synthetic_moving_potential_tracking")
+    for track in refinement.moving_potential_tracks:
+        component = f"synthetic_moving_potential_tracking:{track.track}"
+        if track.status == "passed":
+            completed.append(component)
+        else:
+            blocked.append(component)
     if refinement.real_refinement.status != "passed":
         blocked.append("real_financial_refinement")
         limitations.extend(refinement.real_refinement.blockers)
@@ -345,6 +375,7 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
         refinement=refinement,
         multi_state=multi_state,
         contribution=contribution,
+        beneficiary_shift=beneficiary_shift,
         training=training_preflight,
         checkpoint_training=checkpoint_training_preflight,
         limitations=limitations_tuple,
@@ -363,6 +394,9 @@ def run_vtdo_experiment(config: VTDOExperimentConfig) -> VTDOExperimentManifest:
         "refinement_dynamics_report_hash": refinement.report_hash,
         "multi_state_report_id": multi_state.report_id if multi_state else None,
         "contribution_validation_report_id": contribution.report_id if contribution else None,
+        "beneficiary_state_shift_report_id": (
+            beneficiary_shift.report_id if beneficiary_shift else None
+        ),
         "training_preflight_hash": (training_preflight.report_hash if training_preflight else None),
         "refinement_checkpoint_training_preflight_hash": (
             checkpoint_training_preflight.report_hash if checkpoint_training_preflight else None
@@ -449,6 +483,16 @@ def _build_input_manifest(config: VTDOExperimentConfig) -> dict[str, object]:
         add_source(
             "contribution_validation_observations",
             config.contribution_validation.observation_path,
+        )
+    if config.beneficiary_state_shift.baseline_observation_path is not None:
+        add_source(
+            "beneficiary_shift_baseline_observations",
+            config.beneficiary_state_shift.baseline_observation_path,
+        )
+    if config.beneficiary_state_shift.updated_observation_path is not None:
+        add_source(
+            "beneficiary_shift_updated_observations",
+            config.beneficiary_state_shift.updated_observation_path,
         )
     if config.refinement_dynamics.real_round_input_path is not None:
         add_source("real_vtdo_round_input", config.refinement_dynamics.real_round_input_path)

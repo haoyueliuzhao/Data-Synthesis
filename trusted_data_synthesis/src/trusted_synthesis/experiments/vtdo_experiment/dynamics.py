@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from trusted_synthesis.core.vtdo import VTDORoundArtifact
 from trusted_synthesis.hashing import canonical_hash
 
-from .moving_potential import run_moving_potential_tracking_experiment
+from .moving_potential import run_moving_potential_tracking_experiments
 from .round_io import load_vtdo_round_artifacts
 from .schema import (
     AggregateMetric,
@@ -63,7 +63,7 @@ def run_refinement_dynamics_experiment(
         state_catalogs,
         phase_values,
     )
-    moving = run_moving_potential_tracking_experiment(
+    moving = run_moving_potential_tracking_experiments(
         config.moving_potential_benchmark,
         synthetic_config,
         experiment_id=experiment_id,
@@ -84,7 +84,8 @@ def run_refinement_dynamics_experiment(
         "checkpoint_summaries": checkpoints,
         "practical_stabilization": practical,
         "fixed_potential_contraction": fixed_summary,
-        "moving_potential_tracking": moving.summary,
+        "primary_moving_potential_track": config.moving_potential_benchmark.primary_track,
+        "moving_potential_tracks": tuple(item.summary for item in moving),
         "real_refinement": real_summary,
         "strict_convergence_claim_supported": False,
         "interpretation": interpretation,
@@ -98,7 +99,7 @@ def run_refinement_dynamics_experiment(
         report=report,
         controlled_rows=controlled_rows,
         fixed_potential_rows=fixed_rows,
-        moving_potential_rows=moving.rows,
+        moving_potential_rows=tuple(row for item in moving for row in item.rows),
         real_rows=real_rows,
     )
 
@@ -230,9 +231,7 @@ def _aggregate_controlled_rounds(
                 absolute_utility_delta=_aggregate(
                     [_as_float(row["absolute_utility_delta"]) for row in current]
                 ),
-                potential_drift=_aggregate(
-                    [_as_float(row["potential_drift"]) for row in current]
-                ),
+                potential_drift=_aggregate([_as_float(row["potential_drift"]) for row in current]),
                 stabilization_score=_aggregate(
                     [_as_float(row["stabilization_score"]) for row in current]
                 ),
@@ -522,6 +521,15 @@ def _real_round_dynamics(
             state_id: math.log(value) for state_id, value in potential.items()
         }
 
+    expected_task_ids = set(config.expected_real_task_condition_ids)
+    observed_task_ids = set(grouped)
+    missing_task_ids = expected_task_ids - observed_task_ids
+    unexpected_task_ids = observed_task_ids - expected_task_ids
+    blockers.extend(f"missing_real_task_condition:{value}" for value in sorted(missing_task_ids))
+    blockers.extend(
+        f"unexpected_real_task_condition:{value}" for value in sorted(unexpected_task_ids)
+    )
+
     complete = 0
     link_failures = 0
     eligible = 0
@@ -538,8 +546,12 @@ def _real_round_dynamics(
         if len(by_index) != len(ordered):
             blockers.append(f"duplicate_round_index:{condition_id}")
             continue
-        if not all(index in by_index for index in expected_indices):
-            blockers.append(f"incomplete_real_refinement_sequence:{condition_id}")
+        observed_indices = tuple(sorted(by_index))
+        if observed_indices != expected_indices:
+            blockers.append(
+                f"real_refinement_round_set_mismatch:{condition_id}:"
+                f"observed={observed_indices}:expected={expected_indices}"
+            )
             continue
         sequence = tuple(by_index[index] for index in expected_indices)
         complete += 1
@@ -561,7 +573,11 @@ def _real_round_dynamics(
         previous_log_potential: dict[str, float] | None = None
         for artifact in sequence:
             row = row_by_round_id[artifact.round_id]
-            current_support = set(artifact.update.next_distribution.probabilities)
+            current_support = {
+                state_id
+                for state_id, probability in artifact.update.next_distribution.probabilities.items()
+                if probability > config.coverage_epsilon
+            }
             current_target = anchor_target_by_round_id[artifact.round_id]
             current_log_potential = log_potential_by_round_id[artifact.round_id]
             stable = False
@@ -584,13 +600,11 @@ def _real_round_dynamics(
                     row["potential_drift"] = potential_drift
                     row["stabilization_score"] = (
                         _as_float(row["kl_shift"])
-                        + config.utility_delta_weight
-                        * _as_float(row["absolute_utility_delta"])
+                        + config.utility_delta_weight * _as_float(row["absolute_utility_delta"])
                         + config.potential_drift_weight * potential_drift
                     )
                     stable = bool(
-                        _as_float(row["stabilization_score"])
-                        < config.stabilization_score_threshold
+                        _as_float(row["stabilization_score"]) < config.stabilization_score_threshold
                     )
             cumulative_regret += _as_float(row["instantaneous_regret"])
             row["cumulative_regret"] = cumulative_regret
@@ -631,6 +645,10 @@ def _real_round_dynamics(
         configured_artifact_count=len(config.real_round_artifact_paths),
         validated_artifact_count=len(artifacts),
         task_condition_count=len(grouped),
+        expected_task_condition_count=len(expected_task_ids),
+        missing_task_condition_count=len(missing_task_ids),
+        unexpected_task_condition_count=len(unexpected_task_ids),
+        turnover_probability_threshold=config.coverage_epsilon,
         complete_sequence_count=complete,
         sequential_link_failure_count=link_failures,
         stabilization_eligible_sequence_count=eligible,
@@ -676,8 +694,7 @@ def _projective_potential_drift(
     if set(current_log_potential) != set(previous_log_potential):
         raise ValueError("potential drift requires identical state support")
     deltas = [
-        current_log_potential[key] - previous_log_potential[key]
-        for key in current_log_potential
+        current_log_potential[key] - previous_log_potential[key] for key in current_log_potential
     ]
     return max(deltas) - min(deltas)
 

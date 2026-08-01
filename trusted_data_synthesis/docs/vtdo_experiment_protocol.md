@@ -1,4 +1,4 @@
-# VTDO Experiment Protocol v3
+# VTDO Experiment Protocol v6
 
 ## 1. Purpose
 
@@ -23,12 +23,14 @@ cannot be reported as evidence for a later stage.
 The active identities are:
 
 ```text
-experiment schema:       vtdo_experiment.v3
+experiment schema:       vtdo_experiment.v6
 experiment config:       config/vtdo_experiment_finance.json
 student config:          config/vtdo_qwen2_5_7b_500k.json
 runner:                  trusted-synthesis run-vtdo-experiment
+feedback compiler:       trusted-synthesis generate-vtdo-real-feedback
 trainer:                 trusted-synthesis train-vtdo-arm
-default output:          artifacts/vtdo_experiment/finance_v3
+benchmark predictor:     trusted-synthesis predict-vtdo-benchmarks
+default output:          artifacts/vtdo_experiment/finance_v6
 ```
 
 Every run freezes the normalized experiment configuration, all external input hashes, execution
@@ -93,12 +95,20 @@ The primary real-data contract requires:
 3-5 independently accepted states per task
 300-500 accepted trajectories in total
 one frozen Oracle program per task
-full Omega_x persisted for every accepted task
+full JointCompilationArtifact and Omega_x persisted for every accepted task
+Omega component manifest replayed before state discovery
 ```
 
 Accepted states must differ through replayable decisions such as retrieval breadth, verification
 frontier, selected evidence lineage, or output lineage. Surface paraphrases and deterministic
 format variants are quotient probes only; they cannot increase positive training support.
+
+Before provider invocation, each domain compiles its state semantics into the same Core variation
+axes: Evidence Acquisition, Evidence Support, Execution Realization, Verification Policy, and
+Lineage Policy. The resulting `TrajectoryStateSpaceCompilation` must embed the original immutable
+`JointCompilationArtifact` and freeze the variation-provider manifest. Legal and Science
+same-`Omega_x` contract tests must each realize at least two valid states. Domain strategy names
+remain in plugins or experiment fixtures and cannot become Core enums.
 
 For every attempted strategy, the artifact records:
 
@@ -109,6 +119,8 @@ rejected attempt count and reason
 duplicate quotient-state count
 raw-sequence and canonical-state identity
 retrieval, operation, and evidence-lineage hashes
+Omega component manifest and canonicalizer version
+verified State discovery witnesses
 ```
 
 The report must expose the complete funnel rather than computing a pass rate only over retained
@@ -121,32 +133,81 @@ the quota is filled or the candidate pool is exhausted, and the report records b
 and rejected tasks. Exhaustion before the accepted quota is reached fails closed. This prevents a
 nominal 100-task experiment from silently becoming a smaller experiment after state deduplication.
 
-The current deterministic Finance materializer is suitable for validating state construction. It
-must not be described as observed model behavior unless the states originated from recorded model
-calls.
+The current Finance implementation is explicitly a
+`FinanceDeterministicStateFixtureProvider`. It validates state-space compilation and verifier
+behavior; it is not an Explorer and must never be reported as observed model behavior. A real
+Explorer or Materializer receives only `PublicStateGenerationRequest`, never full `Omega_x`, an
+exact state object, gold Evidence IDs, hidden programs, Proof Graph, or reference answer. Every
+request must pass the leakage audit before a provider call.
+
+Final data materialization is a separate, fresh state-conditioned generation phase. It rejects
+discovery reuse by trajectory ID, content hash, and normalized decision-trace hash; replays
+`V(tau, Omega_x)`; and reproduces the requested quotient state. Reports must include requested,
+attempted, off-target, and released counts per state; quota fill and per-state acceptance; source,
+allocated-target, and released distributions; total variation and Jensen-Shannon divergence; public
+request audits; and decision-trace uniqueness. A budget large enough for the positive support uses a
+one-item support floor. A smaller budget declares support truncation. Failed quotas are never
+reassigned to easier states.
 
 ## 5. Experiment 3: Empirical Contribution Validation
 
-Contribution quality is an empirical question. The active runner accepts only an immutable JSONL
-observation file containing at least 90 observations from at least 30 tasks, with at least three
-states per eligible task. Each observation binds:
+Contribution quality is an empirical question. Production VTDO estimates Contribution with a local
+beneficiary Probe; a finite 5% training intervention is an independent validation target and is
+never accepted by the distribution updater. The active runner accepts only immutable paired
+observations containing at least 270 `(task, round, state, seed)` pairs from at least 30 tasks,
+at least three states per eligible task-round, and at least three common seeds per state. Each pair
+binds:
 
 ```text
 task_condition_id
+round_index
 state_id
-estimated contribution C_hat
-observed downstream delta J
-beneficiary checkpoint and evaluation distribution
-probe protocol and baseline-distribution identity
-intervention budget and seed
-evaluation snapshot identity
+common seed
+beneficiary model state and checkpoint
+higher-is-better metric contract
+task-round baseline distribution and training-set identity
+state-specific Probe update-set identity
+internal-validation identity
+untouched final-test identity
+cold-start Probe optimizer contract
+adapted model/checkpoint, zero-state hash, and executed step count
+Probe performance gain
+Intervention model/checkpoint and frozen retraining result
+finite-Intervention epsilon and added-sample count
+normalized Intervention performance gain
 ```
 
-The primary diagnostics are within-task rank correlation, pairwise concordance, task-macro
-Spearman, centered global Spearman, sign agreement, and task-cluster bootstrap intervals. A
-negative rank relationship fails even when its absolute magnitude is large. Missing, undersized,
-single-state, or identity-inconsistent observations block this component. Synthetic observations
-are never created as a replacement.
+The Probe performs one to three local steps, three by default, with a newly created zero-state SGD
+optimizer with zero momentum or a cold-start AdamW optimizer. It may access only its assigned
+update instances and the internal validation set. The finite Intervention retrains from the same
+frozen baseline using:
+
+```text
+delta_n_z = ceil(0.05 / 0.95 * n_t(x))
+epsilon   = delta_n_z / (n_t(x) + delta_n_z)
+C_int     = (J(M_t^(+z)) - J(M_t)) / epsilon
+```
+
+The final test set is frozen for leakage auditing but is passed to neither runtime. Probe and
+Intervention observations must agree exactly on task-round beneficiary identity, metric, baseline,
+split, state, and paired seed. Their adapted model-state IDs and checkpoint content identities must
+be distinct and unique across atomic observations, so a Probe result cannot be relabeled as a
+finite Intervention or replayed under another Round identity. Confidence and
+standard error are diagnostics only and never scale the observed gain.
+
+Atomic pairs are first aggregated into task-round-state Probe means and normalized-Intervention
+means and variances. The primary diagnostics are then within-task-round rank correlation, pairwise
+concordance, task-round macro Spearman, centered global Spearman, sign agreement, mean within-state
+Intervention variance, and cluster-bootstrap intervals. Passing requires the configured lower
+confidence bounds for macro Spearman and pairwise concordance, rather than their point estimates.
+Every state must use the same frozen seed set. A negative rank relationship fails even when its
+absolute magnitude is large. Missing, undersized, single-seed, single-state, split-leaking,
+optimizer-state-reusing, or identity-inconsistent pairs block this component. Synthetic Oracle
+observations are never created as a replacement and remain restricted to update-operator controls.
+Serialized observations retain their Probe adaptation or Intervention retraining result, so replay
+does not depend on an earlier process having performed an unrecorded check. Within an inner-loop
+Round sequence, the beneficiary and Probe protocol family remain frozen; the exact Probe set and
+its identity are round-specific, preventing a later round from reusing an earlier observation set.
 
 ## 6. Experiment 4: Refinement Dynamics
 
@@ -186,10 +247,20 @@ pi_anchor_t*(z) proportional to r(z) Phi_t(z)^(1/kappa)
 TrackingError_t = KL(pi_(t+1) || pi_anchor_t*)
 ```
 
-The five-round benchmark compares no feedback, one-shot static optimization, and full VTDO on the
-same moving-potential sequence. It reports tracking error and cumulative dynamic regret. This
-tests whether the update direction follows an evolving target, rather than merely whether the
-formula remains numerically stable.
+The five-round benchmark compares no feedback, one-shot static optimization, and full VTDO under
+three explicitly separated tracks:
+
+```text
+Track A  exogenous_shared              primary, method-neutral potential sequence
+Track B  vtdo_induced_shared           supplementary, shared sequence induced by VTDO exposure
+Track C  method_specific_closed_loop   supplementary, each method induces its own potential
+```
+
+Track A is the headline comparison because every method sees the same exogenous drift and no
+method exposure enters `Phi_t`. Tracks B and C analyze endogenous feedback and cannot replace the
+method-neutral result. Every track reports tracking error, cumulative dynamic regret, exact
+proximal-objective replay, and confidence intervals. When regret advantage is required, the lower
+confidence bound, not merely the sample mean, must be nonnegative.
 
 ### Real feedback-loop stabilization
 
@@ -216,6 +287,25 @@ process.
 Real financial refinement is accepted only from immutable, lineage-linked `VTDORoundArtifact`
 files. Every round independently replays the variational objective and exact proximal optimizer.
 Missing rounds are reported as blocked and are not replaced by the controlled run.
+
+### Recorded real-feedback production
+
+`generate-vtdo-real-feedback` consumes a frozen Finance state pool, recorded Explorer trajectories,
+and atomic beneficiary intervention records. It independently replays every trajectory through the
+Finance verifier, reconstructs exploration distributions and multi-seed Contribution probes,
+builds `RealRoundAssemblyInput`, assembles the Round artifacts, and replays the serialized inputs a
+second time. Checkpoint, generation, evaluation, budget, seed-set, and source-file hashes are part
+of the report identity. Missing model outputs are never synthesized by this compiler.
+
+### Beneficiary model-state shift
+
+The primary causal refinement experiment freezes the beneficiary checkpoint so that only
+`pi(z|x)` changes. A separate paired `M0 -> M1` experiment compares Contribution observations on
+exactly the same task-state-seed support and frozen evaluation/probe contract. It reports task-clustered absolute
+Contribution shift with a paired confidence bound, task-wise rank correlation, and direction-change
+rate. This supports the
+limited claim that `C_t(x,z)` can depend on model state; it does not substitute for the fixed-
+beneficiary primary comparison.
 
 ## 7. Experiment 5: Equal-Supervised-Token Downstream Training
 
@@ -252,8 +342,10 @@ manifest. Missing real rounds block the comparison; controlled synthetic distrib
 substituted for these training datasets. Round 1 is the one-shot condition, Round 3 is the primary
 iterative condition, and Round 5 is analysis-only and is never materialized as a training arm.
 
-FinQA, TAT-QA, and FinanceBench are evaluation-only. Their exact snapshot IDs and SHA-256 hashes
-must be frozen before training. The trainer validates the serialized preflight, arm manifest,
+FinQA and TAT-QA are mandatory evaluation-only snapshots for the primary experiment; FinanceBench
+is an optional extension. Exact repository revisions, split identities, adapter/metric versions,
+and SHA-256 hashes must be frozen before training. The trainer validates the serialized preflight,
+arm manifest,
 dataset identity, task/state capacity, token schedule, model revision, and benchmark contract
 before allocating a GPU.
 
@@ -280,8 +372,10 @@ The full training experiment is ready only when all of the following hold:
 5. B5 is derived from the selected real VTDO round;
 6. every primary causal arm satisfies the fixed-task-marginal, state, supervised-token, model,
    and multi-seed contracts;
-7. all three external benchmark snapshots match their frozen hashes;
-8. no public training input contains Oracle evidence IDs, reference answers, or hidden programs.
+7. the mandatory FinQA and TAT-QA snapshots match their frozen identities and hashes;
+8. no public training input contains Oracle evidence IDs, reference answers, or hidden programs;
+9. no hard benchmark leakage collision or unavailable required hard channel is present;
+   subject overlap is report-only.
 
 The run status is `passed`, `partial`, or `blocked`. A partial run may be useful for component
 validation but cannot support the full downstream-training claim.
@@ -313,6 +407,7 @@ finance_multi_state/finance_multi_state_report.json
 finance_multi_state/finance_multi_state_tasks.jsonl
 contribution_validation_report.json
 refinement_dynamics_report.json
+beneficiary_state_shift_report.json
 controlled_refinement_rounds.csv
 fixed_potential_operator_verification.csv
 moving_potential_tracking_rounds.csv
@@ -324,6 +419,7 @@ figure3_moving_potential_tracking.svg
 figure4_refinement_dynamics.svg
 training_preflight.json
 training_arms/*.jsonl
+benchmark_leakage_audit.json
 vtdo_experiment_report.md
 manifest.json
 ```
@@ -331,18 +427,31 @@ manifest.json
 GPU training is invoked per ready arm with `train-vtdo-arm`. A blocked preflight exits before model
 loading or CUDA allocation. Each invocation must include a seed from the frozen preflight.
 
-External predictions are evaluated without training-data access:
+External predictions are first generated from an immutable training result and generation config,
+then evaluated without training-data access:
 
 ```bash
+trusted-synthesis predict-vtdo-benchmarks \
+  --vtdo-config config/vtdo_experiment_finance.json \
+  --training-result <model-run>/training_result.json \
+  --generation-config config/vtdo_benchmark_generation.json \
+  --output-dir <model-run>/benchmark_predictions
+
 trusted-synthesis evaluate-vtdo-benchmarks \
   --vtdo-config config/vtdo_experiment_finance.json \
-  --predictions <run>/benchmark_predictions.jsonl
+  --predictions <model-run>/benchmark_predictions/benchmark_predictions.jsonl \
+  --prediction-manifest \
+    <model-run>/benchmark_predictions/benchmark_prediction_manifest.json
 ```
 
 The evaluator reports contract success, semantic accuracy conditional on a valid contract,
-end-to-end accuracy, and Wilson intervals for FinQA, TAT-QA, and FinanceBench. Training preflight
-also performs text, operation, subject, evidence, source-record, document, and binding leakage
-checks against the frozen evaluation snapshots.
+end-to-end accuracy, native F1, Wilson intervals, and FinQA program execution accuracy. FinQA
+prompts contain pre-text, tables, post-text, and an answer/scale/program contract; TAT-QA prompts
+contain tables, paragraphs, and an answer/scale contract. The immutable prediction manifest binds
+the training arm/result/seed, adapter and base-model content, generator, generation config, and
+evaluation snapshot. Exact/near prompt, evidence, source-record, document, and binding collisions
+are hard blockers; an unavailable required hard channel also blocks the run, and subject overlap is
+a soft diagnostic.
 
 ## 11. Claim Discipline
 
@@ -350,9 +459,11 @@ checks against the frozen evaluation snapshots.
 |---|---|
 | Controlled synthetic run | update implementation and controlled distribution behavior |
 | Fixed-potential control | numerical verification of the contraction result |
-| Moving-potential rounds | finite-step dynamics and practical stabilization only |
+| Exogenous moving-potential track | method-neutral finite-step tracking and dynamic regret |
+| Endogenous moving-potential tracks | supplementary feedback-path diagnostics only |
 | Real multi-state artifacts | state-construction feasibility and verified state diversity |
 | Contribution observations | association between estimated contribution and observed delta J |
+| Paired M0/M1 observations | model-state dependence under the frozen probe contract |
 | Equal-budget trained arms | downstream utility comparison |
 | Frozen external benchmarks | benchmark generalization under the declared snapshots |
 

@@ -7,6 +7,18 @@ from types import SimpleNamespace
 
 import pytest
 
+from trusted_synthesis.core.vtdo import (
+    InterventionTrainingResult,
+    ProbeAdaptationResult,
+    empty_optimizer_state_hash,
+    make_contribution_data_isolation_contract,
+    make_contribution_intervention_observation,
+    make_contribution_intervention_protocol,
+    make_contribution_metric_contract,
+    make_contribution_probe_observation,
+    make_contribution_probe_protocol,
+    make_probe_optimizer_contract,
+)
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_case,
 )
@@ -18,6 +30,11 @@ from trusted_synthesis.experiments.vtdo_experiment.dynamics import (
     run_refinement_dynamics_experiment,
 )
 from trusted_synthesis.experiments.vtdo_experiment.evaluation import (
+    BENCHMARK_ADAPTER_VERSION,
+    BENCHMARK_METRIC_VERSION,
+    BenchmarkPrediction,
+    benchmark_prediction_id,
+    benchmark_snapshot_manifest_hash,
     evaluate_external_benchmark_predictions,
     load_benchmark_examples,
 )
@@ -29,6 +46,7 @@ from trusted_synthesis.experiments.vtdo_experiment.multistate import (
     _build_task_artifact,
     _quotient_probe,
 )
+from trusted_synthesis.experiments.vtdo_experiment.render import _format_optional_float
 from trusted_synthesis.experiments.vtdo_experiment.schema import (
     ContributionValidationConfig,
     ContributionValidationObservation,
@@ -49,12 +67,14 @@ from trusted_synthesis.experiments.vtdo_experiment.synthetic import (
 )
 from trusted_synthesis.experiments.vtdo_experiment.training import (
     _component_arm,
+    _external_benchmark_status,
     _host_instrumented_target,
     _vtdo_arm,
     build_refinement_checkpoint_training_arms,
     build_training_experiment_preflight,
     train_vtdo_arm,
 )
+from trusted_synthesis.hashing import canonical_hash
 
 
 def test_synthetic_protocol_centers_contribution_and_separates_ablations() -> None:
@@ -135,12 +155,14 @@ def test_fixed_potential_operator_verifies_theoretical_contraction() -> None:
 def test_moving_potential_tracks_optimum_and_improves_variational_objective() -> None:
     execution = run_moving_potential_tracking_experiment(
         MovingPotentialBenchmarkConfig(rounds=3),
-        SyntheticExperimentConfig(state_count=20, rounds=3, seeds=(7, 13)),
+        SyntheticExperimentConfig(state_count=20, rounds=3, seeds=tuple(range(10))),
         experiment_id="test_moving_potential",
     )
 
     assert execution.summary.status == "passed"
-    assert execution.summary.variational_objective.transition_count == 6
+    assert execution.summary.track == "exogenous_shared"
+    assert execution.summary.is_primary_track
+    assert execution.summary.variational_objective.transition_count == 30
     assert execution.summary.variational_objective.all_transitions_verified
     assert execution.summary.optimization_direction_supported
     summaries = {item.method: item for item in execution.summary.method_summaries}
@@ -190,6 +212,7 @@ def test_real_round_analysis_fails_closed_for_missing_artifact(tmp_path: Path) -
             fixed_potential_rounds=2,
             moving_potential_benchmark=MovingPotentialBenchmarkConfig(rounds=2),
             real_round_artifact_paths=(tmp_path / "missing.jsonl",),
+            expected_real_task_condition_ids=("task:missing",),
         ),
         synthetic_config,
         synthetic,
@@ -263,40 +286,125 @@ def _write_contribution_observations(
     identity_mismatch: bool = False,
 ) -> None:
     observations: list[ContributionValidationObservation] = []
+    seeds = (7, 13, 19)
     for task_index in range(3):
-        for state_index in range(3):
-            outcome = float(2 - state_index) if reverse_outcomes else float(state_index)
-            beneficiary = (
-                "qwen:mismatched"
-                if identity_mismatch and task_index == 2 and state_index == 2
-                else "qwen:round0"
-            )
-            values = {
-                "task_condition_id": f"task:{task_index:03d}",
-                "state_id": f"state:{state_index:03d}",
-                "beneficiary_model_state_id": beneficiary,
-                "evaluation_distribution_id": "finance_eval:v1",
-                "target_metric_id": "answer_accuracy",
-                "probe_protocol_hash": "probe:v2",
-                "baseline_distribution_id": "baseline:v1",
-                "training_intervention_budget": 1_000,
-                "seed": 7,
-                "evaluation_snapshot_hash": "evaluation:snapshot:v1",
-                "estimated_contribution": float(state_index),
-                "observed_delta_j": outcome,
-                "sample_count": 20,
-                "schema_version": "contribution_validation_observation.v2",
-            }
-            provisional = ContributionValidationObservation.model_construct(
-                observation_id="pending",
-                **values,
-            )
-            observations.append(
-                ContributionValidationObservation(
-                    observation_id=contribution_validation_observation_id(provisional),
+        task_id = f"task:{task_index:03d}"
+        state_ids = tuple(f"state:{index:03d}" for index in range(3))
+        data_isolation = make_contribution_data_isolation_contract(
+            task_condition_id=task_id,
+            baseline_training_set_id=f"train:{task_id}",
+            baseline_training_instance_ids=tuple(f"{task_id}:train:{index}" for index in range(19)),
+            probe_update_instance_ids_by_state={
+                state_id: (f"{task_id}:probe:{state_id}",) for state_id in state_ids
+            },
+            internal_validation_set_id="finance_eval:v1",
+            internal_validation_instance_ids=tuple(
+                f"{task_id}:validation:{index}" for index in range(20)
+            ),
+            final_test_set_id=f"final-test:{task_id}",
+            final_test_instance_ids=(f"{task_id}:final-test:0",),
+        )
+        metric = make_contribution_metric_contract(
+            target_metric_id="answer_accuracy",
+            evaluation_distribution_id="finance_eval:v1",
+            evaluation_snapshot_hash="evaluation:snapshot:v1",
+            score_transform="identity",
+        )
+        optimizer = make_probe_optimizer_contract(
+            optimizer_name="sgd",
+            learning_rate=1e-5,
+            step_count=3,
+        )
+        for state_index, state_id in enumerate(state_ids):
+            for seed in seeds:
+                intervention_value = (
+                    float(2 - state_index) if reverse_outcomes else float(state_index)
+                )
+                beneficiary = (
+                    "qwen:mismatched"
+                    if identity_mismatch
+                    and task_index == 2
+                    and state_index == 2
+                    and seed == seeds[-1]
+                    else "qwen:round0"
+                )
+                probe_contract = make_contribution_probe_protocol(
+                    beneficiary_model_state_id=beneficiary,
+                    beneficiary_checkpoint_hash=f"checkpoint:{beneficiary}",
+                    metric_contract=metric,
+                    data_isolation=data_isolation,
+                    optimizer=optimizer,
+                    probe_seeds=seeds,
+                )
+                intervention_contract = make_contribution_intervention_protocol(
+                    beneficiary_model_state_id=beneficiary,
+                    beneficiary_checkpoint_hash=f"checkpoint:{beneficiary}",
+                    metric_contract=metric,
+                    data_isolation=data_isolation,
+                    retraining_protocol_hash="retraining:v1",
+                    intervention_seeds=seeds,
+                    target_epsilon=0.05,
+                )
+                probe = make_contribution_probe_observation(
+                    task_condition_id=task_id,
+                    round_index=0,
+                    state_id=state_id,
+                    protocol=probe_contract,
+                    seed=seed,
+                    adaptation_result=ProbeAdaptationResult(
+                        adapted_model_state_id=f"{beneficiary}:probe:{task_id}:{state_id}:{seed}",
+                        adapted_checkpoint_hash=f"checkpoint:{beneficiary}:probe:{task_id}:{state_id}:{seed}",
+                        base_model_state_id=beneficiary,
+                        base_checkpoint_hash=f"checkpoint:{beneficiary}",
+                        optimizer_contract_id=optimizer.contract_id,
+                        initial_optimizer_state_hash=empty_optimizer_state_hash(optimizer),
+                        executed_step_count=optimizer.step_count,
+                    ),
+                    baseline_performance=0.0,
+                    adapted_performance=float(state_index),
+                )
+                epsilon = 1.0 / 20.0
+                intervention = make_contribution_intervention_observation(
+                    task_condition_id=task_id,
+                    round_index=0,
+                    state_id=state_id,
+                    protocol=intervention_contract,
+                    seed=seed,
+                    training_result=InterventionTrainingResult(
+                        intervention_model_state_id=(
+                            f"{beneficiary}:intervention:{task_id}:{state_id}:{seed}"
+                        ),
+                        intervention_checkpoint_hash=(
+                            f"checkpoint:{beneficiary}:intervention:{task_id}:{state_id}:{seed}"
+                        ),
+                        base_model_state_id=beneficiary,
+                        base_checkpoint_hash=f"checkpoint:{beneficiary}",
+                        retraining_protocol_hash="retraining:v1",
+                        baseline_training_set_id=f"train:{task_id}",
+                    ),
+                    baseline_performance=0.0,
+                    intervention_performance=epsilon * intervention_value,
+                )
+                values = {
+                    "task_condition_id": task_id,
+                    "round_index": 0,
+                    "state_id": state_id,
+                    "seed": seed,
+                    "baseline_distribution_id": f"baseline:{task_id}",
+                    "probe_observation": probe,
+                    "intervention_observation": intervention,
+                    "schema_version": "contribution_validation_observation.v6",
+                }
+                provisional = ContributionValidationObservation.model_construct(
+                    observation_id="pending",
                     **values,
                 )
-            )
+                observations.append(
+                    ContributionValidationObservation(
+                        observation_id=contribution_validation_observation_id(provisional),
+                        **values,
+                    )
+                )
     path.write_text(
         "".join(item.model_dump_json() + "\n" for item in observations),
         encoding="utf-8",
@@ -306,11 +414,12 @@ def _write_contribution_observations(
 def _contribution_config(path: Path) -> ContributionValidationConfig:
     return ContributionValidationConfig(
         observation_path=path,
-        minimum_observation_count=9,
+        minimum_observation_count=27,
         minimum_unique_task_count=3,
         minimum_states_per_task=3,
-        minimum_macro_spearman=0.2,
-        minimum_pairwise_concordance=0.55,
+        minimum_seeds_per_state=3,
+        minimum_macro_spearman_ci_lower_bound=0.2,
+        minimum_pairwise_concordance_ci_lower_bound=0.55,
         cluster_bootstrap_samples=100,
     )
 
@@ -320,11 +429,155 @@ def test_contribution_validation_reports_within_task_rank_signal(tmp_path: Path)
     _write_contribution_observations(path)
     report = run_contribution_validation(_contribution_config(path))
     assert report.status == "passed"
+    assert report.paired_seed_count == 3
+    assert report.aggregated_state_count == 9
     assert report.task_rank_correlation is not None
     assert report.task_rank_correlation.mean == pytest.approx(1.0)
     assert report.centered_global_spearman == pytest.approx(1.0)
     assert report.pairwise_concordance_rate == pytest.approx(1.0)
     assert report.sign_agreement_rate == pytest.approx(1.0)
+
+
+def test_contribution_validation_clusters_multiple_rounds_by_task(tmp_path: Path) -> None:
+    path = tmp_path / "multi_round_contribution.jsonl"
+    _write_contribution_observations(path)
+    first_round = [
+        ContributionValidationObservation.model_validate_json(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    second_round = []
+    for item in first_round:
+        probe = make_contribution_probe_observation(
+            task_condition_id=item.task_condition_id,
+            round_index=1,
+            state_id=item.state_id,
+            protocol=item.probe_observation.probe_contract,
+            seed=item.seed,
+            adaptation_result=item.probe_observation.adaptation_result.model_copy(
+                update={
+                    "adapted_model_state_id": (
+                        item.probe_observation.adaptation_result.adapted_model_state_id + ":round1"
+                    ),
+                    "adapted_checkpoint_hash": (
+                        item.probe_observation.adaptation_result.adapted_checkpoint_hash + ":round1"
+                    ),
+                }
+            ),
+            baseline_performance=item.probe_observation.baseline_performance,
+            adapted_performance=item.probe_observation.adapted_performance,
+        )
+        intervention = make_contribution_intervention_observation(
+            task_condition_id=item.task_condition_id,
+            round_index=1,
+            state_id=item.state_id,
+            protocol=item.intervention_observation.intervention_contract,
+            seed=item.seed,
+            training_result=item.intervention_observation.training_result.model_copy(
+                update={
+                    "intervention_model_state_id": (
+                        item.intervention_observation.training_result.intervention_model_state_id
+                        + ":round1"
+                    ),
+                    "intervention_checkpoint_hash": (
+                        item.intervention_observation.training_result.intervention_checkpoint_hash
+                        + ":round1"
+                    ),
+                }
+            ),
+            baseline_performance=item.intervention_observation.baseline_performance,
+            intervention_performance=item.intervention_observation.intervention_performance,
+        )
+        values = {
+            "task_condition_id": item.task_condition_id,
+            "round_index": 1,
+            "state_id": item.state_id,
+            "seed": item.seed,
+            "baseline_distribution_id": f"baseline:{item.task_condition_id}:round1",
+            "probe_observation": probe,
+            "intervention_observation": intervention,
+            "schema_version": "contribution_validation_observation.v6",
+        }
+        provisional = ContributionValidationObservation.model_construct(
+            observation_id="pending",
+            **values,
+        )
+        second_round.append(
+            ContributionValidationObservation(
+                observation_id=contribution_validation_observation_id(provisional),
+                **values,
+            )
+        )
+    path.write_text(
+        "".join(item.model_dump_json() + "\n" for item in (*first_round, *second_round)),
+        encoding="utf-8",
+    )
+
+    report = run_contribution_validation(_contribution_config(path))
+
+    assert report.status == "passed"
+    assert report.unique_round_count == 2
+    assert report.unique_task_round_count == 6
+    assert report.eligible_task_round_count == 6
+    assert report.task_rank_correlation is not None
+    assert report.task_rank_correlation.sample_count == 3
+
+
+def test_contribution_validation_rejects_reused_artifact_across_rounds(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "reused_contribution.jsonl"
+    _write_contribution_observations(path)
+    first = ContributionValidationObservation.model_validate_json(
+        path.read_text(encoding="utf-8").splitlines()[0]
+    )
+    probe = make_contribution_probe_observation(
+        task_condition_id=first.task_condition_id,
+        round_index=1,
+        state_id=first.state_id,
+        protocol=first.probe_observation.probe_contract,
+        seed=first.seed,
+        adaptation_result=first.probe_observation.adaptation_result,
+        baseline_performance=first.probe_observation.baseline_performance,
+        adapted_performance=first.probe_observation.adapted_performance,
+    )
+    intervention = make_contribution_intervention_observation(
+        task_condition_id=first.task_condition_id,
+        round_index=1,
+        state_id=first.state_id,
+        protocol=first.intervention_observation.intervention_contract,
+        seed=first.seed,
+        training_result=first.intervention_observation.training_result,
+        baseline_performance=first.intervention_observation.baseline_performance,
+        intervention_performance=first.intervention_observation.intervention_performance,
+    )
+    values = {
+        "task_condition_id": first.task_condition_id,
+        "round_index": 1,
+        "state_id": first.state_id,
+        "seed": first.seed,
+        "baseline_distribution_id": f"baseline:{first.task_condition_id}:round1",
+        "probe_observation": probe,
+        "intervention_observation": intervention,
+        "schema_version": "contribution_validation_observation.v6",
+    }
+    provisional = ContributionValidationObservation.model_construct(
+        observation_id="pending",
+        **values,
+    )
+    reused = ContributionValidationObservation(
+        observation_id=contribution_validation_observation_id(provisional),
+        **values,
+    )
+    with path.open("a", encoding="utf-8") as output:
+        output.write(reused.model_dump_json() + "\n")
+
+    report = run_contribution_validation(_contribution_config(path))
+
+    assert report.status == "blocked"
+    assert any(
+        blocker.startswith("contribution_trained_artifact_reused:") for blocker in report.blockers
+    )
 
 
 def test_contribution_validation_rejects_negative_rank_signal(tmp_path: Path) -> None:
@@ -334,7 +587,7 @@ def test_contribution_validation_rejects_negative_rank_signal(tmp_path: Path) ->
     assert report.status == "blocked"
     assert report.task_rank_correlation is not None
     assert report.task_rank_correlation.mean == pytest.approx(-1.0)
-    assert any("macro_spearman_below_threshold" in item for item in report.blockers)
+    assert any("macro_spearman_ci_lower_bound_below_threshold" in item for item in report.blockers)
 
 
 def test_contribution_validation_rejects_identity_drift(tmp_path: Path) -> None:
@@ -342,7 +595,13 @@ def test_contribution_validation_rejects_identity_drift(tmp_path: Path) -> None:
     _write_contribution_observations(path, identity_mismatch=True)
     report = run_contribution_validation(_contribution_config(path))
     assert report.status == "blocked"
-    assert "contribution_identity_mismatch:beneficiary_model_state_id" in report.blockers
+    assert "contribution_probe_contract_not_frozen:task:002|round=0" in report.blockers
+    assert "contribution_intervention_contract_not_frozen:task:002|round=0" in report.blockers
+
+
+def test_report_formats_missing_contribution_variance_as_not_available() -> None:
+    assert _format_optional_float(None) == "n/a"
+    assert _format_optional_float(0.125) == "0.125"
 
 
 def test_training_preflight_uses_new_state_artifacts_and_blocks_missing_b3_b5(
@@ -384,7 +643,8 @@ def test_training_preflight_uses_new_state_artifacts_and_blocks_missing_b3_b5(
     assert len(arms["B4_random_state"]) == 1
     assert not arms["B3_ccgr"]
     assert not arms["B5_vtdo"]
-    assert preflight.pilot_training_ready
+    assert preflight.permitted_arm_ids == ()
+    assert "external_benchmarks:not_configured" in preflight.shared_training_blockers
     assert not preflight.primary_causal_training_ready
     assert not preflight.full_comparison_matrix_ready
     assert preflight.training_seeds == (student.seed, student.seed + 1, student.seed + 2)
@@ -395,6 +655,51 @@ def test_training_preflight_uses_new_state_artifacts_and_blocks_missing_b3_b5(
         assert capacities[arm_id].minimum_task_weight == pytest.approx(1.0)
         assert capacities[arm_id].maximum_task_weight == pytest.approx(1.0)
     assert any("ccgr_task_distribution_not_configured" in item for item in preflight.blockers)
+
+
+def test_training_benchmark_contract_requires_finqa_and_tatqa(
+    tmp_path: Path,
+) -> None:
+    benchmark_path = tmp_path / "benchmark.json"
+    benchmark_path.write_text("[]", encoding="utf-8")
+    digest = hashlib.sha256(benchmark_path.read_bytes()).hexdigest()
+
+    def snapshot(benchmark_id: str) -> ExternalBenchmarkSnapshot:
+        return ExternalBenchmarkSnapshot(
+            benchmark_id=benchmark_id,
+            path=benchmark_path,
+            sha256=digest,
+            source_repository=f"official/{benchmark_id}",
+            source_revision="a" * 40,
+            split="test",
+            adapter_version=BENCHMARK_ADAPTER_VERSION,
+            metric_version=BENCHMARK_METRIC_VERSION,
+        )
+
+    complete = TrainingExperimentConfig(
+        training_config_path=tmp_path / "student.json",
+        external_benchmarks=(snapshot("finqa"), snapshot("tat_qa")),
+    )
+    status, blockers = _external_benchmark_status(complete)
+    assert status == "ready"
+    assert not blockers
+
+    with_optional = complete.model_copy(
+        update={
+            "external_benchmarks": (
+                *complete.external_benchmarks,
+                snapshot("financebench"),
+            )
+        }
+    )
+    status, blockers = _external_benchmark_status(with_optional)
+    assert status == "ready"
+    assert not blockers
+
+    incomplete = complete.model_copy(update={"external_benchmarks": (snapshot("finqa"),)})
+    status, blockers = _external_benchmark_status(incomplete)
+    assert status == "not_available"
+    assert blockers and blockers[0].startswith("required_external_benchmark_missing:")
 
 
 def test_refinement_checkpoint_training_fails_closed_without_round_artifacts(
@@ -429,15 +734,12 @@ def test_vtdo_and_component_arms_use_the_explicit_selected_round(
             task_count=1,
         ),
     )
-    state_ids = tuple(
-        sorted(item.assignment.state.state_id for item in artifact.accepted_states)
-    )
+    state_ids = tuple(sorted(item.assignment.state.state_id for item in artifact.accepted_states))
 
     def fake_round(round_index: int, prior_id: str, next_id: str):
         current = {state_id: 1.0 / len(state_ids) for state_id in state_ids}
         next_probabilities = {
-            state_id: (index + round_index + 1)
-            for index, state_id in enumerate(state_ids)
+            state_id: (index + round_index + 1) for index, state_id in enumerate(state_ids)
         }
         total = sum(next_probabilities.values())
         normalized_next = {
@@ -477,8 +779,7 @@ def test_vtdo_and_component_arms_use_the_explicit_selected_round(
         fake_round(2, "distribution:2", "distribution:3"),
     )
     monkeypatch.setattr(
-        "trusted_synthesis.experiments.vtdo_experiment.training."
-        "load_vtdo_round_artifacts",
+        "trusted_synthesis.experiments.vtdo_experiment.training.load_vtdo_round_artifacts",
         lambda paths: (rounds, ()),
     )
     round_one, blockers = _vtdo_arm(
@@ -551,7 +852,7 @@ def test_vtdo_arm_training_fails_before_model_loading(tmp_path: Path) -> None:
         "primary_task_marginal_contract_verified": False,
         "primary_causal_training_ready": False,
         "full_comparison_matrix_ready": False,
-        "pilot_training_ready": False,
+        "permitted_arm_ids": (),
         "external_benchmark_status": "not_configured",
         "benchmark_leakage_status": "not_configured",
         "benchmark_leakage_count": 0,
@@ -560,7 +861,7 @@ def test_vtdo_arm_training_fails_before_model_loading(tmp_path: Path) -> None:
         "primary_causal_blockers": ("B5_vtdo:no_materializable_records",),
         "secondary_comparison_blockers": (),
         "blockers": ("B5_vtdo:no_materializable_records",),
-        "schema_version": "vtdo_experiment.v3",
+        "schema_version": "vtdo_experiment.v6",
     }
     provisional = TrainingExperimentPreflight.model_construct(
         **values,
@@ -577,7 +878,7 @@ def test_vtdo_arm_training_fails_before_model_loading(tmp_path: Path) -> None:
     dataset_path = tmp_path / "B5_vtdo.jsonl"
     dataset_path.write_text("", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="primary causal training preflight is not ready"):
+    with pytest.raises(ValueError, match="arm is not permitted by the frozen preflight"):
         train_vtdo_arm(
             student_config_path=student_path,
             preflight_path=preflight_path,
@@ -591,12 +892,36 @@ def test_vtdo_arm_training_fails_before_model_loading(tmp_path: Path) -> None:
 
 def test_external_benchmark_adapters_and_evaluator(tmp_path: Path) -> None:
     payloads = {
-        "finqa": [{"qa": {"id": "f1", "question": "What is 2 plus 2?", "answer": "4"}}],
+        "finqa": [
+            {
+                "pre_text": ["The filing reports two components."],
+                "table": [["component", "value"], ["A", "2"], ["B", "2"]],
+                "post_text": ["Both values use the same scale."],
+                "qa": {
+                    "id": "f1",
+                    "question": "What is the sum of A and B?",
+                    "exe_ans": "4",
+                    "program": ["add(2, 2)"],
+                },
+            }
+        ],
         "tat_qa": [
-            {"questions": [{"uid": "t1", "question": "What is revenue?", "answer": "10"}]}
+            {
+                "table": {"table": [["metric", "value"], ["revenue", "10"]]},
+                "paragraphs": [{"text": "Revenue was reported without a scale."}],
+                "questions": [
+                    {
+                        "uid": "t1",
+                        "question": "What is revenue?",
+                        "answer": "10",
+                        "scale": "",
+                        "answer_type": "span",
+                    }
+                ],
+            }
         ],
         "financebench": [
-            {"id": "b1", "question": "What is cash?", "answer": "5"}
+            {"id": "b1", "question": "What is cash?", "answer": "5", "context": "Cash is 5."}
         ],
     }
     snapshots = []
@@ -608,29 +933,65 @@ def test_external_benchmark_adapters_and_evaluator(tmp_path: Path) -> None:
                 benchmark_id=benchmark_id,
                 path=path,
                 sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                source_repository=f"official/{benchmark_id}",
+                source_revision="a" * 40,
+                split="test",
+                adapter_version=BENCHMARK_ADAPTER_VERSION,
+                metric_version=BENCHMARK_METRIC_VERSION,
             )
         )
     typed_snapshots = tuple(snapshots)
     examples = load_benchmark_examples(typed_snapshots)
     assert len(examples) == 3
+    assert all("Context:" in item.prompt for item in examples)
+    assert "component" in next(item.prompt for item in examples if item.benchmark_id == "finqa")
     predictions = tmp_path / "predictions.jsonl"
     answers = {"finqa": "4", "tat_qa": "10", "financebench": "5"}
-    predictions.write_text(
-        "".join(
-            json.dumps(
-                {
-                    "benchmark_id": item.benchmark_id,
-                    "example_id": item.example_id,
-                    "prediction": answers[item.benchmark_id],
-                    "contract_success": True,
-                }
+    run_id = "benchmark_prediction_run:test"
+    prediction_values = []
+    for item in examples:
+        values = {
+            "prediction_run_id": run_id,
+            "benchmark_id": item.benchmark_id,
+            "example_id": item.example_id,
+            "answer": answers[item.benchmark_id],
+            "scale": "",
+            "program": "add(2, 2)" if item.benchmark_id == "finqa" else "",
+            "contract_success": True,
+            "raw_response_hash": canonical_hash(
+                answers[item.benchmark_id],
+                prefix="benchmark_raw_response:",
+            ),
+        }
+        provisional = BenchmarkPrediction.model_construct(
+            prediction_id="pending",
+            **values,
+        )
+        prediction_values.append(
+            BenchmarkPrediction(
+                prediction_id=benchmark_prediction_id(provisional),
+                **values,
             )
-            + "\n"
-            for item in examples
+        )
+    predictions.write_text(
+        "".join(item.model_dump_json() + "\n" for item in prediction_values),
+        encoding="utf-8",
+    )
+    prediction_manifest = tmp_path / "prediction_manifest.json"
+    prediction_manifest.write_text(
+        json.dumps(
+            {
+                "prediction_run_id": run_id,
+                "predictions_sha256": hashlib.sha256(predictions.read_bytes()).hexdigest(),
+                "evaluation_snapshot_hash": benchmark_snapshot_manifest_hash(typed_snapshots),
+            }
         ),
         encoding="utf-8",
     )
-    report = evaluate_external_benchmark_predictions(typed_snapshots, predictions)
-    assert report.status == "passed"
-    assert report.total_example_count == 3
-    assert all(item.end_to_end_accuracy == pytest.approx(1.0) for item in report.slices)
+    report = evaluate_external_benchmark_predictions(
+        typed_snapshots,
+        predictions,
+        prediction_manifest,
+    )
+    assert report.status == "blocked"
+    assert "benchmark_prediction_manifest_invalid_or_incomplete" in report.blockers

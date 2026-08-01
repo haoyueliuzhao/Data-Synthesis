@@ -66,7 +66,7 @@ class VTDORoundArtifact(FrozenModel):
             raise ValueError("VTDO exploration batch belongs to another q_t")
         if self.exploration_batch.role_contract_id != self.role_contract.contract_id:
             raise ValueError("VTDO exploration batch violates the role contract")
-        if self.exploration_batch.context_id != self.state_catalog.verification_context_id:
+        if self.exploration_batch.context_id != self.state_catalog.omega_context_id:
             raise ValueError("VTDO exploration batch uses another verification context")
         if self.exploration_batch.status != "passed":
             raise ValueError("VTDO round cannot use an incomplete exploration batch")
@@ -101,12 +101,14 @@ class VTDORoundArtifact(FrozenModel):
             raise ValueError("VTDO Accepted prior does not replay support conditioning")
         if self.accepted_coverage_prior != expected_coverage:
             raise ValueError("VTDO Accepted coverage does not replay support conditioning")
-        probe_by_state = {item.state_id: item for item in self.contribution_probes}
+        probe_ids = [item.observation_id for item in self.contribution_probes]
         accepted_support = set(self.validity_partition.accepted_state_ids)
-        if len(probe_by_state) != len(self.contribution_probes):
-            raise ValueError("VTDO round has duplicate contribution probes")
-        if set(probe_by_state) != accepted_support:
-            raise ValueError("VTDO contribution probes do not cover Accepted support")
+        if {item.round_index for item in self.contribution_probes} != {self.round_index}:
+            raise ValueError("VTDO Contribution Probes belong to another round")
+        if len(probe_ids) != len(set(probe_ids)):
+            raise ValueError("VTDO round has duplicate Contribution Probe observations")
+        if {item.state_id for item in self.contribution_probes} != accepted_support:
+            raise ValueError("VTDO Contribution Probes do not cover Accepted support")
         expected_manifest = estimate_contributions_from_probes(
             self.accepted_prior,
             self.contribution_probes,
@@ -144,7 +146,9 @@ def assemble_vtdo_round(
     contribution_probes: Iterable[ContributionProbeObservation],
     energy_config: AnchoredEnergyConfig,
 ) -> VTDORoundArtifact:
-    probes = tuple(sorted(contribution_probes, key=lambda item: item.state_id))
+    probes = tuple(
+        sorted(contribution_probes, key=lambda item: (item.state_id, item.seed))
+    )
     accepted_prior, accepted_coverage = condition_on_accepted_support(
         pushforward_estimate.distribution,
         exploration.coverage_prior,
