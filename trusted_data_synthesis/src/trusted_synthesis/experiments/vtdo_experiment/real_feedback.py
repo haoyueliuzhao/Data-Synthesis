@@ -21,6 +21,7 @@ from trusted_synthesis.core.trajectory.schema import Trajectory
 from trusted_synthesis.core.vtdo import (
     AnchoredEnergyConfig,
     ContributionProbeObservation,
+    ContributionProductionAuthorization,
     ProbeAdaptationResult,
     ProbeOptimizerContract,
     StateConditionedTrajectoryExplorer,
@@ -58,7 +59,7 @@ from .real_rounds import (
     real_round_assembly_input_id,
 )
 
-REAL_FEEDBACK_VERSION = "vtdo_real_feedback.v4"
+REAL_FEEDBACK_VERSION = "vtdo_real_feedback.v5"
 
 
 class FrozenModel(BaseModel):
@@ -142,6 +143,7 @@ class RealFeedbackProductionConfig(FrozenModel):
     finance_archive_config_path: Path
     explorer_trajectory_path: Path
     probe_observation_path: Path
+    contribution_production_authorization_path: Path
     output_dir: Path
     explorer_provider_id: str = Field(min_length=1)
     explorer_provider_version: str = Field(min_length=1)
@@ -157,12 +159,13 @@ class RealFeedbackProductionConfig(FrozenModel):
     target_metric_id: str = Field(min_length=1)
     evaluation_snapshot_hash: str = Field(min_length=1)
     score_transform: Literal["identity", "negative_loss"] = "identity"
-    probe_optimizer_name: Literal["sgd", "adamw"] = "sgd"
+    probe_optimizer_name: Literal["sgd"] = "sgd"
     probe_learning_rate: float = Field(gt=0)
     probe_step_count: int = Field(default=3, ge=1, le=3)
     probe_weight_decay: float = Field(default=0.0, ge=0)
     probe_momentum: float = Field(default=0.0, ge=0)
-    probe_seeds: tuple[int, ...] = Field(min_length=1)
+    probe_seeds: tuple[int, ...] = Field(min_length=2)
+    probe_uncertainty_penalty_coefficient: float = Field(default=1.0, gt=0)
     round_count: int = Field(default=1, ge=1, le=5)
     exploration_rate: float = Field(default=0.2, gt=0, lt=1)
     exploration_budget_per_task: int = Field(default=20, ge=3)
@@ -216,6 +219,7 @@ class RealFeedbackProductionConfig(FrozenModel):
             "finance_archive_config_path",
             "explorer_trajectory_path",
             "probe_observation_path",
+            "contribution_production_authorization_path",
             "output_dir",
         ):
             value = Path(str(payload[field]))
@@ -254,6 +258,7 @@ class RealFeedbackProductionReport(FrozenModel):
             "finance_archive_config",
             "explorer_trajectories",
             "contribution_probes",
+            "contribution_production_authorization",
         }
         if set(self.input_hashes) != required_inputs:
             raise ValueError("real-feedback input hash manifest is incomplete")
@@ -322,6 +327,9 @@ def produce_real_vtdo_feedback(
         "finance_archive_config": _sha256(config.finance_archive_config_path),
         "explorer_trajectories": _sha256(config.explorer_trajectory_path),
         "contribution_probes": _sha256(config.probe_observation_path),
+        "contribution_production_authorization": _sha256(
+            config.contribution_production_authorization_path
+        ),
     }
     input_manifest_hash = canonical_hash(
         input_hashes,
@@ -336,6 +344,33 @@ def produce_real_vtdo_feedback(
         config.probe_observation_path,
         RecordedContributionProbe,
     )
+    production_authorization = ContributionProductionAuthorization.model_validate_json(
+        config.contribution_production_authorization_path.read_text(encoding="utf-8")
+    )
+    expected_optimizer = make_probe_optimizer_contract(
+        optimizer_name=config.probe_optimizer_name,
+        learning_rate=config.probe_learning_rate,
+        step_count=config.probe_step_count,
+        weight_decay=config.probe_weight_decay,
+        momentum=config.probe_momentum,
+    )
+    authorization_identity = {
+        "beneficiary_model_state_id": config.beneficiary_model_state_id,
+        "beneficiary_checkpoint_hash": config.beneficiary_checkpoint_hash,
+        "target_metric_id": config.target_metric_id,
+        "probe_optimizer_contract_id": expected_optimizer.contract_id,
+        "selected_adaptation_horizon": config.probe_step_count,
+        "uncertainty_penalty_coefficient": (
+            config.probe_uncertainty_penalty_coefficient
+        ),
+        "internal_validation_set_id": config.evaluation_distribution_id,
+    }
+    observed_authorization = production_authorization.model_dump(
+        mode="python",
+        include=set(authorization_identity),
+    )
+    if observed_authorization != authorization_identity:
+        raise ValueError("real-feedback config does not match Contribution authorization")
     if len(artifacts) < config.minimum_task_count:
         blockers.append(
             f"feedback_tasks_below_minimum:{len(artifacts)}<{config.minimum_task_count}"
@@ -387,6 +422,7 @@ def produce_real_vtdo_feedback(
                 probes_by_key,
                 consumed_explorer,
                 consumed_probe_records,
+                production_authorization,
             )
         except (KeyError, TypeError, ValueError) as error:
             blockers.append(
@@ -483,6 +519,7 @@ def _produce_task_feedback(
     probes_by_key: Mapping[tuple[str, int, str], list[RecordedContributionProbe]],
     consumed_explorer: set[str],
     consumed_probe_records: set[str],
+    production_authorization: ContributionProductionAuthorization,
 ) -> tuple[
     list[RealRoundAssemblyInput],
     list[Any],
@@ -576,6 +613,7 @@ def _produce_task_feedback(
             "exploration": exploration,
             "exploration_batch": batch,
             "contribution_probes": probes,
+            "contribution_production_authorization": production_authorization,
             "validity_thresholds": config.validity_thresholds,
             "validity_prior_success": config.validity_prior_success,
             "validity_prior_failure": config.validity_prior_failure,
@@ -615,6 +653,7 @@ def _produce_task_feedback(
             pushforward_estimate=pushforward,
             validity_partition=partition,
             contribution_probes=probes,
+            contribution_production_authorization=production_authorization,
             energy_config=config.energy_config,
         )
         task_inputs.append(assembly_input)
@@ -714,6 +753,7 @@ def _aggregate_probes(
         data_isolation=data_isolation,
         optimizer=optimizer,
         probe_seeds=config.probe_seeds,
+        uncertainty_penalty_coefficient=(config.probe_uncertainty_penalty_coefficient),
     )
     observations = tuple(
         make_contribution_probe_observation(

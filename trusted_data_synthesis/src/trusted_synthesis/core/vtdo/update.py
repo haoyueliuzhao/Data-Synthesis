@@ -9,12 +9,16 @@ from .schema import (
     AnchoredEnergyConfig,
     ConditionalTrajectoryDistribution,
     ContributionEstimationManifest,
+    ContributionProductionAuthorization,
     CoveragePrior,
     StateEnergyPotential,
+    StateReachabilityEstimate,
+    StateReachabilityManifest,
     StateValidityEstimate,
     ValidityRegion,
     VTDORoleContract,
     anchored_distribution_update_id,
+    validate_contribution_production_authorization,
 )
 
 
@@ -23,8 +27,10 @@ def update_valid_trajectory_distribution(
     coverage_prior: CoveragePrior,
     validity_estimates: Iterable[StateValidityEstimate],
     contribution_manifest: ContributionEstimationManifest,
+    contribution_production_authorization: ContributionProductionAuthorization | None,
     config: AnchoredEnergyConfig,
     role_contract: VTDORoleContract,
+    reachability_manifest: StateReachabilityManifest | None = None,
 ) -> AnchoredDistributionUpdate:
     """Apply the frozen anchored energy update on the Accepted quotient states.
 
@@ -65,9 +71,28 @@ def update_valid_trajectory_distribution(
         raise ValueError(
             "finite Intervention Contribution is validation-only and cannot update pi_t"
         )
+    validate_contribution_production_authorization(
+        contribution_manifest,
+        contribution_production_authorization,
+    )
     contributions = {item.state_id: item for item in contribution_manifest.estimates}
     if set(contributions) != support:
         raise ValueError("contribution manifest must cover the current support exactly")
+    reachability = {}
+    if reachability_manifest is not None:
+        if reachability_manifest.task_condition_id != prior.task_condition_id:
+            raise ValueError("reachability manifest belongs to another task condition")
+        if reachability_manifest.explorer_provider_id != role_contract.explorer_provider_id:
+            raise ValueError("reachability manifest uses another Explorer provider")
+        reachability = {item.state_id: item for item in reachability_manifest.estimates}
+        if set(reachability) != support:
+            raise ValueError("reachability manifest must cover current support exactly")
+    if config.reachability_weight > 0 and not reachability:
+        raise ValueError("reachability-aware energy requires a complete manifest")
+    if config.reachability_weight > 0 and any(
+        item.attempted_trajectory_count == 0 for item in reachability.values()
+    ):
+        raise ValueError("reachability-aware energy cannot use unmeasured states")
 
     if any(
         not math.isclose(
@@ -86,7 +111,8 @@ def update_valid_trajectory_distribution(
     for state_id in sorted(support):
         current_probability = prior.probabilities[state_id]
         coverage_probability = coverage_prior.probabilities[state_id]
-        contribution = contributions[state_id].centered_contribution
+        centered_contribution = contributions[state_id].centered_contribution
+        contribution = contributions[state_id].conservative_centered_contribution
         novelty = max(
             math.log(coverage_probability / current_probability),
             0.0,
@@ -101,9 +127,20 @@ def update_valid_trajectory_distribution(
             epsilon=config.epsilon,
             temperature=config.novelty_temperature,
         )
+        reachability_estimate = reachability.get(state_id)
+        reachability_probability = (
+            _reachability_signal(reachability_estimate, config)
+            if reachability_estimate is not None
+            else 1.0
+        )
+        normalized_reachability = max(
+            config.reachability_floor,
+            reachability_probability,
+        )
         potential = (
             normalized_contribution**config.contribution_weight
             * normalized_novelty**config.novelty_weight
+            * normalized_reachability**config.reachability_weight
         )
         energy = -math.log(potential)
         potentials.append(
@@ -111,10 +148,17 @@ def update_valid_trajectory_distribution(
                 state_id=state_id,
                 current_probability=current_probability,
                 coverage_probability=coverage_probability,
-                centered_contribution=contribution,
+                centered_contribution=centered_contribution,
+                conservative_centered_contribution=contribution,
+                contribution_signal_kind="conservative_centered_contribution",
                 normalized_contribution=normalized_contribution,
                 coverage_relative_novelty=novelty,
                 normalized_novelty=normalized_novelty,
+                reachability_estimate_id=(
+                    reachability_estimate.estimate_id if reachability_estimate is not None else None
+                ),
+                reachability_probability=reachability_probability,
+                normalized_reachability=normalized_reachability,
                 potential=potential,
                 energy=energy,
             )
@@ -141,8 +185,10 @@ def update_valid_trajectory_distribution(
         "next_distribution": next_distribution,
         "validity_estimates": estimates,
         "contribution_manifest": contribution_manifest,
+        "contribution_production_authorization": contribution_production_authorization,
         "role_contract": role_contract,
         "energy_config": config,
+        "reachability_manifest": reachability_manifest,
         "state_potentials": tuple(potentials),
         "history_exponent": rho,
         "energy_exponent": eta,
@@ -187,6 +233,15 @@ def _normalize_novelty(
     temperature: float,
 ) -> float:
     return epsilon + (1.0 - 2.0 * epsilon) * (1.0 - math.exp(-value / temperature))
+
+
+def _reachability_signal(
+    estimate: StateReachabilityEstimate,
+    config: AnchoredEnergyConfig,
+) -> float:
+    if config.reachability_signal == "posterior_mean":
+        return estimate.posterior_mean
+    return estimate.confidence_lower
 
 
 def _kl(left: dict[str, float], right: dict[str, float]) -> float:

@@ -239,7 +239,9 @@ def estimate_centered_contributions(
     *,
     confidences: Mapping[str, float],
     observation_counts: Mapping[str, int],
+    sample_standard_deviations: Mapping[str, float],
     standard_errors: Mapping[str, float],
+    uncertainty_penalty_coefficient: float,
     beneficiary_model_state_id: str,
     beneficiary_checkpoint_hash: str,
     target_evaluation_distribution_id: str,
@@ -255,15 +257,19 @@ def estimate_centered_contributions(
     data_isolation_contract_id: str,
     final_test_set_id: str,
     estimator_id: str,
+    probe_optimizer_contract_id: str | None = None,
+    probe_adaptation_horizon: int | None = None,
 ) -> ContributionEstimationManifest:
-    """Center unscaled higher-is-better gains under the current pi_t.
-
-    Confidence and standard error are diagnostic metadata. They never shrink or
-    otherwise alter the directional derivative estimate.
-    """
+    """Center mean gains and a conservative uncertainty-adjusted signal under pi_t."""
 
     support = set(distribution.probabilities)
-    maps = (raw_marginal_gains, confidences, observation_counts, standard_errors)
+    maps = (
+        raw_marginal_gains,
+        confidences,
+        observation_counts,
+        sample_standard_deviations,
+        standard_errors,
+    )
     if any(set(values) != support for values in maps):
         raise ValueError("Contribution inputs must cover the current support exactly")
     if any(not math.isfinite(value) for value in raw_marginal_gains.values()):
@@ -272,10 +278,25 @@ def estimate_centered_contributions(
         raise ValueError("Contribution confidence must be in [0, 1]")
     if any(value < 1 for value in observation_counts.values()):
         raise ValueError("each Contribution estimate requires at least one observation")
+    if uncertainty_penalty_coefficient < 0 or not math.isfinite(uncertainty_penalty_coefficient):
+        raise ValueError("Contribution uncertainty penalty must be finite and nonnegative")
+    if any(value < 0 or not math.isfinite(value) for value in sample_standard_deviations.values()):
+        raise ValueError("Contribution standard deviations must be finite and nonnegative")
     if any(value < 0 or not math.isfinite(value) for value in standard_errors.values()):
         raise ValueError("Contribution standard errors must be finite and nonnegative")
     baseline = sum(
-        distribution.probabilities[state_id] * raw_marginal_gains[state_id]
+        distribution.probabilities[state_id] * raw_marginal_gains[state_id] for state_id in support
+    )
+    uncertainty_penalties = {
+        state_id: uncertainty_penalty_coefficient * sample_standard_deviations[state_id]
+        for state_id in support
+    }
+    conservative_raw_gains = {
+        state_id: raw_marginal_gains[state_id] - uncertainty_penalties[state_id]
+        for state_id in support
+    }
+    conservative_baseline = sum(
+        distribution.probabilities[state_id] * conservative_raw_gains[state_id]
         for state_id in support
     )
     estimates = []
@@ -284,8 +305,14 @@ def estimate_centered_contributions(
             "state_id": state_id,
             "raw_marginal_gain": raw_marginal_gains[state_id],
             "confidence": confidences[state_id],
+            "sample_standard_deviation": sample_standard_deviations[state_id],
             "standard_error": standard_errors[state_id],
             "centered_contribution": raw_marginal_gains[state_id] - baseline,
+            "uncertainty_penalty": uncertainty_penalties[state_id],
+            "conservative_raw_marginal_gain": conservative_raw_gains[state_id],
+            "conservative_centered_contribution": (
+                conservative_raw_gains[state_id] - conservative_baseline
+            ),
             "current_probability": distribution.probabilities[state_id],
             "observation_count": observation_counts[state_id],
         }
@@ -297,6 +324,9 @@ def estimate_centered_contributions(
             )
         )
     weighted_mean = sum(item.current_probability * item.centered_contribution for item in estimates)
+    weighted_conservative_mean = sum(
+        item.current_probability * item.conservative_centered_contribution for item in estimates
+    )
     manifest_values = {
         "task_condition_id": distribution.task_condition_id,
         "distribution_id": distribution.distribution_id,
@@ -311,8 +341,14 @@ def estimate_centered_contributions(
         "data_isolation_contract_id": data_isolation_contract_id,
         "final_test_set_id": final_test_set_id,
         "estimator_id": estimator_id,
+        "probe_optimizer_contract_id": probe_optimizer_contract_id,
+        "probe_adaptation_horizon": probe_adaptation_horizon,
+        "uncertainty_statistic": "sample_standard_deviation",
+        "uncertainty_penalty_coefficient": uncertainty_penalty_coefficient,
+        "production_contribution_field": "conservative_centered_contribution",
         "estimates": tuple(estimates),
         "weighted_centered_mean": weighted_mean,
+        "weighted_conservative_centered_mean": weighted_conservative_mean,
     }
     provisional_manifest = ContributionEstimationManifest.model_construct(
         manifest_id="pending",

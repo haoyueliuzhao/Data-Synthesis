@@ -15,7 +15,7 @@ AGENT_ANSWER_DECISION_SCHEMA_VERSION = "agent_answer_decision.v1"
 HOST_EXECUTION_FEEDBACK_SCHEMA_VERSION = "host_execution_feedback.v2"
 FAILED_ACTION_PLAN_SCHEMA_VERSION = "failed_action_plan.v1"
 HOST_INTERACTION_PROGRESS_SCHEMA_VERSION = "host_interaction_progress.v1"
-AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v4"
+AGENT_GENERATION_SCHEMA_VERSION = "agent_generation_audit.v5"
 
 
 class AgentModelConfig(BaseModel):
@@ -385,6 +385,7 @@ class AgentGenerationAudit(BaseModel):
     answer_prompt_manifest_hash: str
     action_prompt_manifest_hash: str | None = None
     final_answer_prompt_manifest_hash: str | None = None
+    generation_constraints_hash: str | None = None
     interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
     executed_search_query_hash: str
     model_search_used: bool = False

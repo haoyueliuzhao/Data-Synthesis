@@ -104,9 +104,7 @@ class TrajectoryStateSpaceCompilation(FrozenModel):
     variation_provider_id: str = Field(min_length=1)
     variation_provider_version: str = Field(min_length=1)
     variations: tuple[AdmissibleTrajectoryVariation, ...] = Field(min_length=1)
-    public_conditions_by_variation_id: dict[str, PublicStateCondition] = Field(
-        min_length=1
-    )
+    public_conditions_by_variation_id: dict[str, PublicStateCondition] = Field(min_length=1)
     schema_version: str = STATE_SPACE_CONTRACT_VERSION
 
     @property
@@ -214,9 +212,7 @@ def make_admissible_trajectory_variation(
         "minimum_verification_degree": minimum_verification_degree,
         "schema_version": STATE_SPACE_CONTRACT_VERSION,
     }
-    provisional = AdmissibleTrajectoryVariation.model_construct(
-        variation_id="pending", **values
-    )
+    provisional = AdmissibleTrajectoryVariation.model_construct(variation_id="pending", **values)
     return AdmissibleTrajectoryVariation(
         variation_id=admissible_trajectory_variation_id(provisional), **values
     )
@@ -224,9 +220,7 @@ def make_admissible_trajectory_variation(
 
 def observed_variation(attributes: TrajectoryAttributes) -> AdmissibleTrajectoryVariation:
     capabilities = set(attributes.capability_tags)
-    acquisition: AcquisitionRequirement = (
-        "bounded" if "retrieval" in capabilities else "none"
-    )
+    acquisition: AcquisitionRequirement = "bounded" if "retrieval" in capabilities else "none"
     verification: VerificationRequirement
     if attributes.verification_degree == 0:
         verification = "none"
@@ -234,9 +228,7 @@ def observed_variation(attributes: TrajectoryAttributes) -> AdmissibleTrajectory
         verification = "intermediate"
     else:
         verification = "full"
-    lineage: LineageRequirement = (
-        "citation_minimum" if "citation" in capabilities else "direct"
-    )
+    lineage: LineageRequirement = "citation_minimum" if "citation" in capabilities else "direct"
     return make_admissible_trajectory_variation(
         acquisition_requirement=acquisition,
         evidence_support_requirement="required_roles",
@@ -270,9 +262,7 @@ def make_public_state_condition(
         "schema_version": STATE_SPACE_CONTRACT_VERSION,
     }
     provisional = PublicStateCondition.model_construct(condition_id="pending", **values)
-    return PublicStateCondition(
-        condition_id=public_state_condition_id(provisional), **values
-    )
+    return PublicStateCondition(condition_id=public_state_condition_id(provisional), **values)
 
 
 def compile_trajectory_state_space(
@@ -343,9 +333,7 @@ def audit_public_state_generation_request(
     request: PublicStateGenerationRequest,
     context: TrajectoryVerificationContext,
 ) -> PublicStateLeakageAudit:
-    serialized = json.dumps(
-        request.model_dump(mode="json"), ensure_ascii=False, sort_keys=True
-    )
+    serialized = json.dumps(request.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
     public_serialized = json.dumps(
         context.task.public.model_dump(mode="json"), ensure_ascii=False, sort_keys=True
     )
@@ -362,14 +350,16 @@ def audit_public_state_generation_request(
         "quality_contract_hash": context.quality_contract.contract_hash,
     }
     secrets.update(
-        {f"gold_evidence_id:{index}": value for index, value in enumerate(
-            context.task.oracle.gold_evidence_ids
-        )}
+        {
+            f"gold_evidence_id:{index}": value
+            for index, value in enumerate(context.task.oracle.gold_evidence_ids)
+        }
     )
     secrets.update(
-        {f"reference_trajectory_id:{index}": value for index, value in enumerate(
-            context.oracle_specification.reference_example_ids
-        )}
+        {
+            f"reference_trajectory_id:{index}": value
+            for index, value in enumerate(context.oracle_specification.reference_example_ids)
+        }
     )
     leaked = tuple(
         sorted(
@@ -385,9 +375,7 @@ def audit_public_state_generation_request(
         "schema_version": STATE_SPACE_CONTRACT_VERSION,
     }
     provisional = PublicStateLeakageAudit.model_construct(audit_id="pending", **values)
-    return PublicStateLeakageAudit(
-        audit_id=public_state_leakage_audit_id(provisional), **values
-    )
+    return PublicStateLeakageAudit(audit_id=public_state_leakage_audit_id(provisional), **values)
 
 
 def admissible_trajectory_variation_id(value: AdmissibleTrajectoryVariation) -> str:

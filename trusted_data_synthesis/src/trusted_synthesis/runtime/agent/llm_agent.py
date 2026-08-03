@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from collections.abc import Mapping
+from typing import Any, Literal
 
 from pydantic import ValidationError
 
@@ -46,12 +47,12 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v8"
-LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v8"
-LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v7"
-LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v1"
-LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v3"
-LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v1"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v9"
+LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
+LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
+LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v2"
+LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v4"
+LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v2"
 
 
 class LLMAgentSolver:
@@ -65,6 +66,10 @@ class LLMAgentSolver:
         self._client = client
         self._registry = operation_registry
 
+    @property
+    def interaction_protocol(self) -> Literal["full_response", "host_instrumented"]:
+        return self._client.config.interaction_protocol
+
     def solve(self, task: TaskPublicSpec, environment: EvidenceToolRuntime) -> Trajectory:
         return self.solve_with_audit(task, environment).trajectory
 
@@ -75,7 +80,18 @@ class LLMAgentSolver:
         self,
         task: TaskPublicSpec,
         environment: EvidenceToolRuntime,
+        *,
+        generation_constraints: Mapping[str, Any] | None = None,
     ) -> AgentSolveResult:
+        visible_constraints = _normalize_generation_constraints(generation_constraints)
+        generation_constraints_hash = (
+            canonical_hash(
+                visible_constraints,
+                prefix="agent_generation_constraints:",
+            )
+            if visible_constraints
+            else None
+        )
         telemetry: list[ModelCallTelemetry] = []
         repair_count = 0
         model_search_used = task.retrieval_track != RetrievalTrack.RESOLVED
@@ -86,7 +102,10 @@ class LLMAgentSolver:
         search_plan_summary: str | None = None
         executed_search_query = dict(task.retrieval_scope)
         if model_search_used:
-            search_prompt, search_prompt_manifest_hash = _build_search_prompt(task)
+            search_prompt, search_prompt_manifest_hash = _build_search_prompt(
+                task,
+                visible_constraints,
+            )
             search_response, search_telemetry, search_repairs = _request_search_response(
                 self._client,
                 search_prompt,
@@ -109,6 +128,7 @@ class LLMAgentSolver:
                 retrieved,
                 operation_catalog,
                 executed_search_query,
+                visible_constraints,
             )
             (
                 action_plan,
@@ -130,6 +150,7 @@ class LLMAgentSolver:
                 retrieved,
                 action_plan,
                 execution_trace,
+                visible_constraints,
             )
             response, final_telemetry, final_repairs = _request_host_answer(
                 self._client,
@@ -158,6 +179,7 @@ class LLMAgentSolver:
                 retrieved,
                 operation_catalog,
                 executed_search_query,
+                visible_constraints,
             )
             response, answer_telemetry, answer_repairs = _request_agent_response(
                 self._client,
@@ -205,6 +227,7 @@ class LLMAgentSolver:
             "prompt_manifest_hash": prompt_manifest_hash,
             "response_contract_hash": response_hash,
             "executed_search_query_hash": executed_search_query_hash,
+            "generation_constraints_hash": generation_constraints_hash,
             "telemetry_request_hashes": tuple(item.request_hash for item in telemetry),
         }
         audit = AgentGenerationAudit(
@@ -219,6 +242,7 @@ class LLMAgentSolver:
             answer_prompt_manifest_hash=answer_prompt_manifest_hash,
             action_prompt_manifest_hash=action_prompt_manifest_hash,
             final_answer_prompt_manifest_hash=final_answer_prompt_manifest_hash,
+            generation_constraints_hash=generation_constraints_hash,
             interaction_protocol=self._client.config.interaction_protocol,
             executed_search_query_hash=executed_search_query_hash,
             model_search_used=model_search_used,
@@ -658,7 +682,10 @@ def _validate_agent_response_contract(
         raise ValueError("execution trace output must bind to the public output node")
 
 
-def _build_search_prompt(task: TaskPublicSpec) -> tuple[str, str]:
+def _build_search_prompt(
+    task: TaskPublicSpec,
+    generation_constraints: dict[str, Any],
+) -> tuple[str, str]:
     response_schema = AgentSearchResponseContract.model_json_schema()
     manifest = {
         "prompt_version": LLM_AGENT_SEARCH_PROMPT_VERSION,
@@ -666,9 +693,14 @@ def _build_search_prompt(task: TaskPublicSpec) -> tuple[str, str]:
             response_schema,
             prefix="agent_search_response_schema:",
         ),
+        "generation_constraints_hash": canonical_hash(
+            generation_constraints,
+            prefix="agent_generation_constraints:",
+        ),
     }
     payload = {
         "task_public_spec": task.model_dump(mode="json", exclude_none=True),
+        "trajectory_generation_constraints": generation_constraints,
         "search_interface": {
             "allowed_fields": (
                 "subject_ids",
@@ -688,7 +720,9 @@ def _build_search_prompt(task: TaskPublicSpec) -> tuple[str, str]:
         "matching response_json_schema. Never invent or request evidence IDs, gold IDs, "
         "or oracle fields. Use aliases for natural-language entity names and use only "
         "constraints supported by search_interface. The host preserves the immutable "
-        "corpus boundary. Do not answer the task in this phase."
+        "corpus boundary. Honor trajectory_generation_constraints only through fields "
+        "allowed by search_interface; they constrain acquisition behavior and never change "
+        "the task semantics. Do not answer the task in this phase."
     )
     prompt = (
         f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
@@ -714,6 +748,7 @@ def _build_action_prompt(
     evidence: tuple[EvidenceItem, ...],
     operation_catalog: tuple[dict[str, Any], ...],
     executed_search_query: dict[str, Any],
+    generation_constraints: dict[str, Any],
 ) -> tuple[str, str]:
     response_schema = AgentActionPlanContract.model_json_schema()
     task_execution_contract = _task_execution_contract(task, operation_catalog)
@@ -731,9 +766,14 @@ def _build_action_prompt(
             task_execution_contract,
             prefix="agent_task_execution_contract:",
         ),
+        "generation_constraints_hash": canonical_hash(
+            generation_constraints,
+            prefix="agent_generation_constraints:",
+        ),
     }
     payload = {
         "task_public_spec": task.model_dump(mode="json", exclude_none=True),
+        "trajectory_generation_constraints": generation_constraints,
         "executed_search_query": executed_search_query,
         "retrieved_evidence": [
             item.model_dump(mode="json", exclude_none=True) for item in evidence
@@ -775,7 +815,10 @@ def _build_action_prompt(
         "dependency, and exact parameters. For plan_hidden tasks, use only registered "
         "operators allowed by the public tool policy. selected_evidence_ids must be unique "
         "and exactly equal the evidence used by all decisions. The output step must be the "
-        "last execution. Do not answer the task in this phase and include no text outside JSON."
+        "last execution. Honor trajectory_generation_constraints only where the public "
+        "action contract gives you a corresponding decision; never invent extra evidence, "
+        "operators, verification, or lineage to imitate an unavailable capability. Do not "
+        "answer the task in this phase and include no text outside JSON."
     )
     prompt = (
         f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
@@ -788,6 +831,7 @@ def _build_final_answer_prompt(
     evidence: tuple[EvidenceItem, ...],
     action_plan: AgentActionPlanContract,
     execution_trace: AgentExecutionTrace,
+    generation_constraints: dict[str, Any],
 ) -> tuple[str, str]:
     response_schema = AgentAnswerDecisionContract.model_json_schema()
     final_answer_contract = _final_answer_decision_contract(task)
@@ -822,9 +866,14 @@ def _build_final_answer_prompt(
             prefix="agent_final_answer_contract:",
         ),
         "action_plan_hash": canonical_hash(action_plan, prefix="agent_action_plan:"),
+        "generation_constraints_hash": canonical_hash(
+            generation_constraints,
+            prefix="agent_generation_constraints:",
+        ),
     }
     payload = {
         "task_public_spec": task.model_dump(mode="json", exclude_none=True),
+        "trajectory_generation_constraints": generation_constraints,
         "selected_evidence": [
             item.model_dump(mode="json", exclude_none=True) for item in selected_evidence
         ],
@@ -873,7 +922,8 @@ def _build_final_answer_prompt(
         "is cited_evidence_ids; never emit a citations object. Do not emit source locators, "
         "execution IDs, tool "
         "observations, verification wrappers, or any commentary outside JSON. The host owns "
-        "those records and will independently bind them."
+        "those records and will independently bind them. Trajectory generation constraints "
+        "must never change the answer semantics or justify unsupported answer content."
     )
     prompt = (
         f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
@@ -886,6 +936,7 @@ def _build_prompt(
     evidence: tuple[EvidenceItem, ...],
     operation_catalog: tuple[dict[str, Any], ...],
     executed_search_query: dict[str, Any],
+    generation_constraints: dict[str, Any],
 ) -> tuple[str, str]:
     response_schema = AgentResponseContract.model_json_schema()
     task_execution_contract = _task_execution_contract(task, operation_catalog)
@@ -909,9 +960,14 @@ def _build_prompt(
             domain_contract_guidance,
             prefix="agent_domain_contract_guidance:",
         ),
+        "generation_constraints_hash": canonical_hash(
+            generation_constraints,
+            prefix="agent_generation_constraints:",
+        ),
     }
     payload = {
         "task_public_spec": task.model_dump(mode="json", exclude_none=True),
+        "trajectory_generation_constraints": generation_constraints,
         "executed_search_query": executed_search_query,
         "retrieved_evidence": [
             item.model_dump(mode="json", exclude_none=True) for item in evidence
@@ -977,13 +1033,32 @@ def _build_prompt(
         "result field and enum in task_execution_contract; do not rename semantic fields. "
         "Select only evidence used by the execution and copy citation fields exactly. The "
         "final_answer top level must contain result and citations, never raw payload fields. "
-        "When verification_result is required, copy output observation.result exactly, not "
+        "Honor trajectory_generation_constraints only through choices available in this "
+        "public response contract; never invent evidence, operations, verification, or "
+        "lineage to force a requested shape. When verification_result is required, copy "
+        "output observation.result exactly, not "
         "a status or notes wrapper. Include no commentary outside JSON."
     )
     prompt = (
         f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_prompt_manifest:")
+
+
+def _normalize_generation_constraints(
+    constraints: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    if constraints is None:
+        return {}
+    try:
+        normalized = json.loads(
+            json.dumps(dict(constraints), ensure_ascii=False, sort_keys=True)
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError("generation constraints must be JSON serializable") from exc
+    if not isinstance(normalized, dict):
+        raise ValueError("generation constraints must normalize to a JSON object")
+    return normalized
 
 
 def _repair_prompt(

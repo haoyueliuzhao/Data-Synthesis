@@ -173,75 +173,118 @@ It measures the first-order effect of moving probability mass from the current t
 distribution to state `z` for the **beneficiary** model. It is not an Explorer score and it is not
 the CCGR capability-gap heuristic.
 
-The implementation deliberately separates three estimators:
-
-| Layer | Artifact | Permitted use |
-| --- | --- | --- |
-| synthetic oracle | `SyntheticOracleContributionObservation` | operator-control experiments only |
-| finite intervention | `ContributionInterventionObservation` | validate the production proxy |
-| local probe | `ContributionProbeObservation` | production VTDO distribution update |
-
-A finite intervention adds a frozen probability mass to one state:
+The engineering approximation is Scheme 3, the Gradient Projection family. For a state update-set
+training-loss gradient `g_z` and an objective loss gradient `g_v`, GP-A is the directional
+baseline:
 
 ```text
-delta_n_z = ceil(epsilon / (1 - epsilon) * n_t(x))
-epsilon   = delta_n_z / (n_t(x) + delta_n_z)
-C_hat_int = (J(M_t^(+z)) - J(M_t)) / epsilon
+C_hat_grad_raw(x, z) = <g_z, g_v> / (||g_z|| ||g_v||)
 ```
 
-The default validation target is `epsilon=0.05`. An Intervention manifest is marked
-`intervention_validation`; the distribution updater rejects it rather than silently treating it as
-a production estimate.
-
-The production approximation performs a local beneficiary update:
+The positive sign follows from `J=-L_v`: after one SGD step
+`theta'=theta-eta*g_z`, the first-order utility gain is `eta*<g_z,g_v>`. The score
+is centered under the frozen conditional distribution before it can enter a VTDO update:
 
 ```text
-theta'_z    = theta_t - eta * grad L(M_t, B_z)
-C_hat_probe = J_nu_int(M_theta'_z) - J_nu_int(M_theta_t)
+C_hat_grad(x, z) = C_hat_grad_raw(x, z)
+                 - E_(z~pi_t)[C_hat_grad_raw(x, z)]
 ```
 
-`ProbeOptimizerContract` permits one to three steps (three by default), requires a cold-start SGD
-optimizer with zero momentum or a cold-start AdamW optimizer, and forbids reuse of the main
-training optimizer state. Runtime adapters must return the zero-state optimizer hash and the exact
-executed step count. `ContributionProbeObservation` retains that adaptation result and the adapted
-model/checkpoint; `ContributionInterventionObservation` likewise retains its frozen retraining
-result. A validation pair requires distinct adapted/intervention model and checkpoint identities;
-the local Probe cannot be reused as its own finite-Intervention target. Deserialization therefore
-replays the runtime contract instead of trusting an opaque score. The beneficiary checkpoint, not
-the Explorer checkpoint, is frozen within each task-round Probe protocol.
+GP-B centers in gradient space, which is algebraically equivalent to a centered dot product:
 
-`ContributionDataIsolationContract` freezes four disjoint objects per task condition:
+```text
+g_bar_x = E_(z~pi_t)[g_z]
+C_hat_B(x, z) = <g_v, g_z - g_bar_x>
+```
+
+GP-C projects the actual optimizer descent map `U_t` rather than the unpreconditioned gradient:
+
+```text
+u_z = U_t(g_z)
+u_bar_x = E_(z~pi_t)[u_z]
+C_hat_C(x, z) = <g_v, u_z - u_bar_x>
+```
+
+An optimizer-aware score is valid only for the exact frozen optimizer state, learning rate,
+clipping, weight decay, trainable parameter subspace, and step policy. Under plain SGD with a
+positive scalar learning rate, GP-C is only a rescaling of GP-B and is not independent evidence.
+
+The approximation has four deliberately separated evidence layers:
+
+| Layer | Permitted use |
+| --- | --- |
+| synthetic oracle | update-operator controls only |
+| Gradient Projection on estimation objectives | production-candidate estimation |
+| Gradient Projection on disjoint validation objectives | proxy stability validation |
+| finite symmetric distribution intervention | independent target validation only |
+
+Historical local-Probe and one-state finite-Intervention schemas remain readable for audit and
+mechanism diagnostics. They are not the canonical production estimator. In particular, a local
+Probe cannot become energy-eligible merely because it is reproducible on its own validation set.
+
+The Contribution data-isolation contract freezes four disjoint objects per task condition:
 
 ```text
 baseline training D_t
-state-specific Probe update sets B_z
-internal validation nu_int
+state-specific gradient update sets B_z
+estimation and validation objective records nu_est, nu_val
 untouched final test nu_test
 ```
 
-All instance identities are content-addressed. Update sets must be pairwise disjoint, and no training
-or Probe instance may occur in `nu_int` or `nu_test`. Probe and Intervention runtimes receive only
-their allowed instance IDs. The final test set is named in the manifest for leakage auditing but is
-never passed to either runtime.
+All instance identities are content-addressed. Update sets must be pairwise disjoint, and no
+training instance may occur in either objective split or `nu_test`. Estimation and validation
+objective records are mutually disjoint. The untouched final test is inaccessible while gradients,
+scales, perturbations, and thresholds are frozen.
 
-All performance contracts are explicitly `higher_is_better`. Loss metrics must be transformed to
-`J=-Loss` before an observation is constructed. Confidence and standard error are diagnostics;
-they do **not** multiply or shrink the observed gain. The unscaled state gains are centered under the
-current distribution:
+Independent validation perturbs the complete conditional distribution through zero-sum contrast
+coordinates. It prebinds all task-state gradients, applies symmetric `+/-` perturbations, and
+reconstructs coordinate effects from a frozen orthogonal design. It is a target, never an
+estimator. The target must satisfy all of the following before rank evidence is interpreted:
 
 ```text
-C_hat_t(x, z) = gain_t(x, z) - E_(z~pi_t)[gain_t(x, z)]
-E_(z~pi_t)[C_hat_t(x, z)] = 0
+conditional probabilities remain positive and normalized
+task marginal mu(x) and state support remain fixed
+actual parameter step matches the intended step
+numeric replay is deterministic
+orthogonal reconstruction error passes its frozen bound
+learning rate and optimizer match the intended production update
 ```
 
-Empirical validation aggregates paired observations by `(task, round, state)` and reports
-task-round macro rank agreement with the independently trained finite-Intervention target. The
-configured lower confidence bounds for rank correlation and pairwise concordance, rather than
-point estimates, determine whether the proxy is eligible for a production claim.
+Production authorization then requires at least 30 frozen tasks and three verified states per task,
+cross-split Gradient Projection stability, and independent target agreement. Both estimation and
+validation lower 95% bounds for macro Spearman must exceed zero; pairwise-concordance lower bounds
+must exceed 0.5; winner agreement and permutation tests must pass their frozen thresholds. The
+final-test target cannot select a learning rate, perturbation, objective split, or threshold.
 
-A production manifest fails closed on incomplete task-round state or seed support,
-model/checkpoint drift, metric or evaluation drift, optimizer drift, data-split drift, non-frozen
-baselines, or final-test leakage.
+A manifest fails closed on incomplete support, checkpoint or metric drift, split leakage,
+parameter-step non-identifiability, source-scale mismatch, failed rank evidence, or absent immutable
+artifacts. Consequently:
+
+```text
+Scheme 3 + matching independent authorization -> energy eligible
+Scheme 3 without authorization                -> Contribution = 0
+finite intervention target                     -> never energy eligible
+historical local Probe                         -> diagnostic only
+```
+
+The first completed 30-task Finance experiment found strong estimation-versus-validation proxy
+stability but failed both independent cached-SGD batch-intervention rank gates. A subsequent
+GP-A/B/C experiment used the same 30-task support and a separately frozen one-step cold-start
+AdamW target. All three formula variants passed the target rank gate; GP-C had the highest point
+estimate, but its paired advantage over GP-B was not statistically established. The result
+supports Scheme 3 under that diagnostic optimizer contract, not cross-optimizer transfer or the
+unavailable historical optimizer continuation.
+
+A later production-matched authorization attempt preregistered GP-C as Primary on a strictly fresh
+30-task population, froze disjoint Estimation/Validation/Authorization objectives, and added
+next-distribution gates. GP-C failed before Authorization access: its Estimation/Validation
+Spearman was `0.150/0.300`, probability-update direction agreement was `0.544/0.589`, and normalized
+target regret remained above the frozen bounds. No real Finance Contribution authorization exists.
+Until a production-matched approximation passes the independent contract, real rounds must use
+`Contribution=0`; novelty and validity remain available under their own contracts. The positive
+diagnostic and negative authorization evidence are recorded respectively in
+`docs/finance_gradient_projection_abc_validation_report.md` and
+`docs/finance_gradient_projection_independent_authorization_report.md`.
 
 ## Novelty, Potential, And Anchored Update
 

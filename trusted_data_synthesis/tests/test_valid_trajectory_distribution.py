@@ -41,6 +41,7 @@ from trusted_synthesis.core.vtdo import (
     assemble_vtdo_round,
     compile_trajectory_state_space,
     condition_on_accepted_support,
+    contribution_current_distribution_hash,
     empty_optimizer_state_hash,
     estimate_contributions_from_probes,
     estimate_exploration_state_validity,
@@ -53,12 +54,15 @@ from trusted_synthesis.core.vtdo import (
     make_contribution_metric_contract,
     make_contribution_probe_observation,
     make_contribution_probe_protocol,
+    make_contribution_production_authorization,
+    make_contribution_rank_validation_evidence,
     make_exploration_distribution,
     make_probe_optimizer_contract,
     make_public_state_generation_request,
     make_state_validity_partition,
     make_task_conditioned_policy,
     make_trajectory_state_catalog,
+    make_unconditioned_reachability_manifest,
     make_uniform_coverage_prior,
     make_vtdo_role_contract,
     observed_variation,
@@ -91,6 +95,10 @@ from trusted_synthesis.experiments.vtdo_experiment.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime import InMemoryEvidenceToolRuntime
+from trusted_synthesis.runtime.agent import (
+    assess_state_condition_controllability,
+    project_state_condition_constraints,
+)
 
 
 def test_oracle_specification_freezes_validity_boundary_not_unique_reasoning() -> None:
@@ -316,8 +324,10 @@ def test_empirical_contribution_is_model_tied_and_centered_under_current_pi() ->
         round_index=0,
     )
     probes = (
-        _probe("task:x", "state:a", baseline=0.50, intervention=0.60),
-        _probe("task:x", "state:b", baseline=0.50, intervention=0.90),
+        _probe("task:x", "state:a", baseline=0.50, intervention=0.60, seed=7),
+        _probe("task:x", "state:a", baseline=0.50, intervention=0.61, seed=13),
+        _probe("task:x", "state:b", baseline=0.50, intervention=0.90, seed=7),
+        _probe("task:x", "state:b", baseline=0.50, intervention=0.89, seed=13),
     )
 
     manifest = estimate_contributions_from_probes(distribution, probes)
@@ -333,13 +343,14 @@ def test_empirical_contribution_is_model_tied_and_centered_under_current_pi() ->
 
 
 def test_anchored_update_matches_frozen_equation_and_exact_novelty() -> None:
-    prior, coverage, validity, manifest, config, roles = _update_inputs("task:x")
+    prior, coverage, validity, manifest, authorization, config, roles = _update_inputs("task:x")
 
     update = update_valid_trajectory_distribution(
         prior,
         coverage,
         validity,
         manifest,
+        authorization,
         config,
         roles,
     )
@@ -362,6 +373,106 @@ def test_anchored_update_matches_frozen_equation_and_exact_novelty() -> None:
     assert update.next_distribution.probabilities == pytest.approx(expected)
     assert update.next_distribution.probabilities["state:b"] > 0.2
     assert update.algorithm_id == ("anchored_energy_valid_trajectory_distribution_refinement")
+
+
+def test_reachability_aware_energy_penalizes_unobserved_novel_states() -> None:
+    prior, coverage, validity, manifest, authorization, config, roles = _update_inputs("task:x")
+    baseline = update_valid_trajectory_distribution(
+        prior,
+        coverage,
+        validity,
+        manifest,
+        authorization,
+        config,
+        roles,
+    )
+    reachability = make_unconditioned_reachability_manifest(
+        task_condition_id="task:x",
+        explorer_provider_id="provider:explorer-v1",
+        explorer_provider_version="1.0.0",
+        state_counts={"state:a": 19, "state:b": 1},
+        attempted_trajectory_count=20,
+        source_batch_ids=("exploration:round-0",),
+    )
+    reachability_config = config.model_copy(
+        update={
+            "reachability_weight": 1.0,
+            "reachability_floor": 0.01,
+            "reachability_signal": "posterior_mean",
+        }
+    )
+
+    aware = update_valid_trajectory_distribution(
+        prior,
+        coverage,
+        validity,
+        manifest,
+        authorization,
+        reachability_config,
+        roles,
+        reachability,
+    )
+
+    assert aware.reachability_manifest == reachability
+    potentials = {item.state_id: item for item in aware.state_potentials}
+    assert potentials["state:a"].reachability_probability > (
+        potentials["state:b"].reachability_probability
+    )
+    assert (
+        aware.next_distribution.probabilities["state:b"]
+        < (baseline.next_distribution.probabilities["state:b"])
+    )
+
+
+def test_reachability_aware_energy_fails_closed_without_measurements() -> None:
+    prior, coverage, validity, manifest, authorization, config, roles = _update_inputs("task:x")
+    reachability_config = config.model_copy(update={"reachability_weight": 1.0})
+
+    with pytest.raises(ValueError, match="complete manifest"):
+        update_valid_trajectory_distribution(
+            prior,
+            coverage,
+            validity,
+            manifest,
+            authorization,
+            reachability_config,
+            roles,
+        )
+
+
+def test_reachability_confidence_lower_uses_positive_floor_for_zero_hits() -> None:
+    prior, coverage, validity, manifest, authorization, config, roles = _update_inputs("task:x")
+    reachability = make_unconditioned_reachability_manifest(
+        task_condition_id="task:x",
+        explorer_provider_id="provider:explorer-v1",
+        explorer_provider_version="1.0.0",
+        state_counts={"state:a": 2, "state:b": 0},
+        attempted_trajectory_count=2,
+        source_batch_ids=("exploration:round-0",),
+    )
+    reachability_config = config.model_copy(
+        update={
+            "reachability_weight": 1.0,
+            "reachability_floor": 0.01,
+            "reachability_signal": "confidence_lower",
+        }
+    )
+
+    aware = update_valid_trajectory_distribution(
+        prior,
+        coverage,
+        validity,
+        manifest,
+        authorization,
+        reachability_config,
+        roles,
+        reachability,
+    )
+
+    potentials = {item.state_id: item for item in aware.state_potentials}
+    assert potentials["state:b"].reachability_probability == 0
+    assert potentials["state:b"].normalized_reachability == 0.01
+    assert potentials["state:b"].potential > 0
 
 
 def test_update_artifact_replays_equation_instead_of_trusting_serialized_metrics() -> None:
@@ -405,7 +516,7 @@ def test_update_rejects_potential_detached_from_contribution_manifest() -> None:
 
 
 def test_update_rejects_contribution_from_another_beneficiary_model() -> None:
-    prior, coverage, validity, manifest, config, _ = _update_inputs("task:x")
+    prior, coverage, validity, manifest, authorization, config, _ = _update_inputs("task:x")
     wrong_roles = make_vtdo_role_contract(
         explorer_provider_id="provider:explorer-v1",
         materialization_provider_id="provider:materializer-v1",
@@ -419,13 +530,14 @@ def test_update_rejects_contribution_from_another_beneficiary_model() -> None:
             coverage,
             validity,
             manifest,
+            authorization,
             config,
             wrong_roles,
         )
 
 
 def test_validity_is_a_noncompensable_gate_and_conditions_training_support() -> None:
-    prior, coverage, validity, manifest, config, roles = _update_inputs("task:x")
+    prior, coverage, validity, manifest, authorization, config, roles = _update_inputs("task:x")
     quarantined = _validity_estimate("task:x", "state:b", 0.5)
 
     with pytest.raises(ValueError, match="non-Accepted"):
@@ -434,6 +546,7 @@ def test_validity_is_a_noncompensable_gate_and_conditions_training_support() -> 
             coverage,
             (validity[0], quarantined),
             manifest,
+            authorization,
             config,
             roles,
         )
@@ -587,6 +700,73 @@ def test_public_state_request_excludes_host_only_omega_and_oracle_artifacts() ->
     )
     assert all(value not in payload or value in public_payload for value in host_only_values)
     assert not hasattr(request.state_condition, "state_id")
+
+
+def test_state_condition_controllability_rejects_host_blocked_targets() -> None:
+    _, compiled, candidate, evaluator, context = _case_runtime(0)
+    report = evaluator.evaluate(context, candidate)
+    bounded = make_admissible_trajectory_variation(
+        acquisition_requirement="bounded",
+        evidence_support_requirement="required_roles",
+        verification_requirement="full",
+        lineage_requirement="direct",
+        required_capabilities=report.attributes.capability_tags,
+        minimum_tool_calls=report.attributes.tool_call_count,
+        minimum_evidence_count=report.attributes.evidence_dependency_count,
+        minimum_reasoning_depth=report.attributes.reasoning_depth,
+        minimum_verification_degree=report.attributes.verification_degree,
+    )
+    expanded = make_admissible_trajectory_variation(
+        acquisition_requirement="expanded",
+        evidence_support_requirement="expanded_context",
+        verification_requirement="full",
+        lineage_requirement="full",
+        required_capabilities=report.attributes.capability_tags,
+        minimum_tool_calls=report.attributes.tool_call_count,
+        minimum_evidence_count=report.attributes.evidence_dependency_count,
+        minimum_reasoning_depth=report.attributes.reasoning_depth,
+        minimum_verification_degree=report.attributes.verification_degree,
+    )
+    compilation = compile_trajectory_state_space(
+        compiled.joint_compilation,
+        _TestVariationProvider((bounded, expanded)),
+    )
+    bounded_request = make_public_state_generation_request(
+        context,
+        compilation.public_conditions_by_variation_id[bounded.variation_id],
+        candidate_count=1,
+        seed=11,
+    )
+    expanded_request = make_public_state_generation_request(
+        context,
+        compilation.public_conditions_by_variation_id[expanded.variation_id],
+        candidate_count=1,
+        seed=13,
+    )
+
+    bounded_audit = assess_state_condition_controllability(
+        bounded_request,
+        interaction_protocol="host_instrumented",
+    )
+    expanded_audit = assess_state_condition_controllability(
+        expanded_request,
+        interaction_protocol="host_instrumented",
+    )
+    constraints = project_state_condition_constraints(
+        bounded_request.state_condition,
+        bounded_audit,
+    )
+
+    assert bounded_audit.condition_requestable
+    assert not bounded_audit.blocked_dimensions
+    assert constraints["target_behavior"]["acquisition_requirement"] == "bounded"
+    assert "condition_id" not in constraints["target_behavior"]
+    assert not expanded_audit.condition_requestable
+    assert set(expanded_audit.blocked_dimensions) == {
+        "acquisition_requirement",
+        "evidence_support_requirement",
+        "lineage_requirement",
+    }
 
 
 def test_decision_trace_erases_runtime_identity_but_preserves_decisions() -> None:
@@ -947,6 +1127,32 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
     assert partition.accepted_state_ids == (valid_state.state_id,)
     assert partition.rejected_state_ids == (invalid_state.state_id,)
 
+    round_probes = (
+        _probe(
+            context.task.task_id,
+            valid_state.state_id,
+            baseline=0.5,
+            intervention=0.7,
+            state_ids=(valid_state.state_id,),
+            seed=7,
+        ),
+        _probe(
+            context.task.task_id,
+            valid_state.state_id,
+            baseline=0.5,
+            intervention=0.7,
+            state_ids=(valid_state.state_id,),
+            seed=13,
+        ),
+    )
+    accepted_prior, _ = condition_on_accepted_support(
+        pushforward.distribution,
+        exploration.coverage_prior,
+        partition,
+    )
+    round_authorization = _production_authorization(
+        estimate_contributions_from_probes(accepted_prior, round_probes)
+    )
     round_artifact = assemble_vtdo_round(
         state_catalog=catalog,
         role_contract=roles,
@@ -954,15 +1160,8 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
         exploration_batch=batch,
         pushforward_estimate=pushforward,
         validity_partition=partition,
-        contribution_probes=(
-            _probe(
-                context.task.task_id,
-                valid_state.state_id,
-                baseline=0.5,
-                intervention=0.7,
-                state_ids=(valid_state.state_id,),
-            ),
-        ),
+        contribution_probes=round_probes,
+        contribution_production_authorization=round_authorization,
         energy_config=AnchoredEnergyConfig(
             epsilon=0.01,
             contribution_temperature=0.2,
@@ -976,19 +1175,23 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
     assert round_artifact.status == "passed"
     assert round_artifact.update.next_distribution.probabilities == {valid_state.state_id: 1.0}
 
-    wrong_probe = _probe(
-        context.task.task_id,
-        valid_state.state_id,
-        baseline=0.5,
-        intervention=0.9,
-        state_ids=(valid_state.state_id,),
+    wrong_probes = tuple(
+        _probe(
+            context.task.task_id,
+            valid_state.state_id,
+            baseline=0.5,
+            intervention=0.9,
+            state_ids=(valid_state.state_id,),
+            seed=seed,
+        )
+        for seed in (7, 13)
     )
     round_values = {
         field: getattr(round_artifact, field)
         for field in type(round_artifact).model_fields
         if field != "round_id"
     }
-    round_values["contribution_probes"] = (wrong_probe,)
+    round_values["contribution_probes"] = wrong_probes
     with pytest.raises(ValueError, match="does not replay its probes"):
         VTDORoundArtifact(round_id=round_artifact.round_id, **round_values)
 
@@ -1065,8 +1268,19 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
                     intervention=0.7,
                     state_ids=(valid_state.state_id,),
                     round_index=round_index,
+                    seed=7,
+                ),
+                _probe(
+                    context.task.task_id,
+                    valid_state.state_id,
+                    baseline=0.5,
+                    intervention=0.7,
+                    state_ids=(valid_state.state_id,),
+                    round_index=round_index,
+                    seed=13,
                 ),
             ),
+            contribution_production_authorization=round_authorization,
             energy_config=round_artifact.update.energy_config,
         )
         direct_rounds.append(next_round)
@@ -1080,6 +1294,7 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
             "exploration": item.exploration,
             "exploration_batch": item.exploration_batch,
             "contribution_probes": item.contribution_probes,
+            "contribution_production_authorization": (item.contribution_production_authorization),
             "validity_thresholds": ValidityThresholds(reject_below=0.25, accept_at_or_above=0.75),
             "validity_prior_success": 0.0,
             "validity_prior_failure": 0.0,
@@ -1476,6 +1691,7 @@ def _probe(
     intervention: float,
     state_ids: tuple[str, ...] = ("state:a", "state:b"),
     round_index: int = 0,
+    seed: int = 7,
 ):
     data = make_contribution_data_isolation_contract(
         task_condition_id=condition,
@@ -1508,17 +1724,21 @@ def _probe(
             learning_rate=1e-5,
             step_count=3,
         ),
-        probe_seeds=(7,),
+        probe_seeds=(7, 13),
     )
     return make_contribution_probe_observation(
         task_condition_id=condition,
         round_index=round_index,
         state_id=state_id,
         protocol=protocol,
-        seed=7,
+        seed=seed,
         adaptation_result=ProbeAdaptationResult(
-            adapted_model_state_id=f"model:qwen-round-3:probe:{state_id}:round{round_index}",
-            adapted_checkpoint_hash=f"checkpoint:qwen-round-3:probe:{state_id}:round{round_index}",
+            adapted_model_state_id=(
+                f"model:qwen-round-3:probe:{state_id}:round{round_index}:seed{seed}"
+            ),
+            adapted_checkpoint_hash=(
+                f"checkpoint:qwen-round-3:probe:{state_id}:round{round_index}:seed{seed}"
+            ),
             base_model_state_id=protocol.beneficiary_model_state_id,
             base_checkpoint_hash=protocol.beneficiary_checkpoint_hash,
             optimizer_contract_id=protocol.optimizer.contract_id,
@@ -1584,10 +1804,12 @@ def _update_inputs(
             condition,
             state_id,
             baseline=0.5,
-            intervention=0.6 if index == 0 else 0.9,
+            intervention=(0.6 if index == 0 else 0.9) + (0.001 if seed == 13 else 0.0),
             state_ids=state_ids,
+            seed=seed,
         )
         for index, state_id in enumerate(state_ids)
+        for seed in (7, 13)
     )
     manifest = estimate_contributions_from_probes(prior, probes)
     validity = tuple(_validity_estimate(condition, state_id, 1.0) for state_id in state_ids)
@@ -1600,7 +1822,62 @@ def _update_inputs(
         history_kl_weight=2.0,
         coverage_kl_weight=1.0,
     )
-    return prior, coverage, validity, manifest, config, _role_contract("provider:explorer-v1")
+    return (
+        prior,
+        coverage,
+        validity,
+        manifest,
+        _production_authorization(manifest),
+        config,
+        _role_contract("provider:explorer-v1"),
+    )
+
+
+def _production_authorization(manifest):
+    def evidence(role):
+        return make_contribution_rank_validation_evidence(
+            evaluation_role=role,
+            macro_task_spearman=0.8,
+            macro_task_spearman_ci95=(0.2, 0.95),
+            macro_pairwise_concordance=0.8,
+            macro_pairwise_concordance_ci95=(0.6, 0.95),
+            winner_agreement_rate=0.8,
+            macro_spearman_p_value=0.01,
+            macro_pairwise_concordance_p_value=0.01,
+        )
+
+    task_condition_ids = (
+        manifest.task_condition_id,
+        *(f"task:authorized:{index}" for index in range(29)),
+    )
+    task_distribution_hashes = {
+        task_id: (
+            contribution_current_distribution_hash(
+                manifest.task_condition_id,
+                {item.state_id: item.current_probability for item in manifest.estimates},
+            )
+            if task_id == manifest.task_condition_id
+            else f"test-current-distribution:{task_id}"
+        )
+        for task_id in task_condition_ids
+    }
+    return make_contribution_production_authorization(
+        manifest=manifest,
+        analysis_version="test_contribution_validation.v1",
+        analysis_report_hash="test-contribution-report:passed",
+        task_condition_ids=task_condition_ids,
+        task_distribution_hashes=task_distribution_hashes,
+        task_count=30,
+        state_count=60,
+        internal_validation_record_count=10,
+        final_test_record_count=10,
+        estimation_seed_count=2,
+        validation_seed_count=2,
+        intervention_seed_count=2,
+        cross_seed_stability=evidence("cross_seed_stability"),
+        independent_final_test=evidence("independent_final_test"),
+        heldout_final_test=evidence("heldout_final_test"),
+    )
 
 
 def _role_contract(explorer_provider_id: str):

@@ -112,12 +112,8 @@ class StateConditionedExplorationBatch(FrozenModel):
     seed: int
     total_budget: int = Field(ge=1)
     requested_state_counts: dict[str, int] = Field(min_length=1)
-    public_state_requests: dict[str, PublicStateGenerationRequest] = Field(
-        default_factory=dict
-    )
-    public_state_leakage_audits: dict[str, PublicStateLeakageAudit] = Field(
-        default_factory=dict
-    )
+    public_state_requests: dict[str, PublicStateGenerationRequest] = Field(default_factory=dict)
+    public_state_leakage_audits: dict[str, PublicStateLeakageAudit] = Field(default_factory=dict)
     generated_candidate_count: int = Field(ge=0)
     evaluated_candidate_count: int = Field(ge=0)
     mapped_candidate_count: int = Field(ge=0)
@@ -155,8 +151,7 @@ class StateConditionedExplorationBatch(FrozenModel):
         ):
             raise ValueError("exploration leakage audit binds another public request")
         if any(
-            item.public_request_id
-            != self.public_state_requests[item.requested_state_id].request_id
+            item.public_request_id != self.public_state_requests[item.requested_state_id].request_id
             for item in self.observations
         ):
             raise ValueError("exploration observation binds another public request")
@@ -236,9 +231,7 @@ class StateConditionedTrajectoryExplorer:
         if any(state.omega_context_id != context.context_id for state in states.values()):
             raise ValueError("Explorer state catalog belongs to another Omega context")
         expected_manifest = make_omega_component_manifest(context)
-        if any(
-            state.omega_component_manifest != expected_manifest for state in states.values()
-        ):
+        if any(state.omega_component_manifest != expected_manifest for state in states.values()):
             raise ValueError("Explorer state catalog has another Omega component manifest")
 
         requested = allocate_exploration_budget(exploration, total_budget)

@@ -482,6 +482,7 @@ def _make_record(
     sampling_weight: float,
     source_distribution_id: str | None,
     metadata: dict[str, Any],
+    source_artifact_id: str | None = None,
 ) -> VTDOTrainingRecord:
     user_payload = {
         "public_task": artifact.omega.task.public.model_dump(mode="json"),
@@ -498,7 +499,7 @@ def _make_record(
         "assistant_target": _host_instrumented_target(trajectory),
         "target_contract": "host_instrumented_decisions.v1",
         "sampling_weight": sampling_weight,
-        "source_artifact_id": artifact.artifact_id,
+        "source_artifact_id": source_artifact_id or artifact.artifact_id,
         "source_distribution_id": source_distribution_id,
         "metadata": metadata,
         "schema_version": "vtdo_training_record.v2",

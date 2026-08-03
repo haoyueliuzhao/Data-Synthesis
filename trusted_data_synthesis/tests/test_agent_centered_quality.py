@@ -242,6 +242,62 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
     )
 
 
+def test_generation_constraints_are_model_visible_and_change_prompt_lineage() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_payload = _action_plan_from_trajectory(deterministic)
+    answer_payload = _answer_decision_from_trajectory(deterministic)
+    compact_client = ScriptedJsonClient(
+        [copy.deepcopy(action_payload), copy.deepcopy(answer_payload)],
+        interaction_protocol="host_instrumented",
+    )
+    broad_client = ScriptedJsonClient(
+        [copy.deepcopy(action_payload), copy.deepcopy(answer_payload)],
+        interaction_protocol="host_instrumented",
+    )
+
+    compact = LLMAgentSolver(compact_client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+        generation_constraints={
+            "acquisition_requirement": "bounded",
+            "lineage_requirement": "direct",
+        },
+    )
+    broad = LLMAgentSolver(broad_client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+        generation_constraints={
+            "acquisition_requirement": "expanded",
+            "lineage_requirement": "full",
+        },
+    )
+
+    assert compact.audit.generation_constraints_hash
+    assert broad.audit.generation_constraints_hash
+    assert (
+        compact.audit.generation_constraints_hash
+        != broad.audit.generation_constraints_hash
+    )
+    assert (
+        compact.audit.action_prompt_manifest_hash
+        != broad.audit.action_prompt_manifest_hash
+    )
+    assert compact.audit.prompt_manifest_hash != broad.audit.prompt_manifest_hash
+    assert '"trajectory_generation_constraints"' in compact_client.prompts[0]
+    assert '"acquisition_requirement": "bounded"' in compact_client.prompts[0]
+    assert '"acquisition_requirement": "expanded"' in broad_client.prompts[0]
+
+
 
 def test_host_instrumented_multistep_uses_direct_grounding_and_transitive_lineage() -> None:
     case = next(

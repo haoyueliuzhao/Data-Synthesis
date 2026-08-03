@@ -12,6 +12,7 @@ from trusted_synthesis.core.vtdo import (
     InterventionTrainingResult,
     ProbeAdaptationResult,
     ValidityThresholds,
+    contribution_current_distribution_hash,
     empty_optimizer_state_hash,
     estimate_contributions_from_interventions,
     estimate_contributions_from_probes,
@@ -23,6 +24,8 @@ from trusted_synthesis.core.vtdo import (
     make_contribution_metric_contract,
     make_contribution_probe_observation,
     make_contribution_probe_protocol,
+    make_contribution_production_authorization,
+    make_contribution_rank_validation_evidence,
     make_coverage_prior,
     make_probe_optimizer_contract,
     make_vtdo_role_contract,
@@ -128,10 +131,32 @@ def test_probe_confidence_is_diagnostic_and_does_not_shrink_contribution() -> No
         make_contribution_probe_observation(
             task_condition_id="task:x",
             round_index=0,
+            state_id="state:a",
+            protocol=probe,
+            seed=13,
+            adaptation_result=_adaptation_result(probe, "state:proof", 13),
+            baseline_performance=0.5,
+            adapted_performance=0.6,
+            measurement_confidence=0.1,
+        ),
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
             state_id="state:b",
             protocol=probe,
             seed=7,
             adaptation_result=_adaptation_result(probe, "state:proof", 7),
+            baseline_performance=0.5,
+            adapted_performance=0.9,
+            measurement_confidence=1.0,
+        ),
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
+            state_id="state:b",
+            protocol=probe,
+            seed=13,
+            adaptation_result=_adaptation_result(probe, "state:proof", 13),
             baseline_performance=0.5,
             adapted_performance=0.9,
             measurement_confidence=1.0,
@@ -143,8 +168,251 @@ def test_probe_confidence_is_diagnostic_and_does_not_shrink_contribution() -> No
 
     assert estimates["state:a"].raw_marginal_gain == pytest.approx(0.1)
     assert estimates["state:a"].centered_contribution == pytest.approx(-0.06)
+    assert estimates["state:a"].sample_standard_deviation == 0.0
+    assert estimates["state:a"].conservative_centered_contribution == pytest.approx(-0.06)
     assert estimates["state:b"].centered_contribution == pytest.approx(0.24)
     assert manifest.weighted_centered_mean == pytest.approx(0.0, abs=1e-12)
+
+
+def test_uncertainty_penalty_can_reverse_noisy_mean_ranking_and_drives_energy() -> None:
+    distribution, probe, _ = _contracts()
+    gains = {
+        ("state:a", 7): 0.2,
+        ("state:a", 13): 0.4,
+        ("state:b", 7): 0.25,
+        ("state:b", 13): 0.25,
+    }
+    observations = tuple(
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
+            state_id=state_id,
+            protocol=probe,
+            seed=seed,
+            adaptation_result=_adaptation_result(probe, "state:proof", seed),
+            baseline_performance=0.5,
+            adapted_performance=0.5 + gain,
+        )
+        for (state_id, seed), gain in gains.items()
+    )
+    manifest = estimate_contributions_from_probes(distribution, observations)
+    estimates = {item.state_id: item for item in manifest.estimates}
+
+    assert estimates["state:a"].centered_contribution > estimates["state:b"].centered_contribution
+    assert estimates["state:a"].sample_standard_deviation > 0
+    assert estimates["state:a"].conservative_centered_contribution < (
+        estimates["state:b"].conservative_centered_contribution
+    )
+    assert manifest.weighted_conservative_centered_mean == pytest.approx(0.0, abs=1e-12)
+
+    coverage = make_coverage_prior(
+        "task:x",
+        {"state:a": 0.5, "state:b": 0.5},
+        policy="test",
+    )
+    update = update_valid_trajectory_distribution(
+        distribution,
+        coverage,
+        tuple(_accepted_validity(state_id) for state_id in ("state:a", "state:b")),
+        manifest,
+        _production_authorization(manifest),
+        AnchoredEnergyConfig(
+            epsilon=0.01,
+            contribution_temperature=1.0,
+            novelty_temperature=1.0,
+            contribution_weight=0.999999,
+            novelty_weight=0.000001,
+            history_kl_weight=1.0,
+            coverage_kl_weight=1.0,
+        ),
+        make_vtdo_role_contract(
+            explorer_provider_id="explorer:x",
+            materialization_provider_id="materializer:x",
+            beneficiary_model_state_id="beneficiary:x",
+            final_student_model_id="student:x",
+        ),
+    )
+    potentials = {item.state_id: item for item in update.state_potentials}
+    assert potentials["state:b"].normalized_contribution > (
+        potentials["state:a"].normalized_contribution
+    )
+    assert all(
+        item.contribution_signal_kind == "conservative_centered_contribution"
+        for item in potentials.values()
+    )
+
+
+def test_local_probe_update_fails_closed_without_matching_independent_authorization() -> None:
+    distribution, probe, _ = _contracts()
+    observations = tuple(
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
+            state_id=state_id,
+            protocol=probe,
+            seed=seed,
+            adaptation_result=_adaptation_result(probe, "state:proof", seed),
+            baseline_performance=0.5,
+            adapted_performance=0.6 + state_index * 0.1,
+        )
+        for state_index, state_id in enumerate(("state:a", "state:b"))
+        for seed in (7, 13)
+    )
+    manifest = estimate_contributions_from_probes(distribution, observations)
+    coverage = make_coverage_prior(
+        "task:x",
+        {"state:a": 0.5, "state:b": 0.5},
+        policy="test",
+    )
+    validity = tuple(_accepted_validity(state_id) for state_id in ("state:a", "state:b"))
+    config = AnchoredEnergyConfig(
+        epsilon=0.01,
+        contribution_temperature=1.0,
+        novelty_temperature=1.0,
+        contribution_weight=0.5,
+        novelty_weight=0.5,
+        history_kl_weight=1.0,
+        coverage_kl_weight=1.0,
+    )
+    roles = make_vtdo_role_contract(
+        explorer_provider_id="explorer:x",
+        materialization_provider_id="materializer:x",
+        beneficiary_model_state_id="beneficiary:x",
+        final_student_model_id="student:x",
+    )
+
+    with pytest.raises(ValueError, match="independent authorization"):
+        update_valid_trajectory_distribution(
+            distribution,
+            coverage,
+            validity,
+            manifest,
+            None,
+            config,
+            roles,
+        )
+
+    authorization = _production_authorization(manifest)
+    wrong_horizon = authorization.model_copy(update={"selected_adaptation_horizon": 1})
+    with pytest.raises(ValueError, match="does not match"):
+        update_valid_trajectory_distribution(
+            distribution,
+            coverage,
+            validity,
+            manifest,
+            wrong_horizon,
+            config,
+            roles,
+        )
+
+
+def test_production_authorization_rejects_failed_rank_evidence() -> None:
+    distribution, probe, _ = _contracts()
+    observations = tuple(
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
+            state_id=state_id,
+            protocol=probe,
+            seed=seed,
+            adaptation_result=_adaptation_result(probe, "state:proof", seed),
+            baseline_performance=0.5,
+            adapted_performance=0.6 + state_index * 0.1,
+        )
+        for state_index, state_id in enumerate(("state:a", "state:b"))
+        for seed in (7, 13)
+    )
+    manifest = estimate_contributions_from_probes(distribution, observations)
+    failed = make_contribution_rank_validation_evidence(
+        evaluation_role="cross_seed_stability",
+        macro_task_spearman=0.1,
+        macro_task_spearman_ci95=(-0.2, 0.4),
+        macro_pairwise_concordance=0.55,
+        macro_pairwise_concordance_ci95=(0.4, 0.7),
+        winner_agreement_rate=0.5,
+        macro_spearman_p_value=0.2,
+        macro_pairwise_concordance_p_value=0.2,
+    )
+    valid = _production_authorization(manifest)
+
+    with pytest.raises(ValueError, match="failed rank gate"):
+        make_contribution_production_authorization(
+            manifest=manifest,
+            analysis_version=valid.analysis_version,
+            analysis_report_hash=valid.analysis_report_hash,
+            task_condition_ids=valid.task_condition_ids,
+            task_distribution_hashes=dict(valid.task_distribution_hashes),
+            task_count=valid.task_count,
+            state_count=valid.state_count,
+            internal_validation_record_count=valid.internal_validation_record_count,
+            final_test_record_count=valid.final_test_record_count,
+            estimation_seed_count=valid.estimation_seed_count,
+            validation_seed_count=valid.validation_seed_count,
+            intervention_seed_count=valid.intervention_seed_count,
+            cross_seed_stability=failed,
+            independent_final_test=valid.independent_final_test,
+            heldout_final_test=valid.heldout_final_test,
+        )
+
+    mismatched_distributions = dict(valid.task_distribution_hashes)
+    mismatched_distributions[manifest.task_condition_id] = "current-distribution:wrong"
+    with pytest.raises(ValueError, match="distribution mapping does not match"):
+        make_contribution_production_authorization(
+            manifest=manifest,
+            analysis_version=valid.analysis_version,
+            analysis_report_hash=valid.analysis_report_hash,
+            task_condition_ids=valid.task_condition_ids,
+            task_distribution_hashes=mismatched_distributions,
+            task_count=valid.task_count,
+            state_count=valid.state_count,
+            internal_validation_record_count=valid.internal_validation_record_count,
+            final_test_record_count=valid.final_test_record_count,
+            estimation_seed_count=valid.estimation_seed_count,
+            validation_seed_count=valid.validation_seed_count,
+            intervention_seed_count=valid.intervention_seed_count,
+            cross_seed_stability=valid.cross_seed_stability,
+            independent_final_test=valid.independent_final_test,
+            heldout_final_test=valid.heldout_final_test,
+        )
+
+
+def test_production_authorization_rejects_task_outside_validated_population() -> None:
+    distribution, probe, _ = _contracts()
+    observations = tuple(
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
+            state_id=state_id,
+            protocol=probe,
+            seed=seed,
+            adaptation_result=_adaptation_result(probe, "state:proof", seed),
+            baseline_performance=0.5,
+            adapted_performance=adapted_performance,
+        )
+        for state_id, adapted_performance in (("state:a", 0.6), ("state:b", 0.9))
+        for seed in (7, 13)
+    )
+    manifest = estimate_contributions_from_probes(distribution, observations)
+    valid = _production_authorization(manifest)
+
+    with pytest.raises(ValueError, match="outside the validated population"):
+        make_contribution_production_authorization(
+            manifest=manifest,
+            analysis_version=valid.analysis_version,
+            analysis_report_hash=valid.analysis_report_hash,
+            task_condition_ids=tuple(f"task:other:{index}" for index in range(30)),
+            task_distribution_hashes=dict(valid.task_distribution_hashes),
+            task_count=valid.task_count,
+            state_count=valid.state_count,
+            internal_validation_record_count=valid.internal_validation_record_count,
+            final_test_record_count=valid.final_test_record_count,
+            estimation_seed_count=valid.estimation_seed_count,
+            validation_seed_count=valid.validation_seed_count,
+            intervention_seed_count=valid.intervention_seed_count,
+            cross_seed_stability=valid.cross_seed_stability,
+            independent_final_test=valid.independent_final_test,
+            heldout_final_test=valid.heldout_final_test,
+        )
 
 
 def test_manifest_replays_centering_from_raw_gains_and_current_distribution() -> None:
@@ -163,10 +431,30 @@ def test_manifest_replays_centering_from_raw_gains_and_current_distribution() ->
         make_contribution_probe_observation(
             task_condition_id="task:x",
             round_index=0,
+            state_id="state:a",
+            protocol=probe,
+            seed=13,
+            adaptation_result=_adaptation_result(probe, "state:proof", 13),
+            baseline_performance=0.5,
+            adapted_performance=0.6,
+        ),
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
             state_id="state:b",
             protocol=probe,
             seed=7,
             adaptation_result=_adaptation_result(probe, "state:proof", 7),
+            baseline_performance=0.5,
+            adapted_performance=0.9,
+        ),
+        make_contribution_probe_observation(
+            task_condition_id="task:x",
+            round_index=0,
+            state_id="state:b",
+            protocol=probe,
+            seed=13,
+            adaptation_result=_adaptation_result(probe, "state:proof", 13),
             baseline_performance=0.5,
             adapted_performance=0.9,
         ),
@@ -303,6 +591,7 @@ def test_finite_intervention_manifest_cannot_update_production_distribution() ->
             coverage,
             validity,
             manifest,
+            None,
             AnchoredEnergyConfig(
                 epsilon=0.01,
                 contribution_temperature=1.0,
@@ -479,7 +768,7 @@ def _contracts(
         metric_contract=metric,
         data_isolation=data,
         optimizer=optimizer,
-        probe_seeds=(7,),
+        probe_seeds=(7, 13),
     )
     intervention = make_contribution_intervention_protocol(
         beneficiary_model_state_id="beneficiary:x",
@@ -623,4 +912,53 @@ def _accepted_validity(state_id: str) -> StateValidityEstimate:
     return StateValidityEstimate(
         estimate_id=state_validity_estimate_id(provisional),
         **values,
+    )
+
+
+def _production_authorization(
+    manifest: ContributionEstimationManifest,
+):
+    def evidence(role: str):
+        return make_contribution_rank_validation_evidence(
+            evaluation_role=role,
+            macro_task_spearman=0.8,
+            macro_task_spearman_ci95=(0.2, 0.95),
+            macro_pairwise_concordance=0.8,
+            macro_pairwise_concordance_ci95=(0.6, 0.95),
+            winner_agreement_rate=0.8,
+            macro_spearman_p_value=0.01,
+            macro_pairwise_concordance_p_value=0.01,
+        )
+
+    task_condition_ids = (
+        manifest.task_condition_id,
+        *(f"task:authorized:{index}" for index in range(29)),
+    )
+    task_distribution_hashes = {
+        task_id: (
+            contribution_current_distribution_hash(
+                manifest.task_condition_id,
+                {item.state_id: item.current_probability for item in manifest.estimates},
+            )
+            if task_id == manifest.task_condition_id
+            else f"test-current-distribution:{task_id}"
+        )
+        for task_id in task_condition_ids
+    }
+    return make_contribution_production_authorization(
+        manifest=manifest,
+        analysis_version="test_contribution_validation.v1",
+        analysis_report_hash="test-contribution-report:passed",
+        task_condition_ids=task_condition_ids,
+        task_distribution_hashes=task_distribution_hashes,
+        task_count=30,
+        state_count=60,
+        internal_validation_record_count=10,
+        final_test_record_count=10,
+        estimation_seed_count=2,
+        validation_seed_count=2,
+        intervention_seed_count=2,
+        cross_seed_stability=evidence("cross_seed_stability"),
+        independent_final_test=evidence("independent_final_test"),
+        heldout_final_test=evidence("heldout_final_test"),
     )

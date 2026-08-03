@@ -13,6 +13,13 @@ from trusted_synthesis.core.vtdo.schema import (
     VTDO_SCHEMA_VERSION,
     ConditionalTrajectoryDistribution,
     ContributionEstimationManifest,
+    ContributionProductionAuthorization,
+    ContributionRankValidationEvidence,
+    contribution_current_distribution_hash,
+    contribution_distribution_contract_hash,
+    contribution_production_authorization_id,
+    contribution_rank_validation_evidence_id,
+    contribution_task_population_hash,
 )
 from trusted_synthesis.hashing import canonical_hash
 
@@ -107,9 +114,9 @@ class ProbeOptimizerContract(FrozenModel):
     """A local optimizer whose state cannot inherit the main training history."""
 
     contract_id: str = Field(min_length=1)
-    optimizer_name: Literal["sgd", "adamw"]
+    optimizer_name: Literal["sgd"]
     learning_rate: float = Field(gt=0)
-    step_count: int = Field(default=3, ge=1, le=3)
+    step_count: int = Field(default=1, ge=1, le=3)
     weight_decay: float = Field(default=0.0, ge=0)
     momentum: float = Field(default=0.0, ge=0)
     cold_start: Literal[True] = True
@@ -119,8 +126,10 @@ class ProbeOptimizerContract(FrozenModel):
 
     @model_validator(mode="after")
     def validate_contract(self) -> ProbeOptimizerContract:
-        if self.optimizer_name == "sgd" and not math.isclose(self.momentum, 0.0, abs_tol=1e-12):
+        if not math.isclose(self.momentum, 0.0, abs_tol=1e-12):
             raise ValueError("SGD Contribution Probe requires momentum=0")
+        if not math.isclose(self.weight_decay, 0.0, abs_tol=1e-12):
+            raise ValueError("SGD Contribution Probe requires weight_decay=0")
         if self.contract_id != probe_optimizer_contract_id(self):
             raise ValueError("Probe optimizer contract identity is invalid")
         return self
@@ -135,7 +144,12 @@ class ContributionProbeProtocol(FrozenModel):
     metric_contract: ContributionMetricContract
     data_isolation: ContributionDataIsolationContract
     optimizer: ProbeOptimizerContract
-    probe_seeds: tuple[int, ...] = Field(min_length=1)
+    probe_seeds: tuple[int, ...] = Field(min_length=2)
+    uncertainty_statistic: Literal["sample_standard_deviation"] = "sample_standard_deviation"
+    uncertainty_penalty_coefficient: float = Field(default=1.0, gt=0)
+    centering_policy: Literal["pi_weighted_after_uncertainty_penalty"] = (
+        "pi_weighted_after_uncertainty_penalty"
+    )
     schema_version: str = VTDO_SCHEMA_VERSION
 
     @model_validator(mode="after")
@@ -451,9 +465,9 @@ def make_contribution_data_isolation_contract(
 
 def make_probe_optimizer_contract(
     *,
-    optimizer_name: Literal["sgd", "adamw"] = "sgd",
+    optimizer_name: Literal["sgd"] = "sgd",
     learning_rate: float,
-    step_count: int = 3,
+    step_count: int = 1,
     weight_decay: float = 0.0,
     momentum: float = 0.0,
 ) -> ProbeOptimizerContract:
@@ -483,6 +497,7 @@ def make_contribution_probe_protocol(
     data_isolation: ContributionDataIsolationContract,
     optimizer: ProbeOptimizerContract,
     probe_seeds: Iterable[int],
+    uncertainty_penalty_coefficient: float = 1.0,
 ) -> ContributionProbeProtocol:
     values = {
         "beneficiary_model_state_id": beneficiary_model_state_id,
@@ -491,6 +506,9 @@ def make_contribution_probe_protocol(
         "data_isolation": data_isolation,
         "optimizer": optimizer,
         "probe_seeds": tuple(sorted(probe_seeds)),
+        "uncertainty_statistic": "sample_standard_deviation",
+        "uncertainty_penalty_coefficient": uncertainty_penalty_coefficient,
+        "centering_policy": "pi_weighted_after_uncertainty_penalty",
         "schema_version": VTDO_SCHEMA_VERSION,
     }
     provisional = ContributionProbeProtocol.model_construct(protocol_id="pending", **values)
@@ -635,6 +653,120 @@ def make_synthetic_oracle_contribution_observation(
     )
 
 
+def make_contribution_rank_validation_evidence(
+    *,
+    evaluation_role: Literal[
+        "cross_seed_stability",
+        "independent_final_test",
+        "heldout_final_test",
+    ],
+    macro_task_spearman: float,
+    macro_task_spearman_ci95: tuple[float, float],
+    macro_pairwise_concordance: float,
+    macro_pairwise_concordance_ci95: tuple[float, float],
+    winner_agreement_rate: float,
+    macro_spearman_p_value: float,
+    macro_pairwise_concordance_p_value: float,
+) -> ContributionRankValidationEvidence:
+    values = {
+        "evaluation_role": evaluation_role,
+        "macro_task_spearman": macro_task_spearman,
+        "macro_task_spearman_ci95": macro_task_spearman_ci95,
+        "macro_pairwise_concordance": macro_pairwise_concordance,
+        "macro_pairwise_concordance_ci95": macro_pairwise_concordance_ci95,
+        "winner_agreement_rate": winner_agreement_rate,
+        "macro_spearman_p_value": macro_spearman_p_value,
+        "macro_pairwise_concordance_p_value": macro_pairwise_concordance_p_value,
+        "schema_version": VTDO_SCHEMA_VERSION,
+    }
+    provisional = ContributionRankValidationEvidence.model_construct(
+        evidence_id="pending",
+        **values,
+    )
+    return ContributionRankValidationEvidence(
+        evidence_id=contribution_rank_validation_evidence_id(provisional),
+        **values,
+    )
+
+
+def make_contribution_production_authorization(
+    *,
+    manifest: ContributionEstimationManifest,
+    analysis_version: str,
+    analysis_report_hash: str,
+    task_condition_ids: Iterable[str],
+    task_distribution_hashes: Mapping[str, str],
+    task_count: int,
+    state_count: int,
+    internal_validation_record_count: int,
+    final_test_record_count: int,
+    estimation_seed_count: int,
+    validation_seed_count: int,
+    intervention_seed_count: int,
+    cross_seed_stability: ContributionRankValidationEvidence,
+    independent_final_test: ContributionRankValidationEvidence,
+    heldout_final_test: ContributionRankValidationEvidence,
+) -> ContributionProductionAuthorization:
+    if manifest.estimator_kind != "local_probe":
+        raise ValueError("only a local Probe manifest can receive production authorization")
+    frozen_task_condition_ids = tuple(sorted(task_condition_ids))
+    if manifest.task_condition_id not in frozen_task_condition_ids:
+        raise ValueError("Contribution manifest task is outside the validated population")
+    frozen_task_distribution_hashes = tuple(
+        sorted((str(task_id), str(value)) for task_id, value in task_distribution_hashes.items())
+    )
+    manifest_distribution_hash = contribution_current_distribution_hash(
+        manifest.task_condition_id,
+        {item.state_id: item.current_probability for item in manifest.estimates},
+    )
+    if dict(frozen_task_distribution_hashes).get(manifest.task_condition_id) != (
+        manifest_distribution_hash
+    ):
+        raise ValueError("Contribution distribution mapping does not match its manifest")
+    values = {
+        "analysis_version": analysis_version,
+        "analysis_report_hash": analysis_report_hash,
+        "current_distribution_contract_hash": contribution_distribution_contract_hash(
+            dict(frozen_task_distribution_hashes)
+        ),
+        "task_distribution_hashes": frozen_task_distribution_hashes,
+        "beneficiary_model_state_id": manifest.beneficiary_model_state_id,
+        "beneficiary_checkpoint_hash": manifest.beneficiary_checkpoint_hash,
+        "target_metric_id": manifest.target_metric_id,
+        "probe_optimizer_contract_id": manifest.probe_optimizer_contract_id,
+        "selected_adaptation_horizon": manifest.probe_adaptation_horizon,
+        "uncertainty_statistic": manifest.uncertainty_statistic,
+        "uncertainty_penalty_coefficient": manifest.uncertainty_penalty_coefficient,
+        "production_contribution_field": manifest.production_contribution_field,
+        "internal_validation_set_id": manifest.target_evaluation_distribution_id,
+        "final_test_set_id": manifest.final_test_set_id,
+        "task_condition_ids": frozen_task_condition_ids,
+        "task_population_hash": contribution_task_population_hash(frozen_task_condition_ids),
+        "task_count": task_count,
+        "state_count": state_count,
+        "internal_validation_record_count": internal_validation_record_count,
+        "final_test_record_count": final_test_record_count,
+        "estimation_seed_count": estimation_seed_count,
+        "validation_seed_count": validation_seed_count,
+        "intervention_seed_count": intervention_seed_count,
+        "seed_sets_disjoint": True,
+        "strict_identity_validated": True,
+        "cross_seed_stability": cross_seed_stability,
+        "independent_final_test": independent_final_test,
+        "heldout_final_test": heldout_final_test,
+        "status": "passed",
+        "schema_version": VTDO_SCHEMA_VERSION,
+    }
+    provisional = ContributionProductionAuthorization.model_construct(
+        authorization_id="pending",
+        **values,
+    )
+    return ContributionProductionAuthorization(
+        authorization_id=contribution_production_authorization_id(provisional),
+        **values,
+    )
+
+
 def run_contribution_probe(
     runtime: ContributionProbeRuntimeProtocol,
     *,
@@ -739,6 +871,10 @@ def estimate_contributions_from_probes(
         state_id: _standard_error(item.performance_gain for item in state_items)
         for state_id, state_items in by_state.items()
     }
+    sample_standard_deviations = {
+        state_id: _sample_standard_deviation(item.performance_gain for item in state_items)
+        for state_id, state_items in by_state.items()
+    }
     confidences = {
         state_id: min(item.measurement_confidence for item in state_items)
         for state_id, state_items in by_state.items()
@@ -749,7 +885,9 @@ def estimate_contributions_from_probes(
         gains,
         confidences=confidences,
         observation_counts=counts,
+        sample_standard_deviations=sample_standard_deviations,
         standard_errors=standard_errors,
+        uncertainty_penalty_coefficient=protocol.uncertainty_penalty_coefficient,
         beneficiary_model_state_id=protocol.beneficiary_model_state_id,
         beneficiary_checkpoint_hash=protocol.beneficiary_checkpoint_hash,
         target_evaluation_distribution_id=(protocol.metric_contract.evaluation_distribution_id),
@@ -761,6 +899,8 @@ def estimate_contributions_from_probes(
         data_isolation_contract_id=protocol.data_isolation.contract_id,
         final_test_set_id=protocol.data_isolation.final_test_set_id,
         estimator_id=estimator_id,
+        probe_optimizer_contract_id=protocol.optimizer.contract_id,
+        probe_adaptation_horizon=protocol.optimizer.step_count,
     )
 
 
@@ -790,7 +930,14 @@ def estimate_contributions_from_interventions(
         values,
         confidences={state_id: 1.0 for state_id in by_state},
         observation_counts=counts,
+        sample_standard_deviations={
+            state_id: _sample_standard_deviation(
+                item.normalized_intervention_contribution for item in state_items
+            )
+            for state_id, state_items in by_state.items()
+        },
         standard_errors=standard_errors,
+        uncertainty_penalty_coefficient=0.0,
         beneficiary_model_state_id=protocol.beneficiary_model_state_id,
         beneficiary_checkpoint_hash=protocol.beneficiary_checkpoint_hash,
         target_evaluation_distribution_id=(protocol.metric_contract.evaluation_distribution_id),
@@ -829,7 +976,9 @@ def estimate_synthetic_oracle_contributions(
         {state_id: item.oracle_contribution for state_id, item in by_state.items()},
         confidences={state_id: 1.0 for state_id in by_state},
         observation_counts={state_id: 1 for state_id in by_state},
+        sample_standard_deviations={state_id: 0.0 for state_id in by_state},
         standard_errors={state_id: 0.0 for state_id in by_state},
+        uncertainty_penalty_coefficient=0.0,
         beneficiary_model_state_id="synthetic_oracle",
         beneficiary_checkpoint_hash="synthetic_oracle",
         target_evaluation_distribution_id="synthetic_oracle",
@@ -1050,6 +1199,13 @@ def _standard_error(values: Iterable[float]) -> float:
     if len(items) < 2:
         return 0.0
     return statistics.stdev(items) / math.sqrt(len(items))
+
+
+def _sample_standard_deviation(values: Iterable[float]) -> float:
+    items = tuple(values)
+    if len(items) < 2:
+        return 0.0
+    return statistics.stdev(items)
 
 
 def _validate_finite_scores(*values: float) -> None:

@@ -23,6 +23,13 @@ from trusted_synthesis.runtime.agent.schema import (
     HostInteractionProgress,
     ModelCallTelemetry,
 )
+from trusted_synthesis.runtime.agent.state_conditioned import (
+    StateConditionControllabilityAudit,
+    StateConditionedGenerationRecord,
+    StateConditionedLLMTrajectoryProvider,
+    assess_state_condition_controllability,
+    project_state_condition_constraints,
+)
 
 __all__ = [
     "AgentActionDecision",
@@ -47,4 +54,9 @@ __all__ = [
     "LLMClientError",
     "ModelCallTelemetry",
     "OpenAICompatibleJsonClient",
+    "StateConditionControllabilityAudit",
+    "StateConditionedGenerationRecord",
+    "StateConditionedLLMTrajectoryProvider",
+    "assess_state_condition_controllability",
+    "project_state_condition_constraints",
 ]

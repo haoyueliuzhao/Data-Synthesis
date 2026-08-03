@@ -16,6 +16,7 @@ from .schema import (
     AnchoredEnergyConfig,
     ConditionalTrajectoryDistribution,
     ContributionEstimationManifest,
+    ContributionProductionAuthorization,
     CoveragePrior,
     EmpiricalDistributionEstimate,
     ExplorationDistribution,
@@ -45,6 +46,7 @@ class VTDORoundArtifact(FrozenModel):
     accepted_coverage_prior: CoveragePrior
     contribution_probes: tuple[ContributionProbeObservation, ...] = Field(min_length=1)
     contribution_manifest: ContributionEstimationManifest
+    contribution_production_authorization: ContributionProductionAuthorization
     update: AnchoredDistributionUpdate
     status: str = "passed"
     schema_version: str = VTDO_SCHEMA_VERSION
@@ -125,6 +127,7 @@ class VTDORoundArtifact(FrozenModel):
             self.accepted_coverage_prior,
             accepted_estimates,
             self.contribution_manifest,
+            self.contribution_production_authorization,
             self.update.energy_config,
             self.role_contract,
         )
@@ -144,11 +147,10 @@ def assemble_vtdo_round(
     pushforward_estimate: EmpiricalDistributionEstimate,
     validity_partition: StateValidityPartition,
     contribution_probes: Iterable[ContributionProbeObservation],
+    contribution_production_authorization: ContributionProductionAuthorization,
     energy_config: AnchoredEnergyConfig,
 ) -> VTDORoundArtifact:
-    probes = tuple(
-        sorted(contribution_probes, key=lambda item: (item.state_id, item.seed))
-    )
+    probes = tuple(sorted(contribution_probes, key=lambda item: (item.state_id, item.seed)))
     accepted_prior, accepted_coverage = condition_on_accepted_support(
         pushforward_estimate.distribution,
         exploration.coverage_prior,
@@ -163,6 +165,7 @@ def assemble_vtdo_round(
         accepted_coverage,
         accepted_estimates,
         contribution_manifest,
+        contribution_production_authorization,
         energy_config,
         role_contract,
     )
@@ -179,6 +182,7 @@ def assemble_vtdo_round(
         "accepted_coverage_prior": accepted_coverage,
         "contribution_probes": probes,
         "contribution_manifest": contribution_manifest,
+        "contribution_production_authorization": contribution_production_authorization,
         "update": update,
         "status": "passed",
         "schema_version": VTDO_SCHEMA_VERSION,

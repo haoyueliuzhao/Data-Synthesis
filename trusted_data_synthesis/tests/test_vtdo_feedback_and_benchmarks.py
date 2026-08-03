@@ -10,12 +10,16 @@ from trusted_synthesis.core.vtdo import (
     AnchoredEnergyConfig,
     ProbeAdaptationResult,
     ValidityThresholds,
+    contribution_current_distribution_hash,
     empty_optimizer_state_hash,
+    estimate_contributions_from_probes,
     make_conditional_distribution,
     make_contribution_data_isolation_contract,
     make_contribution_metric_contract,
     make_contribution_probe_observation,
     make_contribution_probe_protocol,
+    make_contribution_production_authorization,
+    make_contribution_rank_validation_evidence,
     make_probe_optimizer_contract,
 )
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
@@ -240,6 +244,107 @@ def test_real_feedback_replays_explorer_and_multi_seed_probes(
 
     probe_path = tmp_path / "probes.jsonl"
     _write_models(probe_path, probe_records)
+    isolation = make_contribution_data_isolation_contract(
+        task_condition_id=condition_id,
+        baseline_training_set_id="finance-train:v1",
+        baseline_training_instance_ids=baseline_training_ids,
+        probe_update_instance_ids_by_state={
+            state_id: (f"probe:{state_id}",) for state_id in state_ids
+        },
+        internal_validation_set_id="finance-eval:v1",
+        internal_validation_instance_ids=internal_validation_ids,
+        final_test_set_id="finance-final-test:v1",
+        final_test_instance_ids=final_test_ids,
+    )
+    metric = make_contribution_metric_contract(
+        target_metric_id="answer-accuracy",
+        evaluation_distribution_id="finance-eval:v1",
+        evaluation_snapshot_hash="evaluation-snapshot:abc",
+        score_transform="identity",
+    )
+    protocol = make_contribution_probe_protocol(
+        beneficiary_model_state_id="beneficiary:M0",
+        beneficiary_checkpoint_hash="beneficiary-checkpoint:abc",
+        metric_contract=metric,
+        data_isolation=isolation,
+        optimizer=probe_optimizer,
+        probe_seeds=(7, 13, 19),
+    )
+    observations = tuple(
+        make_contribution_probe_observation(
+            task_condition_id=record.task_condition_id,
+            round_index=record.round_index,
+            state_id=record.state_id,
+            protocol=protocol,
+            seed=record.seed,
+            adaptation_result=ProbeAdaptationResult(
+                adapted_model_state_id=record.adapted_model_state_id,
+                adapted_checkpoint_hash=record.adapted_checkpoint_hash,
+                base_model_state_id=record.beneficiary_model_state_id,
+                base_checkpoint_hash=record.beneficiary_checkpoint_hash,
+                optimizer_contract_id=probe_optimizer.contract_id,
+                initial_optimizer_state_hash=empty_optimizer_state_hash(probe_optimizer),
+                executed_step_count=probe_optimizer.step_count,
+            ),
+            baseline_performance=record.baseline_performance,
+            adapted_performance=record.adapted_performance,
+        )
+        for record in probe_records
+    )
+    contribution_manifest = estimate_contributions_from_probes(prior, observations)
+
+    def rank_evidence(role):
+        return make_contribution_rank_validation_evidence(
+            evaluation_role=role,
+            macro_task_spearman=0.8,
+            macro_task_spearman_ci95=(0.2, 0.95),
+            macro_pairwise_concordance=0.8,
+            macro_pairwise_concordance_ci95=(0.6, 0.95),
+            winner_agreement_rate=0.8,
+            macro_spearman_p_value=0.01,
+            macro_pairwise_concordance_p_value=0.01,
+        )
+
+    task_condition_ids = (
+        contribution_manifest.task_condition_id,
+        *(f"task:authorized:{index}" for index in range(29)),
+    )
+    task_distribution_hashes = {
+        task_id: (
+            contribution_current_distribution_hash(
+                contribution_manifest.task_condition_id,
+                {
+                    item.state_id: item.current_probability
+                    for item in contribution_manifest.estimates
+                },
+            )
+            if task_id == contribution_manifest.task_condition_id
+            else f"test-current-distribution:{task_id}"
+        )
+        for task_id in task_condition_ids
+    }
+    authorization = make_contribution_production_authorization(
+        manifest=contribution_manifest,
+        analysis_version="test_contribution_validation.v1",
+        analysis_report_hash="test-contribution-report:passed",
+        task_condition_ids=task_condition_ids,
+        task_distribution_hashes=task_distribution_hashes,
+        task_count=30,
+        state_count=60,
+        internal_validation_record_count=len(internal_validation_ids),
+        final_test_record_count=len(final_test_ids),
+        estimation_seed_count=3,
+        validation_seed_count=3,
+        intervention_seed_count=3,
+        cross_seed_stability=rank_evidence("cross_seed_stability"),
+        independent_final_test=rank_evidence("independent_final_test"),
+        heldout_final_test=rank_evidence("heldout_final_test"),
+    )
+    authorization_path = tmp_path / "contribution_authorization.json"
+    authorization_path.write_text(
+        authorization.model_dump_json(indent=2) + "\n",
+        encoding="utf-8",
+    )
 
     reports = {
         item.trajectory.trajectory_id: item.validity_report for item in artifact.accepted_states
@@ -262,6 +367,7 @@ def test_real_feedback_replays_explorer_and_multi_seed_probes(
             finance_archive_config_path=tmp_path / "unused.json",
             explorer_trajectory_path=explorer_path,
             probe_observation_path=probe_path,
+            contribution_production_authorization_path=authorization_path,
             output_dir=output_dir,
             explorer_provider_id="explorer:provider",
             explorer_provider_version="1.0.0",

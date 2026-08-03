@@ -58,9 +58,7 @@ class StateConditionedTrainingArtifact(FrozenModel):
     materialization_provider_id: str = Field(min_length=1)
     public_request_id: str = Field(min_length=1)
     decision_trace_hash: str = Field(min_length=1)
-    generation_phase: Literal["distribution_materialization"] = (
-        "distribution_materialization"
-    )
+    generation_phase: Literal["distribution_materialization"] = "distribution_materialization"
     schema_version: str = VTDO_SCHEMA_VERSION
 
     @model_validator(mode="after")
@@ -203,22 +201,14 @@ class TrajectoryStateMaterializationReport(FrozenModel):
             raise ValueError("materialization released budget shares are inconsistent")
         if not _probability_maps_close(self.released_state_distribution, expected_released):
             raise ValueError("materialization released distribution is inconsistent")
-        expected_allocation_tv = _total_variation(
-            self.source_state_distribution, expected_target
-        )
+        expected_allocation_tv = _total_variation(self.source_state_distribution, expected_target)
         expected_release_tv = (
             _total_variation(expected_target, expected_released) if total_released else 1.0
         )
-        expected_js = (
-            _jensen_shannon(expected_target, expected_released) if total_released else 1.0
-        )
-        if not math.isclose(
-            self.allocation_total_variation, expected_allocation_tv, abs_tol=1e-12
-        ):
+        expected_js = _jensen_shannon(expected_target, expected_released) if total_released else 1.0
+        if not math.isclose(self.allocation_total_variation, expected_allocation_tv, abs_tol=1e-12):
             raise ValueError("materialization allocation TV is inconsistent")
-        if not math.isclose(
-            self.distribution_total_variation, expected_release_tv, abs_tol=1e-12
-        ):
+        if not math.isclose(self.distribution_total_variation, expected_release_tv, abs_tol=1e-12):
             raise ValueError("materialization release TV is inconsistent")
         if not math.isclose(self.jensen_shannon_divergence, expected_js, abs_tol=1e-12):
             raise ValueError("materialization JS divergence is inconsistent")
@@ -231,21 +221,15 @@ class TrajectoryStateMaterializationReport(FrozenModel):
         if not math.isclose(self.quota_fill_rate, total_released / total_requested, abs_tol=1e-12):
             raise ValueError("materialization quota fill rate is inconsistent")
         expected_acceptance = total_released / total_attempted if total_attempted else 0.0
-        if not math.isclose(
-            self.generation_acceptance_rate, expected_acceptance, abs_tol=1e-12
-        ):
+        if not math.isclose(self.generation_acceptance_rate, expected_acceptance, abs_tol=1e-12):
             raise ValueError("materialization acceptance rate is inconsistent")
         for state_id in support:
             attempts = self.attempted_state_counts[state_id]
             acceptance = self.released_state_counts[state_id] / attempts if attempts else 0.0
             off_target = self.off_target_state_counts[state_id] / attempts if attempts else 0.0
-            if not math.isclose(
-                self.state_acceptance_rates[state_id], acceptance, abs_tol=1e-12
-            ):
+            if not math.isclose(self.state_acceptance_rates[state_id], acceptance, abs_tol=1e-12):
                 raise ValueError("state acceptance rate is inconsistent")
-            if not math.isclose(
-                self.state_off_target_rates[state_id], off_target, abs_tol=1e-12
-            ):
+            if not math.isclose(self.state_off_target_rates[state_id], off_target, abs_tol=1e-12):
                 raise ValueError("state off-target rate is inconsistent")
         expected_floor = total_requested >= len(support)
         expected_truncation = any(
@@ -449,27 +433,19 @@ class ValidTrajectoryStateMaterializer:
             state_id: count / total_budget for state_id, count in released_counts.items()
         }
         released_distribution = (
-            {
-                state_id: count / total_released
-                for state_id, count in released_counts.items()
-            }
+            {state_id: count / total_released for state_id, count in released_counts.items()}
             if total_released
             else {state_id: 0.0 for state_id in requested}
         )
         distribution_tv = (
-            _total_variation(target_distribution, released_distribution)
-            if total_released
-            else 1.0
+            _total_variation(target_distribution, released_distribution) if total_released else 1.0
         )
         js_divergence = (
-            _jensen_shannon(target_distribution, released_distribution)
-            if total_released
-            else 1.0
+            _jensen_shannon(target_distribution, released_distribution) if total_released else 1.0
         )
         status: Literal["passed", "blocked"] = (
             "passed"
-            if released_counts == requested
-            and math.isclose(distribution_tv, 0.0, abs_tol=1e-12)
+            if released_counts == requested and math.isclose(distribution_tv, 0.0, abs_tol=1e-12)
             else "blocked"
         )
         report_values = {
@@ -525,9 +501,7 @@ class ValidTrajectoryStateMaterializer:
                 distribution.probabilities[state_id] > 0 and requested[state_id] == 0
                 for state_id in requested
             ),
-            "unique_decision_trace_count": len(
-                {item.decision_trace_hash for item in released}
-            ),
+            "unique_decision_trace_count": len({item.decision_trace_hash for item in released}),
             "independent_regeneration_enforced": True,
             "artifacts": tuple(released),
             "failure_counts": dict(sorted(failures.items())),
@@ -590,8 +564,7 @@ def _probability_maps_close(
     right: dict[str, float],
 ) -> bool:
     return set(left) == set(right) and all(
-        math.isclose(left[state_id], right[state_id], abs_tol=1e-12)
-        for state_id in left
+        math.isclose(left[state_id], right[state_id], abs_tol=1e-12) for state_id in left
     )
 
 

@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from trusted_synthesis.core.vtdo import (
     AnchoredEnergyConfig,
     ContributionProbeObservation,
+    ContributionProductionAuthorization,
     ExplorationDistribution,
     StateConditionedExplorationBatch,
     TrajectoryStateCatalog,
@@ -33,6 +34,7 @@ class RealRoundAssemblyInput(FrozenModel):
     exploration: ExplorationDistribution
     exploration_batch: StateConditionedExplorationBatch
     contribution_probes: tuple[ContributionProbeObservation, ...] = Field(min_length=1)
+    contribution_production_authorization: ContributionProductionAuthorization
     validity_thresholds: ValidityThresholds
     validity_prior_success: float = Field(default=0.0, ge=0)
     validity_prior_failure: float = Field(default=0.0, ge=0)
@@ -154,6 +156,9 @@ def assemble_real_vtdo_rounds(
                     pushforward_estimate=pushforward,
                     validity_partition=partition,
                     contribution_probes=item.contribution_probes,
+                    contribution_production_authorization=(
+                        item.contribution_production_authorization
+                    ),
                     energy_config=item.energy_config,
                 )
             )
@@ -196,6 +201,10 @@ def assemble_real_vtdo_rounds(
             "role_contract": {item.role_contract.contract_id for item in ordered},
             "energy_config": {
                 canonical_hash(item.update.energy_config, prefix="real_round_energy_config:")
+                for item in ordered
+            },
+            "contribution_production_authorization": {
+                item.contribution_production_authorization.authorization_id
                 for item in ordered
             },
         }

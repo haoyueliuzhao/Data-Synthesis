@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from enum import Enum
 from typing import Literal
 
@@ -8,9 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
-VTDO_SCHEMA_VERSION = "vtdo.v6"
+VTDO_SCHEMA_VERSION = "vtdo.v8"
 VTDO_ALGORITHM_ID = "anchored_energy_valid_trajectory_distribution_refinement"
-VTDO_ALGORITHM_VERSION = "aevtdr.v2"
+VTDO_ALGORITHM_VERSION = "aevtdr.v4"
 
 
 class FrozenModel(BaseModel):
@@ -180,8 +181,12 @@ class ContributionEstimate(FrozenModel):
     state_id: str = Field(min_length=1)
     raw_marginal_gain: float
     confidence: float = Field(ge=0, le=1)
+    sample_standard_deviation: float = Field(ge=0)
     standard_error: float = Field(ge=0)
     centered_contribution: float
+    uncertainty_penalty: float = Field(ge=0)
+    conservative_raw_marginal_gain: float
+    conservative_centered_contribution: float
     current_probability: float = Field(gt=0, le=1)
     observation_count: int = Field(ge=1)
     schema_version: str = VTDO_SCHEMA_VERSION
@@ -190,8 +195,12 @@ class ContributionEstimate(FrozenModel):
     def validate_estimate(self) -> ContributionEstimate:
         numeric = (
             self.raw_marginal_gain,
+            self.sample_standard_deviation,
             self.standard_error,
             self.centered_contribution,
+            self.uncertainty_penalty,
+            self.conservative_raw_marginal_gain,
+            self.conservative_centered_contribution,
             self.current_probability,
         )
         if any(not math.isfinite(value) for value in numeric):
@@ -220,8 +229,14 @@ class ContributionEstimationManifest(FrozenModel):
     data_isolation_contract_id: str = Field(min_length=1)
     final_test_set_id: str = Field(min_length=1)
     estimator_id: str = Field(min_length=1)
+    probe_optimizer_contract_id: str | None = None
+    probe_adaptation_horizon: int | None = Field(default=None, ge=1, le=3)
+    uncertainty_statistic: Literal["sample_standard_deviation"]
+    uncertainty_penalty_coefficient: float = Field(ge=0)
+    production_contribution_field: Literal["conservative_centered_contribution"]
     estimates: tuple[ContributionEstimate, ...] = Field(min_length=1)
     weighted_centered_mean: float
+    weighted_conservative_centered_mean: float
     schema_version: str = VTDO_SCHEMA_VERSION
 
     @model_validator(mode="after")
@@ -233,6 +248,22 @@ class ContributionEstimationManifest(FrozenModel):
         }[self.estimator_kind]
         if self.usage_scope != expected_scope:
             raise ValueError("Contribution estimator kind and usage scope disagree")
+        if self.estimator_kind == "local_probe":
+            if not self.probe_optimizer_contract_id or self.probe_adaptation_horizon is None:
+                raise ValueError(
+                    "production local Probe must freeze its optimizer and adaptation horizon"
+                )
+            if self.uncertainty_penalty_coefficient <= 0:
+                raise ValueError("production local Probe requires a positive uncertainty penalty")
+            if any(item.observation_count < 2 for item in self.estimates):
+                raise ValueError("production local Probe requires at least two seeds per state")
+        else:
+            if self.probe_optimizer_contract_id is not None or (
+                self.probe_adaptation_horizon is not None
+            ):
+                raise ValueError("non-Probe Contribution cannot carry a Probe optimizer")
+            if not math.isclose(self.uncertainty_penalty_coefficient, 0.0, abs_tol=1e-12):
+                raise ValueError("non-Probe Contribution cannot apply the Probe uncertainty policy")
         state_ids = [item.state_id for item in self.estimates]
         if len(state_ids) != len(set(state_ids)):
             raise ValueError("contribution manifest contains duplicate states")
@@ -253,6 +284,36 @@ class ContributionEstimationManifest(FrozenModel):
             for item in self.estimates
         ):
             raise ValueError("centered Contribution does not replay from raw gains and pi_t")
+        if any(
+            not math.isclose(
+                item.uncertainty_penalty,
+                self.uncertainty_penalty_coefficient * item.sample_standard_deviation,
+                rel_tol=0.0,
+                abs_tol=1e-12,
+            )
+            or not math.isclose(
+                item.conservative_raw_marginal_gain,
+                item.raw_marginal_gain - item.uncertainty_penalty,
+                rel_tol=0.0,
+                abs_tol=1e-12,
+            )
+            for item in self.estimates
+        ):
+            raise ValueError("conservative Contribution does not replay from uncertainty")
+        conservative_mean = sum(
+            item.current_probability * item.conservative_raw_marginal_gain
+            for item in self.estimates
+        )
+        if any(
+            not math.isclose(
+                item.conservative_centered_contribution,
+                item.conservative_raw_marginal_gain - conservative_mean,
+                rel_tol=0.0,
+                abs_tol=1e-12,
+            )
+            for item in self.estimates
+        ):
+            raise ValueError("conservative Contribution is not centered under pi_t")
         expected_mean = sum(
             item.current_probability * item.centered_contribution for item in self.estimates
         )
@@ -260,9 +321,201 @@ class ContributionEstimationManifest(FrozenModel):
             raise ValueError("contribution centered mean is inconsistent")
         if not math.isclose(self.weighted_centered_mean, 0.0, abs_tol=1e-12):
             raise ValueError("centered contributions must have zero current-distribution mean")
+        expected_conservative_mean = sum(
+            item.current_probability * item.conservative_centered_contribution
+            for item in self.estimates
+        )
+        if not math.isclose(
+            self.weighted_conservative_centered_mean,
+            expected_conservative_mean,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("conservative centered mean is inconsistent")
+        if not math.isclose(
+            self.weighted_conservative_centered_mean,
+            0.0,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("conservative contributions must have zero pi_t mean")
         if self.manifest_id != contribution_manifest_id(self):
             raise ValueError("contribution manifest identity is invalid")
         return self
+
+
+class ContributionRankValidationEvidence(FrozenModel):
+    """One independently measured rank-preservation gate for a Probe estimand."""
+
+    evidence_id: str = Field(min_length=1)
+    evaluation_role: Literal[
+        "cross_seed_stability",
+        "independent_final_test",
+        "heldout_final_test",
+    ]
+    macro_task_spearman: float = Field(ge=-1, le=1)
+    macro_task_spearman_ci95: tuple[float, float]
+    macro_pairwise_concordance: float = Field(ge=0, le=1)
+    macro_pairwise_concordance_ci95: tuple[float, float]
+    winner_agreement_rate: float = Field(ge=0, le=1)
+    macro_spearman_p_value: float = Field(ge=0, le=1)
+    macro_pairwise_concordance_p_value: float = Field(ge=0, le=1)
+    schema_version: str = VTDO_SCHEMA_VERSION
+
+    @model_validator(mode="after")
+    def validate_evidence(self) -> ContributionRankValidationEvidence:
+        spearman_lower, spearman_upper = self.macro_task_spearman_ci95
+        concordance_lower, concordance_upper = self.macro_pairwise_concordance_ci95
+        if not -1 <= spearman_lower <= self.macro_task_spearman <= spearman_upper <= 1:
+            raise ValueError("Contribution Spearman interval is invalid")
+        if not (
+            0 <= concordance_lower <= self.macro_pairwise_concordance <= concordance_upper <= 1
+        ):
+            raise ValueError("Contribution concordance interval is invalid")
+        if self.evidence_id != contribution_rank_validation_evidence_id(self):
+            raise ValueError("Contribution rank-validation evidence identity is invalid")
+        return self
+
+    @property
+    def passes_production_gate(self) -> bool:
+        return bool(
+            self.macro_task_spearman_ci95[0] > 0
+            and self.macro_pairwise_concordance_ci95[0] > 0.5
+            and self.winner_agreement_rate >= 0.5
+            and self.macro_spearman_p_value < 0.05
+            and self.macro_pairwise_concordance_p_value < 0.05
+        )
+
+
+class ContributionProductionAuthorization(FrozenModel):
+    """Proof that a frozen local-Probe estimand may influence a VTDO update."""
+
+    authorization_id: str = Field(min_length=1)
+    analysis_version: str = Field(min_length=1)
+    analysis_report_hash: str = Field(min_length=1)
+    current_distribution_contract_hash: str = Field(min_length=1)
+    task_distribution_hashes: tuple[tuple[str, str], ...] = Field(min_length=1)
+    beneficiary_model_state_id: str = Field(min_length=1)
+    beneficiary_checkpoint_hash: str = Field(min_length=1)
+    target_metric_id: str = Field(min_length=1)
+    probe_optimizer_contract_id: str = Field(min_length=1)
+    selected_adaptation_horizon: int = Field(ge=1, le=3)
+    uncertainty_statistic: Literal["sample_standard_deviation"]
+    uncertainty_penalty_coefficient: float = Field(gt=0)
+    production_contribution_field: Literal["conservative_centered_contribution"]
+    internal_validation_set_id: str = Field(min_length=1)
+    final_test_set_id: str = Field(min_length=1)
+    task_condition_ids: tuple[str, ...] = Field(min_length=1)
+    task_population_hash: str = Field(min_length=1)
+    task_count: int = Field(ge=1)
+    state_count: int = Field(ge=1)
+    internal_validation_record_count: int = Field(ge=1)
+    final_test_record_count: int = Field(ge=1)
+    estimation_seed_count: int = Field(ge=1)
+    validation_seed_count: int = Field(ge=1)
+    intervention_seed_count: int = Field(ge=1)
+    seed_sets_disjoint: Literal[True]
+    strict_identity_validated: Literal[True]
+    cross_seed_stability: ContributionRankValidationEvidence
+    independent_final_test: ContributionRankValidationEvidence
+    heldout_final_test: ContributionRankValidationEvidence
+    status: Literal["passed"]
+    schema_version: str = VTDO_SCHEMA_VERSION
+
+    @model_validator(mode="after")
+    def validate_authorization(self) -> ContributionProductionAuthorization:
+        evidence = (
+            self.cross_seed_stability,
+            self.independent_final_test,
+            self.heldout_final_test,
+        )
+        expected_roles = (
+            "cross_seed_stability",
+            "independent_final_test",
+            "heldout_final_test",
+        )
+        if tuple(item.evaluation_role for item in evidence) != expected_roles:
+            raise ValueError("Contribution authorization has misassigned validation evidence")
+        if not all(item.passes_production_gate for item in evidence):
+            raise ValueError("Contribution authorization contains a failed rank gate")
+        if tuple(sorted(self.task_condition_ids)) != self.task_condition_ids:
+            raise ValueError("Contribution authorization task population is not canonical")
+        if len(self.task_condition_ids) != len(set(self.task_condition_ids)):
+            raise ValueError("Contribution authorization contains duplicate task identities")
+        if len(self.task_condition_ids) != self.task_count:
+            raise ValueError("Contribution authorization task count is not its frozen population")
+        if tuple(sorted(self.task_distribution_hashes)) != self.task_distribution_hashes:
+            raise ValueError("Contribution authorization distribution mapping is not canonical")
+        task_distribution_hashes = dict(self.task_distribution_hashes)
+        if len(task_distribution_hashes) != len(self.task_distribution_hashes):
+            raise ValueError("Contribution authorization contains duplicate distribution tasks")
+        if tuple(task_distribution_hashes) != self.task_condition_ids:
+            raise ValueError("Contribution authorization distributions do not cover its tasks")
+        if self.current_distribution_contract_hash != contribution_distribution_contract_hash(
+            task_distribution_hashes
+        ):
+            raise ValueError("Contribution authorization distribution contract is invalid")
+        if self.task_population_hash != contribution_task_population_hash(self.task_condition_ids):
+            raise ValueError("Contribution authorization task-population hash is invalid")
+        if self.task_count < 30 or self.state_count < self.task_count:
+            raise ValueError("Contribution production authorization needs at least 30 tasks")
+        if self.internal_validation_record_count < 5 or self.final_test_record_count < 5:
+            raise ValueError("Contribution production authorization lacks evaluation support")
+        if (
+            min(
+                self.estimation_seed_count,
+                self.validation_seed_count,
+                self.intervention_seed_count,
+            )
+            < 2
+        ):
+            raise ValueError("Contribution production authorization needs multiple seeds per role")
+        if self.authorization_id != contribution_production_authorization_id(self):
+            raise ValueError("Contribution production authorization identity is invalid")
+        return self
+
+
+def validate_contribution_production_authorization(
+    manifest: ContributionEstimationManifest,
+    authorization: ContributionProductionAuthorization | None,
+) -> None:
+    if manifest.estimator_kind == "synthetic_oracle":
+        if authorization is not None:
+            raise ValueError("synthetic Contribution cannot consume a Probe authorization")
+        return
+    if manifest.estimator_kind != "local_probe":
+        raise ValueError("finite Intervention Contribution is validation-only")
+    if authorization is None:
+        raise ValueError("production local Probe requires an independent authorization")
+    if manifest.task_condition_id not in authorization.task_condition_ids:
+        raise ValueError("Contribution manifest task is outside the validated population")
+    manifest_distribution_hash = contribution_current_distribution_hash(
+        manifest.task_condition_id,
+        {item.state_id: item.current_probability for item in manifest.estimates},
+    )
+    authorized_distribution_hash = dict(authorization.task_distribution_hashes).get(
+        manifest.task_condition_id
+    )
+    if authorized_distribution_hash != manifest_distribution_hash:
+        raise ValueError("Contribution authorization does not match the manifest current pi_t")
+    if any(
+        item.observation_count < authorization.estimation_seed_count for item in manifest.estimates
+    ):
+        raise ValueError("Contribution manifest has fewer seeds than its authorization")
+    expected = {
+        "beneficiary_model_state_id": manifest.beneficiary_model_state_id,
+        "beneficiary_checkpoint_hash": manifest.beneficiary_checkpoint_hash,
+        "target_metric_id": manifest.target_metric_id,
+        "probe_optimizer_contract_id": manifest.probe_optimizer_contract_id,
+        "selected_adaptation_horizon": manifest.probe_adaptation_horizon,
+        "uncertainty_statistic": manifest.uncertainty_statistic,
+        "uncertainty_penalty_coefficient": manifest.uncertainty_penalty_coefficient,
+        "production_contribution_field": manifest.production_contribution_field,
+        "internal_validation_set_id": manifest.target_evaluation_distribution_id,
+        "final_test_set_id": manifest.final_test_set_id,
+    }
+    observed = authorization.model_dump(mode="python", include=set(expected))
+    if observed != expected:
+        mismatched = tuple(key for key in expected if observed.get(key) != expected[key])
+        raise ValueError(f"Contribution authorization does not match its manifest:{mismatched}")
 
 
 class AnchoredEnergyConfig(FrozenModel):
@@ -273,6 +526,9 @@ class AnchoredEnergyConfig(FrozenModel):
     novelty_weight: float = Field(gt=0)
     history_kl_weight: float = Field(gt=0)
     coverage_kl_weight: float = Field(gt=0)
+    reachability_weight: float = Field(default=0.0, ge=0)
+    reachability_floor: float = Field(default=0.01, gt=0, le=1)
+    reachability_signal: Literal["posterior_mean", "confidence_lower"] = "posterior_mean"
 
     @model_validator(mode="after")
     def validate_weights(self) -> AnchoredEnergyConfig:
@@ -293,14 +549,117 @@ class AnchoredEnergyConfig(FrozenModel):
         return 1.0 / (self.history_kl_weight + self.coverage_kl_weight)
 
 
+class StateReachabilityEstimate(FrozenModel):
+    estimate_id: str = Field(min_length=1)
+    task_condition_id: str = Field(min_length=1)
+    state_id: str = Field(min_length=1)
+    explorer_provider_id: str = Field(min_length=1)
+    explorer_provider_version: str = Field(min_length=1)
+    estimation_mode: Literal["unconditioned_pushforward", "state_conditioned"]
+    protocol_status: Literal["unconditioned", "condition_applied", "protocol_blocked"]
+    generation_constraints_hash: str | None = None
+    attempted_trajectory_count: int = Field(ge=0)
+    on_target_trajectory_count: int = Field(ge=0)
+    posterior_alpha: float = Field(gt=0)
+    posterior_beta: float = Field(gt=0)
+    posterior_mean: float = Field(gt=0, lt=1)
+    interval_coverage_probability: float = Field(default=0.95, gt=0, lt=1)
+    confidence_lower: float = Field(ge=0, le=1)
+    confidence_upper: float = Field(ge=0, le=1)
+    status: Literal[
+        "observed_reachable",
+        "not_observed",
+        "unmeasured",
+        "protocol_blocked",
+    ]
+    estimator_id: str = "beta_binomial_with_wilson_interval"
+    estimator_version: str = "1.0.0"
+    schema_version: str = "trajectory_reachability.v2"
+
+    @model_validator(mode="after")
+    def validate_estimate(self) -> StateReachabilityEstimate:
+        if self.on_target_trajectory_count > self.attempted_trajectory_count:
+            raise ValueError("reachable-state hits cannot exceed attempts")
+        if self.protocol_status == "protocol_blocked":
+            if self.attempted_trajectory_count or self.generation_constraints_hash is not None:
+                raise ValueError("a protocol-blocked state cannot claim model attempts")
+            expected_status = "protocol_blocked"
+        elif self.attempted_trajectory_count == 0:
+            expected_status = "unmeasured"
+        elif self.on_target_trajectory_count:
+            expected_status = "observed_reachable"
+        else:
+            expected_status = "not_observed"
+        if self.status != expected_status:
+            raise ValueError("reachability status is inconsistent")
+        if self.protocol_status == "condition_applied" and not self.generation_constraints_hash:
+            raise ValueError("conditioned reachability requires a constraint hash")
+        if self.protocol_status == "unconditioned" and self.generation_constraints_hash is not None:
+            raise ValueError("unconditioned reachability cannot carry a constraint hash")
+        expected_alpha = self.on_target_trajectory_count + 1.0
+        expected_beta = self.attempted_trajectory_count - self.on_target_trajectory_count + 1.0
+        if not math.isclose(self.posterior_alpha, expected_alpha, abs_tol=1e-12):
+            raise ValueError("reachability posterior alpha is inconsistent")
+        if not math.isclose(self.posterior_beta, expected_beta, abs_tol=1e-12):
+            raise ValueError("reachability posterior beta is inconsistent")
+        expected_mean = expected_alpha / (expected_alpha + expected_beta)
+        if not math.isclose(self.posterior_mean, expected_mean, abs_tol=1e-12):
+            raise ValueError("reachability posterior mean is inconsistent")
+        expected_lower, expected_upper = _wilson_interval(
+            self.on_target_trajectory_count,
+            self.attempted_trajectory_count,
+            self.interval_coverage_probability,
+        )
+        if not math.isclose(self.confidence_lower, expected_lower, abs_tol=1e-12):
+            raise ValueError("reachability lower bound is inconsistent")
+        if not math.isclose(self.confidence_upper, expected_upper, abs_tol=1e-12):
+            raise ValueError("reachability upper bound is inconsistent")
+        if self.estimate_id != state_reachability_estimate_id(self):
+            raise ValueError("state reachability estimate identity is invalid")
+        return self
+
+
+class StateReachabilityManifest(FrozenModel):
+    manifest_id: str = Field(min_length=1)
+    task_condition_id: str = Field(min_length=1)
+    explorer_provider_id: str = Field(min_length=1)
+    explorer_provider_version: str = Field(min_length=1)
+    estimates: tuple[StateReachabilityEstimate, ...] = Field(min_length=1)
+    source_batch_ids: tuple[str, ...] = Field(min_length=1)
+    schema_version: str = "trajectory_reachability_manifest.v2"
+
+    @model_validator(mode="after")
+    def validate_manifest(self) -> StateReachabilityManifest:
+        state_ids = tuple(item.state_id for item in self.estimates)
+        if len(state_ids) != len(set(state_ids)):
+            raise ValueError("reachability manifest contains duplicate states")
+        if len(self.source_batch_ids) != len(set(self.source_batch_ids)):
+            raise ValueError("reachability source batches must be unique")
+        if any(
+            item.task_condition_id != self.task_condition_id
+            or item.explorer_provider_id != self.explorer_provider_id
+            or item.explorer_provider_version != self.explorer_provider_version
+            for item in self.estimates
+        ):
+            raise ValueError("reachability estimates disagree with their manifest")
+        if self.manifest_id != state_reachability_manifest_id(self):
+            raise ValueError("state reachability manifest identity is invalid")
+        return self
+
+
 class StateEnergyPotential(FrozenModel):
     state_id: str = Field(min_length=1)
     current_probability: float = Field(gt=0, le=1)
     coverage_probability: float = Field(gt=0, le=1)
     centered_contribution: float
+    conservative_centered_contribution: float
+    contribution_signal_kind: Literal["conservative_centered_contribution"]
     normalized_contribution: float = Field(gt=0, lt=1)
     coverage_relative_novelty: float = Field(ge=0)
     normalized_novelty: float = Field(gt=0, lt=1)
+    reachability_estimate_id: str | None = None
+    reachability_probability: float = Field(default=1.0, ge=0, le=1)
+    normalized_reachability: float = Field(default=1.0, gt=0, le=1)
     potential: float = Field(gt=0, lt=1)
     energy: float = Field(gt=0)
 
@@ -314,8 +673,10 @@ class AnchoredDistributionUpdate(FrozenModel):
     next_distribution: ConditionalTrajectoryDistribution
     validity_estimates: tuple[StateValidityEstimate, ...] = Field(min_length=1)
     contribution_manifest: ContributionEstimationManifest
+    contribution_production_authorization: ContributionProductionAuthorization | None = None
     role_contract: VTDORoleContract
     energy_config: AnchoredEnergyConfig
+    reachability_manifest: StateReachabilityManifest | None = None
     state_potentials: tuple[StateEnergyPotential, ...] = Field(min_length=1)
     history_exponent: float = Field(gt=0, lt=1)
     energy_exponent: float = Field(gt=0)
@@ -371,11 +732,37 @@ class AnchoredDistributionUpdate(FrozenModel):
             self.role_contract.beneficiary_model_state_id
         ):
             raise ValueError("VTDO contribution manifest violates the role contract")
+        validate_contribution_production_authorization(
+            self.contribution_manifest,
+            self.contribution_production_authorization,
+        )
         contribution_by_state = {
             item.state_id: item for item in self.contribution_manifest.estimates
         }
         if set(contribution_by_state) != state_ids:
             raise ValueError("VTDO contribution manifest has another state support")
+        reachability_by_state: dict[str, StateReachabilityEstimate] = {}
+        if self.reachability_manifest is not None:
+            if self.reachability_manifest.task_condition_id != (
+                self.prior_distribution.task_condition_id
+            ):
+                raise ValueError("VTDO reachability manifest crosses task conditions")
+            if (
+                self.reachability_manifest.explorer_provider_id
+                != self.role_contract.explorer_provider_id
+            ):
+                raise ValueError("VTDO reachability manifest uses another Explorer")
+            reachability_by_state = {
+                item.state_id: item for item in self.reachability_manifest.estimates
+            }
+            if set(reachability_by_state) != state_ids:
+                raise ValueError("reachability manifest has another state support")
+        if self.energy_config.reachability_weight > 0 and not reachability_by_state:
+            raise ValueError("reachability-aware energy requires a complete manifest")
+        if self.energy_config.reachability_weight > 0 and any(
+            item.attempted_trajectory_count == 0 for item in reachability_by_state.values()
+        ):
+            raise ValueError("reachability-aware energy requires measured state support")
         if not math.isclose(
             self.history_exponent,
             self.energy_config.history_exponent,
@@ -403,6 +790,14 @@ class AnchoredDistributionUpdate(FrozenModel):
                 abs_tol=1e-12,
             ):
                 raise ValueError("state potential is detached from its contribution manifest")
+            if not math.isclose(
+                potential.conservative_centered_contribution,
+                contribution.conservative_centered_contribution,
+                abs_tol=1e-12,
+            ):
+                raise ValueError("state potential is detached from conservative Contribution")
+            if potential.contribution_signal_kind != "conservative_centered_contribution":
+                raise ValueError("state potential uses an unsupported Contribution signal")
             if not math.isclose(potential.coverage_probability, coverage, abs_tol=1e-12):
                 raise ValueError("state potential has another coverage probability")
             expected_novelty = max(math.log(coverage / current), 0.0)
@@ -413,7 +808,7 @@ class AnchoredDistributionUpdate(FrozenModel):
             ):
                 raise ValueError("state potential novelty is not log(r/pi)+")
             expected_contribution = _normalized_contribution_value(
-                potential.centered_contribution,
+                potential.conservative_centered_contribution,
                 epsilon=self.energy_config.epsilon,
                 temperature=self.energy_config.contribution_temperature,
             )
@@ -421,6 +816,16 @@ class AnchoredDistributionUpdate(FrozenModel):
                 expected_novelty,
                 epsilon=self.energy_config.epsilon,
                 temperature=self.energy_config.novelty_temperature,
+            )
+            estimate = reachability_by_state.get(state_id)
+            expected_reachability = (
+                _reachability_signal_value(estimate, self.energy_config)
+                if estimate is not None
+                else 1.0
+            )
+            expected_normalized_reachability = max(
+                self.energy_config.reachability_floor,
+                expected_reachability,
             )
             if not math.isclose(
                 potential.normalized_contribution,
@@ -434,9 +839,26 @@ class AnchoredDistributionUpdate(FrozenModel):
                 abs_tol=1e-12,
             ):
                 raise ValueError("state novelty normalization is inconsistent")
+            if potential.reachability_estimate_id != (
+                estimate.estimate_id if estimate is not None else None
+            ):
+                raise ValueError("state potential is detached from reachability evidence")
+            if not math.isclose(
+                potential.reachability_probability,
+                expected_reachability,
+                abs_tol=1e-12,
+            ):
+                raise ValueError("state reachability probability is inconsistent")
+            if not math.isclose(
+                potential.normalized_reachability,
+                expected_normalized_reachability,
+                abs_tol=1e-12,
+            ):
+                raise ValueError("state reachability normalization is inconsistent")
             expected_potential = (
                 potential.normalized_contribution**self.energy_config.contribution_weight
                 * potential.normalized_novelty**self.energy_config.novelty_weight
+                * potential.normalized_reachability**self.energy_config.reachability_weight
             )
             if not math.isclose(potential.potential, expected_potential, abs_tol=1e-12):
                 raise ValueError("state geometric potential is inconsistent")
@@ -681,10 +1103,102 @@ def contribution_manifest_id(value: ContributionEstimationManifest) -> str:
     )
 
 
-def anchored_distribution_update_id(value: AnchoredDistributionUpdate) -> str:
+def contribution_rank_validation_evidence_id(
+    value: ContributionRankValidationEvidence,
+) -> str:
     return canonical_hash(
-        value.model_dump(mode="json", exclude={"update_id"}),
+        value.model_dump(mode="json", exclude={"evidence_id"}),
+        prefix="contribution_rank_validation_evidence:",
+    )
+
+
+def contribution_task_population_hash(task_condition_ids: tuple[str, ...]) -> str:
+    return canonical_hash(
+        tuple(sorted(task_condition_ids)),
+        prefix="contribution_task_population:",
+    )
+
+
+def contribution_current_distribution_hash(
+    task_condition_id: str,
+    state_probabilities: Mapping[str, float],
+) -> str:
+    probabilities = dict(state_probabilities)
+    _validate_probability_map(probabilities, "Contribution current distribution")
+    return canonical_hash(
+        {
+            "task_condition_id": task_condition_id,
+            "state_probabilities": dict(sorted(probabilities.items())),
+        },
+        prefix="contribution_current_distribution:",
+    )
+
+
+def contribution_distribution_contract_hash(
+    task_distribution_hashes: Mapping[str, str],
+) -> str:
+    values = dict(task_distribution_hashes)
+    if not values or any(not task_id or not value for task_id, value in values.items()):
+        raise ValueError("Contribution distribution contract requires named task distributions")
+    return canonical_hash(
+        dict(sorted(values.items())),
+        prefix="contribution_distribution_contract:",
+    )
+
+
+def contribution_production_authorization_id(
+    value: ContributionProductionAuthorization,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"authorization_id"}),
+        prefix="contribution_production_authorization:",
+    )
+
+
+def anchored_distribution_update_id(value: AnchoredDistributionUpdate) -> str:
+    payload = value.model_dump(mode="json", exclude={"update_id"})
+    energy_config = payload["energy_config"]
+    state_potentials = payload["state_potentials"]
+    if (
+        payload.get("reachability_manifest") is None
+        and energy_config.get("reachability_weight") == 0.0
+        and energy_config.get("reachability_floor") == 0.01
+        and energy_config.get("reachability_signal") == "posterior_mean"
+        and all(
+            item.get("reachability_estimate_id") is None
+            and item.get("reachability_probability") == 1.0
+            and item.get("normalized_reachability") == 1.0
+            for item in state_potentials
+        )
+    ):
+        payload.pop("reachability_manifest", None)
+        for field in (
+            "reachability_weight",
+            "reachability_floor",
+            "reachability_signal",
+        ):
+            energy_config.pop(field, None)
+        for item in state_potentials:
+            item.pop("reachability_estimate_id", None)
+            item.pop("reachability_probability", None)
+            item.pop("normalized_reachability", None)
+    return canonical_hash(
+        payload,
         prefix="anchored_vtdo_update:",
+    )
+
+
+def state_reachability_estimate_id(value: StateReachabilityEstimate) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"estimate_id"}),
+        prefix="state_reachability_estimate:",
+    )
+
+
+def state_reachability_manifest_id(value: StateReachabilityManifest) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"manifest_id"}),
+        prefix="state_reachability_manifest:",
     )
 
 
@@ -748,3 +1262,36 @@ def _total_variation_probability(
 
 def _entropy_probability(values: dict[str, float]) -> float:
     return -sum(value * math.log(value) for value in values.values())
+
+
+def _reachability_signal_value(
+    estimate: StateReachabilityEstimate,
+    config: AnchoredEnergyConfig,
+) -> float:
+    if config.reachability_signal == "posterior_mean":
+        return estimate.posterior_mean
+    return estimate.confidence_lower
+
+
+def _wilson_interval(
+    successes: int,
+    attempts: int,
+    interval_coverage_probability: float,
+) -> tuple[float, float]:
+    if attempts == 0:
+        return 0.0, 1.0
+    # The reachability contract currently freezes a 95% interval.
+    if not math.isclose(interval_coverage_probability, 0.95, abs_tol=1e-12):
+        raise ValueError("reachability currently supports interval_coverage_probability=0.95 only")
+    z = 1.959963984540054
+    probability = successes / attempts
+    denominator = 1.0 + z * z / attempts
+    center = (probability + z * z / (2.0 * attempts)) / denominator
+    margin = (
+        z
+        * math.sqrt(
+            probability * (1.0 - probability) / attempts + z * z / (4.0 * attempts * attempts)
+        )
+        / denominator
+    )
+    return max(0.0, center - margin), min(1.0, center + margin)

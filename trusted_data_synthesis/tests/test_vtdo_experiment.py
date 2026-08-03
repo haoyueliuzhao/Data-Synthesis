@@ -10,7 +10,10 @@ import pytest
 from trusted_synthesis.core.vtdo import (
     InterventionTrainingResult,
     ProbeAdaptationResult,
+    contribution_distribution_contract_hash,
     empty_optimizer_state_hash,
+    estimate_contributions_from_probes,
+    make_conditional_distribution,
     make_contribution_data_isolation_contract,
     make_contribution_intervention_observation,
     make_contribution_intervention_protocol,
@@ -46,6 +49,41 @@ from trusted_synthesis.experiments.vtdo_experiment.multistate import (
     _build_task_artifact,
     _quotient_probe,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_estimand import (
+    analyze_contribution_estimands,
+    issue_contribution_production_authorization,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_horizon import (
+    analyze_contribution_horizons,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_intervention import (
+    CONTRIBUTION_INTERVENTION_VERSION,
+    _permutation_null,
+    _task_rank_row,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_intervention import (
+    _pairwise_concordance as _intervention_pairwise_concordance,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_population import (
+    CENTERING_POLICY,
+    CONTRIBUTION_POPULATION_VERSION,
+    PRODUCTION_CONTRIBUTION_FIELD,
+    STATE_PROBABILITY_POLICY,
+    _attach_contribution_signals,
+    _current_distribution_hash,
+    _penalty_sensitivity_rows,
+    _seed_waves,
+    _validate_probe_replication_contract,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_support import (
+    _select_balanced_artifacts,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_reachability import (
+    _error_record as _reachability_error_record,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_reachability import (
+    _telemetry as _reachability_telemetry,
+)
 from trusted_synthesis.experiments.vtdo_experiment.render import _format_optional_float
 from trusted_synthesis.experiments.vtdo_experiment.schema import (
     ContributionValidationConfig,
@@ -69,6 +107,7 @@ from trusted_synthesis.experiments.vtdo_experiment.training import (
     _component_arm,
     _external_benchmark_status,
     _host_instrumented_target,
+    _make_record,
     _vtdo_arm,
     build_refinement_checkpoint_training_arms,
     build_training_experiment_preflight,
@@ -602,6 +641,774 @@ def test_contribution_validation_rejects_identity_drift(tmp_path: Path) -> None:
 def test_report_formats_missing_contribution_variance_as_not_available() -> None:
     assert _format_optional_float(None) == "n/a"
     assert _format_optional_float(0.125) == "0.125"
+
+
+def test_training_record_can_bind_an_independently_materialized_source(
+    tmp_path: Path,
+) -> None:
+    artifact = _build_task_artifact(
+        build_finance_counterfactual_case(3),
+        FinanceMultiStateConfig(
+            finance_archive_config_path=tmp_path / "unused.json",
+            task_count=1,
+        ),
+    )
+    state = artifact.accepted_states[0]
+    materialized_source_id = "state_conditioned_training_artifact:test"
+    record = _make_record(
+        artifact=artifact,
+        trajectory=state.trajectory,
+        state_id=state.assignment.state.state_id,
+        arm_id="B5_vtdo",
+        accepted_target=True,
+        sampling_weight=1.0,
+        source_distribution_id="conditional_distribution:test",
+        source_artifact_id=materialized_source_id,
+        metadata={"materialization_artifact_id": materialized_source_id},
+    )
+
+    assert record.source_artifact_id == materialized_source_id
+    assert record.metadata["materialization_artifact_id"] == materialized_source_id
+
+
+def test_reachability_evaluation_failure_preserves_model_telemetry(
+    tmp_path: Path,
+) -> None:
+    artifact = _build_task_artifact(
+        build_finance_counterfactual_case(4),
+        FinanceMultiStateConfig(
+            finance_archive_config_path=tmp_path / "unused.json",
+            task_count=1,
+        ),
+    )
+    record = _reachability_error_record(
+        artifact=artifact,
+        replicate=0,
+        mode="unconditioned",
+        exc=ValueError("verifier rejected the generated trajectory"),
+        generation_audit={
+            "telemetry": [
+                {
+                    "http_success": True,
+                    "json_contract_success": True,
+                    "response_model": "deepseek-v4-pro",
+                    "prompt_tokens": 100,
+                    "completion_tokens": 20,
+                    "total_tokens": 120,
+                }
+            ]
+        },
+    )
+
+    telemetry = _reachability_telemetry([record])
+
+    assert record["failure_stage"] == "trajectory_evaluation"
+    assert telemetry["api_call_count"] == 1
+    assert telemetry["api_call_success_count"] == 1
+    assert telemetry["total_tokens"] == 120
+
+
+def test_intervention_permutation_baseline_is_deterministic() -> None:
+    vectors = [
+        ([1.0, 2.0, 3.0], [1.0, 2.0, 3.0]),
+        ([3.0, 2.0, 1.0], [3.0, 2.0, 1.0]),
+    ]
+
+    first = _permutation_null(vectors, iterations=100, seed=17)
+    second = _permutation_null(vectors, iterations=100, seed=17)
+
+    assert first == second
+    assert (
+        _intervention_pairwise_concordance(
+            [1.0, 2.0, 3.0],
+            [1.0, 2.0, 3.0],
+        )
+        == 1.0
+    )
+    assert (
+        _intervention_pairwise_concordance(
+            [1.0, 2.0, 3.0],
+            [3.0, 2.0, 1.0],
+        )
+        == 0.0
+    )
+
+
+def test_contribution_horizon_analysis_detects_local_rank_reversal() -> None:
+    state_rows = []
+    for task_index in range(3):
+        for state_index, value in enumerate((1.0, 2.0, 3.0)):
+            state_rows.append(
+                {
+                    "task_id": f"task:{task_index}",
+                    "state_id": f"state:{task_index}:{state_index}",
+                    "strategy": f"strategy:{state_index}",
+                    "estimation_mean_gain": value,
+                    "validation_mean_gain": value + 0.1,
+                }
+            )
+    population_report = {
+        "report_hash": "population-report",
+        "state_rows": state_rows,
+    }
+
+    def intervention(step_count: int, values: tuple[float, ...]):
+        report_rows = []
+        for task_index in range(3):
+            for state_index, value in enumerate(values):
+                report_rows.append(
+                    {
+                        "task_id": f"task:{task_index}",
+                        "state_id": f"state:{task_index}:{state_index}",
+                        "intervention_mean_gain": value,
+                    }
+                )
+        plan = {
+            "plan_hash": f"plan:{step_count}",
+            "intervention_step_count": step_count,
+            "final_test_set_id": "final-test",
+            "learning_rate": 0.0002,
+        }
+        report = {
+            "plan_hash": plan["plan_hash"],
+            "report_hash": f"report:{step_count}",
+            "source_population_report_hash": "population-report",
+            "state_rows": report_rows,
+            "strategy_intervention_mean_gain": {},
+        }
+        return plan, report
+
+    report = analyze_contribution_horizons(
+        population_plan={"plan_hash": "population-plan", "probe_step_count": 3},
+        population_report=population_report,
+        intervention_runs=[
+            intervention(3, (1.0, 2.0, 3.0)),
+            intervention(12, (3.0, 2.0, 1.0)),
+        ],
+        bootstrap_samples=100,
+        permutation_iterations=100,
+    )
+
+    assert report["diagnosis"] == "local_proxy_supported_but_long_horizon_not_supported"
+    assert report["local_proxy_supported"] is True
+    assert report["long_horizon_proxy_supported"] is False
+    assert report["production_contribution_allowed"] is False
+    assert report["maximum_observed_supported_horizon"] == 3
+    assert report["first_observed_unsupported_horizon"] == 12
+    comparisons = {item["comparison_id"]: item for item in report["comparisons"]}
+    reversal = comparisons["intervention_h12_final_test__vs__intervention_h3_final_test"]
+    assert reversal["macro_task_spearman"] == -1.0
+    assert reversal["rank_flip_rate"] == 1.0
+
+
+def test_contribution_estimand_analysis_selects_only_same_horizon_valid_proxy() -> None:
+    def seal(value: dict, *, field: str, prefix: str) -> dict:
+        value[field] = canonical_hash(value, prefix=prefix)
+        return value
+
+    task_count = 30
+    jobs = [
+        {
+            "job_id": f"job:{task_index}:{state_index}",
+            "record_id": f"record:{task_index}:{state_index}",
+            "task_id": f"task:{task_index}",
+            "task_type": "comparison",
+            "state_id": f"state:{task_index}:{state_index}",
+            "strategy": f"strategy:{state_index}",
+        }
+        for task_index in range(task_count)
+        for state_index in range(3)
+    ]
+    common_identity = {
+        "base_model_manifest_hash": "base-model-manifest",
+        "beneficiary_adapter_tensor_sha256": "adapter-sha256",
+        "beneficiary_model_state_id": "beneficiary-state",
+        "beneficiary_checkpoint_hash": "beneficiary-checkpoint",
+        "source_records_sha256": "source-records-sha256",
+        "target_records_sha256": "target-records-sha256",
+        "source_baseline_report_hash": "baseline-report-hash",
+        "source_probe_plan_hash": "probe-plan-hash",
+        "task_count": task_count,
+        "learning_rate": 0.0002,
+        "jobs": jobs,
+        "final_test_record_ids": [f"final:{index}" for index in range(5)],
+    }
+
+    def population(horizon: int, values: tuple[float, ...]):
+        rows = []
+        probability = 1.0 / len(values)
+        baseline = sum(probability * value for value in values)
+        for task_index in range(task_count):
+            for state_index, value in enumerate(values):
+                centered = value - baseline
+                rows.append(
+                    {
+                        "task_id": f"task:{task_index}",
+                        "state_id": f"state:{task_index}:{state_index}",
+                        "current_probability": probability,
+                        "estimation_mean_gain": value,
+                        "validation_mean_gain": value + 0.1,
+                        "estimation_centered_contribution": centered,
+                        "validation_centered_contribution": centered,
+                        "all_seed_centered_contribution": centered,
+                        "estimation_conservative_centered_contribution": centered,
+                        "validation_conservative_centered_contribution": centered,
+                        "all_seed_conservative_centered_contribution": centered,
+                    }
+                )
+        task_distribution_hashes = {
+            f"task:{task_index}": _current_distribution_hash(
+                f"task:{task_index}",
+                {
+                    f"state:{task_index}:{state_index}": probability
+                    for state_index in range(len(values))
+                },
+            )
+            for task_index in range(task_count)
+        }
+        task_rows = [
+            {
+                "task_id": f"task:{task_index}",
+                "current_distribution_hash": task_distribution_hashes[f"task:{task_index}"],
+                "weighted_centered_means": {
+                    split: 0.0 for split in ("estimation", "validation", "all_seed")
+                },
+                "weighted_conservative_centered_means": {
+                    split: 0.0 for split in ("estimation", "validation", "all_seed")
+                },
+            }
+            for task_index in range(task_count)
+        ]
+        plan = seal(
+            {
+                **common_identity,
+                "experiment_version": CONTRIBUTION_POPULATION_VERSION,
+                "probe_step_count": horizon,
+                "probe_optimizer": "cold_start_sgd",
+                "probe_seeds": [1, 2, 3, 4, 5, 6, 7, 8],
+                "validation_record_ids": [f"validation:{index}" for index in range(5)],
+                "estimation_seeds": [1, 2, 3, 4],
+                "validation_seeds": [5, 6, 7, 8],
+                "internal_validation_set_id": "internal-validation",
+                "final_test_set_id": "probe-final-test",
+                "uncertainty_statistic": "sample_standard_deviation",
+                "uncertainty_penalty_coefficient": 1.0,
+                "centering_policy": CENTERING_POLICY,
+                "state_probability_policy": STATE_PROBABILITY_POLICY,
+                "probe_estimand_id": canonical_hash(
+                    {
+                        "beneficiary_checkpoint_hash": "beneficiary-checkpoint",
+                        "internal_validation_set_id": "internal-validation",
+                        "source_records_sha256": "source-records-sha256",
+                        "metric": "negative_supervised_token_nll",
+                        "evaluation_role": "internal_validation",
+                        "probe_step_count": horizon,
+                        "learning_rate": 0.0002,
+                        "optimizer": "cold_start_sgd",
+                        "uncertainty_statistic": "sample_standard_deviation",
+                        "uncertainty_penalty_coefficient": 1.0,
+                        "centering_policy": CENTERING_POLICY,
+                    },
+                    prefix="finance_contribution_probe_estimand:",
+                ),
+            },
+            field="plan_hash",
+            prefix="finance_contribution_population_plan:",
+        )
+        report = seal(
+            {
+                "experiment_version": CONTRIBUTION_POPULATION_VERSION,
+                "plan_hash": plan["plan_hash"],
+                "final_test_set_id": plan["final_test_set_id"],
+                "internal_validation_set_id": plan["internal_validation_set_id"],
+                "probe_step_count": plan["probe_step_count"],
+                "learning_rate": plan["learning_rate"],
+                "probe_optimizer": plan["probe_optimizer"],
+                "estimation_seeds": plan["estimation_seeds"],
+                "validation_seeds": plan["validation_seeds"],
+                "seed_count": len(plan["probe_seeds"]),
+                "production_contribution_field": PRODUCTION_CONTRIBUTION_FIELD,
+                "uncertainty_penalty_coefficient": 1.0,
+                "centering_policy": CENTERING_POLICY,
+                "state_probability_policy": STATE_PROBABILITY_POLICY,
+                "task_distribution_hashes": task_distribution_hashes,
+                "current_distribution_contract_hash": contribution_distribution_contract_hash(
+                    task_distribution_hashes
+                ),
+                "weighted_centering_replay_passed": True,
+                "task_count": task_count,
+                "state_count": task_count * 3,
+                "observation_count": task_count * 3 * len(plan["probe_seeds"]),
+                "task_rows": task_rows,
+                "state_rows": rows,
+            },
+            field="report_hash",
+            prefix="finance_contribution_population_report:",
+        )
+        return plan, report
+
+    def intervention(horizon: int, values: tuple[float, ...]):
+        rows = []
+        for task_index in range(task_count):
+            for state_index, value in enumerate(values):
+                rows.append(
+                    {
+                        "task_id": f"task:{task_index}",
+                        "state_id": f"state:{task_index}:{state_index}",
+                        "intervention_mean_gain": value,
+                    }
+                )
+        plan = seal(
+            {
+                **common_identity,
+                "experiment_version": CONTRIBUTION_INTERVENTION_VERSION,
+                "source_population_report_hash": f"historical-population-report:{horizon}",
+                "probe_contribution_signal_kind": PRODUCTION_CONTRIBUTION_FIELD,
+                "probe_uncertainty_penalty_coefficient": 1.0,
+                "intervention_step_count": horizon,
+                "final_test_set_id": "intervention-final-test",
+                "intervention_seeds": [9, 10, 11, 12],
+                "intervention_optimizer": "cold_start_sgd",
+                "optimizer_alignment_role": "same_optimizer_estimand",
+                "metric": "negative_supervised_token_nll",
+                "evaluation_role": "untouched_final_test",
+                "optimizer_contract": {
+                    "optimizer": "cold_start_sgd",
+                    "learning_rate": 0.0002,
+                    "step_count": horizon,
+                    "momentum": 0.0,
+                    "weight_decay": 0.0,
+                    "gradient_clipping": False,
+                    "gradient_clip_norm": None,
+                    "optimizer_state_policy": "empty_at_each_task_state",
+                },
+                "intervention_estimand_id": canonical_hash(
+                    {
+                        "beneficiary_checkpoint_hash": "beneficiary-checkpoint",
+                        "final_test_set_id": "intervention-final-test",
+                        "target_records_sha256": "target-records-sha256",
+                        "metric": "negative_supervised_token_nll",
+                        "evaluation_role": "untouched_final_test",
+                        "intervention_step_count": horizon,
+                        "learning_rate": 0.0002,
+                        "optimizer_contract": {
+                            "optimizer": "cold_start_sgd",
+                            "learning_rate": 0.0002,
+                            "step_count": horizon,
+                            "momentum": 0.0,
+                            "weight_decay": 0.0,
+                            "gradient_clipping": False,
+                            "gradient_clip_norm": None,
+                            "optimizer_state_policy": "empty_at_each_task_state",
+                        },
+                        "optimizer_alignment_role": "same_optimizer_estimand",
+                    },
+                    prefix="finance_contribution_intervention_estimand:",
+                ),
+            },
+            field="plan_hash",
+            prefix="finance_contribution_intervention_plan:",
+        )
+        report = seal(
+            {
+                "experiment_version": CONTRIBUTION_INTERVENTION_VERSION,
+                "plan_hash": plan["plan_hash"],
+                "source_population_report_hash": plan["source_population_report_hash"],
+                "final_test_set_id": plan["final_test_set_id"],
+                "intervention_step_count": plan["intervention_step_count"],
+                "learning_rate": plan["learning_rate"],
+                "intervention_optimizer": plan["intervention_optimizer"],
+                "optimizer_alignment_role": plan["optimizer_alignment_role"],
+                "probe_contribution_signal_kind": plan["probe_contribution_signal_kind"],
+                "probe_uncertainty_penalty_coefficient": plan[
+                    "probe_uncertainty_penalty_coefficient"
+                ],
+                "intervention_seed_count": len(plan["intervention_seeds"]),
+                "state_count": task_count * 3,
+                "observation_count": (task_count * 3 * len(plan["intervention_seeds"])),
+                "state_rows": rows,
+            },
+            field="report_hash",
+            prefix="finance_contribution_intervention_report:",
+        )
+        return plan, report
+
+    report = analyze_contribution_estimands(
+        population_runs=[
+            population(1, (1.0, 2.0, 3.0)),
+            population(3, (1.0, 2.0, 3.0)),
+            population(5, (1.0, 2.0, 3.0)),
+        ],
+        intervention_runs=[
+            intervention(1, (1.0, 2.0, 3.0)),
+            intervention(3, (1.0, 2.0, 3.0)),
+            intervention(5, (3.0, 2.0, 1.0)),
+        ],
+        bootstrap_samples=100,
+        permutation_iterations=100,
+    )
+
+    assert report["exploratory_selected_horizon"] == 1
+    assert report["production_contribution_allowed"] is True
+    assert report["validated_production_horizon"] == 1
+    assert report["production_authorization_issuable"] is True
+    assert [item["rank_gate_passed"] for item in report["horizon_rows"]] == [
+        True,
+        True,
+        False,
+    ]
+    assert report["horizon_rows"][0]["rank_gate_components"] == {
+        "cross_seed_stability": True,
+        "estimation_to_final_test": True,
+        "heldout_to_final_test": True,
+    }
+    assert report["exploratory_confidence_margin_score"] > 0
+    assert report["exploratory_point_robustness_score"] == 1.0
+    assert {item["mode"] for item in report["strict_rebind_contracts"]} == {
+        "strict_identity_reanalysis"
+    }
+    assert (
+        report["horizon_rows"][0]["conservative_signal_lift"]["estimation_to_final_test_spearman"]
+        == 0.0
+    )
+
+    distribution = make_conditional_distribution(
+        "task:0",
+        {f"state:0:{index}": 1.0 / 3.0 for index in range(3)},
+        round_index=0,
+    )
+    isolation = make_contribution_data_isolation_contract(
+        task_condition_id="task:0",
+        baseline_training_set_id="train:task:0",
+        baseline_training_instance_ids=("train:0",),
+        probe_update_instance_ids_by_state={
+            f"state:0:{index}": (f"probe:{index}",) for index in range(3)
+        },
+        internal_validation_set_id="internal-validation",
+        internal_validation_instance_ids=tuple(f"validation:{index}" for index in range(5)),
+        final_test_set_id="probe-final-test",
+        final_test_instance_ids=tuple(f"final:{index}" for index in range(5)),
+    )
+    metric = make_contribution_metric_contract(
+        target_metric_id="negative_supervised_token_nll",
+        evaluation_distribution_id="internal-validation",
+        evaluation_snapshot_hash="internal-validation-snapshot",
+        score_transform="negative_loss",
+    )
+    optimizer = make_probe_optimizer_contract(learning_rate=0.0002, step_count=1)
+    protocol = make_contribution_probe_protocol(
+        beneficiary_model_state_id="beneficiary-state",
+        beneficiary_checkpoint_hash="beneficiary-checkpoint",
+        metric_contract=metric,
+        data_isolation=isolation,
+        optimizer=optimizer,
+        probe_seeds=(1, 2, 3, 4),
+        uncertainty_penalty_coefficient=1.0,
+    )
+    observations = tuple(
+        make_contribution_probe_observation(
+            task_condition_id="task:0",
+            round_index=0,
+            state_id=f"state:0:{state_index}",
+            protocol=protocol,
+            seed=seed,
+            adaptation_result=ProbeAdaptationResult(
+                adapted_model_state_id=f"adapted:{state_index}:{seed}",
+                adapted_checkpoint_hash=f"adapted-checkpoint:{state_index}:{seed}",
+                base_model_state_id="beneficiary-state",
+                base_checkpoint_hash="beneficiary-checkpoint",
+                optimizer_contract_id=optimizer.contract_id,
+                initial_optimizer_state_hash=empty_optimizer_state_hash(optimizer),
+                executed_step_count=1,
+            ),
+            baseline_performance=0.0,
+            adapted_performance=float(state_index),
+        )
+        for state_index in range(3)
+        for seed in (1, 2, 3, 4)
+    )
+    manifest = estimate_contributions_from_probes(distribution, observations)
+    authorization = issue_contribution_production_authorization(
+        analysis_report=report,
+        manifest=manifest,
+    )
+    assert authorization.selected_adaptation_horizon == 1
+    assert authorization.task_count == 30
+    assert manifest.task_condition_id in authorization.task_condition_ids
+
+    tampered_report = dict(report)
+    tampered_report["validated_production_horizon"] = 3
+    with pytest.raises(ValueError, match="report_hash does not replay"):
+        issue_contribution_production_authorization(
+            analysis_report=tampered_report,
+            manifest=manifest,
+        )
+
+    diagnostic_only = analyze_contribution_estimands(
+        population_runs=[
+            population(1, (1.0, 2.0, 3.0)),
+            population(3, (1.0, 2.0, 3.0)),
+            population(5, (1.0, 2.0, 3.0)),
+        ],
+        intervention_runs=[
+            intervention(1, (3.0, 2.0, 1.0)),
+            intervention(3, (3.0, 2.0, 1.0)),
+            intervention(5, (1.0, 2.0, 3.0)),
+        ],
+        bootstrap_samples=100,
+        permutation_iterations=100,
+    )
+    assert diagnostic_only["exploratory_selected_horizon"] == 5
+    assert diagnostic_only["validated_production_horizon"] is None
+    assert diagnostic_only["production_contribution_allowed"] is False
+    assert "validated_horizon_exists" in diagnostic_only["production_blockers"]
+
+    population_run = population(1, (1.0, 2.0, 3.0))
+    intervention_plan, intervention_report = intervention(1, (1.0, 2.0, 3.0))
+    intervention_plan["target_records_sha256"] = "different-target-records"
+    intervention_plan.pop("plan_hash")
+    seal(
+        intervention_plan,
+        field="plan_hash",
+        prefix="finance_contribution_intervention_plan:",
+    )
+    intervention_report["plan_hash"] = intervention_plan["plan_hash"]
+    intervention_report.pop("report_hash")
+    seal(
+        intervention_report,
+        field="report_hash",
+        prefix="finance_contribution_intervention_report:",
+    )
+    with pytest.raises(ValueError, match="target_records_sha256"):
+        analyze_contribution_estimands(
+            population_runs=[population_run],
+            intervention_runs=[(intervention_plan, intervention_report)],
+            bootstrap_samples=10,
+            permutation_iterations=10,
+        )
+
+    tampered_population_plan, tampered_population_report = population(1, (1.0, 2.0, 3.0))
+    tampered_population_report["state_rows"][0]["current_probability"] = 0.5
+    tampered_population_report.pop("report_hash")
+    seal(
+        tampered_population_report,
+        field="report_hash",
+        prefix="finance_contribution_population_report:",
+    )
+    with pytest.raises(ValueError, match="current state probability"):
+        analyze_contribution_estimands(
+            population_runs=[(tampered_population_plan, tampered_population_report)],
+            intervention_runs=[intervention(1, (1.0, 2.0, 3.0))],
+            bootstrap_samples=10,
+            permutation_iterations=10,
+        )
+
+    for threshold_kwargs, message in (
+        ({"minimum_task_count": 29}, "task threshold"),
+        ({"minimum_evaluation_records": 4}, "evaluation threshold"),
+        ({"minimum_seed_replicates_per_role": 3}, "seed threshold"),
+    ):
+        with pytest.raises(ValueError, match=message):
+            analyze_contribution_estimands(
+                population_runs=[],
+                intervention_runs=[],
+                **threshold_kwargs,
+            )
+
+    low_seed_plan, low_seed_report = population(1, (1.0, 2.0, 3.0))
+    low_seed_plan["probe_seeds"] = [1, 2, 5, 6]
+    low_seed_plan["estimation_seeds"] = [1, 2]
+    low_seed_plan["validation_seeds"] = [5, 6]
+    low_seed_plan.pop("plan_hash")
+    seal(
+        low_seed_plan,
+        field="plan_hash",
+        prefix="finance_contribution_population_plan:",
+    )
+    low_seed_report["plan_hash"] = low_seed_plan["plan_hash"]
+    low_seed_report["estimation_seeds"] = low_seed_plan["estimation_seeds"]
+    low_seed_report["validation_seeds"] = low_seed_plan["validation_seeds"]
+    low_seed_report["seed_count"] = len(low_seed_plan["probe_seeds"])
+    low_seed_report["observation_count"] = low_seed_report["state_count"] * len(
+        low_seed_plan["probe_seeds"]
+    )
+    low_seed_report.pop("report_hash")
+    seal(
+        low_seed_report,
+        field="report_hash",
+        prefix="finance_contribution_population_report:",
+    )
+    seed_qualified_selection = analyze_contribution_estimands(
+        population_runs=[
+            (low_seed_plan, low_seed_report),
+            population(3, (1.0, 2.0, 3.0)),
+        ],
+        intervention_runs=[
+            intervention(1, (1.0, 2.0, 3.0)),
+            intervention(3, (1.0, 2.0, 3.0)),
+        ],
+        bootstrap_samples=100,
+        permutation_iterations=100,
+    )
+    assert seed_qualified_selection["rank_validated_production_horizons"] == [
+        1,
+        3,
+    ]
+    assert seed_qualified_selection["production_seed_eligible_horizons"] == [3]
+    assert seed_qualified_selection["jointly_eligible_production_horizons"] == [3]
+    assert seed_qualified_selection["validated_production_horizon"] == 3
+
+
+def test_production_probe_optimizer_allows_at_most_three_sgd_steps() -> None:
+    assert make_probe_optimizer_contract(learning_rate=0.0002, step_count=3).step_count == 3
+    with pytest.raises(ValueError):
+        make_probe_optimizer_contract(learning_rate=0.0002, step_count=4)
+
+
+def test_population_conservative_signal_is_centered_and_penalizes_seed_variance() -> None:
+    rows = [
+        {
+            "state_id": "state:a",
+            "estimation_mean_gain": 0.3,
+            "estimation_seed_gains": [0.2, 0.4],
+        },
+        {
+            "state_id": "state:b",
+            "estimation_mean_gain": 0.25,
+            "estimation_seed_gains": [0.25, 0.25],
+        },
+        {
+            "state_id": "state:c",
+            "estimation_mean_gain": 0.1,
+            "estimation_seed_gains": [0.1, 0.1],
+        },
+    ]
+    probabilities = {"state:a": 0.6, "state:b": 0.3, "state:c": 0.1}
+
+    _attach_contribution_signals(
+        rows,
+        split="estimation",
+        penalty_coefficient=1.0,
+        state_probabilities=probabilities,
+    )
+
+    assert sum(
+        probabilities[item["state_id"]] * item["estimation_conservative_centered_contribution"]
+        for item in rows
+    ) == pytest.approx(0.0, abs=1e-12)
+    assert {item["state_id"]: item["current_probability"] for item in rows} == probabilities
+    assert rows[0]["estimation_centered_contribution"] > rows[1]["estimation_centered_contribution"]
+    assert (
+        rows[0]["estimation_conservative_centered_contribution"]
+        < rows[1]["estimation_conservative_centered_contribution"]
+    )
+    for row in rows:
+        row["all_seed_seed_gains"] = row["estimation_seed_gains"] * 2
+        row["all_seed_mean_gain"] = row["estimation_mean_gain"]
+        row["validation_seed_gains"] = list(row["estimation_seed_gains"])
+        row["validation_mean_gain"] = row["estimation_mean_gain"]
+    _attach_contribution_signals(
+        rows,
+        split="all_seed",
+        penalty_coefficient=1.0,
+        state_probabilities=probabilities,
+    )
+    assert sum(
+        probabilities[item["state_id"]] * item["all_seed_conservative_centered_contribution"]
+        for item in rows
+    ) == pytest.approx(0.0, abs=1e-12)
+    sensitivity = _penalty_sensitivity_rows({"task": rows})
+    assert [item["penalty_coefficient"] for item in sensitivity] == [
+        0.0,
+        0.25,
+        0.5,
+        1.0,
+        2.0,
+    ]
+
+
+def test_intervention_ranks_the_production_conservative_signal() -> None:
+    states = [
+        {
+            "task_type": "comparison",
+            "probe_estimation_centered_contribution": 0.3,
+            "probe_estimation_conservative_centered_contribution": 0.1,
+            "intervention_mean_gain": 0.1,
+        },
+        {
+            "task_type": "comparison",
+            "probe_estimation_centered_contribution": 0.2,
+            "probe_estimation_conservative_centered_contribution": 0.3,
+            "intervention_mean_gain": 0.3,
+        },
+        {
+            "task_type": "comparison",
+            "probe_estimation_centered_contribution": 0.1,
+            "probe_estimation_conservative_centered_contribution": 0.2,
+            "intervention_mean_gain": 0.2,
+        },
+    ]
+
+    row, vectors = _task_rank_row("task:1", states)
+
+    assert row["spearman"] == 1.0
+    assert row["raw_centered_spearman"] == -0.5
+    assert vectors[0] == [0.1, 0.3, 0.2]
+
+
+def test_population_production_replication_contract_and_gpu_waves() -> None:
+    seeds = tuple(range(8))
+    _validate_probe_replication_contract(
+        probe_step_count=3,
+        probe_seeds=seeds,
+        run_role="production_candidate",
+    )
+    with pytest.raises(ValueError, match="four seeds per split"):
+        _validate_probe_replication_contract(
+            probe_step_count=3,
+            probe_seeds=tuple(range(4)),
+            run_role="production_candidate",
+        )
+    with pytest.raises(ValueError, match="one or three"):
+        _validate_probe_replication_contract(
+            probe_step_count=5,
+            probe_seeds=seeds,
+            run_role="production_candidate",
+        )
+    _validate_probe_replication_contract(
+        probe_step_count=5,
+        probe_seeds=tuple(range(4)),
+        run_role="horizon_validation_only",
+    )
+    assert _seed_waves(seeds, (3, 4, 5, 6)) == (
+        ((3, 0), (4, 1), (5, 2), (6, 3)),
+        ((3, 4), (4, 5), (5, 6), (6, 7)),
+    )
+
+
+def test_contribution_support_selection_balances_task_types_deterministically() -> None:
+    artifacts = tuple(
+        SimpleNamespace(
+            artifact_id=f"artifact:{task_type}:{index}",
+            omega=SimpleNamespace(
+                task=SimpleNamespace(public=SimpleNamespace(task_type=task_type))
+            ),
+        )
+        for task_type in ("comparison", "ratio", "temporal")
+        for index in range(3)
+    )
+
+    selected = _select_balanced_artifacts(artifacts, count=6, salt="validation")
+
+    assert selected == _select_balanced_artifacts(artifacts, count=6, salt="validation")
+    assert sorted(item.omega.task.public.task_type for item in selected) == [
+        "comparison",
+        "comparison",
+        "ratio",
+        "ratio",
+        "temporal",
+        "temporal",
+    ]
 
 
 def test_training_preflight_uses_new_state_artifacts_and_blocks_missing_b3_b5(

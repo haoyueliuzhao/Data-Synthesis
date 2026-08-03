@@ -413,6 +413,7 @@ def _production_vtdo_update(
         coverage,
         estimates,
         manifest,
+        None,
         _energy_config(config),
         make_vtdo_role_contract(
             explorer_provider_id="synthetic_explorer:v1",

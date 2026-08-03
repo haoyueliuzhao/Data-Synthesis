@@ -165,8 +165,7 @@ class TrajectoryStateCatalog(FrozenModel):
         if len(trajectory_ids) != len(set(trajectory_ids)):
             raise ValueError("state catalog reuses a discovery trajectory")
         if any(
-            witness.validity_report.context_id != self.omega_context_id
-            for witness in witnesses
+            witness.validity_report.context_id != self.omega_context_id for witness in witnesses
         ):
             raise ValueError("state discovery witness belongs to another Omega context")
         if self.parent_catalog_id == self.catalog_id:
@@ -198,9 +197,7 @@ class TrajectoryStateCatalog(FrozenModel):
 
 
 def make_trajectory_state_catalog(
-    discoveries: Iterable[
-        tuple[TrajectoryStateAssignment, TrajectoryValidityReport, Trajectory]
-    ],
+    discoveries: Iterable[tuple[TrajectoryStateAssignment, TrajectoryValidityReport, Trajectory]],
     *,
     state_space_compilation: TrajectoryStateSpaceCompilation,
     discovery_method: str,
