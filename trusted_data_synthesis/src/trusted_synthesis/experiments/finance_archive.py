@@ -360,11 +360,13 @@ class FinanceArchiveBindingProvider:
         *,
         seed: int,
         require_corpus_disjoint: bool = True,
+        excluded_evidence_version_ids: frozenset[str] = frozenset(),
     ) -> tuple[ContractCase, ...]:
         """Select a deterministic, prefix-stable set of real Archive tasks.
 
         Weighted fair scheduling keeps every prefix close to the frozen Pattern mix, while
-        corpus-disjoint selection prevents train/evaluation leakage through distractors.
+        corpus-disjoint selection prevents within-population leakage through distractors. A
+        frozen exclusion set additionally prevents public-corpus reuse across populations.
         """
 
         if count < 1:
@@ -421,6 +423,8 @@ class FinanceArchiveBindingProvider:
                     continue
                 evidence_versions = {item.evidence_version_id for item in case.corpus.evidence}
                 if case.task.task_id in used_task_ids:
+                    continue
+                if evidence_versions & excluded_evidence_version_ids:
                     continue
                 if require_corpus_disjoint and evidence_versions & used_evidence_versions:
                     continue

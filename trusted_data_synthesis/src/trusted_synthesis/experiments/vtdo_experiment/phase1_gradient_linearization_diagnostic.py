@@ -314,7 +314,12 @@ def run(args: argparse.Namespace) -> None:
     record_rows: list[dict[str, Any]] = []
     record_weights: list[float] = []
     for index, record in enumerate(final_records):
-        gradient, loss, supervised_tokens = _record_gradient(model, tokenizer, record)
+        gradient, loss, supervised_tokens = _record_gradient(
+            model,
+            tokenizer,
+            record,
+            mode="objective_eval",
+        )
         path = diagnostic_dir / f"final_record_{index:02d}.safetensors"
         save_file(gradient, path)
         record_gradients.append(gradient)

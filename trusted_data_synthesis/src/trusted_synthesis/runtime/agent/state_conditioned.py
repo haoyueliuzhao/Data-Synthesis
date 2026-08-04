@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -13,12 +13,17 @@ from trusted_synthesis.core.vtdo.state_space import (
     PublicStateGenerationRequest,
 )
 from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime.agent.client import LLMClientError
 from trusted_synthesis.runtime.agent.llm_agent import LLMAgentSolver
-from trusted_synthesis.runtime.agent.schema import AgentGenerationAudit
+from trusted_synthesis.runtime.agent.schema import (
+    AgentGenerationAudit,
+    HostInteractionProgress,
+    ModelCallTelemetry,
+)
 from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 
-STATE_CONDITIONED_AGENT_PROVIDER_VERSION = "state_conditioned_agent_provider.v1"
-STATE_CONTROLLABILITY_AUDIT_VERSION = "state_condition_controllability.v1"
+STATE_CONDITIONED_AGENT_PROVIDER_VERSION = "state_conditioned_agent_provider.v4"
+STATE_CONTROLLABILITY_AUDIT_VERSION = "state_condition_controllability.v3"
 
 ControlStatus = Literal[
     "model_controlled",
@@ -63,9 +68,36 @@ class StateConditionedGenerationRecord(BaseModel):
 
     request_id: str = Field(min_length=1)
     candidate_index: int = Field(ge=0)
+    request_seed: int
+    candidate_seed: int
+    trajectory_id: str = Field(min_length=1)
+    trajectory_hash: str = Field(min_length=1)
     controllability_audit_id: str = Field(min_length=1)
     generation_audit: AgentGenerationAudit
     schema_version: str = STATE_CONDITIONED_AGENT_PROVIDER_VERSION
+
+
+class StateConditionedGenerationFailureRecord(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    failure_id: str = Field(min_length=1)
+    request_id: str = Field(min_length=1)
+    candidate_index: int = Field(ge=0)
+    request_seed: int
+    candidate_seed: int
+    controllability_audit_id: str = Field(min_length=1)
+    error_type: str = Field(min_length=1)
+    error_message: str = Field(min_length=1)
+    telemetry: tuple[ModelCallTelemetry, ...] = ()
+    failure_artifact: dict[str, Any] | None = None
+    interaction_progress: HostInteractionProgress | None = None
+    schema_version: str = STATE_CONDITIONED_AGENT_PROVIDER_VERSION
+
+    @model_validator(mode="after")
+    def validate_failure(self) -> StateConditionedGenerationFailureRecord:
+        if self.failure_id != state_conditioned_generation_failure_record_id(self):
+            raise ValueError("state-conditioned generation failure identity is invalid")
+        return self
 
 
 class StateConditionedLLMTrajectoryProvider:
@@ -90,11 +122,16 @@ class StateConditionedLLMTrajectoryProvider:
         self._corpora = dict(public_corpora_by_task_id)
         self._reject_protocol_blocked = reject_protocol_blocked
         self._records: list[StateConditionedGenerationRecord] = []
+        self._failure_records: list[StateConditionedGenerationFailureRecord] = []
         self._controllability_audits: list[StateConditionControllabilityAudit] = []
 
     @property
     def records(self) -> tuple[StateConditionedGenerationRecord, ...]:
         return tuple(self._records)
+
+    @property
+    def failure_records(self) -> tuple[StateConditionedGenerationFailureRecord, ...]:
+        return tuple(self._failure_records)
 
     @property
     def controllability_audits(self) -> tuple[StateConditionControllabilityAudit, ...]:
@@ -122,16 +159,58 @@ class StateConditionedLLMTrajectoryProvider:
                 "state condition is not requestable under the current agent contract: "
                 + ",".join(audit.blocked_dimensions)
             )
-        constraints = project_state_condition_constraints(
+        base_constraints = project_state_condition_constraints(
             request.state_condition,
             audit,
         )
         for candidate_index in range(request.candidate_count):
-            result = self._solver.solve_with_audit(
-                request.task_public,
-                InMemoryEvidenceToolRuntime(corpus),
-                generation_constraints=constraints,
-            )
+            candidate_seed = _candidate_generation_seed(request.seed, candidate_index)
+            constraints = {
+                **base_constraints,
+                "sampling_context": {
+                    "request_seed": request.seed,
+                    "candidate_index": candidate_index,
+                    "candidate_seed": candidate_seed,
+                },
+            }
+            try:
+                result = self._solver.solve_with_audit(
+                    request.task_public,
+                    InMemoryEvidenceToolRuntime(corpus),
+                    generation_constraints=constraints,
+                )
+            except LLMClientError as exc:
+                failure_artifact = (
+                    exc.failure_artifact.model_dump(mode="json")
+                    if isinstance(exc.failure_artifact, BaseModel)
+                    else dict(exc.failure_artifact)
+                    if isinstance(exc.failure_artifact, Mapping)
+                    else None
+                )
+                values = {
+                    "request_id": request.request_id,
+                    "candidate_index": candidate_index,
+                    "request_seed": request.seed,
+                    "candidate_seed": candidate_seed,
+                    "controllability_audit_id": audit.audit_id,
+                    "error_type": type(exc).__name__,
+                    "error_message": str(exc),
+                    "telemetry": exc.telemetry,
+                    "failure_artifact": failure_artifact,
+                    "interaction_progress": exc.interaction_progress,
+                    "schema_version": STATE_CONDITIONED_AGENT_PROVIDER_VERSION,
+                }
+                provisional = StateConditionedGenerationFailureRecord.model_construct(
+                    failure_id="pending",
+                    **values,
+                )
+                self._failure_records.append(
+                    StateConditionedGenerationFailureRecord(
+                        failure_id=state_conditioned_generation_failure_record_id(provisional),
+                        **values,
+                    )
+                )
+                continue
             expected_hash = canonical_hash(
                 constraints,
                 prefix="agent_generation_constraints:",
@@ -142,11 +221,24 @@ class StateConditionedLLMTrajectoryProvider:
                 StateConditionedGenerationRecord(
                     request_id=request.request_id,
                     candidate_index=candidate_index,
+                    request_seed=request.seed,
+                    candidate_seed=candidate_seed,
+                    trajectory_id=result.trajectory.trajectory_id,
+                    trajectory_hash=result.trajectory.trajectory_hash,
                     controllability_audit_id=audit.audit_id,
                     generation_audit=result.audit,
                 )
             )
             yield result.trajectory
+
+
+def state_conditioned_generation_failure_record_id(
+    value: StateConditionedGenerationFailureRecord,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"failure_id"}),
+        prefix="state_conditioned_generation_failure:",
+    )
 
 
 def assess_state_condition_controllability(
@@ -174,12 +266,31 @@ def assess_state_condition_controllability(
             if plan_given
             else "model_controlled"
         ),
+        "retrieval_elaboration": (
+            "host_satisfied"
+            if condition.retrieval_elaboration == "unconstrained"
+            else "model_controlled"
+            if not resolved
+            else "host_satisfied"
+            if condition.retrieval_elaboration == "required_only"
+            else "host_blocked"
+        ),
         "execution_requirement": (
             "host_satisfied"
             if plan_given and condition.execution_requirement == "program_equivalent"
             else "host_blocked"
             if plan_given
             else "model_controlled"
+        ),
+        "execution_elaboration": (
+            "host_satisfied"
+            if condition.execution_elaboration == "unconstrained"
+            else "model_controlled"
+            if not plan_given
+            else "host_satisfied"
+            if condition.execution_elaboration
+            in {"baseline_program", "program_projection"}
+            else "host_blocked"
         ),
         "verification_requirement": (
             "host_satisfied"
@@ -261,10 +372,61 @@ def project_state_condition_constraints(
         "contract_version": STATE_CONDITIONED_AGENT_PROVIDER_VERSION,
         "target_behavior": target,
         "dimension_control": dict(sorted(controllability.dimension_status.items())),
+        "control_plan": _state_control_plan(condition, controllability),
         "binding_rule": (
             "Honor only model-controlled or shared-control dimensions. Host-satisfied "
             "dimensions are immutable guarantees. Never simulate a host-blocked dimension."
         ),
+    }
+
+
+def _state_control_plan(
+    condition: PublicStateCondition,
+    controllability: StateConditionControllabilityAudit,
+) -> dict[str, object]:
+    retrieval_rules = {
+        "unconstrained": "Use any valid public search strategy.",
+        "required_only": (
+            "Maximize public query specificity using the exact subject, predicate, and time "
+            "constraints needed by the task. Do not intentionally retrieve contextual rows."
+        ),
+        "semantic_context": (
+            "Retrieve the required rows plus nearby semantically related context. Keep a "
+            "non-empty subject or predicate constraint, but omit exact temporal filters so "
+            "the query is broader than required-only and narrower than the whole corpus."
+        ),
+        "full_corpus": (
+            "Return an empty model-owned search query. The Host will add only the immutable "
+            "corpus boundary, yielding the complete public corpus."
+        ),
+    }
+    execution_rules = {
+        "unconstrained": "Use any independently valid registered operation graph.",
+        "baseline_program": (
+            "Use the shortest semantically complete registered operation graph for the task. "
+            "Do not add lookup operations solely to create optional transparent projections."
+        ),
+        "program_projection": (
+            "Preserve the registered lookup projection nodes that belong to the shortest "
+            "semantically complete operation graph, and feed their outputs to the semantic "
+            "operation. Do not add another projection layer."
+        ),
+        "transparent_projection": (
+            "Insert a registered lookup projection for each raw Evidence input consumed by a "
+            "semantic operation, then feed the lookup step outputs to that operation."
+        ),
+    }
+    return {
+        "retrieval": {
+            "mode": condition.retrieval_elaboration,
+            "control_status": controllability.dimension_status["retrieval_elaboration"],
+            "rule": retrieval_rules[condition.retrieval_elaboration],
+        },
+        "execution": {
+            "mode": condition.execution_elaboration,
+            "control_status": controllability.dimension_status["execution_elaboration"],
+            "rule": execution_rules[condition.execution_elaboration],
+        },
     }
 
 
@@ -275,3 +437,15 @@ def state_condition_controllability_audit_id(
         value.model_dump(mode="json", exclude={"audit_id"}),
         prefix="state_condition_controllability_audit:",
     )
+
+
+def _candidate_generation_seed(request_seed: int, candidate_index: int) -> int:
+    digest = canonical_hash(
+        {
+            "request_seed": request_seed,
+            "candidate_index": candidate_index,
+            "provider_version": STATE_CONDITIONED_AGENT_PROVIDER_VERSION,
+        },
+        prefix="state_conditioned_candidate_seed:",
+    ).rsplit(":", 1)[-1]
+    return int(digest[:16], 16)

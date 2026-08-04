@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import threading
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -54,7 +55,9 @@ from trusted_synthesis.runtime.agent import (
     LLMAgentSolver,
     LLMClientError,
     ModelCallTelemetry,
+    OpenAICompatibleJsonClient,
 )
+from trusted_synthesis.runtime.agent.client import _estimate_cost
 from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 
 
@@ -126,11 +129,7 @@ class PromptRoutingJsonClient(ScriptedJsonClient):
     def complete_json(self, prompt: str):
         with self._lock:
             task_id = next(
-                (
-                    key
-                    for key in self._payload_by_task_id
-                    if f'"task_id": "{key}"' in prompt
-                ),
+                (key for key in self._payload_by_task_id if f'"task_id": "{key}"' in prompt),
                 None,
             )
             if task_id is None:
@@ -222,7 +221,33 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
     assert result.audit.action_failure_history == ()
     assert result.trajectory.program_execution["source"] == "host_instrumented_execution"
     assert client.call_count == 2
+    action_prompt_payload = json.loads(client.prompts[0].split("PAYLOAD:\n", 1)[1])
+    valid_evidence_inputs = action_prompt_payload["evidence_identifier_contract"][
+        "valid_evidence_inputs"
+    ]
+    assert all(set(item) == {"source", "evidence_id"} for item in valid_evidence_inputs)
+    assert all(
+        {
+            "input_role_contract",
+            "parameter_contract",
+            "downstream_selector_contract",
+        }
+        <= set(operation)
+        for operation in action_prompt_payload["operation_catalog"]
+    )
+    assert "domain_contract_guidance" in action_prompt_payload
+    assert set(
+        action_prompt_payload["action_input_contract"]["typed_examples"]["lookup"]["inputs"][0]
+    ) == {"source", "evidence_id"}
     assert "host_owned_fields" in client.prompts[0]
+    assert '"evidence_identifier_contract"' in client.prompts[0]
+    assert '"exact_evidence_ids"' in client.prompts[0]
+    assert "Never invent evidence_1-style aliases" in client.prompts[0]
+    assert "payload.value is invalid on an evidence input" in client.prompts[0]
+    assert "a lookup result stores its scalar at payload.value" in client.prompts[0]
+    assert all(
+        evidence_id in client.prompts[0] for evidence_id in action_payload["selected_evidence_ids"]
+    )
     assert "host_execution" in client.prompts[1]
     assert "answer_result_seed_complete" in client.prompts[1]
     assert "operation_results_by_public_node" in client.prompts[1]
@@ -284,19 +309,12 @@ def test_generation_constraints_are_model_visible_and_change_prompt_lineage() ->
 
     assert compact.audit.generation_constraints_hash
     assert broad.audit.generation_constraints_hash
-    assert (
-        compact.audit.generation_constraints_hash
-        != broad.audit.generation_constraints_hash
-    )
-    assert (
-        compact.audit.action_prompt_manifest_hash
-        != broad.audit.action_prompt_manifest_hash
-    )
+    assert compact.audit.generation_constraints_hash != broad.audit.generation_constraints_hash
+    assert compact.audit.action_prompt_manifest_hash != broad.audit.action_prompt_manifest_hash
     assert compact.audit.prompt_manifest_hash != broad.audit.prompt_manifest_hash
     assert '"trajectory_generation_constraints"' in compact_client.prompts[0]
     assert '"acquisition_requirement": "bounded"' in compact_client.prompts[0]
     assert '"acquisition_requirement": "expanded"' in broad_client.prompts[0]
-
 
 
 def test_host_instrumented_multistep_uses_direct_grounding_and_transitive_lineage() -> None:
@@ -347,9 +365,7 @@ def test_host_instrumented_multistep_uses_direct_grounding_and_transitive_lineag
     output_node = next(
         node for node in task.oracle.task_program.nodes if node.node_id == output_node_id
     )
-    expected_direct = {
-        ref.ref_id for ref in output_node.input_refs if ref.kind.value == "evidence"
-    }
+    expected_direct = {ref.ref_id for ref in output_node.input_refs if ref.kind.value == "evidence"}
     assert set(output_step.evidence_ids) == expected_direct
     expected_lineage = set(task.oracle.gold_evidence_ids)
     assert set(result.trajectory.program_execution["operation_lineage"][output_node_id]) == (
@@ -376,9 +392,7 @@ def test_host_instrumented_multistep_uses_direct_grounding_and_transitive_lineag
         if item.evidence_id not in expected_lineage
     )
     invalid_steps = tuple(
-        step.model_copy(
-            update={"evidence_ids": (*tuple(sorted(expected_lineage)), distractor_id)}
-        )
+        step.model_copy(update={"evidence_ids": (*tuple(sorted(expected_lineage)), distractor_id)})
         if step.step_index == output_step.step_index
         else step
         for step in result.trajectory.steps
@@ -405,9 +419,7 @@ def test_host_instrumented_agent_rejects_unretrieved_evidence() -> None:
     )
     action_plan = _action_plan_from_trajectory(deterministic)
     action_plan["selected_evidence_ids"][0] = "evidence:unknown:item@v1"
-    action_plan["executions"][0]["inputs"][0]["evidence_id"] = (
-        "evidence:unknown:item@v1"
-    )
+    action_plan["executions"][0]["inputs"][0]["evidence_id"] = "evidence:unknown:item@v1"
 
     with pytest.raises(LLMClientError, match="host action contract") as captured:
         LLMAgentSolver(
@@ -424,6 +436,44 @@ def test_host_instrumented_agent_rejects_unretrieved_evidence() -> None:
     assert captured.value.interaction_progress is not None
     assert captured.value.interaction_progress.action_plan_contract_succeeded is True
     assert captured.value.interaction_progress.host_execution_evaluable is False
+    assert captured.value.telemetry[0].json_contract_success is True
+
+
+def test_semi_open_action_failure_preserves_search_telemetry() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.SEMI_OPEN,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    resolved_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        resolved_task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_plan = _action_plan_from_trajectory(deterministic)
+    action_plan["selected_evidence_ids"][0] = "evidence:unknown:item@v1"
+    action_plan["executions"][0]["inputs"][0]["evidence_id"] = "evidence:unknown:item@v1"
+    client = ScriptedJsonClient(
+        [_search_response(task.public.retrieval_scope), action_plan],
+        interaction_protocol="host_instrumented",
+    )
+
+    with pytest.raises(LLMClientError, match="host action contract") as captured:
+        LLMAgentSolver(client, case.registry).solve(
+            task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
+
+    assert len(captured.value.telemetry) == 2
+    assert captured.value.telemetry[0].json_contract_success is True
+    assert captured.value.telemetry[1].error_type == "AgentActionInterfaceError"
 
 
 def test_host_instrumented_semantic_action_failure_is_structured_feedback() -> None:
@@ -463,9 +513,46 @@ def test_host_instrumented_semantic_action_failure_is_structured_feedback() -> N
     assert failure.failed_step_index == 1
     assert failure.action_plan.executions[0].operator_id == replacement
     assert captured.value.telemetry[0].error_type == "AgentSemanticActionError"
+    assert captured.value.telemetry[0].json_contract_success is True
     assert captured.value.interaction_progress is not None
     assert captured.value.interaction_progress.action_plan_contract_succeeded is True
     assert captured.value.interaction_progress.host_execution_evaluable is False
+
+
+def test_host_instrumented_selector_failure_returns_coordinate_guidance() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_HIDDEN,
+    )
+    plan_given_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        plan_given_task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    action_plan = _action_plan_from_trajectory(deterministic)
+    action_plan["executions"][0]["inputs"][0]["selector"] = "payload.value"
+
+    with pytest.raises(LLMClientError, match="host action contract") as captured:
+        LLMAgentSolver(
+            ScriptedJsonClient(
+                [action_plan],
+                interaction_protocol="host_instrumented",
+            ),
+            case.registry,
+        ).solve(task.public, InMemoryEvidenceToolRuntime(case.corpus))
+
+    failure = captured.value.failure_artifact
+    assert isinstance(failure, FailedActionPlan)
+    assert failure.error_code == "invalid_input_selector"
+    assert "never use 'payload.value'" in failure.error_message
 
 
 def test_host_instrumented_answer_failure_preserves_completed_host_stage() -> None:
@@ -568,6 +655,144 @@ def test_plan_hidden_candidate_node_ids_are_semantically_normalized() -> None:
         for step in trajectory.steps
         if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
     )
+
+
+@pytest.mark.parametrize("domain", ("finance", "legal"))
+def test_plan_hidden_accepts_only_verified_transparent_lookup_adapters(
+    domain: str,
+) -> None:
+    if domain == "finance":
+        case = build_finance_counterfactual_cases(count=2)[1]
+    else:
+        case = next(
+            item for item in build_pattern_validation_cases(per_domain=1) if item.domain == "legal"
+        )
+    visible_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    hidden_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_HIDDEN,
+    )
+    if domain == "finance":
+        deterministic = FinanceNumericCandidateGenerator().generate(
+            visible_task.public,
+            InMemoryEvidenceToolRuntime(case.bundle),
+        )
+    else:
+        deterministic = PlanGivenContractCandidate(case.registry).generate(
+            visible_task.public,
+            InMemoryEvidenceToolRuntime(case.corpus),
+        )
+    selected_step = next(
+        step
+        for step in deterministic.steps
+        if step.action == ActionType.SELECT_EVIDENCE and step.program_node_id is None
+    )
+    semantic_steps = [
+        step
+        for step in deterministic.steps
+        if step.program_node_id is not None
+        and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    ]
+    assert len(semantic_steps) == 1
+    semantic_step = semantic_steps[0]
+    direct_inputs = [_action_input_from_ref(ref, {}) for ref in semantic_step.input_refs]
+    assert all(item["source"] == "evidence" for item in direct_inputs)
+    lookup_executions = [
+        {
+            "operator_id": "lookup",
+            "inputs": [item],
+            "parameters": {},
+            "rationale_summary": "Project one selected Evidence payload.",
+        }
+        for item in direct_inputs
+    ]
+    semantic_execution = {
+        "operator_id": semantic_step.operator_id,
+        "inputs": [
+            {
+                "source": "step",
+                "step_index": index,
+                "selector": "payload",
+            }
+            for index in range(1, len(lookup_executions) + 1)
+        ],
+        "parameters": semantic_step.tool_input.get("parameters", {}),
+        "rationale_summary": "Execute the semantic operation over projected payloads.",
+    }
+    action_payload = {
+        "schema_version": "agent_action_plan.v1",
+        "plan_summary": "Project selected evidence, then execute the semantic operation.",
+        "selected_evidence_ids": list(selected_step.evidence_ids),
+        "executions": [*lookup_executions, semantic_execution],
+        "output_step_index": len(lookup_executions) + 1,
+    }
+    client = ScriptedJsonClient(
+        [action_payload, _answer_decision_from_trajectory(deterministic)],
+        interaction_protocol="host_instrumented",
+    )
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        hidden_task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    report = CandidateWorkflowVerifier(
+        case.registry,
+        semantic_policy=case.semantic_policy,
+    ).verify(hidden_task, case.corpus, case.proof_graph, result.trajectory)
+
+    assert report.passed, report.model_dump(mode="json")
+    assert len(report.program_node_mapping) == len(lookup_executions) + 1
+    assert {
+        alias for alias in report.program_node_mapping.values() if alias.startswith("projection:")
+    } == {
+        f"projection:{semantic_step.program_node_id}:{index}"
+        for index in range(len(lookup_executions))
+    }
+    operation_steps = [
+        step
+        for step in result.trajectory.steps
+        if step.program_node_id is not None
+        and step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    ]
+    assert len(operation_steps) == len(lookup_executions) + 1
+    if domain == "finance":
+        output = operation_steps[-1].observation["result"]
+        assert output["higher_ref"] in set(hidden_task.oracle.gold_evidence_ids)
+        assert not str(output["higher_ref"]).startswith(("step_", "operation:"))
+
+    lookup_step = next(step for step in operation_steps if step.operator_id == "lookup")
+    tampered_steps = tuple(
+        step.model_copy(
+            update={
+                "observation": {
+                    **step.observation,
+                    "result": {
+                        **step.observation["result"],
+                        "selected_ref": "evidence:tampered:item@v1",
+                    },
+                }
+            }
+        )
+        if step.step_index == lookup_step.step_index
+        else step
+        for step in result.trajectory.steps
+    )
+    tampered = result.trajectory.model_copy(update={"steps": tampered_steps})
+    tampered_report = CandidateWorkflowVerifier(
+        case.registry,
+        semantic_policy=case.semantic_policy,
+    ).verify(hidden_task, case.corpus, case.proof_graph, tampered)
+    assert not tampered_report.passed
+    assert "program_node_alignment" in {
+        check.check_id for check in tampered_report.checks if not check.passed
+    }
 
 
 def test_agent_contract_repair_feeds_a_new_request() -> None:
@@ -849,6 +1074,50 @@ def test_agent_controls_non_resolved_search_without_oracle_ids(
     assert "evidence_ids" not in search_step.tool_input
 
 
+def test_agent_repairs_a_valid_search_contract_that_returns_no_evidence() -> None:
+    case = build_pattern_validation_cases(per_domain=1)[0]
+    task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.SEMI_OPEN,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    resolved_task = materialize_track_variant(
+        case.task,
+        case.corpus,
+        retrieval_track=RetrievalTrack.RESOLVED,
+        planning_track=PlanningTrack.PLAN_GIVEN,
+    )
+    deterministic = PlanGivenContractCandidate(case.registry).generate(
+        resolved_task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+    empty_search = _search_response(task.public.retrieval_scope)
+    empty_search["search_query"] = {"subject_ids": ["subject:does-not-exist"]}
+    client = ScriptedJsonClient(
+        [
+            empty_search,
+            _search_response(task.public.retrieval_scope),
+            _response_from_trajectory(deterministic),
+        ],
+        repair_attempts=1,
+    )
+
+    result = LLMAgentSolver(client, case.registry).solve_with_audit(
+        task.public,
+        InMemoryEvidenceToolRuntime(case.corpus),
+    )
+
+    assert client.call_count == 3
+    assert result.audit.search_contract_repair_count == 1
+    assert result.audit.contract_repair_count == 1
+    assert result.audit.telemetry[0].error_type == "AgentSearchExecutionError"
+    assert result.audit.telemetry[0].json_contract_success is True
+    assert result.audit.telemetry[1].json_contract_success is True
+    assert "search_empty_result" in client.prompts[1]
+    assert "individually_nonmatching_fields" in client.prompts[1]
+
+
 def test_agent_capacity_audit_supports_domain_specific_targets() -> None:
     config = AgentValidationConfig(
         model=ScriptedJsonClient([]).config,
@@ -977,22 +1246,28 @@ def test_agent_validation_runner_covers_three_domains_and_both_planning_tracks(
     critic_slice = _stratified_critic_examples(artifacts.critic_dataset.examples, 6)
     assert {item.domain for item in critic_slice} == {"finance", "legal", "science"}
     for domain in ("finance", "legal", "science"):
-        assert sum(
-            item.domain == domain
-            and item.candidate_source == "real_agent"
-            and item.contract_annotation.acceptability.value == "accept"
-            for item in critic_slice
-        ) == 1
+        assert (
+            sum(
+                item.domain == domain
+                and item.candidate_source == "real_agent"
+                and item.contract_annotation.acceptability.value == "accept"
+                for item in critic_slice
+            )
+            == 1
+        )
 
     buffered_slice = _stratified_critic_examples(artifacts.critic_dataset.examples, 9)
     assert len(buffered_slice) == 9
     for domain in ("finance", "legal", "science"):
-        assert sum(
-            item.domain == domain
-            and item.candidate_source == "real_agent"
-            and item.contract_annotation.acceptability.value == "accept"
-            for item in buffered_slice
-        ) == 2
+        assert (
+            sum(
+                item.domain == domain
+                and item.candidate_source == "real_agent"
+                and item.contract_annotation.acceptability.value == "accept"
+                for item in buffered_slice
+            )
+            == 2
+        )
     assert any(item.candidate_source == "typed_counterfactual" for item in buffered_slice)
 
     assert {item.candidate_source for item in critic_slice} == {
@@ -1217,6 +1492,178 @@ def test_model_config_rejects_inline_credentials() -> None:
         )
 
 
+def test_agent_cost_estimation_uses_cache_breakdown_or_conservative_miss() -> None:
+    config = AgentModelConfig(
+        provider="deepseek",
+        endpoint="https://api.deepseek.com/v1/chat/completions",
+        model="deepseek-v4-pro",
+        api_key_env="DEEPSEEK_API_KEY",
+        input_cache_hit_cost_per_million=0.003625,
+        input_cache_miss_cost_per_million=0.435,
+        output_cost_per_million=0.87,
+    )
+
+    detailed, detailed_method = _estimate_cost(
+        config,
+        1_000_000,
+        1_000_000,
+        prompt_cache_hit_tokens=750_000,
+        prompt_cache_miss_tokens=250_000,
+    )
+    conservative, conservative_method = _estimate_cost(
+        config,
+        1_000_000,
+        1_000_000,
+    )
+
+    assert detailed == pytest.approx(0.75 * 0.003625 + 0.25 * 0.435 + 0.87)
+    assert detailed_method == "provider_cache_breakdown"
+    assert conservative == pytest.approx(0.435 + 0.87)
+    assert conservative_method == "conservative_cache_miss"
+
+
+def test_agent_model_config_rejects_partial_cache_pricing() -> None:
+    with pytest.raises(ValueError, match="both hit and miss"):
+        AgentModelConfig(
+            provider="deepseek",
+            endpoint="https://api.deepseek.com/v1/chat/completions",
+            model="deepseek-v4-pro",
+            api_key_env="DEEPSEEK_API_KEY",
+            input_cache_hit_cost_per_million=0.003625,
+        )
+
+
+def test_agent_model_config_rejects_core_request_body_override() -> None:
+    with pytest.raises(ValueError, match="core request fields"):
+        AgentModelConfig(
+            provider="test",
+            endpoint="https://models.example.test/v1/chat/completions",
+            model="test-model",
+            api_key_env="TEST_ONLY_KEY",
+            request_body_overrides={"messages": []},
+        )
+
+
+class _FakeHttpResponse:
+    def __init__(self, payload: dict[str, Any]) -> None:
+        self.status = 200
+        self._payload = json.dumps(payload).encode("utf-8")
+
+    def __enter__(self) -> _FakeHttpResponse:
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return self._payload
+
+
+def test_openai_client_applies_safe_body_overrides(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("TEST_ONLY_KEY", "test-secret")
+    observed: dict[str, Any] = {}
+
+    def fake_urlopen(request: urllib.request.Request, *, timeout: float):
+        observed.update(json.loads(request.data or b"{}"))
+        assert timeout == 60
+        return _FakeHttpResponse(
+            {
+                "model": "deepseek-v4-pro",
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "message": {"content": '{"ok": true}'},
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 8,
+                    "total_tokens": 108,
+                },
+            }
+        )
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    client = OpenAICompatibleJsonClient(
+        AgentModelConfig(
+            provider="deepseek",
+            endpoint="https://api.deepseek.com/v1/chat/completions",
+            model="deepseek-v4-pro",
+            api_key_env="TEST_ONLY_KEY",
+            auto_discover_models=False,
+            maximum_model_attempts=1,
+            request_body_overrides={"thinking": {"type": "disabled"}},
+        )
+    )
+
+    payload, telemetry = client.complete_json("Return JSON.")
+
+    assert payload == {"ok": True}
+    assert observed["thinking"] == {"type": "disabled"}
+    assert telemetry.finish_reason == "stop"
+    assert telemetry.response_content_length == len('{"ok": true}')
+    assert telemetry.reasoning_content_present is False
+
+
+def test_openai_client_reports_reasoning_budget_exhaustion_with_cost(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("TEST_ONLY_KEY", "test-secret")
+
+    def fake_urlopen(_request: urllib.request.Request, *, timeout: float):
+        assert timeout == 60
+        return _FakeHttpResponse(
+            {
+                "model": "deepseek-v4-pro",
+                "choices": [
+                    {
+                        "finish_reason": "length",
+                        "message": {
+                            "content": "",
+                            "reasoning_content": "private reasoning omitted",
+                        },
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 4096,
+                    "total_tokens": 4196,
+                    "completion_tokens_details": {"reasoning_tokens": 4096},
+                },
+            }
+        )
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    client = OpenAICompatibleJsonClient(
+        AgentModelConfig(
+            provider="deepseek",
+            endpoint="https://api.deepseek.com/v1/chat/completions",
+            model="deepseek-v4-pro",
+            api_key_env="TEST_ONLY_KEY",
+            auto_discover_models=False,
+            maximum_model_attempts=1,
+            input_cost_per_million=0.435,
+            output_cost_per_million=0.87,
+        )
+    )
+
+    with pytest.raises(LLMClientError) as captured:
+        client.complete_json("Return JSON.")
+
+    telemetry = captured.value.telemetry[-1]
+    assert telemetry.error_type == "ReasoningBudgetExhaustedError"
+    assert telemetry.http_success is True
+    assert telemetry.finish_reason == "length"
+    assert telemetry.reasoning_content_present is True
+    assert telemetry.reasoning_tokens == 4096
+    assert telemetry.completion_tokens == 4096
+    assert telemetry.estimated_cost == pytest.approx(
+        100 / 1_000_000 * 0.435 + 4096 / 1_000_000 * 0.87
+    )
+
+
 def test_public_agent_imports_work_in_a_cold_python_process() -> None:
     repository_root = Path(__file__).resolve().parents[1]
     environment = {**os.environ, "PYTHONPATH": str(repository_root / "src")}
@@ -1275,9 +1722,7 @@ def _action_plan_from_trajectory(trajectory: Trajectory) -> dict[str, Any]:
         "executions": [
             {
                 "operator_id": step.operator_id,
-                "inputs": [
-                    _action_input_from_ref(ref, node_positions) for ref in step.input_refs
-                ],
+                "inputs": [_action_input_from_ref(ref, node_positions) for ref in step.input_refs],
                 "parameters": step.tool_input.get("parameters", {}),
                 "rationale_summary": "Execute the selected typed operation.",
             }
@@ -1311,9 +1756,7 @@ def _answer_decision_from_trajectory(trajectory: Trajectory) -> dict[str, Any]:
     return {
         "schema_version": "agent_answer_decision.v1",
         "result": final_answer["result"],
-        "cited_evidence_ids": [
-            item["evidence_id"] for item in final_answer["citations"]
-        ],
+        "cited_evidence_ids": [item["evidence_id"] for item in final_answer["citations"]],
         **({"status": final_answer["status"]} if "status" in final_answer else {}),
         **({"claims": final_answer["claims"]} if "claims" in final_answer else {}),
     }
@@ -1457,8 +1900,7 @@ def test_plan_given_result_execution_refs_are_canonicalized_before_replay() -> N
     case = next(
         item
         for item in build_pattern_validation_cases(per_domain=3)
-        if item.task.public.metadata["task_pattern"]["pattern_id"]
-        == "legal.rule_application"
+        if item.task.public.metadata["task_pattern"]["pattern_id"] == "legal.rule_application"
     )
     task = materialize_track_variant(
         case.task,
@@ -1486,13 +1928,9 @@ def test_plan_given_result_execution_refs_are_canonicalized_before_replay() -> N
         return value
 
     for step in payload["execution_trace"]["steps"]:
-        step["observation"]["result"] = to_execution_refs(
-            step["observation"]["result"]
-        )
+        step["observation"]["result"] = to_execution_refs(step["observation"]["result"])
     payload["verification_result"] = to_execution_refs(payload["verification_result"])
-    payload["final_answer"]["result"] = to_execution_refs(
-        payload["final_answer"]["result"]
-    )
+    payload["final_answer"]["result"] = to_execution_refs(payload["final_answer"]["result"])
 
     result = LLMAgentSolver(ScriptedJsonClient([payload]), case.registry).solve_with_audit(
         task.public,

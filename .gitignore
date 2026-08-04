@@ -5,6 +5,7 @@
 **/*.egg-info/
 **/*.pyc
 trusted_data_synthesis/.venv/
+trusted_data_synthesis/.env
 trusted_data_synthesis/artifacts/
 trusted_data_synthesis/.coverage
 trusted_data_synthesis/build/

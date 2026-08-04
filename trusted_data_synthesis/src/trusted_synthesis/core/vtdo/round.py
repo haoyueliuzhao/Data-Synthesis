@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
 from .catalog import TrajectoryStateCatalog
-from .contribution import ContributionProbeObservation, estimate_contributions_from_probes
 from .explorer import StateConditionedExplorationBatch
 from .feasibility import StateValidityPartition, condition_on_accepted_support
 from .schema import (
@@ -15,8 +12,8 @@ from .schema import (
     AnchoredDistributionUpdate,
     AnchoredEnergyConfig,
     ConditionalTrajectoryDistribution,
+    ContributionApproximationAuthorization,
     ContributionEstimationManifest,
-    ContributionProductionAuthorization,
     CoveragePrior,
     EmpiricalDistributionEstimate,
     ExplorationDistribution,
@@ -44,9 +41,8 @@ class VTDORoundArtifact(FrozenModel):
     validity_partition: StateValidityPartition
     accepted_prior: ConditionalTrajectoryDistribution
     accepted_coverage_prior: CoveragePrior
-    contribution_probes: tuple[ContributionProbeObservation, ...] = Field(min_length=1)
     contribution_manifest: ContributionEstimationManifest
-    contribution_production_authorization: ContributionProductionAuthorization
+    contribution_approximation_authorization: ContributionApproximationAuthorization | None
     update: AnchoredDistributionUpdate
     status: str = "passed"
     schema_version: str = VTDO_SCHEMA_VERSION
@@ -103,20 +99,11 @@ class VTDORoundArtifact(FrozenModel):
             raise ValueError("VTDO Accepted prior does not replay support conditioning")
         if self.accepted_coverage_prior != expected_coverage:
             raise ValueError("VTDO Accepted coverage does not replay support conditioning")
-        probe_ids = [item.observation_id for item in self.contribution_probes]
         accepted_support = set(self.validity_partition.accepted_state_ids)
-        if {item.round_index for item in self.contribution_probes} != {self.round_index}:
-            raise ValueError("VTDO Contribution Probes belong to another round")
-        if len(probe_ids) != len(set(probe_ids)):
-            raise ValueError("VTDO round has duplicate Contribution Probe observations")
-        if {item.state_id for item in self.contribution_probes} != accepted_support:
-            raise ValueError("VTDO Contribution Probes do not cover Accepted support")
-        expected_manifest = estimate_contributions_from_probes(
-            self.accepted_prior,
-            self.contribution_probes,
-        )
-        if self.contribution_manifest != expected_manifest:
-            raise ValueError("VTDO contribution manifest does not replay its probes")
+        if {item.state_id for item in self.contribution_manifest.estimates} != accepted_support:
+            raise ValueError("VTDO Contribution manifest does not cover Accepted support")
+        if self.contribution_manifest.distribution_id != self.accepted_prior.distribution_id:
+            raise ValueError("VTDO Contribution manifest belongs to another Accepted prior")
         accepted_estimates = tuple(
             item
             for item in self.validity_partition.estimates
@@ -127,7 +114,7 @@ class VTDORoundArtifact(FrozenModel):
             self.accepted_coverage_prior,
             accepted_estimates,
             self.contribution_manifest,
-            self.contribution_production_authorization,
+            self.contribution_approximation_authorization,
             self.update.energy_config,
             self.role_contract,
         )
@@ -146,17 +133,15 @@ def assemble_vtdo_round(
     exploration_batch: StateConditionedExplorationBatch,
     pushforward_estimate: EmpiricalDistributionEstimate,
     validity_partition: StateValidityPartition,
-    contribution_probes: Iterable[ContributionProbeObservation],
-    contribution_production_authorization: ContributionProductionAuthorization,
+    contribution_manifest: ContributionEstimationManifest,
+    contribution_approximation_authorization: ContributionApproximationAuthorization | None,
     energy_config: AnchoredEnergyConfig,
 ) -> VTDORoundArtifact:
-    probes = tuple(sorted(contribution_probes, key=lambda item: (item.state_id, item.seed)))
     accepted_prior, accepted_coverage = condition_on_accepted_support(
         pushforward_estimate.distribution,
         exploration.coverage_prior,
         validity_partition,
     )
-    contribution_manifest = estimate_contributions_from_probes(accepted_prior, probes)
     accepted_estimates = tuple(
         item for item in validity_partition.estimates if item.region == ValidityRegion.ACCEPTED
     )
@@ -165,7 +150,7 @@ def assemble_vtdo_round(
         accepted_coverage,
         accepted_estimates,
         contribution_manifest,
-        contribution_production_authorization,
+        contribution_approximation_authorization,
         energy_config,
         role_contract,
     )
@@ -180,9 +165,8 @@ def assemble_vtdo_round(
         "validity_partition": validity_partition,
         "accepted_prior": accepted_prior,
         "accepted_coverage_prior": accepted_coverage,
-        "contribution_probes": probes,
         "contribution_manifest": contribution_manifest,
-        "contribution_production_authorization": contribution_production_authorization,
+        "contribution_approximation_authorization": contribution_approximation_authorization,
         "update": update,
         "status": "passed",
         "schema_version": VTDO_SCHEMA_VERSION,

@@ -4,8 +4,9 @@
 
 This document defines the only active paper experiment for Valid Trajectory Distribution
 Optimization (VTDO). It replaces the legacy v0.8 training-utility and v0.9 validation protocols.
-Historical implementations and outputs have been removed from the working tree. Tracked source
-changes remain auditable through Git history, but no legacy artifact is an accepted protocol input.
+Historical implementations remain only as explicit diagnostic modules; their production entry
+points are disabled. Tracked source changes remain auditable through Git history, but no legacy
+artifact is an accepted protocol input.
 
 The experimental claim chain is:
 
@@ -149,17 +150,61 @@ request audits; and decision-trace uniqueness. A budget large enough for the pos
 one-item support floor. A smaller budget declares support truncation. Failed quotas are never
 reassigned to easier states.
 
+### Active v14 real-Agent entry path
+
+The deterministic Finance state fixture remains a contract test only. The active empirical entry
+path recompiles real Archive tasks as `semi_open + plan_hidden`, preserving Oracle semantics while
+hiding the retrieval answer, Gold Evidence IDs, and task program. Development partition A and
+sealed authorization partition B must each fill their accepted-task quota and expose 3--5
+host-requestable quotient states per task. The authorization build consumes the complete
+development Public Corpus as a frozen exclusion manifest. Task IDs, source task IDs, Gold and
+distractor Evidence versions, and Source Record IDs must all have zero cross-partition overlap.
+
+The unconditioned Explorer estimates `pi_0` with at least four frozen replicas per task. A passed
+initial-distribution report requires every replica to be independently valid and mapped to the
+registered state catalog. Coverage-prior smoothing may preserve positive support, but it cannot
+turn a failed, invalid, or off-catalog observation into a passed empirical run. Checkpoints resume
+only valid catalog hits; all other jobs are retried while their historical telemetry remains in the
+cost audit.
+
+Fresh state-conditioned materialization uses a separately derived provider identity and at least
+three accepted independent trajectory draws per positive-probability state. Trajectory IDs and
+content hashes must be unique, while identical decision structures remain valid empirical outcomes
+and are reported through a separate decision-trace diversity diagnostic. The materializer consumes
+the exact initial-distribution report and distribution hash, writes one atomic task checkpoint, and
+replays the complete validity and state-assignment contracts before release. Explorer and
+materializer identities are derived from the frozen model configuration and solver version rather
+than accepted as caller-controlled labels.
+
+Objective Support freezes a separate target boundary before Gradient planning. The active v6
+support contract contains a `gradient_target_contract`, an
+`objective_support_exclusion_contract`, and a `future_population_exclusion_contract`; these task
+sets have distinct canonical identities and cannot be substituted for one another. The target and
+Objective Support exclusions must be disjoint. Gradient Projection accepts only an Artifact path
+and SHA-256 explicitly frozen by the target contract.
+
+API credentials are process-environment inputs only. They must not appear in command arguments,
+JSON configuration, checkpoints, telemetry, or reports. Model discovery may validate the requested
+model before a run, but one experiment identity cannot silently mix fallback models. A replacement
+model therefore requires a new frozen model configuration and a fresh run identity.
+
+The current real-Agent preflight, population hashes, disjointness report, cost ladder, and exact
+smoke command are recorded in `docs/finance_v12_real_agent_preflight_report.md`.
+
 ## 5. Experiment 3: Empirical Contribution Validation
 
 The only active production-candidate approximation family is Scheme 3, Gradient Projection. Local
 beneficiary Probes and single-state finite interventions are historical diagnostics; they cannot
 authorize a real VTDO Contribution update. The theoretical estimand is unchanged.
 
-For each task, the active experiment freezes one conditional state distribution, three independently
-verified quotient states, state-specific training records, four estimation objective records, four
-disjoint validation objective records, and an untouched final-test set. For state training-loss
-gradient `g_z`, objective-loss gradient `g_v`, and optimizer descent map `U`, the preregistered
-variants are:
+The active v14 protocol freezes the exact typed `ConditionalTrajectoryDistribution` for every
+task-round. Each task has 3--5 positive-probability quotient states, each state has 3--5 fresh and
+independently verified trajectory realizations, and the objective support contains 16 estimation,
+16 validation, and 16 sealed authorization records. The three partitions and all state
+realizations are mutually disjoint. A support-scaling pretest at 4/8/16/32 records must select at
+least 16 records, and objective records are balanced across at least three available trajectory
+strategies. For state training-loss gradient `g_z`, objective-loss gradient `g_v`, and optimizer
+descent map `U`, the diagnostic variants are:
 
 ```text
 GP-A = cosine(g_z,g_v) - E_pi[cosine(g_z,g_v)]
@@ -168,39 +213,76 @@ GP-C = <g_v, U(g_z) - E_pi[U(g_z)]>
 ```
 
 GP-A is the direction-only baseline. GP-B retains gradient magnitude and centers in gradient
-space. GP-C is optimizer-aware and must bind the exact optimizer state and hyperparameters. With
-plain SGD and a positive scalar learning rate, GP-C and GP-B have identical rankings and are not
-independent estimators.
+space. GP-C is the only production-candidate estimator. Its current engineering claim is local:
+one state-homogeneous, cold-start AdamW step with zero weight decay, no inherited optimizer state,
+no mixed-state batch, fixed clipping, and a frozen LoRA parameter space. It does not approximate
+the full Student optimizer trajectory. With plain SGD and a positive scalar learning rate, GP-C
+and GP-B have identical rankings and are not independent estimators.
 
-The active runner requires at least 30 tasks and 90 state gradients. Every gradient artifact binds
-the task, state, beneficiary checkpoint, tokenizer, supervised-token mask, source record,
-distribution, objective split, dtype, and content hash. Estimation and validation objectives are
-mutually disjoint. The untouched final test cannot be loaded until every candidate score, scale,
-threshold, perturbation, and design identity is frozen.
+The production runner requires at least 30 tasks, complete 3--5-state support, and 3--5 realization
+gradients per state. Every artifact binds the task, round, state, exact nonuniform distribution,
+beneficiary checkpoint, tokenizer, supervised-token mask, source record, objective split, dtype,
+and content hash. Each target is split into an aligned common-token region and a
+state-differential-token region. Full, common, and differential gradients use the same RNG
+realization; their token-count-weighted recomposition must recover the full gradient. Every
+realization must retain non-empty common and differential regions. The hard lexical-coverage gate
+applies to pooled differential-token mass per task because an individual state may legitimately
+lie close to the shared task skeleton; record- and state-level fractions remain immutable
+diagnostics. Differential-gradient fraction, sign agreement, gradient variance, effective sample
+size, split-half cosine, AdamW update cosine, and sign saturation remain fail-closed stability
+gates.
 
-Proxy stability is necessary but not sufficient. Estimation and validation Gradient Projection
-rankings are compared first. Independent validation then constructs two zero-sum contrast
-coordinates for each three-state task and evaluates a frozen symmetric batch design:
+Proxy stability is necessary but not sufficient. Independent validation constructs a complete
+zero-sum contrast basis inside each task, partitions the coordinates into salted blocks of 5--10,
+and evaluates multiple frozen Hadamard designs. Every design includes a null replay and uses central
+differences at radii `h`, `h/2`, and `h/4`, followed by Richardson extrapolation:
 
 ```text
-30 tasks x 2 coordinates = 60 coordinates
-64 x 60 Sylvester-Hadamard design
-D_h = (J(theta - eta*(g_base + epsilon*H_h G))
-       - J(theta - eta*(g_base - epsilon*H_h G))) / (2*epsilon)
+D_h = (J(theta - eta*(g_base + h*H G))
+       - J(theta - eta*(g_base - h*H G))) / (2*h)
+D_R = Richardson(D_h, D_(h/2), D_(h/4))
 ```
 
 The intervention binds the complete conditional distribution, so task marginal `mu(x)`, state
 support, and total update mass remain fixed. The learning-rate ladder is preregistered and may be
 selected only by parameter-step fidelity. The final-test outcome cannot select the scale. A target
-is interpretable only when probabilities remain positive, numeric replays are deterministic,
-Hadamard reconstruction passes, and the actual float32 parameter update matches the intended update.
-Production additionally requires the selected optimizer and learning rate to match the source
-training contract.
+is interpretable only when probabilities remain positive, numeric replays are deterministic, block
+reconstruction and radius-stability gates pass, the signal exceeds null replay, and the actual
+float32 parameter update matches the intended update. The independent objective gradient is
+evaluated after the frozen global local-update vector. Leave-one-realization-out Jackknife
+pseudovalues carry state uncertainty through proxy construction and Contribution materialization.
 
-For both estimation and validation proxies, the lower 95% macro-Spearman bound must exceed zero,
-the lower 95% pairwise-concordance bound must exceed 0.5, winner agreement must pass its frozen
-minimum, and permutation p-values must be below 0.05. Missing support, leakage, parameter-step
-non-identifiability, source-scale mismatch, or either failed rank gate blocks authorization.
+Estimation, validation, and the independently opened authorization partition each receive rank and
+next-distribution gates. The latter include total variation, Jensen--Shannon divergence,
+update-direction agreement, absolute target regret, and normalized target regret. Normalized
+regret is computed only when attainable target gain exceeds its frozen floor; at least 80% of tasks
+must be normalizable. Missing support, token-region dominance, realization reuse, Jackknife drift,
+leakage, parameter-step non-identifiability, source-scale mismatch, or any failed gate blocks
+authorization.
+
+The current executable gradient contract is `finance_contribution_gradient_projection.v14`, and
+the current Objective Support contract is `finance_contribution_evaluation_support.v6`.
+Vocabulary logits are materialized only at causal predecessor positions of supervised labels; this
+is exactly equivalent to mean causal NLL with ignored prompt labels. Objective gradients keep all
+stochastic children in eval mode while enabling only gradient-checkpoint wrappers. Token-region
+losses share one decoder activation graph. Multi-GPU placement is a strict whitelist: all
+nonselected devices receive zero placement capacity, and the resolved Hugging Face device map is
+hashed into the objective-gradient manifest. A run that touches an undeclared device is invalid
+even when its numerical outputs complete.
+
+Finite-precision behavior is governed by the independently frozen v3 numeric contract. The active
+profile uses BF16 model execution, FP32 sparse projection and trainable parameters, FP64 loss
+accumulation, gradient checkpointing, TF32 disabled, and highest float32 matmul precision. It gates
+loss identity, gradient direction and relative error, GP score drift, task rank, and induced
+distribution TV/JS together; no single tensor-error threshold can be changed after observing a
+production candidate.
+
+The 2026-08-04 three-task v10 smoke completed the real-Agent-to-gradient path but did not satisfy
+production gates. Weighted common/differential losses recovered full loss to `5.27e-8`, while
+separate BF16 VJPs retained a maximum 1.793% gradient discrepancy and each state had only one
+realization. The frozen `1e-4` gradient-recomposition threshold was not relaxed. The run therefore
+remains diagnostic and cannot open GP-C or finite-intervention authorization. Full evidence is in
+`docs/finance_v13_real_agent_gradient_smoke_report.md`.
 
 The first completed 30-task run found estimation-versus-validation Spearman `0.717`, but its
 independent cached-SGD target failed both rank gates. The selected numerically identifiable
@@ -227,6 +309,25 @@ was issued. A post-global-update objective-gradient diagnostic did not recover G
 result supersedes any interpretation that the earlier diagnostic population was sufficient for
 production authorization; it does not erase that run's bounded mechanism evidence. Full evidence
 is in `docs/finance_gradient_projection_independent_authorization_report.md`.
+
+That report is immutable historical evidence for the retired protocol. Its artifacts do not
+satisfy `vtdo.v12` / `aevtdr.v7` and cannot be promoted or replayed as a current authorization.
+A subsequent v12 integration smoke rebuilt the 16+16+16 Objective Support, replayed the calibrated
+numeric contract, and recomputed 32 Objective gradients plus 11 state gradients on A100 GPUs. The
+numeric gate passed, but every state still had one realization, so mean ESS remained `1.0` and the
+realization-stability gate failed. Post-global GP-C and independent intervention remained closed;
+`production_authorized=false`. Evidence is in
+`docs/finance_v13_gradient_projection_v12_target_boundary_report.md`.
+
+The 2026-08-04 v14 production candidate then completed the real-Agent entry path for 30 tasks,
+100 states, and 300 fresh realizations. The sampling-stability contract passed, but the immutable
+finite-precision contract failed on seven realization-level tail cases and three strict task-rank
+comparisons. All 1,065 referenced gradient files passed a separate full content-hash replay, so
+this is a numeric-contract failure rather than artifact corruption. Post-global GP-C, independent
+distribution intervention, Jackknife proxy materialization, and typed authorization remain closed;
+`production_authorized=false`. The current 300 realizations are a held-out production-validation
+population and may not be reused to tune a replacement numeric contract. Full evidence is in
+`docs/finance_v14_real_agent_gradient_projection_report.md`.
 
 ## 6. Experiment 4: Refinement Dynamics
 

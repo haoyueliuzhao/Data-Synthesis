@@ -13,6 +13,7 @@ from trusted_synthesis.core.evaluation.grounding import (
 )
 from trusted_synthesis.core.evaluation.leakage import OracleLeakageChecker
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
+from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.evidence.validation import EvidenceValidator
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.graph.validation import ProofGraphValidator
@@ -21,6 +22,7 @@ from trusted_synthesis.core.operations.program import (
     TaskProgramOracleVerifier,
 )
 from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.operations.schema import OperationDefinition, OperationInput
 from trusted_synthesis.core.plugins import (
     ClaimVerifierProtocol,
     SemanticPolicyProtocol,
@@ -32,6 +34,7 @@ from trusted_synthesis.core.trajectory.schema import (
     ActionType,
     StepStatus,
     Trajectory,
+    TrajectoryStep,
     WorkflowKind,
 )
 
@@ -174,6 +177,8 @@ class CandidateWorkflowVerifier:
             task,
             candidate,
             expected_node_outputs,
+            evidence_by_id,
+            self._registry,
         )
         node_statuses = _program_execution_statuses(
             task,
@@ -181,6 +186,7 @@ class CandidateWorkflowVerifier:
             expected_node_outputs,
             node_mapping,
             selected_set,
+            evidence_by_id,
             self._registry,
         )
         required_node_count = len(node_statuses)
@@ -360,25 +366,23 @@ def _program_execution_statuses(
     expected_outputs: dict[str, dict[str, Any]],
     node_mapping: dict[str, str],
     selected_evidence_ids: set[str],
+    evidence_by_id: dict[str, EvidenceItem],
     registry: OperationRegistry,
 ) -> tuple[ProgramNodeExecutionStatus, ...]:
-    operation_steps = tuple(
-        step
-        for step in candidate.steps
-        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
-        and step.program_node_id is not None
-    )
+    operation_steps = _candidate_operation_steps(candidate)
     step_indexes = {
         step.program_node_id: step.step_index
         for step in operation_steps
         if step.program_node_id is not None
     }
-    expected_lineage_by_node: dict[str, set[str]] = {}
-    for node in task.oracle.task_program.nodes:
-        lineage = {ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE}
-        for dependency in node.dependencies:
-            lineage.update(expected_lineage_by_node[dependency])
-        expected_lineage_by_node[node.node_id] = lineage
+    expected_lineage_by_node = _expected_program_lineages(task)
+    observed_lineage_by_node = _candidate_operation_lineages(operation_steps)
+    transparent_projections = _verified_transparent_projections(
+        operation_steps,
+        evidence_by_id,
+        selected_evidence_ids,
+        registry,
+    )
 
     statuses = []
     for node in task.oracle.task_program.nodes:
@@ -400,25 +404,29 @@ def _program_execution_statuses(
             )
             continue
         step = matches[0]
+        definition = registry.require(node.operator_id)
         executed = step.status == StepStatus.SUCCEEDED
         if not executed:
             details.append("status_failed")
         observed = isinstance(step.observation.get("result"), dict)
         if not observed:
             details.append("observation_missing")
-        expected_action = (
-            ActionType.SELECT_EVIDENCE if node.operator_id == "lookup" else ActionType.CALCULATE
-        )
+        expected_action = ActionType(definition.action_type)
         if step.action != expected_action:
             details.append("action_mismatch")
         if step.operator_id != node.operator_id:
             details.append("operator_mismatch")
-        expected_refs = (
-            _translated_program_refs(node, node_mapping)
-            if task.public.planning_track == PlanningTrack.PLAN_HIDDEN
-            else tuple(_program_ref(ref) for ref in node.input_refs)
-        )
-        if step.input_refs != expected_refs:
+        if task.public.planning_track == PlanningTrack.PLAN_HIDDEN:
+            refs_match, _ = _input_refs_equivalent(
+                node,
+                step,
+                node_mapping,
+                transparent_projections,
+                definition,
+            )
+        else:
+            refs_match = step.input_refs == tuple(_program_ref(ref) for ref in node.input_refs)
+        if not refs_match:
             details.append("input_ref_mismatch")
         if not _values_equivalent(
             step.tool_input.get("parameters", {}),
@@ -427,14 +435,18 @@ def _program_execution_statuses(
             details.append("parameter_mismatch")
         if step.output_ref != f"operation:{candidate_node_id}":
             details.append("output_ref_mismatch")
-        expected_evidence = {
-            ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
-        }
         expected_lineage = expected_lineage_by_node[node.node_id]
-        observed_evidence = set(step.evidence_ids)
-        if observed_evidence not in (expected_evidence, expected_lineage):
+        observed_evidence = set(observed_lineage_by_node.get(candidate_node_id or "", ()))
+        direct_input_evidence = {
+            ref.split("#", 1)[0].removeprefix("evidence:")
+            for ref in step.input_refs
+            if ref.startswith("evidence:")
+        }
+        if observed_evidence != expected_lineage:
             details.append("evidence_binding_mismatch")
-        if not set(step.evidence_ids).issubset(selected_evidence_ids):
+        if not direct_input_evidence.issubset(set(step.evidence_ids)):
+            details.append("evidence_binding_mismatch")
+        if not observed_evidence.issubset(selected_evidence_ids):
             details.append("evidence_not_selected")
         for dependency in node.dependencies:
             dependency_candidate_id = node_mapping.get(dependency)
@@ -445,7 +457,6 @@ def _program_execution_statuses(
             )
             if dependency_index is None or dependency_index >= step.step_index:
                 details.append(f"dependency_order:{dependency}")
-        definition = registry.require(node.operator_id)
         tool_bound = step.tool_name == definition.tool_capability
         if not tool_bound:
             details.append("tool_binding_mismatch")
@@ -552,24 +563,42 @@ def _verify_claims(
 
 
 def _verify_action_sequence(candidate: Trajectory, task: TaskPackage) -> tuple[str, ...]:
-    order = {
-        ActionType.PLAN: 0,
-        ActionType.SEARCH: 1,
-        ActionType.SELECT_EVIDENCE: 2,
-        ActionType.CALCULATE: 3,
-        ActionType.VERIFY: 4,
-        ActionType.ANSWER: 5,
-    }
     failures: list[str] = []
-    ranks = [order[step.action] for step in candidate.steps]
-    if ranks != sorted(ranks):
-        failures.append("action_order_not_monotonic")
-    counts = {action: sum(step.action == action for step in candidate.steps) for action in order}
+    actions = tuple(ActionType)
+    counts = {action: sum(step.action == action for step in candidate.steps) for action in actions}
     for action in (ActionType.PLAN, ActionType.SEARCH, ActionType.ANSWER):
         if counts[action] != 1:
             failures.append(f"{action.value}_count={counts[action]}")
     if counts[ActionType.SELECT_EVIDENCE] < 1:
         failures.append("select_evidence_missing")
+
+    positions = {
+        action: tuple(index for index, step in enumerate(candidate.steps) if step.action == action)
+        for action in actions
+    }
+    operation_positions = tuple(
+        index
+        for index, step in enumerate(candidate.steps)
+        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+    )
+    plan_position = positions[ActionType.PLAN][0] if counts[ActionType.PLAN] == 1 else None
+    search_position = positions[ActionType.SEARCH][0] if counts[ActionType.SEARCH] == 1 else None
+    answer_position = positions[ActionType.ANSWER][0] if counts[ActionType.ANSWER] == 1 else None
+    verify_positions = positions[ActionType.VERIFY]
+    sequence_valid = (
+        plan_position == 0
+        and search_position is not None
+        and plan_position < search_position
+        and answer_position == len(candidate.steps) - 1
+        and all(search_position < item < answer_position for item in operation_positions)
+        and all(
+            (not operation_positions or item > max(operation_positions)) and item < answer_position
+            for item in verify_positions
+        )
+    )
+    if not sequence_valid:
+        failures.append("action_order_not_monotonic")
+
     calculation_required = TaskRequirement.CALCULATE in task.public.requirements
     if calculation_required and counts[ActionType.CALCULATE] < 1:
         failures.append("calculate_missing")
@@ -583,9 +612,17 @@ def _verify_program_trace(
     task: TaskPackage,
     candidate: Trajectory,
     expected_outputs: dict[str, dict[str, Any]],
+    evidence_by_id: dict[str, EvidenceItem],
+    registry: OperationRegistry,
 ) -> tuple[tuple[str, ...], dict[str, str]]:
     if task.public.planning_track == PlanningTrack.PLAN_HIDDEN:
-        return _verify_plan_hidden_trace(task, candidate, expected_outputs)
+        return _verify_plan_hidden_trace(
+            task,
+            candidate,
+            expected_outputs,
+            evidence_by_id,
+            registry,
+        )
     failures = _verify_plan_given_trace(task, candidate, expected_outputs)
     return failures, {node.node_id: node.node_id for node in task.oracle.task_program.nodes}
 
@@ -662,37 +699,59 @@ def _verify_plan_hidden_trace(
     task: TaskPackage,
     candidate: Trajectory,
     expected_outputs: dict[str, dict[str, Any]],
+    evidence_by_id: dict[str, EvidenceItem],
+    registry: OperationRegistry,
 ) -> tuple[tuple[str, ...], dict[str, str]]:
     program = task.oracle.task_program
-    candidate_steps = tuple(
-        step
-        for step in candidate.steps
-        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
-        and step.program_node_id is not None
+    candidate_steps = _candidate_operation_steps(candidate)
+    selected_evidence_ids = set(_action_evidence(candidate, ActionType.SELECT_EVIDENCE))
+    transparent_projections = _verified_transparent_projections(
+        candidate_steps,
+        evidence_by_id,
+        selected_evidence_ids,
+        registry,
     )
+    observed_lineages = _candidate_operation_lineages(candidate_steps)
+    expected_lineages = _expected_program_lineages(task)
     failures: list[str] = []
     mapping: dict[str, str] = {}
     mapped_step_indexes: dict[str, int] = {}
     used_step_indexes: set[int] = set()
     used_program_node_ids: set[str] = set()
+    consumed_transparent_ids: set[str] = set()
     for node in program.nodes:
-        expected_action = (
-            ActionType.SELECT_EVIDENCE if node.operator_id == "lookup" else ActionType.CALCULATE
-        )
-        expected_refs = _translated_program_refs(node, mapping)
-        candidates = [
-            step
-            for step in candidate_steps
-            if step.step_index not in used_step_indexes
-            and step.action == expected_action
-            and step.operator_id == node.operator_id
-            and step.input_refs == expected_refs
-        ]
+        definition = registry.require(node.operator_id)
+        expected_action = ActionType(definition.action_type)
+        candidates: list[tuple[TrajectoryStep, dict[str, str]]] = []
+        for step in candidate_steps:
+            if (
+                step.step_index in used_step_indexes
+                or step.action != expected_action
+                or step.operator_id != node.operator_id
+            ):
+                continue
+            refs_match, consumed = _input_refs_equivalent(
+                node,
+                step,
+                mapping,
+                transparent_projections,
+                definition,
+            )
+            if refs_match:
+                candidates.append((step, consumed))
         if len(candidates) != 1:
             failures.append(f"node:{node.node_id}:semantic_execution_count={len(candidates)}")
             continue
-        step = candidates[0]
+        step, consumed = candidates[0]
         assert step.program_node_id is not None
+        projection_alias_conflict = (
+            step.program_node_id in consumed
+            or any(item in used_program_node_ids for item in consumed)
+            or any(alias in mapping for alias in consumed.values())
+        )
+        if projection_alias_conflict:
+            failures.append(f"node:{node.node_id}:projection_alias_conflict")
+            continue
         if step.program_node_id in used_program_node_ids:
             failures.append(f"node:{node.node_id}:duplicate_candidate_node_id")
             continue
@@ -703,9 +762,13 @@ def _verify_plan_hidden_trace(
             failures.append(f"node:{node.node_id}:dependency_order")
             continue
         mapping[node.node_id] = step.program_node_id
+        for candidate_projection_id, stable_alias in consumed.items():
+            mapping[stable_alias] = candidate_projection_id
         mapped_step_indexes[node.node_id] = step.step_index
         used_step_indexes.add(step.step_index)
         used_program_node_ids.add(step.program_node_id)
+        used_program_node_ids.update(consumed)
+        consumed_transparent_ids.update(consumed)
         if step.output_ref != f"operation:{step.program_node_id}":
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_ref")
         if not _values_equivalent(
@@ -719,17 +782,249 @@ def _verify_plan_hidden_trace(
         )
         if not _values_equivalent(step.observation.get("result"), expected_output):
             failures.append(f"node:{node.node_id}:step:{step.step_index}:output_mismatch")
-        expected_evidence = {
-            ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE
-        }
-        if expected_evidence and set(step.evidence_ids) != expected_evidence:
+        observed_lineage = set(observed_lineages.get(step.program_node_id, ()))
+        if observed_lineage != expected_lineages[node.node_id]:
             failures.append(f"node:{node.node_id}:step:{step.step_index}:evidence_binding")
     unused = [
-        step.step_index for step in candidate_steps if step.step_index not in used_step_indexes
+        step.step_index
+        for step in candidate_steps
+        if step.step_index not in used_step_indexes
+        and step.program_node_id not in consumed_transparent_ids
     ]
     if unused:
         failures.append(f"unmapped_candidate_steps:{','.join(str(item) for item in unused)}")
     return tuple(failures), mapping
+
+
+def _candidate_operation_steps(candidate: Trajectory) -> tuple[TrajectoryStep, ...]:
+    return tuple(
+        step
+        for step in candidate.steps
+        if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}
+        and step.program_node_id is not None
+    )
+
+
+def _expected_program_lineages(task: TaskPackage) -> dict[str, set[str]]:
+    lineage_by_node: dict[str, set[str]] = {}
+    for node in task.oracle.task_program.nodes:
+        lineage = {ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE}
+        for dependency in node.dependencies:
+            lineage.update(lineage_by_node[dependency])
+        lineage_by_node[node.node_id] = lineage
+    return lineage_by_node
+
+
+def _candidate_operation_lineages(
+    steps: tuple[TrajectoryStep, ...],
+) -> dict[str, tuple[str, ...]]:
+    lineage_by_node: dict[str, tuple[str, ...]] = {}
+    for step in steps:
+        assert step.program_node_id is not None
+        lineage = list(step.evidence_ids)
+        for ref in step.input_refs:
+            base = ref.split("#", 1)[0]
+            if base.startswith("evidence:"):
+                lineage.append(base.removeprefix("evidence:"))
+            elif base.startswith("operation:"):
+                lineage.extend(lineage_by_node.get(base.removeprefix("operation:"), ()))
+        lineage_by_node[step.program_node_id] = tuple(
+            dict.fromkeys(item for item in lineage if item)
+        )
+    return lineage_by_node
+
+
+def _verified_transparent_projections(
+    steps: tuple[TrajectoryStep, ...],
+    evidence_by_id: dict[str, EvidenceItem],
+    selected_evidence_ids: set[str],
+    registry: OperationRegistry,
+) -> dict[str, TrajectoryStep]:
+    projections: dict[str, TrajectoryStep] = {}
+    for step in steps:
+        if step.operator_id is None or step.program_node_id is None:
+            continue
+        try:
+            definition = registry.require(step.operator_id)
+        except ValueError:
+            continue
+        if definition.program_role != "transparent_projection":
+            continue
+        if _transparent_projection_is_valid(
+            step,
+            definition,
+            evidence_by_id,
+            selected_evidence_ids,
+            registry,
+        ):
+            projections[step.program_node_id] = step
+    return projections
+
+
+def _transparent_projection_is_valid(
+    step: TrajectoryStep,
+    definition: OperationDefinition,
+    evidence_by_id: dict[str, EvidenceItem],
+    selected_evidence_ids: set[str],
+    registry: OperationRegistry,
+) -> bool:
+    if (
+        step.status != StepStatus.SUCCEEDED
+        or step.action != ActionType(definition.action_type)
+        or len(step.input_refs) != 1
+        or step.output_ref != f"operation:{step.program_node_id}"
+        or step.tool_name != definition.tool_capability
+    ):
+        return False
+    input_ref = step.input_refs[0]
+    base, separator, selector = input_ref.partition("#")
+    if not base.startswith("evidence:"):
+        return False
+    evidence_id = base.removeprefix("evidence:")
+    evidence = evidence_by_id.get(evidence_id)
+    if (
+        evidence is None
+        or evidence_id not in selected_evidence_ids
+        or set(step.evidence_ids) != {evidence_id}
+    ):
+        return False
+    parameters = step.tool_input.get("parameters", {})
+    observed_output = step.observation.get("result")
+    if not isinstance(parameters, dict) or not isinstance(observed_output, dict):
+        return False
+    try:
+        value = _select_reference_value(
+            evidence.payload,
+            selector if separator else None,
+        )
+        inputs = (OperationInput(ref_id=evidence_id, value=value),)
+        registry.validate_inputs(definition, inputs)
+        registry.validate_compatibility(definition, (evidence,), parameters)
+        registry.validate_output(definition, observed_output)
+        verification = definition.oracle_verifier.verify(
+            inputs,
+            parameters,
+            observed_output,
+        )
+    except (KeyError, TypeError, ValueError):
+        return False
+    return verification.passed
+
+
+def _input_refs_equivalent(
+    node,
+    step: TrajectoryStep,
+    mapping: dict[str, str],
+    transparent_projections: dict[str, TrajectoryStep],
+    definition: OperationDefinition,
+) -> tuple[bool, dict[str, str]]:
+    expected_refs = _translated_program_refs(node, mapping)
+    if len(expected_refs) != len(step.input_refs):
+        return False, {}
+    consumed: dict[str, str] = {}
+
+    def match_ref(observed: str, expected: str) -> tuple[bool, str | None]:
+        if expected.split("#", 1)[0].startswith("evidence:"):
+            collapsed, projection_id = _collapse_transparent_ref(
+                observed,
+                transparent_projections,
+                consumer_step_index=step.step_index,
+            )
+        else:
+            collapsed, projection_id = observed, None
+        return (
+            _canonical_input_ref(collapsed, definition)
+            == _canonical_input_ref(expected, definition),
+            projection_id,
+        )
+
+    matched: list[tuple[int, str | None]] = []
+    if definition.input_order_policy == "ordered":
+        for input_index, (observed, expected) in enumerate(
+            zip(step.input_refs, expected_refs, strict=True)
+        ):
+            passed, projection_id = match_ref(observed, expected)
+            if not passed:
+                return False, {}
+            matched.append((input_index, projection_id))
+    else:
+        unmatched = list(enumerate(expected_refs))
+        for observed in step.input_refs:
+            selected: tuple[int, int, str | None] | None = None
+            for position, (input_index, expected) in enumerate(unmatched):
+                passed, projection_id = match_ref(observed, expected)
+                if passed:
+                    selected = (position, input_index, projection_id)
+                    break
+            if selected is None:
+                return False, {}
+            position, input_index, projection_id = selected
+            unmatched.pop(position)
+            matched.append((input_index, projection_id))
+
+    for input_index, projection_id in matched:
+        if projection_id is not None:
+            stable_alias = f"projection:{node.node_id}:{input_index}"
+            previous = consumed.get(projection_id)
+            if previous is not None and previous != stable_alias:
+                return False, {}
+            consumed[projection_id] = stable_alias
+    return True, consumed
+
+
+def _collapse_transparent_ref(
+    ref: str,
+    transparent_projections: dict[str, TrajectoryStep],
+    *,
+    consumer_step_index: int,
+) -> tuple[str, str | None]:
+    base, separator, selector = ref.partition("#")
+    if not base.startswith("operation:"):
+        return ref, None
+    projection_id = base.removeprefix("operation:")
+    projection = transparent_projections.get(projection_id)
+    if projection is None or projection.step_index >= consumer_step_index:
+        return ref, None
+    source_ref = projection.input_refs[0]
+    source_base, source_separator, source_selector = source_ref.partition("#")
+    projected_selector: str | None
+    if not separator or selector == "payload":
+        projected_selector = None
+    elif selector.startswith("payload."):
+        projected_selector = selector.removeprefix("payload.")
+    else:
+        return ref, None
+    if source_separator and projected_selector is not None:
+        return ref, None
+    resolved_selector = source_selector if source_separator else projected_selector
+    resolved = (
+        f"{source_base}#{resolved_selector}" if resolved_selector is not None else source_base
+    )
+    return resolved, projection_id
+
+
+def _canonical_input_ref(ref: str, definition: OperationDefinition) -> str:
+    base, separator, selector = ref.partition("#")
+    if (
+        base.startswith("evidence:")
+        and "numeric" in definition.input_schema
+        and (not separator or selector == "value")
+    ):
+        return f"{base}#value"
+    return ref
+
+
+def _select_reference_value(value: Any, selector: str | None) -> Any:
+    current = value
+    if selector is None:
+        return current
+    for segment in selector.split("."):
+        if isinstance(current, BaseModel):
+            current = current.model_dump(mode="python")
+        if not isinstance(current, dict) or segment not in current:
+            raise ValueError(f"invalid transparent projection selector: {selector}")
+        current = current[segment]
+    return current
 
 
 def _translated_program_refs(node, mapping: dict[str, str]) -> tuple[str, ...]:
@@ -810,6 +1105,8 @@ def _translate_operation_refs(value: Any, mapping: dict[str, str]) -> Any:
         translated = mapping.get(node_id, node_id)
         suffix = f"#{selector}" if separator else ""
         return f"operation:{translated}{suffix}"
+    if isinstance(value, str):
+        return mapping.get(value, value)
     return value
 
 

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import math
 from collections import Counter
+from collections.abc import Callable, Iterable, Iterator, Mapping
+from functools import partial
 from itertools import islice
-from typing import Literal
+from typing import Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -37,6 +39,17 @@ from .state_space import (
     audit_public_state_generation_request,
     make_public_state_generation_request,
 )
+
+TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION: Literal[
+    "trajectory_state_materialization_report.v3"
+] = "trajectory_state_materialization_report.v3"
+
+RealizationUniquenessPolicy = Literal[
+    "deduplicated_decision_trace",
+    "independent_trajectory_draws",
+]
+
+_T = TypeVar("_T")
 
 
 class FrozenModel(BaseModel):
@@ -108,6 +121,7 @@ class TrajectoryStateMaterializationReport(FrozenModel):
     requested_state_counts: dict[str, int] = Field(min_length=1)
     attempted_state_counts: dict[str, int] = Field(min_length=1)
     off_target_state_counts: dict[str, int] = Field(min_length=1)
+    observed_state_counts_by_target: dict[str, dict[str, int]] = Field(min_length=1)
     attempted_trajectory_count: int = Field(ge=0)
     released_state_counts: dict[str, int] = Field(min_length=1)
     public_state_requests: dict[str, PublicStateGenerationRequest] = Field(default_factory=dict)
@@ -126,12 +140,16 @@ class TrajectoryStateMaterializationReport(FrozenModel):
     state_off_target_rates: dict[str, float] = Field(min_length=1)
     minimum_support_floor_applied: bool
     finite_budget_support_truncation: bool
+    realization_uniqueness_policy: RealizationUniquenessPolicy
+    unique_trajectory_hash_count: int = Field(ge=0)
     unique_decision_trace_count: int = Field(ge=0)
     independent_regeneration_enforced: Literal[True] = True
     artifacts: tuple[StateConditionedTrainingArtifact, ...] = ()
     failure_counts: dict[str, int] = Field(default_factory=dict)
     status: Literal["passed", "blocked"]
-    schema_version: str = VTDO_SCHEMA_VERSION
+    schema_version: Literal[
+        "trajectory_state_materialization_report.v3"
+    ] = TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
 
     @model_validator(mode="after")
     def validate_report(self) -> TrajectoryStateMaterializationReport:
@@ -149,6 +167,8 @@ class TrajectoryStateMaterializationReport(FrozenModel):
         )
         if any(set(item) != support for item in maps):
             raise ValueError("materialization metrics do not share one state support")
+        if set(self.observed_state_counts_by_target) != support:
+            raise ValueError("materialization observation matrix has another target support")
         if any(count < 0 for count in self.requested_state_counts.values()):
             raise ValueError("materialization request counts cannot be negative")
         if any(
@@ -157,6 +177,21 @@ class TrajectoryStateMaterializationReport(FrozenModel):
             for state_id in support
         ):
             raise ValueError("materialization state counts are inconsistent")
+        for target_state_id, observed_counts in self.observed_state_counts_by_target.items():
+            if any(not state_id or count < 0 for state_id, count in observed_counts.items()):
+                raise ValueError("materialization observation matrix is invalid")
+            if sum(observed_counts.values()) > self.attempted_state_counts[target_state_id]:
+                raise ValueError("materialization observations exceed target attempts")
+            on_target = observed_counts.get(target_state_id, 0)
+            observed_off_target_count = sum(
+                count
+                for observed_state_id, count in observed_counts.items()
+                if observed_state_id != target_state_id
+            )
+            if on_target != self.released_state_counts[target_state_id]:
+                raise ValueError("materialization on-target observations disagree with releases")
+            if observed_off_target_count != self.off_target_state_counts[target_state_id]:
+                raise ValueError("materialization off-target observations disagree with counts")
         total_requested = sum(self.requested_state_counts.values())
         total_attempted = sum(self.attempted_state_counts.values())
         total_released = sum(self.released_state_counts.values())
@@ -249,8 +284,16 @@ class TrajectoryStateMaterializationReport(FrozenModel):
             if count
         }:
             raise ValueError("materialization artifacts disagree with released counts")
+        trajectory_hashes = [item.trajectory.trajectory_hash for item in self.artifacts]
+        if len(trajectory_hashes) != len(set(trajectory_hashes)):
+            raise ValueError("materialization artifacts contain duplicate trajectories")
+        if self.unique_trajectory_hash_count != len(set(trajectory_hashes)):
+            raise ValueError("materialization trajectory count is inconsistent")
         traces = [item.decision_trace_hash for item in self.artifacts]
-        if len(traces) != len(set(traces)):
+        if (
+            self.realization_uniqueness_policy == "deduplicated_decision_trace"
+            and len(traces) != len(set(traces))
+        ):
             raise ValueError("materialization artifacts contain duplicate decision traces")
         if self.unique_decision_trace_count != len(set(traces)):
             raise ValueError("materialization decision-trace count is inconsistent")
@@ -300,6 +343,10 @@ class ValidTrajectoryStateMaterializer:
         total_budget: int,
         seed: int,
         maximum_attempt_multiplier: int = 3,
+        requested_state_counts: Mapping[str, int] | None = None,
+        realization_uniqueness_policy: RealizationUniquenessPolicy = (
+            "deduplicated_decision_trace"
+        ),
     ) -> tuple[tuple[StateConditionedTrainingArtifact, ...], TrajectoryStateMaterializationReport]:
         if total_budget < 1:
             raise ValueError("trajectory-state materialization budget must be positive")
@@ -316,16 +363,33 @@ class ValidTrajectoryStateMaterializer:
         if not set(distribution.probabilities) <= set(state_catalog.states):
             raise ValueError("materialization distribution contains an unknown state")
 
-        requested = allocate_materialization_budget(distribution, total_budget)
+        if requested_state_counts is None:
+            requested = allocate_materialization_budget(distribution, total_budget)
+        else:
+            requested = dict(sorted(requested_state_counts.items()))
+            if set(requested) != set(distribution.probabilities):
+                raise ValueError(
+                    "explicit materialization quotas must exactly cover distribution support"
+                )
+            if any(count < 0 for count in requested.values()):
+                raise ValueError("explicit materialization quotas cannot be negative")
+            if sum(requested.values()) != total_budget:
+                raise ValueError(
+                    "explicit materialization quotas do not sum to total_budget"
+                )
         released: list[StateConditionedTrainingArtifact] = []
         released_counts = {state_id: 0 for state_id in requested}
         attempted_counts = {state_id: 0 for state_id in requested}
         off_target_counts = {state_id: 0 for state_id in requested}
+        observed_state_counts_by_target = {
+            state_id: Counter[str]() for state_id in requested
+        }
         public_requests: dict[str, PublicStateGenerationRequest] = {}
         leakage_audits: dict[str, PublicStateLeakageAudit] = {}
         failures: Counter[str] = Counter()
         attempted = 0
         seen_trajectory_ids: set[str] = set()
+        seen_trajectory_hashes: set[str] = set()
         seen_decision_trace_hashes: set[str] = set()
         discovery_trajectory_ids = state_catalog.discovery_trajectory_ids()
         discovery_trajectory_hashes = state_catalog.discovery_trajectory_hashes()
@@ -345,10 +409,16 @@ class ValidTrajectoryStateMaterializer:
             public_requests[state_id] = request
             leakage_audits[state_id] = audit_public_state_generation_request(request, context)
             try:
-                candidates = islice(self._provider.generate(request), attempt_budget)
+                candidates = _generate_while(
+                    islice(self._provider.generate(request), attempt_budget),
+                    partial(
+                        _state_quota_unfilled,
+                        released_counts,
+                        state_id,
+                        target_count,
+                    ),
+                )
                 for trajectory in candidates:
-                    if released_counts[state_id] >= target_count:
-                        break
                     attempted += 1
                     attempted_counts[state_id] += 1
                     if (
@@ -360,7 +430,11 @@ class ValidTrajectoryStateMaterializer:
                     if trajectory.trajectory_id in seen_trajectory_ids:
                         failures["duplicate_trajectory"] += 1
                         continue
+                    if trajectory.trajectory_hash in seen_trajectory_hashes:
+                        failures["duplicate_trajectory_hash"] += 1
+                        continue
                     seen_trajectory_ids.add(trajectory.trajectory_id)
+                    seen_trajectory_hashes.add(trajectory.trajectory_hash)
                     try:
                         report = self._evaluator.evaluate(context, trajectory)
                     except Exception:
@@ -373,13 +447,13 @@ class ValidTrajectoryStateMaterializer:
                         trajectory,
                         program_node_aliases=report.program_node_mapping,
                     )
-                    if decision_trace in discovery_decision_trace_hashes:
-                        failures["discovery_decision_trace_reuse"] += 1
-                        continue
-                    if decision_trace in seen_decision_trace_hashes:
-                        failures["duplicate_decision_trace"] += 1
-                        continue
-                    seen_decision_trace_hashes.add(decision_trace)
+                    if realization_uniqueness_policy == "deduplicated_decision_trace":
+                        if decision_trace in discovery_decision_trace_hashes:
+                            failures["discovery_decision_trace_reuse"] += 1
+                            continue
+                        if decision_trace in seen_decision_trace_hashes:
+                            failures["duplicate_decision_trace"] += 1
+                            continue
                     try:
                         assignment = map_trajectory_to_state(
                             context,
@@ -390,10 +464,12 @@ class ValidTrajectoryStateMaterializer:
                     except Exception:
                         failures["state_mapping_error"] += 1
                         continue
+                    observed_state_counts_by_target[state_id][assignment.state.state_id] += 1
                     if assignment.state.state_id != state_id:
                         failures["off_target_state"] += 1
                         off_target_counts[state_id] += 1
                         continue
+                    seen_decision_trace_hashes.add(decision_trace)
                     values = {
                         "context": context,
                         "target_state": target_state,
@@ -461,6 +537,10 @@ class ValidTrajectoryStateMaterializer:
             "requested_state_counts": requested,
             "attempted_state_counts": attempted_counts,
             "off_target_state_counts": off_target_counts,
+            "observed_state_counts_by_target": {
+                state_id: dict(sorted(counts.items()))
+                for state_id, counts in sorted(observed_state_counts_by_target.items())
+            },
             "attempted_trajectory_count": attempted,
             "released_state_counts": released_counts,
             "public_state_requests": dict(sorted(public_requests.items())),
@@ -501,12 +581,16 @@ class ValidTrajectoryStateMaterializer:
                 distribution.probabilities[state_id] > 0 and requested[state_id] == 0
                 for state_id in requested
             ),
+            "realization_uniqueness_policy": realization_uniqueness_policy,
+            "unique_trajectory_hash_count": len(
+                {item.trajectory.trajectory_hash for item in released}
+            ),
             "unique_decision_trace_count": len({item.decision_trace_hash for item in released}),
             "independent_regeneration_enforced": True,
             "artifacts": tuple(released),
             "failure_counts": dict(sorted(failures.items())),
             "status": status,
-            "schema_version": VTDO_SCHEMA_VERSION,
+            "schema_version": TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION,
         }
         provisional_report = TrajectoryStateMaterializationReport.model_construct(
             report_id="pending",
@@ -517,6 +601,27 @@ class ValidTrajectoryStateMaterializer:
             **report_values,
         )
         return tuple(released), report
+
+
+def _generate_while(
+    values: Iterable[_T],
+    condition: Callable[[], bool],
+) -> Iterator[_T]:
+    """Check quota state before pulling a potentially expensive provider result."""
+    iterator = iter(values)
+    while condition():
+        try:
+            yield next(iterator)
+        except StopIteration:
+            return
+
+
+def _state_quota_unfilled(
+    released_counts: Mapping[str, int],
+    state_id: str,
+    target_count: int,
+) -> bool:
+    return released_counts[state_id] < target_count
 
 
 def state_conditioned_training_artifact_id(

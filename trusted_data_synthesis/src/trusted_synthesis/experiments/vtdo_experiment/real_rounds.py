@@ -6,8 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from trusted_synthesis.core.vtdo import (
     AnchoredEnergyConfig,
-    ContributionProbeObservation,
-    ContributionProductionAuthorization,
+    ContributionApproximationAuthorization,
+    ContributionEstimationManifest,
     ExplorationDistribution,
     StateConditionedExplorationBatch,
     TrajectoryStateCatalog,
@@ -33,8 +33,9 @@ class RealRoundAssemblyInput(FrozenModel):
     role_contract: VTDORoleContract
     exploration: ExplorationDistribution
     exploration_batch: StateConditionedExplorationBatch
-    contribution_probes: tuple[ContributionProbeObservation, ...] = Field(min_length=1)
-    contribution_production_authorization: ContributionProductionAuthorization
+    contribution_manifest: ContributionEstimationManifest
+    contribution_approximation_authorization: ContributionApproximationAuthorization | None
+    contribution_source_artifact_hash: str = Field(min_length=1)
     validity_thresholds: ValidityThresholds
     validity_prior_success: float = Field(default=0.0, ge=0)
     validity_prior_failure: float = Field(default=0.0, ge=0)
@@ -42,9 +43,6 @@ class RealRoundAssemblyInput(FrozenModel):
     energy_config: AnchoredEnergyConfig
     explorer_checkpoint_hash: str = Field(min_length=1)
     beneficiary_checkpoint_hash: str = Field(min_length=1)
-    probe_protocol_id: str = Field(min_length=1)
-    probe_protocol_family_hash: str = Field(min_length=1)
-    probe_set_hash: str = Field(min_length=1)
     catalog_version: str = Field(min_length=1)
     schema_version: str = VTDO_EXPERIMENT_VERSION
 
@@ -54,27 +52,26 @@ class RealRoundAssemblyInput(FrozenModel):
             raise ValueError("real-round assembly input identity is invalid")
         if self.exploration.task_condition_id != self.state_catalog.task_condition_id:
             raise ValueError("real-round input crosses task conditions")
-        if any(
-            item.probe_contract.beneficiary_checkpoint_hash != self.beneficiary_checkpoint_hash
-            for item in self.contribution_probes
+        if self.contribution_manifest.beneficiary_checkpoint_hash != (
+            self.beneficiary_checkpoint_hash
         ):
             raise ValueError("real-round input has another beneficiary checkpoint")
-        if any(
-            item.probe_contract.beneficiary_model_state_id
-            != self.role_contract.beneficiary_model_state_id
-            for item in self.contribution_probes
+        if self.contribution_manifest.beneficiary_model_state_id != (
+            self.role_contract.beneficiary_model_state_id
         ):
-            raise ValueError("real-round Probe violates the beneficiary role contract")
-        protocol_ids = {item.probe_contract.protocol_id for item in self.contribution_probes}
-        if protocol_ids != {self.probe_protocol_id}:
-            raise ValueError("real-round input does not freeze one Probe protocol")
-        expected_round = self.exploration.training_distribution.round_index
-        if {item.round_index for item in self.contribution_probes} != {expected_round}:
-            raise ValueError("real-round input contains Probes from another round")
-        if self.probe_protocol_family_hash != _probe_protocol_family_hash(self.contribution_probes):
-            raise ValueError("real-round Probe family identity is invalid")
-        if self.probe_set_hash != _probe_observation_set_hash(self.contribution_probes):
-            raise ValueError("real-round Probe observation set identity is invalid")
+            raise ValueError("real-round Contribution violates the beneficiary role contract")
+        if self.contribution_source_artifact_hash != (
+            self.contribution_manifest.estimation_protocol_hash
+        ):
+            raise ValueError("real-round Contribution source identity is detached")
+        authorization = self.contribution_approximation_authorization
+        if self.contribution_manifest.estimator_kind == "gradient_projection":
+            if authorization is None:
+                raise ValueError("real-round Gradient Projection lacks authorization")
+            if authorization.beneficiary_checkpoint_hash != self.beneficiary_checkpoint_hash:
+                raise ValueError("real-round authorization has another beneficiary checkpoint")
+        elif authorization is not None:
+            raise ValueError("real-round diagnostic Contribution cannot carry authorization")
         return self
 
 
@@ -106,7 +103,7 @@ def assemble_real_vtdo_rounds(
     input_path: Path,
     output_path: Path,
 ) -> tuple[RealRoundAssemblyReport, tuple[VTDORoundArtifact, ...]]:
-    """Compile frozen Explorer observations and probes into replayable VTDO rounds."""
+    """Compile frozen Explorer evidence and Contribution manifests into VTDO rounds."""
 
     blockers: list[str] = []
     inputs: list[RealRoundAssemblyInput] = []
@@ -120,19 +117,9 @@ def assemble_real_vtdo_rounds(
                 inputs.append(RealRoundAssemblyInput.model_validate_json(line))
             except ValidationError:
                 blockers.append(f"real_round_input_invalid:{index}")
-    probes = tuple(probe for item in inputs for probe in item.contribution_probes)
-    probe_artifact_fields = {
-        "observation_id": tuple(item.observation_id for item in probes),
-        "adapted_model_state_id": tuple(
-            item.adaptation_result.adapted_model_state_id for item in probes
-        ),
-        "adapted_checkpoint_hash": tuple(
-            item.adaptation_result.adapted_checkpoint_hash for item in probes
-        ),
-    }
-    for field, artifact_ids in probe_artifact_fields.items():
-        if len(artifact_ids) != len(set(artifact_ids)):
-            blockers.append(f"real_round_probe_artifact_reused:{field}")
+    manifest_ids = tuple(item.contribution_manifest.manifest_id for item in inputs)
+    if len(manifest_ids) != len(set(manifest_ids)):
+        blockers.append("real_round_contribution_manifest_reused")
     rounds: list[VTDORoundArtifact] = []
     for item in inputs:
         try:
@@ -155,9 +142,9 @@ def assemble_real_vtdo_rounds(
                     exploration_batch=item.exploration_batch,
                     pushforward_estimate=pushforward,
                     validity_partition=partition,
-                    contribution_probes=item.contribution_probes,
-                    contribution_production_authorization=(
-                        item.contribution_production_authorization
+                    contribution_manifest=item.contribution_manifest,
+                    contribution_approximation_authorization=(
+                        item.contribution_approximation_authorization
                     ),
                     energy_config=item.energy_config,
                 )
@@ -177,7 +164,7 @@ def assemble_real_vtdo_rounds(
     complete_sequence_count = 0
     for condition_id, condition_rounds in sorted(grouped.items()):
         ordered = sorted(condition_rounds, key=lambda value: value.round_index)
-        frozen_sequence_fields = {
+        frozen_sequence_fields: dict[str, set[str]] = {
             "explorer_checkpoint_hash": {
                 input_by_exploration[item.exploration.exploration_id].explorer_checkpoint_hash
                 for item in ordered
@@ -186,8 +173,8 @@ def assemble_real_vtdo_rounds(
                 input_by_exploration[item.exploration.exploration_id].beneficiary_checkpoint_hash
                 for item in ordered
             },
-            "probe_protocol_family_hash": {
-                input_by_exploration[item.exploration.exploration_id].probe_protocol_family_hash
+            "approximation_contract_id": {
+                item.contribution_manifest.approximation_contract_id or ""
                 for item in ordered
             },
             "catalog_version": {
@@ -203,9 +190,8 @@ def assemble_real_vtdo_rounds(
                 canonical_hash(item.update.energy_config, prefix="real_round_energy_config:")
                 for item in ordered
             },
-            "contribution_production_authorization": {
-                item.contribution_production_authorization.authorization_id
-                for item in ordered
+            "contribution_estimator": {
+                item.contribution_manifest.estimator_id for item in ordered
             },
         }
         for field, identities in frozen_sequence_fields.items():
@@ -261,51 +247,6 @@ def assemble_real_vtdo_rounds(
         **report_values,
     )
     return report, ordered_rounds
-
-
-def _probe_observation_set_hash(
-    observations: tuple[ContributionProbeObservation, ...],
-) -> str:
-    return canonical_hash(
-        tuple(
-            item.observation_id
-            for item in sorted(
-                observations,
-                key=lambda item: (item.round_index, item.state_id, item.seed),
-            )
-        ),
-        prefix="real_round_probe_observation_set:",
-    )
-
-
-def _probe_protocol_family_hash(
-    observations: tuple[ContributionProbeObservation, ...],
-) -> str:
-    families = {
-        canonical_hash(
-            {
-                "metric_contract": item.probe_contract.metric_contract,
-                "optimizer": item.probe_contract.optimizer,
-                "probe_seeds": item.probe_contract.probe_seeds,
-                "data_roles": {
-                    "has_baseline_training": bool(
-                        item.probe_contract.data_isolation.baseline_training_instance_ids
-                    ),
-                    "has_internal_validation": bool(
-                        item.probe_contract.data_isolation.internal_validation_instance_ids
-                    ),
-                    "has_final_test": bool(
-                        item.probe_contract.data_isolation.final_test_instance_ids
-                    ),
-                },
-            },
-            prefix="real_round_probe_protocol_family:",
-        )
-        for item in observations
-    }
-    if len(families) != 1:
-        raise ValueError("real-round input mixes Probe protocol families")
-    return next(iter(families))
 
 
 def real_round_assembly_input_id(value: RealRoundAssemblyInput) -> str:

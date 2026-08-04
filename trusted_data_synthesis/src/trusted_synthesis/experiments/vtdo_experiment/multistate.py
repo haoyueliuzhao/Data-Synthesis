@@ -14,7 +14,9 @@ from trusted_synthesis.core.evaluation.contracts import (
     QualityContractCompiler,
     QualityContractRuntime,
 )
+from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.operations.program import TaskProgramExecutor
+from trusted_synthesis.core.operations.schema import OperationInput
 from trusted_synthesis.core.synthesis import (
     JointCompilationArtifact,
     ProofCarryingSampleCompiler,
@@ -40,7 +42,9 @@ from trusted_synthesis.core.vtdo import (
     AcquisitionRequirement,
     AdmissibleTrajectoryVariation,
     EvidenceSupportRequirement,
+    ExecutionElaboration,
     LineageRequirement,
+    RetrievalElaboration,
     TrajectoryStateCatalog,
     TrajectoryStateSpaceCompilation,
     VerificationRequirement,
@@ -54,13 +58,14 @@ from trusted_synthesis.domains.finance.verification import FinanceClaimVerifier
 from trusted_synthesis.experiments.finance_archive import FinanceArchiveBindingProvider
 from trusted_synthesis.hashing import canonical_hash
 
-FINANCE_MULTI_STATE_VERSION = "finance_multi_state.v3"
-FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION = (
-    "finance_deterministic_state_fixture.v1"
-)
+FINANCE_MULTI_STATE_VERSION = "finance_multi_state.v13"
+FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION = "finance_deterministic_state_fixture.v8"
 
 LineageStrategy = Literal[
     "compact_direct",
+    "compact_projection",
+    "semantic_direct",
+    "semantic_projection",
     "broad_direct",
     "compact_verify_frontier",
     "broad_full_lineage",
@@ -69,10 +74,22 @@ LineageStrategy = Literal[
 
 _STRATEGIES: tuple[LineageStrategy, ...] = (
     "compact_direct",
+    "compact_projection",
+    "semantic_direct",
+    "semantic_projection",
     "broad_direct",
     "compact_verify_frontier",
     "broad_full_lineage",
     "compact_output_lineage",
+)
+
+
+DEFAULT_FINANCE_DISCOVERY_STRATEGIES: tuple[LineageStrategy, ...] = (
+    "compact_direct",
+    "compact_projection",
+    "semantic_direct",
+    "semantic_projection",
+    "broad_direct",
 )
 
 
@@ -82,16 +99,38 @@ class FinanceDeterministicStateFixtureProvider:
     fixture_provider_id = "finance_deterministic_state_fixture"
     fixture_provider_version = FINANCE_DETERMINISTIC_STATE_FIXTURE_VERSION
     variation_provider_id = "finance_fixture_variation_compiler"
-    variation_provider_version = "1.0.0"
+    variation_provider_version = "1.5.0"
 
     def compile_variations(
         self,
         context: TrajectoryVerificationContext,
     ) -> tuple[AdmissibleTrajectoryVariation, ...]:
-        del context
-        return tuple(self.variation_for(strategy) for strategy in _STRATEGIES)
+        baseline_execution_elaboration: Literal[
+            "baseline_program", "program_projection"
+        ] = (
+            "program_projection"
+            if any(
+                node.operator_id == "lookup"
+                for node in context.task.oracle.task_program.nodes
+            )
+            else "baseline_program"
+        )
+        return tuple(
+            self.variation_for(
+                strategy,
+                baseline_execution_elaboration=baseline_execution_elaboration,
+            )
+            for strategy in _STRATEGIES
+        )
 
-    def variation_for(self, strategy: LineageStrategy) -> AdmissibleTrajectoryVariation:
+    def variation_for(
+        self,
+        strategy: LineageStrategy,
+        *,
+        baseline_execution_elaboration: Literal[
+            "baseline_program", "program_projection"
+        ] = "baseline_program",
+    ) -> AdmissibleTrajectoryVariation:
         variation_values: dict[
             LineageStrategy,
             tuple[
@@ -104,6 +143,24 @@ class FinanceDeterministicStateFixtureProvider:
             "compact_direct": (
                 "bounded",
                 "required_roles",
+                "full",
+                "direct",
+            ),
+            "compact_projection": (
+                "bounded",
+                "required_roles",
+                "full",
+                "direct",
+            ),
+            "semantic_direct": (
+                "bounded",
+                "expanded_context",
+                "full",
+                "direct",
+            ),
+            "semantic_projection": (
+                "bounded",
+                "expanded_context",
                 "full",
                 "direct",
             ),
@@ -133,11 +190,25 @@ class FinanceDeterministicStateFixtureProvider:
             ),
         }
         acquisition, support, verification, lineage = variation_values[strategy]
+        retrieval_elaboration: RetrievalElaboration = (
+            "full_corpus"
+            if strategy.startswith("broad_")
+            else "semantic_context"
+            if strategy in {"semantic_direct", "semantic_projection"}
+            else "required_only"
+        )
+        execution_elaboration: ExecutionElaboration = (
+            "transparent_projection"
+            if strategy in {"compact_projection", "semantic_projection"}
+            else baseline_execution_elaboration
+        )
         return make_admissible_trajectory_variation(
             acquisition_requirement=acquisition,
             evidence_support_requirement=support,
             verification_requirement=verification,
             lineage_requirement=lineage,
+            retrieval_elaboration=retrieval_elaboration,
+            execution_elaboration=execution_elaboration,
             required_capabilities=(
                 "citation",
                 "evidence_selection",
@@ -302,9 +373,7 @@ class FinanceTaskStateArtifact(FrozenModel):
             for witnesses in self.state_catalog.discovery_witnesses.values()
             for witness in witnesses
         }
-        if witness_report_ids != {
-            item.validity_report.report_id for item in self.accepted_states
-        }:
+        if witness_report_ids != {item.validity_report.report_id for item in self.accepted_states}:
             raise ValueError("state catalog witnesses do not exactly cover validity reports")
         if self.state_catalog.omega_context_id != self.omega.context_id:
             raise ValueError("state catalog belongs to another Omega context")
@@ -481,9 +550,7 @@ def build_finance_multi_state_dataset(
     report_values = {
         "config_hash": canonical_hash(config, prefix="finance_multi_state_config:"),
         "kg_build_id": provider.kg_build_id,
-        "state_fixture_provider_id": (
-            FinanceDeterministicStateFixtureProvider.fixture_provider_id
-        ),
+        "state_fixture_provider_id": (FinanceDeterministicStateFixtureProvider.fixture_provider_id),
         "state_fixture_provider_version": (
             FinanceDeterministicStateFixtureProvider.fixture_provider_version
         ),
@@ -518,9 +585,7 @@ def build_finance_multi_state_dataset(
         "surface_probe_count": quotient["surface_probe_count"],
         "surface_invariance_rate": quotient["surface_invariance_rate"],
         "independent_order_probe_count": quotient["independent_order_probe_count"],
-        "independent_order_invariance_rate": quotient[
-            "independent_order_invariance_rate"
-        ],
+        "independent_order_invariance_rate": quotient["independent_order_invariance_rate"],
         "semantic_mutation_probe_count": quotient["semantic_mutation_probe_count"],
         "semantic_separation_rate": quotient["semantic_separation_rate"],
         "quotient_false_merge_count": quotient["false_merge_count"],
@@ -563,7 +628,26 @@ def load_finance_multi_state_artifacts(path: Path) -> tuple[FinanceTaskStateArti
     )
 
 
-def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskStateArtifact:
+def build_finance_task_state_artifact(
+    case,
+    config: FinanceMultiStateConfig,
+    *,
+    strategies: tuple[LineageStrategy, ...] = DEFAULT_FINANCE_DISCOVERY_STRATEGIES,
+    discovery_method: str = "verified_finance_deterministic_fixture",
+    revision_reason: str = "verified_finance_fixture_state_space_initialization",
+) -> FinanceTaskStateArtifact:
+    """Compile one Finance task into a verified quotient-state catalog.
+
+    The deterministic trajectories are discovery witnesses only. Production gradient
+    realizations must be regenerated independently by an Explorer/Materializer pair.
+    """
+
+    if not 3 <= len(strategies) <= 5 or len(set(strategies)) != len(strategies):
+        raise ValueError("Finance state discovery requires 3-5 unique strategies")
+    if any(strategy not in _STRATEGIES for strategy in strategies):
+        raise ValueError("Finance state discovery contains an unknown strategy")
+    if not discovery_method.strip() or not revision_reason.strip():
+        raise ValueError("Finance state discovery identity cannot be empty")
     compiled = ProofCarryingSampleCompiler(
         case.registry,
         QualityContractCompiler(case.registry, domain_provider=case.quality_clause_provider),
@@ -599,16 +683,14 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
         joint_compilation,
         fixture_provider,
     )
-    variations = dict(
-        zip(_STRATEGIES, state_space_compilation.variations, strict=True)
-    )
+    variations = dict(zip(_STRATEGIES, state_space_compilation.variations, strict=True))
     public_conditions_by_assignment_id = {}
     accepted: list[AcceptedFinanceState] = []
     seen_states: set[str] = set()
     strategy_attempt_count = 0
     strategy_verifier_pass_count = 0
     duplicate_state_count = 0
-    for strategy in _STRATEGIES:
+    for strategy in strategies:
         strategy_attempt_count += 1
         trajectory = fixture_provider.generate_fixture(omega, case.registry, strategy)
         validity = evaluator.evaluate(omega, trajectory)
@@ -655,13 +737,10 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
         validity_report=rejected_report,
     )
     catalog = make_trajectory_state_catalog(
-        (
-            (item.assignment, item.validity_report, item.trajectory)
-            for item in accepted
-        ),
+        ((item.assignment, item.validity_report, item.trajectory) for item in accepted),
         state_space_compilation=state_space_compilation,
-        discovery_method="verified_finance_deterministic_fixture",
-        revision_reason="verified_finance_fixture_state_space_initialization",
+        discovery_method=discovery_method,
+        revision_reason=revision_reason,
         public_conditions_by_assignment_id=public_conditions_by_assignment_id,
     )
     pattern = case.task.public.metadata.get("task_pattern")
@@ -700,6 +779,10 @@ def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskSt
     )
 
 
+def _build_task_artifact(case, config: FinanceMultiStateConfig) -> FinanceTaskStateArtifact:
+    return build_finance_task_state_artifact(case, config)
+
+
 def _compile_fixture_trajectory(
     omega: TrajectoryVerificationContext,
     registry,
@@ -713,7 +796,10 @@ def _compile_fixture_trajectory(
     gold_set = set(gold_ids)
     corpus_ids = tuple(item.evidence_id for item in omega.public_corpus.evidence)
     broad = strategy.startswith("broad_")
-    retrieved_ids = corpus_ids if broad else gold_ids
+    if strategy in {"semantic_direct", "semantic_projection"}:
+        retrieved_ids = _semantic_context_retrieval_ids(omega)
+    else:
+        retrieved_ids = corpus_ids if broad else gold_ids
     full_lineage = strategy == "broad_full_lineage"
     output_lineage = strategy in {"compact_output_lineage", "compact_verify_frontier"}
     verify_frontier = strategy != "compact_verify_frontier"
@@ -749,28 +835,86 @@ def _compile_fixture_trajectory(
             status=StepStatus.SUCCEEDED,
         ),
     ]
+
+    projection_specs = []
+    projection_ref_by_input: dict[tuple[str, int], str] = {}
+    if strategy in {"compact_projection", "semantic_projection"}:
+        for node in program.nodes:
+            definition = registry.require(node.operator_id)
+            if definition.program_role == "transparent_projection":
+                continue
+            for input_index, ref in enumerate(node.input_refs):
+                if ref.kind != InputRefKind.EVIDENCE:
+                    continue
+                projection_id = f"projection:{node.node_id}:{input_index}"
+                projection_specs.append((projection_id, node, input_index, ref))
+                if ref.selector:
+                    projected_selector = "payload"
+                elif "numeric" in definition.input_schema:
+                    projected_selector = "payload.value"
+                else:
+                    projected_selector = "payload"
+                projection_ref_by_input[(node.node_id, input_index)] = (
+                    f"operation:{projection_id}#{projected_selector}"
+                )
+
+    lookup_definition = registry.require("lookup")
+    for projection_id, _, _, ref in projection_specs:
+        evidence = evidence_by_id[ref.ref_id]
+        value = _select_program_input_value(evidence.payload, ref.selector)
+        inputs = (OperationInput(ref_id=evidence.evidence_id, value=value),)
+        output = lookup_definition.executor.execute(inputs, {})
+        registry.validate_inputs(lookup_definition, inputs)
+        registry.validate_compatibility(lookup_definition, (evidence,), {})
+        registry.validate_output(lookup_definition, output)
+        steps.append(
+            TrajectoryStep(
+                step_index=len(steps) + 1,
+                action=ActionType(lookup_definition.action_type),
+                tool_name=lookup_definition.tool_capability,
+                tool_input={"parameters": {}},
+                observation={"result": output},
+                evidence_ids=(evidence.evidence_id,),
+                program_node_id=projection_id,
+                operator_id=lookup_definition.operator_id,
+                input_refs=(_program_ref(ref),),
+                output_ref=f"operation:{projection_id}",
+                rationale_summary="Project one selected Evidence payload.",
+                status=StepStatus.SUCCEEDED,
+            )
+        )
+
     for node in program.nodes:
         definition = registry.require(node.operator_id)
-        direct = tuple(ref.ref_id for ref in node.input_refs if ref.kind == InputRefKind.EVIDENCE)
+        input_refs = tuple(
+            projection_ref_by_input.get(
+                (node.node_id, input_index),
+                _fixture_program_ref(ref, definition),
+            )
+            for input_index, ref in enumerate(node.input_refs)
+        )
+        direct = tuple(
+            ref.ref_id
+            for input_index, ref in enumerate(node.input_refs)
+            if ref.kind == InputRefKind.EVIDENCE
+            and (node.node_id, input_index) not in projection_ref_by_input
+        )
         evidence_ids = direct
         if not direct and (
             full_lineage or (output_lineage and node.node_id == program.output_node_id)
         ):
             evidence_ids = tuple(sorted(lineage_by_node[node.node_id] & gold_set))
-        action = (
-            ActionType.SELECT_EVIDENCE if node.operator_id == "lookup" else ActionType.CALCULATE
-        )
         steps.append(
             TrajectoryStep(
                 step_index=len(steps) + 1,
-                action=action,
+                action=ActionType(definition.action_type),
                 tool_name=definition.tool_capability,
                 tool_input={"parameters": node.parameters},
                 observation={"result": execution.node_outputs[node.node_id]},
                 evidence_ids=evidence_ids,
                 program_node_id=node.node_id,
                 operator_id=node.operator_id,
-                input_refs=tuple(_program_ref(ref) for ref in node.input_refs),
+                input_refs=input_refs,
                 output_ref=f"operation:{node.node_id}",
                 rationale_summary=(
                     "Execute one typed node and preserve its chosen evidence frontier."
@@ -839,6 +983,19 @@ def _compile_fixture_trajectory(
     )
 
 
+def _select_program_input_value(value, selector: str | None):
+    if selector is None:
+        return value
+    current = value
+    for segment in selector.split("."):
+        if isinstance(current, BaseModel):
+            current = current.model_dump(mode="python")
+        if not isinstance(current, dict) or segment not in current:
+            raise ValueError(f"invalid fixture input selector: {selector}")
+        current = current[segment]
+    return current
+
+
 def _wrong_answer_attempt(source: Trajectory) -> Trajectory:
     final_answer = {
         "result": {"invalid_result": "deterministic_wrong_answer"},
@@ -874,6 +1031,18 @@ def _program_ref(ref) -> str:
     return f"{value}#{ref.selector}" if ref.selector else value
 
 
+def _fixture_program_ref(ref, definition) -> str:
+    value = _program_ref(ref)
+    if (
+        ref.kind == InputRefKind.EVIDENCE
+        and ref.selector is None
+        and definition.program_role != "transparent_projection"
+        and "numeric" in definition.input_schema
+    ):
+        return f"{value}#value"
+    return value
+
+
 def _retrieval_signature(trajectory: Trajectory) -> str:
     evidence_ids = tuple(
         sorted(
@@ -884,6 +1053,36 @@ def _retrieval_signature(trajectory: Trajectory) -> str:
         )
     )
     return canonical_hash(evidence_ids, prefix="trajectory_retrieval_scope:")
+
+
+def _semantic_context_retrieval_ids(
+    context: TrajectoryVerificationContext,
+) -> tuple[str, ...]:
+    evidence_by_id = context.public_corpus.by_id()
+    gold = tuple(
+        evidence_by_id[evidence_id] for evidence_id in context.task.oracle.gold_evidence_ids
+    )
+    semantic_keys = {_semantic_context_key(item) for item in gold}
+    return tuple(
+        item.evidence_id
+        for item in context.public_corpus.evidence
+        if _semantic_context_key(item) in semantic_keys
+    )
+
+
+def _semantic_context_key(
+    item: EvidenceItem,
+) -> tuple[str, str, str, str | None, str | None, str, str]:
+    temporal = item.temporal_context
+    return (
+        item.domain,
+        item.subject.subject_id,
+        item.subject.subject_type,
+        temporal.basis,
+        temporal.frequency,
+        item.source.authority.value,
+        item.epistemic_status.value,
+    )
 
 
 def _surface_probe(source: Trajectory) -> Trajectory:
@@ -953,9 +1152,7 @@ def _quotient_probe(
                 raw_hashes.add(trajectory.trajectory_hash)
                 state_ids.add(assignment.state.state_id)
                 validity_by_state.setdefault(assignment.state.state_id, []).append(1.0)
-        accepted_state_ids = {
-            item.assignment.state.state_id for item in artifact.accepted_states
-        }
+        accepted_state_ids = {item.assignment.state.state_id for item in artifact.accepted_states}
         for rejected in artifact.rejected_attempts:
             assignment = map_trajectory_to_state(
                 artifact.omega,
@@ -977,9 +1174,7 @@ def _quotient_probe(
         "surface_probe_count": surface_count,
         "surface_invariance_rate": surface_matches / surface_count if surface_count else 0.0,
         "independent_order_probe_count": order_count,
-        "independent_order_invariance_rate": (
-            order_matches / order_count if order_count else None
-        ),
+        "independent_order_invariance_rate": (order_matches / order_count if order_count else None),
         "semantic_mutation_probe_count": semantic_count,
         "semantic_separation_rate": (
             semantic_separations / semantic_count if semantic_count else None

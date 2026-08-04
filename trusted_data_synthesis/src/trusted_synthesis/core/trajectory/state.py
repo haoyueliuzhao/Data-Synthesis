@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -19,9 +20,9 @@ from trusted_synthesis.core.trajectory.specification import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-TRAJECTORY_STATE_SCHEMA_VERSION = "trajectory_quotient_state.v2"
-TRAJECTORY_CANONICALIZER_VERSION = "dependency_wl_canonicalizer.v2"
-TRAJECTORY_DECISION_TRACE_VERSION = "trajectory_decision_trace.v1"
+TRAJECTORY_STATE_SCHEMA_VERSION = "trajectory_quotient_state.v5"
+TRAJECTORY_CANONICALIZER_VERSION = "dependency_wl_canonicalizer.v6"
+TRAJECTORY_DECISION_TRACE_VERSION = "trajectory_decision_trace.v2"
 
 NodeClassKind = Literal["action", "evidence"]
 
@@ -174,7 +175,7 @@ def map_trajectory_to_state(
         include_incident_edges=True,
     )
     result_hash = canonical_hash(
-        _semantic_result(trajectory.final_answer),
+        _semantic_result(trajectory.final_answer, aliases=aliases),
         prefix="trajectory_result_semantics:",
     )
     values = {
@@ -303,6 +304,24 @@ def _strip_execution_metadata(value: Any) -> Any:
     return value
 
 
+def _public_corpus_size(context: TrajectoryVerificationContext) -> int | None:
+    count = len(context.public_corpus.evidence)
+    return count if count > 0 else None
+
+
+def _retrieval_context_class(
+    *,
+    returned_evidence_ids: set[str],
+    retained_evidence_ids: set[str],
+    corpus_size: int | None,
+) -> Literal["required_only", "contextual", "full_corpus"]:
+    if not returned_evidence_ids - retained_evidence_ids:
+        return "required_only"
+    if corpus_size is not None and len(returned_evidence_ids) >= corpus_size:
+        return "full_corpus"
+    return "contextual"
+
+
 def _dependency_graph(
     context: TrajectoryVerificationContext,
     trajectory: Trajectory,
@@ -311,8 +330,23 @@ def _dependency_graph(
     tool_equivalence: Mapping[str, str],
 ) -> tuple[tuple[_RawNode, ...], tuple[_RawEdge, ...]]:
     action_nodes: list[_RawNode] = []
-    evidence_ids = {evidence_id for step in trajectory.steps for evidence_id in step.evidence_ids}
+    evidence_ids = {
+        evidence_id
+        for step in trajectory.steps
+        if step.action != ActionType.SEARCH
+        for evidence_id in step.evidence_ids
+    }
     evidence_ids.update(_citation_evidence_ids(trajectory.final_answer))
+    corpus_size = _public_corpus_size(context)
+    retrieval_contexts = {
+        step.step_index: _retrieval_context_class(
+            returned_evidence_ids=set(step.evidence_ids),
+            retained_evidence_ids=evidence_ids,
+            corpus_size=corpus_size,
+        )
+        for step in trajectory.steps
+        if step.action == ActionType.SEARCH
+    }
     evidence_nodes = [
         _RawNode(
             key=f"evidence:{evidence_id}",
@@ -321,6 +355,16 @@ def _dependency_graph(
             payload={"evidence_id": evidence_id},
         )
         for evidence_id in sorted(evidence_ids)
+    ]
+    retrieval_context_nodes = [
+        _RawNode(
+            key=f"retrieval_context:{step_index}",
+            kind="evidence",
+            semantic_label=f"retrieval_context:{context_class}",
+            payload={"retrieval_context_class": context_class},
+        )
+        for step_index, context_class in sorted(retrieval_contexts.items())
+        if context_class != "required_only"
     ]
     step_keys: dict[int, str] = {}
     role_to_step: dict[str, str] = {}
@@ -348,6 +392,8 @@ def _dependency_graph(
             trajectory,
             aliases=aliases,
             tool_equivalence=tool_equivalence,
+            retained_evidence_ids=evidence_ids,
+            retrieval_context_class=retrieval_contexts.get(step.step_index),
         )
         action_nodes.append(
             _RawNode(
@@ -360,8 +406,11 @@ def _dependency_graph(
     edges: set[_RawEdge] = set()
     for step in trajectory.steps:
         target = step_keys[step.step_index]
-        for evidence_id in sorted(step.evidence_ids):
+        for evidence_id in sorted(set(step.evidence_ids) & evidence_ids):
             edges.add(_RawEdge(f"evidence:{evidence_id}", "uses_evidence", target))
+        context_class = retrieval_contexts.get(step.step_index)
+        if context_class is not None and context_class != "required_only":
+            edges.add(_RawEdge(f"retrieval_context:{step.step_index}", "retrieval_context", target))
         for raw_ref in step.input_refs:
             normalized = _normalize_ref(raw_ref, aliases)
             if normalized is None:
@@ -391,7 +440,7 @@ def _dependency_graph(
             if source is not None:
                 edges.add(_RawEdge(source, "program_dependency", operation_target))
     _add_lifecycle_edges(trajectory, step_keys, role_to_step, program.output_node_id, edges)
-    return tuple((*evidence_nodes, *action_nodes)), tuple(
+    return tuple((*evidence_nodes, *retrieval_context_nodes, *action_nodes)), tuple(
         sorted(edges, key=lambda item: (item.source, item.relation, item.target))
     )
 
@@ -565,6 +614,8 @@ def _step_semantics(
     *,
     aliases: Mapping[str, str],
     tool_equivalence: Mapping[str, str],
+    retained_evidence_ids: set[str],
+    retrieval_context_class: str | None,
 ) -> dict[str, Any]:
     role = _canonical_program_role(step.program_node_id, aliases)
     tool = step.tool_name
@@ -572,6 +623,9 @@ def _step_semantics(
         tool = tool_equivalence.get(tool, tool)
     if step.operator_id is not None:
         tool = f"operator:{step.operator_id}"
+    semantic_evidence_ids = set(step.evidence_ids)
+    if step.action == ActionType.SEARCH:
+        semantic_evidence_ids &= retained_evidence_ids
     payload: dict[str, Any] = {
         "action": step.action.value,
         "tool_semantics": tool,
@@ -585,18 +639,26 @@ def _step_semantics(
             )
         ),
         "output_ref": _normalize_ref(step.output_ref, aliases),
-        "evidence_ids": tuple(sorted(step.evidence_ids)),
+        "evidence_ids": tuple(sorted(semantic_evidence_ids)),
         "status": step.status.value,
     }
+    if step.action == ActionType.SEARCH:
+        payload["retrieval_context_class"] = retrieval_context_class or "required_only"
     if step.action in {ActionType.SELECT_EVIDENCE, ActionType.CALCULATE}:
-        payload["result"] = step.observation.get("result")
+        payload["result"] = _normalize_semantic_value(
+            step.observation.get("result"),
+            aliases=aliases,
+        )
     elif step.action == ActionType.VERIFY:
         payload["verified_output_ref"] = _normalize_ref(
             step.observation.get("verified_output_ref"), aliases
         )
-        payload["verified_result"] = step.observation.get("verified_result")
+        payload["verified_result"] = _normalize_semantic_value(
+            step.observation.get("verified_result"),
+            aliases=aliases,
+        )
     elif step.action == ActionType.ANSWER:
-        payload["answer"] = _semantic_result(trajectory.final_answer)
+        payload["answer"] = _semantic_result(trajectory.final_answer, aliases=aliases)
     return payload
 
 
@@ -621,7 +683,11 @@ def _normalize_ref(
     return f"{normalized}#{selector}" if selector_separator else normalized
 
 
-def _semantic_result(answer: Mapping[str, Any]) -> dict[str, Any]:
+def _semantic_result(
+    answer: Mapping[str, Any],
+    *,
+    aliases: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
     citations = answer.get("citations")
     normalized_citations: tuple[tuple[str, str], ...] = ()
     if isinstance(citations, list):
@@ -636,9 +702,68 @@ def _semantic_result(answer: Mapping[str, Any]) -> dict[str, Any]:
             )
         )
     return {
-        "result": answer.get("result"),
+        "result": _normalize_semantic_value(answer.get("result"), aliases=aliases),
         "citation_bindings": normalized_citations,
     }
+
+
+def _normalize_semantic_value(
+    value: Any,
+    *,
+    aliases: Mapping[str, str] | None = None,
+) -> Any:
+    """Erase representation-only numeric differences from quotient semantics.
+
+    Plain digit strings remain untouched because they may be identifiers. Decimal or
+    exponent notation is unambiguous enough to canonicalize, while typed numbers are
+    always numeric by construction.
+    """
+
+    if value is None or isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float, Decimal)):
+        return _canonical_decimal(value)
+    if isinstance(value, str):
+        alias_map = aliases or {}
+        value = alias_map.get(value, value)
+        if value.startswith("execution:"):
+            node_id, separator, selector = value.removeprefix("execution:").partition("#")
+            translated = alias_map.get(node_id)
+            if translated is not None:
+                value = f"{translated}#{selector}" if separator else translated
+        candidate = value.strip()
+        if "." not in candidate and "e" not in candidate.casefold():
+            return value
+        try:
+            decimal_value = Decimal(candidate)
+        except InvalidOperation:
+            return value
+        return _canonical_decimal(decimal_value)
+    if isinstance(value, Mapping):
+        return {
+            key: _normalize_semantic_value(item, aliases=aliases)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_normalize_semantic_value(item, aliases=aliases) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_normalize_semantic_value(item, aliases=aliases) for item in value)
+    return value
+
+
+def _canonical_decimal(value: int | float | Decimal) -> str | int | float | Decimal:
+    try:
+        decimal_value = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError, OverflowError):
+        return value
+    if not decimal_value.is_finite():
+        return value
+    if decimal_value == 0:
+        return "0"
+    normalized = format(decimal_value.normalize(), "f")
+    if "." in normalized:
+        normalized = normalized.rstrip("0").rstrip(".")
+    return normalized
 
 
 def _citation_evidence_ids(answer: Mapping[str, Any]) -> set[str]:

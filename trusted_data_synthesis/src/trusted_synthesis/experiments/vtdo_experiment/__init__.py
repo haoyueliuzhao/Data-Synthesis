@@ -22,7 +22,6 @@ from .multistate import (
 from .real_feedback import (
     RealFeedbackProductionConfig,
     RealFeedbackProductionReport,
-    RecordedContributionProbe,
     RecordedExplorerTrajectory,
     produce_real_vtdo_feedback,
 )
@@ -82,7 +81,6 @@ __all__ = [
     "ContributionValidationConfig",
     "ContributionValidationObservation",
     "ContributionValidationReport",
-    "RecordedContributionProbe",
     "ExternalBenchmarkSnapshot",
     "FinanceMultiStateConfig",
     "FinanceMultiStateReport",

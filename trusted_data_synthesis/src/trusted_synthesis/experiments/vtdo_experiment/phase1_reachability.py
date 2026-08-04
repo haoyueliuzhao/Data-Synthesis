@@ -4,6 +4,8 @@ import argparse
 import hashlib
 import json
 import math
+import os
+import stat
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -35,9 +37,7 @@ from trusted_synthesis.runtime.agent import (
 from trusted_synthesis.runtime.tools import InMemoryEvidenceToolRuntime
 
 PHASE11_REACHABILITY_VERSION = "finance_phase1_reachability.v1"
-DEFAULT_TARGET_TASK_ID = (
-    "task:61de93de9105f5c99ec23dc792f0cbb2c7252b8db6002f31522da43b402aeb01"
-)
+DEFAULT_TARGET_TASK_ID = "task:61de93de9105f5c99ec23dc792f0cbb2c7252b8db6002f31522da43b402aeb01"
 EXPLORER_PROVIDER_ID = "deepseek_v4_pro_state_conditioned.phase1"
 
 
@@ -69,17 +69,50 @@ def _load_model_config(path: Path, *, temperature: float) -> AgentModelConfig:
     raw = json.loads(path.read_text(encoding="utf-8"))
     value = raw.get("model", raw)
     config = AgentModelConfig.model_validate(value)
+    _load_project_credential(config.api_key_env)
     return config.model_copy(
         update={
             "temperature": temperature,
             "interaction_protocol": "host_instrumented",
-            "fallback_models": tuple(
-                dict.fromkeys((*config.fallback_models, "deepseek-v4-flash"))
-            ),
-            "require_requested_model": False,
-            "maximum_model_attempts": max(config.maximum_model_attempts, 2),
         }
     )
+
+
+def _load_project_credential(variable_name: str) -> None:
+    """Load one credential from a private project .env without changing run identity."""
+    if os.environ.get(variable_name):
+        return
+    path = Path.cwd() / ".env"
+    if not path.exists():
+        return
+    mode = stat.S_IMODE(path.stat().st_mode)
+    if mode & 0o077:
+        raise ValueError("project .env must not be accessible by group or other users")
+    matches: list[str] = []
+    for line_number, raw_line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(),
+        start=1,
+    ):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line.removeprefix("export ").lstrip()
+        key, separator, raw_value = line.partition("=")
+        if not separator or not key.strip():
+            raise ValueError(f"invalid project .env entry on line {line_number}")
+        if key.strip() != variable_name:
+            continue
+        value = raw_value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        if not value:
+            continue
+        matches.append(value)
+    if len(matches) > 1:
+        raise ValueError(f"project .env defines {variable_name} more than once")
+    if matches:
+        os.environ[variable_name] = matches[0]
 
 
 def _select_artifacts(
@@ -217,6 +250,14 @@ def _telemetry(records: list[dict[str, Any]]) -> dict[str, Any]:
         for item in calls
         if item.get("http_success")
     )
+    token_bearing_calls = [item for item in calls if int(item.get("total_tokens") or 0)]
+    priced_calls = [
+        item
+        for item in token_bearing_calls
+        if item.get("estimated_cost") is not None and item.get("cost_estimation_method") is not None
+    ]
+    estimation_methods = Counter(str(item["cost_estimation_method"]) for item in priced_calls)
+    unpriced_call_count = len(token_bearing_calls) - len(priced_calls)
     return {
         "api_call_count": len(calls),
         "api_call_success_count": sum(bool(item.get("http_success")) for item in calls),
@@ -226,14 +267,17 @@ def _telemetry(records: list[dict[str, Any]]) -> dict[str, Any]:
         "prompt_tokens": sum(int(item.get("prompt_tokens") or 0) for item in calls),
         "completion_tokens": sum(int(item.get("completion_tokens") or 0) for item in calls),
         "total_tokens": sum(int(item.get("total_tokens") or 0) for item in calls),
-        "reported_estimated_cost": sum(
-            float(item.get("estimated_cost") or 0.0) for item in calls
-        ),
+        "reported_estimated_cost": sum(float(item.get("estimated_cost") or 0.0) for item in calls),
         "selected_models": dict(sorted(selected_models.items())),
         "fallback_call_count": sum(bool(item.get("fallback_used")) for item in calls),
+        "priced_call_count": len(priced_calls),
+        "unpriced_call_count": unpriced_call_count,
+        "cost_estimation_methods": dict(sorted(estimation_methods.items())),
         "cost_warning": (
-            "Provider price fields are zero in the frozen config; reported API cost is not "
-            "a billing estimate. Token counts are authoritative."
+            "One or more token-bearing calls lack a frozen price estimate; token counts remain "
+            "authoritative for those calls."
+            if unpriced_call_count
+            else None
         ),
     }
 
@@ -242,11 +286,7 @@ def _entropy(counts: Counter[str]) -> float:
     total = sum(counts.values())
     if not total:
         return 0.0
-    return -sum(
-        (count / total) * math.log(count / total)
-        for count in counts.values()
-        if count
-    )
+    return -sum((count / total) * math.log(count / total) for count in counts.values() if count)
 
 
 def _reachability_manifests(
@@ -325,7 +365,7 @@ def _compare_update(
         archived.coverage_prior,
         archived.validity_estimates,
         archived.contribution_manifest,
-        archived.contribution_production_authorization,
+        archived.contribution_approximation_authorization,
         config,
         archived.role_contract,
         subset_manifest,
@@ -455,9 +495,7 @@ def run(args: argparse.Namespace) -> None:
     )
     controllability_rows: list[dict[str, Any]] = []
     for artifact in selected[: args.conditioned_task_count]:
-        for state_id, condition in sorted(
-            artifact.state_catalog.public_state_conditions.items()
-        ):
+        for state_id, condition in sorted(artifact.state_catalog.public_state_conditions.items()):
             request = make_public_state_generation_request(
                 artifact.omega,
                 condition,
@@ -518,9 +556,7 @@ def run(args: argparse.Namespace) -> None:
                             replicate=0,
                             mode="state_conditioned",
                             exc=exc,
-                            generation_audit=result.generation_audit.model_dump(
-                                mode="json"
-                            ),
+                            generation_audit=result.generation_audit.model_dump(mode="json"),
                             requested_state_id=state_id,
                         )
                     )
@@ -544,9 +580,7 @@ def run(args: argparse.Namespace) -> None:
     completed = [item for item in records if item["status"] == "completed"]
     valid = [item for item in completed if item["validity_report"]["valid"]]
     catalog_hits = [item for item in valid if item["catalog_hit"]]
-    observed_counts = Counter(
-        item["state_assignment"]["state"]["state_id"] for item in valid
-    )
+    observed_counts = Counter(item["state_assignment"]["state"]["state_id"] for item in valid)
     task_reachability = {
         artifact.omega.task.task_id: {
             "task_type": artifact.omega.task.public.task_type,
@@ -565,9 +599,7 @@ def run(args: argparse.Namespace) -> None:
         }
         for artifact in selected
     }
-    conditioned = [
-        item for item in completed if item["mode"] == "state_conditioned"
-    ]
+    conditioned = [item for item in completed if item["mode"] == "state_conditioned"]
     summary: dict[str, Any] = {
         **experiment_identity,
         "batch_id": batch_id,

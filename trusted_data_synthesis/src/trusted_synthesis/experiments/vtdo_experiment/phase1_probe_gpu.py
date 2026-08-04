@@ -302,6 +302,86 @@ def _baseline_lora_model(model_dir: Path, adapter_dir: Path):
     return model
 
 
+def _strict_cuda_max_memory(
+    device_count: int,
+    device_ids: tuple[int, ...],
+) -> dict[int, int | str]:
+    if (
+        device_count <= 0
+        or len(device_ids) < 2
+        or len(set(device_ids)) != len(device_ids)
+        or any(index < 0 or index >= device_count for index in device_ids)
+    ):
+        raise ValueError("invalid sharded CUDA device whitelist")
+    selected = set(device_ids)
+    return {
+        index: "45GiB" if index in selected else 0
+        for index in range(device_count)
+    }
+
+
+def _validated_hf_device_map(
+    model: Any,
+    *,
+    allowed_device_ids: tuple[int, ...],
+) -> dict[str, str]:
+    raw = getattr(model, "hf_device_map", None)
+    if not isinstance(raw, dict) or not raw:
+        raise ValueError("sharded beneficiary lacks an auditable Hugging Face device map")
+    normalized = {str(name): str(device) for name, device in sorted(raw.items())}
+    resolved: set[int] = set()
+    for value in raw.values():
+        if isinstance(value, int):
+            resolved.add(value)
+            continue
+        text = str(value)
+        if text.isdigit():
+            resolved.add(int(text))
+            continue
+        if text.startswith("cuda:") and text.removeprefix("cuda:").isdigit():
+            resolved.add(int(text.removeprefix("cuda:")))
+            continue
+        raise ValueError(f"sharded beneficiary uses a non-CUDA placement:{text}")
+    if not resolved or not resolved.issubset(set(allowed_device_ids)):
+        raise ValueError("sharded beneficiary escaped its CUDA device whitelist")
+    return normalized
+
+
+def _sharded_baseline_lora_model(
+    model_dir: Path,
+    adapter_dir: Path,
+    *,
+    device_ids: tuple[int, ...],
+):
+    """Load the same beneficiary across a frozen set of CUDA devices."""
+
+    if len(device_ids) < 2 or len(set(device_ids)) != len(device_ids):
+        raise ValueError("sharded beneficiary placement requires at least two GPUs")
+    import torch
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM
+
+    max_memory = _strict_cuda_max_memory(torch.cuda.device_count(), device_ids)
+    base = AutoModelForCausalLM.from_pretrained(
+        model_dir,
+        local_files_only=True,
+        dtype=torch.bfloat16,
+        attn_implementation="sdpa",
+        low_cpu_mem_usage=True,
+        device_map="balanced",
+        max_memory=max_memory,
+    )
+    _validated_hf_device_map(base, allowed_device_ids=device_ids)
+    base.config.use_cache = False
+    base.gradient_checkpointing_enable(
+        gradient_checkpointing_kwargs={"use_reentrant": False}
+    )
+    base.enable_input_require_grads()
+    model = PeftModel.from_pretrained(base, adapter_dir, is_trainable=True)
+    model.config.use_cache = False
+    return model
+
+
 def _adapter_tensor_sha256(model: Any) -> str:
     import torch
     from peft import get_peft_model_state_dict

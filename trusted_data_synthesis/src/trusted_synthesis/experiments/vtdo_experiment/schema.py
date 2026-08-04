@@ -736,6 +736,57 @@ class VTDOTrainingRecord(FrozenModel):
         return self
 
 
+class GradientStateRealization(FrozenModel):
+    """One fresh, independently verified trajectory sampled inside a quotient state."""
+
+    realization_id: str = Field(min_length=1)
+    task_condition_id: str = Field(min_length=1)
+    state_id: str = Field(min_length=1)
+    record: VTDOTrainingRecord
+    source_task_artifact_id: str = Field(min_length=1)
+    source_distribution_id: str = Field(min_length=1)
+    trajectory_id: str = Field(min_length=1)
+    trajectory_hash: str = Field(min_length=1)
+    decision_trace_hash: str = Field(min_length=1)
+    independent_verifier_id: str = Field(min_length=1)
+    validity_report_id: str = Field(min_length=1)
+    generation_seed: int
+    generation_ordinal: int = Field(ge=0)
+    fresh_from_discovery: Literal[True]
+    independently_verified: Literal[True]
+    on_target: Literal[True]
+    schema_version: Literal["gradient_state_realization.v1"] = (
+        "gradient_state_realization.v1"
+    )
+
+    @model_validator(mode="after")
+    def validate_realization(self) -> GradientStateRealization:
+        if (
+            self.record.task_id != self.task_condition_id
+            or self.record.trajectory_state_id != self.state_id
+            or self.record.source_distribution_id != self.source_distribution_id
+            or not self.record.accepted_target
+        ):
+            raise ValueError("Gradient realization record is detached from its task state")
+        if self.record.source_artifact_id != self.source_task_artifact_id:
+            raise ValueError("Gradient realization record is detached from its source artifact")
+        expected_metadata = {
+            "trajectory_id": self.trajectory_id,
+            "trajectory_hash": self.trajectory_hash,
+            "decision_trace_hash": self.decision_trace_hash,
+            "independent_verifier_id": self.independent_verifier_id,
+            "validity_report_id": self.validity_report_id,
+            "fresh_from_discovery": True,
+            "independently_verified": True,
+            "on_target": True,
+        }
+        if any(self.record.metadata.get(key) != value for key, value in expected_metadata.items()):
+            raise ValueError("Gradient realization metadata does not replay its proof contract")
+        if self.realization_id != gradient_state_realization_id(self):
+            raise ValueError("Gradient state realization identity is invalid")
+        return self
+
+
 class CCGRTaskDistribution(FrozenModel):
     distribution_id: str = Field(min_length=1)
     task_probabilities: dict[str, float] = Field(min_length=1)
@@ -1034,6 +1085,13 @@ def vtdo_training_record_id(value: VTDOTrainingRecord) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"record_id"}),
         prefix="vtdo_training_record:",
+    )
+
+
+def gradient_state_realization_id(value: GradientStateRealization) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"realization_id"}),
+        prefix="gradient_state_realization:",
     )
 
 

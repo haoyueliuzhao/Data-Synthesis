@@ -13,13 +13,8 @@ from trusted_synthesis.core.vtdo.schema import (
     VTDO_SCHEMA_VERSION,
     ConditionalTrajectoryDistribution,
     ContributionEstimationManifest,
-    ContributionProductionAuthorization,
     ContributionRankValidationEvidence,
-    contribution_current_distribution_hash,
-    contribution_distribution_contract_hash,
-    contribution_production_authorization_id,
     contribution_rank_validation_evidence_id,
-    contribution_task_population_hash,
 )
 from trusted_synthesis.hashing import canonical_hash
 
@@ -659,6 +654,9 @@ def make_contribution_rank_validation_evidence(
         "cross_seed_stability",
         "independent_final_test",
         "heldout_final_test",
+        "internal_estimation",
+        "internal_validation",
+        "independent_authorization",
     ],
     macro_task_spearman: float,
     macro_task_spearman_ci95: tuple[float, float],
@@ -685,84 +683,6 @@ def make_contribution_rank_validation_evidence(
     )
     return ContributionRankValidationEvidence(
         evidence_id=contribution_rank_validation_evidence_id(provisional),
-        **values,
-    )
-
-
-def make_contribution_production_authorization(
-    *,
-    manifest: ContributionEstimationManifest,
-    analysis_version: str,
-    analysis_report_hash: str,
-    task_condition_ids: Iterable[str],
-    task_distribution_hashes: Mapping[str, str],
-    task_count: int,
-    state_count: int,
-    internal_validation_record_count: int,
-    final_test_record_count: int,
-    estimation_seed_count: int,
-    validation_seed_count: int,
-    intervention_seed_count: int,
-    cross_seed_stability: ContributionRankValidationEvidence,
-    independent_final_test: ContributionRankValidationEvidence,
-    heldout_final_test: ContributionRankValidationEvidence,
-) -> ContributionProductionAuthorization:
-    if manifest.estimator_kind != "local_probe":
-        raise ValueError("only a local Probe manifest can receive production authorization")
-    frozen_task_condition_ids = tuple(sorted(task_condition_ids))
-    if manifest.task_condition_id not in frozen_task_condition_ids:
-        raise ValueError("Contribution manifest task is outside the validated population")
-    frozen_task_distribution_hashes = tuple(
-        sorted((str(task_id), str(value)) for task_id, value in task_distribution_hashes.items())
-    )
-    manifest_distribution_hash = contribution_current_distribution_hash(
-        manifest.task_condition_id,
-        {item.state_id: item.current_probability for item in manifest.estimates},
-    )
-    if dict(frozen_task_distribution_hashes).get(manifest.task_condition_id) != (
-        manifest_distribution_hash
-    ):
-        raise ValueError("Contribution distribution mapping does not match its manifest")
-    values = {
-        "analysis_version": analysis_version,
-        "analysis_report_hash": analysis_report_hash,
-        "current_distribution_contract_hash": contribution_distribution_contract_hash(
-            dict(frozen_task_distribution_hashes)
-        ),
-        "task_distribution_hashes": frozen_task_distribution_hashes,
-        "beneficiary_model_state_id": manifest.beneficiary_model_state_id,
-        "beneficiary_checkpoint_hash": manifest.beneficiary_checkpoint_hash,
-        "target_metric_id": manifest.target_metric_id,
-        "probe_optimizer_contract_id": manifest.probe_optimizer_contract_id,
-        "selected_adaptation_horizon": manifest.probe_adaptation_horizon,
-        "uncertainty_statistic": manifest.uncertainty_statistic,
-        "uncertainty_penalty_coefficient": manifest.uncertainty_penalty_coefficient,
-        "production_contribution_field": manifest.production_contribution_field,
-        "internal_validation_set_id": manifest.target_evaluation_distribution_id,
-        "final_test_set_id": manifest.final_test_set_id,
-        "task_condition_ids": frozen_task_condition_ids,
-        "task_population_hash": contribution_task_population_hash(frozen_task_condition_ids),
-        "task_count": task_count,
-        "state_count": state_count,
-        "internal_validation_record_count": internal_validation_record_count,
-        "final_test_record_count": final_test_record_count,
-        "estimation_seed_count": estimation_seed_count,
-        "validation_seed_count": validation_seed_count,
-        "intervention_seed_count": intervention_seed_count,
-        "seed_sets_disjoint": True,
-        "strict_identity_validated": True,
-        "cross_seed_stability": cross_seed_stability,
-        "independent_final_test": independent_final_test,
-        "heldout_final_test": heldout_final_test,
-        "status": "passed",
-        "schema_version": VTDO_SCHEMA_VERSION,
-    }
-    provisional = ContributionProductionAuthorization.model_construct(
-        authorization_id="pending",
-        **values,
-    )
-    return ContributionProductionAuthorization(
-        authorization_id=contribution_production_authorization_id(provisional),
         **values,
     )
 
@@ -894,13 +814,11 @@ def estimate_contributions_from_probes(
         target_metric_id=protocol.metric_contract.target_metric_id,
         target_metric_direction=protocol.metric_contract.objective_direction,
         estimator_kind="local_probe",
-        usage_scope="production_distribution_update",
+        usage_scope="intervention_validation",
         estimation_protocol_hash=protocol.protocol_id,
         data_isolation_contract_id=protocol.data_isolation.contract_id,
         final_test_set_id=protocol.data_isolation.final_test_set_id,
         estimator_id=estimator_id,
-        probe_optimizer_contract_id=protocol.optimizer.contract_id,
-        probe_adaptation_horizon=protocol.optimizer.step_count,
     )
 
 

@@ -8,8 +8,8 @@ from .schema import (
     AnchoredDistributionUpdate,
     AnchoredEnergyConfig,
     ConditionalTrajectoryDistribution,
+    ContributionApproximationAuthorization,
     ContributionEstimationManifest,
-    ContributionProductionAuthorization,
     CoveragePrior,
     StateEnergyPotential,
     StateReachabilityEstimate,
@@ -18,7 +18,7 @@ from .schema import (
     ValidityRegion,
     VTDORoleContract,
     anchored_distribution_update_id,
-    validate_contribution_production_authorization,
+    validate_contribution_approximation_authorization,
 )
 
 
@@ -27,7 +27,7 @@ def update_valid_trajectory_distribution(
     coverage_prior: CoveragePrior,
     validity_estimates: Iterable[StateValidityEstimate],
     contribution_manifest: ContributionEstimationManifest,
-    contribution_production_authorization: ContributionProductionAuthorization | None,
+    contribution_approximation_authorization: ContributionApproximationAuthorization | None,
     config: AnchoredEnergyConfig,
     role_contract: VTDORoleContract,
     reachability_manifest: StateReachabilityManifest | None = None,
@@ -71,9 +71,9 @@ def update_valid_trajectory_distribution(
         raise ValueError(
             "finite Intervention Contribution is validation-only and cannot update pi_t"
         )
-    validate_contribution_production_authorization(
+    validate_contribution_approximation_authorization(
         contribution_manifest,
-        contribution_production_authorization,
+        contribution_approximation_authorization,
     )
     contributions = {item.state_id: item for item in contribution_manifest.estimates}
     if set(contributions) != support:
@@ -185,7 +185,7 @@ def update_valid_trajectory_distribution(
         "next_distribution": next_distribution,
         "validity_estimates": estimates,
         "contribution_manifest": contribution_manifest,
-        "contribution_production_authorization": contribution_production_authorization,
+        "contribution_approximation_authorization": contribution_approximation_authorization,
         "role_contract": role_contract,
         "energy_config": config,
         "reachability_manifest": reachability_manifest,

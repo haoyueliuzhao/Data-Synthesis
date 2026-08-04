@@ -20,6 +20,14 @@ from trusted_synthesis.runtime.agent.schema import (
 _CODE_FENCE = chr(96) * 3
 
 
+class ReasoningBudgetExhaustedError(ValueError):
+    """The provider spent the output budget before emitting final content."""
+
+
+class EmptyFinalContentError(ValueError):
+    """The provider returned a successful envelope without a final answer."""
+
+
 class JsonCompletionClient(Protocol):
     @property
     def config(self) -> AgentModelConfig: ...
@@ -151,6 +159,7 @@ class OpenAICompatibleJsonClient:
             "temperature": self._config.temperature,
             "max_tokens": self._config.max_output_tokens,
             "response_format": {"type": "json_object"},
+            **self._config.request_body_overrides,
         }
         request = urllib.request.Request(
             self._config.endpoint,
@@ -161,22 +170,57 @@ class OpenAICompatibleJsonClient:
         started = time.perf_counter()
         status: int | None = None
         content: str | None = None
+        finish_reason: str | None = None
+        reasoning_content_length: int | None = None
+        prompt_tokens: int | None = None
+        prompt_cache_hit_tokens: int | None = None
+        prompt_cache_miss_tokens: int | None = None
+        completion_tokens: int | None = None
+        total_tokens: int | None = None
+        reasoning_tokens: int | None = None
+        estimated_cost: float | None = None
+        cost_estimation_method: str | None = None
         try:
             with urllib.request.urlopen(request, timeout=self._config.timeout_seconds) as response:
                 status = int(getattr(response, "status", 200))
                 response_body = json.loads(response.read().decode("utf-8"))
-            content = str(response_body["choices"][0]["message"]["content"])
-            parsed = json.loads(_strip_json_fence(content))
-            if not isinstance(parsed, dict):
-                raise TypeError("model response must be a JSON object")
+            choice = response_body["choices"][0]
+            message = choice["message"]
+            finish_reason = _optional_str(choice.get("finish_reason"))
+            raw_content = message.get("content")
+            content = "" if raw_content is None else str(raw_content)
+            raw_reasoning_content = message.get("reasoning_content")
+            reasoning_content_length = (
+                len(str(raw_reasoning_content)) if raw_reasoning_content is not None else None
+            )
             usage = dict(response_body.get("usage") or {})
             prompt_tokens = _optional_int(usage.get("prompt_tokens", usage.get("input_tokens")))
+            prompt_cache_hit_tokens = _optional_int(usage.get("prompt_cache_hit_tokens"))
+            prompt_cache_miss_tokens = _optional_int(usage.get("prompt_cache_miss_tokens"))
             completion_tokens = _optional_int(
                 usage.get("completion_tokens", usage.get("output_tokens"))
             )
             total_tokens = _optional_int(usage.get("total_tokens"))
+            completion_details = dict(usage.get("completion_tokens_details") or {})
+            reasoning_tokens = _optional_int(completion_details.get("reasoning_tokens"))
             if total_tokens is None and prompt_tokens is not None and completion_tokens is not None:
                 total_tokens = prompt_tokens + completion_tokens
+            estimated_cost, cost_estimation_method = _estimate_cost(
+                self._config,
+                prompt_tokens,
+                completion_tokens,
+                prompt_cache_hit_tokens=prompt_cache_hit_tokens,
+                prompt_cache_miss_tokens=prompt_cache_miss_tokens,
+            )
+            if not content.strip():
+                if finish_reason == "length" and reasoning_content_length:
+                    raise ReasoningBudgetExhaustedError(
+                        "model exhausted the output budget in reasoning before final content"
+                    )
+                raise EmptyFinalContentError("model returned an empty final content field")
+            parsed = json.loads(_strip_json_fence(content))
+            if not isinstance(parsed, dict):
+                raise TypeError("model response must be a JSON object")
             telemetry = ModelCallTelemetry(
                 provider=self._config.provider,
                 endpoint_host=urlparse(self._config.endpoint).netloc,
@@ -188,14 +232,18 @@ class OpenAICompatibleJsonClient:
                 http_status=status,
                 http_success=True,
                 json_contract_success=True,
+                finish_reason=finish_reason,
+                response_content_length=len(content),
+                reasoning_content_present=bool(reasoning_content_length),
+                reasoning_content_length=reasoning_content_length,
+                reasoning_tokens=reasoning_tokens,
                 prompt_tokens=prompt_tokens,
+                prompt_cache_hit_tokens=prompt_cache_hit_tokens,
+                prompt_cache_miss_tokens=prompt_cache_miss_tokens,
                 completion_tokens=completion_tokens,
                 total_tokens=total_tokens,
-                estimated_cost=_estimate_cost(
-                    self._config,
-                    prompt_tokens,
-                    completion_tokens,
-                ),
+                estimated_cost=estimated_cost,
+                cost_estimation_method=cost_estimation_method,
                 latency_ms=round((time.perf_counter() - started) * 1000, 3),
                 fallback_used=model != self._config.model,
                 discovery_attempted=discovery_attempted,
@@ -217,8 +265,20 @@ class OpenAICompatibleJsonClient:
                     else None
                 ),
                 http_status=status,
-                http_success=False,
+                http_success=bool(status is not None and 200 <= status < 300),
                 json_contract_success=False,
+                finish_reason=finish_reason,
+                response_content_length=(len(content) if content is not None else None),
+                reasoning_content_present=bool(reasoning_content_length),
+                reasoning_content_length=reasoning_content_length,
+                reasoning_tokens=reasoning_tokens,
+                prompt_tokens=prompt_tokens,
+                prompt_cache_hit_tokens=prompt_cache_hit_tokens,
+                prompt_cache_miss_tokens=prompt_cache_miss_tokens,
+                completion_tokens=completion_tokens,
+                total_tokens=total_tokens,
+                estimated_cost=estimated_cost,
+                cost_estimation_method=cost_estimation_method,
                 latency_ms=round((time.perf_counter() - started) * 1000, 3),
                 fallback_used=model != self._config.model,
                 discovery_attempted=discovery_attempted,
@@ -261,19 +321,43 @@ def _optional_int(value: Any) -> int | None:
     return None if value is None else int(value)
 
 
+def _optional_str(value: Any) -> str | None:
+    if value is None:
+        return None
+    normalized = str(value).strip()
+    return normalized or None
+
+
 def _estimate_cost(
     config: AgentModelConfig,
     prompt_tokens: int | None,
     completion_tokens: int | None,
-) -> float | None:
+    *,
+    prompt_cache_hit_tokens: int | None = None,
+    prompt_cache_miss_tokens: int | None = None,
+) -> tuple[float | None, str | None]:
     if prompt_tokens is None or completion_tokens is None:
-        return None
+        return None, None
+    hit_price = config.input_cache_hit_cost_per_million
+    miss_price = config.input_cache_miss_cost_per_million
+    if hit_price is not None and miss_price is not None:
+        if (
+            prompt_cache_hit_tokens is not None
+            and prompt_cache_miss_tokens is not None
+            and prompt_cache_hit_tokens + prompt_cache_miss_tokens == prompt_tokens
+        ):
+            input_cost = prompt_cache_hit_tokens * hit_price + prompt_cache_miss_tokens * miss_price
+            method = "provider_cache_breakdown"
+        else:
+            input_cost = prompt_tokens * miss_price
+            method = "conservative_cache_miss"
+        return (input_cost + completion_tokens * config.output_cost_per_million) / 1_000_000, method
     if not config.input_cost_per_million and not config.output_cost_per_million:
-        return None
+        return None, None
     return (
         prompt_tokens * config.input_cost_per_million
         + completion_tokens * config.output_cost_per_million
-    ) / 1_000_000
+    ) / 1_000_000, "generic_input_rate"
 
 
 def _safe_error_message(exc: Exception) -> str:

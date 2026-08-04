@@ -180,12 +180,24 @@ def prepare(args: argparse.Namespace) -> None:
             | set(source_plan["final_test_record_ids"])
         )
     }
-    additional_excluded_task_ids = source_plan.get("additional_excluded_task_ids", ())
-    if not isinstance(additional_excluded_task_ids, (list, tuple)) or any(
-        not isinstance(task_id, str) or not task_id for task_id in additional_excluded_task_ids
+    future_exclusion_contract = source_plan.get("future_population_exclusion_contract")
+    if future_exclusion_contract is not None and not isinstance(future_exclusion_contract, dict):
+        raise ValueError("future-population exclusion contract is invalid")
+    future_excluded_task_ids = (
+        () if future_exclusion_contract is None else future_exclusion_contract.get("task_ids", ())
+    )
+    if not isinstance(future_excluded_task_ids, (list, tuple)) or any(
+        not isinstance(task_id, str) or not task_id for task_id in future_excluded_task_ids
     ):
-        raise ValueError("additional excluded task identities are invalid")
-    excluded_task_ids.update(additional_excluded_task_ids)
+        raise ValueError("future-population excluded task identities are invalid")
+    if future_exclusion_contract is not None and future_exclusion_contract.get(
+        "task_set_id"
+    ) != canonical_hash(
+        tuple(sorted(future_excluded_task_ids)),
+        prefix="finance_future_population_excluded_task_set:",
+    ):
+        raise ValueError("future-population exclusion task set is invalid")
+    excluded_task_ids.update(future_excluded_task_ids)
     del excluded
     artifacts = load_finance_multi_state_artifacts(Path(args.artifacts_path).resolve())
     selected = _select_tasks(

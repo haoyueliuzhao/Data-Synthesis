@@ -77,9 +77,11 @@ def execute_action_plan(
                 operator_id=decision.operator_id,
             ) from exc
     _validate_public_plan_shape(task, plan)
+    _validate_agent_contract_guidance(task, plan)
 
     outputs: dict[int, dict[str, Any]] = {}
     execution_ids: dict[int, str] = {}
+    semantic_output_refs: dict[int, str] = {}
     lineages: dict[int, tuple[str, ...]] = {}
     steps: list[AgentExecutionStep] = []
     for step_index, decision in enumerate(plan.executions, start=1):
@@ -104,7 +106,7 @@ def execute_action_plan(
                 item,
                 evidence_by_id,
                 outputs,
-                execution_ids,
+                semantic_output_refs,
                 step_index=step_index,
                 operator_id=decision.operator_id,
             )
@@ -169,6 +171,11 @@ def execute_action_plan(
         )
         outputs[step_index] = output
         execution_ids[step_index] = execution_id
+        semantic_output_refs[step_index] = _semantic_output_ref(
+            definition.program_role,
+            output,
+            execution_id,
+        )
         lineages[step_index] = lineage
         direct_evidence_ids = tuple(
             dict.fromkeys(
@@ -188,9 +195,7 @@ def execute_action_plan(
                 planned_node_id=planned_node_id,
                 operator_id=decision.operator_id,
                 tool_name=definition.tool_capability,
-                input_refs=tuple(
-                    _input_ref(item, execution_ids) for item in decision.inputs
-                ),
+                input_refs=tuple(_input_ref(item, execution_ids) for item in decision.inputs),
                 parameters=decision.parameters,
                 # Step grounding is intentionally direct. The complete transitive
                 # answer lineage is reconstructed and frozen in program_execution.
@@ -428,12 +433,54 @@ def _validate_public_plan_shape(
                     )
 
 
+def _validate_agent_contract_guidance(
+    task: TaskPublicSpec,
+    plan: AgentActionPlanContract,
+) -> None:
+    guidance = task.metadata.get("agent_contract_guidance")
+    if guidance is None:
+        return
+    if not isinstance(guidance, dict):
+        raise ActionPlanExecutionError(
+            "agent_contract_guidance must be an object",
+            category="upstream_data",
+            error_code="invalid_agent_contract_guidance",
+        )
+    terminal_contract = guidance.get("terminal_operation_contract")
+    if terminal_contract is None:
+        return
+    if not isinstance(terminal_contract, dict):
+        raise ActionPlanExecutionError(
+            "terminal_operation_contract must be an object",
+            category="upstream_data",
+            error_code="invalid_terminal_operation_contract",
+        )
+    allowed = terminal_contract.get("allowed_operator_ids")
+    if (
+        not isinstance(allowed, (list, tuple))
+        or not allowed
+        or any(not isinstance(item, str) or not item for item in allowed)
+    ):
+        raise ActionPlanExecutionError(
+            "terminal_operation_contract requires non-empty allowed_operator_ids",
+            category="upstream_data",
+            error_code="invalid_terminal_operation_contract",
+        )
+    output_decision = plan.executions[plan.output_step_index - 1]
+    if output_decision.operator_id not in set(allowed):
+        raise ActionPlanExecutionError(
+            "the output operation does not satisfy the public terminal operation contract: "
+            f"allowed={sorted(set(allowed))}, observed={output_decision.operator_id}",
+            category="semantic_action",
+            error_code="terminal_operator_contract_failed",
+            step_index=plan.output_step_index,
+            operator_id=output_decision.operator_id,
+        )
+
+
 def _replace_execution_refs(value: Any, public_refs: dict[str, str]) -> Any:
     if isinstance(value, dict):
-        return {
-            key: _replace_execution_refs(item, public_refs)
-            for key, item in value.items()
-        }
+        return {key: _replace_execution_refs(item, public_refs) for key, item in value.items()}
     if isinstance(value, list):
         return [_replace_execution_refs(item, public_refs) for item in value]
     if isinstance(value, tuple):
@@ -466,7 +513,7 @@ def _resolve_input(
     item: AgentActionInput,
     evidence_by_id: dict[str, EvidenceItem],
     outputs: dict[int, dict[str, Any]],
-    execution_ids: dict[int, str],
+    semantic_output_refs: dict[int, str],
     *,
     step_index: int,
     operator_id: str,
@@ -488,7 +535,7 @@ def _resolve_input(
         dependency_step_index = item.step_index or 0
         try:
             value = outputs[dependency_step_index]
-            ref_id = f"execution:{execution_ids[dependency_step_index]}"
+            ref_id = semantic_output_refs[dependency_step_index]
         except KeyError as exc:
             raise ActionPlanExecutionError(
                 f"action step input is unavailable: {item.step_index}",
@@ -501,14 +548,40 @@ def _resolve_input(
         try:
             value = _select_value(value, item.selector, ref_id)
         except ValueError as exc:
+            selector_guidance = (
+                "Evidence selectors are relative to EvidenceItem.payload: use null for "
+                "lookup, or 'value' for a direct scalar input; never use 'payload.value'."
+                if item.source == "evidence"
+                else "Step selectors are relative to the complete operation result; a "
+                "lookup scalar is selected with 'payload.value', not 'payload'."
+            )
             raise ActionPlanExecutionError(
-                str(exc),
+                f"{exc} {selector_guidance}",
                 category="semantic_action",
                 error_code="invalid_input_selector",
                 step_index=step_index,
                 operator_id=operator_id,
             ) from exc
     return OperationInput(ref_id=ref_id, value=value)
+
+
+def _semantic_output_ref(
+    program_role: str,
+    output: dict[str, Any],
+    execution_id: str,
+) -> str:
+    """Preserve source identity through independently validated projections."""
+
+    if program_role != "transparent_projection":
+        return f"execution:{execution_id}"
+    selected_ref = output.get("selected_ref")
+    if not isinstance(selected_ref, str) or not selected_ref:
+        raise ActionPlanExecutionError(
+            "transparent projection did not preserve a selected_ref",
+            category="semantic_action",
+            error_code="transparent_projection_identity_missing",
+        )
+    return selected_ref
 
 
 def _select_value(value: Any, selector: str, ref_id: str) -> Any:

@@ -87,6 +87,7 @@ def estimate_pushforward_distribution(
     *,
     round_index: int,
     prior_strength: float,
+    observation_ids: Iterable[str] | None = None,
 ) -> EmpiricalDistributionEstimate:
     """Estimate (phi_x)#P with a frozen full-support coverage prior."""
 
@@ -97,6 +98,17 @@ def estimate_pushforward_distribution(
         raise ValueError("push-forward estimation requires observed trajectories")
     if any(item.task_condition_id != coverage_prior.task_condition_id for item in items):
         raise ValueError("push-forward assignments cross task conditions")
+    source_observation_ids = (
+        tuple(observation_ids)
+        if observation_ids is not None
+        else tuple(item.assignment_id for item in items)
+    )
+    if len(source_observation_ids) != len(items):
+        raise ValueError("push-forward observation IDs do not align with assignments")
+    if any(not item for item in source_observation_ids):
+        raise ValueError("push-forward observation IDs cannot be empty")
+    if len(set(source_observation_ids)) != len(source_observation_ids):
+        raise ValueError("push-forward observation IDs must identify independent draws")
     support = set(coverage_prior.probabilities)
     observed = Counter(item.state.state_id for item in items)
     unknown = set(observed) - support
@@ -113,10 +125,10 @@ def estimate_pushforward_distribution(
         / denominator
         for state_id in sorted(support)
     }
-    observation_ids = tuple(sorted(item.assignment_id for item in items))
+    ordered_observation_ids = tuple(sorted(source_observation_ids))
     manifest_hash = canonical_hash(
         {
-            "source_observation_ids": observation_ids,
+            "source_observation_ids": ordered_observation_ids,
             "coverage_prior_id": coverage_prior.prior_id,
             "prior_strength": prior_strength,
             "estimator_kind": "unweighted_pushforward",
@@ -137,7 +149,7 @@ def estimate_pushforward_distribution(
         "total_exposure_weight": total_weight,
         "sum_squared_importance_weights": total_weight,
         "effective_sample_size": total_weight,
-        "source_observation_ids": observation_ids,
+        "source_observation_ids": ordered_observation_ids,
         "sampling_distribution_id": None,
         "estimator_kind": "unweighted_pushforward",
         "coverage_prior": coverage_prior,
@@ -247,7 +259,12 @@ def estimate_centered_contributions(
     target_evaluation_distribution_id: str,
     target_metric_id: str,
     target_metric_direction: Literal["higher_is_better"],
-    estimator_kind: Literal["synthetic_oracle", "finite_intervention", "local_probe"],
+    estimator_kind: Literal[
+        "synthetic_oracle",
+        "finite_intervention",
+        "local_probe",
+        "gradient_projection",
+    ],
     usage_scope: Literal[
         "synthetic_operator_control",
         "intervention_validation",
@@ -257,8 +274,10 @@ def estimate_centered_contributions(
     data_isolation_contract_id: str,
     final_test_set_id: str,
     estimator_id: str,
-    probe_optimizer_contract_id: str | None = None,
-    probe_adaptation_horizon: int | None = None,
+    approximation_contract_id: str | None = None,
+    gradient_mode_contract_id: str | None = None,
+    calibration_artifact_hash: str | None = None,
+    state_realization_counts: Mapping[str, int] | None = None,
 ) -> ContributionEstimationManifest:
     """Center mean gains and a conservative uncertainty-adjusted signal under pi_t."""
 
@@ -341,8 +360,10 @@ def estimate_centered_contributions(
         "data_isolation_contract_id": data_isolation_contract_id,
         "final_test_set_id": final_test_set_id,
         "estimator_id": estimator_id,
-        "probe_optimizer_contract_id": probe_optimizer_contract_id,
-        "probe_adaptation_horizon": probe_adaptation_horizon,
+        "approximation_contract_id": approximation_contract_id,
+        "gradient_mode_contract_id": gradient_mode_contract_id,
+        "calibration_artifact_hash": calibration_artifact_hash,
+        "state_realization_counts": tuple(sorted((state_realization_counts or {}).items())),
         "uncertainty_statistic": "sample_standard_deviation",
         "uncertainty_penalty_coefficient": uncertainty_penalty_coefficient,
         "production_contribution_field": "conservative_centered_contribution",

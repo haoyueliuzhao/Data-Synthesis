@@ -25,6 +25,7 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.agent.state_conditioned import (
     StateConditionControllabilityAudit,
+    StateConditionedGenerationFailureRecord,
     StateConditionedGenerationRecord,
     StateConditionedLLMTrajectoryProvider,
     assess_state_condition_controllability,
@@ -55,6 +56,7 @@ __all__ = [
     "ModelCallTelemetry",
     "OpenAICompatibleJsonClient",
     "StateConditionControllabilityAudit",
+    "StateConditionedGenerationFailureRecord",
     "StateConditionedGenerationRecord",
     "StateConditionedLLMTrajectoryProvider",
     "assess_state_condition_controllability",

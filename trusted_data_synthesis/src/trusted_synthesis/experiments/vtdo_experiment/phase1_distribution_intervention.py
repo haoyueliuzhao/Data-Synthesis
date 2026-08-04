@@ -42,7 +42,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-DISTRIBUTION_INTERVENTION_VERSION = "finance_distribution_intervention.v1"
+DISTRIBUTION_INTERVENTION_VERSION = "finance_distribution_intervention.v2"
 RUN_ROLES = ("smoke", "production_validation")
 PRODUCTION_MINIMUM_INTERVENTION_SEEDS = 4
 NUMERIC_REPLAY_TOLERANCE = 1e-6
@@ -277,13 +277,22 @@ def prepare(args: argparse.Namespace) -> None:
         sum(task_marginals.values()), 1.0, abs_tol=1e-12
     ):
         raise ValueError("Gradient Projection task marginals are invalid")
-    jobs_by_task: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
-    for job in gradient_plan["jobs"]:
-        jobs_by_task[str(job["task_id"])].append(job)
+    states_by_task: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    for state in gradient_report["state_rows"]:
+        states_by_task[str(state["task_id"])].append(state)
     task_jobs = []
-    for task_id, states in sorted(jobs_by_task.items()):
+    for task_id, states in sorted(states_by_task.items()):
         states.sort(key=lambda row: str(row["state_id"]))
-        probabilities = _current_state_probabilities([str(row["state_id"]) for row in states])
+        frozen_distribution = gradient_plan["task_distributions"].get(task_id)
+        if not isinstance(frozen_distribution, dict):
+            raise ValueError("distribution intervention lacks a frozen task distribution")
+        probabilities = _current_state_probabilities(
+            [str(row["state_id"]) for row in states],
+            probabilities={
+                str(state_id): float(probability)
+                for state_id, probability in frozen_distribution["probabilities"].items()
+            },
+        )
         task_jobs.append(
             {
                 "task_id": task_id,
@@ -335,7 +344,7 @@ def prepare(args: argparse.Namespace) -> None:
         "epsilon": args.epsilon,
         "step_count": args.step_count,
         "learning_rate": args.learning_rate,
-        "optimizer": "exact_cached_full_distribution_gradient_sgd",
+        "optimizer": "diagnostic_cached_full_distribution_gradient_sgd",
         "optimizer_state_policy": "one_stateless_sgd_step_from_frozen_checkpoint",
         "distribution_formula": "pi_prime_x=(1-epsilon)*pi_x+epsilon*delta_z",
         "state_support_policy": "exactly_preserved",
@@ -343,9 +352,11 @@ def prepare(args: argparse.Namespace) -> None:
         "evaluation_role": "untouched_final_test",
         "claim_boundary": (
             "This finite full-distribution perturbation preserves the task marginal and is used "
-            "only as an independent final-test target for Gradient Projection. Numeric replay "
-            "seeds test reproducibility and are not counted as independent statistical samples."
+            "only as a validation-only SGD mechanism diagnostic for Gradient Projection. Numeric "
+            "replay seeds test reproducibility and are not independent statistical samples. This "
+            "artifact cannot authorize the AdamW-local production Contribution contract."
         ),
+        "production_authorization_eligible": False,
     }
     values["intervention_estimand_id"] = canonical_hash(
         {
@@ -436,7 +447,7 @@ def _worker(
     )
     state_artifacts = _gradient_artifact_map(
         plan["state_gradient_artifacts"],
-        key="job_id",
+        key="state_artifact_id",
     )
     _restore_adapter(model, baseline_adapter_state)
     if _adapter_tensor_sha256(model) != plan["beneficiary_adapter_tensor_sha256"]:
@@ -469,7 +480,7 @@ def _worker(
             state_id = str(state["state_id"])
             if (task_id, state_id) in completed:
                 continue
-            state_artifact = state_artifacts[str(state["job_id"])]
+            state_artifact = state_artifacts[str(state["state_artifact_id"])]
             state_gradient = _load_verified_gradient(
                 Path(state_artifact["state_gradient_file"]),
                 str(state_artifact["state_gradient_sha256"]),
@@ -512,7 +523,8 @@ def _worker(
                 "task_type": task["task_type"],
                 "state_id": state_id,
                 "strategy": state["strategy"],
-                "record_id": state["record_id"],
+                "state_artifact_id": state["state_artifact_id"],
+                "realization_ids": state["realization_ids"],
                 "seed": seed,
                 "gpu_id": gpu_id,
                 "partition_index": partition_index,
@@ -725,7 +737,7 @@ def aggregate(args: argparse.Namespace) -> None:
         blockers.append("validation_vs_distribution_intervention_rank_gate")
     if max(replay_ranges) > NUMERIC_REPLAY_TOLERANCE:
         blockers.append("numeric_replay_stability")
-    eligible_for_core_promotion = not blockers
+    diagnostic_passed = not blockers
     report: dict[str, Any] = {
         "experiment_version": DISTRIBUTION_INTERVENTION_VERSION,
         "plan_hash": plan["plan_hash"],
@@ -752,14 +764,11 @@ def aggregate(args: argparse.Namespace) -> None:
         "validation_vs_intervention": validation_evidence,
         "raw_estimation_vs_intervention_diagnostic": raw_estimation_evidence,
         "state_rows": state_rows,
-        "eligible_for_core_promotion": eligible_for_core_promotion,
+        "eligible_for_core_promotion": False,
         "production_authorized": False,
-        "recommended_production_action": (
-            "promote_gradient_projection_contract_in_core"
-            if eligible_for_core_promotion
-            else "disable_contribution_component"
-        ),
-        "status": "passed" if eligible_for_core_promotion else "partial",
+        "diagnostic_passed": diagnostic_passed,
+        "recommended_production_action": "run_typed_adamw_local_target_protocol",
+        "status": "passed" if diagnostic_passed else "partial",
         "blockers": blockers,
         "claim_boundary": plan["claim_boundary"],
     }

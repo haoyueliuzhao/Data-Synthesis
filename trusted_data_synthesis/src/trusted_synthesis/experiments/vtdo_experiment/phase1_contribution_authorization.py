@@ -1352,7 +1352,12 @@ def _build_authorization_gradient(args: argparse.Namespace) -> None:
     gradients_by_id = {}
     record_rows = []
     for index, record_id in enumerate(record_ids):
-        gradient, loss, supervised_tokens = _record_gradient(model, tokenizer, records[record_id])
+        gradient, loss, supervised_tokens = _record_gradient(
+            model,
+            tokenizer,
+            records[record_id],
+            mode="objective_eval",
+        )
         path = gradient_dir / f"record_{index:02d}.safetensors"
         save_file(gradient, path)
         gradients_by_id[record_id] = gradient
@@ -1537,7 +1542,10 @@ def _diagnose_post_update_objective(args: argparse.Namespace) -> None:
         gradients = []
         for record_id in plan["objective_partitions"][split]["record_ids"]:
             gradient, loss, supervised_tokens = _record_gradient(
-                model, tokenizer, records[record_id]
+                model,
+                tokenizer,
+                records[record_id],
+                mode="objective_eval",
             )
             gradients.append(gradient)
             rows.append(
@@ -1935,25 +1943,11 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
-    args = _parser().parse_args()
-    if args.command == "prepare":
-        _prepare(args)
-    elif args.command == "preflight":
-        _preflight(args)
-    elif args.command == "worker":
-        _worker(args)
-    elif args.command == "run":
-        _run(args)
-    elif args.command == "aggregate-target":
-        _aggregate_target(args)
-    elif args.command == "calibrate":
-        _calibrate(args)
-    elif args.command == "build-authorization-gradient":
-        _build_authorization_gradient(args)
-    elif args.command == "diagnose-post-update-objective":
-        _diagnose_post_update_objective(args)
-    else:
-        _authorize(args)
+    raise RuntimeError(
+        "phase1_contribution_authorization v1 is retired and cannot issue production "
+        "credentials; use phase1_finite_target, phase1_gp_c_proxy, and "
+        "phase1_authorization_v2"
+    )
 
 
 if __name__ == "__main__":

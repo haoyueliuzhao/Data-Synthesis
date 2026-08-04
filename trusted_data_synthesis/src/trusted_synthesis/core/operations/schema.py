@@ -55,6 +55,10 @@ class OperationDefinition:
     tool_capability: str | None
     action_type: str
     execution_mode: str
+    program_role: str
+    input_role_contract: tuple[str, ...]
+    parameter_contract: tuple[str, ...]
+    downstream_selector_contract: tuple[str, ...]
     executor_version: str
     verifier_version: str
     semantic_version: str
@@ -63,3 +67,4 @@ class OperationDefinition:
     tolerance_policy: str
     implementation_hash: str
     implementation_dependency_ids: tuple[str, ...]
+    input_order_policy: str = "ordered"

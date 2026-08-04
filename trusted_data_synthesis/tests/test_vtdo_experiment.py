@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from trusted_synthesis.core.trajectory.schema import ActionType
 from trusted_synthesis.core.vtdo import (
     InterventionTrainingResult,
     ProbeAdaptationResult,
@@ -45,6 +46,7 @@ from trusted_synthesis.experiments.vtdo_experiment.moving_potential import (
     run_moving_potential_tracking_experiment,
 )
 from trusted_synthesis.experiments.vtdo_experiment.multistate import (
+    DEFAULT_FINANCE_DISCOVERY_STRATEGIES,
     FinanceMultiStateConfig,
     _build_task_artifact,
     _quotient_probe,
@@ -76,7 +78,8 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_populatio
     _validate_probe_replication_contract,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_support import (
-    _select_balanced_artifacts,
+    _artifact_stratum,
+    _select_stratified_artifacts,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_reachability import (
     _error_record as _reachability_error_record,
@@ -288,7 +291,7 @@ def test_experiment_config_rejects_legacy_real_state_section(tmp_path: Path) -> 
         )
 
 
-def test_finance_fixture_produces_five_verified_states_and_rejects_mutation(
+def test_finance_fixture_produces_three_to_five_verified_states_and_rejects_mutation(
     tmp_path: Path,
 ) -> None:
     artifact = _build_task_artifact(
@@ -299,12 +302,26 @@ def test_finance_fixture_produces_five_verified_states_and_rejects_mutation(
         ),
     )
 
-    assert len(artifact.accepted_states) == 5
-    assert artifact.strategy_attempt_count == 5
-    assert artifact.strategy_verifier_pass_count == 5
-    assert len({item.assignment.state.state_id for item in artifact.accepted_states}) == 5
+    assert 3 <= len(artifact.accepted_states) <= 5
+    assert artifact.strategy_attempt_count == len(DEFAULT_FINANCE_DISCOVERY_STRATEGIES)
+    assert artifact.strategy_verifier_pass_count == artifact.strategy_attempt_count
+    assert artifact.duplicate_state_count == (
+        artifact.strategy_attempt_count - len(artifact.accepted_states)
+    )
+    assert len({item.assignment.state.state_id for item in artifact.accepted_states}) == len(
+        artifact.accepted_states
+    )
     assert not artifact.rejected_attempts[0].validity_report.valid
     assert not artifact.program_diversity_claimed
+    semantic_state = next(
+        item for item in artifact.accepted_states if item.strategy == "semantic_direct"
+    )
+    semantic_search = next(
+        step for step in semantic_state.trajectory.steps if step.action == ActionType.SEARCH
+    )
+    assert len(artifact.omega.task.oracle.gold_evidence_ids) < len(semantic_search.evidence_ids)
+    assert len(semantic_search.evidence_ids) < len(artifact.omega.public_corpus.evidence)
+
     assert artifact.omega.oracle_specification is not None
     quotient = _quotient_probe([artifact])
     assert quotient["surface_invariance_rate"] == pytest.approx(1.0)
@@ -706,6 +723,9 @@ def test_reachability_evaluation_failure_preserves_model_telemetry(
     assert telemetry["api_call_count"] == 1
     assert telemetry["api_call_success_count"] == 1
     assert telemetry["total_tokens"] == 120
+    assert telemetry["priced_call_count"] == 0
+    assert telemetry["unpriced_call_count"] == 1
+    assert telemetry["cost_warning"] is not None
 
 
 def test_intervention_permutation_baseline_is_deterministic() -> None:
@@ -792,7 +812,8 @@ def test_contribution_horizon_analysis_detects_local_rank_reversal() -> None:
     assert report["diagnosis"] == "local_proxy_supported_but_long_horizon_not_supported"
     assert report["local_proxy_supported"] is True
     assert report["long_horizon_proxy_supported"] is False
-    assert report["production_contribution_allowed"] is False
+    assert report["local_probe_validation_passed"] is False
+    assert report["production_usage_allowed"] is False
     assert report["maximum_observed_supported_horizon"] == 3
     assert report["first_observed_unsupported_horizon"] == 12
     comparisons = {item["comparison_id"]: item for item in report["comparisons"]}
@@ -1049,9 +1070,9 @@ def test_contribution_estimand_analysis_selects_only_same_horizon_valid_proxy() 
     )
 
     assert report["exploratory_selected_horizon"] == 1
-    assert report["production_contribution_allowed"] is True
-    assert report["validated_production_horizon"] == 1
-    assert report["production_authorization_issuable"] is True
+    assert report["local_probe_validation_passed"] is True
+    assert report["validated_local_probe_horizon"] == 1
+    assert report["production_usage_allowed"] is False
     assert [item["rank_gate_passed"] for item in report["horizon_rows"]] == [
         True,
         True,
@@ -1128,17 +1149,15 @@ def test_contribution_estimand_analysis_selects_only_same_horizon_valid_proxy() 
         for seed in (1, 2, 3, 4)
     )
     manifest = estimate_contributions_from_probes(distribution, observations)
-    authorization = issue_contribution_production_authorization(
-        analysis_report=report,
-        manifest=manifest,
-    )
-    assert authorization.selected_adaptation_horizon == 1
-    assert authorization.task_count == 30
-    assert manifest.task_condition_id in authorization.task_condition_ids
+    with pytest.raises(ValueError, match="local-Probe production authorization was retired"):
+        issue_contribution_production_authorization(
+            analysis_report=report,
+            manifest=manifest,
+        )
 
     tampered_report = dict(report)
-    tampered_report["validated_production_horizon"] = 3
-    with pytest.raises(ValueError, match="report_hash does not replay"):
+    tampered_report["validated_local_probe_horizon"] = 3
+    with pytest.raises(ValueError, match="local-Probe production authorization was retired"):
         issue_contribution_production_authorization(
             analysis_report=tampered_report,
             manifest=manifest,
@@ -1159,9 +1178,9 @@ def test_contribution_estimand_analysis_selects_only_same_horizon_valid_proxy() 
         permutation_iterations=100,
     )
     assert diagnostic_only["exploratory_selected_horizon"] == 5
-    assert diagnostic_only["validated_production_horizon"] is None
-    assert diagnostic_only["production_contribution_allowed"] is False
-    assert "validated_horizon_exists" in diagnostic_only["production_blockers"]
+    assert diagnostic_only["validated_local_probe_horizon"] is None
+    assert diagnostic_only["local_probe_validation_passed"] is False
+    assert "validated_horizon_exists" in diagnostic_only["local_probe_validation_blockers"]
 
     population_run = population(1, (1.0, 2.0, 3.0))
     intervention_plan, intervention_report = intervention(1, (1.0, 2.0, 3.0))
@@ -1250,13 +1269,13 @@ def test_contribution_estimand_analysis_selects_only_same_horizon_valid_proxy() 
         bootstrap_samples=100,
         permutation_iterations=100,
     )
-    assert seed_qualified_selection["rank_validated_production_horizons"] == [
+    assert seed_qualified_selection["rank_validated_local_probe_horizons"] == [
         1,
         3,
     ]
-    assert seed_qualified_selection["production_seed_eligible_horizons"] == [3]
-    assert seed_qualified_selection["jointly_eligible_production_horizons"] == [3]
-    assert seed_qualified_selection["validated_production_horizon"] == 3
+    assert seed_qualified_selection["seed_qualified_local_probe_horizons"] == [3]
+    assert seed_qualified_selection["jointly_validated_local_probe_horizons"] == [3]
+    assert seed_qualified_selection["validated_local_probe_horizon"] == 3
 
 
 def test_production_probe_optimizer_allows_at_most_three_sgd_steps() -> None:
@@ -1386,21 +1405,68 @@ def test_population_production_replication_contract_and_gpu_waves() -> None:
     )
 
 
-def test_contribution_support_selection_balances_task_types_deterministically() -> None:
+def test_contribution_support_selection_stratifies_objective_tasks_deterministically() -> None:
+    strategies = (
+        "compact_direct",
+        "broad_direct",
+        "compact_verify_frontier",
+    )
     artifacts = tuple(
         SimpleNamespace(
             artifact_id=f"artifact:{task_type}:{index}",
             omega=SimpleNamespace(
-                task=SimpleNamespace(public=SimpleNamespace(task_type=task_type))
+                task=SimpleNamespace(
+                    public=SimpleNamespace(
+                        task_type=task_type,
+                        instruction="x" * (100 + index * 70),
+                    ),
+                    oracle=SimpleNamespace(
+                        gold_evidence_ids=tuple(range(index + 1)),
+                        task_program=SimpleNamespace(
+                            nodes=tuple(
+                                SimpleNamespace(
+                                    node_id=f"node_{node_index}",
+                                    dependencies=(
+                                        ()
+                                        if node_index == 0
+                                        else (f"node_{node_index - 1}",)
+                                    ),
+                                )
+                                for node_index in range(index + 1)
+                            )
+                        ),
+                    ),
+                )
+            ),
+            accepted_states=tuple(
+                SimpleNamespace(
+                    strategy=strategy,
+                    assignment=SimpleNamespace(
+                        attributes=SimpleNamespace(
+                            reasoning_depth=index + 1,
+                            verification_degree=1.0,
+                            capability_tags=(
+                                "citation",
+                                "evidence_selection",
+                                "verification",
+                            ),
+                        )
+                    ),
+                )
+                for strategy in strategies
             ),
         )
         for task_type in ("comparison", "ratio", "temporal")
         for index in range(3)
     )
 
-    selected = _select_balanced_artifacts(artifacts, count=6, salt="validation")
+    selected = _select_stratified_artifacts(artifacts, count=6, salt="validation")
 
-    assert selected == _select_balanced_artifacts(artifacts, count=6, salt="validation")
+    assert selected == _select_stratified_artifacts(
+        artifacts,
+        count=6,
+        salt="validation",
+    )
     assert sorted(item.omega.task.public.task_type for item in selected) == [
         "comparison",
         "comparison",
@@ -1409,6 +1475,10 @@ def test_contribution_support_selection_balances_task_types_deterministically() 
         "temporal",
         "temporal",
     ]
+    selected_strata = tuple(_artifact_stratum(item) for item in selected)
+    assert len({row["context_length_bucket"] for row in selected_strata}) >= 2
+    assert len({row["evidence_count_bucket"] for row in selected_strata}) >= 2
+    assert len({row["program_depth_bucket"] for row in selected_strata}) >= 2
 
 
 def test_training_preflight_uses_new_state_artifacts_and_blocks_missing_b3_b5(
@@ -1443,8 +1513,10 @@ def test_training_preflight_uses_new_state_artifacts_and_blocks_missing_b3_b5(
         primary_training_round=3,
     )
 
-    assert len(arms["B1_raw"]) == 6
-    assert len(arms["B2_validity"]) == 5
+    assert len(arms["B1_raw"]) == len(artifact.accepted_states) + len(
+        artifact.rejected_attempts
+    )
+    assert len(arms["B2_validity"]) == len(artifact.accepted_states)
     assert not arms["B2_contribution_only"]
     assert not arms["B2_novelty_only"]
     assert len(arms["B4_random_state"]) == 1

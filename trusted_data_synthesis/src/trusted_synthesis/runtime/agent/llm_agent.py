@@ -47,12 +47,12 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v9"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v20"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
-LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v2"
-LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v4"
-LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v2"
+LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v11"
+LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v5"
+LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v6"
 
 
 class LLMAgentSolver:
@@ -106,21 +106,24 @@ class LLMAgentSolver:
                 task,
                 visible_constraints,
             )
-            search_response, search_telemetry, search_repairs = _request_search_response(
+            (
+                search_response,
+                executed_search_query,
+                retrieved,
+                search_telemetry,
+                search_repairs,
+            ) = _request_search_response(
                 self._client,
                 search_prompt,
+                task,
+                environment,
+                visible_constraints,
             )
             telemetry.extend(search_telemetry)
             repair_count += search_repairs
             search_plan_summary = search_response.plan_summary
-            executed_search_query = _bounded_search_query(
-                task,
-                search_response.search_query.model_dump(
-                    mode="json",
-                    exclude_defaults=True,
-                ),
-            )
-        retrieved = environment.search(executed_search_query)
+        else:
+            retrieved = environment.search(executed_search_query)
         operation_catalog = _public_operation_catalog(self._registry, task)
         if self._client.config.interaction_protocol == "host_instrumented":
             action_prompt, action_prompt_manifest_hash = _build_action_prompt(
@@ -130,19 +133,28 @@ class LLMAgentSolver:
                 executed_search_query,
                 visible_constraints,
             )
-            (
-                action_plan,
-                execution_trace,
-                action_telemetry,
-                action_repairs,
-                action_failure_history,
-            ) = _request_host_action_plan(
-                self._client,
-                action_prompt,
-                task,
-                retrieved,
-                self._registry,
-            )
+            try:
+                (
+                    action_plan,
+                    execution_trace,
+                    action_telemetry,
+                    action_repairs,
+                    action_failure_history,
+                ) = _request_host_action_plan(
+                    self._client,
+                    action_prompt,
+                    task,
+                    retrieved,
+                    self._registry,
+                    visible_constraints,
+                )
+            except LLMClientError as exc:
+                raise LLMClientError(
+                    str(exc),
+                    (*telemetry, *exc.telemetry),
+                    failure_artifact=exc.failure_artifact,
+                    interaction_progress=exc.interaction_progress,
+                ) from exc
             telemetry.extend(action_telemetry)
             repair_count += action_repairs
             final_prompt, final_answer_prompt_manifest_hash = _build_final_answer_prompt(
@@ -152,16 +164,24 @@ class LLMAgentSolver:
                 execution_trace,
                 visible_constraints,
             )
-            response, final_telemetry, final_repairs = _request_host_answer(
-                self._client,
-                final_prompt,
-                task,
-                retrieved,
-                action_plan,
-                execution_trace,
-                self._registry,
-                action_contract_repair_count=action_repairs,
-            )
+            try:
+                response, final_telemetry, final_repairs = _request_host_answer(
+                    self._client,
+                    final_prompt,
+                    task,
+                    retrieved,
+                    action_plan,
+                    execution_trace,
+                    self._registry,
+                    action_contract_repair_count=action_repairs,
+                )
+            except LLMClientError as exc:
+                raise LLMClientError(
+                    str(exc),
+                    (*telemetry, *exc.telemetry),
+                    failure_artifact=exc.failure_artifact,
+                    interaction_progress=exc.interaction_progress,
+                ) from exc
             telemetry.extend(final_telemetry)
             repair_count += final_repairs
             answer_repairs = final_repairs
@@ -269,11 +289,22 @@ class LLMAgentSolver:
 def _request_search_response(
     client: JsonCompletionClient,
     base_prompt: str,
-) -> tuple[AgentSearchResponseContract, tuple[ModelCallTelemetry, ...], int]:
+    task: TaskPublicSpec,
+    environment: EvidenceToolRuntime,
+    generation_constraints: dict[str, Any],
+) -> tuple[
+    AgentSearchResponseContract,
+    dict[str, Any],
+    tuple[EvidenceItem, ...],
+    tuple[ModelCallTelemetry, ...],
+    int,
+]:
     telemetry: list[ModelCallTelemetry] = []
     previous_payload: dict[str, Any] | None = None
     validation_error = ""
     response: AgentSearchResponseContract | None = None
+    executed_query: dict[str, Any] | None = None
+    retrieved: tuple[EvidenceItem, ...] = ()
     for attempt in range(client.config.contract_repair_attempts + 1):
         prompt = (
             base_prompt
@@ -283,23 +314,91 @@ def _request_search_response(
         payload, call_telemetry = client.complete_json(prompt)
         previous_payload = payload
         try:
-            response = AgentSearchResponseContract.model_validate(payload)
+            candidate = AgentSearchResponseContract.model_validate(payload)
+            model_query = candidate.search_query.model_dump(mode="json", exclude_defaults=True)
+            _validate_state_control_search_query(model_query, generation_constraints)
+            query = _bounded_search_query(
+                task,
+                model_query,
+            )
+            candidate_evidence = environment.search(query)
+            if not candidate_evidence:
+                diagnostic = _search_failure_diagnostic(task, environment, query)
+                raise ValueError(
+                    "search_empty_result: "
+                    + json.dumps(diagnostic, ensure_ascii=False, sort_keys=True)
+                )
+            response = candidate
+            executed_query = query
+            retrieved = candidate_evidence
             telemetry.append(call_telemetry)
             break
-        except ValidationError as exc:
+        except (ValidationError, ValueError) as exc:
             contract_errors = _contract_errors(exc)
             validation_error = "; ".join(contract_errors)
             telemetry.append(
                 _invalid_contract_telemetry(
                     call_telemetry,
-                    "AgentSearchContractError",
+                    (
+                        "AgentSearchContractError"
+                        if isinstance(exc, ValidationError)
+                        else "AgentSearchExecutionError"
+                    ),
                     contract_errors=contract_errors,
                     payload=payload,
+                    json_contract_success=not isinstance(exc, ValidationError),
                 )
             )
-    if response is None:
+    if response is None or executed_query is None or not retrieved:
         raise LLMClientError("model failed the agent search contract", tuple(telemetry))
-    return response, tuple(telemetry), max(len(telemetry) - 1, 0)
+    return (
+        response,
+        executed_query,
+        retrieved,
+        tuple(telemetry),
+        max(len(telemetry) - 1, 0),
+    )
+
+
+def _validate_state_control_search_query(
+    model_query: dict[str, Any],
+    generation_constraints: dict[str, Any],
+) -> None:
+    control_plan = generation_constraints.get("control_plan")
+    if not isinstance(control_plan, dict):
+        return
+    retrieval = control_plan.get("retrieval")
+    if not isinstance(retrieval, dict) or retrieval.get("control_status") != "model_controlled":
+        return
+    mode = retrieval.get("mode")
+    if mode == "full_corpus":
+        if model_query:
+            raise ValueError(
+                "state_retrieval_full_corpus_requires_empty_query: omit every optional "
+                "model-owned search field"
+            )
+        return
+    if mode == "semantic_context":
+        if not model_query:
+            raise ValueError(
+                "state_retrieval_semantic_context_requires_nonempty_semantic_query"
+            )
+        if model_query.get("temporal_labels"):
+            raise ValueError(
+                "state_retrieval_semantic_context_forbids_exact_temporal_labels"
+            )
+        return
+    if mode == "required_only":
+        has_subject = bool(model_query.get("subject_ids") or model_query.get("aliases"))
+        has_semantics = bool(
+            model_query.get("predicates")
+            or model_query.get("semantic_constraints")
+            or model_query.get("partial_constraints")
+        )
+        if not has_subject or not has_semantics:
+            raise ValueError(
+                "state_retrieval_required_only_requires_subject_and_semantic_specificity"
+            )
 
 
 def _request_agent_response(
@@ -349,6 +448,7 @@ def _request_host_action_plan(
     task: TaskPublicSpec,
     retrieved: tuple[EvidenceItem, ...],
     registry: OperationRegistry,
+    generation_constraints: dict[str, Any],
 ) -> tuple[
     AgentActionPlanContract,
     AgentExecutionTrace,
@@ -384,6 +484,7 @@ def _request_host_action_plan(
         previous_payload = payload
         try:
             candidate = AgentActionPlanContract.model_validate(payload)
+            _validate_state_control_action_plan(candidate, generation_constraints)
             trace = execute_action_plan(task, retrieved, candidate, registry)
             accepted_plan = candidate
             execution_trace = trace
@@ -409,6 +510,7 @@ def _request_host_action_plan(
                     ),
                     contract_errors=contract_errors,
                     payload=payload,
+                    json_contract_success=True,
                 )
             )
         except ValidationError as exc:
@@ -440,6 +542,54 @@ def _request_host_action_plan(
         max(len(telemetry) - 1, 0),
         tuple(failed_actions),
     )
+
+
+def _validate_state_control_action_plan(
+    plan: AgentActionPlanContract,
+    generation_constraints: dict[str, Any],
+) -> None:
+    control_plan = generation_constraints.get("control_plan")
+    if not isinstance(control_plan, dict):
+        return
+    execution = control_plan.get("execution")
+    if not isinstance(execution, dict) or execution.get("control_status") != "model_controlled":
+        return
+    execution_mode = execution.get("mode")
+    lookup_indexes = {
+        index
+        for index, decision in enumerate(plan.executions, start=1)
+        if decision.operator_id == "lookup"
+    }
+    projection_consumed = any(
+        decision.operator_id != "lookup"
+        and any(
+            item.source == "step" and item.step_index in lookup_indexes
+            for item in decision.inputs
+        )
+        for decision in plan.executions
+    )
+    if execution_mode == "baseline_program":
+        if projection_consumed:
+            raise ActionPlanExecutionError(
+                "baseline execution state forbids optional lookup projections",
+                category="semantic_action",
+                error_code="state_execution_baseline_projection_forbidden",
+            )
+        return
+    if execution_mode not in {"program_projection", "transparent_projection"}:
+        return
+    if not lookup_indexes:
+        raise ActionPlanExecutionError(
+            "transparent projection state requires at least one lookup operation",
+            category="semantic_action",
+            error_code="state_execution_projection_missing",
+        )
+    if not projection_consumed:
+        raise ActionPlanExecutionError(
+            "transparent projection lookup outputs must feed a semantic operation",
+            category="semantic_action",
+            error_code="state_execution_projection_unconsumed",
+        )
 
 
 def _request_host_answer(
@@ -525,10 +675,11 @@ def _invalid_contract_telemetry(
     *,
     contract_errors: tuple[str, ...] = (),
     payload: dict[str, Any] | None = None,
+    json_contract_success: bool = False,
 ) -> ModelCallTelemetry:
     return telemetry.model_copy(
         update={
-            "json_contract_success": False,
+            "json_contract_success": json_contract_success,
             "error_type": error_type,
             "error_message": contract_errors[0] if contract_errors else None,
             "contract_errors": contract_errors,
@@ -712,15 +863,39 @@ def _build_search_prompt(
                 "partial_constraints",
             ),
             "forbidden_fields": ("evidence_ids", "gold_ids", "oracle_contract"),
+            "field_contracts": {
+                "subject_ids": (
+                    "exact opaque subject IDs only; omit when the public task shows only a name"
+                ),
+                "aliases": "exact entity names or aliases only; never metric or source names",
+                "predicates": "exact machine predicate identifiers only; omit when uncertain",
+                "temporal_labels": "exact public period or date labels, including full dates",
+                "source_authorities": (
+                    "authority tiers only, such as official, primary, or secondary; never a "
+                    "source or publisher name"
+                ),
+                "semantic_constraints": (
+                    "exact public enum values only for subject_types, time_bases, frequencies, "
+                    "epistemic_statuses, definition_ids, scope_ids, temporal_labels, and "
+                    "source_authorities"
+                ),
+            },
+            "empty_result_policy": "omit an uncertain filter instead of guessing its value",
         },
         "response_json_schema": response_schema,
     }
     instructions = (
         "Plan one bounded evidence search from the public task. Return only a JSON object "
         "matching response_json_schema. Never invent or request evidence IDs, gold IDs, "
-        "or oracle fields. Use aliases for natural-language entity names and use only "
-        "constraints supported by search_interface. The host preserves the immutable "
-        "corpus boundary. Honor trajectory_generation_constraints only through fields "
+        "or oracle fields. Follow search_interface.field_contracts exactly. Use aliases "
+        "only for entity names; never put a metric or source name in aliases. Omit any "
+        "filter whose exact machine value is uncertain rather than guessing. The host "
+        "preserves the immutable corpus boundary. Treat "
+        "trajectory_generation_constraints.control_plan.retrieval as an executable public "
+        "contract. In required_only mode, use specific subject and semantic filters. In "
+        "semantic_context mode, keep a non-empty semantic query but omit exact temporal_labels. "
+        "In full_corpus mode, return every search_query field empty so the Host applies only "
+        "the corpus boundary. Honor trajectory_generation_constraints only through fields "
         "allowed by search_interface; they constrain acquisition behavior and never change "
         "the task semantics. Do not answer the task in this phase."
     )
@@ -743,6 +918,93 @@ def _bounded_search_query(
     return query
 
 
+def _search_failure_diagnostic(
+    task: TaskPublicSpec,
+    environment: EvidenceToolRuntime,
+    query: dict[str, Any],
+) -> dict[str, Any]:
+    boundary = task.retrieval_scope.get("corpus_boundary")
+    base_query = {"corpus_boundary": boundary} if boundary is not None else {}
+    nonmatching: list[str] = []
+    for field in (
+        "subject_ids",
+        "predicates",
+        "temporal_labels",
+        "aliases",
+        "source_authorities",
+    ):
+        if field in query and not environment.search({**base_query, field: query[field]}):
+            nonmatching.append(field)
+
+    semantic = query.get("semantic_constraints")
+    if isinstance(semantic, dict):
+        for field, value in sorted(semantic.items()):
+            probe = {
+                **base_query,
+                "semantic_constraints": {field: value},
+                "apply_semantic_filters": True,
+            }
+            if not environment.search(probe):
+                nonmatching.append(f"semantic_constraints.{field}")
+
+    partial = query.get("partial_constraints")
+    if isinstance(partial, dict):
+        for field in ("predicate", "definition_id"):
+            if field not in partial:
+                continue
+            probe = {**base_query, "partial_constraints": {field: partial[field]}}
+            if not environment.search(probe):
+                nonmatching.append(f"partial_constraints.{field}")
+
+    return {
+        "executed_query": query,
+        "individually_nonmatching_fields": sorted(nonmatching),
+        "repair_instruction": (
+            "remove or correct individually_nonmatching_fields; if none are listed, "
+            "broaden the incompatible filter combination"
+        ),
+    }
+
+
+def _state_execution_shape_contract(
+    generation_constraints: dict[str, Any],
+) -> dict[str, Any]:
+    control_plan = generation_constraints.get("control_plan")
+    if not isinstance(control_plan, dict):
+        return {"mode": "unconstrained"}
+    execution = control_plan.get("execution")
+    if not isinstance(execution, dict) or execution.get("control_status") != "model_controlled":
+        return {"mode": "unconstrained"}
+    mode = execution.get("mode")
+    if mode == "baseline_program":
+        return {
+            "mode": mode,
+            "projection_lookup_count": 0,
+            "semantic_input_contract": {
+                "source": "evidence",
+                "selector": "value",
+            },
+            "direct_evidence_example": {
+                "operator_id": "<required_semantic_operator>",
+                "inputs": [
+                    {
+                        "source": "evidence",
+                        "evidence_id": "<exact_evidence_id>",
+                        "selector": "value",
+                    }
+                ],
+            },
+        }
+    if mode in {"program_projection", "transparent_projection"}:
+        return {
+            "mode": mode,
+            "projection_lookup_count": "one_per_raw_evidence_input",
+            "lookup_input_selector": None,
+            "semantic_step_input_selector": "payload.value",
+        }
+    return {"mode": "unconstrained"}
+
+
 def _build_action_prompt(
     task: TaskPublicSpec,
     evidence: tuple[EvidenceItem, ...],
@@ -752,6 +1014,10 @@ def _build_action_prompt(
 ) -> tuple[str, str]:
     response_schema = AgentActionPlanContract.model_json_schema()
     task_execution_contract = _task_execution_contract(task, operation_catalog)
+    domain_contract_guidance = task.metadata.get("agent_contract_guidance") or {}
+    state_execution_shape_contract = _state_execution_shape_contract(
+        generation_constraints
+    )
     manifest = {
         "prompt_version": LLM_AGENT_ACTION_PROMPT_VERSION,
         "response_schema_hash": canonical_hash(
@@ -766,9 +1032,17 @@ def _build_action_prompt(
             task_execution_contract,
             prefix="agent_task_execution_contract:",
         ),
+        "domain_contract_guidance_hash": canonical_hash(
+            domain_contract_guidance,
+            prefix="agent_domain_contract_guidance:",
+        ),
         "generation_constraints_hash": canonical_hash(
             generation_constraints,
             prefix="agent_generation_constraints:",
+        ),
+        "state_execution_shape_contract_hash": canonical_hash(
+            state_execution_shape_contract,
+            prefix="agent_state_execution_shape_contract:",
         ),
     }
     payload = {
@@ -778,20 +1052,104 @@ def _build_action_prompt(
         "retrieved_evidence": [
             item.model_dump(mode="json", exclude_none=True) for item in evidence
         ],
+        "evidence_identifier_contract": {
+            "exact_evidence_ids": [item.evidence_id for item in evidence],
+            "valid_evidence_inputs": [
+                {
+                    "source": "evidence",
+                    "evidence_id": item.evidence_id,
+                }
+                for item in evidence
+            ],
+            "rule": (
+                "Copy a raw evidence_id exactly from exact_evidence_ids. Do not shorten it, "
+                "add an evidence: prefix, or invent symbolic IDs such as evidence_1."
+            ),
+        },
         "operation_catalog": operation_catalog,
         "task_execution_contract": task_execution_contract,
+        "domain_contract_guidance": domain_contract_guidance,
+        "state_execution_shape_contract": state_execution_shape_contract,
         "action_input_contract": {
             "evidence": {
-                "source": "evidence",
-                "evidence_id": "copy one exact retrieved evidence_id",
-                "step_index": None,
-                "selector": "optional payload path",
+                "required_fields": {
+                    "source": "evidence",
+                    "evidence_id": "copy one exact retrieved evidence_id",
+                },
+                "optional_selector": (
+                    "path relative to EvidenceItem.payload; use null when the operator "
+                    "consumes the complete payload, including every lookup input"
+                ),
+                "forbidden_fields": ("step_index",),
             },
             "step": {
-                "source": "step",
-                "evidence_id": None,
-                "step_index": "one-based index of an earlier execution decision",
-                "selector": "optional operation-result path",
+                "required_fields": {
+                    "source": "step",
+                    "step_index": "one-based index of an earlier execution decision",
+                },
+                "optional_selector": (
+                    "path relative to the complete earlier operation result; a lookup result "
+                    "stores its scalar at payload.value"
+                ),
+                "forbidden_fields": ("evidence_id",),
+            },
+            "selector_rules": (
+                "Selectors never start from EvidenceItem or from an execution wrapper. "
+                "Therefore payload.value is invalid on an evidence input, while value is "
+                "valid for a direct scalar payload. Every lookup evidence input must use a "
+                "null selector. A downstream numeric input that reads a lookup step must use "
+                "selector payload.value, not payload."
+            ),
+            "typed_examples": {
+                "lookup": {
+                    "operator_id": "lookup",
+                    "inputs": [
+                        {
+                            "source": "evidence",
+                            "evidence_id": "<exact_evidence_id>",
+                        }
+                    ],
+                },
+                "growth_after_two_lookups": {
+                    "operator_id": "growth",
+                    "inputs": [
+                        {
+                            "source": "step",
+                            "step_index": 1,
+                            "selector": "payload.value",
+                        },
+                        {
+                            "source": "step",
+                            "step_index": 2,
+                            "selector": "payload.value",
+                        },
+                    ],
+                },
+                "difference_after_two_lookups": {
+                    "operator_id": "difference",
+                    "input_role_order": ("baseline_or_subtrahend", "comparison_or_minuend"),
+                    "inputs": [
+                        {"source": "step", "step_index": 1, "selector": "payload.value"},
+                        {"source": "step", "step_index": 2, "selector": "payload.value"},
+                    ],
+                },
+                "registered_ratio_after_two_lookups": {
+                    "operator_id": "ratio",
+                    "parameters": {"registered_pair": "<numerator>/<denominator>"},
+                    "input_role_order": ("numerator", "denominator"),
+                    "inputs": [
+                        {"source": "step", "step_index": 1, "selector": "payload.value"},
+                        {"source": "step", "step_index": 2, "selector": "payload.value"},
+                    ],
+                },
+                "compare_two_scalar_operation_results": {
+                    "operator_id": "compare",
+                    "downstream_result_selector": "value",
+                    "inputs": [
+                        {"source": "step", "step_index": 1, "selector": "value"},
+                        {"source": "step", "step_index": 2, "selector": "value"},
+                    ],
+                },
             },
             "host_owned_fields": (
                 "execution_id",
@@ -810,12 +1168,30 @@ def _build_action_prompt(
         "operator IDs, semantic inputs, parameters, and the output step. The host executes "
         "those decisions and records immutable IDs, tool observations, source locators, and "
         "lineage; never emit those host-owned fields. Evidence inputs copy an exact retrieved "
-        "evidence_id. Step inputs use the one-based index of an earlier decision. For "
+        "evidence_id from evidence_identifier_contract.exact_evidence_ids and contain source "
+        "plus evidence_id only, with an optional selector. Never invent evidence_1-style "
+        "aliases. Step inputs contain source plus the one-based index of an earlier decision, "
+        "with an optional selector. Follow action_input_contract.selector_rules and its typed "
+        "examples exactly; selectors use the local value coordinate system and are not JSON "
+        "paths from an EvidenceItem or execution wrapper. "
+        "Every operation must follow its operation_catalog input_role_contract in order, "
+        "parameter_contract exactly, and downstream_selector_contract when another step "
+        "consumes its result. Apply domain_contract_guidance where present; it refines domain "
+        "roles without overriding the registered operation semantics. A "
+        "domain_contract_guidance.terminal_operation_contract is an executable public "
+        "constraint: the output execution operator must be one of its allowed_operator_ids. For "
+        "non-empty retrieved evidence, never return empty selected_evidence_ids or an empty "
+        "executions list. For "
         "plan_given tasks, preserve the public node order, operator, input kind, selector, "
         "dependency, and exact parameters. For plan_hidden tasks, use only registered "
         "operators allowed by the public tool policy. selected_evidence_ids must be unique "
         "and exactly equal the evidence used by all decisions. The output step must be the "
-        "last execution. Honor trajectory_generation_constraints only where the public "
+        "last execution. Treat state_execution_shape_contract as an executable public "
+        "contract whenever its mode is not unconstrained. baseline_program requires exactly "
+        "zero lookup steps that feed another operation and uses its direct_evidence_example. "
+        "program_projection and transparent_projection require lookup outputs to feed semantic "
+        "operations, following the lookup and after-two-lookups typed examples. Honor "
+        "trajectory_generation_constraints only where the public "
         "action contract gives you a corresponding decision; never invent extra evidence, "
         "operators, verification, or lineage to imitate an unavailable capability. Do not "
         "answer the task in this phase and include no text outside JSON."
@@ -835,6 +1211,7 @@ def _build_final_answer_prompt(
 ) -> tuple[str, str]:
     response_schema = AgentAnswerDecisionContract.model_json_schema()
     final_answer_contract = _final_answer_decision_contract(task)
+    domain_contract_guidance = task.metadata.get("agent_contract_guidance") or {}
     output_execution = next(
         item
         for item in execution_trace.steps
@@ -864,6 +1241,10 @@ def _build_final_answer_prompt(
         "final_answer_contract_hash": canonical_hash(
             final_answer_contract,
             prefix="agent_final_answer_contract:",
+        ),
+        "domain_contract_guidance_hash": canonical_hash(
+            domain_contract_guidance,
+            prefix="agent_domain_contract_guidance:",
         ),
         "action_plan_hash": canonical_hash(action_plan, prefix="agent_action_plan:"),
         "generation_constraints_hash": canonical_hash(
@@ -898,7 +1279,7 @@ def _build_final_answer_prompt(
             "operation_results_by_public_node": visible_outputs,
         },
         "final_answer_contract": final_answer_contract,
-        "domain_contract_guidance": task.metadata.get("agent_contract_guidance") or {},
+        "domain_contract_guidance": domain_contract_guidance,
         "citation_contract": {
             "required_evidence_ids": action_plan.selected_evidence_ids,
             "rule": (
@@ -1051,9 +1432,7 @@ def _normalize_generation_constraints(
     if constraints is None:
         return {}
     try:
-        normalized = json.loads(
-            json.dumps(dict(constraints), ensure_ascii=False, sort_keys=True)
-        )
+        normalized = json.loads(json.dumps(dict(constraints), ensure_ascii=False, sort_keys=True))
     except (TypeError, ValueError) as exc:
         raise ValueError("generation constraints must be JSON serializable") from exc
     if not isinstance(normalized, dict):
@@ -1070,10 +1449,12 @@ def _repair_prompt(
         "previous_response": previous_payload,
         "contract_error": validation_error,
         "repair_rule": (
-            "Repair JSON shape, exact typed result fields, citations, tool binding, and graph "
-            "ordering. Recompute only from the same retrieved evidence and public operators "
-            "when required by the contract error. Never substitute a hidden or externally "
-            "supplied answer."
+            "Preserve the public-only boundary. If contract_error contains "
+            "search_empty_result, broaden or correct only the public search fields and never "
+            "invent evidence IDs. Otherwise repair JSON shape, exact typed result fields, "
+            "citations, tool binding, and graph ordering. Recompute only from the same "
+            "retrieved evidence and public operators when required by the contract error. "
+            "Never substitute a hidden or externally supplied answer."
         ),
     }
     return (
@@ -1105,6 +1486,11 @@ def _public_operation_catalog(
             "tool_capability": item["tool_capability"],
             "action_type": item["action_type"],
             "invariant_checks": item["invariant_checks"],
+            "compatibility_policy": item["compatibility_policy"],
+            "formula_id": item["formula_id"],
+            "input_role_contract": item["input_role_contract"],
+            "parameter_contract": item["parameter_contract"],
+            "downstream_selector_contract": item["downstream_selector_contract"],
         }
         for item in manifest
         if item["operator_id"] in allowed_operator_ids
@@ -1213,8 +1599,6 @@ def _final_answer_contract(task: TaskPublicSpec) -> dict[str, Any]:
             ],
         },
     }
-
-
 
 
 def _answer_result_seed(task: TaskPublicSpec, raw_output: Any) -> dict[str, Any]:

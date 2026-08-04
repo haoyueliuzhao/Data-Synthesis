@@ -205,9 +205,11 @@ u_bar_x = E_(z~pi_t)[u_z]
 C_hat_C(x, z) = <g_v, u_z - u_bar_x>
 ```
 
-An optimizer-aware score is valid only for the exact frozen optimizer state, learning rate,
-clipping, weight decay, trainable parameter subspace, and step policy. Under plain SGD with a
-positive scalar learning rate, GP-C is only a rescaling of GP-B and is not independent evidence.
+An optimizer-aware score is valid only for its exact frozen local optimizer contract. The current
+engineering approximation is one state-homogeneous cold-start AdamW step with zero weight decay,
+no inherited optimizer state, no mixed-state batch, fixed clipping, and a frozen LoRA parameter
+subspace. It is not an approximation to the full Student training trajectory. Under plain SGD with
+a positive scalar learning rate, GP-C is only a rescaling of GP-B and is not independent evidence.
 
 The approximation has four deliberately separated evidence layers:
 
@@ -250,11 +252,24 @@ orthogonal reconstruction error passes its frozen bound
 learning rate and optimizer match the intended production update
 ```
 
-Production authorization then requires at least 30 frozen tasks and three verified states per task,
-cross-split Gradient Projection stability, and independent target agreement. Both estimation and
-validation lower 95% bounds for macro Spearman must exceed zero; pairwise-concordance lower bounds
-must exceed 0.5; winner agreement and permutation tests must pass their frozen thresholds. The
-final-test target cannot select a learning rate, perturbation, objective split, or threshold.
+Production authorization requires at least 30 frozen tasks, exact nonuniform 3--5-state support,
+and 3--5 fresh independently verified trajectory draws per state. Draws must have unique
+trajectory identities and content hashes; repeated decision structures are observed outcomes
+rather than grounds for resampling. Objective support is split into 16
+estimation, 16 validation, and 16 sealed authorization records after a 4/8/16/32 support-scaling
+check. State targets are decomposed into aligned common and differential supervised-token regions;
+the full gradient must replay as their token-weighted composition, every record must retain both
+regions, and pooled task-level differential-token coverage must pass its frozen floor. Record- and
+state-level token fractions remain diagnostics, while differential-gradient signal remains a
+separate hard gate. Independent targets use multi-radius block-Hadamard central differences,
+Richardson extrapolation, null replay, and a post-global-update objective gradient. Jackknife
+pseudovalues carry realization uncertainty into materialized Contribution estimates.
+
+Rank evidence and induced-distribution evidence are both mandatory. Normalized target regret is
+defined only for tasks whose attainable target gain exceeds the preregistered floor; low-gain tasks
+remain in absolute-regret reporting and cannot be hidden behind a numeric denominator clamp. At
+least 80% of tasks must support normalization. The authorization partition cannot select a scale,
+perturbation, objective split, threshold, or estimator.
 
 A manifest fails closed on incomplete support, checkpoint or metric drift, split leakage,
 parameter-step non-identifiability, source-scale mismatch, failed rank evidence, or absent immutable

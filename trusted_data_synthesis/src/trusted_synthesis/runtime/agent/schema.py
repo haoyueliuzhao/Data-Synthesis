@@ -38,8 +38,13 @@ class AgentModelConfig(BaseModel):
     require_requested_model: bool = True
     preferred_model_patterns: tuple[str, ...] = ()
     input_cost_per_million: float = Field(default=0, ge=0)
+    input_cache_hit_cost_per_million: float | None = Field(default=None, ge=0)
+    input_cache_miss_cost_per_million: float | None = Field(default=None, ge=0)
     output_cost_per_million: float = Field(default=0, ge=0)
+    pricing_source_url: str | None = None
+    pricing_checked_at: str | None = None
     extra_headers: dict[str, str] = Field(default_factory=dict)
+    request_body_overrides: dict[str, Any] = Field(default_factory=dict)
     interaction_protocol: Literal["full_response", "host_instrumented"] = "full_response"
 
     @model_validator(mode="after")
@@ -49,10 +54,31 @@ class AgentModelConfig(BaseModel):
             "proxy-authorization",
             "x-api-key",
             "api-key",
+            "api_key",
+            "apikey",
         }
         observed = {key.casefold() for key in self.extra_headers}
         if observed & forbidden:
             raise ValueError("model credentials must be supplied only through api_key_env")
+        reserved_body_fields = {
+            "messages",
+            "model",
+            "max_tokens",
+            "response_format",
+        }
+        observed_body_fields = {key.casefold() for key in self.request_body_overrides}
+        if observed_body_fields & reserved_body_fields:
+            raise ValueError("request_body_overrides cannot replace core request fields")
+        if observed_body_fields & forbidden:
+            raise ValueError("model credentials cannot be supplied through request_body_overrides")
+        cache_prices = (
+            self.input_cache_hit_cost_per_million,
+            self.input_cache_miss_cost_per_million,
+        )
+        if (cache_prices[0] is None) != (cache_prices[1] is None):
+            raise ValueError("cache-aware pricing requires both hit and miss prices")
+        if cache_prices[0] is not None and self.input_cost_per_million:
+            raise ValueError("generic and cache-aware input prices cannot both be active")
         return self
 
     @property
@@ -73,10 +99,25 @@ class ModelCallTelemetry(BaseModel):
     http_status: int | None = None
     http_success: bool = False
     json_contract_success: bool = False
+    finish_reason: str | None = None
+    response_content_length: int | None = Field(default=None, ge=0)
+    reasoning_content_present: bool = False
+    reasoning_content_length: int | None = Field(default=None, ge=0)
+    reasoning_tokens: int | None = Field(default=None, ge=0)
     prompt_tokens: int | None = Field(default=None, ge=0)
+    prompt_cache_hit_tokens: int | None = Field(default=None, ge=0)
+    prompt_cache_miss_tokens: int | None = Field(default=None, ge=0)
     completion_tokens: int | None = Field(default=None, ge=0)
     total_tokens: int | None = Field(default=None, ge=0)
     estimated_cost: float | None = Field(default=None, ge=0)
+    cost_estimation_method: (
+        Literal[
+            "provider_cache_breakdown",
+            "conservative_cache_miss",
+            "generic_input_rate",
+        ]
+        | None
+    ) = None
     latency_ms: float | None = Field(default=None, ge=0)
     fallback_used: bool = False
     discovery_attempted: bool = False
@@ -175,9 +216,9 @@ class AgentActionInput(BaseModel):
     def validate_source_reference(self) -> AgentActionInput:
         if self.source == "evidence":
             if not self.evidence_id or self.step_index is not None:
-                raise ValueError("evidence inputs require only evidence_id")
+                raise ValueError("evidence inputs require evidence_id and forbid step_index")
         elif self.step_index is None or self.evidence_id is not None:
-            raise ValueError("step inputs require only step_index")
+            raise ValueError("step inputs require step_index and forbid evidence_id")
         return self
 
 
@@ -322,10 +363,7 @@ class HostInteractionProgress(BaseModel):
 
 def _replace_host_execution_refs(value: Any, public_refs: dict[str, str]) -> Any:
     if isinstance(value, dict):
-        return {
-            key: _replace_host_execution_refs(item, public_refs)
-            for key, item in value.items()
-        }
+        return {key: _replace_host_execution_refs(item, public_refs) for key, item in value.items()}
     if isinstance(value, list):
         return [_replace_host_execution_refs(item, public_refs) for item in value]
     if isinstance(value, tuple):

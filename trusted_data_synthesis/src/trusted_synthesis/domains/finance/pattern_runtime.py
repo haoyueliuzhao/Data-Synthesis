@@ -24,7 +24,7 @@ from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 
 class FinanceTaskPatternRuntime:
     runtime_id = "finance_task_pattern_runtime.v1"
-    runtime_version = "1.1.0"
+    runtime_version = "1.3.0"
     domain = "finance"
     renderer_ids: tuple[str, ...] = (
         "finance.fact_retrieval.v1",
@@ -302,8 +302,86 @@ class FinanceTaskPatternRuntime:
             retrieval_scope=resolved_retrieval_scope(evidence),
             answer_schema=answer_schema,
             oracle_selection_contract=selection_contract,
-            metadata={"domain_plugin_id": "finance_tasks.v2"},
+            metadata={
+                "domain_plugin_id": "finance_tasks.v4",
+                "agent_contract_guidance": _finance_agent_contract_guidance(
+                    pattern.task_type, evidence_by_role
+                ),
+            },
         )
+
+
+def _finance_agent_contract_guidance(
+    task_type: str,
+    evidence_by_role: dict[str, tuple[EvidenceItem, ...]],
+) -> dict[str, object]:
+    role_contract = {
+        role: tuple(
+            {
+                "predicate": item.predicate,
+                "subject_id": item.subject.subject_id,
+                "temporal_label": time_label(item),
+            }
+            for item in items
+        )
+        for role, items in sorted(evidence_by_role.items())
+    }
+    guidance: dict[str, object] = {
+        "evidence_roles": role_contract,
+        "general_rules": (
+            "Preserve the declared evidence roles and their order in every operation.",
+            "Use machine decimal strings without unit text and do not round implicitly.",
+        ),
+    }
+    terminal_operators = {
+        "fact_retrieval": "lookup",
+        "comparison": "compare",
+        "temporal_growth": "growth",
+        "temporal_absolute_change": "difference",
+        "registered_ratio": "ratio",
+        "derived_growth_comparison": "compare",
+        "temporal_average": "aggregate",
+    }
+    terminal_operator = terminal_operators.get(task_type)
+    if terminal_operator is not None:
+        guidance["terminal_operation_contract"] = {
+            "allowed_operator_ids": (terminal_operator,),
+            "rule": "the final host execution must directly produce the public answer semantics",
+        }
+    if task_type in {"temporal_growth", "temporal_absolute_change"}:
+        guidance["ordered_change"] = {
+            "input_role_order": ("earlier", "later"),
+            "rule": "the registered operation computes the later value from the earlier value",
+        }
+    elif task_type == "registered_ratio":
+        numerator = evidence_by_role["numerator"][0]
+        denominator = evidence_by_role["denominator"][0]
+        registered_pair = f"{numerator.predicate}/{denominator.predicate}"
+        guidance["registered_ratio"] = {
+            "input_role_order": ("numerator", "denominator"),
+            "exact_parameters": {"registered_pair": registered_pair},
+            "rule": "divide the numerator value by the denominator value",
+        }
+    elif task_type == "derived_growth_comparison":
+        guidance["derived_growth_comparison"] = {
+            "growth_role_pairs": (
+                ("left_earlier", "left_later"),
+                ("right_earlier", "right_later"),
+            ),
+            "growth_result_selector": "value",
+            "terminal_operator": "compare",
+            "rule": "compare the two growth outputs; difference alone cannot identify the winner",
+            "comparison_input_roles": ("left_growth", "right_growth"),
+        }
+    elif task_type == "temporal_average":
+        guidance["temporal_average"] = {
+            "input_role": "series",
+            "exact_parameters": {"method": "mean"},
+            "rule": "include every listed observation exactly once",
+        }
+    elif task_type == "comparison":
+        guidance["comparison"] = {"input_role_order": ("left", "right")}
+    return guidance
 
 
 def _time_range_phrase(earlier: EvidenceItem, later: EvidenceItem) -> str:

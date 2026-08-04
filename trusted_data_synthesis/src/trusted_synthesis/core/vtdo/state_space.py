@@ -14,7 +14,7 @@ from trusted_synthesis.core.trajectory.specification import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-STATE_SPACE_CONTRACT_VERSION = "trajectory_state_space.v1"
+STATE_SPACE_CONTRACT_VERSION = "trajectory_state_space.v3"
 
 AcquisitionRequirement = Literal["none", "bounded", "expanded", "multi_stage"]
 EvidenceSupportRequirement = Literal["required_roles", "expanded_context"]
@@ -26,6 +26,18 @@ ExecutionRequirement = Literal[
 ]
 VerificationRequirement = Literal["none", "output", "intermediate", "full"]
 LineageRequirement = Literal["direct", "citation_minimum", "output_upstream", "full"]
+RetrievalElaboration = Literal[
+    "unconstrained",
+    "required_only",
+    "semantic_context",
+    "full_corpus",
+]
+ExecutionElaboration = Literal[
+    "unconstrained",
+    "baseline_program",
+    "program_projection",
+    "transparent_projection",
+]
 
 
 class FrozenModel(BaseModel):
@@ -41,6 +53,8 @@ class AdmissibleTrajectoryVariation(FrozenModel):
     execution_requirement: ExecutionRequirement
     verification_requirement: VerificationRequirement
     lineage_requirement: LineageRequirement
+    retrieval_elaboration: RetrievalElaboration = "unconstrained"
+    execution_elaboration: ExecutionElaboration = "unconstrained"
     required_capabilities: tuple[CapabilityTag, ...] = ()
     minimum_tool_calls: int = Field(default=0, ge=0)
     minimum_evidence_count: int = Field(default=0, ge=0)
@@ -79,6 +93,8 @@ class PublicStateCondition(FrozenModel):
     execution_requirement: ExecutionRequirement
     verification_requirement: VerificationRequirement
     lineage_requirement: LineageRequirement
+    retrieval_elaboration: RetrievalElaboration = "unconstrained"
+    execution_elaboration: ExecutionElaboration = "unconstrained"
     required_capabilities: tuple[CapabilityTag, ...] = ()
     minimum_tool_calls: int = Field(default=0, ge=0)
     minimum_evidence_count: int = Field(default=0, ge=0)
@@ -193,6 +209,8 @@ def make_admissible_trajectory_variation(
     execution_requirement: ExecutionRequirement = "program_equivalent",
     verification_requirement: VerificationRequirement = "output",
     lineage_requirement: LineageRequirement = "direct",
+    retrieval_elaboration: RetrievalElaboration = "unconstrained",
+    execution_elaboration: ExecutionElaboration = "unconstrained",
     required_capabilities: tuple[CapabilityTag, ...] = (),
     minimum_tool_calls: int = 0,
     minimum_evidence_count: int = 0,
@@ -205,6 +223,8 @@ def make_admissible_trajectory_variation(
         "execution_requirement": execution_requirement,
         "verification_requirement": verification_requirement,
         "lineage_requirement": lineage_requirement,
+        "retrieval_elaboration": retrieval_elaboration,
+        "execution_elaboration": execution_elaboration,
         "required_capabilities": tuple(sorted(required_capabilities)),
         "minimum_tool_calls": minimum_tool_calls,
         "minimum_evidence_count": minimum_evidence_count,
@@ -253,6 +273,8 @@ def make_public_state_condition(
         "execution_requirement": variation.execution_requirement,
         "verification_requirement": variation.verification_requirement,
         "lineage_requirement": variation.lineage_requirement,
+        "retrieval_elaboration": variation.retrieval_elaboration,
+        "execution_elaboration": variation.execution_elaboration,
         "required_capabilities": variation.required_capabilities,
         "minimum_tool_calls": variation.minimum_tool_calls,
         "minimum_evidence_count": variation.minimum_evidence_count,

@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+import pytest
 
 from trusted_synthesis.core.evidence import EpistemicStatus, ScalarObservation
 from trusted_synthesis.core.evidence.schema import SourceAuthority
@@ -252,6 +253,14 @@ def test_finance_archive_contract_cases_are_deterministic_and_pinned(
     compiled, _ = _compile_runtime(first[0], tracked_task)
     assert compiled.sample.task_id == tracked_task.task_id
     assert first[0].source_grounding_verifier is not None
+
+    excluded = frozenset(item.evidence_version_id for item in first[0].corpus.evidence)
+    with pytest.raises(ValueError, match="lacks a corpus-disjoint ContractCase prefix"):
+        provider.contract_cases(
+            1,
+            seed=31,
+            excluded_evidence_version_ids=excluded,
+        )
 
 
 def test_finance_archive_contract_cases_skip_invalid_mined_binding(

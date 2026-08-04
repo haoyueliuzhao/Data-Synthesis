@@ -41,25 +41,25 @@ from trusted_synthesis.core.vtdo import (
     assemble_vtdo_round,
     compile_trajectory_state_space,
     condition_on_accepted_support,
-    contribution_current_distribution_hash,
     empty_optimizer_state_hash,
     estimate_contributions_from_probes,
     estimate_exploration_state_validity,
     estimate_importance_weighted_pushforward,
     estimate_pushforward_distribution,
     estimate_state_validity,
+    estimate_synthetic_oracle_contributions,
     make_admissible_trajectory_variation,
     make_conditional_distribution,
     make_contribution_data_isolation_contract,
     make_contribution_metric_contract,
     make_contribution_probe_observation,
     make_contribution_probe_protocol,
-    make_contribution_production_authorization,
-    make_contribution_rank_validation_evidence,
     make_exploration_distribution,
     make_probe_optimizer_contract,
+    make_public_state_condition,
     make_public_state_generation_request,
     make_state_validity_partition,
+    make_synthetic_oracle_contribution_observation,
     make_task_conditioned_policy,
     make_trajectory_state_catalog,
     make_unconditioned_reachability_manifest,
@@ -84,8 +84,6 @@ from trusted_synthesis.experiments.cross_domain_contract_suite.fixtures import (
 from trusted_synthesis.experiments.vtdo_experiment.dynamics import _real_round_dynamics
 from trusted_synthesis.experiments.vtdo_experiment.real_rounds import (
     RealRoundAssemblyInput,
-    _probe_observation_set_hash,
-    _probe_protocol_family_hash,
     assemble_real_vtdo_rounds,
     real_round_assembly_input_id,
 )
@@ -221,6 +219,49 @@ def test_structural_quotient_preserves_result_and_evidence_semantics() -> None:
     assert original.state.result_semantics_hash != result_state.state.result_semantics_hash
     assert original.state.state_id != evidence_state.state.state_id
     assert original.state.evidence_lineage_hash != evidence_state.state.evidence_lineage_hash
+
+
+def test_structural_quotient_erases_equivalent_numeric_formatting() -> None:
+    _, _, candidate, evaluator, context = _case_runtime(1)
+    report = evaluator.evaluate(context, candidate)
+    answer = deepcopy(candidate.final_answer)
+    answer["result"]["difference"] = "0.8"
+    steps = []
+    for step in candidate.steps:
+        observation = deepcopy(step.observation)
+        result = observation.get("result")
+        if isinstance(result, dict) and result.get("difference") == "0.80":
+            result["difference"] = "8e-1"
+        verified_result = observation.get("verified_result")
+        if isinstance(verified_result, dict) and verified_result.get("difference") == "0.80":
+            verified_result["difference"] = 0.8
+        steps.append(step.model_copy(update={"observation": observation}))
+    formatted = candidate.model_copy(
+        update={
+            "trajectory_id": canonical_hash(
+                {"source": candidate.trajectory_id, "variant": "numeric-format"},
+                prefix="trajectory_variant:",
+            ),
+            "steps": tuple(steps),
+            "final_answer": answer,
+        }
+    )
+
+    original = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=report.program_node_mapping,
+    )
+    normalized = map_trajectory_to_state(
+        context,
+        formatted,
+        program_node_aliases=report.program_node_mapping,
+    )
+
+    assert original.trajectory_hash != normalized.trajectory_hash
+    assert original.state.state_id == normalized.state.state_id
+    assert original.state.operation_graph_hash == normalized.state.operation_graph_hash
+    assert original.state.result_semantics_hash == normalized.state.result_semantics_hash
 
 
 def test_same_quotient_state_can_contain_valid_and_invalid_realizations() -> None:
@@ -710,6 +751,8 @@ def test_state_condition_controllability_rejects_host_blocked_targets() -> None:
         evidence_support_requirement="required_roles",
         verification_requirement="full",
         lineage_requirement="direct",
+        retrieval_elaboration="required_only",
+        execution_elaboration="baseline_program",
         required_capabilities=report.attributes.capability_tags,
         minimum_tool_calls=report.attributes.tool_call_count,
         minimum_evidence_count=report.attributes.evidence_dependency_count,
@@ -721,6 +764,8 @@ def test_state_condition_controllability_rejects_host_blocked_targets() -> None:
         evidence_support_requirement="expanded_context",
         verification_requirement="full",
         lineage_requirement="full",
+        retrieval_elaboration="full_corpus",
+        execution_elaboration="transparent_projection",
         required_capabilities=report.attributes.capability_tags,
         minimum_tool_calls=report.attributes.tool_call_count,
         minimum_evidence_count=report.attributes.evidence_dependency_count,
@@ -760,12 +805,16 @@ def test_state_condition_controllability_rejects_host_blocked_targets() -> None:
     assert bounded_audit.condition_requestable
     assert not bounded_audit.blocked_dimensions
     assert constraints["target_behavior"]["acquisition_requirement"] == "bounded"
+    assert constraints["control_plan"]["retrieval"]["mode"] == "required_only"
+    assert constraints["control_plan"]["execution"]["mode"] == "baseline_program"
     assert "condition_id" not in constraints["target_behavior"]
     assert not expanded_audit.condition_requestable
     assert set(expanded_audit.blocked_dimensions) == {
         "acquisition_requirement",
         "evidence_support_requirement",
+        "execution_elaboration",
         "lineage_requirement",
+        "retrieval_elaboration",
     }
 
 
@@ -959,6 +1008,45 @@ def test_legal_and_science_compile_multiple_states_inside_one_omega() -> None:
         )
 
 
+def test_search_only_distractor_identity_is_quantized_within_context_class() -> None:
+    case, _, candidate, evaluator, context = _case_runtime(0)
+    selected_ids = {
+        evidence_id
+        for step in candidate.steps
+        if step.action.value != "search"
+        for evidence_id in step.evidence_ids
+    }
+    distractor_ids = [
+        item.evidence_id for item in case.corpus.evidence if item.evidence_id not in selected_ids
+    ]
+    assert len(distractor_ids) >= 2
+
+    left = _expanded_retrieval_variant(candidate, tuple(sorted((*selected_ids, distractor_ids[0]))))
+    right = _expanded_retrieval_variant(
+        candidate, tuple(sorted((*selected_ids, distractor_ids[1])))
+    )
+    full = _expanded_retrieval_variant(
+        candidate, tuple(item.evidence_id for item in case.corpus.evidence)
+    )
+    left_report = evaluator.evaluate(context, left)
+    right_report = evaluator.evaluate(context, right)
+    full_report = evaluator.evaluate(context, full)
+    assert left_report.valid and right_report.valid and full_report.valid
+
+    left_state = map_trajectory_to_state(
+        context, left, program_node_aliases=left_report.program_node_mapping
+    )
+    right_state = map_trajectory_to_state(
+        context, right, program_node_aliases=right_report.program_node_mapping
+    )
+    full_state = map_trajectory_to_state(
+        context, full, program_node_aliases=full_report.program_node_mapping
+    )
+
+    assert left_state.state.state_id == right_state.state.state_id
+    assert left_state.state.state_id != full_state.state.state_id
+
+
 def test_sparse_training_support_remains_explorable_under_full_catalog_q() -> None:
     training = make_conditional_distribution(
         "task:x",
@@ -1087,7 +1175,10 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
             invalid_state.state_id: invalid,
         },
     )
-    roles = _role_contract(provider.provider_id)
+    roles = _role_contract(
+        provider.provider_id,
+        beneficiary_model_state_id="synthetic_oracle",
+    )
     batch = StateConditionedTrajectoryExplorer(provider, evaluator).explore(
         context,
         catalog,
@@ -1127,31 +1218,22 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
     assert partition.accepted_state_ids == (valid_state.state_id,)
     assert partition.rejected_state_ids == (invalid_state.state_id,)
 
-    round_probes = (
-        _probe(
-            context.task.task_id,
-            valid_state.state_id,
-            baseline=0.5,
-            intervention=0.7,
-            state_ids=(valid_state.state_id,),
-            seed=7,
-        ),
-        _probe(
-            context.task.task_id,
-            valid_state.state_id,
-            baseline=0.5,
-            intervention=0.7,
-            state_ids=(valid_state.state_id,),
-            seed=13,
-        ),
-    )
     accepted_prior, _ = condition_on_accepted_support(
         pushforward.distribution,
         exploration.coverage_prior,
         partition,
     )
-    round_authorization = _production_authorization(
-        estimate_contributions_from_probes(accepted_prior, round_probes)
+    contribution_manifest = estimate_synthetic_oracle_contributions(
+        accepted_prior,
+        (
+            make_synthetic_oracle_contribution_observation(
+                task_condition_id=context.task.task_id,
+                round_index=accepted_prior.round_index,
+                state_id=valid_state.state_id,
+                oracle_contribution=0.2,
+                oracle_protocol_hash="synthetic-round:0",
+            ),
+        ),
     )
     round_artifact = assemble_vtdo_round(
         state_catalog=catalog,
@@ -1160,8 +1242,8 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
         exploration_batch=batch,
         pushforward_estimate=pushforward,
         validity_partition=partition,
-        contribution_probes=round_probes,
-        contribution_production_authorization=round_authorization,
+        contribution_manifest=contribution_manifest,
+        contribution_approximation_authorization=None,
         energy_config=AnchoredEnergyConfig(
             epsilon=0.01,
             contribution_temperature=0.2,
@@ -1175,24 +1257,25 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
     assert round_artifact.status == "passed"
     assert round_artifact.update.next_distribution.probabilities == {valid_state.state_id: 1.0}
 
-    wrong_probes = tuple(
-        _probe(
-            context.task.task_id,
-            valid_state.state_id,
-            baseline=0.5,
-            intervention=0.9,
-            state_ids=(valid_state.state_id,),
-            seed=seed,
-        )
-        for seed in (7, 13)
+    wrong_manifest = estimate_synthetic_oracle_contributions(
+        accepted_prior,
+        (
+            make_synthetic_oracle_contribution_observation(
+                task_condition_id=context.task.task_id,
+                round_index=accepted_prior.round_index,
+                state_id=valid_state.state_id,
+                oracle_contribution=0.9,
+                oracle_protocol_hash="synthetic-round:tampered",
+            ),
+        ),
     )
     round_values = {
         field: getattr(round_artifact, field)
         for field in type(round_artifact).model_fields
         if field != "round_id"
     }
-    round_values["contribution_probes"] = wrong_probes
-    with pytest.raises(ValueError, match="does not replay its probes"):
+    round_values["contribution_manifest"] = wrong_manifest
+    with pytest.raises(ValueError, match="does not replay the complete round evidence"):
         VTDORoundArtifact(round_id=round_artifact.round_id, **round_values)
 
     artifacts, materialization = ValidTrajectoryStateMaterializer(
@@ -1253,6 +1336,23 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
                 accept_at_or_above=0.75,
             ),
         )
+        next_accepted_prior, _ = condition_on_accepted_support(
+            next_pushforward.distribution,
+            next_exploration.coverage_prior,
+            next_partition,
+        )
+        next_manifest = estimate_synthetic_oracle_contributions(
+            next_accepted_prior,
+            (
+                make_synthetic_oracle_contribution_observation(
+                    task_condition_id=context.task.task_id,
+                    round_index=next_accepted_prior.round_index,
+                    state_id=valid_state.state_id,
+                    oracle_contribution=0.2,
+                    oracle_protocol_hash=f"synthetic-round:{round_index}",
+                ),
+            ),
+        )
         next_round = assemble_vtdo_round(
             state_catalog=catalog,
             role_contract=roles,
@@ -1260,27 +1360,8 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
             exploration_batch=next_batch,
             pushforward_estimate=next_pushforward,
             validity_partition=next_partition,
-            contribution_probes=(
-                _probe(
-                    context.task.task_id,
-                    valid_state.state_id,
-                    baseline=0.5,
-                    intervention=0.7,
-                    state_ids=(valid_state.state_id,),
-                    round_index=round_index,
-                    seed=7,
-                ),
-                _probe(
-                    context.task.task_id,
-                    valid_state.state_id,
-                    baseline=0.5,
-                    intervention=0.7,
-                    state_ids=(valid_state.state_id,),
-                    round_index=round_index,
-                    seed=13,
-                ),
-            ),
-            contribution_production_authorization=round_authorization,
+            contribution_manifest=next_manifest,
+            contribution_approximation_authorization=None,
             energy_config=round_artifact.update.energy_config,
         )
         direct_rounds.append(next_round)
@@ -1293,18 +1374,20 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
             "role_contract": item.role_contract,
             "exploration": item.exploration,
             "exploration_batch": item.exploration_batch,
-            "contribution_probes": item.contribution_probes,
-            "contribution_production_authorization": (item.contribution_production_authorization),
+            "contribution_manifest": item.contribution_manifest,
+            "contribution_approximation_authorization": (
+                item.contribution_approximation_authorization
+            ),
+            "contribution_source_artifact_hash": (
+                item.contribution_manifest.estimation_protocol_hash
+            ),
             "validity_thresholds": ValidityThresholds(reject_below=0.25, accept_at_or_above=0.75),
             "validity_prior_success": 0.0,
             "validity_prior_failure": 0.0,
             "pushforward_prior_strength": 1.0,
             "energy_config": item.update.energy_config,
             "explorer_checkpoint_hash": "explorer-checkpoint:v1",
-            "beneficiary_checkpoint_hash": "checkpoint:qwen-round-3",
-            "probe_protocol_id": item.contribution_probes[0].probe_contract.protocol_id,
-            "probe_protocol_family_hash": _probe_protocol_family_hash(item.contribution_probes),
-            "probe_set_hash": _probe_observation_set_hash(item.contribution_probes),
+            "beneficiary_checkpoint_hash": "synthetic_oracle",
             "catalog_version": "test-catalog:v1",
         }
         provisional_input = RealRoundAssemblyInput.model_construct(
@@ -1316,8 +1399,7 @@ def test_round_artifact_replays_exploration_estimation_update_and_materializatio
                 **input_values,
             )
         )
-    assert len({item.probe_set_hash for item in assembly_inputs}) == 3
-    assert len({item.probe_protocol_family_hash for item in assembly_inputs}) == 1
+    assert len({item.contribution_source_artifact_hash for item in assembly_inputs}) == 3
     input_path = tmp_path / "three_round_inputs.jsonl"
     output_path = tmp_path / "three_round_artifacts.jsonl"
     input_path.write_text(
@@ -1399,6 +1481,96 @@ def test_materializer_rejects_reuse_of_state_discovery_trajectory() -> None:
     assert materialization.distribution_fidelity_error == 1.0
 
 
+def test_off_target_trace_does_not_block_a_later_on_target_quota() -> None:
+    _, compiled, candidate, evaluator, context = _case_runtime(0)
+    expanded = _expanded_retrieval_variant(
+        candidate,
+        tuple(item.evidence_id for item in context.public_corpus.evidence),
+    )
+    compact_report = evaluator.evaluate(context, candidate)
+    expanded_report = evaluator.evaluate(context, expanded)
+    assert compact_report.valid and expanded_report.valid
+    compact_assignment = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=compact_report.program_node_mapping,
+    )
+    expanded_assignment = map_trajectory_to_state(
+        context,
+        expanded,
+        program_node_aliases=expanded_report.program_node_mapping,
+    )
+    assignments = {
+        compact_assignment.state.state_id: (compact_assignment, compact_report, candidate),
+        expanded_assignment.state.state_id: (expanded_assignment, expanded_report, expanded),
+    }
+    assert len(assignments) == 2
+    compact_variation = make_admissible_trajectory_variation(
+        acquisition_requirement="bounded",
+        evidence_support_requirement="required_roles",
+        retrieval_elaboration="required_only",
+    )
+    expanded_variation = make_admissible_trajectory_variation(
+        acquisition_requirement="expanded",
+        evidence_support_requirement="expanded_context",
+        retrieval_elaboration="full_corpus",
+    )
+    compilation = compile_trajectory_state_space(
+        compiled.joint_compilation,
+        _TestVariationProvider((compact_variation, expanded_variation)),
+    )
+    ordered_state_ids = tuple(sorted(assignments))
+    actual_state_id = ordered_state_ids[1]
+    actual_source = assignments[actual_state_id][2]
+    condition_by_assignment_id = {
+        assignments[ordered_state_ids[0]][0].assignment_id: make_public_state_condition(
+            context.task.task_id,
+            compact_variation,
+        ),
+        assignments[ordered_state_ids[1]][0].assignment_id: make_public_state_condition(
+            context.task.task_id,
+            expanded_variation,
+        ),
+    }
+    catalog = make_trajectory_state_catalog(
+        tuple(assignments[state_id] for state_id in ordered_state_ids),
+        state_space_compilation=compilation,
+        discovery_method="verified_test_exploration",
+        revision_reason="test_off_target_trace_is_not_released_dedup_state",
+        public_conditions_by_assignment_id=condition_by_assignment_id,
+    )
+    distribution = make_conditional_distribution(
+        context.task.task_id,
+        {state_id: 0.5 for state_id in ordered_state_ids},
+        round_index=1,
+    )
+    provider = _AlwaysActualStateProvider(actual_source)
+    roles = _role_contract(provider.provider_id)
+
+    artifacts, report = ValidTrajectoryStateMaterializer(provider, evaluator).materialize(
+        context,
+        catalog,
+        distribution,
+        roles,
+        total_budget=2,
+        requested_state_counts={state_id: 1 for state_id in ordered_state_ids},
+        maximum_attempt_multiplier=1,
+        seed=31,
+    )
+
+    assert len(artifacts) == 1
+    assert artifacts[0].target_state.state_id == actual_state_id
+    assert report.off_target_state_counts[ordered_state_ids[0]] == 1
+    assert report.observed_state_counts_by_target[ordered_state_ids[0]] == {
+        actual_state_id: 1
+    }
+    assert report.observed_state_counts_by_target[actual_state_id] == {
+        actual_state_id: 1
+    }
+    assert "duplicate_decision_trace" not in report.failure_counts
+    assert report.failure_counts["target_quota_unfilled"] == 1
+
+
 def test_materializer_rejects_reidentified_discovery_decision_trace() -> None:
     _, compiled, candidate, evaluator, context = _case_runtime(0)
     report = evaluator.evaluate(context, candidate)
@@ -1443,8 +1615,75 @@ def test_materializer_rejects_reidentified_discovery_decision_trace() -> None:
     assert "discovery_trajectory_reuse" not in materialization.failure_counts
 
 
+def test_materializer_preserves_independent_draws_with_one_decision_structure() -> None:
+    _, compiled, candidate, evaluator, context = _case_runtime(0)
+    report = evaluator.evaluate(context, candidate)
+    assignment = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=report.program_node_mapping,
+    )
+    state_space_compilation = compile_trajectory_state_space(
+        compiled.joint_compilation,
+        _TestVariationProvider((observed_variation(report.attributes),)),
+    )
+    catalog = make_trajectory_state_catalog(
+        ((assignment, report, candidate),),
+        state_space_compilation=state_space_compilation,
+        discovery_method="verified_test_exploration",
+        revision_reason="test_independent_draws_do_not_bias_structural_modes",
+    )
+    distribution = make_conditional_distribution(
+        context.task.task_id,
+        {assignment.state.state_id: 1.0},
+        round_index=1,
+    )
+    provider = _ReplayDecisionTraceProvider(candidate)
+    roles = _role_contract(provider.provider_id)
+
+    artifacts, materialization = ValidTrajectoryStateMaterializer(
+        provider,
+        evaluator,
+    ).materialize(
+        context,
+        catalog,
+        distribution,
+        roles,
+        total_budget=3,
+        seed=29,
+        realization_uniqueness_policy="independent_trajectory_draws",
+    )
+
+    assert materialization.status == "passed"
+    assert materialization.realization_uniqueness_policy == "independent_trajectory_draws"
+    assert len(artifacts) == 3
+    assert provider.yield_count == 3
+    assert materialization.unique_trajectory_hash_count == 3
+    assert materialization.unique_decision_trace_count == 1
+    assert "discovery_decision_trace_reuse" not in materialization.failure_counts
+    assert "duplicate_decision_trace" not in materialization.failure_counts
+
+
 class _ReplayDecisionTraceProvider:
     provider_id = "decision_trace_replay_provider:test"
+    provider_version = "1.0.0"
+
+    def __init__(self, source: Trajectory) -> None:
+        self._source = source
+        self.yield_count = 0
+
+    def generate(self, request):
+        for index in range(request.candidate_count):
+            self.yield_count += 1
+            yield _trajectory_variant(
+                self._source,
+                f"reidentified-discovery-{request.seed}-{index}",
+                generator_version=f"runtime-{index}",
+            )
+
+
+class _AlwaysActualStateProvider:
+    provider_id = "always_actual_state_provider:test"
     provider_version = "1.0.0"
 
     def __init__(self, source: Trajectory) -> None:
@@ -1454,8 +1693,9 @@ class _ReplayDecisionTraceProvider:
         for index in range(request.candidate_count):
             yield _trajectory_variant(
                 self._source,
-                f"reidentified-discovery-{request.seed}-{index}",
-                generator_version=f"runtime-{index}",
+                f"actual-state-{request.seed}-{index}",
+                generator_version=f"materializer-{request.seed}-{index}",
+                search_variant="shared-materialized-route",
             )
 
 
@@ -1799,19 +2039,17 @@ def _update_inputs(
         policy="frozen_target_coverage",
     )
     state_ids = tuple(sorted(probabilities))
-    probes = tuple(
-        _probe(
-            condition,
-            state_id,
-            baseline=0.5,
-            intervention=(0.6 if index == 0 else 0.9) + (0.001 if seed == 13 else 0.0),
-            state_ids=state_ids,
-            seed=seed,
+    observations = tuple(
+        make_synthetic_oracle_contribution_observation(
+            task_condition_id=condition,
+            round_index=prior.round_index,
+            state_id=state_id,
+            oracle_contribution=0.1 + index * 0.3,
+            oracle_protocol_hash="synthetic-update-equation:test-v1",
         )
         for index, state_id in enumerate(state_ids)
-        for seed in (7, 13)
     )
-    manifest = estimate_contributions_from_probes(prior, probes)
+    manifest = estimate_synthetic_oracle_contributions(prior, observations)
     validity = tuple(_validity_estimate(condition, state_id, 1.0) for state_id in state_ids)
     config = AnchoredEnergyConfig(
         epsilon=0.01,
@@ -1827,63 +2065,23 @@ def _update_inputs(
         coverage,
         validity,
         manifest,
-        _production_authorization(manifest),
+        None,
         config,
-        _role_contract("provider:explorer-v1"),
+        _role_contract(
+            "provider:explorer-v1",
+            beneficiary_model_state_id="synthetic_oracle",
+        ),
     )
 
 
-def _production_authorization(manifest):
-    def evidence(role):
-        return make_contribution_rank_validation_evidence(
-            evaluation_role=role,
-            macro_task_spearman=0.8,
-            macro_task_spearman_ci95=(0.2, 0.95),
-            macro_pairwise_concordance=0.8,
-            macro_pairwise_concordance_ci95=(0.6, 0.95),
-            winner_agreement_rate=0.8,
-            macro_spearman_p_value=0.01,
-            macro_pairwise_concordance_p_value=0.01,
-        )
-
-    task_condition_ids = (
-        manifest.task_condition_id,
-        *(f"task:authorized:{index}" for index in range(29)),
-    )
-    task_distribution_hashes = {
-        task_id: (
-            contribution_current_distribution_hash(
-                manifest.task_condition_id,
-                {item.state_id: item.current_probability for item in manifest.estimates},
-            )
-            if task_id == manifest.task_condition_id
-            else f"test-current-distribution:{task_id}"
-        )
-        for task_id in task_condition_ids
-    }
-    return make_contribution_production_authorization(
-        manifest=manifest,
-        analysis_version="test_contribution_validation.v1",
-        analysis_report_hash="test-contribution-report:passed",
-        task_condition_ids=task_condition_ids,
-        task_distribution_hashes=task_distribution_hashes,
-        task_count=30,
-        state_count=60,
-        internal_validation_record_count=10,
-        final_test_record_count=10,
-        estimation_seed_count=2,
-        validation_seed_count=2,
-        intervention_seed_count=2,
-        cross_seed_stability=evidence("cross_seed_stability"),
-        independent_final_test=evidence("independent_final_test"),
-        heldout_final_test=evidence("heldout_final_test"),
-    )
-
-
-def _role_contract(explorer_provider_id: str):
+def _role_contract(
+    explorer_provider_id: str,
+    *,
+    beneficiary_model_state_id: str = "model:qwen-round-3",
+):
     return make_vtdo_role_contract(
         explorer_provider_id=explorer_provider_id,
         materialization_provider_id=explorer_provider_id,
-        beneficiary_model_state_id="model:qwen-round-3",
+        beneficiary_model_state_id=beneficiary_model_state_id,
         final_student_model_id="model:qwen-student-round-4",
     )

@@ -5,15 +5,12 @@ import math
 from collections import defaultdict
 from itertools import combinations
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, NoReturn
 
 from trusted_synthesis.core.vtdo import (
     ContributionEstimationManifest,
-    ContributionProductionAuthorization,
     contribution_distribution_contract_hash,
     contribution_task_population_hash,
-    make_contribution_production_authorization,
-    make_contribution_rank_validation_evidence,
     make_probe_optimizer_contract,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_horizon import (
@@ -449,126 +446,15 @@ def _internal_validation_set_id(plan: dict[str, Any]) -> str:
     )
 
 
-def _rank_validation_evidence(
-    comparison: dict[str, Any],
-    *,
-    role: Literal[
-        "cross_seed_stability",
-        "independent_final_test",
-        "heldout_final_test",
-    ],
-):
-    permutation = comparison["permutation_test"]
-    return make_contribution_rank_validation_evidence(
-        evaluation_role=role,
-        macro_task_spearman=float(comparison["macro_task_spearman"]),
-        macro_task_spearman_ci95=tuple(comparison["macro_task_spearman_ci95"]),
-        macro_pairwise_concordance=float(comparison["macro_pairwise_concordance"]),
-        macro_pairwise_concordance_ci95=tuple(comparison["macro_pairwise_concordance_ci95"]),
-        winner_agreement_rate=float(comparison["winner_agreement_rate"]),
-        macro_spearman_p_value=float(permutation["macro_spearman_p_value"]),
-        macro_pairwise_concordance_p_value=float(permutation["macro_pairwise_concordance_p_value"]),
-    )
-
-
 def issue_contribution_production_authorization(
     *,
     analysis_report: dict[str, Any],
     manifest: ContributionEstimationManifest,
-) -> ContributionProductionAuthorization:
-    """Issue the only credential that lets a real Probe affect VTDO energy."""
-
-    _assert_canonical_artifact_hash(
-        analysis_report,
-        field="report_hash",
-        prefix="finance_contribution_estimand_analysis:",
-        label="Contribution estimand analysis",
-    )
-    if analysis_report.get("analysis_version") != CONTRIBUTION_ESTIMAND_ANALYSIS_VERSION:
-        raise ValueError("Contribution authorization requires the current analysis contract")
-    if not (
-        analysis_report.get("production_contribution_allowed") is True
-        and analysis_report.get("production_authorization_issuable") is True
-        and analysis_report.get("status") == "passed"
-        and all(analysis_report.get("production_support_gates", {}).values())
-    ):
-        raise ValueError("Contribution analysis did not pass all production gates")
-    if int(analysis_report.get("minimum_task_count", 0)) < PRODUCTION_MINIMUM_TASK_COUNT:
-        raise ValueError("Contribution analysis weakened the task-population gate")
-    if (
-        int(analysis_report.get("minimum_evaluation_records", 0))
-        < PRODUCTION_MINIMUM_EVALUATION_RECORDS
-    ):
-        raise ValueError("Contribution analysis weakened the evaluation-support gate")
-    if (
-        int(analysis_report.get("minimum_seed_replicates_per_role", 0))
-        < PRODUCTION_MINIMUM_SEEDS_PER_SPLIT
-    ):
-        raise ValueError("Contribution analysis weakened the seed-replication gate")
-    selected_seed_counts = analysis_report.get("selected_seed_counts")
-    if (
-        not isinstance(selected_seed_counts, dict)
-        or min(int(value) for value in selected_seed_counts.values())
-        < PRODUCTION_MINIMUM_SEEDS_PER_SPLIT
-    ):
-        raise ValueError("Contribution authorization lacks four seeds per role")
-    horizon = analysis_report.get("validated_production_horizon")
-    if horizon is None:
-        raise ValueError("Contribution analysis did not validate a production horizon")
-    selected_rows = [
-        item for item in analysis_report["horizon_rows"] if int(item["horizon"]) == int(horizon)
-    ]
-    if len(selected_rows) != 1 or selected_rows[0].get("rank_gate_passed") is not True:
-        raise ValueError("validated Contribution horizon has no unique passing evidence")
-    selected = selected_rows[0]
-    rebind = selected["rebind_contract"]
-    expected_manifest_identity = {
-        "beneficiary_model_state_id": rebind["beneficiary_model_state_id"],
-        "beneficiary_checkpoint_hash": rebind["beneficiary_checkpoint_hash"],
-        "target_metric_id": rebind["target_metric_id"],
-        "probe_optimizer_contract_id": rebind["probe_optimizer_contract_id"],
-        "probe_adaptation_horizon": int(horizon),
-        "uncertainty_statistic": rebind["uncertainty_statistic"],
-        "uncertainty_penalty_coefficient": rebind["uncertainty_penalty_coefficient"],
-        "production_contribution_field": CORE_PRODUCTION_CONTRIBUTION_FIELD,
-        "target_evaluation_distribution_id": analysis_report["internal_validation_set_id"],
-        "final_test_set_id": analysis_report["final_test_set_id"],
-    }
-    observed_manifest_identity = manifest.model_dump(
-        mode="python", include=set(expected_manifest_identity)
-    )
-    if observed_manifest_identity != expected_manifest_identity:
-        mismatched = tuple(
-            key
-            for key, value in expected_manifest_identity.items()
-            if observed_manifest_identity.get(key) != value
-        )
-        raise ValueError(f"Contribution manifest does not match validated analysis:{mismatched}")
-    seed_counts = analysis_report["selected_seed_counts"]
-    return make_contribution_production_authorization(
-        manifest=manifest,
-        analysis_version=str(analysis_report["analysis_version"]),
-        analysis_report_hash=str(analysis_report["report_hash"]),
-        task_condition_ids=analysis_report["task_condition_ids"],
-        task_distribution_hashes=analysis_report["task_distribution_hashes"],
-        task_count=int(analysis_report["task_count"]),
-        state_count=int(analysis_report["state_count"]),
-        internal_validation_record_count=int(analysis_report["internal_validation_record_count"]),
-        final_test_record_count=int(analysis_report["final_test_record_count"]),
-        estimation_seed_count=int(seed_counts["estimation"]),
-        validation_seed_count=int(seed_counts["validation"]),
-        intervention_seed_count=int(seed_counts["intervention"]),
-        cross_seed_stability=_rank_validation_evidence(
-            selected["seed_stability"], role="cross_seed_stability"
-        ),
-        independent_final_test=_rank_validation_evidence(
-            selected["independent_final_test_validity"],
-            role="independent_final_test",
-        ),
-        heldout_final_test=_rank_validation_evidence(
-            selected["heldout_final_test_validity"],
-            role="heldout_final_test",
-        ),
+) -> NoReturn:
+    del analysis_report, manifest
+    raise ValueError(
+        "local-Probe production authorization was retired; use the frozen "
+        "Gradient Projection ContributionApproximationAuthorization protocol"
     )
 
 
@@ -940,8 +826,10 @@ def analyze_contribution_estimands(
         ),
         "final_test_support_sufficient": final_test_count >= minimum_evaluation_records,
     }
-    production_allowed = bool(all(support_gates.values()))
-    production_blockers = tuple(key for key, passed in support_gates.items() if not passed)
+    local_validation_passed = bool(all(support_gates.values()))
+    local_validation_blockers = tuple(
+        key for key, passed in support_gates.items() if not passed
+    )
     task_population_hash = contribution_task_population_hash(task_condition_ids)
     analysis_report: dict[str, Any] = {
         "analysis_version": CONTRIBUTION_ESTIMAND_ANALYSIS_VERSION,
@@ -963,13 +851,13 @@ def analyze_contribution_estimands(
         ],
         "horizon_rows": horizon_rows,
         "cross_horizon_probe": cross_horizon_probe,
-        "rank_validated_production_horizons": [
+        "rank_validated_local_probe_horizons": [
             int(item["horizon"]) for item in rank_validated_production_rows
         ],
-        "production_seed_eligible_horizons": [
+        "seed_qualified_local_probe_horizons": [
             int(item["horizon"]) for item in seed_replicated_production_rows
         ],
-        "jointly_eligible_production_horizons": [
+        "jointly_validated_local_probe_horizons": [
             int(item["horizon"]) for item in production_candidate_rows
         ],
         "cross_horizon_intervention": cross_horizon_intervention,
@@ -982,9 +870,9 @@ def analyze_contribution_estimands(
         "exploratory_point_robustness_score": (
             float(exploratory_selected["point_robustness_score"]) if exploratory_selected else None
         ),
-        "validated_production_horizon": (
+        "validated_local_probe_horizon": (
             int(production_selected["horizon"])
-            if production_allowed and production_selected
+            if local_validation_passed and production_selected
             else None
         ),
         "selected_seed_counts": selected_seed_counts,
@@ -994,19 +882,17 @@ def analyze_contribution_estimands(
         "minimum_task_count": minimum_task_count,
         "minimum_evaluation_records": minimum_evaluation_records,
         "minimum_seed_replicates_per_role": minimum_seed_replicates_per_role,
-        "production_support_gates": support_gates,
-        "production_blockers": production_blockers,
-        "production_contribution_allowed": production_allowed,
-        "production_authorization_issuable": production_allowed,
-        "recommended_production_action": (
-            "enable_validated_horizon" if production_allowed else "disable_contribution_component"
-        ),
-        "status": "passed" if production_allowed else "partial",
+        "local_probe_support_gates": support_gates,
+        "local_probe_validation_blockers": local_validation_blockers,
+        "local_probe_validation_passed": local_validation_passed,
+        "production_usage_allowed": False,
+        "recommended_action": "retain_local_probe_as_validation_only",
+        "status": "diagnostic_passed" if local_validation_passed else "partial",
         "claim_boundary": (
-            "The selected horizon is exploratory until both the task-population and "
-            "evaluation-support gates pass. C^h is not evidence for any other horizon "
-            "or for full Student-training utility. Strict identity reanalysis preserves "
-            "the original Intervention lineage and does not relabel old observations."
+            "A validated Local Probe horizon is diagnostic evidence only. It cannot "
+            "authorize a VTDO distribution update or stand in for Gradient Projection "
+            "or full Student-training utility. Strict identity reanalysis preserves the "
+            "original Intervention lineage and does not relabel old observations."
         ),
     }
     analysis_report["report_hash"] = canonical_hash(
@@ -1036,8 +922,6 @@ def main() -> None:
         type=int,
         default=PRODUCTION_MINIMUM_SEEDS_PER_SPLIT,
     )
-    parser.add_argument("--contribution-manifest-path")
-    parser.add_argument("--authorization-output-path")
     args = parser.parse_args()
     population_runs = []
     for raw_path in args.population_dirs:
@@ -1057,22 +941,6 @@ def main() -> None:
         minimum_seed_replicates_per_role=args.minimum_seed_replicates_per_role,
     )
     _write_json(Path(args.output_path), report)
-    if bool(args.contribution_manifest_path) != bool(args.authorization_output_path):
-        raise ValueError(
-            "Contribution manifest and authorization output paths must be supplied together"
-        )
-    if args.contribution_manifest_path:
-        manifest = ContributionEstimationManifest.model_validate(
-            _read_json(Path(args.contribution_manifest_path))
-        )
-        authorization = issue_contribution_production_authorization(
-            analysis_report=report,
-            manifest=manifest,
-        )
-        _write_json(
-            Path(args.authorization_output_path),
-            authorization.model_dump(mode="json"),
-        )
 
 
 if __name__ == "__main__":

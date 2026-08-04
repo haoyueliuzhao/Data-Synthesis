@@ -10,10 +10,10 @@ from pydantic import BaseModel
 
 from trusted_synthesis.core.vtdo import (
     AnchoredDistributionUpdate,
+    ContributionApproximationAuthorization,
     ContributionEstimationManifest,
     ContributionProbeObservation,
     ContributionProbeProtocol,
-    ContributionProductionAuthorization,
     CoveragePrior,
     EmpiricalDistributionEstimate,
     StateConditionedTrainingArtifact,
@@ -259,8 +259,8 @@ def audit_phase1(
         ContributionEstimationManifest,
     )
     authorization = _typed_json(
-        aggregate_dir / "contribution_production_authorization.json",
-        ContributionProductionAuthorization,
+        aggregate_dir / "contribution_approximation_authorization.json",
+        ContributionApproximationAuthorization,
     )
     update = _typed_json(
         aggregate_dir / "anchored_distribution_update.json",
@@ -297,8 +297,8 @@ def audit_phase1(
     _check(coverage == update.coverage_prior, "update is detached from coverage prior")
     _check(contribution == update.contribution_manifest, "update crossed Contribution manifests")
     _check(
-        authorization == update.contribution_production_authorization,
-        "update crossed Contribution production authorizations",
+        authorization == update.contribution_approximation_authorization,
+        "update crossed Contribution approximation authorizations",
     )
     _check(protocol.protocol_id == contribution.estimation_protocol_hash, "wrong Probe protocol")
     _check(

@@ -112,7 +112,7 @@ def _profile(
         archived.coverage_prior,
         archived.validity_estimates,
         archived.contribution_manifest,
-        archived.contribution_production_authorization,
+        archived.contribution_approximation_authorization,
         config,
         archived.role_contract,
         manifest,

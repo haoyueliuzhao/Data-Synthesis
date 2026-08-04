@@ -9,9 +9,19 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
-VTDO_SCHEMA_VERSION = "vtdo.v8"
+VTDO_SCHEMA_VERSION = "vtdo.v12"
 VTDO_ALGORITHM_ID = "anchored_energy_valid_trajectory_distribution_refinement"
-VTDO_ALGORITHM_VERSION = "aevtdr.v4"
+VTDO_ALGORITHM_VERSION = "aevtdr.v7"
+CONTRIBUTION_APPROXIMATION_AUTHORIZATION_VERSION = (
+    "finance_contribution_authorization.v4"
+)
+GRADIENT_PROJECTION_ESTIMATOR_ID = "gp_c_post_global_local_adamw_v3"
+GRADIENT_PROJECTION_CLAIM_BOUNDARY = (
+    "Authorized only for one local state-homogeneous cold-start AdamW VTDO "
+    "distribution update at the frozen beneficiary checkpoint. The authorization "
+    "does not cover optimizer continuation, mixed-state batches, multi-step Student "
+    "training, or a different task population."
+)
 
 
 class FrozenModel(BaseModel):
@@ -219,7 +229,12 @@ class ContributionEstimationManifest(FrozenModel):
     target_evaluation_distribution_id: str = Field(min_length=1)
     target_metric_id: str = Field(min_length=1)
     target_metric_direction: Literal["higher_is_better"]
-    estimator_kind: Literal["synthetic_oracle", "finite_intervention", "local_probe"]
+    estimator_kind: Literal[
+        "synthetic_oracle",
+        "finite_intervention",
+        "local_probe",
+        "gradient_projection",
+    ]
     usage_scope: Literal[
         "synthetic_operator_control",
         "intervention_validation",
@@ -229,8 +244,10 @@ class ContributionEstimationManifest(FrozenModel):
     data_isolation_contract_id: str = Field(min_length=1)
     final_test_set_id: str = Field(min_length=1)
     estimator_id: str = Field(min_length=1)
-    probe_optimizer_contract_id: str | None = None
-    probe_adaptation_horizon: int | None = Field(default=None, ge=1, le=3)
+    approximation_contract_id: str | None = None
+    gradient_mode_contract_id: str | None = None
+    calibration_artifact_hash: str | None = None
+    state_realization_counts: tuple[tuple[str, int], ...] = ()
     uncertainty_statistic: Literal["sample_standard_deviation"]
     uncertainty_penalty_coefficient: float = Field(ge=0)
     production_contribution_field: Literal["conservative_centered_contribution"]
@@ -244,24 +261,64 @@ class ContributionEstimationManifest(FrozenModel):
         expected_scope = {
             "synthetic_oracle": "synthetic_operator_control",
             "finite_intervention": "intervention_validation",
-            "local_probe": "production_distribution_update",
+            "local_probe": "intervention_validation",
+            "gradient_projection": "production_distribution_update",
         }[self.estimator_kind]
         if self.usage_scope != expected_scope:
             raise ValueError("Contribution estimator kind and usage scope disagree")
-        if self.estimator_kind == "local_probe":
-            if not self.probe_optimizer_contract_id or self.probe_adaptation_horizon is None:
-                raise ValueError(
-                    "production local Probe must freeze its optimizer and adaptation horizon"
+        if self.estimator_kind == "gradient_projection":
+            if not all(
+                (
+                    self.approximation_contract_id,
+                    self.gradient_mode_contract_id,
+                    self.calibration_artifact_hash,
                 )
-            if self.uncertainty_penalty_coefficient <= 0:
-                raise ValueError("production local Probe requires a positive uncertainty penalty")
-            if any(item.observation_count < 2 for item in self.estimates):
-                raise ValueError("production local Probe requires at least two seeds per state")
-        else:
-            if self.probe_optimizer_contract_id is not None or (
-                self.probe_adaptation_horizon is not None
             ):
-                raise ValueError("non-Probe Contribution cannot carry a Probe optimizer")
+                raise ValueError("production Gradient Projection must freeze all contracts")
+            if self.uncertainty_penalty_coefficient <= 0:
+                raise ValueError("production Gradient Projection requires uncertainty control")
+            realization_counts = dict(self.state_realization_counts)
+            if len(realization_counts) != len(self.state_realization_counts):
+                raise ValueError("Gradient Projection contains duplicate state realizations")
+            if set(realization_counts) != {item.state_id for item in self.estimates}:
+                raise ValueError("Gradient Projection realizations do not cover state support")
+            if any(not 3 <= value <= 5 for value in realization_counts.values()):
+                raise ValueError(
+                    "Gradient Projection requires 3-5 realizations per state"
+                )
+            if any(
+                item.observation_count != realization_counts[item.state_id]
+                for item in self.estimates
+            ):
+                raise ValueError(
+                    "Gradient Projection observation counts do not replay realizations"
+                )
+            if tuple(sorted(self.state_realization_counts)) != self.state_realization_counts:
+                raise ValueError("Gradient Projection realization counts are not canonical")
+        elif self.estimator_kind == "local_probe":
+            if any(
+                value is not None
+                for value in (
+                    self.approximation_contract_id,
+                    self.gradient_mode_contract_id,
+                    self.calibration_artifact_hash,
+                )
+            ) or self.state_realization_counts:
+                raise ValueError("diagnostic local Probe cannot claim Gradient contracts")
+            if self.uncertainty_penalty_coefficient <= 0:
+                raise ValueError("diagnostic local Probe requires a positive uncertainty penalty")
+            if any(item.observation_count < 2 for item in self.estimates):
+                raise ValueError("diagnostic local Probe requires at least two seeds per state")
+        else:
+            if any(
+                value is not None
+                for value in (
+                    self.approximation_contract_id,
+                    self.gradient_mode_contract_id,
+                    self.calibration_artifact_hash,
+                )
+            ) or self.state_realization_counts:
+                raise ValueError("non-Gradient Contribution cannot carry Gradient contracts")
             if not math.isclose(self.uncertainty_penalty_coefficient, 0.0, abs_tol=1e-12):
                 raise ValueError("non-Probe Contribution cannot apply the Probe uncertainty policy")
         state_ids = [item.state_id for item in self.estimates]
@@ -350,6 +407,9 @@ class ContributionRankValidationEvidence(FrozenModel):
         "cross_seed_stability",
         "independent_final_test",
         "heldout_final_test",
+        "internal_estimation",
+        "internal_validation",
+        "independent_authorization",
     ]
     macro_task_spearman: float = Field(ge=-1, le=1)
     macro_task_spearman_ci95: tuple[float, float]
@@ -385,134 +445,409 @@ class ContributionRankValidationEvidence(FrozenModel):
         )
 
 
-class ContributionProductionAuthorization(FrozenModel):
-    """Proof that a frozen local-Probe estimand may influence a VTDO update."""
+class ContributionOptimizerUpdateContract(FrozenModel):
+    """Exact local update map approximated by a production Contribution estimator."""
 
-    authorization_id: str = Field(min_length=1)
-    analysis_version: str = Field(min_length=1)
-    analysis_report_hash: str = Field(min_length=1)
-    current_distribution_contract_hash: str = Field(min_length=1)
-    task_distribution_hashes: tuple[tuple[str, str], ...] = Field(min_length=1)
-    beneficiary_model_state_id: str = Field(min_length=1)
-    beneficiary_checkpoint_hash: str = Field(min_length=1)
-    target_metric_id: str = Field(min_length=1)
-    probe_optimizer_contract_id: str = Field(min_length=1)
-    selected_adaptation_horizon: int = Field(ge=1, le=3)
-    uncertainty_statistic: Literal["sample_standard_deviation"]
-    uncertainty_penalty_coefficient: float = Field(gt=0)
-    production_contribution_field: Literal["conservative_centered_contribution"]
-    internal_validation_set_id: str = Field(min_length=1)
-    final_test_set_id: str = Field(min_length=1)
-    task_condition_ids: tuple[str, ...] = Field(min_length=1)
-    task_population_hash: str = Field(min_length=1)
+    contract_id: str = Field(min_length=1)
+    optimizer_name: Literal["adamw"]
+    estimator_scope: Literal["local_distribution_update_only"]
+    step_count: Literal[1]
+    cold_start: Literal[True]
+    reuse_main_optimizer_state: Literal[False]
+    learning_rate: float = Field(gt=0)
+    betas: tuple[float, float]
+    epsilon: float = Field(gt=0)
+    weight_decay: float = Field(ge=0)
+    maximum_gradient_norm: float = Field(gt=0)
+    gradient_accumulation_steps: Literal[1]
+    mixed_state_batches_allowed: Literal[False]
+    trainable_parameter_space: str = Field(min_length=1)
+    state_gradient_mode: Literal["train"]
+    objective_gradient_mode: Literal["eval"]
+    objective_gradient_point: Literal["post_global_update"]
+    dropout_realization_policy: Literal["independent_seed_per_realization"]
+    schema_version: str = VTDO_SCHEMA_VERSION
+
+    @model_validator(mode="after")
+    def validate_contract(self) -> ContributionOptimizerUpdateContract:
+        beta_one, beta_two = self.betas
+        if not 0 < beta_one < beta_two < 1:
+            raise ValueError("Contribution optimizer betas are invalid")
+        if not math.isclose(self.weight_decay, 0.0, abs_tol=1e-12):
+            raise ValueError("local Gradient Projection forbids weight decay")
+        if self.contract_id != contribution_optimizer_update_contract_id(self):
+            raise ValueError("Contribution optimizer-update contract identity is invalid")
+        return self
+
+
+class ContributionCalibrationContract(FrozenModel):
+    contract_id: str = Field(min_length=1)
+    method: Literal["global_median_absolute_scale_through_zero"]
+    estimation_set_id: str = Field(min_length=1)
+    validation_set_id: str = Field(min_length=1)
+    authorization_set_id: str = Field(min_length=1)
+    calibration_artifact_hash: str = Field(min_length=1)
+    frozen_before_authorization_access: Literal[True]
+    authorization_may_tune: Literal[False]
+    schema_version: str = VTDO_SCHEMA_VERSION
+
+    @model_validator(mode="after")
+    def validate_contract(self) -> ContributionCalibrationContract:
+        if len(
+            {
+                self.estimation_set_id,
+                self.validation_set_id,
+                self.authorization_set_id,
+            }
+        ) != 3:
+            raise ValueError("Contribution calibration partitions must be disjoint")
+        if self.contract_id != contribution_calibration_contract_id(self):
+            raise ValueError("Contribution calibration contract identity is invalid")
+        return self
+
+
+class ContributionDistributionGateThresholds(FrozenModel):
+    maximum_mean_total_variation: float = Field(ge=0, le=1)
+    maximum_p95_total_variation: float = Field(ge=0, le=1)
+    maximum_mean_jensen_shannon: float = Field(ge=0)
+    maximum_p95_jensen_shannon: float = Field(ge=0)
+    minimum_update_direction_agreement: float = Field(ge=0, le=1)
+    maximum_mean_absolute_target_regret: float = Field(ge=0)
+    maximum_p95_absolute_target_regret: float = Field(ge=0)
+    maximum_mean_normalized_target_regret: float = Field(ge=0)
+    maximum_p95_normalized_target_regret: float = Field(ge=0)
+    minimum_mean_attainable_gain: float = Field(gt=0)
+    minimum_normalizable_attainable_gain: float = Field(gt=0)
+    minimum_normalizable_task_rate: float = Field(ge=0, le=1)
+
+
+class ContributionDistributionValidationEvidence(FrozenModel):
+    evidence_id: str = Field(min_length=1)
+    evaluation_role: Literal[
+        "internal_estimation",
+        "internal_validation",
+        "independent_authorization",
+    ]
     task_count: int = Field(ge=1)
-    state_count: int = Field(ge=1)
-    internal_validation_record_count: int = Field(ge=1)
-    final_test_record_count: int = Field(ge=1)
-    estimation_seed_count: int = Field(ge=1)
-    validation_seed_count: int = Field(ge=1)
-    intervention_seed_count: int = Field(ge=1)
-    seed_sets_disjoint: Literal[True]
-    strict_identity_validated: Literal[True]
-    cross_seed_stability: ContributionRankValidationEvidence
-    independent_final_test: ContributionRankValidationEvidence
-    heldout_final_test: ContributionRankValidationEvidence
+    mean_total_variation: float = Field(ge=0, le=1)
+    p95_total_variation: float = Field(ge=0, le=1)
+    mean_jensen_shannon: float = Field(ge=0)
+    p95_jensen_shannon: float = Field(ge=0)
+    mean_update_direction_agreement: float = Field(ge=0, le=1)
+    mean_absolute_target_regret: float = Field(ge=0)
+    p95_absolute_target_regret: float = Field(ge=0)
+    mean_normalized_target_regret: float = Field(ge=0)
+    p95_normalized_target_regret: float = Field(ge=0)
+    mean_attainable_gain: float = Field(gt=0)
+    normalizable_task_count: int = Field(ge=0)
+    normalizable_task_rate: float = Field(ge=0, le=1)
+    task_type_stratified_metrics_hash: str = Field(min_length=1)
+    gain_quantile_metrics_hash: str = Field(min_length=1)
+    thresholds: ContributionDistributionGateThresholds
     status: Literal["passed"]
     schema_version: str = VTDO_SCHEMA_VERSION
 
     @model_validator(mode="after")
-    def validate_authorization(self) -> ContributionProductionAuthorization:
-        evidence = (
-            self.cross_seed_stability,
-            self.independent_final_test,
-            self.heldout_final_test,
-        )
-        expected_roles = (
-            "cross_seed_stability",
-            "independent_final_test",
-            "heldout_final_test",
-        )
-        if tuple(item.evaluation_role for item in evidence) != expected_roles:
-            raise ValueError("Contribution authorization has misassigned validation evidence")
-        if not all(item.passes_production_gate for item in evidence):
-            raise ValueError("Contribution authorization contains a failed rank gate")
-        if tuple(sorted(self.task_condition_ids)) != self.task_condition_ids:
-            raise ValueError("Contribution authorization task population is not canonical")
-        if len(self.task_condition_ids) != len(set(self.task_condition_ids)):
-            raise ValueError("Contribution authorization contains duplicate task identities")
-        if len(self.task_condition_ids) != self.task_count:
-            raise ValueError("Contribution authorization task count is not its frozen population")
-        if tuple(sorted(self.task_distribution_hashes)) != self.task_distribution_hashes:
-            raise ValueError("Contribution authorization distribution mapping is not canonical")
-        task_distribution_hashes = dict(self.task_distribution_hashes)
-        if len(task_distribution_hashes) != len(self.task_distribution_hashes):
-            raise ValueError("Contribution authorization contains duplicate distribution tasks")
-        if tuple(task_distribution_hashes) != self.task_condition_ids:
-            raise ValueError("Contribution authorization distributions do not cover its tasks")
-        if self.current_distribution_contract_hash != contribution_distribution_contract_hash(
-            task_distribution_hashes
+    def validate_evidence(self) -> ContributionDistributionValidationEvidence:
+        if self.normalizable_task_count > self.task_count or not math.isclose(
+            self.normalizable_task_rate,
+            self.normalizable_task_count / self.task_count,
+            abs_tol=1e-12,
         ):
-            raise ValueError("Contribution authorization distribution contract is invalid")
-        if self.task_population_hash != contribution_task_population_hash(self.task_condition_ids):
-            raise ValueError("Contribution authorization task-population hash is invalid")
-        if self.task_count < 30 or self.state_count < self.task_count:
-            raise ValueError("Contribution production authorization needs at least 30 tasks")
-        if self.internal_validation_record_count < 5 or self.final_test_record_count < 5:
-            raise ValueError("Contribution production authorization lacks evaluation support")
-        if (
-            min(
-                self.estimation_seed_count,
-                self.validation_seed_count,
-                self.intervention_seed_count,
-            )
-            < 2
-        ):
-            raise ValueError("Contribution production authorization needs multiple seeds per role")
-        if self.authorization_id != contribution_production_authorization_id(self):
-            raise ValueError("Contribution production authorization identity is invalid")
+            raise ValueError("Contribution distribution normalizable support is inconsistent")
+        passed = bool(
+            self.mean_total_variation <= self.thresholds.maximum_mean_total_variation
+            and self.p95_total_variation <= self.thresholds.maximum_p95_total_variation
+            and self.mean_jensen_shannon <= self.thresholds.maximum_mean_jensen_shannon
+            and self.p95_jensen_shannon <= self.thresholds.maximum_p95_jensen_shannon
+            and self.mean_update_direction_agreement
+            >= self.thresholds.minimum_update_direction_agreement
+            and self.mean_absolute_target_regret
+            <= self.thresholds.maximum_mean_absolute_target_regret
+            and self.p95_absolute_target_regret
+            <= self.thresholds.maximum_p95_absolute_target_regret
+            and self.mean_normalized_target_regret
+            <= self.thresholds.maximum_mean_normalized_target_regret
+            and self.p95_normalized_target_regret
+            <= self.thresholds.maximum_p95_normalized_target_regret
+            and self.mean_attainable_gain >= self.thresholds.minimum_mean_attainable_gain
+            and self.normalizable_task_rate
+            >= self.thresholds.minimum_normalizable_task_rate
+        )
+        if not passed:
+            raise ValueError("Contribution distribution evidence failed its frozen gate")
+        if self.evidence_id != contribution_distribution_validation_evidence_id(self):
+            raise ValueError("Contribution distribution-validation identity is invalid")
         return self
 
 
-def validate_contribution_production_authorization(
+class ContributionApproximationAuthorization(FrozenModel):
+    """Authorization for a local Gradient Projection to drive one VTDO update."""
+
+    authorization_id: str = Field(min_length=1)
+    authorization_version: Literal["finance_contribution_authorization.v4"]
+    artifact_type: Literal["ContributionApproximationAuthorization"]
+    status: Literal["authorized"]
+    estimator_kind: Literal["gradient_projection"]
+    estimator_id: Literal["gp_c_post_global_local_adamw_v3"]
+    usage_scope: Literal["local_distribution_update_only"]
+    approximation_contract_id: str = Field(min_length=1)
+    analysis_report_hash: str = Field(min_length=1)
+    source_plan_hash: str = Field(min_length=1)
+    local_update_manifest_hash: str = Field(min_length=1)
+    beneficiary_model_state_id: str = Field(min_length=1)
+    beneficiary_checkpoint_hash: str = Field(min_length=1)
+    target_metric_id: str = Field(min_length=1)
+    optimizer_contract: ContributionOptimizerUpdateContract
+    objective_gradient_point: Literal["post_global_update"]
+    calibration_contract: ContributionCalibrationContract
+    objective_partition_ids: tuple[tuple[str, str], ...] = Field(min_length=3, max_length=3)
+    objective_partition_hashes: tuple[tuple[str, str], ...] = Field(
+        min_length=3, max_length=3
+    )
+    objective_record_counts: tuple[tuple[str, int], ...] = Field(min_length=3, max_length=3)
+    objective_partitions_disjoint: Literal[True]
+    authorization_split_unopened_until_freeze: Literal[True]
+    task_condition_ids: tuple[str, ...] = Field(min_length=30)
+    task_population_hash: str = Field(min_length=1)
+    task_distribution_hashes: tuple[tuple[str, str], ...] = Field(min_length=30)
+    task_distribution_ids: tuple[tuple[str, str], ...] = Field(min_length=30)
+    task_round_indices: tuple[tuple[str, int], ...] = Field(min_length=30)
+    current_distribution_contract_hash: str = Field(min_length=1)
+    exact_distribution_contract_hash: str = Field(min_length=1)
+    task_state_supports: tuple[tuple[str, tuple[str, ...]], ...] = Field(min_length=30)
+    state_realization_counts: tuple[tuple[str, str, int], ...] = Field(min_length=90)
+    task_count: int = Field(ge=30)
+    state_count: int = Field(ge=90)
+    task_sampling_contract_hash: str = Field(min_length=1)
+    state_realization_manifest_hash: str = Field(min_length=1)
+    gradient_diagnostics_hash: str = Field(min_length=1)
+    token_region_manifest_hash: str = Field(min_length=1)
+    finite_target_method: Literal[
+        "multi_radius_block_hadamard_richardson"
+    ]
+    finite_target_report_hashes: tuple[tuple[str, str], ...] = Field(
+        min_length=3,
+        max_length=3,
+    )
+    post_global_objective_gradient_hashes: tuple[tuple[str, str], ...] = Field(
+        min_length=3,
+        max_length=3,
+    )
+    proxy_report_hashes: tuple[tuple[str, str], ...] = Field(
+        min_length=3,
+        max_length=3,
+    )
+    uncertainty_penalty_coefficient: float = Field(gt=0)
+    state_uncertainty_method: Literal[
+        "leave_one_realization_out_jackknife_pseudovalues"
+    ]
+    objective_support_scaling_report_hash: str = Field(min_length=1)
+    gradient_realization_stability_report_hash: str = Field(min_length=1)
+    finite_target_reports_passed: Literal[True]
+    post_global_objective_gradients_verified: Literal[True]
+    strict_freshness_contract_hash: str = Field(min_length=1)
+    strict_identity_validated: Literal[True]
+    internal_estimation_rank: ContributionRankValidationEvidence
+    internal_validation_rank: ContributionRankValidationEvidence
+    independent_authorization_rank: ContributionRankValidationEvidence
+    internal_estimation_distribution: ContributionDistributionValidationEvidence
+    internal_validation_distribution: ContributionDistributionValidationEvidence
+    independent_authorization_distribution: ContributionDistributionValidationEvidence
+    claim_boundary: Literal[
+        "Authorized only for one local state-homogeneous cold-start AdamW VTDO "
+        "distribution update at the frozen beneficiary checkpoint. The authorization "
+        "does not cover optimizer continuation, mixed-state batches, multi-step Student "
+        "training, or a different task population."
+    ]
+    schema_version: str = VTDO_SCHEMA_VERSION
+
+    @model_validator(mode="after")
+    def validate_authorization(self) -> ContributionApproximationAuthorization:
+        expected_roles = (
+            "internal_estimation",
+            "internal_validation",
+            "independent_authorization",
+        )
+        rank_evidence = (
+            self.internal_estimation_rank,
+            self.internal_validation_rank,
+            self.independent_authorization_rank,
+        )
+        distribution_evidence = (
+            self.internal_estimation_distribution,
+            self.internal_validation_distribution,
+            self.independent_authorization_distribution,
+        )
+        if tuple(item.evaluation_role for item in rank_evidence) != expected_roles:
+            raise ValueError("Contribution authorization has misassigned rank evidence")
+        if not all(item.passes_production_gate for item in rank_evidence):
+            raise ValueError("Contribution authorization contains a failed rank gate")
+        if tuple(item.evaluation_role for item in distribution_evidence) != expected_roles:
+            raise ValueError("Contribution authorization has misassigned distribution evidence")
+        if tuple(sorted(self.task_condition_ids)) != self.task_condition_ids or len(
+            set(self.task_condition_ids)
+        ) != len(self.task_condition_ids):
+            raise ValueError("Contribution authorization task population is not canonical")
+        if len(self.task_condition_ids) != self.task_count:
+            raise ValueError("Contribution authorization task count is inconsistent")
+        distribution_hashes = dict(self.task_distribution_hashes)
+        distribution_ids = dict(self.task_distribution_ids)
+        round_indices = dict(self.task_round_indices)
+        if (
+            tuple(sorted(self.task_distribution_hashes)) != self.task_distribution_hashes
+            or len(distribution_hashes) != len(self.task_distribution_hashes)
+            or tuple(distribution_hashes) != self.task_condition_ids
+        ):
+            raise ValueError("Contribution authorization distribution mapping is incomplete")
+        if (
+            tuple(sorted(self.task_distribution_ids)) != self.task_distribution_ids
+            or tuple(sorted(self.task_round_indices)) != self.task_round_indices
+            or tuple(distribution_ids) != self.task_condition_ids
+            or tuple(round_indices) != self.task_condition_ids
+            or len(set(distribution_ids.values())) != self.task_count
+            or len(set(round_indices.values())) != 1
+        ):
+            raise ValueError("Contribution authorization exact distribution identity is invalid")
+        if self.current_distribution_contract_hash != contribution_distribution_contract_hash(
+            distribution_hashes
+        ):
+            raise ValueError("Contribution authorization distribution contract is invalid")
+        if self.exact_distribution_contract_hash != contribution_exact_distribution_contract_hash(
+            distribution_ids,
+            round_indices,
+            distribution_hashes,
+        ):
+            raise ValueError("Contribution authorization exact distribution contract is invalid")
+        if self.task_population_hash != contribution_task_population_hash(self.task_condition_ids):
+            raise ValueError("Contribution authorization task-population hash is invalid")
+        support_by_task = dict(self.task_state_supports)
+        if (
+            tuple(sorted(self.task_state_supports)) != self.task_state_supports
+            or tuple(support_by_task) != self.task_condition_ids
+            or any(tuple(sorted(states)) != states for states in support_by_task.values())
+            or any(not 3 <= len(states) <= 5 for states in support_by_task.values())
+        ):
+            raise ValueError("Contribution authorization state support is invalid")
+        if sum(len(states) for states in support_by_task.values()) != self.state_count:
+            raise ValueError("Contribution authorization state count is inconsistent")
+        realization_counts = {
+            (task_id, state_id): count
+            for task_id, state_id, count in self.state_realization_counts
+        }
+        expected_realizations = {
+            (task_id, state_id)
+            for task_id, states in support_by_task.items()
+            for state_id in states
+        }
+        if (
+            len(realization_counts) != len(self.state_realization_counts)
+            or set(realization_counts) != expected_realizations
+            or any(not 3 <= count <= 5 for count in realization_counts.values())
+            or tuple(sorted(self.state_realization_counts)) != self.state_realization_counts
+        ):
+            raise ValueError("Contribution authorization state realizations are incomplete")
+        expected_partition_roles = {"estimation", "validation", "authorization"}
+        partition_ids = dict(self.objective_partition_ids)
+        partition_hashes = dict(self.objective_partition_hashes)
+        partition_counts = dict(self.objective_record_counts)
+        if not all(
+            set(values) == expected_partition_roles
+            for values in (partition_ids, partition_hashes, partition_counts)
+        ):
+            raise ValueError("Contribution authorization objective partitions are incomplete")
+        if len(set(partition_ids.values())) != 3 or len(set(partition_hashes.values())) != 3:
+            raise ValueError("Contribution authorization objective partitions are not disjoint")
+        if any(partition_counts[role] < 16 for role in expected_partition_roles):
+            raise ValueError("Contribution authorization objective support is too small")
+        finite_targets = dict(self.finite_target_report_hashes)
+        post_global_gradients = dict(self.post_global_objective_gradient_hashes)
+        proxy_reports = dict(self.proxy_report_hashes)
+        if (
+            tuple(sorted(self.finite_target_report_hashes))
+            != self.finite_target_report_hashes
+            or tuple(sorted(self.post_global_objective_gradient_hashes))
+            != self.post_global_objective_gradient_hashes
+            or tuple(sorted(self.proxy_report_hashes)) != self.proxy_report_hashes
+            or set(finite_targets) != expected_partition_roles
+            or set(post_global_gradients) != expected_partition_roles
+            or set(proxy_reports) != expected_partition_roles
+            or len(set(finite_targets.values())) != 3
+            or len(set(post_global_gradients.values())) != 3
+            or len(set(proxy_reports.values())) != 3
+        ):
+            raise ValueError("Contribution authorization target evidence is incomplete")
+        if self.optimizer_contract.contract_id != self.approximation_contract_id:
+            raise ValueError("Contribution authorization optimizer contract is detached")
+        if self.authorization_id != contribution_approximation_authorization_id(self):
+            raise ValueError("Contribution approximation authorization identity is invalid")
+        return self
+
+
+def validate_contribution_approximation_authorization(
     manifest: ContributionEstimationManifest,
-    authorization: ContributionProductionAuthorization | None,
+    authorization: ContributionApproximationAuthorization | None,
 ) -> None:
     if manifest.estimator_kind == "synthetic_oracle":
         if authorization is not None:
-            raise ValueError("synthetic Contribution cannot consume a Probe authorization")
+            raise ValueError("synthetic Contribution cannot consume a production authorization")
         return
-    if manifest.estimator_kind != "local_probe":
-        raise ValueError("finite Intervention Contribution is validation-only")
+    if manifest.estimator_kind != "gradient_projection":
+        raise ValueError(f"{manifest.estimator_kind} Contribution is validation-only")
     if authorization is None:
-        raise ValueError("production local Probe requires an independent authorization")
+        raise ValueError("production Gradient Projection requires an independent authorization")
     if manifest.task_condition_id not in authorization.task_condition_ids:
-        raise ValueError("Contribution manifest task is outside the validated population")
+        raise ValueError("Contribution manifest task is outside the authorized population")
+    probabilities = {
+        item.state_id: item.current_probability for item in manifest.estimates
+    }
     manifest_distribution_hash = contribution_current_distribution_hash(
         manifest.task_condition_id,
-        {item.state_id: item.current_probability for item in manifest.estimates},
+        probabilities,
     )
-    authorized_distribution_hash = dict(authorization.task_distribution_hashes).get(
+    if dict(authorization.task_distribution_hashes).get(
         manifest.task_condition_id
-    )
-    if authorized_distribution_hash != manifest_distribution_hash:
+    ) != manifest_distribution_hash:
         raise ValueError("Contribution authorization does not match the manifest current pi_t")
-    if any(
-        item.observation_count < authorization.estimation_seed_count for item in manifest.estimates
-    ):
-        raise ValueError("Contribution manifest has fewer seeds than its authorization")
-    expected = {
-        "beneficiary_model_state_id": manifest.beneficiary_model_state_id,
-        "beneficiary_checkpoint_hash": manifest.beneficiary_checkpoint_hash,
-        "target_metric_id": manifest.target_metric_id,
-        "probe_optimizer_contract_id": manifest.probe_optimizer_contract_id,
-        "selected_adaptation_horizon": manifest.probe_adaptation_horizon,
-        "uncertainty_statistic": manifest.uncertainty_statistic,
-        "uncertainty_penalty_coefficient": manifest.uncertainty_penalty_coefficient,
-        "production_contribution_field": manifest.production_contribution_field,
-        "internal_validation_set_id": manifest.target_evaluation_distribution_id,
-        "final_test_set_id": manifest.final_test_set_id,
+    if dict(authorization.task_distribution_ids).get(
+        manifest.task_condition_id
+    ) != manifest.distribution_id:
+        raise ValueError("Contribution authorization does not match the manifest distribution ID")
+    authorized_states = dict(authorization.task_state_supports)[manifest.task_condition_id]
+    if tuple(sorted(probabilities)) != authorized_states:
+        raise ValueError("Contribution authorization does not match manifest state support")
+    realization_counts = {
+        state_id: count
+        for task_id, state_id, count in authorization.state_realization_counts
+        if task_id == manifest.task_condition_id
     }
-    observed = authorization.model_dump(mode="python", include=set(expected))
+    if dict(manifest.state_realization_counts) != realization_counts:
+        raise ValueError("Contribution manifest realizations differ from authorization")
+    expected = {
+        "beneficiary_model_state_id": authorization.beneficiary_model_state_id,
+        "beneficiary_checkpoint_hash": authorization.beneficiary_checkpoint_hash,
+        "target_metric_id": authorization.target_metric_id,
+        "estimator_id": authorization.estimator_id,
+        "approximation_contract_id": authorization.approximation_contract_id,
+        "gradient_mode_contract_id": authorization.optimizer_contract.contract_id,
+        "calibration_artifact_hash": (
+            authorization.calibration_contract.calibration_artifact_hash
+        ),
+        "uncertainty_statistic": "sample_standard_deviation",
+        "production_contribution_field": "conservative_centered_contribution",
+        "uncertainty_penalty_coefficient": (
+            authorization.uncertainty_penalty_coefficient
+        ),
+        "target_evaluation_distribution_id": dict(
+            authorization.objective_partition_ids
+        )["validation"],
+        "final_test_set_id": dict(authorization.objective_partition_ids)["authorization"],
+        "estimation_protocol_hash": contribution_materialization_protocol_hash(
+            authorization
+        ),
+        "data_isolation_contract_id": authorization.strict_freshness_contract_hash,
+    }
+    observed = manifest.model_dump(mode="python", include=set(expected))
     if observed != expected:
         mismatched = tuple(key for key in expected if observed.get(key) != expected[key])
         raise ValueError(f"Contribution authorization does not match its manifest:{mismatched}")
@@ -673,7 +1008,7 @@ class AnchoredDistributionUpdate(FrozenModel):
     next_distribution: ConditionalTrajectoryDistribution
     validity_estimates: tuple[StateValidityEstimate, ...] = Field(min_length=1)
     contribution_manifest: ContributionEstimationManifest
-    contribution_production_authorization: ContributionProductionAuthorization | None = None
+    contribution_approximation_authorization: ContributionApproximationAuthorization | None = None
     role_contract: VTDORoleContract
     energy_config: AnchoredEnergyConfig
     reachability_manifest: StateReachabilityManifest | None = None
@@ -732,9 +1067,9 @@ class AnchoredDistributionUpdate(FrozenModel):
             self.role_contract.beneficiary_model_state_id
         ):
             raise ValueError("VTDO contribution manifest violates the role contract")
-        validate_contribution_production_authorization(
+        validate_contribution_approximation_authorization(
             self.contribution_manifest,
-            self.contribution_production_authorization,
+            self.contribution_approximation_authorization,
         )
         contribution_by_state = {
             item.state_id: item for item in self.contribution_manifest.estimates
@@ -1146,12 +1481,90 @@ def contribution_distribution_contract_hash(
     )
 
 
-def contribution_production_authorization_id(
-    value: ContributionProductionAuthorization,
+def contribution_exact_distribution_contract_hash(
+    task_distribution_ids: Mapping[str, str],
+    task_round_indices: Mapping[str, int],
+    task_distribution_hashes: Mapping[str, str],
+) -> str:
+    distribution_ids = dict(task_distribution_ids)
+    round_indices = dict(task_round_indices)
+    distribution_hashes = dict(task_distribution_hashes)
+    if not distribution_ids or not (
+        set(distribution_ids) == set(round_indices) == set(distribution_hashes)
+    ):
+        raise ValueError("exact Contribution distribution contract is incomplete")
+    if any(not value for value in distribution_ids.values()) or any(
+        value < 0 for value in round_indices.values()
+    ):
+        raise ValueError("exact Contribution distribution identity is invalid")
+    return canonical_hash(
+        {
+            task_id: {
+                "distribution_id": distribution_ids[task_id],
+                "round_index": round_indices[task_id],
+                "probability_hash": distribution_hashes[task_id],
+            }
+            for task_id in sorted(distribution_ids)
+        },
+        prefix="contribution_exact_distribution_contract:",
+    )
+
+
+def contribution_materialization_protocol_hash(
+    authorization: ContributionApproximationAuthorization,
+) -> str:
+    return canonical_hash(
+        {
+            "authorization_id": authorization.authorization_id,
+            "source_plan_hash": authorization.source_plan_hash,
+            "validation_proxy_report_hash": dict(authorization.proxy_report_hashes)[
+                "validation"
+            ],
+            "local_update_manifest_hash": authorization.local_update_manifest_hash,
+            "objective_gradient_point": authorization.objective_gradient_point,
+            "exact_distribution_contract_hash": (
+                authorization.exact_distribution_contract_hash
+            ),
+            "token_region_manifest_hash": authorization.token_region_manifest_hash,
+            "uncertainty_method": authorization.state_uncertainty_method,
+        },
+        prefix="finance_gradient_contribution_materialization_protocol:",
+    )
+
+
+def contribution_optimizer_update_contract_id(
+    value: ContributionOptimizerUpdateContract,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"contract_id"}),
+        prefix="contribution_optimizer_update_contract:",
+    )
+
+
+def contribution_calibration_contract_id(
+    value: ContributionCalibrationContract,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"contract_id"}),
+        prefix="contribution_calibration_contract:",
+    )
+
+
+def contribution_distribution_validation_evidence_id(
+    value: ContributionDistributionValidationEvidence,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"evidence_id"}),
+        prefix="contribution_distribution_validation_evidence:",
+    )
+
+
+def contribution_approximation_authorization_id(
+    value: ContributionApproximationAuthorization,
 ) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"authorization_id"}),
-        prefix="contribution_production_authorization:",
+        prefix="contribution_approximation_authorization:",
     )
 
 

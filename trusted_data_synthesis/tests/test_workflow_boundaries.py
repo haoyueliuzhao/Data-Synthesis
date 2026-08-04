@@ -51,6 +51,55 @@ def test_candidate_api_cannot_receive_an_oracle(finance_evidence: EvidenceItem) 
         TaskPublicSpec.model_validate(leaked_public)
 
 
+def test_evidence_search_matches_canonical_dates_beside_display_labels(
+    finance_evidence: EvidenceItem,
+) -> None:
+    bundle = EvidenceBundle(
+        bundle_id="bundle_temporal_alias",
+        evidence=(finance_evidence,),
+        purpose="temporal alias search",
+    )
+    runtime = InMemoryEvidenceToolRuntime(bundle)
+
+    by_period_end = runtime.search({"temporal_labels": ["2023-09-30"]})
+    by_display_label = runtime.search({"temporal_labels": ["FY2023"]})
+
+    assert by_period_end == (finance_evidence,)
+    assert by_display_label == (finance_evidence,)
+
+
+def test_evidence_search_executes_declared_semantic_dimensions(
+    finance_evidence: EvidenceItem,
+) -> None:
+    other_basis = finance_evidence.model_copy(
+        update={
+            "evidence_id": f"{finance_evidence.evidence_id}:other-basis",
+            "temporal_context": finance_evidence.temporal_context.model_copy(
+                update={"basis": "observation_date", "frequency": "monthly"}
+            ),
+        }
+    )
+    bundle = EvidenceBundle(
+        bundle_id="bundle_semantic_search",
+        evidence=(finance_evidence, other_basis),
+        purpose="semantic search",
+    )
+
+    matched = InMemoryEvidenceToolRuntime(bundle).search(
+        {
+            "apply_semantic_filters": True,
+            "semantic_constraints": {
+                "subject_types": [finance_evidence.subject.subject_type],
+                "time_bases": [finance_evidence.temporal_context.basis],
+                "frequencies": [finance_evidence.temporal_context.frequency],
+                "epistemic_statuses": [finance_evidence.epistemic_status.value],
+            },
+        }
+    )
+
+    assert matched == (finance_evidence,)
+
+
 def test_finance_candidate_is_not_part_of_the_generic_runtime() -> None:
     import trusted_synthesis.runtime as runtime
 

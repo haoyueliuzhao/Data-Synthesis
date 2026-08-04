@@ -15,8 +15,17 @@
     "require_requested_model": true,
     "preferred_model_patterns": [],
     "input_cost_per_million": 0,
-    "output_cost_per_million": 0,
-    "extra_headers": {}
+    "input_cache_hit_cost_per_million": 0.003625,
+    "input_cache_miss_cost_per_million": 0.435,
+    "output_cost_per_million": 0.87,
+    "pricing_source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "pricing_checked_at": "2026-08-03",
+    "extra_headers": {},
+    "request_body_overrides": {
+      "thinking": {
+        "type": "disabled"
+      }
+    }
   },
   "tasks_per_domain": 1,
   "retrieval_tracks": [

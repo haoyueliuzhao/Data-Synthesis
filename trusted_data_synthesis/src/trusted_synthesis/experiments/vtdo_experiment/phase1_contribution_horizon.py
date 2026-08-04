@@ -282,17 +282,17 @@ def analyze_contribution_horizons(
         "diagnosis": diagnosis,
         "local_proxy_supported": shortest_supported,
         "long_horizon_proxy_supported": longest_supported,
-        "production_contribution_allowed": (
+        "local_probe_validation_passed": (
             shortest_supported and longest_supported and task_count >= 30
         ),
+        "production_usage_allowed": False,
         "claim_boundary": (
             "Contribution is a horizon- and evaluation-distribution-specific estimand. "
             "Evidence at one adaptation horizon cannot be reused for another horizon."
         ),
         "recommended_action": (
-            "Align the VTDO Contribution estimator with the intended update horizon, add "
-            "intermediate horizons, and reach at least 30 independent tasks before enabling "
-            "Contribution-driven production updates."
+            "Retain this result as Local Probe validation evidence. Production updates "
+            "require a separately frozen and independently authorized Gradient Projection."
         ),
     }
     report["analysis_hash"] = canonical_hash(

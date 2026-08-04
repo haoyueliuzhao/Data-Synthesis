@@ -23,7 +23,7 @@ from trusted_synthesis.core.trajectory.state import TrajectoryStateAssignment
 from trusted_synthesis.core.trajectory.validity import TrajectoryValidityReport
 from trusted_synthesis.core.vtdo import (
     AnchoredEnergyConfig,
-    ContributionProductionAuthorization,
+    ContributionApproximationAuthorization,
     ProbeAdaptationResult,
     StateConditionedExplorationBatch,
     ValidityThresholds,
@@ -355,12 +355,12 @@ def _energy_sensitivity(
     return rows
 
 
-def aggregate_phase1(args: argparse.Namespace) -> None:
+def _legacy_aggregate_phase1_implementation(args: argparse.Namespace) -> None:
     output_dir = Path(args.output_dir).resolve()
     plan = _read_json(output_dir / "probe_plan.json")
     baseline = _read_json(output_dir / "beneficiary_training_report.json")
     authorization_path = Path(args.contribution_authorization_path).resolve()
-    authorization = ContributionProductionAuthorization.model_validate(
+    authorization = ContributionApproximationAuthorization.model_validate(
         _read_json(authorization_path)
     )
     artifact = _load_target_artifact(Path(plan["artifacts_path"]), str(plan["task_id"]))
@@ -743,6 +743,15 @@ def aggregate_phase1(args: argparse.Namespace) -> None:
     print(json.dumps(summary, indent=2, sort_keys=True))
 
 
+def aggregate_phase1(args: argparse.Namespace) -> None:
+    del args
+    raise RuntimeError(
+        "the Local-Probe Phase 1 aggregate is retired and cannot drive production "
+        "VTDO updates; use phase1_authorization_v2 and "
+        "phase1_contribution_materializer_v2"
+    )
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the finance VTDO phase-one MVP")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -764,14 +773,6 @@ def _parser() -> argparse.ArgumentParser:
     worker.add_argument("--seed", type=int, required=True)
     worker.set_defaults(handler=run_probe_worker)
 
-    aggregate = subparsers.add_parser("aggregate")
-    aggregate.add_argument("--output-dir", required=True)
-    aggregate.add_argument("--replicates-path", required=True)
-    aggregate.add_argument("--conditioned-batch-path", required=True)
-    aggregate.add_argument("--archive-config-path", required=True)
-    aggregate.add_argument("--contribution-authorization-path", required=True)
-    aggregate.add_argument("--materialization-budget", type=int, default=30)
-    aggregate.set_defaults(handler=aggregate_phase1)
     return parser
 
 

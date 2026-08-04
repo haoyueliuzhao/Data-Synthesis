@@ -70,6 +70,12 @@ class OperationRegistry:
     def register(self, definition: OperationDefinition) -> None:
         if definition.operator_id in self._definitions:
             raise ValueError(f"operation already registered: {definition.operator_id}")
+        if definition.program_role not in {"semantic", "transparent_projection"}:
+            raise ValueError(f"unknown operation program role: {definition.program_role}")
+        if definition.input_order_policy not in {"ordered", "permutation_invariant"}:
+            raise ValueError(
+                f"unknown operation input order policy: {definition.input_order_policy}"
+            )
         self._definitions[definition.operator_id] = definition
 
     def require(self, operator_id: str) -> OperationDefinition:
@@ -214,6 +220,11 @@ class OperationRegistry:
                 "tool_capability": item.tool_capability,
                 "action_type": item.action_type,
                 "execution_mode": item.execution_mode,
+                "program_role": item.program_role,
+                "input_role_contract": item.input_role_contract,
+                "parameter_contract": item.parameter_contract,
+                "downstream_selector_contract": item.downstream_selector_contract,
+                "input_order_policy": item.input_order_policy,
                 "executor": type(item.executor).__name__,
                 "oracle_verifier": type(item.oracle_verifier).__name__,
                 "executor_version": item.executor_version,
@@ -241,6 +252,12 @@ def default_registry() -> OperationRegistry:
             ("arity=1",),
             output_model=LookupOutput,
             action_type="select_evidence",
+            program_role="transparent_projection",
+            input_role_contract=("selected_evidence",),
+            parameter_contract=("parameters must be empty",),
+            downstream_selector_contract=(
+                "numeric consumers of this result must select payload.value",
+            ),
         ),
         make_operation_definition(
             "compare",
@@ -252,6 +269,11 @@ def default_registry() -> OperationRegistry:
             ("arity=2",),
             output_model=ComparisonOutput,
             tool_capability="calculator",
+            input_role_contract=("left_value", "right_value"),
+            parameter_contract=("parameters must be empty",),
+            downstream_selector_contract=(
+                "select higher_ref or difference explicitly when consumed downstream",
+            ),
         ),
         make_operation_definition(
             "difference",
@@ -263,6 +285,12 @@ def default_registry() -> OperationRegistry:
             ("arity=2",),
             output_model=ScalarOutput,
             tool_capability="calculator",
+            input_role_contract=(
+                "baseline_or_subtrahend",
+                "comparison_or_minuend",
+            ),
+            parameter_contract=("parameters must be empty",),
+            downstream_selector_contract=("numeric consumers must select value",),
         ),
         make_operation_definition(
             "ratio",
@@ -274,6 +302,12 @@ def default_registry() -> OperationRegistry:
             ("arity=2", "denominator_non_zero"),
             output_model=ScalarOutput,
             tool_capability="calculator",
+            input_role_contract=("numerator", "denominator"),
+            parameter_contract=(
+                "registered_pair is required and must equal "
+                "<numerator predicate>/<denominator predicate>",
+            ),
+            downstream_selector_contract=("numeric consumers must select value",),
         ),
         make_operation_definition(
             "growth",
@@ -288,6 +322,12 @@ def default_registry() -> OperationRegistry:
             verifier_version="1.0.1",
             semantic_version="1.0.1",
             formula_id="growth.relative_change_abs_base.v1",
+            input_role_contract=(
+                "baseline_or_earlier",
+                "comparison_or_later",
+            ),
+            parameter_contract=("parameters must be empty",),
+            downstream_selector_contract=("numeric consumers must select value",),
         ),
         make_operation_definition(
             "aggregate",
@@ -299,6 +339,14 @@ def default_registry() -> OperationRegistry:
             ("non_empty", "method_registered"),
             output_model=AggregateOutput,
             tool_capability="calculator",
+            input_role_contract=("observations",),
+            parameter_contract=(
+                "method is required when the task requests an aggregate; registered values "
+                "are mean and sum",
+            ),
+            downstream_selector_contract=("numeric consumers must select value",),
+            input_order_policy="permutation_invariant",
+            semantic_version="1.1.0",
         ),
     )
     return OperationRegistry(definitions)
@@ -317,6 +365,11 @@ def make_operation_definition(
     tool_capability: str | None = None,
     action_type: str = "calculate",
     execution_mode: str = "deterministic_local",
+    program_role: str = "semantic",
+    input_role_contract: tuple[str, ...] = (),
+    parameter_contract: tuple[str, ...] = (),
+    downstream_selector_contract: tuple[str, ...] = (),
+    input_order_policy: str = "ordered",
     implementation_dependencies: tuple[object, ...] = (),
     executor_version="1.0.0",
     verifier_version="1.0.0",
@@ -345,6 +398,11 @@ def make_operation_definition(
         tool_capability=tool_capability,
         action_type=action_type,
         execution_mode=execution_mode,
+        program_role=program_role,
+        input_role_contract=input_role_contract,
+        parameter_contract=parameter_contract,
+        downstream_selector_contract=downstream_selector_contract,
+        input_order_policy=input_order_policy,
         executor_version=executor_version,
         verifier_version=verifier_version,
         semantic_version=semantic_version,
