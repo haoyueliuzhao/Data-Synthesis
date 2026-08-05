@@ -270,12 +270,12 @@ nonselected devices receive zero placement capacity, and the resolved Hugging Fa
 hashed into the objective-gradient manifest. A run that touches an undeclared device is invalid
 even when its numerical outputs complete.
 
-Finite-precision behavior is governed by the independently frozen v3 numeric contract. The active
-profile uses BF16 model execution, FP32 sparse projection and trainable parameters, FP64 loss
-accumulation, gradient checkpointing, TF32 disabled, and highest float32 matmul precision. It gates
-loss identity, gradient direction and relative error, GP score drift, task rank, and induced
-distribution TV/JS together; no single tensor-error threshold can be changed after observing a
-production candidate.
+The independently frozen v3 numeric contract governed the v14 production candidate. It is now
+historical evidence rather than an active production authorization because v14 failed that
+contract. Any successor must be calibrated and validated on disjoint task populations before it
+can be frozen. Loss identity, gradient direction and relative error, GP score drift, margin-aware
+ordering, and induced-distribution TV/JS remain joint fail-closed gates; no threshold or execution
+profile may be changed after observing its validation population.
 
 The 2026-08-04 three-task v10 smoke completed the real-Agent-to-gradient path but did not satisfy
 production gates. Weighted common/differential losses recovered full loss to `5.27e-8`, while
@@ -328,6 +328,19 @@ distribution intervention, Jackknife proxy materialization, and typed authorizat
 `production_authorized=false`. The current 300 realizations are a held-out production-validation
 population and may not be reused to tune a replacement numeric contract. Full evidence is in
 `docs/finance_v14_real_agent_gradient_projection_report.md`.
+
+The 2026-08-05 v16 recalibration implemented that recovery protocol on three disjoint, balanced
+six-task partitions: development, validation, and an unopened sealed candidate. It also used fresh
+4+4+4 Objective Support records and a shared-forward numeric algorithm with one causal CE loss
+vector and three VJPs. Two BF16 profiles passed development. The preregistered selector froze the
+TF32 control profile and its thresholds before validation. On independent validation, all 25
+margin-resolvable state pairs and all six task winners agreed, and TV/JS stayed within contract,
+but raw fidelity did not generalize: maximum relative error was `0.0300558` against `0.027`, minimum
+cosine was `0.9995483` against `0.99967`, and maximum GP-score delta was `0.0028211` against
+`0.0023`. The aggregate status is therefore `failed`, no `frozen_numeric_contract.json` exists,
+and the sealed candidate, GP-C, and intervention remain unopened. The validation profile cannot be
+replaced post hoc by the other development profile. Full evidence is in
+`docs/finance_v16_numeric_contract_validation_report.md`.
 
 ## 6. Experiment 4: Refinement Dynamics
 

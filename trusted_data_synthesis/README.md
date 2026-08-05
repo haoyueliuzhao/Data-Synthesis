@@ -134,6 +134,8 @@ trusted-synthesis train-vtdo-arm \
 
 See [VTDO Experiment Protocol](docs/vtdo_experiment_protocol.md),
 [Valid Trajectory Distribution Optimization](docs/valid_trajectory_distribution_optimization.md),
+[Current Project Status](docs/current_project_status.md),
+[Finance v16 Numeric Contract Validation](docs/finance_v16_numeric_contract_validation_report.md),
 [Generalization Contract](docs/generalization_contract.md), and
 [Experiment Migration Audit](docs/vtdo_experiment_migration_audit.md).
 

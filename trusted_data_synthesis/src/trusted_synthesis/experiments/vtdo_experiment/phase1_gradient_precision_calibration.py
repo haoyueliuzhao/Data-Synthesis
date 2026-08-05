@@ -360,6 +360,39 @@ def _regional_loss(
     return losses.mean()
 
 
+def _shared_token_region_losses(
+    logits: Any,
+    targets: Any,
+    *,
+    common_ordinals: Any,
+    differential_ordinals: Any,
+    accumulator_dtype: Literal["float32", "float64"],
+) -> tuple[Any, Any, Any]:
+    import torch
+
+    token_losses = torch.nn.functional.cross_entropy(
+        logits.float().reshape(-1, logits.shape[-1]),
+        targets.to(logits.device).reshape(-1),
+        reduction="none",
+    ).reshape(targets.shape)
+
+    def region_mean(ordinals: Any | None) -> Any:
+        selected = (
+            token_losses
+            if ordinals is None
+            else token_losses.index_select(1, ordinals.to(token_losses.device))
+        )
+        if accumulator_dtype == "float64":
+            return selected.double().mean()
+        return selected.mean()
+
+    return (
+        region_mean(None),
+        region_mean(common_ordinals),
+        region_mean(differential_ordinals),
+    )
+
+
 def _gradient_decomposition(
     model: Any,
     tokenizer: Any,
@@ -368,6 +401,7 @@ def _gradient_decomposition(
     profile: PrecisionProfile,
     common_label_positions: tuple[int, ...],
     differential_label_positions: tuple[int, ...],
+    shared_token_loss: bool = False,
 ) -> dict[str, Any]:
     import torch
 
@@ -406,26 +440,35 @@ def _gradient_decomposition(
         prediction_positions,
         projection_dtype=profile.sparse_projection_dtype,
     )
-    losses = (
-        _regional_loss(
+    if shared_token_loss:
+        losses = _shared_token_region_losses(
             logits,
             targets,
-            ordinals=None,
+            common_ordinals=common_ordinals,
+            differential_ordinals=differential_ordinals,
             accumulator_dtype=profile.loss_accumulator_dtype,
-        ),
-        _regional_loss(
-            logits,
-            targets,
-            ordinals=common_ordinals,
-            accumulator_dtype=profile.loss_accumulator_dtype,
-        ),
-        _regional_loss(
-            logits,
-            targets,
-            ordinals=differential_ordinals,
-            accumulator_dtype=profile.loss_accumulator_dtype,
-        ),
-    )
+        )
+    else:
+        losses = (
+            _regional_loss(
+                logits,
+                targets,
+                ordinals=None,
+                accumulator_dtype=profile.loss_accumulator_dtype,
+            ),
+            _regional_loss(
+                logits,
+                targets,
+                ordinals=common_ordinals,
+                accumulator_dtype=profile.loss_accumulator_dtype,
+            ),
+            _regional_loss(
+                logits,
+                targets,
+                ordinals=differential_ordinals,
+                accumulator_dtype=profile.loss_accumulator_dtype,
+            ),
+        )
     counts = (
         supervised_tokens,
         len(common_label_positions),
@@ -470,6 +513,26 @@ def _gradient_decomposition(
         "differential_supervised_tokens": differential_count,
         **metrics,
     }
+
+
+def _gradient_decomposition_shared_token_loss(
+    model: Any,
+    tokenizer: Any,
+    record: VTDOTrainingRecord,
+    *,
+    profile: PrecisionProfile,
+    common_label_positions: tuple[int, ...],
+    differential_label_positions: tuple[int, ...],
+) -> dict[str, Any]:
+    return _gradient_decomposition(
+        model,
+        tokenizer,
+        record,
+        profile=profile,
+        common_label_positions=common_label_positions,
+        differential_label_positions=differential_label_positions,
+        shared_token_loss=True,
+    )
 
 
 def _softmax_update(

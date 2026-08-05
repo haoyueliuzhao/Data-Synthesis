@@ -33,7 +33,7 @@ from trusted_synthesis.runtime.agent.state_conditioned import (
     assess_state_condition_controllability,
 )
 
-FINANCE_AGENT_POPULATION_VERSION = "finance_agent_population.v13"
+FINANCE_AGENT_POPULATION_VERSION = "finance_agent_population.v14"
 FINANCE_AGENT_INTERFACE_VERSION = "finance_agent_interface.v1"
 AGENT_DISCOVERY_STRATEGIES = DEFAULT_FINANCE_DISCOVERY_STRATEGIES
 
@@ -58,9 +58,8 @@ class FinanceAgentPopulationReport(FrozenModel):
     task_type_counts: dict[str, int] = Field(default_factory=dict)
     failure_counts: dict[str, int] = Field(default_factory=dict)
     source_to_agent_task_ids: dict[str, str] = Field(default_factory=dict)
-    excluded_population_artifact_sha256: str | None = Field(
-        default=None, min_length=64, max_length=64
-    )
+    excluded_population_artifact_sha256s: tuple[str, ...] = Field(default_factory=tuple)
+    excluded_population_artifact_set_id: str | None = Field(default=None, min_length=1)
     excluded_public_evidence_version_count: int = Field(ge=0)
     artifact_sha256: str = Field(min_length=64, max_length=64)
     status: str = Field(pattern="^(passed|partial|blocked)$")
@@ -83,10 +82,23 @@ class FinanceAgentPopulationReport(FrozenModel):
             raise ValueError("Agent population status is inconsistent")
         if self.status == "passed" and self.requestable_state_count != self.accepted_state_count:
             raise ValueError("a passed Agent population contains an uncontrollable state")
-        if (self.excluded_population_artifact_sha256 is None) != (
-            self.excluded_public_evidence_version_count == 0
-        ):
+        has_exclusions = bool(self.excluded_population_artifact_sha256s)
+        if has_exclusions != (self.excluded_public_evidence_version_count > 0):
             raise ValueError("Agent population exclusion lineage is inconsistent")
+        expected_set_id = (
+            canonical_hash(
+                tuple(sorted(self.excluded_population_artifact_sha256s)),
+                prefix="finance_agent_population_exclusion_set:",
+            )
+            if has_exclusions
+            else None
+        )
+        if self.excluded_population_artifact_set_id != expected_set_id:
+            raise ValueError("Agent population exclusion-set identity is inconsistent")
+        if len(set(self.excluded_population_artifact_sha256s)) != len(
+            self.excluded_population_artifact_sha256s
+        ):
+            raise ValueError("Agent population exclusion artifacts are duplicated")
         if self.report_id != finance_agent_population_report_id(self):
             raise ValueError("Agent population report identity is invalid")
         return self
@@ -167,7 +179,7 @@ def build_finance_agent_population(
     output_dir: Path,
     task_count: int | None = None,
     seed: int | None = None,
-    excluded_population_artifacts_path: Path | None = None,
+    excluded_population_artifacts_paths: tuple[Path, ...] = (),
 ) -> tuple[FinanceAgentPopulationReport, tuple[FinanceTaskStateArtifact, ...]]:
     experiment = VTDOExperimentConfig.from_json(experiment_config_path)
     source_config = experiment.multi_state
@@ -195,19 +207,36 @@ def build_finance_agent_population(
         candidates_per_pattern=state_config.candidates_per_pattern,
     )
     candidate_count = math.ceil(requested * state_config.candidate_task_oversampling_factor)
-    excluded_artifact_sha256: str | None = None
-    excluded_evidence_versions: frozenset[str] = frozenset()
-    if excluded_population_artifacts_path is not None:
-        excluded_population_artifacts_path = excluded_population_artifacts_path.resolve()
-        excluded_artifacts = load_finance_multi_state_artifacts(excluded_population_artifacts_path)
-        excluded_evidence_versions = frozenset(
-            evidence.evidence_version_id
-            for artifact in excluded_artifacts
-            for evidence in artifact.omega.public_corpus.evidence
+    resolved_exclusion_paths = tuple(
+        path.resolve() for path in excluded_population_artifacts_paths
+    )
+    if len(set(resolved_exclusion_paths)) != len(resolved_exclusion_paths):
+        raise ValueError("excluded Agent population paths are duplicated")
+    excluded_artifact_sha256s = tuple(
+        sorted(_sha256(path) for path in resolved_exclusion_paths)
+    )
+    if len(set(excluded_artifact_sha256s)) != len(excluded_artifact_sha256s):
+        raise ValueError("excluded Agent population contents are duplicated")
+    excluded_artifacts = tuple(
+        artifact
+        for path in resolved_exclusion_paths
+        for artifact in load_finance_multi_state_artifacts(path)
+    )
+    excluded_evidence_versions = frozenset(
+        evidence.evidence_version_id
+        for artifact in excluded_artifacts
+        for evidence in artifact.omega.public_corpus.evidence
+    )
+    if resolved_exclusion_paths and not excluded_evidence_versions:
+        raise ValueError("excluded Agent populations have no public Evidence")
+    excluded_artifact_set_id = (
+        canonical_hash(
+            excluded_artifact_sha256s,
+            prefix="finance_agent_population_exclusion_set:",
         )
-        if not excluded_evidence_versions:
-            raise ValueError("excluded Agent population has no public Evidence")
-        excluded_artifact_sha256 = _sha256(excluded_population_artifacts_path)
+        if excluded_artifact_sha256s
+        else None
+    )
     cases = provider.contract_cases(
         candidate_count,
         seed=effective_seed,
@@ -267,7 +296,8 @@ def build_finance_agent_population(
         ),
         "failure_counts": dict(sorted(failures.items())),
         "source_to_agent_task_ids": dict(sorted(source_to_agent.items())),
-        "excluded_population_artifact_sha256": excluded_artifact_sha256,
+        "excluded_population_artifact_sha256s": excluded_artifact_sha256s,
+        "excluded_population_artifact_set_id": excluded_artifact_set_id,
         "excluded_public_evidence_version_count": len(excluded_evidence_versions),
         "artifact_sha256": _sha256(artifact_path),
         "status": (
@@ -390,7 +420,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--task-count", type=int)
     parser.add_argument("--seed", type=int)
-    parser.add_argument("--exclude-population-artifacts-path")
+    parser.add_argument(
+        "--exclude-population-artifacts-paths",
+        nargs="*",
+        default=(),
+    )
     return parser
 
 
@@ -401,10 +435,9 @@ def main() -> None:
         output_dir=Path(args.output_dir).resolve(),
         task_count=args.task_count,
         seed=args.seed,
-        excluded_population_artifacts_path=(
-            Path(args.exclude_population_artifacts_path).resolve()
-            if args.exclude_population_artifacts_path
-            else None
+        excluded_population_artifacts_paths=tuple(
+            Path(value).resolve()
+            for value in args.exclude_population_artifacts_paths
         ),
     )
     print(report.model_dump_json(indent=2))
