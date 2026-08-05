@@ -342,6 +342,25 @@ and the sealed candidate, GP-C, and intervention remain unopened. The validation
 replaced post hoc by the other development profile. Full evidence is in
 `docs/finance_v16_numeric_contract_validation_report.md`.
 
+The 2026-08-05 v17 root-cause experiment then constructed a fresh three-partition population and
+kept the inherited sealed candidate unopened. It evaluated eight preregistered execution profiles
+on one lowest-index realization per task-state: 20 of 60 development realizations per profile.
+Sparse-projection FP32, FP64 loss accumulation, TF32-off, checkpoint changes, separate forwards,
+and functional VJP extraction all failed the unchanged joint numeric gate. Only
+`fp32_activation_strict` passed. Relative-error reduction against the otherwise matched TF32-off
+profile was positive for 20/20 jobs, with a task-cluster bootstrap 95% interval of
+`[0.011827, 0.018466]`. The selector froze that profile and a `0.0011` pairwise uncertainty envelope
+before validation.
+
+On the disjoint validation diagnostic subset, the selected profile completed 20/20 checkpoints.
+Maximum relative error was `0.006024`, minimum cosine was `0.9999819`, maximum GP-score delta was
+`0.0006838`, maximum TV was `0.00005472`, and all frozen gates passed. All 25 resolvable pairs, six
+task winners, and six strict task permutations agreed. The resulting
+`finance_gradient_numeric_contract.v17` authorizes exactly one inherited
+`independent_sealed_candidate` numeric run. It does not authorize Contribution, GP-C, a VTDO
+update, Student training, or a downstream claim, and `production_authorized` remains false. Full
+evidence is in `docs/finance_v17_numeric_root_cause_report.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control

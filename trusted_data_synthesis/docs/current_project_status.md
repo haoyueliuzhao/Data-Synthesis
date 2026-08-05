@@ -3,27 +3,24 @@
 Audit date: 2026-08-05
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
-credential-redacted recovery records, and checks rerun on the migrated server. Missing chat messages
-are not treated as experimental evidence.
+credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
+messages are not treated as experimental evidence.
 
 ## Repository Identity
 
 - Active repository: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
 - Branch: `main`
-- Base HEAD: `5573dbc4f1f75fa25cd36ece3f51864ee884537c`
-- Worktree: contains the intentional v16 implementation, tests, and documentation described here
+- v17 implementation parent: `7b201fd`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The base commit contains the v14 real-Agent Gradient Projection candidate. The current worktree adds
-a disjoint numeric recalibration population, shared-forward gradient decomposition, independent
-validation, strict checkpoint replay, and fail-closed aggregate authorization.
+The active v17 change set adds a fail-closed numeric root-cause runner, eight controlled execution
+profiles, task-cluster paired contrasts, immutable per-realization checkpoints, development-only
+selection, independent validation, and a single-purpose frozen numeric contract.
 
 ## Runtime And Data
 
-The migrated environment remains operational with Python 3.12, PyTorch 2.7.1+cu128, CUDA 12.8, and
-eight NVIDIA A100-SXM4-80GB GPUs. At the end of this audit no Finance v16 experiment process was
-running. Unrelated processes retained approximately 22 GB per GPU; this observation is not a future
-resource reservation.
+The migrated environment is operational with Python 3.12, PyTorch 2.7.1+cu128, CUDA 12.8, and
+eight NVIDIA A100-SXM4-80GB GPUs. No v17 process remained after aggregation.
 
 The read-only Finance Archive remains the active data dependency:
 
@@ -36,27 +33,30 @@ The read-only Finance Archive remains the active data dependency:
 | Fact nodes | 658,535 |
 | DerivedFact nodes | 135,990 |
 
-The newest DB-only build from the previous server is still unavailable, but the immutable archive
-required by the active experiment is present and readable.
+The newest DB-only build from the previous server remains unavailable. The immutable archive used
+by the experiment is present and readable.
 
 ## Revalidated Code State
 
 | Check | Result |
 | --- | --- |
+| Root-cause and Gradient Projection focus | 65 passed |
 | Ruff | passed |
-| Mypy | passed, 235 source files |
-| Pytest | passed, 355 tests in 114.58 seconds |
-| Git whitespace audit | passed |
-| Core generalization boundary | retained by the full test suite |
-| Legal and Science contracts | retained by the full test suite |
+| Mypy | passed, 236 source files |
+| Pytest | passed, 373 tests in 116.00 seconds |
+| Core generalization boundary | retained by full suite |
+| Legal and Science contracts | retained by full suite |
 
-The v16 checkpoint tests prove exact resume and reject altered plans, profiles, splits, jobs, and
-row identities. Failed aggregation also rejects a stale frozen numeric contract; no compatibility
-path converts a failed v5 validation into the older v3 contract.
+The v17 tests reject altered plans, implementation manifests, profiles, splits, source jobs,
+result rows, selection lineage, uncertainty envelopes, and stale contracts. Validation cannot run
+before selection or with a nonselected profile. A failed aggregate cannot retain a stale numeric
+contract.
 
-## v14 Historical Boundary
+## Historical Boundaries
 
-The v14 production candidate remains immutable historical evidence:
+### v14 production candidate
+
+The immutable v14 candidate remains historical evidence:
 
 - 30 real Finance tasks;
 - 100 quotient trajectory states;
@@ -65,98 +65,111 @@ The v14 production candidate remains immutable historical evidence:
 - stable realization sampling and positive internal proxy association;
 - seven raw numeric-tail violations and three strict task-order reversals.
 
-It remains a holdout and was not reused to tune v16. Its status remains `partial` with
+It was not reused to tune v16 or v17. Its status remains `partial` with
 `production_authorized=false`.
 
-## v16 Numeric Recalibration
+### v16 recalibration
 
-### Population and generation
+v16 used disjoint development, validation, and sealed-candidate populations. The BF16 TF32 profile
+passed development but failed independent validation on relative error, cosine, and GP-score delta.
+No v16 numeric contract was issued. Margin-aware ordering remained stable, so v16 localized the
+bottleneck to raw gradient-level numerical fidelity rather than sampling or task ordering.
 
-v16 constructed development, validation, and sealed-candidate partitions with six balanced task
-families each. Every partition contains 63 Evidence versions. Cross-partition task, Evidence, and
-semantic overlap are zero. The sealed-candidate outcome flag remains false.
+The unused v16 profile was not substituted post hoc, and the v16 validation set was not reused for
+v17 tuning.
 
-Development and validation each produced 24/24 valid initial Agent trajectories, 20 states, and
-60/60 released realizations. Across the four DeepSeek-V4-Pro generation stages:
+## v17 Numeric Root-Cause Experiment
 
-- API calls: 518;
-- total tokens: 3,770,538;
-- fallback calls: 0;
-- provider-reported cost-estimate sum: `0.95538615` in the provider telemetry unit.
+### Population and real-Agent inputs
 
-The cost value is telemetry, not a billing invoice, and no currency is inferred from it.
+v17 created three fresh, balanced six-task partitions. Every partition contains one task from each
+of six task families and binds 63 Evidence versions. Task, Evidence-version, and semantic overlap
+across development, validation, and sealed candidate are all zero.
 
-### Numeric calibration
+Development and validation each produced:
 
-The shared-forward algorithm uses one causal CE vector and three VJPs. Both development profiles
-passed. The preregistered selector froze `bf16_checkpoint_tf32_v10_control` before validation.
+- 24/24 valid initial trajectories;
+- 20 trajectory states;
+- 60/60 released state-conditioned realizations.
 
-| Development metric | TF32 control | Strict accumulation |
+The full real-Agent input funnel used 554 DeepSeek-V4-Pro calls and 4,092,455 tokens. Every API call
+and JSON contract succeeded, fallback use was zero, and the provider-reported estimate summed to
+`0.484361248`. That value is telemetry rather than an invoice. The numeric experiment itself made
+no additional API calls.
+
+### Development diagnosis
+
+The preregistered matrix evaluated 20 realization-level records under eight profiles. Seven
+profiles failed the unchanged raw numeric contract. Only `fp32_activation_strict` passed:
+
+| Metric | BF16 control | FP32 activation |
 | --- | ---: | ---: |
-| Maximum GP delta | 0.00152472 | 0.00178094 |
-| Maximum relative error | 0.02121472 | 0.02296097 |
-| Minimum cosine | 0.99977505 | 0.99973922 |
-| Maximum update TV | 0.00015072 | 0.00019001 |
-| Resolvable pair direction | 22/22 | 24/24 |
+| Maximum relative error | 0.03436155 | 0.00641550 |
+| Minimum cosine | 0.99952628 | 0.99997942 |
+| Maximum GP delta | 0.00212896 | 0.00052523 |
+| Maximum update TV | 0.00012564 | 0.00004071 |
+| Pairwise envelope | 0.0043 | 0.0011 |
 
-### Independent validation
+The paired FP32-versus-TF32-off contrast reduced relative error in 20/20 records, with mean
+reduction `0.01451894` and a task-cluster bootstrap 95% interval of
+`[0.01182715, 0.01846619]`. Projection FP32, FP64 accumulation, TF32-off, checkpoint changes,
+separate forwards, and functional VJP did not cross the joint gate.
 
-The frozen TF32 profile failed independent raw numeric validation:
+The development tail was a long `derived_growth_comparison` record whose differential region was
+474/5,126 supervised tokens. Its paired relative error fell from `0.03436155` to `0.00363419` under
+FP32 activation. The supported engineering diagnosis is BF16 forward-activation rounding in small
+differential regions.
 
-| Metric | Observed | Frozen threshold | Result |
-| --- | ---: | ---: | --- |
-| Maximum GP delta | 0.00282111 | <= 0.0023 | failed |
-| Maximum relative error | 0.03005580 | <= 0.027 | failed |
-| Minimum cosine | 0.99954834 | >= 0.99967 | failed |
-| Maximum loss identity error | 4.16e-8 | <= 1e-6 | passed |
-| Maximum update JS | 3.11e-8 | <= 1e-6 | passed |
-| Maximum update TV | 0.00015587 | <= 0.00023 | passed |
+### Frozen selection and independent validation
 
-Failure localization found one `temporal_growth` relative-error violation, two cosine violations in
-the same state, and one `comparison` GP-delta violation. In contrast, validation retained 100%
-direction agreement on 23 resolvable pairs, 6/6 winner agreement, and 6/6 strict task-permutation
-agreement. Those diagnostics do not override the raw gate.
+The selector froze `fp32_activation_strict` and an uncertainty envelope of `0.0011` before observing
+validation. The independent validation then completed 20/20 fresh checkpoints and passed all gates:
 
-Aggregate identity:
-`finance_gradient_precision_v5_report:23a368bfb49741f7b3063fd4e467175232766b39544f601885267964a1f8e97a`.
+| Metric | Observed | Frozen threshold |
+| --- | ---: | ---: |
+| Maximum GP delta | 0.00068376 | <= 0.0023 |
+| Maximum relative error | 0.00602399 | <= 0.027 |
+| Minimum cosine | 0.99998186 | >= 0.99967 |
+| Maximum loss identity error | 5.95e-8 | <= 1e-6 |
+| Maximum update JS | 5.86e-9 | <= 1e-6 |
+| Maximum update TV | 0.00005472 | <= 0.00023 |
 
-A separate integrity replay verified 185 canonical identities, all 180 checkpoints, and zero
-pairwise task/Evidence/semantic overlap. Audit identity:
-`finance_v16_numeric_integrity_audit:f13b93b180eb23a40805729bd575bca021c460f22442a255812998e7b293ecfc`.
+All 25 resolvable state pairs, all six task winners, and all six strict task permutations agreed.
+
+Authoritative identities:
+
+- report: `finance_gradient_numeric_root_cause_report:8f9db5c9249904f9846cb7482ad428f0181407a3580d7a00437fa885be57306c`;
+- contract: `finance_gradient_numeric_contract:e2a1c890af575f477389b0bfb1475810aeecec3e5f4bf3a6213c552a82fa86b7`.
 
 ## Authorization State
 
 The scientifically correct state is:
 
-- aggregate status: `failed`;
-- failure: `raw_numeric_precision_failed`;
+- v17 aggregate status: `passed`;
+- `numeric_contract_authorized=true`;
 - `production_authorized=false`;
-- no `frozen_numeric_contract.json` exists;
-- no v16 Contribution credential exists;
-- sealed candidate unopened;
-- GP-C and independent intervention not run;
-- Student training and benchmark effects cannot be attributed to v16 Contribution optimization.
+- allowed next run role: `independent_sealed_candidate`;
+- sealed-candidate outcomes remain unopened;
+- GP-C, Contribution intervention, VTDO updates, Student training, and downstream claims remain
+  unauthorized.
 
-The unused strict profile cannot be run on the already-opened validation population as a post-hoc
-alternate. Thresholds cannot be relaxed after observing validation.
+The pass establishes an independently validated numerical decomposition profile. It does not yet
+establish that GP-C predicts finite intervention utility.
 
-## Recovery-Safe Next Step
+## Next Step
 
-The next experiment must be a newly preregistered, development-only numerical root-cause study. It
-should isolate loss accumulation, sparse-projection dtype, token-region reduction, and VJP
-recomposition on a new population. Any algorithm change requires a new version, new independent
-validation tasks, and newly frozen thresholds. The current sealed candidate and v14 holdout remain
-closed.
-
-Higher-order Hessian or Richardson Contribution approximations are premature: the first-order
-numeric fidelity gate has not yet passed independent validation.
+Run exactly one inherited sealed-candidate numeric evaluation under the frozen v17 profile,
+thresholds, envelope, task set, implementation manifest, and three-GPU resource contract. Do not
+change the profile after observing that partition. A sealed pass may open the later GP-C and
+independent-intervention stages; a failure closes this engineering route without threshold tuning.
 
 ## Authoritative References
 
-- `docs/finance_v14_real_agent_gradient_projection_report.md`
+- `docs/finance_v17_numeric_root_cause_report.md`
 - `docs/finance_v16_numeric_contract_validation_report.md`
+- `docs/finance_v14_real_agent_gradient_projection_report.md`
 - `docs/vtdo_experiment_protocol.md`
 - `docs/valid_trajectory_distribution_optimization.md`
 - `docs/server_recovery.md`
-- `artifacts/vtdo_experiment/finance_v16_numeric_recalibration_partitions_6x6x6_v3_20260804/report.json`
-- `artifacts/vtdo_experiment/finance_v16_gradient_precision_calibration_v5_dev6_val6_v1_20260804/report.json`
+- `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/report.json`
+- `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/frozen_numeric_contract.json`

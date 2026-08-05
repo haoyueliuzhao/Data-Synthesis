@@ -40,6 +40,10 @@ CALIBRATION_VERSION = "finance_gradient_finite_precision_calibration.v3"
 SOURCE_GRADIENT_VERSION = "finance_contribution_gradient_projection.v10"
 SPLITS = ("development", "validation")
 SHARD_MEMORY_CAP_GIB = 12
+MULTI_GPU_PRIMARY_SHARD_MEMORY_CAP_GIB = 4
+MULTI_GPU_OTHER_SHARD_MEMORY_CAP_GIB = 24
+MULTI_GPU_DEVICE_MAP_POLICY = "balanced"
+MULTI_GPU_ADAPTER_LOAD_CACHE_POLICY = "empty_unused_cuda_cache_after_base_sharding"
 
 
 @dataclass(frozen=True)
@@ -262,6 +266,29 @@ def _strict_max_memory(
     }
 
 
+def _multi_gpu_load_kwargs(
+    device_count: int,
+    gpu_ids: tuple[int, ...],
+) -> dict[str, Any]:
+    """Reserve the first shard device for long-sequence activation memory."""
+
+    max_memory = _strict_max_memory(
+        device_count,
+        gpu_ids,
+        per_device_gib=MULTI_GPU_OTHER_SHARD_MEMORY_CAP_GIB,
+    )
+    max_memory[gpu_ids[0]] = f"{MULTI_GPU_PRIMARY_SHARD_MEMORY_CAP_GIB}GiB"
+    return {
+        "device_map": MULTI_GPU_DEVICE_MAP_POLICY,
+        "max_memory": max_memory,
+    }
+
+
+def _release_multi_gpu_load_cache(torch_module: Any, gpu_ids: tuple[int, ...]) -> None:
+    if len(gpu_ids) > 1:
+        torch_module.cuda.empty_cache()
+
+
 def _load_calibration_model(
     *,
     model_dir: Path,
@@ -282,13 +309,7 @@ def _load_calibration_model(
     }
     if len(gpu_ids) > 1:
         load_kwargs.update(
-            {
-                "device_map": "balanced",
-                "max_memory": _strict_max_memory(
-                    torch.cuda.device_count(),
-                    gpu_ids,
-                ),
-            }
+            _multi_gpu_load_kwargs(torch.cuda.device_count(), gpu_ids)
         )
     base = AutoModelForCausalLM.from_pretrained(model_dir, **load_kwargs)
     if len(gpu_ids) == 1:
@@ -304,6 +325,7 @@ def _load_calibration_model(
     else:
         base.gradient_checkpointing_disable()
     base.enable_input_require_grads()
+    _release_multi_gpu_load_cache(torch, gpu_ids)
     model = PeftModel.from_pretrained(base, adapter_dir, is_trainable=True)
     model.config.use_cache = False
     return model, device_map

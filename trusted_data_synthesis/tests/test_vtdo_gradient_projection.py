@@ -63,7 +63,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_gradient_precision_cal
     _build_numeric_contract,
     _derive_validation_thresholds,
     _distribution_distance,
+    _multi_gpu_load_kwargs,
     _rank_agreement,
+    _release_multi_gpu_load_cache,
     _softmax_update,
     _strict_max_memory,
 )
@@ -635,6 +637,23 @@ def test_precision_calibration_gpu_contract_excludes_unselected_devices() -> Non
     }
     with pytest.raises(ValueError, match="GPU whitelist"):
         _strict_max_memory(4, (1, 1))
+
+
+def test_precision_calibration_multi_gpu_reserves_first_device_for_activations() -> None:
+    assert _multi_gpu_load_kwargs(4, (1, 3)) == {
+        "device_map": "balanced",
+        "max_memory": {0: 0, 1: "4GiB", 2: 0, 3: "24GiB"},
+    }
+
+
+def test_precision_calibration_releases_only_multi_gpu_load_cache() -> None:
+    calls: list[bool] = []
+    torch_module = SimpleNamespace(cuda=SimpleNamespace(empty_cache=lambda: calls.append(True)))
+
+    _release_multi_gpu_load_cache(torch_module, (1,))
+    assert calls == []
+    _release_multi_gpu_load_cache(torch_module, (1, 3))
+    assert calls == [True]
 
 
 def test_precision_calibration_distribution_stability_is_exact() -> None:
