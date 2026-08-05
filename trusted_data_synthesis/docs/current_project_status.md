@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-05
+Audit date: 2026-08-06
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -11,16 +11,17 @@ messages are not treated as experimental evidence.
 - Active repository: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
 - Branch: `main`
 - v17 implementation parent: `7b201fd`
+- sealed retry implementation SHA-256: `1e9533f4c67096874ba28aa3f28e0319ed9e8d2d609d08b92f0d2197e6ad285a`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active v17 change set adds a fail-closed numeric root-cause runner, eight controlled execution
-profiles, task-cluster paired contrasts, immutable per-realization checkpoints, development-only
-selection, independent validation, and a single-purpose frozen numeric contract.
+The current change set adds the fail-closed v17 root-cause pipeline and the one-shot inherited
+sealed-candidate executor, including immutable source manifests, per-state checkpoints, explicit
+pre-observation retry lineage, and claim-bounded aggregation.
 
 ## Runtime And Data
 
 The migrated environment is operational with Python 3.12, PyTorch 2.7.1+cu128, CUDA 12.8, and
-eight NVIDIA A100-SXM4-80GB GPUs. No v17 process remained after aggregation.
+eight NVIDIA A100-SXM4-80GB GPUs. No sealed experiment process remained after aggregation.
 
 The read-only Finance Archive remains the active data dependency:
 
@@ -40,10 +41,10 @@ by the experiment is present and readable.
 
 | Check | Result |
 | --- | --- |
-| Root-cause and Gradient Projection focus | 65 passed |
+| Sealed-candidate focus | 6 passed |
 | Ruff | passed |
-| Mypy | passed, 236 source files |
-| Pytest | passed, 373 tests in 116.00 seconds |
+| Mypy | passed, 237 source files |
+| Pytest | passed, 379 tests in 116.96 seconds |
 | Core generalization boundary | retained by full suite |
 | Legal and Science contracts | retained by full suite |
 
@@ -141,35 +142,58 @@ Authoritative identities:
 - report: `finance_gradient_numeric_root_cause_report:8f9db5c9249904f9846cb7482ad428f0181407a3580d7a00437fa885be57306c`;
 - contract: `finance_gradient_numeric_contract:e2a1c890af575f477389b0bfb1475810aeecec3e5f4bf3a6213c552a82fa86b7`.
 
+## v18 Inherited Sealed Numeric Candidate
+
+The first attempt failed before any state metric was computed because the checkpoint loader read
+`jobs` from the outer source manifest instead of its nested descriptor. The immutable v1 result
+records `execution_failed`, `KeyError('jobs')`, zero checkpoints, and no numeric summary.
+
+A new retry plan allowed only that source-manifest lookup repair and froze every scientific input
+unchanged. It computed 20/20 fresh diagnostic checkpoints on GPUs 3-5 and passed all frozen gates:
+
+| Metric | Observed | Frozen threshold |
+| --- | ---: | ---: |
+| Maximum GP delta | 0.00081042 | <= 0.0023 |
+| Maximum relative error | 0.00633034 | <= 0.027 |
+| Minimum cosine | 0.99997997 | >= 0.99967 |
+| Maximum loss identity error | 5.31e-8 | <= 1e-6 |
+| Maximum update JS | 3.37e-9 | <= 1e-6 |
+| Maximum update TV | 0.00005026 | <= 0.00023 |
+
+All 24 resolvable pairs, all six task winners, and all six strict task permutations agreed. The
+result hash is
+`finance_gradient_numeric_sealed_result:ed13f8f07830ad47471293a8c73c22f464844959699b1b91d7c6cc99c94721d2`.
+
 ## Authorization State
 
 The scientifically correct state is:
 
-- v17 aggregate status: `passed`;
+- inherited sealed numeric status: `passed`;
+- `sealed_numeric_contract_passed=true`;
 - `numeric_contract_authorized=true`;
 - `production_authorized=false`;
-- allowed next run role: `independent_sealed_candidate`;
-- sealed-candidate outcomes remain unopened;
-- GP-C, Contribution intervention, VTDO updates, Student training, and downstream claims remain
-  unauthorized.
+- `contribution_authorized=false`;
+- allowed next stage: `preregister_contribution_authorization_experiment`;
+- VTDO updates, Student training, and downstream claims remain unauthorized.
 
-The pass establishes an independently validated numerical decomposition profile. It does not yet
-establish that GP-C predicts finite intervention utility.
+The pass establishes that the frozen numerical execution path generalizes to the untouched sealed
+population. It does not establish that GP-C predicts independent finite intervention utility.
 
 ## Next Step
 
-Run exactly one inherited sealed-candidate numeric evaluation under the frozen v17 profile,
-thresholds, envelope, task set, implementation manifest, and three-GPU resource contract. Do not
-change the profile after observing that partition. A sealed pass may open the later GP-C and
-independent-intervention stages; a failure closes this engineering route without threshold tuning.
+Preregister a separate Contribution authorization experiment with independent estimation and
+finite-intervention targets. Reuse the frozen FP32 numeric profile without threshold tuning. Do not
+promote this sealed result directly into a VTDO update or production release.
 
 ## Authoritative References
 
+- `docs/finance_v18_sealed_numeric_authorization_report.md`
 - `docs/finance_v17_numeric_root_cause_report.md`
 - `docs/finance_v16_numeric_contract_validation_report.md`
 - `docs/finance_v14_real_agent_gradient_projection_report.md`
 - `docs/vtdo_experiment_protocol.md`
 - `docs/valid_trajectory_distribution_optimization.md`
 - `docs/server_recovery.md`
+- `artifacts/vtdo_experiment/finance_v17_sealed_numeric_candidate_retry_v2_20260806/report.json`
 - `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/report.json`
 - `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/frozen_numeric_contract.json`

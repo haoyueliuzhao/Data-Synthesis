@@ -361,6 +361,22 @@ task winners, and six strict task permutations agreed. The resulting
 update, Student training, or a downstream claim, and `production_authorized` remains false. Full
 evidence is in `docs/finance_v17_numeric_root_cause_report.md`.
 
+On 2026-08-06 the inherited sealed numeric candidate was opened exactly once under that frozen
+contract. Its first process attempt failed before any state metric was computed because the
+checkpoint loader used the outer source-manifest schema instead of the nested source descriptor.
+The immutable failure has zero checkpoints and no numeric summary. A separately hashed retry plan
+allowed only that lookup repair and froze the task set, trajectories, state realizations,
+authorization objective gradient, profile, thresholds, uncertainty envelope, and gradient seed.
+
+The retry computed 20/20 fresh diagnostic checkpoints. Maximum relative error was `0.0063303`,
+minimum cosine was `0.9999800`, maximum GP-score delta was `0.0008104`, maximum TV was
+`0.00005026`, and all frozen raw gates passed. All 24 resolvable pairs, six task winners, and six
+strict task permutations agreed. The sealed numeric stage is therefore complete, while
+`production_authorized=false` and `contribution_authorized=false`. The only authorized transition
+is preregistration of a separate Contribution authorization experiment with independent finite
+intervention targets. Full evidence is in
+`docs/finance_v18_sealed_numeric_authorization_report.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control
