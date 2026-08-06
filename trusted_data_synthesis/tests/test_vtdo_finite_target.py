@@ -5,11 +5,14 @@ import copy
 import pytest
 
 from trusted_synthesis.experiments.vtdo_experiment.phase1_finite_target import (
+    DIRECTION_MANIFEST_HASH_PREFIX,
     _observation_hash,
+    _verify_direction_manifest,
     analyze_finite_target,
     build_finite_target_plan,
     recover_pi_centered_state_values,
 )
+from trusted_synthesis.hashing import canonical_hash
 
 
 def _gradient_inputs() -> tuple[dict[str, object], dict[str, object]]:
@@ -20,8 +23,7 @@ def _gradient_inputs() -> tuple[dict[str, object], dict[str, object]]:
         weights = [float(index + 1) for index in range(state_count)]
         total = sum(weights)
         probabilities = {
-            f"state-{task_index}-{index}": weight / total
-            for index, weight in enumerate(weights)
+            f"state-{task_index}-{index}": weight / total for index, weight in enumerate(weights)
         }
         task_id = f"task-{task_index}"
         task_distributions[task_id] = {
@@ -39,6 +41,10 @@ def _gradient_inputs() -> tuple[dict[str, object], dict[str, object]]:
             )
     plan: dict[str, object] = {
         "plan_hash": "gradient-plan",
+        "run_role": "production_candidate",
+        "numeric_contract_hash": "numeric-contract",
+        "numeric_contract": {"selected_profile": {"profile_id": "test"}},
+        "production_authorization_eligible": True,
         "beneficiary_model_state_id": "beneficiary-state",
         "beneficiary_checkpoint_hash": "beneficiary-checkpoint",
         "model_dir": "/model",
@@ -47,7 +53,10 @@ def _gradient_inputs() -> tuple[dict[str, object], dict[str, object]]:
         "beneficiary_adapter_tensor_sha256": "adapter-sha",
         "source_records_path": "/records.jsonl",
         "source_records_sha256": "records-sha",
-        "local_optimizer_contract": {"contract_id": "optimizer-contract"},
+        "local_optimizer_contract": {
+            "contract_id": "optimizer-contract",
+            "objective_gradient_mode": "deterministic_eval_with_checkpoint_wrappers",
+        },
         "task_distributions": task_distributions,
         "gradient_estimation_record_ids": tuple(f"est-{index}" for index in range(16)),
         "gradient_validation_record_ids": tuple(f"val-{index}" for index in range(16)),
@@ -60,9 +69,7 @@ def _gradient_inputs() -> tuple[dict[str, object], dict[str, object]]:
         "task_count": 30,
         "state_count": len(state_rows),
         "state_rows": state_rows,
-        "task_marginals": {
-            f"task-{index}": task_marginal for index in range(30)
-        },
+        "task_marginals": {f"task-{index}": task_marginal for index in range(30)},
         "global_gradient_artifact": {
             "file": "/global.safetensors",
             "sha256": "global-sha",
@@ -107,13 +114,10 @@ def _observations(plan: dict[str, object]) -> tuple[list[dict[str, object]], dic
             radius = float(radius)
             for sign in (-1, 1):
                 signed_radius = sign * radius
-                objective = (
-                    0.75
-                    + signed_radius * linear
-                    + 0.2 * signed_radius**3 * linear
-                )
+                objective = 0.75 + signed_radius * linear + 0.2 * signed_radius**3 * linear
                 observation = {
                     "plan_hash": plan["plan_hash"],
+                    "numeric_contract_hash": plan["numeric_contract_hash"],
                     "direction_manifest_hash": "direction-manifest:test",
                     "objective_role": plan["objective_role"],
                     "design_row_id": row["design_row_id"],
@@ -132,6 +136,60 @@ def _observations(plan: dict[str, object]) -> tuple[list[dict[str, object]], dic
     return observations, true_coordinates
 
 
+def test_sealed_causal_pilot_uses_frozen_protocol_and_forbids_authorization() -> None:
+    gradient_plan, gradient_report = _gradient_inputs()
+    task_ids = tuple(f"task-{index}" for index in range(6))
+    gradient_plan["run_role"] = "sealed_causal_pilot"
+    gradient_plan["production_authorization_eligible"] = False
+    gradient_plan["task_distributions"] = {
+        task_id: gradient_plan["task_distributions"][task_id] for task_id in task_ids
+    }
+    gradient_plan["numeric_contract"] = {
+        "selected_profile": {"profile_id": "test"},
+        "finite_target_protocol": {
+            "base_radius": 0.1,
+            "radii": [0.1, 0.05, 0.025],
+            "block_size": 7,
+            "design_count": 2,
+            "finite_difference": "symmetric_central",
+            "extrapolation": "two_level_richardson_O_h4",
+        },
+    }
+    gradient_report["task_count"] = 6
+    gradient_report["state_rows"] = [
+        row for row in gradient_report["state_rows"] if row["task_id"] in task_ids
+    ]
+    gradient_report["state_count"] = len(gradient_report["state_rows"])
+    gradient_report["task_marginals"] = {task_id: 1.0 / 6 for task_id in task_ids}
+
+    plan = build_finite_target_plan(
+        gradient_plan=gradient_plan,
+        gradient_report=gradient_report,
+        objective_role="estimation",
+        objective_record_ids=tuple(f"est-{index}" for index in range(4)),
+        objective_records_hash="pilot-estimation-records",
+        base_radius=0.1,
+        block_size=7,
+        design_count=2,
+        design_salt="sealed-causal-pilot",
+    )
+
+    assert plan["run_role"] == "sealed_causal_pilot"
+    assert plan["production_authorization_eligible"] is False
+    with pytest.raises(ValueError, match="cannot open the authorization objective"):
+        build_finite_target_plan(
+            gradient_plan=gradient_plan,
+            gradient_report=gradient_report,
+            objective_role="authorization",
+            objective_record_ids=tuple(f"auth-{index}" for index in range(4)),
+            objective_records_hash="pilot-authorization-records",
+            base_radius=0.1,
+            block_size=7,
+            design_count=2,
+            design_salt="sealed-causal-pilot",
+        )
+
+
 def test_multiradius_hadamard_target_recovers_nonuniform_support() -> None:
     plan = _plan()
     observations, expected = _observations(plan)
@@ -145,10 +203,7 @@ def test_multiradius_hadamard_target_recovers_nonuniform_support() -> None:
     assert report["p95_radius_instability"] < 1e-8
     assert report["signal_to_null_ratio"] > 1e6
     assert report["coordinate_values"] == pytest.approx(expected, abs=1e-10)
-    assert all(
-        abs(float(row["weighted_target_mean"])) < 1e-10
-        for row in report["state_targets"]
-    )
+    assert all(abs(float(row["weighted_target_mean"])) < 1e-10 for row in report["state_targets"])
 
 
 def test_finite_target_rejects_an_incomplete_design() -> None:
@@ -221,3 +276,31 @@ def test_authorization_target_requires_frozen_development_gates() -> None:
             objective_records_hash="objective-records-hash",
             design_salt="test-salt",
         )
+
+
+def test_direction_manifest_replay_is_fail_closed() -> None:
+    plan = {
+        "plan_hash": "finite-plan",
+        "design_rows": [{"design_row_id": "design-1"}],
+    }
+    manifest = {
+        "finite_target_plan_hash": "finite-plan",
+        "direction_artifacts": [
+            {
+                "design_row_id": "design-1",
+                "file": "/direction.safetensors",
+                "sha256": "direction-sha",
+            }
+        ],
+    }
+    manifest["manifest_hash"] = canonical_hash(
+        manifest,
+        prefix=DIRECTION_MANIFEST_HASH_PREFIX,
+    )
+
+    assert _verify_direction_manifest(plan, manifest) == manifest["manifest_hash"]
+
+    tampered = copy.deepcopy(manifest)
+    tampered["direction_artifacts"][0]["sha256"] = "tampered"
+    with pytest.raises(ValueError, match="identity changed"):
+        _verify_direction_manifest(plan, tampered)

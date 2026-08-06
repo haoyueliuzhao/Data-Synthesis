@@ -561,6 +561,10 @@ def _initial_report_lineage_mode(
 
 
 def build_authorization_gradient(args: argparse.Namespace) -> None:
+    raise RuntimeError(
+        "The archived v18 authorization-gradient runner is retired; use the v19 "
+        "sealed causal pilot and its frozen FP32 execution contract."
+    )
     import torch
     from safetensors.torch import save_file
 

@@ -301,6 +301,15 @@ diagnostic and negative authorization evidence are recorded respectively in
 `docs/finance_gradient_projection_abc_validation_report.md` and
 `docs/finance_gradient_projection_independent_authorization_report.md`.
 
+The later v19 sealed causal pilot separated numeric execution from target identifiability on a
+fresh six-task pilot. The v18-certified strict-FP32 gradient path replayed successfully on all 60
+state realizations, but both disjoint finite-target partitions failed their preregistered
+reconstruction and radius-stability gates before GP-C was evaluated. A smaller-radius diagnostic
+also failed to recover local linearity. This evidence narrows the current blocker to the finite
+target-estimation regime used by the authorization protocol; it is neither a GP-C validation nor a
+GP-C falsification. The Authorization objective remains unopened and real rounds continue with
+`Contribution=0`. See `docs/finance_v19_sealed_causal_pilot_report.md`.
+
 ## Novelty, Potential, And Anchored Update
 
 Coverage-relative novelty is exact:

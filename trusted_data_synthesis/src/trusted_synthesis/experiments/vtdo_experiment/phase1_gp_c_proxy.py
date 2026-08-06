@@ -4,7 +4,6 @@ import argparse
 import gc
 import json
 import math
-import os
 import statistics
 import time
 from collections import defaultdict
@@ -13,9 +12,11 @@ from pathlib import Path
 from typing import Any
 
 from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient import (
+    OBJECTIVE_GRADIENT_EXECUTION_MODE,
     _gradient_dot,
     _gradient_norm,
     _gradient_parameter_manifest,
+    _load_execution_model,
     _load_records,
     _load_verified_gradient,
     _record_gradient,
@@ -25,15 +26,29 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient 
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
     _adapter_tensor_sha256,
-    _baseline_lora_model,
     _load_tokenizer,
     _read_json,
     _write_json,
 )
 from trusted_synthesis.hashing import canonical_hash
 
-GP_C_PROXY_VERSION = "finance_gradient_projection_gp_c.v3"
+GP_C_PROXY_VERSION = "finance_gradient_projection_gp_c.v5"
 CALIBRATION_FLOOR = 1e-12
+
+
+def _replay_hash(
+    value: Mapping[str, Any],
+    *,
+    field: str,
+    prefix: str,
+    label: str,
+) -> str:
+    payload = dict(value)
+    observed = payload.pop(field, None)
+    expected = canonical_hash(payload, prefix=prefix)
+    if observed != expected:
+        raise ValueError(f"{label} identity changed")
+    return str(observed)
 
 
 def _cold_start_adamw_update(
@@ -50,9 +65,7 @@ def _cold_start_adamw_update(
     clip_scale = min(1.0, maximum_gradient_norm / norm)
     updates = {
         name: (
-            learning_rate
-            * (value * clip_scale)
-            / (value.abs() * clip_scale + epsilon)
+            learning_rate * (value * clip_scale) / (value.abs() * clip_scale + epsilon)
         ).contiguous()
         for name, value in frozen.items()
     }
@@ -70,9 +83,7 @@ def _linear_combination(
     names = tuple(vectors[0])
     if any(tuple(vector) != names for vector in vectors):
         raise ValueError("GP-C vector parameter manifests differ")
-    result = {
-        name: vectors[0][name].new_zeros(vectors[0][name].shape) for name in names
-    }
+    result = {name: vectors[0][name].new_zeros(vectors[0][name].shape) for name in names}
     for vector, weight in zip(vectors, weights, strict=True):
         if not math.isfinite(weight):
             raise ValueError("GP-C vector weight is non-finite")
@@ -109,9 +120,7 @@ def _load_state_jackknife_updates(
         realization_ids = {str(row["excluded_realization_id"]) for row in rows}
         if len(jackknife_ids) != len(rows) or len(realization_ids) != len(rows):
             raise ValueError("GP-C Jackknife identities must be unique within a state")
-        frozen[key] = tuple(
-            sorted(rows, key=lambda row: str(row["excluded_realization_id"]))
-        )
+        frozen[key] = tuple(sorted(rows, key=lambda row: str(row["excluded_realization_id"])))
     return frozen
 
 
@@ -166,7 +175,7 @@ def freeze_local_update_manifest(
         "weight_decay": 0.0,
         "mixed_state_batches_allowed": False,
         "state_gradient_mode": "train",
-        "objective_gradient_mode": "eval",
+        "objective_gradient_mode": OBJECTIVE_GRADIENT_EXECUTION_MODE,
         "objective_gradient_point": "post_global_update",
     }
     if any(optimizer.get(key) != value for key, value in expected_contract.items()):
@@ -266,13 +275,11 @@ def freeze_local_update_manifest(
     task_vectors = []
     task_weights = []
     task_marginals = {
-        str(key): float(value)
-        for key, value in gradient_report["task_marginals"].items()
+        str(key): float(value) for key, value in gradient_report["task_marginals"].items()
     }
     for task_id, distribution in sorted(gradient_plan["task_distributions"].items()):
         probabilities = {
-            str(key): float(value)
-            for key, value in distribution["probabilities"].items()
+            str(key): float(value) for key, value in distribution["probabilities"].items()
         }
         states = tuple(sorted(probabilities))
         if {(task_id, state_id) for state_id in states} - set(state_updates):
@@ -298,12 +305,16 @@ def freeze_local_update_manifest(
         "artifact_type": "LocalAdamWUpdateManifest",
         "source_gradient_plan_hash": gradient_plan["plan_hash"],
         "source_gradient_report_hash": gradient_report["report_hash"],
+        "run_role": gradient_plan["run_role"],
+        "numeric_contract_hash": gradient_plan["numeric_contract_hash"],
+        "numeric_profile": gradient_plan["numeric_contract"]["selected_profile"],
+        "production_authorization_eligible": bool(
+            gradient_plan.get("production_authorization_eligible", True)
+        ),
         "beneficiary_model_state_id": gradient_plan["beneficiary_model_state_id"],
         "beneficiary_checkpoint_hash": gradient_plan["beneficiary_checkpoint_hash"],
         "task_sampling_contract_hash": gradient_plan["task_sampling_contract_hash"],
-        "state_realization_manifest_hash": gradient_plan[
-            "state_realization_manifest_hash"
-        ],
+        "state_realization_manifest_hash": gradient_plan["state_realization_manifest_hash"],
         "optimizer_contract": optimizer,
         "local_update_estimand": "expectation_of_state_homogeneous_cold_start_adamw_updates",
         "state_artifacts": tuple(state_artifacts),
@@ -316,9 +327,7 @@ def freeze_local_update_manifest(
             "sha256": _sha256(global_path),
             "update_norm": _gradient_norm(global_update),
         },
-        "gradient_realization_stability_report_hash": gradient_report[
-            "gradient_diagnostics_hash"
-        ],
+        "gradient_realization_stability_report_hash": gradient_report["gradient_diagnostics_hash"],
         "claim_boundary": (
             "The frozen vectors implement one local state-homogeneous cold-start AdamW "
             "distribution update. They are not full Student optimizer trajectories."
@@ -339,9 +348,7 @@ def freeze_finite_target_directions(
 ) -> dict[str, Any]:
     from safetensors.torch import save_file
 
-    if finite_plan["source_gradient_plan_hash"] != update_manifest[
-        "source_gradient_plan_hash"
-    ]:
+    if finite_plan["source_gradient_plan_hash"] != update_manifest["source_gradient_plan_hash"]:
         raise ValueError("finite-target directions cross Gradient Projection plans")
     state_updates = {
         (str(row["task_id"]), str(row["state_id"])): _load_verified_gradient(
@@ -469,7 +476,32 @@ def analyze_gp_c_proxy(
     update_manifest: Mapping[str, Any],
     objective_gradient_manifest: Mapping[str, Any],
     calibration_scale: float | None = None,
+    calibration_report_hash: str | None = None,
 ) -> dict[str, Any]:
+    _replay_hash(
+        finite_plan,
+        field="plan_hash",
+        prefix="finance_finite_target_plan:",
+        label="GP-C finite-target plan",
+    )
+    _replay_hash(
+        finite_report,
+        field="report_hash",
+        prefix="finance_finite_target_report:",
+        label="GP-C finite-target report",
+    )
+    _replay_hash(
+        update_manifest,
+        field="manifest_hash",
+        prefix="finance_gp_c_local_update_manifest:",
+        label="GP-C local-update manifest",
+    )
+    _replay_hash(
+        objective_gradient_manifest,
+        field="manifest_hash",
+        prefix="finance_post_global_objective_gradient_manifest:",
+        label="GP-C objective-gradient manifest",
+    )
     if finite_report.get("plan_hash") != finite_plan.get("plan_hash"):
         raise ValueError("GP-C target report does not replay its plan")
     if finite_report.get("status") != "passed":
@@ -484,9 +516,14 @@ def analyze_gp_c_proxy(
         "source_gradient_plan_hash"
     ):
         raise ValueError("GP-C local update belongs to another Gradient Projection plan")
-    if objective_gradient_manifest.get("finite_target_plan_hash") != finite_plan.get(
-        "plan_hash"
+    if (
+        finite_report.get("numeric_contract_hash") != finite_plan.get("numeric_contract_hash")
+        or update_manifest.get("numeric_contract_hash") != finite_plan.get("numeric_contract_hash")
+        or objective_gradient_manifest.get("numeric_contract_hash")
+        != finite_plan.get("numeric_contract_hash")
     ):
+        raise ValueError("GP-C evidence crosses numeric execution contracts")
+    if objective_gradient_manifest.get("finite_target_plan_hash") != finite_plan.get("plan_hash"):
         raise ValueError("GP-C objective gradient belongs to another target plan")
     if objective_gradient_manifest.get("local_update_manifest_hash") != update_manifest.get(
         "manifest_hash"
@@ -504,6 +541,15 @@ def analyze_gp_c_proxy(
         raise ValueError("GP-C objective gradient uses another beneficiary checkpoint")
     if objective_gradient_manifest.get("objective_gradient_point") != "post_global_update":
         raise ValueError("GP-C requires a post-global objective gradient")
+    if (
+        finite_plan.get("objective_gradient_mode")
+        != OBJECTIVE_GRADIENT_EXECUTION_MODE
+        or finite_plan.get("optimizer_contract", {}).get("objective_gradient_mode")
+        != OBJECTIVE_GRADIENT_EXECUTION_MODE
+        or objective_gradient_manifest.get("objective_gradient_mode")
+        != OBJECTIVE_GRADIENT_EXECUTION_MODE
+    ):
+        raise ValueError("GP-C objective execution mode changed")
     objective_artifact = objective_gradient_manifest["aggregate_gradient_artifact"]
     objective_gradient = _load_verified_gradient(
         Path(str(objective_artifact["file"])),
@@ -522,8 +568,7 @@ def analyze_gp_c_proxy(
     )
     target_by_task = {
         str(row["task_id"]): {
-            str(key): float(value)
-            for key, value in row["target_state_values"].items()
+            str(key): float(value) for key, value in row["target_state_values"].items()
         }
         for row in finite_report["state_targets"]
     }
@@ -536,9 +581,7 @@ def analyze_gp_c_proxy(
     target_values_all = []
     task_payloads = []
     for task_id, distribution in sorted(finite_plan["task_distributions"].items()):
-        probabilities = {
-            str(key): float(value) for key, value in distribution.items()
-        }
+        probabilities = {str(key): float(value) for key, value in distribution.items()}
         raw = {
             state_id: _gradient_dot(
                 state_updates[(task_id, state_id)],
@@ -557,9 +600,7 @@ def analyze_gp_c_proxy(
             ]
             for state_id in probabilities
         }
-        if any(
-            not 3 <= len(values) <= 5 for values in raw_jackknife_by_state.values()
-        ):
+        if any(not 3 <= len(values) <= 5 for values in raw_jackknife_by_state.values()):
             raise ValueError("GP-C proxy lacks 3-5 Jackknife updates per state")
         target = target_by_task[task_id]
         proxy_vector = [centered[state_id] for state_id in sorted(probabilities)]
@@ -581,21 +622,24 @@ def analyze_gp_c_proxy(
     orientation = sum(
         left * right for left, right in zip(proxy_values_all, target_values_all, strict=True)
     )
-    fitted_scale = (
-        statistics.median(abs(value) for value in target_values_all)
-        / max(statistics.median(abs(value) for value in proxy_values_all), CALIBRATION_FLOOR)
+    fitted_scale = statistics.median(abs(value) for value in target_values_all) / max(
+        statistics.median(abs(value) for value in proxy_values_all), CALIBRATION_FLOOR
     )
     if orientation <= 0:
         fitted_scale *= -1.0
     objective_role = str(finite_plan["objective_role"])
     if objective_role == "estimation":
-        if calibration_scale is not None:
-            raise ValueError("estimation must fit rather than consume a calibration scale")
+        if calibration_scale is not None or calibration_report_hash is not None:
+            raise ValueError("estimation must fit rather than consume a calibration report")
         applied_scale = fitted_scale
         calibration_source = "fitted_on_estimation_only"
     else:
-        if calibration_scale is None or not math.isfinite(calibration_scale):
-            raise ValueError("validation and authorization require a frozen calibration scale")
+        if (
+            calibration_scale is None
+            or not math.isfinite(calibration_scale)
+            or not calibration_report_hash
+        ):
+            raise ValueError("validation and authorization require a frozen calibration report")
         applied_scale = calibration_scale
         calibration_source = "frozen_estimation_scale"
     task_rows = []
@@ -620,10 +664,7 @@ def analyze_gp_c_proxy(
         )
         local_denominator = sum(value * value for value in proxy_vector)
         local_scale = (
-            sum(
-                left * right
-                for left, right in zip(proxy_vector, target_vector, strict=True)
-            )
+            sum(left * right for left, right in zip(proxy_vector, target_vector, strict=True))
             / local_denominator
             if local_denominator > CALIBRATION_FLOOR
             else 0.0
@@ -678,6 +719,10 @@ def analyze_gp_c_proxy(
     report: dict[str, Any] = {
         "experiment_version": GP_C_PROXY_VERSION,
         "artifact_type": "PostGlobalGPCProxyReport",
+        "run_role": finite_plan["run_role"],
+        "numeric_contract_hash": finite_plan["numeric_contract_hash"],
+        "numeric_profile": finite_plan["numeric_profile"],
+        "production_authorization_eligible": bool(finite_plan["production_authorization_eligible"]),
         "finite_target_plan_hash": finite_plan["plan_hash"],
         "finite_target_report_hash": finite_report["report_hash"],
         "source_gradient_plan_hash": finite_plan.get("source_gradient_plan_hash"),
@@ -702,13 +747,12 @@ def analyze_gp_c_proxy(
         ),
         "objective_gradient_point": "post_global_update",
         "calibration_source": calibration_source,
+        "calibration_report_hash": calibration_report_hash,
         "fitted_estimation_scale": fitted_scale if objective_role == "estimation" else None,
         "applied_calibration_scale": applied_scale,
         "orientation_before_calibration": "aligned" if orientation > 0 else "reversed",
         "macro_task_spearman": statistics.fmean(row["spearman"] for row in task_rows),
-        "winner_agreement_rate": statistics.fmean(
-            row["winner_agreement"] for row in task_rows
-        ),
+        "winner_agreement_rate": statistics.fmean(row["winner_agreement"] for row in task_rows),
         "mean_normalized_residual_rms": statistics.fmean(
             row["normalized_residual_rms"] for row in task_rows
         ),
@@ -716,9 +760,7 @@ def analyze_gp_c_proxy(
             task_type: {
                 "task_count": len(rows),
                 "macro_spearman": statistics.fmean(row["spearman"] for row in rows),
-                "winner_agreement": statistics.fmean(
-                    row["winner_agreement"] for row in rows
-                ),
+                "winner_agreement": statistics.fmean(row["winner_agreement"] for row in rows),
                 "mean_normalized_residual_rms": statistics.fmean(
                     row["normalized_residual_rms"] for row in rows
                 ),
@@ -764,16 +806,26 @@ def _freeze_directions(args: argparse.Namespace) -> None:
 
 
 def _build_objective_gradient(args: argparse.Namespace) -> None:
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
     import torch
     from peft import get_peft_model_state_dict
     from safetensors.torch import save_file
 
+    gpu_ids = tuple(int(value) for value in args.gpu_ids)
+    if len(gpu_ids) != 3 or len(set(gpu_ids)) != 3:
+        raise ValueError("post-global objective requires one frozen three-GPU group")
+    if any(value < 0 or value >= torch.cuda.device_count() for value in gpu_ids):
+        raise ValueError("post-global objective GPU group is unavailable")
+    torch.cuda.set_device(gpu_ids[0])
     finite_plan = _read_json(Path(args.finite_target_plan).resolve())
     update_manifest = _read_json(Path(args.local_update_manifest).resolve())
-    if finite_plan["source_gradient_plan_hash"] != update_manifest[
-        "source_gradient_plan_hash"
-    ]:
+    if finite_plan.get("objective_gradient_mode") != OBJECTIVE_GRADIENT_EXECUTION_MODE:
+        raise ValueError("post-global objective execution mode changed")
+    if (
+        finite_plan.get("optimizer_contract", {}).get("objective_gradient_mode")
+        != OBJECTIVE_GRADIENT_EXECUTION_MODE
+    ):
+        raise ValueError("post-global optimizer objective mode changed")
+    if finite_plan["source_gradient_plan_hash"] != update_manifest["source_gradient_plan_hash"]:
         raise ValueError("post-global objective crosses Gradient Projection plans")
     records_path = Path(str(finite_plan["source_records_path"]))
     if _sha256(records_path) != finite_plan["source_records_sha256"]:
@@ -783,11 +835,14 @@ def _build_objective_gradient(args: argparse.Namespace) -> None:
     if any(record_id not in records for record_id in objective_ids):
         raise ValueError("post-global objective support is incomplete")
     _seed_everything(args.numeric_seed)
-    torch.cuda.reset_peak_memory_stats()
+    for gpu_id in gpu_ids:
+        torch.cuda.reset_peak_memory_stats(gpu_id)
     tokenizer = _load_tokenizer(Path(str(finite_plan["model_dir"])))
-    model = _baseline_lora_model(
+    model, resolved_device_map = _load_execution_model(
         Path(str(finite_plan["model_dir"])),
         Path(str(finite_plan["beneficiary_adapter_dir"])),
+        gpu_ids=gpu_ids,
+        profile=finite_plan["numeric_profile"],
     )
     if _adapter_tensor_sha256(model) != finite_plan["beneficiary_adapter_tensor_sha256"]:
         raise ValueError("post-global objective loaded another beneficiary Adapter")
@@ -838,20 +893,22 @@ def _build_objective_gradient(args: argparse.Namespace) -> None:
     manifest: dict[str, Any] = {
         "experiment_version": GP_C_PROXY_VERSION,
         "artifact_type": "PostGlobalObjectiveGradientManifest",
+        "run_role": finite_plan["run_role"],
+        "numeric_contract_hash": finite_plan["numeric_contract_hash"],
+        "numeric_profile": finite_plan["numeric_profile"],
+        "production_authorization_eligible": bool(finite_plan["production_authorization_eligible"]),
         "finite_target_plan_hash": finite_plan["plan_hash"],
         "source_gradient_plan_hash": finite_plan["source_gradient_plan_hash"],
         "local_update_manifest_hash": update_manifest["manifest_hash"],
         "beneficiary_model_state_id": finite_plan["beneficiary_model_state_id"],
         "beneficiary_checkpoint_hash": finite_plan["beneficiary_checkpoint_hash"],
-        "baseline_adapter_tensor_sha256": finite_plan[
-            "beneficiary_adapter_tensor_sha256"
-        ],
+        "baseline_adapter_tensor_sha256": finite_plan["beneficiary_adapter_tensor_sha256"],
         "post_global_adapter_tensor_sha256": post_global_adapter_hash,
         "objective_role": finite_plan["objective_role"],
         "objective_record_ids": objective_ids,
         "objective_records_hash": finite_plan["objective_records_hash"],
         "objective_record_count": len(objective_ids),
-        "objective_gradient_mode": "eval",
+        "objective_gradient_mode": OBJECTIVE_GRADIENT_EXECUTION_MODE,
         "objective_gradient_point": "post_global_update",
         "parameter_manifest": parameter_manifest,
         "parameter_manifest_hash": parameter_manifest_hash,
@@ -864,7 +921,18 @@ def _build_objective_gradient(args: argparse.Namespace) -> None:
         },
         "numeric_seed": args.numeric_seed,
         "runtime_seconds": time.monotonic() - started,
-        "peak_gpu_memory_bytes": int(torch.cuda.max_memory_allocated()),
+        "requested_cuda_device_ids": gpu_ids,
+        "resolved_hf_device_map": resolved_device_map,
+        "resolved_hf_device_map_hash": canonical_hash(
+            resolved_device_map,
+            prefix="finance_post_global_objective_hf_device_map:",
+        ),
+        "peak_gpu_memory_bytes": max(
+            int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids
+        ),
+        "peak_gpu_memory_bytes_by_requested_device": {
+            str(gpu_id): int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids
+        },
     }
     manifest["manifest_hash"] = canonical_hash(
         manifest,
@@ -883,10 +951,27 @@ def _analyze(args: argparse.Namespace) -> None:
     update_manifest = _read_json(Path(args.local_update_manifest).resolve())
     objective_manifest = _read_json(Path(args.objective_gradient_manifest).resolve())
     calibration_scale = None
+    calibration_report_hash = None
     if args.calibration_report:
         calibration = _read_json(Path(args.calibration_report).resolve())
-        if calibration.get("objective_role") != "estimation":
-            raise ValueError("GP-C calibration must come from the estimation partition")
+        calibration_report_hash = _replay_hash(
+            calibration,
+            field="report_hash",
+            prefix="finance_post_global_gp_c_proxy_report:",
+            label="GP-C calibration report",
+        )
+        if (
+            calibration.get("status") != "passed"
+            or calibration.get("objective_role") != "estimation"
+            or calibration.get("calibration_source") != "fitted_on_estimation_only"
+            or calibration.get("numeric_contract_hash") != finite_plan.get("numeric_contract_hash")
+            or calibration.get("run_role") != finite_plan.get("run_role")
+            or calibration.get("source_gradient_plan_hash")
+            != finite_plan.get("source_gradient_plan_hash")
+            or calibration.get("beneficiary_checkpoint_hash")
+            != finite_plan.get("beneficiary_checkpoint_hash")
+        ):
+            raise ValueError("GP-C calibration must be the matching estimation report")
         calibration_scale = float(calibration["applied_calibration_scale"])
     report = analyze_gp_c_proxy(
         finite_plan=finite_plan,
@@ -894,6 +979,7 @@ def _analyze(args: argparse.Namespace) -> None:
         update_manifest=update_manifest,
         objective_gradient_manifest=objective_manifest,
         calibration_scale=calibration_scale,
+        calibration_report_hash=calibration_report_hash,
     )
     output_path = Path(args.output_path).resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -919,7 +1005,7 @@ def _parser() -> argparse.ArgumentParser:
     objective.add_argument("--finite-target-plan", required=True)
     objective.add_argument("--local-update-manifest", required=True)
     objective.add_argument("--output-dir", required=True)
-    objective.add_argument("--gpu-id", type=int, required=True)
+    objective.add_argument("--gpu-ids", type=int, nargs="+", required=True)
     objective.add_argument("--numeric-seed", type=int, default=20261121)
     objective.set_defaults(handler=_build_objective_gradient)
     analyze = subparsers.add_parser("analyze")

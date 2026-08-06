@@ -150,7 +150,7 @@ request audits; and decision-trace uniqueness. A budget large enough for the pos
 one-item support floor. A smaller budget declares support truncation. Failed quotas are never
 reassigned to easier states.
 
-### Active v14 real-Agent entry path
+### Active real-Agent entry path
 
 The deterministic Finance state fixture remains a contract test only. The active empirical entry
 path recompiles real Archive tasks as `semi_open + plan_hidden`, preserving Oracle semantics while
@@ -197,7 +197,7 @@ The only active production-candidate approximation family is Scheme 3, Gradient 
 beneficiary Probes and single-state finite interventions are historical diagnostics; they cannot
 authorize a real VTDO Contribution update. The theoretical estimand is unchanged.
 
-The active v14 protocol freezes the exact typed `ConditionalTrajectoryDistribution` for every
+The active production protocol freezes the exact typed `ConditionalTrajectoryDistribution` for every
 task-round. Each task has 3--5 positive-probability quotient states, each state has 3--5 fresh and
 independently verified trajectory realizations, and the objective support contains 16 estimation,
 16 validation, and 16 sealed authorization records. The three partitions and all state
@@ -260,7 +260,7 @@ must be normalizable. Missing support, token-region dominance, realization reuse
 leakage, parameter-step non-identifiability, source-scale mismatch, or any failed gate blocks
 authorization.
 
-The current executable gradient contract is `finance_contribution_gradient_projection.v14`, and
+The current executable gradient contract is `finance_contribution_gradient_projection.v15`, and
 the current Objective Support contract is `finance_contribution_evaluation_support.v6`.
 Vocabulary logits are materialized only at causal predecessor positions of supervised labels; this
 is exactly equivalent to mean causal NLL with ignored prompt labels. Objective gradients keep all
@@ -376,6 +376,31 @@ strict task permutations agreed. The sealed numeric stage is therefore complete,
 is preregistration of a separate Contribution authorization experiment with independent finite
 intervention targets. Full evidence is in
 `docs/finance_v18_sealed_numeric_authorization_report.md`.
+
+The 2026-08-06 v19 sealed causal pilot exercised that transition on six frozen tasks, 20 states,
+and 60 fresh state realizations. Estimation and Validation each used four mutually disjoint
+Objective Support records; the Authorization objective remained forbidden. The strict FP32
+activation path passed again: maximum loss-identity error was `5.31e-8`, maximum token-gradient
+recomposition relative error was `0.0068513`, minimum recomposition cosine was `0.9999770`,
+maximum GP-score drift was `0.0007361`, and the induced update remained within TV
+`3.8020e-5` and JS `2.2476e-9`.
+
+The independent finite target nevertheless failed its preregistered identifiability gate before
+GP-C execution. Estimation/Validation reconstruction relative error was `0.5065/0.3774` against a
+maximum of `0.1`; p95 radius instability was `1.5420/1.4557` against a maximum of `0.25`. Each
+partition completed 204 observations over the frozen `0.1/0.05/0.025` radius ladder, and the
+signal exceeded deterministic null replay, so this is not an execution failure or a null-signal
+result. A post-failure, non-authorizing diagnostic on eight deterministically selected directions
+per partition used radii `0.025/0.0125/0.00625`; median instability worsened from `0.6258` to
+`0.6680` on Estimation and from `0.5014` to `0.9350` on Validation. Smaller radii therefore did not
+restore local linearity on this diagnostic subset.
+
+Because the target gate failed, GP-C rank, distribution, and regret comparisons were not run;
+Authorization was not opened; `Contribution=0`; and no VTDO update, Student training, or downstream
+claim is permitted. The result establishes that the current finite-intervention target is not
+stably identifiable at the tested radii. It does not establish that Gradient Projection itself is
+invalid. Full evidence and the next-stage estimator redesign requirements are recorded in
+`docs/finance_v19_sealed_causal_pilot_report.md`.
 
 ## 6. Experiment 4: Refinement Dynamics
 

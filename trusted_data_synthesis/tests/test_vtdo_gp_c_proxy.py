@@ -11,7 +11,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_gp_c_proxy import (
     _linear_combination,
     analyze_gp_c_proxy,
     freeze_finite_target_directions,
+    freeze_local_update_manifest,
 )
+from trusted_synthesis.hashing import canonical_hash
 
 
 def _save(path: Path, value: float) -> dict[str, object]:
@@ -23,6 +25,7 @@ def _save(path: Path, value: float) -> dict[str, object]:
 
 
 def _proxy_inputs(tmp_path: Path, *, role: str = "estimation"):
+    tmp_path.mkdir(parents=True, exist_ok=True)
     objective = _save(tmp_path / "objective.safetensors", 1.0)
     state_values = {
         ("task-a", "a"): -1.0,
@@ -61,7 +64,14 @@ def _proxy_inputs(tmp_path: Path, *, role: str = "estimation"):
                 }
             )
     finite_plan = {
-        "plan_hash": f"plan:{role}",
+        "run_role": "production_candidate",
+        "numeric_contract_hash": "numeric-contract",
+        "numeric_profile": {"profile_id": "test"},
+        "production_authorization_eligible": True,
+        "objective_gradient_mode": "deterministic_eval_with_checkpoint_wrappers",
+        "optimizer_contract": {
+            "objective_gradient_mode": "deterministic_eval_with_checkpoint_wrappers"
+        },
         "source_gradient_plan_hash": "gradient-plan",
         "beneficiary_model_state_id": "beneficiary-state",
         "beneficiary_checkpoint_hash": "beneficiary-checkpoint",
@@ -74,6 +84,10 @@ def _proxy_inputs(tmp_path: Path, *, role: str = "estimation"):
         },
         "claim_boundary": "local only",
     }
+    finite_plan["plan_hash"] = canonical_hash(
+        finite_plan,
+        prefix="finance_finite_target_plan:",
+    )
     target_rows = []
     for task_id, probabilities in finite_plan["task_distributions"].items():
         raw = {state_id: state_values[(task_id, state_id)] for state_id in probabilities}
@@ -87,33 +101,44 @@ def _proxy_inputs(tmp_path: Path, *, role: str = "estimation"):
             }
         )
     finite_report = {
-        "plan_hash": f"plan:{role}",
-        "report_hash": f"target:{role}",
+        "plan_hash": finite_plan["plan_hash"],
         "source_gradient_plan_hash": "gradient-plan",
+        "numeric_contract_hash": "numeric-contract",
         "objective_role": role,
         "status": "passed",
         "state_targets": target_rows,
     }
+    finite_report["report_hash"] = canonical_hash(
+        finite_report,
+        prefix="finance_finite_target_report:",
+    )
     update_manifest = {
-        "manifest_hash": "updates",
         "source_gradient_plan_hash": "gradient-plan",
+        "numeric_contract_hash": "numeric-contract",
         "state_artifacts": state_artifacts,
         "state_jackknife_artifacts": jackknife_artifacts,
-        "state_uncertainty_method": (
-            "leave_one_realization_out_jackknife_pseudovalues"
-        ),
+        "state_uncertainty_method": ("leave_one_realization_out_jackknife_pseudovalues"),
     }
+    update_manifest["manifest_hash"] = canonical_hash(
+        update_manifest,
+        prefix="finance_gp_c_local_update_manifest:",
+    )
     objective_manifest = {
-        "manifest_hash": f"objective:{role}",
-        "finite_target_plan_hash": f"plan:{role}",
-        "local_update_manifest_hash": "updates",
+        "numeric_contract_hash": "numeric-contract",
+        "finite_target_plan_hash": finite_plan["plan_hash"],
+        "local_update_manifest_hash": update_manifest["manifest_hash"],
         "beneficiary_checkpoint_hash": "beneficiary-checkpoint",
         "objective_role": role,
         "objective_record_ids": tuple(f"{role}-{index}" for index in range(16)),
         "objective_records_hash": f"objective-records:{role}",
+        "objective_gradient_mode": "deterministic_eval_with_checkpoint_wrappers",
         "objective_gradient_point": "post_global_update",
         "aggregate_gradient_artifact": objective,
     }
+    objective_manifest["manifest_hash"] = canonical_hash(
+        objective_manifest,
+        prefix="finance_post_global_objective_gradient_manifest:",
+    )
     return finite_plan, finite_report, update_manifest, objective_manifest
 
 
@@ -142,6 +167,31 @@ def test_cold_start_adamw_is_applied_before_distribution_expectation() -> None:
     assert not torch.allclose(expected["weight"], update_of_mean_gradient["weight"])
 
 
+def test_local_update_freeze_rejects_abstract_objective_mode(tmp_path: Path) -> None:
+    plan = {
+        "plan_hash": "gradient-plan",
+        "local_optimizer_contract": {
+            "optimizer_name": "adamw",
+            "estimator_scope": "local_distribution_update_only",
+            "step_count": 1,
+            "cold_start": True,
+            "reuse_main_optimizer_state": False,
+            "weight_decay": 0.0,
+            "mixed_state_batches_allowed": False,
+            "state_gradient_mode": "train",
+            "objective_gradient_mode": "eval",
+            "objective_gradient_point": "post_global_update",
+        },
+    }
+    report = {
+        "plan_hash": "gradient-plan",
+        "gradient_realization_stability": {"status": "passed"},
+    }
+
+    with pytest.raises(ValueError, match="optimizer contract differs"):
+        freeze_local_update_manifest(plan, report, output_dir=tmp_path)
+
+
 def test_gp_c_proxy_is_pi_centered_and_uses_post_global_objective(tmp_path: Path) -> None:
     inputs = _proxy_inputs(tmp_path)
 
@@ -165,6 +215,26 @@ def test_gp_c_proxy_is_pi_centered_and_uses_post_global_objective(tmp_path: Path
         assert all(row["jackknife_proxy_sample_standard_deviation"] > 0 for row in rows)
 
 
+def test_gp_c_proxy_rejects_rehashed_abstract_objective_mode(tmp_path: Path) -> None:
+    inputs = list(_proxy_inputs(tmp_path))
+    objective_manifest = dict(inputs[3])
+    objective_manifest["objective_gradient_mode"] = "eval"
+    objective_manifest.pop("manifest_hash")
+    objective_manifest["manifest_hash"] = canonical_hash(
+        objective_manifest,
+        prefix="finance_post_global_objective_gradient_manifest:",
+    )
+    inputs[3] = objective_manifest
+
+    with pytest.raises(ValueError, match="objective execution mode changed"):
+        analyze_gp_c_proxy(
+            finite_plan=inputs[0],
+            finite_report=inputs[1],
+            update_manifest=inputs[2],
+            objective_gradient_manifest=inputs[3],
+        )
+
+
 def test_validation_proxy_requires_frozen_estimation_calibration(tmp_path: Path) -> None:
     inputs = _proxy_inputs(tmp_path, role="validation")
 
@@ -175,6 +245,29 @@ def test_validation_proxy_requires_frozen_estimation_calibration(tmp_path: Path)
             update_manifest=inputs[2],
             objective_gradient_manifest=inputs[3],
         )
+
+
+def test_validation_proxy_freezes_exact_estimation_report(tmp_path: Path) -> None:
+    estimation_inputs = _proxy_inputs(tmp_path / "estimation")
+    estimation_report = analyze_gp_c_proxy(
+        finite_plan=estimation_inputs[0],
+        finite_report=estimation_inputs[1],
+        update_manifest=estimation_inputs[2],
+        objective_gradient_manifest=estimation_inputs[3],
+    )
+    validation_inputs = _proxy_inputs(tmp_path / "validation", role="validation")
+
+    validation_report = analyze_gp_c_proxy(
+        finite_plan=validation_inputs[0],
+        finite_report=validation_inputs[1],
+        update_manifest=validation_inputs[2],
+        objective_gradient_manifest=validation_inputs[3],
+        calibration_scale=float(estimation_report["applied_calibration_scale"]),
+        calibration_report_hash=str(estimation_report["report_hash"]),
+    )
+
+    assert validation_report["calibration_source"] == "frozen_estimation_scale"
+    assert validation_report["calibration_report_hash"] == estimation_report["report_hash"]
 
 
 def test_finite_target_direction_uses_task_marginal_and_tangent(tmp_path: Path) -> None:

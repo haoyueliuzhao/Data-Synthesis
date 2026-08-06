@@ -21,7 +21,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_authoriza
     _robust_positive_scale,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient import (
-    CALIBRATED_NUMERIC_PROFILE,
     _activate_deterministic_eval_checkpointing,
     _aligned_token_region_partition,
     _attach_centered_signal,
@@ -34,6 +33,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient 
     _normalized_gradient_alignment,
     _numeric_precision_replay,
     _realization_stability_thresholds,
+    _replay_evaluation_gradient_manifest,
     _selected_gradient_states,
     _state_realization_diagnostics,
     _supervised_causal_projection,
@@ -42,6 +42,16 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient 
     _token_overlap,
     _validate_run_contract,
     _weighted_gradient,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_numeric_execution import (
+    EXECUTION_CONTRACT_HASH_PREFIX,
+    EXECUTION_CONTRACT_VERSION,
+    EXPECTED_PROFILE,
+    EXPECTED_PROFILE_ALGORITHM_CONTRACT,
+    EXPECTED_TASK_SET_ID,
+    FINITE_TARGET_PROTOCOL,
+    NUMERIC_THRESHOLDS,
+    SEALED_CAUSAL_PILOT_ROLE,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_distribution_intervention import (
     _apply_gradient_step,
@@ -253,7 +263,7 @@ def test_production_gradient_projection_contract_is_fail_closed() -> None:
         )
     with pytest.raises(ValueError, match="at least 8 evaluation records"):
         _validate_run_contract(
-            run_role="smoke",
+            run_role="sealed_causal_pilot",
             task_count=3,
             evaluation_record_count=6,
         )
@@ -437,8 +447,7 @@ def test_token_region_manifest_gates_task_pooled_coverage_not_each_draw(
             "differential_label_positions": tuple(range(common, common + differential)),
             "common_supervised_token_count": common,
             "differential_supervised_token_count": differential,
-            "differential_supervised_token_fraction": differential
-            / (common + differential),
+            "differential_supervised_token_fraction": differential / (common + differential),
         }
 
     regions = {
@@ -767,29 +776,39 @@ def test_precision_numeric_contract_rejects_threshold_replay_mismatch() -> None:
         )
 
 
-def test_gradient_v12_replays_frozen_numeric_contract(tmp_path) -> None:
-    thresholds = {
-        "maximum_loss_identity_absolute_error": 1e-6,
-        "minimum_gradient_recomposition_cosine": 0.99975,
-        "maximum_gradient_recomposition_relative_error": 0.022,
-        "maximum_gp_score_absolute_delta": 0.0023,
-        "minimum_task_rank_agreement": 1.0,
-        "maximum_update_total_variation": 0.00027,
-        "maximum_update_jensen_shannon": 1e-6,
-    }
+def test_gradient_v15_replays_frozen_execution_contract(tmp_path) -> None:
     contract = {
-        "calibration_version": "finance_gradient_finite_precision_calibration.v3",
-        "plan_hash": "precision-plan:1",
-        "selection_hash": "precision-selection:1",
-        "selected_profile": CALIBRATED_NUMERIC_PROFILE,
-        "thresholds": thresholds,
-        "development_result_hash": "development:1",
-        "validation_result_hash": "validation:1",
-        "allowed_next_run_role": "independent_30_task_production_candidate",
+        "contract_version": EXECUTION_CONTRACT_VERSION,
+        "run_role": SEALED_CAUSAL_PILOT_ROLE,
+        "source_v18": {"report_hash": "v18-report"},
+        "source_gradient_plan": {"plan_hash": "source-gradient-plan"},
+        "source_support": {
+            "plan_hash": "source-support-plan",
+            "objective_partition_ids": {
+                role: [f"{role}-{index}" for index in range(4)]
+                for role in ("estimation", "validation", "authorization")
+            },
+        },
+        "frozen_inputs": {"target_records": {"sha256": "records"}},
+        "selected_profile": EXPECTED_PROFILE,
+        "profile_algorithm_contract": EXPECTED_PROFILE_ALGORITHM_CONTRACT,
+        "numeric_thresholds": NUMERIC_THRESHOLDS,
+        "finite_target_protocol": FINITE_TARGET_PROTOCOL,
+        "task_set_id": EXPECTED_TASK_SET_ID,
+        "task_ids": [f"task-{index}" for index in range(6)],
+        "task_count": 6,
+        "state_count": 20,
+        "state_realization_count": 60,
+        "allowed_objective_roles": ["estimation", "validation"],
+        "authorization_objective_access": "forbidden",
+        "production_authorization_eligible": False,
+        "success_transition": "launch_fresh_30_task_independent_authorization_study",
+        "failure_transition": "retain_contribution_zero_and_investigate_estimator_bias",
+        "claim_boundary": "pilot only",
     }
     contract["contract_hash"] = canonical_hash(
         contract,
-        prefix="finance_gradient_precision_contract:",
+        prefix=EXECUTION_CONTRACT_HASH_PREFIX,
     )
     path = tmp_path / "numeric_contract.json"
     path.write_text(json.dumps(contract), encoding="utf-8")
@@ -797,9 +816,9 @@ def test_gradient_v12_replays_frozen_numeric_contract(tmp_path) -> None:
     assert _load_numeric_contract(path) == contract
     assert _realization_stability_thresholds({"numeric_contract": contract})[
         "maximum_token_gradient_recomposition_relative_error"
-    ] == pytest.approx(0.022)
+    ] == pytest.approx(NUMERIC_THRESHOLDS["maximum_gradient_recomposition_relative_error"])
 
-    contract["thresholds"]["maximum_gp_score_absolute_delta"] = 1.0
+    contract["numeric_thresholds"]["maximum_gp_score_absolute_delta"] = 1.0
     path.write_text(json.dumps(contract), encoding="utf-8")
     with pytest.raises(ValueError, match="identity replay"):
         _load_numeric_contract(path)
@@ -1202,3 +1221,27 @@ def test_gp_c_distribution_contract_replay_preserves_support_and_mass() -> None:
     assert replay["support_preserved"] is True
     assert replay["minimum_perturbed_probability"] > 0
     assert replay["maximum_probability_mass_error"] == pytest.approx(0.0)
+
+
+def test_evaluation_gradient_manifest_replay_is_fail_closed() -> None:
+    plan = {
+        "plan_hash": "gradient-plan",
+        "numeric_contract_hash": "numeric-contract",
+        "gradient_mode_contract_id": "gradient-mode",
+    }
+    manifest = {
+        **plan,
+        "record_gradients": [],
+        "aggregate_gradients": [],
+    }
+    manifest["manifest_hash"] = canonical_hash(
+        manifest,
+        prefix="finance_contribution_evaluation_gradient_manifest:",
+    )
+
+    assert _replay_evaluation_gradient_manifest(plan, manifest) == manifest["manifest_hash"]
+
+    tampered = dict(manifest)
+    tampered["numeric_contract_hash"] = "other"
+    with pytest.raises(ValueError, match="identity changed"):
+        _replay_evaluation_gradient_manifest(plan, tampered)

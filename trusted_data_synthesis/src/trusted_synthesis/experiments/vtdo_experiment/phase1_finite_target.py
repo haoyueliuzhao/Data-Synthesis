@@ -13,10 +13,11 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
+from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient import (
+    OBJECTIVE_GRADIENT_EXECUTION_MODE,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
     _adapter_tensor_sha256,
-    _baseline_lora_model,
-    _evaluate,
     _load_records,
     _load_tokenizer,
     _read_json,
@@ -25,7 +26,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-FINITE_TARGET_VERSION = "finance_gradient_finite_target.v2"
+FINITE_TARGET_VERSION = "finance_gradient_finite_target.v4"
 DEFAULT_BASE_RADIUS = 0.1
 DEFAULT_BLOCK_SIZE = 8
 DEFAULT_DESIGN_COUNT = 3
@@ -33,6 +34,7 @@ MAXIMUM_RECONSTRUCTION_RELATIVE_ERROR = 0.10
 MAXIMUM_P95_RADIUS_INSTABILITY = 0.25
 MINIMUM_SIGNAL_TO_NULL_RATIO = 3.0
 NUMERIC_FLOOR = 1e-12
+DIRECTION_MANIFEST_HASH_PREFIX = "finance_gp_c_finite_target_directions:"
 
 
 def _observation_hash(observation: Mapping[str, Any]) -> str:
@@ -76,9 +78,7 @@ def _sylvester_hadamard(order: int) -> tuple[tuple[int, ...], ...]:
         raise ValueError("Sylvester Hadamard order must be a power of two")
     matrix: tuple[tuple[int, ...], ...] = ((1,),)
     while len(matrix) < order:
-        matrix = tuple(
-            tuple((*row, *row)) for row in matrix
-        ) + tuple(
+        matrix = tuple(tuple((*row, *row)) for row in matrix) + tuple(
             tuple((*row, *(-value for value in row))) for row in matrix
         )
     return matrix
@@ -95,9 +95,7 @@ def _coordinate_rows(
     if set(task_distributions) != set(task_marginals):
         raise ValueError("finite target task marginals do not cover its distributions")
     marginals = {str(key): float(value) for key, value in task_marginals.items()}
-    invalid_marginal = any(
-        value <= 0 or not math.isfinite(value) for value in marginals.values()
-    )
+    invalid_marginal = any(value <= 0 or not math.isfinite(value) for value in marginals.values())
     if invalid_marginal or not math.isclose(
         sum(marginals.values()),
         1.0,
@@ -228,10 +226,33 @@ def build_finite_target_plan(
         raise ValueError("finite target requires a replayed Gradient Projection report")
     if gradient_report.get("state_count") != len(gradient_report.get("state_rows", ())):
         raise ValueError("finite target requires complete aggregated state rows")
-    if gradient_report.get("task_count", 0) < 30:
-        raise ValueError("production finite target requires at least 30 tasks")
-    if len(objective_record_ids) < 16:
-        raise ValueError("production finite target requires at least 16 objective records")
+    run_role = str(gradient_plan.get("run_role", ""))
+    if run_role == "sealed_causal_pilot":
+        minimum_tasks = 6
+        minimum_records = 4
+        if objective_role == "authorization":
+            raise ValueError("sealed causal pilot cannot open the authorization objective")
+        execution_contract = gradient_plan.get("numeric_contract", {})
+        protocol = execution_contract.get("finite_target_protocol")
+        expected = {
+            "base_radius": base_radius,
+            "radii": [base_radius, base_radius / 2.0, base_radius / 4.0],
+            "block_size": block_size,
+            "design_count": design_count,
+            "finite_difference": "symmetric_central",
+            "extrapolation": "two_level_richardson_O_h4",
+        }
+        if protocol != expected:
+            raise ValueError("sealed causal pilot finite-target protocol differs")
+    elif run_role == "production_candidate":
+        minimum_tasks = 30
+        minimum_records = 16
+    else:
+        raise ValueError("finite target requires a registered Gradient Projection run role")
+    if gradient_report.get("task_count", 0) < minimum_tasks:
+        raise ValueError(f"{run_role} finite target has insufficient tasks")
+    if len(objective_record_ids) < minimum_records:
+        raise ValueError(f"{run_role} finite target has insufficient objective records")
     if len(set(objective_record_ids)) != len(objective_record_ids):
         raise ValueError("finite target objective records must be unique")
     prerequisite_hashes = dict(authorization_prerequisite_report_hashes or {})
@@ -239,20 +260,23 @@ def build_finite_target_plan(
         if set(prerequisite_hashes) != {"estimation", "validation"} or any(
             not value for value in prerequisite_hashes.values()
         ):
-            raise ValueError(
-                "authorization target requires frozen estimation and validation gates"
-            )
+            raise ValueError("authorization target requires frozen estimation and validation gates")
     elif prerequisite_hashes:
         raise ValueError("development finite targets cannot carry authorization prerequisites")
     if not 0 < base_radius < 0.5:
         raise ValueError("finite-target base radius must lie in (0, 0.5)")
+    optimizer_contract = gradient_plan["local_optimizer_contract"]
+    if (
+        optimizer_contract.get("objective_gradient_mode")
+        != OBJECTIVE_GRADIENT_EXECUTION_MODE
+    ):
+        raise ValueError("finite-target objective execution mode changed")
     task_distributions = {
         str(task_id): _validate_probabilities(values["probabilities"])
         for task_id, values in gradient_plan["task_distributions"].items()
     }
     task_marginals = {
-        str(task_id): float(value)
-        for task_id, value in gradient_report["task_marginals"].items()
+        str(task_id): float(value) for task_id, value in gradient_report["task_marginals"].items()
     }
     state_rows_by_task: defaultdict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for state in gradient_report["state_rows"]:
@@ -272,6 +296,13 @@ def build_finite_target_plan(
     values: dict[str, Any] = {
         "experiment_version": FINITE_TARGET_VERSION,
         "artifact_type": "GradientProjectionFiniteTargetPlan",
+        "run_role": run_role,
+        "numeric_contract_hash": gradient_plan["numeric_contract_hash"],
+        "numeric_profile": gradient_plan["numeric_contract"]["selected_profile"],
+        "production_authorization_eligible": bool(
+            run_role == "production_candidate"
+            and gradient_plan.get("production_authorization_eligible", True)
+        ),
         "source_gradient_plan_hash": gradient_plan["plan_hash"],
         "source_gradient_report_hash": gradient_report["report_hash"],
         "beneficiary_model_state_id": gradient_plan["beneficiary_model_state_id"],
@@ -279,17 +310,15 @@ def build_finite_target_plan(
         "model_dir": gradient_plan["model_dir"],
         "base_model_manifest_hash": gradient_plan["base_model_manifest_hash"],
         "beneficiary_adapter_dir": gradient_plan["beneficiary_adapter_dir"],
-        "beneficiary_adapter_tensor_sha256": gradient_plan[
-            "beneficiary_adapter_tensor_sha256"
-        ],
+        "beneficiary_adapter_tensor_sha256": gradient_plan["beneficiary_adapter_tensor_sha256"],
         "source_records_path": gradient_plan["source_records_path"],
         "source_records_sha256": gradient_plan["source_records_sha256"],
-        "optimizer_contract": gradient_plan["local_optimizer_contract"],
+        "optimizer_contract": optimizer_contract,
         "objective_role": objective_role,
         "objective_record_ids": tuple(objective_record_ids),
         "objective_records_hash": objective_records_hash,
         "objective_record_count": len(objective_record_ids),
-        "objective_gradient_mode": "eval",
+        "objective_gradient_mode": OBJECTIVE_GRADIENT_EXECUTION_MODE,
         "objective_gradient_point": "post_global_update",
         "state_gradient_mode": "train",
         "task_distributions": task_distributions,
@@ -314,17 +343,13 @@ def build_finite_target_plan(
         "finite_difference": "symmetric_central",
         "extrapolation": "two_level_richardson_O_h4",
         "null_replay_per_design": 1,
-        "maximum_reconstruction_relative_error": (
-            MAXIMUM_RECONSTRUCTION_RELATIVE_ERROR
-        ),
+        "maximum_reconstruction_relative_error": (MAXIMUM_RECONSTRUCTION_RELATIVE_ERROR),
         "maximum_p95_radius_instability": MAXIMUM_P95_RADIUS_INSTABILITY,
         "minimum_signal_to_null_ratio": MINIMUM_SIGNAL_TO_NULL_RATIO,
         "authorization_access_policy": (
             "authorization_requires_passed_estimation_and_validation_reports"
         ),
-        "authorization_prerequisite_report_hashes": dict(
-            sorted(prerequisite_hashes.items())
-        ),
+        "authorization_prerequisite_report_hashes": dict(sorted(prerequisite_hashes.items())),
         "claim_boundary": (
             "This protocol estimates a local, one-step cold-start AdamW distribution-update "
             "target around the post-global-update beneficiary. It does not approximate the "
@@ -367,10 +392,10 @@ def _observation_derivatives(
             raise ValueError("finite target was not measured at the post-global point")
         if observation.get("objective_role") != plan["objective_role"]:
             raise ValueError("finite-target observation uses another objective partition")
+        if observation.get("numeric_contract_hash") != plan["numeric_contract_hash"]:
+            raise ValueError("finite-target observation uses another numeric contract")
         direction_manifest_hash = str(observation.get("direction_manifest_hash", ""))
-        baseline_adapter_hash = str(
-            observation.get("baseline_post_global_adapter_hash", "")
-        )
+        baseline_adapter_hash = str(observation.get("baseline_post_global_adapter_hash", ""))
         if not direction_manifest_hash or not baseline_adapter_hash:
             raise ValueError("finite-target observation lacks frozen execution identity")
         supervised_tokens = int(observation.get("supervised_tokens", 0))
@@ -446,11 +471,14 @@ def _recover_design_coordinates(
             raise ValueError("finite-target Hadamard block is incomplete")
         coordinate_ids = tuple(str(value) for value in rows[0]["coordinate_ids"])
         for coordinate_id in coordinate_ids:
-            value = sum(
-                float(row["coordinate_weights"][coordinate_id])
-                * float(extrapolated[str(row["design_row_id"])])
-                for row in rows
-            ) / order
+            value = (
+                sum(
+                    float(row["coordinate_weights"][coordinate_id])
+                    * float(extrapolated[str(row["design_row_id"])])
+                    for row in rows
+                )
+                / order
+            )
             if coordinate_id in recovered[design_index]:
                 raise ValueError("finite-target coordinate appears twice in one design")
             recovered[design_index][coordinate_id] = value
@@ -501,21 +529,15 @@ def analyze_finite_target(
     observed_plan_hash = unhashed.pop("plan_hash", None)
     if observed_plan_hash != canonical_hash(unhashed, prefix="finance_finite_target_plan:"):
         raise ValueError("finite-target plan identity changed")
-    derivatives, extrapolated, radius_instability = _observation_derivatives(
-        plan, observations
-    )
+    derivatives, extrapolated, radius_instability = _observation_derivatives(plan, observations)
     by_design = _recover_design_coordinates(plan, extrapolated)
     coordinate_ids = tuple(str(row["coordinate_id"]) for row in plan["coordinate_rows"])
     coordinate_values = {
-        coordinate_id: statistics.fmean(
-            values[coordinate_id] for values in by_design.values()
-        )
+        coordinate_id: statistics.fmean(values[coordinate_id] for values in by_design.values())
         for coordinate_id in coordinate_ids
     }
     design_variances = {
-        coordinate_id: statistics.variance(
-            [values[coordinate_id] for values in by_design.values()]
-        )
+        coordinate_id: statistics.variance([values[coordinate_id] for values in by_design.values()])
         for coordinate_id in coordinate_ids
     }
     residuals = []
@@ -539,9 +561,7 @@ def analyze_finite_target(
     signal_rms = math.sqrt(statistics.fmean(value * value for value in coordinate_values.values()))
     null_rms = math.sqrt(statistics.fmean(value * value for value in null_values))
     signal_to_null = signal_rms / max(null_rms, NUMERIC_FLOOR)
-    coordinate_metadata = {
-        str(row["coordinate_id"]): row for row in plan["coordinate_rows"]
-    }
+    coordinate_metadata = {str(row["coordinate_id"]): row for row in plan["coordinate_rows"]}
     task_coordinates: defaultdict[str, dict[str, tuple[str, float]]] = defaultdict(dict)
     for coordinate_id, value in coordinate_values.items():
         metadata = coordinate_metadata[coordinate_id]
@@ -579,13 +599,18 @@ def analyze_finite_target(
         str(observation["direction_manifest_hash"]) for observation in observations
     }
     baseline_adapter_hashes = {
-        str(observation["baseline_post_global_adapter_hash"])
-        for observation in observations
+        str(observation["baseline_post_global_adapter_hash"]) for observation in observations
     }
     authorization_role = plan["objective_role"] == "authorization"
     report: dict[str, Any] = {
         "experiment_version": FINITE_TARGET_VERSION,
         "artifact_type": "GradientProjectionFiniteTargetReport",
+        "run_role": plan["run_role"],
+        "numeric_contract_hash": plan["numeric_contract_hash"],
+        "numeric_profile": plan["numeric_profile"],
+        "production_authorization_eligible": bool(
+            passed and plan["production_authorization_eligible"]
+        ),
         "plan_hash": plan["plan_hash"],
         "source_gradient_plan_hash": plan["source_gradient_plan_hash"],
         "source_gradient_report_hash": plan["source_gradient_report_hash"],
@@ -607,9 +632,7 @@ def analyze_finite_target(
         "design_count": len(by_design),
         "radii": plan["radii"],
         "reconstruction_relative_error": reconstruction_error,
-        "maximum_reconstruction_relative_error": plan[
-            "maximum_reconstruction_relative_error"
-        ],
+        "maximum_reconstruction_relative_error": plan["maximum_reconstruction_relative_error"],
         "mean_radius_instability": statistics.fmean(radius_instability),
         "p95_radius_instability": p95_instability,
         "maximum_p95_radius_instability": plan["maximum_p95_radius_instability"],
@@ -617,9 +640,7 @@ def analyze_finite_target(
         "null_replay_rms": null_rms,
         "signal_to_null_ratio": signal_to_null,
         "minimum_signal_to_null_ratio": plan["minimum_signal_to_null_ratio"],
-        "mean_cross_design_coordinate_variance": statistics.fmean(
-            design_variances.values()
-        ),
+        "mean_cross_design_coordinate_variance": statistics.fmean(design_variances.values()),
         "coordinate_values": coordinate_values,
         "coordinate_cross_design_variances": design_variances,
         "state_targets": state_targets,
@@ -663,12 +684,36 @@ def _append_jsonl(path: Path, value: Mapping[str, Any]) -> None:
         os.fsync(sink.fileno())
 
 
+def _verify_direction_manifest(
+    plan: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+) -> str:
+    payload = dict(manifest)
+    observed = payload.pop("manifest_hash", None)
+    expected = canonical_hash(payload, prefix=DIRECTION_MANIFEST_HASH_PREFIX)
+    if observed != expected:
+        raise ValueError("finite-target direction manifest identity changed")
+    if manifest.get("finite_target_plan_hash") != plan.get("plan_hash"):
+        raise ValueError("finite-target direction manifest belongs to another plan")
+    artifacts = manifest.get("direction_artifacts")
+    if not isinstance(artifacts, list):
+        raise ValueError("finite-target direction manifest has no artifacts")
+    expected_ids = {str(row["design_row_id"]) for row in plan["design_rows"]}
+    observed_ids = [str(row.get("design_row_id", "")) for row in artifacts]
+    if set(observed_ids) != expected_ids or len(observed_ids) != len(expected_ids):
+        raise ValueError("finite-target direction support is incomplete")
+    if any(not row.get("file") or not row.get("sha256") for row in artifacts):
+        raise ValueError("finite-target direction artifact identity is incomplete")
+    return str(observed)
+
+
 def _execute(args: argparse.Namespace) -> None:
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
     import torch
     from peft import get_peft_model_state_dict
 
     from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient import (
+        _evaluate_records_numeric,
+        _load_execution_model,
         _load_verified_gradient,
         _sha256,
     )
@@ -678,11 +723,16 @@ def _execute(args: argparse.Namespace) -> None:
         _restore_adapter,
     )
 
+    gpu_ids = tuple(int(value) for value in args.gpu_ids)
+    if len(gpu_ids) != 3 or len(set(gpu_ids)) != 3:
+        raise ValueError("finite target requires one frozen three-GPU group")
+    if any(value < 0 or value >= torch.cuda.device_count() for value in gpu_ids):
+        raise ValueError("finite-target GPU group is unavailable")
+    torch.cuda.set_device(gpu_ids[0])
     output_dir = Path(args.output_dir).resolve()
     plan = _read_json(output_dir / "plan.json")
     direction_manifest = _read_json(Path(args.direction_manifest).resolve())
-    if direction_manifest.get("finite_target_plan_hash") != plan["plan_hash"]:
-        raise ValueError("finite-target direction manifest belongs to another plan")
+    _verify_direction_manifest(plan, direction_manifest)
     if not 0 <= args.partition_index < args.partition_count:
         raise ValueError("finite-target partition index is invalid")
     records_path = Path(str(plan["source_records_path"]))
@@ -691,12 +741,9 @@ def _execute(args: argparse.Namespace) -> None:
     records = _load_records(records_path)
     objective_records = tuple(records[record_id] for record_id in plan["objective_record_ids"])
     direction_by_id = {
-        str(row["design_row_id"]): row
-        for row in direction_manifest["direction_artifacts"]
+        str(row["design_row_id"]): row for row in direction_manifest["direction_artifacts"]
     }
-    expected_direction_ids = {
-        str(row["design_row_id"]) for row in plan["design_rows"]
-    }
+    expected_direction_ids = {str(row["design_row_id"]) for row in plan["design_rows"]}
     if set(direction_by_id) != expected_direction_ids:
         raise ValueError("finite-target direction support is incomplete")
     jobs = [
@@ -725,11 +772,14 @@ def _execute(args: argparse.Namespace) -> None:
         else set()
     )
     _seed_everything(args.numeric_seed)
-    torch.cuda.reset_peak_memory_stats()
+    for gpu_id in gpu_ids:
+        torch.cuda.reset_peak_memory_stats(gpu_id)
     tokenizer = _load_tokenizer(Path(str(plan["model_dir"])))
-    model = _baseline_lora_model(
+    model, resolved_device_map = _load_execution_model(
         Path(str(plan["model_dir"])),
         Path(str(plan["beneficiary_adapter_dir"])),
+        gpu_ids=gpu_ids,
+        profile=plan["numeric_profile"],
     )
     if _adapter_tensor_sha256(model) != plan["beneficiary_adapter_tensor_sha256"]:
         raise ValueError("finite target loaded another beneficiary Adapter")
@@ -744,7 +794,7 @@ def _execute(args: argparse.Namespace) -> None:
     )
     _restore_adapter(model, baseline_state)
     _apply_descent_vector(model, global_update)
-    baseline_objective, baseline_loss, baseline_tokens = _evaluate(
+    baseline_objective, baseline_loss, baseline_tokens = _evaluate_records_numeric(
         model,
         tokenizer,
         objective_records,
@@ -771,7 +821,7 @@ def _execute(args: argparse.Namespace) -> None:
         _seed_everything(args.numeric_seed)
         _restore_adapter(model, baseline_state)
         _apply_descent_vector(model, update)
-        objective_value, loss, supervised_tokens = _evaluate(
+        objective_value, loss, supervised_tokens = _evaluate_records_numeric(
             model,
             tokenizer,
             objective_records,
@@ -783,6 +833,7 @@ def _execute(args: argparse.Namespace) -> None:
             "plan_hash": plan["plan_hash"],
             "direction_manifest_hash": direction_manifest["manifest_hash"],
             "objective_role": plan["objective_role"],
+            "numeric_contract_hash": plan["numeric_contract_hash"],
             "objective_gradient_point": "post_global_update",
             "design_row_id": design_row_id,
             "radius": radius,
@@ -811,11 +862,20 @@ def _execute(args: argparse.Namespace) -> None:
         "completed_before_resume": len(completed),
         "completed_now": completed_now,
         "runtime_seconds": time.monotonic() - started,
-        "peak_gpu_memory_bytes": int(torch.cuda.max_memory_allocated()),
+        "requested_cuda_device_ids": gpu_ids,
+        "resolved_hf_device_map": resolved_device_map,
+        "resolved_hf_device_map_hash": canonical_hash(
+            resolved_device_map,
+            prefix="finance_finite_target_hf_device_map:",
+        ),
+        "peak_gpu_memory_bytes": max(
+            int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids
+        ),
+        "peak_gpu_memory_bytes_by_requested_device": {
+            str(gpu_id): int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids
+        },
     }
-    worker_report_path = (
-        output_dir / "workers" / f"partition_{args.partition_index}_report.json"
-    )
+    worker_report_path = output_dir / "workers" / f"partition_{args.partition_index}_report.json"
     _write_json(worker_report_path, worker_report)
     print(json.dumps(worker_report, ensure_ascii=False, indent=2, sort_keys=True))
     del model, global_update, baseline_state
@@ -826,12 +886,16 @@ def _execute(args: argparse.Namespace) -> None:
 def _aggregate(args: argparse.Namespace) -> None:
     output_dir = Path(args.output_dir).resolve()
     plan = _read_json(output_dir / "plan.json")
+    direction_manifest = _read_json(Path(args.direction_manifest).resolve())
+    direction_manifest_hash = _verify_direction_manifest(plan, direction_manifest)
     observations = [
         row
         for path in sorted((output_dir / "workers").glob("partition_*.jsonl"))
         for row in _load_jsonl(path)
     ]
     report = analyze_finite_target(plan, observations)
+    if report.get("direction_manifest_hash") != direction_manifest_hash:
+        raise ValueError("finite-target observations use another direction manifest")
     _write_json(output_dir / "report.json", report)
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
 
@@ -933,13 +997,14 @@ def _parser() -> argparse.ArgumentParser:
     execute = subparsers.add_parser("execute")
     execute.add_argument("--output-dir", required=True)
     execute.add_argument("--direction-manifest", required=True)
-    execute.add_argument("--gpu-id", type=int, required=True)
+    execute.add_argument("--gpu-ids", type=int, nargs="+", required=True)
     execute.add_argument("--partition-index", type=int, default=0)
     execute.add_argument("--partition-count", type=int, default=1)
     execute.add_argument("--numeric-seed", type=int, default=20261131)
     execute.set_defaults(handler=_execute)
     aggregate = subparsers.add_parser("aggregate")
     aggregate.add_argument("--output-dir", required=True)
+    aggregate.add_argument("--direction-manifest", required=True)
     aggregate.set_defaults(handler=_aggregate)
     return parser
 

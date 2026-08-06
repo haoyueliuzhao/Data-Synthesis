@@ -10,7 +10,9 @@ import os
 import statistics
 import time
 from collections import Counter, defaultdict
+from collections.abc import Iterator, Mapping
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from contextlib import ExitStack, contextmanager
 from difflib import SequenceMatcher
 from itertools import combinations
 from pathlib import Path
@@ -38,7 +40,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_populatio
 from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
     MAX_SEQUENCE_LENGTH,
     _adapter_tensor_sha256,
-    _baseline_lora_model,
     _batch,
     _encode_record,
     _load_records,
@@ -46,8 +47,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
     _read_json,
     _record_from_state,
     _seed_everything,
-    _sharded_baseline_lora_model,
-    _validated_hf_device_map,
     _write_json,
 )
 from trusted_synthesis.experiments.vtdo_experiment.schema import (
@@ -61,18 +60,28 @@ if TYPE_CHECKING:
         FinanceStateRealizationReport,
     )
 
-GRADIENT_ALIGNMENT_VERSION = "finance_contribution_gradient_projection.v14"
+GRADIENT_ALIGNMENT_VERSION = "finance_contribution_gradient_projection.v15"
+PROJECTION_EXECUTION_DTYPE: Literal["model", "float32", "bfloat16"] = "bfloat16"
+LOSS_ACCUMULATOR_DTYPE: Literal["float32", "float64"] = "float32"
+REQUIRED_EXECUTION_GPU_COUNT = 3
 REQUIRED_OBJECTIVE_SUPPORT_VERSION = "finance_contribution_evaluation_support.v6"
-NUMERIC_CALIBRATION_VERSION = "finance_gradient_finite_precision_calibration.v3"
-NUMERIC_CONTRACT_RUN_ROLE = "independent_30_task_production_candidate"
 CALIBRATED_NUMERIC_PROFILE = {
-    "profile_id": "bf16_checkpoint_strict_accumulation",
-    "model_dtype": "bfloat16",
-    "sparse_projection_dtype": "float32",
-    "loss_accumulator_dtype": "float64",
-    "gradient_checkpointing": True,
-    "cuda_matmul_allow_tf32": False,
-    "float32_matmul_precision": "highest",
+    "baseline_profile_id": "tf32_off_only",
+    "factor_id": "activation_dtype",
+    "intervention_count": 2,
+    "precision": {
+        "cuda_matmul_allow_tf32": False,
+        "float32_matmul_precision": "highest",
+        "gradient_checkpointing": True,
+        "loss_accumulator_dtype": LOSS_ACCUMULATOR_DTYPE,
+        "model_dtype": "float32",
+        "profile_id": "fp32_activation_strict",
+        "sparse_projection_dtype": "model",
+    },
+    "profile_id": "fp32_activation_strict",
+    "projection_execution_dtype": PROJECTION_EXECUTION_DTYPE,
+    "required_gpu_count": REQUIRED_EXECUTION_GPU_COUNT,
+    "vjp_mode": "shared_retained_backward",
 }
 NUMERIC_THRESHOLD_KEYS = {
     "maximum_loss_identity_absolute_error",
@@ -103,6 +112,7 @@ GRADIENT_STATE_STRATEGY_PRIORITY: tuple[LineageStrategy, ...] = (
 STATE_PROBABILITY_POLICY = "exact_frozen_task_round_distribution_over_3_to_5_states_v3"
 SMOKE_STATE_PROBABILITY_POLICY = "explicit_uniform_smoke_only_v1"
 TASK_SAMPLING_CONTRACT_VERSION = "finance_gradient_task_sampling.v4"
+OBJECTIVE_GRADIENT_EXECUTION_MODE = "deterministic_eval_with_checkpoint_wrappers"
 SPARSE_CAUSAL_LOSS_CONTRACT = {
     "version": "exact_sparse_supervised_causal_loss.v2",
     "forward_path": "decoder_hidden_states_then_sparse_output_projection",
@@ -116,7 +126,7 @@ SPARSE_CAUSAL_LOSS_CONTRACT = {
 }
 GRADIENT_MODE_CONTRACT = {
     "state_gradient_mode": "train",
-    "objective_gradient_mode": "deterministic_eval_with_checkpoint_wrappers",
+    "objective_gradient_mode": OBJECTIVE_GRADIENT_EXECUTION_MODE,
     "dropout_realization_policy": "independent_seed_per_realization",
     "objective_checkpoint_policy": (
         "stochastic_children_remain_eval_while_gradient_checkpoint_layers_recompute"
@@ -128,7 +138,7 @@ GRADIENT_MODE_CONTRACT = {
 PRODUCTION_MINIMUM_TASK_COUNT = 30
 PRODUCTION_MINIMUM_RECORDS_PER_SPLIT = 16
 SMOKE_MINIMUM_RECORDS_PER_SPLIT = 4
-RUN_ROLES = ("smoke", "production_candidate")
+RUN_ROLES = ("sealed_causal_pilot", "production_candidate")
 TOKEN_REGION_DECOMPOSITION_VERSION = "aligned_common_subsequence_token_gradient.v2"
 MINIMUM_TASK_POOLED_DIFFERENTIAL_SUPERVISED_TOKEN_FRACTION = 0.05
 REALIZATION_STABILITY_THRESHOLDS = {
@@ -154,21 +164,12 @@ def _sha256(path: Path) -> str:
 
 
 def _load_numeric_contract(path: Path) -> dict[str, Any]:
-    contract = _read_json(path)
-    expected_hash = contract.get("contract_hash")
-    if not isinstance(expected_hash, str) or not expected_hash:
-        raise ValueError("Gradient Projection numeric contract has no identity")
-    payload = dict(contract)
-    payload.pop("contract_hash", None)
-    if canonical_hash(payload, prefix="finance_gradient_precision_contract:") != expected_hash:
-        raise ValueError("Gradient Projection numeric contract failed identity replay")
-    if contract.get("calibration_version") != NUMERIC_CALIBRATION_VERSION:
-        raise ValueError("Gradient Projection numeric contract uses another calibration")
-    if contract.get("allowed_next_run_role") != NUMERIC_CONTRACT_RUN_ROLE:
-        raise ValueError("Gradient Projection numeric contract is not production eligible")
-    if contract.get("selected_profile") != CALIBRATED_NUMERIC_PROFILE:
-        raise ValueError("Gradient Projection numeric profile differs from the frozen profile")
-    thresholds = contract.get("thresholds")
+    from trusted_synthesis.experiments.vtdo_experiment import (
+        phase1_contribution_numeric_execution as numeric_execution,
+    )
+
+    contract = numeric_execution.verify_execution_contract(_read_json(path))
+    thresholds = contract.get("numeric_thresholds")
     if not isinstance(thresholds, dict) or set(thresholds) != NUMERIC_THRESHOLD_KEYS:
         raise ValueError("Gradient Projection numeric thresholds are incomplete")
     if any(not math.isfinite(float(value)) for value in thresholds.values()):
@@ -185,6 +186,11 @@ def _replay_numeric_contract(plan: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Gradient Projection plan embeds another numeric contract")
     if contract["contract_hash"] != plan.get("numeric_contract_hash"):
         raise ValueError("Gradient Projection numeric contract identity changed")
+    if contract["profile_algorithm_contract"] != plan.get("profile_algorithm_contract"):
+        raise ValueError("Gradient Projection execution algorithm changed")
+    mode_contract = plan.get("gradient_mode_contract", {})
+    if mode_contract.get("profile_algorithm_contract") != contract["profile_algorithm_contract"]:
+        raise ValueError("Gradient Projection mode algorithm changed")
     return contract
 
 
@@ -193,10 +199,59 @@ def _configure_numeric_policy(profile: dict[str, Any]) -> None:
 
     if profile != CALIBRATED_NUMERIC_PROFILE:
         raise ValueError("Gradient Projection attempted an uncalibrated numeric profile")
-    torch.set_float32_matmul_precision(str(profile["float32_matmul_precision"]))
-    allow_tf32 = bool(profile["cuda_matmul_allow_tf32"])
+    precision = profile["precision"]
+    torch.set_float32_matmul_precision(str(precision["float32_matmul_precision"]))
+    allow_tf32 = bool(precision["cuda_matmul_allow_tf32"])
     torch.backends.cuda.matmul.allow_tf32 = allow_tf32
     torch.backends.cudnn.allow_tf32 = allow_tf32
+
+
+def _execution_precision_profile(profile: dict[str, Any]) -> Any:
+    if profile != CALIBRATED_NUMERIC_PROFILE:
+        raise ValueError("Gradient Projection attempted another execution profile")
+    from trusted_synthesis.experiments.vtdo_experiment import (
+        phase1_gradient_precision_calibration as precision_calibration,
+    )
+
+    return precision_calibration.PrecisionProfile(**profile["precision"])
+
+
+def _load_execution_model(
+    model_dir: Path,
+    adapter_dir: Path,
+    *,
+    gpu_ids: tuple[int, ...],
+    profile: dict[str, Any] = CALIBRATED_NUMERIC_PROFILE,
+) -> tuple[Any, dict[str, str]]:
+    if len(gpu_ids) != int(profile["required_gpu_count"]):
+        raise ValueError("Gradient Projection requires the frozen three-GPU FP32 placement")
+    from trusted_synthesis.experiments.vtdo_experiment import (
+        phase1_gradient_precision_calibration as precision_calibration,
+    )
+
+    return precision_calibration._load_calibration_model(
+        model_dir=model_dir,
+        adapter_dir=adapter_dir,
+        profile=_execution_precision_profile(profile),
+        gpu_ids=gpu_ids,
+    )
+
+
+def _model_input_device(model: Any) -> Any:
+    causal_model = model.get_base_model() if hasattr(model, "get_base_model") else model
+    embedding = causal_model.get_input_embeddings()
+    weight = getattr(embedding, "weight", None)
+    if weight is None:
+        raise ValueError("Gradient Projection model input device is unavailable")
+    return weight.device
+
+
+def _place_batch_on_model_input_device(
+    model: Any,
+    batch: dict[str, Any],
+) -> dict[str, Any]:
+    device = _model_input_device(model)
+    return {name: value.to(device) for name, value in batch.items()}
 
 
 def _assert_trainable_parameter_precision(manifest: dict[str, Any]) -> None:
@@ -205,8 +260,36 @@ def _assert_trainable_parameter_precision(manifest: dict[str, Any]) -> None:
         raise ValueError("Gradient Projection requires FP32 trainable Adapter parameters")
 
 
+@contextmanager
+def _numeric_execution_context(
+    model: Any,
+    *,
+    offload_saved_tensors: bool,
+) -> Iterator[None]:
+    import torch
+
+    parameters = tuple(model.parameters())
+    uses_cuda = any(parameter.device.type == "cuda" for parameter in parameters)
+    if not uses_cuda:
+        yield
+        return
+    from torch.nn.attention import SDPBackend, sdpa_kernel
+
+    from trusted_synthesis.experiments.vtdo_experiment.phase1_gradient_numeric_root_cause import (
+        _configure_attention_execution_policy,
+        _stride_preserving_saved_tensors,
+    )
+
+    _configure_attention_execution_policy()
+    with ExitStack() as contexts:
+        if offload_saved_tensors:
+            contexts.enter_context(_stride_preserving_saved_tensors(torch))
+        contexts.enter_context(sdpa_kernel(SDPBackend.EFFICIENT_ATTENTION))
+        yield
+
+
 def _realization_stability_thresholds(plan: dict[str, Any]) -> dict[str, float]:
-    numeric = plan["numeric_contract"]["thresholds"]
+    numeric = plan["numeric_contract"]["numeric_thresholds"]
     return {
         **REALIZATION_STABILITY_THRESHOLDS,
         "maximum_loss_identity_absolute_error": float(
@@ -248,6 +331,27 @@ def _valid_hashed_row(row: dict[str, Any], *, prefix: str) -> bool:
     payload = dict(row)
     payload.pop("result_hash", None)
     return canonical_hash(payload, prefix=prefix) == expected
+
+
+def _replay_evaluation_gradient_manifest(
+    plan: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+) -> str:
+    payload = dict(manifest)
+    observed = payload.pop("manifest_hash", None)
+    expected = canonical_hash(
+        payload,
+        prefix="finance_contribution_evaluation_gradient_manifest:",
+    )
+    if observed != expected:
+        raise ValueError("evaluation gradient manifest identity changed")
+    if (
+        manifest.get("plan_hash") != plan.get("plan_hash")
+        or manifest.get("numeric_contract_hash") != plan.get("numeric_contract_hash")
+        or manifest.get("gradient_mode_contract_id") != plan.get("gradient_mode_contract_id")
+    ):
+        raise ValueError("evaluation gradient manifest belongs to another plan")
+    return str(observed)
 
 
 def _validate_run_contract(
@@ -480,25 +584,31 @@ def _record_gradient(
         raise ValueError(f"unknown Gradient Projection model mode:{mode}")
     model.zero_grad(set_to_none=True)
     batch, supervised_tokens = _batch(tokenizer, record)
+    batch = _place_batch_on_model_input_device(model, batch)
     labels = batch.pop("labels")
     prediction_positions, target_labels, supervised_tokens = _supervised_causal_projection(
         labels,
         supervised_label_positions=supervised_label_positions,
     )
-    logits = _sparse_causal_logits(
-        model,
-        batch,
-        prediction_positions,
-        projection_dtype="float32",
-    )
-    if logits.ndim != 3 or logits.shape[:2] != target_labels.shape:
-        raise ValueError("Gradient Projection sparse logits do not match supervised targets")
-    loss = _mean_supervised_nll(logits, target_labels)
-    if not torch.isfinite(loss):
-        raise ValueError("Gradient Projection produced a non-finite loss")
-    loss.backward()
-    gradients = _collect_trainable_gradients(model)
-    loss_value = float(loss.detach().double().cpu())
+    with _numeric_execution_context(model, offload_saved_tensors=True):
+        logits = _sparse_causal_logits(
+            model,
+            batch,
+            prediction_positions,
+            projection_dtype=PROJECTION_EXECUTION_DTYPE,
+        )
+        if logits.ndim != 3 or logits.shape[:2] != target_labels.shape:
+            raise ValueError("Gradient Projection sparse logits do not match supervised targets")
+        loss = _mean_supervised_nll(
+            logits,
+            target_labels,
+            accumulator_dtype=LOSS_ACCUMULATOR_DTYPE,
+        )
+        if not torch.isfinite(loss):
+            raise ValueError("Gradient Projection produced a non-finite loss")
+        loss.backward()
+        gradients = _collect_trainable_gradients(model)
+        loss_value = float(loss.detach().double().cpu())
     del loss, logits, batch, labels, prediction_positions, target_labels
     return gradients, loss_value, supervised_tokens
 
@@ -524,7 +634,7 @@ def _mean_supervised_nll(
     target_labels: Any,
     *,
     token_ordinals: Any | None = None,
-    accumulator_dtype: Literal["float32", "float64"] = "float64",
+    accumulator_dtype: Literal["float32", "float64"] = "float32",
 ) -> Any:
     import torch
 
@@ -546,6 +656,83 @@ def _mean_supervised_nll(
     raise ValueError("Gradient Projection loss accumulator dtype is not registered")
 
 
+def _shared_supervised_nlls(
+    logits: Any,
+    target_labels: Any,
+    *,
+    common_ordinals: Any,
+    differential_ordinals: Any,
+    accumulator_dtype: Literal["float32", "float64"],
+) -> tuple[Any, Any, Any]:
+    import torch
+
+    token_losses = torch.nn.functional.cross_entropy(
+        logits.float().reshape(-1, logits.shape[-1]),
+        target_labels.to(logits.device).reshape(-1),
+        reduction="none",
+    ).reshape(target_labels.shape)
+
+    def region_mean(ordinals: Any | None) -> Any:
+        selected = (
+            token_losses
+            if ordinals is None
+            else token_losses.index_select(1, ordinals.to(token_losses.device))
+        )
+        return selected.double().mean() if accumulator_dtype == "float64" else selected.mean()
+
+    if accumulator_dtype not in {"float32", "float64"}:
+        raise ValueError("Gradient Projection loss accumulator dtype is not registered")
+    return (
+        region_mean(None),
+        region_mean(common_ordinals),
+        region_mean(differential_ordinals),
+    )
+
+
+def _evaluate_records_numeric(
+    model: Any,
+    tokenizer: Any,
+    records: tuple[VTDOTrainingRecord, ...],
+) -> tuple[float, float, int]:
+    import torch
+
+    if not records:
+        raise ValueError("Gradient Projection numeric evaluation has no records")
+    _configure_numeric_policy(CALIBRATED_NUMERIC_PROFILE)
+    model.eval()
+    weighted_loss = 0.0
+    token_count = 0
+    with (
+        torch.inference_mode(),
+        _numeric_execution_context(model, offload_saved_tensors=False),
+    ):
+        for record in records:
+            batch, _ = _batch(tokenizer, record)
+            batch = _place_batch_on_model_input_device(model, batch)
+            labels = batch.pop("labels")
+            prediction_positions, targets, supervised_tokens = _supervised_causal_projection(labels)
+            logits = _sparse_causal_logits(
+                model,
+                batch,
+                prediction_positions,
+                projection_dtype=PROJECTION_EXECUTION_DTYPE,
+            )
+            loss = _mean_supervised_nll(
+                logits,
+                targets,
+                accumulator_dtype=LOSS_ACCUMULATOR_DTYPE,
+            )
+            if not torch.isfinite(loss):
+                raise ValueError("Gradient Projection numeric evaluation is non-finite")
+            weighted_loss += float(loss.detach().float().cpu()) * supervised_tokens
+            token_count += supervised_tokens
+            del batch, labels, prediction_positions, targets, logits, loss
+    if token_count == 0:
+        raise ValueError("Gradient Projection numeric evaluation has no supervised tokens")
+    loss_value = weighted_loss / token_count
+    return -loss_value, loss_value, token_count
+
+
 def _record_gradient_decomposition(
     model: Any,
     tokenizer: Any,
@@ -564,6 +751,7 @@ def _record_gradient_decomposition(
     model.train()
     model.zero_grad(set_to_none=True)
     batch, _ = _batch(tokenizer, record)
+    batch = _place_batch_on_model_input_device(model, batch)
     labels = batch.pop("labels")
     prediction_positions, target_labels, supervised_tokens = _supervised_causal_projection(labels)
     all_label_positions = tuple(
@@ -588,43 +776,38 @@ def _record_gradient_decomposition(
         dtype=torch.long,
         device=target_labels.device,
     )
-    logits = _sparse_causal_logits(
-        model,
-        batch,
-        prediction_positions,
-        projection_dtype="float32",
-    )
-    losses = (
-        _mean_supervised_nll(logits, target_labels),
-        _mean_supervised_nll(
-            logits,
-            target_labels,
-            token_ordinals=common_ordinals,
-        ),
-        _mean_supervised_nll(
-            logits,
-            target_labels,
-            token_ordinals=differential_ordinals,
-        ),
-    )
-    counts = (
-        supervised_tokens,
-        len(common_label_positions),
-        len(differential_label_positions),
-    )
-    results = []
-    for index, (loss, count) in enumerate(zip(losses, counts, strict=True)):
-        if not torch.isfinite(loss):
-            raise ValueError("Gradient Projection produced a non-finite regional loss")
-        model.zero_grad(set_to_none=True)
-        loss.backward(retain_graph=index < len(losses) - 1)
-        results.append(
-            (
-                _collect_trainable_gradients(model),
-                float(loss.detach().double().cpu()),
-                count,
-            )
+    with _numeric_execution_context(model, offload_saved_tensors=True):
+        logits = _sparse_causal_logits(
+            model,
+            batch,
+            prediction_positions,
+            projection_dtype=PROJECTION_EXECUTION_DTYPE,
         )
+        losses = _shared_supervised_nlls(
+            logits,
+            target_labels,
+            common_ordinals=common_ordinals,
+            differential_ordinals=differential_ordinals,
+            accumulator_dtype=LOSS_ACCUMULATOR_DTYPE,
+        )
+        counts = (
+            supervised_tokens,
+            len(common_label_positions),
+            len(differential_label_positions),
+        )
+        results = []
+        for index, (loss, count) in enumerate(zip(losses, counts, strict=True)):
+            if not torch.isfinite(loss):
+                raise ValueError("Gradient Projection produced a non-finite regional loss")
+            model.zero_grad(set_to_none=True)
+            loss.backward(retain_graph=index < len(losses) - 1)
+            results.append(
+                (
+                    _collect_trainable_gradients(model),
+                    float(loss.detach().double().cpu()),
+                    count,
+                )
+            )
     del batch, labels, logits, losses, prediction_positions, target_labels
     return results[0], results[1], results[2]
 
@@ -662,7 +845,7 @@ def _sparse_causal_logits(
     batch: dict[str, Any],
     prediction_positions: Any,
     *,
-    projection_dtype: Literal["model", "float32"] = "float32",
+    projection_dtype: Literal["model", "float32", "bfloat16"] = "bfloat16",
 ) -> Any:
     """Run the full decoder while materializing vocabulary logits only where needed."""
 
@@ -684,13 +867,14 @@ def _sparse_causal_logits(
     selected_hidden_states = selected_hidden_states.to(output_embedding.weight.device)
     if projection_dtype == "model":
         return output_embedding(selected_hidden_states)
-    if projection_dtype != "float32":
+    if projection_dtype not in {"float32", "bfloat16"}:
         raise ValueError("Gradient Projection sparse projection dtype is not registered")
     bias = getattr(output_embedding, "bias", None)
+    dtype = torch.float32 if projection_dtype == "float32" else torch.bfloat16
     return torch.nn.functional.linear(
-        selected_hidden_states.float(),
-        output_embedding.weight.float(),
-        None if bias is None else bias.float(),
+        selected_hidden_states.to(dtype),
+        output_embedding.weight.to(dtype),
+        None if bias is None else bias.to(dtype),
     )
 
 
@@ -922,9 +1106,7 @@ def _load_state_realization_report(
         FinanceStateRealizationReport,
     )
 
-    report = FinanceStateRealizationReport.model_validate_json(
-        path.read_text(encoding="utf-8")
-    )
+    report = FinanceStateRealizationReport.model_validate_json(path.read_text(encoding="utf-8"))
     if report.status != "passed":
         raise ValueError("Gradient Projection requires a passed state realization report")
     if report.artifact_sha256 != _sha256(artifacts_path):
@@ -1068,12 +1250,8 @@ def _build_token_region_manifest(
 
     def summarize(record_ids: list[str]) -> dict[str, int | float]:
         rows = [records[record_id] for record_id in record_ids]
-        fractions = [
-            float(row["differential_supervised_token_fraction"]) for row in rows
-        ]
-        differential_count = sum(
-            int(row["differential_supervised_token_count"]) for row in rows
-        )
+        fractions = [float(row["differential_supervised_token_fraction"]) for row in rows]
+        differential_count = sum(int(row["differential_supervised_token_count"]) for row in rows)
         supervised_count = sum(
             int(row["common_supervised_token_count"])
             + int(row["differential_supervised_token_count"])
@@ -1082,9 +1260,7 @@ def _build_token_region_manifest(
         return {
             "record_count": len(rows),
             "minimum_record_differential_supervised_token_fraction": min(fractions),
-            "mean_record_differential_supervised_token_fraction": statistics.fmean(
-                fractions
-            ),
+            "mean_record_differential_supervised_token_fraction": statistics.fmean(fractions),
             "pooled_differential_supervised_token_fraction": (
                 differential_count / supervised_count
             ),
@@ -1116,17 +1292,12 @@ def _build_token_region_manifest(
         float(value["differential_supervised_token_fraction"]) for value in records.values()
     )
     minimum_state_pooled_fraction = min(
-        float(row["pooled_differential_supervised_token_fraction"])
-        for row in state_rows
+        float(row["pooled_differential_supervised_token_fraction"]) for row in state_rows
     )
     minimum_task_pooled_fraction = min(
-        float(row["pooled_differential_supervised_token_fraction"])
-        for row in task_rows
+        float(row["pooled_differential_supervised_token_fraction"]) for row in task_rows
     )
-    if (
-        minimum_task_pooled_fraction
-        < MINIMUM_TASK_POOLED_DIFFERENTIAL_SUPERVISED_TOKEN_FRACTION
-    ):
+    if minimum_task_pooled_fraction < MINIMUM_TASK_POOLED_DIFFERENTIAL_SUPERVISED_TOKEN_FRACTION:
         raise ValueError("token-region decomposition is dominated by common target tokens")
     manifest: dict[str, Any] = {
         "version": TOKEN_REGION_DECOMPOSITION_VERSION,
@@ -1138,9 +1309,7 @@ def _build_token_region_manifest(
         "minimum_task_pooled_differential_supervised_token_fraction_threshold": (
             MINIMUM_TASK_POOLED_DIFFERENTIAL_SUPERVISED_TOKEN_FRACTION
         ),
-        "minimum_observed_record_differential_supervised_token_fraction": (
-            minimum_record_fraction
-        ),
+        "minimum_observed_record_differential_supervised_token_fraction": (minimum_record_fraction),
         "minimum_observed_state_pooled_differential_supervised_token_fraction": (
             minimum_state_pooled_fraction
         ),
@@ -1269,11 +1438,16 @@ def prepare(args: argparse.Namespace) -> None:
         raise ValueError("Gradient Projection requires explicit Objective Support v6")
     if support_report.get("plan_hash") != support_plan.get("plan_hash"):
         raise ValueError("Gradient Projection support report does not replay its plan")
+    source_support_contract = numeric_contract["source_support"]
     if (
-        support_plan.get("numeric_contract_hash") != numeric_contract["contract_hash"]
-        or support_report.get("numeric_contract_hash") != numeric_contract["contract_hash"]
+        support_plan.get("numeric_contract_hash")
+        != source_support_contract["source_numeric_contract_hash"]
+        or support_report.get("numeric_contract_hash")
+        != source_support_contract["source_numeric_contract_hash"]
+        or support_plan.get("plan_hash") != source_support_contract["plan_hash"]
+        or support_report.get("report_hash") != source_support_contract["report_hash"]
     ):
-        raise ValueError("Gradient Projection and Objective Support numeric contracts differ")
+        raise ValueError("Gradient Projection Objective Support differs from v19 lineage")
     target_task_ids, excluded_task_ids, target_task_set_id = _support_target_boundary(support_plan)
     if support_report.get("gradient_target_task_set_id") != target_task_set_id:
         raise ValueError("Gradient Projection support report targets another task set")
@@ -1418,9 +1592,7 @@ def prepare(args: argparse.Namespace) -> None:
         if distributions_path is None:
             raise ValueError("state realizations require frozen current distributions")
         if realization_report_path is None and args.run_role == "production_candidate":
-            raise ValueError(
-                "production Gradient Projection requires a state realization report"
-            )
+            raise ValueError("production Gradient Projection requires a state realization report")
         if realization_report_path is not None:
             realization_report = _load_state_realization_report(
                 realization_report_path,
@@ -1608,9 +1780,7 @@ def prepare(args: argparse.Namespace) -> None:
             str(realization_report_path) if realization_report_path is not None else None
         ),
         "source_report_sha256": (
-            _sha256(realization_report_path)
-            if realization_report_path is not None
-            else None
+            _sha256(realization_report_path) if realization_report_path is not None else None
         ),
         "source_report_id": (
             realization_report.report_id if realization_report is not None else None
@@ -1626,9 +1796,7 @@ def prepare(args: argparse.Namespace) -> None:
             if realizations_path is not None
             else len(jobs)
         ),
-        "unique_decision_trace_count": len(
-            {str(job["decision_trace_hash"]) for job in jobs}
-        ),
+        "unique_decision_trace_count": len({str(job["decision_trace_hash"]) for job in jobs}),
         "decision_trace_diversity_rate": (
             len({str(job["decision_trace_hash"]) for job in jobs}) / len(jobs)
         ),
@@ -1661,6 +1829,7 @@ def prepare(args: argparse.Namespace) -> None:
         **GRADIENT_MODE_CONTRACT,
         "numeric_profile": numeric_contract["selected_profile"],
         "numeric_contract_hash": numeric_contract["contract_hash"],
+        "profile_algorithm_contract": numeric_contract["profile_algorithm_contract"],
     }
     values: dict[str, Any] = {
         "experiment_version": GRADIENT_ALIGNMENT_VERSION,
@@ -1726,6 +1895,7 @@ def prepare(args: argparse.Namespace) -> None:
         "numeric_contract_sha256": _sha256(numeric_contract_path),
         "numeric_contract": numeric_contract,
         "numeric_contract_hash": numeric_contract["contract_hash"],
+        "profile_algorithm_contract": numeric_contract["profile_algorithm_contract"],
         "local_optimizer_contract": {
             "optimizer_name": "adamw",
             "estimator_scope": "local_distribution_update_only",
@@ -1856,30 +2026,16 @@ def build_evaluation_gradients(args: argparse.Namespace) -> None:
     for gpu_id in gpu_ids:
         torch.cuda.reset_peak_memory_stats(gpu_id)
     tokenizer = _load_tokenizer(Path(plan["model_dir"]))
-    model = (
-        _sharded_baseline_lora_model(
-            Path(plan["model_dir"]),
-            Path(plan["beneficiary_adapter_dir"]),
-            device_ids=gpu_ids,
-        )
-        if len(gpu_ids) > 1
-        else _baseline_lora_model(
-            Path(plan["model_dir"]),
-            Path(plan["beneficiary_adapter_dir"]),
-        )
+    model, resolved_device_map = _load_execution_model(
+        Path(plan["model_dir"]),
+        Path(plan["beneficiary_adapter_dir"]),
+        gpu_ids=gpu_ids,
+        profile=numeric_contract["selected_profile"],
     )
     if _adapter_tensor_sha256(model) != plan["beneficiary_adapter_tensor_sha256"]:
         raise ValueError("Gradient Projection loaded another beneficiary Adapter")
     parameter_manifest, parameter_manifest_hash = _gradient_parameter_manifest(model)
     _assert_trainable_parameter_precision(parameter_manifest)
-    resolved_device_map = (
-        _validated_hf_device_map(
-            model.get_base_model(),
-            allowed_device_ids=gpu_ids,
-        )
-        if len(gpu_ids) > 1
-        else {"": str(gpu_ids[0])}
-    )
     source_records = _load_records(Path(plan["source_records_path"]))
     gradient_dir = output_dir / "evaluation_gradients"
     gradient_dir.mkdir(parents=True, exist_ok=True)
@@ -2495,11 +2651,10 @@ def _load_gradient_artifacts(
 def _worker(
     plan_path: str,
     *,
-    gpu_id: int,
+    gpu_ids: tuple[int, ...],
     partition_index: int,
     partition_count: int,
 ) -> dict[str, Any]:
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
     import torch
     from safetensors.torch import save_file
 
@@ -2509,8 +2664,7 @@ def _worker(
     numeric_contract = _replay_numeric_contract(plan)
     output_dir = Path(plan_path).parent
     manifest = _read_json(output_dir / "evaluation_gradient_manifest.json")
-    if manifest.get("plan_hash") != plan["plan_hash"]:
-        raise ValueError("evaluation gradients belong to another plan")
+    _replay_evaluation_gradient_manifest(plan, manifest)
     if _sha256(Path(plan["target_records_path"])) != plan["target_records_sha256"]:
         raise ValueError("target records changed after Gradient Projection planning")
     if manifest.get("gradient_mode_contract_id") != plan["gradient_mode_contract_id"]:
@@ -2555,11 +2709,19 @@ def _worker(
     records = _load_records(Path(plan["target_records_path"]))
     _seed_everything(20260840 + partition_index)
     _configure_numeric_policy(numeric_contract["selected_profile"])
-    torch.cuda.reset_peak_memory_stats()
+    if len(gpu_ids) != int(numeric_contract["selected_profile"]["required_gpu_count"]):
+        raise ValueError("Gradient Projection worker requires one frozen three-GPU group")
+    if any(gpu_id < 0 or gpu_id >= torch.cuda.device_count() for gpu_id in gpu_ids):
+        raise ValueError("Gradient Projection worker GPU group is unavailable")
+    torch.cuda.set_device(gpu_ids[0])
+    for gpu_id in gpu_ids:
+        torch.cuda.reset_peak_memory_stats(gpu_id)
     tokenizer = _load_tokenizer(Path(plan["model_dir"]))
-    model = _baseline_lora_model(
+    model, resolved_device_map = _load_execution_model(
         Path(plan["model_dir"]),
         Path(plan["beneficiary_adapter_dir"]),
+        gpu_ids=gpu_ids,
+        profile=numeric_contract["selected_profile"],
     )
     if _adapter_tensor_sha256(model) != plan["beneficiary_adapter_tensor_sha256"]:
         raise ValueError("Gradient Projection worker loaded another beneficiary Adapter")
@@ -2570,9 +2732,7 @@ def _worker(
     if parameter_manifest != manifest["parameter_manifest"]:
         raise ValueError("Gradient Projection parameter manifest failed exact replay")
     validation_aggregate_rows = [
-        row
-        for row in manifest["aggregate_gradients"]
-        if str(row.get("split")) == "validation"
+        row for row in manifest["aggregate_gradients"] if str(row.get("split")) == "validation"
     ]
     if len(validation_aggregate_rows) != 1:
         raise ValueError("Gradient Projection requires one validation aggregate gradient")
@@ -2650,7 +2810,8 @@ def _worker(
             "gradient_mode_contract_id": plan["gradient_mode_contract_id"],
             "numeric_contract_hash": plan["numeric_contract_hash"],
             "state_gradient_mode": "train",
-            "gpu_id": gpu_id,
+            "gpu_id": gpu_ids[0],
+            "gpu_ids": gpu_ids,
             "partition_index": partition_index,
             "partition_count": partition_count,
             "status": "passed",
@@ -2681,15 +2842,23 @@ def _worker(
         _append_jsonl(worker_path, result)
         del state_gradient, common_gradient, differential_gradient, recomposed_gradient
         completed_now += 1
+    peak_memory = {str(gpu_id): int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids}
     report = {
-        "gpu_id": gpu_id,
+        "gpu_id": gpu_ids[0],
+        "gpu_ids": gpu_ids,
+        "resolved_hf_device_map": resolved_device_map,
+        "resolved_hf_device_map_hash": canonical_hash(
+            resolved_device_map,
+            prefix="finance_gradient_hf_device_map:",
+        ),
         "partition_index": partition_index,
         "partition_count": partition_count,
         "job_count": len(jobs),
         "completed_before_resume": len(completed),
         "completed_now": completed_now,
         "runtime_seconds": time.monotonic() - started,
-        "peak_gpu_memory_bytes": int(torch.cuda.max_memory_allocated()),
+        "peak_gpu_memory_bytes": max(peak_memory.values()),
+        "peak_gpu_memory_bytes_by_requested_device": peak_memory,
     }
     del model, numeric_objective_gradient
     gc.collect()
@@ -2697,13 +2866,24 @@ def _worker(
     return report
 
 
+def _parse_gpu_groups(values: tuple[str, ...] | list[str]) -> tuple[tuple[int, ...], ...]:
+    groups = tuple(
+        tuple(int(item) for item in str(value).split(",") if item.strip()) for value in values
+    )
+    if not groups or any(len(group) != REQUIRED_EXECUTION_GPU_COUNT for group in groups):
+        raise ValueError("Gradient Projection requires comma-separated three-GPU groups")
+    flattened = tuple(item for group in groups for item in group)
+    if len(set(flattened)) != len(flattened) or any(item < 0 for item in flattened):
+        raise ValueError("Gradient Projection GPU groups must be disjoint and non-negative")
+    return groups
+
+
 def run(args: argparse.Namespace) -> None:
     output_dir = Path(args.output_dir).resolve()
     plan_path = output_dir / "plan.json"
     plan = _read_json(plan_path)
-    if not args.gpu_ids or len(set(args.gpu_ids)) != len(args.gpu_ids):
-        raise ValueError("Gradient Projection requires unique GPU ids")
-    partition_count = min(len(args.gpu_ids), len(plan["jobs"]))
+    gpu_groups = _parse_gpu_groups(args.gpu_groups)
+    partition_count = min(len(gpu_groups), len(plan["jobs"]))
     context = multiprocessing.get_context("spawn")
     reports = []
     with ProcessPoolExecutor(max_workers=partition_count, mp_context=context) as executor:
@@ -2711,16 +2891,18 @@ def run(args: argparse.Namespace) -> None:
             executor.submit(
                 _worker,
                 str(plan_path),
-                gpu_id=gpu_id,
+                gpu_ids=gpu_ids,
                 partition_index=index,
                 partition_count=partition_count,
-            ): (gpu_id, index)
-            for index, gpu_id in enumerate(args.gpu_ids[:partition_count])
+            ): (gpu_ids, index)
+            for index, gpu_ids in enumerate(gpu_groups[:partition_count])
         }
         for future in as_completed(futures):
             reports.append(future.result())
     summary = {
         "plan_hash": plan["plan_hash"],
+        "numeric_contract_hash": plan["numeric_contract_hash"],
+        "gpu_groups": gpu_groups,
         "workers": sorted(reports, key=lambda item: item["partition_index"]),
     }
     _write_json(output_dir / "worker_summary.json", summary)
@@ -2732,6 +2914,7 @@ def aggregate(args: argparse.Namespace) -> None:
     plan = _read_json(output_dir / "plan.json")
     numeric_contract = _replay_numeric_contract(plan)
     manifest = _read_json(output_dir / "evaluation_gradient_manifest.json")
+    _replay_evaluation_gradient_manifest(plan, manifest)
     if manifest.get("numeric_contract_hash") != numeric_contract["contract_hash"]:
         raise ValueError("evaluation gradients use another numeric contract")
     rows = [
@@ -3118,7 +3301,12 @@ def _parser() -> argparse.ArgumentParser:
     gradients_parser.set_defaults(handler=build_evaluation_gradients)
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--output-dir", required=True)
-    run_parser.add_argument("--gpu-ids", type=int, nargs="+", default=(0, 3, 4, 5, 6, 7))
+    run_parser.add_argument(
+        "--gpu-groups",
+        nargs="+",
+        required=True,
+        help="Disjoint comma-separated three-GPU groups, for example 0,1,2 3,4,5",
+    )
     run_parser.set_defaults(handler=run)
     aggregate_parser = subparsers.add_parser("aggregate")
     aggregate_parser.add_argument("--output-dir", required=True)
