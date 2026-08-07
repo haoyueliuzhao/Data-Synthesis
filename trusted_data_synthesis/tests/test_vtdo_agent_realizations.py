@@ -10,6 +10,7 @@ from trusted_synthesis.core.evaluation.contracts import (
     QualityContractCompiler,
     QualityContractRuntime,
 )
+from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
 from trusted_synthesis.core.trajectory import (
@@ -59,6 +60,8 @@ from trusted_synthesis.runtime.agent.client import LLMClientError
 from trusted_synthesis.runtime.agent.host_execution import ActionPlanExecutionError
 from trusted_synthesis.runtime.agent.llm_agent import (
     LLM_AGENT_SOLVER_VERSION,
+    _build_action_prompt,
+    _public_operation_catalog,
     _state_search_contract,
     _validate_state_control_action_plan,
 )
@@ -507,6 +510,52 @@ def test_state_search_contract_provides_mode_specific_public_examples() -> None:
     assert semantic_query["predicates"] == required_query["predicates"]
     assert "temporal_labels" not in semantic_query
     assert full_query == {}
+
+
+def test_state_action_prompt_ends_with_mode_specific_public_contract() -> None:
+    context, fixture_provider, _ = _agent_runtime()
+    operation_catalog = _public_operation_catalog(default_registry(), context.task.public)
+    payloads = {}
+
+    for strategy in ("compact_direct", "compact_projection"):
+        condition = make_public_state_condition(
+            context.task.task_id,
+            fixture_provider.variation_for(strategy),
+        )
+        request = make_public_state_generation_request(
+            context,
+            condition,
+            candidate_count=1,
+            seed=17,
+        )
+        audit = assess_state_condition_controllability(
+            request,
+            interaction_protocol="host_instrumented",
+        )
+        constraints = project_state_condition_constraints(condition, audit)
+        prompt, _ = _build_action_prompt(
+            context.task.public,
+            context.public_corpus.evidence,
+            operation_catalog,
+            {},
+            constraints,
+        )
+        assert "FINAL STATE ACTION CONTRACT" in prompt
+        payloads[strategy] = json.loads(
+            prompt.split("PAYLOAD:\n", 1)[1].split("\n\nFINAL STATE ACTION CONTRACT", 1)[0]
+        )
+
+    direct = payloads["compact_direct"]
+    projected = payloads["compact_projection"]
+    assert direct["state_action_contract"]["mode"] == "baseline_program"
+    assert direct["state_action_contract"]["forbidden_operator_ids"] == ["lookup"]
+    assert set(direct["action_input_contract"]["typed_examples"]) == {"direct_semantic_operation"}
+    assert projected["state_action_contract"]["mode"] == "transparent_projection"
+    assert projected["state_action_contract"]["required_projection_operator_id"] == "lookup"
+    assert set(projected["action_input_contract"]["typed_examples"]) == {
+        "lookup",
+        "semantic_after_lookup",
+    }
 
 
 def test_pushforward_preserves_independent_draws_with_identical_assignment() -> None:

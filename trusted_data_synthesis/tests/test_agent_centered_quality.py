@@ -221,7 +221,9 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
     assert result.audit.action_failure_history == ()
     assert result.trajectory.program_execution["source"] == "host_instrumented_execution"
     assert client.call_count == 2
-    action_prompt_payload = json.loads(client.prompts[0].split("PAYLOAD:\n", 1)[1])
+    action_prompt_payload = json.loads(
+        client.prompts[0].split("PAYLOAD:\n", 1)[1].split("\n\nFINAL STATE ACTION CONTRACT", 1)[0]
+    )
     valid_evidence_inputs = action_prompt_payload["evidence_identifier_contract"][
         "valid_evidence_inputs"
     ]
@@ -235,6 +237,13 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
         <= set(operation)
         for operation in action_prompt_payload["operation_catalog"]
     )
+    assert all(
+        "provenance" not in item and "source_locator" not in item
+        for item in action_prompt_payload["retrieved_evidence"]
+    )
+    assert {item["evidence_id"] for item in action_prompt_payload["retrieved_evidence"]} == {
+        item["evidence_id"] for item in valid_evidence_inputs
+    }
     assert "domain_contract_guidance" in action_prompt_payload
     assert set(
         action_prompt_payload["action_input_contract"]["typed_examples"]["lookup"]["inputs"][0]

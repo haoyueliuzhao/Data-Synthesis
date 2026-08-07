@@ -1,10 +1,11 @@
 # Finance v22 Development Population And Power Study
 
-Status date: 2026-08-07
+Status date: 2026-08-08
 
-Current status: `development_support_frozen`. Real API observations and GPU target measurements have
-not yet started. This document records the pre-outcome design, immutable inputs, and scientific
-boundaries for the successor to the cancelled v21 run.
+Current status: `materializer_action_contract_requalification`. The initial Explorer distribution
+is qualified and two state-materializer diagnostics have completed. Development target gradients
+have not started. This document records the pre-outcome design, immutable inputs, observed
+materialization limits, and scientific boundaries for the successor to the cancelled v21 run.
 
 ## Scientific Question
 
@@ -82,6 +83,57 @@ Only after these pre-target quantities are frozen may the Development target stu
 variance across task, task family, Objective micro-split, realization, and numeric replay. The final
 Validation task count is not frozen until Monte Carlo power simulation uses those observed variance
 components.
+
+## Materializer Diagnostics
+
+The unconditioned DeepSeek Explorer stage completed before state-conditioned materialization:
+
+| Measure | Observed |
+| --- | ---: |
+| Requested trajectories | 300 |
+| Valid trajectories | 300 |
+| Catalog hits | 298 |
+| Valid off-catalog trajectories | 2 |
+| API / JSON-contract success | 900 / 900 |
+
+The first DeepSeek state-conditioned run released 315 of 500 requested realizations before the
+provider exhausted its prepaid credit. It remains a partial model-sensitivity artifact and is not
+silently combined with later local-model runs.
+
+The first local Qwen diagnostic used Action Prompt v11 and Search Prompt v7 with one attempt per
+state. The seven-replica serving pool completed every HTTP request, but only 8 of 100 requested
+state realizations were independently verified and released:
+
+| Measure | Observed |
+| --- | ---: |
+| API calls / HTTP successes | 258 / 258 |
+| JSON-contract successes | 183 |
+| Generation successes / failures | 25 / 75 |
+| Independently released trajectories | 8 |
+| Invalid trajectories | 16 |
+| Off-target trajectories | 1 |
+
+The failure taxonomy localized the remaining issue to Action Plan realization rather than serving
+or search. Common failures were truncated or malformed JSON, direct semantic operations emitted for
+transparent-projection states, and lookup projections emitted for baseline states. Action Prompt
+v12 therefore makes the following generic, public-only changes:
+
+- action catalogs contain only fields required to choose and wire operations;
+- baseline and projection modes receive mutually exclusive typed examples;
+- public evidence roles, terminal-operation constraints, and topology rules are repeated in a
+  final recency block;
+- contract repair explicitly changes topology for `state_execution_*` failures;
+- the local structured-generation profile uses temperature 0.2 and 2,048 output tokens.
+
+These changes do not let the Host select evidence or construct the operation graph. A fresh
+100-state smoke run must pass a predeclared engineering threshold before the five-realization run is
+allowed. The failed diagnostic remains immutable and auditable.
+
+The predeclared smoke threshold is: at least 70 of 100 requested states released, 100% HTTP success,
+no identity or public/oracle-isolation violation, at most two search-contract failures, at most ten
+combined baseline/projection topology failures, at least one release from every registered task
+family, and at least one release from every registered state strategy. Failing any item blocks the
+500-realization run and permits only another versioned engineering diagnostic.
 
 ## Fail-Closed Transition
 

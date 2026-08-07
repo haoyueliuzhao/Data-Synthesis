@@ -50,7 +50,7 @@ from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v20"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
-LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v11"
+LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v12"
 LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v5"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v7"
 
@@ -380,13 +380,9 @@ def _validate_state_control_search_query(
         return
     if mode == "semantic_context":
         if not model_query:
-            raise ValueError(
-                "state_retrieval_semantic_context_requires_nonempty_semantic_query"
-            )
+            raise ValueError("state_retrieval_semantic_context_requires_nonempty_semantic_query")
         if model_query.get("temporal_labels"):
-            raise ValueError(
-                "state_retrieval_semantic_context_forbids_exact_temporal_labels"
-            )
+            raise ValueError("state_retrieval_semantic_context_forbids_exact_temporal_labels")
         return
     if mode == "required_only":
         has_subject = bool(model_query.get("subject_ids") or model_query.get("aliases"))
@@ -563,8 +559,7 @@ def _validate_state_control_action_plan(
     projection_consumed = any(
         decision.operator_id != "lookup"
         and any(
-            item.source == "step" and item.step_index in lookup_indexes
-            for item in decision.inputs
+            item.source == "step" and item.step_index in lookup_indexes for item in decision.inputs
         )
         for decision in plan.executions
     )
@@ -872,10 +867,7 @@ def _state_search_contract(
     if not isinstance(control_plan, Mapping):
         return None
     retrieval = control_plan.get("retrieval")
-    if (
-        not isinstance(retrieval, Mapping)
-        or retrieval.get("control_status") != "model_controlled"
-    ):
+    if not isinstance(retrieval, Mapping) or retrieval.get("control_status") != "model_controlled":
         return None
     mode = retrieval.get("mode")
     hints = _public_search_query_hints(task)
@@ -888,9 +880,7 @@ def _state_search_contract(
             "every exact period filter."
         )
         query = {
-            key: values
-            for key, values in hints.items()
-            if key in {"subject_ids", "predicates"}
+            key: values for key, values in hints.items() if key in {"subject_ids", "predicates"}
         }
     elif mode == "required_only":
         requirement = (
@@ -1101,18 +1091,22 @@ def _build_action_prompt(
 ) -> tuple[str, str]:
     response_schema = AgentActionPlanContract.model_json_schema()
     task_execution_contract = _task_execution_contract(task, operation_catalog)
+    action_operation_catalog = _action_operation_catalog(operation_catalog)
     domain_contract_guidance = task.metadata.get("agent_contract_guidance") or {}
-    state_execution_shape_contract = _state_execution_shape_contract(
-        generation_constraints
+    state_execution_shape_contract = _state_execution_shape_contract(generation_constraints)
+    state_action_contract = _state_action_contract(
+        state_execution_shape_contract,
+        domain_contract_guidance,
     )
     manifest = {
         "prompt_version": LLM_AGENT_ACTION_PROMPT_VERSION,
+        "evidence_view_version": "agent_action_evidence.v1",
         "response_schema_hash": canonical_hash(
             response_schema,
             prefix="agent_action_plan_schema:",
         ),
         "operation_catalog_hash": canonical_hash(
-            operation_catalog,
+            action_operation_catalog,
             prefix="agent_operation_catalog:",
         ),
         "task_execution_contract_hash": canonical_hash(
@@ -1131,14 +1125,16 @@ def _build_action_prompt(
             state_execution_shape_contract,
             prefix="agent_state_execution_shape_contract:",
         ),
+        "state_action_contract_hash": canonical_hash(
+            state_action_contract,
+            prefix="agent_state_action_contract:",
+        ),
     }
     payload = {
         "task_public_spec": task.model_dump(mode="json", exclude_none=True),
         "trajectory_generation_constraints": generation_constraints,
         "executed_search_query": executed_search_query,
-        "retrieved_evidence": [
-            item.model_dump(mode="json", exclude_none=True) for item in evidence
-        ],
+        "retrieved_evidence": [_action_evidence_view(item) for item in evidence],
         "evidence_identifier_contract": {
             "exact_evidence_ids": [item.evidence_id for item in evidence],
             "valid_evidence_inputs": [
@@ -1153,7 +1149,7 @@ def _build_action_prompt(
                 "add an evidence: prefix, or invent symbolic IDs such as evidence_1."
             ),
         },
-        "operation_catalog": operation_catalog,
+        "operation_catalog": action_operation_catalog,
         "task_execution_contract": task_execution_contract,
         "domain_contract_guidance": domain_contract_guidance,
         "state_execution_shape_contract": state_execution_shape_contract,
@@ -1187,57 +1183,7 @@ def _build_action_prompt(
                 "null selector. A downstream numeric input that reads a lookup step must use "
                 "selector payload.value, not payload."
             ),
-            "typed_examples": {
-                "lookup": {
-                    "operator_id": "lookup",
-                    "inputs": [
-                        {
-                            "source": "evidence",
-                            "evidence_id": "<exact_evidence_id>",
-                        }
-                    ],
-                },
-                "growth_after_two_lookups": {
-                    "operator_id": "growth",
-                    "inputs": [
-                        {
-                            "source": "step",
-                            "step_index": 1,
-                            "selector": "payload.value",
-                        },
-                        {
-                            "source": "step",
-                            "step_index": 2,
-                            "selector": "payload.value",
-                        },
-                    ],
-                },
-                "difference_after_two_lookups": {
-                    "operator_id": "difference",
-                    "input_role_order": ("baseline_or_subtrahend", "comparison_or_minuend"),
-                    "inputs": [
-                        {"source": "step", "step_index": 1, "selector": "payload.value"},
-                        {"source": "step", "step_index": 2, "selector": "payload.value"},
-                    ],
-                },
-                "registered_ratio_after_two_lookups": {
-                    "operator_id": "ratio",
-                    "parameters": {"registered_pair": "<numerator>/<denominator>"},
-                    "input_role_order": ("numerator", "denominator"),
-                    "inputs": [
-                        {"source": "step", "step_index": 1, "selector": "payload.value"},
-                        {"source": "step", "step_index": 2, "selector": "payload.value"},
-                    ],
-                },
-                "compare_two_scalar_operation_results": {
-                    "operator_id": "compare",
-                    "downstream_result_selector": "value",
-                    "inputs": [
-                        {"source": "step", "step_index": 1, "selector": "value"},
-                        {"source": "step", "step_index": 2, "selector": "value"},
-                    ],
-                },
-            },
+            "typed_examples": _state_action_input_examples(state_execution_shape_contract),
             "host_owned_fields": (
                 "execution_id",
                 "tool_name",
@@ -1248,45 +1194,168 @@ def _build_action_prompt(
             ),
         },
         "response_json_schema": response_schema,
+        "state_action_contract": state_action_contract,
     }
     instructions = (
         "Choose the evidence and operations needed to solve the public task. Return only "
-        "one JSON object matching response_json_schema. You decide selected evidence, "
+        "one compact JSON object matching response_json_schema. You decide selected evidence, "
         "operator IDs, semantic inputs, parameters, and the output step. The host executes "
         "those decisions and records immutable IDs, tool observations, source locators, and "
         "lineage; never emit those host-owned fields. Evidence inputs copy an exact retrieved "
         "evidence_id from evidence_identifier_contract.exact_evidence_ids and contain source "
         "plus evidence_id only, with an optional selector. Never invent evidence_1-style "
         "aliases. Step inputs contain source plus the one-based index of an earlier decision, "
-        "with an optional selector. Follow action_input_contract.selector_rules and its typed "
-        "examples exactly; selectors use the local value coordinate system and are not JSON "
-        "paths from an EvidenceItem or execution wrapper. "
+        "with an optional selector. Follow action_input_contract.selector_rules and only its "
+        "mode-specific typed examples. "
         "Every operation must follow its operation_catalog input_role_contract in order, "
         "parameter_contract exactly, and downstream_selector_contract when another step "
         "consumes its result. Apply domain_contract_guidance where present; it refines domain "
         "roles without overriding the registered operation semantics. A "
         "domain_contract_guidance.terminal_operation_contract is an executable public "
-        "constraint: the output execution operator must be one of its allowed_operator_ids. For "
+        "constraint: the output execution operator must be one of its allowed_operator_ids. "
+        "For "
         "non-empty retrieved evidence, never return empty selected_evidence_ids or an empty "
         "executions list. For "
         "plan_given tasks, preserve the public node order, operator, input kind, selector, "
         "dependency, and exact parameters. For plan_hidden tasks, use only registered "
         "operators allowed by the public tool policy. selected_evidence_ids must be unique "
-        "and exactly equal the evidence used by all decisions. The output step must be the "
-        "last execution. Treat state_execution_shape_contract as an executable public "
-        "contract whenever its mode is not unconstrained. baseline_program requires exactly "
-        "zero lookup steps that feed another operation and uses its direct_evidence_example. "
-        "program_projection and transparent_projection require lookup outputs to feed semantic "
-        "operations, following the lookup and after-two-lookups typed examples. Honor "
+        "and exactly equal the evidence used by all decisions. Treat state_action_contract as "
+        "the final executable public contract. Honor "
         "trajectory_generation_constraints only where the public "
         "action contract gives you a corresponding decision; never invent extra evidence, "
         "operators, verification, or lineage to imitate an unavailable capability. Do not "
         "answer the task in this phase and include no text outside JSON."
     )
+    final_contract = (
+        "\n\nFINAL STATE ACTION CONTRACT (obey this after reading the payload):\n"
+        + json.dumps(state_action_contract, ensure_ascii=False, sort_keys=True)
+        + "\nReturn one compact JSON object now."
+    )
     prompt = (
-        f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+        f"{instructions}\n\nPAYLOAD:\n"
+        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}{final_contract}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_action_prompt_manifest:")
+
+
+def _action_operation_catalog(
+    operation_catalog: tuple[dict[str, Any], ...],
+) -> tuple[dict[str, Any], ...]:
+    """Keep only public fields needed to choose and wire an action plan."""
+
+    fields = (
+        "operator_id",
+        "tool_capability",
+        "action_type",
+        "input_role_contract",
+        "parameter_contract",
+        "downstream_selector_contract",
+    )
+    return tuple({field: item[field] for field in fields} for item in operation_catalog)
+
+
+def _action_evidence_view(item: EvidenceItem) -> dict[str, Any]:
+    """Expose only public semantic fields needed to select and execute evidence."""
+
+    payload = item.model_dump(mode="json", exclude_none=True)
+    fields = (
+        "evidence_id",
+        "evidence_kind",
+        "subject",
+        "predicate",
+        "temporal_context",
+        "payload",
+        "definition",
+        "source",
+        "scope",
+        "epistemic_status",
+        "domain_context",
+    )
+    return {field: payload[field] for field in fields if field in payload}
+
+
+def _state_action_input_examples(
+    state_execution_shape_contract: dict[str, Any],
+) -> dict[str, Any]:
+    direct = {
+        "operator_id": "<required_semantic_operator>",
+        "inputs": [
+            {
+                "source": "evidence",
+                "evidence_id": "<exact_evidence_id>",
+                "selector": "value",
+            }
+        ],
+    }
+    lookup = {
+        "operator_id": "lookup",
+        "inputs": [
+            {
+                "source": "evidence",
+                "evidence_id": "<exact_evidence_id>",
+            }
+        ],
+    }
+    projected = {
+        "operator_id": "<required_semantic_operator>",
+        "inputs": [
+            {
+                "source": "step",
+                "step_index": 1,
+                "selector": "payload.value",
+            }
+        ],
+    }
+    mode = state_execution_shape_contract.get("mode")
+    if mode == "baseline_program":
+        return {"direct_semantic_operation": direct}
+    if mode in {"program_projection", "transparent_projection"}:
+        return {"lookup": lookup, "semantic_after_lookup": projected}
+    return {
+        "direct_semantic_operation": direct,
+        "lookup": lookup,
+        "semantic_after_lookup": projected,
+    }
+
+
+def _state_action_contract(
+    state_execution_shape_contract: dict[str, Any],
+    domain_contract_guidance: Mapping[str, Any],
+) -> dict[str, Any]:
+    mode = state_execution_shape_contract.get("mode", "unconstrained")
+    terminal = domain_contract_guidance.get("terminal_operation_contract")
+    evidence_roles = domain_contract_guidance.get("evidence_roles")
+    contract: dict[str, Any] = {
+        "mode": mode,
+        "selected_evidence_rule": (
+            "Select only retrieved evidence matching every public evidence role; preserve the "
+            "role order declared in domain_contract_guidance and use each required role once."
+        ),
+        "semantic_graph_rule": (
+            "Translate every operation dependency declared in domain_contract_guidance into "
+            "execution decisions in dependency order; do not collapse a multi-stage graph."
+        ),
+        "output_step_rule": "output_step_index is the one-based last execution index.",
+    }
+    if isinstance(terminal, Mapping):
+        contract["terminal_operation_contract"] = dict(terminal)
+    if isinstance(evidence_roles, Mapping):
+        contract["evidence_roles"] = dict(evidence_roles)
+    if mode == "baseline_program":
+        contract["required_topology"] = (
+            "Use zero lookup executions. Feed selected raw evidence directly to semantic "
+            "operations with selector value."
+        )
+        contract["forbidden_operator_ids"] = ("lookup",)
+    elif mode in {"program_projection", "transparent_projection"}:
+        contract["required_topology"] = (
+            "Start with exactly one lookup execution per selected raw evidence input, in "
+            "evidence-role order. Every lookup input uses the exact evidence_id and no selector. "
+            "Then feed those earlier lookup steps to semantic operations with selector "
+            "payload.value. A semantic step may reference only a smaller one-based step_index."
+        )
+        contract["required_projection_operator_id"] = "lookup"
+    return contract
 
 
 def _build_final_answer_prompt(
@@ -1541,6 +1610,8 @@ def _repair_prompt(
             "invent evidence IDs. Otherwise repair JSON shape, exact typed result fields, "
             "citations, tool binding, and graph ordering. Recompute only from the same "
             "retrieved evidence and public operators when required by the contract error. "
+            "If contract_error starts with state_execution_, change the execution topology "
+            "to satisfy the FINAL STATE ACTION CONTRACT instead of repeating the prior plan. "
             "Never substitute a hidden or externally supplied answer."
         ),
     }
