@@ -47,7 +47,7 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v21"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v20"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
 LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v11"
