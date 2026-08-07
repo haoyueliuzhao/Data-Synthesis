@@ -24,7 +24,7 @@
     "extra_headers": {
       "X-VTDO-Materializer-Pool": "qwen2.5-7b:gpu0,gpu2,gpu3,gpu4,gpu5,gpu6,gpu7",
       "X-VTDO-Search-Prompt-Version": "agent_search_prompt.v7",
-      "X-VTDO-Action-Prompt-Version": "agent_action_prompt.v12",
+      "X-VTDO-Action-Prompt-Version": "agent_action_prompt.v13",
       "X-VTDO-Proxy-SHA256": "28f325860ae1c6242bdb66a18cbebc1ac2f154e63a2fa7b3f4ce2e1924afcd86",
       "X-VTDO-Launcher-SHA256": "9a877d70d637ea3ef2732206770256a168938886d00c3acd457dd198998ac048"
     },

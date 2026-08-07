@@ -549,9 +549,17 @@ def test_state_action_prompt_ends_with_mode_specific_public_contract() -> None:
     projected = payloads["compact_projection"]
     assert direct["state_action_contract"]["mode"] == "baseline_program"
     assert direct["state_action_contract"]["forbidden_operator_ids"] == ["lookup"]
+    assert direct["state_action_contract"]["operator_input_count_contract"]["compare"] == {
+        "input_schema": "two:numeric",
+        "required_input_count": 2,
+        "input_role_order": ["left_value", "right_value"],
+    }
     assert set(direct["action_input_contract"]["typed_examples"]) == {"direct_semantic_operation"}
     assert projected["state_action_contract"]["mode"] == "transparent_projection"
     assert projected["state_action_contract"]["required_projection_operator_id"] == "lookup"
+    assert projected["state_action_contract"]["operator_input_count_contract"]["lookup"][
+        "required_input_count"
+    ] == 1
     assert set(projected["action_input_contract"]["typed_examples"]) == {
         "lookup",
         "semantic_after_lookup",

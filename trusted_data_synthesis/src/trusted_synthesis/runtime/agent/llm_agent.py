@@ -50,7 +50,7 @@ from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v20"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
-LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v12"
+LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v13"
 LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v5"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v7"
 
@@ -1097,6 +1097,7 @@ def _build_action_prompt(
     state_action_contract = _state_action_contract(
         state_execution_shape_contract,
         domain_contract_guidance,
+        action_operation_catalog,
     )
     manifest = {
         "prompt_version": LLM_AGENT_ACTION_PROMPT_VERSION,
@@ -1245,6 +1246,8 @@ def _action_operation_catalog(
 
     fields = (
         "operator_id",
+        "input_schema",
+        "invariant_checks",
         "tool_capability",
         "action_type",
         "input_role_contract",
@@ -1321,6 +1324,7 @@ def _state_action_input_examples(
 def _state_action_contract(
     state_execution_shape_contract: dict[str, Any],
     domain_contract_guidance: Mapping[str, Any],
+    operation_catalog: tuple[dict[str, Any], ...],
 ) -> dict[str, Any]:
     mode = state_execution_shape_contract.get("mode", "unconstrained")
     terminal = domain_contract_guidance.get("terminal_operation_contract")
@@ -1329,13 +1333,16 @@ def _state_action_contract(
         "mode": mode,
         "selected_evidence_rule": (
             "Select only retrieved evidence matching every public evidence role; preserve the "
-            "role order declared in domain_contract_guidance and use each required role once."
+            "role order declared in domain_contract_guidance and use every evidence item listed "
+            "inside each role exactly once. A role may contain several observations. Never batch "
+            "several raw evidence items into one lookup execution."
         ),
         "semantic_graph_rule": (
             "Translate every operation dependency declared in domain_contract_guidance into "
             "execution decisions in dependency order; do not collapse a multi-stage graph."
         ),
         "output_step_rule": "output_step_index is the one-based last execution index.",
+        "operator_input_count_contract": _operator_input_count_contract(operation_catalog),
     }
     if isinstance(terminal, Mapping):
         contract["terminal_operation_contract"] = dict(terminal)
@@ -1351,11 +1358,38 @@ def _state_action_contract(
         contract["required_topology"] = (
             "Start with exactly one lookup execution per selected raw evidence input, in "
             "evidence-role order. Every lookup input uses the exact evidence_id and no selector. "
+            "A lookup execution always has exactly one input; never group a series or role into "
+            "one lookup. "
             "Then feed those earlier lookup steps to semantic operations with selector "
             "payload.value. A semantic step may reference only a smaller one-based step_index."
         )
         contract["required_projection_operator_id"] = "lookup"
     return contract
+
+
+def _operator_input_count_contract(
+    operation_catalog: tuple[dict[str, Any], ...],
+) -> dict[str, dict[str, Any]]:
+    """Translate public input schemas into compact, model-visible arity rules."""
+
+    result: dict[str, dict[str, Any]] = {}
+    for operation in operation_catalog:
+        operator_id = str(operation["operator_id"])
+        input_schema = str(operation["input_schema"])
+        if input_schema.startswith("one:"):
+            count: int | str = 1
+        elif input_schema.startswith("two:"):
+            count = 2
+        elif input_schema.startswith("many:"):
+            count = "one_or_more_separate_inputs"
+        else:
+            count = "follow_input_schema"
+        result[operator_id] = {
+            "input_schema": input_schema,
+            "required_input_count": count,
+            "input_role_order": operation["input_role_contract"],
+        }
+    return result
 
 
 def _build_final_answer_prompt(
@@ -1612,6 +1646,9 @@ def _repair_prompt(
             "retrieved evidence and public operators when required by the contract error. "
             "If contract_error starts with state_execution_, change the execution topology "
             "to satisfy the FINAL STATE ACTION CONTRACT instead of repeating the prior plan. "
+            "If contract_error says an operator received the wrong input count, rebuild that "
+            "execution to match operator_input_count_contract. In particular, emit one separate "
+            "lookup per raw evidence item and never place multiple evidence inputs in one lookup. "
             "Never substitute a hidden or externally supplied answer."
         ),
     }

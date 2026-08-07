@@ -67,6 +67,7 @@ from trusted_synthesis.core.vtdo.feasibility import (
 )
 from trusted_synthesis.core.vtdo.materialization import (
     TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION,
+    RejectedStateConditionedTrajectory,
     StateConditionedTrainingArtifact,
     TrajectoryStateMaterializationReport,
     ValidTrajectoryStateMaterializer,
@@ -188,6 +189,7 @@ __all__ = [
     "InterventionTrainingResult",
     "ProbeAdaptationResult",
     "ProbeOptimizerContract",
+    "RejectedStateConditionedTrajectory",
     "SyntheticOracleContributionObservation",
     "StateConditionedExplorationBatch",
     "StateConditionedTrajectoryExplorer",

@@ -1615,6 +1615,60 @@ def test_materializer_rejects_reidentified_discovery_decision_trace() -> None:
     assert "discovery_trajectory_reuse" not in materialization.failure_counts
 
 
+def test_materializer_freezes_independent_invalid_trajectory_reports() -> None:
+    _, compiled, candidate, evaluator, context = _case_runtime(0)
+    valid_report = evaluator.evaluate(context, candidate)
+    assignment = map_trajectory_to_state(
+        context,
+        candidate,
+        program_node_aliases=valid_report.program_node_mapping,
+    )
+    compilation = compile_trajectory_state_space(
+        compiled.joint_compilation,
+        _TestVariationProvider((observed_variation(valid_report.attributes),)),
+    )
+    catalog = make_trajectory_state_catalog(
+        ((assignment, valid_report, candidate),),
+        state_space_compilation=compilation,
+        discovery_method="verified_test_exploration",
+        revision_reason="test_invalid_materialization_audit",
+    )
+    distribution = make_conditional_distribution(
+        context.task.task_id,
+        {assignment.state.state_id: 1.0},
+        round_index=1,
+    )
+    invalid = _trajectory_variant(
+        candidate,
+        "invalid-materialization-audit",
+        remove_citations=True,
+    )
+    provider = _CatalogTrajectoryProvider(
+        catalog,
+        {assignment.state.state_id: invalid},
+    )
+    roles = _role_contract(provider.provider_id)
+
+    artifacts, report = ValidTrajectoryStateMaterializer(provider, evaluator).materialize(
+        context,
+        catalog,
+        distribution,
+        roles,
+        total_budget=1,
+        maximum_attempt_multiplier=1,
+        seed=43,
+    )
+
+    assert artifacts == ()
+    assert report.failure_counts["invalid_trajectory"] == 1
+    assert len(report.rejected_trajectories) == 1
+    rejection = report.rejected_trajectories[0]
+    assert rejection.target_state_id == assignment.state.state_id
+    assert rejection.trajectory.trajectory_id != candidate.trajectory_id
+    assert not rejection.validity_report.valid
+    assert rejection.validity_report.failure_types
+
+
 def test_materializer_preserves_independent_draws_with_one_decision_structure() -> None:
     _, compiled, candidate, evaluator, context = _case_runtime(0)
     report = evaluator.evaluate(context, candidate)

@@ -2,8 +2,8 @@
 
 Status date: 2026-08-08
 
-Current status: `materializer_action_contract_requalification`. The initial Explorer distribution
-is qualified and two state-materializer diagnostics have completed. Development target gradients
+Current status: `materializer_action_prompt_v13_diagnostic`. The initial Explorer distribution
+is qualified and three state-materializer diagnostics have completed. Development target gradients
 have not started. This document records the pre-outcome design, immutable inputs, observed
 materialization limits, and scientific boundaries for the successor to the cancelled v21 run.
 
@@ -134,6 +134,24 @@ no identity or public/oracle-isolation violation, at most two search-contract fa
 combined baseline/projection topology failures, at least one release from every registered task
 family, and at least one release from every registered state strategy. Failing any item blocks the
 500-realization run and permits only another versioned engineering diagnostic.
+
+The Action Prompt v12 smoke also failed this frozen threshold. It released 18 of 100 requested
+states after 315/315 successful local API calls and 290 JSON-contract successes. The released set
+covered all five registered state strategies, but only comparison, registered ratio, and temporal
+absolute change; derived growth comparison, temporal average, and temporal growth had no release.
+The dominant action failures were 19 wrong-arity operation plans, including multiple raw Evidence
+items batched into a one-input `lookup`, plus six semantic-compatibility failures. Another 38
+generated trajectories were rejected by the independent evaluator, but the v3 materialization
+report retained only their count rather than their typed validity reports. The 500-realization run
+therefore remains blocked.
+
+The next and only permitted diagnostic uses Action Prompt v13 and materialization report v4. v13
+restores each registered operation's public input schema and invariant checks, derives a compact
+operator input-count contract, and states explicitly that a series role contains separate Evidence
+items rather than one batched lookup. It still leaves Evidence selection and operation-graph
+construction to the model. Report v4 freezes every independently rejected trajectory together with
+its validity report, so a failed diagnostic remains causally auditable instead of collapsing all
+post-generation failures into one counter. The original smoke threshold is unchanged.
 
 ## Fail-Closed Transition
 

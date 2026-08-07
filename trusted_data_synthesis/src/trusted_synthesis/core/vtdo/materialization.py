@@ -41,8 +41,8 @@ from .state_space import (
 )
 
 TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION: Literal[
-    "trajectory_state_materialization_report.v3"
-] = "trajectory_state_materialization_report.v3"
+    "trajectory_state_materialization_report.v4"
+] = "trajectory_state_materialization_report.v4"
 
 RealizationUniquenessPolicy = Literal[
     "deduplicated_decision_trace",
@@ -107,6 +107,29 @@ class StateConditionedTrainingArtifact(FrozenModel):
         return self
 
 
+class RejectedStateConditionedTrajectory(FrozenModel):
+    """A generated trajectory rejected by the independent validity evaluator."""
+
+    target_state_id: str = Field(min_length=1)
+    trajectory: Trajectory
+    validity_report: TrajectoryValidityReport
+    rejection_stage: Literal["independent_validity"] = "independent_validity"
+    schema_version: Literal["rejected_state_conditioned_trajectory.v1"] = (
+        "rejected_state_conditioned_trajectory.v1"
+    )
+
+    @model_validator(mode="after")
+    def validate_rejection(self) -> RejectedStateConditionedTrajectory:
+        if self.validity_report.valid:
+            raise ValueError("rejected trajectory cannot carry a passing validity report")
+        if (
+            self.validity_report.trajectory_id != self.trajectory.trajectory_id
+            or self.validity_report.trajectory_hash != self.trajectory.trajectory_hash
+        ):
+            raise ValueError("rejected validity report belongs to another trajectory")
+        return self
+
+
 class TrajectoryStateMaterializationReport(FrozenModel):
     report_id: str = Field(min_length=1)
     explorer_provider_id: str = Field(min_length=1)
@@ -145,10 +168,11 @@ class TrajectoryStateMaterializationReport(FrozenModel):
     unique_decision_trace_count: int = Field(ge=0)
     independent_regeneration_enforced: Literal[True] = True
     artifacts: tuple[StateConditionedTrainingArtifact, ...] = ()
+    rejected_trajectories: tuple[RejectedStateConditionedTrajectory, ...] = ()
     failure_counts: dict[str, int] = Field(default_factory=dict)
     status: Literal["passed", "blocked"]
     schema_version: Literal[
-        "trajectory_state_materialization_report.v3"
+        "trajectory_state_materialization_report.v4"
     ] = TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
 
     @model_validator(mode="after")
@@ -284,6 +308,14 @@ class TrajectoryStateMaterializationReport(FrozenModel):
             if count
         }:
             raise ValueError("materialization artifacts disagree with released counts")
+        if len(self.rejected_trajectories) != self.failure_counts.get(
+            "invalid_trajectory", 0
+        ):
+            raise ValueError("materialization rejected trajectories disagree with failure counts")
+        if any(
+            item.target_state_id not in support for item in self.rejected_trajectories
+        ):
+            raise ValueError("materialization rejection targets an unknown state")
         trajectory_hashes = [item.trajectory.trajectory_hash for item in self.artifacts]
         if len(trajectory_hashes) != len(set(trajectory_hashes)):
             raise ValueError("materialization artifacts contain duplicate trajectories")
@@ -378,6 +410,7 @@ class ValidTrajectoryStateMaterializer:
                     "explicit materialization quotas do not sum to total_budget"
                 )
         released: list[StateConditionedTrainingArtifact] = []
+        rejected_trajectories: list[RejectedStateConditionedTrajectory] = []
         released_counts = {state_id: 0 for state_id in requested}
         attempted_counts = {state_id: 0 for state_id in requested}
         off_target_counts = {state_id: 0 for state_id in requested}
@@ -442,6 +475,13 @@ class ValidTrajectoryStateMaterializer:
                         continue
                     if not report.valid:
                         failures["invalid_trajectory"] += 1
+                        rejected_trajectories.append(
+                            RejectedStateConditionedTrajectory(
+                                target_state_id=state_id,
+                                trajectory=trajectory,
+                                validity_report=report,
+                            )
+                        )
                         continue
                     decision_trace = trajectory_decision_trace_hash(
                         trajectory,
@@ -588,6 +628,7 @@ class ValidTrajectoryStateMaterializer:
             "unique_decision_trace_count": len({item.decision_trace_hash for item in released}),
             "independent_regeneration_enforced": True,
             "artifacts": tuple(released),
+            "rejected_trajectories": tuple(rejected_trajectories),
             "failure_counts": dict(sorted(failures.items())),
             "status": status,
             "schema_version": TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION,

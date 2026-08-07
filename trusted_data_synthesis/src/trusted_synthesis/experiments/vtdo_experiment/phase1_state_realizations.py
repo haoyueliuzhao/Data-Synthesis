@@ -154,7 +154,7 @@ class FinanceStateRealizationReport(FrozenModel):
     model_config_hash: str = Field(min_length=1)
     explorer_provider_id: str = Field(min_length=1)
     materialization_provider_id: str = Field(min_length=1)
-    materialization_report_version: Literal["trajectory_state_materialization_report.v3"] = (
+    materialization_report_version: Literal["trajectory_state_materialization_report.v4"] = (
         TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
     )
     run_identity: str = Field(min_length=1)

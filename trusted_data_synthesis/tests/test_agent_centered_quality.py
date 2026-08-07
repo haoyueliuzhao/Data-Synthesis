@@ -230,6 +230,8 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
     assert all(set(item) == {"source", "evidence_id"} for item in valid_evidence_inputs)
     assert all(
         {
+            "input_schema",
+            "invariant_checks",
             "input_role_contract",
             "parameter_contract",
             "downstream_selector_contract",
@@ -245,6 +247,13 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
         item["evidence_id"] for item in valid_evidence_inputs
     }
     assert "domain_contract_guidance" in action_prompt_payload
+    input_counts = action_prompt_payload["state_action_contract"][
+        "operator_input_count_contract"
+    ]
+    assert set(input_counts) == {
+        operation["operator_id"] for operation in action_prompt_payload["operation_catalog"]
+    }
+    assert all(contract["required_input_count"] for contract in input_counts.values())
     assert set(
         action_prompt_payload["action_input_contract"]["typed_examples"]["lookup"]["inputs"][0]
     ) == {"source", "evidence_id"}
