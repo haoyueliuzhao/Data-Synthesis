@@ -402,6 +402,25 @@ stably identifiable at the tested radii. It does not establish that Gradient Pro
 invalid. Full evidence and the next-stage estimator redesign requirements are recorded in
 `docs/finance_v19_sealed_causal_pilot_report.md`.
 
+The 2026-08-06 v20 finite-target identifiability study then tested the measurement redesign without
+running GP-C. It used six new tasks, 20 states, 60 three-realization state samples, and disjoint
+16-record Estimation and Validation objectives divided into four micro-splits each. A separate
+16-record Authorization identity was frozen but its Objective remained forbidden. Perturbations
+were normalized to actual parameter-step ratios `0.01/0.005/0.0025`; the design contained seven
+direct anchors, block sizes 2/4/7, and a null replay; local response used an odd-cubic slope model.
+
+The formal run completed 186 observations per role. Numeric, parameter-scale, Objective-replay,
+and null gates passed. Target identifiability did not: direct-anchor identifiable rate was zero in
+both roles; maximum p95 nonlinearity was `16.0095/63.3579`; maximum block reconstruction error was
+`1.8606/1.8830`; and block direction agreement was `0.6522/0.5652`. All direct-anchor confidence
+intervals crossed zero, and only four of seven signs agreed across roles. Block error was not
+monotonic with block size, so the failure cannot be assigned only to large combined directions.
+
+The combined result is fail-closed. GP-C was not evaluated, Authorization observation count is
+zero, and real Finance VTDO retains `Contribution=0`. Any successor must preregister a fresh target
+measurement and may not tune v20 thresholds or promote its records into Authorization. Full
+evidence is in `docs/finance_v20_target_identifiability_report.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control

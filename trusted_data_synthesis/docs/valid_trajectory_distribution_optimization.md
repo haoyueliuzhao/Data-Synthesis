@@ -310,6 +310,16 @@ target-estimation regime used by the authorization protocol; it is neither a GP-
 GP-C falsification. The Authorization objective remains unopened and real rounds continue with
 `Contribution=0`. See `docs/finance_v19_sealed_causal_pilot_report.md`.
 
+The v20 target-identifiability study increased both disjoint Objective roles to 16 records, added
+four independent micro-splits, normalized perturbations by measured parameter movement, compared
+direct coordinates with block sizes 2/4/7, and fit odd-cubic local response models. The execution
+and replay contracts passed, but every direct-coordinate confidence interval crossed zero, block
+reconstruction failed in both roles, and cross-role sign agreement was only `4/7`. This result
+strengthens the measurement diagnosis: the current first-order finite Objective target is not
+observable with the required precision. It still does not test or falsify GP-C or the theoretical
+functional derivative. Authorization remains unopened and real VTDO retains `Contribution=0`.
+See `docs/finance_v20_target_identifiability_report.md`.
+
 ## Novelty, Potential, And Anchored Update
 
 Coverage-relative novelty is exact:

@@ -10,13 +10,14 @@ messages are not treated as experimental evidence.
 
 - Active repository: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
 - Branch: `main`
-- v17 implementation parent: `7b201fd`
+- v20 implementation parent: `5ca63e3`
 - sealed retry implementation SHA-256: `1e9533f4c67096874ba28aa3f28e0319ed9e8d2d609d08b92f0d2197e6ad285a`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The current change set adds the fail-closed v17 root-cause pipeline and the one-shot inherited
-sealed-candidate executor, including immutable source manifests, per-state checkpoints, explicit
-pre-observation retry lineage, and claim-bounded aggregation.
+The current change set adds the fail-closed v20 finite-target identifiability study, including
+fresh target-population selection, measured parameter-step normalization, direct-coordinate
+anchors, disjoint Objective micro-splits, block-size diagnostics, odd-cubic slope fitting, and
+claim-bounded aggregation that cannot execute GP-C or open Authorization.
 
 ## Runtime And Data
 
@@ -41,10 +42,10 @@ by the experiment is present and readable.
 
 | Check | Result |
 | --- | --- |
-| Sealed-candidate focus | 6 passed |
+| Target-identifiability focus | 8 passed |
 | Ruff | passed |
-| Mypy | passed, 237 source files |
-| Pytest | passed, 379 tests in 116.96 seconds |
+| Mypy | passed, 242 source files |
+| Pytest | passed, 401 tests in 119.27 seconds |
 | Core generalization boundary | retained by full suite |
 | Legal and Science contracts | retained by full suite |
 
@@ -164,29 +165,79 @@ All 24 resolvable pairs, all six task winners, and all six strict task permutati
 result hash is
 `finance_gradient_numeric_sealed_result:ed13f8f07830ad47471293a8c73c22f464844959699b1b91d7c6cc99c94721d2`.
 
+
+## v19 Sealed Causal Pilot
+
+v19 used six fresh Finance tasks, 20 states, and 60 state-conditioned realizations. The strict-FP32
+Gradient execution contract passed, but the independent finite target failed before GP-C was
+evaluated. Estimation/Validation reconstruction error was `0.5065/0.3774` against `0.1`, and p95
+radius instability was `1.5420/1.4557` against `0.25`. A smaller-radius diagnostic did not restore
+local linearity. Authorization remained unopened and `Contribution=0`.
+
+## v20 Finite Target Identifiability Study
+
+v20 implemented the target-measurement redesign requested by the v19 audit. It used six new tasks,
+20 states, 60 fresh real-Agent realizations, 16 Estimation records, 16 Validation records, and a
+frozen but unopened 16-record Authorization partition. Estimation and Validation were each split
+into four mutually exclusive Objective micro-splits.
+
+The frozen direction design contained 14 quotient coordinates and 31 rows: seven direct anchors,
+seven block-2 rows, eight block-4 rows, eight block-7 rows, and one null row. Three perturbation
+ratios were normalized against the measured global parameter-step norm and evaluated in both
+directions. The formal study completed 186 observations per role and 372 overall.
+
+Execution integrity passed again. Maximum parameter-step ratio relative error was `4.3255e-7`,
+maximum Gradient recomposition relative error was `0.0073369`, minimum recomposition cosine was
+`0.9999732`, and null Objective delta was exactly zero.
+
+Finite-target identifiability nevertheless failed:
+
+| Metric | Estimation | Validation | Frozen requirement |
+| --- | ---: | ---: | ---: |
+| Direct anchor identifiable rate | `0.0000` | `0.0000` | `>= 1.0000` |
+| Maximum direct slope CV | `34.5470` | `4.3135` | `<= 0.5` |
+| Maximum p95 nonlinearity ratio | `16.0095` | `63.3579` | `<= 0.25` |
+| Maximum block reconstruction error | `1.8606` | `1.8830` | `<= 0.15` |
+| Block direction agreement | `0.6522` | `0.5652` | `>= 0.8` |
+
+All fourteen role-wise direct-anchor confidence intervals crossed zero. Only four of seven direct
+coordinate signs agreed across Estimation and Validation, so the combined `0.5714` agreement also
+failed its frozen `1.0` gate. Block-size error was not monotonic, and direct anchors themselves
+were unstable; the evidence therefore localizes the blocker to Objective-level slope
+observability, not only to Hadamard-style direction interaction.
+
+The combined status is `failed`; GP-C was not evaluated; Authorization observation count is zero;
+and the only valid transition is `retain_contribution_zero_and_redesign_target_measurement`.
+
 ## Authorization State
 
 The scientifically correct state is:
 
-- inherited sealed numeric status: `passed`;
-- `sealed_numeric_contract_passed=true`;
-- `numeric_contract_authorized=true`;
+- strict-FP32 numeric execution status: `passed`;
+- v20 finite-target identifiability status: `failed`;
+- `gp_c_evaluated=false`;
+- `authorization_objective_access=forbidden`;
+- `authorization_objective_observation_count=0`;
 - `production_authorized=false`;
 - `contribution_authorized=false`;
-- allowed next stage: `preregister_contribution_authorization_experiment`;
+- allowed next stage: `redesign_target_measurement_with_fresh_support`;
 - VTDO updates, Student training, and downstream claims remain unauthorized.
 
-The pass establishes that the frozen numerical execution path generalizes to the untouched sealed
-population. It does not establish that GP-C predicts independent finite intervention utility.
+The current evidence establishes reliable strict-FP32 execution but does not establish a stable
+finite target with which to test GP-C. It neither validates nor falsifies GP-C or theoretical
+Contribution.
 
 ## Next Step
 
-Preregister a separate Contribution authorization experiment with independent estimation and
-finite-intervention targets. Reuse the frozen FP32 numeric profile without threshold tuning. Do not
-promote this sealed result directly into a VTDO update or production release.
+Do not rerun GP-C or open Authorization on v20. Preregister a new target-measurement design with
+fresh Objective Support and an explicit minimum observable effect or variance-reduction strategy.
+Keep the frozen FP32 numeric profile, but do not tune v20 thresholds or reuse its Estimation and
+Validation records as a future Authorization set.
 
 ## Authoritative References
 
+- `docs/finance_v20_target_identifiability_report.md`
+- `docs/finance_v19_sealed_causal_pilot_report.md`
 - `docs/finance_v18_sealed_numeric_authorization_report.md`
 - `docs/finance_v17_numeric_root_cause_report.md`
 - `docs/finance_v16_numeric_contract_validation_report.md`
@@ -194,6 +245,9 @@ promote this sealed result directly into a VTDO update or production release.
 - `docs/vtdo_experiment_protocol.md`
 - `docs/valid_trajectory_distribution_optimization.md`
 - `docs/server_recovery.md`
+- `artifacts/vtdo_experiment/finance_v20_target_identifiability_study_p2_v1_20260806/combined_report.json`
+- `artifacts/vtdo_experiment/finance_v20_target_identifiability_study_p2_v1_20260806/estimation_report.json`
+- `artifacts/vtdo_experiment/finance_v20_target_identifiability_study_p2_v1_20260806/validation_report.json`
 - `artifacts/vtdo_experiment/finance_v17_sealed_numeric_candidate_retry_v2_20260806/report.json`
 - `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/report.json`
 - `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/frozen_numeric_contract.json`

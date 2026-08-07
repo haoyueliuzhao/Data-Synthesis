@@ -21,7 +21,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient 
     _configure_numeric_policy,
     _gradient_parameter_manifest,
     _load_numeric_contract,
-    _replay_numeric_contract,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
     _adapter_tensor_sha256,
@@ -37,9 +36,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_probe_gpu import (
 from trusted_synthesis.experiments.vtdo_experiment.schema import VTDOTrainingRecord
 from trusted_synthesis.hashing import canonical_hash
 
-CONTRIBUTION_SUPPORT_VERSION = "finance_contribution_evaluation_support.v6"
+CONTRIBUTION_SUPPORT_VERSION = "finance_contribution_evaluation_support.v7"
 OBJECTIVE_STRATEGY_PRIORITY: tuple[LineageStrategy, ...] = GRADIENT_STATE_STRATEGY_PRIORITY
-SUPPORT_RUN_ROLES = ("smoke", "production_candidate")
+TARGET_IDENTIFIABILITY_ROLE = "target_identifiability"
+SUPPORT_RUN_ROLES = ("smoke", "production_candidate", TARGET_IDENTIFIABILITY_ROLE)
 PRODUCTION_ESTIMATION_RECORD_COUNT = 16
 PRODUCTION_VALIDATION_RECORD_COUNT = 16
 PRODUCTION_AUTHORIZATION_RECORD_COUNT = 16
@@ -59,6 +59,20 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: source.read(4 * 1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _replay_support_numeric_contract(plan: dict[str, Any]) -> dict[str, Any]:
+    path = Path(str(plan["numeric_contract_path"]))
+    if not path.is_file() or _sha256(path) != plan["numeric_contract_sha256"]:
+        raise ValueError("Contribution Support numeric contract changed after planning")
+    contract = _load_numeric_contract(path)
+    if contract != plan.get("numeric_contract"):
+        raise ValueError("Contribution Support plan embeds another numeric contract")
+    if contract["contract_hash"] != plan.get("numeric_contract_hash"):
+        raise ValueError("Contribution Support numeric contract identity changed")
+    if contract["selected_profile"] != plan.get("numeric_profile"):
+        raise ValueError("Contribution Support numeric profile changed")
+    return contract
 
 
 def _count_bucket(value: int, *, boundaries: tuple[int, ...]) -> str:
@@ -309,7 +323,7 @@ def prepare(args: argparse.Namespace) -> None:
         raise ValueError("Contribution support smoke splits are too small")
     if args.internal_validation_count % 2:
         raise ValueError("Contribution internal support must split evenly")
-    if args.run_role == "production_candidate" and (
+    if args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE} and (
         args.internal_validation_count
         < PRODUCTION_ESTIMATION_RECORD_COUNT + PRODUCTION_VALIDATION_RECORD_COUNT
         or args.final_test_count < PRODUCTION_AUTHORIZATION_RECORD_COUNT
@@ -317,6 +331,15 @@ def prepare(args: argparse.Namespace) -> None:
         raise ValueError(
             "production Contribution support requires 16 estimation, 16 validation, "
             "and 16 authorization records"
+        )
+    if args.run_role == TARGET_IDENTIFIABILITY_ROLE and (
+        args.internal_validation_count
+        != PRODUCTION_ESTIMATION_RECORD_COUNT + PRODUCTION_VALIDATION_RECORD_COUNT
+        or args.final_test_count != PRODUCTION_AUTHORIZATION_RECORD_COUNT
+    ):
+        raise ValueError(
+            "target-identifiability support requires exactly 16 estimation, "
+            "16 validation, and 16 sealed authorization records"
         )
     numeric_contract_path = Path(args.numeric_contract_path).resolve()
     numeric_contract = _load_numeric_contract(numeric_contract_path)
@@ -553,6 +576,16 @@ def prepare(args: argparse.Namespace) -> None:
             "partitions_disjoint": True,
             "partition_identity_explicit": True,
             "stratification_fields": STRATIFICATION_FIELDS,
+            "evaluated_roles": (
+                ("estimation", "validation")
+                if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+                else ("estimation", "validation", "authorization")
+            ),
+            "authorization_objective_access": (
+                "forbidden"
+                if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+                else "allowed_by_source_protocol"
+            ),
         },
         "selected_task_semantic_signatures": tuple(
             sorted(
@@ -571,8 +604,13 @@ def prepare(args: argparse.Namespace) -> None:
         "numeric_contract_hash": numeric_contract["contract_hash"],
         "numeric_profile": numeric_contract["selected_profile"],
         "claim_boundary": (
-            "These records expand Contribution evaluation support only. They are disjoint "
-            "from the Phase 1.2 horizon-selection tasks and must not train the beneficiary."
+            "These records support a target-identifiability development study only; the "
+            "Authorization partition is frozen but its Objective remains unopened."
+            if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+            else (
+                "These records expand Contribution evaluation support only. They are disjoint "
+                "from the Phase 1.2 horizon-selection tasks and must not train the beneficiary."
+            )
         ),
     }
     values["plan_hash"] = canonical_hash(
@@ -591,7 +629,7 @@ def evaluate(args: argparse.Namespace) -> None:
     plan = _read_json(output_dir / "plan.json")
     if plan["experiment_version"] != CONTRIBUTION_SUPPORT_VERSION:
         raise ValueError("unsupported Contribution evaluation-support plan")
-    numeric_contract = _replay_numeric_contract(plan)
+    numeric_contract = _replay_support_numeric_contract(plan)
     _configure_numeric_policy(numeric_contract["selected_profile"])
     artifacts_path = Path(plan["artifacts_path"])
     if _sha256(artifacts_path) != plan["artifacts_sha256"]:
@@ -698,8 +736,15 @@ def evaluate(args: argparse.Namespace) -> None:
         raise ValueError("evaluation support loaded another beneficiary Adapter")
     parameter_manifest, parameter_manifest_hash = _gradient_parameter_manifest(model)
     _assert_trainable_parameter_precision(parameter_manifest)
+    evaluated_roles = (
+        ("estimation", "validation")
+        if plan["run_role"] == TARGET_IDENTIFIABILITY_ROLE
+        else ("estimation", "validation", "authorization")
+    )
+    if tuple(plan["objective_partition_contract"].get("evaluated_roles", ())) != evaluated_roles:
+        raise ValueError("Contribution support Objective access contract changed")
     partition_results = {}
-    for name in ("estimation", "validation", "authorization"):
+    for name in evaluated_roles:
         partition_records = tuple(
             records[record_id] for record_id in partitions[name]["record_ids"]
         )
@@ -729,6 +774,10 @@ def evaluate(args: argparse.Namespace) -> None:
         "parameter_manifest_hash": parameter_manifest_hash,
         "training_record_ids": plan["baseline_record_ids"],
         "objective_partition_results": partition_results,
+        "authorization_objective_access": (
+            "forbidden" if plan["run_role"] == TARGET_IDENTIFIABILITY_ROLE else "evaluated"
+        ),
+        "authorization_partition_frozen": True,
         "objective_partition_contract": plan["objective_partition_contract"],
         "objective_partitions": plan["objective_partitions"],
         "gradient_target_task_set_id": target_contract["task_set_id"],

@@ -64,7 +64,7 @@ GRADIENT_ALIGNMENT_VERSION = "finance_contribution_gradient_projection.v15"
 PROJECTION_EXECUTION_DTYPE: Literal["model", "float32", "bfloat16"] = "bfloat16"
 LOSS_ACCUMULATOR_DTYPE: Literal["float32", "float64"] = "float32"
 REQUIRED_EXECUTION_GPU_COUNT = 3
-REQUIRED_OBJECTIVE_SUPPORT_VERSION = "finance_contribution_evaluation_support.v6"
+REQUIRED_OBJECTIVE_SUPPORT_VERSION = "finance_contribution_evaluation_support.v7"
 CALIBRATED_NUMERIC_PROFILE = {
     "baseline_profile_id": "tf32_off_only",
     "factor_id": "activation_dtype",
@@ -138,7 +138,9 @@ GRADIENT_MODE_CONTRACT = {
 PRODUCTION_MINIMUM_TASK_COUNT = 30
 PRODUCTION_MINIMUM_RECORDS_PER_SPLIT = 16
 SMOKE_MINIMUM_RECORDS_PER_SPLIT = 4
-RUN_ROLES = ("sealed_causal_pilot", "production_candidate")
+TARGET_IDENTIFIABILITY_ROLE = "target_identifiability"
+TARGET_IDENTIFIABILITY_TASK_COUNT = 6
+RUN_ROLES = ("sealed_causal_pilot", "production_candidate", TARGET_IDENTIFIABILITY_ROLE)
 TOKEN_REGION_DECOMPOSITION_VERSION = "aligned_common_subsequence_token_gradient.v2"
 MINIMUM_TASK_POOLED_DIFFERENTIAL_SUPERVISED_TOKEN_FRACTION = 0.05
 REALIZATION_STABILITY_THRESHOLDS = {
@@ -168,7 +170,18 @@ def _load_numeric_contract(path: Path) -> dict[str, Any]:
         phase1_contribution_numeric_execution as numeric_execution,
     )
 
-    contract = numeric_execution.verify_execution_contract(_read_json(path))
+    raw = _read_json(path)
+    version = raw.get("contract_version")
+    if version == numeric_execution.EXECUTION_CONTRACT_VERSION:
+        contract = numeric_execution.verify_execution_contract(raw)
+    else:
+        from trusted_synthesis.experiments.vtdo_experiment import (
+            phase1_target_identifiability_contract as identifiability_contract,
+        )
+
+        if version != identifiability_contract.IDENTIFIABILITY_CONTRACT_VERSION:
+            raise ValueError("Gradient Projection numeric contract version is not registered")
+        contract = identifiability_contract.verify_identifiability_contract(raw)
     thresholds = contract.get("numeric_thresholds")
     if not isinstance(thresholds, dict) or set(thresholds) != NUMERIC_THRESHOLD_KEYS:
         raise ValueError("Gradient Projection numeric thresholds are incomplete")
@@ -366,7 +379,7 @@ def _validate_run_contract(
         raise ValueError("Gradient Projection requires at least one task")
     minimum_per_split = (
         PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
-        if run_role == "production_candidate"
+        if run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
         else SMOKE_MINIMUM_RECORDS_PER_SPLIT
     )
     if evaluation_record_count < 2 * minimum_per_split:
@@ -378,6 +391,14 @@ def _validate_run_contract(
         raise ValueError("Gradient Projection evaluation support must split evenly")
     if run_role == "production_candidate" and task_count < PRODUCTION_MINIMUM_TASK_COUNT:
         raise ValueError("production Gradient Projection requires at least 30 tasks")
+    if run_role == TARGET_IDENTIFIABILITY_ROLE and (
+        task_count != TARGET_IDENTIFIABILITY_TASK_COUNT
+        or evaluation_record_count != 2 * PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
+    ):
+        raise ValueError(
+            "target-identifiability Gradient Projection requires exactly six tasks "
+            "and 16+16 Objective records"
+        )
 
 
 def _support_target_boundary(
@@ -689,11 +710,11 @@ def _shared_supervised_nlls(
     )
 
 
-def _evaluate_records_numeric(
+def _evaluate_records_numeric_detailed(
     model: Any,
     tokenizer: Any,
     records: tuple[VTDOTrainingRecord, ...],
-) -> tuple[float, float, int]:
+) -> tuple[float, float, int, tuple[dict[str, Any], ...]]:
     import torch
 
     if not records:
@@ -702,6 +723,7 @@ def _evaluate_records_numeric(
     model.eval()
     weighted_loss = 0.0
     token_count = 0
+    rows: list[dict[str, Any]] = []
     with (
         torch.inference_mode(),
         _numeric_execution_context(model, offload_saved_tensors=False),
@@ -724,13 +746,35 @@ def _evaluate_records_numeric(
             )
             if not torch.isfinite(loss):
                 raise ValueError("Gradient Projection numeric evaluation is non-finite")
-            weighted_loss += float(loss.detach().float().cpu()) * supervised_tokens
+            loss_value = float(loss.detach().float().cpu())
+            weighted_loss += loss_value * supervised_tokens
             token_count += supervised_tokens
+            rows.append(
+                {
+                    "record_id": record.record_id,
+                    "performance": -loss_value,
+                    "negative_log_likelihood": loss_value,
+                    "supervised_tokens": supervised_tokens,
+                }
+            )
             del batch, labels, prediction_positions, targets, logits, loss
     if token_count == 0:
         raise ValueError("Gradient Projection numeric evaluation has no supervised tokens")
-    loss_value = weighted_loss / token_count
-    return -loss_value, loss_value, token_count
+    aggregate_loss = weighted_loss / token_count
+    return -aggregate_loss, aggregate_loss, token_count, tuple(rows)
+
+
+def _evaluate_records_numeric(
+    model: Any,
+    tokenizer: Any,
+    records: tuple[VTDOTrainingRecord, ...],
+) -> tuple[float, float, int]:
+    performance, loss, token_count, _ = _evaluate_records_numeric_detailed(
+        model,
+        tokenizer,
+        records,
+    )
+    return performance, loss, token_count
 
 
 def _record_gradient_decomposition(
@@ -1135,8 +1179,16 @@ def _state_realization_support(
             expected[(artifact.omega.task.task_id, state.assignment.state.state_id)] = artifact
     if set(grouped) != set(expected):
         raise ValueError("Gradient Projection realizations do not exactly cover selected states")
-    minimum = PRODUCTION_MINIMUM_REALIZATIONS_PER_STATE if run_role == "production_candidate" else 1
-    maximum = PRODUCTION_MAXIMUM_REALIZATIONS_PER_STATE
+    minimum = (
+        PRODUCTION_MINIMUM_REALIZATIONS_PER_STATE
+        if run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
+        else 1
+    )
+    maximum = (
+        PRODUCTION_MINIMUM_REALIZATIONS_PER_STATE
+        if run_role == TARGET_IDENTIFIABILITY_ROLE
+        else PRODUCTION_MAXIMUM_REALIZATIONS_PER_STATE
+    )
     frozen: dict[tuple[str, str], tuple[GradientStateRealization, ...]] = {}
     for key, values in grouped.items():
         artifact = expected[key]
@@ -1469,7 +1521,7 @@ def prepare(args: argparse.Namespace) -> None:
     )
     minimum_authorization_records = (
         PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
-        if args.run_role == "production_candidate"
+        if args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
         else SMOKE_MINIMUM_RECORDS_PER_SPLIT
     )
     if len(authorization_ids) < minimum_authorization_records:
@@ -1479,6 +1531,18 @@ def prepare(args: argparse.Namespace) -> None:
         )
     if set(evaluation_ids) & set(authorization_ids):
         raise ValueError("Gradient Projection objective partitions are not disjoint")
+    if args.run_role == TARGET_IDENTIFIABILITY_ROLE:
+        if support_report.get("authorization_objective_access") != "forbidden":
+            raise ValueError(
+                "target-identifiability Gradient Projection requires sealed Authorization"
+            )
+        if set(support_report.get("objective_partition_results", {})) != {
+            "estimation",
+            "validation",
+        }:
+            raise ValueError(
+                "target-identifiability support evaluated an undeclared Objective role"
+            )
     if args.uncertainty_penalty_coefficient <= 0:
         raise ValueError("Gradient Projection uncertainty penalty must be positive")
     if (
@@ -1512,12 +1576,17 @@ def prepare(args: argparse.Namespace) -> None:
         if distributions_path is not None
         else {}
     )
-    if args.run_role == "production_candidate" and distributions_path is None:
-        raise ValueError("production Gradient Projection requires frozen current distributions")
+    if (
+        args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
+        and distributions_path is None
+    ):
+        raise ValueError(
+            f"{args.run_role} Gradient Projection requires frozen current distributions"
+        )
     if distributions_path is None and not args.allow_uniform_smoke_distribution:
         raise ValueError("uniform state probabilities require --allow-uniform-smoke-distribution")
-    if args.allow_uniform_smoke_distribution and args.run_role != "smoke":
-        raise ValueError("uniform smoke distributions cannot enter production")
+    if args.allow_uniform_smoke_distribution and args.run_role != "sealed_causal_pilot":
+        raise ValueError("uniform smoke distributions cannot enter registered studies")
     selected = _select_gradient_tasks(
         artifacts,
         count=args.task_count,
@@ -1591,8 +1660,13 @@ def prepare(args: argparse.Namespace) -> None:
     if realizations_path is not None:
         if distributions_path is None:
             raise ValueError("state realizations require frozen current distributions")
-        if realization_report_path is None and args.run_role == "production_candidate":
-            raise ValueError("production Gradient Projection requires a state realization report")
+        if realization_report_path is None and args.run_role in {
+            "production_candidate",
+            TARGET_IDENTIFIABILITY_ROLE,
+        }:
+            raise ValueError(
+                f"{args.run_role} Gradient Projection requires a state realization report"
+            )
         if realization_report_path is not None:
             realization_report = _load_state_realization_report(
                 realization_report_path,
@@ -1615,8 +1689,8 @@ def prepare(args: argparse.Namespace) -> None:
                 for item in state_realizations
             ):
                 raise ValueError("Gradient realization uses another current distribution")
-    elif args.run_role == "production_candidate":
-        raise ValueError("production Gradient Projection requires state realizations")
+    elif args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}:
+        raise ValueError(f"{args.run_role} Gradient Projection requires state realizations")
 
     jobs: list[dict[str, Any]] = []
     target_records: list[VTDOTrainingRecord] = []
@@ -1868,6 +1942,12 @@ def prepare(args: argparse.Namespace) -> None:
         "selected_task_ids": tuple(item.omega.task.task_id for item in selected),
         "excluded_task_ids": tuple(sorted(excluded_task_ids)),
         "task_count": len(selected),
+        "production_authorization_eligible": False
+        if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+        else True,
+        "authorization_objective_access": (
+            "forbidden" if args.run_role == TARGET_IDENTIFIABILITY_ROLE else "frozen_for_later_gate"
+        ),
         "jobs": jobs,
         "state_count": len(realization_counts),
         "state_realization_count": len(jobs),
@@ -1945,9 +2025,15 @@ def prepare(args: argparse.Namespace) -> None:
             "gradient_precision_profile": numeric_contract["selected_profile"],
         },
         "claim_boundary": (
-            "Gradient Projection estimates one local, state-homogeneous cold-start AdamW "
-            "distribution update. It does not approximate the full Student optimizer path and "
-            "cannot influence VTDO until independent rank and distribution gates pass."
+            "This development-only Gradient Projection freezes local update vectors for a "
+            "finite-target identifiability study; it cannot execute GP-C, open Authorization, "
+            "authorize Contribution, or influence VTDO."
+            if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+            else (
+                "Gradient Projection estimates one local, state-homogeneous cold-start AdamW "
+                "distribution update. It does not approximate the full Student optimizer path "
+                "and cannot influence VTDO until independent rank and distribution gates pass."
+            )
         ),
     }
     values["gradient_estimand_id"] = canonical_hash(
@@ -2962,7 +3048,7 @@ def aggregate(args: argparse.Namespace) -> None:
     penalty = float(plan["uncertainty_penalty_coefficient"])
     minimum_replicates = (
         PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
-        if plan["run_role"] == "production_candidate"
+        if plan["run_role"] in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
         else SMOKE_MINIMUM_RECORDS_PER_SPLIT
     )
     for task_id, values in sorted(grouped.items()):
