@@ -2,9 +2,9 @@
 
 Status date: 2026-08-07
 
-Current status: `running`. This document records the frozen pre-outcome design and implementation
-state. Numeric results are intentionally absent until both Estimation and Validation roles have
-completed and replayed.
+Current status: `cancelled_after_partial_execution`. The frozen design remains auditable, but the
+run was stopped by operator request on 2026-08-07 for a protocol redesign. Estimation and Validation
+each contain 9 of 32 planned observations; no aggregate scientific result was produced.
 
 ## Scientific Question
 
@@ -105,12 +105,12 @@ the first v21 observation was emitted:
 | Mypy | passed, 246 source files |
 | Full Pytest | 425 passed in 116.34 seconds |
 
-## Runtime State
+## Cancellation State
 
-Estimation runs on GPUs `0,2,3`; Validation runs on GPUs `4,5,6`. GPU 1 belongs to an unrelated
-process and is not used. Each role evaluates 128 long-context records under the frozen strict-FP32
-profile. The process is intentionally not replaced by an unvalidated batched or lower-precision
-path.
+The Estimation and Validation workers were stopped after each role wrote 9 of 32 planned
+observations. No v21 worker remains running. The partial rows are retained only as cancelled-run
+provenance and cannot be aggregated, promoted into Development, reused as Validation, or used to
+tune v22. Authorization was never opened and GP-C was never evaluated.
 
 ## Permitted Transitions
 
@@ -118,9 +118,10 @@ If and only if all target-observability gates pass, the next permitted action is
 independent GP-C comparison protocol. A pass still does not open Authorization or authorize
 Contribution.
 
-If either role fails, the only valid transition is to retain `Contribution=0` and report target
-unobservability. Threshold relaxation, post-outcome coordinate replacement, Authorization access,
-and direct GP-C execution are forbidden.
+Because the run was cancelled before either role completed, it supports neither a pass nor a
+scientific failure. The only valid transition is to retain `Contribution=0` and preregister a fresh
+Development variance and power study. Threshold relaxation, post-outcome coordinate
+replacement, Authorization access, and direct GP-C execution are forbidden.
 
 ## Immutable References
 

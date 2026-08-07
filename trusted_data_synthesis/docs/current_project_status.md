@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-06
+Audit date: 2026-08-07
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -37,6 +37,20 @@ The read-only Finance Archive remains the active data dependency:
 
 The newest DB-only build from the previous server remains unavailable. The immutable archive used
 by the experiment is present and readable.
+
+## v21 Cancellation And v22 Development Expansion
+
+v21 was stopped by operator request after Estimation and Validation each wrote 9 of 32 planned
+observations. No aggregate was created, no GP-C evaluation occurred, and the partial rows are not
+scientific evidence for target identifiability. All v21 workers are stopped.
+
+v22 now freezes a pre-outcome Development-only population from the 420-task real Finance pool:
+30 tasks balanced across six families, 100 accepted states, and 312 public Evidence versions with
+zero Evidence overlap across target tasks. A separate 64-record Objective role is task-, signature-,
+and Evidence-disjoint from the targets and is frozen into eight micro-splits of eight. Planned API
+support is 300 unconditioned Explorer draws plus five state-conditioned realizations for each of
+100 states. Validation and Authorization access are forbidden, GP-C is disabled, and production
+Contribution remains zero until a later independent target is identifiable.
 
 ## Revalidated Code State
 

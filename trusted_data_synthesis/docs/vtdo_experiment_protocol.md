@@ -444,6 +444,17 @@ independent GP-C comparison. It does not open Authorization, evaluate GP-C, auth
 Contribution, or update VTDO. A failure retains `Contribution=0`. The design and eventual result
 are recorded in `docs/finance_v21_target_observability_report.md`.
 
+The v21 run was cancelled after 9 of 32 planned observations in each Objective role. No aggregate
+target result exists and its partial observations are ineligible for successor tuning or reuse. The
+2026-08-07 v22 successor therefore returns to a Development-only variance and power stage. It
+freezes 30 balanced target tasks with 100 states, 10 planned unconditioned Explorer replicas per
+task, five planned realizations per state, and 64 disjoint Development Objective records split into
+eight micro-splits. Validation and Authorization do not exist in the v22 artifact. The MPE is the
+minimum centered Contribution contrast that changes a selected next-round state probability by
+0.02 under the frozen anchored update and task-conditional Reachability. Final target sample size
+remains unfrozen until nested variance is observed. See
+`docs/finance_v22_development_power_plan.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control
