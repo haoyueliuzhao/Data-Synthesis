@@ -47,14 +47,19 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_reachability import (
     _load_model_config,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_state_realizations import (
+    MINIMUM_PARTIAL_INITIAL_CATALOG_HIT_RATE,
+    MINIMUM_PARTIAL_INITIAL_CATALOG_HITS_PER_TASK,
+    PartialInitialDistributionQualification,
     choose_realization_budget,
     finance_state_materialization_provider_id,
+    partial_initial_distribution_qualification_id,
     validate_initial_distribution_lineage,
 )
 from trusted_synthesis.runtime.agent.client import LLMClientError
 from trusted_synthesis.runtime.agent.host_execution import ActionPlanExecutionError
 from trusted_synthesis.runtime.agent.llm_agent import (
     LLM_AGENT_SOLVER_VERSION,
+    _state_search_contract,
     _validate_state_control_action_plan,
 )
 from trusted_synthesis.runtime.agent.schema import (
@@ -65,6 +70,7 @@ from trusted_synthesis.runtime.agent.schema import (
 from trusted_synthesis.runtime.agent.state_conditioned import (
     StateConditionedLLMTrajectoryProvider,
     assess_state_condition_controllability,
+    project_state_condition_constraints,
 )
 
 
@@ -444,13 +450,9 @@ def test_agent_state_catalog_only_contains_requestable_conditions() -> None:
         AGENT_DISCOVERY_STRATEGIES
     )
     assert conditions_by_strategy["compact_direct"].retrieval_elaboration == "required_only"
-    assert conditions_by_strategy["semantic_direct"].retrieval_elaboration == (
-        "semantic_context"
-    )
+    assert conditions_by_strategy["semantic_direct"].retrieval_elaboration == ("semantic_context")
     assert conditions_by_strategy["broad_direct"].retrieval_elaboration == "full_corpus"
-    assert conditions_by_strategy["compact_direct"].execution_elaboration == (
-        "baseline_program"
-    )
+    assert conditions_by_strategy["compact_direct"].execution_elaboration == ("baseline_program")
     assert conditions_by_strategy["semantic_projection"].execution_elaboration == (
         "transparent_projection"
     )
@@ -467,6 +469,44 @@ def test_agent_state_catalog_only_contains_requestable_conditions() -> None:
         )
         assert audit.condition_requestable
         assert not audit.blocked_dimensions
+
+
+def test_state_search_contract_provides_mode_specific_public_examples() -> None:
+    context, fixture_provider, _ = _agent_runtime()
+
+    contracts = {}
+    for strategy in ("compact_direct", "semantic_direct", "broad_direct"):
+        condition = make_public_state_condition(
+            context.task.task_id,
+            fixture_provider.variation_for(strategy),
+        )
+        request = make_public_state_generation_request(
+            context,
+            condition,
+            candidate_count=1,
+            seed=17,
+        )
+        audit = assess_state_condition_controllability(
+            request,
+            interaction_protocol="host_instrumented",
+        )
+        constraints = project_state_condition_constraints(condition, audit)
+        contracts[strategy] = _state_search_contract(context.task.public, constraints)
+
+    required = contracts["compact_direct"]
+    semantic = contracts["semantic_direct"]
+    full = contracts["broad_direct"]
+    assert required is not None and semantic is not None and full is not None
+    required_query = required["valid_response_example"]["search_query"]
+    semantic_query = semantic["valid_response_example"]["search_query"]
+    full_query = full["valid_response_example"]["search_query"]
+    assert required_query["subject_ids"]
+    assert required_query["predicates"]
+    assert required_query["temporal_labels"]
+    assert semantic_query["subject_ids"] == required_query["subject_ids"]
+    assert semantic_query["predicates"] == required_query["predicates"]
+    assert "temporal_labels" not in semantic_query
+    assert full_query == {}
 
 
 def test_pushforward_preserves_independent_draws_with_identical_assignment() -> None:
@@ -613,6 +653,157 @@ def test_state_realization_replays_initial_distribution_manifest(tmp_path) -> No
             artifacts_path=artifacts_path,
             distributions_path=distributions_path,
             distributions={"task:test": distribution},
+        )
+
+
+def test_partial_initial_distribution_requires_hashed_development_qualification(
+    tmp_path,
+) -> None:
+    artifacts_path = tmp_path / "agent_population.jsonl"
+    distributions_path = tmp_path / "initial_distributions.jsonl"
+    initial_report_path = tmp_path / "initial_report.json"
+    artifacts_path.write_text("frozen-population\n", encoding="utf-8")
+    task_ids = tuple(f"task:{index:02d}" for index in range(30))
+    distributions = {
+        task_id: make_conditional_distribution(
+            task_id,
+            {f"{task_id}:state:a": 0.75, f"{task_id}:state:b": 0.25},
+            round_index=0,
+        )
+        for task_id in task_ids
+    }
+    distributions_path.write_text(
+        "".join(distributions[task_id].model_dump_json() + "\n" for task_id in task_ids),
+        encoding="utf-8",
+    )
+    model_config_hash = "agent_model_config:test-partial"
+    explorer_provider_id = finance_unconditioned_explorer_provider_id(model_config_hash)
+    catalog_counts = {task_id: 8 if index == 0 else 10 for index, task_id in enumerate(task_ids)}
+    values = {
+        "artifact_sha256": _file_sha256(artifacts_path),
+        "model_config_hash": model_config_hash,
+        "explorer_provider_id": explorer_provider_id,
+        "explorer_provider_version": LLM_AGENT_SOLVER_VERSION,
+        "trajectory_records_sha256": "a" * 64,
+        "estimate_sha256": "b" * 64,
+        "distribution_sha256": _file_sha256(distributions_path),
+        "sampling_salt": "test-partial",
+        "run_identity": finance_initial_distribution_run_identity(
+            artifact_sha256=_file_sha256(artifacts_path),
+            model_config_hash=model_config_hash,
+            explorer_provider_id=explorer_provider_id,
+            explorer_provider_version=LLM_AGENT_SOLVER_VERSION,
+            selected_task_ids=task_ids,
+            replicas_per_task=10,
+            prior_strength=1.0,
+            sampling_salt="test-partial",
+            seed=19,
+        ),
+        "seed": 19,
+        "selected_task_ids": task_ids,
+        "replicas_per_task": 10,
+        "prior_strength": 1.0,
+        "requested_trajectory_count": 300,
+        "recorded_attempt_count": 300,
+        "resumed_valid_catalog_count": 0,
+        "new_generation_attempt_count": 300,
+        "completed_trajectory_count": 300,
+        "valid_trajectory_count": 300,
+        "catalog_hit_count": 298,
+        "off_catalog_valid_count": 2,
+        "task_estimate_ids": {task_id: f"estimate:{task_id}" for task_id in task_ids},
+        "task_distribution_ids": {
+            task_id: distribution.distribution_id for task_id, distribution in distributions.items()
+        },
+        "observed_state_counts": {
+            task_id: {f"{task_id}:state:a": catalog_counts[task_id]} for task_id in task_ids
+        },
+        "valid_catalog_observation_counts": catalog_counts,
+        "complete_observation_task_count": 29,
+        "nonuniform_distribution_count": 30,
+        "full_support_distribution_count": 30,
+        "failure_counts": {},
+        "telemetry": {
+            "api_call_count": 900,
+            "api_call_success_count": 900,
+            "json_contract_success_count": 900,
+        },
+        "status": "partial",
+        "schema_version": FINANCE_INITIAL_DISTRIBUTION_VERSION,
+    }
+    provisional_report = FinanceInitialDistributionReport.model_construct(
+        report_id="pending",
+        **values,
+    )
+    report = FinanceInitialDistributionReport(
+        report_id=finance_initial_distribution_report_id(provisional_report),
+        **values,
+    )
+    initial_report_path.write_text(report.model_dump_json(), encoding="utf-8")
+    qualification_values = {
+        "use_case": "development_variance_and_power_only",
+        "development_contract_hash": "finance_development_power_contract:test",
+        "development_contract_sha256": "c" * 64,
+        "materializer_model_config_hash": "agent_model_config:materializer-test",
+        "initial_distribution_report_id": report.report_id,
+        "initial_distribution_report_sha256": _file_sha256(initial_report_path),
+        "artifact_sha256": report.artifact_sha256,
+        "distribution_sha256": report.distribution_sha256,
+        "trajectory_records_sha256": report.trajectory_records_sha256,
+        "selected_task_ids": task_ids,
+        "requested_trajectory_count": 300,
+        "valid_trajectory_count": 300,
+        "catalog_hit_count": 298,
+        "off_catalog_valid_count": 2,
+        "catalog_hit_rate": 298 / 300,
+        "minimum_catalog_hits_per_task": 8,
+        "required_minimum_catalog_hits_per_task": (MINIMUM_PARTIAL_INITIAL_CATALOG_HITS_PER_TASK),
+        "required_minimum_catalog_hit_rate": (MINIMUM_PARTIAL_INITIAL_CATALOG_HIT_RATE),
+        "full_support_distribution_count": 30,
+        "api_call_count": 900,
+        "api_call_success_count": 900,
+        "json_contract_success_count": 900,
+        "decision": "passed",
+        "schema_version": "partial_initial_distribution_qualification.v2",
+    }
+    provisional_qualification = PartialInitialDistributionQualification.model_construct(
+        qualification_id="pending",
+        **qualification_values,
+    )
+    qualification = PartialInitialDistributionQualification(
+        qualification_id=partial_initial_distribution_qualification_id(provisional_qualification),
+        **qualification_values,
+    )
+
+    with pytest.raises(ValueError, match="explicit qualification"):
+        validate_initial_distribution_lineage(
+            report,
+            artifacts_path=artifacts_path,
+            distributions_path=distributions_path,
+            distributions=distributions,
+            initial_report_path=initial_report_path,
+        )
+    validate_initial_distribution_lineage(
+        report,
+        artifacts_path=artifacts_path,
+        distributions_path=distributions_path,
+        distributions=distributions,
+        initial_report_path=initial_report_path,
+        qualification=qualification,
+    )
+
+    initial_report_path.write_text(
+        report.model_dump_json() + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="initial_distribution_report_sha256"):
+        validate_initial_distribution_lineage(
+            report,
+            artifacts_path=artifacts_path,
+            distributions_path=distributions_path,
+            distributions=distributions,
+            initial_report_path=initial_report_path,
+            qualification=qualification,
         )
 
 

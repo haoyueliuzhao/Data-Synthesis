@@ -50,13 +50,18 @@ from trusted_synthesis.runtime.agent.state_conditioned import (
     StateConditionedGenerationRecord,
 )
 
-FINANCE_STATE_REALIZATION_VERSION: Literal[
-    "finance_state_realization_materialization.v7"
-] = "finance_state_realization_materialization.v7"
+FINANCE_STATE_REALIZATION_VERSION: Literal["finance_state_realization_materialization.v8"] = (
+    "finance_state_realization_materialization.v8"
+)
 FINANCE_INDEPENDENT_TRAJECTORY_VERIFIER_ID = "finance_trajectory_validity_evaluator.v2"
 FINANCE_REALIZATION_UNIQUENESS_POLICY: Literal["independent_trajectory_draws"] = (
     "independent_trajectory_draws"
 )
+PARTIAL_INITIAL_DISTRIBUTION_QUALIFICATION_VERSION: Literal[
+    "partial_initial_distribution_qualification.v2"
+] = "partial_initial_distribution_qualification.v2"
+MINIMUM_PARTIAL_INITIAL_CATALOG_HIT_RATE = 0.99
+MINIMUM_PARTIAL_INITIAL_CATALOG_HITS_PER_TASK = 8
 
 TaskMaterializationResult = tuple[
     tuple[StateConditionedTrainingArtifact, ...],
@@ -70,18 +75,88 @@ class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
+class PartialInitialDistributionQualification(FrozenModel):
+    qualification_id: str = Field(min_length=1)
+    use_case: Literal["development_variance_and_power_only"]
+    development_contract_hash: str = Field(min_length=1)
+    development_contract_sha256: str = Field(min_length=64, max_length=64)
+    materializer_model_config_hash: str = Field(min_length=1)
+    initial_distribution_report_id: str = Field(min_length=1)
+    initial_distribution_report_sha256: str = Field(min_length=64, max_length=64)
+    artifact_sha256: str = Field(min_length=64, max_length=64)
+    distribution_sha256: str = Field(min_length=64, max_length=64)
+    trajectory_records_sha256: str = Field(min_length=64, max_length=64)
+    selected_task_ids: tuple[str, ...] = Field(min_length=1)
+    requested_trajectory_count: int = Field(ge=1)
+    valid_trajectory_count: int = Field(ge=1)
+    catalog_hit_count: int = Field(ge=1)
+    off_catalog_valid_count: int = Field(ge=1)
+    catalog_hit_rate: float = Field(ge=0, le=1)
+    minimum_catalog_hits_per_task: int = Field(ge=1)
+    required_minimum_catalog_hits_per_task: int = Field(ge=1)
+    required_minimum_catalog_hit_rate: float = Field(ge=0, le=1)
+    full_support_distribution_count: int = Field(ge=1)
+    api_call_count: int = Field(ge=1)
+    api_call_success_count: int = Field(ge=1)
+    json_contract_success_count: int = Field(ge=1)
+    decision: Literal["passed"] = "passed"
+    schema_version: Literal["partial_initial_distribution_qualification.v2"] = (
+        PARTIAL_INITIAL_DISTRIBUTION_QUALIFICATION_VERSION
+    )
+
+    @model_validator(mode="after")
+    def validate_qualification(self) -> PartialInitialDistributionQualification:
+        if tuple(sorted(self.selected_task_ids)) != self.selected_task_ids:
+            raise ValueError("partial qualification task IDs are not canonical")
+        if len(set(self.selected_task_ids)) != len(self.selected_task_ids):
+            raise ValueError("partial qualification task IDs are duplicated")
+        if self.valid_trajectory_count != self.requested_trajectory_count:
+            raise ValueError("partial qualification requires every trajectory to be valid")
+        if self.catalog_hit_count + self.off_catalog_valid_count != self.valid_trajectory_count:
+            raise ValueError("partial qualification catalog accounting is inconsistent")
+        expected_rate = self.catalog_hit_count / self.valid_trajectory_count
+        if abs(self.catalog_hit_rate - expected_rate) > 1e-12:
+            raise ValueError("partial qualification catalog hit rate is inconsistent")
+        if (
+            self.required_minimum_catalog_hit_rate < MINIMUM_PARTIAL_INITIAL_CATALOG_HIT_RATE
+            or self.catalog_hit_rate < self.required_minimum_catalog_hit_rate
+        ):
+            raise ValueError("partial qualification catalog hit rate is insufficient")
+        if (
+            self.required_minimum_catalog_hits_per_task
+            < MINIMUM_PARTIAL_INITIAL_CATALOG_HITS_PER_TASK
+            or self.minimum_catalog_hits_per_task < self.required_minimum_catalog_hits_per_task
+        ):
+            raise ValueError("partial qualification per-task catalog support is insufficient")
+        if self.full_support_distribution_count != len(self.selected_task_ids):
+            raise ValueError("partial qualification lost full distribution support")
+        if not (
+            self.api_call_count == self.api_call_success_count == self.json_contract_success_count
+        ):
+            raise ValueError("partial qualification requires complete API contract success")
+        if self.qualification_id != partial_initial_distribution_qualification_id(self):
+            raise ValueError("partial qualification identity is invalid")
+        return self
+
+
 class FinanceStateRealizationReport(FrozenModel):
     report_id: str = Field(min_length=1)
     artifact_sha256: str = Field(min_length=64, max_length=64)
     distribution_sha256: str = Field(min_length=64, max_length=64)
     initial_distribution_report_id: str = Field(min_length=1)
     initial_distribution_report_sha256: str = Field(min_length=64, max_length=64)
+    initial_distribution_qualification_id: str | None = None
+    initial_distribution_qualification_sha256: str | None = Field(
+        default=None,
+        min_length=64,
+        max_length=64,
+    )
     model_config_hash: str = Field(min_length=1)
     explorer_provider_id: str = Field(min_length=1)
     materialization_provider_id: str = Field(min_length=1)
-    materialization_report_version: Literal[
-        "trajectory_state_materialization_report.v3"
-    ] = TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
+    materialization_report_version: Literal["trajectory_state_materialization_report.v3"] = (
+        TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
+    )
     run_identity: str = Field(min_length=1)
     resumed_task_count: int = Field(ge=0)
     new_task_attempt_count: int = Field(ge=0)
@@ -111,7 +186,7 @@ class FinanceStateRealizationReport(FrozenModel):
     generation_failures_sha256: str = Field(min_length=64, max_length=64)
     realizations_sha256: str = Field(min_length=64, max_length=64)
     status: str = Field(pattern="^(passed|partial|blocked)$")
-    schema_version: Literal["finance_state_realization_materialization.v7"] = (
+    schema_version: Literal["finance_state_realization_materialization.v8"] = (
         FINANCE_STATE_REALIZATION_VERSION
     )
 
@@ -119,9 +194,7 @@ class FinanceStateRealizationReport(FrozenModel):
     def validate_report(self) -> FinanceStateRealizationReport:
         if self.task_count != len(self.requested_counts_by_task):
             raise ValueError("state realization task accounting is inconsistent")
-        if self.state_count != sum(
-            len(item) for item in self.requested_counts_by_task.values()
-        ):
+        if self.state_count != sum(len(item) for item in self.requested_counts_by_task.values()):
             raise ValueError("state realization support accounting is inconsistent")
         if self.requested_realization_count != sum(
             sum(item.values()) for item in self.requested_counts_by_task.values()
@@ -152,10 +225,11 @@ class FinanceStateRealizationReport(FrozenModel):
             raise ValueError("state realization task reports do not cover requested tasks")
         if self.explorer_provider_id == self.materialization_provider_id:
             raise ValueError("Explorer and materialization provider identities must differ")
-        if (
-            self.materialization_report_version
-            != TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
+        if (self.initial_distribution_qualification_id is None) != (
+            self.initial_distribution_qualification_sha256 is None
         ):
+            raise ValueError("state realization qualification lineage is incomplete")
+        if self.materialization_report_version != TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION:
             raise ValueError("state realization references another materializer contract")
         if self.resumed_task_count + self.new_task_attempt_count != self.task_count:
             raise ValueError("state realization resume accounting is inconsistent")
@@ -180,6 +254,11 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
     artifacts_path = Path(args.artifacts_path).resolve()
     distributions_path = Path(args.distributions_path).resolve()
     initial_report_path = Path(args.initial_distribution_report).resolve()
+    qualification_path = (
+        Path(args.partial_initial_qualification).resolve()
+        if args.partial_initial_qualification
+        else None
+    )
     model_config_path = Path(args.model_config_path).resolve()
     archive_config_path = Path(args.archive_config_path).resolve()
     output_dir = Path(args.output_dir).resolve()
@@ -190,11 +269,20 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
     initial_report = FinanceInitialDistributionReport.model_validate_json(
         initial_report_path.read_text(encoding="utf-8")
     )
+    qualification = (
+        PartialInitialDistributionQualification.model_validate_json(
+            qualification_path.read_text(encoding="utf-8")
+        )
+        if qualification_path is not None
+        else None
+    )
     validate_initial_distribution_lineage(
         initial_report,
         artifacts_path=artifacts_path,
         distributions_path=distributions_path,
         distributions=distributions,
+        initial_report_path=initial_report_path,
+        qualification=qualification,
     )
     if set(distributions) - set(artifact_by_task):
         raise ValueError("state realization distribution references an unknown task")
@@ -208,6 +296,11 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
         model_config_path,
         temperature=args.temperature,
     )
+    if (
+        qualification is not None
+        and qualification.materializer_model_config_hash != model_config.public_manifest_hash
+    ):
+        raise ValueError("state realization used another qualified materializer config")
     materialization_provider_id = finance_state_materialization_provider_id(
         model_config.public_manifest_hash
     )
@@ -220,9 +313,7 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
     requested_by_task = {
         artifact.omega.task.task_id: {
             state_id: args.minimum_realizations_per_state
-            for state_id in sorted(
-                distributions[artifact.omega.task.task_id].probabilities
-            )
+            for state_id in sorted(distributions[artifact.omega.task.task_id].probabilities)
         }
         for artifact in selected
     }
@@ -231,11 +322,15 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
             "artifact_sha256": _sha256(artifacts_path),
             "distribution_sha256": _sha256(distributions_path),
             "initial_distribution_report_id": initial_report.report_id,
+            "initial_distribution_qualification_id": (
+                qualification.qualification_id if qualification is not None else None
+            ),
+            "initial_distribution_qualification_sha256": (
+                _sha256(qualification_path) if qualification_path is not None else None
+            ),
             "model_config_hash": model_config.public_manifest_hash,
             "role_contract_id": role_contract.contract_id,
-            "materialization_report_version": (
-                TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
-            ),
+            "materialization_report_version": (TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION),
             "realization_uniqueness_policy": FINANCE_REALIZATION_UNIQUENESS_POLICY,
             "minimum_realizations_per_state": args.minimum_realizations_per_state,
             "maximum_realizations_per_state": args.maximum_realizations_per_state,
@@ -331,15 +426,11 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
         generation_by_trajectory.setdefault(item.trajectory_id, item)
     realizations: list[GradientStateRealization] = []
     artifact_by_context = {item.omega.context_id: item for item in selected}
-    distribution_by_id = {
-        item.distribution_id: item for item in distributions.values()
-    }
+    distribution_by_id = {item.distribution_id: item for item in distributions.values()}
     for training_artifact in all_training_artifacts:
         artifact = artifact_by_context[training_artifact.context.context_id]
         distribution = distribution_by_id[training_artifact.source_distribution_id]
-        generation = generation_by_trajectory.get(
-            training_artifact.trajectory.trajectory_id
-        )
+        generation = generation_by_trajectory.get(training_artifact.trajectory.trajectory_id)
         if generation is None:
             raise ValueError("released trajectory has no generation audit record")
         realizations.append(
@@ -406,12 +497,16 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
         "distribution_sha256": _sha256(distributions_path),
         "initial_distribution_report_id": initial_report.report_id,
         "initial_distribution_report_sha256": _sha256(initial_report_path),
+        "initial_distribution_qualification_id": (
+            qualification.qualification_id if qualification is not None else None
+        ),
+        "initial_distribution_qualification_sha256": (
+            _sha256(qualification_path) if qualification_path is not None else None
+        ),
         "model_config_hash": model_config.public_manifest_hash,
         "explorer_provider_id": initial_report.explorer_provider_id,
         "materialization_provider_id": materialization_provider_id,
-        "materialization_report_version": (
-            TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
-        ),
+        "materialization_report_version": (TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION),
         "run_identity": run_identity,
         "resumed_task_count": len(resumed_task_ids),
         "new_task_attempt_count": len(pending),
@@ -421,12 +516,8 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
         "requested_realization_count": requested_total,
         "released_realization_count": released_total,
         "realization_uniqueness_policy": FINANCE_REALIZATION_UNIQUENESS_POLICY,
-        "unique_trajectory_hash_count": len(
-            {item.trajectory_hash for item in realizations}
-        ),
-        "unique_decision_trace_count": len(
-            {item.decision_trace_hash for item in realizations}
-        ),
+        "unique_trajectory_hash_count": len({item.trajectory_hash for item in realizations}),
+        "unique_decision_trace_count": len({item.decision_trace_hash for item in realizations}),
         "decision_trace_diversity_rate": (
             len({item.decision_trace_hash for item in realizations}) / released_total
             if released_total
@@ -451,8 +542,7 @@ def run_state_realizations(args: argparse.Namespace) -> FinanceStateRealizationR
         "realizations_sha256": _sha256(realizations_path),
         "status": (
             "passed"
-            if released_total == requested_total
-            and len(materialization_reports) == len(selected)
+            if released_total == requested_total and len(materialization_reports) == len(selected)
             else "partial"
             if released_total
             else "blocked"
@@ -500,9 +590,7 @@ def _materialize_task(
     provider = StateConditionedLLMTrajectoryProvider(
         provider_id=materialization_provider_id,
         solver=solver,
-        public_corpora_by_task_id={
-            artifact.omega.task.task_id: artifact.omega.public_corpus
-        },
+        public_corpora_by_task_id={artifact.omega.task.task_id: artifact.omega.public_corpus},
     )
     training_artifacts, report = ValidTrajectoryStateMaterializer(
         provider,
@@ -536,12 +624,8 @@ def _write_task_checkpoint(
             "task_id": task_id,
             "training_artifacts": [item.model_dump(mode="json") for item in artifacts],
             "materialization_report": report.model_dump(mode="json"),
-            "generation_records": [
-                item.model_dump(mode="json") for item in generation_records
-            ],
-            "generation_failures": [
-                item.model_dump(mode="json") for item in generation_failures
-            ],
+            "generation_records": [item.model_dump(mode="json") for item in generation_records],
+            "generation_failures": [item.model_dump(mode="json") for item in generation_failures],
         },
     )
 
@@ -589,10 +673,8 @@ def _load_task_checkpoints(
             or report.source_distribution_id != distribution.distribution_id
             or report.role_contract_id != role_contract_id
             or report.materialization_provider_id != materialization_provider_id
-            or report.schema_version
-            != TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
-            or report.realization_uniqueness_policy
-            != FINANCE_REALIZATION_UNIQUENESS_POLICY
+            or report.schema_version != TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
+            or report.realization_uniqueness_policy != FINANCE_REALIZATION_UNIQUENESS_POLICY
             or report.requested_state_counts != requested_by_task[task_id]
             or report.released_state_counts != requested_by_task[task_id]
         ):
@@ -677,9 +759,7 @@ def make_gradient_state_realization(
         "on_target": True,
         "schema_version": "gradient_state_realization.v1",
     }
-    provisional = GradientStateRealization.model_construct(
-        realization_id="pending", **values
-    )
+    provisional = GradientStateRealization.model_construct(realization_id="pending", **values)
     return GradientStateRealization(
         realization_id=gradient_state_realization_id(provisional),
         **values,
@@ -696,9 +776,7 @@ def finance_state_materialization_provider_id(model_config_hash: str) -> str:
             "solver_version": LLM_AGENT_SOLVER_VERSION,
             "provider_version": STATE_CONDITIONED_AGENT_PROVIDER_VERSION,
             "experiment_contract": FINANCE_STATE_REALIZATION_VERSION,
-            "materialization_report_version": (
-                TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION
-            ),
+            "materialization_report_version": (TRAJECTORY_STATE_MATERIALIZATION_REPORT_VERSION),
             "realization_uniqueness_policy": FINANCE_REALIZATION_UNIQUENESS_POLICY,
         },
         prefix="agent_provider:",
@@ -711,9 +789,25 @@ def validate_initial_distribution_lineage(
     artifacts_path: Path,
     distributions_path: Path,
     distributions: dict[str, ConditionalTrajectoryDistribution],
+    initial_report_path: Path | None = None,
+    qualification: PartialInitialDistributionQualification | None = None,
 ) -> None:
-    if report.status != "passed":
-        raise ValueError("state realization requires a passed initial distribution report")
+    if report.status == "passed":
+        if qualification is not None:
+            raise ValueError("passed initial distribution must not use a qualification")
+    elif qualification is None:
+        raise ValueError(
+            "state realization requires a passed initial distribution report "
+            "or an explicit qualification"
+        )
+    else:
+        if initial_report_path is None:
+            raise ValueError("partial qualification requires the frozen initial report path")
+        _validate_partial_initial_qualification(
+            report,
+            qualification,
+            initial_report_path=initial_report_path,
+        )
     if report.artifact_sha256 != _sha256(artifacts_path):
         raise ValueError("initial distribution report references another task population")
     if report.distribution_sha256 != _sha256(distributions_path):
@@ -721,11 +815,50 @@ def validate_initial_distribution_lineage(
     if set(report.selected_task_ids) != set(distributions):
         raise ValueError("initial distribution task support does not match its report")
     observed_distribution_ids = {
-        task_id: distribution.distribution_id
-        for task_id, distribution in distributions.items()
+        task_id: distribution.distribution_id for task_id, distribution in distributions.items()
     }
     if report.task_distribution_ids != observed_distribution_ids:
         raise ValueError("initial distribution IDs do not replay the frozen report")
+
+
+def _validate_partial_initial_qualification(
+    report: FinanceInitialDistributionReport,
+    qualification: PartialInitialDistributionQualification,
+    *,
+    initial_report_path: Path,
+) -> None:
+    telemetry = report.telemetry
+    expected = {
+        "initial_distribution_report_id": report.report_id,
+        "initial_distribution_report_sha256": _sha256(initial_report_path),
+        "artifact_sha256": report.artifact_sha256,
+        "distribution_sha256": report.distribution_sha256,
+        "trajectory_records_sha256": report.trajectory_records_sha256,
+        "selected_task_ids": tuple(sorted(report.selected_task_ids)),
+        "requested_trajectory_count": report.requested_trajectory_count,
+        "valid_trajectory_count": report.valid_trajectory_count,
+        "catalog_hit_count": report.catalog_hit_count,
+        "off_catalog_valid_count": report.off_catalog_valid_count,
+        "catalog_hit_rate": report.catalog_hit_count / report.valid_trajectory_count,
+        "minimum_catalog_hits_per_task": min(report.valid_catalog_observation_counts.values()),
+        "full_support_distribution_count": report.full_support_distribution_count,
+        "api_call_count": int(telemetry.get("api_call_count") or 0),
+        "api_call_success_count": int(telemetry.get("api_call_success_count") or 0),
+        "json_contract_success_count": int(telemetry.get("json_contract_success_count") or 0),
+    }
+    observed = qualification.model_dump(mode="python")
+    for field, value in expected.items():
+        if observed[field] != value:
+            raise ValueError(f"partial qualification changed initial report field:{field}")
+
+
+def partial_initial_distribution_qualification_id(
+    value: PartialInitialDistributionQualification,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"qualification_id"}),
+        prefix="partial_initial_distribution_qualification:",
+    )
 
 
 def _load_distributions(
@@ -791,6 +924,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--artifacts-path", required=True)
     parser.add_argument("--distributions-path", required=True)
     parser.add_argument("--initial-distribution-report", required=True)
+    parser.add_argument("--partial-initial-qualification")
     parser.add_argument("--model-config-path", required=True)
     parser.add_argument("--archive-config-path", required=True)
     parser.add_argument("--output-dir", required=True)

@@ -40,7 +40,12 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_initial_distribution i
     FinanceInitialDistributionReport,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_state_realizations import (
+    MINIMUM_PARTIAL_INITIAL_CATALOG_HIT_RATE,
+    MINIMUM_PARTIAL_INITIAL_CATALOG_HITS_PER_TASK,
     FinanceStateRealizationReport,
+    PartialInitialDistributionQualification,
+    partial_initial_distribution_qualification_id,
+    validate_initial_distribution_lineage,
 )
 from trusted_synthesis.experiments.vtdo_experiment.schema import VTDOTrainingRecord
 from trusted_synthesis.hashing import canonical_hash
@@ -50,7 +55,7 @@ DEVELOPMENT_POPULATION_VERSION = "finance_development_power_population.v22"
 DEVELOPMENT_POPULATION_HASH_PREFIX = "finance_development_power_population:"
 DEVELOPMENT_SUPPORT_VERSION = "finance_development_objective_support.v22"
 DEVELOPMENT_SUPPORT_HASH_PREFIX = "finance_development_objective_support:"
-DEVELOPMENT_CONTRACT_VERSION = "finance_development_power_contract.v22"
+DEVELOPMENT_CONTRACT_VERSION = "finance_development_power_contract.v22.1"
 DEVELOPMENT_CONTRACT_HASH_PREFIX = "finance_development_power_contract:"
 DEVELOPMENT_REPORT_VERSION = "finance_development_power_report.v22"
 DEVELOPMENT_REPORT_HASH_PREFIX = "finance_development_power_report:"
@@ -114,9 +119,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _read_jsonl(path: Path) -> tuple[dict[str, Any], ...]:
     values = tuple(
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     )
     if any(not isinstance(value, dict) for value in values):
         raise ValueError(f"v22 JSONL contains a non-object row:{path}")
@@ -138,8 +141,7 @@ def _write_jsonl(path: Path, values: Sequence[Mapping[str, Any]]) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
         "".join(
-            json.dumps(dict(value), ensure_ascii=False, sort_keys=True) + "\n"
-            for value in values
+            json.dumps(dict(value), ensure_ascii=False, sort_keys=True) + "\n" for value in values
         ),
         encoding="utf-8",
     )
@@ -164,9 +166,7 @@ def _artifact_task_type(artifact: FinanceTaskStateArtifact) -> str:
 
 
 def _artifact_state_ids(artifact: FinanceTaskStateArtifact) -> tuple[str, ...]:
-    return tuple(
-        sorted(state.assignment.state.state_id for state in artifact.accepted_states)
-    )
+    return tuple(sorted(state.assignment.state.state_id for state in artifact.accepted_states))
 
 
 def _gradient_eligible(artifact: FinanceTaskStateArtifact) -> bool:
@@ -280,9 +280,7 @@ def select_population(
     artifacts_path = output_dir / "development_task_states.jsonl"
     if report_path.exists() or artifacts_path.exists():
         raise ValueError("v22 Development population is immutable and already exists")
-    source_report = FinanceAgentPopulationReport.model_validate(
-        _read_json(source_report_path)
-    )
+    source_report = FinanceAgentPopulationReport.model_validate(_read_json(source_report_path))
     if source_report.status != "passed":
         raise ValueError("v22 source population did not pass")
     if _sha256(source_artifacts_path) != source_report.artifact_sha256:
@@ -310,9 +308,7 @@ def select_population(
     task_type_counts = dict(sorted(Counter(_artifact_task_type(row) for row in selected).items()))
     state_counts = {_artifact_task_id(row): len(row.accepted_states) for row in selected}
     evidence = {
-        value
-        for artifact in selected
-        for value in _artifact_evidence_version_ids(artifact)
+        value for artifact in selected for value in _artifact_evidence_version_ids(artifact)
     }
     report: dict[str, Any] = {
         "experiment_version": DEVELOPMENT_POPULATION_VERSION,
@@ -423,6 +419,8 @@ def verify_population(report: Mapping[str, Any]) -> dict[str, Any]:
     ):
         raise ValueError("v22 Development tasks share public Evidence")
     return frozen
+
+
 def _select_disjoint_objective_artifacts(
     artifacts: tuple[FinanceTaskStateArtifact, ...],
     *,
@@ -458,20 +456,15 @@ def _micro_split_manifest(
     artifacts: Sequence[FinanceTaskStateArtifact],
     records: Sequence[VTDOTrainingRecord],
 ) -> tuple[dict[str, Any], ...]:
-    if len(artifacts) != DEVELOPMENT_OBJECTIVE_RECORD_COUNT or len(records) != len(
-        artifacts
-    ):
+    if len(artifacts) != DEVELOPMENT_OBJECTIVE_RECORD_COUNT or len(records) != len(artifacts):
         raise ValueError("v22 micro-split input count differs")
     split_ids = tuple(
-        f"development_micro_split_{index:02d}"
-        for index in range(OBJECTIVE_MICRO_SPLIT_COUNT)
+        f"development_micro_split_{index:02d}" for index in range(OBJECTIVE_MICRO_SPLIT_COUNT)
     )
     members: dict[str, list[tuple[FinanceTaskStateArtifact, VTDOTrainingRecord]]] = {
         split_id: [] for split_id in split_ids
     }
-    task_type_counts: dict[str, Counter[str]] = {
-        split_id: Counter() for split_id in split_ids
-    }
+    task_type_counts: dict[str, Counter[str]] = {split_id: Counter() for split_id in split_ids}
     pairs = sorted(
         zip(artifacts, records, strict=True),
         key=lambda pair: (
@@ -646,13 +639,9 @@ def verify_development_support(value: Mapping[str, Any]) -> dict[str, Any]:
     artifacts_path = Path(str(frozen["artifacts_path"])).resolve()
     if not records_path.is_file() or _sha256(records_path) != frozen.get("records_sha256"):
         raise ValueError("v22 Development Objective records changed")
-    if not artifacts_path.is_file() or _sha256(artifacts_path) != frozen.get(
-        "artifacts_sha256"
-    ):
+    if not artifacts_path.is_file() or _sha256(artifacts_path) != frozen.get("artifacts_sha256"):
         raise ValueError("v22 Development Objective artifacts changed")
-    records = tuple(
-        VTDOTrainingRecord.model_validate(row) for row in _read_jsonl(records_path)
-    )
+    records = tuple(VTDOTrainingRecord.model_validate(row) for row in _read_jsonl(records_path))
     if len(records) != DEVELOPMENT_OBJECTIVE_RECORD_COUNT:
         raise ValueError("v22 Development Objective record count differs")
     artifacts = load_finance_multi_state_artifacts(artifacts_path)
@@ -674,9 +663,7 @@ def verify_development_support(value: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(population_item, dict):
         raise ValueError("v22 Development population reference is missing")
     population_path = Path(str(population_item.get("path"))).resolve()
-    if not population_path.is_file() or _sha256(population_path) != population_item.get(
-        "sha256"
-    ):
+    if not population_path.is_file() or _sha256(population_path) != population_item.get("sha256"):
         raise ValueError("v22 Development population reference changed")
     population = verify_population(_read_json(population_path))
     if population["report_hash"] != population_item.get("report_hash"):
@@ -791,9 +778,7 @@ def run_preflight(*, repo_root: Path, output_path: Path) -> dict[str, Any]:
         "credential_environment_values_recorded": False,
         "status": (
             "passed"
-            if all(row["passed"] for row in results)
-            and generalization.passed
-            and not secret_hits
+            if all(row["passed"] for row in results) and generalization.passed and not secret_hits
             else "failed"
         ),
     }
@@ -817,6 +802,7 @@ def prepare_contract(
     support_manifest_path: Path,
     preflight_path: Path,
     model_config_path: Path,
+    materializer_model_config_path: Path,
     archive_config_path: Path,
     source_numeric_plan_path: Path,
     output_path: Path,
@@ -831,6 +817,10 @@ def prepare_contract(
         raise ValueError("v22 Development contract requires a passed preflight")
     model_raw = _read_json(model_config_path)
     model_config = AgentModelConfig.model_validate(model_raw.get("model", model_raw))
+    materializer_raw = _read_json(materializer_model_config_path)
+    materializer_model_config = AgentModelConfig.model_validate(
+        materializer_raw.get("model", materializer_raw)
+    )
     archive_config = FinanceArchiveConfig.from_json(archive_config_path)
     numeric_plan = _read_json(source_numeric_plan_path)
     required_numeric_fields = {
@@ -893,6 +883,16 @@ def prepare_contract(
             "credential_value_recorded": False,
             "replicas_per_task": EXPLORER_REPLICAS_PER_TASK,
         },
+        "materializer": {
+            "model_config_path": str(materializer_model_config_path.resolve()),
+            "model_config_sha256": _sha256(materializer_model_config_path),
+            "model_config_hash": materializer_model_config.public_manifest_hash,
+            "provider": materializer_model_config.provider,
+            "requested_model": materializer_model_config.model,
+            "api_key_env": materializer_model_config.api_key_env,
+            "credential_value_recorded": False,
+            "realizations_per_state": REALIZATIONS_PER_STATE,
+        },
         "numeric_execution": {
             "source_plan_path": str(source_numeric_plan_path.resolve()),
             "source_plan_sha256": _sha256(source_numeric_plan_path),
@@ -911,8 +911,7 @@ def prepare_contract(
         },
         "mpe_contract": {
             "definition": (
-                "minimum_centered_contribution_contrast_causing_"
-                "selected_state_probability_shift"
+                "minimum_centered_contribution_contrast_causing_selected_state_probability_shift"
             ),
             "target_probability_shift": TARGET_PROBABILITY_SHIFT,
             "energy_config": ENERGY_CONFIG,
@@ -971,9 +970,11 @@ def verify_contract(value: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("v22 Development data contract is missing")
     state_count = data.get("state_count")
-    if not isinstance(state_count, int) or state_count < (
-        EXPECTED_TASK_COUNT * MINIMUM_STATES_PER_TASK
-    ) or state_count > (EXPECTED_TASK_COUNT * MAXIMUM_STATES_PER_TASK):
+    if (
+        not isinstance(state_count, int)
+        or state_count < (EXPECTED_TASK_COUNT * MINIMUM_STATES_PER_TASK)
+        or state_count > (EXPECTED_TASK_COUNT * MAXIMUM_STATES_PER_TASK)
+    ):
         raise ValueError("v22 Development state count differs")
     if data != {
         "task_count": EXPECTED_TASK_COUNT,
@@ -1033,12 +1034,10 @@ def _next_probabilities(
         raise ValueError("v22 MPE reachability support differs")
     coverage = 1.0 / len(probabilities)
     rho = float(ENERGY_CONFIG["history_kl_weight"]) / (
-        float(ENERGY_CONFIG["history_kl_weight"])
-        + float(ENERGY_CONFIG["coverage_kl_weight"])
+        float(ENERGY_CONFIG["history_kl_weight"]) + float(ENERGY_CONFIG["coverage_kl_weight"])
     )
     eta = 1.0 / (
-        float(ENERGY_CONFIG["history_kl_weight"])
-        + float(ENERGY_CONFIG["coverage_kl_weight"])
+        float(ENERGY_CONFIG["history_kl_weight"]) + float(ENERGY_CONFIG["coverage_kl_weight"])
     )
     values = {}
     for state_id, probability in probabilities.items():
@@ -1087,9 +1086,7 @@ def contribution_mpe_for_state(
     )
 
     def shift(selected_effect: float) -> float:
-        other_effect = (
-            -selected_effect * selected_probability / (1.0 - selected_probability)
-        )
+        other_effect = -selected_effect * selected_probability / (1.0 - selected_probability)
         contributions = {
             state_id: selected_effect if state_id == selected_state_id else other_effect
             for state_id in probabilities
@@ -1155,9 +1152,11 @@ def _wilson(successes: int, attempts: int) -> tuple[float, float]:
     proportion = successes / attempts
     denominator = 1.0 + z * z / attempts
     center = (proportion + z * z / (2.0 * attempts)) / denominator
-    radius = z * math.sqrt(
-        proportion * (1.0 - proportion) / attempts + z * z / (4.0 * attempts**2)
-    ) / denominator
+    radius = (
+        z
+        * math.sqrt(proportion * (1.0 - proportion) / attempts + z * z / (4.0 * attempts**2))
+        / denominator
+    )
     return max(0.0, center - radius), min(1.0, center + radius)
 
 
@@ -1175,9 +1174,7 @@ def _telemetry(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     return {
         "api_call_count": len(calls),
         "http_success_count": sum(bool(row.get("http_success")) for row in calls),
-        "json_contract_success_count": sum(
-            bool(row.get("json_contract_success")) for row in calls
-        ),
+        "json_contract_success_count": sum(bool(row.get("json_contract_success")) for row in calls),
         "prompt_tokens": sum(int(row.get("prompt_tokens") or 0) for row in calls),
         "completion_tokens": sum(int(row.get("completion_tokens") or 0) for row in calls),
         "total_tokens": sum(int(row.get("total_tokens") or 0) for row in calls),
@@ -1187,10 +1184,141 @@ def _telemetry(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
+def qualify_partial_initial_distribution(
+    *,
+    contract_path: Path,
+    initial_report_path: Path,
+    initial_records_path: Path,
+    distributions_path: Path,
+    output_path: Path,
+) -> dict[str, Any]:
+    if output_path.exists():
+        raise ValueError("v22 initial qualification is immutable and already exists")
+    contract = verify_contract(_read_json(contract_path))
+    population = verify_population(_read_json(Path(str(contract["population"]["path"]))))
+    report = FinanceInitialDistributionReport.model_validate(_read_json(initial_report_path))
+    if report.status != "partial":
+        raise ValueError("v22 qualification is only valid for a partial initial report")
+    if report.artifact_sha256 != population["development_artifacts_sha256"]:
+        raise ValueError("v22 partial initial report belongs to another population")
+    if report.model_config_hash != contract["explorer"]["model_config_hash"]:
+        raise ValueError("v22 partial initial report used another effective model config")
+    if report.replicas_per_task != EXPLORER_REPLICAS_PER_TASK:
+        raise ValueError("v22 partial initial report has another replica contract")
+    if _sha256(initial_records_path) != report.trajectory_records_sha256:
+        raise ValueError("v22 partial initial trajectory records changed")
+    if _sha256(distributions_path) != report.distribution_sha256:
+        raise ValueError("v22 partial initial distributions changed")
+
+    artifacts = load_finance_multi_state_artifacts(
+        Path(str(contract["population"]["artifacts_path"]))
+    )
+    artifacts_by_task = {_artifact_task_id(artifact): artifact for artifact in artifacts}
+    task_ids = set(report.selected_task_ids)
+    if task_ids != set(artifacts_by_task):
+        raise ValueError("v22 partial initial task support differs")
+    rows = _read_jsonl(initial_records_path)
+    if len(rows) != report.requested_trajectory_count:
+        raise ValueError("v22 partial initial record count differs")
+    observation_ids = [str(row.get("observation_id") or "") for row in rows]
+    if "" in observation_ids or len(set(observation_ids)) != len(observation_ids):
+        raise ValueError("v22 partial initial observation identities are invalid")
+    records_by_task: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        task_id = str(row.get("task_id") or "")
+        if task_id not in artifacts_by_task:
+            raise ValueError("v22 partial initial record references another task")
+        if row.get("status") != "completed":
+            raise ValueError("v22 partial initial record is incomplete")
+        if not bool(row.get("validity_report", {}).get("valid")):
+            raise ValueError("v22 partial initial record is invalid")
+        state_id = str(row["state_assignment"]["state"]["state_id"])
+        state_ids = set(_artifact_state_ids(artifacts_by_task[task_id]))
+        if bool(row.get("catalog_hit")) != (state_id in state_ids):
+            raise ValueError("v22 partial initial catalog assignment is inconsistent")
+        records_by_task[task_id].append(row)
+    if any(len(records_by_task[task_id]) != EXPLORER_REPLICAS_PER_TASK for task_id in task_ids):
+        raise ValueError("v22 partial initial per-task support differs")
+    observed_catalog_counts = {
+        task_id: sum(row.get("catalog_hit") is True for row in records_by_task[task_id])
+        for task_id in sorted(task_ids)
+    }
+    if observed_catalog_counts != report.valid_catalog_observation_counts:
+        raise ValueError("v22 partial initial catalog counts changed")
+    if sum(observed_catalog_counts.values()) != report.catalog_hit_count:
+        raise ValueError("v22 partial initial catalog total changed")
+
+    distributions = tuple(
+        ConditionalTrajectoryDistribution.model_validate(row)
+        for row in _read_jsonl(distributions_path)
+    )
+    if {item.task_condition_id for item in distributions} != task_ids:
+        raise ValueError("v22 partial initial distributions cover another task set")
+    full_support_count = 0
+    for distribution in distributions:
+        expected_states = set(
+            _artifact_state_ids(artifacts_by_task[distribution.task_condition_id])
+        )
+        if set(distribution.probabilities) == expected_states and all(
+            probability > 0 for probability in distribution.probabilities.values()
+        ):
+            full_support_count += 1
+    if full_support_count != len(task_ids):
+        raise ValueError("v22 partial initial distributions lost full support")
+
+    observed_telemetry = _telemetry(rows)
+    report_telemetry = report.telemetry
+    telemetry_pairs = {
+        "api_call_count": observed_telemetry["api_call_count"],
+        "api_call_success_count": observed_telemetry["http_success_count"],
+        "json_contract_success_count": observed_telemetry["json_contract_success_count"],
+    }
+    for field, value in telemetry_pairs.items():
+        if int(report_telemetry.get(field) or 0) != value:
+            raise ValueError(f"v22 partial initial telemetry changed:{field}")
+
+    values: dict[str, Any] = {
+        "use_case": "development_variance_and_power_only",
+        "development_contract_hash": contract["contract_hash"],
+        "development_contract_sha256": _sha256(contract_path),
+        "materializer_model_config_hash": contract["materializer"]["model_config_hash"],
+        "initial_distribution_report_id": report.report_id,
+        "initial_distribution_report_sha256": _sha256(initial_report_path),
+        "artifact_sha256": report.artifact_sha256,
+        "distribution_sha256": report.distribution_sha256,
+        "trajectory_records_sha256": report.trajectory_records_sha256,
+        "selected_task_ids": tuple(sorted(task_ids)),
+        "requested_trajectory_count": report.requested_trajectory_count,
+        "valid_trajectory_count": report.valid_trajectory_count,
+        "catalog_hit_count": report.catalog_hit_count,
+        "off_catalog_valid_count": report.off_catalog_valid_count,
+        "catalog_hit_rate": report.catalog_hit_count / report.valid_trajectory_count,
+        "minimum_catalog_hits_per_task": min(observed_catalog_counts.values()),
+        "required_minimum_catalog_hits_per_task": (MINIMUM_PARTIAL_INITIAL_CATALOG_HITS_PER_TASK),
+        "required_minimum_catalog_hit_rate": (MINIMUM_PARTIAL_INITIAL_CATALOG_HIT_RATE),
+        "full_support_distribution_count": full_support_count,
+        **telemetry_pairs,
+        "decision": "passed",
+        "schema_version": "partial_initial_distribution_qualification.v2",
+    }
+    provisional = PartialInitialDistributionQualification.model_construct(
+        qualification_id="pending",
+        **values,
+    )
+    qualification = PartialInitialDistributionQualification(
+        qualification_id=partial_initial_distribution_qualification_id(provisional),
+        **values,
+    )
+    payload = qualification.model_dump(mode="json")
+    _write_json(output_path, payload)
+    return payload
+
+
 def analyze_development_data(
     *,
     contract_path: Path,
     initial_report_path: Path,
+    initial_qualification_path: Path | None,
     initial_records_path: Path,
     distributions_path: Path,
     realization_report_path: Path,
@@ -1201,20 +1329,40 @@ def analyze_development_data(
     if output_path.exists():
         raise ValueError("v22 Development analysis is immutable and already exists")
     contract = verify_contract(_read_json(contract_path))
-    population = verify_population(
-        _read_json(Path(str(contract["population"]["path"])))
-    )
+    population = verify_population(_read_json(Path(str(contract["population"]["path"]))))
     task_ids = set(population["selected_task_ids"])
-    initial = FinanceInitialDistributionReport.model_validate(
-        _read_json(initial_report_path)
+    initial = FinanceInitialDistributionReport.model_validate(_read_json(initial_report_path))
+    qualification = (
+        PartialInitialDistributionQualification.model_validate(
+            _read_json(initial_qualification_path)
+        )
+        if initial_qualification_path is not None
+        else None
     )
-    realization = FinanceStateRealizationReport.model_validate(
-        _read_json(realization_report_path)
-    )
+    if qualification is not None and (
+        qualification.development_contract_hash != contract["contract_hash"]
+        or qualification.development_contract_sha256 != _sha256(contract_path)
+    ):
+        raise ValueError("v22 initial qualification references another contract")
+    realization = FinanceStateRealizationReport.model_validate(_read_json(realization_report_path))
     target_sha = population["development_artifacts_sha256"]
     if initial.artifact_sha256 != target_sha or realization.artifact_sha256 != target_sha:
         raise ValueError("v22 generated data belongs to another task population")
-    if initial.status != "passed" or realization.status != "passed":
+    validate_initial_distribution_lineage(
+        initial,
+        artifacts_path=Path(str(contract["population"]["artifacts_path"])),
+        distributions_path=distributions_path,
+        distributions={
+            row.task_condition_id: row
+            for row in (
+                ConditionalTrajectoryDistribution.model_validate(value)
+                for value in _read_jsonl(distributions_path)
+            )
+        },
+        initial_report_path=initial_report_path,
+        qualification=qualification,
+    )
+    if realization.status != "passed":
         raise ValueError("v22 generated data did not pass")
     if initial.replicas_per_task != EXPLORER_REPLICAS_PER_TASK:
         raise ValueError("v22 Explorer replica count differs")
@@ -1225,13 +1373,28 @@ def analyze_development_data(
         raise ValueError("v22 state realization count differs")
     if _sha256(initial_report_path) != realization.initial_distribution_report_sha256:
         raise ValueError("v22 initial distribution report changed")
+    expected_qualification_id = (
+        qualification.qualification_id if qualification is not None else None
+    )
+    expected_qualification_sha = (
+        _sha256(initial_qualification_path) if initial_qualification_path is not None else None
+    )
+    if (
+        realization.initial_distribution_qualification_id != expected_qualification_id
+        or realization.initial_distribution_qualification_sha256 != expected_qualification_sha
+    ):
+        raise ValueError("v22 initial distribution qualification lineage changed")
     if _sha256(initial_records_path) != initial.trajectory_records_sha256:
         raise ValueError("v22 initial Explorer records changed")
     distribution_sha256 = _sha256(distributions_path)
-    if distribution_sha256 not in {
-        initial.distribution_sha256,
-        realization.distribution_sha256,
-    } or initial.distribution_sha256 != realization.distribution_sha256:
+    if (
+        distribution_sha256
+        not in {
+            initial.distribution_sha256,
+            realization.distribution_sha256,
+        }
+        or initial.distribution_sha256 != realization.distribution_sha256
+    ):
         raise ValueError("v22 initial distribution artifact changed")
     if _sha256(materialization_reports_path) != realization.materialization_reports_sha256:
         raise ValueError("v22 materialization reports changed")
@@ -1284,9 +1447,7 @@ def analyze_development_data(
                 "reachability_wilson_intervals": intervals,
             }
         )
-    distribution_task_by_id = {
-        row.distribution_id: row.task_condition_id for row in distributions
-    }
+    distribution_task_by_id = {row.distribution_id: row.task_condition_id for row in distributions}
     if len(distribution_task_by_id) != EXPECTED_TASK_COUNT:
         raise ValueError("v22 distribution identities are duplicated")
     transitions: defaultdict[tuple[str, str], Counter[str]] = defaultdict(Counter)
@@ -1313,8 +1474,7 @@ def analyze_development_data(
             for state_id, count in observed.items():
                 transitions[key][str(state_id)] += int(count)
         task_failures = {
-            str(key): int(value)
-            for key, value in materialization.get("failure_counts", {}).items()
+            str(key): int(value) for key, value in materialization.get("failure_counts", {}).items()
         }
         failure_counts.update(task_failures)
         failure_counts_by_task[task_id].update(task_failures)
@@ -1364,9 +1524,7 @@ def analyze_development_data(
             )
     mpe_values = [float(row["minimum_practical_effect"]) for row in mpe_rows]
     conditioned_attempt_count = sum(attempted.values())
-    conditioned_on_target_count = sum(
-        int(row["on_target_count"]) for row in conditioned_rows
-    )
+    conditioned_on_target_count = sum(int(row["on_target_count"]) for row in conditioned_rows)
     if conditioned_attempt_count < 1:
         raise ValueError("v22 conditioned generation support is empty")
     explorer_telemetry = _telemetry(initial_rows)
@@ -1385,6 +1543,15 @@ def analyze_development_data(
                 "sha256": _sha256(initial_report_path),
                 "report_id": initial.report_id,
             },
+            "initial_qualification": (
+                {
+                    "path": str(initial_qualification_path.resolve()),
+                    "sha256": _sha256(initial_qualification_path),
+                    "qualification_id": qualification.qualification_id,
+                }
+                if initial_qualification_path is not None and qualification is not None
+                else None
+            ),
             "realization_report": {
                 "path": str(realization_report_path.resolve()),
                 "sha256": _sha256(realization_report_path),
@@ -1396,21 +1563,15 @@ def analyze_development_data(
         "explorer_observation_count": len(initial_rows),
         "state_realization_count": realization.released_realization_count,
         "natural_distribution_rows": natural_rows,
-        "mean_task_state_entropy": statistics.fmean(
-            row["state_entropy"] for row in natural_rows
-        ),
+        "mean_task_state_entropy": statistics.fmean(row["state_entropy"] for row in natural_rows),
         "conditioned_state_rows": conditioned_rows,
         "conditioned_attempt_count": conditioned_attempt_count,
         "conditioned_on_target_count": conditioned_on_target_count,
-        "conditioned_on_target_rate": (
-            conditioned_on_target_count / conditioned_attempt_count
-        ),
+        "conditioned_on_target_rate": (conditioned_on_target_count / conditioned_attempt_count),
         "off_target_transition_matrix": {
             task_id: {
                 target_state_id: dict(sorted(values.items()))
-                for (row_task_id, target_state_id), values in sorted(
-                    transitions.items()
-                )
+                for (row_task_id, target_state_id), values in sorted(transitions.items())
                 if row_task_id == task_id
             }
             for task_id in sorted(task_ids)
@@ -1473,12 +1634,20 @@ def _parser() -> argparse.ArgumentParser:
     contract.add_argument("--support-manifest-path", required=True)
     contract.add_argument("--preflight-path", required=True)
     contract.add_argument("--model-config-path", required=True)
+    contract.add_argument("--materializer-model-config-path", required=True)
     contract.add_argument("--archive-config-path", required=True)
     contract.add_argument("--source-numeric-plan-path", required=True)
     contract.add_argument("--output-path", required=True)
+    qualify = commands.add_parser("qualify-initial")
+    qualify.add_argument("--contract-path", required=True)
+    qualify.add_argument("--initial-report-path", required=True)
+    qualify.add_argument("--initial-records-path", required=True)
+    qualify.add_argument("--distributions-path", required=True)
+    qualify.add_argument("--output-path", required=True)
     analyze = commands.add_parser("analyze-data")
     analyze.add_argument("--contract-path", required=True)
     analyze.add_argument("--initial-report-path", required=True)
+    analyze.add_argument("--initial-qualification-path")
     analyze.add_argument("--initial-records-path", required=True)
     analyze.add_argument("--distributions-path", required=True)
     analyze.add_argument("--realization-report-path", required=True)
@@ -1519,14 +1688,28 @@ def main() -> None:
             support_manifest_path=Path(args.support_manifest_path).resolve(),
             preflight_path=Path(args.preflight_path).resolve(),
             model_config_path=Path(args.model_config_path).resolve(),
+            materializer_model_config_path=Path(args.materializer_model_config_path).resolve(),
             archive_config_path=Path(args.archive_config_path).resolve(),
             source_numeric_plan_path=Path(args.source_numeric_plan_path).resolve(),
+            output_path=Path(args.output_path).resolve(),
+        )
+    elif args.command == "qualify-initial":
+        value = qualify_partial_initial_distribution(
+            contract_path=Path(args.contract_path).resolve(),
+            initial_report_path=Path(args.initial_report_path).resolve(),
+            initial_records_path=Path(args.initial_records_path).resolve(),
+            distributions_path=Path(args.distributions_path).resolve(),
             output_path=Path(args.output_path).resolve(),
         )
     else:
         value = analyze_development_data(
             contract_path=Path(args.contract_path).resolve(),
             initial_report_path=Path(args.initial_report_path).resolve(),
+            initial_qualification_path=(
+                Path(args.initial_qualification_path).resolve()
+                if args.initial_qualification_path
+                else None
+            ),
             initial_records_path=Path(args.initial_records_path).resolve(),
             distributions_path=Path(args.distributions_path).resolve(),
             realization_report_path=Path(args.realization_report_path).resolve(),

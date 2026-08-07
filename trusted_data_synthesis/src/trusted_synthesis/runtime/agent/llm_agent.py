@@ -47,12 +47,12 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v20"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v21"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
 LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v11"
 LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v5"
-LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v6"
+LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v7"
 
 
 class LLMAgentSolver:
@@ -833,6 +833,84 @@ def _validate_agent_response_contract(
         raise ValueError("execution trace output must bind to the public output node")
 
 
+def _public_search_query_hints(task: TaskPublicSpec) -> dict[str, list[str]]:
+    guidance = task.metadata.get("agent_contract_guidance")
+    if not isinstance(guidance, Mapping):
+        return {}
+    evidence_roles = guidance.get("evidence_roles")
+    if not isinstance(evidence_roles, Mapping):
+        return {}
+    hints: dict[str, list[str]] = {
+        "subject_ids": [],
+        "predicates": [],
+        "temporal_labels": [],
+    }
+    field_map = {
+        "subject_ids": "subject_id",
+        "predicates": "predicate",
+        "temporal_labels": "temporal_label",
+    }
+    for role_items in evidence_roles.values():
+        items = (role_items,) if isinstance(role_items, Mapping) else role_items
+        if not isinstance(items, (list, tuple)):
+            continue
+        for item in items:
+            if not isinstance(item, Mapping):
+                continue
+            for output_field, input_field in field_map.items():
+                value = item.get(input_field)
+                if isinstance(value, str) and value and value not in hints[output_field]:
+                    hints[output_field].append(value)
+    return {key: values for key, values in hints.items() if values}
+
+
+def _state_search_contract(
+    task: TaskPublicSpec,
+    generation_constraints: dict[str, Any],
+) -> dict[str, Any] | None:
+    control_plan = generation_constraints.get("control_plan")
+    if not isinstance(control_plan, Mapping):
+        return None
+    retrieval = control_plan.get("retrieval")
+    if (
+        not isinstance(retrieval, Mapping)
+        or retrieval.get("control_status") != "model_controlled"
+    ):
+        return None
+    mode = retrieval.get("mode")
+    hints = _public_search_query_hints(task)
+    if mode == "full_corpus":
+        requirement = "Return an empty search_query object. Do not copy any public hint field."
+        query: dict[str, Any] = {}
+    elif mode == "semantic_context":
+        requirement = (
+            "Copy the public subject_ids and predicates below, but omit temporal_labels and "
+            "every exact period filter."
+        )
+        query = {
+            key: values
+            for key, values in hints.items()
+            if key in {"subject_ids", "predicates"}
+        }
+    elif mode == "required_only":
+        requirement = (
+            "Copy the exact public subject_ids, predicates, and temporal_labels below. Do not "
+            "construct definition_ids or add source names as aliases."
+        )
+        query = hints
+    else:
+        return None
+    return {
+        "mode": mode,
+        "requirement": requirement,
+        "valid_response_example": {
+            "schema_version": "agent_search.v1",
+            "plan_summary": f"Execute the public {mode} retrieval contract.",
+            "search_query": query,
+        },
+    }
+
+
 def _build_search_prompt(
     task: TaskPublicSpec,
     generation_constraints: dict[str, Any],
@@ -849,6 +927,7 @@ def _build_search_prompt(
             prefix="agent_generation_constraints:",
         ),
     }
+    state_search_contract = _state_search_contract(task, generation_constraints)
     payload = {
         "task_public_spec": task.model_dump(mode="json", exclude_none=True),
         "trajectory_generation_constraints": generation_constraints,
@@ -883,6 +962,7 @@ def _build_search_prompt(
             "empty_result_policy": "omit an uncertain filter instead of guessing its value",
         },
         "response_json_schema": response_schema,
+        "state_search_contract": state_search_contract,
     }
     instructions = (
         "Plan one bounded evidence search from the public task. Return only a JSON object "
@@ -899,8 +979,15 @@ def _build_search_prompt(
         "allowed by search_interface; they constrain acquisition behavior and never change "
         "the task semantics. Do not answer the task in this phase."
     )
+    final_contract = (
+        "\n\nFINAL STATE SEARCH CONTRACT (copy its valid_response_example shape exactly):\n"
+        + json.dumps(state_search_contract, ensure_ascii=False, sort_keys=True)
+        if state_search_contract is not None
+        else ""
+    )
     prompt = (
-        f"{instructions}\n\nPAYLOAD:\n{json.dumps(payload, ensure_ascii=False, sort_keys=True)}"
+        f"{instructions}\n\nPAYLOAD:\n"
+        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}{final_contract}"
     )
     return prompt, canonical_hash(manifest, prefix="agent_search_prompt_manifest:")
 
