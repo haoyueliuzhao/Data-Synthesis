@@ -2,10 +2,11 @@
 
 Status date: 2026-08-08
 
-Current status: `materializer_action_prompt_v13_diagnostic`. The initial Explorer distribution
-is qualified and three state-materializer diagnostics have completed. Development target gradients
-have not started. This document records the pre-outcome design, immutable inputs, observed
-materialization limits, and scientific boundaries for the successor to the cancelled v21 run.
+Current status: `exact_one_step_target_implementation_preoutcome`. The initial Explorer
+distribution and the complete DeepSeek v13 state-conditioned population are qualified. Development
+target gradients have not started. This document records the pre-outcome design, immutable inputs,
+observed materialization limits, and scientific boundaries for the successor to the cancelled v21
+run.
 
 ## Scientific Question
 
@@ -160,6 +161,77 @@ must contain 48-60 fresh tasks and remain disjoint in task ID, Evidence version,
 signature. Direct coordinates precede any block design. GP-C remains inaccessible until an
 independent target is either statistically identifiable or demonstrably within the frozen
 practical-equivalence region.
+
+## Completed Development Data Stage
+
+DeepSeek v4 Pro with Action Prompt v13 passed the unchanged 100-state smoke gate and then completed
+the full conditioned run. The complete data report is immutable at:
+
+```text
+artifacts/vtdo_experiment/
+  finance_v22_development_data_analysis_deepseek_v13_v1_20260808/report.json
+```
+
+| Measure | Result |
+| --- | ---: |
+| Independent tasks | 30 |
+| Accepted quotient states | 100 |
+| Unconditioned Explorer observations | 300 |
+| State-conditioned realizations | 500 / 500 |
+| Conditioned attempts | 502 |
+| On-target attempts | 500 |
+| On-target rate | 99.6016% |
+| API / JSON-contract successes | 1,506 / 1,506 |
+| Duplicate-trajectory retries | 2 |
+| Mean empirical natural-state entropy | 0.0059505 |
+| Update-derived MPE range | 0.0078282 - 0.0209338 |
+
+The entropy is computed from ten unconditioned observations per task. Most tasks placed all ten
+observations in one catalog state; this is an observed Explorer concentration, not a claim that the
+other accepted states are invalid or unreachable. The five state-conditioned realizations remain
+independent draws inside each frozen quotient state. Repository-side price coefficients estimate
+the conditioned run at USD 1.0902; this is not a provider invoice.
+
+## Exact One-Step Development Target
+
+The pre-outcome target implementation is:
+
+```text
+src/trusted_synthesis/experiments/vtdo_experiment/phase1_development_target.py
+```
+
+It does not continue the v20 finite-radius or Hadamard protocol. It freezes one shared global
+one-step update over the complete conditional distribution:
+
+```text
+g(pi) = sum_x mu(x) sum_z pi(z|x) mean_r g(x,z,r)
+theta' = theta - AdamW_cold_start(g(pi))
+```
+
+`mu(x)` is uniform and immutable across the 30 Development tasks. Each quotient state receives five
+equally weighted trajectory realizations, preserving `P(tau|x,z)` independently of assistant-token
+length. The Development Objective contains eight immutable micro-splits of eight equally weighted
+records. Every Objective gradient is evaluated at the same `theta'`, rather than constructing a
+different post-update model for each task.
+
+For each task, state, Objective micro-split, and realization, the measured surrogate is the exact
+chain derivative for the frozen one-step optimizer:
+
+```text
+Y(x,z,m,r) = mu(x) < d AdamW(g) / d g ^T g_objective(m),
+                         g(x,z,r) - sum_j pi(j|x) mean_r g(x,j,r) >
+```
+
+The AdamW vector-Jacobian product includes the derivative of global-norm clipping when clipping is
+active. It uses neither a finite radius nor GP-C as its target. One primary state coordinate per
+task is selected by an outcome-blind salted hash before gradients are observed; all 100 states are
+retained for variance estimation. The resulting 4,000 crossed observations estimate task-family,
+task, state, Objective, realization, interaction, and numeric components. Only then may an empirical
+power simulation freeze the size of a future fresh Validation population.
+
+The target remains a one-step engineering surrogate, not the full Student-training functional. A
+successful Development result cannot establish Validation identifiability, evaluate GP-C, open
+Authorization, authorize Contribution, update VTDO, or support downstream Student claims.
 
 ## Immutable References
 
