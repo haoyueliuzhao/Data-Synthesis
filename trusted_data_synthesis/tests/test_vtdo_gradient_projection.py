@@ -267,6 +267,23 @@ def test_production_gradient_projection_contract_is_fail_closed() -> None:
             task_count=3,
             evaluation_record_count=6,
         )
+    _validate_run_contract(
+        run_role="target_observability",
+        task_count=6,
+        evaluation_record_count=256,
+    )
+    with pytest.raises(ValueError, match="at least 256"):
+        _validate_run_contract(
+            run_role="target_observability",
+            task_count=6,
+            evaluation_record_count=32,
+        )
+    with pytest.raises(ValueError, match="exactly six tasks"):
+        _validate_run_contract(
+            run_role="target_observability",
+            task_count=5,
+            evaluation_record_count=256,
+        )
 
 
 def test_gradient_support_boundary_separates_targets_from_exclusions() -> None:
@@ -1245,3 +1262,71 @@ def test_evaluation_gradient_manifest_replay_is_fail_closed() -> None:
     tampered["numeric_contract_hash"] = "other"
     with pytest.raises(ValueError, match="identity changed"):
         _replay_evaluation_gradient_manifest(plan, tampered)
+
+
+def test_evaluation_gradient_record_order_is_split_stable() -> None:
+    plan = {
+        "gradient_estimation_record_ids": ["e0", "e1"],
+        "gradient_validation_record_ids": ["v0", "v1"],
+    }
+
+    assert gradient_module._evaluation_gradient_record_ids(plan) == (
+        "e0",
+        "e1",
+        "v0",
+        "v1",
+    )
+
+
+def test_evaluation_gradient_checkpoint_replay_is_fail_closed(tmp_path) -> None:
+    from safetensors.torch import save_file
+
+    gradient_path = tmp_path / "record_000.safetensors"
+    save_file({"adapter.weight": torch.tensor([1.0, 2.0])}, gradient_path)
+    checkpoint_path = tmp_path / "record_000.json"
+    row = {
+        "schema_version": gradient_module.EVALUATION_GRADIENT_SHARD_VERSION,
+        "plan_hash": "plan:1",
+        "record_index": 0,
+        "record_id": "record:1",
+        "file": str(gradient_path),
+        "sha256": gradient_module._sha256(gradient_path),
+        "loss": 1.0,
+        "supervised_tokens": 2,
+        "gradient_norm": math.sqrt(5.0),
+    }
+    row["checkpoint_hash"] = gradient_module._checkpoint_hash(row)
+    gradient_module._write_json(checkpoint_path, row)
+
+    replayed = gradient_module._load_gradient_checkpoint(
+        checkpoint_path,
+        plan_hash="plan:1",
+        record_id="record:1",
+        record_index=0,
+    )
+    assert replayed == row
+
+    tampered = dict(row)
+    tampered["loss"] = 2.0
+    gradient_module._write_json(checkpoint_path, tampered)
+    with pytest.raises(ValueError, match="checkpoint identity changed"):
+        gradient_module._load_gradient_checkpoint(
+            checkpoint_path,
+            plan_hash="plan:1",
+            record_id="record:1",
+            record_index=0,
+        )
+
+
+def test_stream_weighted_gradients_matches_weighted_mean(tmp_path) -> None:
+    from safetensors.torch import save_file
+
+    rows = []
+    for index, values in enumerate(([1.0, 3.0], [3.0, 7.0])):
+        path = tmp_path / f"gradient_{index}.safetensors"
+        save_file({"adapter.weight": torch.tensor(values)}, path)
+        rows.append({"file": str(path), "sha256": gradient_module._sha256(path)})
+
+    aggregate = gradient_module._stream_weighted_gradients(rows, [1.0, 3.0])
+
+    assert torch.equal(aggregate["adapter.weight"], torch.tensor([2.5, 6.0]))

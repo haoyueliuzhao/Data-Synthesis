@@ -421,6 +421,29 @@ zero, and real Finance VTDO retains `Contribution=0`. Any successor must preregi
 measurement and may not tune v20 thresholds or promote its records into Authorization. Full
 evidence is in `docs/finance_v20_target_identifiability_report.md`.
 
+The 2026-08-07 v21 successor changes the scientific question from finite-target reconstruction to
+Direct Coordinate observability. Before any v21 outcome, it froze a new 420-task population, six
+fresh target tasks with 20 states, 60 three-realization state samples, and disjoint
+128/128/128-record Estimation, Validation, and sealed Authorization partitions. Estimation and
+Validation are each partitioned into 32 immutable four-record micro-splits. Authorization content
+access remains forbidden.
+
+The v21 design contains seven preregistered Direct Coordinates and one Null replay; no block or
+Hadamard reconstruction is present. Actual parameter-step ratios are `0.01` and `0.005`, with
+`0.005` primary. The engineering minimum practical effect is `0.005` in raw Objective-slope units
+and is not a downstream or business-effect threshold. A coordinate is resolved only as a
+meaningful nonzero effect or a practically equivalent effect under the frozen confidence-interval
+policy. Both radii must agree, both Objective roles must resolve all seven coordinates, and
+cross-role resolutions must agree exactly.
+
+All state and global update directions are computed Objective-blind. Runtime role files physically
+contain only the permitted Objective role. Observation replay binds the plan, direction and scale
+manifests, design role, coordinate IDs, numeric seed, baseline micro-splits, and exact registered
+radius keys. A successful target-observability result permits only preregistration of a new
+independent GP-C comparison. It does not open Authorization, evaluate GP-C, authorize
+Contribution, or update VTDO. A failure retains `Contribution=0`. The design and eventual result
+are recorded in `docs/finance_v21_target_observability_report.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control

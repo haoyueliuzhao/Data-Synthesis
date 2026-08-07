@@ -10,7 +10,7 @@ import os
 import statistics
 import time
 from collections import Counter, defaultdict
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 from difflib import SequenceMatcher
@@ -139,8 +139,12 @@ PRODUCTION_MINIMUM_TASK_COUNT = 30
 PRODUCTION_MINIMUM_RECORDS_PER_SPLIT = 16
 SMOKE_MINIMUM_RECORDS_PER_SPLIT = 4
 TARGET_IDENTIFIABILITY_ROLE = "target_identifiability"
+TARGET_OBSERVABILITY_ROLE = "target_observability"
 TARGET_IDENTIFIABILITY_TASK_COUNT = 6
-RUN_ROLES = ("sealed_causal_pilot", "production_candidate", TARGET_IDENTIFIABILITY_ROLE)
+TARGET_OBSERVABILITY_TASK_COUNT = 6
+TARGET_OBSERVABILITY_RECORDS_PER_SPLIT = 128
+SEALED_DEVELOPMENT_ROLES = frozenset({TARGET_IDENTIFIABILITY_ROLE, TARGET_OBSERVABILITY_ROLE})
+RUN_ROLES = ("sealed_causal_pilot", "production_candidate", *sorted(SEALED_DEVELOPMENT_ROLES))
 TOKEN_REGION_DECOMPOSITION_VERSION = "aligned_common_subsequence_token_gradient.v2"
 MINIMUM_TASK_POOLED_DIFFERENTIAL_SUPERVISED_TOKEN_FRACTION = 0.05
 REALIZATION_STABILITY_THRESHOLDS = {
@@ -175,13 +179,18 @@ def _load_numeric_contract(path: Path) -> dict[str, Any]:
     if version == numeric_execution.EXECUTION_CONTRACT_VERSION:
         contract = numeric_execution.verify_execution_contract(raw)
     else:
-        from trusted_synthesis.experiments.vtdo_experiment import (
-            phase1_target_identifiability_contract as identifiability_contract,
-        )
-
-        if version != identifiability_contract.IDENTIFIABILITY_CONTRACT_VERSION:
+        if version == "finance_target_identifiability_contract.v20":
+            from trusted_synthesis.experiments.vtdo_experiment import (
+                phase1_target_identifiability_contract,
+            )
+            contract = phase1_target_identifiability_contract.verify_identifiability_contract(raw)
+        elif version == "finance_target_observability_contract.v21":
+            from trusted_synthesis.experiments.vtdo_experiment import (
+                phase1_target_observability_contract,
+            )
+            contract = phase1_target_observability_contract.verify_observability_contract(raw)
+        else:
             raise ValueError("Gradient Projection numeric contract version is not registered")
-        contract = identifiability_contract.verify_identifiability_contract(raw)
     thresholds = contract.get("numeric_thresholds")
     if not isinstance(thresholds, dict) or set(thresholds) != NUMERIC_THRESHOLD_KEYS:
         raise ValueError("Gradient Projection numeric thresholds are incomplete")
@@ -367,6 +376,14 @@ def _replay_evaluation_gradient_manifest(
     return str(observed)
 
 
+def _minimum_records_per_split(run_role: str) -> int:
+    if run_role == TARGET_OBSERVABILITY_ROLE:
+        return TARGET_OBSERVABILITY_RECORDS_PER_SPLIT
+    if run_role == "production_candidate" or run_role in SEALED_DEVELOPMENT_ROLES:
+        return PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
+    return SMOKE_MINIMUM_RECORDS_PER_SPLIT
+
+
 def _validate_run_contract(
     *,
     run_role: str,
@@ -377,11 +394,7 @@ def _validate_run_contract(
         raise ValueError("unknown Gradient Projection run role")
     if task_count < 1:
         raise ValueError("Gradient Projection requires at least one task")
-    minimum_per_split = (
-        PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
-        if run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
-        else SMOKE_MINIMUM_RECORDS_PER_SPLIT
-    )
+    minimum_per_split = _minimum_records_per_split(run_role)
     if evaluation_record_count < 2 * minimum_per_split:
         raise ValueError(
             f"{run_role} Gradient Projection requires at least "
@@ -398,6 +411,14 @@ def _validate_run_contract(
         raise ValueError(
             "target-identifiability Gradient Projection requires exactly six tasks "
             "and 16+16 Objective records"
+        )
+    if run_role == TARGET_OBSERVABILITY_ROLE and (
+        task_count != TARGET_OBSERVABILITY_TASK_COUNT
+        or evaluation_record_count != 2 * TARGET_OBSERVABILITY_RECORDS_PER_SPLIT
+    ):
+        raise ValueError(
+            "target-observability Gradient Projection requires exactly six tasks "
+            "and 128+128 Objective records"
         )
 
 
@@ -1181,12 +1202,12 @@ def _state_realization_support(
         raise ValueError("Gradient Projection realizations do not exactly cover selected states")
     minimum = (
         PRODUCTION_MINIMUM_REALIZATIONS_PER_STATE
-        if run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
+        if run_role == "production_candidate" or run_role in SEALED_DEVELOPMENT_ROLES
         else 1
     )
     maximum = (
         PRODUCTION_MINIMUM_REALIZATIONS_PER_STATE
-        if run_role == TARGET_IDENTIFIABILITY_ROLE
+        if run_role in SEALED_DEVELOPMENT_ROLES
         else PRODUCTION_MAXIMUM_REALIZATIONS_PER_STATE
     )
     frozen: dict[tuple[str, str], tuple[GradientStateRealization, ...]] = {}
@@ -1481,6 +1502,10 @@ def _permutation_p_value(
 def prepare(args: argparse.Namespace) -> None:
     numeric_contract_path = Path(args.numeric_contract_path).resolve()
     numeric_contract = _load_numeric_contract(numeric_contract_path)
+    contract_run_role = numeric_contract.get("run_role")
+    if contract_run_role in SEALED_DEVELOPMENT_ROLES and contract_run_role != args.run_role:
+        raise ValueError("Gradient Projection run role differs from its sealed contract")
+
     support_dir = Path(args.source_support_dir).resolve()
     support_plan_path = support_dir / "plan.json"
     support_report_path = support_dir / "beneficiary_evaluation_report.json"
@@ -1519,11 +1544,7 @@ def prepare(args: argparse.Namespace) -> None:
         task_count=args.task_count,
         evaluation_record_count=len(evaluation_ids),
     )
-    minimum_authorization_records = (
-        PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
-        if args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
-        else SMOKE_MINIMUM_RECORDS_PER_SPLIT
-    )
+    minimum_authorization_records = _minimum_records_per_split(args.run_role)
     if len(authorization_ids) < minimum_authorization_records:
         raise ValueError(
             f"{args.run_role} Gradient Projection requires at least "
@@ -1531,18 +1552,14 @@ def prepare(args: argparse.Namespace) -> None:
         )
     if set(evaluation_ids) & set(authorization_ids):
         raise ValueError("Gradient Projection objective partitions are not disjoint")
-    if args.run_role == TARGET_IDENTIFIABILITY_ROLE:
+    if args.run_role in SEALED_DEVELOPMENT_ROLES:
         if support_report.get("authorization_objective_access") != "forbidden":
-            raise ValueError(
-                "target-identifiability Gradient Projection requires sealed Authorization"
-            )
+            raise ValueError(f"{args.run_role} requires sealed Authorization")
         if set(support_report.get("objective_partition_results", {})) != {
             "estimation",
             "validation",
         }:
-            raise ValueError(
-                "target-identifiability support evaluated an undeclared Objective role"
-            )
+            raise ValueError(f"{args.run_role} evaluated an undeclared Objective role")
     if args.uncertainty_penalty_coefficient <= 0:
         raise ValueError("Gradient Projection uncertainty penalty must be positive")
     if (
@@ -1577,9 +1594,8 @@ def prepare(args: argparse.Namespace) -> None:
         else {}
     )
     if (
-        args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
-        and distributions_path is None
-    ):
+        args.run_role == "production_candidate" or args.run_role in SEALED_DEVELOPMENT_ROLES
+    ) and distributions_path is None:
         raise ValueError(
             f"{args.run_role} Gradient Projection requires frozen current distributions"
         )
@@ -1660,10 +1676,9 @@ def prepare(args: argparse.Namespace) -> None:
     if realizations_path is not None:
         if distributions_path is None:
             raise ValueError("state realizations require frozen current distributions")
-        if realization_report_path is None and args.run_role in {
-            "production_candidate",
-            TARGET_IDENTIFIABILITY_ROLE,
-        }:
+        if realization_report_path is None and (
+            args.run_role == "production_candidate" or args.run_role in SEALED_DEVELOPMENT_ROLES
+        ):
             raise ValueError(
                 f"{args.run_role} Gradient Projection requires a state realization report"
             )
@@ -1689,7 +1704,7 @@ def prepare(args: argparse.Namespace) -> None:
                 for item in state_realizations
             ):
                 raise ValueError("Gradient realization uses another current distribution")
-    elif args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}:
+    elif args.run_role == "production_candidate" or args.run_role in SEALED_DEVELOPMENT_ROLES:
         raise ValueError(f"{args.run_role} Gradient Projection requires state realizations")
 
     jobs: list[dict[str, Any]] = []
@@ -1943,10 +1958,10 @@ def prepare(args: argparse.Namespace) -> None:
         "excluded_task_ids": tuple(sorted(excluded_task_ids)),
         "task_count": len(selected),
         "production_authorization_eligible": False
-        if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+        if args.run_role in SEALED_DEVELOPMENT_ROLES
         else True,
         "authorization_objective_access": (
-            "forbidden" if args.run_role == TARGET_IDENTIFIABILITY_ROLE else "frozen_for_later_gate"
+            "forbidden" if args.run_role in SEALED_DEVELOPMENT_ROLES else "frozen_for_later_gate"
         ),
         "jobs": jobs,
         "state_count": len(realization_counts),
@@ -2026,9 +2041,9 @@ def prepare(args: argparse.Namespace) -> None:
         },
         "claim_boundary": (
             "This development-only Gradient Projection freezes local update vectors for a "
-            "finite-target identifiability study; it cannot execute GP-C, open Authorization, "
+            "sealed target-observability study; it cannot execute GP-C, open Authorization, "
             "authorize Contribution, or influence VTDO."
-            if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+            if args.run_role in SEALED_DEVELOPMENT_ROLES
             else (
                 "Gradient Projection estimates one local, state-homogeneous cold-start AdamW "
                 "distribution update. It does not approximate the full Student optimizer path "
@@ -2068,21 +2083,22 @@ def prepare(args: argparse.Namespace) -> None:
     print(json.dumps(values, ensure_ascii=False, indent=2, sort_keys=True))
 
 
-def build_evaluation_gradients(args: argparse.Namespace) -> None:
-    gpu_ids = tuple(args.gpu_ids)
-    if not gpu_ids or any(gpu_id < 0 for gpu_id in gpu_ids):
-        raise ValueError("evaluation gradients require non-negative GPU ids")
-    if len(set(gpu_ids)) != len(gpu_ids):
-        raise ValueError("evaluation gradients require unique GPU ids")
-    import torch
-    from safetensors.torch import save_file
+EVALUATION_GRADIENT_SHARD_VERSION = "finance_evaluation_gradient_shard.v2"
+EVALUATION_GRADIENT_CHECKPOINT_PREFIX = "finance_evaluation_gradient_checkpoint:"
+EVALUATION_GRADIENT_PARTITION_PREFIX = "finance_evaluation_gradient_partition:"
 
-    if any(gpu_id >= torch.cuda.device_count() for gpu_id in gpu_ids):
-        raise ValueError("evaluation gradient GPU id is not visible to this process")
-    torch.cuda.set_device(gpu_ids[0])
 
-    output_dir = Path(args.output_dir).resolve()
-    plan = _read_json(output_dir / "plan.json")
+def _evaluation_gradient_record_ids(plan: Mapping[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        str(value)
+        for value in (
+            *plan["gradient_estimation_record_ids"],
+            *plan["gradient_validation_record_ids"],
+        )
+    )
+
+
+def _verify_evaluation_gradient_sources(plan: dict[str, Any]) -> dict[str, Any]:
     if plan.get("experiment_version") != GRADIENT_ALIGNMENT_VERSION:
         raise ValueError("evaluation gradients require a current Gradient Projection plan")
     numeric_contract = _replay_numeric_contract(plan)
@@ -2107,6 +2123,60 @@ def build_evaluation_gradients(args: argparse.Namespace) -> None:
         != plan["state_realization_manifest"]["source_report_sha256"]
     ):
         raise ValueError("state realization report changed after Gradient Projection planning")
+    return numeric_contract
+
+
+def _checkpoint_hash(value: Mapping[str, Any]) -> str:
+    payload = dict(value)
+    payload.pop("checkpoint_hash", None)
+    return canonical_hash(payload, prefix=EVALUATION_GRADIENT_CHECKPOINT_PREFIX)
+
+
+def _load_gradient_checkpoint(
+    path: Path,
+    *,
+    plan_hash: str,
+    record_id: str,
+    record_index: int,
+) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    row = _read_json(path)
+    if row.get("checkpoint_hash") != _checkpoint_hash(row):
+        raise ValueError("evaluation gradient checkpoint identity changed")
+    if (
+        row.get("schema_version") != EVALUATION_GRADIENT_SHARD_VERSION
+        or row.get("plan_hash") != plan_hash
+        or row.get("record_id") != record_id
+        or row.get("record_index") != record_index
+    ):
+        raise ValueError("evaluation gradient checkpoint belongs to another job")
+    gradient_path = Path(str(row["file"]))
+    if not gradient_path.is_file() or _sha256(gradient_path) != row.get("sha256"):
+        raise ValueError("evaluation gradient checkpoint payload changed")
+    return row
+
+
+def build_evaluation_gradients(args: argparse.Namespace) -> None:
+    gpu_ids = tuple(args.gpu_ids)
+    partition_index = int(args.partition_index)
+    partition_count = int(args.partition_count)
+    if not gpu_ids or any(gpu_id < 0 for gpu_id in gpu_ids):
+        raise ValueError("evaluation gradients require non-negative GPU ids")
+    if len(set(gpu_ids)) != len(gpu_ids):
+        raise ValueError("evaluation gradients require unique GPU ids")
+    if partition_count < 1 or not 0 <= partition_index < partition_count:
+        raise ValueError("evaluation gradient partition is invalid")
+    import torch
+    from safetensors.torch import save_file
+
+    if any(gpu_id >= torch.cuda.device_count() for gpu_id in gpu_ids):
+        raise ValueError("evaluation gradient GPU id is not visible to this process")
+    torch.cuda.set_device(gpu_ids[0])
+
+    output_dir = Path(args.output_dir).resolve()
+    plan = _read_json(output_dir / "plan.json")
+    numeric_contract = _verify_evaluation_gradient_sources(plan)
     _seed_everything(args.numeric_seed)
     _configure_numeric_policy(numeric_contract["selected_profile"])
     for gpu_id in gpu_ids:
@@ -2124,43 +2194,178 @@ def build_evaluation_gradients(args: argparse.Namespace) -> None:
     _assert_trainable_parameter_precision(parameter_manifest)
     source_records = _load_records(Path(plan["source_records_path"]))
     gradient_dir = output_dir / "evaluation_gradients"
+    checkpoint_dir = output_dir / "evaluation_gradient_checkpoints"
+    partition_dir = output_dir / "evaluation_gradient_partitions"
     gradient_dir.mkdir(parents=True, exist_ok=True)
-    all_record_ids = (
-        *plan["gradient_estimation_record_ids"],
-        *plan["gradient_validation_record_ids"],
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    partition_dir.mkdir(parents=True, exist_ok=True)
+    all_record_ids = _evaluation_gradient_record_ids(plan)
+    assigned = tuple(
+        (index, record_id)
+        for index, record_id in enumerate(all_record_ids)
+        if index % partition_count == partition_index
     )
     record_rows: list[dict[str, Any]] = []
-    gradients_by_id: dict[str, dict[str, Any]] = {}
+    completed_before_resume = 0
     started = time.monotonic()
-    for index, record_id in enumerate(all_record_ids):
+    for index, record_id in assigned:
+        checkpoint_path = checkpoint_dir / f"record_{index:03d}.json"
+        checkpoint = _load_gradient_checkpoint(
+            checkpoint_path,
+            plan_hash=str(plan["plan_hash"]),
+            record_id=record_id,
+            record_index=index,
+        )
+        if checkpoint is not None:
+            record_rows.append(checkpoint)
+            completed_before_resume += 1
+            continue
         gradients, loss, supervised_tokens = _record_gradient(
             model,
             tokenizer,
             source_records[record_id],
             mode="objective_eval",
         )
-        path = gradient_dir / f"record_{index:02d}.safetensors"
+        path = gradient_dir / f"record_{index:03d}.safetensors"
         save_file(gradients, path)
-        gradients_by_id[record_id] = gradients
-        record_rows.append(
-            {
-                "record_id": record_id,
-                "file": str(path),
-                "sha256": _sha256(path),
-                "loss": loss,
-                "supervised_tokens": supervised_tokens,
-                "gradient_norm": _gradient_norm(gradients),
-            }
-        )
+        row: dict[str, Any] = {
+            "schema_version": EVALUATION_GRADIENT_SHARD_VERSION,
+            "plan_hash": plan["plan_hash"],
+            "record_index": index,
+            "record_id": record_id,
+            "file": str(path),
+            "sha256": _sha256(path),
+            "loss": loss,
+            "supervised_tokens": supervised_tokens,
+            "gradient_norm": _gradient_norm(gradients),
+        }
+        row["checkpoint_hash"] = _checkpoint_hash(row)
+        _write_json(checkpoint_path, row)
+        record_rows.append(row)
+        del gradients
+    peak_memory_by_device = {
+        str(gpu_id): int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids
+    }
+    report: dict[str, Any] = {
+        "schema_version": EVALUATION_GRADIENT_SHARD_VERSION,
+        "plan_hash": plan["plan_hash"],
+        "numeric_contract_hash": plan["numeric_contract_hash"],
+        "partition_index": partition_index,
+        "partition_count": partition_count,
+        "assigned_record_count": len(assigned),
+        "completed_before_resume": completed_before_resume,
+        "completed_now": len(assigned) - completed_before_resume,
+        "record_rows": tuple(sorted(record_rows, key=lambda row: int(row["record_index"]))),
+        "parameter_manifest": parameter_manifest,
+        "parameter_manifest_hash": parameter_manifest_hash,
+        "numeric_seed": args.numeric_seed,
+        "runtime_seconds": time.monotonic() - started,
+        "requested_cuda_device_ids": gpu_ids,
+        "cuda_visible_devices_env": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "peak_gpu_memory_bytes": max(peak_memory_by_device.values()),
+        "peak_gpu_memory_bytes_by_requested_device": peak_memory_by_device,
+        "resolved_hf_device_map": resolved_device_map,
+        "resolved_hf_device_map_hash": canonical_hash(
+            resolved_device_map,
+            prefix="finance_gradient_hf_device_map:",
+        ),
+        "gpu_names": tuple(torch.cuda.get_device_name(gpu_id) for gpu_id in gpu_ids),
+        "torch_version": torch.__version__,
+    }
+    report["report_hash"] = canonical_hash(
+        report,
+        prefix=EVALUATION_GRADIENT_PARTITION_PREFIX,
+    )
+    _write_json(partition_dir / f"partition_{partition_index}.json", report)
+    print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
+
+
+def _stream_weighted_gradients(
+    rows: Sequence[Mapping[str, Any]],
+    weights: Sequence[float],
+) -> dict[str, Any]:
+    if not rows or len(rows) != len(weights):
+        raise ValueError("streaming weighted gradient inputs are incomplete")
+    if any(weight <= 0 or not math.isfinite(weight) for weight in weights):
+        raise ValueError("streaming weighted gradient requires finite positive weights")
+    normalizer = sum(weights)
+    aggregate: dict[str, Any] | None = None
+    parameter_names: tuple[str, ...] | None = None
+    for row, weight in zip(rows, weights, strict=True):
+        gradients = _load_verified_gradient(Path(str(row["file"])), str(row["sha256"]))
+        names = tuple(gradients)
+        if parameter_names is None:
+            parameter_names = names
+            aggregate = {name: gradients[name].new_zeros(gradients[name].shape) for name in names}
+        elif names != parameter_names:
+            raise ValueError("streaming gradient parameter manifests do not align")
+        assert aggregate is not None
+        for name in names:
+            aggregate[name].add_(gradients[name], alpha=weight / normalizer)
+        del gradients
+    assert aggregate is not None
+    return {name: value.contiguous() for name, value in aggregate.items()}
+
+
+def finalize_evaluation_gradients(args: argparse.Namespace) -> None:
+    import torch
+    from safetensors.torch import save_file
+
+    output_dir = Path(args.output_dir).resolve()
+    partition_count = int(args.partition_count)
+    if partition_count < 1:
+        raise ValueError("evaluation gradient partition count must be positive")
+    plan = _read_json(output_dir / "plan.json")
+    numeric_contract = _verify_evaluation_gradient_sources(plan)
+    partition_dir = output_dir / "evaluation_gradient_partitions"
+    reports = [
+        _read_json(partition_dir / f"partition_{index}.json") for index in range(partition_count)
+    ]
+    for index, report in enumerate(reports):
+        payload = dict(report)
+        observed = payload.pop("report_hash", None)
+        expected = canonical_hash(payload, prefix=EVALUATION_GRADIENT_PARTITION_PREFIX)
+        if observed != expected:
+            raise ValueError("evaluation gradient partition identity changed")
+        if (
+            report.get("schema_version") != EVALUATION_GRADIENT_SHARD_VERSION
+            or report.get("plan_hash") != plan.get("plan_hash")
+            or report.get("numeric_contract_hash") != plan.get("numeric_contract_hash")
+            or report.get("partition_index") != index
+            or report.get("partition_count") != partition_count
+            or report.get("numeric_seed") != args.numeric_seed
+        ):
+            raise ValueError("evaluation gradient partition belongs to another run")
+    parameter_hashes = {str(report["parameter_manifest_hash"]) for report in reports}
+    parameter_manifests = {canonical_hash(report["parameter_manifest"]) for report in reports}
+    if len(parameter_hashes) != 1 or len(parameter_manifests) != 1:
+        raise ValueError("evaluation gradient partitions used different parameter spaces")
+    all_record_ids = _evaluation_gradient_record_ids(plan)
+    record_rows = sorted(
+        (dict(row) for report in reports for row in report["record_rows"]),
+        key=lambda row: int(row["record_index"]),
+    )
+    if tuple(int(row["record_index"]) for row in record_rows) != tuple(range(len(all_record_ids))):
+        raise ValueError("evaluation gradient partitions do not exactly cover record indices")
+    if tuple(str(row["record_id"]) for row in record_rows) != all_record_ids:
+        raise ValueError("evaluation gradient partitions do not exactly cover Objective records")
+    for row in record_rows:
+        if row.get("checkpoint_hash") != _checkpoint_hash(row):
+            raise ValueError("evaluation gradient checkpoint changed before finalization")
+        path = Path(str(row["file"]))
+        if not path.is_file() or _sha256(path) != row.get("sha256"):
+            raise ValueError("evaluation gradient payload changed before finalization")
+    rows_by_id = {str(row["record_id"]): row for row in record_rows}
+    gradient_dir = output_dir / "evaluation_gradients"
     aggregate_rows = []
-    rows_by_id = {row["record_id"]: row for row in record_rows}
     for split in ("estimation", "validation"):
-        record_ids = tuple(plan[f"gradient_{split}_record_ids"])
-        weights = [float(rows_by_id[record_id]["supervised_tokens"]) for record_id in record_ids]
-        aggregate = _weighted_gradient(
-            [gradients_by_id[record_id] for record_id in record_ids],
-            weights,
-        )
+        record_ids = tuple(str(value) for value in plan[f"gradient_{split}_record_ids"])
+        rows = [rows_by_id[record_id] for record_id in record_ids]
+        weights = [float(row["supervised_tokens"]) for row in rows]
+        aggregate = _stream_weighted_gradients(rows, weights)
         path = gradient_dir / f"{split}_aggregate.safetensors"
         save_file(aggregate, path)
         aggregate_rows.append(
@@ -2173,9 +2378,15 @@ def build_evaluation_gradients(args: argparse.Namespace) -> None:
                 "gradient_norm": _gradient_norm(aggregate),
             }
         )
+        del aggregate
     peak_memory_by_device = {
-        str(gpu_id): int(torch.cuda.max_memory_allocated(gpu_id)) for gpu_id in gpu_ids
+        str(gpu_id): int(value)
+        for report in reports
+        for gpu_id, value in report["peak_gpu_memory_bytes_by_requested_device"].items()
     }
+    requested_groups = tuple(
+        tuple(int(value) for value in report["requested_cuda_device_ids"]) for report in reports
+    )
     manifest: dict[str, Any] = {
         "experiment_version": GRADIENT_ALIGNMENT_VERSION,
         "plan_hash": plan["plan_hash"],
@@ -2189,23 +2400,26 @@ def build_evaluation_gradients(args: argparse.Namespace) -> None:
         "objective_gradient_mode": plan["gradient_mode_contract"]["objective_gradient_mode"],
         "objective_gradient_evaluation_point": "beneficiary_before_global_pi_update",
         "objective_gradient_role": plan["internal_objective_gradient_role"],
-        "parameter_manifest": parameter_manifest,
-        "parameter_manifest_hash": parameter_manifest_hash,
+        "parameter_manifest": reports[0]["parameter_manifest"],
+        "parameter_manifest_hash": next(iter(parameter_hashes)),
         "record_gradients": record_rows,
         "aggregate_gradients": aggregate_rows,
         "numeric_seed": args.numeric_seed,
-        "runtime_seconds": time.monotonic() - started,
-        "requested_cuda_device_ids": gpu_ids,
-        "cuda_visible_devices_env": os.environ.get("CUDA_VISIBLE_DEVICES"),
-        "device_placement": ("balanced_sharded" if len(gpu_ids) > 1 else "single_device"),
+        "runtime_seconds": sum(float(report["runtime_seconds"]) for report in reports),
+        "partition_count": partition_count,
+        "requested_cuda_device_groups": requested_groups,
+        "requested_cuda_device_ids": tuple(
+            sorted(value for group in requested_groups for value in group)
+        ),
+        "cuda_visible_devices_env": tuple(report["cuda_visible_devices_env"] for report in reports),
+        "device_placement": "parallel_balanced_sharded",
         "peak_gpu_memory_bytes": max(peak_memory_by_device.values()),
         "peak_gpu_memory_bytes_by_requested_device": peak_memory_by_device,
-        "resolved_hf_device_map": resolved_device_map,
-        "resolved_hf_device_map_hash": canonical_hash(
-            resolved_device_map,
-            prefix="finance_gradient_hf_device_map:",
+        "resolved_hf_device_maps": tuple(report["resolved_hf_device_map"] for report in reports),
+        "resolved_hf_device_map_hashes": tuple(
+            report["resolved_hf_device_map_hash"] for report in reports
         ),
-        "gpu_names": tuple(torch.cuda.get_device_name(gpu_id) for gpu_id in gpu_ids),
+        "gpu_names": tuple(name for report in reports for name in report["gpu_names"]),
         "torch_version": torch.__version__,
     }
     manifest["manifest_hash"] = canonical_hash(
@@ -2214,9 +2428,6 @@ def build_evaluation_gradients(args: argparse.Namespace) -> None:
     )
     _write_json(output_dir / "evaluation_gradient_manifest.json", manifest)
     print(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True))
-    del model, gradients_by_id
-    gc.collect()
-    torch.cuda.empty_cache()
 
 
 def _load_verified_gradient(path: Path, sha256: str) -> dict[str, Any]:
@@ -3046,11 +3257,7 @@ def aggregate(args: argparse.Namespace) -> None:
     task_vectors = []
     task_distribution_hashes = {}
     penalty = float(plan["uncertainty_penalty_coefficient"])
-    minimum_replicates = (
-        PRODUCTION_MINIMUM_RECORDS_PER_SPLIT
-        if plan["run_role"] in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE}
-        else SMOKE_MINIMUM_RECORDS_PER_SPLIT
-    )
+    minimum_replicates = _minimum_records_per_split(str(plan["run_role"]))
     for task_id, values in sorted(grouped.items()):
         values.sort(key=lambda row: str(row["state_id"]))
         probabilities = _current_state_probabilities(
@@ -3384,7 +3591,14 @@ def _parser() -> argparse.ArgumentParser:
     gradients_parser.add_argument("--output-dir", required=True)
     gradients_parser.add_argument("--gpu-ids", type=int, nargs="+", required=True)
     gradients_parser.add_argument("--numeric-seed", type=int, default=20260840)
+    gradients_parser.add_argument("--partition-index", type=int, default=0)
+    gradients_parser.add_argument("--partition-count", type=int, default=1)
     gradients_parser.set_defaults(handler=build_evaluation_gradients)
+    finalize_gradients_parser = subparsers.add_parser("finalize-evaluation-gradients")
+    finalize_gradients_parser.add_argument("--output-dir", required=True)
+    finalize_gradients_parser.add_argument("--partition-count", type=int, required=True)
+    finalize_gradients_parser.add_argument("--numeric-seed", type=int, default=20260840)
+    finalize_gradients_parser.set_defaults(handler=finalize_evaluation_gradients)
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--output-dir", required=True)
     run_parser.add_argument(

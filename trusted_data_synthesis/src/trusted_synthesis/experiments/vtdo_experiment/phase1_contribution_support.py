@@ -39,10 +39,13 @@ from trusted_synthesis.hashing import canonical_hash
 CONTRIBUTION_SUPPORT_VERSION = "finance_contribution_evaluation_support.v7"
 OBJECTIVE_STRATEGY_PRIORITY: tuple[LineageStrategy, ...] = GRADIENT_STATE_STRATEGY_PRIORITY
 TARGET_IDENTIFIABILITY_ROLE = "target_identifiability"
-SUPPORT_RUN_ROLES = ("smoke", "production_candidate", TARGET_IDENTIFIABILITY_ROLE)
+TARGET_OBSERVABILITY_ROLE = "target_observability"
+SEALED_DEVELOPMENT_ROLES = frozenset({TARGET_IDENTIFIABILITY_ROLE, TARGET_OBSERVABILITY_ROLE})
+SUPPORT_RUN_ROLES = ("smoke", "production_candidate", *sorted(SEALED_DEVELOPMENT_ROLES))
 PRODUCTION_ESTIMATION_RECORD_COUNT = 16
 PRODUCTION_VALIDATION_RECORD_COUNT = 16
 PRODUCTION_AUTHORIZATION_RECORD_COUNT = 16
+TARGET_OBSERVABILITY_RECORD_COUNT = 128
 STRATIFICATION_FIELDS = (
     "task_type",
     "context_length_bucket",
@@ -316,6 +319,16 @@ def _objective_records(
     return tuple(records)
 
 
+def _required_partition_counts(run_role: str) -> tuple[int, int, int]:
+    if run_role == TARGET_OBSERVABILITY_ROLE:
+        return (TARGET_OBSERVABILITY_RECORD_COUNT,) * 3
+    return (
+        PRODUCTION_ESTIMATION_RECORD_COUNT,
+        PRODUCTION_VALIDATION_RECORD_COUNT,
+        PRODUCTION_AUTHORIZATION_RECORD_COUNT,
+    )
+
+
 def prepare(args: argparse.Namespace) -> None:
     if args.run_role not in SUPPORT_RUN_ROLES:
         raise ValueError("unknown Contribution support run role")
@@ -323,23 +336,27 @@ def prepare(args: argparse.Namespace) -> None:
         raise ValueError("Contribution support smoke splits are too small")
     if args.internal_validation_count % 2:
         raise ValueError("Contribution internal support must split evenly")
-    if args.run_role in {"production_candidate", TARGET_IDENTIFIABILITY_ROLE} and (
-        args.internal_validation_count
-        < PRODUCTION_ESTIMATION_RECORD_COUNT + PRODUCTION_VALIDATION_RECORD_COUNT
-        or args.final_test_count < PRODUCTION_AUTHORIZATION_RECORD_COUNT
+    required_estimation, required_validation, required_authorization = _required_partition_counts(
+        args.run_role
+    )
+    if args.run_role == "production_candidate" or args.run_role in SEALED_DEVELOPMENT_ROLES:
+        if (
+            args.internal_validation_count < required_estimation + required_validation
+            or args.final_test_count < required_authorization
+        ):
+            raise ValueError(
+                f"{args.run_role} Contribution support requires at least "
+                f"{required_estimation} estimation, {required_validation} validation, "
+                f"and {required_authorization} authorization records"
+            )
+    if args.run_role in SEALED_DEVELOPMENT_ROLES and (
+        args.internal_validation_count != required_estimation + required_validation
+        or args.final_test_count != required_authorization
     ):
         raise ValueError(
-            "production Contribution support requires 16 estimation, 16 validation, "
-            "and 16 authorization records"
-        )
-    if args.run_role == TARGET_IDENTIFIABILITY_ROLE and (
-        args.internal_validation_count
-        != PRODUCTION_ESTIMATION_RECORD_COUNT + PRODUCTION_VALIDATION_RECORD_COUNT
-        or args.final_test_count != PRODUCTION_AUTHORIZATION_RECORD_COUNT
-    ):
-        raise ValueError(
-            "target-identifiability support requires exactly 16 estimation, "
-            "16 validation, and 16 sealed authorization records"
+            f"{args.run_role} support requires exactly {required_estimation} estimation, "
+            f"{required_validation} validation, and {required_authorization} sealed "
+            "authorization records"
         )
     numeric_contract_path = Path(args.numeric_contract_path).resolve()
     numeric_contract = _load_numeric_contract(numeric_contract_path)
@@ -572,18 +589,18 @@ def prepare(args: argparse.Namespace) -> None:
             "estimation_record_count": len(estimation_records),
             "validation_record_count": len(validation_records),
             "authorization_record_count": len(authorization_records),
-            "minimum_production_records_per_partition": 16,
+            "minimum_production_records_per_partition": required_estimation,
             "partitions_disjoint": True,
             "partition_identity_explicit": True,
             "stratification_fields": STRATIFICATION_FIELDS,
             "evaluated_roles": (
                 ("estimation", "validation")
-                if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+                if args.run_role in SEALED_DEVELOPMENT_ROLES
                 else ("estimation", "validation", "authorization")
             ),
             "authorization_objective_access": (
                 "forbidden"
-                if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+                if args.run_role in SEALED_DEVELOPMENT_ROLES
                 else "allowed_by_source_protocol"
             ),
         },
@@ -604,9 +621,9 @@ def prepare(args: argparse.Namespace) -> None:
         "numeric_contract_hash": numeric_contract["contract_hash"],
         "numeric_profile": numeric_contract["selected_profile"],
         "claim_boundary": (
-            "These records support a target-identifiability development study only; the "
-            "Authorization partition is frozen but its Objective remains unopened."
-            if args.run_role == TARGET_IDENTIFIABILITY_ROLE
+            f"These records support the {args.run_role} development study only; "
+            "the Authorization partition is frozen but its Objective remains unopened."
+            if args.run_role in SEALED_DEVELOPMENT_ROLES
             else (
                 "These records expand Contribution evaluation support only. They are disjoint "
                 "from the Phase 1.2 horizon-selection tasks and must not train the beneficiary."
@@ -738,7 +755,7 @@ def evaluate(args: argparse.Namespace) -> None:
     _assert_trainable_parameter_precision(parameter_manifest)
     evaluated_roles = (
         ("estimation", "validation")
-        if plan["run_role"] == TARGET_IDENTIFIABILITY_ROLE
+        if plan["run_role"] in SEALED_DEVELOPMENT_ROLES
         else ("estimation", "validation", "authorization")
     )
     if tuple(plan["objective_partition_contract"].get("evaluated_roles", ())) != evaluated_roles:
@@ -775,7 +792,7 @@ def evaluate(args: argparse.Namespace) -> None:
         "training_record_ids": plan["baseline_record_ids"],
         "objective_partition_results": partition_results,
         "authorization_objective_access": (
-            "forbidden" if plan["run_role"] == TARGET_IDENTIFIABILITY_ROLE else "evaluated"
+            "forbidden" if plan["run_role"] in SEALED_DEVELOPMENT_ROLES else "evaluated"
         ),
         "authorization_partition_frozen": True,
         "objective_partition_contract": plan["objective_partition_contract"],

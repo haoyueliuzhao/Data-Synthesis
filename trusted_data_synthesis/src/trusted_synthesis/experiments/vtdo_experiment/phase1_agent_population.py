@@ -25,7 +25,6 @@ from trusted_synthesis.experiments.vtdo_experiment.multistate import (
     DEFAULT_FINANCE_DISCOVERY_STRATEGIES,
     FinanceTaskStateArtifact,
     build_finance_task_state_artifact,
-    load_finance_multi_state_artifacts,
 )
 from trusted_synthesis.experiments.vtdo_experiment.schema import VTDOExperimentConfig
 from trusted_synthesis.hashing import canonical_hash
@@ -33,8 +32,9 @@ from trusted_synthesis.runtime.agent.state_conditioned import (
     assess_state_condition_controllability,
 )
 
-FINANCE_AGENT_POPULATION_VERSION = "finance_agent_population.v14"
+FINANCE_AGENT_POPULATION_VERSION = "finance_agent_population.v15"
 FINANCE_AGENT_INTERFACE_VERSION = "finance_agent_interface.v1"
+EXCLUSION_IDENTITY_INDEX_VERSION = "finance_population_exclusion_identity_index.v1"
 AGENT_DISCOVERY_STRATEGIES = DEFAULT_FINANCE_DISCOVERY_STRATEGIES
 
 
@@ -60,7 +60,10 @@ class FinanceAgentPopulationReport(FrozenModel):
     source_to_agent_task_ids: dict[str, str] = Field(default_factory=dict)
     excluded_population_artifact_sha256s: tuple[str, ...] = Field(default_factory=tuple)
     excluded_population_artifact_set_id: str | None = Field(default=None, min_length=1)
+    exclusion_identity_index_version: str = EXCLUSION_IDENTITY_INDEX_VERSION
+    excluded_population_record_count: int = Field(ge=0)
     excluded_public_evidence_version_count: int = Field(ge=0)
+    excluded_public_evidence_version_set_id: str | None = Field(default=None, min_length=1)
     artifact_sha256: str = Field(min_length=64, max_length=64)
     status: str = Field(pattern="^(passed|partial|blocked)$")
     schema_version: str = FINANCE_AGENT_POPULATION_VERSION
@@ -82,9 +85,15 @@ class FinanceAgentPopulationReport(FrozenModel):
             raise ValueError("Agent population status is inconsistent")
         if self.status == "passed" and self.requestable_state_count != self.accepted_state_count:
             raise ValueError("a passed Agent population contains an uncontrollable state")
+        if self.exclusion_identity_index_version != EXCLUSION_IDENTITY_INDEX_VERSION:
+            raise ValueError("Agent population exclusion-index version is invalid")
         has_exclusions = bool(self.excluded_population_artifact_sha256s)
+        if has_exclusions != (self.excluded_population_record_count > 0):
+            raise ValueError("Agent population exclusion record accounting is inconsistent")
         if has_exclusions != (self.excluded_public_evidence_version_count > 0):
             raise ValueError("Agent population exclusion lineage is inconsistent")
+        if has_exclusions != bool(self.excluded_public_evidence_version_set_id):
+            raise ValueError("Agent population exclusion Evidence identity is inconsistent")
         expected_set_id = (
             canonical_hash(
                 tuple(sorted(self.excluded_population_artifact_sha256s)),
@@ -207,28 +216,30 @@ def build_finance_agent_population(
         candidates_per_pattern=state_config.candidates_per_pattern,
     )
     candidate_count = math.ceil(requested * state_config.candidate_task_oversampling_factor)
-    resolved_exclusion_paths = tuple(
-        path.resolve() for path in excluded_population_artifacts_paths
-    )
+    resolved_exclusion_paths = tuple(path.resolve() for path in excluded_population_artifacts_paths)
     if len(set(resolved_exclusion_paths)) != len(resolved_exclusion_paths):
         raise ValueError("excluded Agent population paths are duplicated")
-    excluded_artifact_sha256s = tuple(
-        sorted(_sha256(path) for path in resolved_exclusion_paths)
-    )
+    excluded_artifact_sha256s = tuple(sorted(_sha256(path) for path in resolved_exclusion_paths))
     if len(set(excluded_artifact_sha256s)) != len(excluded_artifact_sha256s):
         raise ValueError("excluded Agent population contents are duplicated")
-    excluded_artifacts = tuple(
-        artifact
-        for path in resolved_exclusion_paths
-        for artifact in load_finance_multi_state_artifacts(path)
+    exclusion_sources = tuple(
+        _read_population_identity_source(path) for path in resolved_exclusion_paths
     )
     excluded_evidence_versions = frozenset(
-        evidence.evidence_version_id
-        for artifact in excluded_artifacts
-        for evidence in artifact.omega.public_corpus.evidence
+        evidence_version_id
+        for source in exclusion_sources
+        for evidence_version_id in source["evidence_version_ids"]
     )
     if resolved_exclusion_paths and not excluded_evidence_versions:
         raise ValueError("excluded Agent populations have no public Evidence")
+    excluded_evidence_version_set_id = (
+        canonical_hash(
+            tuple(sorted(excluded_evidence_versions)),
+            prefix="finance_population_excluded_evidence_version_set:",
+        )
+        if excluded_evidence_versions
+        else None
+    )
     excluded_artifact_set_id = (
         canonical_hash(
             excluded_artifact_sha256s,
@@ -298,7 +309,12 @@ def build_finance_agent_population(
         "source_to_agent_task_ids": dict(sorted(source_to_agent.items())),
         "excluded_population_artifact_sha256s": excluded_artifact_sha256s,
         "excluded_population_artifact_set_id": excluded_artifact_set_id,
+        "exclusion_identity_index_version": EXCLUSION_IDENTITY_INDEX_VERSION,
+        "excluded_population_record_count": sum(
+            int(source["record_count"]) for source in exclusion_sources
+        ),
         "excluded_public_evidence_version_count": len(excluded_evidence_versions),
+        "excluded_public_evidence_version_set_id": excluded_evidence_version_set_id,
         "artifact_sha256": _sha256(artifact_path),
         "status": (
             "passed" if len(artifacts) == requested else "partial" if artifacts else "blocked"
@@ -395,6 +411,47 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _read_population_identity_source(path: Path) -> dict[str, Any]:
+    """Index immutable Evidence identities without loading a legacy object schema."""
+
+    record_count = 0
+    evidence_version_ids: set[str] = set()
+    with path.open("r", encoding="utf-8") as source:
+        for line_number, line in enumerate(source, start=1):
+            if not line.strip():
+                continue
+            record_count += 1
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"excluded population contains invalid JSON at line {line_number}"
+                ) from exc
+            if not isinstance(value, dict):
+                raise ValueError("excluded population row is not an object")
+            joint = value.get("joint_compilation")
+            omega = joint.get("omega") if isinstance(joint, dict) else None
+            corpus = omega.get("public_corpus") if isinstance(omega, dict) else None
+            evidence = corpus.get("evidence") if isinstance(corpus, dict) else None
+            if not isinstance(evidence, list) or not evidence:
+                raise ValueError(
+                    "excluded population row lacks immutable public Evidence identities"
+                )
+            for item in evidence:
+                version_id = item.get("evidence_version_id") if isinstance(item, dict) else None
+                if not isinstance(version_id, str) or not version_id.strip():
+                    raise ValueError("excluded population Evidence lacks an evidence_version_id")
+                evidence_version_ids.add(version_id)
+    if record_count == 0 or not evidence_version_ids:
+        raise ValueError("excluded population identity source is empty")
+    return {
+        "path": str(path),
+        "sha256": _sha256(path),
+        "record_count": record_count,
+        "evidence_version_ids": tuple(sorted(evidence_version_ids)),
+    }
+
+
 def _write_jsonl_atomic(path: Path, values) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     with temporary.open("w", encoding="utf-8") as sink:
@@ -436,8 +493,7 @@ def main() -> None:
         task_count=args.task_count,
         seed=args.seed,
         excluded_population_artifacts_paths=tuple(
-            Path(value).resolve()
-            for value in args.exclude_population_artifacts_paths
+            Path(value).resolve() for value in args.exclude_population_artifacts_paths
         ),
     )
     print(report.model_dump_json(indent=2))
