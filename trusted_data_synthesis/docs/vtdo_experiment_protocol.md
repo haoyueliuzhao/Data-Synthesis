@@ -452,8 +452,18 @@ task, five planned realizations per state, and 64 disjoint Development Objective
 eight micro-splits. Validation and Authorization do not exist in the v22 artifact. The MPE is the
 minimum centered Contribution contrast that changes a selected next-round state probability by
 0.02 under the frozen anchored update and task-conditional Reachability. Final target sample size
-remains unfrozen until nested variance is observed. See
-`docs/finance_v22_development_power_plan.md`.
+remains unfrozen until nested variance is observed.
+
+The v22 Development measurement is now complete. The exact one-step AdamW chain derivative produced
+4,000 observations from 30 tasks, 100 states, five realizations per state, and eight Objective
+micro-splits. All 100 state intervals were contained in their update-derived practical-equivalence
+regions; 83 were also statistically nonzero, demonstrating why significance and equivalence must
+be reported as separate axes. Objective variation accounted for `99.9443%` of nested measurement
+variance. The original homogeneous one-MPE mean-power diagnostic does not freeze future
+task-specific proxy-validation support. The next recommended but unopened design contains 60 fresh
+tasks and 128 disjoint Objective records. A separate proxy-target agreement power contract must be
+frozen before GP-C is exposed. See `docs/finance_v22_development_power_plan.md` and
+`docs/finance_v22_development_exact_target_report.md`.
 
 ## 6. Experiment 4: Refinement Dynamics
 

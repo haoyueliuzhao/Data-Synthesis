@@ -320,6 +320,18 @@ observable with the required precision. It still does not test or falsify GP-C o
 functional derivative. Authorization remains unopened and real VTDO retains `Contribution=0`.
 See `docs/finance_v20_target_identifiability_report.md`.
 
+The v22 Development successor replaces finite-radius recovery with an exact chain derivative of a
+single frozen cold-start AdamW update. It uses 30 real Finance tasks, 100 accepted quotient states,
+five independent realizations per state, and eight disjoint Objective micro-splits, yielding 4,000
+crossed target observations. Numeric and simplex identities passed. All 30 outcome-blind primary
+coordinates and all 100 state coordinates had 95% intervals fully contained within their
+state-specific update-derived MPE; no coordinate was meaningfully beyond MPE. Objective micro-split
+variation accounted for `99.9443%` of nested measurement variance, while realization variation was
+negligible. This is precise evidence of practical equivalence for the Development one-step
+surrogate, not a claim that theoretical Contribution is globally zero and not an evaluation of
+GP-C. Fresh Validation remains unopened, Authorization remains forbidden, and real VTDO retains
+`Contribution=0`. See `docs/finance_v22_development_exact_target_report.md`.
+
 ## Novelty, Potential, And Anchored Update
 
 Coverage-relative novelty is exact:

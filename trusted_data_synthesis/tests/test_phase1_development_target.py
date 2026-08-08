@@ -7,7 +7,7 @@ import pytest
 from trusted_synthesis.experiments.vtdo_experiment.phase1_development_target import (
     cold_start_adamw_vjp,
     crossed_effect_summary,
-    empirical_power_grid,
+    homogeneous_mean_power_diagnostic,
 )
 
 
@@ -57,10 +57,9 @@ def test_crossed_effect_summary_separates_two_main_effects() -> None:
     assert summary["standard_error"] == pytest.approx(math.sqrt(1.0 / 3.0 + 0.5 / 2.0))
 
 
-def test_empirical_power_grid_is_deterministic_and_increases_with_support() -> None:
-    first = empirical_power_grid(task_between_variance=1.0, measurement_variance=0.5)
-    second = empirical_power_grid(task_between_variance=1.0, measurement_variance=0.5)
+def test_homogeneous_mean_power_diagnostic_is_deterministic() -> None:
+    first = homogeneous_mean_power_diagnostic(task_between_variance=1.0, measurement_variance=0.5)
+    second = homogeneous_mean_power_diagnostic(task_between_variance=1.0, measurement_variance=0.5)
     assert first == second
     assert [row["task_count"] for row in first] == [30, 45, 50, 60, 80, 100]
     assert first[-1]["power"] > first[0]["power"]
-

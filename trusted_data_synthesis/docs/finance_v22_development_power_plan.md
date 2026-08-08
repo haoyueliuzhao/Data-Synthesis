@@ -2,11 +2,10 @@
 
 Status date: 2026-08-08
 
-Current status: `exact_one_step_target_implementation_preoutcome`. The initial Explorer
-distribution and the complete DeepSeek v13 state-conditioned population are qualified. Development
-target gradients have not started. This document records the pre-outcome design, immutable inputs,
-observed materialization limits, and scientific boundaries for the successor to the cancelled v21
-run.
+Current status: `development_design_recommendation_ready`. The initial Explorer distribution, the
+complete DeepSeek v13 state-conditioned population, 500 state gradients, eight Objective gradients,
+and 4,000 exact-target observations are complete. The original target report remains immutable; a
+separate v22.1 analysis corrects inference and study sizing without rewriting its observations.
 
 ## Scientific Question
 
@@ -80,10 +79,11 @@ The data stage will collect:
 - API success, contract repair, token, cost, and retry telemetry;
 - the update-derived MPE distribution.
 
-Only after these pre-target quantities are frozen may the Development target study estimate nested
-variance across task, task family, Objective micro-split, realization, and numeric replay. The final
-Validation task count is not frozen until Monte Carlo power simulation uses those observed variance
-components.
+Only after these pre-target quantities were frozen did the Development target study estimate nested
+variance across task, task family, Objective micro-split, realization, and numeric replay. The
+result is now complete. A post-measurement audit showed that the original homogeneous-mean power
+diagnostic is insufficient to freeze the number of task-specific coordinates for GP-C validation,
+so the final Validation contract remains unopened.
 
 ## Materializer Diagnostics
 
@@ -156,11 +156,11 @@ post-generation failures into one counter. The original smoke threshold is uncha
 
 ## Fail-Closed Transition
 
-The next permitted transition is a Development target measurement. A future Validation population
-must contain 48-60 fresh tasks and remain disjoint in task ID, Evidence version, and semantic
-signature. Direct coordinates precede any block design. GP-C remains inaccessible until an
-independent target is either statistically identifiable or demonstrably within the frozen
-practical-equivalence region.
+The Development target measurement is complete. The next permitted transition is to preregister a
+fresh, family-balanced Validation design without observing any Validation outcome. The recommended
+support is 60 tasks, five realizations per state, and 128 Objective records in 16 disjoint
+micro-splits. GP-C remains inaccessible until fresh exact targets contain practically meaningful
+coordinates and a separate proxy-target agreement contract has been frozen.
 
 ## Completed Development Data Stage
 
@@ -233,10 +233,40 @@ The target remains a one-step engineering surrogate, not the full Student-traini
 successful Development result cannot establish Validation identifiability, evaluate GP-C, open
 Authorization, authorize Contribution, update VTDO, or support downstream Student claims.
 
+## Completed Exact-Target Result
+
+The measurement contract was frozen at source commit `3aa1b0c` before outcomes. Two concurrent
+three-GPU workers completed 500/500 state gradients, followed by 8/8 Objective micro-splits. The
+aggregate produced 4,000 crossed observations and passed numeric and simplex replay:
+
+| Measure | Result |
+| --- | ---: |
+| FP32/FP64 maximum target delta | `1.0551e-11` |
+| Maximum simplex-centering error | `1.1699e-11` |
+| Objective share of nested measurement variance | `99.9443%` |
+| Realization share | `0.0005%` |
+| Primary coordinates statistically nonzero | 26 / 30 |
+| Primary coordinates practically equivalent | 30 / 30 |
+| All states practically equivalent | 100 / 100 |
+| Coordinates meaningful beyond MPE | 0 / 100 |
+
+The original exclusive resolution labels hid that 26 primary coordinates were both statistically
+nonzero and practically equivalent. The separately hashed v22.1 analysis reports both axes. Median
+primary effect magnitude is `0.001181 x MPE`; the maximum is `0.024457 x MPE`.
+
+The original `power=1.0` result for a homogeneous one-MPE population mean is retained as a
+diagnostic but cannot freeze task count for future proxy-target agreement. The recommended fresh
+Validation support is 60 tasks (10 per family), five realizations per state, and 128 Objective
+records (16 x 8). That recommendation is not yet a Validation contract and does not open any held
+out data. Full results are in `docs/finance_v22_development_exact_target_report.md`.
+
 ## Immutable References
 
 - `artifacts/vtdo_experiment/finance_v22_development_population30_v1_20260807/`
 - `artifacts/vtdo_experiment/finance_v22_development_objective64_v1_20260807/`
 - `artifacts/vtdo_experiment/finance_v21_target_observability_population420_v1_20260807/`
 - `artifacts/vtdo_experiment/finance_v21_target_observability_population6_v1_20260807/`
+- `artifacts/vtdo_experiment/finance_v22_development_exact_target_v1_20260808/`
 - `src/trusted_synthesis/experiments/vtdo_experiment/phase1_development_power.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_development_target.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_development_design_analysis.py`

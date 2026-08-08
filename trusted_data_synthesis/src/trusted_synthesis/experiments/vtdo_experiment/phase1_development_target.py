@@ -31,6 +31,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_contribution_gradient 
     _seed_everything,
     _weighted_gradient,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_development_design_analysis import (
+    classify_effect_interval,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_gp_c_proxy import (
     _apply_descent_vector,
 )
@@ -49,7 +52,7 @@ STATE_AGGREGATE_VERSION = "finance_development_state_gradient_aggregate.v22"
 STATE_AGGREGATE_PREFIX = "finance_development_state_gradient_aggregate:"
 OBJECTIVE_WORKER_VERSION = "finance_development_objective_gradient_worker.v22"
 OBJECTIVE_WORKER_PREFIX = "finance_development_objective_gradient_worker:"
-TARGET_REPORT_VERSION = "finance_development_exact_target_report.v22"
+TARGET_REPORT_VERSION = "finance_development_exact_target_report.v22.1"
 TARGET_REPORT_PREFIX = "finance_development_exact_target_report:"
 PRIMARY_COORDINATE_SALT = "finance_v22_development_primary_coordinate_20260808"
 STATE_PARTITION_COUNT = 2
@@ -227,8 +230,7 @@ def prepare_target_contract(
         or realization_report.get("artifact_sha256") != _sha256(task_states_path)
         or realization_report.get("distribution_sha256") != _sha256(distributions_path)
         or realization_report.get("realizations_sha256") != _sha256(realizations_path)
-        or realization_report.get("realization_uniqueness_policy")
-        != "independent_trajectory_draws"
+        or realization_report.get("realization_uniqueness_policy") != "independent_trajectory_draws"
     ):
         raise ValueError("Development realization report differs")
     if (
@@ -386,9 +388,7 @@ def prepare_target_contract(
             "model_dir": source_plan["model_dir"],
             "base_model_manifest_hash": source_plan["base_model_manifest_hash"],
             "beneficiary_adapter_dir": source_plan["beneficiary_adapter_dir"],
-            "beneficiary_adapter_tensor_sha256": source_plan[
-                "beneficiary_adapter_tensor_sha256"
-            ],
+            "beneficiary_adapter_tensor_sha256": source_plan["beneficiary_adapter_tensor_sha256"],
             "beneficiary_checkpoint_hash": source_plan["beneficiary_checkpoint_hash"],
             "beneficiary_model_state_id": source_plan["beneficiary_model_state_id"],
         },
@@ -599,9 +599,7 @@ def run_state_gradient_worker(
     return report
 
 
-def _verify_state_worker_report(
-    value: Mapping[str, Any], *, contract_hash: str
-) -> dict[str, Any]:
+def _verify_state_worker_report(value: Mapping[str, Any], *, contract_hash: str) -> dict[str, Any]:
     report = dict(value)
     _replay_hash(report, field="report_hash", prefix=STATE_WORKER_PREFIX)
     if (
@@ -1010,9 +1008,9 @@ def _directional_dot(
         raise ValueError("target directional parameter manifests differ")
     result = torch.zeros((), dtype=torch.float64)
     for name, value in vjp.items():
-        difference = realization_gradient[name].to(dtype=value.dtype) - task_mean_gradient[
-            name
-        ].to(dtype=value.dtype)
+        difference = realization_gradient[name].to(dtype=value.dtype) - task_mean_gradient[name].to(
+            dtype=value.dtype
+        )
         result += torch.sum(value.double() * difference.double())
     return float(result)
 
@@ -1066,7 +1064,7 @@ def crossed_effect_summary(values: Mapping[tuple[str, str], float]) -> dict[str,
     }
 
 
-def empirical_power_grid(
+def homogeneous_mean_power_diagnostic(
     *, task_between_variance: float, measurement_variance: float, seed: int = 20262208
 ) -> list[dict[str, Any]]:
     if task_between_variance < 0 or measurement_variance < 0:
@@ -1150,8 +1148,7 @@ def aggregate_target_measurements(
         )
         del objective
     realization_refs = {
-        str(row["realization_id"]): row
-        for row in state_manifest["realization_gradient_artifacts"]
+        str(row["realization_id"]): row for row in state_manifest["realization_gradient_artifacts"]
     }
     task_mean_refs = {str(row["task_id"]): row for row in state_manifest["task_mean_artifacts"]}
     realization_objects = _load_state_realizations(
@@ -1215,16 +1212,13 @@ def aggregate_target_measurements(
     for (task_id, state_id), values in sorted(grouped.items()):
         summary = crossed_effect_summary(values)
         threshold = mpe[(task_id, state_id)]
-        if summary["ci_lower"] > 0 or summary["ci_upper"] < 0:
-            resolution = (
-                "meaningful_nonzero"
-                if abs(summary["mean"]) >= threshold
-                else "sub_mpe_nonzero"
-            )
-        elif summary["ci_lower"] >= -threshold and summary["ci_upper"] <= threshold:
-            resolution = "practically_equivalent"
-        else:
-            resolution = "inconclusive"
+        inference = classify_effect_interval(
+            mean=float(summary["mean"]),
+            ci_lower=float(summary["ci_lower"]),
+            ci_upper=float(summary["ci_upper"]),
+            minimum_practical_effect=threshold,
+        )
+        resolution = str(inference["joint_resolution"])
         if state_id == primary_by_task[task_id]:
             resolution_counts[resolution] += 1
         state_summaries.append(
@@ -1235,6 +1229,7 @@ def aggregate_target_measurements(
                 "is_primary_coordinate": state_id == primary_by_task[task_id],
                 "minimum_practical_effect": threshold,
                 "resolution": resolution,
+                "dual_axis_inference": inference,
                 **summary,
             }
         )
@@ -1260,12 +1255,13 @@ def aggregate_target_measurements(
     observed_variance = statistics.variance(normalized_means)
     mean_measurement_variance = statistics.fmean(normalized_measurement_variances)
     task_between_variance = max(0.0, observed_variance - mean_measurement_variance)
-    power_rows = empirical_power_grid(
+    homogeneous_power_rows = homogeneous_mean_power_diagnostic(
         task_between_variance=task_between_variance,
         measurement_variance=mean_measurement_variance,
     )
-    recommended = next(
-        (row["task_count"] for row in power_rows if row["target_power_reached"]), None
+    diagnostic_task_count = next(
+        (row["task_count"] for row in homogeneous_power_rows if row["target_power_reached"]),
+        None,
     )
     per_state_components = [
         {
@@ -1300,9 +1296,7 @@ def aggregate_target_measurements(
         "state_manifest": _artifact_ref(
             state_manifest_path, manifest_hash=state_manifest["manifest_hash"]
         ),
-        "objective_worker_report_hashes": [
-            report["report_hash"] for report in objective_reports
-        ],
+        "objective_worker_report_hashes": [report["report_hash"] for report in objective_reports],
         "post_update_adapter_hash": objective_reports[0]["post_update_adapter_hash"],
         "observation_artifact": _artifact_ref(observations_path),
         "task_count": len(contract["task_rows"]),
@@ -1327,17 +1321,21 @@ def aggregate_target_measurements(
             "numeric_maximum_absolute_delta": maximum_numeric_delta,
         },
         "simplex_center_maximum_absolute_error": maximum_center_error,
-        "empirical_power_contract": {
+        "homogeneous_mean_power_diagnostic": {
             "effect_size": "one_update_derived_mpe",
             "normalized_task_between_variance": task_between_variance,
             "normalized_measurement_variance": mean_measurement_variance,
             "observed_primary_normalized_mean_variance": observed_variance,
-            "rows": power_rows,
-            "recommended_task_count": recommended,
-            "recommendation_status": "within_grid" if recommended is not None else "above_grid",
+            "rows": homogeneous_power_rows,
+            "diagnostic_task_count": diagnostic_task_count,
+            "accepted_as_final_validation_task_count": False,
+            "interpretation": (
+                "A homogeneous one-MPE population-mean diagnostic cannot freeze the number "
+                "of task-specific coordinates required for proxy-target validation."
+            ),
         },
         "nested_variance_measurement_status": "measured_on_development_only",
-        "final_validation_task_count_frozen": recommended is not None,
+        "final_validation_task_count_frozen": False,
         "validation_objective_access": "forbidden",
         "authorization_objective_access": "forbidden",
         "gp_c_evaluated": False,

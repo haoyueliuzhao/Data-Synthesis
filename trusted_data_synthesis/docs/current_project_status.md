@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-07
+Audit date: 2026-08-08
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -10,19 +10,27 @@ messages are not treated as experimental evidence.
 
 - Active repository: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
 - Branch: `main`
-- v20 implementation parent: `5ca63e3`
-- sealed retry implementation SHA-256: `1e9533f4c67096874ba28aa3f28e0319ed9e8d2d609d08b92f0d2197e6ad285a`
+- v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
+- v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The current change set adds the fail-closed v20 finite-target identifiability study, including
-fresh target-population selection, measured parameter-step normalization, direct-coordinate
-anchors, disjoint Objective micro-splits, block-size diagnostics, odd-cubic slope fitting, and
-claim-bounded aggregation that cannot execute GP-C or open Authorization.
+The current change set completes the v22 Development-only exact one-step target study and adds a
+separately hashed v22.1 design analysis. The original 4,000 target observations and target report
+are preserved unchanged. Validation and Authorization remain inaccessible, GP-C remains
+unevaluated, and production Contribution remains zero.
 
 ## Runtime And Data
 
 The migrated environment is operational with Python 3.12, PyTorch 2.7.1+cu128, CUDA 12.8, and
 eight NVIDIA A100-SXM4-80GB GPUs. No sealed experiment process remained after aggregation.
+
+After all v22 workers had exited, a separate root-owned process
+`/opt/venv/render/bin/python3 --coin pearl` appeared at 10:22 and occupied GPUs 0, 1, 3, 4, 6, and
+7. It is not a project process and was not terminated. At the same time, `/usr/bin/nvidia-smi` had
+an invalid mixed-case ELF interpreter path; read-only inspection remained possible through the
+system loader. Future GPU experiments should not start until the server operator reviews this
+external workload and binary change. Neither event occurred during the completed v22 target
+workers or changes their content-hashed artifacts.
 
 The read-only Finance Archive remains the active data dependency:
 
@@ -44,24 +52,40 @@ v21 was stopped by operator request after Estimation and Validation each wrote 9
 observations. No aggregate was created, no GP-C evaluation occurred, and the partial rows are not
 scientific evidence for target identifiability. All v21 workers are stopped.
 
-v22 now freezes a pre-outcome Development-only population from the 420-task real Finance pool:
-30 tasks balanced across six families, 100 accepted states, and 312 public Evidence versions with
-zero Evidence overlap across target tasks. A separate 64-record Objective role is task-, signature-,
-and Evidence-disjoint from the targets and is frozen into eight micro-splits of eight. Planned API
-support is 300 unconditioned Explorer draws plus five state-conditioned realizations for each of
-100 states. Validation and Authorization access are forbidden, GP-C is disabled, and production
-Contribution remains zero until a later independent target is identifiable.
+v22 froze a pre-outcome Development-only population from the 420-task real Finance pool: 30 tasks
+balanced across six families, 100 accepted states, and 312 public Evidence versions with zero
+Evidence overlap across target tasks. A separate 64-record Objective role is task-, signature-, and
+Evidence-disjoint from the targets and was frozen into eight micro-splits of eight. DeepSeek v4 Pro
+completed 300 unconditioned Explorer draws and 500/500 state-conditioned realizations.
+
+The exact target then completed 500/500 strict-FP32 state gradients and 8/8 Objective-gradient
+micro-splits on two parallel three-GPU workers. It produced 4,000 crossed observations under one
+shared global cold-start AdamW update. Maximum FP32/FP64 target delta was `1.0551e-11` and maximum
+simplex-centering error was `1.1699e-11`.
+
+Post-measurement dual-axis inference found that 26/30 primary coordinates were statistically
+nonzero, while 30/30 primary coordinates and 100/100 total state coordinates were practically
+equivalent under their update-derived MPE. No coordinate was meaningfully beyond MPE. Objective
+micro-split variation accounted for `99.9443%` of nested measurement variance; realization
+variation accounted for approximately `0.0005%`.
 
 ## Revalidated Code State
 
 | Check | Result |
 | --- | --- |
-| Target-identifiability focus | 8 passed |
-| Ruff | passed |
-| Mypy | passed, 242 source files |
-| Pytest | passed, 401 tests in 119.27 seconds |
-| Core generalization boundary | retained by full suite |
+| Development target/design focus | 10 passed |
+| Ruff check | passed |
+| Ruff format, changed files | passed |
+| Mypy | passed, 249 source files |
+| Pytest | passed, 446 tests in 132.65 seconds |
+| Core generalization boundary | 130 files, zero imports/branches/field accesses/violations |
+| Tracked production-key pattern scan | zero `sk-...` hits; one explicit `test-secret` fixture |
+| v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
 | Legal and Science contracts | retained by full suite |
+
+The repository-wide formatter would rewrite 67 historical files under the currently installed
+Ruff version. Those unrelated files were deliberately not reformatted; all changed Python files
+pass the formatter and lint checks.
 
 The v17 tests reject altered plans, implementation manifests, profiles, splits, source jobs,
 result rows, selection lineage, uncertainty envelopes, and stale contracts. Validation cannot run
@@ -229,28 +253,38 @@ The scientifically correct state is:
 
 - strict-FP32 numeric execution status: `passed`;
 - v20 finite-target identifiability status: `failed`;
+- v22 Development exact-target execution status: `passed`;
+- v22 primary practical-equivalence status: `30/30`;
+- v22 all-state practical-equivalence status: `100/100`;
+- v22 meaningful-beyond-MPE count: `0/100`;
 - `gp_c_evaluated=false`;
 - `authorization_objective_access=forbidden`;
 - `authorization_objective_observation_count=0`;
 - `production_authorized=false`;
 - `contribution_authorized=false`;
-- allowed next stage: `redesign_target_measurement_with_fresh_support`;
+- allowed next stage: `preregister_fresh_validation_exact_target_contract`;
 - VTDO updates, Student training, and downstream claims remain unauthorized.
 
-The current evidence establishes reliable strict-FP32 execution but does not establish a stable
-finite target with which to test GP-C. It neither validates nor falsifies GP-C or theoretical
-Contribution.
+The current evidence establishes reliable strict-FP32 execution and a precise exact one-step target
+on Development. It also shows that every observed Development coordinate is materially below the
+current MPE. This neither validates nor falsifies GP-C or theoretical Contribution: a proxy cannot
+be meaningfully ranked against a Development target with no practically meaningful coordinates,
+and no fresh Validation result exists.
 
 ## Next Step
 
-Do not rerun GP-C or open Authorization on v20. Preregister a new target-measurement design with
-fresh Objective Support and an explicit minimum observable effect or variance-reduction strategy.
-Keep the frozen FP32 numeric profile, but do not tune v20 thresholds or reuse its Estimation and
-Validation records as a future Authorization set.
+Do not rerun GP-C or open Authorization. Freeze a fresh Validation exact-target contract before any
+new target outcome is observed. The current recommendation is 60 tasks balanced across six
+families, 3-5 states per task, five realizations per state, and 128 Objective records in 16 disjoint
+micro-splits. The final proxy-target agreement estimand and power contract must be preregistered
+separately before GP-C is exposed. Do not reuse v20, cancelled v21, or v22 Development tasks,
+Evidence, semantic signatures, or Objective records.
 
 ## Authoritative References
 
 - `docs/finance_v20_target_identifiability_report.md`
+- `docs/finance_v22_development_power_plan.md`
+- `docs/finance_v22_development_exact_target_report.md`
 - `docs/finance_v19_sealed_causal_pilot_report.md`
 - `docs/finance_v18_sealed_numeric_authorization_report.md`
 - `docs/finance_v17_numeric_root_cause_report.md`
