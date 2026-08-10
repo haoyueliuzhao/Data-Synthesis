@@ -6,7 +6,8 @@ from typing import Any
 import pytest
 
 from trusted_synthesis.core.task.answer_schema import required_answer_fields
-from trusted_synthesis.core.trajectory.schema import ActionType
+from trusted_synthesis.core.task.schema import TaskRequirement
+from trusted_synthesis.core.trajectory.schema import ActionType, StepStatus
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_cases,
 )
@@ -23,14 +24,17 @@ from trusted_synthesis.runtime.tools import (
 
 
 class _ScriptedClient:
-    def __init__(self, payloads: list[dict[str, Any]]) -> None:
+    def __init__(
+        self, payloads: list[dict[str, Any]], *, contract_repair_attempts: int = 0
+    ) -> None:
         self._payloads = iter(payloads)
+        self.prompts: list[str] = []
         self._config = AgentModelConfig(
             provider="fixture",
             endpoint="https://fixture.invalid/v1/chat/completions",
             model="fixture-model",
             api_key_env="FIXTURE_API_KEY",
-            contract_repair_attempts=0,
+            contract_repair_attempts=contract_repair_attempts,
         )
 
     @property
@@ -38,6 +42,7 @@ class _ScriptedClient:
         return self._config
 
     def complete_json(self, prompt: str) -> tuple[dict[str, Any], ModelCallTelemetry]:
+        self.prompts.append(prompt)
         payload = next(self._payloads)
         request_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         return payload, ModelCallTelemetry(
@@ -58,8 +63,18 @@ class _ScriptedClient:
 
 
 class _ToolRuntime:
-    def __init__(self, *, fail_first: bool = False) -> None:
-        self._manifest = _tool_manifest(maximum_failed_tool_calls=1 if fail_first else 0)
+    def __init__(
+        self,
+        *,
+        fail_first: bool = False,
+        maximum_failed_tool_calls: int | None = None,
+    ) -> None:
+        failed_budget = (
+            (1 if fail_first else 0)
+            if maximum_failed_tool_calls is None
+            else maximum_failed_tool_calls
+        )
+        self._manifest = _tool_manifest(maximum_failed_tool_calls=failed_budget)
         self._fail_first = fail_first
         self.calls: list[AgentToolCall] = []
 
@@ -173,6 +188,21 @@ def _answer_decision(answer: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _scripted_tool_arguments(**arguments: Any) -> dict[str, Any]:
+    return {
+        "rationale_summary": "Fill the Host-selected tool arguments from public context.",
+        "arguments": arguments,
+    }
+
+
+def _scripted_answer(answer: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "rationale_summary": "The selected and verified Evidence supports the answer.",
+        "answer": answer,
+        "cited_evidence_ids": ["evidence:public:1"],
+    }
+
+
 def test_autonomous_agent_loop_preserves_host_owned_observations() -> None:
     task, answer = _task_and_answer()
     client = _ScriptedClient(
@@ -200,7 +230,8 @@ def test_autonomous_agent_loop_preserves_host_owned_observations() -> None:
         ActionType.VERIFY,
         ActionType.ANSWER,
     ]
-    assert result.trajectory.final_answer == answer
+    assert result.trajectory.final_answer["result"] == answer
+    assert result.trajectory.final_answer["citations"] == [{"evidence_id": "evidence:public:1"}]
     assert result.audit.successful_tool_call_count == 2
     assert result.audit.verification_tool_call_count == 1
     assert result.audit.error_recovery_count == 0
@@ -239,25 +270,118 @@ def test_autonomous_agent_loop_records_failure_and_recovery() -> None:
     assert result.observations[1].status == "succeeded"
 
 
-def test_scripted_agent_cannot_change_host_tool_order() -> None:
+def test_agent_rejects_identical_failed_call_regardless_of_host_call_index() -> None:
     task, _ = _task_and_answer()
-    client = _ScriptedClient([_plan(), _tool_decision("verify_result", value=10)])
-    solver = IterativeAgentSolver(
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="same bad query"),
+            _tool_decision("lookup", query="same bad query"),
+        ]
+    )
+    runtime = _ToolRuntime(fail_first=True)
+
+    with pytest.raises(LLMClientError, match="repeated an identical failed tool call"):
+        IterativeAgentSolver(
+            client,
+            mode="autonomous_agent",
+            maximum_total_tokens=100,
+        ).solve_with_audit(task, runtime)
+
+    assert len(runtime.calls) == 1
+
+
+def test_successful_intervening_action_reopens_a_failed_tool_call() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="temporarily unavailable"),
+            _tool_decision("verify_result", value=10),
+            _tool_decision("lookup", query="temporarily unavailable"),
+            _answer_decision(answer),
+        ]
+    )
+    runtime = _ToolRuntime(fail_first=True)
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+    ).solve_with_audit(task, runtime)
+
+    assert [item.status for item in result.observations] == [
+        "failed",
+        "succeeded",
+        "succeeded",
+    ]
+    assert [item.tool_id for item in runtime.calls] == [
+        "lookup",
+        "verify_result",
+        "lookup",
+    ]
+
+
+def test_scripted_agent_host_controls_tool_order() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _scripted_tool_arguments(query="public metric"),
+            _scripted_tool_arguments(value=10),
+            _scripted_answer(answer),
+        ]
+    )
+    runtime = _ToolRuntime()
+
+    result = IterativeAgentSolver(
         client,
         mode="scripted_tool",
         maximum_total_tokens=100,
         scripted_tool_sequence=("lookup", "verify_result"),
+    ).solve_with_audit(task, runtime)
+
+    assert [item.tool_id for item in runtime.calls] == ["lookup", "verify_result"]
+    assert result.audit.scripted_tool_sequence == ("lookup", "verify_result")
+    assert result.trajectory.final_answer["result"] == answer
+    assert all(
+        '"tool_id"' not in prompt.split("PUBLIC_CONTEXT_JSON:", 1)[0]
+        for prompt in client.prompts[1:]
     )
 
-    with pytest.raises(LLMClientError, match="changed the frozen tool sequence"):
-        solver.solve_with_audit(task, _ToolRuntime())
+
+def test_contract_repair_does_not_replay_echoed_payload() -> None:
+    task, answer = _task_and_answer()
+    echoed = {"prompt_version": "echo", "padding": "x" * 10_000}
+    client = _ScriptedClient(
+        [
+            echoed,
+            _plan(),
+            _answer_decision(answer),
+            _answer_decision(answer),
+            _answer_decision(answer),
+        ],
+        contract_repair_attempts=1,
+    )
+
+    with pytest.raises(LLMClientError, match="stop-rejection budget"):
+        IterativeAgentSolver(
+            client,
+            mode="autonomous_agent",
+            maximum_total_tokens=100,
+        ).solve_with_audit(task, _ToolRuntime())
+
+    assert len(client.prompts) == 5
+    assert "x" * 100 not in client.prompts[1]
+    assert '"previous_payload":' not in client.prompts[1]
+    assert "previous_payload_keys" in client.prompts[1]
 
 
 def test_agent_cannot_stop_without_observed_evidence() -> None:
     task, answer = _task_and_answer()
-    client = _ScriptedClient([_plan(), _answer_decision(answer)])
+    client = _ScriptedClient([_plan(), *(_answer_decision(answer) for _ in range(3))])
 
-    with pytest.raises(LLMClientError, match="without using a tool"):
+    with pytest.raises(LLMClientError, match="stop-rejection budget") as captured:
         IterativeAgentSolver(
             client,
             mode="autonomous_agent",
@@ -267,17 +391,99 @@ def test_agent_cannot_stop_without_observed_evidence() -> None:
             _ToolRuntime(),
         )
 
+    artifact = captured.value.failure_artifact
+    assert artifact is not None
+    assert len(artifact.stop_rejections) == 3
+    assert {item.reason_code for item in artifact.stop_rejections} == {"missing_observed_evidence"}
 
-def test_iterative_agent_rejects_missing_required_tool_arguments() -> None:
-    task, _ = _task_and_answer()
-    client = _ScriptedClient([_plan(), _tool_decision("lookup")])
 
-    with pytest.raises(LLMClientError, match="lacks required fields.*query"):
-        IterativeAgentSolver(
-            client,
-            mode="autonomous_agent",
-            maximum_total_tokens=100,
-        ).solve_with_audit(task, _ToolRuntime())
+def test_agent_repairs_premature_stop_after_host_feedback() -> None:
+    task, answer = _task_and_answer()
+    task = task.model_copy(
+        update={
+            "requirements": tuple(
+                dict.fromkeys((*task.requirements, TaskRequirement.VERIFY_RESULT))
+            )
+        }
+    )
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="public metric"),
+            _answer_decision(answer),
+            _tool_decision("verify_result", value=10),
+            _answer_decision(answer),
+        ]
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+    ).solve_with_audit(task, _ToolRuntime())
+
+    answer_steps = [step for step in result.trajectory.steps if step.action == ActionType.ANSWER]
+    assert [step.status for step in answer_steps] == [
+        StepStatus.FAILED,
+        StepStatus.SUCCEEDED,
+    ]
+    assert len(result.audit.stop_rejections) == 1
+    assert result.audit.stop_rejections[0].reason_code == "missing_required_verification"
+    assert "host_feedback" in client.prompts[3]
+    assert "run a successful verification tool" in client.prompts[3]
+    assert "answer_field_contract" in client.prompts[3]
+
+
+def test_scripted_agent_retries_same_host_tool_after_failed_observation() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _scripted_tool_arguments(query="bad query"),
+            _scripted_tool_arguments(query="reformulated query"),
+            _scripted_tool_arguments(value=10),
+            _scripted_answer(answer),
+        ]
+    )
+    runtime = _ToolRuntime(fail_first=True)
+
+    result = IterativeAgentSolver(
+        client,
+        mode="scripted_tool",
+        maximum_total_tokens=100,
+        scripted_tool_sequence=("lookup", "verify_result"),
+    ).solve_with_audit(task, runtime)
+
+    assert [item.tool_id for item in runtime.calls] == [
+        "lookup",
+        "lookup",
+        "verify_result",
+    ]
+    assert result.audit.failed_tool_call_count == 1
+    assert result.audit.error_recovery_count == 1
+
+
+def test_iterative_agent_recovers_from_missing_required_tool_arguments() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup"),
+            _tool_decision("lookup", query="public metric"),
+            _answer_decision(answer),
+        ]
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+    ).solve_with_audit(task, _ToolRuntime(maximum_failed_tool_calls=1))
+
+    assert result.observations[0].status == "failed"
+    assert result.observations[0].error_code == "agent_tool_argument_contract"
+    assert result.observations[1].status == "succeeded"
+    assert result.audit.error_recovery_count == 1
 
 
 def test_iterative_agent_rejects_malformed_successful_tool_output() -> None:
@@ -298,16 +504,24 @@ def test_iterative_agent_rejects_unknown_final_answer_fields() -> None:
         [
             _plan(),
             _tool_decision("lookup", query="public metric"),
-            _answer_decision({**answer, "unsupported_extension": 1}),
+            _tool_decision("verify_result", value=10),
+            *(_answer_decision({**answer, "unsupported_extension": 1}) for _ in range(3)),
         ]
     )
 
-    with pytest.raises(LLMClientError, match="answer contains unknown fields"):
+    with pytest.raises(LLMClientError, match="stop-rejection budget") as captured:
         IterativeAgentSolver(
             client,
             mode="autonomous_agent",
             maximum_total_tokens=100,
         ).solve_with_audit(task, _ToolRuntime())
+
+    artifact = captured.value.failure_artifact
+    assert artifact is not None
+    assert len(artifact.stop_rejections) == 3
+    assert {item.reason_code for item in artifact.stop_rejections} == {
+        "invalid_final_answer_contract"
+    }
 
 
 def test_iterative_agent_rejects_oracle_fields_in_final_answer() -> None:

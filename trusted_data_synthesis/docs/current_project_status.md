@@ -9,7 +9,7 @@ messages are not treated as experimental evidence.
 ## Repository Identity
 
 - Active repository: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
-- Branch: `main`
+- Implementation branch: `codex/pro-flash-v23` in an isolated worktree
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
@@ -19,10 +19,11 @@ separately hashed v22.1 design analysis. The original 4,000 target observations 
 are preserved unchanged. Validation and Authorization remain inaccessible, GP-C remains
 unevaluated, and production Contribution remains zero.
 
-The post-v22 plan now inserts a capability-sensitive Agent Runtime Pilot before any fresh
-Validation. Domain-neutral tool and iterative Host-execution contracts, the three-arm Pilot gate,
-and a Finance six-tool manifest are implemented. The real Archive tool executors, API Pilot,
-frontier screening, and new exact-target measurements have not run.
+The post-v22 plan inserts a capability-sensitive Agent Runtime Pilot before any fresh Validation.
+Domain-neutral tool and iterative Host-execution contracts, the three-arm factorial gate, Finance
+Archive executors, independent replay verifier, and paired Pro--Flash runner are implemented.
+The final v9 API qualification ran and failed its completion and JSON-contract gates. Factorial
+Discovery, frontier screening, and new exact-target measurements therefore remain unopened.
 
 ## Runtime And Data
 
@@ -74,16 +75,51 @@ equivalent under their update-derived MPE. No coordinate was meaningfully beyond
 micro-split variation accounted for `99.9443%` of nested measurement variance; realization
 variation accounted for approximately `0.0005%`.
 
+## v23 Pro--Flash Agent Runtime Qualification
+
+v23 changes the generation kernel before attempting another exact-target study. It compares exact
+`deepseek-v4-pro` and `deepseek-v4-flash` model identities across Direct/Bare, Host-scripted Tool,
+and Autonomous Agent runtimes. Scripted and Autonomous share one frozen six-tool Archive
+environment; all Observations are content addressed and independently replayed. The model never
+receives Gold Evidence IDs, hidden programs, reference answers, Proof Graphs, or quotient targets.
+
+Protocol-development runs v4-v8 localized output-contract, stop-correction, tool-argument,
+no-match recovery, and cumulative-context-budget failures. v6, v7, and v8 each consumed a new
+36-task set, and each successor excluded every earlier formal task set. No gate threshold was
+relaxed. v9 was declared the final qualification and excluded 150 prior task identities before its
+first API call.
+
+v9 completed all 36 requested calibration records with 12 parallel workers. It made 265 API calls,
+used 1,151,551 provider-reported tokens, and recorded an estimated API cost of `$0.2782318716`.
+All calls used the requested exact model, with zero fallback, zero model-identity mismatch, and zero
+HTTP failure. The six model-runtime cells were:
+
+| Model | Runtime | Completed | Independently valid |
+| --- | --- | ---: | ---: |
+| Pro | Direct/Bare | 6/6 | 6/6 |
+| Pro | Scripted Tool | 6/6 | 5/6 |
+| Pro | Autonomous Agent | 6/6 | 4/6 |
+| Flash | Direct/Bare | 6/6 | 6/6 |
+| Flash | Scripted Tool | 6/6 | 4/6 |
+| Flash | Autonomous Agent | 5/6 | 3/6 |
+
+The exact-model, independent-validity-smoke, and interactive-tool gates passed. The minimum cell
+completion rate was `0.8333 < 1.0`, and the minimum cell JSON-contract rate was
+`0.9048 < 0.95`; both preregistered gates failed. The formal decision is
+`stop_after_factorial_calibration`, with `next_permitted_stage=protocol_repair_only`. The 30-task,
+1,800-rollout Discovery was not launched. No GPU, exact-target, GP-C, Validation, or Authorization
+computation occurred.
+
 ## Revalidated Code State
 
 | Check | Result |
 | --- | --- |
 | Development target/design focus | 10 passed |
-| Agent runtime/Pilot focus | 14 passed |
+| v23 Pro--Flash/runtime focus | 30 passed |
 | Ruff check | passed |
 | Ruff format, changed files | passed |
-| Mypy | passed, 252 source files |
-| Pytest | passed, 460 tests in 135.97 seconds |
+| Mypy | passed, 260 source files |
+| Pytest | passed, 480 tests in 135.67 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked production-key pattern scan | zero `sk-...` hits; one explicit `test-secret` fixture |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
@@ -263,12 +299,14 @@ The scientifically correct state is:
 - v22 primary practical-equivalence status: `30/30`;
 - v22 all-state practical-equivalence status: `100/100`;
 - v22 meaningful-beyond-MPE count: `0/100`;
+- v23 final Explorer qualification status: `failed`;
+- v23 Factorial Discovery rollout count: `0/1800`;
 - `gp_c_evaluated=false`;
 - `authorization_objective_access=forbidden`;
 - `authorization_objective_observation_count=0`;
 - `production_authorized=false`;
 - `contribution_authorized=false`;
-- allowed next stage: `freeze_agent_runtime_pilot_after_capacity_audit`;
+- v23 report next permitted stage: `protocol_repair_only` under a new frozen contract;
 - VTDO updates, Student training, and downstream claims remain unauthorized.
 
 The current evidence establishes reliable strict-FP32 execution and a precise exact one-step target
@@ -279,12 +317,12 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not rerun GP-C, open Authorization, or issue the 60-task Validation contract. First implement the
-real frozen-Archive tool executors, run a capacity audit, and freeze the 24-30 task Direct/Bare vs
-Scripted Tool vs Autonomous Agent Pilot before any API outcome. A passing Pilot may advance only to
-Beneficiary frontier screening and a new Agent population. Re-estimate Development variance under
-that new generation kernel before freezing any Validation size. Do not reuse v20, cancelled v21,
-or v22 tasks, Evidence, semantic signatures, trajectories, or Objective records.
+Do not rerun GP-C, open Authorization, issue the 60-task Validation contract, or launch the reserved
+v23 Discovery. The final v9 qualification is a negative outcome under its frozen gates. Any next
+attempt must be a separately identified Agent-environment redesign with new tasks and unchanged
+scientific claim boundaries; it cannot relax v9 thresholds or reinterpret its partial valid cells
+as a pass. Objective Support remains a separate unresolved bottleneck and cannot be repaired by
+changing Explorer models alone.
 
 ## Authoritative References
 
@@ -292,6 +330,7 @@ or v22 tasks, Evidence, semantic signatures, trajectories, or Objective records.
 - `docs/finance_v22_development_power_plan.md`
 - `docs/finance_v22_development_exact_target_report.md`
 - `docs/finance_v23_capability_sensitive_agent_plan.md`
+- `docs/finance_v23_explorer_runtime_factorial_report.md`
 - `docs/finance_v19_sealed_causal_pilot_report.md`
 - `docs/finance_v18_sealed_numeric_authorization_report.md`
 - `docs/finance_v17_numeric_root_cause_report.md`

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -20,6 +21,14 @@ JOINT_COMPILATION_ARTIFACT_VERSION = "joint_compilation_artifact.v1"
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+@dataclass(frozen=True)
+class ReferenceExecutionIdentity:
+    """Minimal immutable identity accepted in place of a full reference Trajectory."""
+
+    trajectory_id: str
+    trajectory_hash: str
 
 
 class OracleExecutionSpecification(FrozenModel):
@@ -81,9 +90,10 @@ class TrajectoryVerificationContext(FrozenModel):
         corpus_by_id = self.public_corpus.by_id()
         bundle_by_id = {item.evidence_id: item for item in self.evidence_bundle.evidence}
         for evidence_id in self.task.oracle.gold_evidence_ids:
-            if evidence_id not in bundle_by_id or corpus_by_id.get(evidence_id) != bundle_by_id[
-                evidence_id
-            ]:
+            if (
+                evidence_id not in bundle_by_id
+                or corpus_by_id.get(evidence_id) != bundle_by_id[evidence_id]
+            ):
                 raise ValueError("verification Evidence boundary is incomplete or mutated")
         expected_spec = make_oracle_execution_specification(
             self.task,
@@ -92,7 +102,7 @@ class TrajectoryVerificationContext(FrozenModel):
             self.proof_graph,
             self.quality_contract,
             reference_examples=tuple(
-                _ReferenceIdentity(item, digest)
+                ReferenceExecutionIdentity(item, digest)
                 for item, digest in zip(
                     self.oracle_specification.reference_example_ids,
                     self.oracle_specification.reference_example_hashes,
@@ -152,12 +162,6 @@ class JointCompilationArtifact(FrozenModel):
         return self
 
 
-class _ReferenceIdentity:
-    def __init__(self, trajectory_id: str, trajectory_hash: str) -> None:
-        self.trajectory_id = trajectory_id
-        self.trajectory_hash = trajectory_hash
-
-
 def make_oracle_execution_specification(
     task: TaskPackage,
     evidence_bundle: EvidenceBundle,
@@ -165,7 +169,7 @@ def make_oracle_execution_specification(
     proof_graph: ProofGraph,
     quality_contract: QualityContract,
     *,
-    reference_examples: Iterable[Trajectory | _ReferenceIdentity],
+    reference_examples: Iterable[Trajectory | ReferenceExecutionIdentity],
 ) -> OracleExecutionSpecification:
     references = tuple(reference_examples)
     if not references:
@@ -313,8 +317,6 @@ def _required_actions(task: TaskPackage) -> tuple[ActionType, ...]:
     }
     actions = {ActionType.PLAN, ActionType.ANSWER}
     actions.update(
-        mapping[requirement]
-        for requirement in task.public.requirements
-        if requirement in mapping
+        mapping[requirement] for requirement in task.public.requirements if requirement in mapping
     )
     return tuple(sorted(actions, key=lambda item: item.value))

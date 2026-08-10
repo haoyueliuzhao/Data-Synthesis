@@ -1,0 +1,32 @@
+{
+  "model": {
+    "provider": "deepseek",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "models_endpoint": "https://api.deepseek.com/models",
+    "model": "deepseek-v4-pro",
+    "fallback_models": [],
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "timeout_seconds": 180,
+    "max_output_tokens": 4096,
+    "temperature": 0.6,
+    "interaction_protocol": "host_instrumented",
+    "maximum_model_attempts": 1,
+    "contract_repair_attempts": 1,
+    "auto_discover_models": true,
+    "require_requested_model": true,
+    "preferred_model_patterns": [],
+    "input_cost_per_million": 0,
+    "input_cache_hit_cost_per_million": 0.003625,
+    "input_cache_miss_cost_per_million": 0.435,
+    "output_cost_per_million": 0.87,
+    "pricing_source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "pricing_checked_at": "2026-08-11",
+    "extra_headers": {},
+    "request_body_overrides": {
+      "thinking": {
+        "type": "disabled"
+      },
+      "top_p": 0.9
+    }
+  }
+}

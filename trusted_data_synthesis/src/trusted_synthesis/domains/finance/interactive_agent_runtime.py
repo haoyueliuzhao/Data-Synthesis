@@ -1,0 +1,733 @@
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
+from typing import Any
+
+from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
+from trusted_synthesis.core.evidence.payloads import ScalarObservation
+from trusted_synthesis.core.evidence.schema import EvidenceItem
+from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.operations.schema import OperationInput
+from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime.tools import (
+    AgentToolCall,
+    AgentToolEnvironmentManifest,
+    AgentToolResult,
+)
+
+FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v3"
+
+_PUBLIC_SUBJECT_ID_SUFFIXES = ("_US", "_COUNTRY", "_HK", "_CN")
+FINANCE_ARCHIVE_NORMALIZATION_POLICY_VERSION = "finance_archive_normalization_policy.v1"
+_MAX_QUERY_RESULTS = 12
+_TOKEN_PATTERN = re.compile(r"[0-9a-z]+|[\u4e00-\u9fff]", re.IGNORECASE)
+
+
+@dataclass(frozen=True)
+class _StoredOperation:
+    operation_ref: str
+    operator_id: str
+    output: dict[str, Any]
+    evidence_ids: tuple[str, ...]
+
+
+class FinanceArchiveInteractiveToolRuntime:
+    """Snapshot-bound Finance tools with per-rollout discovery and lineage state."""
+
+    def __init__(
+        self,
+        corpus: EvidenceCorpus,
+        manifest: AgentToolEnvironmentManifest,
+        *,
+        registry: OperationRegistry | None = None,
+    ) -> None:
+        if manifest.corpus_id != corpus.corpus_id or manifest.corpus_hash != corpus.corpus_hash:
+            raise ValueError("Finance Agent runtime corpus differs from its frozen manifest")
+        if manifest.network_policy != "forbidden":
+            raise ValueError("Finance Archive Pilot requires an offline frozen environment")
+        self._corpus = corpus
+        self._manifest = manifest
+        self._registry = registry or default_registry()
+        self._by_id = corpus.by_id()
+        locator_groups: dict[str, list[str]] = {}
+        for item in corpus.evidence:
+            locator_groups.setdefault(_public_locator(item), []).append(item.evidence_id)
+        self._locator_to_ids = {
+            locator: tuple(sorted(evidence_ids)) for locator, evidence_ids in locator_groups.items()
+        }
+        self._discovered_ids: set[str] = set()
+        self._selected_ids: set[str] = set()
+        self._exposed_locators: set[str] = set()
+        self._operations: dict[str, _StoredOperation] = {}
+
+    @property
+    def manifest(self) -> AgentToolEnvironmentManifest:
+        return self._manifest
+
+    @property
+    def discovered_evidence_ids(self) -> tuple[str, ...]:
+        return tuple(sorted(self._discovered_ids))
+
+    @property
+    def selected_evidence_ids(self) -> tuple[str, ...]:
+        return tuple(sorted(self._selected_ids))
+
+    @property
+    def operation_refs(self) -> tuple[str, ...]:
+        return tuple(sorted(self._operations))
+
+    def execute(self, call: AgentToolCall) -> AgentToolResult:
+        handlers = {
+            "search_archive": self._search_archive,
+            "open_document": self._open_document,
+            "query_structured_fact": self._query_structured_fact,
+            "calculator": self._calculator,
+            "normalize_metric_unit_period": self._normalize,
+            "cross_check_evidence": self._cross_check,
+        }
+        handler = handlers.get(call.tool_id)
+        if handler is None:
+            return _failed("unknown_tool", f"unsupported Finance Archive tool: {call.tool_id}")
+        try:
+            return handler(call.arguments)
+        except (InvalidOperation, TypeError, ValueError) as exc:
+            return _failed(f"{call.tool_id}_contract", str(exc) or type(exc).__name__)
+
+    def _search_archive(self, arguments: dict[str, Any]) -> AgentToolResult:
+        query = _required_string(arguments, "query")
+        limit = _required_int(arguments, "limit", minimum=1, maximum=_MAX_QUERY_RESULTS)
+        subject_aliases = _string_tuple(arguments.get("subject_aliases", ()))
+        period_labels = _string_tuple(arguments.get("period_labels", ()))
+        source_filters = _string_tuple(arguments.get("source_filters", ()))
+        query_tokens = _tokens(" ".join((query, *subject_aliases, *period_labels)))
+        if not query_tokens:
+            raise ValueError("Archive search query contains no searchable terms")
+        ranked: list[tuple[int, str, EvidenceItem]] = []
+        for item in self._corpus.evidence:
+            if source_filters and not _matches_source(item, source_filters):
+                continue
+            if period_labels and not _matches_text(
+                item.temporal_context.label or "", period_labels
+            ):
+                continue
+            text = _search_text(item)
+            score = len(query_tokens & _tokens(text))
+            normalized_query = _normalize_text(query)
+            if normalized_query and normalized_query in _normalize_text(text):
+                score += 4
+            if subject_aliases and _matches_text(
+                " ".join((item.subject.subject_id, item.subject.name)),
+                subject_aliases,
+            ):
+                score += 3
+            if score:
+                ranked.append((score, item.evidence_id, item))
+        selected = tuple(
+            item
+            for _, _, item in sorted(
+                ranked,
+                key=lambda row: (-row[0], row[1]),
+            )[:limit]
+        )
+        evidence_ids = tuple(item.evidence_id for item in selected)
+        self._discovered_ids.update(evidence_ids)
+        locators = tuple(_public_locator(item) for item in selected)
+        self._exposed_locators.update(locators)
+        query_hash = canonical_hash(
+            {
+                "query": query,
+                "subject_aliases": subject_aliases,
+                "period_labels": period_labels,
+                "source_filters": source_filters,
+                "limit": limit,
+                "snapshot_hash": self._manifest.snapshot_hash,
+            },
+            prefix="finance_archive_search:",
+        )
+        return AgentToolResult(
+            status="succeeded",
+            result={
+                "matches": [
+                    _evidence_summary(item, public_locator=locator)
+                    for item, locator in zip(selected, locators, strict=True)
+                ],
+                "query_hash": query_hash,
+                "snapshot_hash": self._manifest.snapshot_hash,
+            },
+            evidence_ids=evidence_ids,
+            provenance_hashes=_provenance_hashes(selected),
+        )
+
+    def _open_document(self, arguments: dict[str, Any]) -> AgentToolResult:
+        locator = _required_string(arguments, "public_locator")
+        if locator not in self._exposed_locators:
+            return _failed(
+                "locator_not_discovered",
+                "open_document accepts only locators returned by search_archive",
+            )
+        evidence_ids = self._locator_to_ids.get(locator, ())
+        selected = tuple(self._by_id[item] for item in evidence_ids)
+        if not selected:
+            return _failed("locator_not_found", "Archive locator has no frozen Evidence")
+        self._selected_ids.update(evidence_ids)
+        return AgentToolResult(
+            status="succeeded",
+            result={
+                "content": {
+                    "public_locator": locator,
+                    "section_or_page": arguments.get("section_or_page"),
+                    "facts": [_public_fact(item) for item in selected],
+                },
+                "evidence_ids": list(evidence_ids),
+                "source_locator_hash": selected[0].source_locator.locator_hash,
+            },
+            evidence_ids=evidence_ids,
+            provenance_hashes=_provenance_hashes(selected),
+        )
+
+    def _query_structured_fact(self, arguments: dict[str, Any]) -> AgentToolResult:
+        subject_alias = _required_string(arguments, "subject_alias")
+        metric_alias = _required_string(arguments, "metric_alias")
+        period_label = _required_string(arguments, "period_label")
+        filters = arguments.get("public_filters")
+        if not isinstance(filters, dict):
+            raise ValueError("public_filters must be an object")
+        matches = tuple(
+            item
+            for item in self._corpus.evidence
+            if _matches_subject(item, subject_alias)
+            and _matches_metric(item, metric_alias)
+            and _matches_exact(item.temporal_context.label or "", period_label)
+            and _matches_public_filters(item, filters)
+        )
+        if len(matches) > _MAX_QUERY_RESULTS:
+            return _failed(
+                "structured_query_too_broad",
+                f"structured query returned {len(matches)} facts; refine public filters",
+            )
+        if not matches:
+            hints = tuple(
+                {
+                    "subject_alias": item.subject.subject_id,
+                    "metric_alias": item.predicate,
+                    "period_label": item.temporal_context.label,
+                }
+                for evidence_id in sorted(self._discovered_ids)
+                if (item := self._by_id[evidence_id])
+            )[:6]
+            return _failed(
+                "structured_query_no_match",
+                "No exact fact matched. Use the subject, metric, and period labels exactly "
+                "as returned by search_archive. Public selector hints from prior search: "
+                + json.dumps(hints, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+            )
+        evidence_ids = tuple(item.evidence_id for item in matches)
+        self._discovered_ids.update(evidence_ids)
+        self._selected_ids.update(evidence_ids)
+        query_hash = canonical_hash(
+            {
+                "subject_alias": subject_alias,
+                "metric_alias": metric_alias,
+                "period_label": period_label,
+                "public_filters": filters,
+                "snapshot_hash": self._manifest.snapshot_hash,
+            },
+            prefix="finance_structured_fact_query:",
+        )
+        return AgentToolResult(
+            status="succeeded",
+            result={
+                "facts": [_public_fact(item) for item in matches],
+                "evidence_ids": list(evidence_ids),
+                "query_hash": query_hash,
+            },
+            evidence_ids=evidence_ids,
+            provenance_hashes=_provenance_hashes(matches),
+        )
+
+    def _calculator(self, arguments: dict[str, Any]) -> AgentToolResult:
+        operator_id = _required_string(arguments, "operator")
+        operands = arguments.get("operands")
+        parameters = arguments.get("parameters")
+        if not isinstance(operands, list) or not operands:
+            raise ValueError("calculator operands must be a nonempty array")
+        if not isinstance(parameters, dict):
+            raise ValueError("calculator parameters must be an object")
+        definition = self._registry.require(operator_id)
+        inputs: list[OperationInput] = []
+        lineage: list[str] = []
+        for index, operand in enumerate(operands):
+            resolved, evidence_ids = self._resolve_operand(operand, index)
+            inputs.append(resolved)
+            lineage.extend(evidence_ids)
+        evidence_ids = tuple(dict.fromkeys(lineage))
+        if not evidence_ids:
+            raise ValueError("calculator operands must retain selected Evidence lineage")
+        evidence = tuple(self._by_id[item] for item in evidence_ids)
+        resolved_inputs = tuple(inputs)
+        self._registry.validate_inputs(definition, resolved_inputs)
+        self._registry.validate_compatibility(definition, evidence, parameters)
+        output = definition.executor.execute(resolved_inputs, parameters)
+        self._registry.validate_output(definition, output)
+        operation_hash = canonical_hash(
+            {
+                "operator_id": operator_id,
+                "inputs": [
+                    {"ref_id": item.ref_id, "value": item.value} for item in resolved_inputs
+                ],
+                "parameters": parameters,
+                "output": output,
+                "evidence_ids": evidence_ids,
+                "registry_manifest": self._registry.manifest(),
+            },
+            prefix="finance_agent_operation:",
+        )
+        operation_ref = f"operation:{operation_hash}"
+        self._operations[operation_ref] = _StoredOperation(
+            operation_ref=operation_ref,
+            operator_id=operator_id,
+            output=output,
+            evidence_ids=evidence_ids,
+        )
+        return AgentToolResult(
+            status="succeeded",
+            result={
+                "result": {
+                    "operator": operator_id,
+                    "output": output,
+                    "operation_ref": operation_ref,
+                },
+                "operation_hash": operation_hash,
+            },
+            evidence_ids=evidence_ids,
+            provenance_hashes=_provenance_hashes(evidence),
+        )
+
+    def _resolve_operand(
+        self,
+        operand: Any,
+        index: int,
+    ) -> tuple[OperationInput, tuple[str, ...]]:
+        if isinstance(operand, dict):
+            evidence_id = operand.get("evidence_id")
+            operation_ref = operand.get("operation_ref")
+            if evidence_id is not None:
+                return self._evidence_operand(str(evidence_id))
+            if operation_ref is not None:
+                return self._operation_operand(str(operation_ref), operand.get("selector"))
+            if "value" in operand:
+                ref_id = str(operand.get("ref_id") or f"literal:{index}")
+                return OperationInput(ref_id=ref_id, value=operand["value"]), ()
+            raise ValueError("calculator operand object needs evidence_id, operation_ref, or value")
+        if isinstance(operand, str) and operand.startswith("evidence:"):
+            return self._evidence_operand(operand)
+        if isinstance(operand, str) and operand.startswith("operation:"):
+            return self._operation_operand(operand, None)
+        return OperationInput(ref_id=f"literal:{index}", value=operand), ()
+
+    def _evidence_operand(
+        self,
+        evidence_id: str,
+    ) -> tuple[OperationInput, tuple[str, ...]]:
+        if evidence_id not in self._selected_ids:
+            raise ValueError(f"calculator Evidence was not selected: {evidence_id}")
+        item = self._by_id.get(evidence_id)
+        if item is None:
+            raise ValueError(f"calculator Evidence is unknown: {evidence_id}")
+        return OperationInput(ref_id=evidence_id, value=item.payload), (evidence_id,)
+
+    def _operation_operand(
+        self,
+        operation_ref: str,
+        selector: Any,
+    ) -> tuple[OperationInput, tuple[str, ...]]:
+        stored = self._operations.get(operation_ref)
+        if stored is None:
+            raise ValueError(f"calculator operation reference is unknown: {operation_ref}")
+        value: Any = stored.output
+        if selector is not None:
+            value = _select_mapping_value(stored.output, str(selector))
+        return OperationInput(ref_id=operation_ref, value=value), stored.evidence_ids
+
+    def _normalize(self, arguments: dict[str, Any]) -> AgentToolResult:
+        evidence_ids = _evidence_id_tuple(arguments.get("evidence_ids"))
+        target = arguments.get("target_definition")
+        if not isinstance(target, dict):
+            raise ValueError("target_definition must be an object")
+        evidence = self._selected_evidence(evidence_ids)
+        fields = {
+            "predicate": lambda item: item.predicate,
+            "definition_id": lambda item: item.definition.definition_id,
+            "unit": lambda item: getattr(item.payload, "unit", None),
+            "currency": lambda item: getattr(item.payload, "currency", None),
+            "time_basis": lambda item: item.temporal_context.basis,
+            "frequency": lambda item: item.temporal_context.frequency,
+        }
+        mismatches: dict[str, list[Any]] = {}
+        for field, getter in fields.items():
+            values = [getter(item) for item in evidence]
+            expected = target.get(field)
+            if expected is not None:
+                if any(value != expected for value in values):
+                    mismatches[field] = values
+            elif (
+                not values or any(value in (None, "") for value in values) or len(set(values)) != 1
+            ):
+                mismatches[field] = values
+        policy_hash = canonical_hash(
+            {
+                "version": FINANCE_ARCHIVE_NORMALIZATION_POLICY_VERSION,
+                "target": target,
+                "evidence_ids": evidence_ids,
+            },
+            prefix="finance_agent_normalization_policy:",
+        )
+        return AgentToolResult(
+            status="succeeded",
+            result={
+                "normalized_values": [
+                    {
+                        "evidence_id": item.evidence_id,
+                        "value": _scalar_value(item),
+                        "unit": getattr(item.payload, "unit", None),
+                        "currency": getattr(item.payload, "currency", None),
+                        "period": item.temporal_context.label,
+                    }
+                    for item in evidence
+                ],
+                "compatibility_report": {
+                    "compatible": not mismatches,
+                    "mismatches": mismatches,
+                },
+                "policy_hash": policy_hash,
+            },
+            evidence_ids=evidence_ids,
+            provenance_hashes=_provenance_hashes(evidence),
+        )
+
+    def _cross_check(self, arguments: dict[str, Any]) -> AgentToolResult:
+        evidence_ids = _evidence_id_tuple(arguments.get("evidence_ids"))
+        claim_or_result = arguments.get("claim_or_result")
+        if not isinstance(claim_or_result, dict):
+            raise ValueError("claim_or_result must be an object")
+        evidence = self._selected_evidence(evidence_ids)
+        operation_refs = tuple(sorted(_find_operation_refs(claim_or_result)))
+        unknown_operations = tuple(ref for ref in operation_refs if ref not in self._operations)
+        conflicts: list[dict[str, Any]] = []
+        if unknown_operations:
+            conflicts.append(
+                {
+                    "type": "unknown_operation_reference",
+                    "operation_refs": list(unknown_operations),
+                }
+            )
+        missing_provenance = [
+            item.evidence_id for item in evidence if not _provenance_complete(item)
+        ]
+        if missing_provenance:
+            conflicts.append(
+                {
+                    "type": "missing_provenance",
+                    "evidence_ids": missing_provenance,
+                }
+            )
+        if not operation_refs and not self._operations:
+            conflicts.append({"type": "no_replayable_calculation"})
+        verification_hash = canonical_hash(
+            {
+                "evidence_ids": evidence_ids,
+                "claim_or_result": claim_or_result,
+                "known_operations": tuple(sorted(self._operations)),
+                "conflicts": conflicts,
+                "snapshot_hash": self._manifest.snapshot_hash,
+            },
+            prefix="finance_agent_cross_check:",
+        )
+        return AgentToolResult(
+            status="succeeded",
+            result={
+                "verified": not conflicts,
+                "support": list(evidence_ids),
+                "conflicts": conflicts,
+                "verification_hash": verification_hash,
+            },
+            evidence_ids=evidence_ids,
+            provenance_hashes=_provenance_hashes(evidence),
+        )
+
+    def _selected_evidence(
+        self,
+        evidence_ids: tuple[str, ...],
+    ) -> tuple[EvidenceItem, ...]:
+        unknown = set(evidence_ids) - set(self._by_id)
+        if unknown:
+            raise ValueError(f"Evidence IDs are unknown: {sorted(unknown)}")
+        unselected = set(evidence_ids) - self._selected_ids
+        if unselected:
+            raise ValueError(f"Evidence IDs were not selected: {sorted(unselected)}")
+        return tuple(self._by_id[item] for item in evidence_ids)
+
+
+def _required_string(arguments: dict[str, Any], field: str) -> str:
+    value = arguments.get(field)
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} must be a nonempty string")
+    return value.strip()
+
+
+def _required_int(
+    arguments: dict[str, Any],
+    field: str,
+    *,
+    minimum: int,
+    maximum: int,
+) -> int:
+    value = arguments.get(field)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"{field} must be an integer")
+    if value < minimum or value > maximum:
+        raise ValueError(f"{field} must be between {minimum} and {maximum}")
+    return value
+
+
+def _string_tuple(value: Any) -> tuple[str, ...]:
+    if value in (None, ()):
+        return ()
+    if not isinstance(value, (list, tuple)):
+        raise ValueError("optional text filters must be arrays")
+    output = tuple(str(item).strip() for item in value if str(item).strip())
+    if len(output) != len(set(output)):
+        raise ValueError("optional text filters contain duplicates")
+    return output
+
+
+def _evidence_id_tuple(value: Any) -> tuple[str, ...]:
+    evidence_ids = _string_tuple(value)
+    if not evidence_ids:
+        raise ValueError("evidence_ids must be a nonempty array")
+    return evidence_ids
+
+
+def _failed(code: str, message: str) -> AgentToolResult:
+    return AgentToolResult(
+        status="failed",
+        result={},
+        error_code=code,
+        error_message=message,
+    )
+
+
+def _tokens(value: str) -> set[str]:
+    return {
+        item.casefold()
+        for item in _TOKEN_PATTERN.findall(value)
+        if len(item) > 1 or "\u4e00" <= item <= "\u9fff"
+    }
+
+
+def _normalize_text(value: str) -> str:
+    return " ".join(_TOKEN_PATTERN.findall(value.casefold()))
+
+
+def _matches_text(value: str, aliases: tuple[str, ...]) -> bool:
+    normalized_value = _normalize_text(value)
+    return any(
+        (normalized_alias := _normalize_text(alias))
+        and (normalized_alias in normalized_value or bool(_tokens(alias) & _tokens(value)))
+        for alias in aliases
+    )
+
+
+def _matches_exact(value: str, expected: str) -> bool:
+    return _normalize_text(value) == _normalize_text(expected)
+
+
+def _matches_subject(item: EvidenceItem, alias: str) -> bool:
+    normalized = _normalize_text(alias)
+    aliases = {
+        _normalize_text(item.subject.subject_id),
+        _normalize_text(item.subject.name),
+    }
+    aliases.update(
+        _normalize_text(item.subject.subject_id[: -len(suffix)])
+        for suffix in _PUBLIC_SUBJECT_ID_SUFFIXES
+        if item.subject.subject_id.endswith(suffix)
+    )
+    return normalized in aliases
+
+
+def _matches_metric(item: EvidenceItem, alias: str) -> bool:
+    normalized = _normalize_text(alias)
+    attributes = item.definition.attributes
+    candidates = {
+        item.predicate,
+        str(attributes.get("metric_name") or ""),
+        str(attributes.get("raw_concept_name") or ""),
+        item.definition.definition_id or "",
+    }
+    return normalized in {_normalize_text(value) for value in candidates if value}
+
+
+def _matches_source(item: EvidenceItem, filters: tuple[str, ...]) -> bool:
+    return _matches_text(
+        " ".join(
+            (
+                item.source.source_id,
+                item.source.name,
+                item.source.provider or "",
+                item.source.authority.value,
+            )
+        ),
+        filters,
+    )
+
+
+def _metric_text(item: EvidenceItem) -> str:
+    attributes = item.definition.attributes
+    return " ".join(
+        (
+            item.predicate,
+            str(attributes.get("metric_name") or ""),
+            str(attributes.get("raw_concept_name") or ""),
+            item.definition.definition_id or "",
+            item.definition.text or "",
+        )
+    )
+
+
+def _search_text(item: EvidenceItem) -> str:
+    return " ".join(
+        (
+            item.subject.subject_id,
+            item.subject.name,
+            item.subject.subject_type,
+            _metric_text(item),
+            item.temporal_context.label or "",
+            item.temporal_context.basis or "",
+            item.temporal_context.frequency or "",
+            item.source.source_id,
+            item.source.name,
+            item.source.provider or "",
+            item.source.authority.value,
+        )
+    )
+
+
+def _matches_public_filters(item: EvidenceItem, filters: dict[str, Any]) -> bool:
+    supported = {
+        "source_id": item.source.source_id,
+        "source_authority": item.source.authority.value,
+        "unit": getattr(item.payload, "unit", None),
+        "currency": getattr(item.payload, "currency", None),
+        "definition_id": item.definition.definition_id,
+        "time_basis": item.temporal_context.basis,
+        "frequency": item.temporal_context.frequency,
+        "subject_type": item.subject.subject_type,
+    }
+    unknown = set(filters) - set(supported)
+    if unknown:
+        raise ValueError(
+            f"unsupported public_filters: {sorted(unknown)}; allowed scalar keys are "
+            f"{sorted(supported)}; use {{}} when no exact filter is needed"
+        )
+    return all(value in (None, "") or supported[key] == value for key, value in filters.items())
+
+
+def _public_locator(item: EvidenceItem) -> str:
+    return f"archive://source/{item.source_locator.locator_hash}"
+
+
+def _evidence_summary(
+    item: EvidenceItem,
+    *,
+    public_locator: str,
+) -> dict[str, Any]:
+    return {
+        "evidence_id": item.evidence_id,
+        "public_locator": public_locator,
+        "subject": {
+            "subject_id": item.subject.subject_id,
+            "name": item.subject.name,
+            "type": item.subject.subject_type,
+        },
+        "metric": {
+            "predicate": item.predicate,
+            "name": item.definition.attributes.get("metric_name"),
+            "definition_id": item.definition.definition_id,
+        },
+        "period": item.temporal_context.label,
+        "source": {
+            "source_id": item.source.source_id,
+            "name": item.source.name,
+            "authority": item.source.authority.value,
+        },
+    }
+
+
+def _public_fact(item: EvidenceItem) -> dict[str, Any]:
+    return {
+        **_evidence_summary(item, public_locator=_public_locator(item)),
+        "payload": item.payload.model_dump(mode="json", exclude_none=True),
+        "time_basis": item.temporal_context.basis,
+        "frequency": item.temporal_context.frequency,
+        "source_locator_hash": item.source_locator.locator_hash,
+        "provenance_hash": _provenance_hash(item),
+    }
+
+
+def _scalar_value(item: EvidenceItem) -> str:
+    if not isinstance(item.payload, ScalarObservation):
+        raise ValueError(f"Evidence is not a scalar observation: {item.evidence_id}")
+    return format(Decimal(str(item.payload.value)), "f")
+
+
+def _provenance_complete(item: EvidenceItem) -> bool:
+    return bool(
+        item.evidence_version_id
+        and item.provenance.adapter_id
+        and item.provenance.archive_id
+        and item.provenance.source_record_id
+        and item.source_locator.locator_hash
+    )
+
+
+def _provenance_hash(item: EvidenceItem) -> str:
+    return canonical_hash(
+        {
+            "evidence_version_id": item.evidence_version_id,
+            "source_locator": item.source_locator,
+            "provenance": item.provenance,
+        },
+        prefix="finance_agent_evidence_provenance:",
+    )
+
+
+def _provenance_hashes(evidence: tuple[EvidenceItem, ...]) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(_provenance_hash(item) for item in evidence))
+
+
+def _select_mapping_value(value: dict[str, Any], selector: str) -> Any:
+    current: Any = value
+    for segment in selector.split("."):
+        if not isinstance(current, dict) or segment not in current:
+            raise ValueError(f"operation selector is invalid: {selector}")
+        current = current[segment]
+    return current
+
+
+def _find_operation_refs(value: Any) -> set[str]:
+    if isinstance(value, dict):
+        return {
+            *(str(item) for item in value.values() if _is_operation_ref(item)),
+            *(ref for item in value.values() for ref in _find_operation_refs(item)),
+        }
+    if isinstance(value, (list, tuple)):
+        return {ref for item in value for ref in _find_operation_refs(item)}
+    return {str(value)} if _is_operation_ref(value) else set()
+
+
+def _is_operation_ref(value: Any) -> bool:
+    return isinstance(value, str) and value.startswith("operation:")

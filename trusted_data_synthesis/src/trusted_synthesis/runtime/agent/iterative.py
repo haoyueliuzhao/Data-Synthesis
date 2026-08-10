@@ -22,14 +22,17 @@ from trusted_synthesis.runtime.tools import (
     AgentToolObservation,
     AgentToolResult,
     InteractiveAgentToolRuntime,
+    agent_tool_argument_rejection,
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v1"
-ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v1"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v1"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v1"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v9"
+ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v7"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v7"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v9"
 
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v6"
+MAXIMUM_STOP_REJECTIONS = 2
 MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
     {
         "answer_payload",
@@ -48,7 +51,47 @@ MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
 
 InteractiveAgentMode = Literal["scripted_tool", "autonomous_agent"]
 DecisionType = Literal["tool_call", "final_answer"]
+StopRejectionCode = Literal[
+    "missing_observed_evidence",
+    "missing_required_verification",
+    "invalid_final_answer_contract",
+]
 ContractT = TypeVar("ContractT", bound=BaseModel)
+
+
+class PublicAgentStateCondition(BaseModel):
+    """Model-visible behavior recipe; opaque quotient-state identities stay Host-only."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    action_sequence: tuple[ActionType, ...] = Field(min_length=1)
+    tool_sequence: tuple[str, ...] = Field(min_length=1)
+    minimum_successful_tool_calls: int = Field(ge=1)
+    minimum_verification_calls: int = Field(ge=0)
+    query_policy: Literal[
+        "single_query_allowed",
+        "reformulation_allowed",
+        "reformulation_required",
+    ]
+    recovery_policy: Literal[
+        "recovery_not_required",
+        "recover_if_tool_fails",
+    ]
+    stop_policy: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_condition(self) -> PublicAgentStateCondition:
+        if len(self.tool_sequence) != len(self.action_sequence):
+            raise ValueError("public Agent condition actions and tools must align")
+        if self.minimum_successful_tool_calls > len(self.tool_sequence):
+            raise ValueError("public Agent condition requires more calls than its tool sequence")
+        if self.minimum_verification_calls > self.tool_sequence.count("cross_check_evidence"):
+            raise ValueError("public Agent condition verification count exceeds its tool sequence")
+        return self
+
+    @property
+    def condition_hash(self) -> str:
+        return canonical_hash(self, prefix="public_agent_state_condition:")
 
 
 class AgentLoopPlanContract(BaseModel):
@@ -56,9 +99,17 @@ class AgentLoopPlanContract(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    plan_summary: str = Field(min_length=1)
-    subgoal_labels: tuple[str, ...] = Field(min_length=1)
-    stop_conditions: tuple[str, ...] = Field(min_length=1)
+    plan_summary: str = Field(min_length=1, max_length=240)
+    subgoal_labels: tuple[str, ...] = Field(min_length=2, max_length=6)
+    stop_conditions: tuple[str, ...] = Field(min_length=1, max_length=4)
+
+    @model_validator(mode="after")
+    def validate_compact_plan(self) -> AgentLoopPlanContract:
+        if any(len(item) > 64 for item in self.subgoal_labels):
+            raise ValueError("Agent plan subgoal labels must not exceed 64 characters")
+        if any(len(item) > 96 for item in self.stop_conditions):
+            raise ValueError("Agent plan stop conditions must not exceed 96 characters")
+        return self
 
 
 class AgentLoopDecisionContract(BaseModel):
@@ -67,7 +118,7 @@ class AgentLoopDecisionContract(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     decision_type: DecisionType
-    rationale_summary: str = Field(min_length=1)
+    rationale_summary: str = Field(min_length=1, max_length=1200)
     tool_id: str | None = None
     arguments: dict[str, Any] | None = None
     answer: dict[str, Any] | None = None
@@ -90,6 +141,41 @@ class AgentLoopDecisionContract(BaseModel):
         return self
 
 
+class AgentScriptedToolContract(BaseModel):
+    """Arguments for one Host-selected tool in the scripted control arm."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    rationale_summary: str = Field(min_length=1, max_length=1200)
+    arguments: dict[str, Any]
+
+
+class AgentFinalAnswerContract(BaseModel):
+    """Final public answer, separated from action selection to reduce ambiguity."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    rationale_summary: str = Field(min_length=1, max_length=1200)
+    answer: dict[str, Any]
+    cited_evidence_ids: tuple[str, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_citations(self) -> AgentFinalAnswerContract:
+        if len(self.cited_evidence_ids) != len(set(self.cited_evidence_ids)):
+            raise ValueError("final_answer contains duplicate Evidence citations")
+        return self
+
+
+class AgentStopRejection(BaseModel):
+    """Host feedback for a premature or structurally invalid stop decision."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    decision_index: int = Field(ge=0)
+    reason_code: StopRejectionCode
+    feedback: str = Field(min_length=1, max_length=600)
+
+
 class IterativeAgentAudit(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -98,6 +184,7 @@ class IterativeAgentAudit(BaseModel):
     mode: InteractiveAgentMode
     model_config_hash: str = Field(min_length=1)
     environment_manifest_id: str = Field(min_length=1)
+    public_state_condition_hash: str | None = None
     plan_prompt_hash: str = Field(min_length=1)
     decision_prompt_hashes: tuple[str, ...] = Field(min_length=1)
     observation_ids: tuple[str, ...] = Field(min_length=1)
@@ -114,6 +201,7 @@ class IterativeAgentAudit(BaseModel):
     telemetry: tuple[ModelCallTelemetry, ...] = Field(min_length=1)
     stopped_by_model: Literal[True] = True
     completed: Literal[True] = True
+    stop_rejections: tuple[AgentStopRejection, ...] = ()
     schema_version: str = ITERATIVE_AGENT_AUDIT_VERSION
 
     @model_validator(mode="after")
@@ -151,6 +239,37 @@ class IterativeAgentSolveResult(BaseModel):
         return self
 
 
+class IterativeAgentFailureArtifact(BaseModel):
+    """Replayable public progress retained when an iterative solve fails closed."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    artifact_id: str = Field(min_length=1)
+    task_id: str = Field(min_length=1)
+    mode: InteractiveAgentMode
+    environment_manifest_id: str = Field(min_length=1)
+    plan: AgentLoopPlanContract | None = None
+    decisions: tuple[AgentLoopDecisionContract, ...] = ()
+    observations: tuple[AgentToolObservation, ...] = ()
+    telemetry: tuple[ModelCallTelemetry, ...]
+    failure_message: str = Field(min_length=1)
+    stop_rejections: tuple[AgentStopRejection, ...] = ()
+    schema_version: str = ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> IterativeAgentFailureArtifact:
+        if self.artifact_id != iterative_agent_failure_artifact_id(self):
+            raise ValueError("iterative Agent failure Artifact identity is invalid")
+        return self
+
+
+def iterative_agent_failure_artifact_id(value: IterativeAgentFailureArtifact) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"artifact_id"}),
+        prefix="iterative_agent_failure_artifact:",
+    )
+
+
 class IterativeAgentSolver:
     """Model decides one public action at a time; Host executes and records every observation."""
 
@@ -177,10 +296,17 @@ class IterativeAgentSolver:
         self,
         task: TaskPublicSpec,
         runtime: InteractiveAgentToolRuntime,
+        *,
+        public_state_condition: PublicAgentStateCondition | None = None,
     ) -> IterativeAgentSolveResult:
         manifest = runtime.manifest
         _assert_no_model_forbidden_fields(task.model_dump(mode="json", exclude_none=True))
         _assert_no_model_forbidden_fields(manifest.model_dump(mode="json", exclude_none=True))
+        if public_state_condition is not None:
+            condition_payload = public_state_condition.model_dump(mode="json")
+            _assert_no_model_forbidden_fields(condition_payload)
+        else:
+            condition_payload = None
         selectable = {item.tool_id: item for item in manifest.tools if item.model_selectable}
         if not selectable:
             raise ValueError("interactive Agent runtime exposes no selectable tool")
@@ -189,14 +315,41 @@ class IterativeAgentSolver:
             raise ValueError(f"scripted Agent sequence contains unknown tools: {unknown_scripted}")
         if len(self._scripted_tool_sequence) > manifest.maximum_tool_calls:
             raise ValueError("scripted Agent sequence exceeds the environment tool budget")
+        if public_state_condition is not None:
+            unknown_condition_tools = set(public_state_condition.tool_sequence) - set(selectable)
+            if unknown_condition_tools:
+                raise ValueError(
+                    "public Agent condition contains unknown tools: "
+                    f"{sorted(unknown_condition_tools)}"
+                )
+            if len(public_state_condition.tool_sequence) > manifest.maximum_tool_calls:
+                raise ValueError("public Agent condition exceeds the environment tool budget")
 
         telemetry: list[ModelCallTelemetry] = []
-        plan_prompt = _plan_prompt(task, manifest.model_dump(mode="json"), self._mode)
-        plan, plan_telemetry, plan_repairs = _request_contract(
-            self._client,
-            plan_prompt,
-            AgentLoopPlanContract,
+        plan_prompt = _plan_prompt(
+            task,
+            _model_visible_environment(manifest, consumed_tool_calls=0),
+            self._mode,
+            condition_payload,
         )
+        try:
+            plan, plan_telemetry, plan_repairs = _request_contract(
+                self._client,
+                plan_prompt,
+                AgentLoopPlanContract,
+            )
+        except LLMClientError as exc:
+            artifact = _make_failure_artifact(
+                task=task,
+                mode=self._mode,
+                environment_manifest_id=manifest.manifest_id,
+                plan=None,
+                decisions=(),
+                observations=(),
+                telemetry=exc.telemetry,
+                failure_message=str(exc),
+            )
+            raise LLMClientError(str(exc), exc.telemetry, failure_artifact=artifact) from exc
         telemetry.extend(plan_telemetry)
         _enforce_token_budget(telemetry, self._maximum_total_tokens)
         repair_count = plan_repairs
@@ -206,86 +359,165 @@ class IterativeAgentSolver:
         failed_count = 0
         total_observation_bytes = 0
         final_decision: AgentLoopDecisionContract | None = None
+        scripted_step_index = 0
+        stop_rejections: list[AgentStopRejection] = []
+
+        def failure(message: str) -> LLMClientError:
+            return _iterative_failure(
+                message,
+                task=task,
+                mode=self._mode,
+                environment_manifest_id=manifest.manifest_id,
+                plan=plan,
+                decisions=tuple(decisions),
+                observations=tuple(observations),
+                telemetry=tuple(telemetry),
+                stop_rejections=tuple(stop_rejections),
+            )
 
         while final_decision is None:
             if len(observations) > manifest.maximum_tool_calls:
-                raise LLMClientError("Agent exceeded the frozen tool-call budget", tuple(telemetry))
+                raise failure("Agent exceeded the frozen tool-call budget")
             expected_tool = (
-                self._scripted_tool_sequence[len(observations)]
+                self._scripted_tool_sequence[scripted_step_index]
                 if self._mode == "scripted_tool"
-                and len(observations) < len(self._scripted_tool_sequence)
+                and scripted_step_index < len(self._scripted_tool_sequence)
                 else None
             )
-            decision_prompt = _decision_prompt(
-                task,
-                manifest.model_dump(mode="json"),
-                plan,
-                tuple(observations),
-                mode=self._mode,
-                expected_tool=expected_tool,
-            )
+            if expected_tool is not None:
+                expected_spec = selectable[expected_tool]
+                decision_prompt = _scripted_tool_prompt(
+                    task,
+                    expected_spec.model_dump(mode="json"),
+                    plan,
+                    tuple(observations),
+                    public_state_condition=condition_payload,
+                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                )
+                response_type: type[BaseModel] = AgentScriptedToolContract
+            elif self._mode == "scripted_tool":
+                decision_prompt = _final_answer_prompt(
+                    task,
+                    plan,
+                    tuple(observations),
+                    public_state_condition=condition_payload,
+                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                )
+                response_type = AgentFinalAnswerContract
+            else:
+                decision_prompt = _decision_prompt(
+                    task,
+                    _model_visible_environment(
+                        manifest,
+                        consumed_tool_calls=len(observations),
+                    ),
+                    plan,
+                    tuple(observations),
+                    mode=self._mode,
+                    expected_tool=None,
+                    public_state_condition=condition_payload,
+                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                )
+                response_type = AgentLoopDecisionContract
             prompt_hashes.append(canonical_hash(decision_prompt, prefix="agent_decision_prompt:"))
-            decision, decision_telemetry, decision_repairs = _request_contract(
-                self._client,
-                decision_prompt,
-                AgentLoopDecisionContract,
-            )
+            try:
+                response, decision_telemetry, decision_repairs = _request_contract(
+                    self._client,
+                    decision_prompt,
+                    response_type,
+                )
+            except LLMClientError as exc:
+                telemetry.extend(exc.telemetry)
+                raise failure(str(exc)) from exc
+            if isinstance(response, AgentScriptedToolContract):
+                decision = AgentLoopDecisionContract(
+                    decision_type="tool_call",
+                    rationale_summary=response.rationale_summary,
+                    tool_id=expected_tool,
+                    arguments=response.arguments,
+                )
+            elif isinstance(response, AgentFinalAnswerContract):
+                decision = AgentLoopDecisionContract(
+                    decision_type="final_answer",
+                    rationale_summary=response.rationale_summary,
+                    answer=response.answer,
+                    cited_evidence_ids=response.cited_evidence_ids,
+                )
+            else:
+                if not isinstance(response, AgentLoopDecisionContract):
+                    raise TypeError("unexpected iterative Agent response contract")
+                decision = response
             telemetry.extend(decision_telemetry)
-            _enforce_token_budget(telemetry, self._maximum_total_tokens)
+            try:
+                _enforce_token_budget(telemetry, self._maximum_total_tokens)
+            except LLMClientError as exc:
+                raise failure(str(exc)) from exc
             repair_count += decision_repairs
             _assert_no_model_forbidden_fields(decision.model_dump(mode="json", exclude_none=True))
             decisions.append(decision)
-            if expected_tool is not None and (
-                decision.decision_type != "tool_call" or decision.tool_id != expected_tool
-            ):
-                raise LLMClientError(
-                    "scripted Agent changed the frozen tool sequence",
-                    tuple(telemetry),
-                )
-            if (
-                self._mode == "scripted_tool"
-                and expected_tool is None
-                and decision.decision_type != "final_answer"
-            ):
-                raise LLMClientError(
-                    "scripted Agent attempted an extra tool call",
-                    tuple(telemetry),
-                )
             if decision.decision_type == "final_answer":
+                rejection_code: StopRejectionCode | None = None
+                rejection_feedback = ""
                 if not observations:
-                    raise LLMClientError(
-                        "interactive Agent stopped without using a tool",
-                        tuple(telemetry),
+                    rejection_code = "missing_observed_evidence"
+                    rejection_feedback = (
+                        "Final answer rejected: use at least one public tool and observed Evidence "
+                        "before stopping."
                     )
+                elif TaskRequirement.VERIFY_RESULT in task.requirements and not any(
+                    item.status == "succeeded"
+                    and selectable[item.call.tool_id].semantic_role == "verify"
+                    for item in observations
+                ):
+                    rejection_code = "missing_required_verification"
+                    rejection_feedback = (
+                        "Final answer rejected: run a successful verification tool before stopping."
+                    )
+                else:
+                    try:
+                        _validate_final_answer(task, decision, tuple(observations), selectable)
+                    except LLMClientError as exc:
+                        rejection_code = "invalid_final_answer_contract"
+                        rejection_feedback = f"Final answer rejected: {exc}"
+                if rejection_code is not None:
+                    stop_rejections.append(
+                        AgentStopRejection(
+                            decision_index=len(decisions) - 1,
+                            reason_code=rejection_code,
+                            feedback=rejection_feedback,
+                        )
+                    )
+                    if len(stop_rejections) > MAXIMUM_STOP_REJECTIONS:
+                        raise failure("Agent exceeded the frozen stop-rejection budget")
+                    continue
                 final_decision = decision
                 break
             if len(observations) >= manifest.maximum_tool_calls:
-                raise LLMClientError(
-                    "Agent exhausted the frozen tool-call budget", tuple(telemetry)
-                )
+                raise failure("Agent exhausted the frozen tool-call budget")
             tool_id = decision.tool_id or ""
             _assert_no_model_forbidden_fields(decision.arguments or {})
             spec = selectable.get(tool_id)
             if spec is None:
-                raise LLMClientError(
-                    f"Agent selected an unavailable tool: {tool_id}", tuple(telemetry)
-                )
-            try:
-                spec.validate_arguments(decision.arguments or {})
-            except ValueError as exc:
-                raise LLMClientError(str(exc), tuple(telemetry)) from exc
+                raise failure(f"Agent selected an unavailable tool: {tool_id}")
             call = AgentToolCall(
                 call_index=len(observations) + 1,
                 tool_id=tool_id,
                 arguments=decision.arguments or {},
             )
-            result = _execute_tool(runtime, call)
+            failed_signatures: set[str] = set()
+            for item in reversed(observations):
+                if item.status == "succeeded":
+                    break
+                failed_signatures.add(_tool_call_signature(item.call))
+            if _tool_call_signature(call) in failed_signatures:
+                raise failure("Agent repeated an identical failed tool call")
+            result = agent_tool_argument_rejection(spec, call) or _execute_tool(runtime, call)
             _assert_no_model_forbidden_fields(result.result)
             if result.status == "succeeded":
                 try:
                     spec.validate_output(result.result)
                 except ValueError as exc:
-                    raise LLMClientError(str(exc), tuple(telemetry)) from exc
+                    raise failure(str(exc)) from exc
             observation = make_agent_tool_observation(
                 environment_manifest_id=manifest.manifest_id,
                 call=call,
@@ -308,25 +540,21 @@ class IterativeAgentSolver:
             )
             total_observation_bytes += observation_bytes
             if total_observation_bytes > manifest.maximum_total_observation_bytes:
-                raise LLMClientError(
-                    "Agent exceeded the frozen observation-byte budget",
-                    tuple(telemetry),
-                )
+                raise failure("Agent exceeded the frozen observation-byte budget")
             observations.append(observation)
+            if self._mode == "scripted_tool" and observation.status == "succeeded":
+                scripted_step_index += 1
             failed_count += int(observation.status == "failed")
             if failed_count > manifest.maximum_failed_tool_calls:
-                raise LLMClientError(
-                    "Agent exceeded the frozen failed-tool budget",
-                    tuple(telemetry),
-                )
+                raise failure("Agent exceeded the frozen failed-tool budget")
 
-        _validate_final_answer(task, final_decision, tuple(observations), selectable)
         trajectory = _make_trajectory(
             task,
             plan,
             tuple(decisions),
             tuple(observations),
             final_decision,
+            tuple(stop_rejections),
             manifest.manifest_id,
             {tool_id: item.trajectory_action for tool_id, item in selectable.items()},
         )
@@ -340,12 +568,18 @@ class IterativeAgentSolver:
             "mode": self._mode,
             "model_config_hash": self._client.config.public_manifest_hash,
             "environment_manifest_id": manifest.manifest_id,
+            "public_state_condition_hash": (
+                public_state_condition.condition_hash
+                if public_state_condition is not None
+                else None
+            ),
             "plan_prompt_hash": canonical_hash(plan_prompt, prefix="agent_plan_prompt:"),
             "decision_prompt_hashes": tuple(prompt_hashes),
             "observation_ids": tuple(item.observation_id for item in observations),
             "observation_content_hashes": tuple(item.content_hash for item in observations),
             "scripted_tool_sequence": self._scripted_tool_sequence,
             "successful_tool_call_count": successful_count,
+            "stop_rejections": tuple(stop_rejections),
             "failed_tool_call_count": failed_count,
             "error_recovery_count": _error_recovery_count(tuple(observations)),
             "verification_tool_call_count": verification_count,
@@ -377,6 +611,66 @@ def iterative_agent_audit_id(value: IterativeAgentAudit) -> str:
     )
 
 
+def _make_failure_artifact(
+    *,
+    task: TaskPublicSpec,
+    mode: InteractiveAgentMode,
+    environment_manifest_id: str,
+    plan: AgentLoopPlanContract | None,
+    decisions: tuple[AgentLoopDecisionContract, ...],
+    observations: tuple[AgentToolObservation, ...],
+    stop_rejections: tuple[AgentStopRejection, ...] = (),
+    telemetry: tuple[ModelCallTelemetry, ...],
+    failure_message: str,
+) -> IterativeAgentFailureArtifact:
+    values = {
+        "task_id": task.task_id,
+        "mode": mode,
+        "environment_manifest_id": environment_manifest_id,
+        "plan": plan,
+        "decisions": decisions,
+        "observations": observations,
+        "stop_rejections": stop_rejections,
+        "telemetry": telemetry,
+        "failure_message": failure_message,
+        "schema_version": ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION,
+    }
+    provisional = IterativeAgentFailureArtifact.model_construct(
+        artifact_id="pending",
+        **values,
+    )
+    return IterativeAgentFailureArtifact(
+        artifact_id=iterative_agent_failure_artifact_id(provisional),
+        **values,
+    )
+
+
+def _iterative_failure(
+    message: str,
+    *,
+    task: TaskPublicSpec,
+    mode: InteractiveAgentMode,
+    environment_manifest_id: str,
+    plan: AgentLoopPlanContract | None,
+    decisions: tuple[AgentLoopDecisionContract, ...],
+    observations: tuple[AgentToolObservation, ...],
+    stop_rejections: tuple[AgentStopRejection, ...] = (),
+    telemetry: tuple[ModelCallTelemetry, ...],
+) -> LLMClientError:
+    artifact = _make_failure_artifact(
+        task=task,
+        mode=mode,
+        environment_manifest_id=environment_manifest_id,
+        plan=plan,
+        decisions=decisions,
+        observations=observations,
+        stop_rejections=stop_rejections,
+        telemetry=telemetry,
+        failure_message=message,
+    )
+    return LLMClientError(message, telemetry, failure_artifact=artifact)
+
+
 def _request_contract(
     client: JsonCompletionClient,
     base_prompt: str,
@@ -384,28 +678,45 @@ def _request_contract(
 ) -> tuple[ContractT, tuple[ModelCallTelemetry, ...], int]:
     telemetry: list[ModelCallTelemetry] = []
     validation_error = ""
-    previous_payload: dict[str, Any] | None = None
-    for attempt in range(client.config.contract_repair_attempts + 1):
+    previous_payload_keys: tuple[str, ...] = ()
+    expected_fields = tuple(model_type.model_fields)
+    maximum_attempt = client.config.contract_repair_attempts
+    for attempt in range(maximum_attempt + 1):
+        repair_note = json.dumps(
+            {
+                "validation_error": validation_error[:1200],
+                "previous_payload_keys": previous_payload_keys,
+                "required_json_fields": expected_fields,
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
         prompt = (
             base_prompt
             if attempt == 0
             else base_prompt
-            + "\nThe previous JSON failed validation. Return a corrected JSON object only.\n"
-            + json.dumps(
-                {"previous_payload": previous_payload, "validation_error": validation_error},
-                ensure_ascii=False,
-                sort_keys=True,
-            )
+            + "\nCONTRACT_REPAIR_JSON:\n"
+            + repair_note
+            + "\nReturn only the corrected response object. Do not copy PUBLIC_CONTEXT_JSON."
         )
-        payload, call = client.complete_json(prompt)
-        previous_payload = payload
+        try:
+            payload, call = client.complete_json(prompt)
+        except LLMClientError as exc:
+            telemetry.extend(exc.telemetry)
+            validation_error = f"provider_or_json_error:{exc}"[:1200]
+            previous_payload_keys = ()
+            if attempt == maximum_attempt:
+                break
+            continue
+        previous_payload_keys = tuple(sorted(str(key) for key in payload))
         try:
             return model_type.model_validate(payload), (*telemetry, call), attempt
         except ValidationError as exc:
             validation_error = "; ".join(
                 f"{'.'.join(str(item) for item in error['loc'])}:{error['msg']}"
                 for error in exc.errors()
-            )
+            )[:1200]
             telemetry.append(
                 call.model_copy(
                     update={
@@ -452,6 +763,15 @@ def _execute_tool(
         )
 
 
+def _tool_call_signature(call: AgentToolCall) -> str:
+    """Call identity excludes the monotonic Host index so retries are comparable."""
+
+    return canonical_hash(
+        {"tool_id": call.tool_id, "arguments": call.arguments},
+        prefix="agent_tool_call_semantics:",
+    )
+
+
 def _validate_final_answer(
     task: TaskPublicSpec,
     decision: AgentLoopDecisionContract,
@@ -484,6 +804,7 @@ def _make_trajectory(
     decisions: tuple[AgentLoopDecisionContract, ...],
     observations: tuple[AgentToolObservation, ...],
     final_decision: AgentLoopDecisionContract,
+    stop_rejections: tuple[AgentStopRejection, ...],
     environment_manifest_id: str,
     action_by_tool_id: dict[str, ActionType],
 ) -> Trajectory:
@@ -499,40 +820,83 @@ def _make_trajectory(
             status=StepStatus.SUCCEEDED,
         )
     ]
-    tool_decisions = [item for item in decisions if item.decision_type == "tool_call"]
-    for index, (decision, observation) in enumerate(
-        zip(tool_decisions, observations, strict=True),
-        start=2,
-    ):
+    rejection_by_decision = {item.decision_index: item for item in stop_rejections}
+    observation_index = 0
+    accepted_answer_count = 0
+    for decision_index, decision in enumerate(decisions):
+        if decision.decision_type == "tool_call":
+            if observation_index >= len(observations):
+                raise ValueError("iterative Agent trajectory lost a Host observation")
+            observation = observations[observation_index]
+            input_refs = (
+                (f"observation:{observations[observation_index - 1].observation_id}",)
+                if observation_index > 0
+                else ()
+            )
+            steps.append(
+                TrajectoryStep(
+                    step_index=len(steps) + 1,
+                    action=action_by_tool_id[observation.call.tool_id],
+                    tool_name=observation.call.tool_id,
+                    tool_input=observation.call.arguments,
+                    observation=observation.model_dump(mode="json"),
+                    evidence_ids=observation.evidence_ids,
+                    input_refs=input_refs,
+                    output_ref=f"observation:{observation.observation_id}",
+                    rationale_summary=decision.rationale_summary,
+                    status=(
+                        StepStatus.SUCCEEDED
+                        if observation.status == "succeeded"
+                        else StepStatus.FAILED
+                    ),
+                )
+            )
+            observation_index += 1
+            continue
+
+        rejection = rejection_by_decision.get(decision_index)
+        if rejection is not None:
+            steps.append(
+                TrajectoryStep(
+                    step_index=len(steps) + 1,
+                    action=ActionType.ANSWER,
+                    observation={
+                        "host_rejection_reason": rejection.reason_code,
+                        "host_feedback": rejection.feedback,
+                        "cited_evidence_ids": decision.cited_evidence_ids,
+                    },
+                    evidence_ids=decision.cited_evidence_ids,
+                    input_refs=tuple(
+                        f"observation:{item.observation_id}"
+                        for item in observations[:observation_index]
+                    ),
+                    rationale_summary=decision.rationale_summary,
+                    status=StepStatus.FAILED,
+                )
+            )
+            continue
+
+        if decision != final_decision:
+            raise ValueError("iterative Agent trajectory contains an unclassified stop decision")
+        accepted_answer_count += 1
         steps.append(
             TrajectoryStep(
-                step_index=index,
-                action=action_by_tool_id[observation.call.tool_id],
-                tool_name=observation.call.tool_id,
-                tool_input=observation.call.arguments,
-                observation=observation.model_dump(mode="json"),
-                evidence_ids=observation.evidence_ids,
-                input_refs=(
-                    (f"observation:{observations[index - 3].observation_id}",) if index > 2 else ()
+                step_index=len(steps) + 1,
+                action=ActionType.ANSWER,
+                observation={"cited_evidence_ids": final_decision.cited_evidence_ids},
+                evidence_ids=final_decision.cited_evidence_ids,
+                input_refs=tuple(
+                    f"observation:{item.observation_id}"
+                    for item in observations[:observation_index]
                 ),
-                output_ref=f"observation:{observation.observation_id}",
-                rationale_summary=decision.rationale_summary,
-                status=(
-                    StepStatus.SUCCEEDED if observation.status == "succeeded" else StepStatus.FAILED
-                ),
+                rationale_summary=final_decision.rationale_summary,
+                status=StepStatus.SUCCEEDED,
             )
         )
-    steps.append(
-        TrajectoryStep(
-            step_index=len(steps) + 1,
-            action=ActionType.ANSWER,
-            observation={"cited_evidence_ids": final_decision.cited_evidence_ids},
-            evidence_ids=final_decision.cited_evidence_ids,
-            input_refs=tuple(f"observation:{item.observation_id}" for item in observations),
-            rationale_summary=final_decision.rationale_summary,
-            status=StepStatus.SUCCEEDED,
-        )
-    )
+    if observation_index != len(observations):
+        raise ValueError("iterative Agent trajectory has unbound Host observations")
+    if accepted_answer_count != 1:
+        raise ValueError("iterative Agent trajectory requires one accepted final answer")
     values = {
         "task_id": task.task_id,
         "workflow_kind": WorkflowKind.CANDIDATE,
@@ -541,8 +905,14 @@ def _make_trajectory(
             "execution_source": "host_iterative_tool_runtime",
             "environment_manifest_id": environment_manifest_id,
             "observation_ids": tuple(item.observation_id for item in observations),
+            "stop_rejections": tuple(item.model_dump(mode="json") for item in stop_rejections),
         },
-        "final_answer": final_decision.answer or {},
+        "final_answer": {
+            "result": final_decision.answer or {},
+            "citations": [
+                {"evidence_id": evidence_id} for evidence_id in final_decision.cited_evidence_ids
+            ],
+        },
         "generator_version": ITERATIVE_AGENT_SOLVER_VERSION,
     }
     return Trajectory(
@@ -570,29 +940,177 @@ def _assert_no_model_forbidden_fields(value: Any, *, path: str = "public") -> No
             _assert_no_model_forbidden_fields(item, path=f"{path}[{index}]")
 
 
+def _model_visible_environment(
+    manifest: Any,
+    *,
+    consumed_tool_calls: int,
+) -> dict[str, Any]:
+    """Compact public tool surface; immutable hashes remain in the Host audit."""
+
+    return {
+        "environment_id": manifest.environment_id,
+        "snapshot_id": manifest.snapshot_id,
+        "network_policy": manifest.network_policy,
+        "remaining_tool_calls": max(0, manifest.maximum_tool_calls - consumed_tool_calls),
+        "maximum_failed_tool_calls": manifest.maximum_failed_tool_calls,
+        "tools": [
+            {
+                "tool_id": item.tool_id,
+                "semantic_role": item.semantic_role,
+                "description": item.description,
+                "required_input_fields": item.required_input_fields,
+                "input_contract": item.input_contract,
+            }
+            for item in manifest.tools
+            if item.model_selectable
+        ],
+    }
+
+
+def _model_visible_observations(
+    observations: tuple[AgentToolObservation, ...],
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "observation_id": item.observation_id,
+            "call_index": item.call.call_index,
+            "tool_id": item.call.tool_id,
+            "arguments": item.call.arguments,
+            "status": item.status,
+            "result": item.result,
+            "evidence_ids": item.evidence_ids,
+            "error_code": item.error_code,
+            "error_message": item.error_message,
+        }
+        for item in observations
+    ]
+
+
+def _model_visible_task(task: TaskPublicSpec) -> dict[str, Any]:
+    retrieval_scope = {
+        key: value for key, value in task.retrieval_scope.items() if key != "corpus_boundary"
+    }
+    visible = {
+        "task_id": task.task_id,
+        "domain": task.domain,
+        "task_type": task.task_type,
+        "instruction": task.instruction,
+        "requirements": [item.value for item in task.requirements],
+        "retrieval_track": task.retrieval_track.value,
+        "retrieval_scope": retrieval_scope,
+        "answer_schema": task.answer_schema,
+        "answer_field_contract": {
+            "required_fields": tuple(sorted(required_answer_fields(task.answer_schema))),
+            "allowed_fields": tuple(sorted(allowed_result_fields(task.answer_schema))),
+            "additional_fields_allowed": False,
+        },
+    }
+    guidance = task.metadata.get("agent_contract_guidance")
+    if guidance is not None:
+        visible["agent_contract_guidance"] = guidance
+    return visible
+
+
+def _json_contract_prompt(instruction: str, context: dict[str, Any]) -> str:
+    return (
+        instruction
+        + "\nPUBLIC_CONTEXT_JSON:\n"
+        + json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    )
+
+
 def _plan_prompt(
     task: TaskPublicSpec,
     environment_manifest: dict[str, Any],
     mode: InteractiveAgentMode,
+    public_state_condition: dict[str, Any] | None,
 ) -> str:
-    return json.dumps(
+    tool_summary = [
+        {
+            "tool_id": item["tool_id"],
+            "semantic_role": item["semantic_role"],
+            "description": item["description"],
+        }
+        for item in environment_manifest["tools"]
+    ]
+    return _json_contract_prompt(
+        "Return only one compact JSON object with exactly these keys: plan_summary, "
+        "subgoal_labels, stop_conditions. Do not copy the task or context. Use 2-6 short "
+        "subgoal labels and 1-4 observable stop conditions. Do not provide hidden "
+        "chain-of-thought. plan_summary <=240 characters; each label <=64; each stop "
+        "condition <=96.",
         {
             "prompt_version": ITERATIVE_AGENT_PLAN_PROMPT_VERSION,
-            "instruction": (
-                "Return a compact public plan. Do not provide hidden chain-of-thought. "
-                "You cannot see Gold Evidence IDs, the Oracle program, or the reference answer."
-            ),
             "mode": mode,
-            "task": task.model_dump(mode="json", exclude_none=True),
-            "tool_environment": environment_manifest,
-            "response_contract": {
-                "plan_summary": "string",
-                "subgoal_labels": ["short public labels"],
-                "stop_conditions": ["observable conditions"],
+            "public_behavior_condition": public_state_condition,
+            "task": _model_visible_task(task),
+            "tool_environment": {
+                "network_policy": environment_manifest["network_policy"],
+                "remaining_tool_calls": environment_manifest["remaining_tool_calls"],
+                "tools": tool_summary,
             },
         },
-        ensure_ascii=False,
-        sort_keys=True,
+    )
+
+
+def _scripted_tool_prompt(
+    task: TaskPublicSpec,
+    expected_tool: dict[str, Any],
+    plan: AgentLoopPlanContract,
+    observations: tuple[AgentToolObservation, ...],
+    *,
+    public_state_condition: dict[str, Any] | None,
+    host_feedback: tuple[str, ...],
+) -> str:
+    return _json_contract_prompt(
+        "The Host has frozen the next tool. Return only one JSON object with exactly "
+        "rationale_summary and arguments. Do not return tool_id, a final answer, the task, "
+        "or the context. Fill arguments for the specified tool contract. Search results are "
+        "discovered candidates only; Evidence becomes selected only after open_document or "
+        "query_structured_fact succeeds. Never repeat identical arguments after a failure. "
+        "Keep rationale_summary <=1200 characters and do not provide hidden chain-of-thought.",
+        {
+            "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
+            "mode": "scripted_tool",
+            "public_behavior_condition": public_state_condition,
+            "task": _model_visible_task(task),
+            "plan": plan.model_dump(mode="json"),
+            "expected_tool": {
+                "tool_id": expected_tool["tool_id"],
+                "description": expected_tool["description"],
+                "required_input_fields": expected_tool["required_input_fields"],
+                "input_contract": expected_tool["input_contract"],
+            },
+            "host_feedback": host_feedback,
+            "observations": _model_visible_observations(observations),
+        },
+    )
+
+
+def _final_answer_prompt(
+    task: TaskPublicSpec,
+    plan: AgentLoopPlanContract,
+    observations: tuple[AgentToolObservation, ...],
+    *,
+    public_state_condition: dict[str, Any] | None,
+    host_feedback: tuple[str, ...],
+) -> str:
+    return _json_contract_prompt(
+        "Return only one JSON object with exactly rationale_summary, answer, and "
+        "cited_evidence_ids. answer must follow the public answer_schema exactly. Cite only "
+        "Evidence IDs present in successful observations. Copy the exact terminal successful "
+        "calculator result into the answer: do not round values, rename reference IDs, or "
+        "change numeric types. Follow answer_schema and agent_contract_guidance exactly. Do "
+        "not add a tool call or copy the task/context. Keep rationale_summary <=1200 characters.",
+        {
+            "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
+            "mode": "scripted_tool",
+            "public_behavior_condition": public_state_condition,
+            "task": _model_visible_task(task),
+            "plan": plan.model_dump(mode="json"),
+            "host_feedback": host_feedback,
+            "observations": _model_visible_observations(observations),
+        },
     )
 
 
@@ -604,40 +1122,32 @@ def _decision_prompt(
     *,
     mode: InteractiveAgentMode,
     expected_tool: str | None,
+    public_state_condition: dict[str, Any] | None,
+    host_feedback: tuple[str, ...],
 ) -> str:
-    return json.dumps(
+    if mode != "autonomous_agent" or expected_tool is not None:
+        raise ValueError("autonomous decision prompt received scripted control state")
+    return _json_contract_prompt(
+        "Return only one compact JSON object. Choose one next public action. For a tool call "
+        "use exactly decision_type, rationale_summary, tool_id, arguments, answer=null, and "
+        "cited_evidence_ids=[]. For a final answer use decision_type, rationale_summary, "
+        "tool_id=null, arguments=null, answer, and cited_evidence_ids. Search results are "
+        "discovered candidates only; select Evidence with open_document or "
+        "query_structured_fact before normalize, calculator, cross-check, or citation. Do not "
+        "stop before required verification succeeds. Never repeat an identical failed call. "
+        "For a final answer, copy the exact terminal successful calculator result without "
+        "rounding values, renaming reference IDs, or changing numeric types; follow "
+        "answer_schema and agent_contract_guidance exactly. Address any Host feedback before "
+        "stopping. Keep rationale_summary <=1200 characters. Do not copy the task/context or "
+        "provide hidden chain-of-thought.",
         {
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
-            "instruction": (
-                "Choose exactly one next public action. The Host executes tools. Return only "
-                "a rationale summary, never hidden chain-of-thought. Stop only when the answer "
-                "is supported by observed Evidence and required verification is complete."
-            ),
             "mode": mode,
-            "expected_scripted_tool": expected_tool,
-            "task": task.model_dump(mode="json", exclude_none=True),
+            "public_behavior_condition": public_state_condition,
+            "task": _model_visible_task(task),
             "plan": plan.model_dump(mode="json"),
             "tool_environment": environment_manifest,
-            "observations": [item.model_dump(mode="json") for item in observations],
-            "response_contract": {
-                "tool_call": {
-                    "decision_type": "tool_call",
-                    "rationale_summary": "string",
-                    "tool_id": "string",
-                    "arguments": {},
-                    "answer": None,
-                    "cited_evidence_ids": [],
-                },
-                "final_answer": {
-                    "decision_type": "final_answer",
-                    "rationale_summary": "string",
-                    "tool_id": None,
-                    "arguments": None,
-                    "answer": {},
-                    "cited_evidence_ids": ["observed Evidence IDs"],
-                },
-            },
+            "host_feedback": host_feedback,
+            "observations": _model_visible_observations(observations),
         },
-        ensure_ascii=False,
-        sort_keys=True,
     )

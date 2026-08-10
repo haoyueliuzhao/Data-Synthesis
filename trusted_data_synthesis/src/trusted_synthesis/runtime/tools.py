@@ -146,6 +146,26 @@ class AgentToolResult(BaseModel):
         return self
 
 
+def agent_tool_argument_rejection(
+    spec: AgentToolSpec,
+    call: AgentToolCall,
+) -> AgentToolResult | None:
+    """Turn model-owned argument contract errors into replayable failed observations."""
+
+    if call.tool_id != spec.tool_id:
+        raise ValueError("Agent tool call and ToolSpec identities differ")
+    try:
+        spec.validate_arguments(call.arguments)
+    except ValueError as exc:
+        return AgentToolResult(
+            status="failed",
+            result={},
+            error_code="agent_tool_argument_contract",
+            error_message=str(exc) or type(exc).__name__,
+        )
+    return None
+
+
 class AgentToolObservation(BaseModel):
     """Content-addressed, replayable observation created by the Host."""
 

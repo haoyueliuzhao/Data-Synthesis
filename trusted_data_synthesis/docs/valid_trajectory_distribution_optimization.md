@@ -333,13 +333,21 @@ GP-C. Fresh Validation remains unopened, Authorization remains forbidden, and re
 `Contribution=0`. See `docs/finance_v22_development_exact_target_report.md`.
 
 The post-v22 experiment changes the trajectory kernel before attempting fresh Validation. A
-three-arm Direct/Bare, Scripted Tool, and Autonomous Agent Pilot tests whether model-selected tool
-planning, query reformulation, verification, recovery, and stopping create valid states with larger
-exact-target contrasts. Scripted and Autonomous share one frozen tool and Evidence environment;
-all Host Observations are content addressed. A passing Pilot can advance only to Beneficiary
-frontier screening, not Validation or GP-C. The Agent kernel requires new Explorer, catalog,
-Reachability, and initial-distribution identities. See
-`docs/finance_v23_capability_sensitive_agent_plan.md`.
+paired `deepseek-v4-pro` versus `deepseek-v4-flash` three-arm Direct/Bare, Scripted Tool, and
+Autonomous Agent Pilot tests whether model-selected tool planning, query reformulation,
+verification, recovery, and stopping create valid states with larger exact-target contrasts.
+Explorer models are distinct generation-kernel identities, not interchangeable implementations.
+Scripted and Autonomous share one frozen tool and Evidence environment; all Host Observations are
+content addressed. A passing Pilot can advance only to Beneficiary frontier screening, not
+Validation or GP-C. The Agent kernel requires new Explorer, catalog, Reachability, and
+initial-distribution identities.
+
+The final v9 calibration failed its frozen completion and JSON-contract gates, so the state-space
+Discovery and exact-target contrast were never observed. This result does not evaluate the
+capability-sensitivity hypothesis, GP-C, or theoretical Contribution. It preserves
+`Contribution=0` and prevents any inference that Flash is a better Explorer merely because it
+produced more failures. See `docs/finance_v23_capability_sensitive_agent_plan.md` and
+`docs/finance_v23_explorer_runtime_factorial_report.md`.
 
 ## Novelty, Potential, And Anchored Update
 

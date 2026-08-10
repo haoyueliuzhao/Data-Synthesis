@@ -7,9 +7,12 @@ from trusted_synthesis.runtime.agent.client import (
 from trusted_synthesis.runtime.agent.iterative import (
     AgentLoopDecisionContract,
     AgentLoopPlanContract,
+    AgentStopRejection,
     IterativeAgentAudit,
+    IterativeAgentFailureArtifact,
     IterativeAgentSolver,
     IterativeAgentSolveResult,
+    PublicAgentStateCondition,
 )
 from trusted_synthesis.runtime.agent.llm_agent import LLMAgentSolver
 from trusted_synthesis.runtime.agent.schema import (
@@ -60,9 +63,12 @@ __all__ = [
     "JsonCompletionClient",
     "AgentLoopDecisionContract",
     "AgentLoopPlanContract",
+    "AgentStopRejection",
     "IterativeAgentAudit",
+    "IterativeAgentFailureArtifact",
     "IterativeAgentSolveResult",
     "IterativeAgentSolver",
+    "PublicAgentStateCondition",
     "LLMAgentSolver",
     "LLMClientError",
     "ModelCallTelemetry",

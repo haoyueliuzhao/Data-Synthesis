@@ -7,7 +7,7 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v1"
+FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v4"
 
 
 def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
@@ -19,7 +19,12 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             tool_version=FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION,
             semantic_role="acquire",
             trajectory_action=ActionType.SEARCH,
-            description="Search the frozen financial Archive using public text and typed filters.",
+            description=(
+                "Search the frozen financial Archive using public text and typed filters. "
+                "Matches are discovery summaries only; select Evidence with open_document or "
+                "query_structured_fact before normalization, calculation, verification, or "
+                "citation."
+            ),
             input_contract={
                 "query": "string",
                 "subject_aliases": "array[string]",
@@ -58,12 +63,24 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             tool_version=FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION,
             semantic_role="query",
             trajectory_action=ActionType.SELECT_EVIDENCE,
-            description="Query frozen structured facts without accepting hidden Gold identifiers.",
+            description=(
+                "Query frozen structured facts without hidden Gold identifiers. A successful "
+                "exact query selects its returned Evidence IDs for downstream tools. Use the "
+                "public subject ID/name, metric predicate/name, and exact period label from "
+                "search results. Canonical short subject IDs such as LOW for LOW_US and USA for "
+                "USA_COUNTRY are accepted. public_filters may be {} or contain only scalar "
+                "source_id, source_authority, unit, currency, definition_id, time_basis, "
+                "frequency, and subject_type keys."
+            ),
             input_contract={
                 "subject_alias": "string",
                 "metric_alias": "string",
                 "period_label": "string",
-                "public_filters": "object",
+                "public_filters": (
+                    "object with only optional scalar source_id, source_authority, unit, "
+                    "currency, definition_id, time_basis, frequency, subject_type keys; use {} "
+                    "when no exact filter is needed"
+                ),
             },
             output_contract={
                 "facts": "array[typed public fact]",
@@ -83,11 +100,21 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             tool_version=FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION,
             semantic_role="calculate",
             trajectory_action=ActionType.CALCULATE,
-            description="Execute a registered deterministic arithmetic operation on public inputs.",
+            description=(
+                "Execute lookup, compare, difference, ratio, growth, or aggregate on selected "
+                "Evidence or prior operation outputs while retaining Evidence lineage."
+            ),
             input_contract={
-                "operator": "registered operator ID",
-                "operands": "array[number or public step reference]",
-                "parameters": "object",
+                "operator": "lookup|compare|difference|ratio|growth|aggregate",
+                "operands": (
+                    "array of selected evidence_id strings, {evidence_id}, or "
+                    "{operation_ref,selector}; ordered for difference/growth/ratio"
+                ),
+                "parameters": (
+                    "{} except ratio requires registered_pair='<numerator predicate>/"
+                    "<denominator predicate>' exactly as exposed in agent_contract_guidance; "
+                    "aggregate requires method=mean|sum"
+                ),
             },
             output_contract={
                 "result": "typed numeric result",
@@ -103,7 +130,8 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             trajectory_action=ActionType.CALCULATE,
             description=(
                 "Apply the frozen Finance policy for metric definition, unit, currency, and "
-                "period alignment."
+                "period alignment. Every evidence_id must already be selected by "
+                "open_document or query_structured_fact; search_archive alone does not select."
             ),
             input_contract={
                 "evidence_ids": "array[string]",
@@ -127,7 +155,8 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             semantic_role="verify",
             trajectory_action=ActionType.VERIFY,
             description=(
-                "Cross-check selected Evidence and return a replayable verification report."
+                "Cross-check previously selected Evidence and a concrete computed claim/result; "
+                "return a replayable verification report before the final answer."
             ),
             input_contract={
                 "evidence_ids": "array[string]",

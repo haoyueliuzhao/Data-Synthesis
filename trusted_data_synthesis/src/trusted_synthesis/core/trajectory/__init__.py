@@ -33,6 +33,7 @@ if TYPE_CHECKING:
         JointCompilationArtifact,
         OmegaComponentManifest,
         OracleExecutionSpecification,
+        ReferenceExecutionIdentity,
         TrajectoryVerificationContext,
         make_joint_compilation_artifact,
         make_omega_component_manifest,
@@ -65,6 +66,10 @@ _EXPORTS = {
     "OracleExecutionSpecification": (
         "trusted_synthesis.core.trajectory.specification",
         "OracleExecutionSpecification",
+    ),
+    "ReferenceExecutionIdentity": (
+        "trusted_synthesis.core.trajectory.specification",
+        "ReferenceExecutionIdentity",
     ),
     "TrajectoryAttributeProfile": (
         "trusted_synthesis.core.trajectory.attributes",

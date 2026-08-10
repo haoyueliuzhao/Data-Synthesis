@@ -2,7 +2,7 @@
 
 Status date: 2026-08-11
 
-Current status: `agent_runtime_protocol_implemented_pilot_not_run`
+Current status: `paired_explorer_calibration_failed_discovery_not_permitted`
 
 ## Motivation
 
@@ -62,7 +62,9 @@ The domain-neutral implementation is in:
 
 - `runtime/tools.py`: frozen tool/environment and content-addressed Observation contracts;
 - `runtime/agent/iterative.py`: one-action-per-turn scripted/autonomous loop;
-- `phase1_agent_runtime_pilot.py`: immutable three-arm design and fail-closed gates.
+- `phase1_pro_flash_agent_pilot.py`: paired Explorer identity and isolated task partitions;
+- `phase1_explorer_runtime_factorial.py`: immutable three-arm design and fail-closed gates;
+- `phase1_explorer_runtime_factorial_runner.py`: checkpointed parallel execution and reports.
 
 Required public input and output fields are executable Host gates rather than prompt-only
 descriptions. Missing model arguments, unknown fields, or malformed successful tool outputs stop
@@ -79,8 +81,42 @@ normalize_metric_unit_period
 cross_check_evidence
 ```
 
-The contracts and a deterministic fake runtime are tested. Real Archive executors and the API Pilot
-have not run yet.
+The contracts, deterministic fake runtime, read-only Archive executors, independent Finance
+verifier, and checkpointed API runner are tested. The final v9 API qualification completed on
+2026-08-11; it failed its preregistered completion and JSON-contract gates, so factorial Discovery
+did not run.
+
+## Pro--Flash Paired Explorer Factorial
+
+The paired experiment treats `deepseek-v4-pro` and `deepseek-v4-flash` as different Explorer
+identities. There is no fallback and no claim that Flash is an in-place replacement. Both models
+receive the same public tasks, frozen Archive, Host runtime, temperature, `top_p`, tool budget, and
+90,000-token cumulative rollout budget. The primary contrasts are:
+
+```text
+Flash vs Pro within Autonomous Agent
+Autonomous Agent vs Scripted Tool within each model
+```
+
+The preferred later materialization mechanism remains Contract B: Flash may discover states, but
+Pro would rematerialize any selected public state condition under the same verifier. Contract A,
+where Flash also materializes training trajectories, is only an end-to-end supplementary arm.
+Neither contract was opened because calibration failed.
+
+The final frozen identities are:
+
+| Item | Identity |
+| --- | --- |
+| Base contract | `finance_pro_flash_paired_pilot_contract:61618f1d...` |
+| Factorial contract | `finance_explorer_runtime_factorial_contract:3c627a08...` |
+| Runtime | `finance_archive_interactive_runtime.v3` |
+| Toolset | `finance_archive_agent_toolset.v4` |
+| Solver | `iterative_agent_solver.v9` |
+| Quotient mapper | `dependency_wl_canonicalizer.v6` |
+
+The six calibration tasks and 30 reserved Discovery tasks are balanced over the six Finance task
+families. The 18 reserved exact-target tasks were frozen but never opened. v9 excludes 150 prior
+task identities: 42 historical v20/v21/v22 identities and the 108 fresh tasks consumed by v6-v8.
 
 ## Three-Arm Pilot
 
@@ -183,7 +219,10 @@ metrics.
 
 ## Current Claim Boundary
 
-No real v23 Agent trajectory, capability-frontier population, exact target, Validation result,
-GP-C score, VTDO update, or Student result exists yet. Production Contribution remains zero. The
-implemented result is an executable and fail-closed experimental protocol, not evidence that the
-Agent hypothesis is true.
+Real v23 calibration trajectories now exist, but the final qualification status is `failed`.
+There is no v23 Discovery population, capability-frontier population, state-conditioned study,
+exact target, Validation result, GP-C score, VTDO update, or Student result. Production
+Contribution remains zero. The result establishes an executable and fail-closed experiment and a
+negative Explorer qualification outcome; it is not evidence that the Agent hypothesis is true or
+that Flash improves capability sensitivity. See
+`docs/finance_v23_explorer_runtime_factorial_report.md`.

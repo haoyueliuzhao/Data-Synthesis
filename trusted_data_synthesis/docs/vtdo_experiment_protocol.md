@@ -467,8 +467,10 @@ frozen before GP-C is exposed. See `docs/finance_v22_development_power_plan.md` 
 
 ### 5.3 Capability-Sensitive Agent Runtime Gate
 
-The 60-task exact-target Validation is no longer the immediate post-v22 transition. First run a
-Development-only three-arm Pilot on 24-30 shared Finance tasks:
+The 60-task exact-target Validation is no longer the immediate post-v22 transition. First qualify
+a Development-only paired Explorer factorial on shared Finance tasks. `deepseek-v4-pro` is the
+strong baseline and `deepseek-v4-flash` is a separately identified medium-capability candidate;
+neither may fall back to the other. Each model runs the same three Runtime arms:
 
 ```text
 Direct/Bare
@@ -483,11 +485,24 @@ states. Each arm receives 8-12 unconditional runs; 12-18 balanced tasks receive 
 attempts per state and a small exact-target measurement. The independent verifier, quotient-state
 mapper, and exact-target design are content-hashed in the Pilot contract before API outcomes.
 
-All state-space, validity, provenance, target-sensitivity, and non-length-only gates must pass. A
+A six-task calibration gate precedes the 30-task, ten-replicate factorial Discovery. Calibration
+requires exact model identity, 100% completion in every model-runtime cell, at least 95% JSON
+contract success per cell, at least one independently valid trajectory per cell, and at least 80%
+interactive-tool success. Calibration outcomes cannot change thresholds.
+
+All later state-space, validity, provenance, target-sensitivity, and non-length-only gates must
+pass. A
 failure returns to Agent environment design. A pass permits only Beneficiary frontier screening and
 a new Agent population. Fresh Development must re-estimate variance before any Validation task
 count is frozen. Validation, Authorization, GP-C, and production Contribution remain inaccessible
 throughout this Pilot. See `docs/finance_v23_capability_sensitive_agent_plan.md`.
+
+The final v9 qualification completed 36/36 requested records but failed closed. Its minimum cell
+completion was `0.8333` against `1.0`, and minimum JSON-contract success was `0.9048` against
+`0.95`. Exact models, independent validity smoke, and interactive tool execution passed. The
+formal next stage is `protocol_repair_only`; Discovery, state conditioning, exact target, GP-C,
+Validation, and Authorization were not executed. This is an Explorer qualification failure, not a
+Contribution or GP-C result. See `docs/finance_v23_explorer_runtime_factorial_report.md`.
 
 ## 6. Experiment 4: Refinement Dynamics
 
