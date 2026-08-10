@@ -465,6 +465,30 @@ tasks and 128 disjoint Objective records. A separate proxy-target agreement powe
 frozen before GP-C is exposed. See `docs/finance_v22_development_power_plan.md` and
 `docs/finance_v22_development_exact_target_report.md`.
 
+### 5.3 Capability-Sensitive Agent Runtime Gate
+
+The 60-task exact-target Validation is no longer the immediate post-v22 transition. First run a
+Development-only three-arm Pilot on 24-30 shared Finance tasks:
+
+```text
+Direct/Bare
+Scripted Tool: Host fixes sequence, model supplies public arguments
+Autonomous Agent: model chooses tool, query, verification, recovery, and stop
+```
+
+Scripted and Autonomous must share the same frozen tool manifest, Evidence snapshot, token and
+tool-call budgets, timeout, and verifier. Host execution emits content-addressed Observations. The
+model cannot access Gold Evidence IDs, Oracle programs, reference answers, Proof Graphs, or target
+states. Each arm receives 8-12 unconditional runs; 12-18 balanced tasks receive 5-8 conditioned
+attempts per state and a small exact-target measurement. The independent verifier, quotient-state
+mapper, and exact-target design are content-hashed in the Pilot contract before API outcomes.
+
+All state-space, validity, provenance, target-sensitivity, and non-length-only gates must pass. A
+failure returns to Agent environment design. A pass permits only Beneficiary frontier screening and
+a new Agent population. Fresh Development must re-estimate variance before any Validation task
+count is frozen. Validation, Authorization, GP-C, and production Contribution remain inaccessible
+throughout this Pilot. See `docs/finance_v23_capability_sensitive_agent_plan.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control

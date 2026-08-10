@@ -2,10 +2,15 @@
 
 Status date: 2026-08-08
 
-Current status: `development_design_recommendation_ready`. The initial Explorer distribution, the
-complete DeepSeek v13 state-conditioned population, 500 state gradients, eight Objective gradients,
-and 4,000 exact-target observations are complete. The original target report remains immutable; a
-separate v22.1 analysis corrects inference and study sizing without rewriting its observations.
+Current status: `superseded_as_immediate_next_step_by_agent_runtime_pilot`. The initial Explorer
+distribution, the complete DeepSeek v13 state-conditioned population, 500 state gradients, eight
+Objective gradients, and 4,000 exact-target observations are complete. The original target report
+remains immutable; a separate v22.1 analysis corrects inference and study sizing without rewriting
+its observations.
+
+The v22.1 recommendation is retained as a statistical reference. It is not an active Validation
+contract: the 2026-08-11 design amendment first tests whether a frozen, Host-executed Agent runtime
+creates capability-sensitive states. See `docs/finance_v23_capability_sensitive_agent_plan.md`.
 
 ## Scientific Question
 
@@ -156,11 +161,11 @@ post-generation failures into one counter. The original smoke threshold is uncha
 
 ## Fail-Closed Transition
 
-The Development target measurement is complete. The next permitted transition is to preregister a
-fresh, family-balanced Validation design without observing any Validation outcome. The recommended
-support is 60 tasks, five realizations per state, and 128 Objective records in 16 disjoint
-micro-splits. GP-C remains inaccessible until fresh exact targets contain practically meaningful
-coordinates and a separate proxy-target agreement contract has been frozen.
+The Development target measurement is complete. Under the 2026-08-11 amendment, the next permitted
+transition is a pre-outcome Agent Runtime Pilot capacity audit and contract freeze. A passing Pilot
+may proceed only to Beneficiary frontier screening and a new Agent Development population. The
+historical 60-task recommendation cannot be frozen until variance is re-estimated under that new
+generation kernel. GP-C remains inaccessible.
 
 ## Completed Development Data Stage
 
@@ -258,7 +263,8 @@ The original `power=1.0` result for a homogeneous one-MPE population mean is ret
 diagnostic but cannot freeze task count for future proxy-target agreement. The recommended fresh
 Validation support is 60 tasks (10 per family), five realizations per state, and 128 Objective
 records (16 x 8). That recommendation is not yet a Validation contract and does not open any held
-out data. Full results are in `docs/finance_v22_development_exact_target_report.md`.
+out data. It is now also conditional on a passing Agent Pilot and a new Development power study.
+Full results are in `docs/finance_v22_development_exact_target_report.md`.
 
 ## Immutable References
 

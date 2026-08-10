@@ -332,6 +332,15 @@ surrogate, not a claim that theoretical Contribution is globally zero and not an
 GP-C. Fresh Validation remains unopened, Authorization remains forbidden, and real VTDO retains
 `Contribution=0`. See `docs/finance_v22_development_exact_target_report.md`.
 
+The post-v22 experiment changes the trajectory kernel before attempting fresh Validation. A
+three-arm Direct/Bare, Scripted Tool, and Autonomous Agent Pilot tests whether model-selected tool
+planning, query reformulation, verification, recovery, and stopping create valid states with larger
+exact-target contrasts. Scripted and Autonomous share one frozen tool and Evidence environment;
+all Host Observations are content addressed. A passing Pilot can advance only to Beneficiary
+frontier screening, not Validation or GP-C. The Agent kernel requires new Explorer, catalog,
+Reachability, and initial-distribution identities. See
+`docs/finance_v23_capability_sensitive_agent_plan.md`.
+
 ## Novelty, Potential, And Anchored Update
 
 Coverage-relative novelty is exact:

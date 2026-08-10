@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-08
+Audit date: 2026-08-11
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -18,6 +18,11 @@ The current change set completes the v22 Development-only exact one-step target 
 separately hashed v22.1 design analysis. The original 4,000 target observations and target report
 are preserved unchanged. Validation and Authorization remain inaccessible, GP-C remains
 unevaluated, and production Contribution remains zero.
+
+The post-v22 plan now inserts a capability-sensitive Agent Runtime Pilot before any fresh
+Validation. Domain-neutral tool and iterative Host-execution contracts, the three-arm Pilot gate,
+and a Finance six-tool manifest are implemented. The real Archive tool executors, API Pilot,
+frontier screening, and new exact-target measurements have not run.
 
 ## Runtime And Data
 
@@ -74,11 +79,12 @@ variation accounted for approximately `0.0005%`.
 | Check | Result |
 | --- | --- |
 | Development target/design focus | 10 passed |
+| Agent runtime/Pilot focus | 14 passed |
 | Ruff check | passed |
 | Ruff format, changed files | passed |
-| Mypy | passed, 249 source files |
-| Pytest | passed, 446 tests in 132.65 seconds |
-| Core generalization boundary | 130 files, zero imports/branches/field accesses/violations |
+| Mypy | passed, 252 source files |
+| Pytest | passed, 460 tests in 135.97 seconds |
+| Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked production-key pattern scan | zero `sk-...` hits; one explicit `test-secret` fixture |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
 | Legal and Science contracts | retained by full suite |
@@ -262,7 +268,7 @@ The scientifically correct state is:
 - `authorization_objective_observation_count=0`;
 - `production_authorized=false`;
 - `contribution_authorized=false`;
-- allowed next stage: `preregister_fresh_validation_exact_target_contract`;
+- allowed next stage: `freeze_agent_runtime_pilot_after_capacity_audit`;
 - VTDO updates, Student training, and downstream claims remain unauthorized.
 
 The current evidence establishes reliable strict-FP32 execution and a precise exact one-step target
@@ -273,18 +279,19 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not rerun GP-C or open Authorization. Freeze a fresh Validation exact-target contract before any
-new target outcome is observed. The current recommendation is 60 tasks balanced across six
-families, 3-5 states per task, five realizations per state, and 128 Objective records in 16 disjoint
-micro-splits. The final proxy-target agreement estimand and power contract must be preregistered
-separately before GP-C is exposed. Do not reuse v20, cancelled v21, or v22 Development tasks,
-Evidence, semantic signatures, or Objective records.
+Do not rerun GP-C, open Authorization, or issue the 60-task Validation contract. First implement the
+real frozen-Archive tool executors, run a capacity audit, and freeze the 24-30 task Direct/Bare vs
+Scripted Tool vs Autonomous Agent Pilot before any API outcome. A passing Pilot may advance only to
+Beneficiary frontier screening and a new Agent population. Re-estimate Development variance under
+that new generation kernel before freezing any Validation size. Do not reuse v20, cancelled v21,
+or v22 tasks, Evidence, semantic signatures, trajectories, or Objective records.
 
 ## Authoritative References
 
 - `docs/finance_v20_target_identifiability_report.md`
 - `docs/finance_v22_development_power_plan.md`
 - `docs/finance_v22_development_exact_target_report.md`
+- `docs/finance_v23_capability_sensitive_agent_plan.md`
 - `docs/finance_v19_sealed_causal_pilot_report.md`
 - `docs/finance_v18_sealed_numeric_authorization_report.md`
 - `docs/finance_v17_numeric_root_cause_report.md`

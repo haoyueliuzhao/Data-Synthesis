@@ -193,6 +193,15 @@ issued, the project must freeze a separate target-observability and proxy-target
 contract. Validation tasks, Evidence, semantic signatures, and Objective records must be disjoint
 from v20, the cancelled v21 run, and v22 Development.
 
+### Post-report design amendment (2026-08-11)
+
+The 60-task design remains a possible future Validation size, but it is no longer the immediate
+next experiment. Because v22 used high-quality but weakly discriminative bare/model-reported
+trajectories, the project first runs a Direct/Bare vs Scripted Tool vs Autonomous Agent Pilot and
+Beneficiary frontier screening. A change of Agent generation kernel requires a new population,
+state catalog, Reachability manifest, and Development power study before the 60-task design can be
+frozen. See `docs/finance_v23_capability_sensitive_agent_plan.md`.
+
 If fresh Validation again places all exact target intervals inside ±MPE, the supported conclusion
 is that state-specific exact-target contrasts are practically negligible for this one-step
 surrogate and current state space. It would still not establish that theoretical Contribution is

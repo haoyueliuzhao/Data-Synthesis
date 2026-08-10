@@ -4,6 +4,13 @@ from trusted_synthesis.runtime.agent.client import (
     LLMClientError,
     OpenAICompatibleJsonClient,
 )
+from trusted_synthesis.runtime.agent.iterative import (
+    AgentLoopDecisionContract,
+    AgentLoopPlanContract,
+    IterativeAgentAudit,
+    IterativeAgentSolver,
+    IterativeAgentSolveResult,
+)
 from trusted_synthesis.runtime.agent.llm_agent import LLMAgentSolver
 from trusted_synthesis.runtime.agent.schema import (
     AgentActionDecision,
@@ -51,6 +58,11 @@ __all__ = [
     "AgentSolver",
     "CandidateAgent",
     "JsonCompletionClient",
+    "AgentLoopDecisionContract",
+    "AgentLoopPlanContract",
+    "IterativeAgentAudit",
+    "IterativeAgentSolveResult",
+    "IterativeAgentSolver",
     "LLMAgentSolver",
     "LLMClientError",
     "ModelCallTelemetry",
