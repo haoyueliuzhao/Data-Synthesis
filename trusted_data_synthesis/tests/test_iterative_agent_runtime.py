@@ -11,8 +11,12 @@ from trusted_synthesis.core.trajectory.schema import ActionType, StepStatus
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_cases,
 )
-from trusted_synthesis.runtime.agent import IterativeAgentSolver
+from trusted_synthesis.runtime.agent import (
+    IterativeAgentProtocolProfile,
+    IterativeAgentSolver,
+)
 from trusted_synthesis.runtime.agent.client import LLMClientError
+from trusted_synthesis.runtime.agent.iterative import _compact_public_value
 from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTelemetry
 from trusted_synthesis.runtime.tools import (
     AgentToolCall,
@@ -110,6 +114,32 @@ class _MalformedOutputRuntime(_ToolRuntime):
         )
 
 
+class _FalseVerificationRuntime(_ToolRuntime):
+    def execute(self, call: AgentToolCall) -> AgentToolResult:
+        if call.tool_id != "verify_result":
+            return super().execute(call)
+        self.calls.append(call)
+        return AgentToolResult(
+            status="succeeded",
+            result={"value": 10, "verified": False},
+            evidence_ids=("evidence:public:1",),
+            provenance_hashes=("provenance:test",),
+        )
+
+
+class _MissingVerificationFlagRuntime(_ToolRuntime):
+    def execute(self, call: AgentToolCall) -> AgentToolResult:
+        if call.tool_id != "verify_result":
+            return super().execute(call)
+        self.calls.append(call)
+        return AgentToolResult(
+            status="succeeded",
+            result={"value": 10},
+            evidence_ids=("evidence:public:1",),
+            provenance_hashes=("provenance:test",),
+        )
+
+
 def _tool_manifest(*, maximum_failed_tool_calls: int) -> AgentToolEnvironmentManifest:
     tools = (
         AgentToolSpec(
@@ -134,6 +164,18 @@ def _tool_manifest(*, maximum_failed_tool_calls: int) -> AgentToolEnvironmentMan
             output_contract={"verified": "boolean"},
             required_input_fields=("value",),
             required_output_fields=("verified",),
+            allow_additional_output_fields=True,
+        ),
+        AgentToolSpec(
+            tool_id="calculator",
+            tool_version="fixture.v1",
+            semantic_role="calculate",
+            trajectory_action=ActionType.CALCULATE,
+            description="Calculate from selected public Evidence.",
+            input_contract={"value": "number"},
+            output_contract={"value": "number"},
+            required_input_fields=("value",),
+            required_output_fields=("value",),
             allow_additional_output_fields=True,
         ),
     )
@@ -348,6 +390,10 @@ def test_scripted_agent_host_controls_tool_order() -> None:
         '"tool_id"' not in prompt.split("PUBLIC_CONTEXT_JSON:", 1)[0]
         for prompt in client.prompts[1:]
     )
+    assert '"remaining_tool_ids"' in client.prompts[1]
+    assert '"verify_result"' in client.prompts[1]
+    assert "never shorten a period label" in client.prompts[1]
+    assert "actual JSON objects, never encoded strings" in client.prompts[1]
 
 
 def test_contract_repair_does_not_replay_echoed_payload() -> None:
@@ -430,8 +476,158 @@ def test_agent_repairs_premature_stop_after_host_feedback() -> None:
     assert len(result.audit.stop_rejections) == 1
     assert result.audit.stop_rejections[0].reason_code == "missing_required_verification"
     assert "host_feedback" in client.prompts[3]
-    assert "run a successful verification tool" in client.prompts[3]
+    assert "verification must return verified=true" in client.prompts[3]
     assert "answer_field_contract" in client.prompts[3]
+
+
+def test_host_can_auditably_repair_one_missing_verification_call() -> None:
+    task, answer = _task_and_answer()
+    task = task.model_copy(
+        update={
+            "requirements": tuple(
+                dict.fromkeys((*task.requirements, TaskRequirement.VERIFY_RESULT))
+            )
+        }
+    )
+    client = _ScriptedClient(
+        [
+            _tool_decision("lookup", query="public metric"),
+            _answer_decision(answer),
+            _scripted_tool_arguments(value=10),
+            _answer_decision(answer),
+        ]
+    )
+    profile = IterativeAgentProtocolProfile(
+        initial_plan_mode="implicit_public",
+        host_repair_missing_verification=True,
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+        protocol_profile=profile,
+    ).solve_with_audit(task, _ToolRuntime())
+
+    assert [item.call.tool_id for item in result.observations] == [
+        "lookup",
+        "verify_result",
+    ]
+    assert result.audit.host_forced_verification_call_count == 1
+    assert result.audit.stopped_by_model is True
+    assert result.audit.host_forced_final_answer is False
+    assert len(result.audit.stop_rejections) == 1
+    assert result.audit.stop_rejections[0].reason_code == "missing_required_verification"
+    assert '"host_control":"repair"' in client.prompts[2]
+    assert '"host_repair_reason":"missing_required_verification"' in client.prompts[2]
+
+
+def test_stop_readiness_requires_calculation_before_verification() -> None:
+    task, answer = _task_and_answer()
+    task = task.model_copy(
+        update={
+            "requirements": tuple(
+                dict.fromkeys(
+                    (
+                        *task.requirements,
+                        TaskRequirement.CALCULATE,
+                        TaskRequirement.VERIFY_RESULT,
+                    )
+                )
+            )
+        }
+    )
+    client = _ScriptedClient(
+        [
+            _tool_decision("lookup", query="public metric"),
+            _answer_decision(answer),
+            _tool_decision("calculator", value=10),
+            _answer_decision(answer),
+            _scripted_tool_arguments(value=10),
+            _answer_decision(answer),
+        ]
+    )
+    profile = IterativeAgentProtocolProfile(
+        initial_plan_mode="implicit_public",
+        host_repair_missing_verification=True,
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+        protocol_profile=profile,
+    ).solve_with_audit(task, _ToolRuntime())
+
+    assert [item.call.tool_id for item in result.observations] == [
+        "lookup",
+        "calculator",
+        "verify_result",
+    ]
+    assert [item.reason_code for item in result.audit.stop_rejections] == [
+        "missing_required_calculation",
+        "missing_required_verification",
+    ]
+    assert result.audit.host_forced_verification_call_count == 1
+    assert '"unmet_action_requirements":["calculate","verify_result"]' in client.prompts[1]
+    assert '"unmet_action_requirements":["verify_result"]' in client.prompts[3]
+
+
+def test_verified_false_does_not_unlock_final_answer() -> None:
+    task, answer = _task_and_answer()
+    task = task.model_copy(
+        update={
+            "requirements": tuple(
+                dict.fromkeys((*task.requirements, TaskRequirement.VERIFY_RESULT))
+            )
+        }
+    )
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("verify_result", value=10),
+            *(_answer_decision(answer) for _ in range(3)),
+        ]
+    )
+
+    with pytest.raises(LLMClientError, match="stop-rejection budget") as captured:
+        IterativeAgentSolver(
+            client,
+            mode="autonomous_agent",
+            maximum_total_tokens=100,
+        ).solve_with_audit(task, _FalseVerificationRuntime())
+
+    artifact = captured.value.failure_artifact
+    assert artifact is not None
+    assert {item.reason_code for item in artifact.stop_rejections} == {
+        "missing_required_verification"
+    }
+
+
+def test_missing_verification_flag_fails_tool_contract() -> None:
+    task, _ = _task_and_answer()
+    task = task.model_copy(
+        update={
+            "requirements": tuple(
+                dict.fromkeys((*task.requirements, TaskRequirement.VERIFY_RESULT))
+            )
+        }
+    )
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("verify_result", value=10),
+        ]
+    )
+
+    with pytest.raises(LLMClientError, match="lacks required fields: \\['verified'\\]"):
+        IterativeAgentSolver(
+            client,
+            mode="autonomous_agent",
+            maximum_total_tokens=100,
+        ).solve_with_audit(task, _MissingVerificationFlagRuntime())
 
 
 def test_scripted_agent_retries_same_host_tool_after_failed_observation() -> None:
@@ -577,3 +773,94 @@ def test_iterative_agent_enforces_model_token_budget() -> None:
             mode="autonomous_agent",
             maximum_total_tokens=9,
         ).solve_with_audit(task, _ToolRuntime())
+
+
+def test_implicit_public_plan_removes_a_model_protocol_call() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("verify_result", value=10),
+            _answer_decision(answer),
+        ]
+    )
+    profile = IterativeAgentProtocolProfile(initial_plan_mode="implicit_public")
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+        protocol_profile=profile,
+    ).solve_with_audit(task, _ToolRuntime())
+
+    assert len(client.prompts) == 3
+    assert result.audit.protocol_profile_hash == profile.profile_hash
+    assert result.trajectory.steps[0].action == ActionType.PLAN
+    assert "Choose one next public action" in client.prompts[0]
+    assert result.audit.stopped_by_model is True
+    assert result.audit.host_forced_final_answer is False
+
+
+def test_compact_observation_view_omits_audit_only_hashes() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("verify_result", value=10),
+            _answer_decision(answer),
+        ]
+    )
+    profile = IterativeAgentProtocolProfile(
+        initial_plan_mode="implicit_public",
+        observation_view="compact",
+    )
+
+    IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+        protocol_profile=profile,
+    ).solve_with_audit(task, _ToolRuntime())
+
+    assert '"observation_id"' not in client.prompts[1]
+    assert '"provenance_hash"' not in client.prompts[1]
+    assert '"value":10' in client.prompts[1]
+    assert '"evidence_ids"' in client.prompts[1]
+
+
+def test_compact_public_value_preserves_actionable_public_locator() -> None:
+    compact = _compact_public_value(
+        {"public_locator": "archive://document/1", "query_hash": "audit-only"}
+    )
+
+    assert compact == {"public_locator": "archive://document/1"}
+
+
+def test_final_answer_reserve_switches_only_after_verified_evidence() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("verify_result", value=10),
+            _tool_decision("lookup", query="supporting metric"),
+            _scripted_answer(answer),
+        ]
+    )
+    profile = IterativeAgentProtocolProfile(
+        initial_plan_mode="implicit_public",
+        observation_view="compact",
+        contract_repair_token_reserve=5,
+        final_answer_token_reserve=15,
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=45,
+        protocol_profile=profile,
+    ).solve_with_audit(task, _ToolRuntime())
+
+    assert len(result.observations) == 3
+    assert result.audit.host_forced_final_answer is True
+    assert result.audit.stopped_by_model is False
+    assert "Return only one JSON object with exactly rationale_summary" in client.prompts[-1]

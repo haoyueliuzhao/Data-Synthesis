@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-11
+Audit date: 2026-08-12
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -20,10 +20,11 @@ are preserved unchanged. Validation and Authorization remain inaccessible, GP-C 
 unevaluated, and production Contribution remains zero.
 
 The post-v22 plan inserts a capability-sensitive Agent Runtime Pilot before any fresh Validation.
-Domain-neutral tool and iterative Host-execution contracts, the three-arm factorial gate, Finance
-Archive executors, independent replay verifier, and paired Pro--Flash runner are implemented.
-The final v9 API qualification ran and failed its completion and JSON-contract gates. Factorial
-Discovery, frontier screening, and new exact-target measurements therefore remain unopened.
+v24 now qualifies the bounded Agent Runtime on a fresh 18-task set: all 216 Pro--Flash Scripted and
+Autonomous records completed, all Runtime gates passed, and Host-forced verification was zero. The
+separate semantic-ladder audit failed because Frontier minus Easy semantic difficulty was only
+`0.0117` against `1.0`. Capability calibration, Beneficiary screening, and new exact-target
+measurements therefore remain unopened while task construction is redesigned.
 
 ## Runtime And Data
 
@@ -110,18 +111,40 @@ completion rate was `0.8333 < 1.0`, and the minimum cell JSON-contract rate was
 1,800-rollout Discovery was not launched. No GPU, exact-target, GP-C, Validation, or Authorization
 computation occurred.
 
+## v24 Runtime Qualification And Semantic Ladder
+
+v24 freezes semantic, Agentic, and protocol difficulty separately and requires both Runtime
+qualification and a true semantic Frontier before capability measurement. Development revisions
+removed premature verification, rejected `verified=false`, separated raw JSON response rate from
+bounded logical resolution, and clarified exact public selector and JSON operand contracts.
+
+The final v4 qualification excluded every v1-v3 task before sampling. It selected 60 new task IDs
+with zero overlap against prior v24 qualification tasks and ran the 18 Easy-Control tasks with 24
+workers. All 216 requested rollouts completed. Minimum raw JSON response rate was `0.9556`, bounded
+logical resolution was `1.0`, minimum tool success was `0.9531`, final-answer emission was `1.0`,
+and no budget or authority failure occurred. The run used 6,723,826 provider-reported tokens and an
+estimated `$1.4765509822`; it used no local GPU.
+
+The semantic audit failed independently: Easy, Frontier, and Hard means were `4.5833`, `4.5950`,
+and `4.7292`; no family met the minimum Frontier gain. A deliberate Stage B invocation
+revalidated the Stage A report, checkpoint, and canonical rollout, then failed before client
+construction with `capability calibration requires a true semantic Frontier`. The formal transition is `frontier_task_construction_only`; Exact Target, GP-C, Validation, and Authorization
+remain forbidden. A credential-free completed-run replay resumed `216/216`, executed zero jobs,
+validated both content hashes, and returned the unchanged report identity without client
+construction. See `docs/finance_v24_capability_ladder_experiment.md`.
+
 ## Revalidated Code State
 
 | Check | Result |
 | --- | --- |
 | Development target/design focus | 10 passed |
-| v23 Pro--Flash/runtime focus | 30 passed |
+| v24 Agent/runtime focus | 38 passed |
 | Ruff check | passed |
 | Ruff format, changed files | passed |
-| Mypy | passed, 260 source files |
-| Pytest | passed, 480 tests in 135.67 seconds |
+| Mypy | passed, 262 source files |
+| Pytest | passed, 498 tests in 136.05 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
-| Tracked production-key pattern scan | zero `sk-...` hits; one explicit `test-secret` fixture |
+| Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
 | Legal and Science contracts | retained by full suite |
 

@@ -504,6 +504,24 @@ formal next stage is `protocol_repair_only`; Discovery, state conditioning, exac
 Validation, and Authorization were not executed. This is an Explorer qualification failure, not a
 Contribution or GP-C result. See `docs/finance_v23_explorer_runtime_factorial_report.md`.
 
+v24 supersedes the six-task qualification with two independent Development gates. Runtime Stage A
+uses 18 Easy-Control tasks, three per Finance family, and requires exact models, 100% completion and
+final emission, no budget exhaustion, complete replay and authority integrity, at least 95% tool
+success, and bounded JSON resolution of 100%. Raw provider JSON is retained as a separate diagnostic
+with an 85% floor; repaired logical calls are never counted twice. Stage B requires a separately
+frozen semantic Frontier: mean Frontier gain must be at least 1.0 and at least four families must
+gain 0.5. Runtime success cannot override semantic failure.
+
+The fresh v24.4 Runtime qualification passed all gates over 216/216 records with zero Host-forced
+verification. Its semantic audit failed: Frontier minus Easy was `0.0117`, with zero passing
+families. The only permitted transition is `frontier_task_construction_only`. An attempted Stage B
+entry revalidated the Stage A report, checkpoint, and canonical rollout, then failed before client
+construction. Completed stages may be replayed without credentials: the
+runner verifies checkpoint, canonical rollout, run, denominator, and semantic-audit identities
+before returning the frozen report, and performs no model discovery. No capability-calibration,
+Exact Target, GP-C, Validation, or Authorization work was performed. See
+`docs/finance_v24_capability_ladder_experiment.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control

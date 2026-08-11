@@ -333,8 +333,8 @@ GP-C. Fresh Validation remains unopened, Authorization remains forbidden, and re
 `Contribution=0`. See `docs/finance_v22_development_exact_target_report.md`.
 
 The post-v22 experiment changes the trajectory kernel before attempting fresh Validation. A
-paired `deepseek-v4-pro` versus `deepseek-v4-flash` three-arm Direct/Bare, Scripted Tool, and
-Autonomous Agent Pilot tests whether model-selected tool planning, query reformulation,
+paired `deepseek-v4-pro` versus `deepseek-v4-flash` three-arm Direct Fixed Retrieval, Scripted Tool,
+and Autonomous Agent Pilot tests whether model-selected tool planning, query reformulation,
 verification, recovery, and stopping create valid states with larger exact-target contrasts.
 Explorer models are distinct generation-kernel identities, not interchangeable implementations.
 Scripted and Autonomous share one frozen tool and Evidence environment; all Host Observations are
@@ -348,6 +348,15 @@ capability-sensitivity hypothesis, GP-C, or theoretical Contribution. It preserv
 `Contribution=0` and prevents any inference that Flash is a better Explorer merely because it
 produced more failures. See `docs/finance_v23_capability_sensitive_agent_plan.md` and
 `docs/finance_v23_explorer_runtime_factorial_report.md`.
+
+v24 subsequently separated Runtime qualification from semantic capability measurement. A fresh
+216-record Runtime qualification passed every protocol gate, but the registered Frontier had only
+`0.0117` more semantic difficulty than Easy Control and no family met its minimum gain. Stage B was
+therefore rejected before any model call. This localizes the next problem to task-space
+construction rather than Runtime execution, but still does not identify a Pro-Flash capability
+effect or a meaningful Contribution coordinate. Validation, Authorization, and GP-C remain
+unopened, and `Contribution=0` is unchanged. See
+`docs/finance_v24_capability_ladder_experiment.md`.
 
 ## Novelty, Potential, And Anchored Update
 

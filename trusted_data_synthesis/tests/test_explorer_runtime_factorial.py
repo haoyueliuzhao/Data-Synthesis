@@ -83,6 +83,7 @@ def test_iterative_failure_artifact_retains_public_progress() -> None:
         task=task,
         mode="autonomous_agent",
         environment_manifest_id="environment:test",
+        protocol_profile_hash="protocol-profile:test",
         plan=None,
         decisions=(),
         observations=(),
@@ -93,6 +94,7 @@ def test_iterative_failure_artifact_retains_public_progress() -> None:
     assert artifact.task_id == task.task_id
     assert artifact.failure_message == "expected failure"
     assert artifact.artifact_id.startswith("iterative_agent_failure_artifact:")
+    assert artifact.protocol_profile_hash == "protocol-profile:test"
 
 
 def test_factorial_checkpoint_rejects_another_run(tmp_path: Path) -> None:

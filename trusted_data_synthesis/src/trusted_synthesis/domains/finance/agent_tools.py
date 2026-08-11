@@ -7,7 +7,7 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v4"
+FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v5"
 
 
 def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
@@ -66,8 +66,9 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             description=(
                 "Query frozen structured facts without hidden Gold identifiers. A successful "
                 "exact query selects its returned Evidence IDs for downstream tools. Use the "
-                "public subject ID/name, metric predicate/name, and exact period label from "
-                "search results. Canonical short subject IDs such as LOW for LOW_US and USA for "
+                "public subject ID/name, metric predicate/name, and exact period label copied "
+                "verbatim from search results; do not abbreviate period labels. Canonical short "
+                "subject IDs such as LOW for LOW_US and USA for "
                 "USA_COUNTRY are accepted. public_filters may be {} or contain only scalar "
                 "source_id, source_authority, unit, currency, definition_id, time_basis, "
                 "frequency, and subject_type keys."
@@ -107,8 +108,9 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
             input_contract={
                 "operator": "lookup|compare|difference|ratio|growth|aggregate",
                 "operands": (
-                    "array of selected evidence_id strings, {evidence_id}, or "
-                    "{operation_ref,selector}; ordered for difference/growth/ratio"
+                    "array of selected evidence_id strings, actual JSON {evidence_id} objects, "
+                    "or actual JSON {operation_ref,selector} objects; never encode an operand "
+                    "object as a string; ordered for difference/growth/ratio"
                 ),
                 "parameters": (
                     "{} except ratio requires registered_pair='<numerator predicate>/"
