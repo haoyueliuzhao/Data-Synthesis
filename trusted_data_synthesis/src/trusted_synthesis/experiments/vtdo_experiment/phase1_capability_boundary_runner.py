@@ -21,6 +21,7 @@ from trusted_synthesis.core.trajectory.state import (
 )
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
+    recovery_scenario_from_metadata,
 )
 from trusted_synthesis.domains.finance.iterative_agent_verifier import (
     FinanceIterativeAgentVerifier,
@@ -417,7 +418,13 @@ def _run_one(
             observations: tuple[AgentToolObservation, ...] = ()
             verification_payload = validity.model_dump(mode="json")
         else:
-            runtime = FinanceArchiveInteractiveToolRuntime(context.public_corpus, manifest)
+            runtime = FinanceArchiveInteractiveToolRuntime(
+                context.public_corpus,
+                manifest,
+                recovery_scenario=recovery_scenario_from_metadata(
+                    context.task.public.metadata
+                ),
+            )
             result = IterativeAgentSolver(
                 client,
                 mode=(

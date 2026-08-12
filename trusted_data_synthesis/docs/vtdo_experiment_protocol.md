@@ -809,6 +809,19 @@ information support. It must not select and evaluate an information-optimal
 subset on the same v25.11 outcomes. See
 docs/finance_v25_11_workflow_information_audit_report.md.
 
+### v25.12 Flash-first multi-Tier confirmation
+
+v25.12 implements that transition with a separately hashed Development policy and a fresh
+confirmation population. Policy selection uses only v25.11 outcomes; confirmation tasks exclude
+historical Task signatures, Evidence IDs, and Evidence Version IDs. Flash receives the complete
+frozen support (630 rollouts). Pro receives a 20% preregistered anchor subset (126 rollouts) only
+after both Flash workflow information cells pass. Scripted Branching, Scripted Stopping, and
+Recovery Easy are secondary diagnostics rather than primary information support.
+
+The public task text is frozen before model execution. API calls generate Agent trajectories;
+they cannot rewrite the confirmation questions, Programs, support policy, or anchor selection.
+See `docs/finance_v25_12_multitier_confirmation_protocol.md`.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

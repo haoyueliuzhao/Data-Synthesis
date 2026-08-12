@@ -20,6 +20,8 @@ from trusted_synthesis.core.trajectory.schema import ActionType, StepStatus, Wor
 from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
+    FinanceTypedRecoveryScenario,
+    recovery_scenario_from_metadata,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import (
@@ -33,7 +35,7 @@ from trusted_synthesis.runtime.tools import (
     agent_tool_argument_rejection,
 )
 
-FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v1"
+FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v2"
 
 
 class FinanceIterativeAgentVerificationReport(BaseModel):
@@ -149,7 +151,12 @@ class FinanceIterativeAgentVerifier:
             sum(provenance_ready) / len(provenance_ready) if provenance_ready else 0.0
         )
 
-        replay_failures = _replay_observations(shared_corpus, environment, observations)
+        replay_failures = _replay_observations(
+            shared_corpus,
+            environment,
+            observations,
+            recovery_scenario=recovery_scenario_from_metadata(task.public.metadata),
+        )
         leakage_failures = _model_forbidden_field_paths(
             trajectory.model_dump(mode="json", exclude_none=True)
         )
@@ -177,6 +184,16 @@ class FinanceIterativeAgentVerifier:
             task.public,
             trajectory.final_answer,
         )
+        if task.public.metadata.get("answer_projection_contract_version") == "v1":
+            projection = task.oracle.selection_contract.get("answer_projection")
+            normalized_oracle = _apply_reference_projection(
+                normalized_oracle,
+                projection,
+            )
+            normalized_candidate = _apply_reference_projection(
+                normalized_candidate,
+                projection,
+            )
         schema_failures = _direct_answer_schema_failures(
             task.public.answer_schema,
             trajectory.final_answer,
@@ -393,8 +410,14 @@ def _replay_observations(
     corpus: EvidenceCorpus,
     environment: AgentToolEnvironmentManifest,
     observations: tuple[AgentToolObservation, ...],
+    *,
+    recovery_scenario: FinanceTypedRecoveryScenario | None = None,
 ) -> tuple[str, ...]:
-    runtime = FinanceArchiveInteractiveToolRuntime(corpus, environment)
+    runtime = FinanceArchiveInteractiveToolRuntime(
+        corpus,
+        environment,
+        recovery_scenario=recovery_scenario,
+    )
     failures: list[str] = []
     for index, observation in enumerate(observations):
         spec = environment.tools_by_id.get(observation.call.tool_id)
@@ -407,6 +430,20 @@ def _replay_observations(
         if _result_payload(replayed) != _observation_payload(observation):
             failures.append(f"observation:{index}:replay_mismatch")
     return tuple(failures)
+
+
+def _apply_reference_projection(
+    answer: dict[str, Any],
+    projection: Any,
+) -> dict[str, Any]:
+    if not isinstance(projection, dict) or not projection:
+        return answer
+    output = dict(answer)
+    for field in ("higher_ref", "selected_ref"):
+        value = output.get(field)
+        if value is not None and str(value) in projection:
+            output[field] = projection[str(value)]
+    return output
 
 
 def _result_payload(result: AgentToolResult) -> dict[str, Any]:

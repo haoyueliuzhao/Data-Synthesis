@@ -28,6 +28,10 @@ from trusted_synthesis.core.trajectory.specification import (
 from trusted_synthesis.domains.finance.agent_tools import (
     make_finance_archive_agent_tool_manifest,
 )
+from trusted_synthesis.domains.finance.interactive_agent_runtime import (
+    finance_runtime_snapshot_hash,
+    recovery_scenario_from_metadata,
+)
 from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
     DifficultyTier,
@@ -696,12 +700,16 @@ def make_v25_native_runtime_context(
     registry = default_registry()
     corpus = task.public_corpus
     snapshot_id = str(corpus.build_id or f"corpus:{corpus.corpus_hash}")
+    recovery_scenario = recovery_scenario_from_metadata(task.task.public.metadata)
     manifest = make_finance_archive_agent_tool_manifest(
         environment_id=f"finance_v25:{runtime_arm.value}:{task.artifact_id}",
         corpus_id=corpus.corpus_id,
         corpus_hash=corpus.corpus_hash,
         archive_snapshot_id=snapshot_id,
-        archive_snapshot_hash=corpus.corpus_hash,
+        archive_snapshot_hash=finance_runtime_snapshot_hash(
+            corpus.corpus_hash,
+            recovery_scenario,
+        ),
         maximum_tool_calls=MAXIMUM_TOOL_CALLS,
         maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,
         maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,

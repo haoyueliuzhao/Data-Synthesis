@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
+    recovery_scenario_from_metadata,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
     DifficultyTier,
@@ -525,7 +526,14 @@ def _public_witness_check(
             raise ValueError(f"program contains public-unrecoverable dead nodes:{dead_nodes}")
         if unsupported:
             raise ValueError(f"program contains publicly unsupported operations:{unsupported}")
-        runtime = FinanceArchiveInteractiveToolRuntime(task.public_corpus, manifest)
+        recovery_scenario = recovery_scenario_from_metadata(
+            task.task.public.metadata
+        )
+        runtime = FinanceArchiveInteractiveToolRuntime(
+            task.public_corpus,
+            manifest,
+            recovery_scenario=recovery_scenario,
+        )
         by_tool = {item.tool_id: item for item in manifest.tools}
         call_index = 0
         selected_ids: list[str] = []
@@ -555,6 +563,22 @@ def _public_witness_check(
                 "period_label": item.temporal_context.label,
                 "public_filters": filters,
             }
+            if recovery_scenario is not None and call_index == 1:
+                probe_arguments = _recovery_probe_arguments(item, arguments)
+                by_tool["query_structured_fact"].validate_arguments(probe_arguments)
+                probe_result = runtime.execute(
+                    AgentToolCall(
+                        call_index=call_index,
+                        tool_id="query_structured_fact",
+                        arguments=probe_arguments,
+                    )
+                )
+                if (
+                    probe_result.status != "failed"
+                    or probe_result.error_code != recovery_scenario.error_code
+                ):
+                    raise ValueError("typed recovery probe did not reach its frozen failure")
+                call_index += 1
             by_tool["query_structured_fact"].validate_arguments(arguments)
             result = runtime.execute(
                 AgentToolCall(
@@ -656,6 +680,7 @@ def _public_witness_check(
             "tool_execution_count": call_index,
             "output_replay_match": True,
             "opaque_operation_refs_canonicalized": len(reverse_operation_refs),
+            "typed_recovery_observed": recovery_scenario is not None,
         }
         passed = True
     except (KeyError, TypeError, ValueError) as exc:
@@ -666,6 +691,32 @@ def _public_witness_check(
         passed=passed,
         details=details,
     )
+
+
+def _recovery_probe_arguments(
+    item: Any,
+    corrected_arguments: dict[str, Any],
+) -> dict[str, Any]:
+    probe = {
+        **corrected_arguments,
+        "public_filters": dict(corrected_arguments["public_filters"]),
+    }
+    if item.subject.name and item.subject.name != item.subject.subject_id:
+        probe["subject_alias"] = item.subject.name
+        return probe
+    metric_name = str(item.definition.attributes.get("metric_name") or "")
+    if metric_name and metric_name != item.predicate:
+        probe["metric_alias"] = metric_name
+        return probe
+    definition_id = item.definition.definition_id
+    if definition_id and definition_id != item.predicate:
+        probe["metric_alias"] = definition_id
+        return probe
+    filters = probe["public_filters"]
+    if filters:
+        filters.pop(next(iter(sorted(filters))))
+        return probe
+    raise ValueError("typed recovery witness lacks two equivalent public selectors")
 
 
 def _replace_runtime_operation_refs(

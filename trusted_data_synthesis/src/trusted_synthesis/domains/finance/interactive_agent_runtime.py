@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceItem
@@ -18,7 +20,8 @@ from trusted_synthesis.runtime.tools import (
     AgentToolResult,
 )
 
-FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v3"
+FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v5"
+FINANCE_TYPED_RECOVERY_SCENARIO_VERSION = "finance_typed_recovery_scenario.v1"
 
 _PUBLIC_SUBJECT_ID_SUFFIXES = ("_US", "_COUNTRY", "_HK", "_CN")
 FINANCE_ARCHIVE_NORMALIZATION_POLICY_VERSION = "finance_archive_normalization_policy.v1"
@@ -34,6 +37,88 @@ class _StoredOperation:
     evidence_ids: tuple[str, ...]
 
 
+class FinanceTypedRecoveryScenario(BaseModel):
+    """Frozen, public-safe intervention used to observe an actual recovery transition."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    scenario_id: str = Field(min_length=1)
+    scope_identity: str = Field(min_length=1)
+    trigger_tool: str = "query_structured_fact"
+    forced_failure_count: int = Field(default=1, ge=1, le=1)
+    error_code: str = "typed_selector_requires_refinement"
+    mismatch_fields: tuple[str, ...] = Field(min_length=1)
+    correction_policy: str = (
+        "change at least one public selector after inspecting the failed observation"
+    )
+    schema_version: str = FINANCE_TYPED_RECOVERY_SCENARIO_VERSION
+
+    @model_validator(mode="after")
+    def validate_scenario(self) -> FinanceTypedRecoveryScenario:
+        if self.trigger_tool != "query_structured_fact":
+            raise ValueError("Finance recovery scenario must target structured selection")
+        if self.scenario_id != finance_typed_recovery_scenario_id(self):
+            raise ValueError("Finance typed recovery scenario identity is invalid")
+        return self
+
+
+def make_finance_typed_recovery_scenario(
+    *, scope_identity: str, mismatch_fields: tuple[str, ...]
+) -> FinanceTypedRecoveryScenario:
+    values = {
+        "scope_identity": scope_identity,
+        "trigger_tool": "query_structured_fact",
+        "forced_failure_count": 1,
+        "error_code": "typed_selector_requires_refinement",
+        "mismatch_fields": tuple(sorted(set(mismatch_fields))),
+        "correction_policy": (
+            "change at least one public selector after inspecting the failed observation"
+        ),
+        "schema_version": FINANCE_TYPED_RECOVERY_SCENARIO_VERSION,
+    }
+    provisional = FinanceTypedRecoveryScenario.model_construct(
+        scenario_id="pending",
+        **values,
+    )
+    return FinanceTypedRecoveryScenario(
+        scenario_id=finance_typed_recovery_scenario_id(provisional),
+        **values,
+    )
+
+
+def finance_typed_recovery_scenario_id(
+    value: FinanceTypedRecoveryScenario,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"scenario_id"}),
+        prefix="finance_typed_recovery_scenario:",
+    )
+
+
+def recovery_scenario_from_metadata(
+    metadata: dict[str, Any],
+) -> FinanceTypedRecoveryScenario | None:
+    raw = metadata.get("typed_recovery_scenario")
+    if raw is None:
+        return None
+    return FinanceTypedRecoveryScenario.model_validate(raw)
+
+
+def finance_runtime_snapshot_hash(
+    corpus_hash: str,
+    scenario: FinanceTypedRecoveryScenario | None,
+) -> str:
+    if scenario is None:
+        return corpus_hash
+    return canonical_hash(
+        {
+            "corpus_hash": corpus_hash,
+            "typed_recovery_scenario": scenario,
+        },
+        prefix="finance_archive_runtime_snapshot:",
+    )
+
+
 class FinanceArchiveInteractiveToolRuntime:
     """Snapshot-bound Finance tools with per-rollout discovery and lineage state."""
 
@@ -43,11 +128,17 @@ class FinanceArchiveInteractiveToolRuntime:
         manifest: AgentToolEnvironmentManifest,
         *,
         registry: OperationRegistry | None = None,
+        recovery_scenario: FinanceTypedRecoveryScenario | None = None,
     ) -> None:
         if manifest.corpus_id != corpus.corpus_id or manifest.corpus_hash != corpus.corpus_hash:
             raise ValueError("Finance Agent runtime corpus differs from its frozen manifest")
         if manifest.network_policy != "forbidden":
             raise ValueError("Finance Archive Pilot requires an offline frozen environment")
+        if manifest.snapshot_hash != finance_runtime_snapshot_hash(
+            corpus.corpus_hash,
+            recovery_scenario,
+        ):
+            raise ValueError("Finance Agent runtime behavior differs from its frozen snapshot")
         self._corpus = corpus
         self._manifest = manifest
         self._registry = registry or default_registry()
@@ -62,6 +153,9 @@ class FinanceArchiveInteractiveToolRuntime:
         self._selected_ids: set[str] = set()
         self._exposed_locators: set[str] = set()
         self._operations: dict[str, _StoredOperation] = {}
+        self._recovery_scenario = recovery_scenario
+        self._forced_recovery_failures = 0
+        self._forced_recovery_selector_hash: str | None = None
 
     @property
     def manifest(self) -> AgentToolEnvironmentManifest:
@@ -203,6 +297,39 @@ class FinanceArchiveInteractiveToolRuntime:
             and _matches_exact(item.temporal_context.label or "", period_label)
             and _matches_public_filters(item, filters)
         )
+        scenario = self._recovery_scenario
+        selector_hash = canonical_hash(
+            {
+                "subject_alias": subject_alias,
+                "metric_alias": metric_alias,
+                "period_label": period_label,
+                "public_filters": filters,
+            },
+            prefix="finance_typed_recovery_selector:",
+        )
+        if (
+            scenario is not None
+            and self._forced_recovery_failures < scenario.forced_failure_count
+            and matches
+        ):
+            self._forced_recovery_failures += 1
+            self._forced_recovery_selector_hash = selector_hash
+            return _failed(
+                scenario.error_code,
+                "The typed selector reached a registered near-match branch. Inspect the "
+                "public search observations, change at least one subject, metric, period, or "
+                "public_filter selector, and retry the structured query. Registered mismatch "
+                f"fields: {', '.join(scenario.mismatch_fields)}.",
+            )
+        if (
+            scenario is not None
+            and self._forced_recovery_selector_hash == selector_hash
+        ):
+            return _failed(
+                "typed_selector_not_revised",
+                "The retry repeated the failed typed selector. Change at least one public "
+                "subject, metric, period, or filter selector before retrying.",
+            )
         if len(matches) > _MAX_QUERY_RESULTS:
             return _failed(
                 "structured_query_too_broad",

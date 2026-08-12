@@ -844,6 +844,7 @@ class _CapabilityTaskBuilder:
         program: TaskProgram,
         instruction: str,
         answer_projection: dict[str, str],
+        public_metadata: dict[str, Any] | None = None,
     ) -> CapabilitySensitiveTaskArtifact:
         graph_build_ids = {
             value
@@ -941,7 +942,8 @@ class _CapabilityTaskBuilder:
                     "verification_checkpoints": verification_checkpoints,
                     "stopping_conditions": stopping_conditions,
                     "single_retrieval_solvable": structure.single_retrieval_solvable,
-                }
+                },
+                **(public_metadata or {}),
             },
             quality_rubric={
                 "evidence_coverage": 1.0,

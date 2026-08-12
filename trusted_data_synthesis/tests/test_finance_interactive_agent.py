@@ -17,9 +17,12 @@ from trusted_synthesis.domains.finance.agent_tools import (
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
     _matches_subject,
+    finance_runtime_snapshot_hash,
+    make_finance_typed_recovery_scenario,
 )
 from trusted_synthesis.domains.finance.iterative_agent_verifier import (
     FinanceIterativeAgentVerifier,
+    _apply_reference_projection,
 )
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_case,
@@ -284,6 +287,82 @@ def test_structured_fact_query_fails_closed_when_no_fact_matches() -> None:
     assert result.status == "failed"
     assert result.error_code == "structured_query_no_match"
     assert result.evidence_ids == ()
+
+
+def test_typed_recovery_requires_a_changed_public_selector() -> None:
+    context = _omega()
+    item = context.public_corpus.evidence[0]
+    scenario = make_finance_typed_recovery_scenario(
+        scope_identity="test:typed-recovery",
+        mismatch_fields=("subject",),
+    )
+    manifest = make_finance_archive_agent_tool_manifest(
+        environment_id="finance_agent_recovery_test",
+        corpus_id=context.public_corpus.corpus_id,
+        corpus_hash=context.public_corpus.corpus_hash,
+        archive_snapshot_id="finance_agent_recovery_snapshot",
+        archive_snapshot_hash=finance_runtime_snapshot_hash(
+            context.public_corpus.corpus_hash,
+            scenario,
+        ),
+        maximum_tool_calls=12,
+        maximum_failed_tool_calls=2,
+    )
+    runtime = FinanceArchiveInteractiveToolRuntime(
+        context.public_corpus,
+        manifest,
+        recovery_scenario=scenario,
+    )
+    first_arguments = {
+        "subject_alias": item.subject.name,
+        "metric_alias": item.predicate,
+        "period_label": item.temporal_context.label,
+        "public_filters": {"source_id": item.source.source_id},
+    }
+    first = runtime.execute(
+        AgentToolCall(
+            call_index=1,
+            tool_id="query_structured_fact",
+            arguments=first_arguments,
+        )
+    )
+    repeated = runtime.execute(
+        AgentToolCall(
+            call_index=2,
+            tool_id="query_structured_fact",
+            arguments=first_arguments,
+        )
+    )
+    corrected = runtime.execute(
+        AgentToolCall(
+            call_index=3,
+            tool_id="query_structured_fact",
+            arguments={
+                **first_arguments,
+                "subject_alias": item.subject.subject_id,
+            },
+        )
+    )
+
+    assert first.status == "failed"
+    assert first.error_code == "typed_selector_requires_refinement"
+    assert repeated.status == "failed"
+    assert repeated.error_code == "typed_selector_not_revised"
+    assert corrected.status == "succeeded"
+    assert item.evidence_id in corrected.evidence_ids
+
+
+def test_comparison_reference_projection_maps_internal_id_to_public_label() -> None:
+    projection = {"evidence:alpha": "Alpha Plc", "evidence:beta": "Beta Plc"}
+
+    assert _apply_reference_projection(
+        {"higher_ref": "evidence:alpha", "difference": "12"},
+        projection,
+    ) == {"higher_ref": "Alpha Plc", "difference": "12"}
+    assert _apply_reference_projection(
+        {"higher_ref": "Alpha Plc", "difference": "12"},
+        projection,
+    ) == {"higher_ref": "Alpha Plc", "difference": "12"}
 
 
 def test_frozen_short_subject_identifier_matches_public_subject_suffix() -> None:
