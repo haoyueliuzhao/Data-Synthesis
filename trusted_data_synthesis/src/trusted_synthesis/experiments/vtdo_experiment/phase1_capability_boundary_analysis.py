@@ -13,6 +13,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary im
     FinanceCapabilityBoundaryContract,
     RuntimeTaskBinding,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
+    DifficultyTier,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_frontier import (
     CAPABILITY_AXES,
     CAPABILITY_SENSITIVE_FAMILIES,
@@ -23,9 +26,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 )
 from trusted_synthesis.hashing import canonical_hash
 
-CAPABILITY_ROLLOUT_OUTCOME_VERSION = "finance_capability_rollout_outcome.v6"
-QUALIFICATION_REPORT_VERSION = "finance_capability_qualification_report.v7"
-EMPIRICAL_INFORMATION_AUDIT_VERSION = "empirical_capability_information_audit.v7"
+CAPABILITY_ROLLOUT_OUTCOME_VERSION = "finance_capability_rollout_outcome.v7"
+QUALIFICATION_REPORT_VERSION = "finance_capability_qualification_report.v8"
+TIER_LOCALIZATION_REPORT_VERSION = "finance_capability_tier_localization_report.v1"
+EMPIRICAL_INFORMATION_AUDIT_VERSION = "empirical_capability_information_audit.v8"
 BENEFICIARY_SCREENING_VERSION = "beneficiary_frontier_screening.v1"
 
 
@@ -35,6 +39,7 @@ class FrozenModel(BaseModel):
 
 class BoundaryStage(str, Enum):
     RUNTIME_QUALIFICATION = "runtime_qualification"
+    TIER_LOCALIZATION = "tier_localization"
     PAIRED_CALIBRATION = "paired_calibration"
     BENEFICIARY_SCREENING = "beneficiary_screening"
 
@@ -218,7 +223,7 @@ class CapabilityQualificationReport(FrozenModel):
     technical_gates: tuple[TechnicalGate, ...] = Field(min_length=1)
     semantic_results_are_descriptive_only: Literal[True] = True
     status: Literal["passed", "failed"]
-    next_permitted_stage: Literal["paired_capability_calibration", "protocol_repair_only"]
+    next_permitted_stage: Literal["capability_tier_localization", "protocol_repair_only"]
     validation_objective_access: Literal["forbidden"] = "forbidden"
     authorization_objective_access: Literal["forbidden"] = "forbidden"
     exact_target_evaluated: Literal[False] = False
@@ -243,7 +248,7 @@ class CapabilityQualificationReport(FrozenModel):
         passed = all(item.passed for item in self.technical_gates)
         if (self.status == "passed") != passed:
             raise ValueError("Qualification status differs from technical gates")
-        expected_next = "paired_capability_calibration" if passed else "protocol_repair_only"
+        expected_next = "capability_tier_localization" if passed else "protocol_repair_only"
         if self.next_permitted_stage != expected_next:
             raise ValueError("Qualification transition is not fail-closed")
         if self.report_id != qualification_report_id(self):
@@ -272,6 +277,134 @@ class SignedConfidenceInterval(FrozenModel):
     def validate_interval(self) -> SignedConfidenceInterval:
         if not self.lower <= self.point <= self.upper:
             raise ValueError("signed confidence interval does not contain its point estimate")
+        return self
+
+
+class TierLocalizationCell(FrozenModel):
+    model_arm: ExplorerArm
+    runtime_arm: CapabilityRuntimeArm
+    family: str = Field(min_length=1)
+    tier: DifficultyTier
+    task_artifact_id: str = Field(min_length=1)
+    attempted_count: int = Field(ge=1)
+    technical_resolution_rate: float = Field(ge=0, le=1)
+    semantic_answer_accuracy: float = Field(ge=0, le=1)
+    valid_success_rate: float = Field(ge=0, le=1)
+    valid_success_interval: ConfidenceInterval
+    technical_ready: bool
+    boundary_candidate: bool
+
+    @model_validator(mode="after")
+    def validate_cell(self) -> TierLocalizationCell:
+        if self.family not in CAPABILITY_SENSITIVE_FAMILIES:
+            raise ValueError("Tier Localization cell uses an unknown family")
+        if self.valid_success_interval.point != self.valid_success_rate:
+            raise ValueError("Tier Localization interval differs from its point estimate")
+        if self.boundary_candidate and not self.technical_ready:
+            raise ValueError("an unresolved Tier Localization cell cannot be a boundary")
+        return self
+
+
+class RuntimeFamilyTierSelection(FrozenModel):
+    runtime_arm: CapabilityRuntimeArm
+    family: str = Field(min_length=1)
+    selected_tier: DifficultyTier | None = None
+    selected_task_artifact_id: str | None = None
+    combined_bernoulli_information: float = Field(ge=0, le=0.25)
+    pro_success_rate: float = Field(ge=0, le=1)
+    flash_success_rate: float = Field(ge=0, le=1)
+    both_models_technically_ready: bool
+    boundary_identified: bool
+
+    @model_validator(mode="after")
+    def validate_selection(self) -> RuntimeFamilyTierSelection:
+        if self.family not in CAPABILITY_SENSITIVE_FAMILIES:
+            raise ValueError("Tier selection uses an unknown family")
+        has_selection = self.selected_tier is not None
+        if has_selection != (self.selected_task_artifact_id is not None):
+            raise ValueError("Tier selection task and tier are inconsistent")
+        if self.boundary_identified != (
+            has_selection and self.both_models_technically_ready
+        ):
+            raise ValueError("Tier selection boundary decision is inconsistent")
+        return self
+
+
+class CapabilityTierLocalizationReport(FrozenModel):
+    report_id: str = Field(min_length=1)
+    contract_id: str = Field(min_length=1)
+    qualification_report_id: str = Field(min_length=1)
+    requested_rollout_count: int = Field(ge=1)
+    recorded_rollout_count: int = Field(ge=0)
+    outcome_set_hash: str = Field(min_length=1)
+    cells: tuple[TierLocalizationCell, ...] = Field(min_length=126, max_length=126)
+    selections: tuple[RuntimeFamilyTierSelection, ...] = Field(min_length=21, max_length=21)
+    boundary_family_count_by_runtime: dict[CapabilityRuntimeArm, int]
+    monotonic_response_fraction: float = Field(ge=0, le=1)
+    all_runtime_localization_ready: bool
+    calibration_frontier_compatible: bool
+    next_permitted_stage: Literal[
+        "paired_capability_calibration",
+        "calibration_contract_refreeze_required",
+        "task_or_runtime_redesign_only",
+    ]
+    validation_objective_access: Literal["forbidden"] = "forbidden"
+    authorization_objective_access: Literal["forbidden"] = "forbidden"
+    exact_target_evaluated: Literal[False] = False
+    gp_c_evaluated: Literal[False] = False
+    production_contribution: float = Field(default=0, ge=0, le=0)
+    schema_version: str = TIER_LOCALIZATION_REPORT_VERSION
+
+    @model_validator(mode="after")
+    def validate_report(self) -> CapabilityTierLocalizationReport:
+        if self.schema_version != TIER_LOCALIZATION_REPORT_VERSION:
+            raise ValueError("Tier Localization report version is unsupported")
+        if self.recorded_rollout_count != self.requested_rollout_count:
+            raise ValueError("Tier Localization has an incomplete rollout denominator")
+        expected_cells = {
+            (model, runtime, family, tier)
+            for model in ExplorerArm
+            for runtime in CapabilityRuntimeArm
+            for family in CAPABILITY_SENSITIVE_FAMILIES
+            for tier in DifficultyTier
+        }
+        if {
+            (item.model_arm, item.runtime_arm, item.family, item.tier)
+            for item in self.cells
+        } != expected_cells:
+            raise ValueError("Tier Localization lacks a Model x Runtime x Family x Tier cell")
+        expected_selections = {
+            (runtime, family)
+            for runtime in CapabilityRuntimeArm
+            for family in CAPABILITY_SENSITIVE_FAMILIES
+        }
+        if {(item.runtime_arm, item.family) for item in self.selections} != expected_selections:
+            raise ValueError("Tier Localization lacks a Runtime x Family decision")
+        expected_counts = {
+            runtime: sum(
+                item.boundary_identified
+                for item in self.selections
+                if item.runtime_arm == runtime
+            )
+            for runtime in CapabilityRuntimeArm
+        }
+        if self.boundary_family_count_by_runtime != expected_counts:
+            raise ValueError("Tier Localization boundary counts are inconsistent")
+        if self.calibration_frontier_compatible and not self.all_runtime_localization_ready:
+            raise ValueError("Frontier compatibility lacks Runtime localization readiness")
+        expected_next = (
+            "task_or_runtime_redesign_only"
+            if not self.all_runtime_localization_ready
+            else (
+                "paired_capability_calibration"
+                if self.calibration_frontier_compatible
+                else "calibration_contract_refreeze_required"
+            )
+        )
+        if self.next_permitted_stage != expected_next:
+            raise ValueError("Tier Localization transition is not fail-closed")
+        if self.report_id != tier_localization_report_id(self):
+            raise ValueError("Tier Localization report identity is invalid")
         return self
 
 
@@ -503,7 +636,7 @@ def make_qualification_report(
         "status": "passed" if passed else "failed",
         "outcome_set_hash": capability_outcome_set_hash(outcomes),
         "next_permitted_stage": (
-            "paired_capability_calibration" if passed else "protocol_repair_only"
+            "capability_tier_localization" if passed else "protocol_repair_only"
         ),
         "validation_objective_access": "forbidden",
         "authorization_objective_access": "forbidden",
@@ -513,6 +646,107 @@ def make_qualification_report(
     }
     provisional = CapabilityQualificationReport.model_construct(report_id="pending", **values)
     return CapabilityQualificationReport(report_id=qualification_report_id(provisional), **values)
+
+
+def make_tier_localization_report(
+    contract: FinanceCapabilityBoundaryContract,
+    qualification: CapabilityQualificationReport,
+    outcomes: tuple[CapabilityRolloutOutcome, ...],
+) -> CapabilityTierLocalizationReport:
+    if qualification.contract_id != contract.contract_id or qualification.status != "passed":
+        raise ValueError("Tier Localization requires a passing Qualification report")
+    _validate_outcomes(
+        contract,
+        outcomes,
+        bindings=contract.localization_bindings,
+        stage=BoundaryStage.TIER_LOCALIZATION,
+        replicas=contract.localization_replicas,
+    )
+    bindings = {item.binding_id: item for item in contract.localization_bindings}
+    cells = tuple(
+        _tier_localization_cell(
+            contract,
+            model,
+            runtime,
+            family,
+            tier,
+            outcomes,
+            bindings,
+        )
+        for model in ExplorerArm
+        for runtime in CapabilityRuntimeArm
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+        for tier in DifficultyTier
+    )
+    selections = tuple(
+        _select_runtime_family_tier(runtime, family, cells)
+        for runtime in CapabilityRuntimeArm
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+    )
+    boundary_counts = {
+        runtime: sum(
+            item.boundary_identified
+            for item in selections
+            if item.runtime_arm == runtime
+        )
+        for runtime in CapabilityRuntimeArm
+    }
+    all_runtime_ready = all(
+        boundary_counts[runtime]
+        >= contract.localization_thresholds.minimum_runtime_boundary_families[runtime]
+        for runtime in CapabilityRuntimeArm
+    )
+    frontier_compatible = all_runtime_ready and all(
+        item.boundary_identified and item.selected_tier == DifficultyTier.FRONTIER
+        for item in selections
+    )
+    by_cell = {
+        (item.model_arm, item.runtime_arm, item.family, item.tier): item for item in cells
+    }
+    monotonic = [
+        (
+            by_cell[(model, runtime, family, DifficultyTier.EASY_CONTROL)].valid_success_rate
+            >= by_cell[(model, runtime, family, DifficultyTier.FRONTIER)].valid_success_rate
+            >= by_cell[(model, runtime, family, DifficultyTier.HARD_CONTROL)].valid_success_rate
+        )
+        for model in ExplorerArm
+        for runtime in CapabilityRuntimeArm
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+    ]
+    next_stage = (
+        "task_or_runtime_redesign_only"
+        if not all_runtime_ready
+        else (
+            "paired_capability_calibration"
+            if frontier_compatible
+            else "calibration_contract_refreeze_required"
+        )
+    )
+    values = {
+        "contract_id": contract.contract_id,
+        "qualification_report_id": qualification.report_id,
+        "requested_rollout_count": contract.requested_localization_rollouts,
+        "recorded_rollout_count": len(outcomes),
+        "outcome_set_hash": capability_outcome_set_hash(outcomes),
+        "cells": cells,
+        "selections": selections,
+        "boundary_family_count_by_runtime": boundary_counts,
+        "monotonic_response_fraction": sum(monotonic) / len(monotonic),
+        "all_runtime_localization_ready": all_runtime_ready,
+        "calibration_frontier_compatible": frontier_compatible,
+        "next_permitted_stage": next_stage,
+        "validation_objective_access": "forbidden",
+        "authorization_objective_access": "forbidden",
+        "exact_target_evaluated": False,
+        "gp_c_evaluated": False,
+        "production_contribution": 0.0,
+    }
+    provisional = CapabilityTierLocalizationReport.model_construct(
+        report_id="pending", **values
+    )
+    return CapabilityTierLocalizationReport(
+        report_id=tier_localization_report_id(provisional), **values
+    )
 
 
 def make_empirical_information_audit(
@@ -587,6 +821,132 @@ def make_empirical_information_audit(
     provisional = EmpiricalCapabilityInformationAudit.model_construct(audit_id="pending", **values)
     return EmpiricalCapabilityInformationAudit(
         audit_id=empirical_information_audit_id(provisional), **values
+    )
+
+
+def _tier_localization_cell(
+    contract: FinanceCapabilityBoundaryContract,
+    model: ExplorerArm,
+    runtime: CapabilityRuntimeArm,
+    family: str,
+    tier: DifficultyTier,
+    outcomes: tuple[CapabilityRolloutOutcome, ...],
+    bindings: dict[str, RuntimeTaskBinding],
+) -> TierLocalizationCell:
+    selected = tuple(
+        item
+        for item in outcomes
+        if item.model_arm == model
+        and item.runtime_arm == runtime
+        and item.family == family
+        and bindings[item.binding_id].tier == tier
+    )
+    task_ids = {item.task_artifact_id for item in selected}
+    if len(task_ids) != 1:
+        raise ValueError("Tier Localization cell must contain exactly one task")
+    technical_flags = [
+        item.completed
+        and item.bounded_json_resolution_success
+        and item.terminal_result_emitted
+        and item.observation_replay_success
+        and item.authority_integrity_success
+        and not item.budget_exhausted
+        for item in selected
+    ]
+    technical_rate = sum(technical_flags) / len(selected)
+    success_rate = sum(item.valid_success for item in selected) / len(selected)
+    threshold = contract.localization_thresholds
+    technical_ready = technical_rate >= threshold.minimum_technical_resolution_rate
+    boundary = (
+        technical_ready
+        and threshold.boundary_probability_lower
+        <= success_rate
+        <= threshold.boundary_probability_upper
+    )
+    return TierLocalizationCell(
+        model_arm=model,
+        runtime_arm=runtime,
+        family=family,
+        tier=tier,
+        task_artifact_id=next(iter(task_ids)),
+        attempted_count=len(selected),
+        technical_resolution_rate=technical_rate,
+        semantic_answer_accuracy=sum(item.semantic_answer_correct for item in selected)
+        / len(selected),
+        valid_success_rate=success_rate,
+        valid_success_interval=_wilson_interval(
+            sum(item.valid_success for item in selected), len(selected)
+        ),
+        technical_ready=technical_ready,
+        boundary_candidate=boundary,
+    )
+
+
+def _select_runtime_family_tier(
+    runtime: CapabilityRuntimeArm,
+    family: str,
+    cells: tuple[TierLocalizationCell, ...],
+) -> RuntimeFamilyTierSelection:
+    by_key = {
+        (item.model_arm, item.tier): item
+        for item in cells
+        if item.runtime_arm == runtime and item.family == family
+    }
+    tier_priority = {
+        DifficultyTier.FRONTIER: 2,
+        DifficultyTier.EASY_CONTROL: 1,
+        DifficultyTier.HARD_CONTROL: 0,
+    }
+    options = []
+    for tier in DifficultyTier:
+        pro = by_key[(ExplorerArm.PRO, tier)]
+        flash = by_key[(ExplorerArm.FLASH, tier)]
+        information = (
+            pro.valid_success_rate * (1.0 - pro.valid_success_rate)
+            + flash.valid_success_rate * (1.0 - flash.valid_success_rate)
+        ) / 2.0
+        both_technical = pro.technical_ready and flash.technical_ready
+        eligible = both_technical and (
+            pro.boundary_candidate or flash.boundary_candidate
+        )
+        options.append((information, tier_priority[tier], tier, pro, flash, eligible))
+    eligible_options = [item for item in options if item[-1]]
+    diagnostic = max(options, key=lambda item: (item[0], item[1]))
+    selected = (
+        max(eligible_options, key=lambda item: (item[0], item[1]))
+        if eligible_options
+        else diagnostic
+    )
+    information, _, tier, pro, flash, eligible = selected
+    return RuntimeFamilyTierSelection(
+        runtime_arm=runtime,
+        family=family,
+        selected_tier=tier if eligible else None,
+        selected_task_artifact_id=pro.task_artifact_id if eligible else None,
+        combined_bernoulli_information=min(0.25, max(0.0, information)),
+        pro_success_rate=pro.valid_success_rate,
+        flash_success_rate=flash.valid_success_rate,
+        both_models_technically_ready=pro.technical_ready and flash.technical_ready,
+        boundary_identified=eligible,
+    )
+
+
+def _wilson_interval(successes: int, total: int) -> ConfidenceInterval:
+    if total <= 0:
+        raise ValueError("Wilson interval requires a positive denominator")
+    point = successes / total
+    z = 1.959963984540054
+    denominator = 1.0 + z * z / total
+    center = (point + z * z / (2.0 * total)) / denominator
+    radius = (
+        z
+        * math.sqrt(point * (1.0 - point) / total + z * z / (4.0 * total * total))
+        / denominator
+    )
+    return ConfidenceInterval(
+        lower=max(0.0, center - radius),
+        point=point,
+        upper=min(1.0, center + radius),
     )
 
 
@@ -1057,6 +1417,13 @@ def qualification_report_id(value: CapabilityQualificationReport) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"report_id"}),
         prefix="capability_qualification_report:",
+    )
+
+
+def tier_localization_report_id(value: CapabilityTierLocalizationReport) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"report_id"}),
+        prefix="capability_tier_localization_report:",
     )
 
 

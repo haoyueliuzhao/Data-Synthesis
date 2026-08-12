@@ -36,10 +36,12 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary_an
     BoundaryStage,
     CapabilityQualificationReport,
     CapabilityRolloutOutcome,
+    CapabilityTierLocalizationReport,
     EmpiricalCapabilityInformationAudit,
     capability_rollout_outcome_id,
     make_empirical_information_audit,
     make_qualification_report,
+    make_tier_localization_report,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_frontier import (
     CAPABILITY_SENSITIVE_FRONTIER_VERSION,
@@ -70,8 +72,8 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import AgentToolObservation, InMemoryEvidenceToolRuntime
 
-CAPABILITY_BOUNDARY_RUNNER_VERSION = "finance_capability_boundary_runner.v7"
-CAPABILITY_BOUNDARY_RECORD_VERSION = "finance_capability_boundary_record.v7"
+CAPABILITY_BOUNDARY_RUNNER_VERSION = "finance_capability_boundary_runner.v8"
+CAPABILITY_BOUNDARY_RECORD_VERSION = "finance_capability_boundary_record.v8"
 MODEL_CAPTURED_FAILURES = ("LLMClientError",)
 
 
@@ -179,7 +181,11 @@ def run_capability_boundary_stage(
     output_dir: Path,
     stage: BoundaryStage,
     workers: int,
-) -> CapabilityQualificationReport | EmpiricalCapabilityInformationAudit:
+) -> (
+    CapabilityQualificationReport
+    | CapabilityTierLocalizationReport
+    | EmpiricalCapabilityInformationAudit
+):
     if stage == BoundaryStage.BENEFICIARY_SCREENING:
         raise ValueError("Beneficiary screening uses the isolated local-GPU runner")
     if workers < 1:
@@ -192,10 +198,17 @@ def run_capability_boundary_stage(
     _verify_frozen_inputs(contract)
     if stage == BoundaryStage.PAIRED_CALIBRATION:
         qualification = _load_passing_qualification(output_dir, contract)
+        localization = _load_passing_tier_localization(output_dir, contract, qualification)
         bindings = contract.calibration_bindings
         replicas = contract.calibration_replicas
+    elif stage == BoundaryStage.TIER_LOCALIZATION:
+        qualification = _load_passing_qualification(output_dir, contract)
+        localization = None
+        bindings = contract.localization_bindings
+        replicas = contract.localization_replicas
     else:
         qualification = None
+        localization = None
         bindings = contract.qualification_bindings
         replicas = contract.qualification_replicas
     population = CapabilitySensitiveFrontierPopulation.model_validate_json(
@@ -288,12 +301,20 @@ def run_capability_boundary_stage(
     _write_jsonl_atomic(records_path, (item.model_dump(mode="json") for item in ordered))
     outcomes = tuple(_to_outcome(item, bindings) for item in ordered)
     _write_jsonl_atomic(outcomes_path, (item.model_dump(mode="json") for item in outcomes))
-    report: CapabilityQualificationReport | EmpiricalCapabilityInformationAudit
+    report: (
+        CapabilityQualificationReport
+        | CapabilityTierLocalizationReport
+        | EmpiricalCapabilityInformationAudit
+    )
     if stage == BoundaryStage.RUNTIME_QUALIFICATION:
         report = make_qualification_report(contract, outcomes)
-    else:
+    elif stage == BoundaryStage.TIER_LOCALIZATION:
         if qualification is None:
-            raise AssertionError("Calibration lost its Qualification authorization")
+            raise AssertionError("Tier Localization lost its Qualification authorization")
+        report = make_tier_localization_report(contract, qualification, outcomes)
+    else:
+        if qualification is None or localization is None:
+            raise AssertionError("Calibration lost its prerequisite authorization")
         report = make_empirical_information_audit(contract, qualification, outcomes)
     _write_json_atomic(report_path, report.model_dump(mode="json"))
     _write_json_atomic(
@@ -566,6 +587,7 @@ def _verify_runtime_binding(
         "reference_trajectory_hash": reference.trajectory_hash,
         "environment_manifest_id": manifest.manifest_id,
         "environment_manifest_hash": canonical_hash(manifest, prefix="v25_tool_environment:"),
+        "public_allowed_tools": context.task.public.allowed_tools,
     }
     expected = {key: getattr(binding, key) for key in observed}
     if observed != expected:
@@ -662,6 +684,91 @@ def _load_passing_qualification(
     }
     if any(manifest.get(key) != value for key, value in expected_manifest.items()):
         raise ValueError("Qualification run manifest failed immutable lineage replay")
+    return report
+
+
+def _load_passing_tier_localization(
+    output_dir: Path,
+    contract: FinanceCapabilityBoundaryContract,
+    qualification: CapabilityQualificationReport,
+) -> CapabilityTierLocalizationReport:
+    stage = BoundaryStage.TIER_LOCALIZATION
+    report_path = output_dir / "finance_tier_localization_report.json"
+    checkpoint_path = output_dir / f"{stage.value}.checkpoint.jsonl"
+    records_path = output_dir / f"{stage.value}_records.jsonl"
+    outcomes_path = output_dir / f"{stage.value}_outcomes.jsonl"
+    manifest_path = output_dir / f"{stage.value}_run_manifest.json"
+    required = (report_path, checkpoint_path, records_path, outcomes_path, manifest_path)
+    if any(not path.is_file() for path in required):
+        raise ValueError("calibration requires a complete frozen Tier Localization run")
+    expected_run_identity = _run_identity(
+        contract,
+        stage,
+        contract.localization_bindings,
+        contract.localization_replicas,
+    )
+    checkpoint_records = _load_checkpoint(
+        checkpoint_path,
+        run_identity=expected_run_identity,
+        bindings=contract.localization_bindings,
+        replicas=contract.localization_replicas,
+    )
+    records = tuple(
+        CapabilityBoundaryRolloutRecord.model_validate_json(line)
+        for line in records_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    expected_jobs = {
+        (model, binding.binding_id, replicate)
+        for model in ExplorerArm
+        for binding in contract.localization_bindings
+        for replicate in range(contract.localization_replicas)
+    }
+    if {_record_key(item) for item in records} != expected_jobs or len(records) != len(
+        expected_jobs
+    ):
+        raise ValueError("Tier Localization records do not exactly cover frozen jobs")
+    if {item.record_id for item in checkpoint_records} != {item.record_id for item in records}:
+        raise ValueError("Tier Localization checkpoint and canonical records disagree")
+    outcomes = tuple(
+        CapabilityRolloutOutcome.model_validate_json(line)
+        for line in outcomes_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    recomputed_outcomes = tuple(
+        _to_outcome(item, contract.localization_bindings) for item in records
+    )
+    if {item.outcome_id for item in outcomes} != {
+        item.outcome_id for item in recomputed_outcomes
+    } or len(outcomes) != len(recomputed_outcomes):
+        raise ValueError("Tier Localization outcomes do not replay from canonical records")
+    report = CapabilityTierLocalizationReport.model_validate_json(
+        report_path.read_text(encoding="utf-8")
+    )
+    recomputed_report = make_tier_localization_report(
+        contract, qualification, recomputed_outcomes
+    )
+    if (
+        report != recomputed_report
+        or report.next_permitted_stage != "paired_capability_calibration"
+    ):
+        raise ValueError("paired calibration is not authorized by Tier Localization replay")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    expected_manifest = {
+        "run_identity": expected_run_identity,
+        "runner_version": CAPABILITY_BOUNDARY_RUNNER_VERSION,
+        "contract_id": contract.contract_id,
+        "stage": stage.value,
+        "checkpoint_sha256": _sha256(checkpoint_path),
+        "records_sha256": _sha256(records_path),
+        "outcomes_sha256": _sha256(outcomes_path),
+        "outcome_set_hash": report.outcome_set_hash,
+        "report_id": report.report_id,
+        "report_schema_version": report.schema_version,
+        "report_sha256": _sha256(report_path),
+    }
+    if any(manifest.get(key) != value for key, value in expected_manifest.items()):
+        raise ValueError("Tier Localization manifest failed immutable lineage replay")
     return report
 
 
@@ -945,16 +1052,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument(
         "--stage",
-        choices=("qualification", "calibration"),
+        choices=("qualification", "localization", "calibration"),
         required=True,
     )
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args(argv)
-    stage = (
-        BoundaryStage.RUNTIME_QUALIFICATION
-        if args.stage == "qualification"
-        else BoundaryStage.PAIRED_CALIBRATION
-    )
+    stage = {
+        "qualification": BoundaryStage.RUNTIME_QUALIFICATION,
+        "localization": BoundaryStage.TIER_LOCALIZATION,
+        "calibration": BoundaryStage.PAIRED_CALIBRATION,
+    }[args.stage]
     report = run_capability_boundary_stage(
         contract_path=args.contract,
         output_dir=args.output_dir,

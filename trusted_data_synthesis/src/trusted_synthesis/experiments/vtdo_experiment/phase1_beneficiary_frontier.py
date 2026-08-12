@@ -30,9 +30,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 from trusted_synthesis.hashing import canonical_hash
 
 BENEFICIARY_IDENTITY_VERSION = "beneficiary_model_identity.v2"
-BENEFICIARY_SCREENING_CONTRACT_VERSION = "beneficiary_screening_contract.v5"
-BENEFICIARY_OUTCOME_VERSION = "beneficiary_frontier_outcome.v5"
-BENEFICIARY_SCREENING_ARTIFACT_VERSION = "beneficiary_frontier_screening.v5"
+BENEFICIARY_SCREENING_CONTRACT_VERSION = "beneficiary_screening_contract.v6"
+BENEFICIARY_OUTCOME_VERSION = "beneficiary_frontier_outcome.v6"
+BENEFICIARY_SCREENING_ARTIFACT_VERSION = "beneficiary_frontier_screening.v6"
 BENEFICIARY_REPLICAS = 5
 
 

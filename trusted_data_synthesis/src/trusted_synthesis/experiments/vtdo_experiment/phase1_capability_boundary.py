@@ -13,8 +13,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.evaluation.contracts.compiler import QualityContractCompiler
 from trusted_synthesis.core.operations.program import ProgramExecutionError, TaskProgramExecutor
-from trusted_synthesis.core.operations.registry import default_registry
-from trusted_synthesis.core.task.builder import public_program_skeleton
+from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.task.builder import allowed_tools_for_program, public_program_skeleton
 from trusted_synthesis.core.task.materialization import resolved_retrieval_scope
 from trusted_synthesis.core.task.program import InputRefKind, TaskProgram
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack, TaskRequirement
@@ -50,16 +50,18 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
-CAPABILITY_BOUNDARY_CONTRACT_VERSION = "finance_capability_boundary_contract.v7"
+CAPABILITY_BOUNDARY_CONTRACT_VERSION = "finance_capability_boundary_contract.v8"
 CAPABILITY_NECESSITY_AUDIT_VERSION = "finance_capability_necessity_audit.v2"
 RUNTIME_VISIBLE_DEMAND_VERSION = "model_visible_capability_demand.v2"
-RUNTIME_BINDING_VERSION = "finance_capability_runtime_binding.v5"
+RUNTIME_BINDING_VERSION = "finance_capability_runtime_binding.v6"
 
 QUALIFICATION_TASKS_PER_FAMILY = 1
+LOCALIZATION_TASKS_PER_FAMILY_TIER = 1
 CALIBRATION_TASKS_PER_FAMILY = 4
 QUALIFICATION_REPLICAS = 3
+LOCALIZATION_REPLICAS = 5
 CALIBRATION_REPLICAS = 10
-MAXIMUM_REQUIRED_TOOL_CALLS = 12
+MAXIMUM_REQUIRED_TOOL_CALLS = 20
 MAXIMUM_FAILED_TOOL_CALLS = 3
 MAXIMUM_TOOL_CALLS = MAXIMUM_REQUIRED_TOOL_CALLS + MAXIMUM_FAILED_TOOL_CALLS
 MAXIMUM_OBSERVATION_BYTES = 1_000_000
@@ -219,6 +221,7 @@ class RuntimeTaskBinding(FrozenModel):
     reference_trajectory_hash: str = Field(min_length=1)
     environment_manifest_id: str = Field(min_length=1)
     environment_manifest_hash: str = Field(min_length=1)
+    public_allowed_tools: tuple[str, ...] = Field(min_length=1)
     visible_demand: ModelVisibleCapabilityDemand
     scripted_tool_sequence: tuple[str, ...] = ()
     schema_version: str = RUNTIME_BINDING_VERSION
@@ -231,6 +234,13 @@ class RuntimeTaskBinding(FrozenModel):
             raise ValueError("runtime binding and visible demand use different tasks")
         if self.visible_demand.runtime_arm != self.runtime_arm:
             raise ValueError("runtime binding and visible demand use different arms")
+        if self.public_allowed_tools != tuple(dict.fromkeys(self.public_allowed_tools)):
+            raise ValueError("runtime binding allowed tools are not canonical")
+        if (
+            self.runtime_arm == CapabilityRuntimeArm.DIRECT_FIXED_RETRIEVAL
+            and "evidence.search" not in self.public_allowed_tools
+        ):
+            raise ValueError("Direct Runtime lacks its evidence-search capability")
         if self.runtime_arm == CapabilityRuntimeArm.SCRIPTED_TOOL:
             if not self.scripted_tool_sequence:
                 raise ValueError("Scripted Tool binding lacks a frozen sequence")
@@ -280,6 +290,32 @@ class EmpiricalInformationThresholds(FrozenModel):
             raise ValueError("empirical thresholds do not cover every Runtime")
         if self.boundary_probability_lower >= self.boundary_probability_upper:
             raise ValueError("empirical boundary probability interval is empty")
+        return self
+
+
+class TierLocalizationThresholds(FrozenModel):
+    minimum_technical_resolution_rate: float = Field(default=0.80, ge=0, le=1)
+    boundary_probability_lower: float = Field(default=0.10, ge=0, le=1)
+    boundary_probability_upper: float = Field(default=0.90, ge=0, le=1)
+    minimum_runtime_boundary_families: dict[CapabilityRuntimeArm, int] = Field(
+        default_factory=lambda: {
+            CapabilityRuntimeArm.DIRECT_FIXED_RETRIEVAL: 2,
+            CapabilityRuntimeArm.SCRIPTED_TOOL: 3,
+            CapabilityRuntimeArm.AUTONOMOUS_AGENT: 4,
+        }
+    )
+
+    @model_validator(mode="after")
+    def validate_thresholds(self) -> TierLocalizationThresholds:
+        if self.boundary_probability_lower >= self.boundary_probability_upper:
+            raise ValueError("tier-localization boundary interval is empty")
+        if set(self.minimum_runtime_boundary_families) != set(CapabilityRuntimeArm):
+            raise ValueError("tier-localization thresholds do not cover every Runtime")
+        if any(
+            value < 1 or value > len(CAPABILITY_SENSITIVE_FAMILIES)
+            for value in self.minimum_runtime_boundary_families.values()
+        ):
+            raise ValueError("tier-localization family threshold is invalid")
         return self
 
 
@@ -350,10 +386,13 @@ class FinanceCapabilityBoundaryContract(FrozenModel):
     authority_contracts: tuple[RuntimeAuthorityContract, ...] = Field(min_length=3, max_length=3)
     necessity_audit: CapabilityNecessityAudit
     qualification_bindings: tuple[RuntimeTaskBinding, ...] = Field(min_length=21, max_length=21)
+    localization_bindings: tuple[RuntimeTaskBinding, ...] = Field(min_length=63, max_length=63)
     calibration_bindings: tuple[RuntimeTaskBinding, ...] = Field(min_length=84, max_length=84)
     qualification_replicas: int = Field(default=QUALIFICATION_REPLICAS, ge=3, le=3)
+    localization_replicas: int = Field(default=LOCALIZATION_REPLICAS, ge=5, le=5)
     calibration_replicas: int = Field(default=CALIBRATION_REPLICAS, ge=10, le=10)
     requested_qualification_rollouts: int = Field(ge=1)
+    requested_localization_rollouts: int = Field(ge=1)
     requested_calibration_rollouts: int = Field(ge=1)
     maximum_tool_calls: int = Field(default=MAXIMUM_TOOL_CALLS, ge=1)
     maximum_failed_tool_calls: int = Field(default=MAXIMUM_FAILED_TOOL_CALLS, ge=0)
@@ -361,6 +400,7 @@ class FinanceCapabilityBoundaryContract(FrozenModel):
     maximum_model_tokens_per_rollout: int = Field(default=MODEL_TOKEN_BUDGET, ge=1)
     model_contract_repair_attempts: int = Field(default=2, ge=2, le=2)
     technical_thresholds: TechnicalQualificationThresholds
+    localization_thresholds: TierLocalizationThresholds
     information_thresholds: EmpiricalInformationThresholds
     analysis_plan: HierarchicalAnalysisPlan
     random_seed: int
@@ -399,12 +439,18 @@ class FinanceCapabilityBoundaryContract(FrozenModel):
             self.qualification_bindings,
             expected_tasks_per_family=QUALIFICATION_TASKS_PER_FAMILY,
         )
+        _validate_localization_partition(self.localization_bindings)
         _validate_binding_partition(
             self.calibration_bindings,
             expected_tasks_per_family=CALIBRATION_TASKS_PER_FAMILY,
         )
         qualification_tasks = {item.task_artifact_id for item in self.qualification_bindings}
+        localization_tasks = {item.task_artifact_id for item in self.localization_bindings}
         calibration_tasks = {item.task_artifact_id for item in self.calibration_bindings}
+        if not qualification_tasks <= localization_tasks:
+            raise ValueError("Qualification Frontier tasks must anchor Tier Localization")
+        if localization_tasks & calibration_tasks:
+            raise ValueError("Tier Localization and Calibration tasks overlap")
         if qualification_tasks & calibration_tasks:
             raise ValueError("Qualification and Calibration tasks overlap")
         expected_qualification = (
@@ -419,8 +465,16 @@ class FinanceCapabilityBoundaryContract(FrozenModel):
             * len(CapabilityRuntimeArm)
             * self.calibration_replicas
         )
+        expected_localization = (
+            len(localization_tasks)
+            * len(self.model_contracts)
+            * len(CapabilityRuntimeArm)
+            * self.localization_replicas
+        )
         if self.requested_qualification_rollouts != expected_qualification:
             raise ValueError("Qualification rollout count is inconsistent")
+        if self.requested_localization_rollouts != expected_localization:
+            raise ValueError("Tier Localization rollout count is inconsistent")
         if self.requested_calibration_rollouts != expected_calibration:
             raise ValueError("Calibration rollout count is inconsistent")
         if self.contract_id != capability_boundary_contract_id(self):
@@ -555,12 +609,17 @@ def prepare_capability_boundary_contract(
         final_answer_token_reserve=12_000,
         host_repair_missing_verification=True,
     )
-    qualification_tasks, calibration_tasks = _select_frontier_tasks(
+    qualification_tasks, localization_tasks, calibration_tasks = _select_boundary_tasks(
         population, sampling_salt=sampling_salt
     )
     qualification_bindings = tuple(
         _make_runtime_binding(task, arm, protocol)
         for task in qualification_tasks
+        for arm in CapabilityRuntimeArm
+    )
+    localization_bindings = tuple(
+        _make_runtime_binding(task, arm, protocol)
+        for task in localization_tasks
         for arm in CapabilityRuntimeArm
     )
     calibration_bindings = tuple(
@@ -585,10 +644,13 @@ def prepare_capability_boundary_contract(
         "authority_contracts": runtime_authority_contracts(),
         "necessity_audit": necessity,
         "qualification_bindings": qualification_bindings,
+        "localization_bindings": localization_bindings,
         "calibration_bindings": calibration_bindings,
         "qualification_replicas": QUALIFICATION_REPLICAS,
+        "localization_replicas": LOCALIZATION_REPLICAS,
         "calibration_replicas": CALIBRATION_REPLICAS,
         "requested_qualification_rollouts": 126,
+        "requested_localization_rollouts": 630,
         "requested_calibration_rollouts": 1_680,
         "maximum_tool_calls": MAXIMUM_TOOL_CALLS,
         "maximum_failed_tool_calls": MAXIMUM_FAILED_TOOL_CALLS,
@@ -596,6 +658,7 @@ def prepare_capability_boundary_contract(
         "maximum_model_tokens_per_rollout": MODEL_TOKEN_BUDGET,
         "model_contract_repair_attempts": 2,
         "technical_thresholds": TechnicalQualificationThresholds(),
+        "localization_thresholds": TierLocalizationThresholds(),
         "information_thresholds": default_information_thresholds(),
         "analysis_plan": HierarchicalAnalysisPlan(),
         "random_seed": random_seed,
@@ -621,6 +684,7 @@ def make_v25_native_runtime_context(
     runtime_arm: CapabilityRuntimeArm,
     protocol: IterativeAgentProtocolProfile,
 ) -> tuple[TrajectoryVerificationContext, Any, Any]:
+    registry = default_registry()
     corpus = task.public_corpus
     snapshot_id = str(corpus.build_id or f"corpus:{corpus.corpus_hash}")
     manifest = make_finance_archive_agent_tool_manifest(
@@ -634,6 +698,12 @@ def make_v25_native_runtime_context(
         maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,
     )
     direct_fixed = runtime_arm == CapabilityRuntimeArm.DIRECT_FIXED_RETRIEVAL
+    public_allowed_tools = runtime_public_allowed_tools(
+        task,
+        runtime_arm,
+        manifest,
+        registry=registry,
+    )
     retrieval_track = RetrievalTrack.RESOLVED if direct_fixed else task.task.public.retrieval_track
     planning_track = PlanningTrack.PLAN_GIVEN if direct_fixed else task.task.public.planning_track
     program_skeleton = (
@@ -645,7 +715,7 @@ def make_v25_native_runtime_context(
     )
     public = task.task.public.model_copy(
         update={
-            "allowed_tools": tuple(item.tool_id for item in manifest.tools),
+            "allowed_tools": public_allowed_tools,
             "retrieval_track": retrieval_track,
             "planning_track": planning_track,
             "program_skeleton": program_skeleton,
@@ -669,7 +739,6 @@ def make_v25_native_runtime_context(
         }
     )
     runtime_task = task.task.model_copy(update={"public": public})
-    registry = default_registry()
     quality = QualityContractCompiler(
         registry, domain_provider=FinanceQualityClauseProvider()
     ).compile(runtime_task, task.evidence_bundle, task.proof_graph)
@@ -693,6 +762,21 @@ def make_v25_native_runtime_context(
     return context, manifest, reference
 
 
+def runtime_public_allowed_tools(
+    task: CapabilitySensitiveTaskArtifact,
+    runtime_arm: CapabilityRuntimeArm,
+    manifest: Any,
+    *,
+    registry: OperationRegistry | None = None,
+) -> tuple[str, ...]:
+    if runtime_arm == CapabilityRuntimeArm.DIRECT_FIXED_RETRIEVAL:
+        return allowed_tools_for_program(
+            task.task.oracle.task_program,
+            registry or default_registry(),
+        )
+    return tuple(item.tool_id for item in manifest.tools)
+
+
 def v25_scripted_tool_sequence(
     task: CapabilitySensitiveTaskArtifact,
 ) -> tuple[str, ...]:
@@ -707,8 +791,9 @@ def v25_scripted_tool_sequence(
     sequence.extend("normalize_metric_unit_period" for _ in task.reconciliation_axes)
     sequence.extend("calculator" for _ in task.task.oracle.task_program.nodes)
     sequence.extend("cross_check_evidence" for _ in task.verification_checkpoints)
-    if len(sequence) != task.structure.minimal_tool_calls:
-        raise ValueError("v25 Scripted sequence differs from the frozen minimum-call contract")
+    non_tool_stop_decisions = int(task.tier == DifficultyTier.HARD_CONTROL)
+    if len(sequence) + non_tool_stop_decisions != task.structure.minimal_tool_calls:
+        raise ValueError("v25 Scripted sequence differs from the frozen action contract")
     if len(sequence) > MAXIMUM_REQUIRED_TOOL_CALLS:
         raise ValueError("v25 Scripted sequence exceeds the required-call budget")
     return tuple(sequence)
@@ -737,6 +822,7 @@ def _make_runtime_binding(
         "reference_trajectory_hash": reference.trajectory_hash,
         "environment_manifest_id": manifest.manifest_id,
         "environment_manifest_hash": canonical_hash(manifest, prefix="v25_tool_environment:"),
+        "public_allowed_tools": context.task.public.allowed_tools,
         "visible_demand": make_model_visible_demand(task, runtime_arm),
         "scripted_tool_sequence": (
             v25_scripted_tool_sequence(task)
@@ -748,33 +834,55 @@ def _make_runtime_binding(
     return RuntimeTaskBinding(binding_id=runtime_task_binding_id(provisional), **values)
 
 
-def _select_frontier_tasks(
+def _select_boundary_tasks(
     population: CapabilitySensitiveFrontierPopulation,
     *,
     sampling_salt: str,
 ) -> tuple[
-    tuple[CapabilitySensitiveTaskArtifact, ...], tuple[CapabilitySensitiveTaskArtifact, ...]
+    tuple[CapabilitySensitiveTaskArtifact, ...],
+    tuple[CapabilitySensitiveTaskArtifact, ...],
+    tuple[CapabilitySensitiveTaskArtifact, ...],
 ]:
     qualification = []
+    localization = []
     calibration = []
     for family in CAPABILITY_SENSITIVE_FAMILIES:
-        candidates = [
+        frontier_candidates = [
             item
             for item in population.tasks
             if item.family == family and item.tier == DifficultyTier.FRONTIER
         ]
-        ordered = sorted(
-            candidates,
+        ordered_frontier = sorted(
+            frontier_candidates,
             key=lambda item: canonical_hash(
                 {"salt": sampling_salt, "artifact_id": item.artifact_id},
                 prefix="v25_boundary_task_selection:",
             ),
         )
-        if len(ordered) != QUALIFICATION_TASKS_PER_FAMILY + CALIBRATION_TASKS_PER_FAMILY:
+        if len(ordered_frontier) != (
+            QUALIFICATION_TASKS_PER_FAMILY + CALIBRATION_TASKS_PER_FAMILY
+        ):
             raise ValueError("v25 Frontier does not contain exactly five tasks per family")
-        qualification.extend(ordered[:QUALIFICATION_TASKS_PER_FAMILY])
-        calibration.extend(ordered[QUALIFICATION_TASKS_PER_FAMILY:])
-    return tuple(qualification), tuple(calibration)
+        frontier_anchor = ordered_frontier[0]
+        qualification.append(frontier_anchor)
+        localization.append(frontier_anchor)
+        calibration.extend(ordered_frontier[QUALIFICATION_TASKS_PER_FAMILY:])
+        for tier in (DifficultyTier.EASY_CONTROL, DifficultyTier.HARD_CONTROL):
+            tier_candidates = sorted(
+                (
+                    item
+                    for item in population.tasks
+                    if item.family == family and item.tier == tier
+                ),
+                key=lambda item: canonical_hash(
+                    {"salt": sampling_salt, "artifact_id": item.artifact_id},
+                    prefix="v25_localization_task_selection:",
+                ),
+            )
+            if len(tier_candidates) < LOCALIZATION_TASKS_PER_FAMILY_TIER:
+                raise ValueError(f"v25 {tier.value} lacks a localization task for {family}")
+            localization.extend(tier_candidates[:LOCALIZATION_TASKS_PER_FAMILY_TIER])
+    return tuple(qualification), tuple(localization), tuple(calibration)
 
 
 def _necessity_probe(task: CapabilitySensitiveTaskArtifact) -> CapabilityNecessityProbe:
@@ -990,6 +1098,37 @@ def _artifact_contract_ablation_fails(
     return False
 
 
+def _validate_localization_partition(
+    bindings: tuple[RuntimeTaskBinding, ...],
+) -> None:
+    by_task: dict[str, list[RuntimeTaskBinding]] = defaultdict(list)
+    for item in bindings:
+        by_task[item.task_artifact_id].append(item)
+    for values in by_task.values():
+        if {item.runtime_arm for item in values} != set(CapabilityRuntimeArm):
+            raise ValueError("a Tier Localization task lacks a Runtime binding")
+        if len(values) != len(CapabilityRuntimeArm):
+            raise ValueError("a Tier Localization task duplicates a Runtime binding")
+    counts = {
+        (family, tier): len(
+            {
+                item.task_artifact_id
+                for item in bindings
+                if item.family == family and item.tier == tier
+            }
+        )
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+        for tier in DifficultyTier
+    }
+    expected = {
+        (family, tier): LOCALIZATION_TASKS_PER_FAMILY_TIER
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+        for tier in DifficultyTier
+    }
+    if counts != expected:
+        raise ValueError("Tier Localization is not balanced by family and difficulty tier")
+
+
 def _validate_binding_partition(
     bindings: tuple[RuntimeTaskBinding, ...],
     *,
@@ -1099,6 +1238,7 @@ def main(argv: list[str] | None = None) -> int:
             {
                 "contract_id": contract.contract_id,
                 "qualification_rollouts": contract.requested_qualification_rollouts,
+                "localization_rollouts": contract.requested_localization_rollouts,
                 "calibration_rollouts": contract.requested_calibration_rollouts,
                 "necessity_ready": contract.necessity_audit.contract_necessity_ready,
                 "next_permitted_stage": contract.next_permitted_stage,

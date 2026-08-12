@@ -6,6 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
+from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
+from trusted_synthesis.core.graph.builder import ProofGraphBuilder
+from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
 from trusted_synthesis.experiments.vtdo_experiment import (
     phase1_capability_boundary_analysis as analysis,
 )
@@ -20,8 +23,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary im
     CAPABILITY_AXES,
     CapabilityRuntimeArm,
     TechnicalQualificationThresholds,
+    TierLocalizationThresholds,
     default_information_thresholds,
     make_model_visible_demand,
+    runtime_public_allowed_tools,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary_analysis import (
     BoundaryStage,
@@ -33,11 +38,15 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary_an
     capability_rollout_outcome_id,
     make_empirical_information_audit,
     make_qualification_report,
+    make_tier_localization_report,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary_runner import (
     _captured_failure_authority,
     _replay_discovered_models,
     _scripted_tool_authority,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
+    DifficultyTier,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_frontier import (
     CAPABILITY_SENSITIVE_FAMILIES,
@@ -170,13 +179,135 @@ def test_qualification_semantic_accuracy_is_descriptive_not_a_runtime_gate() -> 
     assert report.status == "passed"
     assert report.semantic_results_are_descriptive_only is True
     assert all(cell.semantic_accuracy == 0 for cell in report.cells)
-    assert report.next_permitted_stage == "paired_capability_calibration"
+    assert report.next_permitted_stage == "capability_tier_localization"
     assert report.outcome_set_hash == capability_outcome_set_hash(outcomes)
     report_payload = report.model_dump()
     report_payload["recorded_rollout_count"] -= 1
     report_payload["report_id"] = "report:tampered"
     with pytest.raises(ValueError, match="incomplete rollout denominator"):
         type(report).model_validate(report_payload)
+
+
+def test_direct_runtime_compiles_operation_tools_not_archive_tools(
+    finance_evidence: EvidenceItem,
+) -> None:
+    bundle = EvidenceBundle(
+        bundle_id="bundle:direct_tool_contract",
+        evidence=(finance_evidence,),
+        purpose="Direct Runtime allowed-tool regression",
+        graph_build_id="kg_test",
+    )
+    graph = ProofGraphBuilder().build(bundle)
+    task = ProofGraphTaskSynthesizer().fact_retrieval(
+        graph, bundle, finance_evidence.evidence_id
+    )
+    artifact = SimpleNamespace(task=task)
+    manifest = SimpleNamespace(
+        tools=(SimpleNamespace(tool_id="query_structured_fact"),)
+    )
+
+    direct = runtime_public_allowed_tools(
+        artifact,
+        CapabilityRuntimeArm.DIRECT_FIXED_RETRIEVAL,
+        manifest,
+    )
+    scripted = runtime_public_allowed_tools(
+        artifact,
+        CapabilityRuntimeArm.SCRIPTED_TOOL,
+        manifest,
+    )
+
+    assert direct == ("evidence.search",)
+    assert scripted == ("query_structured_fact",)
+
+
+def _localization_contract_and_outcomes(
+    *,
+    all_fail: bool = False,
+) -> tuple[SimpleNamespace, SimpleNamespace, tuple[CapabilityRolloutOutcome, ...]]:
+    bindings = tuple(
+        SimpleNamespace(
+            binding_id=f"binding:{family}:{tier.value}:{runtime.value}",
+            task_artifact_id=f"task:{family}:{tier.value}",
+            family=family,
+            tier=tier,
+            runtime_arm=runtime,
+        )
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+        for tier in DifficultyTier
+        for runtime in CapabilityRuntimeArm
+    )
+    contract = SimpleNamespace(
+        contract_id="contract:tier-localization",
+        localization_bindings=bindings,
+        localization_replicas=5,
+        requested_localization_rollouts=630,
+        localization_thresholds=TierLocalizationThresholds(),
+    )
+    qualification = SimpleNamespace(
+        contract_id=contract.contract_id,
+        report_id="qualification:passed",
+        status="passed",
+    )
+    success_limits = {
+        DifficultyTier.EASY_CONTROL: {
+            ExplorerArm.PRO: 5,
+            ExplorerArm.FLASH: 4,
+        },
+        DifficultyTier.FRONTIER: {
+            ExplorerArm.PRO: 3,
+            ExplorerArm.FLASH: 2,
+        },
+        DifficultyTier.HARD_CONTROL: {
+            ExplorerArm.PRO: 0,
+            ExplorerArm.FLASH: 0,
+        },
+    }
+    outcomes = tuple(
+        _outcome(
+            contract_id=contract.contract_id,
+            stage=BoundaryStage.TIER_LOCALIZATION,
+            binding=binding,
+            model=model,
+            replicate=replicate,
+            semantic_success=(
+                False
+                if all_fail
+                else replicate < success_limits[binding.tier][model]
+            ),
+        )
+        for binding in bindings
+        for model in ExplorerArm
+        for replicate in range(contract.localization_replicas)
+    )
+    return contract, qualification, outcomes
+
+
+def test_tier_localization_selects_common_empirical_frontier() -> None:
+    contract, qualification, outcomes = _localization_contract_and_outcomes()
+
+    report = make_tier_localization_report(contract, qualification, outcomes)
+
+    assert report.recorded_rollout_count == 630
+    assert report.all_runtime_localization_ready is True
+    assert report.calibration_frontier_compatible is True
+    assert report.next_permitted_stage == "paired_capability_calibration"
+    assert report.monotonic_response_fraction == 1.0
+    assert all(
+        item.selected_tier == DifficultyTier.FRONTIER
+        for item in report.selections
+    )
+
+
+def test_tier_localization_rejects_all_floor_response_distribution() -> None:
+    contract, qualification, outcomes = _localization_contract_and_outcomes(all_fail=True)
+
+    report = make_tier_localization_report(contract, qualification, outcomes)
+
+    assert report.all_runtime_localization_ready is False
+    assert report.calibration_frontier_compatible is False
+    assert report.next_permitted_stage == "task_or_runtime_redesign_only"
+    assert not any(item.boundary_identified for item in report.selections)
 
 
 def test_empirical_information_rejects_response_saturated_pseudo_distribution() -> None:
