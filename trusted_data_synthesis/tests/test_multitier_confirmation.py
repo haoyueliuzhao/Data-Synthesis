@@ -18,6 +18,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
     CAPABILITY_AXES,
     CAPABILITY_SENSITIVE_FAMILIES,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_capability_population import (
+    population_cli_summary,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_confirmation import (
     FinanceMultiTierFlashReport,
     MultiTierInformationCell,
@@ -82,6 +85,30 @@ def test_sparse_pro_anchor_selection_is_preregistered_and_balanced() -> None:
     assert first == second
     assert set(first) == set(CAPABILITY_SENSITIVE_FAMILIES)
     assert len(set(first.values())) == len(CAPABILITY_SENSITIVE_FAMILIES)
+
+
+def test_population_cli_summary_uses_frozen_audits() -> None:
+    population = SimpleNamespace(
+        population_id="population:v25.12",
+        groups=tuple(range(21)),
+        tasks=tuple(range(63)),
+        audit=SimpleNamespace(
+            static_record_count=189,
+            multi_tier_population_ready=True,
+        ),
+        public_contract_audit=SimpleNamespace(passed_record_count=189),
+        excluded_evidence_version_ids=tuple(range(470)),
+    )
+
+    assert population_cli_summary(population) == {
+        "population_id": "population:v25.12",
+        "group_count": 21,
+        "task_count": 63,
+        "static_contract_count": 189,
+        "static_contract_pass_count": 189,
+        "excluded_evidence_version_count": 470,
+        "ready": True,
+    }
 
 
 def _flash_report_values(*, information_passed: bool) -> dict[str, object]:

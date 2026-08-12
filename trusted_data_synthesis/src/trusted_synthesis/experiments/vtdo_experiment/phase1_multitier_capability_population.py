@@ -754,6 +754,24 @@ def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
+def population_cli_summary(
+    population: MultiTierCapabilityPopulation,
+) -> dict[str, Any]:
+    return {
+        "population_id": population.population_id,
+        "group_count": len(population.groups),
+        "task_count": len(population.tasks),
+        "static_contract_count": population.audit.static_record_count,
+        "static_contract_pass_count": (
+            population.public_contract_audit.passed_record_count
+        ),
+        "excluded_evidence_version_count": len(
+            population.excluded_evidence_version_ids
+        ),
+        "ready": population.audit.multi_tier_population_ready,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Build the fresh v25.12 multi-Tier Finance capability population."
@@ -777,17 +795,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(
         json.dumps(
-            {
-                "population_id": population.population_id,
-                "group_count": len(population.groups),
-                "task_count": len(population.tasks),
-                "static_contract_count": population.static_contract_count,
-                "static_contract_pass_count": population.static_contract_pass_count,
-                "excluded_evidence_version_count": len(
-                    population.excluded_evidence_version_ids
-                ),
-                "ready": population.ready,
-            },
+            population_cli_summary(population),
             ensure_ascii=False,
             sort_keys=True,
         )
