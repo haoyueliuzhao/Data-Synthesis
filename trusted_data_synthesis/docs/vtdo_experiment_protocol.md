@@ -769,6 +769,46 @@ cost telemetry before execution. It may authorize only an empirical capability
 information audit. It cannot directly authorize model ranking, Exact Target,
 GP-C, Contribution, or a VTDO update.
 
+### v25.11 workflow information decision
+
+The fresh workflow-only localization completed all 1,260 requested Pro/Flash
+rollouts. Technical resolution, bounded JSON, Observation replay, authority
+integrity, and budget gates all passed. The source run used 10,457 API calls,
+38,067,881 model tokens, and USD 7.3946316566 according to provider telemetry.
+This technical result authorized an offline empirical information audit only.
+
+The audit L2-normalizes each frozen model-visible demand vector and evaluates
+the preregistered response-weighted second moment. The authorizing population
+contains only the shared Tier selected for each workflow Runtime x Family
+cell. Direct remains excluded. General difficulty is removed only for the
+centered axis-specific diagnostic. Confidence intervals resample Ladder
+Groups and within-task realizations. Rank, effective rank, condition number,
+boundary mass, informative-axis count, family dominance, Ladder-Group
+dominance, and selected-family primary-axis alignment all fail closed.
+
+The audit replayed the complete 1,260-record source denominator, analyzed 270
+selected-Tier rollouts, and retained the remaining 990 records only as source
+and non-authorizing full-ladder sensitivity evidence. All four Model x Runtime
+information cells failed. Selected-Tier residual rank was 3 for Scripted and 2
+for Autonomous; effective rank ranged from 1.008 to 1.807. Scripted condition
+numbers were 280.84 and 401.49; Flash Autonomous reached 1,014.39 and was
+99.61% dominated by one family.
+
+The complete three-Tier sensitivity is explicitly non-authorizing. It shows
+that the Scripted full ladder has rank 5 and condition numbers 63.82/77.38,
+while Autonomous remains unstable for at least one model. This localizes the
+primary loss to single-shared-Tier compression and uneven response support,
+not to technical execution failure.
+
+The frozen decision is empirical_capability_information_ready=false,
+paired_calibration_authorized=false, and
+next_permitted_stage=workflow_task_redesign_only.
+
+The next population must be independently fresh and pre-register multi-Tier
+information support. It must not select and evaluate an information-optimal
+subset on the same v25.11 outcomes. See
+docs/finance_v25_11_workflow_information_audit_report.md.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;
