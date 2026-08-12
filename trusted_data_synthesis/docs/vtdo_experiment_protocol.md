@@ -522,6 +522,26 @@ before returning the frozen report, and performs no model discovery. No capabili
 Exact Target, GP-C, Validation, or Authorization work was performed. See
 `docs/finance_v24_capability_ladder_experiment.md`.
 
+v25 supersedes the label-balanced semantic ladder with a capability-identifiability construction
+gate. A Finance task population must cover Retrieval, Planning, Calculation, Reconciliation,
+Verification, Recovery, and Stopping through executable Program or typed workflow requirements.
+Every Easy--Frontier--Hard structural dimension must be strictly monotonic; every Program must
+execute and independently replay; public Evidence must be cross-sample disjoint; and all seven
+families must meet their Frontier-gain requirement.
+
+The capability information audit derives demand vectors only from frozen structure. It normalizes
+and centers them, evaluates the six-dimensional family-contrast subspace, retains the complete
+seven-eigenvalue spectrum as a diagnostic, and verifies that each family mean is primarily aligned
+with its preregistered axis. Balanced labels with identical vectors, relabeled vectors, or a flat
+tier dimension fail closed. Structural readiness does not imply empirical frontier placement.
+
+The real 70-task v25 population passes this gate with contrast effective rank `5.141`, contrast
+condition number `4.726`, and 7/7 family-axis matches. It permits only a v25-native paired model
+capability-boundary calibration. A seven-task, 126-rollout qualification must precede the balanced
+28-task, 1,680-rollout comparison. The v24 runner may not be reused through a lossy adapter. Exact
+Target, GP-C, Validation, Authorization Objective access, VTDO updates, and production Contribution
+remain forbidden. See `docs/finance_v25_capability_sensitive_frontier_report.md`.
+
 ## 6. Experiment 4: Refinement Dynamics
 
 ### Fixed-potential control

@@ -358,6 +358,22 @@ effect or a meaningful Contribution coordinate. Validation, Authorization, and G
 unopened, and `Contribution=0` is unchanged. See
 `docs/finance_v24_capability_ladder_experiment.md`.
 
+v25 adds an instance-level identifiability prerequisite without changing the VTDO update. Surface
+balance over task labels, entities, periods, or metrics does not imply balanced capability support.
+Before optimizing `pi(z | x)`, the frozen task distribution must span distinct Retrieval, Planning,
+Calculation, Reconciliation, Verification, Recovery, and Stopping directions, contain irreducible
+decision depth, and later be empirically calibrated near the beneficiary's capability boundary.
+Otherwise valid states may remain practically equivalent and `C_t(x, z)` cannot be expected to
+separate them.
+
+The engineering gate derives structural demand vectors from executable Programs and typed workflow
+requirements, audits their centered information spectrum, and verifies seven preregistered
+family-primary-axis contrasts. The real v25 Finance construction passes this structural gate, but
+it does not yet prove capability boundary placement or a meaningful Contribution coordinate. Thus
+the only permitted transition is paired model calibration; Validation, Authorization, GP-C, and a
+nonzero production Contribution remain unopened. See
+`docs/finance_v25_capability_sensitive_frontier_report.md`.
+
 ## Novelty, Potential, And Anchored Update
 
 Coverage-relative novelty is exact:

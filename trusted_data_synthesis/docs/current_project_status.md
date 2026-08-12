@@ -24,7 +24,14 @@ v24 now qualifies the bounded Agent Runtime on a fresh 18-task set: all 216 Pro-
 Autonomous records completed, all Runtime gates passed, and Host-forced verification was zero. The
 separate semantic-ladder audit failed because Frontier minus Easy semantic difficulty was only
 `0.0117` against `1.0`. Capability calibration, Beneficiary screening, and new exact-target
-measurements therefore remain unopened while task construction is redesigned.
+measurements therefore remained unopened while task construction was redesigned.
+
+v25 now constructs 70 executable tasks across seven separately audited capability directions.
+Every Program executed and independently replayed, every structural tier dimension is strictly
+monotonic, all seven family-primary-axis checks pass, and the six-dimensional capability-contrast
+subspace has effective rank `5.141` and condition number `4.726`. The structural Frontier is ready,
+but no model call has yet established empirical boundary sensitivity. The only permitted next stage
+is a v25-native paired model capability-boundary calibration.
 
 ## Runtime And Data
 
@@ -133,16 +140,36 @@ remain forbidden. A credential-free completed-run replay resumed `216/216`, exec
 validated both content hashes, and returned the unchanged report identity without client
 construction. See `docs/finance_v24_capability_ladder_experiment.md`.
 
+## v25 Capability-Identifiable Frontier
+
+v25 treats surface-balanced task labels as insufficient. It registers Retrieval, Planning,
+Calculation, Reconciliation, Verification, Recovery, and Stopping as seven capability axes and
+constructs an executable family for each axis. Each family contains three Easy, five Frontier, and
+two Hard-Control tasks drawn from the immutable 420-task Finance source population.
+
+All 70 composite Programs execute and independently replay, all public Corpora are mutually
+Evidence-disjoint, and the same source, run ID, and sampling salt reproduce byte-identical JSON and
+Markdown. The audit uses only Program and typed workflow structure to derive demand vectors; family
+labels add no weight and are used only to verify expected primary-axis alignment. Equal-vector and
+relabeling mutations fail closed.
+
+The structural result authorizes `paired_model_capability_boundary_calibration`. The old v24 runner
+cannot consume v25 without erasing its new identities, so no API/GPU experiment was launched in
+this stage. Exact Target, GP-C, Validation, Authorization Objective access, VTDO updates, and
+production Contribution remain forbidden. See
+`docs/finance_v25_capability_sensitive_frontier_report.md`.
+
 ## Revalidated Code State
 
 | Check | Result |
 | --- | --- |
 | Development target/design focus | 10 passed |
 | v24 Agent/runtime focus | 38 passed |
+| v25 capability-identifiability focus | 5 passed |
 | Ruff check | passed |
 | Ruff format, changed files | passed |
-| Mypy | passed, 262 source files |
-| Pytest | passed, 498 tests in 136.05 seconds |
+| Mypy | passed, 263 source files |
+| Pytest | passed, 503 tests in 135.95 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
