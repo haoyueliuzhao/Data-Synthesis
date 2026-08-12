@@ -23,9 +23,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 )
 from trusted_synthesis.hashing import canonical_hash
 
-CAPABILITY_ROLLOUT_OUTCOME_VERSION = "finance_capability_rollout_outcome.v5"
-QUALIFICATION_REPORT_VERSION = "finance_capability_qualification_report.v6"
-EMPIRICAL_INFORMATION_AUDIT_VERSION = "empirical_capability_information_audit.v6"
+CAPABILITY_ROLLOUT_OUTCOME_VERSION = "finance_capability_rollout_outcome.v6"
+QUALIFICATION_REPORT_VERSION = "finance_capability_qualification_report.v7"
+EMPIRICAL_INFORMATION_AUDIT_VERSION = "empirical_capability_information_audit.v7"
 BENEFICIARY_SCREENING_VERSION = "beneficiary_frontier_screening.v1"
 
 

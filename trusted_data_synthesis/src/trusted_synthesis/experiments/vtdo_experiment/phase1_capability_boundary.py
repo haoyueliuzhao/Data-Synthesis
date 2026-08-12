@@ -50,17 +50,18 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
-CAPABILITY_BOUNDARY_CONTRACT_VERSION = "finance_capability_boundary_contract.v6"
+CAPABILITY_BOUNDARY_CONTRACT_VERSION = "finance_capability_boundary_contract.v7"
 CAPABILITY_NECESSITY_AUDIT_VERSION = "finance_capability_necessity_audit.v2"
 RUNTIME_VISIBLE_DEMAND_VERSION = "model_visible_capability_demand.v2"
-RUNTIME_BINDING_VERSION = "finance_capability_runtime_binding.v4"
+RUNTIME_BINDING_VERSION = "finance_capability_runtime_binding.v5"
 
 QUALIFICATION_TASKS_PER_FAMILY = 1
 CALIBRATION_TASKS_PER_FAMILY = 4
 QUALIFICATION_REPLICAS = 3
 CALIBRATION_REPLICAS = 10
-MAXIMUM_TOOL_CALLS = 12
+MAXIMUM_REQUIRED_TOOL_CALLS = 12
 MAXIMUM_FAILED_TOOL_CALLS = 3
+MAXIMUM_TOOL_CALLS = MAXIMUM_REQUIRED_TOOL_CALLS + MAXIMUM_FAILED_TOOL_CALLS
 MAXIMUM_OBSERVATION_BYTES = 1_000_000
 MODEL_TOKEN_BUDGET = 90_000
 
@@ -235,8 +236,8 @@ class RuntimeTaskBinding(FrozenModel):
                 raise ValueError("Scripted Tool binding lacks a frozen sequence")
         elif self.scripted_tool_sequence:
             raise ValueError("only Scripted Tool bindings may contain a sequence")
-        if len(self.scripted_tool_sequence) > MAXIMUM_TOOL_CALLS:
-            raise ValueError("Scripted Tool sequence exceeds the frozen call budget")
+        if len(self.scripted_tool_sequence) > MAXIMUM_REQUIRED_TOOL_CALLS:
+            raise ValueError("Scripted Tool sequence exceeds the required-call budget")
         if self.binding_id != runtime_task_binding_id(self):
             raise ValueError("runtime task binding identity is invalid")
         return self
@@ -378,6 +379,12 @@ class FinanceCapabilityBoundaryContract(FrozenModel):
     def validate_contract(self) -> FinanceCapabilityBoundaryContract:
         if self.schema_version != CAPABILITY_BOUNDARY_CONTRACT_VERSION:
             raise ValueError("capability boundary contract version is unsupported")
+        if self.maximum_failed_tool_calls != MAXIMUM_FAILED_TOOL_CALLS:
+            raise ValueError("capability boundary failed-tool budget changed")
+        if self.maximum_tool_calls != (
+            MAXIMUM_REQUIRED_TOOL_CALLS + self.maximum_failed_tool_calls
+        ):
+            raise ValueError("capability boundary total tool budget lacks recovery capacity")
         if {item.arm for item in self.model_contracts} != set(ExplorerArm):
             raise ValueError("capability boundary contract requires exactly Pro and Flash")
         if self.paired_sampling_contract_hash != _paired_sampling_contract_hash(
@@ -702,8 +709,8 @@ def v25_scripted_tool_sequence(
     sequence.extend("cross_check_evidence" for _ in task.verification_checkpoints)
     if len(sequence) != task.structure.minimal_tool_calls:
         raise ValueError("v25 Scripted sequence differs from the frozen minimum-call contract")
-    if len(sequence) > MAXIMUM_TOOL_CALLS:
-        raise ValueError("v25 Scripted sequence exceeds the Frontier call budget")
+    if len(sequence) > MAXIMUM_REQUIRED_TOOL_CALLS:
+        raise ValueError("v25 Scripted sequence exceeds the required-call budget")
     return tuple(sequence)
 
 

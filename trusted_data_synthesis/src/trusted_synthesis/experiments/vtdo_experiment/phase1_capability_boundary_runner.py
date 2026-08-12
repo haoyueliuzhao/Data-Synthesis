@@ -70,8 +70,8 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import AgentToolObservation, InMemoryEvidenceToolRuntime
 
-CAPABILITY_BOUNDARY_RUNNER_VERSION = "finance_capability_boundary_runner.v6"
-CAPABILITY_BOUNDARY_RECORD_VERSION = "finance_capability_boundary_record.v6"
+CAPABILITY_BOUNDARY_RUNNER_VERSION = "finance_capability_boundary_runner.v7"
+CAPABILITY_BOUNDARY_RECORD_VERSION = "finance_capability_boundary_record.v7"
 MODEL_CAPTURED_FAILURES = ("LLMClientError",)
 
 
