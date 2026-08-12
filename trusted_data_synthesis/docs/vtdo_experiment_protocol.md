@@ -736,6 +736,39 @@ It cannot be used to estimate the empirical conditional state distribution.
 
 ## 9. Fail-Closed Readiness
 
+### Runtime roles for capability localization
+
+Capability localization uses two separate ladders. They must not be pooled.
+
+`direct_fixed_retrieval` is a positive execution control. Under `PLAN_GIVEN`,
+the public Program Skeleton fixes the operation graph, Host code executes the
+semantic operations, and the verified answer-result seed is available to the
+final-answer realization step. Direct therefore verifies schema exposure,
+Host execution, answer projection, and result emission. It is excluded from:
+
+```text
+capability-tier selection
+response-weighted empirical information matrices
+paired Pro/Flash calibration authorization
+```
+
+The workflow ladder contains only `scripted_tool` and `autonomous_agent`.
+Difficulty must be varied within matched ladder groups that preserve core
+answer semantics while changing model-visible workflow demand. Runtime-specific
+tiers are allowed, but Pro and Flash must share the selected tier within each
+Runtime x Family cell. At least two independent groups must support a selected
+tier.
+
+Every API-exposed task contract is an immutable freshness source. Future
+populations must exclude all prior normalized core semantic signatures,
+including diagnostic and positive-control exposures. Pool exhaustion is a
+fail-closed capacity result; it must not be bypassed by weakening the signature.
+
+The workflow localization contract freezes the complete denominator and exact
+cost telemetry before execution. It may authorize only an empirical capability
+information audit. It cannot directly authorize model ranking, Exact Target,
+GP-C, Contribution, or a VTDO update.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

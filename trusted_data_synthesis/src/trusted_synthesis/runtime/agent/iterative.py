@@ -1373,7 +1373,10 @@ def _scripted_tool_prompt(
         "query_structured_fact succeeds. Copy subject, metric, and period selector strings "
         "verbatim from successful public observations; never shorten a period label. JSON "
         "operand forms such as {operation_ref, selector} must be actual JSON objects, never "
-        "encoded strings. Never repeat identical arguments after a failure. Keep "
+        "encoded strings. Copy operation_ref verbatim from the prior successful calculator "
+        "observation. A selector is relative to its result.result.output object: use 'value' "
+        "for scalar output and never use 'output' or 'output.value'. Never invent a short "
+        "operation name. Never repeat identical arguments after a failure. Keep "
         "rationale_summary must be one short sentence of at most 240 characters. Do not "
         "provide hidden chain-of-thought.",
         {
@@ -1462,6 +1465,9 @@ def _decision_prompt(
         "Copy subject, metric, and period selector strings verbatim from successful public "
         "observations; never shorten a period label. JSON operand forms such as "
         "{operation_ref, selector} must be actual JSON objects, never encoded strings. "
+        "Copy operation_ref verbatim from a successful calculator observation. A selector is "
+        "relative to result.result.output: use 'value' for scalar output and never use "
+        "'output' or 'output.value'. Never invent a short operation name. "
         "For a final answer, copy the exact terminal successful calculator result without "
         "rounding values, renaming reference IDs, or changing numeric types; follow "
         "answer_schema and agent_contract_guidance exactly. Address any Host feedback before "

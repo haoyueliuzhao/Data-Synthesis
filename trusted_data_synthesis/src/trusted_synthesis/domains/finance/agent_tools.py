@@ -109,8 +109,12 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
                 "operator": "lookup|compare|difference|ratio|growth|aggregate",
                 "operands": (
                     "array of selected evidence_id strings, actual JSON {evidence_id} objects, "
-                    "or actual JSON {operation_ref,selector} objects; never encode an operand "
-                    "object as a string; ordered for difference/growth/ratio"
+                    "or actual JSON {operation_ref,selector} objects; copy operation_ref "
+                    "verbatim from a prior successful calculator observation's "
+                    "result.result.operation_ref; selector is relative to that observation's "
+                    "result.result.output object, so use selector='value' for a scalar output "
+                    "and never use output, output.value, result, or result.output; never encode "
+                    "an operand object as a string; ordered for difference/growth/ratio"
                 ),
                 "parameters": (
                     "{} except ratio requires registered_pair='<numerator predicate>/"

@@ -47,10 +47,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder impo
 )
 from trusted_synthesis.hashing import canonical_hash
 
-CAPABILITY_SENSITIVE_FRONTIER_VERSION = "finance_capability_sensitive_frontier.v5"
-CAPABILITY_STRUCTURE_VECTOR_VERSION = "finance_capability_structure_vector.v1"
-CAPABILITY_INFORMATION_AUDIT_VERSION = "capability_information_audit.v4"
-CAPABILITY_FRONTIER_AUDIT_VERSION = "finance_capability_frontier_audit.v4"
+CAPABILITY_SENSITIVE_FRONTIER_VERSION = "finance_capability_sensitive_frontier.v6"
+CAPABILITY_STRUCTURE_VECTOR_VERSION = "finance_capability_structure_vector.v2"
+CAPABILITY_INFORMATION_AUDIT_VERSION = "capability_information_audit.v5"
+CAPABILITY_FRONTIER_AUDIT_VERSION = "finance_capability_frontier_audit.v5"
 
 CAPABILITY_AXES: tuple[str, ...] = (
     "retrieval",
@@ -112,6 +112,7 @@ STRICT_MONOTONIC_DIMENSIONS: tuple[str, ...] = (
     "required_recovery_count",
     "distractor_branch_count",
     "tool_type_count",
+    "minimum_evidence_selection_calls",
     "minimal_tool_calls",
     "stopping_condition_count",
 )
@@ -155,7 +156,9 @@ class CapabilityStructureVector(FrozenModel):
     required_recovery_count: int = Field(ge=0)
     distractor_branch_count: int = Field(ge=0)
     tool_type_count: int = Field(ge=1)
+    minimum_evidence_selection_calls: int = Field(ge=0)
     minimal_tool_calls: int = Field(ge=1)
+    minimal_model_stop_decisions: int = Field(ge=0, le=1)
     stopping_condition_count: int = Field(ge=1)
     single_retrieval_solvable: bool
     semantic_score: float = Field(ge=0)
@@ -253,6 +256,27 @@ class CapabilitySensitiveTaskArtifact(FrozenModel):
             raise ValueError("query decomposition count is inconsistent")
         if self.structure.tool_type_count != len(set(self.required_tool_ids)):
             raise ValueError("tool type count is inconsistent")
+        expected_selection_calls = len(self.evidence_bundle.evidence)
+        additional_selection_calls = _additional_evidence_selection_calls(
+            gold_count=len(self.evidence_bundle.evidence),
+            query_stages=self.query_stages,
+            recovery_branches=self.recovery_branches,
+        )
+        if self.structure.minimum_evidence_selection_calls != expected_selection_calls:
+            raise ValueError("minimum Evidence-selection call count is inconsistent")
+        expected_tool_calls = (
+            len(self.query_stages)
+            + additional_selection_calls
+            + len(self.task.oracle.task_program.nodes)
+            + len(self.reconciliation_axes)
+            + len(self.verification_checkpoints)
+            + len(self.recovery_branches)
+        )
+        if self.structure.minimal_tool_calls != expected_tool_calls:
+            raise ValueError("minimum tool-call count is inconsistent")
+        expected_stop_decisions = int(self.tier == DifficultyTier.HARD_CONTROL)
+        if self.structure.minimal_model_stop_decisions != expected_stop_decisions:
+            raise ValueError("minimum model stop-decision count is inconsistent")
         if self.structure.stopping_condition_count != len(self.stopping_conditions):
             raise ValueError("stopping condition count is inconsistent")
         if self.structure.operation_count != len(self.task.oracle.task_program.nodes):
@@ -1455,7 +1479,8 @@ def _temporal_program(
                 registry, nodes, "result", "difference", baseline, interval_nodes[-1]
             )
             instruction = (
-                f"Derive each signed relative-change ratio for {subject}'s {metric}; compare "
+                f"Using {subject}'s {metric} observations for {', '.join(labels)}, derive "
+                "each signed relative-change ratio; compare "
                 f"the latest ratio over {labels[-2]}–{labels[-1]} with the mean ratio across "
                 "the two preceding intervals."
             )
@@ -1489,7 +1514,8 @@ def _temporal_program(
                 registry, nodes, "result", "difference", baseline, interval_nodes[-1]
             )
             instruction = (
-                f"Reconcile the definition and period basis for {subject}'s {metric}, then "
+                f"Reconcile the definition and period basis for {subject}'s {metric} "
+                f"observations in {', '.join(labels)}, then "
                 f"measure how the {labels[-2]}–{labels[-1]} change differs from the mean of "
                 "the two preceding changes."
             )
@@ -1513,7 +1539,7 @@ def _temporal_program(
             )
             instruction = (
                 f"Join {subject}'s {metric} observations for {', '.join(labels[:-1])}; "
-                f"compare their mean with {labels[-1]}."
+                f"calculate the signed difference between their mean and {labels[-1]}."
             )
         else:
             mean_node = _append_aggregate_evidence_node(
@@ -1526,12 +1552,11 @@ def _temporal_program(
                 registry, nodes, "result", "difference", first_deviation, evidence[3]
             )
             instruction = (
-                f"Join all four {subject} {metric} observations from {labels[0]} through "
-                f"{labels[-1]}; compute the first two-period mean, its deviation at "
+                f"Join all four {subject} {metric} observations for {', '.join(labels)}; "
+                "compute the first two-period mean, its deviation at "
                 f"{labels[2]}, and the subsequent change in that deviation at {labels[3]}."
             )
     elif family == "finance.stopping_decision_control":
-        interval_nodes = _interval_nodes(registry, nodes, evidence, "growth")
         if tier == DifficultyTier.EASY_CONTROL:
             output = _append_binary_evidence_node(
                 registry, nodes, "result", "compare", evidence[0], evidence[1]
@@ -1545,6 +1570,7 @@ def _temporal_program(
                 f"{labels[1]}; stop only after both observations and the comparison are grounded."
             )
         elif tier == DifficultyTier.FRONTIER:
+            interval_nodes = _interval_nodes(registry, nodes, evidence, "growth")
             output = _append_binary_node(
                 registry, nodes, "result", "compare", interval_nodes[0], interval_nodes[1]
             )
@@ -1558,6 +1584,7 @@ def _temporal_program(
                 "and stop only when no required period remains unresolved."
             )
         else:
+            interval_nodes = _interval_nodes(registry, nodes, evidence, "growth")
             baseline = _append_aggregate_node(
                 registry, nodes, "prior_mean", interval_nodes[:-1], method="mean"
             )
@@ -1569,14 +1596,12 @@ def _temporal_program(
                 interval_nodes[-1]: f"{labels[-2]}–{labels[-1]}",
             }
             instruction = (
-                f"Do not stop at the first matching record: resolve all four {subject} "
-                f"{metric} observations from {labels[0]} through {labels[-1]}, reject "
+                f"Do not stop at the first matching record: resolve {subject}'s {metric} "
+                f"observations for {', '.join(labels)}, reject "
                 "inapplicable branches, and compare the latest growth with the verified "
                 "mean of the two prior interval growth rates."
             )
     else:
-        operator = "growth"
-        interval_nodes = _interval_nodes(registry, nodes, evidence, operator)
         if tier == DifficultyTier.EASY_CONTROL:
             output = _append_binary_evidence_node(
                 registry, nodes, "result", "compare", evidence[0], evidence[1]
@@ -1595,6 +1620,7 @@ def _temporal_program(
                 )
             )
         elif tier == DifficultyTier.FRONTIER:
+            interval_nodes = _interval_nodes(registry, nodes, evidence, "growth")
             output = _append_binary_node(
                 registry, nodes, "result", "compare", interval_nodes[0], interval_nodes[1]
             )
@@ -1615,6 +1641,7 @@ def _temporal_program(
                 )
             )
         else:
+            interval_nodes = _interval_nodes(registry, nodes, evidence, "growth")
             baseline = _append_aggregate_node(
                 registry, nodes, "prior_mean", interval_nodes[:-1], method="mean"
             )
@@ -1627,14 +1654,16 @@ def _temporal_program(
             }
             instruction = (
                 (
-                    f"After independently checking every observation, determine whether "
+                    f"After independently checking {subject}'s {metric} observations for "
+                    f"{', '.join(labels)}, determine whether "
                     f"{subject}'s {metric} growth in {labels[-2]}–{labels[-1]} exceeded the "
                     "mean growth of the two prior intervals."
                 )
                 if family == "finance.verification_sensitive_selection"
                 else (
                     f"Recover from both registered near-match branches, resolve all four "
-                    f"{subject} {metric} observations, and determine whether growth in "
+                    f"{subject} {metric} observations for {', '.join(labels)}, and determine "
+                    "whether growth in "
                     f"{labels[-2]}–{labels[-1]} exceeded the verified mean growth of the "
                     "two prior intervals."
                 )
@@ -1648,14 +1677,15 @@ def _cross_entity_program(
     tier: DifficultyTier,
     pairs: tuple[tuple[EvidenceItem, EvidenceItem], ...],
 ) -> tuple[tuple[EvidenceItem, ...], TaskProgram, str, dict[str, str]]:
-    evidence = tuple(item for pair in pairs for item in pair)
-    metric = evidence[0].predicate
+    metric = pairs[0][0].predicate
     earlier_label = time_label(pairs[0][0])
     later_label = time_label(pairs[0][1])
     names = tuple(pair[0].subject.name for pair in pairs)
     nodes: list[OperationNode] = []
     projection: dict[str, str] = {}
+    evidence: tuple[EvidenceItem, ...]
     if tier == DifficultyTier.EASY_CONTROL:
+        evidence = (pairs[0][1], pairs[1][1])
         output = _append_binary_evidence_node(
             registry, nodes, "result", "compare", pairs[0][1], pairs[1][1]
         )
@@ -1668,6 +1698,7 @@ def _cross_entity_program(
             "and by how much?"
         )
     else:
+        evidence = tuple(item for pair in pairs for item in pair)
         operator = "growth" if family == "finance.branching_operation_plan" else "difference"
         derived = []
         for index, pair in enumerate(pairs, start=1):
@@ -1952,6 +1983,7 @@ def _verification_checkpoints(
 def _required_tool_ids(tier: DifficultyTier) -> tuple[str, ...]:
     return {
         DifficultyTier.EASY_CONTROL: (
+            "search_archive",
             "query_structured_fact",
             "calculator",
             "cross_check_evidence",
@@ -2017,13 +2049,19 @@ def _make_structure_vector(
     gold_ids = {item.evidence_id for item in gold}
     depth = _program_depth(program)
     operation_count = len(program.nodes)
+    minimum_selection_calls = len(gold)
+    additional_selection_calls = _additional_evidence_selection_calls(
+        gold_count=len(gold),
+        query_stages=query_stages,
+        recovery_branches=recovery_branches,
+    )
     minimal_calls = (
         len(query_stages)
+        + additional_selection_calls
         + operation_count
         + len(reconciliation_axes)
         + len(verification_checkpoints)
         + len(recovery_branches)
-        + (1 if tier == DifficultyTier.HARD_CONTROL else 0)
     )
     values = {
         "evidence_hop_count": depth + 1,
@@ -2042,7 +2080,9 @@ def _make_structure_vector(
         "required_recovery_count": len(recovery_branches),
         "distractor_branch_count": len(corpus.evidence) - len(gold_ids),
         "tool_type_count": len(set(required_tool_ids)),
+        "minimum_evidence_selection_calls": minimum_selection_calls,
         "minimal_tool_calls": minimal_calls,
+        "minimal_model_stop_decisions": int(tier == DifficultyTier.HARD_CONTROL),
         "stopping_condition_count": len(stopping_conditions),
         "single_retrieval_solvable": tier == DifficultyTier.EASY_CONTROL,
     }
@@ -2076,6 +2116,7 @@ def _semantic_score(value: CapabilityStructureVector) -> float:
         + 0.5 * value.required_recovery_count
         + 0.2 * value.distractor_branch_count
         + 0.08 * value.minimal_tool_calls
+        + 0.25 * value.minimal_model_stop_decisions
         + 0.25 * value.stopping_condition_count
         + (0.5 if not value.single_retrieval_solvable else 0.0),
         9,
@@ -2095,7 +2136,8 @@ def _make_capability_demand_vector(
         "reconciliation": 0.7 * structure.reconciliation_count,
         "verification": 0.7 * structure.required_verification_count,
         "recovery": 0.8 * structure.required_recovery_count + 0.1,
-        "stopping": 0.7 * structure.stopping_condition_count,
+        "stopping": 0.7 * structure.stopping_condition_count
+        + 0.5 * structure.minimal_model_stop_decisions,
     }
     rounded = {axis: round(values[axis], 9) for axis in CAPABILITY_AXES}
     provisional = CapabilityDemandVector.model_construct(
@@ -2106,6 +2148,19 @@ def _make_capability_demand_vector(
         values=rounded,
         vector_hash=capability_demand_vector_hash(provisional),
     )
+
+
+def _additional_evidence_selection_calls(
+    *,
+    gold_count: int,
+    query_stages: tuple[QueryStage, ...],
+    recovery_branches: tuple[RecoveryBranch, ...],
+) -> int:
+    selection_actions = sum(
+        item.action in {"typed_refinement", "document_inspection", "cross_source_join"}
+        for item in query_stages
+    ) + len(recovery_branches)
+    return max(0, gold_count - selection_actions)
 
 
 def _program_depth(program: TaskProgram) -> int:

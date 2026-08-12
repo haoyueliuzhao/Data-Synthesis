@@ -9,6 +9,15 @@ import pytest
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.task.generator import ProofGraphTaskSynthesizer
+from trusted_synthesis.core.task.program import (
+    InputRefKind,
+    OperationNode,
+    ProgramInputRef,
+    make_program,
+)
+from trusted_synthesis.domains.finance.agent_tools import (
+    finance_archive_agent_tool_specs,
+)
 from trusted_synthesis.experiments.vtdo_experiment import (
     phase1_capability_boundary_analysis as analysis,
 )
@@ -24,6 +33,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary im
     CapabilityRuntimeArm,
     TechnicalQualificationThresholds,
     TierLocalizationThresholds,
+    _capability_agent_contract_guidance,
     default_information_thresholds,
     make_model_visible_demand,
     runtime_public_allowed_tools,
@@ -54,6 +64,14 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot import (
     ExplorerArm,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_regression import (
+    _contains_operation_reference_model_violation,
+    _contains_ratio_pair_model_violation,
+    public_task_exposure_signature,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_satisfiability import (
+    replay_tool_preconditions,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.schema import FailedActionPlan, HostInteractionProgress
@@ -219,6 +237,148 @@ def test_direct_runtime_compiles_operation_tools_not_archive_tools(
 
     assert direct == ("evidence.search",)
     assert scripted == ("query_structured_fact",)
+
+
+def test_scripted_tool_preconditions_require_explicit_evidence_selection() -> None:
+    with pytest.raises(ValueError, match="selected_evidence"):
+        replay_tool_preconditions(
+            ("search_archive", "normalize_metric_unit_period")
+        )
+
+    trace, terminal = replay_tool_preconditions(
+        (
+            "search_archive",
+            "query_structured_fact",
+            "normalize_metric_unit_period",
+            "calculator",
+            "cross_check_evidence",
+        )
+    )
+
+    assert len(trace) == 5
+    assert "selected_evidence" in trace[1].state_after
+    assert "verified_result" in terminal
+
+
+def test_capability_guidance_exposes_exact_prior_operation_contract() -> None:
+    difference = OperationNode(
+        node_id="difference",
+        operator_id="difference",
+        input_refs=(
+            ProgramInputRef(kind=InputRefKind.EVIDENCE, ref_id="evidence:earlier"),
+            ProgramInputRef(kind=InputRefKind.EVIDENCE, ref_id="evidence:later"),
+        ),
+        parameters={},
+        output_schema="numeric",
+        verifier_id="operation_replay",
+    )
+    ratio = OperationNode(
+        node_id="ratio",
+        operator_id="ratio",
+        input_refs=(
+            ProgramInputRef(
+                kind=InputRefKind.OPERATION,
+                ref_id="difference",
+                selector="value",
+            ),
+            ProgramInputRef(kind=InputRefKind.EVIDENCE, ref_id="evidence:earlier"),
+        ),
+        parameters={"registered_pair": "revenue/revenue"},
+        output_schema="numeric",
+        verifier_id="operation_replay",
+        dependencies=("difference",),
+    )
+    program = make_program((difference, ratio), "ratio")
+
+    guidance = _capability_agent_contract_guidance(program, existing=None)
+    operation_contract = guidance["calculator_operation_reference_contract"]
+
+    assert operation_contract["allowed_selectors"] == ("value",)
+    assert operation_contract["selector_base"] == (
+        "prior calculator observation result.result.output"
+    )
+    assert operation_contract["literal_operation_names_are_forbidden"] is True
+    assert guidance["registered_ratio_pairs"] == ("revenue/revenue",)
+
+    calculator = next(
+        item for item in finance_archive_agent_tool_specs() if item.tool_id == "calculator"
+    )
+    operand_contract = str(calculator.input_contract["operands"])
+    assert "result.result.operation_ref" in operand_contract
+    assert "selector='value'" in operand_contract
+    assert "never use output, output.value" in operand_contract
+
+
+def test_regression_detects_operation_and_ratio_contract_failures() -> None:
+    def record(message: str) -> SimpleNamespace:
+        return SimpleNamespace(
+            model_dump=lambda **_: {
+                "failure_artifact": {"failure_message": message}
+            }
+        )
+
+    assert _contains_operation_reference_model_violation(
+        record("operation selector is invalid: output.value")
+    )
+    assert _contains_operation_reference_model_violation(
+        record("calculator operation reference is unknown: difference")
+    )
+    assert _contains_ratio_pair_model_violation(
+        record("ratio pair is not explicitly registered: revenue/revenue")
+    )
+
+
+def test_public_task_exposure_signature_binds_semantics_not_artifact_id() -> None:
+    def task(instruction: str, subject_id: str) -> dict[str, object]:
+        return {
+            "artifact_id": "ignored:artifact-identity",
+            "family": "finance.calculation_chain",
+            "task": {
+                "public": {
+                    "task_type": "calculation_chain",
+                    "instruction": instruction,
+                },
+                "oracle": {
+                    "task_program": {
+                        "nodes": [
+                            {
+                                "operator_id": "lookup",
+                                "input_refs": [
+                                    {
+                                        "kind": "evidence",
+                                        "role_id": "reported_value",
+                                        "selector": None,
+                                    }
+                                ],
+                                "parameters": {},
+                            }
+                        ]
+                    }
+                },
+            },
+            "public_corpus": {
+                "evidence": [
+                    {
+                        "subject": {"subject_id": subject_id},
+                        "predicate": "revenue",
+                        "temporal_context": {"label": "FY2024"},
+                        "definition": {"definition_id": "metric:revenue"},
+                        "source": {"source_id": "official-filing"},
+                    }
+                ]
+            },
+        }
+
+    baseline = task("What was Alpha revenue in FY2024?", "entity:alpha")
+    same_semantics = {**baseline, "artifact_id": "another:artifact-identity"}
+    changed_semantics = task("What was Beta revenue in FY2024?", "entity:beta")
+
+    assert public_task_exposure_signature(baseline) == public_task_exposure_signature(
+        same_semantics
+    )
+    assert public_task_exposure_signature(baseline) != public_task_exposure_signature(
+        changed_semantics
+    )
 
 
 def _localization_contract_and_outcomes(

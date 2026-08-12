@@ -47,10 +47,10 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
-LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v20"
+LLM_AGENT_SOLVER_VERSION = "llm_agent_solver.v21"
 LLM_AGENT_PROMPT_VERSION = "agent_candidate_prompt.v9"
 LLM_AGENT_LEGACY_PROMPT_VERSION = "agent_candidate_prompt.v8"
-LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v13"
+LLM_AGENT_ACTION_PROMPT_VERSION = "agent_action_prompt.v14"
 LLM_AGENT_FINAL_ANSWER_PROMPT_VERSION = "agent_final_answer_prompt.v5"
 LLM_AGENT_SEARCH_PROMPT_VERSION = "agent_search_prompt.v7"
 
@@ -1044,16 +1044,31 @@ def _search_failure_diagnostic(
 
 
 def _state_execution_shape_contract(
+    task: TaskPublicSpec,
     generation_constraints: dict[str, Any],
 ) -> dict[str, Any]:
     control_plan = generation_constraints.get("control_plan")
     if not isinstance(control_plan, dict):
-        return {"mode": "unconstrained"}
+        return _default_execution_shape_contract(task)
     execution = control_plan.get("execution")
     if not isinstance(execution, dict) or execution.get("control_status") != "model_controlled":
-        return {"mode": "unconstrained"}
+        return _default_execution_shape_contract(task)
     mode = execution.get("mode")
     if mode == "baseline_program":
+        if task.planning_track == PlanningTrack.PLAN_GIVEN:
+            if task.program_skeleton is None:
+                raise ValueError("plan_given action contract lacks a public program skeleton")
+            public_inputs = _public_program_input_contract(task)
+            return {
+                "mode": mode,
+                "projection_lookup_count": 0,
+                "semantic_input_contract": {
+                    "source": "public_program_skeleton",
+                    "selector": "exact_per_public_input",
+                },
+                "public_program_input_contract": public_inputs,
+                "direct_evidence_example": _public_program_input_example(public_inputs),
+            }
         return {
             "mode": mode,
             "projection_lookup_count": 0,
@@ -1082,6 +1097,24 @@ def _state_execution_shape_contract(
     return {"mode": "unconstrained"}
 
 
+def _default_execution_shape_contract(task: TaskPublicSpec) -> dict[str, Any]:
+    if task.planning_track != PlanningTrack.PLAN_GIVEN:
+        return {"mode": "unconstrained"}
+    if task.program_skeleton is None:
+        raise ValueError("plan_given action contract lacks a public program skeleton")
+    public_inputs = _public_program_input_contract(task)
+    return {
+        "mode": "public_program",
+        "projection_lookup_count": 0,
+        "semantic_input_contract": {
+            "source": "public_program_skeleton",
+            "selector": "exact_per_public_input",
+        },
+        "public_program_input_contract": public_inputs,
+        "direct_evidence_example": _public_program_input_example(public_inputs),
+    }
+
+
 def _build_action_prompt(
     task: TaskPublicSpec,
     evidence: tuple[EvidenceItem, ...],
@@ -1093,7 +1126,10 @@ def _build_action_prompt(
     task_execution_contract = _task_execution_contract(task, operation_catalog)
     action_operation_catalog = _action_operation_catalog(operation_catalog)
     domain_contract_guidance = task.metadata.get("agent_contract_guidance") or {}
-    state_execution_shape_contract = _state_execution_shape_contract(generation_constraints)
+    state_execution_shape_contract = _state_execution_shape_contract(
+        task,
+        generation_constraints,
+    )
     state_action_contract = _state_action_contract(
         state_execution_shape_contract,
         domain_contract_guidance,
@@ -1310,6 +1346,14 @@ def _state_action_input_examples(
         ],
     }
     mode = state_execution_shape_contract.get("mode")
+    if mode in {"baseline_program", "public_program"} and state_execution_shape_contract.get(
+        "public_program_input_contract"
+    ):
+        return {
+            "plan_given_exact_public_inputs": state_execution_shape_contract[
+                "direct_evidence_example"
+            ]
+        }
     if mode == "baseline_program":
         return {"direct_semantic_operation": direct}
     if mode in {"program_projection", "transparent_projection"}:
@@ -1348,12 +1392,23 @@ def _state_action_contract(
         contract["terminal_operation_contract"] = dict(terminal)
     if isinstance(evidence_roles, Mapping):
         contract["evidence_roles"] = dict(evidence_roles)
-    if mode == "baseline_program":
-        contract["required_topology"] = (
-            "Use zero lookup executions. Feed selected raw evidence directly to semantic "
-            "operations with selector value."
-        )
-        contract["forbidden_operator_ids"] = ("lookup",)
+    if mode in {"baseline_program", "public_program"}:
+        public_inputs = state_execution_shape_contract.get("public_program_input_contract")
+        if public_inputs:
+            contract["required_topology"] = (
+                "Use zero lookup executions. Reproduce every public program node and input in "
+                "order. Preserve each public input kind and selector exactly; selector null "
+                "means consume the complete raw Evidence payload and must not be replaced by "
+                "value."
+            )
+            contract["public_program_input_contract"] = public_inputs
+        else:
+            contract["required_topology"] = (
+                "Use zero lookup executions. Feed selected raw evidence directly to semantic "
+                "operations with selector value."
+            )
+        if mode == "baseline_program":
+            contract["forbidden_operator_ids"] = ("lookup",)
     elif mode in {"program_projection", "transparent_projection"}:
         contract["required_topology"] = (
             "Start with exactly one lookup execution per selected raw evidence input, in "
@@ -1365,6 +1420,55 @@ def _state_action_contract(
         )
         contract["required_projection_operator_id"] = "lookup"
     return contract
+
+
+def _public_program_input_contract(task: TaskPublicSpec) -> tuple[dict[str, Any], ...]:
+    if task.program_skeleton is None:
+        return ()
+    return tuple(
+        {
+            "public_node_id": node.public_node_id,
+            "operator_id": node.operator_id,
+            "inputs": tuple(
+                {
+                    "kind": item.kind.value,
+                    "role_id": item.role_id,
+                    "selector": item.selector,
+                }
+                for item in node.inputs
+            ),
+        }
+        for node in task.program_skeleton.nodes
+    )
+
+
+def _public_program_input_example(
+    public_inputs: tuple[dict[str, Any], ...],
+) -> dict[str, Any]:
+    first = public_inputs[0]
+    inputs = []
+    for item in first["inputs"]:
+        if item["kind"] == "evidence":
+            inputs.append(
+                {
+                    "source": "evidence",
+                    "evidence_id": f"<exact_evidence_id_for_{item['role_id']}>",
+                    "selector": item["selector"],
+                }
+            )
+        else:
+            inputs.append(
+                {
+                    "source": "step",
+                    "step_index": "<earlier_one_based_step_index>",
+                    "selector": item["selector"],
+                }
+            )
+    return {
+        "planned_node_id": first["public_node_id"],
+        "operator_id": first["operator_id"],
+        "inputs": inputs,
+    }
 
 
 def _operator_input_count_contract(
@@ -1705,6 +1809,14 @@ def _task_execution_contract(
                 {
                     "public_node_id": node.public_node_id,
                     "operator_id": node.operator_id,
+                    "exact_inputs": tuple(
+                        {
+                            "kind": item.kind.value,
+                            "role_id": item.role_id,
+                            "selector": item.selector,
+                        }
+                        for item in node.inputs
+                    ),
                     "required_tool_name": operation["tool_capability"],
                     "exact_parameters": node.parameters,
                     "observation_result_json_schema": operation["output_model_schema"],

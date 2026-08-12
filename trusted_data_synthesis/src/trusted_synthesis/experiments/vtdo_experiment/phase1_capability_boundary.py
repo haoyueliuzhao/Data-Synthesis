@@ -47,13 +47,17 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
     FinanceProFlashPilotContract,
     _paired_sampling_contract_hash,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_satisfiability import (
+    ScriptedSequenceCompilation,
+    compile_scripted_tool_sequence,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
-CAPABILITY_BOUNDARY_CONTRACT_VERSION = "finance_capability_boundary_contract.v8"
+CAPABILITY_BOUNDARY_CONTRACT_VERSION = "finance_capability_boundary_contract.v9"
 CAPABILITY_NECESSITY_AUDIT_VERSION = "finance_capability_necessity_audit.v2"
 RUNTIME_VISIBLE_DEMAND_VERSION = "model_visible_capability_demand.v2"
-RUNTIME_BINDING_VERSION = "finance_capability_runtime_binding.v6"
+RUNTIME_BINDING_VERSION = "finance_capability_runtime_binding.v7"
 
 QUALIFICATION_TASKS_PER_FAMILY = 1
 LOCALIZATION_TASKS_PER_FAMILY_TIER = 1
@@ -223,7 +227,7 @@ class RuntimeTaskBinding(FrozenModel):
     environment_manifest_hash: str = Field(min_length=1)
     public_allowed_tools: tuple[str, ...] = Field(min_length=1)
     visible_demand: ModelVisibleCapabilityDemand
-    scripted_tool_sequence: tuple[str, ...] = ()
+    scripted_compilation: ScriptedSequenceCompilation | None = None
     schema_version: str = RUNTIME_BINDING_VERSION
 
     @model_validator(mode="after")
@@ -242,11 +246,16 @@ class RuntimeTaskBinding(FrozenModel):
         ):
             raise ValueError("Direct Runtime lacks its evidence-search capability")
         if self.runtime_arm == CapabilityRuntimeArm.SCRIPTED_TOOL:
-            if not self.scripted_tool_sequence:
+            if self.scripted_compilation is None:
                 raise ValueError("Scripted Tool binding lacks a frozen sequence")
-        elif self.scripted_tool_sequence:
+            if self.scripted_compilation.task_artifact_id != self.task_artifact_id:
+                raise ValueError("Scripted compilation belongs to another task")
+        elif self.scripted_compilation is not None:
             raise ValueError("only Scripted Tool bindings may contain a sequence")
-        if len(self.scripted_tool_sequence) > MAXIMUM_REQUIRED_TOOL_CALLS:
+        if (
+            self.scripted_compilation is not None
+            and self.scripted_compilation.minimum_tool_calls > MAXIMUM_REQUIRED_TOOL_CALLS
+        ):
             raise ValueError("Scripted Tool sequence exceeds the required-call budget")
         if self.binding_id != runtime_task_binding_id(self):
             raise ValueError("runtime task binding identity is invalid")
@@ -706,6 +715,10 @@ def make_v25_native_runtime_context(
     )
     retrieval_track = RetrievalTrack.RESOLVED if direct_fixed else task.task.public.retrieval_track
     planning_track = PlanningTrack.PLAN_GIVEN if direct_fixed else task.task.public.planning_track
+    agent_contract_guidance = _capability_agent_contract_guidance(
+        task.task.oracle.task_program,
+        existing=task.task.public.metadata.get("agent_contract_guidance"),
+    )
     program_skeleton = (
         public_program_skeleton(
             task.task.oracle.task_program, default_registry(), task.evidence_bundle.evidence
@@ -726,6 +739,7 @@ def make_v25_native_runtime_context(
             ),
             "metadata": {
                 **task.task.public.metadata,
+                "agent_contract_guidance": agent_contract_guidance,
                 "v25_native_runtime": {
                     "version": CAPABILITY_BOUNDARY_CONTRACT_VERSION,
                     "runtime_arm": runtime_arm.value,
@@ -762,6 +776,54 @@ def make_v25_native_runtime_context(
     return context, manifest, reference
 
 
+def _capability_agent_contract_guidance(
+    program: TaskProgram,
+    *,
+    existing: Any,
+) -> dict[str, Any]:
+    existing_guidance = dict(existing) if isinstance(existing, dict) else {}
+    operation_selectors = tuple(
+        sorted(
+            {
+                item.selector
+                for node in program.nodes
+                for item in node.input_refs
+                if item.kind == InputRefKind.OPERATION and item.selector is not None
+            }
+        )
+    )
+    ratio_pairs = tuple(
+        sorted(
+            {
+                str(node.parameters["registered_pair"])
+                for node in program.nodes
+                if node.operator_id == "ratio"
+                and isinstance(node.parameters.get("registered_pair"), str)
+            }
+        )
+    )
+    return {
+        **existing_guidance,
+        "calculator_operation_reference_contract": {
+            "copy_operation_ref_from": (
+                "successful calculator observation result.result.operation_ref"
+            ),
+            "selector_base": "prior calculator observation result.result.output",
+            "allowed_selectors": operation_selectors,
+            "scalar_selector": "value",
+            "forbidden_selectors": (
+                "output",
+                "output.value",
+                "result",
+                "result.output",
+                "result.output.value",
+            ),
+            "literal_operation_names_are_forbidden": True,
+        },
+        "registered_ratio_pairs": ratio_pairs,
+    }
+
+
 def runtime_public_allowed_tools(
     task: CapabilitySensitiveTaskArtifact,
     runtime_arm: CapabilityRuntimeArm,
@@ -775,28 +837,6 @@ def runtime_public_allowed_tools(
             registry or default_registry(),
         )
     return tuple(item.tool_id for item in manifest.tools)
-
-
-def v25_scripted_tool_sequence(
-    task: CapabilitySensitiveTaskArtifact,
-) -> tuple[str, ...]:
-    query_tools = {
-        "broad_search": "search_archive",
-        "typed_refinement": "query_structured_fact",
-        "document_inspection": "open_document",
-        "cross_source_join": "query_structured_fact",
-    }
-    sequence = [query_tools[item.action] for item in task.query_stages]
-    sequence.extend("query_structured_fact" for _ in task.recovery_branches)
-    sequence.extend("normalize_metric_unit_period" for _ in task.reconciliation_axes)
-    sequence.extend("calculator" for _ in task.task.oracle.task_program.nodes)
-    sequence.extend("cross_check_evidence" for _ in task.verification_checkpoints)
-    non_tool_stop_decisions = int(task.tier == DifficultyTier.HARD_CONTROL)
-    if len(sequence) + non_tool_stop_decisions != task.structure.minimal_tool_calls:
-        raise ValueError("v25 Scripted sequence differs from the frozen action contract")
-    if len(sequence) > MAXIMUM_REQUIRED_TOOL_CALLS:
-        raise ValueError("v25 Scripted sequence exceeds the required-call budget")
-    return tuple(sequence)
 
 
 def _make_runtime_binding(
@@ -824,10 +864,13 @@ def _make_runtime_binding(
         "environment_manifest_hash": canonical_hash(manifest, prefix="v25_tool_environment:"),
         "public_allowed_tools": context.task.public.allowed_tools,
         "visible_demand": make_model_visible_demand(task, runtime_arm),
-        "scripted_tool_sequence": (
-            v25_scripted_tool_sequence(task)
+        "scripted_compilation": (
+            compile_scripted_tool_sequence(
+                task,
+                maximum_required_tool_calls=MAXIMUM_REQUIRED_TOOL_CALLS,
+            )
             if runtime_arm == CapabilityRuntimeArm.SCRIPTED_TOOL
-            else ()
+            else None
         ),
     }
     provisional = RuntimeTaskBinding.model_construct(binding_id="pending", **values)

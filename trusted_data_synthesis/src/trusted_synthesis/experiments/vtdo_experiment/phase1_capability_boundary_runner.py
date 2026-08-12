@@ -7,7 +7,7 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -72,9 +72,18 @@ from trusted_synthesis.runtime.agent.schema import (
 )
 from trusted_synthesis.runtime.tools import AgentToolObservation, InMemoryEvidenceToolRuntime
 
-CAPABILITY_BOUNDARY_RUNNER_VERSION = "finance_capability_boundary_runner.v8"
-CAPABILITY_BOUNDARY_RECORD_VERSION = "finance_capability_boundary_record.v8"
+CAPABILITY_BOUNDARY_RUNNER_VERSION = "finance_capability_boundary_runner.v9"
+CAPABILITY_BOUNDARY_RECORD_VERSION = "finance_capability_boundary_record.v9"
 MODEL_CAPTURED_FAILURES = ("LLMClientError",)
+
+
+class RolloutExecutionContract(Protocol):
+    """Minimal immutable contract consumed by one capability rollout."""
+
+    contract_id: str
+    finance_archive_config_path: str
+    protocol_profile: Any
+    maximum_model_tokens_per_rollout: int
 
 
 class FrozenModel(BaseModel):
@@ -339,7 +348,7 @@ def run_capability_boundary_stage(
 
 
 def _run_one(
-    contract: FinanceCapabilityBoundaryContract,
+    contract: RolloutExecutionContract,
     stage: BoundaryStage,
     model_arm: ExplorerArm,
     binding: RuntimeTaskBinding,
@@ -417,7 +426,11 @@ def _run_one(
                     else "autonomous_agent"
                 ),
                 maximum_total_tokens=contract.maximum_model_tokens_per_rollout,
-                scripted_tool_sequence=binding.scripted_tool_sequence,
+                scripted_tool_sequence=(
+                    binding.scripted_compilation.tool_sequence
+                    if binding.scripted_compilation is not None
+                    else ()
+                ),
                 protocol_profile=contract.protocol_profile,
             ).solve_with_audit(context.task.public, runtime)
             validity = FinanceIterativeAgentVerifier().verify(
@@ -839,7 +852,11 @@ def _authority_integrity(
     if binding.runtime_arm == CapabilityRuntimeArm.SCRIPTED_TOOL:
         return stopping_integrity and _scripted_tool_authority(
             record.observations,
-            binding.scripted_tool_sequence,
+            (
+                binding.scripted_compilation.tool_sequence
+                if binding.scripted_compilation is not None
+                else ()
+            ),
             require_complete=True,
         )
     return stopping_integrity
@@ -910,7 +927,11 @@ def _captured_failure_authority(
     if binding.runtime_arm == CapabilityRuntimeArm.SCRIPTED_TOOL:
         return _scripted_tool_authority(
             artifact.observations,
-            binding.scripted_tool_sequence,
+            (
+                binding.scripted_compilation.tool_sequence
+                if binding.scripted_compilation is not None
+                else ()
+            ),
             require_complete=False,
         )
     return True

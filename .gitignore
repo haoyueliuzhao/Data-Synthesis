@@ -7,5 +7,6 @@
 trusted_data_synthesis/.venv/
 trusted_data_synthesis/.env
 trusted_data_synthesis/artifacts/
+/artifacts/
 trusted_data_synthesis/.coverage
 trusted_data_synthesis/build/

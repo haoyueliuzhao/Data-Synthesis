@@ -254,9 +254,20 @@ def test_host_instrumented_agent_executes_actions_and_owns_trace_metadata() -> N
         operation["operator_id"] for operation in action_prompt_payload["operation_catalog"]
     }
     assert all(contract["required_input_count"] for contract in input_counts.values())
-    assert set(
-        action_prompt_payload["action_input_contract"]["typed_examples"]["lookup"]["inputs"][0]
-    ) == {"source", "evidence_id"}
+    typed_examples = action_prompt_payload["action_input_contract"]["typed_examples"]
+    assert set(typed_examples) == {"plan_given_exact_public_inputs"}
+    public_inputs = action_prompt_payload["state_action_contract"][
+        "public_program_input_contract"
+    ]
+    assert all(
+        typed_input["selector"] == public_input["selector"]
+        for typed_input, public_input in zip(
+            typed_examples["plan_given_exact_public_inputs"]["inputs"],
+            public_inputs[0]["inputs"],
+            strict=True,
+        )
+    )
+    assert any(item["selector"] is None for item in public_inputs[0]["inputs"])
     assert "host_owned_fields" in client.prompts[0]
     assert '"evidence_identifier_contract"' in client.prompts[0]
     assert '"exact_evidence_ids"' in client.prompts[0]
