@@ -26,12 +26,12 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v13"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v14"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v11"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v12"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v12"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v13"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v9"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v10"
 MAXIMUM_STOP_REJECTIONS = 2
 MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
     {
@@ -138,7 +138,7 @@ class AgentLoopDecisionContract(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     decision_type: DecisionType
-    rationale_summary: str = Field(min_length=1, max_length=2400)
+    rationale_summary: str = Field(min_length=1, max_length=512)
     tool_id: str | None = None
     arguments: dict[str, Any] | None = None
     answer: dict[str, Any] | None = None
@@ -166,7 +166,7 @@ class AgentScriptedToolContract(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    rationale_summary: str = Field(min_length=1, max_length=2400)
+    rationale_summary: str = Field(min_length=1, max_length=512)
     arguments: dict[str, Any]
 
 
@@ -175,7 +175,7 @@ class AgentFinalAnswerContract(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    rationale_summary: str = Field(min_length=1, max_length=2400)
+    rationale_summary: str = Field(min_length=1, max_length=512)
     answer: dict[str, Any]
     cited_evidence_ids: tuple[str, ...] = Field(min_length=1)
 
@@ -1374,7 +1374,8 @@ def _scripted_tool_prompt(
         "verbatim from successful public observations; never shorten a period label. JSON "
         "operand forms such as {operation_ref, selector} must be actual JSON objects, never "
         "encoded strings. Never repeat identical arguments after a failure. Keep "
-        "rationale_summary <=2400 characters and do not provide hidden chain-of-thought.",
+        "rationale_summary must be one short sentence of at most 240 characters. Do not "
+        "provide hidden chain-of-thought.",
         {
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
             "mode": mode,
@@ -1417,7 +1418,8 @@ def _final_answer_prompt(
         "change numeric types. Use exactly the keys listed in task.answer_field_contract; never "
         "add context, unit, result_context, or operation fields unless that exact key is allowed. "
         "Follow answer_schema and agent_contract_guidance exactly. Do not add a tool call or copy "
-        "the task/context. Keep rationale_summary <=2400 characters.",
+        "the task/context. rationale_summary must be one short sentence of at most 240 "
+        "characters.",
         {
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
             "mode": mode,
@@ -1463,7 +1465,8 @@ def _decision_prompt(
         "For a final answer, copy the exact terminal successful calculator result without "
         "rounding values, renaming reference IDs, or changing numeric types; follow "
         "answer_schema and agent_contract_guidance exactly. Address any Host feedback before "
-        "stopping. Keep rationale_summary <=2400 characters. Do not copy the task/context or "
+        "stopping. rationale_summary must be one short sentence of at most 240 characters. "
+        "Do not copy the task/context or "
         "provide hidden chain-of-thought.",
         {
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,

@@ -536,11 +536,51 @@ with its preregistered axis. Balanced labels with identical vectors, relabeled v
 tier dimension fail closed. Structural readiness does not imply empirical frontier placement.
 
 The real 70-task v25 population passes this gate with contrast effective rank `5.141`, contrast
-condition number `4.726`, and 7/7 family-axis matches. It permits only a v25-native paired model
-capability-boundary calibration. A seven-task, 126-rollout qualification must precede the balanced
-28-task, 1,680-rollout comparison. The v24 runner may not be reused through a lossy adapter. Exact
-Target, GP-C, Validation, Authorization Objective access, VTDO updates, and production Contribution
-remain forbidden. See `docs/finance_v25_capability_sensitive_frontier_report.md`.
+condition number `4.726`, and 7/7 family-axis matches. A separate destructive Capability Necessity
+Audit withholds required Evidence or removes the registered Program, reconciliation, verification,
+recovery, and stopping requirement. All 35 Frontier probes must be rejected by Program execution
+or the typed task contract. This is contract necessity, not a model causal-effect estimate.
+
+Runtime projection is explicit. Direct Fixed Retrieval exposes Calculation, Reconciliation, and
+Verification. Scripted Tool exposes Retrieval, Calculation, Reconciliation, Verification, and
+argument-level Recovery while the Host fixes the tool order. Autonomous Agent exposes all seven
+axes. Host-controlled demand may not contribute to empirical model information.
+
+The v25.6 contract permits only a seven-task, 126-rollout Runtime Qualification. Semantic accuracy
+is descriptive at this stage: only bounded JSON, typed terminal outcomes, bounded tool resolution,
+Observation/failure replay, authority integrity, and resource budgets gate the transition. A
+passing Qualification permits the balanced 28-task, 1,680-rollout Pro--Flash comparison.
+
+Calibration authorization must independently replay the frozen job identity, checkpoint,
+canonical rollout records, typed outcomes, Qualification report, and run manifest. Their schema
+versions, complete denominators, exact-model telemetry, content hashes, and outcome-set identity
+must agree exactly. A missing or self-consistent summary artifact is insufficient and fails closed.
+
+Calibration is paired at `task_id`. Its primary estimator is a task-cluster paired nested Bootstrap
+that resamples tasks and the ten within-task realizations; unpaired aggregate percentages are
+forbidden. For each Model x Runtime cell, the raw empirical information matrix is exactly:
+
+```text
+I_hat(M,R) = mean_x p_hat(x) (1-p_hat(x)) a(x,R) a(x,R)^T
+```
+
+The axis-specific diagnostic separately centers demand and removes the preregistered general-
+difficulty factor. Rank, effective rank, condition number, boundary mass, general-factor fraction,
+and informative-axis count all fail closed. Axis information and Autonomous Family separation use
+95% interval lower bounds, not point estimates.
+
+Recovery is a conditional behavioral diagnostic: a success requires an observed failure followed
+by a successful corrected action. Query Reformulation and Tool-sequence Diversity are recorded
+separately, so answer correctness cannot be reused as evidence of Recovery skill.
+
+Only a passing six-cell empirical audit may create the independent 420-rollout Qwen Beneficiary
+screen. Beneficiary--Flash--Pro ordering is uncertainty-aware, and only ordered task IDs with
+Beneficiary boundary mass may enter state discovery. At least seven selected tasks are required.
+Neither empirical readiness nor Beneficiary readiness directly authorizes Exact Target or GP-C.
+The v24 runner may not be reused through a lossy adapter. Exact Target, GP-C, Validation,
+Authorization Objective access, VTDO updates, and production Contribution remain forbidden. See
+`docs/finance_v25_capability_sensitive_frontier_report.md` and
+`docs/finance_v25_capability_boundary_revision.md`.
 
 ## 6. Experiment 4: Refinement Dynamics
 

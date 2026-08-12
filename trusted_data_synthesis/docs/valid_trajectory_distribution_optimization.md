@@ -371,8 +371,28 @@ requirements, audits their centered information spectrum, and verifies seven pre
 family-primary-axis contrasts. The real v25 Finance construction passes this structural gate, but
 it does not yet prove capability boundary placement or a meaningful Contribution coordinate. Thus
 the only permitted transition is paired model calibration; Validation, Authorization, GP-C, and a
-nonzero production Contribution remain unopened. See
-`docs/finance_v25_capability_sensitive_frontier_report.md`.
+nonzero production Contribution remain unopened.
+
+The instance-level prerequisite has two distinct parts. Structural support requires nondecorative,
+contract-necessary capability demands. Model-response support requires the empirical matrix
+
+```text
+I_hat(M,R) = mean_x p_hat(M,R,x) (1-p_hat(M,R,x))
+             a(x,R) a(x,R)^T
+```
+
+to retain nontrivial rank and boundary mass after Host-controlled capabilities and a general-
+difficulty factor are removed. A structurally full-rank Population can still be a response-level
+pseudo-distribution when every task is saturated, impossible, or explained by one common
+difficulty factor. This requirement constrains the experimental instantiation of `mu(x)` and the
+reachable state support; it does not modify the definition of `C_t` or the VTDO update.
+
+Pro--Flash gaps are therefore paired by task and evaluated with task-cluster nested Bootstrap
+intervals. Beneficiary screening is a separate gate: only uncertainty-qualified,
+Beneficiary-boundary task identities may advance to state discovery. Passing either gate does not
+waive the unresolved Objective-support variance and cannot directly authorize Exact Target, GP-C,
+or a nonzero Contribution. See `docs/finance_v25_capability_sensitive_frontier_report.md` and
+`docs/finance_v25_capability_boundary_revision.md`.
 
 ## Novelty, Potential, And Anchored Update
 

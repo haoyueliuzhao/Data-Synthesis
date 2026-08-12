@@ -29,9 +29,15 @@ measurements therefore remained unopened while task construction was redesigned.
 v25 now constructs 70 executable tasks across seven separately audited capability directions.
 Every Program executed and independently replayed, every structural tier dimension is strictly
 monotonic, all seven family-primary-axis checks pass, and the six-dimensional capability-contrast
-subspace has effective rank `5.141` and condition number `4.726`. The structural Frontier is ready,
-but no model call has yet established empirical boundary sensitivity. The only permitted next stage
-is a v25-native paired model capability-boundary calibration.
+subspace has effective rank `5.141` and condition number `4.726`. Two preserved 126-record
+Qualification runs then failed their protocol gates; neither is capability evidence. The final
+v25.6 supersedes the unexecuted v25.3--v25.5 preflights. It repairs typed failure lineage, Scripted
+retry authority and model-visible Recovery, tool-resolution semantics, compact JSON output, the
+exact uncentered empirical-information formula, task-cluster nested Bootstrap inference,
+uncertainty-aware Beneficiary task selection, and complete Qualification lineage replay. Recovery
+success is conditional on a recorded opportunity, with separate Query Reformulation and
+Tool-sequence Diversity diagnostics. Qualification has not yet run. The only permitted next stage
+is v25.6 Runtime Qualification.
 
 ## Runtime And Data
 
@@ -153,11 +159,37 @@ Markdown. The audit uses only Program and typed workflow structure to derive dem
 labels add no weight and are used only to verify expected primary-axis alignment. Equal-vector and
 relabeling mutations fail closed.
 
-The structural result authorizes `paired_model_capability_boundary_calibration`. The old v24 runner
-cannot consume v25 without erasing its new identities, so no API/GPU experiment was launched in
-this stage. Exact Target, GP-C, Validation, Authorization Objective access, VTDO updates, and
-production Contribution remain forbidden. See
-`docs/finance_v25_capability_sensitive_frontier_report.md`.
+The structural result authorizes construction of a v25-native boundary contract, not immediate
+calibration. v25.0 and v25.1 each executed 126 Qualification attempts and failed closed with
+`next_permitted_stage=protocol_repair_only`. The failures localized discarded Direct semantic
+failure lineage, an incorrect Scripted retry-authority comparison, and ambiguous technical tool
+success semantics. Their immutable reports remain diagnostics and are not reclassified.
+
+v25.3 and v25.4 were unexecuted preflights. v25.5 was also retired before execution after a final
+audit found that Calibration trusted a passing Qualification report without independently
+replaying checkpoint, canonical records, outcomes, and the run manifest. None made an API call or
+used a GPU. v25.6 uses incompatible v6 Contract, Runner, Record, Report, and empirical-audit
+identities. Qualification accuracy remains descriptive; bounded JSON, typed terminal results,
+bounded tool resolution, replay, authority, complete denominators, exact-model telemetry, and
+resource budgets control the transition.
+
+A passing report would unlock the balanced 28-task, 1,680-rollout Pro--Flash calibration. Model
+differences are estimated with a task-cluster paired nested Bootstrap. The raw empirical
+information matrix uses the preregistered uncentered demand formula; axis-specific information uses
+confidence-interval lower bounds after removing the intercept and a general-difficulty factor. The
+separately frozen Qwen Beneficiary identity is content-replayed; its uncertainty-aware 420-rollout
+screen cannot start before the empirical audit passes and may release only explicitly selected
+boundary-mass tasks.
+
+The v25.6 contract ID is
+`finance_capability_boundary_contract:45896e3eafdc2712657a83c8b0e5482d7849639485205e5f88e396313f248ef2`.
+Its unchanged Population and split pass 35/35 destructive Capability Necessity probes. A
+credential-free negative preflight confirmed that Calibration rejects an incomplete frozen
+Qualification run before model-client construction. v25.6 has made no API call and used no GPU.
+
+Exact Target, GP-C, Validation, Authorization Objective access, VTDO updates, and production
+Contribution remain forbidden. See `docs/finance_v25_capability_sensitive_frontier_report.md` and
+`docs/finance_v25_capability_boundary_revision.md`.
 
 ## Revalidated Code State
 
@@ -165,11 +197,11 @@ production Contribution remain forbidden. See
 | --- | --- |
 | Development target/design focus | 10 passed |
 | v24 Agent/runtime focus | 38 passed |
-| v25 capability-identifiability focus | 5 passed |
+| v25 capability-identifiability focus | 11 passed |
 | Ruff check | passed |
 | Ruff format, changed files | passed |
-| Mypy | passed, 263 source files |
-| Pytest | passed, 503 tests in 135.95 seconds |
+| Mypy | passed, 267 source files |
+| Pytest | passed, 514 tests in 136.42 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |

@@ -47,7 +47,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder impo
 )
 from trusted_synthesis.hashing import canonical_hash
 
-CAPABILITY_SENSITIVE_FRONTIER_VERSION = "finance_capability_sensitive_frontier.v4"
+CAPABILITY_SENSITIVE_FRONTIER_VERSION = "finance_capability_sensitive_frontier.v5"
 CAPABILITY_STRUCTURE_VECTOR_VERSION = "finance_capability_structure_vector.v1"
 CAPABILITY_INFORMATION_AUDIT_VERSION = "capability_information_audit.v4"
 CAPABILITY_FRONTIER_AUDIT_VERSION = "finance_capability_frontier_audit.v4"
@@ -756,6 +756,15 @@ class _CapabilityTaskBuilder:
             ),
         )
         near = [item for item in ranked if len(_minimum_mismatch_fields(item, gold)) == 1]
+        if family == "finance.definition_reconciliation":
+            registered_mismatches = {"period", "definition", "payload_context"}
+            near = [
+                item
+                for item in near
+                if _minimum_mismatch_fields(item, gold)[0] in registered_mismatches
+            ]
+            if len(near) < recovery_count:
+                return None
         if len(near) < recovery_count:
             return None
         selected = near[:recovery_count]
