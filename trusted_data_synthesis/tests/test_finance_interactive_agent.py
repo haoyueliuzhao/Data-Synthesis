@@ -12,13 +12,17 @@ from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.core.task.program import InputRefKind
 from trusted_synthesis.domains.finance.agent_tools import (
+    finance_archive_agent_tool_specs,
     make_finance_archive_agent_tool_manifest,
 )
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
+    FinanceCompletionRole,
     _matches_subject,
     finance_runtime_snapshot_hash,
+    make_candidate_verification_scenario,
     make_finance_typed_recovery_scenario,
+    make_state_dependent_stopping_scenario,
 )
 from trusted_synthesis.domains.finance.iterative_agent_verifier import (
     FinanceIterativeAgentVerifier,
@@ -357,6 +361,210 @@ def test_typed_recovery_requires_a_changed_public_selector() -> None:
     assert item.evidence_id in corrected.evidence_ids
 
 
+def _scenario_manifest(context, scenario):
+    corpus = context.public_corpus
+    return make_finance_archive_agent_tool_manifest(
+        environment_id=f"finance_agent_scenario_test:{scenario.scenario_id}",
+        corpus_id=corpus.corpus_id,
+        corpus_hash=corpus.corpus_hash,
+        archive_snapshot_id="finance_agent_scenario_snapshot",
+        archive_snapshot_hash=finance_runtime_snapshot_hash(
+            corpus.corpus_hash,
+            None,
+            scenario,
+        ),
+        maximum_tool_calls=12,
+        maximum_failed_tool_calls=2,
+    )
+
+
+def _select_fact(runtime, item, call_index: int):
+    return runtime.execute(
+        AgentToolCall(
+            call_index=call_index,
+            tool_id="query_structured_fact",
+            arguments={
+                "subject_alias": item.subject.name,
+                "metric_alias": item.predicate,
+                "period_label": item.temporal_context.label,
+                "public_filters": {"source_id": item.source.source_id},
+            },
+        )
+    )
+
+
+def test_candidate_verification_scenario_requires_localized_repair() -> None:
+    context = _omega()
+    item = context.public_corpus.evidence[0]
+    expected_payload = {
+        "kind": "scalar_observation",
+        "value": str(item.payload.value),
+        "unit": item.payload.unit,
+        "currency": item.payload.currency,
+    }
+    candidate_payload = {
+        **expected_payload,
+        "value": str(item.payload.value + 1),
+    }
+    candidate = {
+        "selected_ref": item.evidence_id,
+        "payload": candidate_payload,
+    }
+    scenario = make_candidate_verification_scenario(
+        candidate_payload=candidate,
+        canonical_candidate_payload={
+            "selected_ref": item.evidence_id,
+            "payload": expected_payload,
+        },
+        repair_target_field="payload",
+    )
+    runtime = FinanceArchiveInteractiveToolRuntime(
+        context.public_corpus,
+        _scenario_manifest(context, scenario),
+        capability_scenario=scenario,
+    )
+    selected = _select_fact(runtime, item, 1)
+    assert selected.status == "succeeded"
+    calculated = runtime.execute(
+        AgentToolCall(
+            call_index=2,
+            tool_id="calculator",
+            arguments={
+                "operator": "lookup",
+                "operands": [{"evidence_id": item.evidence_id}],
+                "parameters": {},
+            },
+        )
+    )
+    assert calculated.status == "succeeded"
+    operation_ref = calculated.result["result"]["operation_ref"]
+    mismatch = runtime.execute(
+        AgentToolCall(
+            call_index=3,
+            tool_id="cross_check_evidence",
+            arguments={
+                "evidence_ids": [item.evidence_id],
+                "claim_or_result": {"operation_ref": operation_ref},
+            },
+        )
+    )
+    assert mismatch.status == "succeeded"
+    assert not mismatch.result["verified"]
+    assert mismatch.result["candidate_repair"]["localized"]
+    assert not mismatch.result["candidate_repair"]["repair_verified"]
+    assert mismatch.result["conflicts"][0]["type"] == "candidate_field_mismatch"
+
+    repaired = runtime.execute(
+        AgentToolCall(
+            call_index=4,
+            tool_id="cross_check_evidence",
+            arguments={
+                "evidence_ids": [item.evidence_id],
+                "claim_or_result": {
+                    "operation_ref": operation_ref,
+                    "candidate_payload": {
+                        "selected_ref": item.evidence_id,
+                        "payload": expected_payload,
+                    },
+                },
+            },
+        )
+    )
+    assert repaired.status == "succeeded"
+    assert repaired.result["verified"], repaired.result["conflicts"]
+    assert repaired.result["candidate_repair"]["repair_verified"]
+
+
+def test_stopping_scenario_exposes_state_and_penalizes_redundant_action() -> None:
+    context = _omega()
+    first = context.public_corpus.evidence[0]
+    first_key = (
+        first.subject.subject_id,
+        first.predicate,
+        first.temporal_context.label,
+        first.source.source_id,
+    )
+    second = next(
+        item
+        for item in context.public_corpus.evidence[1:]
+        if (
+            item.subject.subject_id,
+            item.predicate,
+            item.temporal_context.label,
+            item.source.source_id,
+        )
+        != first_key
+    )
+    roles = tuple(
+        FinanceCompletionRole(
+            role_id=f"role_{index}",
+            subject_alias=item.subject.name,
+            metric_alias=item.predicate,
+            period_label=str(item.temporal_context.label),
+            public_filters={"source_id": item.source.source_id},
+        )
+        for index, item in enumerate((first, second), start=1)
+    )
+    scenario = make_state_dependent_stopping_scenario(required_roles=roles)
+    runtime = FinanceArchiveInteractiveToolRuntime(
+        context.public_corpus,
+        _scenario_manifest(context, scenario),
+        capability_scenario=scenario,
+    )
+    assert _select_fact(runtime, first, 1).status == "succeeded"
+    blocked = _select_fact(runtime, second, 2)
+    assert blocked.status == "failed"
+    assert blocked.error_code == "incomplete_completion_probe_required"
+    assert not blocked.result["completion_state"]["complete"]
+
+    incomplete = runtime.execute(
+        AgentToolCall(
+            call_index=3,
+            tool_id="cross_check_evidence",
+            arguments={
+                "evidence_ids": [first.evidence_id],
+                "claim_or_result": {"phase": "partial_state"},
+            },
+        )
+    )
+    assert incomplete.status == "succeeded"
+    assert not incomplete.result["completion_state"]["complete"]
+    assert incomplete.result["completion_state"]["missing_role_ids"] == ["role_2"]
+
+    assert _select_fact(runtime, second, 4).status == "succeeded"
+    calculated = runtime.execute(
+        AgentToolCall(
+            call_index=5,
+            tool_id="calculator",
+            arguments={
+                "operator": "lookup",
+                "operands": [{"evidence_id": first.evidence_id}],
+                "parameters": {},
+            },
+        )
+    )
+    completed = runtime.execute(
+        AgentToolCall(
+            call_index=6,
+            tool_id="cross_check_evidence",
+            arguments={
+                "evidence_ids": [first.evidence_id, second.evidence_id],
+                "claim_or_result": {
+                    "operation_ref": calculated.result["result"]["operation_ref"]
+                },
+            },
+        )
+    )
+    assert completed.status == "succeeded"
+    assert completed.result["verified"]
+    assert completed.result["completion_state"]["complete"]
+
+    redundant = _select_fact(runtime, first, 7)
+    assert redundant.status == "failed"
+    assert redundant.error_code == "redundant_action_after_verified_completion"
+    assert redundant.result["completion_state"]["redundant_action_cost_applied"]
+
+
 def test_comparison_reference_projection_maps_internal_id_to_public_label() -> None:
     projection = {"evidence:alpha": "Alpha Plc", "evidence:beta": "Beta Plc"}
 
@@ -463,3 +671,38 @@ def test_public_agent_state_condition_rejects_hidden_state_identity() -> None:
                 "target_state_id": "state:hidden",
             }
         )
+
+
+def test_cross_check_tool_contract_accepts_typed_mechanism_reports() -> None:
+    spec = next(
+        item
+        for item in finance_archive_agent_tool_specs()
+        if item.tool_id == "cross_check_evidence"
+    )
+    base = {
+        "verified": True,
+        "support": [],
+        "conflicts": [],
+        "verification_hash": "verification:fixture",
+    }
+
+    spec.validate_output(
+        {
+            **base,
+            "candidate_repair": {
+                "localized": True,
+                "repair_verified": True,
+                "target_field": "difference",
+            },
+        }
+    )
+    spec.validate_output(
+        {
+            **base,
+            "completion_state": {
+                "complete": True,
+                "missing_role_ids": [],
+                "redundant_action_cost_applied": False,
+            },
+        }
+    )

@@ -20,7 +20,9 @@ from trusted_synthesis.core.trajectory.schema import ActionType, StepStatus, Wor
 from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
+    FinanceCapabilityMechanismScenario,
     FinanceTypedRecoveryScenario,
+    capability_mechanism_scenario_from_oracle,
     recovery_scenario_from_metadata,
 )
 from trusted_synthesis.hashing import canonical_hash
@@ -35,7 +37,7 @@ from trusted_synthesis.runtime.tools import (
     agent_tool_argument_rejection,
 )
 
-FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v2"
+FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v3"
 
 
 class FinanceIterativeAgentVerificationReport(BaseModel):
@@ -156,6 +158,9 @@ class FinanceIterativeAgentVerifier:
             environment,
             observations,
             recovery_scenario=recovery_scenario_from_metadata(task.public.metadata),
+            capability_scenario=capability_mechanism_scenario_from_oracle(
+                task.oracle.selection_contract
+            ),
         )
         leakage_failures = _model_forbidden_field_paths(
             trajectory.model_dump(mode="json", exclude_none=True)
@@ -412,11 +417,13 @@ def _replay_observations(
     observations: tuple[AgentToolObservation, ...],
     *,
     recovery_scenario: FinanceTypedRecoveryScenario | None = None,
+    capability_scenario: FinanceCapabilityMechanismScenario | None = None,
 ) -> tuple[str, ...]:
     runtime = FinanceArchiveInteractiveToolRuntime(
         corpus,
         environment,
         recovery_scenario=recovery_scenario,
+        capability_scenario=capability_scenario,
     )
     failures: list[str] = []
     for index, observation in enumerate(observations):

@@ -533,3 +533,50 @@ changing Explorer models alone.
 - `artifacts/vtdo_experiment/finance_v17_sealed_numeric_candidate_retry_v2_20260806/report.json`
 - `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/report.json`
 - `artifacts/vtdo_experiment/finance_v17_numeric_root_cause_dev20_val20_temp02_v13_20260805/frozen_numeric_contract.json`
+
+## v25.22-v25.23 Mechanism Repair And Information Geometry
+
+The v25.21 Candidate Verification and State-dependent Stopping mechanisms were repaired without
+rerunning the two already-replicated recovery mechanisms. The final Flash Development run
+completed 96/96 rollouts and froze both repaired mechanisms. A new held-out Population persisted
+the Development Selection Freeze identity and passed every static freshness, semantic, scenario,
+and public/Oracle isolation gate.
+
+Held-out Confirmation completed 100/100 rollouts. Runtime eligibility, API transport, bounded JSON,
+Observation replay, and authority integrity were 100%, with zero Runtime pathology. Candidate
+Verification was behavior-successful on 25/25 mechanism trajectories. Stopping was evaluable and
+behavior-successful on 19/25; the six unevaluable outcomes remain model failures. Both mechanisms
+passed the unchanged matched-pair criteria, so all four frozen mechanisms are independently
+confirmed.
+
+The corrected v25.23 v2 geometry audit used 20 mechanism-required tasks and 100 rollouts from the
+two held-out Confirmation sources. Coverage was balanced at five groups per mechanism and boundary
+mass was 45%. The v2 replay freezes every numerical/source-contract dependency and uses the same
+Fisher weights for the information matrix, centering, and general-difficulty regression. The
+initial unweighted-residual v1 artifact is superseded.
+
+| Matrix | Numerical rank | Effective rank | Condition number |
+| --- | ---: | ---: | ---: |
+| Raw | 5 | 1.20598 | 1270.31 |
+| General-difficulty residual | 3 | 2.40054 | 5.26 |
+
+The raw distribution remains dominated by a common direction. Removing that direction restores
+numerical conditioning but leaves only three independent residual directions, below the frozen
+rank-4 and effective-rank-3 requirements.
+
+The current authorization state is:
+
+```text
+all_four_mechanisms_confirmed = true
+information_geometry_ready = false
+pro_sparse_anchor_authorized = false
+beneficiary_screening_authorized = false
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = capability_mechanism_support_redesign_only
+```
+
+Mechanism confirmation is retained as a positive result. The current task support is rejected as a
+well-conditioned capability distribution. See
+`docs/finance_v25_22_v25_23_capability_mechanism_repair_and_geometry_report.md`.

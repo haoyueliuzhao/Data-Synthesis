@@ -21,6 +21,7 @@ from trusted_synthesis.core.trajectory.state import (
 )
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
+    capability_mechanism_scenario_from_oracle,
     recovery_scenario_from_metadata,
 )
 from trusted_synthesis.domains.finance.iterative_agent_verifier import (
@@ -423,6 +424,9 @@ def _run_one(
                 manifest,
                 recovery_scenario=recovery_scenario_from_metadata(
                     context.task.public.metadata
+                ),
+                capability_scenario=capability_mechanism_scenario_from_oracle(
+                    context.task.oracle.selection_contract
                 ),
             )
             result = IterativeAgentSolver(

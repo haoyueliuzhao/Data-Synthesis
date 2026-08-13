@@ -7,7 +7,7 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v6"
+FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v7"
 
 
 def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
@@ -173,6 +173,12 @@ def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:
                 "support": "array[string]",
                 "conflicts": "array[object]",
                 "verification_hash": "string",
+                "candidate_repair": (
+                    "optional object describing localized candidate mismatch and verified repair"
+                ),
+                "completion_state": (
+                    "optional object describing required-role coverage and redundant-action cost"
+                ),
             },
             required_input_fields=("evidence_ids", "claim_or_result"),
             required_output_fields=(

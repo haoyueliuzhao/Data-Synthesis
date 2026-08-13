@@ -961,6 +961,56 @@ next_permitted_stage = finance_v25_21_mechanism_population_construction_only
 
 See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
+
+### v25.22-v25.23 repaired mechanisms and mechanism geometry
+
+v25.22 preserves the two replicated v25.21 findings and repairs only Candidate Verification and
+State-dependent Stopping. Candidate Verification now requires independent replay and one
+Oracle-frozen semantic repair while preserving unaffected fields. Stopping now requires an
+externally observed incomplete state, a verified complete state, and an asymmetric post-completion
+action cost. Exact scenario values remain Oracle-only.
+
+Development selection is frozen before a new Confirmation population is sampled. Confirmation
+must persist the Development Selection Freeze path, SHA-256, and ID in its Population, and the
+Population, Freeze, and Contract identities are replayed again immediately before API execution.
+
+The fresh Confirmation completed 100/100 Flash rollouts with 100% Runtime eligibility and zero
+Runtime pathology. Candidate Verification produced 25/25 mechanism-behavior successes;
+State-dependent Stopping produced 19/25, with all 19 evaluable trajectories satisfying every
+behavior check. Both independently met the unchanged matched-pair rules. Combined with the two
+v25.21 mechanisms, this authorizes only a mechanism-specific Information Geometry audit.
+
+v25.23 must not reuse the legacy task-family Information Matrix through an adapter. Its primary
+population is exactly the `mechanism_required` variant from each confirmed held-out group;
+matched controls remain confirmation evidence and do not enter the matrix. It uses:
+
+```text
+I_hat = mean_x p_hat(x)(1-p_hat(x)) a(x)a(x)^T
+response = valid_success
+demand = frozen seven-axis task demand, L2 normalized
+residual = Fisher-weighted centering and weighted least squares on general difficulty
+bootstrap = mechanism-stratified task and realization resampling
+implementation = complete numerical and typed-source manifest frozen before replay
+```
+
+The authoritative v25.23 v2 result fails closed. The initial v1 residual calculation used
+unweighted centering/regression under a Fisher-weighted matrix and is retained only as a diagnostic
+artifact. In v2, raw rank is 5, but effective rank is 1.20598 and condition number is 1270.31.
+After the measure-consistent general-difficulty adjustment, rank is 3, effective rank is 2.40054,
+and condition number is 5.26. Boundary mass, marginal-axis information, mechanism balance,
+dominance, and residual conditioning gates pass; residual rank and effective rank do not. Therefore
+confirmed mechanisms are not yet a well-conditioned capability distribution:
+
+```text
+information_geometry_ready = false
+pro_sparse_anchor_authorized = false
+next_permitted_stage = capability_mechanism_support_redesign_only
+```
+
+No current response may be subset post hoc, no threshold may be relaxed, and Pro, Beneficiary,
+Exact Target, GP-C, Contribution, VTDO updates, and Student training remain blocked. See
+`docs/finance_v25_22_v25_23_capability_mechanism_repair_and_geometry_report.md`.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

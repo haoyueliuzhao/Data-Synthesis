@@ -29,6 +29,7 @@ from trusted_synthesis.domains.finance.agent_tools import (
     make_finance_archive_agent_tool_manifest,
 )
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
+    capability_mechanism_scenario_from_oracle,
     finance_runtime_snapshot_hash,
     recovery_scenario_from_metadata,
 )
@@ -701,6 +702,9 @@ def make_v25_native_runtime_context(
     corpus = task.public_corpus
     snapshot_id = str(corpus.build_id or f"corpus:{corpus.corpus_hash}")
     recovery_scenario = recovery_scenario_from_metadata(task.task.public.metadata)
+    capability_scenario = capability_mechanism_scenario_from_oracle(
+        task.task.oracle.selection_contract
+    )
     manifest = make_finance_archive_agent_tool_manifest(
         environment_id=f"finance_v25:{runtime_arm.value}:{task.artifact_id}",
         corpus_id=corpus.corpus_id,
@@ -709,6 +713,7 @@ def make_v25_native_runtime_context(
         archive_snapshot_hash=finance_runtime_snapshot_hash(
             corpus.corpus_hash,
             recovery_scenario,
+            capability_scenario,
         ),
         maximum_tool_calls=MAXIMUM_TOOL_CALLS,
         maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,

@@ -658,10 +658,49 @@ def _mechanism_behavior_checks(
             "compatibility_decision_verified": "cross_check_evidence" in tool_ids,
         }
     if mechanism_id == MECHANISM_IDS[4]:
+        calculator_positions = tuple(
+            index
+            for index, item in enumerate(observations)
+            if item.status == "succeeded" and item.call.tool_id == "calculator"
+        )
+        candidate_checks = tuple(
+            (index, item.result.get("candidate_repair"))
+            for index, item in enumerate(observations)
+            if item.status == "succeeded"
+            and item.call.tool_id == "cross_check_evidence"
+            and isinstance(item.result.get("candidate_repair"), Mapping)
+        )
+        verified_repairs = tuple(
+            report
+            for _, report in candidate_checks
+            if report.get("repair_verified") is True
+        )
         return {
-            "independent_replay": "calculator" in tool_ids,
-            "candidate_cross_checked": "cross_check_evidence" in tool_ids,
-            "answer_emitted_after_check": bool(steps and steps[-1].action == ActionType.ANSWER),
+            "independent_replay_precedes_repair": bool(
+                calculator_positions
+                and candidate_checks
+                and min(calculator_positions) < max(index for index, _ in candidate_checks)
+            ),
+            "candidate_error_localized": any(
+                report.get("localized") is True for _, report in candidate_checks
+            ),
+            "localized_repair_verified": bool(verified_repairs),
+            "unaffected_fields_preserved": bool(
+                verified_repairs
+                and all(
+                    set(report.get("submitted_candidate", ()))
+                    == {
+                        str(report.get("target_field")),
+                        *map(str, report.get("preserve_fields", ())),
+                    }
+                    for report in verified_repairs
+                )
+            ),
+            "answer_emitted_after_verified_repair": bool(
+                steps
+                and steps[-1].action == ActionType.ANSWER
+                and verified_repairs
+            ),
         }
     if mechanism_id == MECHANISM_IDS[5]:
         return {
@@ -670,13 +709,43 @@ def _mechanism_behavior_checks(
             "post_repair_verification": ("cross_check_evidence" in tool_ids and bool(failed)),
         }
     if mechanism_id == MECHANISM_IDS[6]:
-        verification = record.verification
+        completion_states = tuple(
+            (index, item.result.get("completion_state"))
+            for index, item in enumerate(observations)
+            if item.status == "succeeded"
+            and item.call.tool_id == "cross_check_evidence"
+            and isinstance(item.result.get("completion_state"), Mapping)
+        )
+        complete_positions = tuple(
+            index
+            for index, state in completion_states
+            if state.get("complete") is True
+        )
+        incomplete_observed = any(
+            state.get("complete") is False
+            and bool(state.get("missing_role_ids"))
+            for _, state in completion_states
+        )
+        redundant_failures = tuple(
+            item
+            for item in observations
+            if item.error_code == "redundant_action_after_verified_completion"
+        )
+        no_tool_after_completion = bool(
+            complete_positions
+            and max(complete_positions) == len(observations) - 1
+        )
         return {
-            "completeness_check": "cross_check_evidence" in tool_ids,
-            "all_required_roles_resolved": bool(
-                verification and verification.evidence_provenance_completeness == 1.0
+            "incomplete_state_observed": incomplete_observed,
+            "verified_complete_state_observed": bool(complete_positions),
+            "no_redundant_action_after_completion": (
+                no_tool_after_completion and not redundant_failures
             ),
-            "stop_decision_quality": bool(verification and verification.stop_decision_quality),
+            "terminal_answer_depends_on_stop": bool(
+                steps
+                and steps[-1].action == ActionType.ANSWER
+                and complete_positions
+            ),
         }
     raise ValueError(f"unknown mechanism: {mechanism_id}")
 

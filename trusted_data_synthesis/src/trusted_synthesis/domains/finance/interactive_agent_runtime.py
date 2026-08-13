@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -21,8 +22,10 @@ from trusted_synthesis.runtime.tools import (
     AgentToolResult,
 )
 
-FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v7"
+FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v9"
 FINANCE_TYPED_RECOVERY_SCENARIO_VERSION = "finance_typed_recovery_scenario.v1"
+FINANCE_CAPABILITY_MECHANISM_SCENARIO_VERSION = "finance_capability_mechanism_scenario.v3"
+FINANCE_CAPABILITY_MECHANISM_ORACLE_KEY = "v25_22_capability_mechanism_scenario"
 
 _PUBLIC_SUBJECT_ID_SUFFIXES = ("_US", "_COUNTRY", "_HK", "_CN")
 FINANCE_ARCHIVE_NORMALIZATION_POLICY_VERSION = "finance_archive_normalization_policy.v1"
@@ -96,6 +99,164 @@ def finance_typed_recovery_scenario_id(
     )
 
 
+class FinanceCompletionRole(BaseModel):
+    """Public selector defining one independently observable completeness role."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    role_id: str = Field(min_length=1)
+    subject_alias: str = Field(min_length=1)
+    metric_alias: str = Field(min_length=1)
+    period_label: str = Field(min_length=1)
+    public_filters: dict[str, str] = Field(default_factory=dict)
+
+
+class FinanceCapabilityMechanismScenario(BaseModel):
+    """Public-safe Runtime intervention for capability-mechanism identification."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    scenario_id: str = Field(min_length=1)
+    mechanism_kind: Literal[
+        "candidate_verification_and_repair",
+        "state_dependent_control_and_stopping",
+    ]
+    candidate_payload: dict[str, Any] | None = None
+    canonical_candidate_payload: dict[str, Any] | None = None
+    repair_target_field: str | None = None
+    preserve_fields: tuple[str, ...] = ()
+    required_roles: tuple[FinanceCompletionRole, ...] = ()
+    redundant_action_policy: Literal[
+        "not_applicable",
+        "reject_every_tool_call_after_verified_completion",
+    ]
+    transition_policy: Literal[
+        "not_applicable",
+        "require_incomplete_probe_before_remaining_roles",
+    ]
+    schema_version: str = FINANCE_CAPABILITY_MECHANISM_SCENARIO_VERSION
+
+    @model_validator(mode="after")
+    def validate_scenario(self) -> FinanceCapabilityMechanismScenario:
+        if self.mechanism_kind == "candidate_verification_and_repair":
+            if (
+                not self.candidate_payload
+                or not self.canonical_candidate_payload
+                or not self.repair_target_field
+            ):
+                raise ValueError("candidate verification scenario lacks a localized candidate")
+            if set(self.candidate_payload) != set(self.canonical_candidate_payload):
+                raise ValueError("candidate verification canonical fields differ")
+            if self.repair_target_field not in self.candidate_payload:
+                raise ValueError("candidate verification target field is absent")
+            mismatches = {
+                field
+                for field in self.candidate_payload
+                if self.candidate_payload[field] != self.canonical_candidate_payload[field]
+            }
+            if mismatches != {self.repair_target_field}:
+                raise ValueError("candidate verification must contain exactly one local error")
+            if set(self.preserve_fields) != set(self.candidate_payload) - {
+                self.repair_target_field
+            }:
+                raise ValueError("candidate verification preserve fields are incomplete")
+            if (
+                self.required_roles
+                or self.redundant_action_policy != "not_applicable"
+                or self.transition_policy != "not_applicable"
+            ):
+                raise ValueError("candidate verification scenario mixes stopping state")
+        else:
+            if (
+                self.candidate_payload is not None
+                or self.canonical_candidate_payload is not None
+                or self.repair_target_field is not None
+            ):
+                raise ValueError("stopping scenario exposes candidate state")
+            if self.preserve_fields:
+                raise ValueError("stopping scenario exposes candidate preserve fields")
+            if len(self.required_roles) < 2:
+                raise ValueError("stopping scenario requires at least two observable roles")
+            if len({item.role_id for item in self.required_roles}) != len(self.required_roles):
+                raise ValueError("stopping scenario duplicates a public role")
+            if (
+                self.redundant_action_policy
+                != "reject_every_tool_call_after_verified_completion"
+            ):
+                raise ValueError("stopping scenario lacks an asymmetric action cost")
+            if (
+                self.transition_policy
+                != "require_incomplete_probe_before_remaining_roles"
+            ):
+                raise ValueError("stopping scenario lacks an observable state transition")
+        if self.scenario_id != finance_capability_mechanism_scenario_id(self):
+            raise ValueError("Finance capability mechanism scenario identity is invalid")
+        return self
+
+
+def make_candidate_verification_scenario(
+    *,
+    candidate_payload: Mapping[str, Any],
+    canonical_candidate_payload: Mapping[str, Any],
+    repair_target_field: str,
+) -> FinanceCapabilityMechanismScenario:
+    values = {
+        "mechanism_kind": "candidate_verification_and_repair",
+        "candidate_payload": dict(candidate_payload),
+        "canonical_candidate_payload": dict(canonical_candidate_payload),
+        "repair_target_field": repair_target_field,
+        "preserve_fields": tuple(sorted(set(candidate_payload) - {repair_target_field})),
+        "required_roles": (),
+        "redundant_action_policy": "not_applicable",
+        "transition_policy": "not_applicable",
+    }
+    provisional = FinanceCapabilityMechanismScenario.model_construct(
+        scenario_id="pending", **values
+    )
+    return FinanceCapabilityMechanismScenario(
+        scenario_id=finance_capability_mechanism_scenario_id(provisional), **values
+    )
+
+
+def make_state_dependent_stopping_scenario(
+    *, required_roles: tuple[FinanceCompletionRole, ...]
+) -> FinanceCapabilityMechanismScenario:
+    values = {
+        "mechanism_kind": "state_dependent_control_and_stopping",
+        "candidate_payload": None,
+        "canonical_candidate_payload": None,
+        "repair_target_field": None,
+        "preserve_fields": (),
+        "required_roles": required_roles,
+        "redundant_action_policy": "reject_every_tool_call_after_verified_completion",
+        "transition_policy": "require_incomplete_probe_before_remaining_roles",
+    }
+    provisional = FinanceCapabilityMechanismScenario.model_construct(
+        scenario_id="pending", **values
+    )
+    return FinanceCapabilityMechanismScenario(
+        scenario_id=finance_capability_mechanism_scenario_id(provisional), **values
+    )
+
+
+def finance_capability_mechanism_scenario_id(
+    value: FinanceCapabilityMechanismScenario,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"scenario_id"}),
+        prefix="finance_capability_mechanism_scenario:",
+    )
+
+
+def capability_mechanism_scenario_from_oracle(
+    selection_contract: Mapping[str, Any],
+) -> FinanceCapabilityMechanismScenario | None:
+    raw = selection_contract.get(FINANCE_CAPABILITY_MECHANISM_ORACLE_KEY)
+    if raw is None:
+        return None
+    return FinanceCapabilityMechanismScenario.model_validate(raw)
+
+
 def recovery_scenario_from_metadata(
     metadata: dict[str, Any],
 ) -> FinanceTypedRecoveryScenario | None:
@@ -108,13 +269,15 @@ def recovery_scenario_from_metadata(
 def finance_runtime_snapshot_hash(
     corpus_hash: str,
     scenario: FinanceTypedRecoveryScenario | None,
+    capability_scenario: FinanceCapabilityMechanismScenario | None = None,
 ) -> str:
-    if scenario is None:
+    if scenario is None and capability_scenario is None:
         return corpus_hash
     return canonical_hash(
         {
             "corpus_hash": corpus_hash,
             "typed_recovery_scenario": scenario,
+            "capability_mechanism_scenario": capability_scenario,
         },
         prefix="finance_archive_runtime_snapshot:",
     )
@@ -130,6 +293,7 @@ class FinanceArchiveInteractiveToolRuntime:
         *,
         registry: OperationRegistry | None = None,
         recovery_scenario: FinanceTypedRecoveryScenario | None = None,
+        capability_scenario: FinanceCapabilityMechanismScenario | None = None,
     ) -> None:
         if manifest.corpus_id != corpus.corpus_id or manifest.corpus_hash != corpus.corpus_hash:
             raise ValueError("Finance Agent runtime corpus differs from its frozen manifest")
@@ -138,6 +302,7 @@ class FinanceArchiveInteractiveToolRuntime:
         if manifest.snapshot_hash != finance_runtime_snapshot_hash(
             corpus.corpus_hash,
             recovery_scenario,
+            capability_scenario,
         ):
             raise ValueError("Finance Agent runtime behavior differs from its frozen snapshot")
         self._corpus = corpus
@@ -155,6 +320,9 @@ class FinanceArchiveInteractiveToolRuntime:
         self._exposed_locators: set[str] = set()
         self._operations: dict[str, _StoredOperation] = {}
         self._recovery_scenario = recovery_scenario
+        self._capability_scenario = capability_scenario
+        self._verified_completion_reached = False
+        self._incomplete_completion_probe_observed = False
         self._forced_recovery_failures = 0
         self._forced_recovery_selector_hash: str | None = None
 
@@ -175,6 +343,21 @@ class FinanceArchiveInteractiveToolRuntime:
         return tuple(sorted(self._operations))
 
     def execute(self, call: AgentToolCall) -> AgentToolResult:
+        if self._verified_completion_reached:
+            return _failed(
+                "redundant_action_after_verified_completion",
+                "The public completeness contract was already verified. Every additional tool "
+                "call incurs the frozen terminal redundancy cost; emit the final answer instead.",
+                result={
+                    "completion_state": {
+                        "complete": True,
+                        "redundant_action_cost_applied": True,
+                    }
+                },
+            )
+        transition_rejection = self._stopping_transition_rejection(call)
+        if transition_rejection is not None:
+            return transition_rejection
         handlers = {
             "search_archive": self._search_archive,
             "open_document": self._open_document,
@@ -190,6 +373,33 @@ class FinanceArchiveInteractiveToolRuntime:
             return handler(call.arguments)
         except (InvalidOperation, TypeError, ValueError) as exc:
             return _failed(f"{call.tool_id}_contract", str(exc) or type(exc).__name__)
+
+    def _stopping_transition_rejection(
+        self,
+        call: AgentToolCall,
+    ) -> AgentToolResult | None:
+        scenario = self._capability_scenario
+        if (
+            scenario is None
+            or scenario.mechanism_kind != "state_dependent_control_and_stopping"
+            or scenario.transition_policy
+            != "require_incomplete_probe_before_remaining_roles"
+            or self._incomplete_completion_probe_observed
+            or call.tool_id == "cross_check_evidence"
+        ):
+            return None
+        completion_state, _ = self._completion_state(scenario)
+        resolved = completion_state["resolved_role_ids"]
+        missing = completion_state["missing_role_ids"]
+        if not resolved or not missing:
+            return None
+        return _failed(
+            "incomplete_completion_probe_required",
+            "The Host has observed a strict nonempty subset of required roles. Cross-check that "
+            "subset now to observe completion_state.complete=false before any remaining role is "
+            "made available.",
+            result={"completion_state": completion_state},
+        )
 
     def _search_archive(self, arguments: dict[str, Any]) -> AgentToolResult:
         query = _required_string(arguments, "query")
@@ -573,27 +783,195 @@ class FinanceArchiveInteractiveToolRuntime:
             )
         if not operation_refs and not self._operations:
             conflicts.append({"type": "no_replayable_calculation"})
+        mechanism_report: dict[str, Any] = {}
+        scenario = self._capability_scenario
+        if scenario is not None and scenario.mechanism_kind == "candidate_verification_and_repair":
+            candidate_report, candidate_conflicts = self._candidate_verification_report(
+                scenario,
+                claim_or_result,
+                evidence,
+            )
+            mechanism_report["candidate_repair"] = candidate_report
+            conflicts.extend(candidate_conflicts)
+        if (
+            scenario is not None
+            and scenario.mechanism_kind == "state_dependent_control_and_stopping"
+        ):
+            completion_state, completion_conflicts = self._completion_state(scenario)
+            mechanism_report["completion_state"] = completion_state
+            if not completion_state["complete"]:
+                self._incomplete_completion_probe_observed = True
+            conflicts.extend(completion_conflicts)
         verification_hash = canonical_hash(
             {
                 "evidence_ids": evidence_ids,
                 "claim_or_result": claim_or_result,
                 "known_operations": tuple(sorted(self._operations)),
+                "mechanism_report": mechanism_report,
                 "conflicts": conflicts,
                 "snapshot_hash": self._manifest.snapshot_hash,
             },
             prefix="finance_agent_cross_check:",
         )
+        verified = not conflicts
+        if (
+            verified
+            and scenario is not None
+            and scenario.mechanism_kind == "state_dependent_control_and_stopping"
+        ):
+            self._verified_completion_reached = True
         return AgentToolResult(
             status="succeeded",
             result={
-                "verified": not conflicts,
+                "verified": verified,
                 "support": list(evidence_ids),
                 "conflicts": conflicts,
                 "verification_hash": verification_hash,
+                **mechanism_report,
             },
             evidence_ids=evidence_ids,
             provenance_hashes=_provenance_hashes(evidence),
         )
+
+    def _candidate_verification_report(
+        self,
+        scenario: FinanceCapabilityMechanismScenario,
+        claim_or_result: Mapping[str, Any],
+        evidence: tuple[EvidenceItem, ...],
+    ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        latest = next(reversed(self._operations.values()), None)
+        target = str(scenario.repair_target_field)
+        original = dict(scenario.candidate_payload or {})
+        canonical = dict(scenario.canonical_candidate_payload or {})
+        if latest is None:
+            return (
+                {
+                    "localized": False,
+                    "repair_verified": False,
+                    "target_field": target,
+                },
+                [{"type": "candidate_replay_missing"}],
+            )
+        submitted_raw = claim_or_result.get("candidate_payload")
+        if isinstance(submitted_raw, Mapping):
+            submitted = dict(submitted_raw)
+        elif set(original) <= set(claim_or_result):
+            submitted = {key: claim_or_result[key] for key in original}
+        else:
+            submitted = original
+        expected_target = canonical.get(target)
+        original_mismatch = original.get(target) != expected_target
+        repaired_target = submitted.get(target) == expected_target
+        preserve_matches = all(
+            submitted.get(field) == canonical.get(field)
+            for field in scenario.preserve_fields
+        )
+        exact_fields = set(submitted) == set(canonical)
+        semantic_fields = {
+            field
+            for field in canonical
+            if field
+            in {
+                "source_id",
+                "definition_id",
+                "time_basis",
+                "frequency",
+                "unit",
+                "currency",
+                "entity_scope",
+                "metric_scope",
+                "period_scope",
+            }
+        }
+        semantic_mismatches: dict[str, list[str]] = {}
+        for field in sorted(semantic_fields):
+            observed = sorted(
+                {
+                    str(value)
+                    for item in evidence
+                    if (value := _semantic_candidate_value(item, field)) not in (None, "")
+                }
+            )
+            expected_semantics = canonical[field]
+            if isinstance(expected_semantics, list):
+                supported = observed == [str(value) for value in expected_semantics]
+            else:
+                supported = bool(observed) and all(
+                    value == str(expected_semantics) for value in observed
+                )
+            if not supported:
+                semantic_mismatches[field] = observed
+        conflicts: list[dict[str, Any]] = []
+        if not original_mismatch:
+            conflicts.append({"type": "candidate_not_actually_corrupted", "field": target})
+        if not repaired_target:
+            conflicts.append(
+                {
+                    "type": "candidate_field_mismatch",
+                    "field": target,
+                    "candidate_value": submitted.get(target),
+                    "canonical_value": expected_target,
+                }
+            )
+        if not preserve_matches or not exact_fields:
+            conflicts.append(
+                {
+                    "type": "candidate_unaffected_field_changed",
+                    "required_preserve_fields": list(scenario.preserve_fields),
+                }
+            )
+        if semantic_mismatches:
+            conflicts.append(
+                {
+                    "type": "candidate_semantic_context_unsupported",
+                    "mismatches": semantic_mismatches,
+                }
+            )
+        repair_verified = (
+            original_mismatch
+            and repaired_target
+            and preserve_matches
+            and exact_fields
+            and not semantic_mismatches
+        )
+        return (
+            {
+                "localized": original_mismatch,
+                "repair_verified": repair_verified,
+                "target_field": target,
+                "preserve_fields": list(scenario.preserve_fields),
+                "submitted_candidate": submitted,
+                "canonical_target_value": expected_target,
+                "replay_operation_ref": latest.operation_ref,
+                "semantic_context_verified": not semantic_mismatches,
+            },
+            conflicts,
+        )
+
+    def _completion_state(
+        self,
+        scenario: FinanceCapabilityMechanismScenario,
+    ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        selected = tuple(self._by_id[item] for item in sorted(self._selected_ids))
+        resolved: list[str] = []
+        missing: list[str] = []
+        for role in scenario.required_roles:
+            matched = any(_matches_completion_role(item, role) for item in selected)
+            (resolved if matched else missing).append(role.role_id)
+        complete = not missing
+        state = {
+            "complete": complete,
+            "resolved_role_ids": resolved,
+            "missing_role_ids": missing,
+            "redundant_action_policy": scenario.redundant_action_policy,
+            "redundant_action_cost_applied": False,
+        }
+        conflicts = (
+            []
+            if complete
+            else [{"type": "required_roles_incomplete", "missing_role_ids": missing}]
+        )
+        return state, conflicts
 
     def _selected_evidence(
         self,
@@ -606,6 +984,40 @@ class FinanceArchiveInteractiveToolRuntime:
         if unselected:
             raise ValueError(f"Evidence IDs were not selected: {sorted(unselected)}")
         return tuple(self._by_id[item] for item in evidence_ids)
+
+
+def _semantic_candidate_value(item: EvidenceItem, field: str) -> Any:
+    if field == "source_id":
+        return item.source.source_id
+    if field == "definition_id":
+        return item.definition.definition_id
+    if field == "time_basis":
+        return item.temporal_context.basis
+    if field == "frequency":
+        return item.temporal_context.frequency
+    if field == "unit":
+        return getattr(item.payload, "unit", None)
+    if field == "currency":
+        return getattr(item.payload, "currency", None)
+    if field == "entity_scope":
+        return item.subject.subject_id
+    if field == "metric_scope":
+        return item.predicate
+    if field == "period_scope":
+        return item.temporal_context.label
+    raise ValueError(f"unknown semantic candidate field: {field}")
+
+
+def _matches_completion_role(
+    item: EvidenceItem,
+    role: FinanceCompletionRole,
+) -> bool:
+    return (
+        _matches_subject(item, role.subject_alias)
+        and _matches_metric(item, role.metric_alias)
+        and _matches_exact(item.temporal_context.label or "", role.period_label)
+        and _matches_public_filters(item, role.public_filters)
+    )
 
 
 def _required_string(arguments: dict[str, Any], field: str) -> str:
