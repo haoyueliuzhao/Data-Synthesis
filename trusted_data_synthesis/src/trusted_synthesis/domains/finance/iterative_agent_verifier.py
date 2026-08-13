@@ -519,7 +519,11 @@ def _required_tool_failures(
 ) -> tuple[str, ...]:
     tools = set(successful_tools)
     required = {
-        TaskRequirement.RETRIEVE_EVIDENCE: {"search_archive"},
+        TaskRequirement.RETRIEVE_EVIDENCE: {
+            "search_archive",
+            "open_document",
+            "query_structured_fact",
+        },
         TaskRequirement.SELECT_EVIDENCE: {"open_document", "query_structured_fact"},
         TaskRequirement.CALCULATE: {"calculator"},
         TaskRequirement.VERIFY_RESULT: {"cross_check_evidence"},

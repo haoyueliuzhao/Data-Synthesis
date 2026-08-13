@@ -1161,17 +1161,11 @@ def _execute_stage(
                 }
             )
         )
-        discovered = client.discover_models()
-        if EXPECTED_MODELS[model_arm.value] not in discovered:
-            raise ValueError(f"provider evidence lacks frozen {model_arm.value} model")
-        _write_immutable_json(
+        discovered = _resolve_stage_model_discovery(
+            client,
             discovery_path,
-            {
-                "run_identity": run_identity,
-                "model_arm": model_arm.value,
-                "requested_model": EXPECTED_MODELS[model_arm.value],
-                "discovered_models": discovered,
-            },
+            run_identity=run_identity,
+            model_arm=model_arm,
         )
         with ThreadPoolExecutor(max_workers=min(workers, len(pending))) as executor:
             futures = {
@@ -1588,6 +1582,39 @@ def _load_population(
     if population.population_id != contract.population_id:
         raise ValueError("multi-Tier contract loaded another population")
     return population
+
+
+def _resolve_stage_model_discovery(
+    client: OpenAICompatibleJsonClient,
+    path: Path,
+    *,
+    run_identity: str,
+    model_arm: ExplorerArm,
+) -> tuple[str, ...]:
+    expected_model = EXPECTED_MODELS[model_arm.value]
+    if path.is_file():
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            raw.get("run_identity") != run_identity
+            or raw.get("model_arm") != model_arm.value
+            or raw.get("requested_model") != expected_model
+        ):
+            raise ValueError("model discovery evidence belongs to another stage run")
+        discovered = tuple(str(item) for item in raw.get("discovered_models", ()))
+    else:
+        discovered = tuple(client.discover_models())
+        _write_immutable_json(
+            path,
+            {
+                "run_identity": run_identity,
+                "model_arm": model_arm.value,
+                "requested_model": expected_model,
+                "discovered_models": discovered,
+            },
+        )
+    if expected_model not in discovered:
+        raise ValueError(f"provider evidence lacks frozen {model_arm.value} model")
+    return discovered
 
 
 def _load_stage_checkpoint(
