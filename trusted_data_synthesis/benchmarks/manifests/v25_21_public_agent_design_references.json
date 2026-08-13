@@ -1,0 +1,210 @@
+{
+  "manifest_version": "v25_21_public_agent_design_references.v1",
+  "usage": "design_reference_only",
+  "content_policy": {
+    "task_content_loaded": false,
+    "question_answer_access": "forbidden",
+    "synthesis_access": "forbidden",
+    "training_access": "forbidden",
+    "paraphrase_access": "forbidden",
+    "aggregate_statistics_allowed": true
+  },
+  "references": [
+    {
+      "benchmark_id": "gaia",
+      "official_url": "https://arxiv.org/abs/2311.12983",
+      "reference_date": "2026-08-13",
+      "published_population_count": 466,
+      "population_count_scope": "all questions reported by the GAIA paper",
+      "published_statistics": [
+        {
+          "statistic_id": "question_count",
+          "value": 466,
+          "unit": "questions"
+        },
+        {
+          "statistic_id": "leaderboard_hidden_answer_count",
+          "value": 300,
+          "unit": "questions"
+        }
+      ],
+      "interaction_structures": [
+        "real_world_multi_tool_investigation",
+        "web_browsing",
+        "multimodal_evidence",
+        "short_objective_answer"
+      ],
+      "capability_axes": [
+        "information_acquisition",
+        "tool_planning",
+        "compositional_reasoning",
+        "verification",
+        "control_stopping"
+      ],
+      "evaluation_mechanisms": [
+        "objective_answer",
+        "level_stratification"
+      ],
+      "content_snapshot_status": "not_loaded"
+    },
+    {
+      "benchmark_id": "bfcl_v4",
+      "official_url": "https://gorilla.cs.berkeley.edu/leaderboard.html",
+      "reference_date": "2026-08-13",
+      "published_population_count": 100,
+      "population_count_scope": "human-authored BFCL V4 web-search component; not the full evolving suite",
+      "published_statistics": [
+        {
+          "statistic_id": "web_search_question_count",
+          "value": 100,
+          "unit": "questions"
+        },
+        {
+          "statistic_id": "format_sensitivity_selected_entry_count",
+          "value": 200,
+          "unit": "entries"
+        },
+        {
+          "statistic_id": "format_sensitivity_source_pool_count",
+          "value": 2351,
+          "unit": "entries"
+        }
+      ],
+      "interaction_structures": [
+        "single_turn_function_selection",
+        "parallel_function_calls",
+        "multi_turn_tool_use",
+        "missing_function_or_parameter",
+        "agentic_web_search",
+        "memory_tool_use",
+        "format_sensitivity"
+      ],
+      "capability_axes": [
+        "information_acquisition",
+        "tool_planning",
+        "recovery",
+        "control_stopping"
+      ],
+      "evaluation_mechanisms": [
+        "ast_function_call_match",
+        "multi_turn_state_match",
+        "relevance_and_irrelevance"
+      ],
+      "content_snapshot_status": "not_loaded"
+    },
+    {
+      "benchmark_id": "webarena",
+      "official_url": "https://webarena.dev/",
+      "reference_date": "2026-08-13",
+      "published_population_count": 812,
+      "population_count_scope": "test examples reported by the WebArena paper",
+      "published_statistics": [
+        {
+          "statistic_id": "test_example_count",
+          "value": 812,
+          "unit": "tasks"
+        }
+      ],
+      "interaction_structures": [
+        "stateful_web_environment",
+        "partially_observable_action_sequence",
+        "cross_site_dependency",
+        "functional_state_change"
+      ],
+      "capability_axes": [
+        "information_acquisition",
+        "tool_planning",
+        "compositional_reasoning",
+        "verification",
+        "recovery",
+        "control_stopping"
+      ],
+      "evaluation_mechanisms": [
+        "programmatic_functional_correctness",
+        "state_property_validation"
+      ],
+      "content_snapshot_status": "not_loaded"
+    },
+    {
+      "benchmark_id": "swe_bench",
+      "official_url": "https://www.swebench.com/original.html",
+      "reference_date": "2026-08-13",
+      "published_population_count": 2294,
+      "population_count_scope": "full SWE-bench task population",
+      "published_statistics": [
+        {
+          "statistic_id": "full_instance_count",
+          "value": 2294,
+          "unit": "instances"
+        },
+        {
+          "statistic_id": "source_repository_count",
+          "value": 12,
+          "unit": "repositories"
+        },
+        {
+          "statistic_id": "verified_instance_count",
+          "value": 500,
+          "unit": "instances"
+        },
+        {
+          "statistic_id": "lite_test_instance_count",
+          "value": 300,
+          "unit": "instances"
+        }
+      ],
+      "interaction_structures": [
+        "repository_state_inspection",
+        "issue_localization",
+        "candidate_patch_generation",
+        "test_driven_verification",
+        "iterative_repair"
+      ],
+      "capability_axes": [
+        "information_acquisition",
+        "tool_planning",
+        "compositional_reasoning",
+        "verification",
+        "recovery",
+        "control_stopping"
+      ],
+      "evaluation_mechanisms": [
+        "fail_to_pass_tests",
+        "pass_to_pass_regression_tests",
+        "environment_execution"
+      ],
+      "content_snapshot_status": "not_loaded"
+    },
+    {
+      "benchmark_id": "agentbench",
+      "official_url": "https://github.com/THUDM/AgentBench",
+      "reference_date": "2026-08-13",
+      "published_population_count": 8,
+      "population_count_scope": "distinct interactive environments in the original benchmark",
+      "published_statistics": [
+        {
+          "statistic_id": "environment_count",
+          "value": 8,
+          "unit": "environments"
+        }
+      ],
+      "interaction_structures": [
+        "multi_environment_interaction",
+        "multi_turn_open_ended_action",
+        "environment_feedback",
+        "task_specific_success_state"
+      ],
+      "capability_axes": [
+        "tool_planning",
+        "compositional_reasoning",
+        "recovery",
+        "control_stopping"
+      ],
+      "evaluation_mechanisms": [
+        "environment_success_rate",
+        "interactive_trajectory_evaluation"
+      ],
+      "content_snapshot_status": "not_loaded"
+    }
+  ]
+}

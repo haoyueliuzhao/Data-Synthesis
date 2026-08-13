@@ -909,6 +909,58 @@ Target, GP-C, Contribution, VTDO rounds, and Student training remain blocked.
 
 See `docs/finance_v25_19_v25_20_capability_support_confirmation_report.md`.
 
+### v25.21 public-benchmark capability audit and mechanism population
+
+The v25.20 response may be used only to identify capability axes requiring a new irreducible task
+mechanism. Public evaluation data has two strictly separated roles:
+
+1. FinQA and TAT-QA frozen snapshots may be read only for deterministic aggregate structural
+   statistics. Their task content, answers, programs, and report context may not enter synthesis,
+   training, paraphrasing, prompting, or task-state construction.
+2. GAIA, BFCL V4, WebArena, SWE-bench, and AgentBench may contribute published aggregate counts and
+   interaction-design metadata only. Their task content must remain unloaded.
+
+The mandatory v25.21 primary axes are Information Acquisition, Tool Planning, Compositional
+Reasoning, Semantic Alignment, Verification, Recovery, and Control/Stopping. A population is valid
+only if each axis has one typed mechanism with explicit required dependencies, prohibited
+shortcuts, and observable outcomes.
+
+The Development population contract is:
+
+```text
+tiers = Easy Control, Bridge, Frontier, Hard Control
+groups per mechanism = 2, 4, 4, 2
+mechanism count = 7
+minimum Development groups = 84
+fresh Confirmation groups per mechanism = 5
+replicas per Confirmation task = 5
+```
+
+Development and Confirmation must be disjoint on Task, Group, Evidence ID, Evidence Version ID,
+core semantic signature, task signature, and mechanism signature. Bridge is mandatory: a semantic
+alignment mechanism must include a resolvable unit, period, alias, or compatible-definition case
+between a trivial compatible control and a genuinely non-comparable hard control.
+
+The Runtime, Agent prompt, tool environment, failure taxonomy, and Workflow Information thresholds
+remain unchanged. Correctness is a capability response and cannot become a Runtime gate. Public
+benchmark statistics cannot authorize a model call. Before Flash Development, every mechanism must
+pass executable dependency checks and destructive shortcut mutations.
+
+The current immutable transition is:
+
+```text
+audit_passed = true
+experiment_readiness = design_ready_population_not_materialized
+pro_api_calls_authorized = false
+beneficiary_screening_authorized = false
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = finance_v25_21_mechanism_population_construction_only
+```
+
+See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

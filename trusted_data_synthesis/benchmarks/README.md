@@ -11,6 +11,11 @@ training, paraphrasing, or trajectory-state construction.
 `SHA256SUMS` freezes file contents. The manifest additionally freezes repository,
 revision, source blob, native adapter, native metric, split, and usage identity.
 
+`manifests/v25_21_public_agent_design_references.json` is a separate aggregate-only
+design-reference manifest for GAIA, BFCL V4, WebArena, SWE-bench, and AgentBench. It contains
+published counts and interaction structures only. No task content is loaded, and its contract
+forbids synthesis, training, paraphrasing, and question/answer access.
+
 The active `native_financial_benchmark_adapter.v4` contract reconstructs full report context.
 `native_financial_benchmark_metric.v4` separately reports answer correctness and FinQA program
 execution correctness, while retaining TAT-QA answer/scale scoring. As an adapter self-check, all

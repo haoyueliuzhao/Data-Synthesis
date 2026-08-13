@@ -8,17 +8,18 @@ messages are not treated as experimental evidence.
 
 ## Repository Identity
 
-- Active repository: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
+- Active implementation worktree: `/tmp/codex_v25_9/trusted_data_synthesis`
+- Immutable experiment artifact root: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
 - Implementation branch: `codex/pro-flash-v23` in an isolated worktree
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active experiment is Finance v25.20. Runtime Resolution v2 continues to separate measurement
-integrity from model correctness. v25.19 used only frozen v25.18 Development evidence to define a
-five-group, five-replica support policy. A new real-Finance source extension then produced 35 fresh
-matched groups with zero Task, Group, Evidence, Evidence-Version, semantic-signature, or
-task-signature overlap against v25.18.
+The active experiment is Finance v25.21 task-mechanism redesign. Runtime Resolution v2 continues
+to separate measurement integrity from model correctness. v25.19 used only frozen v25.18
+Development evidence to define a five-group, five-replica support policy. A new real-Finance source
+extension then produced 35 fresh matched groups with zero Task, Group, Evidence, Evidence-Version,
+semantic-signature, or task-signature overlap against v25.18.
 
 The Flash-only v25.20 Confirmation completed 300/300 rollouts. Every global and per-Runtime
 instrument gate passed: transport, bounded JSON, Observation replay, authority, terminal
@@ -31,7 +32,9 @@ Valid reached rank 5 and effective rank 2.499, but condition number remained 267
 reached rank 7, effective rank 2.799, and condition number 92.46. Retrieval remained saturated,
 Autonomous Calculation was 98.29%, and Autonomous Reconciliation remained at zero. Pro sparse
 anchors, Beneficiary screening, Exact Target, GP-C, VTDO updates, and production Contribution are
-still forbidden. The only permitted transition remains `capability_task_support_redesign_only`.
+still forbidden. v25.21 has now compiled the permitted redesign into seven typed mechanisms and an
+84-group Development contract. No new population or model response exists yet; the only permitted
+transition is `finance_v25_21_mechanism_population_construction_only`.
 
 The post-v22 plan inserts a capability-sensitive Agent Runtime Pilot before any fresh Validation.
 v24 now qualifies the bounded Agent Runtime on a fresh 18-task set: all 216 Pro--Flash Scripted and
@@ -256,6 +259,32 @@ existing Tier selection alone cannot repair Retrieval/Calculation ceilings or th
 floor. The next task population must change those axes' irreducible program and Evidence
 dependencies. See `docs/finance_v25_19_v25_20_capability_support_confirmation_report.md`.
 
+## v25.21 Public Benchmark Capability Audit
+
+v25.21 deterministically audited all 1,147 frozen FinQA and 1,663 frozen TAT-QA evaluation items.
+The resulting artifacts contain aggregate statistics only: no question, answer, context, program,
+or Evidence text is exported. Snapshot content hash, source revision, source blob, split, adapter,
+metric, and exact denominator are verified before parsing. Public Agent benchmarks are represented
+only by aggregate design references for GAIA, BFCL V4, WebArena, SWE-bench, and AgentBench; their
+task content was not loaded.
+
+FinQA contains 493 multi-step programs (42.98%) and 84 programs with depth at least three (7.32%).
+TAT-QA contains 699 arithmetic answers (42.03%) and 546 table-text examples (32.83%). These
+statistics support financial calculation and semantic-alignment design, but both snapshots remain
+static evidence-given QA and therefore cannot measure tool planning, recovery, or state-dependent
+stopping.
+
+The v25.20 response geometry was compiled into seven new primary mechanisms: disambiguating
+information acquisition, typed tool planning, dependent compositional calculation, Bridge semantic
+alignment, candidate verification and repair, cross-family recovery, and state-dependent control.
+Every mechanism must support Easy, Bridge, Frontier, and Hard tiers. The preregistered Development
+minimum is 84 matched groups, with four Bridge and four Frontier groups per mechanism. Existing
+Runtime, Prompt, tool-environment, and Workflow Information thresholds remain frozen and
+content-hashed.
+
+The audit is `design_ready_population_not_materialized`; it made zero API calls and used zero GPU
+jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
+
 ## Revalidated Code State
 
 | Check | Result |
@@ -264,16 +293,21 @@ dependencies. See `docs/finance_v25_19_v25_20_capability_support_confirmation_re
 | v24 Agent/runtime focus | 38 passed |
 | v25 capability-identifiability focus | 11 passed |
 | v25.19-v25.20 support-confirmation focus | 26 passed |
+| v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format, non-manifest-bound changed files | passed |
-| Mypy | passed, 282 source files |
-| Pytest | passed, 575 tests in 138.39 seconds |
+| Mypy | passed, 283 source files |
+| Pytest | passed, 580 tests in 137.96 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
 | v25.20 population deterministic replay | byte-identical SHA-256 `8ee0b10046af...` |
 | v25.20 contract deterministic replay | byte-identical SHA-256 `80cf20a2e526...` |
 | v25.20 completed-run replay | 300/300 resumed, zero API jobs, identical report ID |
+| v25.21 audit JSON replay | byte-identical SHA-256 `15b1c8fd99d4...` |
+| v25.21 audit Markdown replay | byte-identical SHA-256 `fb0c4018068b...` |
+| v25.21 mechanism manifest replay | byte-identical SHA-256 `f9765dc5b622...` |
+| v25.21 benchmark-content isolation | 2,810/2,810 questions and all content keys absent |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
 | Legal and Science contracts | retained by full suite |
 
