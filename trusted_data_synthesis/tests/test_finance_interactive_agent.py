@@ -346,8 +346,13 @@ def test_typed_recovery_requires_a_changed_public_selector() -> None:
 
     assert first.status == "failed"
     assert first.error_code == "typed_selector_requires_refinement"
+    retry_contract = first.result["retry_contract"]
+    assert retry_contract["policy"] == "argument_patch_required"
+    assert retry_contract["maximum_identical_replays"] == 0
+    assert retry_contract["suggested_argument_patch"]
     assert repeated.status == "failed"
     assert repeated.error_code == "typed_selector_not_revised"
+    assert repeated.result["retry_contract"]["policy"] == "selector_revision_required"
     assert corrected.status == "succeeded"
     assert item.evidence_id in corrected.evidence_ids
 

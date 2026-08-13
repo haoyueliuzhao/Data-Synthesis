@@ -68,6 +68,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_regression import (
     _contains_operation_reference_model_violation,
     _contains_ratio_pair_model_violation,
+    _task_evidence_identity_sets,
     public_task_exposure_signature,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_satisfiability import (
@@ -379,6 +380,32 @@ def test_public_task_exposure_signature_binds_semantics_not_artifact_id() -> Non
     assert public_task_exposure_signature(baseline) != public_task_exposure_signature(
         changed_semantics
     )
+
+
+def test_exposure_identity_set_binds_evidence_and_version_ids() -> None:
+    task = {
+        "public_corpus": {
+            "evidence": [
+                {
+                    "evidence_id": "evidence:1",
+                    "evidence_version_id": "evidence-version:1",
+                },
+                {
+                    "evidence_id": "evidence:2",
+                    "evidence_version_id": "evidence-version:2",
+                },
+            ]
+        }
+    }
+
+    evidence_ids, version_ids = _task_evidence_identity_sets((task,))
+
+    assert evidence_ids == {"evidence:1", "evidence:2"}
+    assert version_ids == {"evidence-version:1", "evidence-version:2"}
+
+    del task["public_corpus"]["evidence"][0]["evidence_version_id"]  # type: ignore[index]
+    with pytest.raises(ValueError, match="lacks a Version ID"):
+        _task_evidence_identity_sets((task,))
 
 
 def _localization_contract_and_outcomes(

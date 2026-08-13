@@ -15,12 +15,13 @@ from trusted_synthesis.core.operations.registry import OperationRegistry, defaul
 from trusted_synthesis.core.operations.schema import OperationInput
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import (
+    ARGUMENT_PATCH_REQUIRED_POLICY,
     AgentToolCall,
     AgentToolEnvironmentManifest,
     AgentToolResult,
 )
 
-FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v5"
+FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION = "finance_archive_interactive_runtime.v7"
 FINANCE_TYPED_RECOVERY_SCENARIO_VERSION = "finance_typed_recovery_scenario.v1"
 
 _PUBLIC_SUBJECT_ID_SUFFIXES = ("_US", "_COUNTRY", "_HK", "_CN")
@@ -314,21 +315,30 @@ class FinanceArchiveInteractiveToolRuntime:
         ):
             self._forced_recovery_failures += 1
             self._forced_recovery_selector_hash = selector_hash
+            retry_contract = _typed_recovery_retry_contract(matches, filters)
             return _failed(
                 scenario.error_code,
                 "The typed selector reached a registered near-match branch. Inspect the "
                 "public search observations, change at least one subject, metric, period, or "
                 "public_filter selector, and retry the structured query. Registered mismatch "
-                f"fields: {', '.join(scenario.mismatch_fields)}.",
+                f"fields: {', '.join(scenario.mismatch_fields)}. Apply the public "
+                "suggested_argument_patch in retry_contract when it is available.",
+                result={"retry_contract": retry_contract},
             )
-        if (
-            scenario is not None
-            and self._forced_recovery_selector_hash == selector_hash
-        ):
+        if scenario is not None and self._forced_recovery_selector_hash == selector_hash:
+            retry_contract = _typed_recovery_retry_contract(matches, filters)
             return _failed(
                 "typed_selector_not_revised",
                 "The retry repeated the failed typed selector. Change at least one public "
-                "subject, metric, period, or filter selector before retrying.",
+                "subject, metric, period, or filter selector before retrying; apply the "
+                "suggested_argument_patch.",
+                result={
+                    "retry_contract": {
+                        **retry_contract,
+                        "policy": "selector_revision_required",
+                        "maximum_identical_replays": 0,
+                    }
+                },
             )
         if len(matches) > _MAX_QUERY_RESULTS:
             return _failed(
@@ -638,13 +648,47 @@ def _evidence_id_tuple(value: Any) -> tuple[str, ...]:
     return evidence_ids
 
 
-def _failed(code: str, message: str) -> AgentToolResult:
+def _failed(
+    code: str,
+    message: str,
+    *,
+    result: dict[str, Any] | None = None,
+) -> AgentToolResult:
     return AgentToolResult(
         status="failed",
-        result={},
+        result=result or {},
         error_code=code,
         error_message=message,
     )
+
+
+def _typed_recovery_retry_contract(
+    matches: tuple[EvidenceItem, ...],
+    filters: dict[str, Any],
+) -> dict[str, Any]:
+    item = min(matches, key=lambda value: value.evidence_id)
+    supported = (
+        ("source_id", item.source.source_id),
+        ("definition_id", item.definition.definition_id),
+        ("time_basis", item.temporal_context.basis),
+        ("frequency", item.temporal_context.frequency),
+        ("subject_type", item.subject.subject_type),
+        ("source_authority", item.source.authority.value),
+        ("unit", getattr(item.payload, "unit", None)),
+        ("currency", getattr(item.payload, "currency", None)),
+    )
+    patch: dict[str, Any] = {}
+    for key, value in supported:
+        if value not in (None, "") and filters.get(key) != value:
+            patch = {"public_filters": {**filters, key: value}}
+            break
+    if not patch:
+        patch = {"subject_alias": item.subject.subject_id}
+    return {
+        "policy": ARGUMENT_PATCH_REQUIRED_POLICY,
+        "maximum_identical_replays": 0,
+        "suggested_argument_patch": patch,
+    }
 
 
 def _tokens(value: str) -> set[str]:

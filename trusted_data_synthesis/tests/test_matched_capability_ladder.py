@@ -31,6 +31,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
 from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_satisfiability import (
     PublicContractCheck,
     PublicContractSatisfiabilityRecord,
+    RuntimeArmName,
     make_public_contract_audit,
     public_contract_record_id,
 )
@@ -212,7 +213,7 @@ def _passing_record(
 
 
 def test_public_contract_audit_scales_to_63_balanced_tasks() -> None:
-    runtimes = (
+    runtimes: tuple[RuntimeArmName, ...] = (
         "direct_fixed_retrieval",
         "scripted_tool",
         "autonomous_agent",
@@ -231,10 +232,34 @@ def test_public_contract_audit_scales_to_63_balanced_tasks() -> None:
     audit = make_public_contract_audit(
         population_id="population:matched",
         records=records,
+        required_runtime_arms=runtimes,
     )
 
     assert len(audit.records) == 189
     assert audit.passed_record_count == 189
+    assert audit.all_public_contracts_satisfiable is True
+
+
+def test_public_contract_audit_accepts_an_explicit_two_runtime_contract() -> None:
+    runtimes: tuple[RuntimeArmName, ...] = ("scripted_tool", "autonomous_agent")
+    records = tuple(
+        _passing_record(
+            family=family,
+            task_index=0,
+            runtime=runtime,
+        )
+        for family in CAPABILITY_SENSITIVE_FAMILIES
+        for runtime in runtimes
+    )
+
+    audit = make_public_contract_audit(
+        population_id="population:flash-only",
+        records=records,
+        required_runtime_arms=runtimes,
+    )
+
+    assert audit.required_runtime_arms == runtimes
+    assert len(audit.records) == 14
     assert audit.all_public_contracts_satisfiable is True
 
 

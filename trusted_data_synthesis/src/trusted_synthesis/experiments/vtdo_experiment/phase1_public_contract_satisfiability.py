@@ -22,8 +22,7 @@ from trusted_synthesis.runtime.tools import AgentToolCall, AgentToolEnvironmentM
 
 PUBLIC_CONTRACT_SATISFIABILITY_VERSION = "public_contract_satisfiability.v1"
 SCRIPTED_SEQUENCE_COMPILATION_VERSION = "finance_scripted_sequence_compilation.v1"
-PUBLIC_CONTRACT_AUDIT_VERSION = "finance_public_contract_satisfiability_audit.v2"
-LEGACY_PUBLIC_CONTRACT_AUDIT_VERSION = "finance_public_contract_satisfiability_audit.v1"
+PUBLIC_CONTRACT_AUDIT_VERSION = "finance_public_contract_satisfiability_audit.v3"
 
 RuntimeArmName = Literal[
     "direct_fixed_retrieval",
@@ -166,7 +165,8 @@ class PublicContractSatisfiabilityRecord(FrozenModel):
 class PublicContractSatisfiabilityAudit(FrozenModel):
     audit_id: str = Field(min_length=1)
     population_id: str = Field(min_length=1)
-    records: tuple[PublicContractSatisfiabilityRecord, ...] = Field(min_length=21)
+    required_runtime_arms: tuple[RuntimeArmName, ...] = Field(min_length=1)
+    records: tuple[PublicContractSatisfiabilityRecord, ...] = Field(min_length=7)
     passed_record_count: int = Field(ge=0)
     all_public_contracts_satisfiable: bool
     next_permitted_stage: Literal[
@@ -177,21 +177,15 @@ class PublicContractSatisfiabilityAudit(FrozenModel):
 
     @model_validator(mode="after")
     def validate_audit(self) -> PublicContractSatisfiabilityAudit:
-        if self.schema_version not in {
-            LEGACY_PUBLIC_CONTRACT_AUDIT_VERSION,
-            PUBLIC_CONTRACT_AUDIT_VERSION,
-        }:
+        if self.schema_version != PUBLIC_CONTRACT_AUDIT_VERSION:
             raise ValueError("public contract audit version is unsupported")
-        runtime_count = 3
+        if len(set(self.required_runtime_arms)) != len(self.required_runtime_arms):
+            raise ValueError("public contract audit Runtime arms are not unique")
+        runtime_count = len(self.required_runtime_arms)
         family_count = len(CAPABILITY_SENSITIVE_FAMILIES)
-        if (
-            self.schema_version == LEGACY_PUBLIC_CONTRACT_AUDIT_VERSION
-            and len(self.records) != family_count * runtime_count
-        ):
-            raise ValueError("legacy public contract audit requires exactly 21 records")
         if len(self.records) % (family_count * runtime_count) != 0:
             raise ValueError(
-                "public contract audit must contain balanced families across three Runtimes"
+                "public contract audit must contain balanced families across declared Runtimes"
             )
         task_ids = {item.task_artifact_id for item in self.records}
         if len(task_ids) * runtime_count != len(self.records):
@@ -199,8 +193,8 @@ class PublicContractSatisfiabilityAudit(FrozenModel):
         for task_id in task_ids:
             if {
                 item.runtime_arm for item in self.records if item.task_artifact_id == task_id
-            } != {"direct_fixed_retrieval", "scripted_tool", "autonomous_agent"}:
-                raise ValueError("public contract audit task lacks a Runtime")
+            } != set(self.required_runtime_arms):
+                raise ValueError("public contract audit task lacks a declared Runtime")
         if {item.family for item in self.records} != set(CAPABILITY_SENSITIVE_FAMILIES):
             raise ValueError("public contract audit does not cover every capability family")
         family_task_counts = {
@@ -393,11 +387,13 @@ def make_public_contract_audit(
     *,
     population_id: str,
     records: tuple[PublicContractSatisfiabilityRecord, ...],
+    required_runtime_arms: tuple[RuntimeArmName, ...],
 ) -> PublicContractSatisfiabilityAudit:
     passed_count = sum(item.passed for item in records)
     ready = passed_count == len(records)
     values = {
         "population_id": population_id,
+        "required_runtime_arms": required_runtime_arms,
         "records": records,
         "passed_record_count": passed_count,
         "all_public_contracts_satisfiable": ready,

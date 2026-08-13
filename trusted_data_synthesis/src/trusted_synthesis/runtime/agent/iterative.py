@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from decimal import Decimal, InvalidOperation
 from typing import Any, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
@@ -18,6 +19,8 @@ from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.client import JsonCompletionClient, LLMClientError
 from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
 from trusted_synthesis.runtime.tools import (
+    ARGUMENT_PATCH_REQUIRED_POLICY,
+    PREREQUISITE_ACTION_REQUIRED_POLICY,
     AgentToolCall,
     AgentToolObservation,
     AgentToolResult,
@@ -26,13 +29,14 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v14"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v19"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v12"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v13"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v16"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v17"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v10"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v12"
 MAXIMUM_STOP_REJECTIONS = 2
+_ANSWER_FIELD_CONSTRAINT_KEYS = frozenset({"allowed_values", "numeric_minimum", "numeric_maximum"})
 MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
     {
         "answer_payload",
@@ -51,7 +55,7 @@ MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
 
 InteractiveAgentMode = Literal["scripted_tool", "autonomous_agent"]
 InitialPlanMode = Literal["model_contract", "implicit_public"]
-ObservationView = Literal["full", "compact"]
+ObservationView = Literal["full", "compact", "bounded_summary"]
 DecisionType = Literal["tool_call", "final_answer"]
 StopRejectionCode = Literal[
     "missing_observed_evidence",
@@ -473,7 +477,7 @@ class IterativeAgentSolver:
                         "missing_required_verification" if host_repair_tool else None
                     ),
                     public_state_condition=condition_payload,
-                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                    host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     observation_view=self._protocol_profile.observation_view,
                 )
                 response_type: type[BaseModel] = AgentScriptedToolContract
@@ -483,7 +487,7 @@ class IterativeAgentSolver:
                     plan,
                     tuple(observations),
                     public_state_condition=condition_payload,
-                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                    host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     mode=self._mode,
                     observation_view=self._protocol_profile.observation_view,
                 )
@@ -495,7 +499,7 @@ class IterativeAgentSolver:
                     plan,
                     tuple(observations),
                     public_state_condition=condition_payload,
-                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                    host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     mode=self._mode,
                     observation_view=self._protocol_profile.observation_view,
                 )
@@ -512,7 +516,7 @@ class IterativeAgentSolver:
                     mode=self._mode,
                     expected_tool=None,
                     public_state_condition=condition_payload,
-                    host_feedback=tuple(item.feedback for item in stop_rejections),
+                    host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     observation_view=self._protocol_profile.observation_view,
                 )
                 response_type = AgentLoopDecisionContract
@@ -623,8 +627,30 @@ class IterativeAgentSolver:
                     break
                 failed_signatures.add(_tool_call_signature(item.call))
             if _tool_call_signature(call) in failed_signatures:
-                raise failure("Agent repeated an identical failed tool call")
-            result = agent_tool_argument_rejection(spec, call) or _execute_tool(runtime, call)
+                result = AgentToolResult(
+                    status="failed",
+                    result={
+                        "retry_contract": {
+                            "policy": ARGUMENT_PATCH_REQUIRED_POLICY,
+                            "suggested_argument_patch": {
+                                "rule": (
+                                    "change at least one argument according to the latest "
+                                    "public error; the identical failed action remains blocked"
+                                )
+                            },
+                        }
+                    },
+                    error_code="identical_failed_action_blocked",
+                    error_message=(
+                        "The Host blocked an identical failed action without executing it."
+                    ),
+                )
+            else:
+                result = (
+                    agent_tool_argument_rejection(spec, call)
+                    or _operation_step_rejection(task, tuple(observations), call)
+                    or _execute_tool(runtime, call)
+                )
             _assert_no_model_forbidden_fields(result.result)
             if result.status == "succeeded":
                 try:
@@ -838,8 +864,11 @@ def _request_contract(
         )
         try:
             payload, call = client.complete_json(prompt)
+            call = _with_prompt_component_bytes(call, prompt)
         except LLMClientError as exc:
-            telemetry.extend(exc.telemetry)
+            telemetry.extend(
+                _with_prompt_component_bytes(item, prompt) for item in exc.telemetry
+            )
             validation_error = f"provider_or_json_error:{exc}"[:1200]
             previous_payload_keys = ()
             if attempt == maximum_attempt:
@@ -864,6 +893,44 @@ def _request_contract(
                 )
             )
     raise LLMClientError("model failed the iterative Agent contract", tuple(telemetry))
+
+
+def _with_prompt_component_bytes(
+    telemetry: ModelCallTelemetry,
+    prompt: str,
+) -> ModelCallTelemetry:
+    response_shape = dict(telemetry.response_shape)
+    response_shape["prompt_component_bytes"] = _prompt_component_bytes(prompt)
+    return telemetry.model_copy(update={"response_shape": response_shape})
+
+
+def _prompt_component_bytes(prompt: str) -> dict[str, int]:
+    context_marker = "\nPUBLIC_CONTEXT_JSON:\n"
+    repair_marker = "\nCONTRACT_REPAIR_JSON:\n"
+    instruction, separator, remainder = prompt.partition(context_marker)
+    if not separator:
+        return {"instruction": len(prompt.encode("utf-8"))}
+    context_text, repair_separator, repair_text = remainder.partition(repair_marker)
+    values: dict[str, int] = {"instruction": len(instruction.encode("utf-8"))}
+    try:
+        context = json.loads(context_text)
+    except json.JSONDecodeError:
+        values["public_context"] = len(context_text.encode("utf-8"))
+    else:
+        if isinstance(context, dict):
+            for key, value in sorted(context.items()):
+                encoded = json.dumps(
+                    value,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+                values[f"public_context.{key}"] = len(encoded)
+        else:
+            values["public_context"] = len(context_text.encode("utf-8"))
+    if repair_separator:
+        values["contract_repair"] = len(repair_text.encode("utf-8"))
+    return values
 
 
 def _total_model_tokens(telemetry: list[ModelCallTelemetry]) -> int:
@@ -1000,6 +1067,13 @@ def _validate_final_answer(
         raise LLMClientError(
             f"Agent stopped with unmet public requirements: {[item.value for item in unmet]}"
         )
+    operation_progress = _operation_execution_progress(task, observations)
+    if operation_progress is not None and not operation_progress["all_steps_completed"]:
+        next_step = operation_progress.get("next_required_step") or {}
+        raise LLMClientError(
+            "Agent stopped before completing the public operation contract; next step: "
+            f"{next_step.get('step_id', 'unknown')}"
+        )
     answer = decision.answer or {}
     missing_fields = set(required_answer_fields(task.answer_schema)) - set(answer)
     if missing_fields:
@@ -1009,10 +1083,201 @@ def _validate_final_answer(
         raise LLMClientError(
             f"Agent final answer contains unknown fields: {sorted(unknown_fields)}"
         )
+    _validate_answer_field_constraints(task, answer)
+    _validate_answer_observation_constraints(task, answer, observations)
     available_evidence = {evidence_id for item in observations for evidence_id in item.evidence_ids}
     unknown_citations = set(decision.cited_evidence_ids) - available_evidence
     if unknown_citations:
         raise LLMClientError(f"Agent cited unobserved Evidence: {sorted(unknown_citations)}")
+
+
+def _validate_answer_field_constraints(
+    task: TaskPublicSpec,
+    answer: dict[str, Any],
+) -> None:
+    guidance = task.metadata.get("agent_contract_guidance")
+    if guidance is None:
+        return
+    if not isinstance(guidance, dict):
+        raise LLMClientError("agent_contract_guidance must be an object")
+    constraints = guidance.get("answer_field_constraints")
+    if constraints is None:
+        return
+    if not isinstance(constraints, dict):
+        raise LLMClientError("answer_field_constraints must be an object")
+    unknown_fields = set(constraints) - allowed_result_fields(task.answer_schema)
+    if unknown_fields:
+        raise LLMClientError(
+            f"answer_field_constraints references unknown answer fields: {sorted(unknown_fields)}"
+        )
+    for field_name, raw_constraint in constraints.items():
+        if not isinstance(raw_constraint, dict):
+            raise LLMClientError(f"answer constraint for {field_name} must be an object")
+        unknown_keys = set(raw_constraint) - _ANSWER_FIELD_CONSTRAINT_KEYS
+        if unknown_keys:
+            raise LLMClientError(
+                f"answer constraint for {field_name} contains unknown keys: {sorted(unknown_keys)}"
+            )
+        if field_name not in answer:
+            continue
+        value = answer[field_name]
+        allowed_values = raw_constraint.get("allowed_values")
+        if allowed_values is not None:
+            if not isinstance(allowed_values, (list, tuple)) or not allowed_values:
+                raise LLMClientError(f"allowed_values for {field_name} must be a nonempty array")
+            if value not in allowed_values:
+                raise LLMClientError(
+                    f"answer field {field_name} is outside its allowed public values"
+                )
+        minimum = _decimal_answer_bound(raw_constraint, "numeric_minimum", field_name)
+        maximum = _decimal_answer_bound(raw_constraint, "numeric_maximum", field_name)
+        if minimum is not None and maximum is not None and minimum > maximum:
+            raise LLMClientError(f"numeric bounds for {field_name} are inconsistent")
+        if minimum is None and maximum is None:
+            continue
+        if isinstance(value, bool):
+            raise LLMClientError(f"answer field {field_name} must be numeric")
+        try:
+            numeric_value = Decimal(str(value))
+        except (InvalidOperation, ValueError) as exc:
+            raise LLMClientError(f"answer field {field_name} must be numeric") from exc
+        if not numeric_value.is_finite():
+            raise LLMClientError(f"answer field {field_name} must be finite")
+        if minimum is not None and numeric_value < minimum:
+            raise LLMClientError(f"answer field {field_name} is below its public minimum")
+        if maximum is not None and numeric_value > maximum:
+            raise LLMClientError(f"answer field {field_name} is above its public maximum")
+
+
+def _decimal_answer_bound(
+    constraint: dict[str, Any],
+    key: str,
+    field_name: str,
+) -> Decimal | None:
+    if key not in constraint:
+        return None
+    value = constraint[key]
+    if isinstance(value, bool):
+        raise LLMClientError(f"{key} for {field_name} must be a finite decimal")
+    try:
+        output = Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise LLMClientError(f"{key} for {field_name} must be a finite decimal") from exc
+    if not output.is_finite():
+        raise LLMClientError(f"{key} for {field_name} must be a finite decimal")
+    return output
+
+
+def _validate_answer_observation_constraints(
+    task: TaskPublicSpec,
+    answer: dict[str, Any],
+    observations: tuple[AgentToolObservation, ...],
+) -> None:
+    guidance = task.metadata.get("agent_contract_guidance")
+    if not isinstance(guidance, dict):
+        return
+    raw = guidance.get("answer_observation_constraints")
+    if raw is None:
+        return
+    if not isinstance(raw, dict):
+        raise LLMClientError("answer_observation_constraints must be an object")
+    allowed_keys = {
+        "source_tool_id",
+        "source_operation_role",
+        "source_result_selector",
+        "field_selectors",
+        "exact_fields",
+    }
+    unknown_keys = set(raw) - allowed_keys
+    if unknown_keys:
+        raise LLMClientError(
+            f"answer_observation_constraints contains unknown keys: {sorted(unknown_keys)}"
+        )
+    source_tool_id = raw.get("source_tool_id")
+    if not isinstance(source_tool_id, str) or not source_tool_id:
+        raise LLMClientError("answer observation source_tool_id must be a string")
+    source_selector = _selector_tuple(
+        raw.get("source_result_selector"),
+        field_name="source_result_selector",
+    )
+    field_selectors = raw.get("field_selectors")
+    if not isinstance(field_selectors, dict) or not field_selectors:
+        raise LLMClientError("answer observation field_selectors must be an object")
+    exact_fields = raw.get("exact_fields")
+    if not isinstance(exact_fields, (list, tuple)) or not exact_fields:
+        raise LLMClientError("answer observation exact_fields must be a nonempty array")
+    exact_field_names = tuple(str(item) for item in exact_fields)
+    if set(exact_field_names) - set(field_selectors):
+        raise LLMClientError("answer observation exact_fields lack selectors")
+    source_operation_role = raw.get("source_operation_role")
+    if source_operation_role not in (None, "terminal"):
+        raise LLMClientError("answer source_operation_role must be terminal when present")
+    terminal_operation_ref: str | None = None
+    if source_operation_role == "terminal":
+        progress = _operation_execution_progress(task, observations)
+        if progress is None or not progress["all_steps_completed"]:
+            raise LLMClientError("terminal answer source requires a completed Operation Contract")
+        value = progress.get("terminal_operation_ref")
+        if not isinstance(value, str) or not value:
+            raise LLMClientError("terminal Operation Contract lacks an operation reference")
+        terminal_operation_ref = value
+    source_observation = next(
+        (
+            item
+            for item in reversed(observations)
+            if item.status == "succeeded"
+            and item.call.tool_id == source_tool_id
+            and (
+                terminal_operation_ref is None
+                or _try_select_public_value(
+                    item.result,
+                    ("result", "operation_ref"),
+                )
+                == terminal_operation_ref
+            )
+        ),
+        None,
+    )
+    if source_observation is None:
+        raise LLMClientError(f"answer requires a successful terminal {source_tool_id} observation")
+    source_value = _select_public_value(
+        source_observation.result,
+        source_selector,
+        label="source_result_selector",
+    )
+    for field_name in exact_field_names:
+        selector = _selector_tuple(
+            field_selectors[field_name],
+            field_name=f"field_selectors.{field_name}",
+        )
+        expected = _select_public_value(
+            source_value,
+            selector,
+            label=f"field_selectors.{field_name}",
+        )
+        if field_name not in answer or answer[field_name] != expected:
+            raise LLMClientError(
+                f"answer field {field_name} must exactly copy the terminal public "
+                f"{source_tool_id} observation"
+            )
+
+
+def _selector_tuple(value: Any, *, field_name: str) -> tuple[str, ...]:
+    if not isinstance(value, (list, tuple)) or not value:
+        raise LLMClientError(f"{field_name} must be a nonempty selector array")
+    output = tuple(str(item) for item in value)
+    if any(not item for item in output):
+        raise LLMClientError(f"{field_name} contains an empty selector")
+    return output
+
+
+def _select_public_value(value: Any, selector: tuple[str, ...], *, label: str) -> Any:
+    current = value
+    for key in selector:
+        if not isinstance(current, dict) or key not in current:
+            raise LLMClientError(f"{label} does not resolve in the public observation")
+        current = current[key]
+    return current
 
 
 def _make_trajectory(
@@ -1188,10 +1453,46 @@ def _model_visible_observations(
     observations: tuple[AgentToolObservation, ...],
     *,
     view: ObservationView,
-) -> list[dict[str, Any]]:
+) -> list[dict[str, Any]] | dict[str, Any]:
     if view == "full":
         return [_full_observation_view(item) for item in observations]
+    if view == "bounded_summary":
+        return _bounded_observation_summary(observations)
     return [_compact_observation_view(item) for item in observations]
+
+
+def _bounded_observation_summary(
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, Any]:
+    """Expose a bounded sufficient public state instead of replaying the whole transcript."""
+
+    selected: list[dict[str, Any]] = []
+    operations: list[dict[str, Any]] = []
+    latest_unbound_success: dict[str, Any] | None = None
+    latest_verification: dict[str, Any] | None = None
+    latest_failure: dict[str, Any] | None = None
+    for item in observations:
+        compact = _compact_observation_view(item)
+        if item.status == "failed":
+            latest_failure = compact
+            continue
+        result = item.result.get("result", item.result)
+        if isinstance(result, dict) and result.get("operation_ref"):
+            operations.append(compact)
+        elif isinstance(result, dict) and result.get("verified") is True:
+            latest_verification = compact
+        elif item.evidence_ids:
+            selected.append(compact)
+        else:
+            latest_unbound_success = compact
+    return {
+        "observation_count": len(observations),
+        "selected_evidence_observations": selected,
+        "successful_operation_observations": operations,
+        "latest_unbound_success_observation": latest_unbound_success,
+        "latest_verification_observation": latest_verification,
+        "latest_failed_observation": latest_failure,
+    }
 
 
 def _full_observation_view(item: AgentToolObservation) -> dict[str, Any]:
@@ -1303,7 +1604,16 @@ def _model_visible_task(task: TaskPublicSpec) -> dict[str, Any]:
     }
     guidance = task.metadata.get("agent_contract_guidance")
     if guidance is not None:
-        visible["agent_contract_guidance"] = guidance
+        if not isinstance(guidance, dict):
+            raise ValueError("agent_contract_guidance must be an object")
+        # The ordered public frontier is supplied separately by
+        # operation_execution_progress. Repeating the complete future DAG in every
+        # prompt creates token pressure and can pre-empt non-calculation Scripted steps.
+        visible["agent_contract_guidance"] = {
+            key: value
+            for key, value in guidance.items()
+            if key != "operation_execution_contract"
+        }
     return visible
 
 
@@ -1313,6 +1623,351 @@ def _json_contract_prompt(instruction: str, context: dict[str, Any]) -> str:
         + "\nPUBLIC_CONTEXT_JSON:\n"
         + json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     )
+
+
+def _failed_action_repair_context(
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, Any] | None:
+    if not observations or observations[-1].status != "failed":
+        return None
+    failed = observations[-1]
+    retry_contract = failed.result.get("retry_contract")
+    if not isinstance(retry_contract, dict):
+        retry_contract = {}
+    operation_refs = tuple(
+        sorted(
+            {
+                str(operation_ref)
+                for item in observations
+                if item.status == "succeeded"
+                and isinstance(item.result.get("result"), dict)
+                and (operation_ref := item.result["result"].get("operation_ref"))
+            }
+        )
+    )
+    return {
+        "failed_tool_id": failed.call.tool_id,
+        "error_code": failed.error_code,
+        "error_message": failed.error_message,
+        "identical_arguments_forbidden": True,
+        "retry_policy": retry_contract.get("policy"),
+        "required_argument_patch": retry_contract.get("suggested_argument_patch"),
+        "required_prerequisite_action": retry_contract.get("required_prerequisite_action"),
+        "available_successful_operation_refs": operation_refs,
+        "required_action": (
+            "perform required_prerequisite_action first when present; otherwise change the "
+            "failed arguments and apply required_argument_patch; never submit the identical "
+            "call"
+        ),
+    }
+
+
+def _operation_execution_progress(
+    task: TaskPublicSpec,
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, Any] | None:
+    guidance = task.metadata.get("agent_contract_guidance")
+    if not isinstance(guidance, dict):
+        return None
+    contract = guidance.get("operation_execution_contract")
+    if not isinstance(contract, dict):
+        return None
+    raw_steps = contract.get("steps")
+    raw_variables = contract.get("variables")
+    if not isinstance(raw_steps, (list, tuple)) or not raw_steps:
+        raise ValueError("operation_execution_contract requires ordered steps")
+    if not isinstance(raw_variables, (list, tuple)):
+        raise ValueError("operation_execution_contract variables must be an array")
+    variables = {
+        str(item["symbol"]): item
+        for item in raw_variables
+        if isinstance(item, dict) and item.get("symbol")
+    }
+    steps = tuple(item for item in raw_steps if isinstance(item, dict))
+    if len(steps) != len(raw_steps):
+        raise ValueError("operation_execution_contract contains malformed steps")
+    completed: dict[str, str] = {}
+    matched_observation_ids: list[str] = []
+    next_index = 0
+    for observation_index, observation in enumerate(observations):
+        if next_index >= len(steps) or observation.status != "succeeded":
+            continue
+        expected = steps[next_index]
+        if observation.call.tool_id != expected.get("tool_id"):
+            continue
+        if observation.call.arguments.get("operator") != expected.get("tool_operator"):
+            continue
+        if observation.call.arguments.get("parameters") != expected.get("parameters"):
+            continue
+        if not _operation_call_satisfies_step(
+            observation.call.arguments,
+            expected,
+            variables=variables,
+            resolved_variables=_resolved_operation_variables(
+                variables,
+                observations[:observation_index],
+            ),
+            completed=completed,
+        ):
+            continue
+        operation_result = observation.result.get("result")
+        if not isinstance(operation_result, dict):
+            continue
+        operation_ref = operation_result.get("operation_ref")
+        if not isinstance(operation_ref, str) or not operation_ref:
+            continue
+        step_id = str(expected.get("step_id") or "")
+        if not step_id:
+            raise ValueError("operation_execution_contract step lacks step_id")
+        completed[step_id] = operation_ref
+        matched_observation_ids.append(observation.observation_id)
+        next_index += 1
+    if next_index >= len(steps):
+        output_step_id = str(contract.get("output_step_id") or "")
+        return {
+            "contract_version": contract.get("contract_version"),
+            "strict_step_order": True,
+            "all_steps_completed": True,
+            "completed_step_operation_refs": completed,
+            "terminal_operation_ref": completed.get(output_step_id),
+            "matched_observation_ids": tuple(matched_observation_ids),
+        }
+    next_step = steps[next_index]
+    inputs = next_step.get("inputs")
+    selectors = next_step.get("input_selectors")
+    if not isinstance(inputs, (list, tuple)) or not isinstance(selectors, (list, tuple)):
+        raise ValueError("operation_execution_contract step inputs are malformed")
+    if len(inputs) != len(selectors):
+        raise ValueError("operation_execution_contract input selectors are incomplete")
+    resolved_variables = _resolved_operation_variables(variables, observations)
+    resolution = []
+    expected_operands: list[dict[str, Any]] = []
+    unresolved_inputs: list[dict[str, Any]] = []
+    for input_ref, selector in zip(inputs, selectors, strict=True):
+        input_name = str(input_ref)
+        if input_name in completed:
+            operand = {
+                "operation_ref": completed[input_name],
+                "selector": selector,
+            }
+            resolution.append(
+                {
+                    "input_ref": input_name,
+                    "source": "prior_successful_operation",
+                    **operand,
+                }
+            )
+            expected_operands.append(operand)
+        elif input_name in variables:
+            evidence_id = resolved_variables.get(input_name)
+            item = {
+                "input_ref": input_name,
+                "source": "selected_evidence",
+                "public_binding": variables[input_name],
+                "evidence_id": evidence_id,
+                "selection_required": evidence_id is None,
+            }
+            resolution.append(item)
+            if evidence_id is None:
+                unresolved_inputs.append(item)
+            else:
+                expected_operands.append({"evidence_id": evidence_id})
+        else:
+            raise ValueError(f"operation_execution_contract input is unresolved: {input_name}")
+    return {
+        "contract_version": contract.get("contract_version"),
+        "strict_step_order": True,
+        "all_steps_completed": False,
+        "completed_step_operation_refs": completed,
+        "matched_observation_ids": tuple(matched_observation_ids),
+        "next_required_step": {
+            "step_id": next_step.get("step_id"),
+            "tool_id": next_step.get("tool_id"),
+            "operator": next_step.get("tool_operator"),
+            "parameters": next_step.get("parameters"),
+            "expression": next_step.get("expression"),
+            "input_resolution": tuple(resolution),
+            "expected_arguments": (
+                {
+                    "operator": next_step.get("tool_operator"),
+                    "operands": expected_operands,
+                    "parameters": next_step.get("parameters"),
+                }
+                if not unresolved_inputs
+                else None
+            ),
+            "unresolved_inputs": tuple(unresolved_inputs),
+        },
+        "required_action": (
+            "select every unresolved input before calculation; then copy expected_arguments "
+            "exactly and execute next_required_step before any later operation"
+        ),
+    }
+
+
+def _scripted_operation_execution_progress(
+    task: TaskPublicSpec,
+    expected_tool: dict[str, Any],
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, Any] | None:
+    """Keep a pending calculation from preempting the Host retrieval schedule."""
+
+    if str(expected_tool.get("semantic_role") or "") != "calculate":
+        return None
+    return _operation_execution_progress(task, observations)
+
+
+def _operation_step_rejection(
+    task: TaskPublicSpec,
+    observations: tuple[AgentToolObservation, ...],
+    call: AgentToolCall,
+) -> AgentToolResult | None:
+    if call.tool_id != "calculator":
+        return None
+    progress = _operation_execution_progress(task, observations)
+    if progress is None:
+        return None
+    if progress["all_steps_completed"]:
+        return AgentToolResult(
+            status="failed",
+            result={},
+            error_code="operation_contract_complete",
+            error_message="The public Operation Contract has no remaining calculator step.",
+        )
+    next_step = progress["next_required_step"]
+    expected_arguments = next_step.get("expected_arguments")
+    if expected_arguments is None:
+        unresolved = next_step.get("unresolved_inputs") or ()
+        return AgentToolResult(
+            status="failed",
+            result={
+                "retry_contract": {
+                    "policy": PREREQUISITE_ACTION_REQUIRED_POLICY,
+                    "maximum_identical_replays": 0,
+                    "required_prerequisite_action": {
+                        "action": "select_missing_evidence",
+                        "unresolved_inputs": unresolved,
+                    },
+                }
+            },
+            error_code="operation_input_not_selected",
+            error_message=(
+                "Select every unresolved public Evidence input before retrying the frozen "
+                "calculator step."
+            ),
+        )
+    if call.arguments != expected_arguments:
+        return AgentToolResult(
+            status="failed",
+            result={
+                "retry_contract": {
+                    "policy": ARGUMENT_PATCH_REQUIRED_POLICY,
+                    "maximum_identical_replays": 0,
+                    "suggested_argument_patch": expected_arguments,
+                }
+            },
+            error_code="operation_step_contract",
+            error_message=(
+                "The calculator call differs from the next frozen Operation step. Copy the "
+                "suggested_argument_patch exactly."
+            ),
+        )
+    return None
+
+
+def _operation_call_satisfies_step(
+    arguments: dict[str, Any],
+    step: dict[str, Any],
+    *,
+    variables: dict[str, Any],
+    resolved_variables: dict[str, str],
+    completed: dict[str, str],
+) -> bool:
+    operands = arguments.get("operands")
+    inputs = step.get("inputs")
+    selectors = step.get("input_selectors")
+    if not isinstance(operands, list):
+        return False
+    if not isinstance(inputs, (list, tuple)) or not isinstance(selectors, (list, tuple)):
+        return False
+    if len(operands) != len(inputs) or len(inputs) != len(selectors):
+        return False
+    for operand, input_ref, selector in zip(operands, inputs, selectors, strict=True):
+        input_name = str(input_ref)
+        if input_name in completed:
+            if not isinstance(operand, dict):
+                return False
+            if operand.get("operation_ref") != completed[input_name]:
+                return False
+            if selector is not None and operand.get("selector") != selector:
+                return False
+        elif input_name in variables:
+            evidence_id = operand.get("evidence_id") if isinstance(operand, dict) else operand
+            if not isinstance(evidence_id, str) or not evidence_id.startswith("evidence:"):
+                return False
+            expected_evidence_id = resolved_variables.get(input_name)
+            if expected_evidence_id is not None and evidence_id != expected_evidence_id:
+                return False
+        else:
+            return False
+    return True
+
+
+def _resolved_operation_variables(
+    variables: dict[str, Any],
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, str]:
+    output: dict[str, str] = {}
+    for symbol, variable in variables.items():
+        if not isinstance(variable, dict):
+            continue
+        raw_match = variable.get("selection_match")
+        if not isinstance(raw_match, dict):
+            continue
+        collection_selector = raw_match.get("collection_selector")
+        evidence_id_selector = raw_match.get("evidence_id_selector")
+        predicates = raw_match.get("equals")
+        if not isinstance(collection_selector, (list, tuple)) or not isinstance(
+            evidence_id_selector, (list, tuple)
+        ):
+            raise ValueError("operation variable selection selectors are malformed")
+        if not isinstance(predicates, (list, tuple)):
+            raise ValueError("operation variable selection predicates are malformed")
+        matches: set[str] = set()
+        for observation in observations:
+            if observation.status != "succeeded":
+                continue
+            collection = _try_select_public_value(observation.result, collection_selector)
+            if not isinstance(collection, list):
+                continue
+            for candidate in collection:
+                if not all(
+                    isinstance(predicate, dict)
+                    and isinstance(predicate.get("selector"), (list, tuple))
+                    and _try_select_public_value(candidate, predicate["selector"])
+                    == predicate.get("value")
+                    for predicate in predicates
+                ):
+                    continue
+                evidence_id = _try_select_public_value(candidate, evidence_id_selector)
+                if isinstance(evidence_id, str) and evidence_id in observation.evidence_ids:
+                    matches.add(evidence_id)
+        if len(matches) > 1:
+            raise ValueError(f"operation variable {symbol} resolves ambiguously")
+        if matches:
+            output[symbol] = next(iter(matches))
+    return output
+
+
+def _try_select_public_value(value: Any, selector: Any) -> Any:
+    if not isinstance(selector, (list, tuple)):
+        return None
+    current = value
+    for key in selector:
+        if not isinstance(current, dict) or str(key) not in current:
+            return None
+        current = current[str(key)]
+    return current
 
 
 def _plan_prompt(
@@ -1376,7 +2031,11 @@ def _scripted_tool_prompt(
         "encoded strings. Copy operation_ref verbatim from the prior successful calculator "
         "observation. A selector is relative to its result.result.output object: use 'value' "
         "for scalar output and never use 'output' or 'output.value'. Never invent a short "
-        "operation name. Never repeat identical arguments after a failure. Keep "
+        "operation name. When operation_execution_progress is present, the next calculator "
+        "call must execute next_required_step and no later step. When failed_action_repair is "
+        "present, perform required_prerequisite_action first when supplied; otherwise apply "
+        "required_argument_patch and change the failed arguments. Never repeat identical "
+        "arguments after a failure. "
         "rationale_summary must be one short sentence of at most 240 characters. Do not "
         "provide hidden chain-of-thought.",
         {
@@ -1398,6 +2057,12 @@ def _scripted_tool_prompt(
                 "host_repair_reason": host_repair_reason,
             },
             "host_feedback": host_feedback,
+            "failed_action_repair": _failed_action_repair_context(observations),
+            "operation_execution_progress": _scripted_operation_execution_progress(
+                task,
+                expected_tool,
+                observations,
+            ),
             "observations": _model_visible_observations(observations, view=observation_view),
         },
     )
@@ -1422,7 +2087,8 @@ def _final_answer_prompt(
         "add context, unit, result_context, or operation fields unless that exact key is allowed. "
         "Follow answer_schema and agent_contract_guidance exactly. Do not add a tool call or copy "
         "the task/context. rationale_summary must be one short sentence of at most 240 "
-        "characters.",
+        "characters. If operation_execution_progress is present, final output is allowed only "
+        "when all_steps_completed=true.",
         {
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
             "mode": mode,
@@ -1430,6 +2096,7 @@ def _final_answer_prompt(
             "task": _model_visible_task(task),
             "plan": plan.model_dump(mode="json"),
             "host_feedback": host_feedback,
+            "operation_execution_progress": _operation_execution_progress(task, observations),
             "observations": _model_visible_observations(observations, view=observation_view),
         },
     )
@@ -1468,7 +2135,12 @@ def _decision_prompt(
         "Copy operation_ref verbatim from a successful calculator observation. A selector is "
         "relative to result.result.output: use 'value' for scalar output and never use "
         "'output' or 'output.value'. Never invent a short operation name. "
-        "For a final answer, copy the exact terminal successful calculator result without "
+        "When operation_execution_progress is present, execute next_required_step before any "
+        "later operation. When failed_action_repair is present, perform "
+        "required_prerequisite_action first when supplied; otherwise apply "
+        "required_argument_patch and change the failed arguments. For a final answer, copy "
+        "the exact terminal "
+        "successful calculator result without "
         "rounding values, renaming reference IDs, or changing numeric types; follow "
         "answer_schema and agent_contract_guidance exactly. Address any Host feedback before "
         "stopping. rationale_summary must be one short sentence of at most 240 characters. "
@@ -1483,6 +2155,8 @@ def _decision_prompt(
             "tool_environment": environment_manifest,
             "stop_readiness": readiness,
             "host_feedback": host_feedback,
+            "failed_action_repair": _failed_action_repair_context(observations),
+            "operation_execution_progress": _operation_execution_progress(task, observations),
             "observations": _model_visible_observations(observations, view=observation_view),
         },
     )

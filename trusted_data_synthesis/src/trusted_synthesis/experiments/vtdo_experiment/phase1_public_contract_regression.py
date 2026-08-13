@@ -50,7 +50,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_pro_flash_agent_pilot 
     ExplorerArm,
     ExplorerModelContract,
     FinanceProFlashPilotContract,
-    _paired_sampling_contract_hash,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_public_contract_satisfiability import (
     PublicContractSatisfiabilityAudit,
@@ -63,22 +62,27 @@ from trusted_synthesis.runtime.agent import OpenAICompatibleJsonClient
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
 PUBLIC_CONTRACT_REGRESSION_CONTRACT_VERSION = (
-    "finance_public_contract_regression_contract.v4"
+    "finance_public_contract_regression_contract.v5"
 )
 PUBLIC_CONTRACT_REGRESSION_REPORT_VERSION = (
-    "finance_public_contract_regression_report.v4"
+    "finance_public_contract_regression_report.v5"
 )
 PUBLIC_CONTRACT_REGRESSION_RUNNER_VERSION = (
-    "finance_public_contract_regression_runner.v4"
+    "finance_public_contract_regression_runner.v5"
 )
 FRESHNESS_SIGNATURE_VERSION = "finance_public_task_exposure_signature.v1"
 
 REGRESSION_TASKS_PER_FAMILY = 1
 REGRESSION_REPLICAS = 2
+REGRESSION_MODEL_ARMS = (ExplorerArm.FLASH,)
+REGRESSION_RUNTIME_ARMS = (
+    CapabilityRuntimeArm.SCRIPTED_TOOL,
+    CapabilityRuntimeArm.AUTONOMOUS_AGENT,
+)
 REGRESSION_TASK_COUNT = len(CAPABILITY_SENSITIVE_FAMILIES)
-REGRESSION_BINDING_COUNT = REGRESSION_TASK_COUNT * len(CapabilityRuntimeArm)
+REGRESSION_BINDING_COUNT = REGRESSION_TASK_COUNT * len(REGRESSION_RUNTIME_ARMS)
 REGRESSION_ROLLOUT_COUNT = (
-    REGRESSION_BINDING_COUNT * len(ExplorerArm) * REGRESSION_REPLICAS
+    REGRESSION_BINDING_COUNT * len(REGRESSION_MODEL_ARMS) * REGRESSION_REPLICAS
 )
 
 
@@ -98,6 +102,8 @@ class ExposureContractReference(FrozenModel):
     binding_field_names: tuple[str, ...] = Field(min_length=1)
     exposed_task_artifact_ids: tuple[str, ...] = Field(min_length=1)
     exposed_task_signatures: tuple[str, ...] = Field(min_length=1)
+    exposed_evidence_ids: tuple[str, ...] = Field(min_length=1)
+    exposed_evidence_version_ids: tuple[str, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
     def validate_reference(self) -> ExposureContractReference:
@@ -113,6 +119,10 @@ class ExposureContractReference(FrozenModel):
             raise ValueError("exposed task signatures are not canonical")
         if len(self.exposed_task_artifact_ids) != len(self.exposed_task_signatures):
             raise ValueError("exposure identities and signatures have different denominators")
+        for field_name in ("exposed_evidence_ids", "exposed_evidence_version_ids"):
+            values = getattr(self, field_name)
+            if tuple(sorted(set(values))) != values:
+                raise ValueError(f"{field_name} are not canonical")
         if self.reference_id != exposure_contract_reference_id(self):
             raise ValueError("exposure contract reference identity is invalid")
         return self
@@ -129,20 +139,28 @@ class FinancePublicContractRegressionContract(FrozenModel):
     )
     excluded_task_signatures: tuple[str, ...] = Field(min_length=1)
     excluded_task_signature_set_hash: str = Field(min_length=1)
+    excluded_evidence_ids: tuple[str, ...] = Field(min_length=1)
+    excluded_evidence_id_set_hash: str = Field(min_length=1)
+    excluded_evidence_version_ids: tuple[str, ...] = Field(min_length=1)
+    excluded_evidence_version_set_hash: str = Field(min_length=1)
     selected_task_signatures: tuple[str, ...] = Field(
         min_length=REGRESSION_TASK_COUNT,
         max_length=REGRESSION_TASK_COUNT,
     )
     selected_task_signature_set_hash: str = Field(min_length=1)
+    selected_evidence_ids: tuple[str, ...] = Field(min_length=1)
+    selected_evidence_id_set_hash: str = Field(min_length=1)
+    selected_evidence_version_ids: tuple[str, ...] = Field(min_length=1)
+    selected_evidence_version_set_hash: str = Field(min_length=1)
     model_source_contract_path: str = Field(min_length=1)
     model_source_contract_sha256: str = Field(min_length=64, max_length=64)
     finance_archive_config_path: str = Field(min_length=1)
     finance_archive_config_sha256: str = Field(min_length=64, max_length=64)
     model_contracts: tuple[ExplorerModelContract, ...] = Field(
-        min_length=2,
-        max_length=2,
+        min_length=1,
+        max_length=1,
     )
-    paired_sampling_contract_hash: str = Field(min_length=1)
+    model_sampling_contract_hash: str = Field(min_length=1)
     protocol_profile: IterativeAgentProtocolProfile
     bindings: tuple[RuntimeTaskBinding, ...] = Field(
         min_length=REGRESSION_BINDING_COUNT,
@@ -190,12 +208,12 @@ class FinancePublicContractRegressionContract(FrozenModel):
             MAXIMUM_REQUIRED_TOOL_CALLS + self.maximum_failed_tool_calls
         ):
             raise ValueError("public-contract regression lacks failed-call recovery capacity")
-        if {item.arm for item in self.model_contracts} != set(ExplorerArm):
-            raise ValueError("public-contract regression requires Pro and Flash")
-        if self.paired_sampling_contract_hash != _paired_sampling_contract_hash(
+        if {item.arm for item in self.model_contracts} != set(REGRESSION_MODEL_ARMS):
+            raise ValueError("public-contract regression must be Flash-only")
+        if self.model_sampling_contract_hash != _model_sampling_contract_hash(
             self.model_contracts
         ):
-            raise ValueError("public-contract regression model contracts are not paired")
+            raise ValueError("public-contract regression model identity is invalid")
         reference_paths = tuple(item.contract_path for item in self.exposure_contract_references)
         if len(set(reference_paths)) != len(reference_paths):
             raise ValueError("exposure contracts are duplicated")
@@ -210,10 +228,38 @@ class FinancePublicContractRegressionContract(FrozenModel):
         )
         if self.excluded_task_signatures != expected_excluded:
             raise ValueError("excluded signatures differ from frozen exposure contracts")
+        expected_evidence_ids = tuple(
+            sorted(
+                {
+                    evidence_id
+                    for reference in self.exposure_contract_references
+                    for evidence_id in reference.exposed_evidence_ids
+                }
+            )
+        )
+        expected_evidence_versions = tuple(
+            sorted(
+                {
+                    version_id
+                    for reference in self.exposure_contract_references
+                    for version_id in reference.exposed_evidence_version_ids
+                }
+            )
+        )
+        if self.excluded_evidence_ids != expected_evidence_ids:
+            raise ValueError("excluded Evidence IDs differ from exposure contracts")
+        if self.excluded_evidence_version_ids != expected_evidence_versions:
+            raise ValueError("excluded Evidence Versions differ from exposure contracts")
         if len(set(self.selected_task_signatures)) != REGRESSION_TASK_COUNT:
             raise ValueError("selected regression task signatures are not unique")
         if set(self.excluded_task_signatures) & set(self.selected_task_signatures):
             raise ValueError("fresh regression reuses a prior exposed task signature")
+        if set(self.excluded_evidence_ids) & set(self.selected_evidence_ids):
+            raise ValueError("fresh regression reuses a prior exposed Evidence ID")
+        if set(self.excluded_evidence_version_ids) & set(
+            self.selected_evidence_version_ids
+        ):
+            raise ValueError("fresh regression reuses a prior exposed Evidence Version")
         if self.excluded_task_signature_set_hash != _signature_set_hash(
             self.excluded_task_signatures,
             prefix="finance_excluded_exposure_signatures:",
@@ -224,6 +270,33 @@ class FinancePublicContractRegressionContract(FrozenModel):
             prefix="finance_regression_selected_signatures:",
         ):
             raise ValueError("selected task signature identity is invalid")
+        identity_fields = (
+            (
+                self.excluded_evidence_ids,
+                self.excluded_evidence_id_set_hash,
+                "finance_excluded_exposure_evidence_ids:",
+            ),
+            (
+                self.excluded_evidence_version_ids,
+                self.excluded_evidence_version_set_hash,
+                "finance_excluded_exposure_evidence_versions:",
+            ),
+            (
+                self.selected_evidence_ids,
+                self.selected_evidence_id_set_hash,
+                "finance_regression_selected_evidence_ids:",
+            ),
+            (
+                self.selected_evidence_version_ids,
+                self.selected_evidence_version_set_hash,
+                "finance_regression_selected_evidence_versions:",
+            ),
+        )
+        if any(
+            observed_hash != _signature_set_hash(values, prefix=prefix)
+            for values, observed_hash, prefix in identity_fields
+        ):
+            raise ValueError("regression Evidence identity hash is invalid")
         _validate_regression_bindings(self.bindings)
         selected_task_ids = {item.task_artifact_id for item in self.bindings}
         if len(selected_task_ids) != REGRESSION_TASK_COUNT:
@@ -270,7 +343,14 @@ class FinancePublicContractRegressionReport(FrozenModel):
     static_audit_id: str = Field(min_length=1)
     requested_rollout_count: int = Field(ge=1)
     recorded_rollout_count: int = Field(ge=0)
-    cells: tuple[RegressionCellSummary, ...] = Field(min_length=42, max_length=42)
+    cells: tuple[RegressionCellSummary, ...] = Field(
+        min_length=len(REGRESSION_MODEL_ARMS)
+        * len(REGRESSION_RUNTIME_ARMS)
+        * len(CAPABILITY_SENSITIVE_FAMILIES),
+        max_length=len(REGRESSION_MODEL_ARMS)
+        * len(REGRESSION_RUNTIME_ARMS)
+        * len(CAPABILITY_SENSITIVE_FAMILIES),
+    )
     outcome_set_hash: str = Field(min_length=1)
     technical_resolution_count: int = Field(ge=0)
     selector_contradiction_count: int = Field(ge=0)
@@ -311,8 +391,8 @@ class FinancePublicContractRegressionReport(FrozenModel):
             raise ValueError("regression cells do not cover every rollout")
         expected_cells = {
             (model, runtime, family)
-            for model in ExplorerArm
-            for runtime in CapabilityRuntimeArm
+            for model in REGRESSION_MODEL_ARMS
+            for runtime in REGRESSION_RUNTIME_ARMS
             for family in CAPABILITY_SENSITIVE_FAMILIES
         }
         if {
@@ -334,7 +414,7 @@ class FinancePublicContractRegressionReport(FrozenModel):
             raise ValueError("model protocol violation count is inconsistent")
         expected_reachable = all(
             self.semantic_success_count_by_runtime.get(runtime, 0) > 0
-            for runtime in CapabilityRuntimeArm
+            for runtime in REGRESSION_RUNTIME_ARMS
         )
         if self.all_runtime_semantically_reachable != expected_reachable:
             raise ValueError("runtime semantic reachability decision is inconsistent")
@@ -417,14 +497,23 @@ def prepare_public_contract_regression(
         for reference in exposure_references
         for artifact_id in reference.exposed_task_artifact_ids
     }
+    exposed_tasks = load_exposed_tasks_from_references(exposure_references)
+    exposed_evidence_ids, exposed_evidence_version_ids = _task_evidence_identity_sets(
+        exposed_tasks
+    )
     selected = _select_fresh_easy_tasks(
         population,
         prior_signatures=set(excluded_signatures),
         prior_artifact_ids=exposed_ids,
+        prior_evidence_ids=exposed_evidence_ids,
+        prior_evidence_version_ids=exposed_evidence_version_ids,
         sampling_salt=sampling_salt,
     )
     selected_signatures = tuple(
         sorted(public_task_exposure_signature(item) for item in selected)
+    )
+    selected_evidence_ids, selected_evidence_version_ids = _task_evidence_identity_sets(
+        selected
     )
     protocol = IterativeAgentProtocolProfile(
         initial_plan_mode="implicit_public",
@@ -436,11 +525,11 @@ def prepare_public_contract_regression(
     bindings = tuple(
         _make_runtime_binding(task, runtime, protocol)
         for task in selected
-        for runtime in CapabilityRuntimeArm
+        for runtime in REGRESSION_RUNTIME_ARMS
     )
     records = []
     for task in selected:
-        for runtime in CapabilityRuntimeArm:
+        for runtime in REGRESSION_RUNTIME_ARMS:
             context, manifest, _ = make_v25_native_runtime_context(task, runtime, protocol)
             records.append(
                 make_public_contract_record(
@@ -454,6 +543,9 @@ def prepare_public_contract_regression(
     static_audit = make_public_contract_audit(
         population_id=population.population_id,
         records=tuple(records),
+        required_runtime_arms=tuple(
+            cast(RuntimeArmName, runtime.value) for runtime in REGRESSION_RUNTIME_ARMS
+        ),
     )
     if not static_audit.all_public_contracts_satisfiable:
         raise ValueError("public-contract static audit failed; API access is forbidden")
@@ -461,6 +553,11 @@ def prepare_public_contract_regression(
     model_source = FinanceProFlashPilotContract.model_validate_json(
         model_source_contract_path.read_text(encoding="utf-8")
     )
+    model_contracts = tuple(
+        item for item in model_source.model_contracts if item.arm in REGRESSION_MODEL_ARMS
+    )
+    if len(model_contracts) != len(REGRESSION_MODEL_ARMS):
+        raise ValueError("model source lacks the frozen Flash contract")
     values = {
         "run_id": run_id,
         "population_path": str(population_path),
@@ -472,19 +569,37 @@ def prepare_public_contract_regression(
             excluded_signatures,
             prefix="finance_excluded_exposure_signatures:",
         ),
+        "excluded_evidence_ids": tuple(sorted(exposed_evidence_ids)),
+        "excluded_evidence_id_set_hash": _signature_set_hash(
+            exposed_evidence_ids,
+            prefix="finance_excluded_exposure_evidence_ids:",
+        ),
+        "excluded_evidence_version_ids": tuple(sorted(exposed_evidence_version_ids)),
+        "excluded_evidence_version_set_hash": _signature_set_hash(
+            exposed_evidence_version_ids,
+            prefix="finance_excluded_exposure_evidence_versions:",
+        ),
         "selected_task_signatures": selected_signatures,
         "selected_task_signature_set_hash": _signature_set_hash(
             selected_signatures,
             prefix="finance_regression_selected_signatures:",
         ),
+        "selected_evidence_ids": tuple(sorted(selected_evidence_ids)),
+        "selected_evidence_id_set_hash": _signature_set_hash(
+            selected_evidence_ids,
+            prefix="finance_regression_selected_evidence_ids:",
+        ),
+        "selected_evidence_version_ids": tuple(sorted(selected_evidence_version_ids)),
+        "selected_evidence_version_set_hash": _signature_set_hash(
+            selected_evidence_version_ids,
+            prefix="finance_regression_selected_evidence_versions:",
+        ),
         "model_source_contract_path": str(model_source_contract_path),
         "model_source_contract_sha256": _sha256(model_source_contract_path),
         "finance_archive_config_path": str(finance_archive_config_path),
         "finance_archive_config_sha256": _sha256(finance_archive_config_path),
-        "model_contracts": model_source.model_contracts,
-        "paired_sampling_contract_hash": _paired_sampling_contract_hash(
-            model_source.model_contracts
-        ),
+        "model_contracts": model_contracts,
+        "model_sampling_contract_hash": _model_sampling_contract_hash(model_contracts),
         "protocol_profile": protocol,
         "bindings": bindings,
         "public_contract_audit": static_audit,
@@ -559,7 +674,7 @@ def run_public_contract_regression(
         (model, binding, replicate)
         for binding in sorted(contract.bindings, key=lambda item: item.binding_id)
         for replicate in range(contract.replicas)
-        for model in ExplorerArm
+        for model in REGRESSION_MODEL_ARMS
     )
     pending = tuple(
         item
@@ -589,7 +704,7 @@ def run_public_contract_regression(
     else:
         discovered = _load_discovered_models(manifest_path, run_identity)
         discovery_source = "frozen_run_manifest"
-    for arm in ExplorerArm:
+    for arm in REGRESSION_MODEL_ARMS:
         if EXPECTED_MODELS[arm.value] not in discovered.get(arm, ()):
             raise ValueError(f"provider evidence lacks frozen {arm.value} model")
 
@@ -668,8 +783,8 @@ def make_public_contract_regression_report(
         raise ValueError("regression report requires a complete frozen denominator")
     by_binding = {item.binding_id: item for item in contract.bindings}
     cells = []
-    for model in ExplorerArm:
-        for runtime in CapabilityRuntimeArm:
+    for model in REGRESSION_MODEL_ARMS:
+        for runtime in REGRESSION_RUNTIME_ARMS:
             for family in CAPABILITY_SENSITIVE_FAMILIES:
                 values = tuple(
                     item
@@ -745,7 +860,7 @@ def make_public_contract_regression_report(
         runtime: sum(
             item.semantic_answer_correct for item in outcomes if item.runtime_arm == runtime
         )
-        for runtime in CapabilityRuntimeArm
+        for runtime in REGRESSION_RUNTIME_ARMS
     }
     technical_count = sum(item.completed for item in outcomes)
     deterministic_count = selector_count + scripted_precondition_count
@@ -874,6 +989,8 @@ def _make_exposure_contract_reference(
     raw = json.loads(contract_path.read_text(encoding="utf-8"))
     schema_version = str(raw.get("schema_version") or "")
     binding_fields: tuple[str, ...]
+    source_task_map: Mapping[str, Any] | None = None
+    population_path_field = "population_path"
     if schema_version.startswith("finance_capability_boundary_contract."):
         binding_fields = ("localization_bindings", "qualification_bindings")
     elif schema_version.startswith("finance_public_contract_regression_contract."):
@@ -882,16 +999,25 @@ def _make_exposure_contract_reference(
         binding_fields = ("bindings",)
     elif schema_version.startswith("finance_structural_tier_localization_contract."):
         binding_fields = ("bindings",)
+    elif schema_version.startswith("finance_multitier_runtime_repair_calibration.") or (
+        schema_version.startswith("finance_runtime_resolution_contract.")
+    ):
+        binding_fields = ("bindings",)
+        population_path_field = "source_population_path"
+        raw_source_map = raw.get("source_task_artifact_ids")
+        if not isinstance(raw_source_map, Mapping):
+            raise ValueError("runtime exposure contract lacks source task identities")
+        source_task_map = raw_source_map
     else:
         raise ValueError(
             f"unsupported exposure contract schema: {schema_version or '<missing>'}"
         )
-    population_path = Path(str(raw.get("population_path") or "")).resolve()
+    population_path = Path(str(raw.get(population_path_field) or "")).resolve()
     if not population_path.is_file():
         raise ValueError("exposure contract population cannot be loaded")
     population = json.loads(population_path.read_text(encoding="utf-8"))
     tasks = _population_tasks_by_id(population)
-    exposed_ids = tuple(
+    bound_ids = tuple(
         sorted(
             {
                 str(item["task_artifact_id"])
@@ -901,8 +1027,20 @@ def _make_exposure_contract_reference(
             }
         )
     )
+    exposed_ids = tuple(
+        sorted(
+            {
+                str(source_task_map[item]) if source_task_map is not None else item
+                for item in bound_ids
+                if source_task_map is None or item in source_task_map
+            }
+        )
+    )
+    if source_task_map is not None and len(exposed_ids) != len(bound_ids):
+        raise ValueError("runtime exposure source task mapping is incomplete")
     if not exposed_ids or not set(exposed_ids) <= set(tasks):
         raise ValueError("exposure contract task identities cannot be reconstructed")
+    exposed_tasks = tuple(tasks[item] for item in exposed_ids)
     signatures = tuple(
         sorted(public_task_exposure_signature(tasks[item]) for item in exposed_ids)
     )
@@ -919,6 +1057,12 @@ def _make_exposure_contract_reference(
         "binding_field_names": tuple(sorted(binding_fields)),
         "exposed_task_artifact_ids": exposed_ids,
         "exposed_task_signatures": signatures,
+        "exposed_evidence_ids": tuple(
+            sorted(_task_evidence_identity_sets(exposed_tasks)[0])
+        ),
+        "exposed_evidence_version_ids": tuple(
+            sorted(_task_evidence_identity_sets(exposed_tasks)[1])
+        ),
     }
     if not values["contract_id"] or not values["population_id"]:
         raise ValueError("exposure contract or population lacks immutable identity")
@@ -989,6 +1133,8 @@ def _select_fresh_easy_tasks(
     *,
     prior_signatures: set[str],
     prior_artifact_ids: set[str],
+    prior_evidence_ids: set[str],
+    prior_evidence_version_ids: set[str],
     sampling_salt: str,
 ) -> tuple[CapabilitySensitiveTaskArtifact, ...]:
     selected = []
@@ -1001,6 +1147,17 @@ def _select_fresh_easy_tasks(
                 and item.tier == DifficultyTier.EASY_CONTROL
                 and item.artifact_id not in prior_artifact_ids
                 and public_task_exposure_signature(item) not in prior_signatures
+                and not (
+                    {evidence.evidence_id for evidence in item.public_corpus.evidence}
+                    & prior_evidence_ids
+                )
+                and not (
+                    {
+                        evidence.evidence_version_id
+                        for evidence in item.public_corpus.evidence
+                    }
+                    & prior_evidence_version_ids
+                )
             )
         )
         ordered = sorted(
@@ -1020,6 +1177,37 @@ def _select_fresh_easy_tasks(
     return tuple(selected)
 
 
+def _task_evidence_identity_sets(
+    tasks: Iterable[CapabilitySensitiveTaskArtifact | Mapping[str, Any]],
+) -> tuple[set[str], set[str]]:
+    evidence_ids: set[str] = set()
+    evidence_version_ids: set[str] = set()
+    for task in tasks:
+        raw = (
+            task.model_dump(mode="json")
+            if isinstance(task, CapabilitySensitiveTaskArtifact)
+            else task
+        )
+        corpus = raw.get("public_corpus")
+        evidence = corpus.get("evidence") if isinstance(corpus, Mapping) else None
+        if not isinstance(evidence, list) or not evidence:
+            raise ValueError("exposed task lacks immutable public Evidence")
+        for item in evidence:
+            if not isinstance(item, Mapping):
+                raise ValueError("exposed task contains malformed Evidence")
+            evidence_id = item.get("evidence_id")
+            evidence_version_id = item.get("evidence_version_id")
+            if not isinstance(evidence_id, str) or not evidence_id:
+                raise ValueError("exposed task Evidence lacks an ID")
+            if not isinstance(evidence_version_id, str) or not evidence_version_id:
+                raise ValueError("exposed task Evidence lacks a Version ID")
+            evidence_ids.add(evidence_id)
+            evidence_version_ids.add(evidence_version_id)
+    if not evidence_ids or not evidence_version_ids:
+        raise ValueError("task Evidence identity set is empty")
+    return evidence_ids, evidence_version_ids
+
+
 def _validate_regression_bindings(bindings: tuple[RuntimeTaskBinding, ...]) -> None:
     by_task: dict[str, list[RuntimeTaskBinding]] = defaultdict(list)
     for item in bindings:
@@ -1029,9 +1217,9 @@ def _validate_regression_bindings(bindings: tuple[RuntimeTaskBinding, ...]) -> N
     if len(bindings) != REGRESSION_BINDING_COUNT or len(by_task) != REGRESSION_TASK_COUNT:
         raise ValueError("public-contract regression binding count is invalid")
     for values in by_task.values():
-        if {item.runtime_arm for item in values} != set(CapabilityRuntimeArm):
+        if {item.runtime_arm for item in values} != set(REGRESSION_RUNTIME_ARMS):
             raise ValueError("a regression task lacks a Runtime binding")
-        if len(values) != len(CapabilityRuntimeArm):
+        if len(values) != len(REGRESSION_RUNTIME_ARMS):
             raise ValueError("a regression task duplicates a Runtime binding")
     counts = {
         family: len({item.task_artifact_id for item in bindings if item.family == family})
@@ -1186,8 +1374,22 @@ def _load_discovered_models(
         raise ValueError("regression run manifest lacks model discovery evidence")
     return {
         arm: tuple(str(item) for item in discovered.get(arm.value, ()))
-        for arm in ExplorerArm
+        for arm in REGRESSION_MODEL_ARMS
     }
+
+
+def _model_sampling_contract_hash(
+    contracts: tuple[ExplorerModelContract, ...],
+) -> str:
+    if {item.arm for item in contracts} != set(REGRESSION_MODEL_ARMS):
+        raise ValueError("public regression model contracts are incomplete")
+    return canonical_hash(
+        tuple(
+            item.model_dump(mode="json")
+            for item in sorted(contracts, key=lambda value: value.arm.value)
+        ),
+        prefix="finance_public_regression_model_sampling_contract:",
+    )
 
 
 def _run_identity(contract: FinancePublicContractRegressionContract) -> str:

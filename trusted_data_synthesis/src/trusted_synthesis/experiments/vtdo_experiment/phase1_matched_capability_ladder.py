@@ -353,6 +353,9 @@ def build_matched_capability_ladder_population(
     static_audit = make_public_contract_audit(
         population_id=population_id,
         records=tuple(records),
+        required_runtime_arms=tuple(
+            cast(Any, runtime.value) for runtime in CapabilityRuntimeArm
+        ),
     )
     audit = make_matched_ladder_audit(
         groups,

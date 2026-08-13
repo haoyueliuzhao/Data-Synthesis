@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-12
+Audit date: 2026-08-13
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,10 +14,18 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The current change set completes the v22 Development-only exact one-step target study and adds a
-separately hashed v22.1 design analysis. The original 4,000 target observations and target report
-are preserved unchanged. Validation and Authorization remain inaccessible, GP-C remains
-unevaluated, and production Contribution remains zero.
+The active experiment is Finance v25.18. Runtime Resolution v2 now cleanly separates measurement
+integrity from model correctness. Fresh Development and Held-out sets each completed 84/84 Flash
+Workflow rollouts with 100% execution, replay, authority, terminal-resolution, and attribution
+coverage. Held-out Valid Success given Runtime eligibility was 73.81%, with 23.81% boundary cells.
+This authorized a Flash information audit, not a Pro or Contribution experiment.
+
+The v25.18 information audit replayed all 84 Held-out terminal artifacts and computed Final Valid,
+seven axis-specific, and joint capability matrices. Both Workflow Runtime cells failed the frozen
+information gates. Scripted support was too saturated and family-concentrated; Autonomous support
+was full-rank but ill-conditioned. Pro sparse anchors, Beneficiary screening, Exact Target, GP-C,
+VTDO updates, and production Contribution remain forbidden. The only permitted transition is
+`capability_task_support_redesign_only`.
 
 The post-v22 plan inserts a capability-sensitive Agent Runtime Pilot before any fresh Validation.
 v24 now qualifies the bounded Agent Runtime on a fresh 18-task set: all 216 Pro--Flash Scripted and
@@ -190,6 +198,33 @@ Qualification run before model-client construction. v25.6 has made no API call a
 Exact Target, GP-C, Validation, Authorization Objective access, VTDO updates, and production
 Contribution remain forbidden. See `docs/finance_v25_capability_sensitive_frontier_report.md` and
 `docs/finance_v25_capability_boundary_revision.md`.
+
+## v25.17-v25.18 Runtime Resolution And Information Geometry
+
+Runtime Resolution v2 replaced the invalid `technical pass == semantic success` interpretation.
+Instrument qualification now depends only on execution integrity, typed terminal resolution,
+Runtime pathology, and failure-attribution coverage. Model protocol, decision, recovery, stopping,
+verification, and semantic errors remain capability outcomes.
+
+The final v25.18 source pool contains 420 accepted tasks and 1,394 states. Its 70-task Capability
+Frontier covers seven capability families and passes all structural monotonicity and primary-axis
+alignment audits. A Flash-only public regression excluded 133 prior task signatures and 371 prior
+Evidence/Version identities, then completed 28/28 Scripted and Autonomous rollouts without a
+deterministic contract defect.
+
+Fresh Runtime Development and Held-out experiments each completed 84/84 rollouts. Held-out had
+100% Runtime qualification, 73.81% Valid Success given Runtime eligibility, and 23.81% boundary
+cells. Every failure was attributed to L4 Agent decision or L5 semantics; no L0-L2 failure was
+observed.
+
+The resulting Flash information audit failed closed. Scripted Final Valid had rank 3, effective
+rank 2.000, 14.29% boundary mass, and 73.39% maximum family share. Autonomous Final Valid had rank
+7 and effective rank 3.083, but condition number 135.21. The joint condition numbers were
+237,575.79 and 167.80. Bootstrap lower bounds yielded zero informative axes in both Runtime cells.
+
+The final transition is `capability_task_support_redesign_only`. Pro sparse anchors remain
+unauthorized. See
+`docs/finance_v25_17_v25_18_runtime_resolution_and_information_report.md`.
 
 ## Revalidated Code State
 

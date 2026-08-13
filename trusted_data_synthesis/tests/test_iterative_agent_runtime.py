@@ -16,7 +16,14 @@ from trusted_synthesis.runtime.agent import (
     IterativeAgentSolver,
 )
 from trusted_synthesis.runtime.agent.client import LLMClientError
-from trusted_synthesis.runtime.agent.iterative import _compact_public_value
+from trusted_synthesis.runtime.agent.iterative import (
+    _bounded_observation_summary,
+    _compact_public_value,
+    _operation_execution_progress,
+    _operation_step_rejection,
+    _scripted_operation_execution_progress,
+    _validate_answer_observation_constraints,
+)
 from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTelemetry
 from trusted_synthesis.runtime.tools import (
     AgentToolCall,
@@ -24,6 +31,7 @@ from trusted_synthesis.runtime.tools import (
     AgentToolResult,
     AgentToolSpec,
     make_agent_tool_environment_manifest,
+    make_agent_tool_observation,
 )
 
 
@@ -109,6 +117,40 @@ class _MalformedOutputRuntime(_ToolRuntime):
         return AgentToolResult(
             status="succeeded",
             result={},
+            evidence_ids=("evidence:public:1",),
+            provenance_hashes=("provenance:test",),
+        )
+
+
+class _PatchRequiredRuntime(_ToolRuntime):
+    def __init__(self) -> None:
+        super().__init__(maximum_failed_tool_calls=1)
+
+    def execute(self, call: AgentToolCall) -> AgentToolResult:
+        self.calls.append(call)
+        if len(self.calls) == 1:
+            return AgentToolResult(
+                status="failed",
+                result={
+                    "retry_contract": {
+                        "policy": "argument_patch_required",
+                        "maximum_identical_replays": 0,
+                        "suggested_argument_patch": {"query": "reformulated query"},
+                    }
+                },
+                error_code="selector_revision_required",
+                error_message="The environment requires a changed public selector.",
+            )
+        if call.arguments.get("query") != "reformulated query":
+            return AgentToolResult(
+                status="failed",
+                result={},
+                error_code="selector_patch_missing",
+                error_message="The required public selector patch was not applied.",
+            )
+        return AgentToolResult(
+            status="succeeded",
+            result={"value": 10, "verified": False},
             evidence_ids=("evidence:public:1",),
             provenance_hashes=("provenance:test",),
         )
@@ -245,6 +287,298 @@ def _scripted_answer(answer: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _calculator_observation(
+    *,
+    call_index: int,
+    operator: str,
+    operands: list[dict[str, Any]],
+    operation_ref: str,
+    output: dict[str, Any],
+):
+    call = AgentToolCall(
+        call_index=call_index,
+        tool_id="calculator",
+        arguments={"operator": operator, "operands": operands, "parameters": {}},
+    )
+    result = AgentToolResult(
+        status="succeeded",
+        result={
+            "result": {
+                "operator": operator,
+                "output": output,
+                "operation_ref": operation_ref,
+            },
+            "operation_hash": f"hash:{call_index}",
+        },
+        evidence_ids=("evidence:public:1", "evidence:public:2"),
+        provenance_hashes=("provenance:1", "provenance:2"),
+    )
+    return make_agent_tool_observation(
+        environment_manifest_id="manifest:test",
+        call=call,
+        result=result,
+        observation_time_hash=f"time:{call_index}",
+    )
+
+
+def _selection_observation(*, call_index: int, evidence_id: str, slot: str):
+    call = AgentToolCall(
+        call_index=call_index,
+        tool_id="query_structured_fact",
+        arguments={"slot": slot},
+    )
+    result = AgentToolResult(
+        status="succeeded",
+        result={"facts": [{"evidence_id": evidence_id, "slot": slot}]},
+        evidence_ids=(evidence_id,),
+        provenance_hashes=(f"provenance:{slot}",),
+    )
+    return make_agent_tool_observation(
+        environment_manifest_id="manifest:test",
+        call=call,
+        result=result,
+        observation_time_hash=f"selection-time:{call_index}",
+    )
+
+
+def _task_with_operation_contract():
+    task, _ = _task_and_answer()
+    return task.model_copy(
+        update={
+            "metadata": {
+                **task.metadata,
+                "agent_contract_guidance": {
+                    "operation_execution_contract": {
+                        "contract_version": "operation.test.v1",
+                        "variables": [
+                            {"symbol": "v1", "label": "first"},
+                            {"symbol": "v2", "label": "second"},
+                        ],
+                        "steps": [
+                            {
+                                "step_id": "d1",
+                                "tool_id": "calculator",
+                                "tool_operator": "difference",
+                                "inputs": ["v1", "v2"],
+                                "input_selectors": [None, None],
+                                "parameters": {},
+                                "expression": "v2 - v1",
+                            },
+                            {
+                                "step_id": "result",
+                                "tool_id": "calculator",
+                                "tool_operator": "ratio",
+                                "inputs": ["d1", "v1"],
+                                "input_selectors": ["value", None],
+                                "parameters": {},
+                                "expression": "d1 / v1",
+                            },
+                        ],
+                        "output_step_id": "result",
+                    }
+                },
+            }
+        }
+    )
+
+
+def _task_with_resolved_operation_contract():
+    task = _task_with_operation_contract()
+    metadata = task.metadata.copy()
+    guidance = metadata["agent_contract_guidance"].copy()
+    contract = guidance["operation_execution_contract"].copy()
+    contract["variables"] = [
+        {
+            "symbol": "v1",
+            "selection_match": {
+                "collection_selector": ["facts"],
+                "evidence_id_selector": ["evidence_id"],
+                "equals": [{"selector": ["slot"], "value": "first"}],
+            },
+        },
+        {
+            "symbol": "v2",
+            "selection_match": {
+                "collection_selector": ["facts"],
+                "evidence_id_selector": ["evidence_id"],
+                "equals": [{"selector": ["slot"], "value": "second"}],
+            },
+        },
+    ]
+    guidance["operation_execution_contract"] = contract
+    metadata["agent_contract_guidance"] = guidance
+    return task.model_copy(update={"metadata": metadata})
+
+
+def test_operation_progress_requires_ordered_real_operation_references() -> None:
+    task = _task_with_operation_contract()
+    first = _calculator_observation(
+        call_index=1,
+        operator="difference",
+        operands=[
+            {"evidence_id": "evidence:public:1"},
+            {"evidence_id": "evidence:public:2"},
+        ],
+        operation_ref="operation:d1",
+        output={"value": "2"},
+    )
+    progress = _operation_execution_progress(task, (first,))
+
+    assert progress is not None
+    assert progress["all_steps_completed"] is False
+    assert progress["completed_step_operation_refs"] == {"d1": "operation:d1"}
+    assert progress["next_required_step"]["input_resolution"][0] == {
+        "input_ref": "d1",
+        "source": "prior_successful_operation",
+        "operation_ref": "operation:d1",
+        "selector": "value",
+    }
+
+    invented = _calculator_observation(
+        call_index=2,
+        operator="ratio",
+        operands=[
+            {"operation_ref": "operation:invented", "selector": "value"},
+            {"evidence_id": "evidence:public:1"},
+        ],
+        operation_ref="operation:wrong-result",
+        output={"value": "0.2"},
+    )
+    unchanged = _operation_execution_progress(task, (first, invented))
+    assert unchanged is not None
+    assert unchanged["all_steps_completed"] is False
+    assert "result" not in unchanged["completed_step_operation_refs"]
+
+    final = _calculator_observation(
+        call_index=3,
+        operator="ratio",
+        operands=[
+            {"operation_ref": "operation:d1", "selector": "value"},
+            {"evidence_id": "evidence:public:1"},
+        ],
+        operation_ref="operation:result",
+        output={"value": "0.2"},
+    )
+    completed = _operation_execution_progress(task, (first, invented, final))
+    assert completed is not None
+    assert completed["all_steps_completed"] is True
+    assert completed["terminal_operation_ref"] == "operation:result"
+
+
+def test_scripted_retrieval_is_not_preempted_by_pending_calculation() -> None:
+    task = _task_with_operation_contract()
+
+    assert (
+        _scripted_operation_execution_progress(
+            task,
+            {"tool_id": "query_structured_fact", "semantic_role": "query"},
+            (),
+        )
+        is None
+    )
+    calculation_progress = _scripted_operation_execution_progress(
+        task,
+        {"tool_id": "calculator", "semantic_role": "calculate"},
+        (),
+    )
+    assert calculation_progress is not None
+    assert calculation_progress["next_required_step"]["step_id"] == "d1"
+
+
+def test_operation_step_rejection_requires_selection_then_exact_operand_order() -> None:
+    task = _task_with_resolved_operation_contract()
+    first = _selection_observation(
+        call_index=1,
+        evidence_id="evidence:public:1",
+        slot="first",
+    )
+    unresolved_call = AgentToolCall(
+        call_index=2,
+        tool_id="calculator",
+        arguments={
+            "operator": "difference",
+            "operands": [
+                {"evidence_id": "evidence:public:1"},
+                {"evidence_id": "evidence:public:2"},
+            ],
+            "parameters": {},
+        },
+    )
+    prerequisite = _operation_step_rejection(task, (first,), unresolved_call)
+    assert prerequisite is not None
+    assert prerequisite.error_code == "operation_input_not_selected"
+    assert prerequisite.result["retry_contract"]["policy"] == ("prerequisite_action_required")
+
+    second = _selection_observation(
+        call_index=2,
+        evidence_id="evidence:public:2",
+        slot="second",
+    )
+    reversed_call = AgentToolCall(
+        call_index=3,
+        tool_id="calculator",
+        arguments={
+            "operator": "difference",
+            "operands": [
+                {"evidence_id": "evidence:public:2"},
+                {"evidence_id": "evidence:public:1"},
+            ],
+            "parameters": {},
+        },
+    )
+    rejected = _operation_step_rejection(task, (first, second), reversed_call)
+    assert rejected is not None
+    assert rejected.error_code == "operation_step_contract"
+    assert rejected.result["retry_contract"]["suggested_argument_patch"] == {
+        "operator": "difference",
+        "operands": [
+            {"evidence_id": "evidence:public:1"},
+            {"evidence_id": "evidence:public:2"},
+        ],
+        "parameters": {},
+    }
+
+
+def test_terminal_observation_contract_rejects_numeric_coercion() -> None:
+    task, answer = _task_and_answer()
+    field = next(iter(answer))
+    constrained = task.model_copy(
+        update={
+            "metadata": {
+                **task.metadata,
+                "agent_contract_guidance": {
+                    "answer_observation_constraints": {
+                        "source_tool_id": "calculator",
+                        "source_result_selector": ["result", "output"],
+                        "field_selectors": {field: ["value"]},
+                        "exact_fields": [field],
+                    }
+                },
+            }
+        }
+    )
+    observation = _calculator_observation(
+        call_index=1,
+        operator="lookup",
+        operands=[{"evidence_id": "evidence:public:1"}],
+        operation_ref="operation:result",
+        output={"value": "0.1120998852158529944857593521"},
+    )
+
+    with pytest.raises(LLMClientError, match="must exactly copy"):
+        _validate_answer_observation_constraints(
+            constrained,
+            {field: 0.112099885215853},
+            (observation,),
+        )
+
+    _validate_answer_observation_constraints(
+        constrained,
+        {field: "0.1120998852158529944857593521"},
+        (observation,),
+    )
+
+
 def test_autonomous_agent_loop_preserves_host_owned_observations() -> None:
     task, answer = _task_and_answer()
     client = _ScriptedClient(
@@ -312,25 +646,33 @@ def test_autonomous_agent_loop_records_failure_and_recovery() -> None:
     assert result.observations[1].status == "succeeded"
 
 
-def test_agent_rejects_identical_failed_call_regardless_of_host_call_index() -> None:
-    task, _ = _task_and_answer()
+def test_agent_blocks_identical_failed_call_and_allows_argument_repair() -> None:
+    task, answer = _task_and_answer()
     client = _ScriptedClient(
         [
             _plan(),
             _tool_decision("lookup", query="same bad query"),
             _tool_decision("lookup", query="same bad query"),
+            _tool_decision("lookup", query="reformulated query"),
+            _answer_decision(answer),
         ]
     )
-    runtime = _ToolRuntime(fail_first=True)
+    runtime = _ToolRuntime(fail_first=True, maximum_failed_tool_calls=2)
 
-    with pytest.raises(LLMClientError, match="repeated an identical failed tool call"):
-        IterativeAgentSolver(
-            client,
-            mode="autonomous_agent",
-            maximum_total_tokens=100,
-        ).solve_with_audit(task, runtime)
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+    ).solve_with_audit(task, runtime)
 
-    assert len(runtime.calls) == 1
+    assert len(runtime.calls) == 2
+    assert [item.status for item in result.observations] == [
+        "failed",
+        "failed",
+        "succeeded",
+    ]
+    assert result.observations[1].error_code == "identical_failed_action_blocked"
+    assert '"identical_arguments_forbidden":true' in client.prompts[3]
 
 
 def test_successful_intervening_action_reopens_a_failed_tool_call() -> None:
@@ -659,6 +1001,55 @@ def test_scripted_agent_retries_same_host_tool_after_failed_observation() -> Non
     assert result.audit.error_recovery_count == 1
 
 
+def test_environment_contract_requires_argument_patch_after_failure() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("lookup", query="reformulated query"),
+            _answer_decision(answer),
+        ]
+    )
+    runtime = _PatchRequiredRuntime()
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+    ).solve_with_audit(task, runtime)
+
+    assert len(runtime.calls) == 2
+    assert runtime.calls[0].arguments != runtime.calls[1].arguments
+    assert result.audit.failed_tool_call_count == 1
+    assert result.audit.error_recovery_count == 1
+    assert '"required_argument_patch":{"query":"reformulated query"}' in client.prompts[2]
+
+
+def test_environment_contract_never_allows_identical_failed_call_replay() -> None:
+    task, _ = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("lookup", query="public metric"),
+        ]
+    )
+    runtime = _PatchRequiredRuntime()
+
+    with pytest.raises(LLMClientError, match="failed-tool budget") as captured:
+        IterativeAgentSolver(
+            client,
+            mode="autonomous_agent",
+            maximum_total_tokens=100,
+        ).solve_with_audit(task, runtime)
+
+    assert len(runtime.calls) == 1
+    artifact = captured.value.failure_artifact
+    assert artifact is not None
+    assert artifact.observations[-1].error_code == "identical_failed_action_blocked"
+
+
 def test_iterative_agent_recovers_from_missing_required_tool_arguments() -> None:
     task, answer = _task_and_answer()
     client = _ScriptedClient(
@@ -718,6 +1109,48 @@ def test_iterative_agent_rejects_unknown_final_answer_fields() -> None:
     assert {item.reason_code for item in artifact.stop_rejections} == {
         "invalid_final_answer_contract"
     }
+
+
+def test_iterative_agent_repairs_public_answer_field_constraints() -> None:
+    task, answer = _task_and_answer()
+    field = next(iter(answer))
+    guidance = dict(task.metadata.get("agent_contract_guidance", {}))
+    constrained = task.model_copy(
+        update={
+            "metadata": {
+                **task.metadata,
+                "agent_contract_guidance": {
+                    **guidance,
+                    "answer_field_constraints": {
+                        field: {
+                            "allowed_values": [1, 2],
+                            "numeric_minimum": "0",
+                        }
+                    },
+                },
+            }
+        }
+    )
+    invalid = {**answer, field: -1}
+    client = _ScriptedClient(
+        [
+            _plan(),
+            _tool_decision("lookup", query="public metric"),
+            _answer_decision(invalid),
+            _answer_decision(answer),
+        ]
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+    ).solve_with_audit(constrained, _ToolRuntime())
+
+    assert result.trajectory.final_answer["result"] == answer
+    assert [item.reason_code for item in result.audit.stop_rejections] == [
+        "invalid_final_answer_contract"
+    ]
 
 
 def test_iterative_agent_rejects_oracle_fields_in_final_answer() -> None:
@@ -834,6 +1267,38 @@ def test_compact_public_value_preserves_actionable_public_locator() -> None:
     )
 
     assert compact == {"public_locator": "archive://document/1"}
+
+
+def test_bounded_observation_view_retains_sufficient_public_state() -> None:
+    task, answer = _task_and_answer()
+    client = _ScriptedClient(
+        [
+            _tool_decision("lookup", query="public metric"),
+            _tool_decision("verify_result", value=10),
+            _answer_decision(answer),
+        ]
+    )
+    profile = IterativeAgentProtocolProfile(
+        initial_plan_mode="implicit_public",
+        observation_view="bounded_summary",
+    )
+
+    result = IterativeAgentSolver(
+        client,
+        mode="autonomous_agent",
+        maximum_total_tokens=100,
+        protocol_profile=profile,
+    ).solve_with_audit(task, _ToolRuntime())
+    summary = _bounded_observation_summary(result.observations)
+
+    assert summary["observation_count"] == 2
+    assert len(summary["selected_evidence_observations"]) == 1
+    assert summary["latest_verification_observation"]["tool_id"] == "verify_result"
+    assert '"observation_count":2' in client.prompts[-1]
+    assert '"operation_execution_contract"' not in client.prompts[-1]
+    components = result.audit.telemetry[-1].response_shape["prompt_component_bytes"]
+    assert components["public_context.observations"] > 0
+    assert components["public_context.task"] > 0
 
 
 def test_final_answer_reserve_switches_only_after_verified_evidence() -> None:

@@ -5,6 +5,13 @@ from types import SimpleNamespace
 import pytest
 from pydantic import ValidationError
 
+from trusted_synthesis.core.task.program import (
+    InputRefKind,
+    OperationNode,
+    ProgramInputRef,
+    TaskProgram,
+    make_program,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary import (
     CapabilityRuntimeArm,
 )
@@ -19,6 +26,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
     CAPABILITY_SENSITIVE_FAMILIES,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_capability_population import (
+    _public_contract_metadata,
+    finance_operation_execution_contract,
+    finance_public_calculation_instruction,
     population_cli_summary,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_confirmation import (
@@ -37,9 +47,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_workflow_information_a
 
 
 def test_multitier_support_excludes_host_axes_and_recovery_easy() -> None:
-    rules = {
-        (item.runtime_arm, item.family): item for item in _make_support_rules()
-    }
+    rules = {(item.runtime_arm, item.family): item for item in _make_support_rules()}
 
     scripted_stopping = rules[
         (
@@ -111,6 +119,160 @@ def test_population_cli_summary_uses_frozen_audits() -> None:
     }
 
 
+def _formula_evidence(count: int) -> tuple[SimpleNamespace, ...]:
+    return tuple(
+        SimpleNamespace(
+            evidence_id=f"evidence:test:{index}",
+            subject=SimpleNamespace(name="Example Corp"),
+            predicate="revenue",
+            temporal_context=SimpleNamespace(
+                label=f"FY20{20 + index}",
+                basis="fiscal_year",
+                frequency="annual",
+            ),
+            source=SimpleNamespace(source_id="official_test_source"),
+            definition=SimpleNamespace(definition_id="revenue.gaap.v1"),
+            payload=SimpleNamespace(unit="USD", currency="USD"),
+        )
+        for index in range(count)
+    )
+
+
+def _ref(ref_id: str, *, operation: bool = False) -> ProgramInputRef:
+    return ProgramInputRef(
+        kind=InputRefKind.OPERATION if operation else InputRefKind.EVIDENCE,
+        ref_id=ref_id,
+        selector="value" if operation else None,
+    )
+
+
+def _node(
+    node_id: str,
+    operator: str,
+    refs: tuple[ProgramInputRef, ...],
+    *,
+    output_schema: str = "scalar",
+) -> OperationNode:
+    return OperationNode(
+        node_id=node_id,
+        operator_id=operator,
+        input_refs=refs,
+        output_schema=output_schema,
+        verifier_id=f"{operator}.test.v1",
+        dependencies=tuple(ref.ref_id for ref in refs if ref.kind == InputRefKind.OPERATION),
+    )
+
+
+def _calculation_program() -> TaskProgram:
+    nodes = (
+        _node("d1", "difference", (_ref("evidence:test:0"), _ref("evidence:test:1"))),
+        _node("r1", "ratio", (_ref("d1", operation=True), _ref("evidence:test:0"))),
+        _node("d2", "difference", (_ref("evidence:test:1"), _ref("evidence:test:2"))),
+        _node("r2", "ratio", (_ref("d2", operation=True), _ref("evidence:test:1"))),
+        _node("result", "difference", (_ref("r1", operation=True), _ref("r2", operation=True))),
+    )
+    return make_program(nodes, "result")
+
+
+def _comparison_program() -> TaskProgram:
+    nodes = (
+        _node("d1", "difference", (_ref("evidence:test:0"), _ref("evidence:test:1"))),
+        _node("d2", "difference", (_ref("evidence:test:1"), _ref("evidence:test:2"))),
+        _node(
+            "result",
+            "compare",
+            (_ref("d1", operation=True), _ref("d2", operation=True)),
+            output_schema="comparison",
+        ),
+    )
+    return make_program(nodes, "result")
+
+
+def test_public_finance_calculation_contract_exposes_exact_signed_formula() -> None:
+    gold = _formula_evidence(3)
+
+    program = _calculation_program()
+    contract = finance_operation_execution_contract(
+        family="finance.calculation_chain",
+        tier=DifficultyTier.FRONTIER,
+        gold=gold,
+        program=program,
+    )
+
+    expressions = {item["step_id"]: item["expression"] for item in contract["steps"]}
+    assert expressions["d1"] == "v2 - v1"
+    assert expressions["r1"] == "d1 / v1"
+    assert expressions["d2"] == "v3 - v2"
+    assert expressions["r2"] == "d2 / v2"
+    assert contract["final_output_rule"] == "value = result"
+    assert contract["source_program_hash"] == program.program_hash
+    assert "100 *" not in expressions["r1"]
+
+
+def test_public_comparison_contract_constrains_label_and_absolute_gap() -> None:
+    gold = _formula_evidence(3)
+    program = _comparison_program()
+    metadata = _public_contract_metadata(
+        family="finance.definition_reconciliation",
+        tier=DifficultyTier.FRONTIER,
+        gold=gold,
+        program=program,
+        answer_projection={"d1": "first interval", "d2": "second interval"},
+        recovery_branches=(),
+    )
+    guidance = metadata["agent_contract_guidance"]
+
+    assert guidance["answer_field_constraints"] == {
+        "higher_ref": {"allowed_values": ("first interval", "second interval", None)},
+        "difference": {"numeric_minimum": "0"},
+    }
+    assert guidance["operation_execution_contract"]["final_output_rule"] == (
+        "higher_ref plus absolute difference"
+    )
+    assert guidance["answer_observation_constraints"] == {
+        "source_tool_id": "calculator",
+        "source_operation_role": "terminal",
+        "source_result_selector": ("result", "output"),
+        "field_selectors": {"difference": ("difference",)},
+        "exact_fields": ("difference",),
+    }
+    instruction = finance_public_calculation_instruction(
+        "Compare the intervals.",
+        family="finance.definition_reconciliation",
+        tier=DifficultyTier.FRONTIER,
+        gold=gold,
+        program=program,
+    )
+    assert "exact signed arithmetic step disclosed by the Host" in instruction
+    assert "higher_ref plus absolute difference" in instruction
+
+
+def test_formula_contract_separates_workflow_tier_from_program_tier() -> None:
+    program = make_program(
+        (
+            _node(
+                "result",
+                "compare",
+                (_ref("evidence:test:0"), _ref("evidence:test:1")),
+                output_schema="comparison",
+            ),
+        ),
+        "result",
+    )
+    contract = finance_operation_execution_contract(
+        family="finance.branching_operation_plan",
+        tier=DifficultyTier.HARD_CONTROL,
+        gold=_formula_evidence(2),
+        program=program,
+    )
+
+    assert contract["observed_workflow_tier"] == "hard_control"
+    assert contract["program_semantic_tier"] == "easy_control"
+    assert contract["final_output_rule"] == "higher_ref plus absolute difference"
+    assert contract["steps"][-1]["inputs"] == ("v1", "v2")
+    assert contract["variables"][0]["selection_match"]["collection_selector"] == ("facts",)
+
+
 def _flash_report_values(*, information_passed: bool) -> dict[str, object]:
     interval = ConfidenceInterval(lower=0.0, point=0.0, upper=0.0)
     gates = tuple(
@@ -127,9 +289,7 @@ def _flash_report_values(*, information_passed: bool) -> dict[str, object]:
             model_arm=ExplorerArm.FLASH,
             runtime_arm=runtime,
             primary_families=("finance.calculation_chain",),
-            primary_tiers_by_family={
-                "finance.calculation_chain": tuple(DifficultyTier)
-            },
+            primary_tiers_by_family={"finance.calculation_chain": tuple(DifficultyTier)},
             task_count=1,
             rollout_count=5,
             mean_success_rate=0.0,
@@ -142,9 +302,7 @@ def _flash_report_values(*, information_passed: bool) -> dict[str, object]:
             marginal_axis_information={axis: 0.0 for axis in CAPABILITY_AXES},
             marginal_axis_intervals={axis: interval for axis in CAPABILITY_AXES},
             informative_axis_count=0,
-            family_information_share={
-                family: 0.0 for family in CAPABILITY_SENSITIVE_FAMILIES
-            },
+            family_information_share={family: 0.0 for family in CAPABILITY_SENSITIVE_FAMILIES},
             group_information_share={"group:test": 0.0},
             maximum_family_information_share=0.0,
             maximum_group_information_share=0.0,
@@ -176,9 +334,7 @@ def _flash_report_values(*, information_passed: bool) -> dict[str, object]:
         "estimated_cost_usd": 1.0,
         "pro_stage_authorized": information_passed,
         "next_permitted_stage": (
-            "pro_sparse_anchor"
-            if information_passed
-            else "flash_support_or_task_redesign_only"
+            "pro_sparse_anchor" if information_passed else "flash_support_or_task_redesign_only"
         ),
     }
 

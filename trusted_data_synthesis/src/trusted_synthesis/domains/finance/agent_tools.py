@@ -7,7 +7,7 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v5"
+FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION = "finance_archive_agent_toolset.v6"
 
 
 def finance_archive_agent_tool_specs() -> tuple[AgentToolSpec, ...]:

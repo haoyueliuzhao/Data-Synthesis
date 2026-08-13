@@ -11,6 +11,8 @@ from trusted_synthesis.hashing import canonical_hash
 
 AGENT_TOOL_ENVIRONMENT_VERSION = "agent_tool_environment.v1"
 AGENT_TOOL_OBSERVATION_VERSION = "agent_tool_observation.v1"
+ARGUMENT_PATCH_REQUIRED_POLICY = "argument_patch_required"
+PREREQUISITE_ACTION_REQUIRED_POLICY = "prerequisite_action_required"
 
 ToolSemanticRole = Literal[
     "acquire",

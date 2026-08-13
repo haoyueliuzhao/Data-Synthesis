@@ -822,6 +822,59 @@ The public task text is frozen before model execution. API calls generate Agent 
 they cannot rewrite the confirmation questions, Programs, support policy, or anchor selection.
 See `docs/finance_v25_12_multitier_confirmation_protocol.md`.
 
+### v25.17-v25.18 Runtime Resolution and Flash information
+
+Correctness is a model-capability observation, not a Runtime qualification gate. Let `R=1` denote
+a valid measurement instrument and `Y=1` a model success. Every report must preserve both:
+
+```text
+P(Y=1 | R=1)  model capability under a valid instrument
+P(Y=1)        end-to-end system success
+```
+
+Runtime qualification is based only on:
+
+1. execution integrity;
+2. typed terminal resolution;
+3. Runtime-pathology limits;
+4. failure-attribution coverage.
+
+L0 external, L1 task/contract, and L2 tool-environment failures invalidate measurement. L3 model
+protocol, L4 Agent decision, and L5 semantic failures remain in the capability denominator. L6 is
+success. A passing Runtime with saturated capability outcomes must transition to
+`capability_support_redesign_only`, not Runtime repair.
+
+Every formal confirmation uses a fresh group, semantic signature, source task, Evidence ID,
+Evidence Version ID, and trajectory seed. The Held-out report may authorize only the Flash
+information matrix.
+
+The Flash information contract computes:
+
+- Final Valid empirical information as the primary authorizing response;
+- Retrieval, Planning, Calculation, Reconciliation, Verification, Recovery, and Stopping matrices
+  as non-authorizing diagnostics;
+- an equal-observed-axis joint capability matrix.
+
+All matrices condition on Runtime eligibility, use L2-normalized model-visible demands, and remove
+general difficulty only in the centered residual diagnostic. Information rank uses both an
+absolute `1e-12` and relative `1e-6` eigenvalue tolerance. Bootstrap inference is stratified by
+capability family and resamples both tasks and realizations.
+
+Both Workflow Runtime cells must pass rank, effective-rank, condition-number, boundary-mass,
+informative-axis, and family-dominance gates before a sparse Pro anchor can be prepared. Axis-only
+matrices cannot independently authorize Pro, Beneficiary screening, Exact Target, or GP-C.
+
+The v25.18 result is fail-closed:
+
+```text
+runtime_qualification_passed = true
+information_matrix_ready = false
+pro_sparse_anchor_authorized = false
+next_permitted_stage = capability_task_support_redesign_only
+```
+
+See `docs/finance_v25_17_v25_18_runtime_resolution_and_information_report.md`.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

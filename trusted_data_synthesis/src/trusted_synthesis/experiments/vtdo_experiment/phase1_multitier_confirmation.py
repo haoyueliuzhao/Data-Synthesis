@@ -9,7 +9,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from statistics import fmean
-from typing import Any, Literal
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -96,6 +96,15 @@ PRO_ANCHOR_ROLLOUT_COUNT = PRO_ANCHOR_BINDING_COUNT * PRO_ANCHOR_REPLICAS
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+class MultiTierStageExecutionContract(Protocol):
+    contract_id: str
+    finance_archive_config_path: str
+    model_contracts: tuple[ExplorerModelContract, ...]
+    protocol_profile: IterativeAgentProtocolProfile
+    maximum_model_tokens_per_rollout: int
+    model_contract_repair_attempts: int
 
 
 class MultiTierSupportRule(FrozenModel):
@@ -1106,7 +1115,7 @@ def make_sparse_pro_anchor_report(
 
 def _execute_stage(
     *,
-    contract: FinanceMultiTierConfirmationContract,
+    contract: MultiTierStageExecutionContract,
     tasks: Mapping[str, Any],
     bindings: tuple[RuntimeTaskBinding, ...],
     model_arm: ExplorerArm,
@@ -1139,7 +1148,7 @@ def _execute_stage(
     )
     pending = tuple(job for job in jobs if _job_key(*job) not in records)
     print(
-        f"[v25.12:{prefix}] resuming {len(records)}/{len(jobs)}; "
+        f"[multi-tier:{prefix}] resuming {len(records)}/{len(jobs)}; "
         f"executing {len(pending)} with {min(workers, max(1, len(pending)))} workers",
         flush=True,
     )
@@ -1188,7 +1197,7 @@ def _execute_stage(
                 records[key] = record
                 if index % 20 == 0 or index == len(futures):
                     print(
-                        f"[v25.12:{prefix}] completed {len(records)}/{len(jobs)}",
+                        f"[multi-tier:{prefix}] completed {len(records)}/{len(jobs)}",
                         flush=True,
                     )
     else:
@@ -1585,7 +1594,7 @@ def _load_stage_checkpoint(
     path: Path,
     *,
     run_identity: str,
-    contract: FinanceMultiTierConfirmationContract,
+    contract: MultiTierStageExecutionContract,
     model_arm: ExplorerArm,
     bindings: tuple[RuntimeTaskBinding, ...],
     replicas: int,
@@ -1624,7 +1633,7 @@ def _job_key(binding: RuntimeTaskBinding, replicate: int) -> tuple[str, int]:
 
 
 def _stage_run_identity(
-    contract: FinanceMultiTierConfirmationContract,
+    contract: MultiTierStageExecutionContract,
     prefix: str,
     model_arm: ExplorerArm,
     bindings: tuple[RuntimeTaskBinding, ...],
