@@ -875,6 +875,40 @@ next_permitted_stage = capability_task_support_redesign_only
 
 See `docs/finance_v25_17_v25_18_runtime_resolution_and_information_report.md`.
 
+### v25.19-v25.20 independent capability-support confirmation
+
+The v25.18 Held-out outcomes may be used only to freeze Runtime-family support rules. They may not
+be reused as Confirmation responses. A formal support Confirmation requires:
+
+1. four to six independent matched groups per model-visible family;
+2. four to five replicas per selected task;
+3. exclusion of Host-controlled capability axes from the corresponding Runtime geometry;
+4. zero overlap in source task, group, Evidence ID, Evidence Version ID, core semantic signature,
+   and task signature;
+5. complete static public-contract satisfiability before the first API call;
+6. unchanged Runtime and information thresholds;
+7. explicit Family and Ladder-Group information-dominance gates.
+
+Correctness continues to define the response variable. It must not enter Runtime qualification.
+The v25.20 Confirmation completed 300/300 Flash rollouts and passed every Runtime gate, but both
+information cells did not pass. Scripted failed Final and Joint condition-number gates;
+Autonomous failed Final and Joint effective-rank gates. The immutable transition is:
+
+```text
+runtime_qualification_passed = true
+information_matrix_ready = false
+pro_sparse_anchor_authorized = false
+next_permitted_stage = capability_task_support_redesign_only
+```
+
+This result forbids selecting another subset from the same Confirmation responses and reporting it
+as independent evidence. The next Development stage may use the result only to redesign
+irreducible Retrieval, Calculation, Reconciliation, and Recovery mechanisms. A new confirmation
+must again be disjoint on every frozen freshness channel. Pro, Beneficiary, Objective, Exact
+Target, GP-C, Contribution, VTDO rounds, and Student training remain blocked.
+
+See `docs/finance_v25_19_v25_20_capability_support_confirmation_report.md`.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

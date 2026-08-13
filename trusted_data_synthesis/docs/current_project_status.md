@@ -14,18 +14,24 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active experiment is Finance v25.18. Runtime Resolution v2 now cleanly separates measurement
-integrity from model correctness. Fresh Development and Held-out sets each completed 84/84 Flash
-Workflow rollouts with 100% execution, replay, authority, terminal-resolution, and attribution
-coverage. Held-out Valid Success given Runtime eligibility was 73.81%, with 23.81% boundary cells.
-This authorized a Flash information audit, not a Pro or Contribution experiment.
+The active experiment is Finance v25.20. Runtime Resolution v2 continues to separate measurement
+integrity from model correctness. v25.19 used only frozen v25.18 Development evidence to define a
+five-group, five-replica support policy. A new real-Finance source extension then produced 35 fresh
+matched groups with zero Task, Group, Evidence, Evidence-Version, semantic-signature, or
+task-signature overlap against v25.18.
 
-The v25.18 information audit replayed all 84 Held-out terminal artifacts and computed Final Valid,
-seven axis-specific, and joint capability matrices. Both Workflow Runtime cells failed the frozen
-information gates. Scripted support was too saturated and family-concentrated; Autonomous support
-was full-rank but ill-conditioned. Pro sparse anchors, Beneficiary screening, Exact Target, GP-C,
-VTDO updates, and production Contribution remain forbidden. The only permitted transition is
-`capability_task_support_redesign_only`.
+The Flash-only v25.20 Confirmation completed 300/300 rollouts. Every global and per-Runtime
+instrument gate passed: transport, bounded JSON, Observation replay, authority, terminal
+resolution, and failure attribution were 100%, while L0-L2, unattributed, and prompt-pathology
+rates were zero. Correctness remained a capability response: Scripted Valid Success was 52.00%
+and Autonomous was 51.43%.
+
+The larger support improved response geometry but did not pass every frozen gate. Scripted Final
+Valid reached rank 5 and effective rank 2.499, but condition number remained 267.23. Autonomous
+reached rank 7, effective rank 2.799, and condition number 92.46. Retrieval remained saturated,
+Autonomous Calculation was 98.29%, and Autonomous Reconciliation remained at zero. Pro sparse
+anchors, Beneficiary screening, Exact Target, GP-C, VTDO updates, and production Contribution are
+still forbidden. The only permitted transition remains `capability_task_support_redesign_only`.
 
 The post-v22 plan inserts a capability-sensitive Agent Runtime Pilot before any fresh Validation.
 v24 now qualifies the bounded Agent Runtime on a fresh 18-task set: all 216 Pro--Flash Scripted and
@@ -226,6 +232,30 @@ The final transition is `capability_task_support_redesign_only`. Pro sparse anch
 unauthorized. See
 `docs/finance_v25_17_v25_18_runtime_resolution_and_information_report.md`.
 
+## v25.19-v25.20 Capability-Support Confirmation
+
+v25.19 froze 14 Runtime-family rules from the v25.18 Development result. Host-controlled Scripted
+Planning and Stopping were excluded from response geometry. Every model-visible family received
+five independent matched groups and each selected binding received five replicas. The original
+pool failed closed when it could provide only three fresh Verification groups; a disjoint
+420-task real-Finance extension supplied the required capacity without lowering the contract.
+
+The v25.20 population contains 35 groups, 105 static Tier tasks, 60 Runtime bindings, and 50 unique
+selected tasks. All six freshness overlap channels are zero and all static public contracts pass.
+The online run completed 300/300 Flash rollouts with 3,698 API calls and 21,388,724
+provider-reported tokens. No Pro call or GPU computation occurred.
+
+Runtime qualification passed. All 145 failures are attributable capability outcomes: 117 L4
+Agent-decision and 28 L5 semantic failures. Family and Group dominance gates passed, boundary mass
+rose to 56.00% for Scripted and 68.57% for Autonomous, and Autonomous became full-rank with all
+seven marginal-axis Bootstrap lower bounds positive. The remaining failures are Scripted Final
+and Joint condition number, plus Autonomous Final and Joint effective rank.
+
+The experiment shows that independent groups and additional replicas improve observability, but
+existing Tier selection alone cannot repair Retrieval/Calculation ceilings or the Reconciliation
+floor. The next task population must change those axes' irreducible program and Evidence
+dependencies. See `docs/finance_v25_19_v25_20_capability_support_confirmation_report.md`.
+
 ## Revalidated Code State
 
 | Check | Result |
@@ -233,18 +263,25 @@ unauthorized. See
 | Development target/design focus | 10 passed |
 | v24 Agent/runtime focus | 38 passed |
 | v25 capability-identifiability focus | 11 passed |
+| v25.19-v25.20 support-confirmation focus | 26 passed |
 | Ruff check | passed |
-| Ruff format, changed files | passed |
-| Mypy | passed, 267 source files |
-| Pytest | passed, 514 tests in 136.42 seconds |
+| Ruff format, non-manifest-bound changed files | passed |
+| Mypy | passed, 282 source files |
+| Pytest | passed, 575 tests in 138.39 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
+| v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
+| v25.20 population deterministic replay | byte-identical SHA-256 `8ee0b10046af...` |
+| v25.20 contract deterministic replay | byte-identical SHA-256 `80cf20a2e526...` |
+| v25.20 completed-run replay | 300/300 resumed, zero API jobs, identical report ID |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
 | Legal and Science contracts | retained by full suite |
 
-The repository-wide formatter would rewrite 67 historical files under the currently installed
-Ruff version. Those unrelated files were deliberately not reformatted; all changed Python files
-pass the formatter and lint checks.
+The repository-wide formatter would rewrite historical files under the currently installed Ruff
+version. Those unrelated files were deliberately not reformatted. The v25.20 contract binds the
+exact bytes of `phase1_multitier_capability_population.py`; its pre-run formatting is retained so
+the executed contract remains reproducible. All changed Python files pass lint, while the new
+non-manifest-bound source and tests also pass the formatter.
 
 The v17 tests reject altered plans, implementation manifests, profiles, splits, source jobs,
 result rows, selection lineage, uncertainty envelopes, and stale contracts. Validation cannot run

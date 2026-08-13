@@ -396,13 +396,19 @@ def _build_multitier_groups(
     builder: _CapabilityTaskBuilder,
     *,
     excluded_signatures: set[str],
+    groups_per_family: int = MATCHED_GROUPS_PER_FAMILY,
+    core_program_tiers: Mapping[str, DifficultyTier] = CORE_PROGRAM_TIERS,
 ) -> tuple[MatchedLadderGroup, ...]:
+    if groups_per_family < 1:
+        raise ValueError("multi-Tier group count must be positive")
+    if set(core_program_tiers) != set(CAPABILITY_SENSITIVE_FAMILIES):
+        raise ValueError("multi-Tier core-program policy omits a family")
     groups: list[MatchedLadderGroup] = []
     used_signatures: set[str] = set()
     used_public_ids: set[str] = set()
     for family in CAPABILITY_SENSITIVE_FAMILIES:
         built = 0
-        core_tier = CORE_PROGRAM_TIERS[family]
+        core_tier = core_program_tiers[family]
         candidates = (
             builder._cross_candidates(family, core_tier)
             if family == "finance.branching_operation_plan"
@@ -530,9 +536,9 @@ def _build_multitier_groups(
             used_public_ids.update(hard_ids)
             builder._used_evidence_ids.update(hard_ids)
             built += 1
-            if built == MATCHED_GROUPS_PER_FAMILY:
+            if built == groups_per_family:
                 break
-        if built != MATCHED_GROUPS_PER_FAMILY:
+        if built != groups_per_family:
             raise ValueError(
                 f"real Finance Evidence supports only {built} fresh multi-Tier groups for {family}"
             )
