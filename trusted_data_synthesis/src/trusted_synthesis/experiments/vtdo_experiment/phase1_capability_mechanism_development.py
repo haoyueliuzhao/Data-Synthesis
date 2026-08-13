@@ -931,7 +931,7 @@ def make_mechanism_static_audit(
     depth_means: dict[str, dict[MechanismTier, float]] = {}
     depth_monotonic: dict[str, bool] = {}
     for mechanism_id in MECHANISM_IDS:
-        means = {
+        means: dict[MechanismTier, float] = {
             tier: sum(
                 item.mechanism.action_graph.graph_depth
                 for item in groups
