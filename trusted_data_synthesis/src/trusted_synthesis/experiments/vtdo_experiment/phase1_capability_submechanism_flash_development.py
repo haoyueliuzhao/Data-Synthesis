@@ -66,12 +66,15 @@ from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
 SUBMECHANISM_FLASH_CONTRACT_VERSION = (
-    "finance_capability_submechanism_flash_development_contract.v5"
+    "finance_capability_submechanism_flash_development_contract.v7"
 )
-SUBMECHANISM_BEHAVIOR_VERSION = "finance_capability_submechanism_behavior.v2"
+SUBMECHANISM_BEHAVIOR_VERSION = "finance_capability_submechanism_behavior.v3"
 SUBMECHANISM_GEOMETRY_VERSION = "finance_capability_submechanism_geometry.v1"
 SUBMECHANISM_GATE_VERSION = "finance_capability_submechanism_gate.v1"
-SUBMECHANISM_FLASH_REPORT_VERSION = "finance_capability_submechanism_flash_development_report.v5"
+SUBMECHANISM_FLASH_REPORT_VERSION = "finance_capability_submechanism_flash_development_report.v7"
+PRIMARY_RESPONSE_VARIABLE: Literal["capability_contract_success"] = (
+    "capability_contract_success"
+)
 
 EXPECTED_TASK_COUNT = 20
 EXPECTED_PARENT_COUNT = 4
@@ -120,8 +123,8 @@ class SubmechanismGeometryThresholds(FrozenModel):
 class FinanceSubmechanismFlashContract(FrozenModel):
     contract_id: str = Field(min_length=1)
     run_id: str = Field(min_length=1)
-    experiment_label: Literal["finance_v25_28_transport_stabilized_development"] = (
-        "finance_v25_28_transport_stabilized_development"
+    experiment_label: Literal["finance_v25_32_capability_decision_calibration"] = (
+        "finance_v25_32_capability_decision_calibration"
     )
     stage: RuntimeResolutionStage = RuntimeResolutionStage.RESIDUAL_DEVELOPMENT
     source_population_path: str = Field(min_length=1)
@@ -161,7 +164,9 @@ class FinanceSubmechanismFlashContract(FrozenModel):
     thresholds: SubmechanismGeometryThresholds = Field(
         default_factory=SubmechanismGeometryThresholds
     )
-    primary_response_variable: Literal["valid_success"] = "valid_success"
+    primary_response_variable: Literal["capability_contract_success"] = (
+        "capability_contract_success"
+    )
     diagnostic_response_variables: tuple[DiagnosticResponse, ...] = DIAGNOSTIC_RESPONSES
     diagnostics_can_rescue_primary: Literal[False] = False
     confirmation_response_access_during_development: Literal["forbidden"] = "forbidden"
@@ -222,6 +227,8 @@ class FinanceSubmechanismFlashContract(FrozenModel):
             raise ValueError("submechanism rollout identities are incomplete")
         if self.diagnostic_response_variables != DIAGNOSTIC_RESPONSES:
             raise ValueError("submechanism diagnostic responses changed")
+        if self.primary_response_variable != PRIMARY_RESPONSE_VARIABLE:
+            raise ValueError("submechanism primary response contract changed")
         if self.contract_id != submechanism_flash_contract_id(self):
             raise ValueError("submechanism Flash contract identity is invalid")
         return self
@@ -245,6 +252,8 @@ class SubmechanismBehaviorObservation(FrozenModel):
     behavior_evaluable: bool
     behavior_success: bool
     primary_valid_success: bool
+    capability_contract_success: bool
+    post_completion_violation_observed: bool
     tool_response: bool
     verification_response: bool
     recovery_response: bool
@@ -259,9 +268,17 @@ class SubmechanismBehaviorObservation(FrozenModel):
     def validate_observation(self) -> SubmechanismBehaviorObservation:
         if self.behavior_evaluable != self.runtime_eligible:
             raise ValueError("submechanism behavior denominator is inconsistent")
-        expected_success = self.runtime_eligible and self.host_event_ordered
+        expected_success = (
+            self.runtime_eligible
+            and self.host_event_ordered
+            and not self.post_completion_violation_observed
+        )
         if self.behavior_success != expected_success:
             raise ValueError("submechanism behavior success is inconsistent")
+        if self.capability_contract_success != (
+            self.primary_valid_success and self.behavior_success
+        ):
+            raise ValueError("submechanism capability response is inconsistent")
         if self.host_event_ordered and not (self.trigger_observed and self.resolution_observed):
             raise ValueError("ordered submechanism behavior lacks both Host events")
         if self.observation_id != submechanism_behavior_observation_id(self):
@@ -323,7 +340,7 @@ class SubmechanismDevelopmentGate(FrozenModel):
 class FinanceSubmechanismFlashReport(FrozenModel):
     report_id: str = Field(min_length=1)
     contract_id: str = Field(min_length=1)
-    experiment_label: Literal["finance_v25_28_transport_stabilized_development"]
+    experiment_label: Literal["finance_v25_32_capability_decision_calibration"]
     source_base_tier: DifficultyTier
     requested_rollout_count: int = Field(ge=1)
     recorded_rollout_count: int = Field(ge=0)
@@ -339,6 +356,10 @@ class FinanceSubmechanismFlashReport(FrozenModel):
     host_trigger_observation_rate: float = Field(ge=0, le=1)
     host_resolution_observation_rate: float = Field(ge=0, le=1)
     ordered_behavior_success_rate: float = Field(ge=0, le=1)
+    capability_contract_success_rate: float = Field(ge=0, le=1)
+    primary_response_variable: Literal["capability_contract_success"] = (
+        PRIMARY_RESPONSE_VARIABLE
+    )
     primary_spectrum: SubmechanismGeometrySpectrum
     diagnostic_spectra: dict[DiagnosticResponse, SubmechanismGeometrySpectrum]
     gates: tuple[SubmechanismDevelopmentGate, ...] = Field(min_length=10)
@@ -511,7 +532,7 @@ def prepare_submechanism_flash_development(
     finance_config = Path(source.finance_archive_config_path).resolve()
     values = {
         "run_id": run_id,
-        "experiment_label": "finance_v25_28_transport_stabilized_development",
+        "experiment_label": "finance_v25_32_capability_decision_calibration",
         "source_population_path": str(population_path),
         "source_population_sha256": _sha256(population_path),
         "source_population_id": population.population_id,
@@ -628,6 +649,7 @@ def make_submechanism_behavior_observations(
         terminal = terminal_by_key[key]
         outcome = outcome_by_key[key]
         expected = contract.task_expected_host_events[record.task_artifact_id]
+        submechanism_id = contract.task_submechanism_ids[record.task_artifact_id]
         observations = _all_observations(record)
         events = _host_event_sequence(observations, expected)
         trigger = expected[0] in events
@@ -636,12 +658,25 @@ def make_submechanism_behavior_observations(
             trigger and resolution and events.index(expected[0]) <= events.index(expected[1])
         )
         tool_ids = tuple(item.call.tool_id for item in observations)
+        post_completion_violation = any(
+            item.error_code
+            in {
+                "redundant_action_exposes_error_risk",
+                "redundant_action_after_verified_completion",
+            }
+            for item in observations
+        )
+        behavior_success = bool(
+            terminal.runtime_eligible_for_capability_denominator
+            and ordered
+            and not post_completion_violation
+        )
         values = {
             "contract_id": contract.contract_id,
             "record_id": record.record_id,
             "binding_id": record.binding_id,
             "task_artifact_id": record.task_artifact_id,
-            "submechanism_id": contract.task_submechanism_ids[record.task_artifact_id],
+            "submechanism_id": submechanism_id,
             "parent_mechanism_id": contract.task_parent_mechanism_ids[record.task_artifact_id],
             "replicate": record.replicate,
             "runtime_eligible": terminal.runtime_eligible_for_capability_denominator,
@@ -651,15 +686,19 @@ def make_submechanism_behavior_observations(
             "resolution_observed": resolution,
             "host_event_ordered": ordered,
             "behavior_evaluable": terminal.runtime_eligible_for_capability_denominator,
-            "behavior_success": (terminal.runtime_eligible_for_capability_denominator and ordered),
+            "behavior_success": behavior_success,
             "primary_valid_success": terminal.valid_success,
+            "capability_contract_success": terminal.valid_success and behavior_success,
+            "post_completion_violation_observed": post_completion_violation,
             "tool_response": bool(tool_ids and trigger),
             "verification_response": bool(
                 "cross_check_evidence" in tool_ids and outcome.verification_success
             ),
             "recovery_response": ordered,
             "stopping_response": bool(
-                outcome.final_answer_emitted and outcome.stop_quality_success
+                outcome.final_answer_emitted
+                and outcome.stop_quality_success
+                and not post_completion_violation
             ),
             "observed_tool_ids": tool_ids,
             "failed_tool_call_count": sum(item.status == "failed" for item in observations),
@@ -700,9 +739,9 @@ def make_submechanism_flash_report(
             contract,
             behaviors,
             complete_task_ids=complete_task_ids,
-            response_variable="primary_valid_success",
+            response_variable=PRIMARY_RESPONSE_VARIABLE,
         ),
-        response_variable="valid_success",
+        response_variable=PRIMARY_RESPONSE_VARIABLE,
     )
     diagnostics = {
         response: _make_spectrum(
@@ -745,6 +784,10 @@ def make_submechanism_flash_report(
         "host_trigger_observation_rate": _rate(item.trigger_observed for item in behaviors),
         "host_resolution_observation_rate": _rate(item.resolution_observed for item in behaviors),
         "ordered_behavior_success_rate": _rate(item.behavior_success for item in behaviors),
+        "capability_contract_success_rate": _rate(
+            item.capability_contract_success for item in behaviors
+        ),
+        "primary_response_variable": PRIMARY_RESPONSE_VARIABLE,
         "primary_spectrum": primary,
         "diagnostic_spectra": diagnostics,
         "gates": gates,

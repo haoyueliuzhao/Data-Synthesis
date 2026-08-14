@@ -38,6 +38,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanis
     PUBLIC_SUBMECHANISM_METADATA_KEY,
     CapabilitySubmechanismPopulation,
     CapabilitySubmechanismTask,
+    _public_mechanism_nondisclosed,
 )
 from trusted_synthesis.runtime.agent.iterative import (
     IterativeAgentFailureArtifact,
@@ -74,9 +75,12 @@ def _scenario(context: Any, kind: str, *, candidate: bool = False) -> Any:
         "submechanism_id": f"finance.test.{kind}",
         "parent_mechanism_id": "finance.test.parent",
         "intervention_kind": kind,
-        "expected_host_events": (f"{kind}:observed", f"{kind}:resolved"),
+        "expected_host_events": (
+            "observe:typed_host_state",
+            "resolve:typed_host_state",
+        ),
         "evidence_roles": roles,
-        "public_resolution_hint": f"Resolve the typed {kind} branch.",
+        "public_resolution_hint": "Use the observed typed Host state.",
     }
     if candidate:
         values.update(
@@ -210,7 +214,271 @@ def test_runtime_snapshot_and_public_contract_are_scenario_specific() -> None:
     public = public_submechanism_contract(first)
     assert "canonical_candidate" not in public
     assert "evidence_roles" not in public
+    assert "submechanism_id" not in public
+    assert "parent_mechanism_id" not in public
+    assert "intervention_kind" not in public
+    assert "trigger_tool" not in public
+    assert "resolution_tools" not in public
+    assert "public_resolution_hint" not in public
+    assert public["oracle_mechanism_identity_disclosed"] is False
     assert all("evidence:" not in str(value) for value in public.values())
+
+
+def test_candidate_public_contract_exposes_shape_without_gold_value() -> None:
+    context = _omega()
+    scenario = _scenario(context, "local_calculation_error", candidate=True)
+    public = public_submechanism_contract(scenario)
+    submission = public["candidate_submission_contract"]
+
+    assert submission == {
+        "selector": ["claim_or_result", "candidate_payload"],
+        "required_fields": ["unit", "value"],
+        "localized_field": "value",
+        "preserve_fields": ["unit"],
+        "additional_fields_allowed": False,
+        "canonical_value_disclosed": False,
+        "value_source": "derive_independently_from_public_evidence_and_tool_observations",
+    }
+    assert "correct" not in str(public)
+
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+    index, mismatch = _verify(runtime, index, operation_ref)
+    assert mismatch.result["candidate_repair"]["submission_contract"] == submission
+
+    repaired = _call(
+        runtime,
+        index + 1,
+        "cross_check_evidence",
+        {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "claim_or_result": {
+                "operation_ref": operation_ref,
+                "candidate_payload": scenario.canonical_candidate,
+            },
+        },
+    )
+    assert repaired.status == "succeeded"
+    assert repaired.result["verified"] is True
+    assert repaired.result["candidate_repair"]["repair_verified"] is True
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_public_decision_contract_does_not_disclose_partial_probe_sequence() -> None:
+    context = _omega()
+    scenario = _scenario(context, "insufficient_evidence")
+    public = public_submechanism_contract(scenario)
+
+    assert "partial_support_probe_contract" not in public
+    assert public["contract_type"] == "typed_host_state_decision"
+    assert public["host_feedback_contract"][
+        "otherwise_select_the_next_action_from_public_tool_schemas"
+    ] is True
+
+
+def test_public_mechanism_non_disclosure_fails_closed() -> None:
+    scenario = SimpleNamespace(
+        intervention_kind="post_complete_cost",
+        public_resolution_hint="Stop immediately after verified completion.",
+    )
+
+    def task(public_payload: dict[str, Any]) -> Any:
+        public = SimpleNamespace(model_dump=lambda **_: public_payload)
+        return SimpleNamespace(
+            artifact=SimpleNamespace(task=SimpleNamespace(public=public)),
+            submechanism_id="finance.stopping.post_complete_cost",
+            parent_mechanism_id="stopping_control",
+            scenario=scenario,
+        )
+
+    assert _public_mechanism_nondisclosed(
+        task(
+            {
+                "instruction": "Use the typed Host state to decide the next action.",
+                "metadata": {
+                    "capability_decision_contract": {
+                        "contract_type": "typed_host_state_decision",
+                        "oracle_mechanism_identity_disclosed": False,
+                    }
+                },
+            }
+        )
+    )
+    assert not _public_mechanism_nondisclosed(
+        task(
+            {
+                "instruction": "Exercise finance.stopping.post_complete_cost.",
+                "metadata": {"intervention_kind": "post_complete_cost"},
+            }
+        )
+    )
+
+
+def test_insufficient_evidence_emits_executable_typed_continuation() -> None:
+    context = _omega()
+    scenario = _scenario(context, "insufficient_evidence")
+    runtime = _runtime(context, scenario)
+    first = scenario.evidence_roles[0]
+
+    selected = _call(
+        runtime,
+        1,
+        "query_structured_fact",
+        {
+            "subject_alias": first.subject_alias,
+            "metric_alias": first.metric_alias,
+            "period_label": first.period_label,
+            "public_filters": {},
+        },
+    )
+
+    assert selected.status == "succeeded"
+    runtime.manifest.tools_by_id["query_structured_fact"].validate_output(selected.result)
+    state = selected.result["completion_state"]
+    assert state["complete"] is False
+    assert state["host_event"] == scenario.expected_host_events[0]
+    completed = selected
+    remaining = {
+        (
+            role.subject_alias,
+            role.metric_alias,
+            role.period_label,
+        )
+        for role in scenario.evidence_roles
+        if role.evidence_id not in runtime.selected_evidence_ids
+    }
+    index = 2
+    while remaining:
+        required = state["required_prerequisite_action"]
+        arguments = required["arguments"]
+        role_key = (
+            arguments["subject_alias"],
+            arguments["metric_alias"],
+            arguments["period_label"],
+        )
+        assert required["action"] == "retrieve_missing_evidence_role"
+        assert required["tool_id"] == "query_structured_fact"
+        assert arguments["public_filters"] == {}
+        assert role_key in remaining
+        completed = _call(runtime, index, required["tool_id"], required["arguments"])
+        remaining = {
+            (
+                role.subject_alias,
+                role.metric_alias,
+                role.period_label,
+            )
+            for role in scenario.evidence_roles
+            if role.evidence_id not in runtime.selected_evidence_ids
+        }
+        if remaining:
+            state = completed.result["completion_state"]
+        index += 1
+
+    assert completed.status == "succeeded"
+    assert completed.result["submechanism_resolution"]["host_event"] == (
+        scenario.expected_host_events[1]
+    )
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_incomplete_continue_requires_agent_to_select_the_next_typed_action() -> None:
+    context = _omega()
+    scenario = _scenario(context, "incomplete_continue")
+    runtime = _runtime(context, scenario)
+    first = scenario.evidence_roles[0]
+
+    selected = _call(
+        runtime,
+        1,
+        "query_structured_fact",
+        {
+            "subject_alias": first.subject_alias,
+            "metric_alias": first.metric_alias,
+            "period_label": first.period_label,
+            "public_filters": {},
+        },
+    )
+
+    state = selected.result["completion_state"]
+    assert state["complete"] is False
+    assert state["required_prerequisite_action"] is None
+    missing = state["missing_roles"][0]
+    completed = _call(
+        runtime,
+        2,
+        "query_structured_fact",
+        {
+            "subject_alias": missing["subject_alias"],
+            "metric_alias": missing["metric_alias"],
+            "period_label": missing["period_label"],
+            "public_filters": {},
+        },
+    )
+    assert completed.status == "succeeded"
+    assert completed.result["submechanism_resolution"]["host_event"] == (
+        scenario.expected_host_events[1]
+    )
+
+
+def test_evidence_conflict_emits_executable_normalization_action() -> None:
+    context = _omega()
+    scenario = _scenario(context, "evidence_conflict")
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+
+    index, conflict = _verify(runtime, index, operation_ref)
+
+    assert conflict.status == "failed"
+    retry = conflict.result["retry_contract"]
+    required = retry["required_prerequisite_action"]
+    assert required["action"] == "normalize_selected_evidence"
+    assert required["tool_id"] == "normalize_metric_unit_period"
+    assert required["arguments"]["evidence_ids"] == list(runtime.selected_evidence_ids)
+    assert set(required["arguments"]["target_definition"]) == {
+        "definition_id",
+        "time_basis",
+        "frequency",
+    }
+
+    normalized = _call(runtime, index + 1, required["tool_id"], required["arguments"])
+    assert normalized.status == "succeeded"
+    _, verified = _verify(runtime, index + 1, operation_ref)
+    assert verified.status == "succeeded"
+    assert verified.result["verified"] is True
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_unresolved_conflict_requires_agent_tool_selection() -> None:
+    context = _omega()
+    scenario = _scenario(context, "unresolved_conflict_cannot_stop")
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+
+    index, conflict = _verify(runtime, index, operation_ref)
+
+    retry = conflict.result["retry_contract"]
+    assert retry["required_prerequisite_action"] is None
+    assert "required_next_tools" not in retry
+    normalized = _call(
+        runtime,
+        index + 1,
+        "normalize_metric_unit_period",
+        {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {
+                "definition_id": context.public_corpus.evidence[0].definition.definition_id,
+                "time_basis": context.public_corpus.evidence[0].temporal_context.basis,
+                "frequency": context.public_corpus.evidence[0].temporal_context.frequency,
+            },
+        },
+    )
+    assert normalized.status == "succeeded"
+    _, verified = _verify(runtime, index + 1, operation_ref)
+    assert verified.status == "succeeded"
+    assert verified.result["verified"] is True
 
 
 def test_submechanism_replay_and_failed_artifact_preserve_host_observations() -> None:
@@ -321,6 +589,10 @@ def test_completion_observation_exposes_ordered_host_events(kind: str) -> None:
     assert verified.result["completion_state"]["host_event_sequence"] == list(
         scenario.expected_host_events
     )
+    assessment = verified.result["completion_state"]["additional_action_assessment"]
+    assert assessment["additional_action_required"] is False
+    assert "redundant_action_policy" not in verified.result["completion_state"]
+    assert kind not in str(verified.result["completion_state"])
     assert runtime.event_log == scenario.expected_host_events
 
     blocked = _call(

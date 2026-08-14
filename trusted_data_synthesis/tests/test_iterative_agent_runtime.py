@@ -123,6 +123,31 @@ class _TransientThenValidClient:
             http_status=200,
             http_success=True,
             json_contract_success=True,
+            prompt_tokens=6,
+            completion_tokens=4,
+            total_tokens=10,
+        )
+
+
+class _MissingUsageThenValidClient(_TransientThenValidClient):
+    def complete_json(self, prompt: str) -> tuple[dict[str, Any], ModelCallTelemetry]:
+        self.prompts.append(prompt)
+        request_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        missing = len(self.prompts) <= self._failure_count
+        return {"value": 7}, ModelCallTelemetry(
+            provider="fixture",
+            endpoint_host="fixture.invalid",
+            model_requested="fixture-model",
+            model_selected="fixture-model",
+            response_model="fixture-model",
+            request_hash=request_hash,
+            response_hash=f"response:{len(self.prompts)}",
+            http_status=200,
+            http_success=True,
+            json_contract_success=True,
+            prompt_tokens=None if missing else 6,
+            completion_tokens=None if missing else 4,
+            total_tokens=None if missing else 10,
         )
 
 
@@ -854,6 +879,55 @@ def test_transient_provider_retry_exhaustion_is_fail_closed(
 
     assert len(captured.value.telemetry) == 4
     assert all(not item.http_success for item in captured.value.telemetry)
+    assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
+    assert len(set(client.prompts)) == 1
+
+
+def test_missing_usage_telemetry_retries_without_spending_contract_repair(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    delays: list[float] = []
+    monkeypatch.setattr(
+        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
+    )
+    client = _MissingUsageThenValidClient(failure_count=2)
+
+    value, telemetry, repair_count = _request_contract(
+        client, "Return a scalar contract.", _ScalarContract
+    )
+
+    assert value.value == 7
+    assert repair_count == 0
+    assert len(telemetry) == 3
+    assert [item.error_type for item in telemetry] == [
+        "MissingTokenUsageTelemetry",
+        "MissingTokenUsageTelemetry",
+        None,
+    ]
+    assert all(item.http_success for item in telemetry)
+    assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[:2])
+    assert len(set(client.prompts)) == 1
+
+
+def test_missing_usage_telemetry_exhaustion_is_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    delays: list[float] = []
+    monkeypatch.setattr(
+        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
+    )
+    client = _MissingUsageThenValidClient(
+        failure_count=len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS) + 1
+    )
+
+    with pytest.raises(LLMClientError, match="iterative Agent contract") as captured:
+        _request_contract(client, "Return a scalar contract.", _ScalarContract)
+
+    assert len(captured.value.telemetry) == 4
+    assert all(
+        item.error_type == "MissingTokenUsageTelemetry"
+        for item in captured.value.telemetry
+    )
     assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
     assert len(set(client.prompts)) == 1
 

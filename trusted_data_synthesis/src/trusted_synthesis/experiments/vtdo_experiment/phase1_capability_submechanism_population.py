@@ -5,6 +5,7 @@ import hashlib
 import json
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -56,13 +57,14 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_capability_p
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import AgentToolCall, AgentToolResult
 
-SUBMECHANISM_POPULATION_VERSION = "finance_capability_submechanism_population.v3"
-SUBMECHANISM_TASK_VERSION = "finance_capability_submechanism_task.v3"
-SUBMECHANISM_REPLAY_VERSION = "finance_capability_submechanism_runtime_replay.v1"
-SUBMECHANISM_AUDIT_VERSION = "finance_capability_submechanism_static_audit.v3"
+SUBMECHANISM_POPULATION_VERSION = "finance_capability_submechanism_population.v10"
+SUBMECHANISM_TASK_VERSION = "finance_capability_submechanism_task.v9"
+SUBMECHANISM_REPLAY_VERSION = "finance_capability_submechanism_runtime_replay.v2"
+SUBMECHANISM_AUDIT_VERSION = "finance_capability_submechanism_static_audit.v10"
 
 BOUNDARY_BASE_TIER = DifficultyTier.EASY_CONTROL
-PUBLIC_SUBMECHANISM_METADATA_KEY = "capability_submechanism_contract"
+PUBLIC_SUBMECHANISM_METADATA_KEY = "capability_decision_contract"
+PUBLIC_HOST_EVENTS = ("observe:typed_host_state", "resolve:typed_host_state")
 
 SELECTED_TASK_COUNT = 20
 SELECTED_PER_PARENT = 5
@@ -103,7 +105,7 @@ _PREFERRED_DISTRACTOR_FIELD = {
     "source_definition_error": "definition",
     "entity_scope_error": "subject",
     "evidence_conflict": "definition",
-    "unresolved_conflict_cannot_stop": "source",
+    "unresolved_conflict_cannot_stop": "definition",
     "uncertain_source_coverage": "source",
 }
 
@@ -188,6 +190,7 @@ class CapabilitySubmechanismStaticAudit(FrozenModel):
     host_replay_pass_rate: float = Field(ge=0, le=1)
     wrong_branch_rejection_rate: float = Field(ge=0, le=1)
     public_oracle_isolation_rate: float = Field(ge=0, le=1)
+    public_mechanism_non_disclosure_rate: float = Field(ge=0, le=1)
     answer_contract_coverage_rate: float = Field(ge=0, le=1)
     within_population_evidence_disjoint: bool
     prior_evidence_disjoint: bool
@@ -356,6 +359,12 @@ def build_submechanism_population(
             sampling_salt=sampling_salt,
         )
         replay = replay_submechanism_runtime(artifact, scenario)
+        if not replay.passed:
+            raise ValueError(
+                "submechanism Host replay failed for "
+                f"{spec.submechanism_id}: "
+                + json.dumps(replay.model_dump(mode="json"), sort_keys=True)
+            )
         materializer_hash = canonical_hash(
             {
                 "spec_hash": spec.spec_hash,
@@ -564,7 +573,7 @@ def _make_scenario(
         submechanism_id=spec.submechanism_id,
         parent_mechanism_id=spec.parent_mechanism_id,
         intervention_kind=kind,
-        expected_host_events=cast(tuple[str, str], spec.runtime_contract.required_host_events),
+        expected_host_events=PUBLIC_HOST_EVENTS,
         evidence_roles=evidence_roles_from_items(gold),
         public_resolution_hint=_resolution_hint(kind),
         untrusted_candidate=untrusted,
@@ -619,7 +628,25 @@ def _candidate_replacement(
         current = list(canonical) if isinstance(canonical, list) else [str(canonical)]
         value = sorted({*current[:-1], distractor.subject.subject_id})
     else:
-        value = f"incorrect:{canonical}"
+        try:
+            numeric = Decimal(str(canonical))
+        except (InvalidOperation, ValueError):
+            numeric = None
+        if numeric is not None and numeric.is_finite():
+            delta = max(abs(numeric) * Decimal("0.03"), Decimal("0.01"))
+            direction_token = distractor.provenance.content_hash or canonical_hash(
+                distractor.evidence_id,
+                prefix="finance_capability_submechanism_direction_fallback:",
+            )
+            direction_hex = direction_token.rsplit(":", 1)[-1][:2]
+            direction = (
+                Decimal("1")
+                if int(direction_hex, 16) % 2 == 0
+                else Decimal("-1")
+            )
+            value = format(numeric + direction * delta, "f")
+        else:
+            value = getattr(distractor.payload, "value", None)
     if value == canonical or value in (None, ""):
         return f"incompatible:{canonical}"
     return value
@@ -719,19 +746,26 @@ def _submechanism_instruction(
     source_instruction: str,
     projection: Mapping[str, str],
 ) -> str:
-    policy = submechanism_policy_manifest()[scenario.intervention_kind]
-    candidate = (
-        " The public untrusted candidate is "
-        + json.dumps(scenario.untrusted_candidate, sort_keys=True)
-        + "; independently replay it and repair exactly one localized field."
-        if scenario.untrusted_candidate is not None
-        else ""
-    )
+    candidate = ""
+    if scenario.untrusted_candidate is not None:
+        fields = sorted(scenario.untrusted_candidate)
+        candidate = (
+            " The public untrusted candidate is "
+            + json.dumps(scenario.untrusted_candidate, sort_keys=True)
+            + "; before finalizing, audit it with cross_check_evidence. Independently derive "
+            + "and validate any localized correction. If the Host requests a candidate "
+            + "submission, place it only at "
+            + "claim_or_result.candidate_payload with "
+            + f"exactly these fields: {fields}. Do not substitute the final-answer object for "
+            + "the candidate payload."
+        )
     return (
-        f"Use the frozen Archive tools to solve the financial task. Exercise the registered "
-        f"{scenario.intervention_kind} path: begin with {policy['trigger_tool']}; if the Host "
-        f"returns its typed observation, follow only the supplied recovery contract, then "
-        f"cross-check the computed result before stopping.{candidate} "
+        "Use the frozen Archive tools to solve the financial task from public evidence and "
+        "typed Host observations. Do not assume a hidden intervention label or a preselected "
+        "repair branch. Treat observed completion, conflict, and retry state as authoritative; "
+        "when no executable prerequisite is supplied, select the next action from the public "
+        "tool schemas. Finalize only when the observed state supports it."
+        f"{candidate} "
         f"{source_instruction} The final answer uses the public labels "
         f"{sorted(set(projection.values())) or ['value']}."
     )
@@ -775,16 +809,19 @@ def _resolution_hint(kind: SubmechanismKind) -> str:
             "Switch to Archive search and inspect the returned alternative route."
         ),
         "incomplete_continue": (
-            "Observe incomplete coverage, retrieve remaining roles, then verify again."
+            "The observed completion state is incomplete; select the next action from the "
+            "public missing-role state and tool schemas."
         ),
         "post_complete_error_risk": (
-            "Stop immediately after verified completion to avoid a new error risk."
+            "The Host reports verified completion and an elevated integrity risk for an "
+            "additional action."
         ),
         "post_complete_cost": (
-            "Stop immediately after verified completion to avoid marginal tool cost."
+            "The Host reports verified completion and a positive marginal cost for an "
+            "additional action."
         ),
         "unresolved_conflict_cannot_stop": (
-            "Resolve the observed conflict before attempting to stop."
+            "The observed evidence state remains conflicted and does not support finalization."
         ),
         "uncertain_source_coverage": (
             "Inspect provenance for the selected source before final verification."
@@ -894,7 +931,7 @@ def replay_wrong_branch_rejection(
     if kind == "operation_reference_repair":
         calls.select_all()
         calls.calculate()
-        calls.calculate(from_operation=True, selector=False)
+        calls.verify()
     elif kind in {"missing_prerequisite_evidence", "calculation_prerequisite_failure"}:
         calls.call(
             "calculator",
@@ -917,10 +954,7 @@ def replay_wrong_branch_rejection(
     elif kind in _CANDIDATE_TARGET:
         calls.select_all()
         calls.calculate()
-        if kind == "source_definition_error":
-            calls.normalize()
-        else:
-            calls.verify(scenario.untrusted_candidate)
+        calls.verify(scenario.untrusted_candidate)
     elif kind in {"evidence_conflict", "unresolved_conflict_cannot_stop"}:
         calls.select_all()
         calls.calculate()
@@ -1095,20 +1129,17 @@ class _ReplayCalls:
     def trigger_and_repair_operation_reference(self) -> None:
         self.select_all()
         self.calculate()
-        failed = self.calculate(from_operation=True, selector=False)
+        failed = self.verify()
         if failed.status != "failed":
             raise ValueError("operation-reference trigger did not fail")
-        repaired = self.calculate(from_operation=True, selector=True)
+        repaired = self.verify()
         if repaired.status != "succeeded":
             raise ValueError("operation-reference repair did not succeed")
 
     def verify_and_repair_candidate(self) -> None:
         self.select_all()
         self.calculate()
-        if self.scenario.intervention_kind == "source_definition_error":
-            first = self.normalize()
-        else:
-            first = self.verify(self.scenario.untrusted_candidate)
+        first = self.verify(self.scenario.untrusted_candidate)
         if first.status != "succeeded":
             raise ValueError("candidate trigger did not produce a replayable observation")
         result = self.verify(self.scenario.canonical_candidate)
@@ -1226,6 +1257,29 @@ def _public_oracle_isolated(task: CapabilitySubmechanismTask) -> bool:
     )
 
 
+def _public_mechanism_nondisclosed(task: CapabilitySubmechanismTask) -> bool:
+    public_payload = task.artifact.task.public.model_dump(mode="json")
+    public_text = json.dumps(public_payload, ensure_ascii=False, sort_keys=True)
+    public_keys = _collect_mapping_keys(public_payload)
+    forbidden_keys = {
+        "submechanism_id",
+        "parent_mechanism_id",
+        "intervention_kind",
+        "trigger_tools",
+        "resolution_tools",
+        "public_resolution_hint",
+    }
+    forbidden_values = {
+        task.submechanism_id,
+        task.parent_mechanism_id,
+        task.scenario.intervention_kind,
+        task.scenario.public_resolution_hint,
+    }
+    return not (public_keys & forbidden_keys) and not any(
+        value in public_text for value in forbidden_values
+    )
+
+
 def _collect_mapping_keys(value: Any) -> set[str]:
     if isinstance(value, Mapping):
         return {
@@ -1246,6 +1300,9 @@ def make_submechanism_static_audit(
     parents = Counter(item.parent_mechanism_id for item in tasks)
     evidence = [item for task in tasks for item in task.artifact.public_corpus.evidence]
     public_isolation = [_public_oracle_isolated(task) for task in tasks]
+    public_mechanism_nondisclosure = [
+        _public_mechanism_nondisclosed(task) for task in tasks
+    ]
     checks = {
         "selected_task_count": len(tasks) == SELECTED_TASK_COUNT,
         "balanced_parent_coverage": bool(parents)
@@ -1258,6 +1315,7 @@ def make_submechanism_static_audit(
         "host_replay": all(item.runtime_replay.passed for item in tasks),
         "wrong_branch_rejection": all(item.runtime_replay.wrong_branch_rejected for item in tasks),
         "public_oracle_isolation": all(public_isolation),
+        "public_mechanism_non_disclosure": all(public_mechanism_nondisclosure),
         "answer_contract": all(_answer_contract_ready(item.artifact) for item in tasks),
         "within_population_evidence_disjoint": len(evidence)
         == len({item.evidence_id for item in evidence}),
@@ -1287,6 +1345,7 @@ def make_submechanism_static_audit(
             item.runtime_replay.wrong_branch_rejected for item in tasks
         ),
         "public_oracle_isolation_rate": _rate(public_isolation),
+        "public_mechanism_non_disclosure_rate": _rate(public_mechanism_nondisclosure),
         "answer_contract_coverage_rate": _rate(
             _answer_contract_ready(item.artifact) for item in tasks
         ),
@@ -1381,7 +1440,7 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
     audit = population.static_audit
     return "\n".join(
         (
-            "# Finance v25.27 Answer-contract-repaired Submechanism Population",
+            "# Finance Capability Submechanism Population",
             "",
             "## Decision",
             "",
@@ -1400,6 +1459,8 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
             f"- Host trigger/resolution replay: **{audit.host_replay_pass_rate:.2%}**",
             f"- Wrong-branch rejection: **{audit.wrong_branch_rejection_rate:.2%}**",
             f"- Public/Oracle isolation: **{audit.public_oracle_isolation_rate:.2%}**",
+            "- Public mechanism non-disclosure: "
+            f"**{audit.public_mechanism_non_disclosure_rate:.2%}**",
             f"- Answer contract coverage: **{audit.answer_contract_coverage_rate:.2%}**",
             (
                 "- Within-population Evidence disjoint: "
@@ -1411,7 +1472,8 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
             f"- Distinct Materializers: **{audit.distinct_materializer_count}**",
             "",
             "This artifact validates the measurement instrument and fresh Finance support. "
-            "It authorizes only a Flash Development run under a separately frozen contract.",
+            "It does not authorize API use; only a separately frozen Flash stable-support "
+            "stage may consume it.",
             "",
         )
     )
@@ -1419,7 +1481,7 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Build the v25.27 answer-contract-repaired submechanism population"
+        description="Build a fresh Finance capability-submechanism population"
     )
     parser.add_argument("--source-artifacts", type=Path, required=True)
     parser.add_argument("--direction-report", type=Path, required=True)

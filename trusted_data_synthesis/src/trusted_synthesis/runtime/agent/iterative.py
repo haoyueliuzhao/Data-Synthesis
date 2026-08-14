@@ -30,7 +30,7 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v20"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v21"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
 ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v16"
 ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v18"
@@ -45,6 +45,7 @@ _TRANSIENT_PROVIDER_ERROR_TYPES = frozenset(
         "RemoteDisconnected",
         "TimeoutError",
         "URLError",
+        "MissingTokenUsageTelemetry",
     }
 )
 _TRANSIENT_PROVIDER_HTTP_STATUS = frozenset({408, 425, 429, 500, 502, 503, 504})
@@ -863,7 +864,6 @@ def _complete_json_with_transient_retry(
     for attempt in range(len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS) + 1):
         try:
             payload, telemetry = client.complete_json(prompt)
-            return payload, telemetry, tuple(failed)
         except LLMClientError as exc:
             failed.extend(exc.telemetry)
             if (
@@ -872,6 +872,24 @@ def _complete_json_with_transient_retry(
             ):
                 raise LLMClientError(str(exc), tuple(failed)) from exc
             time.sleep(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[attempt])
+            continue
+        if telemetry.total_tokens is None:
+            telemetry = telemetry.model_copy(
+                update={
+                    "json_contract_success": False,
+                    "error_type": "MissingTokenUsageTelemetry",
+                    "error_message": "Provider omitted required token usage telemetry",
+                }
+            )
+            failed.append(telemetry)
+            if attempt == len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS):
+                raise LLMClientError(
+                    "Provider omitted required token usage telemetry",
+                    tuple(failed),
+                )
+            time.sleep(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[attempt])
+            continue
+        return payload, telemetry, tuple(failed)
     raise AssertionError("transient provider retry loop did not terminate")
 
 

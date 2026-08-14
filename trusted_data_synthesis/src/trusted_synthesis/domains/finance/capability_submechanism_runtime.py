@@ -26,8 +26,9 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v1"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v2"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v6"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v8"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v2"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -70,6 +71,7 @@ _COMPLETENESS_KINDS = frozenset(
         "uncertain_source_coverage",
     }
 )
+_PARTIAL_SUPPORT_KINDS = frozenset({"insufficient_evidence", "incomplete_continue"})
 _CONFLICT_KINDS = frozenset(
     {
         "evidence_conflict",
@@ -98,10 +100,9 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
         "search_archive", ("query_structured_fact",), "unsupported_archive_route"
     ),
     "operation_reference_repair": _RuntimePolicy(
-        "calculator",
-        ("calculator",),
+        "cross_check_evidence",
+        ("cross_check_evidence",),
         "stale_operation_reference",
-        trigger_after_successes=1,
     ),
     "selector_scope_correction": _RuntimePolicy(
         "query_structured_fact", ("query_structured_fact",), "selector_scope_mismatch"
@@ -113,7 +114,7 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
         mode="candidate",
     ),
     "source_definition_error": _RuntimePolicy(
-        "normalize_metric_unit_period",
+        "cross_check_evidence",
         ("cross_check_evidence",),
         "source_definition_incompatible",
         mode="candidate",
@@ -125,7 +126,7 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
         mode="candidate",
     ),
     "insufficient_evidence": _RuntimePolicy(
-        "cross_check_evidence",
+        "query_structured_fact",
         ("query_structured_fact", "open_document"),
         "candidate_support_incomplete",
         mode="completeness",
@@ -155,21 +156,21 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
         "query_structured_fact", ("search_archive",), "typed_route_empty"
     ),
     "incomplete_continue": _RuntimePolicy(
-        "cross_check_evidence",
+        "query_structured_fact",
         ("query_structured_fact", "open_document"),
-        "required_roles_incomplete",
+        "evidence_roles_incomplete",
         mode="completeness",
     ),
     "post_complete_error_risk": _RuntimePolicy(
-        "cross_check_evidence", (), "post_complete_error_risk", mode="completeness"
+        "cross_check_evidence", (), "verified_completion_state", mode="completeness"
     ),
     "post_complete_cost": _RuntimePolicy(
-        "cross_check_evidence", (), "post_complete_marginal_cost", mode="completeness"
+        "cross_check_evidence", (), "verified_completion_state", mode="completeness"
     ),
     "unresolved_conflict_cannot_stop": _RuntimePolicy(
         "cross_check_evidence",
         ("normalize_metric_unit_period",),
-        "unresolved_conflict_cannot_stop",
+        "evidence_state_conflicted",
         mode="conflict",
     ),
     "uncertain_source_coverage": _RuntimePolicy(
@@ -432,6 +433,7 @@ class FinanceCapabilitySubmechanismRuntime:
                 self._trigger_call is not None
                 and call.tool_id == self._trigger_call.tool_id
                 and call.arguments == self._trigger_call.arguments
+                and self._scenario.intervention_kind != "operation_reference_repair"
             ):
                 return self._argument_patch_failure()
             result = self._base.execute(call)
@@ -465,6 +467,25 @@ class FinanceCapabilitySubmechanismRuntime:
         selected = set(self._base.selected_evidence_ids)
         required = {item.evidence_id for item in self._scenario.evidence_roles}
         complete = required <= selected
+        if kind in _PARTIAL_SUPPORT_KINDS:
+            if not self._trigger_observed:
+                result = self._base.execute(call)
+                selected = set(self._base.selected_evidence_ids)
+                if result.status == "succeeded" and selected and not required <= selected:
+                    self._observe_trigger(call)
+                    return self._with_partial_selection_state(result)
+                return result
+            if not complete:
+                if call.tool_id not in self._policy.resolution_tools:
+                    return self._resolution_required_failure()
+                result = self._base.execute(call)
+                if result.status == "succeeded":
+                    selected = set(self._base.selected_evidence_ids)
+                    if required <= selected:
+                        self._observe_resolution()
+                        return self._with_resolution_event(result)
+                    return self._with_partial_selection_state(result)
+                return result
         if (
             kind == "uncertain_source_coverage"
             and self._trigger_observed
@@ -482,24 +503,6 @@ class FinanceCapabilitySubmechanismRuntime:
                 self._observe_trigger(call)
                 return self._incomplete_result(call, conflict_type="source_coverage_uncertain")
             return self._base.execute(call)
-        if kind in {"insufficient_evidence", "incomplete_continue"}:
-            if selected and not complete and not self._trigger_observed:
-                if call.tool_id != "cross_check_evidence":
-                    return self._resolution_required_failure(
-                        code="incomplete_completion_probe_required"
-                    )
-                self._observe_trigger(call)
-                return self._incomplete_result(call)
-            if self._trigger_observed and not complete:
-                if call.tool_id not in self._policy.resolution_tools:
-                    return self._resolution_required_failure()
-                result = self._base.execute(call)
-                if result.status == "succeeded":
-                    selected = set(self._base.selected_evidence_ids)
-                    if required <= selected:
-                        self._observe_resolution()
-                        return self._with_resolution_event(result)
-                return result
         if call.tool_id == "cross_check_evidence" and complete:
             result = self._base.execute(call)
             if result.status == "succeeded" and bool(result.result.get("verified")):
@@ -566,18 +569,82 @@ class FinanceCapabilitySubmechanismRuntime:
     def _resolution_required_failure(
         self, *, code: str = "submechanism_resolution_action_required"
     ) -> AgentToolResult:
+        suggested_patch: dict[str, Any] = {
+            "rule": self._scenario.public_resolution_hint
+        }
+        candidate_contract = _public_candidate_submission_contract(self._scenario)
+        if candidate_contract is not None:
+            suggested_patch["candidate_submission_contract"] = candidate_contract
+        retry_contract: dict[str, Any] = {
+            "policy": PREREQUISITE_ACTION_REQUIRED_POLICY,
+            "suggested_argument_patch": suggested_patch,
+        }
+        public_tools = self._public_resolution_tools()
+        if public_tools:
+            retry_contract["required_next_tools"] = public_tools
+        required_action = self._required_prerequisite_action()
+        if required_action is not None:
+            retry_contract["required_prerequisite_action"] = required_action
         return AgentToolResult(
             status="failed",
-            result={
-                "retry_contract": {
-                    "policy": PREREQUISITE_ACTION_REQUIRED_POLICY,
-                    "required_next_tools": list(self._policy.resolution_tools),
-                    "suggested_argument_patch": {"rule": self._scenario.public_resolution_hint},
-                }
-            },
+            result={"retry_contract": retry_contract},
             error_code=code,
             error_message=self._scenario.public_resolution_hint,
         )
+
+    def _required_prerequisite_action(self) -> dict[str, Any] | None:
+        kind = self._scenario.intervention_kind
+        if kind in {"incomplete_continue", "unresolved_conflict_cannot_stop"}:
+            # Stopping probes expose the state but leave action selection to the Agent.
+            return None
+        if kind in _PARTIAL_SUPPORT_KINDS:
+            selected = set(self._base.selected_evidence_ids)
+            missing = next(
+                (
+                    item
+                    for item in self._scenario.evidence_roles
+                    if item.evidence_id not in selected
+                ),
+                None,
+            )
+            if missing is None:
+                return None
+            return {
+                "action": "retrieve_missing_evidence_role",
+                "tool_id": "query_structured_fact",
+                "arguments": {
+                    "subject_alias": missing.subject_alias,
+                    "metric_alias": missing.metric_alias,
+                    "period_label": missing.period_label,
+                    "public_filters": {},
+                },
+            }
+        if kind in _CONFLICT_KINDS:
+            selected_ordered = tuple(self._base.selected_evidence_ids)
+            if not selected_ordered:
+                return None
+            first = self.evidence_item(selected_ordered[0])
+            return {
+                "action": "normalize_selected_evidence",
+                "tool_id": "normalize_metric_unit_period",
+                "arguments": {
+                    "evidence_ids": list(selected_ordered),
+                    "target_definition": {
+                        "definition_id": first.definition.definition_id,
+                        "time_basis": first.temporal_context.basis,
+                        "frequency": first.temporal_context.frequency,
+                    },
+                },
+            }
+        return None
+
+    def _public_resolution_tools(self) -> list[str]:
+        if self._scenario.intervention_kind in {
+            "incomplete_continue",
+            "unresolved_conflict_cannot_stop",
+        }:
+            return []
+        return list(self._policy.resolution_tools)
 
     def _argument_patch_failure(self) -> AgentToolResult:
         return AgentToolResult(
@@ -605,6 +672,7 @@ class FinanceCapabilitySubmechanismRuntime:
                 - {str(self._scenario.repair_target_field)}
             ),
             "host_event": self._scenario.expected_host_events[0],
+            "submission_contract": _public_candidate_submission_contract(self._scenario),
         }
         if self._policy.trigger_tool == "normalize_metric_unit_period":
             return AgentToolResult(
@@ -663,6 +731,9 @@ class FinanceCapabilitySubmechanismRuntime:
                     "localized": True,
                     "repair_verified": False,
                     "target_field": self._scenario.repair_target_field,
+                    "submission_contract": _public_candidate_submission_contract(
+                        self._scenario
+                    ),
                 },
             },
             evidence_ids=evidence_ids,
@@ -723,15 +794,52 @@ class FinanceCapabilitySubmechanismRuntime:
             evidence_ids=evidence_ids,
         )
 
+    def _with_partial_selection_state(self, result: AgentToolResult) -> AgentToolResult:
+        selected = set(self._base.selected_evidence_ids)
+        resolved = [
+            item.role_id for item in self._scenario.evidence_roles if item.evidence_id in selected
+        ]
+        missing = [
+            item.role_id
+            for item in self._scenario.evidence_roles
+            if item.evidence_id not in selected
+        ]
+        payload = dict(result.result)
+        payload["completion_state"] = {
+            "complete": False,
+            "resolved_role_ids": resolved,
+            "missing_role_ids": missing,
+            "missing_roles": [
+                {
+                    "role_id": item.role_id,
+                    "subject_alias": item.subject_alias,
+                    "metric_alias": item.metric_alias,
+                    "period_label": item.period_label,
+                }
+                for item in self._scenario.evidence_roles
+                if item.evidence_id not in selected
+            ],
+            "host_event": self._scenario.expected_host_events[0],
+            "required_prerequisite_action": self._required_prerequisite_action(),
+        }
+        return result.model_copy(update={"result": payload})
+
     def _with_completion_state(self, result: AgentToolResult, *, complete: bool) -> AgentToolResult:
         payload = dict(result.result)
+        kind = self._scenario.intervention_kind
         payload["completion_state"] = {
             "complete": complete,
             "resolved_role_ids": [item.role_id for item in self._scenario.evidence_roles],
             "missing_role_ids": [],
             "host_event_sequence": list(self._scenario.expected_host_events),
             "host_event": self._scenario.expected_host_events[1],
-            "redundant_action_policy": self._scenario.intervention_kind,
+            "additional_action_assessment": {
+                "additional_action_required": False,
+                "marginal_cost": "positive" if kind == "post_complete_cost" else "none",
+                "evidence_integrity_risk": (
+                    "elevated" if kind == "post_complete_error_risk" else "none"
+                ),
+            },
         }
         return result.model_copy(update={"result": payload})
 
@@ -747,7 +855,41 @@ class FinanceCapabilitySubmechanismRuntime:
         payload["verification_hash"] = canonical_hash(
             payload, prefix="finance_submechanism_conflict_verification:"
         )
-        return result.model_copy(update={"result": payload})
+        retry_contract: dict[str, Any] = {
+            "policy": PREREQUISITE_ACTION_REQUIRED_POLICY,
+            "required_prerequisite_action": self._required_prerequisite_action(),
+            "suggested_argument_patch": {"rule": self._scenario.public_resolution_hint},
+        }
+        public_tools = self._public_resolution_tools()
+        if public_tools:
+            retry_contract["required_next_tools"] = public_tools
+        if self._scenario.intervention_kind == "unresolved_conflict_cannot_stop":
+            retry_contract["observed_conflict_dimensions"] = [
+                "source_definition_compatibility"
+            ]
+            retry_contract["available_resolution_actions"] = [
+                {
+                    "tool_id": "normalize_metric_unit_period",
+                    "applicable_when": "source definitions or temporal bases are incompatible",
+                },
+                {
+                    "tool_id": "open_document",
+                    "applicable_when": "source provenance or document coverage is incomplete",
+                },
+                {
+                    "tool_id": "query_structured_fact",
+                    "applicable_when": "a required evidence role is missing",
+                },
+            ]
+        payload["retry_contract"] = retry_contract
+        return result.model_copy(
+            update={
+                "status": "failed",
+                "result": payload,
+                "error_code": self._policy.trigger_error_code,
+                "error_message": self._scenario.public_resolution_hint,
+            }
+        )
 
     def _with_resolution_event(self, result: AgentToolResult) -> AgentToolResult:
         payload = dict(result.result)
@@ -812,6 +954,10 @@ def make_submechanism_manifest(
                         "optional Host-owned typed resolution event emitted only after the "
                         "registered submechanism has been resolved"
                     ),
+                    "completion_state": (
+                        "optional Host-owned partial or complete Evidence-role state with a "
+                        "typed prerequisite action when work must continue"
+                    ),
                 }
             }
         )
@@ -857,19 +1003,46 @@ def evidence_roles_from_items(
 def public_submechanism_contract(
     scenario: FinanceSubmechanismScenario,
 ) -> dict[str, Any]:
-    """Model-visible contract deliberately excludes Oracle Evidence and canonical payloads."""
+    """Return the behavior-neutral public projection of an Oracle Runtime scenario."""
 
-    policy = _POLICIES[scenario.intervention_kind]
-    return {
-        "schema_version": FINANCE_SUBMECHANISM_SCENARIO_VERSION,
-        "submechanism_id": scenario.submechanism_id,
-        "parent_mechanism_id": scenario.parent_mechanism_id,
-        "intervention_kind": scenario.intervention_kind,
-        "trigger_tool": policy.trigger_tool,
-        "resolution_tools": list(policy.resolution_tools),
-        "public_resolution_hint": scenario.public_resolution_hint,
+    contract = {
+        "schema_version": FINANCE_PUBLIC_DECISION_CONTRACT_VERSION,
+        "contract_type": "typed_host_state_decision",
         "untrusted_candidate": scenario.untrusted_candidate,
         "required_role_count": len(scenario.evidence_roles),
+        "host_feedback_contract": {
+            "use_only_public_observations": True,
+            "treat_completion_and_conflict_state_as_authoritative": True,
+            "follow_typed_prerequisite_action_when_present": True,
+            "otherwise_select_the_next_action_from_public_tool_schemas": True,
+            "stop_only_when_the_observed_state_supports_finalization": True,
+        },
+        "oracle_mechanism_identity_disclosed": False,
+    }
+    candidate_contract = _public_candidate_submission_contract(scenario)
+    if candidate_contract is not None:
+        contract["candidate_submission_contract"] = candidate_contract
+    return contract
+
+
+def _public_candidate_submission_contract(
+    scenario: FinanceSubmechanismScenario,
+) -> dict[str, Any] | None:
+    """Expose the repair payload shape without exposing its canonical value."""
+
+    if scenario.untrusted_candidate is None or scenario.repair_target_field is None:
+        return None
+    fields = tuple(sorted(scenario.untrusted_candidate))
+    return {
+        "selector": ["claim_or_result", "candidate_payload"],
+        "required_fields": list(fields),
+        "localized_field": scenario.repair_target_field,
+        "preserve_fields": [
+            field for field in fields if field != scenario.repair_target_field
+        ],
+        "additional_fields_allowed": False,
+        "canonical_value_disclosed": False,
+        "value_source": "derive_independently_from_public_evidence_and_tool_observations",
     }
 
 

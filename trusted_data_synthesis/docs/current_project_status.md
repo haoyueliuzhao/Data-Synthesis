@@ -561,6 +561,37 @@ Mechanism confirmation is retained as a positive result. The current task suppor
 well-conditioned capability distribution. See
 `docs/finance_v25_22_v25_23_capability_mechanism_repair_and_geometry_report.md`.
 
+## v25.30-v25.33 Stable Capability-decision Support
+
+The measurement contract now uses `capability_contract_success`: semantic answer validity must
+co-occur with the registered Host trigger/resolution behavior and no post-completion violation.
+Public tasks no longer expose oracle mechanism identity or canonical repair values.
+
+v25.33 completed 480/480 fresh Flash rollouts. Runtime transport, bounded JSON, Observation replay,
+and authority integrity were 100%, with zero reported Runtime pathology. The common Top-4 geometry
+passed with effective rank 3.5929, condition number 3.4290, and 99.90% bootstrap joint-geometry
+success.
+
+The experiment nevertheless failed its preregistered parent-support contract. State-dependent
+Stopping contributed only 3.16% of information, had one nonzero task, and had a zero bootstrap
+lower bound. Confirmation and Pro remain blocked. Failure-artifact replay also identified a
+state-dependent unreachable `uncertain_source_coverage` recovery path, which must be repaired
+before a new Stopping boundary calibration.
+
+```text
+runtime_measurement_ready = true
+common_top4_geometry_passed = true
+capability_support_admitted = false
+fresh_confirmation_authorized = false
+pro_sparse_anchor_authorized = false
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = stable_support_redesign_only
+```
+
+See `docs/finance_v25_30_v25_33_stable_capability_decision_report.md`.
+
 
 ## v25.24 Submechanism Direction Design
 
