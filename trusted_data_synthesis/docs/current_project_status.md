@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-13
+Audit date: 2026-08-14
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -15,46 +15,24 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active experiment is Finance v25.21 task-mechanism redesign. Runtime Resolution v2 continues
-to separate measurement integrity from model correctness. v25.19 used only frozen v25.18
-Development evidence to define a five-group, five-replica support policy. A new real-Finance source
-extension then produced 35 fresh matched groups with zero Task, Group, Evidence, Evidence-Version,
-semantic-signature, or task-signature overlap against v25.18.
+The active result is Finance v25.29 held-out Submechanism Confirmation. v25.28 repaired the public
+answer projection and separated transient transport retry from semantic contract repair, then
+completed a 60-rollout Flash Development whose Runtime and primary geometry gates all passed.
 
-The Flash-only v25.20 Confirmation completed 300/300 rollouts. Every global and per-Runtime
-instrument gate passed: transport, bounded JSON, Observation replay, authority, terminal
-resolution, and failure attribution were 100%, while L0-L2, unattributed, and prompt-pathology
-rates were zero. Correctness remained a capability response: Scripted Valid Success was 52.00%
-and Autonomous was 51.43%.
+v25.29 assembled a fresh 20-task population from an immutable Evidence-level union. The union
+merged 3,838 public Evidence occurrences into 3,323 unique, content-consistent Evidence Versions;
+the final tasks are disjoint from Development by Evidence, Evidence Version, Task, and semantic
+signature. Confirmation completed 100/100 rollouts with 100% transport, bounded JSON, replay, and
+authority integrity, plus zero Runtime pathology.
 
-The larger support improved response geometry but did not pass every frozen gate. Scripted Final
-Valid reached rank 5 and effective rank 2.499, but condition number remained 267.23. Autonomous
-reached rank 7, effective rank 2.799, and condition number 92.46. Retrieval remained saturated,
-Autonomous Calculation was 98.29%, and Autonomous Reconciliation remained at zero. Pro sparse
-anchors, Beneficiary screening, Exact Target, GP-C, VTDO updates, and production Contribution are
-still forbidden. v25.21 has now compiled the permitted redesign into seven typed mechanisms and an
-84-group Development contract. No new population or model response exists yet; the only permitted
-transition is `finance_v25_21_mechanism_population_construction_only`.
-
-The post-v22 plan inserts a capability-sensitive Agent Runtime Pilot before any fresh Validation.
-v24 now qualifies the bounded Agent Runtime on a fresh 18-task set: all 216 Pro--Flash Scripted and
-Autonomous records completed, all Runtime gates passed, and Host-forced verification was zero. The
-separate semantic-ladder audit failed because Frontier minus Easy semantic difficulty was only
-`0.0117` against `1.0`. Capability calibration, Beneficiary screening, and new exact-target
-measurements therefore remained unopened while task construction was redesigned.
-
-v25 now constructs 70 executable tasks across seven separately audited capability directions.
-Every Program executed and independently replayed, every structural tier dimension is strictly
-monotonic, all seven family-primary-axis checks pass, and the six-dimensional capability-contrast
-subspace has effective rank `5.141` and condition number `4.726`. Two preserved 126-record
-Qualification runs then failed their protocol gates; neither is capability evidence. The final
-v25.6 supersedes the unexecuted v25.3--v25.5 preflights. It repairs typed failure lineage, Scripted
-retry authority and model-visible Recovery, tool-resolution semantics, compact JSON output, the
-exact uncentered empirical-information formula, task-cluster nested Bootstrap inference,
-uncertainty-aware Beneficiary task selection, and complete Qualification lineage replay. Recovery
-success is conditional on a recorded opportunity, with separate Query Reformulation and
-Tool-sequence Diversity diagnostics. Qualification has not yet run. The only permitted next stage
-is v25.6 Runtime Qualification.
+Primary geometry did not fully confirm. Rank, effective rank, boundary mass, seven-axis coverage,
+general-factor, and parent-concentration gates passed, but residual condition number was 589.30
+against a frozen maximum of 100. The weak fifth residual eigenvalue caused the failure. A
+diagnostic-only finite-replicate simulation shows this gate is statistically fragile, but it does
+not rescue or alter the preregistered result. Pro sparse anchors, Beneficiary screening, Exact
+Target, GP-C, VTDO updates, Student training, and production Contribution remain forbidden. The
+next valid action is a separately identified measurement-contract redesign with new held-out data,
+not additional calls under the failed v25.29 contract.
 
 ## Runtime And Data
 
@@ -296,8 +274,8 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format, non-manifest-bound changed files | passed |
-| Mypy | passed, 283 source files |
-| Pytest | passed, 580 tests in 137.96 seconds |
+| Mypy | passed, 300 source files |
+| Pytest | passed, 626 tests in 145.21 seconds |
 | Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
@@ -308,6 +286,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 audit Markdown replay | byte-identical SHA-256 `fb0c4018068b...` |
 | v25.21 mechanism manifest replay | byte-identical SHA-256 `f9765dc5b622...` |
 | v25.21 benchmark-content isolation | 2,810/2,810 questions and all content keys absent |
+| v25.29 completed-run replay | 100/100 resumed, zero API jobs, identical report ID |
 | v22.1 deterministic replay | identical SHA-256 `a19bcc303026...` |
 | Legal and Science contracts | retained by full suite |
 
@@ -514,6 +493,7 @@ changing Explorer models alone.
 
 ## Authoritative References
 
+- `docs/finance_v25_26_v25_29_answer_contract_and_confirmation_report.md`
 - `docs/finance_v20_target_identifiability_report.md`
 - `docs/finance_v22_development_power_plan.md`
 - `docs/finance_v22_development_exact_target_report.md`

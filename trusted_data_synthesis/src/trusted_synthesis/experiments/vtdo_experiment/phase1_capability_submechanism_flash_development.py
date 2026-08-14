@@ -25,6 +25,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary_ru
     CapabilityBoundaryRolloutRecord,
     _all_observations,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
+    DifficultyTier,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_mechanism_information_geometry import (  # noqa: E501
     _condition_number,
     _effective_rank,
@@ -63,12 +66,12 @@ from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
 SUBMECHANISM_FLASH_CONTRACT_VERSION = (
-    "finance_capability_submechanism_flash_development_contract.v2"
+    "finance_capability_submechanism_flash_development_contract.v5"
 )
 SUBMECHANISM_BEHAVIOR_VERSION = "finance_capability_submechanism_behavior.v2"
 SUBMECHANISM_GEOMETRY_VERSION = "finance_capability_submechanism_geometry.v1"
 SUBMECHANISM_GATE_VERSION = "finance_capability_submechanism_gate.v1"
-SUBMECHANISM_FLASH_REPORT_VERSION = "finance_capability_submechanism_flash_development_report.v2"
+SUBMECHANISM_FLASH_REPORT_VERSION = "finance_capability_submechanism_flash_development_report.v5"
 
 EXPECTED_TASK_COUNT = 20
 EXPECTED_PARENT_COUNT = 4
@@ -117,10 +120,14 @@ class SubmechanismGeometryThresholds(FrozenModel):
 class FinanceSubmechanismFlashContract(FrozenModel):
     contract_id: str = Field(min_length=1)
     run_id: str = Field(min_length=1)
+    experiment_label: Literal["finance_v25_28_transport_stabilized_development"] = (
+        "finance_v25_28_transport_stabilized_development"
+    )
     stage: RuntimeResolutionStage = RuntimeResolutionStage.RESIDUAL_DEVELOPMENT
     source_population_path: str = Field(min_length=1)
     source_population_sha256: str = Field(min_length=64, max_length=64)
     source_population_id: str = Field(min_length=1)
+    source_base_tier: DifficultyTier
     source_direction_report_path: str = Field(min_length=1)
     source_direction_report_sha256: str = Field(min_length=64, max_length=64)
     source_direction_report_id: str = Field(min_length=1)
@@ -172,6 +179,10 @@ class FinanceSubmechanismFlashContract(FrozenModel):
 
     @model_validator(mode="after")
     def validate_contract(self) -> FinanceSubmechanismFlashContract:
+        if self.source_base_tier != DifficultyTier.EASY_CONTROL:
+            raise ValueError("v25.28 Development requires the frozen Easy base tier")
+        if any(item.tier != self.source_base_tier for item in self.tasks):
+            raise ValueError("v25.28 Development task tiers differ from its source contract")
         if self.stage != RuntimeResolutionStage.RESIDUAL_DEVELOPMENT:
             raise ValueError("submechanism Flash stage must remain Development")
         if {item.arm for item in self.model_contracts} != {ExplorerArm.FLASH}:
@@ -312,6 +323,8 @@ class SubmechanismDevelopmentGate(FrozenModel):
 class FinanceSubmechanismFlashReport(FrozenModel):
     report_id: str = Field(min_length=1)
     contract_id: str = Field(min_length=1)
+    experiment_label: Literal["finance_v25_28_transport_stabilized_development"]
+    source_base_tier: DifficultyTier
     requested_rollout_count: int = Field(ge=1)
     recorded_rollout_count: int = Field(ge=0)
     runtime_eligible_rollout_count: int = Field(ge=0)
@@ -355,6 +368,8 @@ class FinanceSubmechanismFlashReport(FrozenModel):
 
     @model_validator(mode="after")
     def validate_report(self) -> FinanceSubmechanismFlashReport:
+        if self.source_base_tier != DifficultyTier.EASY_CONTROL:
+            raise ValueError("v25.28 report does not identify the Easy base tier")
         if self.recorded_rollout_count != self.requested_rollout_count:
             raise ValueError("submechanism Development lacks its complete denominator")
         runtime_gates = tuple(item for item in self.gates if item.category == "runtime")
@@ -496,9 +511,11 @@ def prepare_submechanism_flash_development(
     finance_config = Path(source.finance_archive_config_path).resolve()
     values = {
         "run_id": run_id,
+        "experiment_label": "finance_v25_28_transport_stabilized_development",
         "source_population_path": str(population_path),
         "source_population_sha256": _sha256(population_path),
         "source_population_id": population.population_id,
+        "source_base_tier": population.base_tier,
         "source_direction_report_path": str(direction_path),
         "source_direction_report_sha256": _sha256(direction_path),
         "source_direction_report_id": direction.report_id,
@@ -579,6 +596,8 @@ def run_submechanism_flash_development(
         {
             "contract_id": contract.contract_id,
             "report_id": report.report_id,
+            "experiment_label": contract.experiment_label,
+            "source_base_tier": contract.source_base_tier,
             "requested_model": contract.model_contracts[0].requested_model,
             "discovered_models": discovered,
             "records_sha256": _sha256(records_path),
@@ -706,6 +725,8 @@ def make_submechanism_flash_report(
     eligible = tuple(item for item in terminals if item.runtime_eligible_for_capability_denominator)
     values = {
         "contract_id": contract.contract_id,
+        "experiment_label": contract.experiment_label,
+        "source_base_tier": contract.source_base_tier,
         "requested_rollout_count": contract.requested_rollout_count,
         "recorded_rollout_count": len(terminals),
         "runtime_eligible_rollout_count": len(eligible),
@@ -1123,6 +1144,7 @@ def _implementation_manifest() -> dict[str, str]:
             "phase1_multitier_runtime_resolution.py"
         ),
         root / "src/trusted_synthesis/runtime/agent/iterative.py",
+        root / "src/trusted_synthesis/runtime/agent/client.py",
         root / "src/trusted_synthesis/runtime/agent/llm_agent.py",
         root / "src/trusted_synthesis/domains/finance/iterative_agent_verifier.py",
     )
@@ -1137,11 +1159,13 @@ def _rate(values: Iterable[bool]) -> float:
 def _render_report(value: FinanceSubmechanismFlashReport) -> str:
     primary = value.primary_spectrum
     lines = [
-        "# Finance v25.25 Flash Submechanism Development Report",
+        "# Finance v25.28 Transport-stabilized Flash Submechanism Development Report",
         "",
         "## Decision",
         "",
         f"- Report ID: `{value.report_id}`",
+        f"- Experiment: `{value.experiment_label}`",
+        f"- Frozen base tier: **{value.source_base_tier.value}**",
         f"- Rollouts: **{value.recorded_rollout_count}/{value.requested_rollout_count}**",
         f"- Runtime measurement ready: **{value.runtime_measurement_ready}**",
         f"- Primary information geometry ready: **{value.primary_information_geometry_ready}**",
@@ -1232,7 +1256,7 @@ def _write_text_atomic(path: Path, value: str) -> None:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Prepare or run v25.25 Flash submechanism Development."
+        description="Prepare or run v25.28 transport-stabilized Flash submechanism Development."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     prepare = subparsers.add_parser("prepare")

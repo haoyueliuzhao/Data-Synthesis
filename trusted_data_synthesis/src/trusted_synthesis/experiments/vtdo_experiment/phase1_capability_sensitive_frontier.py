@@ -42,6 +42,10 @@ from trusted_synthesis.core.task.schema import (
     VerifierRequirement,
 )
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.experiments.vtdo_experiment.phase1_agent_evidence_union import (
+    FINANCE_AGENT_EVIDENCE_UNION_ITEM_VERSION,
+    FinanceAgentEvidenceUnionItem,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
     DifficultyTier,
 )
@@ -1312,11 +1316,39 @@ def make_capability_information_audit(
 def _load_evidence_pool(path: Path) -> _EvidencePool:
     pool = _EvidencePool()
     policy = FinanceSemanticPolicy()
+    input_kind: str | None = None
+    union_ids: set[str] = set()
+    union_evidence_ids: set[str] = set()
+    union_evidence_version_ids: set[str] = set()
     with path.open(encoding="utf-8") as handle:
         for line in handle:
             if not line.strip():
                 continue
             value = json.loads(line)
+            if value.get("schema_version") == FINANCE_AGENT_EVIDENCE_UNION_ITEM_VERSION:
+                if input_kind not in {None, "evidence_union"}:
+                    raise ValueError("source Evidence file mixes incompatible record kinds")
+                input_kind = "evidence_union"
+                union_item = FinanceAgentEvidenceUnionItem.model_validate(value)
+                item = union_item.evidence
+                if item.evidence_id in union_evidence_ids:
+                    raise ValueError("Evidence union repeats an Evidence ID")
+                if item.evidence_version_id in union_evidence_version_ids:
+                    raise ValueError("Evidence union repeats an Evidence Version")
+                union_ids.add(union_item.union_id)
+                union_evidence_ids.add(item.evidence_id)
+                union_evidence_version_ids.add(item.evidence_version_id)
+                pool.public[item.evidence_id] = item
+                pool.origin_artifacts[item.evidence_id].update(
+                    union_item.source_artifact_ids
+                )
+                pool.source_artifact_ids.update(union_item.source_artifact_ids)
+                if policy.validate_evidence(item).passed:
+                    pool.gold[item.evidence_id] = item
+                continue
+            if input_kind not in {None, "agent_population"}:
+                raise ValueError("source Evidence file mixes incompatible record kinds")
+            input_kind = "agent_population"
             artifact_id = str(value["artifact_id"])
             pool.source_artifact_count += 1
             pool.source_artifact_ids.add(artifact_id)
@@ -1335,10 +1367,13 @@ def _load_evidence_pool(path: Path) -> _EvidencePool:
                 # the composite Program is independently executed and replayed later.
                 if policy.validate_evidence(item).passed:
                     pool.gold.setdefault(item.evidence_id, item)
+    if input_kind == "evidence_union":
+        if len(union_ids) != 1:
+            raise ValueError("Evidence union does not bind one immutable union identity")
+        pool.source_artifact_count = len(pool.source_artifact_ids)
     if not pool.gold or len({item.source.source_id for item in pool.public.values()}) < 3:
         raise ValueError("source Finance population lacks the registered Evidence breadth")
     return pool
-
 
 def _temporal_series(values: Iterable[EvidenceItem]) -> tuple[tuple[EvidenceItem, ...], ...]:
     grouped: dict[tuple[Any, ...], dict[date | datetime, EvidenceItem]] = defaultdict(dict)

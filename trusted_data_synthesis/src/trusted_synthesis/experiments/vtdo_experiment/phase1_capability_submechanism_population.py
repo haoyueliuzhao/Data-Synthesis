@@ -48,13 +48,21 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanis
     CapabilitySubmechanismDirectionReport,
     CapabilitySubmechanismSpec,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_capability_population import (  # noqa: E501
+    ANSWER_PROJECTION_CONTRACT_VERSION,
+    finance_answer_contract_metadata,
+    finance_public_calculation_instruction,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import AgentToolCall, AgentToolResult
 
-SUBMECHANISM_POPULATION_VERSION = "finance_capability_submechanism_population.v1"
-SUBMECHANISM_TASK_VERSION = "finance_capability_submechanism_task.v1"
+SUBMECHANISM_POPULATION_VERSION = "finance_capability_submechanism_population.v3"
+SUBMECHANISM_TASK_VERSION = "finance_capability_submechanism_task.v3"
 SUBMECHANISM_REPLAY_VERSION = "finance_capability_submechanism_runtime_replay.v1"
-SUBMECHANISM_AUDIT_VERSION = "finance_capability_submechanism_static_audit.v1"
+SUBMECHANISM_AUDIT_VERSION = "finance_capability_submechanism_static_audit.v3"
+
+BOUNDARY_BASE_TIER = DifficultyTier.EASY_CONTROL
+PUBLIC_SUBMECHANISM_METADATA_KEY = "capability_submechanism_contract"
 
 SELECTED_TASK_COUNT = 20
 SELECTED_PER_PARENT = 5
@@ -144,10 +152,13 @@ class CapabilitySubmechanismTask(FrozenModel):
     runtime_replay: SubmechanismRuntimeReplay
     source_semantic_signature: str = Field(min_length=1)
     materializer_hash: str = Field(min_length=1)
+    base_tier: DifficultyTier
     schema_version: str = SUBMECHANISM_TASK_VERSION
 
     @model_validator(mode="after")
     def validate_task(self) -> CapabilitySubmechanismTask:
+        if self.base_tier != BOUNDARY_BASE_TIER or self.artifact.tier != self.base_tier:
+            raise ValueError("submechanism task does not use the frozen Easy base tier")
         if (
             self.submechanism_id != self.scenario.submechanism_id
             or self.parent_mechanism_id != self.scenario.parent_mechanism_id
@@ -156,9 +167,11 @@ class CapabilitySubmechanismTask(FrozenModel):
         frozen = self.artifact.task.oracle.selection_contract.get(FINANCE_SUBMECHANISM_ORACLE_KEY)
         if frozen != self.scenario.model_dump(mode="json"):
             raise ValueError("submechanism task did not freeze its Runtime scenario")
-        public = self.artifact.task.public.metadata.get("v25_25_submechanism")
+        public = self.artifact.task.public.metadata.get(PUBLIC_SUBMECHANISM_METADATA_KEY)
         if public != public_submechanism_contract(self.scenario):
             raise ValueError("submechanism public contract differs from its safe projection")
+        if not _answer_contract_ready(self.artifact):
+            raise ValueError("submechanism task lacks the projected public answer contract")
         if not self.runtime_replay.passed:
             raise ValueError("submechanism task lacks a passing Host replay")
         if self.task_record_id != submechanism_task_record_id(self):
@@ -175,12 +188,14 @@ class CapabilitySubmechanismStaticAudit(FrozenModel):
     host_replay_pass_rate: float = Field(ge=0, le=1)
     wrong_branch_rejection_rate: float = Field(ge=0, le=1)
     public_oracle_isolation_rate: float = Field(ge=0, le=1)
+    answer_contract_coverage_rate: float = Field(ge=0, le=1)
     within_population_evidence_disjoint: bool
     prior_evidence_disjoint: bool
     prior_evidence_version_disjoint: bool
     distinct_runtime_policy_count: int = Field(ge=1)
     distinct_materializer_count: int = Field(ge=1)
     implementation_coverage_rate: float = Field(ge=0, le=1)
+    base_tier: DifficultyTier
     rejection_reasons: tuple[str, ...]
     ready: bool
     next_permitted_stage: Literal[
@@ -217,6 +232,7 @@ class CapabilitySubmechanismPopulation(FrozenModel):
     exclusion_paths: tuple[str, ...]
     exclusion_sha256: dict[str, str]
     sampling_salt: str = Field(min_length=1)
+    base_tier: DifficultyTier
     tasks: tuple[CapabilitySubmechanismTask, ...] = Field(
         min_length=SELECTED_TASK_COUNT, max_length=SELECTED_TASK_COUNT
     )
@@ -241,6 +257,10 @@ class CapabilitySubmechanismPopulation(FrozenModel):
 
     @model_validator(mode="after")
     def validate_population(self) -> CapabilitySubmechanismPopulation:
+        if self.base_tier != BOUNDARY_BASE_TIER:
+            raise ValueError("submechanism population does not freeze the Easy base tier")
+        if any(item.base_tier != self.base_tier for item in self.tasks):
+            raise ValueError("submechanism population mixes base tiers")
         excluded_ids, excluded_versions = _collect_excluded_identity(
             tuple(Path(item) for item in self.exclusion_paths)
         )
@@ -343,6 +363,7 @@ def build_submechanism_population(
                 "artifact_id": artifact.artifact_id,
                 "public_corpus": artifact.public_corpus.corpus_hash,
                 "policy": submechanism_policy_manifest()[scenario.intervention_kind],
+                "base_tier": BOUNDARY_BASE_TIER,
             },
             prefix="finance_capability_submechanism_materializer:",
         )
@@ -355,6 +376,7 @@ def build_submechanism_population(
             "runtime_replay": replay,
             "source_semantic_signature": signature,
             "materializer_hash": materializer_hash,
+            "base_tier": BOUNDARY_BASE_TIER,
         }
         provisional = CapabilitySubmechanismTask.model_construct(task_record_id="pending", **values)
         tasks.append(
@@ -381,6 +403,7 @@ def build_submechanism_population(
         "exclusion_paths": tuple(str(item) for item in exclusions),
         "exclusion_sha256": {str(item): _sha256(item) for item in exclusions},
         "sampling_salt": sampling_salt,
+        "base_tier": BOUNDARY_BASE_TIER,
         "tasks": frozen_tasks,
         "static_audit": static_audit,
         "implementation_manifest": implementation,
@@ -418,7 +441,7 @@ def _materialize_submechanism(
     sampling_salt: str,
 ) -> tuple[CapabilitySensitiveTaskArtifact, FinanceSubmechanismScenario, str]:
     family = CORE_FAMILY_BY_MECHANISM[spec.parent_mechanism_id]
-    for candidate in _candidate_iterator(builder, family, DifficultyTier.FRONTIER):
+    for candidate in _candidate_iterator(builder, family, BOUNDARY_BASE_TIER):
         gold, program, source_instruction, projection = candidate
         gold_ids = {item.evidence_id for item in gold}
         gold_versions = {item.evidence_version_id for item in gold}
@@ -446,7 +469,7 @@ def _materialize_submechanism(
         )
         artifact = builder._materialize(
             family=family,
-            tier=DifficultyTier.FRONTIER,
+            tier=BOUNDARY_BASE_TIER,
             gold=gold,
             distractors=(distractor,),
             recovery_branches=recovery,
@@ -602,6 +625,45 @@ def _candidate_replacement(
     return value
 
 
+def _answer_contract_ready(artifact: CapabilitySensitiveTaskArtifact) -> bool:
+    metadata = artifact.task.public.metadata
+    guidance = metadata.get("agent_contract_guidance")
+    if (
+        metadata.get("answer_projection_contract_version")
+        != ANSWER_PROJECTION_CONTRACT_VERSION
+        or not isinstance(guidance, Mapping)
+        or artifact.task.oracle.selection_contract.get("answer_projection")
+        != artifact.answer_projection
+        or "The final output rule is:" not in artifact.task.public.instruction
+    ):
+        return False
+    reference = guidance.get("answer_reference_contract")
+    operation = guidance.get("operation_execution_contract")
+    observation = guidance.get("answer_observation_constraints")
+    if (
+        not isinstance(reference, Mapping)
+        or not isinstance(operation, Mapping)
+        or not isinstance(observation, Mapping)
+    ):
+        return False
+    allowed_labels = tuple(sorted(set(artifact.answer_projection.values())))
+    if tuple(reference.get("allowed_reference_labels") or ()) != allowed_labels:
+        return False
+    if allowed_labels:
+        constraints = guidance.get("answer_field_constraints")
+        if not isinstance(constraints, Mapping):
+            return False
+        higher_ref = constraints.get("higher_ref")
+        if (
+            not isinstance(higher_ref, Mapping)
+            or tuple(higher_ref.get("allowed_values") or ())
+            != (*allowed_labels, None)
+        ):
+            return False
+    expected_ref = artifact.projected_expected_output.get("higher_ref")
+    return expected_ref is None or str(expected_ref) in allowed_labels
+
+
 def _freeze_scenario(
     artifact: CapabilitySensitiveTaskArtifact,
     scenario: FinanceSubmechanismScenario,
@@ -611,12 +673,30 @@ def _freeze_scenario(
 ) -> CapabilitySensitiveTaskArtifact:
     public = artifact.task.public
     allowed = tuple(dict.fromkeys((*public.allowed_tools, *PUBLIC_TOOLS)))
+    gold = tuple(artifact.evidence_bundle.evidence)
+    program = artifact.task.oracle.task_program
     metadata = dict(public.metadata)
-    metadata["v25_25_submechanism"] = public_submechanism_contract(scenario)
+    metadata.update(
+        finance_answer_contract_metadata(
+            family=artifact.family,
+            tier=artifact.tier,
+            gold=gold,
+            program=program,
+            answer_projection=projection,
+        )
+    )
+    metadata[PUBLIC_SUBMECHANISM_METADATA_KEY] = public_submechanism_contract(scenario)
+    instruction = finance_public_calculation_instruction(
+        _submechanism_instruction(scenario, source_instruction, projection),
+        family=artifact.family,
+        tier=artifact.tier,
+        gold=gold,
+        program=program,
+    )
     updated_public = public.model_copy(
         update={
             "allowed_tools": allowed,
-            "instruction": _submechanism_instruction(scenario, source_instruction, projection),
+            "instruction": instruction,
             "metadata": metadata,
         }
     )
@@ -1178,6 +1258,7 @@ def make_submechanism_static_audit(
         "host_replay": all(item.runtime_replay.passed for item in tasks),
         "wrong_branch_rejection": all(item.runtime_replay.wrong_branch_rejected for item in tasks),
         "public_oracle_isolation": all(public_isolation),
+        "answer_contract": all(_answer_contract_ready(item.artifact) for item in tasks),
         "within_population_evidence_disjoint": len(evidence)
         == len({item.evidence_id for item in evidence}),
         "prior_evidence_disjoint": not {item.evidence_id for item in evidence}
@@ -1188,6 +1269,10 @@ def make_submechanism_static_audit(
         == SELECTED_TASK_COUNT,
         "distinct_materializer": len({item.materializer_hash for item in tasks})
         == SELECTED_TASK_COUNT,
+        "base_tier": all(
+            item.base_tier == BOUNDARY_BASE_TIER and item.artifact.tier == BOUNDARY_BASE_TIER
+            for item in tasks
+        ),
     }
     rejections = tuple(sorted(key for key, passed in checks.items() if not passed))
     values = {
@@ -1202,12 +1287,16 @@ def make_submechanism_static_audit(
             item.runtime_replay.wrong_branch_rejected for item in tasks
         ),
         "public_oracle_isolation_rate": _rate(public_isolation),
+        "answer_contract_coverage_rate": _rate(
+            _answer_contract_ready(item.artifact) for item in tasks
+        ),
         "within_population_evidence_disjoint": checks["within_population_evidence_disjoint"],
         "prior_evidence_disjoint": checks["prior_evidence_disjoint"],
         "prior_evidence_version_disjoint": checks["prior_evidence_version_disjoint"],
         "distinct_runtime_policy_count": len({item.scenario.intervention_kind for item in tasks}),
         "distinct_materializer_count": len({item.materializer_hash for item in tasks}),
         "implementation_coverage_rate": len(tasks) / SELECTED_TASK_COUNT,
+        "base_tier": BOUNDARY_BASE_TIER,
         "rejection_reasons": rejections,
         "ready": not rejections,
         "next_permitted_stage": (
@@ -1255,6 +1344,9 @@ def _implementation_manifest() -> dict[str, str]:
         / "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_boundary_runner.py",
         root
         / "src/trusted_synthesis/experiments/vtdo_experiment"
+        / "phase1_multitier_capability_population.py",
+        root
+        / "src/trusted_synthesis/experiments/vtdo_experiment"
         / "phase1_capability_submechanism_direction_design.py",
         root
         / "src/trusted_synthesis/experiments/vtdo_experiment"
@@ -1289,12 +1381,13 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
     audit = population.static_audit
     return "\n".join(
         (
-            "# Finance v25.25 Submechanism Runtime Population",
+            "# Finance v25.27 Answer-contract-repaired Submechanism Population",
             "",
             "## Decision",
             "",
             f"- Population ID: `{population.population_id}`",
             f"- Tasks: **{audit.selected_task_count}/{SELECTED_TASK_COUNT}**",
+            f"- Frozen base tier: **{population.base_tier.value}**",
             f"- Static Runtime ready: **{audit.ready}**",
             f"- Next permitted stage: `{audit.next_permitted_stage}`",
             "- API calls: **0**",
@@ -1307,6 +1400,7 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
             f"- Host trigger/resolution replay: **{audit.host_replay_pass_rate:.2%}**",
             f"- Wrong-branch rejection: **{audit.wrong_branch_rejection_rate:.2%}**",
             f"- Public/Oracle isolation: **{audit.public_oracle_isolation_rate:.2%}**",
+            f"- Answer contract coverage: **{audit.answer_contract_coverage_rate:.2%}**",
             (
                 "- Within-population Evidence disjoint: "
                 f"**{audit.within_population_evidence_disjoint}**"
@@ -1325,7 +1419,7 @@ def _render_report(population: CapabilitySubmechanismPopulation) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Build the v25.25 executable submechanism population"
+        description="Build the v25.27 answer-contract-repaired submechanism population"
     )
     parser.add_argument("--source-artifacts", type=Path, required=True)
     parser.add_argument("--direction-report", type=Path, required=True)

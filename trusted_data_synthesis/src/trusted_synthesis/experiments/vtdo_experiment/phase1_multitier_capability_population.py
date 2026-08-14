@@ -595,14 +595,13 @@ def _exposed_evidence_id_sets(
     return evidence_ids, version_ids
 
 
-def _public_contract_metadata(
+def finance_answer_contract_metadata(
     *,
     family: str,
     tier: DifficultyTier,
     gold: tuple[Any, ...],
     program: TaskProgram,
     answer_projection: Mapping[str, str],
-    recovery_branches: tuple[RecoveryBranch, ...],
 ) -> dict[str, Any]:
     allowed_labels = tuple(sorted(set(answer_projection.values())))
     guidance: dict[str, Any] = {
@@ -631,13 +630,31 @@ def _public_contract_metadata(
         "field_selectors": {numeric_field: (numeric_field,)},
         "exact_fields": (numeric_field,),
     }
-    output: dict[str, Any] = {
+    return {
         "answer_projection_contract_version": ANSWER_PROJECTION_CONTRACT_VERSION,
         "agent_contract_guidance": guidance,
-        "multitier_confirmation": {
-            "core_program_tier": CORE_PROGRAM_TIERS[family].value,
-            "observed_workflow_tier": tier.value,
-        },
+    }
+
+
+def _public_contract_metadata(
+    *,
+    family: str,
+    tier: DifficultyTier,
+    gold: tuple[Any, ...],
+    program: TaskProgram,
+    answer_projection: Mapping[str, str],
+    recovery_branches: tuple[RecoveryBranch, ...],
+) -> dict[str, Any]:
+    output = finance_answer_contract_metadata(
+        family=family,
+        tier=tier,
+        gold=gold,
+        program=program,
+        answer_projection=answer_projection,
+    )
+    output["multitier_confirmation"] = {
+        "core_program_tier": CORE_PROGRAM_TIERS[family].value,
+        "observed_workflow_tier": tier.value,
     }
     if family == "finance.recovery_guided_search" and recovery_branches:
         scenario = make_finance_typed_recovery_scenario(

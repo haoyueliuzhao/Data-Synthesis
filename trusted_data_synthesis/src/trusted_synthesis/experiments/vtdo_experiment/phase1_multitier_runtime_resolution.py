@@ -66,11 +66,11 @@ from trusted_synthesis.runtime.agent.iterative import (
 )
 
 RUNTIME_RESOLUTION_CONTRACT_VERSION = "finance_runtime_resolution_contract.v2"
-RUNTIME_TERMINAL_OUTCOME_VERSION = "finance_runtime_terminal_outcome.v1"
+RUNTIME_TERMINAL_OUTCOME_VERSION = "finance_runtime_terminal_outcome.v2"
 RUNTIME_RESOLUTION_REPORT_VERSION = "finance_runtime_resolution_report.v2"
 RUNTIME_RESOLUTION_RUNNER_VERSION = "finance_runtime_resolution_runner.v2"
-RUNTIME_RESOLUTION_POLICY_VERSION = "finance_runtime_resolution_policy.v2"
-RUNTIME_FAILURE_TAXONOMY_VERSION = "finance_runtime_failure_taxonomy.v1"
+RUNTIME_RESOLUTION_POLICY_VERSION = "finance_runtime_resolution_policy.v3"
+RUNTIME_FAILURE_TAXONOMY_VERSION = "finance_runtime_failure_taxonomy.v2"
 GROUP_COUNT = len(CAPABILITY_SENSITIVE_FAMILIES)
 TASK_COUNT = GROUP_COUNT * len(DifficultyTier)
 BINDING_COUNT = TASK_COUNT * len(WORKFLOW_RUNTIME_ARMS)
@@ -984,7 +984,7 @@ def _make_terminal_outcome(
     }
     observations = _record_observations(record)
     capability_outcomes = _capability_outcomes(binding, record, outcome, observations)
-    api_resolved = bool(record.telemetry) and all(item.http_success for item in record.telemetry)
+    api_resolved = bool(record.telemetry) and record.telemetry[-1].http_success
     runtime_pathology = bool(
         layer
         in {
@@ -1109,11 +1109,11 @@ def _classify_terminal(
     if record.error_message:
         evidence.append(f"message:{_normalized_failure_code(record.error_message)}")
     provider_failure = bool(
-        any(
-            not item.http_success
-            or item.http_status in {408, 429}
-            or (item.http_status or 0) >= 500
-            for item in record.telemetry
+        bool(record.telemetry)
+        and (
+            not record.telemetry[-1].http_success
+            or record.telemetry[-1].http_status in {408, 429}
+            or (record.telemetry[-1].http_status or 0) >= 500
         )
         or (
             record.failure_artifact is None

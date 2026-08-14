@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from trusted_synthesis.core.evaluation.contracts import QualityContractCompiler
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
+    FINANCE_SUBMECHANISM_ORACLE_KEY,
     FinanceCapabilitySubmechanismRuntime,
     evidence_roles_from_items,
     make_finance_submechanism_scenario,
@@ -24,6 +25,19 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_agent_population impor
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary_runner import (
     _all_observations,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
+    DifficultyTier,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_flash_development import (  # noqa: E501
+    FinanceSubmechanismFlashContract,
+    FinanceSubmechanismFlashReport,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_population import (  # noqa: E501
+    BOUNDARY_BASE_TIER,
+    PUBLIC_SUBMECHANISM_METADATA_KEY,
+    CapabilitySubmechanismPopulation,
+    CapabilitySubmechanismTask,
 )
 from trusted_synthesis.runtime.agent.iterative import (
     IterativeAgentFailureArtifact,
@@ -317,3 +331,73 @@ def test_completion_observation_exposes_ordered_host_events(kind: str) -> None:
     )
     assert blocked.status == "failed"
     assert blocked.result["completion_state"]["complete"] is True
+
+
+def test_v25_27_task_contract_rejects_non_easy_artifact() -> None:
+    task = CapabilitySubmechanismTask.model_construct(
+        base_tier=BOUNDARY_BASE_TIER,
+        artifact=SimpleNamespace(tier=DifficultyTier.FRONTIER),
+    )
+
+    with pytest.raises(ValueError, match="frozen Easy base tier"):
+        task.validate_task()
+
+
+def test_v25_27_task_contract_rejects_missing_answer_projection_contract() -> None:
+    context = _omega()
+    scenario = _scenario(context, "post_complete_cost")
+    projection = {"evidence:left": "Left", "evidence:right": "Right"}
+    artifact = SimpleNamespace(
+        tier=BOUNDARY_BASE_TIER,
+        answer_projection=projection,
+        projected_expected_output={"higher_ref": "Right", "difference": "2"},
+        task=SimpleNamespace(
+            public=SimpleNamespace(
+                metadata={
+                    PUBLIC_SUBMECHANISM_METADATA_KEY: public_submechanism_contract(scenario)
+                },
+                instruction="Return the public labels.",
+            ),
+            oracle=SimpleNamespace(
+                selection_contract={
+                    FINANCE_SUBMECHANISM_ORACLE_KEY: scenario.model_dump(mode="json"),
+                    "answer_projection": projection,
+                }
+            ),
+        ),
+    )
+    task = CapabilitySubmechanismTask.model_construct(
+        base_tier=BOUNDARY_BASE_TIER,
+        artifact=artifact,
+        scenario=scenario,
+        submechanism_id=scenario.submechanism_id,
+        parent_mechanism_id=scenario.parent_mechanism_id,
+    )
+
+    with pytest.raises(ValueError, match="projected public answer contract"):
+        task.validate_task()
+
+
+def test_v25_27_population_contract_rejects_non_easy_identity() -> None:
+    population = CapabilitySubmechanismPopulation.model_construct(
+        base_tier=DifficultyTier.FRONTIER,
+        tasks=(),
+    )
+
+    with pytest.raises(ValueError, match="freeze the Easy base tier"):
+        population.validate_population()
+
+
+def test_v25_28_flash_contract_and_report_reject_non_easy_identity() -> None:
+    contract = FinanceSubmechanismFlashContract.model_construct(
+        source_base_tier=DifficultyTier.FRONTIER,
+        tasks=(),
+    )
+    report = FinanceSubmechanismFlashReport.model_construct(
+        source_base_tier=DifficultyTier.FRONTIER,
+    )
+
+    with pytest.raises(ValueError, match="requires the frozen Easy base tier"):
+        contract.validate_contract()
+    with pytest.raises(ValueError, match="does not identify the Easy base tier"):
+        report.validate_report()

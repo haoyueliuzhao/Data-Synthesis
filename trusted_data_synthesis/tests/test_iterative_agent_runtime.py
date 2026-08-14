@@ -4,6 +4,7 @@ import hashlib
 from typing import Any
 
 import pytest
+from pydantic import BaseModel
 
 from trusted_synthesis.core.task.answer_schema import required_answer_fields
 from trusted_synthesis.core.task.schema import TaskRequirement
@@ -17,10 +18,12 @@ from trusted_synthesis.runtime.agent import (
 )
 from trusted_synthesis.runtime.agent.client import LLMClientError
 from trusted_synthesis.runtime.agent.iterative import (
+    TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS,
     _bounded_observation_summary,
     _compact_public_value,
     _operation_execution_progress,
     _operation_step_rejection,
+    _request_contract,
     _scripted_operation_execution_progress,
     _validate_answer_observation_constraints,
 )
@@ -71,6 +74,55 @@ class _ScriptedClient:
             prompt_tokens=6,
             completion_tokens=4,
             total_tokens=10,
+        )
+
+
+class _ScalarContract(BaseModel):
+    value: int
+
+
+class _TransientThenValidClient:
+    def __init__(self, *, failure_count: int) -> None:
+        self._failure_count = failure_count
+        self.prompts: list[str] = []
+        self._config = AgentModelConfig(
+            provider="fixture",
+            endpoint="https://fixture.invalid/v1/chat/completions",
+            model="fixture-model",
+            api_key_env="FIXTURE_API_KEY",
+            contract_repair_attempts=0,
+        )
+
+    @property
+    def config(self) -> AgentModelConfig:
+        return self._config
+
+    def complete_json(self, prompt: str) -> tuple[dict[str, Any], ModelCallTelemetry]:
+        self.prompts.append(prompt)
+        request_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        if len(self.prompts) <= self._failure_count:
+            telemetry = ModelCallTelemetry(
+                provider="fixture",
+                endpoint_host="fixture.invalid",
+                model_requested="fixture-model",
+                model_selected="fixture-model",
+                request_hash=request_hash,
+                http_success=False,
+                json_contract_success=False,
+                error_type="URLError",
+                error_message="temporary TLS transport failure",
+            )
+            raise LLMClientError("temporary TLS transport failure", (telemetry,))
+        return {"value": 7}, ModelCallTelemetry(
+            provider="fixture",
+            endpoint_host="fixture.invalid",
+            model_requested="fixture-model",
+            model_selected="fixture-model",
+            request_hash=request_hash,
+            response_hash="response:valid",
+            http_status=200,
+            http_success=True,
+            json_contract_success=True,
         )
 
 
@@ -763,6 +815,47 @@ def test_contract_repair_does_not_replay_echoed_payload() -> None:
     assert "x" * 100 not in client.prompts[1]
     assert '"previous_payload":' not in client.prompts[1]
     assert "previous_payload_keys" in client.prompts[1]
+
+
+def test_transient_provider_retry_preserves_prompt_and_repair_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    delays: list[float] = []
+    monkeypatch.setattr(
+        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
+    )
+    client = _TransientThenValidClient(failure_count=2)
+
+    value, telemetry, repair_count = _request_contract(
+        client, "Return a scalar contract.", _ScalarContract
+    )
+
+    assert value.value == 7
+    assert repair_count == 0
+    assert len(telemetry) == 3
+    assert [item.http_success for item in telemetry] == [False, False, True]
+    assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[:2])
+    assert len(set(client.prompts)) == 1
+
+
+def test_transient_provider_retry_exhaustion_is_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    delays: list[float] = []
+    monkeypatch.setattr(
+        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
+    )
+    client = _TransientThenValidClient(
+        failure_count=len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS) + 1
+    )
+
+    with pytest.raises(LLMClientError, match="iterative Agent contract") as captured:
+        _request_contract(client, "Return a scalar contract.", _ScalarContract)
+
+    assert len(captured.value.telemetry) == 4
+    assert all(not item.http_success for item in captured.value.telemetry)
+    assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
+    assert len(set(client.prompts)) == 1
 
 
 def test_agent_cannot_stop_without_observed_evidence() -> None:

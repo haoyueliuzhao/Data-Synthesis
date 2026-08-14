@@ -96,6 +96,26 @@ def test_model_token_budget_is_model_decision_when_prompt_is_bounded() -> None:
     assert result[2] == ()
 
 
+def test_recovered_transient_provider_failure_is_not_mislabeled_as_l0() -> None:
+    transient = _telemetry(http_success=False).model_copy(
+        update={
+            "error_type": "URLError",
+            "error_message": "temporary TLS transport failure",
+        }
+    )
+    result = _classify_terminal(
+        _record(
+            error_message="Agent exceeded the frozen model-token budget",
+            telemetry=(transient, _telemetry()),
+        ),
+        _outcome(),
+        prompt_pathology=False,
+    )
+
+    assert result[0] == TerminalClass.MODEL_TOKEN_BUDGET
+    assert result[1] == FailureLayer.L4_MODEL_AGENT_DECISION
+
+
 def test_model_token_budget_is_runtime_contract_when_prompt_is_pathological() -> None:
     result = _classify_terminal(
         _record(

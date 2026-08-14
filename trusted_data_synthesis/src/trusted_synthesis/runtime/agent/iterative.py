@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from decimal import Decimal, InvalidOperation
 from typing import Any, Literal, TypeVar
 
@@ -29,13 +30,24 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v19"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v20"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
 ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v16"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v17"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v18"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v12"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v13"
 MAXIMUM_STOP_REJECTIONS = 2
+TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS = (1.0, 3.0, 7.0)
+_TRANSIENT_PROVIDER_ERROR_TYPES = frozenset(
+    {
+        "ConnectionAbortedError",
+        "ConnectionResetError",
+        "RemoteDisconnected",
+        "TimeoutError",
+        "URLError",
+    }
+)
+_TRANSIENT_PROVIDER_HTTP_STATUS = frozenset({408, 425, 429, 500, 502, 503, 504})
 _ANSWER_FIELD_CONSTRAINT_KEYS = frozenset({"allowed_values", "numeric_minimum", "numeric_maximum"})
 MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
     {
@@ -833,6 +845,36 @@ def _iterative_failure(
     return LLMClientError(message, telemetry, failure_artifact=artifact)
 
 
+def _is_transient_provider_error(error: LLMClientError) -> bool:
+    if not error.telemetry:
+        return False
+    return all(
+        item.error_type in _TRANSIENT_PROVIDER_ERROR_TYPES
+        or item.http_status in _TRANSIENT_PROVIDER_HTTP_STATUS
+        for item in error.telemetry
+    )
+
+
+def _complete_json_with_transient_retry(
+    client: JsonCompletionClient,
+    prompt: str,
+) -> tuple[dict[str, Any], ModelCallTelemetry, tuple[ModelCallTelemetry, ...]]:
+    failed: list[ModelCallTelemetry] = []
+    for attempt in range(len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS) + 1):
+        try:
+            payload, telemetry = client.complete_json(prompt)
+            return payload, telemetry, tuple(failed)
+        except LLMClientError as exc:
+            failed.extend(exc.telemetry)
+            if (
+                not _is_transient_provider_error(exc)
+                or attempt == len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
+            ):
+                raise LLMClientError(str(exc), tuple(failed)) from exc
+            time.sleep(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[attempt])
+    raise AssertionError("transient provider retry loop did not terminate")
+
+
 def _request_contract(
     client: JsonCompletionClient,
     base_prompt: str,
@@ -863,12 +905,19 @@ def _request_contract(
             + "\nReturn only the corrected response object. Do not copy PUBLIC_CONTEXT_JSON."
         )
         try:
-            payload, call = client.complete_json(prompt)
+            payload, call, recovered_transport = _complete_json_with_transient_retry(
+                client, prompt
+            )
+            telemetry.extend(
+                _with_prompt_component_bytes(item, prompt) for item in recovered_transport
+            )
             call = _with_prompt_component_bytes(call, prompt)
         except LLMClientError as exc:
             telemetry.extend(
                 _with_prompt_component_bytes(item, prompt) for item in exc.telemetry
             )
+            if _is_transient_provider_error(exc):
+                break
             validation_error = f"provider_or_json_error:{exc}"[:1200]
             previous_payload_keys = ()
             if attempt == maximum_attempt:
