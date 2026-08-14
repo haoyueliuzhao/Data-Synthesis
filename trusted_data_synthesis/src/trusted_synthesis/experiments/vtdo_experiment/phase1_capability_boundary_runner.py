@@ -19,6 +19,10 @@ from trusted_synthesis.core.trajectory.state import (
     map_trajectory_to_state,
     trajectory_decision_trace_hash,
 )
+from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
+    FinanceCapabilitySubmechanismRuntime,
+    submechanism_scenario_from_oracle,
+)
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
     capability_mechanism_scenario_from_oracle,
@@ -419,15 +423,26 @@ def _run_one(
             observations: tuple[AgentToolObservation, ...] = ()
             verification_payload = validity.model_dump(mode="json")
         else:
-            runtime = FinanceArchiveInteractiveToolRuntime(
-                context.public_corpus,
-                manifest,
-                recovery_scenario=recovery_scenario_from_metadata(
-                    context.task.public.metadata
-                ),
-                capability_scenario=capability_mechanism_scenario_from_oracle(
-                    context.task.oracle.selection_contract
-                ),
+            submechanism_scenario = submechanism_scenario_from_oracle(
+                context.task.oracle.selection_contract
+            )
+            runtime = (
+                FinanceCapabilitySubmechanismRuntime(
+                    context.public_corpus,
+                    manifest,
+                    scenario=submechanism_scenario,
+                )
+                if submechanism_scenario is not None
+                else FinanceArchiveInteractiveToolRuntime(
+                    context.public_corpus,
+                    manifest,
+                    recovery_scenario=recovery_scenario_from_metadata(
+                        context.task.public.metadata
+                    ),
+                    capability_scenario=capability_mechanism_scenario_from_oracle(
+                        context.task.oracle.selection_contract
+                    ),
+                )
             )
             result = IterativeAgentSolver(
                 client,

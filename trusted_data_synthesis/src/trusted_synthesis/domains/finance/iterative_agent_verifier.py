@@ -18,6 +18,11 @@ from trusted_synthesis.core.task.schema import TaskRequirement
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateCheck
 from trusted_synthesis.core.trajectory.schema import ActionType, StepStatus, WorkflowKind
 from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
+from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
+    FinanceCapabilitySubmechanismRuntime,
+    FinanceSubmechanismScenario,
+    submechanism_scenario_from_oracle,
+)
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
     FinanceCapabilityMechanismScenario,
@@ -37,7 +42,7 @@ from trusted_synthesis.runtime.tools import (
     agent_tool_argument_rejection,
 )
 
-FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v3"
+FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v4"
 
 
 class FinanceIterativeAgentVerificationReport(BaseModel):
@@ -161,6 +166,7 @@ class FinanceIterativeAgentVerifier:
             capability_scenario=capability_mechanism_scenario_from_oracle(
                 task.oracle.selection_contract
             ),
+            submechanism_scenario=submechanism_scenario_from_oracle(task.oracle.selection_contract),
         )
         leakage_failures = _model_forbidden_field_paths(
             trajectory.model_dump(mode="json", exclude_none=True)
@@ -418,12 +424,21 @@ def _replay_observations(
     *,
     recovery_scenario: FinanceTypedRecoveryScenario | None = None,
     capability_scenario: FinanceCapabilityMechanismScenario | None = None,
+    submechanism_scenario: FinanceSubmechanismScenario | None = None,
 ) -> tuple[str, ...]:
-    runtime = FinanceArchiveInteractiveToolRuntime(
-        corpus,
-        environment,
-        recovery_scenario=recovery_scenario,
-        capability_scenario=capability_scenario,
+    runtime = (
+        FinanceCapabilitySubmechanismRuntime(
+            corpus,
+            environment,
+            scenario=submechanism_scenario,
+        )
+        if submechanism_scenario is not None
+        else FinanceArchiveInteractiveToolRuntime(
+            corpus,
+            environment,
+            recovery_scenario=recovery_scenario,
+            capability_scenario=capability_scenario,
+        )
     )
     failures: list[str] = []
     for index, observation in enumerate(observations):

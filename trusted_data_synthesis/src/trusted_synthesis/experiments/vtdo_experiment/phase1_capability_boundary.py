@@ -28,6 +28,11 @@ from trusted_synthesis.core.trajectory.specification import (
 from trusted_synthesis.domains.finance.agent_tools import (
     make_finance_archive_agent_tool_manifest,
 )
+from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
+    finance_submechanism_runtime_snapshot_hash,
+    make_submechanism_manifest,
+    submechanism_scenario_from_oracle,
+)
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     capability_mechanism_scenario_from_oracle,
     finance_runtime_snapshot_hash,
@@ -705,19 +710,35 @@ def make_v25_native_runtime_context(
     capability_scenario = capability_mechanism_scenario_from_oracle(
         task.task.oracle.selection_contract
     )
-    manifest = make_finance_archive_agent_tool_manifest(
-        environment_id=f"finance_v25:{runtime_arm.value}:{task.artifact_id}",
-        corpus_id=corpus.corpus_id,
-        corpus_hash=corpus.corpus_hash,
-        archive_snapshot_id=snapshot_id,
-        archive_snapshot_hash=finance_runtime_snapshot_hash(
-            corpus.corpus_hash,
-            recovery_scenario,
-            capability_scenario,
-        ),
-        maximum_tool_calls=MAXIMUM_TOOL_CALLS,
-        maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,
-        maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,
+    submechanism_scenario = submechanism_scenario_from_oracle(task.task.oracle.selection_contract)
+    snapshot_hash = (
+        finance_submechanism_runtime_snapshot_hash(corpus.corpus_hash, submechanism_scenario)
+        if submechanism_scenario is not None
+        else finance_runtime_snapshot_hash(
+            corpus.corpus_hash, recovery_scenario, capability_scenario
+        )
+    )
+    environment_id = f"finance_v25:{runtime_arm.value}:{task.artifact_id}"
+    manifest = (
+        make_submechanism_manifest(
+            corpus=corpus,
+            scenario=submechanism_scenario,
+            environment_id=environment_id,
+            maximum_tool_calls=MAXIMUM_TOOL_CALLS,
+            maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,
+            maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,
+        )
+        if submechanism_scenario is not None
+        else make_finance_archive_agent_tool_manifest(
+            environment_id=environment_id,
+            corpus_id=corpus.corpus_id,
+            corpus_hash=corpus.corpus_hash,
+            archive_snapshot_id=snapshot_id,
+            archive_snapshot_hash=snapshot_hash,
+            maximum_tool_calls=MAXIMUM_TOOL_CALLS,
+            maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,
+            maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,
+        )
     )
     direct_fixed = runtime_arm == CapabilityRuntimeArm.DIRECT_FIXED_RETRIEVAL
     public_allowed_tools = runtime_public_allowed_tools(
@@ -915,9 +936,7 @@ def _select_boundary_tasks(
                 prefix="v25_boundary_task_selection:",
             ),
         )
-        if len(ordered_frontier) != (
-            QUALIFICATION_TASKS_PER_FAMILY + CALIBRATION_TASKS_PER_FAMILY
-        ):
+        if len(ordered_frontier) != (QUALIFICATION_TASKS_PER_FAMILY + CALIBRATION_TASKS_PER_FAMILY):
             raise ValueError("v25 Frontier does not contain exactly five tasks per family")
         frontier_anchor = ordered_frontier[0]
         qualification.append(frontier_anchor)
@@ -925,11 +944,7 @@ def _select_boundary_tasks(
         calibration.extend(ordered_frontier[QUALIFICATION_TASKS_PER_FAMILY:])
         for tier in (DifficultyTier.EASY_CONTROL, DifficultyTier.HARD_CONTROL):
             tier_candidates = sorted(
-                (
-                    item
-                    for item in population.tasks
-                    if item.family == family and item.tier == tier
-                ),
+                (item for item in population.tasks if item.family == family and item.tier == tier),
                 key=lambda item: canonical_hash(
                     {"salt": sampling_salt, "artifact_id": item.artifact_id},
                     prefix="v25_localization_task_selection:",
