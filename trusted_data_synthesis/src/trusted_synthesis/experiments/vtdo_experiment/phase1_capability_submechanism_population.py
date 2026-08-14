@@ -57,10 +57,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_multitier_capability_p
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import AgentToolCall, AgentToolResult
 
-SUBMECHANISM_POPULATION_VERSION = "finance_capability_submechanism_population.v10"
-SUBMECHANISM_TASK_VERSION = "finance_capability_submechanism_task.v9"
-SUBMECHANISM_REPLAY_VERSION = "finance_capability_submechanism_runtime_replay.v2"
-SUBMECHANISM_AUDIT_VERSION = "finance_capability_submechanism_static_audit.v10"
+SUBMECHANISM_POPULATION_VERSION = "finance_capability_submechanism_population.v11"
+SUBMECHANISM_TASK_VERSION = "finance_capability_submechanism_task.v10"
+SUBMECHANISM_REPLAY_VERSION = "finance_capability_submechanism_runtime_replay.v3"
+SUBMECHANISM_AUDIT_VERSION = "finance_capability_submechanism_static_audit.v11"
 
 BOUNDARY_BASE_TIER = DifficultyTier.EASY_CONTROL
 PUBLIC_SUBMECHANISM_METADATA_KEY = "capability_decision_contract"
@@ -1168,6 +1168,11 @@ class _ReplayCalls:
 
     def complete_source_coverage(self) -> None:
         item = self._item(self.scenario.evidence_roles[0].evidence_id)
+        self.select_all()
+        self.calculate()
+        first = self.verify()
+        if bool(first.result.get("verified")):
+            raise ValueError("source coverage trigger unexpectedly verified")
         search = self.call(
             "search_archive",
             {
@@ -1195,11 +1200,6 @@ class _ReplayCalls:
         )
         if locator is None:
             raise ValueError("source coverage replay could not discover a public locator")
-        self.select_all()
-        self.calculate()
-        first = self.verify()
-        if bool(first.result.get("verified")):
-            raise ValueError("source coverage trigger unexpectedly verified")
         opened = self.call("open_document", {"public_locator": locator})
         if opened.status != "succeeded":
             raise ValueError("source coverage resolution did not open the public document")

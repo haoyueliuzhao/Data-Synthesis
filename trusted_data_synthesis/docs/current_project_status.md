@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-14
+Audit date: 2026-08-15
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -15,24 +15,23 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active result is Finance v25.29 held-out Submechanism Confirmation. v25.28 repaired the public
-answer projection and separated transient transport retry from semantic contract repair, then
-completed a 60-rollout Flash Development whose Runtime and primary geometry gates all passed.
+The active result is Finance v25.34 paired Stopping-boundary calibration. v25.33 had passed its
+common Top-4 geometry but failed parent support because State-dependent Stopping supplied only
+3.16% of information and one nonzero task. v25.34 repaired two independently replayed measurement
+defects: an unreachable source-locator path and loss of typed prerequisite actions from the
+generic failed-action Prompt.
 
-v25.29 assembled a fresh 20-task population from an immutable Evidence-level union. The union
-merged 3,838 public Evidence occurrences into 3,323 unique, content-consistent Evidence Versions;
-the final tasks are disjoint from Development by Evidence, Evidence Version, Task, and semantic
-signature. Confirmation completed 100/100 rollouts with 100% transport, bounded JSON, replay, and
-authority integrity, plus zero Runtime pathology.
+A fresh Population excluded all 29 prior submechanism Populations. Two paired 60-rollout Flash
+runs then isolated the Prompt repair. Runtime transport, bounded JSON, replay, and authority were
+100% in both, with zero Runtime pathology. The unresolved-conflict action changed from 0/12 to
+10/12 resolutions and from 0/12 to 9/12 complete capability contracts. Its response probability
+of 0.75 is non-degenerate. The source-coverage path remained reachable and had zero locator
+precondition failures.
 
-Primary geometry did not fully confirm. Rank, effective rank, boundary mass, seven-axis coverage,
-general-factor, and parent-concentration gates passed, but residual condition number was 589.30
-against a frozen maximum of 100. The weak fifth residual eigenvalue caused the failure. A
-diagnostic-only finite-replicate simulation shows this gate is statistically fragile, but it does
-not rescue or alter the preregistered result. Pro sparse anchors, Beneficiary screening, Exact
-Target, GP-C, VTDO updates, Student training, and production Contribution remain forbidden. The
-next valid action is a separately identified measurement-contract redesign with new held-out data,
-not additional calls under the failed v25.29 contract.
+The v25.34-v2 result permits only construction of three fresh stable-support Development
+Populations. It does not reclassify v25.33 or authorize Confirmation, Pro, Beneficiary screening,
+Exact Target, GP-C, VTDO updates, Student training, or production Contribution. See
+`docs/finance_v25_34_stopping_boundary_calibration_report.md`.
 
 ## Runtime And Data
 
@@ -591,6 +590,35 @@ next_permitted_stage = stable_support_redesign_only
 ```
 
 See `docs/finance_v25_30_v25_33_stable_capability_decision_report.md`.
+
+## v25.34 Stopping Boundary Calibration
+
+v25.34 used one fresh Population, five State-dependent Stopping tasks, and 12 Flash realizations
+per task. The first 60-rollout run proved that source coverage was repaired but conflict resolution
+remained 0/12. Trace replay identified a generic Runtime defect: typed public conflict dimensions,
+candidate actions, and the action-selection rule were omitted from the next decision Prompt and
+were lost entirely after an identical failed-call block.
+
+The paired v2 run changed only the content-hashed implementation. It preserved the latest typed
+prerequisite contract without selecting the correct action for the model. Runtime remained 60/60
+eligible with zero pathology. Conflict resolution reached 10/12, complete Contract success reached
+9/12, and the task became a boundary response at 0.75. All frozen v25.34-v2 gates passed.
+
+```text
+runtime_measurement_ready = true
+stopping_instrument_repair_validated = true
+boundary_signal_observed = true
+fresh_stable_support_development_permitted = true
+historical_result_reclassified = false
+fresh_confirmation_authorized = false
+pro_sparse_anchor_authorized = false
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = fresh_stable_support_development_population_build
+```
+
+See `docs/finance_v25_34_stopping_boundary_calibration_report.md`.
 
 
 ## v25.24 Submechanism Direction Design

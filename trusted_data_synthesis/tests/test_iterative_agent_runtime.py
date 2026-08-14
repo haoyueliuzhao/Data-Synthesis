@@ -21,6 +21,7 @@ from trusted_synthesis.runtime.agent.iterative import (
     TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS,
     _bounded_observation_summary,
     _compact_public_value,
+    _failed_action_repair_context,
     _operation_execution_progress,
     _operation_step_rejection,
     _request_contract,
@@ -750,6 +751,79 @@ def test_agent_blocks_identical_failed_call_and_allows_argument_repair() -> None
     ]
     assert result.observations[1].error_code == "identical_failed_action_blocked"
     assert '"identical_arguments_forbidden":true' in client.prompts[3]
+
+
+def test_failed_action_repair_preserves_typed_resolution_guidance() -> None:
+    first = make_agent_tool_observation(
+        environment_manifest_id="manifest:test",
+        call=AgentToolCall(
+            call_index=1,
+            tool_id="cross_check_evidence",
+            arguments={"claim_or_result": {"value": 10}},
+        ),
+        result=AgentToolResult(
+            status="failed",
+            result={
+                "retry_contract": {
+                    "policy": "prerequisite_action_required",
+                    "observed_conflict_dimensions": [
+                        "source_definition_compatibility"
+                    ],
+                    "available_resolution_actions": [
+                        {
+                            "tool_id": "normalize_metric_unit_period",
+                            "applicable_when": (
+                                "source definitions or temporal bases are incompatible"
+                            ),
+                        },
+                        {
+                            "tool_id": "open_document",
+                            "applicable_when": "source provenance is incomplete",
+                        },
+                    ],
+                    "decision_rule": "Match the observed dimension to one action.",
+                }
+            },
+            error_code="evidence_state_conflicted",
+            error_message="Evidence remains conflicted.",
+        ),
+        observation_time_hash="time:1",
+    )
+    blocked = make_agent_tool_observation(
+        environment_manifest_id="manifest:test",
+        call=AgentToolCall(
+            call_index=2,
+            tool_id="cross_check_evidence",
+            arguments={"claim_or_result": {"value": 10}},
+        ),
+        result=AgentToolResult(
+            status="failed",
+            result={
+                "retry_contract": {
+                    "policy": "argument_patch_required",
+                    "suggested_argument_patch": {"rule": "change arguments"},
+                }
+            },
+            error_code="identical_failed_action_blocked",
+            error_message="Identical failed action blocked.",
+        ),
+        observation_time_hash="time:2",
+    )
+
+    context = _failed_action_repair_context((first, blocked))
+
+    assert context is not None
+    assert context["failed_tool_id"] == "cross_check_evidence"
+    assert context["repair_source_error_code"] == "evidence_state_conflicted"
+    assert context["observed_conflict_dimensions"] == [
+        "source_definition_compatibility"
+    ]
+    assert context["available_resolution_actions"][0]["tool_id"] == (
+        "normalize_metric_unit_period"
+    )
+    assert context["resolution_decision_rule"] == (
+        "Match the observed dimension to one action."
+    )
 
 
 def test_successful_intervening_action_reopens_a_failed_tool_call() -> None:

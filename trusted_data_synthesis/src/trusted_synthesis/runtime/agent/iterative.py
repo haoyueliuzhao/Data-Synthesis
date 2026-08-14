@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Mapping
 from decimal import Decimal, InvalidOperation
 from typing import Any, Literal, TypeVar
 
@@ -32,7 +33,7 @@ from trusted_synthesis.runtime.tools import (
 
 ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v21"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v16"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v17"
 ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v18"
 
 ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v13"
@@ -1698,9 +1699,21 @@ def _failed_action_repair_context(
     if not observations or observations[-1].status != "failed":
         return None
     failed = observations[-1]
-    retry_contract = failed.result.get("retry_contract")
+    repair_source = failed
+    retry_contract = repair_source.result.get("retry_contract")
     if not isinstance(retry_contract, dict):
         retry_contract = {}
+    if not _has_typed_resolution_guidance(retry_contract):
+        for candidate in reversed(observations[:-1]):
+            if candidate.status != "failed":
+                continue
+            candidate_contract = candidate.result.get("retry_contract")
+            if isinstance(candidate_contract, dict) and _has_typed_resolution_guidance(
+                candidate_contract
+            ):
+                repair_source = candidate
+                retry_contract = candidate_contract
+                break
     operation_refs = tuple(
         sorted(
             {
@@ -1716,17 +1729,37 @@ def _failed_action_repair_context(
         "failed_tool_id": failed.call.tool_id,
         "error_code": failed.error_code,
         "error_message": failed.error_message,
+        "repair_source_tool_id": repair_source.call.tool_id,
+        "repair_source_error_code": repair_source.error_code,
         "identical_arguments_forbidden": True,
         "retry_policy": retry_contract.get("policy"),
         "required_argument_patch": retry_contract.get("suggested_argument_patch"),
         "required_prerequisite_action": retry_contract.get("required_prerequisite_action"),
+        "required_next_tools": retry_contract.get("required_next_tools"),
+        "observed_conflict_dimensions": retry_contract.get(
+            "observed_conflict_dimensions"
+        ),
+        "available_resolution_actions": retry_contract.get(
+            "available_resolution_actions"
+        ),
+        "resolution_decision_rule": retry_contract.get("decision_rule"),
         "available_successful_operation_refs": operation_refs,
         "required_action": (
-            "perform required_prerequisite_action first when present; otherwise change the "
-            "failed arguments and apply required_argument_patch; never submit the identical "
-            "call"
+            "perform required_prerequisite_action first when present; otherwise, when "
+            "available_resolution_actions are present, choose one listed action whose "
+            "applicable_when condition matches observed_conflict_dimensions; otherwise "
+            "apply required_argument_patch and change the failed arguments; never submit "
+            "the identical call"
         ),
     }
+
+
+def _has_typed_resolution_guidance(value: Mapping[str, Any]) -> bool:
+    return bool(
+        value.get("required_prerequisite_action")
+        or value.get("required_next_tools")
+        or value.get("available_resolution_actions")
+    )
 
 
 def _operation_execution_progress(
@@ -2204,7 +2237,10 @@ def _decision_prompt(
         "'output' or 'output.value'. Never invent a short operation name. "
         "When operation_execution_progress is present, execute next_required_step before any "
         "later operation. When failed_action_repair is present, perform "
-        "required_prerequisite_action first when supplied; otherwise apply "
+        "required_prerequisite_action first when supplied. Otherwise, if "
+        "available_resolution_actions are present, choose one listed tool whose "
+        "applicable_when condition matches observed_conflict_dimensions; do not repeat the "
+        "failed tool. Only when no resolution action is listed should you apply "
         "required_argument_patch and change the failed arguments. For a final answer, copy "
         "the exact terminal "
         "successful calculator result without "

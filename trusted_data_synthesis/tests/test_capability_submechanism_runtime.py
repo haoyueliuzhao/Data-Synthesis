@@ -462,6 +462,7 @@ def test_unresolved_conflict_requires_agent_tool_selection() -> None:
     retry = conflict.result["retry_contract"]
     assert retry["required_prerequisite_action"] is None
     assert "required_next_tools" not in retry
+    assert "Do not repeat verification" in retry["decision_rule"]
     normalized = _call(
         runtime,
         index + 1,
@@ -537,10 +538,18 @@ def test_uncertain_source_requires_public_provenance_resolution() -> None:
     context = _omega()
     scenario = _scenario(context, "uncertain_source_coverage")
     runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+    index, uncertain = _verify(runtime, index, operation_ref)
+    assert uncertain.status == "succeeded"
+    assert uncertain.result["verified"] is False
+    assert uncertain.result["completion_state"]["host_event"] == scenario.expected_host_events[0]
+    assert uncertain.result["completion_state"]["complete"] is False
+
     first = scenario.evidence_roles[0]
     search = _call(
         runtime,
-        1,
+        index + 1,
         "search_archive",
         {
             "query": f"{first.subject_alias} {first.metric_alias}",
@@ -550,16 +559,9 @@ def test_uncertain_source_requires_public_provenance_resolution() -> None:
     assert search.status == "succeeded"
     locator = search.result["matches"][0]["public_locator"]
 
-    index = 1 + _select_all(runtime, scenario)
-    index, operation_ref = _calculate(runtime, index)
-    index, uncertain = _verify(runtime, index, operation_ref)
-    assert uncertain.status == "succeeded"
-    assert uncertain.result["verified"] is False
-    assert uncertain.result["completion_state"]["host_event"] == scenario.expected_host_events[0]
-
     opened = _call(
         runtime,
-        index + 1,
+        index + 2,
         "open_document",
         {"public_locator": locator},
     )
@@ -569,7 +571,7 @@ def test_uncertain_source_requires_public_provenance_resolution() -> None:
         opened.result["submechanism_resolution"]["host_event"] == scenario.expected_host_events[1]
     )
 
-    _, verified = _verify(runtime, index + 1, operation_ref)
+    _, verified = _verify(runtime, index + 2, operation_ref)
     assert verified.status == "succeeded"
     assert verified.result["verified"] is True
     assert runtime.event_log == scenario.expected_host_events
@@ -590,7 +592,7 @@ def test_completion_observation_exposes_ordered_host_events(kind: str) -> None:
         scenario.expected_host_events
     )
     assessment = verified.result["completion_state"]["additional_action_assessment"]
-    assert assessment["additional_action_required"] is False
+    assert "additional_action_required" not in assessment
     assert "redundant_action_policy" not in verified.result["completion_state"]
     assert kind not in str(verified.result["completion_state"])
     assert runtime.event_log == scenario.expected_host_events

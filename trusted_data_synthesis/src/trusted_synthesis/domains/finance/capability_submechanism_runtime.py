@@ -26,9 +26,9 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v6"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v8"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v2"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v7"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v9"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v3"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -175,7 +175,7 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
     ),
     "uncertain_source_coverage": _RuntimePolicy(
         "cross_check_evidence",
-        ("open_document",),
+        ("search_archive", "open_document"),
         "source_coverage_uncertain",
         mode="completeness",
     ),
@@ -491,6 +491,8 @@ class FinanceCapabilitySubmechanismRuntime:
             and self._trigger_observed
             and not self._resolution_observed
         ):
+            if call.tool_id == "search_archive":
+                return self._base.execute(call)
             if call.tool_id != "open_document":
                 return self._resolution_required_failure()
             result = self._base.execute(call)
@@ -834,7 +836,6 @@ class FinanceCapabilitySubmechanismRuntime:
             "host_event_sequence": list(self._scenario.expected_host_events),
             "host_event": self._scenario.expected_host_events[1],
             "additional_action_assessment": {
-                "additional_action_required": False,
                 "marginal_cost": "positive" if kind == "post_complete_cost" else "none",
                 "evidence_integrity_risk": (
                     "elevated" if kind == "post_complete_error_risk" else "none"
@@ -881,6 +882,10 @@ class FinanceCapabilitySubmechanismRuntime:
                     "applicable_when": "a required evidence role is missing",
                 },
             ]
+            retry_contract["decision_rule"] = (
+                "Select the single action whose applicable_when condition matches the observed "
+                "conflict dimensions. Do not repeat verification until that action succeeds."
+            )
         payload["retry_contract"] = retry_contract
         return result.model_copy(
             update={
