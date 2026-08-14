@@ -580,3 +580,35 @@ next_permitted_stage = capability_mechanism_support_redesign_only
 Mechanism confirmation is retained as a positive result. The current task support is rejected as a
 well-conditioned capability distribution. See
 `docs/finance_v25_22_v25_23_capability_mechanism_repair_and_geometry_report.md`.
+
+
+## v25.24 Submechanism Direction Design
+
+v25.24 replaced parent-mechanism labels with 24 typed submechanism candidates: six candidates
+inside each of the four independently confirmed mechanisms. A deterministic 6-choose-5 search per
+parent evaluates 1,296 balanced designs before any model response is observed. Demand vectors are
+mechanically derived from typed Action primitives and Evidence dependencies, then projected off the
+common workflow direction.
+
+The selected 20-task design passes every frozen structural gate:
+
+- residual numerical rank 6;
+- residual effective rank 4.698069;
+- residual condition number 18.862716;
+- high-cosine pair fraction 9.47%;
+- every axis supported by at least two parent mechanisms;
+- 20 distinct workflow backbones.
+
+Only 5/20 selected variants currently have both a Host intervention and real-Finance Materializer
+implementation. Static success therefore does not authorize an API run:
+
+```text
+structural_geometry_ready = true
+runtime_population_ready = false
+api_calls = 0
+gpu_jobs = 0
+next_permitted_stage = submechanism_runtime_implementation_only
+```
+
+Flash, Pro, Beneficiary, Exact Target, GP-C, production Contribution, and Student training remain
+blocked. See `docs/finance_v25_24_submechanism_direction_design_report.md`.

@@ -1125,3 +1125,34 @@ Historical v0.8/v0.9 source, tests, configurations, reports, checkpoints, and ge
 have been permanently removed from the working tree. Restoring tracked source requires an explicit
 historical Git revision; ignored generated outputs are not recoverable. The active CLI and config
 loader intentionally provide no compatibility alias.
+
+
+### v25.24 submechanism direction design
+
+After a blocked v25.23 mechanism geometry result, task support must be redesigned inside the four
+confirmed parent mechanisms. Each parent supplies six typed candidates and retains exactly five.
+Selection is model-free and exhaustive over the 1,296 balanced combinations. Capability demand
+must be recomputed from Action primitives and Evidence dependencies; mechanism names and model
+responses cannot enter the structural vector.
+
+Before Flash is called, the selected design must satisfy:
+
+```text
+residual structural rank >= 5
+residual structural effective rank >= 4
+residual structural condition number <= 100
+high-cosine pair fraction <= 0.35 at cosine >= 0.90
+parent support per capability axis >= 2
+distinct workflow backbones >= 10
+maximum backbone share <= 0.20
+```
+
+All selected submechanisms must additionally have distinct, executable Host intervention and
+real-Finance Materializer contracts. Structural pass without full Runtime coverage authorizes only
+`submechanism_runtime_implementation_only`; it cannot authorize Flash. The primary future
+response remains `valid_success`. Tool, verification, recovery, and stopping outcomes are
+preregistered diagnostics and cannot rescue a failed primary matrix.
+
+The v25.24 structural design passes, but Runtime coverage is 5/20. Consequently no API or GPU was
+used, and Pro, Beneficiary, Exact Target, GP-C, Contribution, VTDO updates, and Student training
+remain blocked.
