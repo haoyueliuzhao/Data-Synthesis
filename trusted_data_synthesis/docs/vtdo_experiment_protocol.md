@@ -1186,3 +1186,65 @@ preregistered diagnostics and cannot rescue a failed primary matrix.
 The v25.24 structural design passes, but Runtime coverage is 5/20. Consequently no API or GPU was
 used, and Pro, Beneficiary, Exact Target, GP-C, Contribution, VTDO updates, and Student training
 remain blocked.
+
+### v25.36 Stopping Shape stability contract
+
+A Stopping Parent may not be admitted from repeated realizations of one task. Development must
+treat an independent task instance as the primary sampling unit and estimate both within-task
+realization variability and between-task Shape variability.
+
+The v25.36 Development contract freezes six Decision Shapes, four structural strata per Shape,
+four independent tasks per Shape, and eight realizations per task. Task construction and admission
+must occur before any API call. Expected Host events, Difficulty vectors, source semantics,
+materializer identities, and the full execution implementation manifest are part of the immutable
+contract.
+
+The candidate-Shape admission contract is:
+
+```text
+complete independent task denominator = 4/4
+boundary probability interval = [0.125, 0.875]
+boundary tasks >= 2
+nonzero-information tasks >= 3
+effective task count >= 2.0
+maximum single-task information share <= 0.60
+between-task probability range <= 0.75
+hierarchical task-and-realization bootstrap information LCB > 0
+```
+
+Control Shapes additionally require mean Capability Contract success of at least 0.75. Runtime
+execution integrity, terminal resolution, Observation replay, and authority integrity remain exact
+100% gates; Runtime pathology and L0-L2 failures must remain zero.
+
+The following practices are forbidden:
+
+```text
+pooling Shapes to rescue a failed Shape
+selecting tasks after observing API responses
+increasing replicas on the same task as a substitute for independent tasks
+relaxing Shape thresholds after Development
+reclassifying v25.35 results
+applying a post-hoc Finalizer repair
+calling Pro or accessing Beneficiary, Exact Target, GP-C, or Contribution
+```
+
+The v25.36 execution completed 192/192 Flash rollouts and passed every Runtime gate. Two candidate
+Shapes, `authority_coverage_gap` and `contextual_resolution_choice`, passed all task-level gates.
+`partial_required_evidence` had a zero hierarchical bootstrap information lower bound;
+`single_dimension_conflict` was supported by only one task; and the
+`verified_extra_call_cost` control failed its mean-success and heterogeneity gates. Therefore the
+complete Difficulty Policy was not frozen:
+
+```text
+runtime_measurement_ready = true
+all_shapes_admitted = false
+difficulty_policy_frozen = false
+fresh_cross_population_preparation_authorized = false
+next_permitted_stage = stopping_shape_support_redesign_only
+```
+
+The two passing Shapes may be retained only as preregistered positive controls on fresh tasks. The
+failed Shapes require a separately identified structural redesign with new tasks, Evidence,
+Evidence Versions, semantic signatures, and materializer identities. Only a future Development in
+which every Shape passes may freeze the Difficulty Policy and prepare a new three-population
+stable-support Confirmation.

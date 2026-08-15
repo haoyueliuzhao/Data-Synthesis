@@ -681,3 +681,38 @@ next_permitted_stage = submechanism_runtime_implementation_only
 
 Flash, Pro, Beneficiary, Exact Target, GP-C, production Contribution, and Student training remain
 blocked. See `docs/finance_v25_24_submechanism_direction_design_report.md`.
+
+## v25.36 Stopping Shape Stability Development
+
+v25.36 first replayed v25.35 offline and rejected a Stopping-only explanation for the observed
+cross-population geometry drift. It then changed the primary sampling unit from repeated rollout
+to independent Finance task: six Stopping Shapes each received four fresh tasks spanning retrieval
+join, calculation chain, definition reconciliation, and verification-sensitive selection, with
+eight Flash realizations per task.
+
+All 192/192 rollouts completed. Execution integrity, terminal resolution, API transport, bounded
+JSON resolution, Observation replay, and authority integrity were 100%; Runtime pathology and
+L0-L2 failures were zero. The measurement instrument therefore remains valid.
+
+Shape-level stable support did not fully pass. `authority_coverage_gap` and
+`contextual_resolution_choice` passed every task-level gate. `partial_required_evidence` failed
+only its hierarchical bootstrap information lower bound. `single_dimension_conflict` was too hard
+in three of four strata and derived all observed information from one task. The
+`verified_extra_call_cost` control also failed its success and heterogeneity gates, while the
+error-risk control passed.
+
+```text
+runtime_measurement_ready = true
+all_shapes_admitted = false
+difficulty_policy_frozen = false
+fresh_cross_population_preparation_authorized = false
+pro_api_call_count = 0
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = stopping_shape_support_redesign_only
+```
+
+No pooled estimate, post-hoc task selection, threshold relaxation, or post-hoc Finalizer repair was
+used. The only permitted transition is a fresh Shape-redesign Development. See
+`docs/finance_v25_36_stopping_shape_stability_report.md`.
