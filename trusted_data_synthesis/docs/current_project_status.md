@@ -620,6 +620,36 @@ next_permitted_stage = fresh_stable_support_development_population_build
 
 See `docs/finance_v25_34_stopping_boundary_calibration_report.md`.
 
+## v25.35 Cross-population Stable-support Development
+
+v25.35 froze all 30 prior submechanism populations, built three mutually disjoint fresh
+populations, and completed 480/480 DeepSeek V4-Flash rollouts. Every population passed exact
+execution integrity, terminal resolution, Observation replay, authority integrity, zero L0-L2
+failures, zero Runtime pathology, and complete typed failed-action context replay.
+
+Stable support did not generalize. Only Population 2 passed all per-population support gates.
+Population 1 had a zero Stopping bootstrap lower bound; Population 3 had only one nonzero Stopping
+task and a 78.25% joint-geometry bootstrap pass rate. All three pairwise Top-4 bootstrap alignment
+rates failed at 38.10%, 54.35%, and 23.30%.
+
+The pooled diagnostic would have passed with 99.95% joint geometry and a 5.60% Stopping LCB, which
+empirically confirms that pooled results cannot rescue population failures.
+
+```text
+all_population_runtime_ready = true
+all_population_capability_support_admitted = false
+cross_population_alignment_ready = false
+development_admitted = false
+fresh_confirmation_preparation_authorized = false
+pro_sparse_anchor_authorized = false
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = stable_support_redesign_only
+```
+
+See `docs/finance_v25_35_cross_population_stable_support_report.md`.
+
 
 ## v25.24 Submechanism Direction Design
 

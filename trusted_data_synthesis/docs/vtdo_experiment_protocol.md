@@ -1011,6 +1011,36 @@ No current response may be subset post hoc, no threshold may be relaxed, and Pro
 Exact Target, GP-C, Contribution, VTDO updates, and Student training remain blocked. See
 `docs/finance_v25_22_v25_23_capability_mechanism_repair_and_geometry_report.md`.
 
+### Runtime-conditioned observability and cross-population support
+
+For Agent capability measurement, the Runtime exposes a public state
+`o_t = psi_R(h_t)`. A capability response is admissible only when action-relevant public state is
+both observable and replayable. A failed-action repair context may preserve public conflict
+dimensions, available actions, action applicability conditions, and the decision rule, but it must
+not select the correct action or expose parameters, Evidence IDs, canonical candidates, or hidden
+programs.
+
+Every new Runtime-conditioned experiment must therefore fail closed on:
+
+```text
+missing action-relevant public state
+unreplayable typed failed-action context
+unavailable public action
+fixed-position action shortcut
+generic failure memory overwriting a typed prerequisite
+Host injection of an Oracle action or hidden identity
+```
+
+Stable support must be evaluated independently in each preregistered fresh population. Every
+population must pass Runtime, geometry, parent minimum-information, and nonzero-task gates. Pairwise
+claimed-subspace alignment must also pass. A pooled estimate is diagnostic only and cannot rescue
+any failed population.
+
+v25.35 validates the Runtime-conditioned instrument but fails stable support: only one of three
+fresh populations passes all support gates, and all three pairwise bootstrap alignments fail.
+Consequently Confirmation and Pro remain blocked; the only permitted transition is
+`stable_support_redesign_only`.
+
 The full training experiment is ready only when all of the following hold:
 
 1. every requested Finance task has 3-5 independently verified canonical states;

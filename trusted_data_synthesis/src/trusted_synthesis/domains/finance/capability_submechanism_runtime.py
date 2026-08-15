@@ -26,9 +26,9 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v7"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v9"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v3"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v8"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v10"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v4"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -571,9 +571,7 @@ class FinanceCapabilitySubmechanismRuntime:
     def _resolution_required_failure(
         self, *, code: str = "submechanism_resolution_action_required"
     ) -> AgentToolResult:
-        suggested_patch: dict[str, Any] = {
-            "rule": self._scenario.public_resolution_hint
-        }
+        suggested_patch: dict[str, Any] = {"rule": self._scenario.public_resolution_hint}
         candidate_contract = _public_candidate_submission_contract(self._scenario)
         if candidate_contract is not None:
             suggested_patch["candidate_submission_contract"] = candidate_contract
@@ -733,9 +731,7 @@ class FinanceCapabilitySubmechanismRuntime:
                     "localized": True,
                     "repair_verified": False,
                     "target_field": self._scenario.repair_target_field,
-                    "submission_contract": _public_candidate_submission_contract(
-                        self._scenario
-                    ),
+                    "submission_contract": _public_candidate_submission_contract(self._scenario),
                 },
             },
             evidence_ids=evidence_ids,
@@ -865,23 +861,10 @@ class FinanceCapabilitySubmechanismRuntime:
         if public_tools:
             retry_contract["required_next_tools"] = public_tools
         if self._scenario.intervention_kind == "unresolved_conflict_cannot_stop":
-            retry_contract["observed_conflict_dimensions"] = [
-                "source_definition_compatibility"
-            ]
-            retry_contract["available_resolution_actions"] = [
-                {
-                    "tool_id": "normalize_metric_unit_period",
-                    "applicable_when": "source definitions or temporal bases are incompatible",
-                },
-                {
-                    "tool_id": "open_document",
-                    "applicable_when": "source provenance or document coverage is incomplete",
-                },
-                {
-                    "tool_id": "query_structured_fact",
-                    "applicable_when": "a required evidence role is missing",
-                },
-            ]
+            retry_contract["observed_conflict_dimensions"] = ["source_definition_compatibility"]
+            retry_contract["available_resolution_actions"] = (
+                self._ordered_conflict_resolution_actions()
+            )
             retry_contract["decision_rule"] = (
                 "Select the single action whose applicable_when condition matches the observed "
                 "conflict dimensions. Do not repeat verification until that action succeeds."
@@ -894,6 +877,34 @@ class FinanceCapabilitySubmechanismRuntime:
                 "error_code": self._policy.trigger_error_code,
                 "error_message": self._scenario.public_resolution_hint,
             }
+        )
+
+    def _ordered_conflict_resolution_actions(self) -> list[dict[str, str]]:
+        """Vary presentation order without changing the public decision problem."""
+
+        actions = (
+            {
+                "tool_id": "normalize_metric_unit_period",
+                "applicable_when": "source definitions or temporal bases are incompatible",
+            },
+            {
+                "tool_id": "open_document",
+                "applicable_when": "source provenance or document coverage is incomplete",
+            },
+            {
+                "tool_id": "query_structured_fact",
+                "applicable_when": "a required evidence role is missing",
+            },
+        )
+        return sorted(
+            actions,
+            key=lambda item: canonical_hash(
+                {
+                    "scenario_id": self._scenario.scenario_id,
+                    "tool_id": item["tool_id"],
+                },
+                prefix="finance_public_resolution_action_order:",
+            ),
         )
 
     def _with_resolution_event(self, result: AgentToolResult) -> AgentToolResult:
@@ -1042,9 +1053,7 @@ def _public_candidate_submission_contract(
         "selector": ["claim_or_result", "candidate_payload"],
         "required_fields": list(fields),
         "localized_field": scenario.repair_target_field,
-        "preserve_fields": [
-            field for field in fields if field != scenario.repair_target_field
-        ],
+        "preserve_fields": [field for field in fields if field != scenario.repair_target_field],
         "additional_fields_allowed": False,
         "canonical_value_disclosed": False,
         "value_source": "derive_independently_from_public_evidence_and_tool_observations",
