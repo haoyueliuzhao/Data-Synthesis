@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceItem
@@ -26,10 +26,11 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v9"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v11"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v5"
-FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v1"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v10"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v12"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v6"
+FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v2"
+FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION = "finance_stopping_shape_decision_contract.v1"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -200,8 +201,20 @@ class FinanceStoppingResolutionAction(BaseModel):
     applicable_when: str = Field(min_length=1)
 
 
+class FinanceStoppingDependencyOption(BaseModel):
+    """Public executable query option without an Oracle correctness label."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    option_id: str = Field(min_length=1)
+    tool_id: Literal["query_structured_fact"] = "query_structured_fact"
+    subject_alias: str = Field(min_length=1)
+    metric_alias: str = Field(min_length=1)
+    period_label: str = Field(min_length=1)
+
+
 class FinanceStoppingShapeDecisionContract(BaseModel):
-    """Public, preregistered difficulty intervention for a Stopping Shape."""
+    """Preregistered public decision state plus Oracle-only scoring identity."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -209,21 +222,73 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
         "partial_evidence_count_only",
         "single_conflict_two_action_one_step",
         "standardized_relative_extra_call_cost",
+        "dependency_disambiguation_required",
+        "single_conflict_semantic_choice_one_step",
+        "sealed_terminal_extra_call_cost",
     ]
     missing_role_disclosure: Literal["count_only"] | None = None
+    dependency_rule: str | None = Field(default=None, min_length=1)
+    dependency_decoy_option: FinanceStoppingDependencyOption | None = None
     conflict_dimensions: tuple[str, ...] = ()
+    observed_conflict_signal: str | None = Field(default=None, min_length=1)
+    oracle_conflict_dimension: str | None = Field(default=None, min_length=1)
     available_resolution_actions: tuple[FinanceStoppingResolutionAction, ...] = ()
     resolution_step_count: int | None = Field(default=None, ge=1, le=2)
     remaining_call_budget_fraction: float | None = Field(default=None, gt=0, le=1)
     remaining_token_budget_fraction: float | None = Field(default=None, gt=0, le=1)
     terminal_utility_loss: float | None = Field(default=None, gt=0, le=1)
+    archive_snapshot_sealed: bool | None = None
+    maximum_additional_information_gain: float | None = Field(default=None, ge=0, le=0)
+    realized_call_budget_debit_fraction: float | None = Field(default=None, gt=0, le=1)
+    realized_token_budget_debit_fraction: float | None = Field(default=None, gt=0, le=1)
+    additional_action_rejected: bool | None = None
     schema_version: str = FINANCE_STOPPING_SHAPE_DECISION_VERSION
+
+    @model_serializer(mode="wrap")
+    def serialize_contract(self, serializer: Any) -> dict[str, Any]:
+        payload = dict(serializer(self))
+        if self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION:
+            for field in (
+                "dependency_rule",
+                "dependency_decoy_option",
+                "observed_conflict_signal",
+                "oracle_conflict_dimension",
+                "archive_snapshot_sealed",
+                "maximum_additional_information_gain",
+                "realized_call_budget_debit_fraction",
+                "realized_token_budget_debit_fraction",
+                "additional_action_rejected",
+            ):
+                payload.pop(field, None)
+        return payload
 
     @model_validator(mode="after")
     def validate_contract(self) -> FinanceStoppingShapeDecisionContract:
+        if (
+            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION
+            and self.contract_kind
+            in {
+                "dependency_disambiguation_required",
+                "single_conflict_semantic_choice_one_step",
+                "sealed_terminal_extra_call_cost",
+            }
+        ):
+            raise ValueError("Finance Stopping Shape v2 decision uses a v1 schema identity")
+        common_absent = (
+            self.dependency_rule is None
+            and self.dependency_decoy_option is None
+            and self.observed_conflict_signal is None
+            and self.oracle_conflict_dimension is None
+            and self.archive_snapshot_sealed is None
+            and self.maximum_additional_information_gain is None
+            and self.realized_call_budget_debit_fraction is None
+            and self.realized_token_budget_debit_fraction is None
+            and self.additional_action_rejected is None
+        )
         if self.contract_kind == "partial_evidence_count_only":
             valid = (
-                self.missing_role_disclosure == "count_only"
+                common_absent
+                and self.missing_role_disclosure == "count_only"
                 and not self.conflict_dimensions
                 and not self.available_resolution_actions
                 and self.resolution_step_count is None
@@ -233,7 +298,8 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
             )
         elif self.contract_kind == "single_conflict_two_action_one_step":
             valid = (
-                self.missing_role_disclosure is None
+                common_absent
+                and self.missing_role_disclosure is None
                 and self.conflict_dimensions == ("source_definition_compatibility",)
                 and tuple(
                     (item.tool_id, item.applicable_when)
@@ -254,15 +320,81 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.remaining_token_budget_fraction is None
                 and self.terminal_utility_loss is None
             )
-        else:
+        elif self.contract_kind == "standardized_relative_extra_call_cost":
             valid = (
-                self.missing_role_disclosure is None
+                common_absent
+                and self.missing_role_disclosure is None
                 and not self.conflict_dimensions
                 and not self.available_resolution_actions
                 and self.resolution_step_count is None
                 and self.remaining_call_budget_fraction == 0.25
                 and self.remaining_token_budget_fraction == 0.20
                 and self.terminal_utility_loss == 1.0
+            )
+        elif self.contract_kind == "dependency_disambiguation_required":
+            valid = (
+                self.missing_role_disclosure is None
+                and self.dependency_rule is not None
+                and self.dependency_decoy_option is not None
+                and not self.conflict_dimensions
+                and self.observed_conflict_signal is None
+                and self.oracle_conflict_dimension is None
+                and not self.available_resolution_actions
+                and self.resolution_step_count == 1
+                and self.remaining_call_budget_fraction is None
+                and self.remaining_token_budget_fraction is None
+                and self.terminal_utility_loss is None
+                and self.archive_snapshot_sealed is None
+                and self.maximum_additional_information_gain is None
+                and self.realized_call_budget_debit_fraction is None
+                and self.realized_token_budget_debit_fraction is None
+                and self.additional_action_rejected is None
+            )
+        elif self.contract_kind == "single_conflict_semantic_choice_one_step":
+            public_text = " ".join(
+                (
+                    self.observed_conflict_signal or "",
+                    *(item.applicable_when for item in self.available_resolution_actions),
+                )
+            ).lower()
+            valid = (
+                self.missing_role_disclosure is None
+                and self.dependency_rule is None
+                and self.dependency_decoy_option is None
+                and not self.conflict_dimensions
+                and self.observed_conflict_signal is not None
+                and self.oracle_conflict_dimension == "source_definition_compatibility"
+                and tuple(item.tool_id for item in self.available_resolution_actions)
+                == ("normalize_metric_unit_period", "open_document")
+                and self.resolution_step_count == 1
+                and "source_definition_compatibility" not in public_text
+                and self.remaining_call_budget_fraction is None
+                and self.remaining_token_budget_fraction is None
+                and self.terminal_utility_loss is None
+                and self.archive_snapshot_sealed is None
+                and self.maximum_additional_information_gain is None
+                and self.realized_call_budget_debit_fraction is None
+                and self.realized_token_budget_debit_fraction is None
+                and self.additional_action_rejected is None
+            )
+        else:
+            valid = (
+                self.missing_role_disclosure is None
+                and self.dependency_rule is None
+                and self.dependency_decoy_option is None
+                and not self.conflict_dimensions
+                and self.observed_conflict_signal is None
+                and self.oracle_conflict_dimension is None
+                and not self.available_resolution_actions
+                and self.resolution_step_count is None
+                and self.remaining_call_budget_fraction is None
+                and self.remaining_token_budget_fraction is None
+                and self.terminal_utility_loss == 1.0
+                and self.archive_snapshot_sealed is True
+                and self.maximum_additional_information_gain == 0.0
+                and self.realized_call_budget_debit_fraction == 0.25
+                and self.realized_token_budget_debit_fraction == 0.20
+                and self.additional_action_rejected is True
             )
         if not valid:
             raise ValueError("Finance Stopping Shape decision contract is inconsistent")
@@ -315,6 +447,9 @@ class FinanceSubmechanismScenario(BaseModel):
                 "partial_evidence_count_only": "incomplete_continue",
                 "single_conflict_two_action_one_step": "evidence_conflict",
                 "standardized_relative_extra_call_cost": "post_complete_cost",
+                "dependency_disambiguation_required": "incomplete_continue",
+                "single_conflict_semantic_choice_one_step": "evidence_conflict",
+                "sealed_terminal_extra_call_cost": "post_complete_cost",
             }[decision.contract_kind]
             if self.intervention_kind != expected_kind:
                 raise ValueError("Stopping Shape decision contract uses the wrong Runtime kind")
@@ -623,7 +758,11 @@ class FinanceCapabilitySubmechanismRuntime:
             if (
                 result.status == "succeeded"
                 and decision is not None
-                and decision.contract_kind == "single_conflict_two_action_one_step"
+                and decision.contract_kind
+                in {
+                    "single_conflict_two_action_one_step",
+                    "single_conflict_semantic_choice_one_step",
+                }
             ):
                 self._observe_resolution()
                 return self._with_resolution_event(result)
@@ -696,7 +835,10 @@ class FinanceCapabilitySubmechanismRuntime:
     def _required_prerequisite_action(self) -> dict[str, Any] | None:
         kind = self._scenario.intervention_kind
         decision = self._scenario.stopping_shape_decision_contract
-        if decision is not None and decision.contract_kind == "single_conflict_two_action_one_step":
+        if decision is not None and decision.contract_kind in {
+            "single_conflict_two_action_one_step",
+            "single_conflict_semantic_choice_one_step",
+        }:
             return None
         if kind in {"incomplete_continue", "unresolved_conflict_cannot_stop"}:
             # Stopping probes expose the state but leave action selection to the Agent.
@@ -744,7 +886,10 @@ class FinanceCapabilitySubmechanismRuntime:
 
     def _public_resolution_tools(self) -> list[str]:
         decision = self._scenario.stopping_shape_decision_contract
-        if decision is not None and decision.contract_kind == "single_conflict_two_action_one_step":
+        if decision is not None and decision.contract_kind in {
+            "single_conflict_two_action_one_step",
+            "single_conflict_semantic_choice_one_step",
+        }:
             return []
         if self._scenario.intervention_kind in {
             "incomplete_continue",
@@ -899,6 +1044,44 @@ class FinanceCapabilitySubmechanismRuntime:
             evidence_ids=evidence_ids,
         )
 
+    def _dependency_disambiguation_options(
+        self,
+        selected: set[str],
+        decision: FinanceStoppingShapeDecisionContract,
+    ) -> tuple[FinanceStoppingDependencyOption, FinanceStoppingDependencyOption]:
+        missing = next(
+            (item for item in self._scenario.evidence_roles if item.evidence_id not in selected),
+            None,
+        )
+        if missing is None or decision.dependency_decoy_option is None:
+            raise ValueError("dependency disambiguation lacks a missing role or decoy")
+        correct = FinanceStoppingDependencyOption(
+            option_id=canonical_hash(
+                {
+                    "scenario_id": self._scenario.scenario_id,
+                    "evidence_id": missing.evidence_id,
+                },
+                prefix="finance_stopping_dependency_option:",
+            ),
+            subject_alias=missing.subject_alias,
+            metric_alias=missing.metric_alias,
+            period_label=missing.period_label,
+        )
+        decoy = decision.dependency_decoy_option
+        ordered = tuple(
+            sorted(
+                (correct, decoy),
+                key=lambda item: canonical_hash(
+                    {
+                        "scenario_id": self._scenario.scenario_id,
+                        "option_id": item.option_id,
+                    },
+                    prefix="finance_stopping_dependency_order:",
+                ),
+            )
+        )
+        return (ordered[0], ordered[1])
+
     def _with_partial_selection_state(self, result: AgentToolResult) -> AgentToolResult:
         selected = set(self._base.selected_evidence_ids)
         resolved = [
@@ -929,6 +1112,19 @@ class FinanceCapabilitySubmechanismRuntime:
                     "Infer the unresolved evidence role from the public task contract and "
                     "retrieve it before verification."
                 ),
+                "host_event": self._scenario.expected_host_events[0],
+                "required_prerequisite_action": None,
+            }
+        elif (
+            decision is not None and decision.contract_kind == "dependency_disambiguation_required"
+        ):
+            options = self._dependency_disambiguation_options(selected, decision)
+            completion_state = {
+                "complete": False,
+                "selected_evidence_count": len(selected),
+                "unresolved_candidate_count": len(options),
+                "dependency_rule": decision.dependency_rule,
+                "candidate_actions": [item.model_dump(mode="json") for item in options],
                 "host_event": self._scenario.expected_host_events[0],
                 "required_prerequisite_action": None,
             }
@@ -967,6 +1163,25 @@ class FinanceCapabilitySubmechanismRuntime:
                 "terminal_utility_loss": decision.terminal_utility_loss,
                 "decision_rule": (
                     "When complete=true, finalization strictly dominates any additional call."
+                ),
+            }
+        elif decision is not None and decision.contract_kind == "sealed_terminal_extra_call_cost":
+            additional_action_assessment = {
+                "archive_snapshot_sealed": decision.archive_snapshot_sealed,
+                "maximum_additional_information_gain": (
+                    decision.maximum_additional_information_gain
+                ),
+                "realized_call_budget_debit_fraction": (
+                    decision.realized_call_budget_debit_fraction
+                ),
+                "realized_token_budget_debit_fraction": (
+                    decision.realized_token_budget_debit_fraction
+                ),
+                "terminal_utility_loss": decision.terminal_utility_loss,
+                "additional_action_rejected": decision.additional_action_rejected,
+                "decision_rule": (
+                    "The verified snapshot is sealed: any additional call has zero possible "
+                    "information gain and incurs the frozen realized debit."
                 ),
             }
         payload["completion_state"] = {
@@ -1008,6 +1223,18 @@ class FinanceCapabilitySubmechanismRuntime:
             retry_contract["decision_rule"] = (
                 "Select the single action whose applicable_when condition matches the observed "
                 "conflict dimension. The applicable action resolves this one-step conflict."
+            )
+        elif (
+            decision is not None
+            and decision.contract_kind == "single_conflict_semantic_choice_one_step"
+        ):
+            retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
+            retry_contract["available_resolution_actions"] = [
+                item.model_dump(mode="json") for item in decision.available_resolution_actions
+            ]
+            retry_contract["decision_rule"] = (
+                "Map the observed semantic symptom to the single applicable action. "
+                "No internal conflict-field label is available."
             )
         elif self._scenario.intervention_kind == "unresolved_conflict_cannot_stop":
             retry_contract["observed_conflict_dimensions"] = ["source_definition_compatibility"]
@@ -1087,6 +1314,24 @@ class FinanceCapabilitySubmechanismRuntime:
         ):
             completion_state["terminal_utility_loss"] = decision.terminal_utility_loss
             completion_state["relative_cost_contract_enforced"] = True
+        elif decision is not None and decision.contract_kind == "sealed_terminal_extra_call_cost":
+            completion_state.update(
+                {
+                    "archive_snapshot_sealed": decision.archive_snapshot_sealed,
+                    "maximum_additional_information_gain": (
+                        decision.maximum_additional_information_gain
+                    ),
+                    "realized_call_budget_debit_fraction": (
+                        decision.realized_call_budget_debit_fraction
+                    ),
+                    "realized_token_budget_debit_fraction": (
+                        decision.realized_token_budget_debit_fraction
+                    ),
+                    "terminal_utility_loss": decision.terminal_utility_loss,
+                    "additional_action_rejected": decision.additional_action_rejected,
+                    "sealed_cost_contract_enforced": True,
+                }
+            )
         return AgentToolResult(
             status="failed",
             result={"completion_state": completion_state},
@@ -1196,7 +1441,11 @@ def public_submechanism_contract(
     if scenario.stopping_shape_decision_contract is not None:
         decision = scenario.stopping_shape_decision_contract.model_dump(
             mode="json",
-            exclude={"contract_kind"},
+            exclude={
+                "contract_kind",
+                "dependency_decoy_option",
+                "oracle_conflict_dimension",
+            },
         )
         decision["internal_shape_identity_disclosed"] = False
         contract["stopping_shape_decision_contract"] = decision
