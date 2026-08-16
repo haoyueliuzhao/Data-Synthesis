@@ -6,6 +6,14 @@ from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from trusted_synthesis.core.trajectory.admission import (
+        JointCompilationAdmissionArtifact,
+        JointCompilationAuditEvidence,
+        RuntimePublicProjection,
+        admit_joint_compilation,
+        make_joint_compilation_audit_evidence,
+        make_runtime_public_projection,
+    )
     from trusted_synthesis.core.trajectory.attributes import (
         TrajectoryAttributeProfile,
         TrajectoryAttributes,
@@ -55,6 +63,14 @@ if TYPE_CHECKING:
 
 _EXPORTS = {
     "ActionType": ("trusted_synthesis.core.trajectory.schema", "ActionType"),
+    "JointCompilationAdmissionArtifact": (
+        "trusted_synthesis.core.trajectory.admission",
+        "JointCompilationAdmissionArtifact",
+    ),
+    "JointCompilationAuditEvidence": (
+        "trusted_synthesis.core.trajectory.admission",
+        "JointCompilationAuditEvidence",
+    ),
     "JointCompilationArtifact": (
         "trusted_synthesis.core.trajectory.specification",
         "JointCompilationArtifact",
@@ -62,6 +78,10 @@ _EXPORTS = {
     "OmegaComponentManifest": (
         "trusted_synthesis.core.trajectory.specification",
         "OmegaComponentManifest",
+    ),
+    "RuntimePublicProjection": (
+        "trusted_synthesis.core.trajectory.admission",
+        "RuntimePublicProjection",
     ),
     "OracleExecutionSpecification": (
         "trusted_synthesis.core.trajectory.specification",
@@ -138,6 +158,18 @@ _EXPORTS = {
     "extract_trajectory_attributes": (
         "trusted_synthesis.core.trajectory.attributes",
         "extract_trajectory_attributes",
+    ),
+    "admit_joint_compilation": (
+        "trusted_synthesis.core.trajectory.admission",
+        "admit_joint_compilation",
+    ),
+    "make_joint_compilation_audit_evidence": (
+        "trusted_synthesis.core.trajectory.admission",
+        "make_joint_compilation_audit_evidence",
+    ),
+    "make_runtime_public_projection": (
+        "trusted_synthesis.core.trajectory.admission",
+        "make_runtime_public_projection",
     ),
     "make_joint_compilation_artifact": (
         "trusted_synthesis.core.trajectory.specification",

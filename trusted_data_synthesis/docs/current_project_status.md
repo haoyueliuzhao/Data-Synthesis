@@ -15,7 +15,21 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active result is Finance v25.47 Context Sufficiency Development. v25.47 replaced the opaque
+The latest completed model result remains Finance v25.47 Context Sufficiency Development.
+Finance v26.0 now freezes a separate capability-heterogeneous VTDO mainline protocol; it does not
+mutate or reauthorize v25.47. v26 restores Joint Compilation as mandatory Phase 0, separates
+`S_measure`, `S_train`, and `S_C`, freezes the 100/60/30/60 task partition, and defines the No-C
+Student matrix plus an isolated Contribution-recovery branch. No v26 API call, GPU job, fresh
+task, Student run, Exact Target, or GP-C result exists yet. See
+`docs/finance_v26_capability_heterogeneous_mainline.md`.
+
+The Core now exposes a content-addressed `JointCompilationAdmissionArtifact`. It binds Oracle,
+Public, Runtime, Verifier, State Mapper, and Materialization views to one Joint Compilation root.
+Its seven gates are fail-closed, and any failure transitions only to
+`joint_compilation_repair_only`. Legal and Science contract tests verify that this is a generic
+Core capability rather than a Finance branch.
+
+v25.47 replaced the opaque
 v25.46 branch cue with one typed, action-neutral public relation state and one shared decision
 policy. Its 48-task pre-API population passed every construct-validity check, including unique
 public applicability, Context sufficiency, order and label invariance, Context removal and swap

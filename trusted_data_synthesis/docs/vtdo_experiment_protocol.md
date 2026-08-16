@@ -1521,3 +1521,29 @@ production Contribution            = 0
 This is a local capability result under a construct-valid and contamination-free measurement
 contract. It is not a negative result for VTDO, and it does not authorize repeated Prompt helping
 within the same grammar.
+
+### v26 capability-heterogeneous mainline and Joint Compilation Phase 0
+
+v26 starts under `finance_v26_capability_heterogeneous_vtdo_mainline.v1`; it never edits v25.47.
+The old result is usable only as historical measurement evidence and promotes zero tasks.
+
+Every new task must pass `JointCompilationAdmissionArtifact` before an API or GPU call. The
+admission binds the Oracle context, runtime-specific public projections, State Space, canonical
+State Mapper, independent verifier, and materialization contract to one immutable Joint
+Compilation identity. Semantic, public, executable, verifier, recursive noninterference,
+state-lineage, and destructive-mutation gates are mandatory. Failure permits only
+`joint_compilation_repair_only`.
+
+The v26 task partitions are 100 synthesis/training, 60 internal Agent evaluation, 30 Exact Target
+Development, and 60 sealed Exact Target Validation tasks. They are isolated by task, Evidence,
+Evidence Version, semantic signature, and trajectory identity. The synthesis marginal is fixed at
+`1/100`, independent of observed model success.
+
+Capability measurement keeps valid observations of model success and model failure. Positive SFT
+keeps only independently valid, replayable, on-target fresh materializations. Contribution support
+is a strict subset requiring Meaningful Exact Target, independent GP-C, update replay, and sealed
+authorization. No inverse-success weighting is permitted.
+
+Before Contribution authorization, distribution experiments must be labeled `AEVTDR-NoC` or
+`novelty-anchored VTDO`, never full `C+N` VTDO. Student materialization uses Rounds 1 and 3; Round 5
+is dynamics-only. Contribution recovery proceeds on isolated tasks and does not block No-C.
