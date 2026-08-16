@@ -568,6 +568,17 @@ def test_full_valid_success_cannot_rescue_a_failed_stopping_shape() -> None:
     assert report.next_permitted_stage == "stopping_shape_redesign_only"
 
 
+def test_report_rejects_global_rate_that_differs_from_atomic_shape_responses() -> None:
+    results = tuple(
+        _shape_result(shape_id, admitted=True, valid=True) for shape_id in sorted(ALL_SHAPES)
+    )
+    payload = _report(results).model_dump(mode="json")
+    payload["stopping_behavior_success_rate"] = 0.51
+
+    with pytest.raises(ValidationError, match="differs from atomic Shape responses"):
+        FinanceStoppingShapePolicyReport.model_validate(payload)
+
+
 def test_mechanism_policy_does_not_admit_invalid_training_support() -> None:
     no_valid = sorted(ALL_SHAPES)[0]
     results = tuple(

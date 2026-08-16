@@ -783,51 +783,52 @@ next_permitted_stage = stopping_shape_causal_timing_repair_only
 
 See `docs/finance_v25_40_stopping_shape_policy_report.md`.
 
-## v25.43-v25.44 Stopping Instrument and Role-position Validation
+## v25.43-v25.44 Stopping Instrument Audit
 
-v25.41-v25.42 are frozen as invalid measurement attempts because host-only
-intervention metadata entered strict business results. The repaired Runtime now
-uses `agent_tool_observation.v2`, with replayable host events in a side channel;
-strict-schema failures are classified as Runtime pathology.
+v25.43 and the first v25.44 run historically appeared to validate the
+agent_tool_observation.v2 side channel and, in the first v25.44 population,
+admitted all four boundary candidates plus both controls. A hardened Snapshot v3
+repair subsequently restored exact Definition-pair capacity in the real Finance
+Archive:
 
-v25.43 completed 384/384 fresh Flash rollouts with 100% execution, terminal,
-replay, and authority integrity. Authority and Partial passed, both controls
-passed, while Contextual and Conflict failed task-heterogeneity gates. A frozen
-forensic audit identified required-Evidence role position as the nuisance factor.
+    Archive scanned / eligible        = 564,297 / 512,845
+    base / companion / final facts    = 151,022 / 92 / 151,114
+    period / definition pair capacity = 75,509 / 90
+    Snapshot status                   = passed
 
-v25.44 prospectively fixed Contextual to `required_2` and Conflict to
-`required_3`, then ran another 48 fresh tasks and 384 Flash rollouts. All four
-boundary candidates and both Runtime controls passed:
+The hardened fresh run completed 384/384 Flash rollouts. Its diagnostic result
+was 3/4 boundary candidates and 2/2 controls, with Authority failing only
+between-task heterogeneity:
 
-```text
-execution / terminal / replay / authority integrity = 100%
-runtime pathology / L0-L2 failure                    = 0 / 0
-boundary candidates admitted                         = 4 / 4
-runtime controls passed                               = 2 / 2
-stopping behavior success                             = 70.57%
-full valid-trajectory success                         = 46.88%
-valid training trajectories                           = 180
-Pro API calls                                         = 0
-Exact Target / GP-C                                   = not evaluated
-production Contribution                               = 0
-next permitted stage = fresh_three_population_shape_policy_preparation
-```
+    stopping behavior success       = 268/384 = 69.79%
+    full valid-trajectory success   = 183/384 = 47.66%
+    answer-semantic success         = 194/384 = 50.52%
+    API calls / model tokens        = 3,700 / 19,293,960
+    estimated cost                  = USD 1.9192
 
-The independent raw audit found 3,268/3,268 v2 tool observations, zero host keys
-inside strict business results, zero unknown-field errors, zero Manifest hash
-drift, and 384/384 trigger observations. The positive result authorizes only the
-preparation of three fresh independent populations; it does not authorize
-Beneficiary, Exact Target, GP-C, VTDO updates, or Student training.
+A recursive raw audit then found the actual P0: 219 of 1,449 tool observations,
+covering 32 of 48 tasks, still embedded Host-only event metadata inside nested
+strict business results (host_event 219 times and host_event_sequence 63
+times). The previous zero-leak audit checked only top-level keys.
 
-See `docs/finance_v25_43_v25_44_stopping_role_position_validation_report.md`.
+The Runtime now recursively rejects reserved Host metadata, emits trigger and
+resolution events only through the outer typed side channel, recursively audits
+historical predecessors, and verifies aggregate response rates against atomic
+Shape rows. Repository-wide validation passes: Ruff, Mypy over 318 source files,
+and 733 tests.
 
-A hardened fresh-population rehearsal then found that Snapshot v2's aggregate
-normalization capacity hid zero fresh exact Definition pairs. Snapshot v3 now
-retains exact SourceDefinition companions for selected time-series facts and
-uses field-specific readiness gates. The real Archive rebuild scanned 564,297
-records, selected 151,022 base facts plus 92 companions, and passed with period,
-Definition, and Contextual pair capacities of 75,509, 90, and 2,436. No API call
-was made for this repair; the next permitted action remains a static fresh
-Population build.
+All historical v25.43/v25.44 Shape outcomes remain immutable diagnostics but are
+invalid for authorization:
 
-See `docs/finance_v25_44_snapshot_v3_capacity_hardening_report.md`.
+    estimand semantics                 = retained
+    shape support policy               = not frozen
+    three-population preparation       = withdrawn
+    Pro / Beneficiary / Exact / GP-C   = blocked
+    production Contribution            = 0
+    next permitted stage               = fresh instrument-reset protocol only
+
+See:
+
+- docs/finance_v25_43_v25_44_stopping_role_position_validation_report.md
+- docs/finance_v25_44_snapshot_v3_capacity_hardening_report.md
+- docs/finance_v25_44_hardened_replication_instrument_audit.md

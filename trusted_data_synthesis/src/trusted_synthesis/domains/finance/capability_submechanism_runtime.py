@@ -836,6 +836,10 @@ class FinanceCapabilitySubmechanismRuntime:
     def execute(self, call: AgentToolCall) -> AgentToolResult:
         if self._verified_complete:
             return self._post_completion_rejection()
+        event_log_offset = len(self._event_log)
+        activation_event = (
+            self._scenario.expected_host_events[0] if self._activation_event_pending else None
+        )
         kind = self._scenario.intervention_kind
         if self._policy.mode == "forced_failure":
             result = self._execute_forced_failure(call)
@@ -845,9 +849,17 @@ class FinanceCapabilitySubmechanismRuntime:
             result = self._execute_completeness(call)
         else:
             result = self._execute_conflict(call)
-        if self._activation_event_pending:
-            result = self._with_activation_event(result)
-            self._activation_event_pending = False
+        emitted_events = tuple(
+            dict.fromkeys(
+                (
+                    *result.host_events,
+                    *((activation_event,) if activation_event is not None else ()),
+                    *self._event_log[event_log_offset:],
+                )
+            )
+        )
+        result = result.model_copy(update={"host_events": emitted_events})
+        self._activation_event_pending = False
         if result.status == "succeeded":
             self._successful_by_tool[call.tool_id] = (
                 self._successful_by_tool.get(call.tool_id, 0) + 1
@@ -1149,17 +1161,6 @@ class FinanceCapabilitySubmechanismRuntime:
             required_role_ids = {role.evidence_id for role in self._scenario.evidence_roles}
         return bool(required_role_ids.intersection(result.evidence_ids))
 
-    def _with_activation_event(self, result: AgentToolResult) -> AgentToolResult:
-        events = tuple(
-            dict.fromkeys(
-                (
-                    self._scenario.expected_host_events[0],
-                    *result.host_events,
-                )
-            )
-        )
-        return result.model_copy(update={"host_events": events})
-
     def _observe_trigger(self, call: AgentToolCall) -> None:
         if not self._trigger_observed:
             self._trigger_observed = True
@@ -1178,7 +1179,6 @@ class FinanceCapabilitySubmechanismRuntime:
                 "retry_contract": {
                     "policy": PREREQUISITE_ACTION_REQUIRED_POLICY,
                     "required_next_tools": list(self._policy.resolution_tools),
-                    "host_event": self._scenario.expected_host_events[0],
                     "suggested_argument_patch": {
                         "rule": self._scenario.public_resolution_hint,
                         "current_operation_refs": list(self._base.operation_refs),
@@ -1336,7 +1336,6 @@ class FinanceCapabilitySubmechanismRuntime:
                 set(self._scenario.canonical_candidate or {})
                 - {str(self._scenario.repair_target_field)}
             ),
-            "host_event": self._scenario.expected_host_events[0],
             "submission_contract": _public_candidate_submission_contract(self._scenario),
         }
         if self._policy.trigger_tool == "normalize_metric_unit_period":
@@ -1417,7 +1416,6 @@ class FinanceCapabilitySubmechanismRuntime:
             "localized": True,
             "repair_verified": repaired,
             "target_field": self._scenario.repair_target_field,
-            "host_event": self._scenario.expected_host_events[1],
         }
         return result.model_copy(update={"result": payload})
 
@@ -1451,7 +1449,6 @@ class FinanceCapabilitySubmechanismRuntime:
                     "complete": False,
                     "resolved_role_ids": resolved,
                     "missing_role_ids": missing,
-                    "host_event": self._scenario.expected_host_events[0],
                 },
             },
             evidence_ids=evidence_ids,
@@ -1568,7 +1565,6 @@ class FinanceCapabilitySubmechanismRuntime:
             "complete": False,
             "resolved_role_ids": resolved,
             "missing_role_ids": missing,
-            "host_event": self._scenario.expected_host_events[0],
             "required_prerequisite_action": self._required_prerequisite_action(),
         }
         if decision is not None and decision.contract_kind == "partial_evidence_count_only":
@@ -1582,7 +1578,6 @@ class FinanceCapabilitySubmechanismRuntime:
                     "Infer the unresolved evidence role from the public task contract and "
                     "retrieve it before verification."
                 ),
-                "host_event": self._scenario.expected_host_events[0],
                 "required_prerequisite_action": None,
             }
         elif decision is not None and decision.contract_kind in {
@@ -1596,7 +1591,6 @@ class FinanceCapabilitySubmechanismRuntime:
                 "unresolved_candidate_count": len(options),
                 "dependency_rule": decision.dependency_rule,
                 "candidate_actions": [item.model_dump(mode="json") for item in options],
-                "host_event": self._scenario.expected_host_events[0],
                 "required_prerequisite_action": None,
             }
             if decision.contract_kind == "conditional_dependency_observation_required":
@@ -1682,8 +1676,6 @@ class FinanceCapabilitySubmechanismRuntime:
             "complete": complete,
             "resolved_role_ids": [item.role_id for item in self._scenario.evidence_roles],
             "missing_role_ids": [],
-            "host_event_sequence": list(self._scenario.expected_host_events),
-            "host_event": self._scenario.expected_host_events[1],
             "additional_action_assessment": additional_action_assessment,
         }
         return result.model_copy(update={"result": payload})
@@ -1694,7 +1686,6 @@ class FinanceCapabilitySubmechanismRuntime:
         payload["conflicts"] = [
             {
                 "type": self._policy.trigger_error_code,
-                "host_event": self._scenario.expected_host_events[0],
             }
         ]
         payload["verification_hash"] = canonical_hash(
@@ -1815,7 +1806,6 @@ class FinanceCapabilitySubmechanismRuntime:
         payload = dict(result.result)
         payload["submechanism_resolution"] = {
             "resolved": True,
-            "host_event": self._scenario.expected_host_events[1],
         }
         return result.model_copy(update={"result": payload})
 

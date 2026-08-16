@@ -17,6 +17,15 @@ AGENT_TOOL_OBSERVATION_VERSION: Literal["agent_tool_observation.v2"] = "agent_to
 ARGUMENT_PATCH_REQUIRED_POLICY = "argument_patch_required"
 PREREQUISITE_ACTION_REQUIRED_POLICY = "prerequisite_action_required"
 
+RESERVED_HOST_RESULT_KEYS = frozenset(
+    {
+        "host_event",
+        "host_events",
+        "host_event_sequence",
+        "submechanism_activation",
+    }
+)
+
 ToolSemanticRole = Literal[
     "acquire",
     "inspect",
@@ -26,6 +35,22 @@ ToolSemanticRole = Literal[
     "verify",
 ]
 ToolExecutionStatus = Literal["succeeded", "failed"]
+
+
+def reserved_host_result_paths(value: Any, *, path: str = "result") -> tuple[str, ...]:
+    """Return Host-only metadata paths embedded in a model-visible business result."""
+
+    output: list[str] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child_path = f"{path}.{key}"
+            if key in RESERVED_HOST_RESULT_KEYS:
+                output.append(child_path)
+            output.extend(reserved_host_result_paths(item, path=child_path))
+    elif isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            output.extend(reserved_host_result_paths(item, path=f"{path}[{index}]"))
+    return tuple(output)
 
 
 class AgentToolSpec(BaseModel):
@@ -69,6 +94,11 @@ class AgentToolSpec(BaseModel):
             raise ValueError(f"Agent tool call contains unknown fields: {sorted(unknown)}")
 
     def validate_output(self, result: dict[str, Any]) -> None:
+        contaminated_paths = reserved_host_result_paths(result)
+        if contaminated_paths:
+            raise ValueError(
+                f"Agent tool output contains reserved Host metadata: {list(contaminated_paths)}"
+            )
         missing = set(self.required_output_fields) - set(result)
         unknown = set(result) - set(self.output_contract)
         if missing:
@@ -141,6 +171,12 @@ class AgentToolResult(BaseModel):
 
     @model_validator(mode="after")
     def validate_result(self) -> AgentToolResult:
+        contaminated_paths = reserved_host_result_paths(self.result)
+        if contaminated_paths:
+            raise ValueError(
+                "Agent tool business result contains reserved Host metadata: "
+                f"{list(contaminated_paths)}"
+            )
         if len(self.evidence_ids) != len(set(self.evidence_ids)):
             raise ValueError("Agent tool result contains duplicate Evidence IDs")
         if len(self.provenance_hashes) != len(set(self.provenance_hashes)):
@@ -200,6 +236,12 @@ class AgentToolObservation(BaseModel):
 
     @model_validator(mode="after")
     def validate_observation(self) -> AgentToolObservation:
+        contaminated_paths = reserved_host_result_paths(self.result)
+        if contaminated_paths:
+            raise ValueError(
+                "Agent tool observation business result contains reserved Host metadata: "
+                f"{list(contaminated_paths)}"
+            )
         if self.status == "succeeded" and (self.error_code or self.error_message):
             raise ValueError("successful Agent tool observation cannot contain an error")
         if self.status == "failed" and not self.error_code:

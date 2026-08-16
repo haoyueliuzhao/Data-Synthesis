@@ -349,7 +349,8 @@ def test_insufficient_evidence_emits_executable_typed_continuation() -> None:
     runtime.manifest.tools_by_id["query_structured_fact"].validate_output(selected.result)
     state = selected.result["completion_state"]
     assert state["complete"] is False
-    assert state["host_event"] == scenario.expected_host_events[0]
+    assert "host_event" not in state
+    assert selected.host_events == (scenario.expected_host_events[0],)
     completed = selected
     remaining = {
         (
@@ -388,10 +389,8 @@ def test_insufficient_evidence_emits_executable_typed_continuation() -> None:
         index += 1
 
     assert completed.status == "succeeded"
-    assert (
-        completed.result["submechanism_resolution"]["host_event"]
-        == (scenario.expected_host_events[1])
-    )
+    assert completed.result["submechanism_resolution"] == {"resolved": True}
+    assert completed.host_events == (scenario.expected_host_events[1],)
     assert runtime.event_log == scenario.expected_host_events
 
 
@@ -429,10 +428,8 @@ def test_incomplete_continue_requires_agent_to_select_the_next_typed_action() ->
         },
     )
     assert completed.status == "succeeded"
-    assert (
-        completed.result["submechanism_resolution"]["host_event"]
-        == (scenario.expected_host_events[1])
-    )
+    assert completed.result["submechanism_resolution"] == {"resolved": True}
+    assert completed.host_events == (scenario.expected_host_events[1],)
 
 
 def test_evidence_conflict_emits_executable_normalization_action() -> None:
@@ -940,7 +937,7 @@ def test_v25_41_temporal_query_resolves_before_required_selection() -> None:
     )
     resolved = runtime.execute(resolved_call)
     runtime.manifest.tools_by_id[resolved_call.tool_id].validate_output(resolved.result)
-    assert resolved.host_events == (scenario.expected_host_events[0],)
+    assert resolved.host_events == scenario.expected_host_events
     assert "host_event_sequence" not in resolved.result
     assert "submechanism_activation" not in resolved.result
     resolved_observation = make_agent_tool_observation(
@@ -1086,8 +1083,9 @@ def test_uncertain_source_requires_public_provenance_resolution() -> None:
     index, uncertain = _verify(runtime, index, operation_ref)
     assert uncertain.status == "succeeded"
     assert uncertain.result["verified"] is False
-    assert uncertain.result["completion_state"]["host_event"] == scenario.expected_host_events[0]
     assert uncertain.result["completion_state"]["complete"] is False
+    assert "host_event" not in uncertain.result["completion_state"]
+    assert uncertain.host_events == (scenario.expected_host_events[0],)
 
     first = scenario.evidence_roles[0]
     search = _call(
@@ -1110,9 +1108,8 @@ def test_uncertain_source_requires_public_provenance_resolution() -> None:
     )
     assert opened.status == "succeeded"
     runtime.manifest.tools_by_id["open_document"].validate_output(opened.result)
-    assert (
-        opened.result["submechanism_resolution"]["host_event"] == scenario.expected_host_events[1]
-    )
+    assert opened.result["submechanism_resolution"] == {"resolved": True}
+    assert opened.host_events == (scenario.expected_host_events[1],)
 
     _, verified = _verify(runtime, index + 2, operation_ref)
     assert verified.status == "succeeded"
@@ -1131,9 +1128,9 @@ def test_completion_observation_exposes_ordered_host_events(kind: str) -> None:
 
     assert verified.status == "succeeded"
     assert verified.result["verified"] is True
-    assert verified.result["completion_state"]["host_event_sequence"] == list(
-        scenario.expected_host_events
-    )
+    assert "host_event_sequence" not in verified.result["completion_state"]
+    assert "host_event" not in verified.result["completion_state"]
+    assert verified.host_events == scenario.expected_host_events
     assessment = verified.result["completion_state"]["additional_action_assessment"]
     assert "additional_action_required" not in assessment
     assert "redundant_action_policy" not in verified.result["completion_state"]

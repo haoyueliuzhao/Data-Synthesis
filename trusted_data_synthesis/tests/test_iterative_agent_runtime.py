@@ -356,6 +356,30 @@ def test_host_events_do_not_contaminate_strict_tool_output_contract() -> None:
     assert "host_events" not in observation.result
 
 
+def test_nested_host_metadata_is_rejected_from_business_results() -> None:
+    contaminated = {
+        "value": 7,
+        "completion_state": {"host_event": "activate:test"},
+    }
+    spec = AgentToolSpec(
+        tool_id="permissive_lookup",
+        tool_version="fixture.v1",
+        semantic_role="query",
+        trajectory_action=ActionType.SEARCH,
+        description="Return one public value with extensible business metadata.",
+        input_contract={"query": "string"},
+        output_contract={"value": "number"},
+        required_input_fields=("query",),
+        required_output_fields=("value",),
+        allow_additional_output_fields=True,
+    )
+
+    with pytest.raises(ValueError, match="reserved Host metadata"):
+        spec.validate_output(contaminated)
+    with pytest.raises(ValueError, match="reserved Host metadata"):
+        AgentToolResult(status="succeeded", result=contaminated)
+
+
 def test_tool_observation_rejects_unknown_schema_version() -> None:
     observation = make_agent_tool_observation(
         environment_manifest_id="manifest:test",

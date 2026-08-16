@@ -1,5 +1,11 @@
 # Finance v25.43-v25.44 Stopping Role-position Validation
 
+> **Superseded authorization notice (2026-08-16):** A later recursive raw
+> audit found 219 model-visible observations with nested Host-only metadata.
+> The historical numerical results below remain immutable diagnostics, but all
+> Shape-policy and three-population authorization claims are withdrawn. See
+> docs/finance_v25_44_hardened_replication_instrument_audit.md.
+
 ## Executive conclusion
 
 v25.43 established a valid host-instrumented Stopping measurement after the

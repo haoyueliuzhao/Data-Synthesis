@@ -521,6 +521,27 @@ class FinanceStoppingShapePolicyReport(FrozenModel):
             item.valid_training_trajectory_count for item in self.shape_results
         ):
             raise ValueError("Aggregate valid training-support count is inconsistent")
+        atomic_rollout_count = sum(item.rollout_count for item in self.shape_results)
+        if self.recorded_rollout_count != atomic_rollout_count:
+            raise ValueError("Aggregate rollout denominator differs from atomic Shape responses")
+        expected_rates = {
+            "stopping_behavior_success_rate": sum(
+                item.mean_stopping_success_rate * item.rollout_count for item in self.shape_results
+            )
+            / atomic_rollout_count,
+            "full_valid_trajectory_success_rate": sum(
+                item.mean_full_valid_success_rate * item.rollout_count
+                for item in self.shape_results
+            )
+            / atomic_rollout_count,
+            "answer_semantic_success_rate": sum(
+                item.mean_semantic_success_rate * item.rollout_count for item in self.shape_results
+            )
+            / atomic_rollout_count,
+        }
+        for field, expected in expected_rates.items():
+            if not math.isclose(getattr(self, field), expected, abs_tol=1e-12):
+                raise ValueError(f"Aggregate {field} differs from atomic Shape responses")
         valid_support_ready = all(
             item.valid_training_trajectory_count > 0 for item in self.shape_results
         )

@@ -115,3 +115,20 @@ Snapshot ID:
 ```text
 finance_stopping_evidence_snapshot:b6a064ef5106c045bb2c06bd3affca775cd8f3b6c95b4b4e7e92d222c426dad0
 ```
+
+## Hardened replication outcome
+
+A fresh 48-task, 384-rollout Flash run was completed after the Snapshot v3
+repair. Snapshot capacity and file integrity passed, but the run did not
+reproduce full Shape admission: three of four boundary candidates passed,
+Authority failed the frozen between-task heterogeneity gate, and both controls
+passed.
+
+A deeper independent audit then found 219 tool observations with nested
+Host-only metadata. This invalidates the run as authorization evidence even
+though all aggregate integrity gates originally reported success. Snapshot v3
+remains a valid capacity artifact; it no longer authorizes an API run under the
+old instrument contract.
+
+The current next stage is a fresh instrument-reset protocol. See
+docs/finance_v25_44_hardened_replication_instrument_audit.md.

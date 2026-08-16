@@ -72,6 +72,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stabili
     stopping_shape_task_id,
 )
 from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime.tools import reserved_host_result_paths
 
 STOPPING_SHAPE_POLICY_PROTOCOL_VERSION = "finance_stopping_shape_policy_protocol.v8"
 STOPPING_SHAPE_POLICY_POPULATION_VERSION = "finance_stopping_shape_policy_population.v8"
@@ -879,11 +880,6 @@ def prepare_stopping_shape_policy_protocol(
         and all(isinstance(item, Mapping) for item in (*records, *terminals, *behaviors))
     ):
         raise ValueError("v25.43 diagnostic artifacts have an invalid denominator")
-    forbidden_result_keys = {
-        "host_event_sequence",
-        "submechanism_activation",
-        "host_events",
-    }
     observation_count = 0
     for record in records:
         observations = list(record.get("observations") or ())
@@ -899,7 +895,7 @@ def prepare_stopping_shape_policy_protocol(
             result = observation.get("result")
             if not isinstance(result, Mapping):
                 raise ValueError("v25.43 observation result is not a JSON object")
-            if forbidden_result_keys.intersection(result):
+            if reserved_host_result_paths(result):
                 raise ValueError("v25.43 Host metadata contaminated a strict tool result")
             if "unknown fields" in str(observation.get("error_message") or "").lower():
                 raise ValueError("v25.43 predecessor contains a strict tool-payload failure")
