@@ -11,6 +11,8 @@ from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_SUBMECHANISM_ORACLE_KEY,
     FinanceCapabilitySubmechanismRuntime,
+    FinanceStoppingResolutionAction,
+    FinanceStoppingShapeDecisionContract,
     evidence_roles_from_items,
     make_finance_submechanism_scenario,
     make_submechanism_manifest,
@@ -272,9 +274,12 @@ def test_public_decision_contract_does_not_disclose_partial_probe_sequence() -> 
 
     assert "partial_support_probe_contract" not in public
     assert public["contract_type"] == "typed_host_state_decision"
-    assert public["host_feedback_contract"][
-        "otherwise_select_the_next_action_from_public_tool_schemas"
-    ] is True
+    assert (
+        public["host_feedback_contract"][
+            "otherwise_select_the_next_action_from_public_tool_schemas"
+        ]
+        is True
+    )
 
 
 def test_public_mechanism_non_disclosure_fails_closed() -> None:
@@ -376,8 +381,9 @@ def test_insufficient_evidence_emits_executable_typed_continuation() -> None:
         index += 1
 
     assert completed.status == "succeeded"
-    assert completed.result["submechanism_resolution"]["host_event"] == (
-        scenario.expected_host_events[1]
+    assert (
+        completed.result["submechanism_resolution"]["host_event"]
+        == (scenario.expected_host_events[1])
     )
     assert runtime.event_log == scenario.expected_host_events
 
@@ -416,8 +422,9 @@ def test_incomplete_continue_requires_agent_to_select_the_next_typed_action() ->
         },
     )
     assert completed.status == "succeeded"
-    assert completed.result["submechanism_resolution"]["host_event"] == (
-        scenario.expected_host_events[1]
+    assert (
+        completed.result["submechanism_resolution"]["host_event"]
+        == (scenario.expected_host_events[1])
     )
 
 
@@ -480,6 +487,81 @@ def test_unresolved_conflict_requires_agent_tool_selection() -> None:
     _, verified = _verify(runtime, index + 1, operation_ref)
     assert verified.status == "succeeded"
     assert verified.result["verified"] is True
+
+
+def test_contextual_entity_scope_requires_matching_query_then_cross_check() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="matched_contextual_resolution_choice",
+        observed_conflict_signal=(
+            "The requested relation is not warranted by the current evidence state."
+        ),
+        oracle_conflict_dimension="entity_scope_alignment",
+        available_resolution_actions=(
+            FinanceStoppingResolutionAction(
+                tool_id="normalize_metric_unit_period",
+                applicable_when="establish a shared measurement basis",
+            ),
+            FinanceStoppingResolutionAction(
+                tool_id="open_document",
+                applicable_when="inspect unresolved document authority",
+            ),
+            FinanceStoppingResolutionAction(
+                tool_id="query_structured_fact",
+                applicable_when="retrieve an observation for the required entity scope",
+            ),
+        ),
+        resolution_step_count=2,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.contextual.entity_scope",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="unresolved_conflict_cannot_stop",
+        expected_host_events=("observe:context", "resolve:context"),
+        evidence_roles=roles,
+        public_resolution_hint="Choose from the public Evidence state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+    index, conflict = _verify(runtime, index, operation_ref)
+    assert conflict.status == "failed"
+
+    wrong = _call(
+        runtime,
+        index + 1,
+        "normalize_metric_unit_period",
+        {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {
+                "definition_id": context.public_corpus.evidence[0].definition.definition_id,
+                "time_basis": context.public_corpus.evidence[0].temporal_context.basis,
+                "frequency": context.public_corpus.evidence[0].temporal_context.frequency,
+            },
+        },
+    )
+    assert wrong.status == "failed"
+    assert wrong.error_code == "submechanism_resolution_action_required"
+
+    role = roles[0]
+    resolved = _call(
+        runtime,
+        index + 2,
+        "query_structured_fact",
+        {
+            "subject_alias": role.subject_alias,
+            "metric_alias": role.metric_alias,
+            "period_label": role.period_label,
+            "public_filters": {},
+        },
+    )
+    assert resolved.status == "succeeded"
+    _, verified = _verify(runtime, index + 2, operation_ref)
+    assert verified.status == "succeeded"
+    assert verified.result["verified"] is True
+    assert runtime.event_log == scenario.expected_host_events
 
 
 def test_submechanism_replay_and_failed_artifact_preserve_host_observations() -> None:
@@ -627,9 +709,7 @@ def test_v25_27_task_contract_rejects_missing_answer_projection_contract() -> No
         projected_expected_output={"higher_ref": "Right", "difference": "2"},
         task=SimpleNamespace(
             public=SimpleNamespace(
-                metadata={
-                    PUBLIC_SUBMECHANISM_METADATA_KEY: public_submechanism_contract(scenario)
-                },
+                metadata={PUBLIC_SUBMECHANISM_METADATA_KEY: public_submechanism_contract(scenario)},
                 instruction="Return the public labels.",
             ),
             oracle=SimpleNamespace(

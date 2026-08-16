@@ -114,6 +114,38 @@ def test_exclusion_identity_reader_accepts_legacy_payload_without_schema_validat
     assert index["evidence_version_ids"] == ("evidence:v1", "evidence:v2")
 
 
+def test_exclusion_identity_reader_accepts_typed_pretty_json_population(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "typed_population.json"
+    payload = {
+        "population_id": "population:test",
+        "tasks": [
+            {
+                "artifact": {
+                    "public_corpus": {
+                        "evidence": [
+                            {"evidence_version_id": "evidence:v1"},
+                            {"evidence_version_id": "evidence:v2"},
+                        ]
+                    }
+                }
+            },
+            {"artifact": {"public_corpus": {"evidence": [{"evidence_version_id": "evidence:v3"}]}}},
+        ],
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    index = _read_population_identity_source(path)
+
+    assert index["record_count"] == 2
+    assert index["evidence_version_ids"] == (
+        "evidence:v1",
+        "evidence:v2",
+        "evidence:v3",
+    )
+
+
 def test_exclusion_identity_reader_fails_closed_without_evidence_identity(
     tmp_path: Path,
 ) -> None:

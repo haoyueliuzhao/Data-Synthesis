@@ -26,11 +26,12 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v10"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v12"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v6"
-FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v2"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v11"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v14"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v7"
+FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v3"
 FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION = "finance_stopping_shape_decision_contract.v1"
+FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION = "finance_stopping_shape_decision_contract.v2"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -150,7 +151,7 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
     ),
     "evidence_conflict": _RuntimePolicy(
         "cross_check_evidence",
-        ("normalize_metric_unit_period",),
+        ("normalize_metric_unit_period", "open_document", "query_structured_fact"),
         "evidence_definition_conflict",
         mode="conflict",
     ),
@@ -171,7 +172,7 @@ _POLICIES: dict[SubmechanismKind, _RuntimePolicy] = {
     ),
     "unresolved_conflict_cannot_stop": _RuntimePolicy(
         "cross_check_evidence",
-        ("normalize_metric_unit_period",),
+        ("normalize_metric_unit_period", "open_document", "query_structured_fact"),
         "evidence_state_conflicted",
         mode="conflict",
     ),
@@ -197,7 +198,7 @@ class FinanceSubmechanismEvidenceRole(BaseModel):
 class FinanceStoppingResolutionAction(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    tool_id: Literal["normalize_metric_unit_period", "open_document"]
+    tool_id: Literal["normalize_metric_unit_period", "open_document", "query_structured_fact"]
     applicable_when: str = Field(min_length=1)
 
 
@@ -225,6 +226,9 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
         "dependency_disambiguation_required",
         "single_conflict_semantic_choice_one_step",
         "sealed_terminal_extra_call_cost",
+        "conditional_dependency_observation_required",
+        "matched_contextual_resolution_choice",
+        "single_conflict_evidence_grounded_choice_one_step",
     ]
     missing_role_disclosure: Literal["count_only"] | None = None
     dependency_rule: str | None = Field(default=None, min_length=1)
@@ -271,9 +275,22 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 "dependency_disambiguation_required",
                 "single_conflict_semantic_choice_one_step",
                 "sealed_terminal_extra_call_cost",
+                "conditional_dependency_observation_required",
+                "matched_contextual_resolution_choice",
+                "single_conflict_evidence_grounded_choice_one_step",
             }
         ):
             raise ValueError("Finance Stopping Shape v2 decision uses a v1 schema identity")
+        if (
+            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION
+            and self.contract_kind
+            in {
+                "conditional_dependency_observation_required",
+                "matched_contextual_resolution_choice",
+                "single_conflict_evidence_grounded_choice_one_step",
+            }
+        ):
+            raise ValueError("Finance Stopping Shape v3 decision uses a v2 schema identity")
         common_absent = (
             self.dependency_rule is None
             and self.dependency_decoy_option is None
@@ -331,7 +348,10 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.remaining_token_budget_fraction == 0.20
                 and self.terminal_utility_loss == 1.0
             )
-        elif self.contract_kind == "dependency_disambiguation_required":
+        elif self.contract_kind in {
+            "dependency_disambiguation_required",
+            "conditional_dependency_observation_required",
+        }:
             valid = (
                 self.missing_role_disclosure is None
                 and self.dependency_rule is not None
@@ -340,7 +360,8 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.observed_conflict_signal is None
                 and self.oracle_conflict_dimension is None
                 and not self.available_resolution_actions
-                and self.resolution_step_count == 1
+                and self.resolution_step_count
+                == (2 if self.contract_kind == "conditional_dependency_observation_required" else 1)
                 and self.remaining_call_budget_fraction is None
                 and self.remaining_token_budget_fraction is None
                 and self.terminal_utility_loss is None
@@ -350,7 +371,11 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.realized_token_budget_debit_fraction is None
                 and self.additional_action_rejected is None
             )
-        elif self.contract_kind == "single_conflict_semantic_choice_one_step":
+        elif self.contract_kind in {
+            "single_conflict_semantic_choice_one_step",
+            "matched_contextual_resolution_choice",
+            "single_conflict_evidence_grounded_choice_one_step",
+        }:
             public_text = " ".join(
                 (
                     self.observed_conflict_signal or "",
@@ -363,10 +388,32 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.dependency_decoy_option is None
                 and not self.conflict_dimensions
                 and self.observed_conflict_signal is not None
-                and self.oracle_conflict_dimension == "source_definition_compatibility"
+                and (
+                    self.oracle_conflict_dimension == "entity_scope_alignment"
+                    if self.contract_kind == "matched_contextual_resolution_choice"
+                    else (
+                        self.oracle_conflict_dimension
+                        in {
+                            "source_definition_compatibility",
+                            "temporal_alignment",
+                            "measurement_context_alignment",
+                        }
+                        if self.contract_kind == "single_conflict_evidence_grounded_choice_one_step"
+                        else self.oracle_conflict_dimension == "source_definition_compatibility"
+                    )
+                )
                 and tuple(item.tool_id for item in self.available_resolution_actions)
-                == ("normalize_metric_unit_period", "open_document")
-                and self.resolution_step_count == 1
+                == (
+                    ("normalize_metric_unit_period", "open_document")
+                    if self.contract_kind == "single_conflict_semantic_choice_one_step"
+                    else (
+                        "normalize_metric_unit_period",
+                        "open_document",
+                        "query_structured_fact",
+                    )
+                )
+                and self.resolution_step_count
+                == (2 if self.contract_kind == "matched_contextual_resolution_choice" else 1)
                 and "source_definition_compatibility" not in public_text
                 and self.remaining_call_budget_fraction is None
                 and self.remaining_token_budget_fraction is None
@@ -450,6 +497,9 @@ class FinanceSubmechanismScenario(BaseModel):
                 "dependency_disambiguation_required": "incomplete_continue",
                 "single_conflict_semantic_choice_one_step": "evidence_conflict",
                 "sealed_terminal_extra_call_cost": "post_complete_cost",
+                "conditional_dependency_observation_required": "incomplete_continue",
+                "matched_contextual_resolution_choice": "unresolved_conflict_cannot_stop",
+                "single_conflict_evidence_grounded_choice_one_step": "evidence_conflict",
             }[decision.contract_kind]
             if self.intervention_kind != expected_kind:
                 raise ValueError("Stopping Shape decision contract uses the wrong Runtime kind")
@@ -583,7 +633,9 @@ class FinanceCapabilitySubmechanismRuntime:
         self._trigger_call: AgentToolCall | None = None
         self._successful_by_tool: dict[str, int] = {}
         self._normalization_observed = False
+        self._decision_action_observed = False
         self._document_opened = False
+        self._dependency_branch_observed = False
         self._verified_complete = False
         self._event_log: list[str] = []
 
@@ -695,6 +747,11 @@ class FinanceCapabilitySubmechanismRuntime:
         required = {item.evidence_id for item in self._scenario.evidence_roles}
         complete = required <= selected
         if kind in _PARTIAL_SUPPORT_KINDS:
+            decision = self._scenario.stopping_shape_decision_contract
+            conditional_dependency = bool(
+                decision is not None
+                and decision.contract_kind == "conditional_dependency_observation_required"
+            )
             if not self._trigger_observed:
                 result = self._base.execute(call)
                 selected = set(self._base.selected_evidence_ids)
@@ -703,8 +760,26 @@ class FinanceCapabilitySubmechanismRuntime:
                     return self._with_partial_selection_state(result)
                 return result
             if not complete:
+                if conditional_dependency and not self._dependency_branch_observed:
+                    if call.tool_id != "search_archive":
+                        return self._resolution_required_failure(
+                            code="dependency_branch_observation_required"
+                        )
+                    if not self._dependency_probe_matches(call):
+                        return self._resolution_required_failure(
+                            code="dependency_probe_query_mismatch"
+                        )
+                    result = self._base.execute(call)
+                    if result.status == "succeeded" and result.result.get("matches"):
+                        self._dependency_branch_observed = True
+                        return self._with_dependency_branch_observation(result)
+                    return result
                 if call.tool_id not in self._policy.resolution_tools:
                     return self._resolution_required_failure()
+                if conditional_dependency and call.tool_id != "query_structured_fact":
+                    return self._resolution_required_failure(
+                        code="dependency_branch_query_required"
+                    )
                 result = self._base.execute(call)
                 if result.status == "succeeded":
                     selected = set(self._base.selected_evidence_ids)
@@ -750,22 +825,27 @@ class FinanceCapabilitySubmechanismRuntime:
                 return base
             self._observe_trigger(call)
             return self._conflict_result(base)
-        if self._trigger_observed and not self._normalization_observed:
-            if call.tool_id != "normalize_metric_unit_period":
+        if self._trigger_observed and not self._decision_action_observed:
+            required_tool = self._required_conflict_resolution_tool()
+            if call.tool_id != required_tool:
                 return self._resolution_required_failure()
+            if required_tool == "query_structured_fact" and not (
+                self._query_matches_required_role(call)
+            ):
+                return self._resolution_required_failure(
+                    code="contextual_resolution_query_mismatch"
+                )
             result = self._base.execute(call)
             decision = self._scenario.stopping_shape_decision_contract
-            if (
-                result.status == "succeeded"
-                and decision is not None
-                and decision.contract_kind
-                in {
+            if result.status == "succeeded":
+                self._decision_action_observed = True
+                if decision is not None and decision.contract_kind in {
                     "single_conflict_two_action_one_step",
                     "single_conflict_semantic_choice_one_step",
-                }
-            ):
-                self._observe_resolution()
-                return self._with_resolution_event(result)
+                    "single_conflict_evidence_grounded_choice_one_step",
+                }:
+                    self._observe_resolution()
+                    return self._with_resolution_event(result)
             return result
         if self._trigger_observed and not self._resolution_observed:
             if call.tool_id != "cross_check_evidence":
@@ -778,6 +858,27 @@ class FinanceCapabilitySubmechanismRuntime:
                 return self._with_resolution_event(result)
             return result
         return self._base.execute(call)
+
+    def _required_conflict_resolution_tool(self) -> str:
+        decision = self._scenario.stopping_shape_decision_contract
+        if (
+            decision is not None
+            and decision.contract_kind == "matched_contextual_resolution_choice"
+            and decision.oracle_conflict_dimension == "entity_scope_alignment"
+        ):
+            return "query_structured_fact"
+        return "normalize_metric_unit_period"
+
+    def _query_matches_required_role(self, call: AgentToolCall) -> bool:
+        observed = (
+            str(call.arguments.get("subject_alias", "")),
+            str(call.arguments.get("metric_alias", "")),
+            str(call.arguments.get("period_label", "")),
+        )
+        return observed in {
+            (item.subject_alias, item.metric_alias, item.period_label)
+            for item in self._scenario.evidence_roles
+        }
 
     def _observe_trigger(self, call: AgentToolCall) -> None:
         if not self._trigger_observed:
@@ -838,6 +939,8 @@ class FinanceCapabilitySubmechanismRuntime:
         if decision is not None and decision.contract_kind in {
             "single_conflict_two_action_one_step",
             "single_conflict_semantic_choice_one_step",
+            "matched_contextual_resolution_choice",
+            "single_conflict_evidence_grounded_choice_one_step",
         }:
             return None
         if kind in {"incomplete_continue", "unresolved_conflict_cannot_stop"}:
@@ -889,8 +992,17 @@ class FinanceCapabilitySubmechanismRuntime:
         if decision is not None and decision.contract_kind in {
             "single_conflict_two_action_one_step",
             "single_conflict_semantic_choice_one_step",
+            "matched_contextual_resolution_choice",
+            "single_conflict_evidence_grounded_choice_one_step",
         }:
             return []
+        if (
+            decision is not None
+            and decision.contract_kind == "conditional_dependency_observation_required"
+        ):
+            return [
+                "query_structured_fact" if self._dependency_branch_observed else "search_archive"
+            ]
         if self._scenario.intervention_kind in {
             "incomplete_continue",
             "unresolved_conflict_cannot_stop",
@@ -1044,6 +1156,63 @@ class FinanceCapabilitySubmechanismRuntime:
             evidence_ids=evidence_ids,
         )
 
+    def _dependency_probe_query(self) -> str:
+        selected = set(self._base.selected_evidence_ids)
+        missing = next(
+            (item for item in self._scenario.evidence_roles if item.evidence_id not in selected),
+            None,
+        )
+        if missing is None:
+            raise ValueError("conditional dependency probe has no unresolved role")
+        return f"{missing.subject_alias} {missing.metric_alias}"
+
+    def _dependency_probe_matches(self, call: AgentToolCall) -> bool:
+        return (
+            call.tool_id == "search_archive"
+            and str(call.arguments.get("query", "")).strip() == self._dependency_probe_query()
+            and int(call.arguments.get("limit", 0)) == 12
+        )
+
+    def _with_dependency_branch_observation(
+        self,
+        result: AgentToolResult,
+    ) -> AgentToolResult:
+        decision = self._scenario.stopping_shape_decision_contract
+        if (
+            decision is None
+            or decision.contract_kind != "conditional_dependency_observation_required"
+            or decision.dependency_decoy_option is None
+        ):
+            raise ValueError("dependency branch observation lacks a v25.39 contract")
+        selected = set(self._base.selected_evidence_ids)
+        missing = next(
+            (item for item in self._scenario.evidence_roles if item.evidence_id not in selected),
+            None,
+        )
+        if missing is None or missing.evidence_id not in set(result.evidence_ids):
+            raise ValueError("dependency probe did not observe the unresolved Evidence branch")
+        options = self._dependency_disambiguation_options(selected, decision)
+        required = next(
+            item for item in options if item.option_id != decision.dependency_decoy_option.option_id
+        )
+        payload = dict(result.result)
+        payload["dependency_branch_observation"] = {
+            "required_option_id": required.option_id,
+            "probe_query_hash": canonical_hash(
+                {
+                    "scenario_id": self._scenario.scenario_id,
+                    "query": self._dependency_probe_query(),
+                    "observed_evidence_ids": tuple(sorted(result.evidence_ids)),
+                },
+                prefix="finance_stopping_dependency_probe_observation:",
+            ),
+            "observation_basis": (
+                "The Archive probe identifies which candidate closes the active "
+                "operation dependency."
+            ),
+        }
+        return result.model_copy(update={"result": payload})
+
     def _dependency_disambiguation_options(
         self,
         selected: set[str],
@@ -1115,9 +1284,10 @@ class FinanceCapabilitySubmechanismRuntime:
                 "host_event": self._scenario.expected_host_events[0],
                 "required_prerequisite_action": None,
             }
-        elif (
-            decision is not None and decision.contract_kind == "dependency_disambiguation_required"
-        ):
+        elif decision is not None and decision.contract_kind in {
+            "dependency_disambiguation_required",
+            "conditional_dependency_observation_required",
+        }:
             options = self._dependency_disambiguation_options(selected, decision)
             completion_state = {
                 "complete": False,
@@ -1128,6 +1298,29 @@ class FinanceCapabilitySubmechanismRuntime:
                 "host_event": self._scenario.expected_host_events[0],
                 "required_prerequisite_action": None,
             }
+            if decision.contract_kind == "conditional_dependency_observation_required":
+                completion_state["dependency_probe"] = {
+                    "tool_id": "search_archive",
+                    "arguments": {
+                        "query": self._dependency_probe_query(),
+                        "limit": 12,
+                    },
+                }
+                completion_state["dependency_branch_observed"] = self._dependency_branch_observed
+                if self._dependency_branch_observed:
+                    assert decision.dependency_decoy_option is not None
+                    required = next(
+                        item
+                        for item in options
+                        if item.option_id != decision.dependency_decoy_option.option_id
+                    )
+                    completion_state["dependency_branch_observation"] = {
+                        "required_option_id": required.option_id,
+                        "observation_basis": (
+                            "The completed Archive probe identifies the active "
+                            "operation dependency."
+                        ),
+                    }
         else:
             completion_state["missing_roles"] = [
                 {
@@ -1235,6 +1428,32 @@ class FinanceCapabilitySubmechanismRuntime:
             retry_contract["decision_rule"] = (
                 "Map the observed semantic symptom to the single applicable action. "
                 "No internal conflict-field label is available."
+            )
+        elif (
+            decision is not None
+            and decision.contract_kind == "matched_contextual_resolution_choice"
+        ):
+            retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
+            retry_contract["available_resolution_actions"] = [
+                item.model_dump(mode="json") for item in decision.available_resolution_actions
+            ]
+            retry_contract["decision_rule"] = (
+                "Choose the action warranted by the observed evidence state, then perform "
+                "one independent post-resolution cross-check. All tasks expose the same "
+                "number of actions and the same two-step decision burden."
+            )
+        elif (
+            decision is not None
+            and decision.contract_kind == "single_conflict_evidence_grounded_choice_one_step"
+        ):
+            retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
+            retry_contract["available_resolution_actions"] = [
+                item.model_dump(mode="json") for item in decision.available_resolution_actions
+            ]
+            retry_contract["decision_rule"] = (
+                "Choose the one action warranted by the current evidence state. The action "
+                "labels do not reveal the Oracle conflict field, and the applicable action "
+                "resolves this one-step conflict."
             )
         elif self._scenario.intervention_kind == "unresolved_conflict_cannot_stop":
             retry_contract["observed_conflict_dimensions"] = ["source_definition_compatibility"]

@@ -1,0 +1,94 @@
+from __future__ import annotations
+
+from datetime import date
+
+from trusted_synthesis.core.evidence.schema import EvidenceItem, SubjectRef
+from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_evidence_snapshot import (
+    select_stopping_evidence_snapshot,
+    stopping_evidence_snapshot_capacity,
+)
+
+
+def _annual(
+    source: EvidenceItem,
+    *,
+    subject_id: str,
+    year: int,
+) -> EvidenceItem:
+    temporal = source.temporal_context.model_copy(
+        update={
+            "label": f"FY{year}",
+            "valid_from": date(year - 1, 10, 1),
+            "valid_to": date(year, 9, 30),
+        }
+    )
+    return source.model_copy(
+        update={
+            "evidence_id": f"evidence:finance:{subject_id}:revenue:{year}@kg_test",
+            "assertion_id": f"assertion:finance:{subject_id}:revenue:{year}",
+            "evidence_version_id": (
+                f"evidence_version:finance:{subject_id}:revenue:{year}@kg_test"
+            ),
+            "subject": SubjectRef(
+                subject_id=subject_id,
+                name=f"Company {subject_id}",
+                subject_type="company",
+                attributes={"market": "US", "country": "US"},
+            ),
+            "temporal_context": temporal,
+            "scope": source.scope.model_copy(update={"scope_id": subject_id})
+            if source.scope
+            else None,
+            "provenance": source.provenance.model_copy(
+                update={"source_record_id": f"{subject_id}:revenue:{year}"}
+            ),
+            "domain_context": {
+                **source.domain_context,
+                "fiscal_year": year,
+            },
+        }
+    )
+
+
+def test_snapshot_selection_preserves_contiguous_peer_series(
+    finance_evidence: EvidenceItem,
+) -> None:
+    evidence = tuple(
+        _annual(finance_evidence, subject_id=subject_id, year=year)
+        for subject_id in ("AAPL_US", "MSFT_US")
+        for year in range(2020, 2026)
+    )
+
+    selected = select_stopping_evidence_snapshot(
+        evidence,
+        maximum_selected_evidence_count=100,
+        selection_salt="snapshot-test",
+    )
+    capacity = stopping_evidence_snapshot_capacity(
+        selected,
+        selection_salt="snapshot-test",
+    )
+
+    assert len(selected) == 12
+    assert capacity["temporal_series_count"] == 2
+    assert capacity["contiguous_window_count"] == 8
+    assert capacity["disjoint_gold_window_capacity"] == 4
+    assert capacity["contextual_pair_capacity"] == 6
+    assert capacity["normalization_pair_capacity"] >= 6
+
+
+def test_snapshot_selection_drops_non_contiguous_short_fragments(
+    finance_evidence: EvidenceItem,
+) -> None:
+    evidence = tuple(
+        _annual(finance_evidence, subject_id="AAPL_US", year=year)
+        for year in (2020, 2021, 2023, 2024)
+    )
+
+    selected = select_stopping_evidence_snapshot(
+        evidence,
+        maximum_selected_evidence_count=100,
+        selection_salt="snapshot-gap-test",
+    )
+
+    assert selected == ()

@@ -411,43 +411,66 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _read_population_identity_source(path: Path) -> dict[str, Any]:
-    """Index immutable Evidence identities without loading a legacy object schema."""
+def _collect_evidence_version_ids(value: Any) -> tuple[str, ...]:
+    observed: set[str] = set()
 
-    record_count = 0
-    evidence_version_ids: set[str] = set()
-    with path.open("r", encoding="utf-8") as source:
-        for line_number, line in enumerate(source, start=1):
+    def visit(item: Any) -> None:
+        if isinstance(item, dict):
+            version_id = item.get("evidence_version_id")
+            if isinstance(version_id, str) and version_id.strip():
+                observed.add(version_id)
+            for child in item.values():
+                visit(child)
+        elif isinstance(item, list):
+            for child in item:
+                visit(child)
+
+    visit(value)
+    return tuple(sorted(observed))
+
+
+def _read_population_identity_source(path: Path) -> dict[str, Any]:
+    """Index immutable Evidence identities from JSONL or typed JSON populations."""
+
+    text = path.read_text(encoding="utf-8")
+    if not text.strip():
+        raise ValueError("excluded population identity source is empty")
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        records: list[Any] = []
+        for line_number, line in enumerate(text.splitlines(), start=1):
             if not line.strip():
                 continue
-            record_count += 1
             try:
-                value = json.loads(line)
+                records.append(json.loads(line))
             except json.JSONDecodeError as exc:
                 raise ValueError(
                     f"excluded population contains invalid JSON at line {line_number}"
                 ) from exc
-            if not isinstance(value, dict):
-                raise ValueError("excluded population row is not an object")
-            joint = value.get("joint_compilation")
-            omega = joint.get("omega") if isinstance(joint, dict) else None
-            corpus = omega.get("public_corpus") if isinstance(omega, dict) else None
-            evidence = corpus.get("evidence") if isinstance(corpus, dict) else None
-            if not isinstance(evidence, list) or not evidence:
-                raise ValueError(
-                    "excluded population row lacks immutable public Evidence identities"
-                )
-            for item in evidence:
-                version_id = item.get("evidence_version_id") if isinstance(item, dict) else None
-                if not isinstance(version_id, str) or not version_id.strip():
-                    raise ValueError("excluded population Evidence lacks an evidence_version_id")
-                evidence_version_ids.add(version_id)
-    if record_count == 0 or not evidence_version_ids:
+    else:
+        if isinstance(payload, dict) and isinstance(payload.get("tasks"), list):
+            records = list(payload["tasks"])
+        elif isinstance(payload, list):
+            records = list(payload)
+        else:
+            records = [payload]
+    if not records:
         raise ValueError("excluded population identity source is empty")
+    evidence_version_ids: set[str] = set()
+    for record_index, record in enumerate(records, start=1):
+        if not isinstance(record, dict):
+            raise ValueError("excluded population record is not an object")
+        record_versions = _collect_evidence_version_ids(record)
+        if not record_versions:
+            raise ValueError(
+                f"excluded population record lacks an evidence_version_id at record {record_index}"
+            )
+        evidence_version_ids.update(record_versions)
     return {
         "path": str(path),
         "sha256": _sha256(path),
-        "record_count": record_count,
+        "record_count": len(records),
         "evidence_version_ids": tuple(sorted(evidence_version_ids)),
     }
 

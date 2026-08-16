@@ -639,11 +639,7 @@ def _candidate_replacement(
                 prefix="finance_capability_submechanism_direction_fallback:",
             )
             direction_hex = direction_token.rsplit(":", 1)[-1][:2]
-            direction = (
-                Decimal("1")
-                if int(direction_hex, 16) % 2 == 0
-                else Decimal("-1")
-            )
+            direction = Decimal("1") if int(direction_hex, 16) % 2 == 0 else Decimal("-1")
             value = format(numeric + direction * delta, "f")
         else:
             value = getattr(distractor.payload, "value", None)
@@ -656,8 +652,7 @@ def _answer_contract_ready(artifact: CapabilitySensitiveTaskArtifact) -> bool:
     metadata = artifact.task.public.metadata
     guidance = metadata.get("agent_contract_guidance")
     if (
-        metadata.get("answer_projection_contract_version")
-        != ANSWER_PROJECTION_CONTRACT_VERSION
+        metadata.get("answer_projection_contract_version") != ANSWER_PROJECTION_CONTRACT_VERSION
         or not isinstance(guidance, Mapping)
         or artifact.task.oracle.selection_contract.get("answer_projection")
         != artifact.answer_projection
@@ -681,10 +676,9 @@ def _answer_contract_ready(artifact: CapabilitySensitiveTaskArtifact) -> bool:
         if not isinstance(constraints, Mapping):
             return False
         higher_ref = constraints.get("higher_ref")
-        if (
-            not isinstance(higher_ref, Mapping)
-            or tuple(higher_ref.get("allowed_values") or ())
-            != (*allowed_labels, None)
+        if not isinstance(higher_ref, Mapping) or tuple(higher_ref.get("allowed_values") or ()) != (
+            *allowed_labels,
+            None,
         ):
             return False
     expected_ref = artifact.projected_expected_output.get("higher_ref")
@@ -970,6 +964,21 @@ def replay_wrong_branch_rejection(
         raise ValueError(f"no negative replay for Finance submechanism: {kind}")
     if scenario.expected_host_events[0] not in runtime.event_log:
         return False
+    decision = scenario.stopping_shape_decision_contract
+    if (
+        decision is not None
+        and decision.contract_kind == "conditional_dependency_observation_required"
+    ):
+        premature = calls.query_role(0)
+        wrong_probe = calls.call(
+            "search_archive", {"query": "wrong dependency branch", "limit": 12}
+        )
+        return (
+            premature.status == "failed"
+            and premature.error_code == "dependency_branch_observation_required"
+            and wrong_probe.status == "failed"
+            and wrong_probe.error_code == "dependency_probe_query_mismatch"
+        )
     policy = submechanism_policy_manifest()[kind]
     resolution_tools = set(policy["resolution_tools"])
     wrong_calls = (
@@ -1152,7 +1161,17 @@ class _ReplayCalls:
         first = self.verify()
         if bool(first.result.get("verified")):
             raise ValueError("conflict trigger unexpectedly verified")
-        self.normalize()
+        decision = self.scenario.stopping_shape_decision_contract
+        if (
+            decision is not None
+            and decision.contract_kind == "matched_contextual_resolution_choice"
+            and decision.oracle_conflict_dimension == "entity_scope_alignment"
+        ):
+            resolution = self.query_role(0, add_filter=True)
+        else:
+            resolution = self.normalize()
+        if resolution.status != "succeeded":
+            raise ValueError("conflict resolution action did not succeed")
         result = self.verify()
         if not bool(result.result.get("verified")):
             raise ValueError("conflict resolution did not verify")
@@ -1162,6 +1181,24 @@ class _ReplayCalls:
         first = self.verify()
         if bool(first.result.get("verified")):
             raise ValueError("incomplete role trigger unexpectedly verified")
+        decision = self.scenario.stopping_shape_decision_contract
+        if (
+            decision is not None
+            and decision.contract_kind == "conditional_dependency_observation_required"
+        ):
+            selected = set(self.runtime.selected_evidence_ids)
+            missing = next(
+                item for item in self.scenario.evidence_roles if item.evidence_id not in selected
+            )
+            probe = self.call(
+                "search_archive",
+                {
+                    "query": f"{missing.subject_alias} {missing.metric_alias}",
+                    "limit": 12,
+                },
+            )
+            if probe.status != "succeeded" or not probe.result.get("dependency_branch_observation"):
+                raise ValueError("dependency branch replay did not produce an observation")
         self.select_all()
         self.calculate()
         self.verify()
@@ -1300,9 +1337,7 @@ def make_submechanism_static_audit(
     parents = Counter(item.parent_mechanism_id for item in tasks)
     evidence = [item for task in tasks for item in task.artifact.public_corpus.evidence]
     public_isolation = [_public_oracle_isolated(task) for task in tasks]
-    public_mechanism_nondisclosure = [
-        _public_mechanism_nondisclosed(task) for task in tasks
-    ]
+    public_mechanism_nondisclosure = [_public_mechanism_nondisclosed(task) for task in tasks]
     checks = {
         "selected_task_count": len(tasks) == SELECTED_TASK_COUNT,
         "balanced_parent_coverage": bool(parents)
