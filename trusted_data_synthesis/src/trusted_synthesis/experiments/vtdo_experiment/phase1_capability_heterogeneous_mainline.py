@@ -21,12 +21,16 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
     CAPABILITY_SENSITIVE_FAMILIES,
     FAMILY_PRIMARY_CAPABILITY,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_bridge import (
+    CompilerAssistedBridgeContract,
+    default_compiler_assisted_bridge_contract,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_context_sufficiency_decision import (  # noqa: E501
     ContextSufficiencyScientificDecision,
 )
 from trusted_synthesis.hashing import canonical_hash
 
-FINANCE_V26_MAINLINE_VERSION = "finance_v26_capability_heterogeneous_vtdo_mainline.v1"
+FINANCE_V26_MAINLINE_VERSION = "finance_v26_capability_heterogeneous_vtdo_mainline.v2"
 MAINLINE_SUPPORT_OBSERVATION_VERSION = "vtdo_mainline_support_observation.v1"
 MAINLINE_SUPPORT_PARTITION_VERSION = "vtdo_mainline_support_partition.v1"
 MAINLINE_PREFLIGHT_VERSION = "finance_v26_mainline_preflight.v1"
@@ -315,6 +319,7 @@ class CapabilityHeterogeneousMainlineProtocol(FrozenModel):
     prior_evidence: tuple[ImmutableArtifactReference, ...] = Field(min_length=1)
     population: MainlinePopulationContract
     joint_compilation: JointCompilationAdmissionContract
+    capability_bridge: CompilerAssistedBridgeContract
     materialization: MainlineStateMaterializationContract
     support: MainlineSupportContract
     no_c: NoCDistributionContract
@@ -652,6 +657,7 @@ def build_mainline_protocol_and_preflight(
         "prior_evidence": (prior,),
         "population": _population_contract(),
         "joint_compilation": JointCompilationAdmissionContract(),
+        "capability_bridge": default_compiler_assisted_bridge_contract(),
         "materialization": MainlineStateMaterializationContract(),
         "support": MainlineSupportContract(),
         "no_c": _no_c_contract(),
@@ -678,6 +684,10 @@ def build_mainline_protocol_and_preflight(
         "joint_compilation_admission": (
             Path(__file__).resolve().parents[2] / "core" / "trajectory" / "admission.py"
         ),
+        "capability_scaffold_compiler": (
+            Path(__file__).resolve().parents[2] / "core" / "trajectory" / "scaffolding.py"
+        ),
+        "capability_bridge": module_root / "phase1_compiler_assisted_bridge.py",
         "state_discovery": module_root / "phase1_initial_distribution.py",
         "state_materialization": module_root / "phase1_state_realizations.py",
         "student_training": module_root / "training.py",
@@ -713,6 +723,15 @@ def build_mainline_protocol_and_preflight(
         "joint_compilation_phase_zero_frozen": (
             protocol.joint_compilation.pre_model_admission_required
             and protocol.joint_compilation.failure_transition == "joint_compilation_repair_only"
+        ),
+        "capability_bridge_pre_model_gate_frozen": (
+            protocol.capability_bridge.next_permitted_stage == "bridge_joint_compilation_admission"
+            and not protocol.capability_bridge.api_authorized_before_scaffold_admission
+            and not protocol.capability_bridge.gpu_authorized_before_support_freeze
+        ),
+        "capability_bridge_selects_support_by_mechanism": (
+            protocol.capability_bridge.support_selected_per_mechanism_not_task
+            and protocol.capability_bridge.mechanisms[0].per_task_scaffold_selection_forbidden
         ),
         "support_sets_fail_closed": protocol.support.inverse_success_weighting_forbidden,
         "no_c_claim_boundary_explicit": (

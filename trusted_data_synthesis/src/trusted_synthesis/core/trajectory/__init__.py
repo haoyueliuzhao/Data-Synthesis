@@ -31,6 +31,21 @@ if TYPE_CHECKING:
         ValidTrajectoryPool,
         ValidTrajectoryPoolBuilder,
     )
+    from trusted_synthesis.core.trajectory.scaffolding import (
+        CapabilityAwarePublicProjection,
+        CapabilityPrerequisiteGraph,
+        CapabilityPrerequisiteNode,
+        CapabilityScaffoldAdmissionArtifact,
+        CapabilityScaffoldGateEvidence,
+        CapabilityScaffoldLadderCompilation,
+        MinimalPublicStateSummarySpec,
+        admit_capability_scaffold_ladder,
+        compile_capability_scaffold_ladder,
+        make_capability_prerequisite_graph,
+        make_capability_prerequisite_node,
+        make_capability_scaffold_gate_evidence,
+        make_minimal_public_state_summary_spec,
+    )
     from trusted_synthesis.core.trajectory.schema import (
         ActionType,
         Trajectory,
@@ -63,6 +78,30 @@ if TYPE_CHECKING:
 
 _EXPORTS = {
     "ActionType": ("trusted_synthesis.core.trajectory.schema", "ActionType"),
+    "CapabilityAwarePublicProjection": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CapabilityAwarePublicProjection",
+    ),
+    "CapabilityPrerequisiteGraph": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CapabilityPrerequisiteGraph",
+    ),
+    "CapabilityPrerequisiteNode": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CapabilityPrerequisiteNode",
+    ),
+    "CapabilityScaffoldAdmissionArtifact": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CapabilityScaffoldAdmissionArtifact",
+    ),
+    "CapabilityScaffoldGateEvidence": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CapabilityScaffoldGateEvidence",
+    ),
+    "CapabilityScaffoldLadderCompilation": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CapabilityScaffoldLadderCompilation",
+    ),
     "JointCompilationAdmissionArtifact": (
         "trusted_synthesis.core.trajectory.admission",
         "JointCompilationAdmissionArtifact",
@@ -74,6 +113,10 @@ _EXPORTS = {
     "JointCompilationArtifact": (
         "trusted_synthesis.core.trajectory.specification",
         "JointCompilationArtifact",
+    ),
+    "MinimalPublicStateSummarySpec": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "MinimalPublicStateSummarySpec",
     ),
     "OmegaComponentManifest": (
         "trusted_synthesis.core.trajectory.specification",
@@ -163,9 +206,33 @@ _EXPORTS = {
         "trusted_synthesis.core.trajectory.admission",
         "admit_joint_compilation",
     ),
+    "admit_capability_scaffold_ladder": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "admit_capability_scaffold_ladder",
+    ),
+    "compile_capability_scaffold_ladder": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "compile_capability_scaffold_ladder",
+    ),
     "make_joint_compilation_audit_evidence": (
         "trusted_synthesis.core.trajectory.admission",
         "make_joint_compilation_audit_evidence",
+    ),
+    "make_capability_prerequisite_graph": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_capability_prerequisite_graph",
+    ),
+    "make_capability_prerequisite_node": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_capability_prerequisite_node",
+    ),
+    "make_capability_scaffold_gate_evidence": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_capability_scaffold_gate_evidence",
+    ),
+    "make_minimal_public_state_summary_spec": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_minimal_public_state_summary_spec",
     ),
     "make_runtime_public_projection": (
         "trusted_synthesis.core.trajectory.admission",

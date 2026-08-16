@@ -56,6 +56,18 @@ joint_compilation_repair_only
 This Core contract is exercised by Legal and Science fixtures. Finance is the first production
 consumer, not the specification of the admission API.
 
+## Capability Bridge Before State Discovery
+
+For task-capability pairs whose valid quotient states are structurally available but unreachable
+to the Explorer, Joint Compilation may compile a cumulative `gamma_0..gamma_3` public scaffold
+ladder. The ladder binds the target capability and scaffold policy into the task condition, keeps
+the target decision under model authority, and admits each level only after Oracle consistency,
+public sufficiency, target-authority, recursive noninterference, minimality, and withdrawal gates.
+
+Finance v26 preregisters a 24-task, three-mechanism Development Pilot. It selects the minimum
+passing scaffold once per mechanism and confirms it on 24 fresh tasks. Per-task scaffold choice is
+forbidden. See `docs/finance_v26_compiler_assisted_capability_bridge.md`.
+
 ## Frozen Data Partitions
 
 All partitions are disjoint on task, Evidence, Evidence Version, semantic signature, and
@@ -151,5 +163,5 @@ Student training
 Exact Target or GP-C
 ```
 
-The next permitted work is fresh-task Joint Compilation and admission. API and GPU work remain
-closed until that artifact is complete.
+The next permitted work is fresh-task Joint Compilation, capability-gap decomposition, and
+capability-scaffold admission. API and GPU work remain closed until those artifacts are complete.

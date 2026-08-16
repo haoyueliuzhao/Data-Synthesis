@@ -1524,8 +1524,9 @@ within the same grammar.
 
 ### v26 capability-heterogeneous mainline and Joint Compilation Phase 0
 
-v26 starts under `finance_v26_capability_heterogeneous_vtdo_mainline.v1`; it never edits v25.47.
-The old result is usable only as historical measurement evidence and promotes zero tasks.
+v26 was first frozen under `finance_v26_capability_heterogeneous_vtdo_mainline.v1`; the current
+scaffold-aware contract advances to v2 without editing v25.47 or the v1 artifact. The old result is
+usable only as historical measurement evidence and promotes zero tasks.
 
 Every new task must pass `JointCompilationAdmissionArtifact` before an API or GPU call. The
 admission binds the Oracle context, runtime-specific public projections, State Space, canonical
@@ -1547,3 +1548,29 @@ authorization. No inverse-success weighting is permitted.
 Before Contribution authorization, distribution experiments must be labeled `AEVTDR-NoC` or
 `novelty-anchored VTDO`, never full `C+N` VTDO. Student materialization uses Rounds 1 and 3; Round 5
 is dynamics-only. Contribution recovery proceeds on isolated tasks and does not block No-C.
+
+### v26 compiler-assisted capability bridge
+
+The current protocol identity advances to
+`finance_v26_capability_heterogeneous_vtdo_mainline.v2`. The v1 freeze remains immutable and is not
+retroactively reinterpreted.
+
+Joint Compilation may now derive capability-aware public projections only after ordinary Joint
+Compilation admission. The exact experimental condition is:
+
+```text
+(task, runtime, target capability, scaffold level, scaffold policy version)
+```
+
+The cumulative levels are unassisted `gamma_0`, typed-summary `gamma_1`, prerequisite/effect
+contract `gamma_2`, and public-subgoal-DAG `gamma_3`. All levels share one Evidence, Program,
+Answer, Proof Graph, Quality Contract, Runtime, and State Mapper root. Every level independently
+passes Oracle consistency, public sufficiency, target-authority preservation, recursive
+noninterference, minimality, and scaffold-withdrawal gates. Failure permits only scaffold repair.
+
+The Development Pilot uses 24 fresh tasks across context-conditioned action, semantic
+reconciliation, and recovery/stopping. Each task receives six Flash rollouts at each of four
+levels. The minimum boundary-producing scaffold is frozen per mechanism, not per task, then tested
+on 24 fresh confirmation tasks. Outcomes never change the task marginal. State discovery remains
+blocked until confirmation passes. Student evaluation must include scaffold withdrawal and weaker
+scaffold annealing conditions.

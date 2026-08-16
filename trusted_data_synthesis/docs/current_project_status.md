@@ -8,9 +8,9 @@ messages are not treated as experimental evidence.
 
 ## Repository Identity
 
-- Active implementation worktree: `/tmp/codex_v25_9/trusted_data_synthesis`
+- Canonical implementation repository: `/data1/zhuxinrui/projects/Data-Synthesis`
 - Immutable experiment artifact root: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
-- Implementation branch: `codex/pro-flash-v23` in an isolated worktree
+- Integration branch: `main`; isolated worktrees are temporary implementation staging only
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
@@ -28,6 +28,19 @@ Public, Runtime, Verifier, State Mapper, and Materialization views to one Joint 
 Its seven gates are fail-closed, and any failure transitions only to
 `joint_compilation_repair_only`. Legal and Science contract tests verify that this is a generic
 Core capability rather than a Finance branch.
+
+The next Joint Compilation layer now compiles a capability prerequisite DAG, deterministic minimum
+public state summary, and cumulative `gamma_0..gamma_3` scaffold projections. The scaffold level is
+part of the experimental condition rather than an untracked Prompt variant. Six independent gates
+preserve Oracle identity, public sufficiency, model authority, recursive noninterference,
+minimality, and scaffold withdrawal. A frozen 24-task Finance Bridge Pilot selects support by
+mechanism, never by task outcome; no Bridge task, API call, or GPU job has run yet. See
+`docs/finance_v26_compiler_assisted_capability_bridge.md`.
+
+The scaffold-aware v26 protocol preflight passed 18/18 checks under protocol ID
+`finance_v26_capability_heterogeneous_vtdo_mainline:722dcc720f3d2c5a46fee2fa57bcb74286795f70d57231e58ac3f1f576735b66`.
+The immutable preflight made zero API calls and launched zero GPU jobs; it authorizes only
+`v26_1_joint_compilation_admission`.
 
 v25.47 replaced the opaque
 v25.46 branch cue with one typed, action-neutral public relation state and one shared decision

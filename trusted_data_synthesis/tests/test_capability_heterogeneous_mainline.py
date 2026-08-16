@@ -21,6 +21,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_heterogeneo
     make_mainline_support_observation,
     partition_mainline_support,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_bridge import (
+    default_compiler_assisted_bridge_contract,
+)
 
 
 def _observation(**updates: Any) -> MainlineSupportObservation:
@@ -54,6 +57,7 @@ def _protocol() -> CapabilityHeterogeneousMainlineProtocol:
         ),
         "population": _population_contract(),
         "joint_compilation": JointCompilationAdmissionContract(),
+        "capability_bridge": default_compiler_assisted_bridge_contract(),
         "materialization": MainlineStateMaterializationContract(),
         "support": MainlineSupportContract(),
         "no_c": _no_c_contract(),
@@ -195,6 +199,9 @@ def test_v26_protocol_keeps_old_results_and_contribution_closed() -> None:
     assert protocol.current_permitted_stage == "v26_1_joint_compilation_admission"
     assert protocol.joint_compilation.pre_model_admission_required
     assert protocol.joint_compilation.failure_transition == "joint_compilation_repair_only"
+    assert protocol.capability_bridge.planned_development_rollout_count == 576
+    assert protocol.capability_bridge.support_selected_per_mechanism_not_task
+    assert not protocol.capability_bridge.api_authorized_before_scaffold_admission
 
 
 def test_v26_protocol_rejects_historical_task_promotion() -> None:
