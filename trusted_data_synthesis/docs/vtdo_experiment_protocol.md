@@ -1321,3 +1321,62 @@ Pro/Beneficiary/Exact Target/GP-C/Contribution -> forbidden
 ```
 
 The v25.40 result remains immutable and cannot be reclassified by that repair.
+
+### v25.41-v25.44 host-event repair and role-position-controlled result
+
+v25.41-v25.42 are immutable invalid-measurement attempts. Host-only intervention
+metadata entered strict business tool results, causing schema failures before the
+intended Stopping response could be observed. Historical outcomes cannot be
+reclassified. The repaired contract uses `agent_tool_observation.v2`: business
+payloads remain schema-exact while typed host events are carried and hashed in a
+separate replayable envelope. Unknown strict-schema fields are L2 Runtime
+pathology, not L4 model capability failure.
+
+v25.43 validated the repaired instrument on 48 fresh tasks and 384 Flash
+rollouts. Runtime integrity was 100% with no L0-L2 failures. Authority and
+Partial were admitted and both controls passed. Contextual and Conflict failed
+task-level heterogeneity gates. A frozen predecessor analysis showed that their
+required-Evidence role position explained the response split.
+
+v25.44 therefore preregistered a single structural control before generating a
+fresh population:
+
+```text
+contextual_resolution_choice target role = required_2
+single_dimension_conflict target role    = required_3
+Authority / Partial / controls           = unchanged regressions
+```
+
+The 48-task static audit passed exact Shape-stratum redundancy, role-position
+control, one-dimensional mismatch, conflict-tool balance, public/Oracle
+isolation, and five-way historical identity disjointness. The subsequent
+384-rollout Flash run passed every Runtime gate. All four boundary candidates
+and both controls passed their preregistered task-level contracts.
+
+The support semantics remain:
+
+```text
+mechanism-observable support = runtime eligible
+                             AND ordered host-event resolution
+                             AND no post-completion violation
+
+valid-training support       = mechanism response
+                             AND complete deterministic trajectory validity
+
+answer-semantic response     = diagnostic only
+```
+
+Cross-estimand rescue, invalid-trajectory training use, pooled Shape rescue,
+post-hoc task selection, and post-hoc deletion remain forbidden.
+
+The only authorized next stage is a three-population stability preparation:
+
+```text
+3 fresh populations x 60 tasks x 8 realizations = 1,440 Flash rollouts
+each population must pass independently
+task/Evidence/version/signature/materializer identities must be disjoint
+```
+
+Pro calls, Beneficiary screening, Exact Target, GP-C, production Contribution,
+VTDO distribution updates, and Student training remain forbidden until that
+stability contract passes.

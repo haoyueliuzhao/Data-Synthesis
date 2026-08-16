@@ -81,6 +81,20 @@ def test_success_is_l6_capability_outcome() -> None:
     assert result[1] == FailureLayer.L6_SUCCESS
 
 
+def test_tool_output_schema_violation_is_runtime_pathology() -> None:
+    result = _classify_terminal(
+        _record(
+            error_message="Agent tool result contains unknown fields: ['host_event_sequence']",
+            telemetry=(_telemetry(),),
+        ),
+        _outcome(),
+        prompt_pathology=False,
+    )
+
+    assert result[0] == TerminalClass.TOOL_ENVIRONMENT_FAILURE
+    assert result[1] == FailureLayer.L2_TOOL_ENVIRONMENT
+
+
 def test_model_token_budget_is_model_decision_when_prompt_is_bounded() -> None:
     result = _classify_terminal(
         _record(

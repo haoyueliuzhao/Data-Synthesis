@@ -72,9 +72,7 @@ SUBMECHANISM_BEHAVIOR_VERSION = "finance_capability_submechanism_behavior.v3"
 SUBMECHANISM_GEOMETRY_VERSION = "finance_capability_submechanism_geometry.v1"
 SUBMECHANISM_GATE_VERSION = "finance_capability_submechanism_gate.v1"
 SUBMECHANISM_FLASH_REPORT_VERSION = "finance_capability_submechanism_flash_development_report.v7"
-PRIMARY_RESPONSE_VARIABLE: Literal["capability_contract_success"] = (
-    "capability_contract_success"
-)
+PRIMARY_RESPONSE_VARIABLE: Literal["capability_contract_success"] = "capability_contract_success"
 
 EXPECTED_TASK_COUNT = 20
 EXPECTED_PARENT_COUNT = 4
@@ -357,9 +355,7 @@ class FinanceSubmechanismFlashReport(FrozenModel):
     host_resolution_observation_rate: float = Field(ge=0, le=1)
     ordered_behavior_success_rate: float = Field(ge=0, le=1)
     capability_contract_success_rate: float = Field(ge=0, le=1)
-    primary_response_variable: Literal["capability_contract_success"] = (
-        PRIMARY_RESPONSE_VARIABLE
-    )
+    primary_response_variable: Literal["capability_contract_success"] = PRIMARY_RESPONSE_VARIABLE
     primary_spectrum: SubmechanismGeometrySpectrum
     diagnostic_spectra: dict[DiagnosticResponse, SubmechanismGeometrySpectrum]
     gates: tuple[SubmechanismDevelopmentGate, ...] = Field(min_length=10)
@@ -1108,6 +1104,9 @@ def _host_event_sequence(
     output: list[str] = []
     allowed = set(expected)
     for observation in observations:
+        output.extend(
+            event for event in getattr(observation, "host_events", ()) if event in allowed
+        )
         output.extend(_host_events(observation.result, allowed))
     return tuple(output)
 

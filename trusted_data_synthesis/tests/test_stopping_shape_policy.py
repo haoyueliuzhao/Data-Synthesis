@@ -7,6 +7,7 @@ from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION,
     FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION,
     FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION,
+    FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION,
     FinanceStoppingDependencyOption,
     FinanceStoppingMeasurementContext,
     FinanceStoppingObservedEvidenceState,
@@ -35,10 +36,16 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_policy_
     CONFLICT_MISMATCH_BY_CELL,
     RUNTIME_CONTROL_SHAPES,
     STRUCTURAL_STRATA,
+    TARGET_ROLE_ID_BY_SHAPE,
     StoppingConflictCellAllocation,
+    StoppingPredecessorMeasurementAudit,
+    StoppingRolePositionPredecessorAudit,
     StoppingShapePolicyThresholds,
+    StoppingToolPayloadMeasurementAudit,
+    _artifact_identity_matches,
     _semantic_content_tokens,
 )
+from trusted_synthesis.hashing import canonical_hash
 
 SHAPE_ROLES = {
     "partial_required_evidence": "boundary_candidate",
@@ -99,9 +106,7 @@ def _state(*, field: str) -> FinanceStoppingObservedEvidenceState:
     if field == "subject":
         updates = {"subject_alias": "entity:observed"}
     elif field == "period":
-        updates = {
-            "temporal_identity": FinanceStoppingTemporalIdentity(label="FY2023")
-        }
+        updates = {"temporal_identity": FinanceStoppingTemporalIdentity(label="FY2023")}
     elif field == "definition":
         updates = {"definition_id": "definition:observed"}
     else:
@@ -138,11 +143,11 @@ def _contextual_decision() -> FinanceStoppingShapeDecisionContract:
     return FinanceStoppingShapeDecisionContract(
         contract_kind="matched_contextual_evidence_state_choice_two_step",
         observed_conflict_signal=(
-            "Two public records are shown below. Exactly one registered identity "
-            "component differs."
+            "Two public records are shown below. Exactly one registered identity component differs."
         ),
         observed_evidence_state=_state(field="subject"),
         oracle_conflict_dimension="entity_scope_alignment",
+        state_activation_phase="before_required_evidence_selection",
         available_resolution_actions=_state_actions(),
         resolution_step_count=2,
     )
@@ -152,11 +157,11 @@ def _conflict_decision() -> FinanceStoppingShapeDecisionContract:
     return FinanceStoppingShapeDecisionContract(
         contract_kind="single_conflict_evidence_state_choice_one_step",
         observed_conflict_signal=(
-            "Two public records are shown below. Exactly one registered identity "
-            "component differs."
+            "Two public records are shown below. Exactly one registered identity component differs."
         ),
         observed_evidence_state=_state(field="definition"),
         oracle_conflict_dimension="source_definition_compatibility",
+        state_activation_phase="after_required_evidence_selection_before_calculation",
         available_resolution_actions=_state_actions(),
         resolution_step_count=1,
     )
@@ -268,6 +273,14 @@ def test_v3_schema_rejects_v25_40_state_contracts() -> None:
         FinanceStoppingShapeDecisionContract.model_validate(payload)
 
 
+def test_v4_schema_rejects_v25_41_activation_phase() -> None:
+    payload = _contextual_decision().model_dump(mode="json")
+    payload["schema_version"] = FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION
+
+    with pytest.raises(ValidationError, match="v5 activation uses a v4 schema identity"):
+        FinanceStoppingShapeDecisionContract.model_validate(payload)
+
+
 def test_public_evidence_state_rejects_more_than_one_difference() -> None:
     state = _state(field="subject")
     with pytest.raises(ValidationError, match="exactly one field"):
@@ -289,9 +302,7 @@ def test_conflict_cell_map_freezes_supported_dimensions_and_resolution_tools() -
 
     assert counts == {"period": 6, "definition": 2, "payload_context": 0}
     assert set(CONFLICT_MISMATCH_BY_CELL) == {
-        (stratum, instance)
-        for stratum, _, _ in STRUCTURAL_STRATA
-        for instance in (0, 1)
+        (stratum, instance) for stratum, _, _ in STRUCTURAL_STRATA for instance in (0, 1)
     }
     thresholds = StoppingShapePolicyThresholds()
     assert min(counts["period"], counts["definition"]) >= (
@@ -424,7 +435,7 @@ def _shape_result(
         shape_role=SHAPE_ROLES[shape_id],
         design_status=(
             "boundary_regression"
-            if shape_id == "authority_coverage_gap"
+            if shape_id in {"authority_coverage_gap", "partial_required_evidence"}
             else (
                 "instrument_regression"
                 if shape_id in RUNTIME_CONTROL_SHAPES
@@ -604,3 +615,133 @@ def test_shape_policy_bootstrap_is_deterministic() -> None:
 
     assert first == second
     assert first[0] > 0.0
+
+
+def test_v25_41_measurement_audit_is_fail_closed() -> None:
+    audit = StoppingPredecessorMeasurementAudit(
+        rollout_counts={
+            "contextual_resolution_choice": 64,
+            "single_dimension_conflict": 64,
+        },
+        runtime_eligible_counts={
+            "contextual_resolution_choice": 64,
+            "single_dimension_conflict": 64,
+        },
+        trigger_observed_counts={
+            "contextual_resolution_choice": 0,
+            "single_dimension_conflict": 0,
+        },
+        resolution_observed_counts={
+            "contextual_resolution_choice": 18,
+            "single_dimension_conflict": 12,
+        },
+        host_event_ordered_counts={
+            "contextual_resolution_choice": 0,
+            "single_dimension_conflict": 0,
+        },
+    )
+    payload = audit.model_dump(mode="json")
+    payload["trigger_observed_counts"]["contextual_resolution_choice"] = 1
+
+    with pytest.raises(ValidationError, match="activation visibility"):
+        StoppingPredecessorMeasurementAudit.model_validate(payload)
+
+
+def test_v25_42_tool_payload_audit_is_fail_closed() -> None:
+    audit = StoppingToolPayloadMeasurementAudit(
+        rollout_counts={
+            "contextual_resolution_choice": 64,
+            "single_dimension_conflict": 64,
+        },
+        completed_counts={
+            "contextual_resolution_choice": 22,
+            "single_dimension_conflict": 8,
+        },
+        trigger_observed_counts={
+            "contextual_resolution_choice": 54,
+            "single_dimension_conflict": 37,
+        },
+        resolution_observed_counts={
+            "contextual_resolution_choice": 29,
+            "single_dimension_conflict": 13,
+        },
+        host_event_ordered_counts={
+            "contextual_resolution_choice": 29,
+            "single_dimension_conflict": 13,
+        },
+        tool_payload_schema_failure_counts={
+            "contextual_resolution_choice": 10,
+            "single_dimension_conflict": 27,
+        },
+        reported_runtime_pathology_counts={
+            "contextual_resolution_choice": 0,
+            "single_dimension_conflict": 0,
+        },
+    )
+    payload = audit.model_dump(mode="json")
+    payload["tool_payload_schema_failure_counts"]["single_dimension_conflict"] = 26
+
+    with pytest.raises(ValidationError, match="strict tool-payload"):
+        StoppingToolPayloadMeasurementAudit.model_validate(payload)
+
+
+def test_v25_44_predecessor_content_address_is_fail_closed() -> None:
+    payload: dict[str, object] = {
+        "schema_version": "fixture.v1",
+        "value": 7,
+    }
+    payload["protocol_id"] = canonical_hash(
+        payload, prefix="finance_stopping_shape_policy_protocol:"
+    )
+
+    assert _artifact_identity_matches(
+        payload,
+        identity_field="protocol_id",
+        prefix="finance_stopping_shape_policy_protocol:",
+    )
+    payload["value"] = 8
+    assert not _artifact_identity_matches(
+        payload,
+        identity_field="protocol_id",
+        prefix="finance_stopping_shape_policy_protocol:",
+    )
+
+
+def _v25_43_role_position_audit() -> StoppingRolePositionPredecessorAudit:
+    return StoppingRolePositionPredecessorAudit(
+        role_task_counts={
+            "contextual_resolution_choice": {"required_1": 4, "required_2": 4},
+            "single_dimension_conflict": {"required_1": 4, "required_3": 4},
+        },
+        role_stopping_probability_vectors={
+            "contextual_resolution_choice": {
+                "required_1": (0.875, 1.0, 1.0, 1.0),
+                "required_2": (0.0, 0.25, 0.25, 0.375),
+            },
+            "single_dimension_conflict": {
+                "required_1": (0.625, 0.75, 1.0, 1.0),
+                "required_3": (0.125, 0.625, 0.625, 0.75),
+            },
+        },
+    )
+
+
+def test_v25_44_role_position_policy_is_prospectively_frozen() -> None:
+    audit = _v25_43_role_position_audit()
+
+    assert audit.measurement_valid
+    assert audit.selected_target_role_ids == TARGET_ROLE_ID_BY_SHAPE
+    assert TARGET_ROLE_ID_BY_SHAPE == {
+        "contextual_resolution_choice": "required_2",
+        "single_dimension_conflict": "required_3",
+    }
+
+
+def test_v25_44_role_position_audit_is_fail_closed() -> None:
+    payload = _v25_43_role_position_audit().model_dump(mode="json")
+    payload["role_stopping_probability_vectors"]["single_dimension_conflict"]["required_3"][0] = (
+        0.25
+    )
+
+    with pytest.raises(ValidationError, match="response vectors"):
+        StoppingRolePositionPredecessorAudit.model_validate(payload)

@@ -32,6 +32,7 @@ from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTe
 from trusted_synthesis.runtime.tools import (
     AgentToolCall,
     AgentToolEnvironmentManifest,
+    AgentToolObservation,
     AgentToolResult,
     AgentToolSpec,
     make_agent_tool_environment_manifest,
@@ -318,6 +319,59 @@ def _task_and_answer() -> tuple[Any, dict[str, Any]]:
     task = build_finance_counterfactual_cases(count=1)[0].task.public
     answer = {field: 1 for field in required_answer_fields(task.answer_schema)}
     return task, answer
+
+
+def test_host_events_do_not_contaminate_strict_tool_output_contract() -> None:
+    spec = AgentToolSpec(
+        tool_id="strict_lookup",
+        tool_version="fixture.v1",
+        semantic_role="query",
+        trajectory_action=ActionType.SEARCH,
+        description="Return one strict public value.",
+        input_contract={"query": "string"},
+        output_contract={"value": "number"},
+        required_input_fields=("query",),
+        required_output_fields=("value",),
+    )
+    result = AgentToolResult(
+        status="succeeded",
+        result={"value": 7},
+        host_events=("activate:test",),
+    )
+
+    spec.validate_output(result.result)
+    observation = make_agent_tool_observation(
+        environment_manifest_id="manifest:test",
+        call=AgentToolCall(
+            call_index=1,
+            tool_id="strict_lookup",
+            arguments={"query": "public query"},
+        ),
+        result=result,
+        observation_time_hash="time:test",
+    )
+
+    assert observation.result == {"value": 7}
+    assert observation.host_events == ("activate:test",)
+    assert "host_events" not in observation.result
+
+
+def test_tool_observation_rejects_unknown_schema_version() -> None:
+    observation = make_agent_tool_observation(
+        environment_manifest_id="manifest:test",
+        call=AgentToolCall(
+            call_index=1,
+            tool_id="strict_lookup",
+            arguments={"query": "public query"},
+        ),
+        result=AgentToolResult(status="succeeded", result={"value": 7}),
+        observation_time_hash="time:test",
+    )
+    payload = observation.model_dump(mode="json")
+    payload["schema_version"] = "agent_tool_observation.v999"
+
+    with pytest.raises(ValueError, match="schema_version"):
+        AgentToolObservation.model_validate(payload)
 
 
 def _plan() -> dict[str, Any]:
@@ -766,9 +820,7 @@ def test_failed_action_repair_preserves_typed_resolution_guidance() -> None:
             result={
                 "retry_contract": {
                     "policy": "prerequisite_action_required",
-                    "observed_conflict_dimensions": [
-                        "source_definition_compatibility"
-                    ],
+                    "observed_conflict_dimensions": ["source_definition_compatibility"],
                     "available_resolution_actions": [
                         {
                             "tool_id": "normalize_metric_unit_period",
@@ -815,15 +867,9 @@ def test_failed_action_repair_preserves_typed_resolution_guidance() -> None:
     assert context is not None
     assert context["failed_tool_id"] == "cross_check_evidence"
     assert context["repair_source_error_code"] == "evidence_state_conflicted"
-    assert context["observed_conflict_dimensions"] == [
-        "source_definition_compatibility"
-    ]
-    assert context["available_resolution_actions"][0]["tool_id"] == (
-        "normalize_metric_unit_period"
-    )
-    assert context["resolution_decision_rule"] == (
-        "Match the observed dimension to one action."
-    )
+    assert context["observed_conflict_dimensions"] == ["source_definition_compatibility"]
+    assert context["available_resolution_actions"][0]["tool_id"] == ("normalize_metric_unit_period")
+    assert context["resolution_decision_rule"] == ("Match the observed dimension to one action.")
 
 
 def test_successful_intervening_action_reopens_a_failed_tool_call() -> None:
@@ -920,9 +966,7 @@ def test_transient_provider_retry_preserves_prompt_and_repair_budget(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     delays: list[float] = []
-    monkeypatch.setattr(
-        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
-    )
+    monkeypatch.setattr("trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append)
     client = _TransientThenValidClient(failure_count=2)
 
     value, telemetry, repair_count = _request_contract(
@@ -941,9 +985,7 @@ def test_transient_provider_retry_exhaustion_is_fail_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     delays: list[float] = []
-    monkeypatch.setattr(
-        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
-    )
+    monkeypatch.setattr("trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append)
     client = _TransientThenValidClient(
         failure_count=len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS) + 1
     )
@@ -961,9 +1003,7 @@ def test_missing_usage_telemetry_retries_without_spending_contract_repair(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     delays: list[float] = []
-    monkeypatch.setattr(
-        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
-    )
+    monkeypatch.setattr("trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append)
     client = _MissingUsageThenValidClient(failure_count=2)
 
     value, telemetry, repair_count = _request_contract(
@@ -987,9 +1027,7 @@ def test_missing_usage_telemetry_exhaustion_is_fail_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     delays: list[float] = []
-    monkeypatch.setattr(
-        "trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append
-    )
+    monkeypatch.setattr("trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append)
     client = _MissingUsageThenValidClient(
         failure_count=len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS) + 1
     )
@@ -998,10 +1036,7 @@ def test_missing_usage_telemetry_exhaustion_is_fail_closed(
         _request_contract(client, "Return a scalar contract.", _ScalarContract)
 
     assert len(captured.value.telemetry) == 4
-    assert all(
-        item.error_type == "MissingTokenUsageTelemetry"
-        for item in captured.value.telemetry
-    )
+    assert all(item.error_type == "MissingTokenUsageTelemetry" for item in captured.value.telemetry)
     assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
     assert len(set(client.prompts)) == 1
 

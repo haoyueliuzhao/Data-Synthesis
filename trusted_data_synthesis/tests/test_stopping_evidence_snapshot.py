@@ -4,9 +4,11 @@ from datetime import date
 
 from trusted_synthesis.core.evidence.schema import EvidenceItem, SubjectRef
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_evidence_snapshot import (
+    _population_identity_matches,
     select_stopping_evidence_snapshot,
     stopping_evidence_snapshot_capacity,
 )
+from trusted_synthesis.hashing import canonical_hash
 
 
 def _annual(
@@ -48,6 +50,18 @@ def _annual(
             },
         }
     )
+
+
+def test_historical_population_identity_is_fail_closed() -> None:
+    payload: dict[str, object] = {
+        "schema_version": "fixture_population.v1",
+        "task_count": 48,
+    }
+    payload["population_id"] = canonical_hash(payload, prefix="fixture_population:")
+
+    assert _population_identity_matches(payload)
+    payload["task_count"] = 49
+    assert not _population_identity_matches(payload)
 
 
 def test_snapshot_selection_preserves_contiguous_peer_series(

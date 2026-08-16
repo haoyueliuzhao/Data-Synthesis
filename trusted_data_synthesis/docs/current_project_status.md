@@ -782,3 +782,41 @@ next_permitted_stage = stopping_shape_causal_timing_repair_only
 ```
 
 See `docs/finance_v25_40_stopping_shape_policy_report.md`.
+
+## v25.43-v25.44 Stopping Instrument and Role-position Validation
+
+v25.41-v25.42 are frozen as invalid measurement attempts because host-only
+intervention metadata entered strict business results. The repaired Runtime now
+uses `agent_tool_observation.v2`, with replayable host events in a side channel;
+strict-schema failures are classified as Runtime pathology.
+
+v25.43 completed 384/384 fresh Flash rollouts with 100% execution, terminal,
+replay, and authority integrity. Authority and Partial passed, both controls
+passed, while Contextual and Conflict failed task-heterogeneity gates. A frozen
+forensic audit identified required-Evidence role position as the nuisance factor.
+
+v25.44 prospectively fixed Contextual to `required_2` and Conflict to
+`required_3`, then ran another 48 fresh tasks and 384 Flash rollouts. All four
+boundary candidates and both Runtime controls passed:
+
+```text
+execution / terminal / replay / authority integrity = 100%
+runtime pathology / L0-L2 failure                    = 0 / 0
+boundary candidates admitted                         = 4 / 4
+runtime controls passed                               = 2 / 2
+stopping behavior success                             = 70.57%
+full valid-trajectory success                         = 46.88%
+valid training trajectories                           = 180
+Pro API calls                                         = 0
+Exact Target / GP-C                                   = not evaluated
+production Contribution                               = 0
+next permitted stage = fresh_three_population_shape_policy_preparation
+```
+
+The independent raw audit found 3,268/3,268 v2 tool observations, zero host keys
+inside strict business results, zero unknown-field errors, zero Manifest hash
+drift, and 384/384 trigger observations. The positive result authorizes only the
+preparation of three fresh independent populations; it does not authorize
+Beneficiary, Exact Target, GP-C, VTDO updates, or Student training.
+
+See `docs/finance_v25_43_v25_44_stopping_role_position_validation_report.md`.

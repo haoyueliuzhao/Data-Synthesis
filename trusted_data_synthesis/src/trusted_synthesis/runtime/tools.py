@@ -10,7 +10,10 @@ from trusted_synthesis.core.trajectory.schema import ActionType
 from trusted_synthesis.hashing import canonical_hash
 
 AGENT_TOOL_ENVIRONMENT_VERSION = "agent_tool_environment.v1"
-AGENT_TOOL_OBSERVATION_VERSION = "agent_tool_observation.v1"
+AGENT_TOOL_OBSERVATION_V1_VERSION: Literal["agent_tool_observation.v1"] = (
+    "agent_tool_observation.v1"
+)
+AGENT_TOOL_OBSERVATION_VERSION: Literal["agent_tool_observation.v2"] = "agent_tool_observation.v2"
 ARGUMENT_PATCH_REQUIRED_POLICY = "argument_patch_required"
 PREREQUISITE_ACTION_REQUIRED_POLICY = "prerequisite_action_required"
 
@@ -132,6 +135,7 @@ class AgentToolResult(BaseModel):
     result: dict[str, Any]
     evidence_ids: tuple[str, ...] = ()
     provenance_hashes: tuple[str, ...] = ()
+    host_events: tuple[str, ...] = ()
     error_code: str | None = None
     error_message: str | None = None
 
@@ -141,6 +145,10 @@ class AgentToolResult(BaseModel):
             raise ValueError("Agent tool result contains duplicate Evidence IDs")
         if len(self.provenance_hashes) != len(set(self.provenance_hashes)):
             raise ValueError("Agent tool result contains duplicate provenance hashes")
+        if any(not item for item in self.host_events):
+            raise ValueError("Agent tool result contains an empty Host event")
+        if len(self.host_events) != len(set(self.host_events)):
+            raise ValueError("Agent tool result contains duplicate Host events")
         if self.status == "succeeded" and (self.error_code or self.error_message):
             raise ValueError("successful Agent tool result cannot contain an error")
         if self.status == "failed" and not self.error_code:
@@ -180,11 +188,15 @@ class AgentToolObservation(BaseModel):
     result: dict[str, Any]
     evidence_ids: tuple[str, ...] = ()
     provenance_hashes: tuple[str, ...] = ()
+    host_events: tuple[str, ...] = ()
     content_hash: str = Field(min_length=1)
     observation_time_hash: str = Field(min_length=1)
     error_code: str | None = None
     error_message: str | None = None
-    schema_version: str = AGENT_TOOL_OBSERVATION_VERSION
+    schema_version: Literal[
+        "agent_tool_observation.v1",
+        "agent_tool_observation.v2",
+    ] = AGENT_TOOL_OBSERVATION_VERSION
 
     @model_validator(mode="after")
     def validate_observation(self) -> AgentToolObservation:
@@ -192,17 +204,17 @@ class AgentToolObservation(BaseModel):
             raise ValueError("successful Agent tool observation cannot contain an error")
         if self.status == "failed" and not self.error_code:
             raise ValueError("failed Agent tool observation requires an error code")
-        expected_content_hash = canonical_hash(
-            {
-                "status": self.status,
-                "result": self.result,
-                "evidence_ids": self.evidence_ids,
-                "provenance_hashes": self.provenance_hashes,
-                "error_code": self.error_code,
-                "error_message": self.error_message,
-            },
-            prefix="agent_tool_content:",
-        )
+        content = {
+            "status": self.status,
+            "result": self.result,
+            "evidence_ids": self.evidence_ids,
+            "provenance_hashes": self.provenance_hashes,
+            "error_code": self.error_code,
+            "error_message": self.error_message,
+        }
+        if self.schema_version != AGENT_TOOL_OBSERVATION_V1_VERSION:
+            content["host_events"] = self.host_events
+        expected_content_hash = canonical_hash(content, prefix="agent_tool_content:")
         if self.content_hash != expected_content_hash:
             raise ValueError("Agent tool observation content hash is invalid")
         if self.observation_id != agent_tool_observation_id(self):
@@ -355,6 +367,7 @@ def make_agent_tool_observation(
             "result": result.result,
             "evidence_ids": result.evidence_ids,
             "provenance_hashes": result.provenance_hashes,
+            "host_events": result.host_events,
             "error_code": result.error_code,
             "error_message": result.error_message,
         },
@@ -367,6 +380,7 @@ def make_agent_tool_observation(
         "result": result.result,
         "evidence_ids": result.evidence_ids,
         "provenance_hashes": result.provenance_hashes,
+        "host_events": result.host_events,
         "content_hash": content_hash,
         "observation_time_hash": observation_time_hash,
         "error_code": result.error_code,

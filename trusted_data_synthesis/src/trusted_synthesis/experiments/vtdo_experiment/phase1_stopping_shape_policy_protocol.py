@@ -46,7 +46,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_direction_design import (  # noqa: E501
     CapabilitySubmechanismSpec,
+    _graph,
     _linear_graph,
+    _node,
     _spec,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_population import (  # noqa: E501
@@ -57,12 +59,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanis
     _make_scenario,
     _select_distractor,
     replay_submechanism_runtime,
-)
-from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_dual_estimand import (
-    FinanceStoppingDualEstimandReport,
-)
-from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_dual_estimand_protocol import (
-    FinanceStoppingDualEstimandProtocol,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stability_protocol import (
     SHAPE_COUNT,
@@ -77,10 +73,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stabili
 )
 from trusted_synthesis.hashing import canonical_hash
 
-STOPPING_SHAPE_POLICY_PROTOCOL_VERSION = "finance_stopping_shape_policy_protocol.v4"
-STOPPING_SHAPE_POLICY_POPULATION_VERSION = "finance_stopping_shape_policy_population.v4"
-STOPPING_SHAPE_POLICY_AUDIT_VERSION = "finance_stopping_shape_policy_static_audit.v4"
-STOPPING_SHAPE_POLICY_EXPERIMENT_LABEL = "finance_v25_40_stopping_shape_policy_development"
+STOPPING_SHAPE_POLICY_PROTOCOL_VERSION = "finance_stopping_shape_policy_protocol.v8"
+STOPPING_SHAPE_POLICY_POPULATION_VERSION = "finance_stopping_shape_policy_population.v8"
+STOPPING_SHAPE_POLICY_AUDIT_VERSION = "finance_stopping_shape_policy_static_audit.v8"
+STOPPING_SHAPE_POLICY_EXPERIMENT_LABEL = "finance_v25_44_stopping_shape_policy_development"
 
 TASKS_PER_STRATUM = 2
 TASKS_PER_SHAPE = len(STRUCTURAL_STRATA) * TASKS_PER_STRATUM
@@ -105,6 +101,7 @@ RUNTIME_CONTROL_SHAPES = frozenset(
 UNCHANGED_REGRESSION_SHAPES = frozenset(
     {
         "authority_coverage_gap",
+        "partial_required_evidence",
         "verified_extra_call_cost",
         "verified_extra_call_error_risk",
     }
@@ -112,11 +109,18 @@ UNCHANGED_REGRESSION_SHAPES = frozenset(
 STRUCTURAL_REDESIGN_SHAPES = frozenset(
     {
         "contextual_resolution_choice",
-        "partial_required_evidence",
         "single_dimension_conflict",
     }
 )
 ALL_SHAPES = BOUNDARY_CANDIDATE_SHAPES | RUNTIME_CONTROL_SHAPES
+
+TARGET_ROLE_INDEX_BY_SHAPE: dict[str, int] = {
+    "contextual_resolution_choice": 1,
+    "single_dimension_conflict": 2,
+}
+TARGET_ROLE_ID_BY_SHAPE: dict[str, str] = {
+    shape_id: f"required_{index + 1}" for shape_id, index in TARGET_ROLE_INDEX_BY_SHAPE.items()
+}
 
 CONFLICT_MISMATCH_BY_CELL: dict[tuple[str, int], str] = {
     ("retrieval_join_frontier", 0): "period",
@@ -182,8 +186,8 @@ class StoppingShapePolicyDefinition(FrozenModel):
     valid_training_support_response: Literal["full_valid_trajectory_success"] = (
         "full_valid_trajectory_success"
     )
-    contribution_authorized_support_response: Literal["not_evaluated_in_v25_40"] = (
-        "not_evaluated_in_v25_40"
+    contribution_authorized_support_response: Literal["not_evaluated_in_v25_44"] = (
+        "not_evaluated_in_v25_44"
     )
     cross_estimand_rescue_forbidden: Literal[True] = True
     invalid_trajectory_training_use_forbidden: Literal[True] = True
@@ -192,13 +196,160 @@ class StoppingShapePolicyDefinition(FrozenModel):
     historical_v25_38_reclassification_authorized: Literal[False] = False
 
 
+class StoppingPredecessorMeasurementAudit(FrozenModel):
+    affected_shape_ids: tuple[
+        Literal["contextual_resolution_choice", "single_dimension_conflict"], ...
+    ] = ("contextual_resolution_choice", "single_dimension_conflict")
+    rollout_counts: dict[str, int]
+    runtime_eligible_counts: dict[str, int]
+    trigger_observed_counts: dict[str, int]
+    resolution_observed_counts: dict[str, int]
+    host_event_ordered_counts: dict[str, int]
+    measurement_valid: Literal[False] = False
+    invalid_reason: Literal["activation_event_not_emitted_to_tool_observation"] = (
+        "activation_event_not_emitted_to_tool_observation"
+    )
+    historical_result_reinterpretation_authorized: Literal[False] = False
+
+    @model_validator(mode="after")
+    def validate_audit(self) -> StoppingPredecessorMeasurementAudit:
+        expected_shapes = {
+            "contextual_resolution_choice",
+            "single_dimension_conflict",
+        }
+        mappings = (
+            self.rollout_counts,
+            self.runtime_eligible_counts,
+            self.trigger_observed_counts,
+            self.resolution_observed_counts,
+            self.host_event_ordered_counts,
+        )
+        if any(set(item) != expected_shapes for item in mappings):
+            raise ValueError("v25.41 measurement audit Shape coverage is incomplete")
+        if self.rollout_counts != {shape: 64 for shape in expected_shapes}:
+            raise ValueError("v25.41 measurement audit rollout denominator changed")
+        if self.runtime_eligible_counts != {shape: 64 for shape in expected_shapes}:
+            raise ValueError("v25.41 affected Shape Runtime was not fully eligible")
+        if self.trigger_observed_counts != {shape: 0 for shape in expected_shapes}:
+            raise ValueError("v25.41 activation visibility diagnosis changed")
+        if self.host_event_ordered_counts != {shape: 0 for shape in expected_shapes}:
+            raise ValueError("v25.41 ordered-event diagnosis changed")
+        if self.resolution_observed_counts != {
+            "contextual_resolution_choice": 18,
+            "single_dimension_conflict": 12,
+        }:
+            raise ValueError("v25.41 resolution diagnostic counts changed")
+        return self
+
+
+class StoppingToolPayloadMeasurementAudit(FrozenModel):
+    affected_shape_ids: tuple[
+        Literal["contextual_resolution_choice", "single_dimension_conflict"], ...
+    ] = ("contextual_resolution_choice", "single_dimension_conflict")
+    rollout_counts: dict[str, int]
+    completed_counts: dict[str, int]
+    trigger_observed_counts: dict[str, int]
+    resolution_observed_counts: dict[str, int]
+    host_event_ordered_counts: dict[str, int]
+    tool_payload_schema_failure_counts: dict[str, int]
+    reported_runtime_pathology_counts: dict[str, int]
+    measurement_valid: Literal[False] = False
+    invalid_reason: Literal["host_event_metadata_injected_into_strict_tool_result_payload"] = (
+        "host_event_metadata_injected_into_strict_tool_result_payload"
+    )
+    historical_result_reinterpretation_authorized: Literal[False] = False
+
+    @model_validator(mode="after")
+    def validate_audit(self) -> StoppingToolPayloadMeasurementAudit:
+        expected_shapes = {
+            "contextual_resolution_choice",
+            "single_dimension_conflict",
+        }
+        mappings = (
+            self.rollout_counts,
+            self.completed_counts,
+            self.trigger_observed_counts,
+            self.resolution_observed_counts,
+            self.host_event_ordered_counts,
+            self.tool_payload_schema_failure_counts,
+            self.reported_runtime_pathology_counts,
+        )
+        if any(set(item) != expected_shapes for item in mappings):
+            raise ValueError("v25.42 tool-payload audit Shape coverage is incomplete")
+        if self.rollout_counts != {shape: 64 for shape in expected_shapes}:
+            raise ValueError("v25.42 tool-payload audit rollout denominator changed")
+        if self.completed_counts != {
+            "contextual_resolution_choice": 22,
+            "single_dimension_conflict": 8,
+        }:
+            raise ValueError("v25.42 completed-record diagnosis changed")
+        if self.trigger_observed_counts != {
+            "contextual_resolution_choice": 54,
+            "single_dimension_conflict": 37,
+        }:
+            raise ValueError("v25.42 trigger visibility counts changed")
+        if self.resolution_observed_counts != {
+            "contextual_resolution_choice": 29,
+            "single_dimension_conflict": 13,
+        }:
+            raise ValueError("v25.42 resolution counts changed")
+        if self.host_event_ordered_counts != self.resolution_observed_counts:
+            raise ValueError("v25.42 ordered-event diagnosis changed")
+        if self.tool_payload_schema_failure_counts != {
+            "contextual_resolution_choice": 10,
+            "single_dimension_conflict": 27,
+        }:
+            raise ValueError("v25.42 strict tool-payload failure counts changed")
+        if self.reported_runtime_pathology_counts != {shape: 0 for shape in expected_shapes}:
+            raise ValueError("v25.42 Runtime-pathology misclassification diagnosis changed")
+        return self
+
+
+class StoppingRolePositionPredecessorAudit(FrozenModel):
+    affected_shape_ids: tuple[
+        Literal["contextual_resolution_choice", "single_dimension_conflict"], ...
+    ] = ("contextual_resolution_choice", "single_dimension_conflict")
+    role_task_counts: dict[str, dict[str, int]]
+    role_stopping_probability_vectors: dict[str, dict[str, tuple[float, ...]]]
+    selected_target_role_ids: dict[str, str] = Field(
+        default_factory=lambda: dict(TARGET_ROLE_ID_BY_SHAPE)
+    )
+    measurement_valid: Literal[True] = True
+    redesign_basis: Literal["required_role_position_is_a_measured_nuisance_factor"] = (
+        "required_role_position_is_a_measured_nuisance_factor"
+    )
+    historical_result_transfer_authorized: Literal[False] = False
+
+    @model_validator(mode="after")
+    def validate_audit(self) -> StoppingRolePositionPredecessorAudit:
+        expected_counts = {
+            "contextual_resolution_choice": {"required_1": 4, "required_2": 4},
+            "single_dimension_conflict": {"required_1": 4, "required_3": 4},
+        }
+        expected_vectors = {
+            "contextual_resolution_choice": {
+                "required_1": (0.875, 1.0, 1.0, 1.0),
+                "required_2": (0.0, 0.25, 0.25, 0.375),
+            },
+            "single_dimension_conflict": {
+                "required_1": (0.625, 0.75, 1.0, 1.0),
+                "required_3": (0.125, 0.625, 0.625, 0.75),
+            },
+        }
+        if self.role_task_counts != expected_counts:
+            raise ValueError("v25.43 required-role task counts changed")
+        if self.role_stopping_probability_vectors != expected_vectors:
+            raise ValueError("v25.43 required-role response vectors changed")
+        if self.selected_target_role_ids != TARGET_ROLE_ID_BY_SHAPE:
+            raise ValueError("v25.44 target-role policy changed")
+        return self
+
+
 class StoppingConflictCellAllocation(FrozenModel):
     stratum_id: str = Field(min_length=1)
     instance_index: Literal[0, 1]
     mismatch_field: Literal["period", "definition"]
-    expected_resolution_tool: Literal[
-        "query_structured_fact", "normalize_metric_unit_period"
-    ]
+    expected_resolution_tool: Literal["query_structured_fact", "normalize_metric_unit_period"]
 
     @model_validator(mode="after")
     def validate_allocation(self) -> StoppingConflictCellAllocation:
@@ -276,7 +427,7 @@ class StoppingShapePolicyDesign(FrozenModel):
                 "matched_contextual_evidence_state_choice_two_step",
             ),
             "partial_required_evidence": (
-                "structural_redesign",
+                "boundary_regression",
                 "conditional_dependency_observation_required",
             ),
             "single_dimension_conflict": (
@@ -297,16 +448,21 @@ class StoppingShapePolicyDesign(FrozenModel):
 class FinanceStoppingShapePolicyProtocol(FrozenModel):
     protocol_id: str = Field(min_length=1)
     run_id: str = Field(min_length=1)
-    experiment_label: Literal["finance_v25_40_stopping_shape_policy_development"] = (
-        "finance_v25_40_stopping_shape_policy_development"
+    experiment_label: Literal["finance_v25_44_stopping_shape_policy_development"] = (
+        "finance_v25_44_stopping_shape_policy_development"
     )
-    source_v25_38_protocol: FrozenArtifactReference
-    source_v25_38_population: FrozenArtifactReference
-    source_v25_38_contract: FrozenArtifactReference
-    source_v25_38_report: FrozenArtifactReference
+    source_v25_43_protocol: FrozenArtifactReference
+    source_v25_43_population: FrozenArtifactReference
+    source_v25_43_contract: FrozenArtifactReference
+    source_v25_43_report: FrozenArtifactReference
+    source_v25_43_manifest: FrozenArtifactReference
+    source_v25_43_records: FrozenArtifactReference
+    source_v25_43_terminal_outcomes: FrozenArtifactReference
+    source_v25_43_behavior_diagnostics: FrozenArtifactReference
+    predecessor_role_position_audit: StoppingRolePositionPredecessorAudit
     source_finance_artifacts: FrozenArtifactReference
     source_calibration_contract: FrozenArtifactReference
-    historical_population_references: tuple[FrozenArtifactReference, ...] = Field(min_length=35)
+    historical_population_references: tuple[FrozenArtifactReference, ...] = Field(min_length=40)
     estimand_definition: StoppingShapePolicyDefinition = Field(
         default_factory=StoppingShapePolicyDefinition
     )
@@ -318,12 +474,11 @@ class FinanceStoppingShapePolicyProtocol(FrozenModel):
         min_length=8,
         max_length=8,
     )
+    target_role_ids: dict[str, str] = Field(default_factory=lambda: dict(TARGET_ROLE_ID_BY_SHAPE))
     conflict_allocation_basis: Literal[
         "exact_one_difference_capacity_preflight_on_frozen_snapshot"
     ] = "exact_one_difference_capacity_preflight_on_frozen_snapshot"
-    unsupported_conflict_dimensions: tuple[Literal["payload_context"], ...] = (
-        "payload_context",
-    )
+    unsupported_conflict_dimensions: tuple[Literal["payload_context"], ...] = ("payload_context",)
     structural_strata: tuple[tuple[str, str, DifficultyTier], ...] = STRUCTURAL_STRATA
     thresholds: StoppingShapePolicyThresholds = Field(default_factory=StoppingShapePolicyThresholds)
     tasks_per_stratum: Literal[2] = 2
@@ -365,8 +520,7 @@ class FinanceStoppingShapePolicyProtocol(FrozenModel):
             for instance_index in range(TASKS_PER_STRATUM)
         }
         observed_cells = {
-            (item.stratum_id, item.instance_index)
-            for item in self.conflict_cell_allocations
+            (item.stratum_id, item.instance_index) for item in self.conflict_cell_allocations
         }
         if observed_cells != expected_cells:
             raise ValueError("Stopping Shape policy conflict Cell coverage is incomplete")
@@ -374,10 +528,13 @@ class FinanceStoppingShapePolicyProtocol(FrozenModel):
             self.historical_population_references
         ):
             raise ValueError("Stopping Shape policy historical populations are duplicated")
-        if self.source_v25_38_population.artifact_id not in {
-            item.artifact_id for item in self.historical_population_references
-        }:
-            raise ValueError("v25.38 Population is absent from the freshness exclusion set")
+        historical_ids = {item.artifact_id for item in self.historical_population_references}
+        if self.source_v25_43_population.artifact_id not in historical_ids:
+            raise ValueError("v25.43 Population is absent from the freshness exclusion set")
+        if not self.predecessor_role_position_audit.measurement_valid:
+            raise ValueError("v25.44 requires a measurement-valid v25.43 predecessor")
+        if self.target_role_ids != TARGET_ROLE_ID_BY_SHAPE:
+            raise ValueError("v25.44 target-role position policy changed")
         if self.estimand_definition != StoppingShapePolicyDefinition():
             raise ValueError("Stopping Shape policy definition changed")
         if self.protocol_id != stopping_shape_policy_protocol_id(self):
@@ -402,6 +559,7 @@ class StoppingShapePolicyStaticAudit(FrozenModel):
     public_oracle_isolation_rate: float = Field(ge=0, le=1)
     answer_contract_rate: float = Field(ge=0, le=1)
     public_decision_contract_rate: float = Field(ge=0, le=1)
+    causal_state_action_graph_rate: float = Field(ge=0, le=1)
     conditional_dependency_contract_rate: float = Field(ge=0, le=1)
     conditional_dependency_output_contract_rate: float = Field(ge=0, le=1)
     matched_contextual_contract_rate: float = Field(ge=0, le=1)
@@ -415,6 +573,9 @@ class StoppingShapePolicyStaticAudit(FrozenModel):
     contextual_conflict_decoy_one_dimensional_rate: float = Field(ge=0, le=1)
     lexical_conflict_leakage_count: int = Field(ge=0, le=0)
     contextual_task_construction_matched: bool
+    target_role_ids: dict[str, str]
+    target_role_control_rate: float = Field(ge=0, le=1)
+    target_role_position_control_frozen: bool
     within_population_evidence_disjoint: bool
     historical_task_disjoint: bool
     historical_evidence_disjoint: bool
@@ -445,10 +606,14 @@ class StoppingShapePolicyStaticAudit(FrozenModel):
             raise ValueError("Stopping Shape policy boundary denominator changed")
         if self.runtime_control_task_count != 16:
             raise ValueError("Stopping Shape policy control denominator changed")
-        if self.unchanged_regression_task_count != 24:
+        if self.unchanged_regression_task_count != 32:
             raise ValueError("Stopping Shape policy regression denominator changed")
-        if self.structural_redesign_task_count != 24:
+        if self.structural_redesign_task_count != 16:
             raise ValueError("Stopping Shape policy redesign denominator changed")
+        if self.target_role_ids != TARGET_ROLE_ID_BY_SHAPE:
+            raise ValueError("Stopping Shape policy target-role map changed")
+        if self.target_role_control_rate != 1.0 or not self.target_role_position_control_frozen:
+            raise ValueError("Stopping Shape policy target-role control is incomplete")
         expected_stage = (
             "flash_stopping_shape_policy_development"
             if expected
@@ -545,12 +710,30 @@ def stopping_shape_policy_population_id(
     )
 
 
+def _artifact_identity_matches(
+    payload: Mapping[str, Any], *, identity_field: str, prefix: str
+) -> bool:
+    identity = str(payload.get(identity_field, ""))
+    return bool(
+        identity
+        and identity
+        == canonical_hash(
+            {key: value for key, value in payload.items() if key != identity_field},
+            prefix=prefix,
+        )
+    )
+
+
 def prepare_stopping_shape_policy_protocol(
     *,
-    source_protocol_path: Path,
-    source_population_path: Path,
-    source_contract_path: Path,
-    source_report_path: Path,
+    source_v25_43_protocol_path: Path,
+    source_v25_43_population_path: Path,
+    source_v25_43_contract_path: Path,
+    source_v25_43_report_path: Path,
+    source_v25_43_manifest_path: Path,
+    source_v25_43_records_path: Path,
+    source_v25_43_terminal_outcomes_path: Path,
+    source_v25_43_behavior_diagnostics_path: Path,
     output_path: Path,
     run_id: str,
     source_finance_artifacts_path: Path | None = None,
@@ -559,63 +742,261 @@ def prepare_stopping_shape_policy_protocol(
 ) -> FinanceStoppingShapePolicyProtocol:
     if output_path.exists():
         raise ValueError("Stopping Shape policy protocol is immutable")
-    paths = tuple(
+    source_paths = tuple(
         path.resolve()
         for path in (
-            source_protocol_path,
-            source_population_path,
-            source_contract_path,
-            source_report_path,
+            source_v25_43_protocol_path,
+            source_v25_43_population_path,
+            source_v25_43_contract_path,
+            source_v25_43_report_path,
         )
     )
-    source_protocol = FinanceStoppingDualEstimandProtocol.model_validate_json(
-        paths[0].read_text(encoding="utf-8")
-    )
-    source_population_payload = json.loads(paths[1].read_text(encoding="utf-8"))
-    source_contract_payload = json.loads(paths[2].read_text(encoding="utf-8"))
-    if not isinstance(source_population_payload, Mapping) or not isinstance(
-        source_contract_payload, Mapping
-    ):
-        raise ValueError("v25.38 frozen Population or Contract is not a JSON object")
-    source_population_id = str(source_population_payload.get("population_id", ""))
-    source_contract_id = str(source_contract_payload.get("contract_id", ""))
-    contract_protocol = source_contract_payload.get("source_protocol")
-    contract_population = source_contract_payload.get("source_population")
-    if not isinstance(contract_protocol, Mapping) or not isinstance(
-        contract_population, Mapping
-    ):
-        raise ValueError("v25.38 frozen Contract lacks typed lineage references")
-    source_report = FinanceStoppingDualEstimandReport.model_validate_json(
-        paths[3].read_text(encoding="utf-8")
-    )
+    manifest_path = source_v25_43_manifest_path.resolve()
+    records_path = source_v25_43_records_path.resolve()
+    terminal_path = source_v25_43_terminal_outcomes_path.resolve()
+    behavior_path = source_v25_43_behavior_diagnostics_path.resolve()
+    payloads = tuple(json.loads(path.read_text(encoding="utf-8")) for path in source_paths)
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if any(not isinstance(item, Mapping) for item in (*payloads, manifest_payload)):
+        raise ValueError("v25.43 frozen predecessor artifacts are not JSON objects")
+    protocol_payload, population_payload, contract_payload, report_payload = payloads
+    protocol_id = str(protocol_payload.get("protocol_id", ""))
+    population_id = str(population_payload.get("population_id", ""))
+    contract_id = str(contract_payload.get("contract_id", ""))
+    report_id = str(report_payload.get("report_id", ""))
+    contract_protocol = contract_payload.get("source_protocol")
+    contract_population = contract_payload.get("source_population")
+    history_payload = protocol_payload.get("historical_population_references")
+    task_shape_ids = contract_payload.get("task_shape_ids")
+    task_payloads = population_payload.get("tasks")
+    shape_results = report_payload.get("shape_results")
     if not (
-        str(source_population_payload.get("protocol_id", "")) == source_protocol.protocol_id
-        and str(contract_protocol.get("artifact_id", "")) == source_protocol.protocol_id
-        and str(contract_population.get("artifact_id", "")) == source_population_id
-        and source_report.contract_id == source_contract_id
-        and source_population_id
-        and source_contract_id
+        isinstance(contract_protocol, Mapping)
+        and isinstance(contract_population, Mapping)
+        and isinstance(history_payload, list)
+        and isinstance(task_shape_ids, Mapping)
+        and isinstance(task_payloads, list)
+        and isinstance(shape_results, list)
     ):
-        raise ValueError("v25.38 Stopping Shape lineage is inconsistent")
-    if not (
-        source_report.runtime_measurement_ready
-        and not source_report.all_shapes_admitted
-        and not source_report.policy_frozen
-        and not source_report.fresh_three_population_preparation_authorized
-        and source_report.next_permitted_stage == "stopping_shape_redesign_only"
-    ):
-        raise ValueError("v25.38 did not authorize prospective estimand redesign")
-    admitted = {item.shape_id for item in source_report.shape_results if item.admitted}
-    if admitted != {
+        raise ValueError("v25.43 frozen predecessor lacks typed lineage or task results")
+    history = tuple(FrozenArtifactReference.model_validate(item) for item in history_payload)
+    admitted = {
+        str(item.get("shape_id"))
+        for item in shape_results
+        if isinstance(item, Mapping) and bool(item.get("admitted"))
+    }
+    expected_admitted = {
         "authority_coverage_gap",
+        "partial_required_evidence",
         "verified_extra_call_cost",
         "verified_extra_call_error_risk",
-    }:
-        raise ValueError("v25.38 Shape result identity differs from the frozen audit")
-    result_by_shape = {item.shape_id: item for item in source_report.shape_results}
-    designs = tuple(
-        _make_shape_policy_design(item, result_by_shape[item.shape_id].admitted)
-        for item in source_protocol.shape_designs
+    }
+    if not (
+        protocol_id
+        and population_id
+        and contract_id
+        and report_id
+        and _artifact_identity_matches(
+            protocol_payload,
+            identity_field="protocol_id",
+            prefix="finance_stopping_shape_policy_protocol:",
+        )
+        and _artifact_identity_matches(
+            population_payload,
+            identity_field="population_id",
+            prefix="finance_stopping_shape_policy_population:",
+        )
+        and _artifact_identity_matches(
+            contract_payload,
+            identity_field="contract_id",
+            prefix="finance_stopping_shape_policy_contract:",
+        )
+        and _artifact_identity_matches(
+            report_payload,
+            identity_field="report_id",
+            prefix="finance_stopping_shape_policy_report:",
+        )
+        and str(contract_protocol.get("sha256")) == _sha256(source_paths[0])
+        and str(contract_population.get("sha256")) == _sha256(source_paths[1])
+        and str(protocol_payload.get("schema_version"))
+        == "finance_stopping_shape_policy_protocol.v7"
+        and str(population_payload.get("schema_version"))
+        == "finance_stopping_shape_policy_population.v7"
+        and str(contract_payload.get("schema_version"))
+        == "finance_stopping_shape_policy_contract.v7"
+        and str(report_payload.get("schema_version")) == "finance_stopping_shape_policy_report.v7"
+        and str(manifest_payload.get("schema_version"))
+        == "finance_stopping_shape_policy_manifest.v7"
+        and str(population_payload.get("protocol_id")) == protocol_id
+        and str(contract_protocol.get("artifact_id")) == protocol_id
+        and str(contract_population.get("artifact_id")) == population_id
+        and str(report_payload.get("contract_id")) == contract_id
+        and str(manifest_payload.get("contract_id")) == contract_id
+        and str(manifest_payload.get("report_id")) == report_id
+        and str(manifest_payload.get("records_sha256")) == _sha256(records_path)
+        and str(manifest_payload.get("terminal_outcomes_sha256")) == _sha256(terminal_path)
+        and str(manifest_payload.get("legacy_behavior_diagnostics_sha256"))
+        == _sha256(behavior_path)
+        and str(manifest_payload.get("report_sha256")) == _sha256(source_paths[3])
+        and int(report_payload.get("recorded_rollout_count", -1)) == EXPECTED_ROLLOUT_COUNT
+        and bool(report_payload.get("runtime_measurement_ready"))
+        and bool(report_payload.get("valid_training_support_ready"))
+        and int(report_payload.get("l0_l2_failure_count", -1)) == 0
+        and float(report_payload.get("runtime_pathology_rate", -1.0)) == 0.0
+        and int(report_payload.get("boundary_candidate_admitted_count", -1)) == 2
+        and int(report_payload.get("runtime_control_pass_count", -1)) == 2
+        and not bool(report_payload.get("all_boundary_candidates_admitted"))
+        and bool(report_payload.get("all_runtime_controls_passed"))
+        and not bool(report_payload.get("all_shapes_contract_passing"))
+        and admitted == expected_admitted
+        and str(report_payload.get("next_permitted_stage")) == "stopping_shape_redesign_only"
+        and not bool(report_payload.get("fresh_three_population_preparation_authorized"))
+        and int(report_payload.get("pro_api_call_count", -1)) == 0
+        and not bool(report_payload.get("beneficiary_screening_authorized"))
+        and not bool(report_payload.get("exact_target_evaluated"))
+        and not bool(report_payload.get("gp_c_evaluated"))
+        and float(report_payload.get("production_contribution", -1.0)) == 0.0
+    ):
+        raise ValueError("v25.43 predecessor identity or frozen result state changed")
+
+    records = tuple(
+        json.loads(line)
+        for line in records_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    terminals = tuple(
+        json.loads(line)
+        for line in terminal_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    behaviors = tuple(
+        json.loads(line)
+        for line in behavior_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    if not (
+        len(records) == len(terminals) == len(behaviors) == EXPECTED_ROLLOUT_COUNT
+        and all(isinstance(item, Mapping) for item in (*records, *terminals, *behaviors))
+    ):
+        raise ValueError("v25.43 diagnostic artifacts have an invalid denominator")
+    forbidden_result_keys = {
+        "host_event_sequence",
+        "submechanism_activation",
+        "host_events",
+    }
+    observation_count = 0
+    for record in records:
+        observations = list(record.get("observations") or ())
+        failure = record.get("failure_artifact")
+        if isinstance(failure, Mapping):
+            observations.extend(failure.get("observations") or ())
+        for observation in observations:
+            if not isinstance(observation, Mapping):
+                raise ValueError("v25.43 observation is not a JSON object")
+            observation_count += 1
+            if str(observation.get("schema_version")) != "agent_tool_observation.v2":
+                raise ValueError("v25.43 observation does not use the Host side channel")
+            result = observation.get("result")
+            if not isinstance(result, Mapping):
+                raise ValueError("v25.43 observation result is not a JSON object")
+            if forbidden_result_keys.intersection(result):
+                raise ValueError("v25.43 Host metadata contaminated a strict tool result")
+            if "unknown fields" in str(observation.get("error_message") or "").lower():
+                raise ValueError("v25.43 predecessor contains a strict tool-payload failure")
+    if observation_count == 0:
+        raise ValueError("v25.43 predecessor contains no replayable observations")
+    if any(
+        "Agent tool result contains unknown fields" in str(record.get("error_message") or "")
+        for record in records
+    ):
+        raise ValueError("v25.43 predecessor contains a strict tool-payload failure")
+
+    task_by_id = {
+        str(item.get("artifact", {}).get("artifact_id", "")): item
+        for item in task_payloads
+        if isinstance(item, Mapping) and isinstance(item.get("artifact"), Mapping)
+    }
+    response_by_task: dict[str, float] = {}
+    for shape_result in shape_results:
+        if not isinstance(shape_result, Mapping):
+            continue
+        for task_result in shape_result.get("task_responses") or ():
+            if isinstance(task_result, Mapping):
+                response_by_task[str(task_result.get("task_artifact_id", ""))] = float(
+                    task_result.get("stopping_probability", -1.0)
+                )
+    role_vectors: dict[str, dict[str, list[float]]] = {
+        shape_id: {} for shape_id in TARGET_ROLE_ID_BY_SHAPE
+    }
+    for task_id, task in task_by_id.items():
+        shape_id = str(task.get("shape_id", ""))
+        if shape_id not in role_vectors:
+            continue
+        scenario = task.get("scenario")
+        if not isinstance(scenario, Mapping):
+            raise ValueError("v25.43 role-position task lacks a scenario")
+        decision = scenario.get("stopping_shape_decision_contract")
+        roles = scenario.get("evidence_roles")
+        if not isinstance(decision, Mapping) or not isinstance(roles, list):
+            raise ValueError("v25.43 role-position task lacks a decision or roles")
+        state = decision.get("observed_evidence_state")
+        if not isinstance(state, Mapping) or not isinstance(state.get("required_record"), Mapping):
+            raise ValueError("v25.43 role-position task lacks a required record")
+        required = state["required_record"]
+        temporal = required.get("temporal_identity")
+        if not isinstance(temporal, Mapping):
+            raise ValueError("v25.43 required record lacks temporal identity")
+        matches = [
+            role
+            for role in roles
+            if isinstance(role, Mapping)
+            and (
+                str(role.get("subject_alias")),
+                str(role.get("metric_alias")),
+                str(role.get("period_label")),
+            )
+            == (
+                str(required.get("subject_alias")),
+                str(required.get("metric_alias")),
+                str(temporal.get("label")),
+            )
+        ]
+        if len(matches) != 1 or task_id not in response_by_task:
+            raise ValueError("v25.43 target role cannot be reconstructed uniquely")
+        role_id = str(matches[0].get("role_id", ""))
+        role_vectors[shape_id].setdefault(role_id, []).append(response_by_task[task_id])
+    frozen_role_vectors = {
+        shape_id: {role_id: tuple(sorted(values)) for role_id, values in sorted(by_role.items())}
+        for shape_id, by_role in sorted(role_vectors.items())
+    }
+    role_counts = {
+        shape_id: {role_id: len(values) for role_id, values in sorted(by_role.items())}
+        for shape_id, by_role in sorted(role_vectors.items())
+    }
+    predecessor_audit = StoppingRolePositionPredecessorAudit(
+        role_task_counts=role_counts,
+        role_stopping_probability_vectors=frozen_role_vectors,
+    )
+
+    manifest_id = canonical_hash(
+        manifest_payload,
+        prefix="finance_stopping_shape_policy_manifest_artifact:",
+    )
+    records_id = canonical_hash(
+        {"contract_id": contract_id, "sha256": _sha256(records_path)},
+        prefix="finance_stopping_shape_policy_records:",
+    )
+    terminal_id = canonical_hash(
+        {"contract_id": contract_id, "sha256": _sha256(terminal_path)},
+        prefix="finance_stopping_shape_policy_terminal_outcomes:",
+    )
+    behavior_id = canonical_hash(
+        {
+            "contract_id": contract_id,
+            "sha256": _sha256(behavior_path),
+            "role_position_audit": predecessor_audit,
+        },
+        prefix="finance_stopping_shape_policy_behavior_diagnostics:",
     )
     additional_historical = tuple(
         _reference(
@@ -626,37 +1007,70 @@ def prepare_stopping_shape_policy_protocol(
     )
     historical = tuple(
         sorted(
-            (
-                *source_protocol.historical_population_references,
-                _reference(paths[1], source_population_id),
-                *additional_historical,
-            ),
+            (*history, _reference(source_paths[1], population_id), *additional_historical),
             key=lambda item: item.artifact_id,
         )
     )
     if len({item.artifact_id for item in historical}) != len(historical):
-        raise ValueError("v25.40 historical exclusion set contains a duplicate")
+        raise ValueError("v25.44 historical exclusion set contains a duplicate")
     if (source_finance_artifacts_path is None) != (source_finance_artifacts_id is None):
         raise ValueError(
             "Stopping Shape policy Finance artifact path and identity must be supplied together"
         )
-    source_finance_reference = source_protocol.source_finance_artifacts
+    finance_reference = FrozenArtifactReference.model_validate(
+        protocol_payload.get("source_finance_artifacts")
+    )
     if source_finance_artifacts_path is not None and source_finance_artifacts_id is not None:
-        source_finance_reference = _reference(
+        finance_reference = _reference(
             source_finance_artifacts_path.resolve(), source_finance_artifacts_id
         )
-
+    calibration_reference = FrozenArtifactReference.model_validate(
+        protocol_payload.get("source_calibration_contract")
+    )
+    result_by_shape = {
+        str(item.get("shape_id")): item for item in shape_results if isinstance(item, Mapping)
+    }
+    design_payloads = protocol_payload.get("shape_designs")
+    if not isinstance(design_payloads, list):
+        raise ValueError("v25.43 protocol lacks Shape designs")
+    designs = tuple(
+        StoppingShapePolicyDesign.model_validate(
+            {
+                **item,
+                "source_result_admitted": bool(
+                    result_by_shape.get(str(item.get("shape_id")), {}).get("admitted")
+                ),
+                "design_status": (
+                    "structural_redesign"
+                    if str(item.get("shape_id")) in STRUCTURAL_REDESIGN_SHAPES
+                    else (
+                        "instrument_regression"
+                        if str(item.get("shape_id")) in RUNTIME_CONTROL_SHAPES
+                        else "boundary_regression"
+                    )
+                ),
+            }
+        )
+        for item in design_payloads
+        if isinstance(item, Mapping)
+    )
     values = {
         "run_id": run_id,
-        "source_v25_38_protocol": _reference(paths[0], source_protocol.protocol_id),
-        "source_v25_38_population": _reference(paths[1], source_population_id),
-        "source_v25_38_contract": _reference(paths[2], source_contract_id),
-        "source_v25_38_report": _reference(paths[3], source_report.report_id),
-        "source_finance_artifacts": source_finance_reference,
-        "source_calibration_contract": source_protocol.source_calibration_contract,
+        "source_v25_43_protocol": _reference(source_paths[0], protocol_id),
+        "source_v25_43_population": _reference(source_paths[1], population_id),
+        "source_v25_43_contract": _reference(source_paths[2], contract_id),
+        "source_v25_43_report": _reference(source_paths[3], report_id),
+        "source_v25_43_manifest": _reference(manifest_path, manifest_id),
+        "source_v25_43_records": _reference(records_path, records_id),
+        "source_v25_43_terminal_outcomes": _reference(terminal_path, terminal_id),
+        "source_v25_43_behavior_diagnostics": _reference(behavior_path, behavior_id),
+        "predecessor_role_position_audit": predecessor_audit,
+        "source_finance_artifacts": finance_reference,
+        "source_calibration_contract": calibration_reference,
         "historical_population_references": historical,
         "estimand_definition": StoppingShapePolicyDefinition(),
         "shape_designs": designs,
+        "target_role_ids": dict(TARGET_ROLE_ID_BY_SHAPE),
     }
     provisional = FinanceStoppingShapePolicyProtocol.model_construct(
         protocol_id="pending", **values
@@ -734,6 +1148,7 @@ def build_stopping_shape_policy_population(
                         if design.shape_id == "single_dimension_conflict"
                         else None
                     ),
+                    target_role_index=TARGET_ROLE_INDEX_BY_SHAPE.get(design.shape_id),
                     used_ids=used_ids,
                     used_versions=used_versions,
                     sampling_salt=(f"{run_id}:{design.shape_id}:{stratum_id}:{instance_index}"),
@@ -812,6 +1227,13 @@ def make_stopping_shape_policy_static_audit(
     task_expected_host_events: Mapping[str, tuple[str, str]],
 ) -> StoppingShapePolicyStaticAudit:
     design_by_shape = {item.shape_id: item for item in protocol.shape_designs}
+    causal_graph_checks = tuple(
+        _causal_state_action_graph_ready(design_by_shape[shape_id])
+        for shape_id in (
+            "contextual_resolution_choice",
+            "single_dimension_conflict",
+        )
+    )
     shape_counts = Counter(item.shape_id for item in tasks)
     role_counts = Counter(item.shape_role for item in tasks)
     stratum_counts = Counter(item.stratum_id for item in tasks)
@@ -861,6 +1283,11 @@ def make_stopping_shape_policy_static_audit(
         for item in (*contextual_tasks, *conflict_tasks)
     )
     contextual_signatures = {_contextual_construction_signature(item) for item in contextual_tasks}
+    role_position_tasks = (*contextual_tasks, *conflict_tasks)
+    target_role_checks = tuple(
+        _required_decision_role_id(item) == protocol.target_role_ids[item.shape_id]
+        for item in role_position_tasks
+    )
     lexical_leaks = sum(
         not _conflict_public_text_isolated(item) for item in (*contextual_tasks, *conflict_tasks)
     )
@@ -892,7 +1319,7 @@ def make_stopping_shape_policy_static_audit(
         "shape_redundancy": set(shape_counts) == ALL_SHAPES
         and set(shape_counts.values()) == {TASKS_PER_SHAPE},
         "shape_role_denominators": boundary_task_count == 32 and control_task_count == 16,
-        "design_denominators": unchanged_task_count == 24 and redesign_task_count == 24,
+        "design_denominators": unchanged_task_count == 32 and redesign_task_count == 16,
         "stratum_balance": set(stratum_counts) == {item[0] for item in STRUCTURAL_STRATA}
         and set(stratum_counts.values()) == {SHAPE_COUNT * TASKS_PER_STRATUM},
         "shape_stratum_redundancy": set(shape_stratum_counts) == expected_shape_strata
@@ -902,18 +1329,17 @@ def make_stopping_shape_policy_static_audit(
         "public_oracle_isolation": all(_public_task_isolated(item) for item in tasks),
         "answer_contract": all(_answer_contract_ready(item.artifact) for item in tasks),
         "public_decision_contract": all(public_contract.values()),
+        "causal_state_action_graph": all(causal_graph_checks),
         "matched_contextual_contract": len(contextual_checks) == TASKS_PER_SHAPE
         and all(contextual_checks),
         "conditional_dependency_contract": len(dependency_checks) == TASKS_PER_SHAPE
         and all(dependency_checks),
         "conditional_dependency_output_contract": (
-            len(dependency_output_checks) == TASKS_PER_SHAPE
-            and all(dependency_output_checks)
+            len(dependency_output_checks) == TASKS_PER_SHAPE and all(dependency_output_checks)
         ),
         "grounded_conflict_contract": len(grounded_checks) == TASKS_PER_SHAPE
         and all(grounded_checks),
-        "conflict_mismatch_balance": conflict_mismatch_counts
-        == expected_conflict_mismatches,
+        "conflict_mismatch_balance": conflict_mismatch_counts == expected_conflict_mismatches,
         "conflict_resolution_tool_balance": conflict_resolution_tool_counts
         == expected_conflict_tools,
         "conflict_resolution_tool_diversity": (
@@ -932,6 +1358,9 @@ def make_stopping_shape_policy_static_audit(
             and all(contextual_conflict_decoy_checks)
         ),
         "contextual_task_construction_matched": len(contextual_signatures) == 1,
+        "target_role_position_control": (
+            len(target_role_checks) == 2 * TASKS_PER_SHAPE and all(target_role_checks)
+        ),
         "zero_lexical_conflict_leakage": lexical_leaks == 0,
         "within_evidence_disjoint": len(evidence) == len({item.evidence_id for item in evidence}),
         "historical_task_disjoint": not task_ids & excluded["artifact_id"],
@@ -995,24 +1424,24 @@ def make_stopping_shape_policy_static_audit(
         "public_oracle_isolation_rate": _rate(_public_task_isolated(item) for item in tasks),
         "answer_contract_rate": _rate(_answer_contract_ready(item.artifact) for item in tasks),
         "public_decision_contract_rate": _rate(public_contract.values()),
+        "causal_state_action_graph_rate": _rate(causal_graph_checks),
         "conditional_dependency_contract_rate": _rate(dependency_checks),
         "conditional_dependency_output_contract_rate": _rate(dependency_output_checks),
         "matched_contextual_contract_rate": _rate(contextual_checks),
         "grounded_conflict_contract_rate": _rate(grounded_checks),
         "conflict_mismatch_dimension_counts": dict(sorted(conflict_mismatch_counts.items())),
-        "conflict_resolution_tool_counts": dict(
-            sorted(conflict_resolution_tool_counts.items())
-        ),
+        "conflict_resolution_tool_counts": dict(sorted(conflict_resolution_tool_counts.items())),
         "conflict_mismatch_balance_frozen": checks["conflict_mismatch_balance"]
         and checks["conflict_resolution_tool_balance"],
-        "conflict_resolution_tool_diversity_frozen": checks[
-            "conflict_resolution_tool_diversity"
-        ],
+        "conflict_resolution_tool_diversity_frozen": checks["conflict_resolution_tool_diversity"],
         "sealed_cost_contract_rate": _rate(cost_checks),
         "dependency_decoy_one_dimensional_rate": _rate(near_decoy_checks),
         "contextual_conflict_decoy_one_dimensional_rate": _rate(contextual_conflict_decoy_checks),
         "lexical_conflict_leakage_count": lexical_leaks,
         "contextual_task_construction_matched": len(contextual_signatures) == 1,
+        "target_role_ids": dict(sorted(protocol.target_role_ids.items())),
+        "target_role_control_rate": _rate(target_role_checks),
+        "target_role_position_control_frozen": checks["target_role_position_control"],
         "within_population_evidence_disjoint": checks["within_evidence_disjoint"],
         "historical_task_disjoint": checks["historical_task_disjoint"],
         "historical_evidence_disjoint": checks["historical_evidence_disjoint"],
@@ -1055,7 +1484,26 @@ def _make_shape_policy_design(
             ),
         }
     )
-    if shape_id == "partial_required_evidence":
+    if shape_id == "contextual_resolution_choice":
+        graph = _linear_graph(
+            (
+                (
+                    "resolve_initial_state",
+                    "resolve_conflict",
+                    "query_structured_fact",
+                ),
+                ("retrieve_remaining", "retrieve", "query_structured_fact"),
+                ("calculate_result", "calculate", "calculator"),
+                ("verify_resolution", "verify_evidence", "cross_check_evidence"),
+            )
+        )
+        runtime = runtime.model_copy(
+            update={
+                "trigger_node_id": "read_task",
+                "resolution_node_id": "verify_resolution",
+            }
+        )
+    elif shape_id == "partial_required_evidence":
         graph = _linear_graph(
             (
                 ("retrieve_partial", "retrieve", "query_structured_fact"),
@@ -1066,16 +1514,40 @@ def _make_shape_policy_design(
             )
         )
     elif shape_id == "single_dimension_conflict":
-        graph = _linear_graph(
+        graph = _graph(
             (
-                ("observe_conflict", "observe_failure", "cross_check_evidence"),
-                ("resolve_conflict", "resolve_conflict", "normalize_metric_unit_period"),
+                _node("read_task", "read_task"),
+                _node(
+                    "retrieve_required",
+                    "retrieve",
+                    ("read_task",),
+                    tool_id="query_structured_fact",
+                ),
+                _node(
+                    "resolve_active_state",
+                    "resolve_conflict",
+                    ("read_task",),
+                    observations=("active public Evidence state",),
+                ),
+                _node(
+                    "calculate_result",
+                    "calculate",
+                    ("retrieve_required", "resolve_active_state"),
+                    tool_id="calculator",
+                ),
+                _node(
+                    "verify_result",
+                    "verify_evidence",
+                    ("calculate_result",),
+                    tool_id="cross_check_evidence",
+                ),
+                _node("stop", "stop", ("verify_result",)),
             )
         )
         runtime = runtime.model_copy(
             update={
-                "trigger_node_id": "observe_conflict",
-                "resolution_node_id": "resolve_conflict",
+                "trigger_node_id": "read_task",
+                "resolution_node_id": "resolve_active_state",
             }
         )
     spec = _spec(
@@ -1088,9 +1560,7 @@ def _make_shape_policy_design(
         source.spec.diagnostic_outcomes,
     )
     decision_kind = {
-        "contextual_resolution_choice": (
-            "matched_contextual_evidence_state_choice_two_step"
-        ),
+        "contextual_resolution_choice": ("matched_contextual_evidence_state_choice_two_step"),
         "partial_required_evidence": "conditional_dependency_observation_required",
         "single_dimension_conflict": "single_conflict_evidence_state_choice_one_step",
         "verified_extra_call_cost": "sealed_terminal_extra_call_cost",
@@ -1098,7 +1568,7 @@ def _make_shape_policy_design(
     status = {
         "authority_coverage_gap": "boundary_regression",
         "contextual_resolution_choice": "structural_redesign",
-        "partial_required_evidence": "structural_redesign",
+        "partial_required_evidence": "boundary_regression",
         "single_dimension_conflict": "structural_redesign",
         "verified_extra_call_cost": "instrument_regression",
         "verified_extra_call_error_risk": "instrument_regression",
@@ -1115,6 +1585,42 @@ def _make_shape_policy_design(
         intervention_kind=cast(SubmechanismKind, spec.runtime_contract.intervention_kind),
         decision_contract_kind=cast(Any, decision_kind),
     )
+
+
+def _causal_state_action_graph_ready(
+    design: StoppingShapePolicyDesign,
+) -> bool:
+    nodes = {item.node_id: item for item in design.spec.action_graph.nodes}
+    runtime = design.spec.runtime_contract
+    if design.shape_id == "contextual_resolution_choice":
+        return bool(
+            runtime.trigger_node_id == "read_task"
+            and runtime.resolution_node_id == "verify_resolution"
+            and nodes.get("resolve_initial_state") is not None
+            and nodes["resolve_initial_state"].tool_id == "query_structured_fact"
+            and nodes["resolve_initial_state"].depends_on == ("read_task",)
+            and nodes.get("retrieve_remaining") is not None
+            and nodes["retrieve_remaining"].depends_on == ("resolve_initial_state",)
+            and nodes.get("calculate_result") is not None
+            and nodes["calculate_result"].depends_on == ("retrieve_remaining",)
+            and nodes.get("verify_resolution") is not None
+            and nodes["verify_resolution"].depends_on == ("calculate_result",)
+        )
+    if design.shape_id == "single_dimension_conflict":
+        return bool(
+            runtime.trigger_node_id == "read_task"
+            and runtime.resolution_node_id == "resolve_active_state"
+            and nodes.get("retrieve_required") is not None
+            and nodes["retrieve_required"].depends_on == ("read_task",)
+            and nodes.get("resolve_active_state") is not None
+            and nodes["resolve_active_state"].depends_on == ("read_task",)
+            and nodes.get("calculate_result") is not None
+            and set(nodes["calculate_result"].depends_on)
+            == {"retrieve_required", "resolve_active_state"}
+            and nodes.get("verify_result") is not None
+            and nodes["verify_result"].depends_on == ("calculate_result",)
+        )
+    return False
 
 
 def _observed_record(item: EvidenceItem) -> FinanceStoppingObservedRecord:
@@ -1142,28 +1648,38 @@ def _observed_evidence_state(
     gold: tuple[EvidenceItem, ...],
     distractor: EvidenceItem,
     mismatch_field: str,
+    target_role_index: int,
 ) -> FinanceStoppingObservedEvidenceState:
-    matches = tuple(
-        item
-        for item in gold
-        if _minimum_mismatch_fields(distractor, (item,)) == (mismatch_field,)
-    )
-    if not matches:
-        raise ValueError("Stopping Shape lacks a one-dimensional public record pair")
-    required = min(matches, key=lambda item: item.evidence_version_id)
+    if not 0 <= target_role_index < len(gold):
+        raise ValueError("Stopping Shape target role is outside the Gold binding")
+    required = gold[target_role_index]
+    if _minimum_mismatch_fields(distractor, (required,)) != (mismatch_field,):
+        raise ValueError("Stopping Shape target role lacks an exact one-dimensional pair")
     return FinanceStoppingObservedEvidenceState(
         observed_record=_observed_record(distractor),
         required_record=_observed_record(required),
     )
 
 
+def _required_decision_role_id(task: StoppingShapeTask) -> str | None:
+    decision = task.scenario.stopping_shape_decision_contract
+    if decision is None or decision.observed_evidence_state is None:
+        return None
+    required = decision.observed_evidence_state.required_record
+    matches = tuple(
+        role.role_id
+        for role in task.scenario.evidence_roles
+        if (role.subject_alias, role.metric_alias, role.period_label)
+        == (required.subject_alias, required.metric_alias, required.period_label)
+    )
+    return matches[0] if len(matches) == 1 else None
+
+
 def _state_resolution_actions() -> tuple[FinanceStoppingResolutionAction, ...]:
     return (
         FinanceStoppingResolutionAction(
             tool_id="normalize_metric_unit_period",
-            applicable_when=(
-                "establish a shared reporting or measurement basis before evaluation"
-            ),
+            applicable_when=("establish a shared reporting or measurement basis before evaluation"),
         ),
         FinanceStoppingResolutionAction(
             tool_id="open_document",
@@ -1185,10 +1701,13 @@ def _task_decision_contract(
     distractor: EvidenceItem,
     mismatch_field: str,
     sampling_salt: str,
+    target_role_index: int | None,
 ) -> FinanceStoppingShapeDecisionContract | None:
     if shape_id in {"authority_coverage_gap", "verified_extra_call_error_risk"}:
         return None
     if shape_id == "contextual_resolution_choice":
+        if target_role_index is None:
+            raise ValueError("Contextual Stopping Shape lacks a frozen target role")
         return FinanceStoppingShapeDecisionContract(
             contract_kind="matched_contextual_evidence_state_choice_two_step",
             observed_conflict_signal=(
@@ -1199,8 +1718,10 @@ def _task_decision_contract(
                 gold=gold,
                 distractor=distractor,
                 mismatch_field=mismatch_field,
+                target_role_index=target_role_index,
             ),
             oracle_conflict_dimension={"subject": "entity_scope_alignment"}[mismatch_field],
+            state_activation_phase="before_required_evidence_selection",
             available_resolution_actions=_state_resolution_actions(),
             resolution_step_count=2,
         )
@@ -1228,6 +1749,8 @@ def _task_decision_contract(
             resolution_step_count=2,
         )
     if shape_id == "single_dimension_conflict":
+        if target_role_index is None:
+            raise ValueError("Conflict Stopping Shape lacks a frozen target role")
         return FinanceStoppingShapeDecisionContract(
             contract_kind="single_conflict_evidence_state_choice_one_step",
             observed_conflict_signal=(
@@ -1238,12 +1761,18 @@ def _task_decision_contract(
                 gold=gold,
                 distractor=distractor,
                 mismatch_field=mismatch_field,
+                target_role_index=target_role_index,
             ),
             oracle_conflict_dimension={
                 "definition": "source_definition_compatibility",
                 "period": "temporal_alignment",
                 "payload_context": "measurement_context_alignment",
             }[mismatch_field],
+            state_activation_phase=(
+                "before_required_evidence_selection"
+                if mismatch_field == "period"
+                else "after_required_evidence_selection_before_calculation"
+            ),
             available_resolution_actions=_state_resolution_actions(),
             resolution_step_count=1,
         )
@@ -1257,7 +1786,7 @@ def _task_decision_contract(
             realized_token_budget_debit_fraction=0.20,
             additional_action_rejected=True,
         )
-    raise ValueError(f"Stopping Shape has no v25.40 decision contract: {shape_id}")
+    raise ValueError(f"Stopping Shape has no v25.44 decision contract: {shape_id}")
 
 
 def _evidence_query_identity(item: EvidenceItem) -> tuple[str, str, str]:
@@ -1362,9 +1891,7 @@ def _semantic_components(item: EvidenceItem) -> tuple[tuple[str, Any], ...]:
 
 def _one_difference_key(item: EvidenceItem, omitted_field: str) -> OneDifferenceKey:
     return tuple(
-        (field, value)
-        for field, value in _semantic_components(item)
-        if field != omitted_field
+        (field, value) for field, value in _semantic_components(item) if field != omitted_field
     )
 
 
@@ -1373,9 +1900,7 @@ def _build_one_difference_index(
     *,
     fields: tuple[str, ...],
 ) -> OneDifferenceIndex:
-    mutable: dict[str, dict[OneDifferenceKey, list[EvidenceItem]]] = {
-        field: {} for field in fields
-    }
+    mutable: dict[str, dict[OneDifferenceKey, list[EvidenceItem]]] = {field: {} for field in fields}
     for item in evidence_pool:
         for field in fields:
             key = _one_difference_key(item, field)
@@ -1409,20 +1934,22 @@ def _indexed_one_difference_candidates(
 def _select_contextual_distractor(
     *,
     gold: tuple[EvidenceItem, ...],
+    target_role_index: int,
     one_difference_index: OneDifferenceIndex,
     used_ids: set[str],
     used_versions: set[str],
     sampling_salt: str,
 ) -> EvidenceItem | None:
+    target = gold[target_role_index]
     candidates: list[tuple[str, EvidenceItem]] = []
     for item in _indexed_one_difference_candidates(
         one_difference_index=one_difference_index,
-        gold=gold,
+        gold=(target,),
         mismatch_field="subject",
     ):
         if item.evidence_id in used_ids or item.evidence_version_id in used_versions:
             continue
-        if _minimum_mismatch_fields(item, gold) != ("subject",):
+        if _minimum_mismatch_fields(item, (target,)) != ("subject",):
             continue
         rank = canonical_hash(
             {
@@ -1438,21 +1965,23 @@ def _select_contextual_distractor(
 def _select_normalization_distractor(
     *,
     gold: tuple[EvidenceItem, ...],
+    target_role_index: int,
     one_difference_index: OneDifferenceIndex,
     used_ids: set[str],
     used_versions: set[str],
     sampling_salt: str,
     required_mismatch_field: str,
 ) -> EvidenceItem | None:
+    target = gold[target_role_index]
     candidates: list[tuple[str, EvidenceItem]] = []
     for item in _indexed_one_difference_candidates(
         one_difference_index=one_difference_index,
-        gold=gold,
+        gold=(target,),
         mismatch_field=required_mismatch_field,
     ):
         if item.evidence_id in used_ids or item.evidence_version_id in used_versions:
             continue
-        mismatches = _minimum_mismatch_fields(item, gold)
+        mismatches = _minimum_mismatch_fields(item, (target,))
         if mismatches != (required_mismatch_field,):
             continue
         rank = canonical_hash(
@@ -1515,6 +2044,7 @@ def _materialize_shape_policy_task(
     evidence_pool: tuple[EvidenceItem, ...],
     one_difference_index: OneDifferenceIndex,
     conflict_mismatch_field: str | None,
+    target_role_index: int | None,
     used_ids: set[str],
     used_versions: set[str],
     sampling_salt: str,
@@ -1549,8 +2079,11 @@ def _materialize_shape_policy_task(
                 sampling_salt=sampling_salt,
             )
         elif design.shape_id == "contextual_resolution_choice":
+            if target_role_index is None:
+                raise ValueError("Contextual task lacks a frozen target role")
             distractor = _select_contextual_distractor(
                 gold=gold,
+                target_role_index=target_role_index,
                 one_difference_index=one_difference_index,
                 used_ids=used_ids | gold_ids,
                 used_versions=used_versions | gold_versions,
@@ -1559,8 +2092,11 @@ def _materialize_shape_policy_task(
         elif design.shape_id == "single_dimension_conflict":
             if conflict_mismatch_field is None:
                 raise ValueError("Stopping conflict task lacks a frozen mismatch allocation")
+            if target_role_index is None:
+                raise ValueError("Conflict task lacks a frozen target role")
             distractor = _select_normalization_distractor(
                 gold=gold,
+                target_role_index=target_role_index,
                 one_difference_index=one_difference_index,
                 used_ids=used_ids | gold_ids,
                 used_versions=used_versions | gold_versions,
@@ -1615,6 +2151,7 @@ def _materialize_shape_policy_task(
             distractor=distractor,
             mismatch_field=_minimum_mismatch_fields(distractor, gold)[0],
             sampling_salt=sampling_salt,
+            target_role_index=target_role_index,
         )
         scenario = base_scenario
         if decision is not None:
@@ -1700,17 +2237,18 @@ def _materialize_shape_policy_task(
 def _shape_policy_resolution_hint(shape_id: str) -> str:
     hints = {
         "contextual_resolution_choice": (
-            "The observed evidence state requires one public resolution action followed by "
-            "an independent cross-check. Choose among the three matched actions from the "
-            "state, not from an internal conflict label."
+            "The initial public evidence state requires one resolution action before the "
+            "requested record is selected, followed by ordinary calculation and an independent "
+            "cross-check. Choose from the public state, not an internal conflict label."
         ),
         "partial_required_evidence": (
             "The unresolved dependency is conditional on an Archive observation. Run the "
             "public probe, then retrieve only the candidate identified by that observation."
         ),
         "single_dimension_conflict": (
-            "Source coverage is complete, but the current values are not yet jointly usable. "
-            "Choose the single evidence-grounded action; no internal conflict label is public."
+            "Use the public activation phase: resolve a missing subject or period before "
+            "selection, or normalize a definition after selection and before calculation. "
+            "No internal conflict label is public."
         ),
         "verified_extra_call_cost": (
             "The verified Archive snapshot is sealed. Another call cannot add information, "
@@ -1767,7 +2305,7 @@ def _dependency_branch_output_contract_ready(task: StoppingShapeTask) -> bool:
     manifest = make_submechanism_manifest(
         corpus=task.artifact.public_corpus,
         scenario=task.scenario,
-        environment_id=f"finance_v25_40:manifest-audit:{task.artifact.artifact_id}",
+        environment_id=f"finance_v25_44:manifest-audit:{task.artifact.artifact_id}",
         maximum_tool_calls=MAXIMUM_TOOL_CALLS,
         maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,
         maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,
@@ -1860,9 +2398,9 @@ def _matched_contextual_contract_ready(task: StoppingShapeTask) -> bool:
     decision = task.scenario.stopping_shape_decision_contract
     return bool(
         decision is not None
-        and decision.contract_kind
-        == "matched_contextual_evidence_state_choice_two_step"
+        and decision.contract_kind == "matched_contextual_evidence_state_choice_two_step"
         and decision.oracle_conflict_dimension == "entity_scope_alignment"
+        and decision.state_activation_phase == "before_required_evidence_selection"
         and _observed_state_difference(decision.observed_evidence_state) == "subject"
         and decision.observed_conflict_signal
         and tuple(item.tool_id for item in decision.available_resolution_actions)
@@ -1890,6 +2428,12 @@ def _grounded_conflict_contract_ready(task: StoppingShapeTask) -> bool:
         and decision.contract_kind == "single_conflict_evidence_state_choice_one_step"
         and expected_dimension is not None
         and decision.oracle_conflict_dimension == expected_dimension
+        and decision.state_activation_phase
+        == (
+            "before_required_evidence_selection"
+            if mismatch == "period"
+            else "after_required_evidence_selection_before_calculation"
+        )
         and _observed_state_difference(decision.observed_evidence_state) == mismatch
         and decision.observed_conflict_signal
         and tuple(item.tool_id for item in decision.available_resolution_actions)
@@ -1927,6 +2471,7 @@ def _contextual_construction_signature(task: StoppingShapeTask) -> str:
             "observed_conflict_signal": decision.observed_conflict_signal,
             "available_resolution_actions": decision.available_resolution_actions,
             "resolution_step_count": decision.resolution_step_count,
+            "state_activation_phase": decision.state_activation_phase,
             "intervention_kind": task.scenario.intervention_kind,
             "expected_host_events": task.scenario.expected_host_events,
         },
@@ -2008,10 +2553,14 @@ def _verify_protocol_inputs(
     protocol: FinanceStoppingShapePolicyProtocol,
 ) -> None:
     references = (
-        protocol.source_v25_38_protocol,
-        protocol.source_v25_38_population,
-        protocol.source_v25_38_contract,
-        protocol.source_v25_38_report,
+        protocol.source_v25_43_protocol,
+        protocol.source_v25_43_population,
+        protocol.source_v25_43_contract,
+        protocol.source_v25_43_report,
+        protocol.source_v25_43_manifest,
+        protocol.source_v25_43_records,
+        protocol.source_v25_43_terminal_outcomes,
+        protocol.source_v25_43_behavior_diagnostics,
         protocol.source_finance_artifacts,
         protocol.source_calibration_contract,
         *protocol.historical_population_references,
@@ -2028,8 +2577,11 @@ def _reference(path: Path, artifact_id: str) -> FrozenArtifactReference:
 def _implementation_manifest() -> dict[str, str]:
     root = Path(__file__).resolve().parents[4]
     paths = (
+        "src/trusted_synthesis/runtime/tools.py",
         "src/trusted_synthesis/domains/finance/capability_submechanism_runtime.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_population.py",
+        "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_flash_development.py",
+        "src/trusted_synthesis/experiments/vtdo_experiment/phase1_multitier_runtime_resolution.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_stopping_shape_stability_protocol.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_stopping_shape_policy_protocol.py",
     )
@@ -2040,7 +2592,7 @@ def _render_population_report(
     population: FinanceStoppingShapePolicyPopulation,
 ) -> str:
     lines = [
-        "# Finance v25.40 Stopping Shape Policy Population",
+        "# Finance v25.44 Stopping Shape Policy Population",
         "",
         f"- Population: {population.population_id}",
         f"- Tasks: {len(population.tasks)}",
@@ -2079,13 +2631,17 @@ def _write_json(path: Path, value: Any) -> None:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Prepare or build v25.40 Stopping Shape Policy")
+    parser = argparse.ArgumentParser(description="Prepare or build v25.44 Stopping Shape Policy")
     subparsers = parser.add_subparsers(dest="command", required=True)
     prepare = subparsers.add_parser("prepare")
-    prepare.add_argument("--source-protocol", required=True, type=Path)
-    prepare.add_argument("--source-population", required=True, type=Path)
-    prepare.add_argument("--source-contract", required=True, type=Path)
-    prepare.add_argument("--source-report", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-protocol", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-population", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-contract", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-report", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-manifest", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-records", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-terminal-outcomes", required=True, type=Path)
+    prepare.add_argument("--source-v25-43-behavior-diagnostics", required=True, type=Path)
     prepare.add_argument("--output", required=True, type=Path)
     prepare.add_argument("--run-id", required=True)
     prepare.add_argument("--source-finance-artifacts", type=Path)
@@ -2107,17 +2663,19 @@ def main() -> None:
     args = _parser().parse_args()
     if args.command == "prepare":
         protocol = prepare_stopping_shape_policy_protocol(
-            source_protocol_path=args.source_protocol,
-            source_population_path=args.source_population,
-            source_contract_path=args.source_contract,
-            source_report_path=args.source_report,
+            source_v25_43_protocol_path=args.source_v25_43_protocol,
+            source_v25_43_population_path=args.source_v25_43_population,
+            source_v25_43_contract_path=args.source_v25_43_contract,
+            source_v25_43_report_path=args.source_v25_43_report,
+            source_v25_43_manifest_path=args.source_v25_43_manifest,
+            source_v25_43_records_path=args.source_v25_43_records,
+            source_v25_43_terminal_outcomes_path=args.source_v25_43_terminal_outcomes,
+            source_v25_43_behavior_diagnostics_path=args.source_v25_43_behavior_diagnostics,
             output_path=args.output,
             run_id=args.run_id,
             source_finance_artifacts_path=args.source_finance_artifacts,
             source_finance_artifacts_id=args.source_finance_artifacts_id,
-            additional_historical_population_paths=tuple(
-                args.additional_historical_population
-            ),
+            additional_historical_population_paths=tuple(args.additional_historical_population),
         )
         print(protocol.model_dump_json(indent=2))
     else:

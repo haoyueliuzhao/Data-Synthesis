@@ -71,11 +71,11 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stabili
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.iterative import IterativeAgentProtocolProfile
 
-STOPPING_SHAPE_POLICY_CONTRACT_VERSION = "finance_stopping_shape_policy_contract.v4"
-STOPPING_SHAPE_POLICY_RESULT_VERSION = "finance_stopping_shape_policy_result.v4"
-STOPPING_SHAPE_POLICY_POLICY_VERSION = "finance_stopping_shape_policy_policy.v4"
-STOPPING_SHAPE_POLICY_REPORT_VERSION = "finance_stopping_shape_policy_report.v4"
-STOPPING_SHAPE_POLICY_MANIFEST_VERSION = "finance_stopping_shape_policy_manifest.v4"
+STOPPING_SHAPE_POLICY_CONTRACT_VERSION = "finance_stopping_shape_policy_contract.v8"
+STOPPING_SHAPE_POLICY_RESULT_VERSION = "finance_stopping_shape_policy_result.v8"
+STOPPING_SHAPE_POLICY_POLICY_VERSION = "finance_stopping_shape_policy_policy.v8"
+STOPPING_SHAPE_POLICY_REPORT_VERSION = "finance_stopping_shape_policy_report.v8"
+STOPPING_SHAPE_POLICY_MANIFEST_VERSION = "finance_stopping_shape_policy_manifest.v8"
 
 
 class FrozenModel(BaseModel):
@@ -85,8 +85,8 @@ class FrozenModel(BaseModel):
 class FinanceStoppingShapePolicyContract(FrozenModel):
     contract_id: str = Field(min_length=1)
     run_id: str = Field(min_length=1)
-    experiment_label: Literal["finance_v25_40_stopping_shape_policy_development"] = (
-        "finance_v25_40_stopping_shape_policy_development"
+    experiment_label: Literal["finance_v25_44_stopping_shape_policy_development"] = (
+        "finance_v25_44_stopping_shape_policy_development"
     )
     stage: RuntimeResolutionStage = RuntimeResolutionStage.RESIDUAL_DEVELOPMENT
     source_protocol: FrozenArtifactReference
@@ -1202,10 +1202,13 @@ def _reference(path: Path, artifact_id: str) -> FrozenArtifactReference:
 def _implementation_manifest() -> dict[str, str]:
     root = Path(__file__).resolve().parents[4]
     paths = (
+        "src/trusted_synthesis/runtime/tools.py",
         "src/trusted_synthesis/domains/finance/capability_submechanism_runtime.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_population.py",
+        "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_flash_development.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_boundary_runner.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_multitier_confirmation.py",
+        "src/trusted_synthesis/experiments/vtdo_experiment/phase1_multitier_runtime_resolution.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_stopping_shape_policy_protocol.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_stopping_shape_policy.py",
     )
@@ -1223,7 +1226,7 @@ def _interval95(values: Sequence[float]) -> tuple[float, float]:
 
 def _render_report(report: FinanceStoppingShapePolicyReport) -> str:
     lines = [
-        "# Finance v25.40 Stopping Shape Policy Development",
+        "# Finance v25.44 Stopping Shape Policy Development",
         "",
         "## Decision",
         "",
@@ -1332,7 +1335,7 @@ def _write_jsonl(path: Path, values: Any) -> None:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run v25.40 Stopping Shape Policy Development")
+    parser = argparse.ArgumentParser(description="Run v25.44 Stopping Shape Policy Development")
     subparsers = parser.add_subparsers(dest="command", required=True)
     prepare = subparsers.add_parser("prepare")
     prepare.add_argument("--protocol", required=True, type=Path)

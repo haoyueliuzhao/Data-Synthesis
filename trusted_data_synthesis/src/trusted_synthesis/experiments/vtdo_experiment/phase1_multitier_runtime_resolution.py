@@ -189,12 +189,8 @@ class FinanceRuntimeResolutionContract(FrozenModel):
     tasks: tuple[CapabilitySensitiveTaskArtifact, ...] = Field(
         min_length=TASK_COUNT, max_length=TASK_COUNT
     )
-    source_task_artifact_ids: dict[str, str] = Field(
-        min_length=TASK_COUNT, max_length=TASK_COUNT
-    )
-    task_semantic_signatures: dict[str, str] = Field(
-        min_length=TASK_COUNT, max_length=TASK_COUNT
-    )
+    source_task_artifact_ids: dict[str, str] = Field(min_length=TASK_COUNT, max_length=TASK_COUNT)
+    task_semantic_signatures: dict[str, str] = Field(min_length=TASK_COUNT, max_length=TASK_COUNT)
     task_evidence_ids: dict[str, tuple[str, ...]] = Field(
         min_length=TASK_COUNT, max_length=TASK_COUNT
     )
@@ -206,9 +202,7 @@ class FinanceRuntimeResolutionContract(FrozenModel):
     )
     freshness: FreshnessAudit
     replicas: int = Field(default=REPLICAS, ge=REPLICAS, le=REPLICAS)
-    requested_rollout_count: int = Field(
-        default=ROLLOUT_COUNT, ge=ROLLOUT_COUNT, le=ROLLOUT_COUNT
-    )
+    requested_rollout_count: int = Field(default=ROLLOUT_COUNT, ge=ROLLOUT_COUNT, le=ROLLOUT_COUNT)
     maximum_model_tokens_per_rollout: int = Field(
         default=MODEL_TOKEN_BUDGET, ge=MODEL_TOKEN_BUDGET, le=MODEL_TOKEN_BUDGET
     )
@@ -244,10 +238,8 @@ class FinanceRuntimeResolutionContract(FrozenModel):
             raise ValueError("runtime-resolution contract version is unsupported")
         expected_versions = (
             self.iterative_agent_solver_version == ITERATIVE_AGENT_SOLVER_VERSION,
-            self.iterative_agent_decision_prompt_version
-            == ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
-            self.finance_interactive_runtime_version
-            == FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION,
+            self.iterative_agent_decision_prompt_version == ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
+            self.finance_interactive_runtime_version == FINANCE_ARCHIVE_INTERACTIVE_RUNTIME_VERSION,
             self.finance_agent_toolset_version == FINANCE_ARCHIVE_AGENT_TOOLSET_VERSION,
             self.operation_execution_contract_version
             == FINANCE_OPERATION_EXECUTION_CONTRACT_VERSION,
@@ -281,18 +273,17 @@ class FinanceRuntimeResolutionContract(FrozenModel):
         ):
             raise ValueError("runtime-resolution task freshness identity is incomplete")
         expected_counts = Counter(
-            (family, tier)
-            for family in CAPABILITY_SENSITIVE_FAMILIES
-            for tier in DifficultyTier
+            (family, tier) for family in CAPABILITY_SENSITIVE_FAMILIES for tier in DifficultyTier
         )
         if Counter((item.family, item.tier) for item in self.tasks) != expected_counts:
             raise ValueError("runtime-resolution tasks are not family/Tier balanced")
         binding_counts = Counter(
             (item.task_artifact_id, item.runtime_arm) for item in self.bindings
         )
-        if set(binding_counts.values()) != {1} or set(
-            item.task_artifact_id for item in self.bindings
-        ) != task_ids:
+        if (
+            set(binding_counts.values()) != {1}
+            or set(item.task_artifact_id for item in self.bindings) != task_ids
+        ):
             raise ValueError("runtime-resolution tasks lack one binding per Runtime")
         if {item.runtime_arm for item in self.bindings} != set(WORKFLOW_RUNTIME_ARMS):
             raise ValueError("runtime-resolution includes another Runtime")
@@ -687,21 +678,15 @@ def prepare_runtime_resolution_contract(
     if len(flash_contracts) != 1:
         raise ValueError("source confirmation does not freeze exactly one Flash model")
     implementation_manifest = _implementation_manifest()
-    if (
-        prior_contract is not None
-        and prior_contract.implementation_manifest_hash
-        != canonical_hash(
-            implementation_manifest,
-            prefix="runtime_resolution_implementation:",
-        )
+    if prior_contract is not None and prior_contract.implementation_manifest_hash != canonical_hash(
+        implementation_manifest,
+        prefix="runtime_resolution_implementation:",
     ):
         raise ValueError("implementation changed after Development; rerun Development")
 
     excluded_group_id_set = {item for values in excluded.values() for item in values}
     excluded_groups = tuple(
-        group
-        for group in population.groups
-        if group.group_id in excluded_group_id_set
+        group for group in population.groups if group.group_id in excluded_group_id_set
     )
     selected_groups = tuple(selected.values())
     selected_source_ids = {item.artifact_id for group in selected_groups for item in group.variants}
@@ -790,9 +775,7 @@ def prepare_runtime_resolution_contract(
         ),
         "selection_salt": selection_salt,
     }
-    provisional = FinanceRuntimeResolutionContract.model_construct(
-        contract_id="pending", **values
-    )
+    provisional = FinanceRuntimeResolutionContract.model_construct(contract_id="pending", **values)
     contract = FinanceRuntimeResolutionContract(
         contract_id=runtime_resolution_contract_id(provisional), **values
     )
@@ -969,10 +952,8 @@ def _make_terminal_outcome(
         record,
         outcome,
         prompt_pathology=bool(
-            prompt["maximum_observation_summary_bytes"]
-            > contract.maximum_observation_summary_bytes
-            or prompt["maximum_public_context_bytes"]
-            > contract.maximum_public_context_bytes
+            prompt["maximum_observation_summary_bytes"] > contract.maximum_observation_summary_bytes
+            or prompt["maximum_public_context_bytes"] > contract.maximum_public_context_bytes
         ),
     )
     layer = classification[1]
@@ -1047,18 +1028,14 @@ def _make_terminal_outcome(
         "identical_failed_action_block_count": identical_blocks,
         "maximum_prompt_component_bytes": prompt["maximum_prompt_component_bytes"],
         "maximum_public_context_bytes": prompt["maximum_public_context_bytes"],
-        "maximum_observation_summary_bytes": prompt[
-            "maximum_observation_summary_bytes"
-        ],
+        "maximum_observation_summary_bytes": prompt["maximum_observation_summary_bytes"],
         "api_call_count": outcome.api_call_count,
         "total_model_tokens": outcome.total_model_tokens,
         "estimated_cost_usd": outcome.estimated_cost_usd,
         "error_type": record.error_type,
         "error_code": _terminal_error_code(record, classification[0]),
     }
-    provisional = RuntimeTerminalOutcome.model_construct(
-        terminal_outcome_id="pending", **values
-    )
+    provisional = RuntimeTerminalOutcome.model_construct(terminal_outcome_id="pending", **values)
     return RuntimeTerminalOutcome(
         terminal_outcome_id=runtime_terminal_outcome_id(provisional), **values
     )
@@ -1102,9 +1079,7 @@ def _classify_terminal(
     message = (record.error_message or "").casefold()
     error_type = (record.error_type or "").casefold()
     observations = _record_observations(record)
-    error_codes = tuple(
-        item.error_code for item in observations if item.error_code is not None
-    )
+    error_codes = tuple(item.error_code for item in observations if item.error_code is not None)
     evidence.extend(f"tool_error:{item}" for item in error_codes[-4:])
     if record.error_message:
         evidence.append(f"message:{_normalized_failure_code(record.error_message)}")
@@ -1124,8 +1099,7 @@ def _classify_terminal(
         )
         or (
             not record.telemetry
-            and error_type
-            in {"connectionerror", "timeouterror", "providererror", "httperror"}
+            and error_type in {"connectionerror", "timeouterror", "providererror", "httperror"}
         )
     )
     if provider_failure:
@@ -1138,6 +1112,17 @@ def _classify_terminal(
             prompt_pathology,
         )
     if any(item.startswith("runtime_exception:") for item in error_codes):
+        return (
+            TerminalClass.TOOL_ENVIRONMENT_FAILURE,
+            FailureLayer.L2_TOOL_ENVIRONMENT,
+            (),
+            "high",
+            tuple(evidence),
+            prompt_pathology,
+        )
+    if "agent tool result" in message and any(
+        token in message for token in ("unknown fields", "lacks required fields")
+    ):
         return (
             TerminalClass.TOOL_ENVIRONMENT_FAILURE,
             FailureLayer.L2_TOOL_ENVIRONMENT,
@@ -1163,11 +1148,7 @@ def _classify_terminal(
                 if prompt_pathology
                 else FailureLayer.L4_MODEL_AGENT_DECISION
             ),
-            (
-                (FailureLayer.L4_MODEL_AGENT_DECISION,)
-                if prompt_pathology
-                else ()
-            ),
+            ((FailureLayer.L4_MODEL_AGENT_DECISION,) if prompt_pathology else ()),
             "high",
             tuple(evidence),
             prompt_pathology,
@@ -1215,10 +1196,10 @@ def _classify_terminal(
             tuple(evidence),
             prompt_pathology,
         )
-    if any(
-        token in message
-        for token in ("json", "contract", "model failed the iterative agent")
-    ) and "valueerror" not in error_type:
+    if (
+        any(token in message for token in ("json", "contract", "model failed the iterative agent"))
+        and "valueerror" not in error_type
+    ):
         return (
             TerminalClass.MODEL_CONTRACT_FAILURE,
             FailureLayer.L3_MODEL_PROTOCOL,
@@ -1280,32 +1261,28 @@ def make_runtime_resolution_report(
         ),
         _gate(
             "bounded_json_resolution",
-            metrics.bounded_json_resolution_rate
-            >= thresholds.minimum_bounded_json_rate,
+            metrics.bounded_json_resolution_rate >= thresholds.minimum_bounded_json_rate,
             metrics.bounded_json_resolution_rate,
             f">={thresholds.minimum_bounded_json_rate}",
             "execution_integrity",
         ),
         _gate(
             "observation_replay",
-            metrics.observation_replay_rate
-            >= thresholds.minimum_observation_replay_rate,
+            metrics.observation_replay_rate >= thresholds.minimum_observation_replay_rate,
             metrics.observation_replay_rate,
             f">={thresholds.minimum_observation_replay_rate}",
             "execution_integrity",
         ),
         _gate(
             "authority_integrity",
-            metrics.authority_integrity_rate
-            >= thresholds.minimum_authority_integrity_rate,
+            metrics.authority_integrity_rate >= thresholds.minimum_authority_integrity_rate,
             metrics.authority_integrity_rate,
             f">={thresholds.minimum_authority_integrity_rate}",
             "execution_integrity",
         ),
         _gate(
             "typed_terminal_resolution",
-            metrics.terminal_resolution_rate
-            >= thresholds.minimum_terminal_resolution_rate,
+            metrics.terminal_resolution_rate >= thresholds.minimum_terminal_resolution_rate,
             metrics.terminal_resolution_rate,
             f">={thresholds.minimum_terminal_resolution_rate}",
             "terminal_resolution",
@@ -1336,8 +1313,7 @@ def make_runtime_resolution_report(
         ),
         _gate(
             "unattributed_failure",
-            metrics.unattributed_failure_rate
-            <= thresholds.maximum_unattributed_failure_rate,
+            metrics.unattributed_failure_rate <= thresholds.maximum_unattributed_failure_rate,
             metrics.unattributed_failure_rate,
             f"<={thresholds.maximum_unattributed_failure_rate}",
             "runtime_pathology",
@@ -1360,16 +1336,14 @@ def make_runtime_resolution_report(
         ),
         _gate(
             "non_saturated_valid_success_lower",
-            metrics.valid_success_given_runtime_eligible
-            >= thresholds.minimum_valid_success_rate,
+            metrics.valid_success_given_runtime_eligible >= thresholds.minimum_valid_success_rate,
             metrics.valid_success_given_runtime_eligible,
             f">={thresholds.minimum_valid_success_rate}",
             "capability_measurement",
         ),
         _gate(
             "non_saturated_valid_success_upper",
-            metrics.valid_success_given_runtime_eligible
-            <= thresholds.maximum_valid_success_rate,
+            metrics.valid_success_given_runtime_eligible <= thresholds.maximum_valid_success_rate,
             metrics.valid_success_given_runtime_eligible,
             f"<={thresholds.maximum_valid_success_rate}",
             "capability_measurement",
@@ -1449,9 +1423,7 @@ def _metrics(terminals: Sequence[RuntimeTerminalOutcome]) -> RuntimeResolutionMe
         item for item in terminals if item.primary_failure_layer != FailureLayer.L6_SUCCESS
     )
     eligible = tuple(item for item in terminals if item.runtime_eligible_for_capability_denominator)
-    cells = {
-        (item.family, item.tier, item.runtime_arm) for item in terminals
-    }
+    cells = {(item.family, item.tier, item.runtime_arm) for item in terminals}
     boundary_count = 0
     cell_probabilities = []
     for family, tier, runtime in cells:
@@ -1474,9 +1446,7 @@ def _metrics(terminals: Sequence[RuntimeTerminalOutcome]) -> RuntimeResolutionMe
         )
         capability_denominators[axis] = len(capability_values)
         capability_rates[axis] = (
-            _rate(sum(capability_values), len(capability_values))
-            if capability_values
-            else None
+            _rate(sum(capability_values), len(capability_values)) if capability_values else None
         )
     layer_counts = Counter(item.primary_failure_layer.value for item in terminals)
     terminal_counts = Counter(item.terminal_class.value for item in terminals)
@@ -1516,9 +1486,7 @@ def _metrics(terminals: Sequence[RuntimeTerminalOutcome]) -> RuntimeResolutionMe
         execution_integrity_rate=_rate(
             sum(item.execution_integrity_passed for item in terminals), count
         ),
-        terminal_resolution_rate=_rate(
-            sum(item.terminal_resolved for item in terminals), count
-        ),
+        terminal_resolution_rate=_rate(sum(item.terminal_resolved for item in terminals), count),
         failure_attribution_coverage_rate=(
             _rate(sum(item.failure_attributed for item in failures), len(failures))
             if failures
@@ -1533,9 +1501,7 @@ def _metrics(terminals: Sequence[RuntimeTerminalOutcome]) -> RuntimeResolutionMe
         tool_environment_failure_rate=_rate(
             layer_counts[FailureLayer.L2_TOOL_ENVIRONMENT.value], count
         ),
-        unattributed_failure_rate=_rate(
-            layer_counts[FailureLayer.UNATTRIBUTED_MIXED.value], count
-        ),
+        unattributed_failure_rate=_rate(layer_counts[FailureLayer.UNATTRIBUTED_MIXED.value], count),
         runtime_prompt_pathology_rate=_rate(
             sum(item.prompt_pathology for item in terminals), count
         ),
@@ -1546,27 +1512,19 @@ def _metrics(terminals: Sequence[RuntimeTerminalOutcome]) -> RuntimeResolutionMe
             else 0.0
         ),
         valid_success_given_runtime_eligible=(
-            _rate(sum(item.valid_success for item in eligible), len(eligible))
-            if eligible
-            else 0.0
+            _rate(sum(item.valid_success for item in eligible), len(eligible)) if eligible else 0.0
         ),
         end_to_end_semantic_accuracy=_rate(
             sum(item.semantic_answer_correct for item in terminals), count
         ),
-        deterministic_valid_rate=_rate(
-            sum(item.deterministic_valid for item in terminals), count
-        ),
-        end_to_end_valid_success_rate=_rate(
-            sum(item.valid_success for item in terminals), count
-        ),
+        deterministic_valid_rate=_rate(sum(item.deterministic_valid for item in terminals), count),
+        end_to_end_valid_success_rate=_rate(sum(item.valid_success for item in terminals), count),
         boundary_cell_fraction=_rate(boundary_count, len(cells)),
         success_entropy=round(
             sum(_binary_entropy(item) for item in cell_probabilities) / len(cell_probabilities),
             9,
         ),
-        premature_stop_rate=_rate(
-            terminal_counts[TerminalClass.PREMATURE_STOP.value], count
-        ),
+        premature_stop_rate=_rate(terminal_counts[TerminalClass.PREMATURE_STOP.value], count),
         deterministic_recovery_failure_rate=_rate(
             terminal_counts[TerminalClass.DETERMINISTIC_RECOVERY_FAILURE.value], count
         ),
@@ -1595,9 +1553,7 @@ def _metrics(terminals: Sequence[RuntimeTerminalOutcome]) -> RuntimeResolutionMe
         maximum_prompt_component_bytes=max(
             item.maximum_prompt_component_bytes for item in terminals
         ),
-        maximum_public_context_bytes=max(
-            item.maximum_public_context_bytes for item in terminals
-        ),
+        maximum_public_context_bytes=max(item.maximum_public_context_bytes for item in terminals),
         maximum_observation_summary_bytes=max(
             item.maximum_observation_summary_bytes for item in terminals
         ),
@@ -1644,14 +1600,8 @@ def _cell(
 
 
 def _conditional_valid_rate(terminals: Sequence[RuntimeTerminalOutcome]) -> float:
-    eligible = tuple(
-        item for item in terminals if item.runtime_eligible_for_capability_denominator
-    )
-    return (
-        _rate(sum(item.valid_success for item in eligible), len(eligible))
-        if eligible
-        else 0.0
-    )
+    eligible = tuple(item for item in terminals if item.runtime_eligible_for_capability_denominator)
+    return _rate(sum(item.valid_success for item in eligible), len(eligible)) if eligible else 0.0
 
 
 def _next_permitted_stage(
@@ -1859,8 +1809,7 @@ def _implementation_manifest() -> dict[str, str]:
             "src/trusted_synthesis/experiments/vtdo_experiment/"
             "phase1_multitier_capability_population.py"
         ),
-        root
-        / "src/trusted_synthesis/experiments/vtdo_experiment/phase1_multitier_confirmation.py",
+        root / "src/trusted_synthesis/experiments/vtdo_experiment/phase1_multitier_confirmation.py",
     )
     return {str(path.relative_to(root)): _sha256(path) for path in paths}
 
@@ -1888,8 +1837,7 @@ def _verify_frozen_inputs(contract: FinanceRuntimeResolutionContract) -> None:
     )
     for optional_path, optional_expected in optional:
         if optional_path is not None and (
-            optional_expected is None
-            or _sha256(Path(optional_path)) != optional_expected
+            optional_expected is None or _sha256(Path(optional_path)) != optional_expected
         ):
             raise ValueError(f"runtime-resolution prior artifact changed:{optional_path}")
     manifest = _implementation_manifest()

@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from trusted_synthesis.core.evaluation.contracts import QualityContractCompiler
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
+    FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION,
     FINANCE_SUBMECHANISM_ORACLE_KEY,
     FinanceCapabilitySubmechanismRuntime,
     FinanceStoppingDependencyOption,
@@ -39,6 +40,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder impo
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_flash_development import (  # noqa: E501
     FinanceSubmechanismFlashContract,
     FinanceSubmechanismFlashReport,
+    _host_event_sequence,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_population import (  # noqa: E501
     BOUNDARY_BASE_TIER,
@@ -577,9 +579,7 @@ def _observed_record_from_role(
     period_label: str | None = None,
 ) -> FinanceStoppingObservedRecord:
     item = next(
-        value
-        for value in context.public_corpus.evidence
-        if value.evidence_id == role.evidence_id
+        value for value in context.public_corpus.evidence if value.evidence_id == role.evidence_id
     )
     temporal = item.temporal_context
     return FinanceStoppingObservedRecord(
@@ -690,6 +690,7 @@ def test_v25_40_contextual_state_requires_the_public_required_record() -> None:
         required_record=required,
     )
     decision = FinanceStoppingShapeDecisionContract(
+        schema_version=FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION,
         contract_kind="matched_contextual_evidence_state_choice_two_step",
         observed_conflict_signal="Two public records differ in one identity component.",
         observed_evidence_state=state,
@@ -758,6 +759,7 @@ def test_v25_40_temporal_conflict_requires_query_instead_of_constant_normalizati
         required_record=required,
     )
     decision = FinanceStoppingShapeDecisionContract(
+        schema_version=FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION,
         contract_kind="single_conflict_evidence_state_choice_one_step",
         observed_conflict_signal="Two public records differ in one identity component.",
         observed_evidence_state=state,
@@ -804,6 +806,223 @@ def test_v25_40_temporal_conflict_requires_query_instead_of_constant_normalizati
     )
     assert resolved.status == "succeeded"
     assert runtime.event_log == scenario.expected_host_events
+
+
+def test_v25_41_contextual_query_is_causal_before_evidence_selection() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    state = FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(update={"subject_alias": "entity:neighbor"}),
+        required_record=required,
+    )
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="matched_contextual_evidence_state_choice_two_step",
+        observed_conflict_signal="Two public records differ in one identity component.",
+        observed_evidence_state=state,
+        oracle_conflict_dimension="entity_scope_alignment",
+        state_activation_phase="before_required_evidence_selection",
+        available_resolution_actions=_state_actions(),
+        resolution_step_count=2,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.contextual.causal",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="unresolved_conflict_cannot_stop",
+        expected_host_events=("observe:context", "resolve:context"),
+        evidence_roles=roles,
+        public_resolution_hint="Choose from the active public Evidence state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+
+    assert runtime.event_log == (scenario.expected_host_events[0],)
+    assert runtime.selected_evidence_ids == ()
+    public_decision = public_submechanism_contract(scenario)["stopping_shape_decision_contract"]
+    assert public_decision["state_activation_phase"] == "before_required_evidence_selection"
+
+    wrong = _call(
+        runtime,
+        1,
+        "normalize_metric_unit_period",
+        {"evidence_ids": [], "target_definition": {}},
+    )
+    assert wrong.status == "failed"
+    assert wrong.error_code == "submechanism_resolution_action_required"
+    assert wrong.host_events == (scenario.expected_host_events[0],)
+    assert "host_event_sequence" not in wrong.result
+    assert "submechanism_activation" not in wrong.result
+
+    required_item = runtime.evidence_item(roles[0].evidence_id)
+    assert required_item.subject.name != required.subject_alias
+    resolved = _call(
+        runtime,
+        2,
+        "query_structured_fact",
+        {
+            "subject_alias": required_item.subject.name,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        },
+    )
+    assert resolved.status == "succeeded"
+
+    index = 2
+    for role in roles:
+        if role.evidence_id in runtime.selected_evidence_ids:
+            continue
+        index += 1
+        selected = _call(
+            runtime,
+            index,
+            "query_structured_fact",
+            {
+                "subject_alias": role.subject_alias,
+                "metric_alias": role.metric_alias,
+                "period_label": role.period_label,
+                "public_filters": {},
+            },
+        )
+        assert selected.status == "succeeded"
+    index, operation_ref = _calculate(runtime, index)
+    _, verified = _verify(runtime, index, operation_ref)
+
+    assert verified.status == "succeeded"
+    assert verified.result["verified"] is True
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_v25_41_temporal_query_resolves_before_required_selection() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    state = FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(
+            update={
+                "temporal_identity": required.temporal_identity.model_copy(
+                    update={"label": f"{required.period_label} alternate"}
+                )
+            }
+        ),
+        required_record=required,
+    )
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="single_conflict_evidence_state_choice_one_step",
+        observed_conflict_signal="Two public records differ in one identity component.",
+        observed_evidence_state=state,
+        oracle_conflict_dimension="temporal_alignment",
+        state_activation_phase="before_required_evidence_selection",
+        available_resolution_actions=_state_actions(),
+        resolution_step_count=1,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.conflict.temporal.causal",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="evidence_conflict",
+        expected_host_events=("observe:conflict", "resolve:conflict"),
+        evidence_roles=roles,
+        public_resolution_hint="Resolve the active temporal Evidence state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+
+    required_item = runtime.evidence_item(roles[0].evidence_id)
+    resolved_call = AgentToolCall(
+        call_index=1,
+        tool_id="query_structured_fact",
+        arguments={
+            "subject_alias": required_item.subject.name,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        },
+    )
+    resolved = runtime.execute(resolved_call)
+    runtime.manifest.tools_by_id[resolved_call.tool_id].validate_output(resolved.result)
+    assert resolved.host_events == (scenario.expected_host_events[0],)
+    assert "host_event_sequence" not in resolved.result
+    assert "submechanism_activation" not in resolved.result
+    resolved_observation = make_agent_tool_observation(
+        environment_manifest_id=runtime.manifest.manifest_id,
+        call=resolved_call,
+        result=resolved,
+        observation_time_hash="observation-time:v25-42-causal",
+    )
+
+    assert resolved.status == "succeeded"
+    assert (
+        _host_event_sequence(
+            (resolved_observation,),
+            scenario.expected_host_events,
+        )
+        == scenario.expected_host_events
+    )
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_v25_41_definition_normalization_blocks_calculation_after_selection() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    state = FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(update={"definition_id": "definition:observed"}),
+        required_record=required,
+    )
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="single_conflict_evidence_state_choice_one_step",
+        observed_conflict_signal="Two public records differ in one identity component.",
+        observed_evidence_state=state,
+        oracle_conflict_dimension="source_definition_compatibility",
+        state_activation_phase="after_required_evidence_selection_before_calculation",
+        available_resolution_actions=_state_actions(),
+        resolution_step_count=1,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.conflict.definition.causal",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="evidence_conflict",
+        expected_host_events=("observe:conflict", "resolve:conflict"),
+        evidence_roles=roles,
+        public_resolution_hint="Resolve the active definition Evidence state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+
+    premature = _call(
+        runtime,
+        index + 1,
+        "calculator",
+        {
+            "operator": "lookup",
+            "operands": [{"evidence_id": runtime.selected_evidence_ids[0]}],
+            "parameters": {},
+        },
+    )
+    assert premature.status == "failed"
+    assert premature.error_code == "submechanism_resolution_action_required"
+
+    normalized = _call(
+        runtime,
+        index + 2,
+        "normalize_metric_unit_period",
+        {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {
+                "definition_id": required.definition_id,
+                "time_basis": context.public_corpus.evidence[0].temporal_context.basis,
+                "frequency": context.public_corpus.evidence[0].temporal_context.frequency,
+            },
+        },
+    )
+    assert normalized.status == "succeeded"
+    assert runtime.event_log == scenario.expected_host_events
+
+    index, operation_ref = _calculate(runtime, index + 2)
+    _, verified = _verify(runtime, index, operation_ref)
+    assert verified.status == "succeeded"
+    assert verified.result["verified"] is True
 
 
 def test_submechanism_replay_and_failed_artifact_preserve_host_observations() -> None:

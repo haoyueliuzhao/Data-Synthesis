@@ -37,12 +37,12 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stabili
 )
 from trusted_synthesis.hashing import canonical_hash
 
-FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION = "finance_stopping_evidence_snapshot.v1"
+FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION: Literal["finance_stopping_evidence_snapshot.v2"] = (
+    "finance_stopping_evidence_snapshot.v2"
+)
 FINANCE_STOPPING_EVIDENCE_SNAPSHOT_SELECTION_VERSION: Literal[
     "finance_stopping_evidence_snapshot_selection.v1"
-] = (
-    "finance_stopping_evidence_snapshot_selection.v1"
-)
+] = "finance_stopping_evidence_snapshot_selection.v1"
 
 
 class FrozenModel(BaseModel):
@@ -68,14 +68,16 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
     archive_config_sha256: str = Field(min_length=64, max_length=64)
     kg_build_id: str = Field(min_length=1)
     graph_schema_version: str = Field(min_length=1)
-    selection_version: Literal[
-        "finance_stopping_evidence_snapshot_selection.v1"
-    ] = FINANCE_STOPPING_EVIDENCE_SNAPSHOT_SELECTION_VERSION
+    selection_version: Literal["finance_stopping_evidence_snapshot_selection.v1"] = (
+        FINANCE_STOPPING_EVIDENCE_SNAPSHOT_SELECTION_VERSION
+    )
     selection_salt: str = Field(min_length=1)
     maximum_selected_evidence_count: int = Field(ge=1)
     maximum_scan_evidence_count: int = Field(ge=0)
     full_archive_scan: bool
     historical_reference_count: int = Field(ge=1)
+    historical_population_references: tuple[FrozenArtifactReference, ...] = Field(min_length=1)
+    historical_reference_manifest_hash: str = Field(min_length=1)
     excluded_evidence_id_count: int = Field(ge=0)
     excluded_evidence_version_count: int = Field(ge=0)
     scanned_evidence_count: int = Field(ge=1)
@@ -104,7 +106,9 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
         "stopping_shape_policy_protocol_build",
         "evidence_snapshot_repair_only",
     ]
-    schema_version: str = FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION
+    schema_version: Literal["finance_stopping_evidence_snapshot.v2"] = (
+        FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_report(self) -> FinanceStoppingEvidenceSnapshotReport:
@@ -120,6 +124,17 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
             raise ValueError("Stopping Evidence Snapshot transition is inconsistent")
         if self.selected_evidence_count != sum(self.selected_evidence_by_source.values()):
             raise ValueError("Stopping Evidence Snapshot source accounting is inconsistent")
+        if self.historical_reference_count != len(self.historical_population_references):
+            raise ValueError("Stopping Evidence Snapshot history count is inconsistent")
+        if len({item.artifact_id for item in self.historical_population_references}) != len(
+            self.historical_population_references
+        ):
+            raise ValueError("Stopping Evidence Snapshot history contains duplicates")
+        if self.historical_reference_manifest_hash != canonical_hash(
+            self.historical_population_references,
+            prefix="finance_stopping_evidence_snapshot_history:",
+        ):
+            raise ValueError("Stopping Evidence Snapshot history identity is invalid")
         if self.report_id != finance_stopping_evidence_snapshot_report_id(self):
             raise ValueError("Stopping Evidence Snapshot report identity is invalid")
         return self
@@ -134,6 +149,17 @@ def finance_stopping_evidence_snapshot_report_id(
     )
 
 
+def _population_identity_matches(payload: dict[str, object]) -> bool:
+    population_id = payload.get("population_id")
+    if not isinstance(population_id, str) or ":" not in population_id:
+        return False
+    prefix = population_id.rsplit(":", 1)[0] + ":"
+    return population_id == canonical_hash(
+        {key: value for key, value in payload.items() if key != "population_id"},
+        prefix=prefix,
+    )
+
+
 def build_finance_stopping_evidence_snapshot(
     *,
     source_protocol_path: Path,
@@ -143,6 +169,7 @@ def build_finance_stopping_evidence_snapshot(
     maximum_selected_evidence_count: int = 30_000,
     maximum_scan_evidence_count: int = 0,
     thresholds: FinanceStoppingEvidenceSnapshotThresholds | None = None,
+    additional_historical_population_paths: tuple[Path, ...] = (),
 ) -> FinanceStoppingEvidenceSnapshotReport:
     output_path = output_dir / "finance_stopping_evidence_snapshot.jsonl"
     report_path = output_dir / "finance_stopping_evidence_snapshot_report.json"
@@ -156,14 +183,16 @@ def build_finance_stopping_evidence_snapshot(
     source_protocol = FinanceStoppingDualEstimandProtocol.model_validate_json(
         source_protocol_path.read_text(encoding="utf-8")
     )
-    source_population_payload = json.loads(
-        source_population_path.read_text(encoding="utf-8")
-    )
+    source_population_payload = json.loads(source_population_path.read_text(encoding="utf-8"))
+    if not isinstance(source_population_payload, dict):
+        raise ValueError("v25.38 Population is not a JSON object")
     source_population_id = source_population_payload.get("population_id")
     source_population_protocol_id = source_population_payload.get("protocol_id")
     source_population_schema = source_population_payload.get("schema_version")
-    if not isinstance(source_population_id, str) or not source_population_id.startswith(
-        "finance_stopping_dual_estimand_population:"
+    if (
+        not isinstance(source_population_id, str)
+        or not source_population_id.startswith("finance_stopping_dual_estimand_population:")
+        or not _population_identity_matches(source_population_payload)
     ):
         raise ValueError("v25.38 Population identity is missing or malformed")
     if source_population_protocol_id != source_protocol.protocol_id:
@@ -190,15 +219,37 @@ def build_finance_stopping_evidence_snapshot(
         path=str(source_population_path),
         sha256=_sha256(source_population_path),
     )
+    additional_historical_references: list[FrozenArtifactReference] = []
+    for path in additional_historical_population_paths:
+        resolved = path.resolve()
+        payload = json.loads(resolved.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError("Additional historical Population is not a JSON object")
+        population_id = payload.get("population_id")
+        if (
+            not isinstance(population_id, str)
+            or not population_id
+            or not _population_identity_matches(payload)
+        ):
+            raise ValueError("Additional historical Population identity is missing or invalid")
+        additional_historical_references.append(
+            FrozenArtifactReference(
+                artifact_id=population_id,
+                path=str(resolved),
+                sha256=_sha256(resolved),
+            )
+        )
     historical_references = tuple(
         sorted(
-            (*source_protocol.historical_population_references, population_reference),
+            (
+                *source_protocol.historical_population_references,
+                population_reference,
+                *additional_historical_references,
+            ),
             key=lambda item: item.artifact_id,
         )
     )
-    if len({item.artifact_id for item in historical_references}) != len(
-        historical_references
-    ):
+    if len({item.artifact_id for item in historical_references}) != len(historical_references):
         raise ValueError("Stopping Evidence Snapshot historical references are duplicated")
     excluded = _collect_excluded_identities(historical_references)
 
@@ -264,8 +315,7 @@ def build_finance_stopping_evidence_snapshot(
     source_counts = Counter(item.source.source_id for item in selected)
     historical_disjoint = not (
         {item.evidence_id for item in selected} & excluded["evidence_id"]
-        or {item.evidence_version_id for item in selected}
-        & excluded["evidence_version_id"]
+        or {item.evidence_version_id for item in selected} & excluded["evidence_version_id"]
     )
     values = {
         "snapshot_id": snapshot_id,
@@ -284,6 +334,11 @@ def build_finance_stopping_evidence_snapshot(
         "maximum_scan_evidence_count": maximum_scan_evidence_count,
         "full_archive_scan": maximum_scan_evidence_count == 0,
         "historical_reference_count": len(historical_references),
+        "historical_population_references": historical_references,
+        "historical_reference_manifest_hash": canonical_hash(
+            historical_references,
+            prefix="finance_stopping_evidence_snapshot_history:",
+        ),
         "excluded_evidence_id_count": len(excluded["evidence_id"]),
         "excluded_evidence_version_count": len(excluded["evidence_version_id"]),
         "scanned_evidence_count": scanned,
@@ -334,12 +389,8 @@ def select_stopping_evidence_snapshot(
     contextual_keys: dict[tuple[object, ...], set[str]] = defaultdict(set)
     for item in evidence:
         contextual_keys[_contextual_identity(item)].add(item.subject.subject_id)
-    contextual_supported = {
-        key for key, subjects in contextual_keys.items() if len(subjects) >= 2
-    }
-    chunks_by_source: dict[str, list[tuple[int, str, tuple[EvidenceItem, ...]]]] = (
-        defaultdict(list)
-    )
+    contextual_supported = {key for key, subjects in contextual_keys.items() if len(subjects) >= 2}
+    chunks_by_source: dict[str, list[tuple[int, str, tuple[EvidenceItem, ...]]]] = defaultdict(list)
     for series in series_values:
         for chunk in _contiguous_chunks(series, maximum_length=6):
             if len(chunk) < 4:
@@ -350,15 +401,11 @@ def select_stopping_evidence_snapshot(
             rank = canonical_hash(
                 {
                     "selection_salt": selection_salt,
-                    "evidence_versions": tuple(
-                        item.evidence_version_id for item in chunk
-                    ),
+                    "evidence_versions": tuple(item.evidence_version_id for item in chunk),
                 },
                 prefix="finance_stopping_evidence_chunk_order:",
             )
-            chunks_by_source[chunk[0].source.source_id].append(
-                (peer_priority, rank, chunk)
-            )
+            chunks_by_source[chunk[0].source.source_id].append((peer_priority, rank, chunk))
     queues = {
         source_id: deque(sorted(chunks, key=lambda row: (row[0], row[1])))
         for source_id, chunks in chunks_by_source.items()
@@ -422,17 +469,15 @@ def stopping_evidence_snapshot_capacity(
     }
 
 
-def _single_mismatch_pair_capacity(
-    evidence: tuple[EvidenceItem, ...], mismatch_field: str
-) -> int:
+def _single_mismatch_pair_capacity(evidence: tuple[EvidenceItem, ...], mismatch_field: str) -> int:
     grouped: dict[tuple[object, ...], Counter[object]] = defaultdict(Counter)
     for item in evidence:
         fields = _mismatch_identity_fields(item)
         if mismatch_field not in fields:
             raise ValueError("unknown one-dimensional mismatch field")
-        grouped[
-            tuple(value for field, value in fields.items() if field != mismatch_field)
-        ][fields[mismatch_field]] += 1
+        grouped[tuple(value for field, value in fields.items() if field != mismatch_field)][
+            fields[mismatch_field]
+        ] += 1
     pair_count = 0
     for category_counts in grouped.values():
         total = sum(category_counts.values())
@@ -473,33 +518,27 @@ def _snapshot_rejection_reasons(
             len(selected) < thresholds.minimum_selected_evidence_count
         ),
         "source_breadth_below_minimum": (
-            len({item.source.source_id for item in selected})
-            < thresholds.minimum_source_count
+            len({item.source.source_id for item in selected}) < thresholds.minimum_source_count
         ),
         "subject_breadth_below_minimum": (
-            len({item.subject.subject_id for item in selected})
-            < thresholds.minimum_subject_count
+            len({item.subject.subject_id for item in selected}) < thresholds.minimum_subject_count
         ),
         "predicate_breadth_below_minimum": (
-            len({item.predicate for item in selected})
-            < thresholds.minimum_predicate_count
+            len({item.predicate for item in selected}) < thresholds.minimum_predicate_count
         ),
         "disjoint_gold_capacity_below_minimum": (
             capacity["disjoint_gold_window_capacity"]
             < thresholds.minimum_disjoint_gold_window_capacity
         ),
         "contextual_pair_capacity_below_minimum": (
-            capacity["contextual_pair_capacity"]
-            < thresholds.minimum_contextual_pair_capacity
+            capacity["contextual_pair_capacity"] < thresholds.minimum_contextual_pair_capacity
         ),
         "normalization_pair_capacity_below_minimum": (
-            capacity["normalization_pair_capacity"]
-            < thresholds.minimum_normalization_pair_capacity
+            capacity["normalization_pair_capacity"] < thresholds.minimum_normalization_pair_capacity
         ),
         "historical_identity_overlap": bool(
             {item.evidence_id for item in selected} & excluded["evidence_id"]
-            or {item.evidence_version_id for item in selected}
-            & excluded["evidence_version_id"]
+            or {item.evidence_version_id for item in selected} & excluded["evidence_version_id"]
         ),
     }
     return tuple(key for key, failed in values.items() if failed)
@@ -512,9 +551,7 @@ def _snapshot_item(snapshot_id: str, evidence: EvidenceItem) -> FinanceAgentEvid
         "source_artifact_ids": (snapshot_id,),
         "schema_version": FINANCE_AGENT_EVIDENCE_UNION_ITEM_VERSION,
     }
-    provisional = FinanceAgentEvidenceUnionItem.model_construct(
-        union_item_id="pending", **values
-    )
+    provisional = FinanceAgentEvidenceUnionItem.model_construct(union_item_id="pending", **values)
     return FinanceAgentEvidenceUnionItem(
         union_item_id=finance_agent_evidence_union_item_id(provisional), **values
     )
@@ -570,6 +607,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--selection-salt", required=True)
     parser.add_argument("--maximum-selected-evidence-count", type=int, default=30_000)
     parser.add_argument("--maximum-scan-evidence-count", type=int, default=0)
+    parser.add_argument(
+        "--additional-historical-population",
+        action="append",
+        default=[],
+        type=Path,
+    )
     return parser
 
 
@@ -582,6 +625,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         selection_salt=args.selection_salt,
         maximum_selected_evidence_count=args.maximum_selected_evidence_count,
         maximum_scan_evidence_count=args.maximum_scan_evidence_count,
+        additional_historical_population_paths=tuple(args.additional_historical_population),
     )
     print(report.model_dump_json(indent=2))
     return 0 if report.status == "passed" else 2

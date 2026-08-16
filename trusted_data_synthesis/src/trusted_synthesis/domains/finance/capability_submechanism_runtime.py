@@ -26,13 +26,14 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v12"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v15"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v8"
-FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v4"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v14"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v17"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v10"
+FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v5"
 FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION = "finance_stopping_shape_decision_contract.v1"
 FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION = "finance_stopping_shape_decision_contract.v2"
 FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION = "finance_stopping_shape_decision_contract.v3"
+FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION = "finance_stopping_shape_decision_contract.v4"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -304,6 +305,13 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
     observed_conflict_signal: str | None = Field(default=None, min_length=1)
     observed_evidence_state: FinanceStoppingObservedEvidenceState | None = None
     oracle_conflict_dimension: str | None = Field(default=None, min_length=1)
+    state_activation_phase: (
+        Literal[
+            "before_required_evidence_selection",
+            "after_required_evidence_selection_before_calculation",
+        ]
+        | None
+    ) = Field(default=None, exclude_if=lambda value: value is None)
     available_resolution_actions: tuple[FinanceStoppingResolutionAction, ...] = ()
     resolution_step_count: int | None = Field(default=None, ge=1, le=2)
     remaining_call_budget_fraction: float | None = Field(default=None, gt=0, le=1)
@@ -373,12 +381,18 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
             }
         ):
             raise ValueError("Finance Stopping Shape v4 decision uses a v3 schema identity")
+        if (
+            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION
+            and self.state_activation_phase is not None
+        ):
+            raise ValueError("Finance Stopping Shape v5 activation uses a v4 schema identity")
         common_absent = (
             self.dependency_rule is None
             and self.dependency_decoy_option is None
             and self.observed_conflict_signal is None
             and self.observed_evidence_state is None
             and self.oracle_conflict_dimension is None
+            and self.state_activation_phase is None
             and self.archive_snapshot_sealed is None
             and self.maximum_additional_information_gain is None
             and self.realized_call_budget_debit_fraction is None
@@ -443,6 +457,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.observed_conflict_signal is None
                 and self.observed_evidence_state is None
                 and self.oracle_conflict_dimension is None
+                and self.state_activation_phase is None
                 and not self.available_resolution_actions
                 and self.resolution_step_count
                 == (2 if self.contract_kind == "conditional_dependency_observation_required" else 1)
@@ -525,6 +540,28 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                     }
                     else 1
                 )
+                and (
+                    self.state_activation_phase == "before_required_evidence_selection"
+                    if (
+                        self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_VERSION
+                        and self.contract_kind
+                        == "matched_contextual_evidence_state_choice_two_step"
+                    )
+                    else (
+                        self.state_activation_phase
+                        == (
+                            "before_required_evidence_selection"
+                            if self.oracle_conflict_dimension == "temporal_alignment"
+                            else "after_required_evidence_selection_before_calculation"
+                        )
+                        if (
+                            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_VERSION
+                            and self.contract_kind
+                            == "single_conflict_evidence_state_choice_one_step"
+                        )
+                        else self.state_activation_phase is None
+                    )
+                )
                 and "source_definition_compatibility" not in public_text
                 and self.remaining_call_budget_fraction is None
                 and self.remaining_token_budget_fraction is None
@@ -544,6 +581,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.observed_conflict_signal is None
                 and self.observed_evidence_state is None
                 and self.oracle_conflict_dimension is None
+                and self.state_activation_phase is None
                 and not self.available_resolution_actions
                 and self.resolution_step_count is None
                 and self.remaining_call_budget_fraction is None
@@ -754,6 +792,12 @@ class FinanceCapabilitySubmechanismRuntime:
         self._dependency_branch_observed = False
         self._verified_complete = False
         self._event_log: list[str] = []
+        self._activation_event_pending = False
+        decision = scenario.stopping_shape_decision_contract
+        if decision is not None and decision.state_activation_phase is not None:
+            self._trigger_observed = True
+            self._event_log.append(scenario.expected_host_events[0])
+            self._activation_event_pending = True
 
     @property
     def manifest(self) -> AgentToolEnvironmentManifest:
@@ -801,6 +845,9 @@ class FinanceCapabilitySubmechanismRuntime:
             result = self._execute_completeness(call)
         else:
             result = self._execute_conflict(call)
+        if self._activation_event_pending:
+            result = self._with_activation_event(result)
+            self._activation_event_pending = False
         if result.status == "succeeded":
             self._successful_by_tool[call.tool_id] = (
                 self._successful_by_tool.get(call.tool_id, 0) + 1
@@ -935,6 +982,9 @@ class FinanceCapabilitySubmechanismRuntime:
         return self._base.execute(call)
 
     def _execute_conflict(self, call: AgentToolCall) -> AgentToolResult:
+        decision = self._scenario.stopping_shape_decision_contract
+        if decision is not None and decision.state_activation_phase is not None:
+            return self._execute_causal_state_conflict(call, decision)
         if not self._trigger_observed and call.tool_id == "cross_check_evidence":
             base = self._base.execute(call)
             if base.status == "failed":
@@ -952,7 +1002,6 @@ class FinanceCapabilitySubmechanismRuntime:
                     code="contextual_resolution_query_mismatch"
                 )
             result = self._base.execute(call)
-            decision = self._scenario.stopping_shape_decision_contract
             if result.status == "succeeded":
                 self._decision_action_observed = True
                 if decision is not None and decision.contract_kind in {
@@ -971,6 +1020,59 @@ class FinanceCapabilitySubmechanismRuntime:
                 )
             result = self._base.execute(call)
             if result.status == "succeeded" and bool(result.result.get("verified")):
+                self._observe_resolution()
+                return self._with_resolution_event(result)
+            return result
+        return self._base.execute(call)
+
+    def _execute_causal_state_conflict(
+        self,
+        call: AgentToolCall,
+        decision: FinanceStoppingShapeDecisionContract,
+    ) -> AgentToolResult:
+        required_tool = self._required_conflict_resolution_tool()
+        selected = set(self._base.selected_evidence_ids)
+        required_ids = {item.evidence_id for item in self._scenario.evidence_roles}
+
+        if not self._decision_action_observed:
+            if (
+                decision.state_activation_phase
+                == "after_required_evidence_selection_before_calculation"
+            ):
+                if call.tool_id in {
+                    "search_archive",
+                    "open_document",
+                    "query_structured_fact",
+                }:
+                    return self._base.execute(call)
+                if not required_ids <= selected:
+                    return self._resolution_required_failure(
+                        code="evidence_selection_required_before_normalization"
+                    )
+            if call.tool_id != required_tool:
+                return self._resolution_required_failure()
+            result = self._base.execute(call)
+            if result.status != "succeeded":
+                return result
+            if required_tool == "query_structured_fact" and not (
+                self._query_result_matches_required_role(result)
+            ):
+                return self._resolution_required_failure(
+                    code="contextual_resolution_query_mismatch"
+                )
+            self._decision_action_observed = True
+            if decision.contract_kind == "single_conflict_evidence_state_choice_one_step":
+                self._observe_resolution()
+                return self._with_resolution_event(result)
+            return result
+
+        if not self._resolution_observed:
+            result = self._base.execute(call)
+            if (
+                call.tool_id == "cross_check_evidence"
+                and result.status == "succeeded"
+                and bool(result.result.get("verified"))
+            ):
                 self._observe_resolution()
                 return self._with_resolution_event(result)
             return result
@@ -1023,6 +1125,41 @@ class FinanceCapabilitySubmechanismRuntime:
             for item in self._scenario.evidence_roles
         }
 
+    def _query_result_matches_required_role(self, result: AgentToolResult) -> bool:
+        """Bind a public selector to an Oracle role through immutable Evidence identity."""
+
+        decision = self._scenario.stopping_shape_decision_contract
+        if decision is not None and decision.observed_evidence_state is not None:
+            required = decision.observed_evidence_state.required_record
+            required_role_ids = {
+                role.evidence_id
+                for role in self._scenario.evidence_roles
+                if (
+                    role.subject_alias,
+                    role.metric_alias,
+                    role.period_label,
+                )
+                == (
+                    required.subject_alias,
+                    required.metric_alias,
+                    required.period_label,
+                )
+            }
+        else:
+            required_role_ids = {role.evidence_id for role in self._scenario.evidence_roles}
+        return bool(required_role_ids.intersection(result.evidence_ids))
+
+    def _with_activation_event(self, result: AgentToolResult) -> AgentToolResult:
+        events = tuple(
+            dict.fromkeys(
+                (
+                    self._scenario.expected_host_events[0],
+                    *result.host_events,
+                )
+            )
+        )
+        return result.model_copy(update={"host_events": events})
+
     def _observe_trigger(self, call: AgentToolCall) -> None:
         if not self._trigger_observed:
             self._trigger_observed = True
@@ -1056,6 +1193,23 @@ class FinanceCapabilitySubmechanismRuntime:
         self, *, code: str = "submechanism_resolution_action_required"
     ) -> AgentToolResult:
         suggested_patch: dict[str, Any] = {"rule": self._scenario.public_resolution_hint}
+        decision = self._scenario.stopping_shape_decision_contract
+        if decision is not None and decision.state_activation_phase is not None:
+            suggested_patch.update(
+                {
+                    "state_activation_phase": decision.state_activation_phase,
+                    "observed_conflict_signal": decision.observed_conflict_signal,
+                    "observed_evidence_state": (
+                        decision.observed_evidence_state.model_dump(mode="json")
+                        if decision.observed_evidence_state is not None
+                        else None
+                    ),
+                    "available_resolution_actions": [
+                        item.model_dump(mode="json")
+                        for item in decision.available_resolution_actions
+                    ],
+                }
+            )
         candidate_contract = _public_candidate_submission_contract(self._scenario)
         if candidate_contract is not None:
             suggested_patch["candidate_submission_contract"] = candidate_contract
@@ -1576,14 +1730,10 @@ class FinanceCapabilitySubmechanismRuntime:
                 "Map the observed semantic symptom to the single applicable action. "
                 "No internal conflict-field label is available."
             )
-        elif (
-            decision is not None
-            and decision.contract_kind
-            in {
-                "matched_contextual_resolution_choice",
-                "matched_contextual_evidence_state_choice_two_step",
-            }
-        ):
+        elif decision is not None and decision.contract_kind in {
+            "matched_contextual_resolution_choice",
+            "matched_contextual_evidence_state_choice_two_step",
+        }:
             retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
             if decision.observed_evidence_state is not None:
                 retry_contract["observed_evidence_state"] = (
@@ -1597,14 +1747,10 @@ class FinanceCapabilitySubmechanismRuntime:
                 "one independent post-resolution cross-check. All tasks expose the same "
                 "number of actions and the same two-step decision burden."
             )
-        elif (
-            decision is not None
-            and decision.contract_kind
-            in {
-                "single_conflict_evidence_grounded_choice_one_step",
-                "single_conflict_evidence_state_choice_one_step",
-            }
-        ):
+        elif decision is not None and decision.contract_kind in {
+            "single_conflict_evidence_grounded_choice_one_step",
+            "single_conflict_evidence_state_choice_one_step",
+        }:
             retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
             if decision.observed_evidence_state is not None:
                 retry_contract["observed_evidence_state"] = (

@@ -753,13 +753,21 @@ def _submechanism_instruction(
             + f"exactly these fields: {fields}. Do not substitute the final-answer object for "
             + "the candidate payload."
         )
+    decision = scenario.stopping_shape_decision_contract
+    activation = ""
+    if decision is not None and decision.state_activation_phase is not None:
+        activation = (
+            " The public decision contract contains an active observed_evidence_state. "
+            f"Its state_activation_phase is {decision.state_activation_phase}; respect that "
+            "phase before calculation or final verification."
+        )
     return (
         "Use the frozen Archive tools to solve the financial task from public evidence and "
         "typed Host observations. Do not assume a hidden intervention label or a preselected "
         "repair branch. Treat observed completion, conflict, and retry state as authoritative; "
         "when no executable prerequisite is supplied, select the next action from the public "
         "tool schemas. Finalize only when the observed state supports it."
-        f"{candidate} "
+        f"{activation}{candidate} "
         f"{source_instruction} The final answer uses the public labels "
         f"{sorted(set(projection.values())) or ['value']}."
     )
@@ -919,6 +927,21 @@ def replay_wrong_branch_rejection(
     )
     calls = _ReplayCalls(runtime)
     kind = scenario.intervention_kind
+    decision = scenario.stopping_shape_decision_contract
+    if decision is not None and decision.state_activation_phase is not None:
+        query_required = decision.oracle_conflict_dimension in {
+            "entity_scope_alignment",
+            "temporal_alignment",
+        }
+        if query_required:
+            result = calls.normalize()
+        else:
+            calls.select_all()
+            result = calls.calculate()
+        return (
+            result.status == "failed"
+            and result.error_code == "submechanism_resolution_action_required"
+        )
     if kind in {"post_complete_error_risk", "post_complete_cost"}:
         calls.verify_complete()
         return calls.extra_action_rejected()
@@ -1156,12 +1179,8 @@ class _ReplayCalls:
             raise ValueError("candidate repair did not verify")
 
     def resolve_conflict(self) -> None:
-        self.select_all()
-        self.calculate()
-        first = self.verify()
-        if bool(first.result.get("verified")):
-            raise ValueError("conflict trigger unexpectedly verified")
         decision = self.scenario.stopping_shape_decision_contract
+        causal = bool(decision is not None and decision.state_activation_phase is not None)
         query_required = bool(
             decision is not None
             and (
@@ -1174,12 +1193,20 @@ class _ReplayCalls:
                     and decision.oracle_conflict_dimension == "entity_scope_alignment"
                 )
                 or (
-                    decision.contract_kind
-                    == "single_conflict_evidence_state_choice_one_step"
+                    decision.contract_kind == "single_conflict_evidence_state_choice_one_step"
                     and decision.oracle_conflict_dimension == "temporal_alignment"
                 )
             )
         )
+        if not causal:
+            self.select_all()
+            self.calculate()
+            first = self.verify()
+            if bool(first.result.get("verified")):
+                raise ValueError("conflict trigger unexpectedly verified")
+        elif not query_required:
+            self.select_all()
+
         if query_required:
             if decision is None or decision.observed_evidence_state is None:
                 resolution = self.query_role(0, add_filter=True)
@@ -1204,6 +1231,10 @@ class _ReplayCalls:
             resolution = self.normalize()
         if resolution.status != "succeeded":
             raise ValueError("conflict resolution action did not succeed")
+
+        if causal:
+            self.select_all()
+            self.calculate()
         result = self.verify()
         if not bool(result.result.get("verified")):
             raise ValueError("conflict resolution did not verify")
