@@ -15,24 +15,25 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active result is Finance v25.46 Contextual Counterfactual Development. v25.45 first established
-a clean recursive Host-Agent measurement instrument but left `contextual_resolution_choice`
-blocked by between-task heterogeneity. v25.46 replaced only that Shape's task grammar with four
-strictly matched Context counterfactual pairs while freezing the other five Shape mechanisms,
-thresholds, Runtime, Public Result schemas, Host side channel, dual estimands, and Flash identity.
+The active result is Finance v25.47 Context Sufficiency Development. v25.47 replaced the opaque
+v25.46 branch cue with one typed, action-neutral public relation state and one shared decision
+policy. Its 48-task pre-API population passed every construct-validity check, including unique
+public applicability, Context sufficiency, order and label invariance, Context removal and swap
+mutations, action-description symmetry, deterministic replay, and lexical leakage rejection.
 
-The formal pre-API audit passed 48/48 tasks and 4/4 matched pairs. Pair branches had identical core
-tasks, public corpora, programs, answers, action sets, tool budgets, prompt byte lengths, and
-deterministic replay; only the active Context changed and the correct action flipped. The new
-384-rollout run was fully auditable, had zero recursive Host-field or marker violations, and all
-four boundary Shape contracts plus both Runtime controls passed.
+The 384-rollout DeepSeek V4-Flash execution was fully auditable, with zero recursive Host-field or
+marker violations. The aggregate Contextual Shape was admitted, but the prospective mechanism
+estimator failed: branch-balanced first-action accuracy was `0.34375`, below both the frozen
+`0.625` requirement and the `0.5` constant-action baseline; contextual policy gain was `-0.15625`,
+and its paired hierarchical-bootstrap LCB95 was `0.171875`. Only 3/4 matched pairs were
+informative.
 
-The prospective Contextual Flip gate nevertheless failed: dual-correct consistency was 2/32
-(`0.0625`) against a frozen `0.125` minimum, and only 2/4 pairs were informative. Definition
-branches showed a strong incorrect archive-query preference. Consequently all v25.46 gates remain
-false and the only permitted next stage is `contextual_shape_redesign_only`. Pro, Beneficiary
-screening, Exact Target, GP-C, VTDO updates, Student training, and production Contribution remain
-blocked. See `docs/finance_v25_46_contextual_counterfactual_report.md`.
+This is interpreted as a localized Flash contextual tool-selection limitation under sufficient
+public Context, not as permission for another same-grammar Prompt repair. A separate immutable
+scientific decision tightens the automatic report transition to
+`contextual_tool_selection_limitation_recorded` and forbids threshold relaxation, post-hoc task
+deletion, additional Flash replicas, Pro calls, Beneficiary screening, Exact Target, and GP-C.
+Production Contribution remains zero. See `docs/finance_v25_47_context_sufficiency_report.md`.
 
 ## Runtime And Data
 

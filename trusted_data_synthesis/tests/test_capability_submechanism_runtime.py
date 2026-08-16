@@ -11,12 +11,14 @@ from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION,
     FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION,
+    FINANCE_STOPPING_SHAPE_DECISION_V7_VERSION,
     FINANCE_SUBMECHANISM_ORACLE_KEY,
     FinanceCapabilitySubmechanismRuntime,
     FinanceStoppingDependencyOption,
     FinanceStoppingMeasurementContext,
     FinanceStoppingObservedEvidenceState,
     FinanceStoppingObservedRecord,
+    FinanceStoppingPublicRelationState,
     FinanceStoppingResolutionAction,
     FinanceStoppingShapeDecisionContract,
     FinanceStoppingTemporalIdentity,
@@ -1167,6 +1169,208 @@ def test_v25_46_contextual_contract_is_version_scoped_fail_closed() -> None:
         FinanceStoppingShapeDecisionContract(
             schema_version=FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION,
             **{**values, "contract_kind": "single_conflict_evidence_state_choice_one_step"},
+        )
+
+
+@pytest.mark.parametrize(
+    ("dimension", "observed_update", "relation_field", "expected_tool", "wrong_tool"),
+    (
+        (
+            "temporal_alignment",
+            "period",
+            "observation_identity_relation",
+            "query_structured_fact",
+            "normalize_metric_unit_period",
+        ),
+        (
+            "source_definition_compatibility",
+            "definition",
+            "meaning_compatibility_relation",
+            "normalize_metric_unit_period",
+            "query_structured_fact",
+        ),
+    ),
+)
+def test_v25_47_context_sufficiency_uses_public_relation_state_for_first_action(
+    dimension: str,
+    observed_update: str,
+    relation_field: str,
+    expected_tool: str,
+    wrong_tool: str,
+) -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    observed = (
+        required.model_copy(
+            update={
+                "temporal_identity": required.temporal_identity.model_copy(
+                    update={"label": f"{required.period_label} alternate"}
+                )
+            }
+        )
+        if observed_update == "period"
+        else required.model_copy(update={"definition_id": "definition:alternate"})
+    )
+    relation_values = {
+        "observation_identity_relation": "aligned",
+        "meaning_compatibility_relation": "aligned",
+        "measurement_compatibility_relation": "aligned",
+        "authority_relation": "aligned",
+        relation_field: "unresolved",
+    }
+    decision = FinanceStoppingShapeDecisionContract(
+        schema_version=FINANCE_STOPPING_SHAPE_DECISION_V7_VERSION,
+        contract_kind="context_sufficient_counterfactual_evidence_choice_two_step",
+        observed_conflict_signal=(
+            "One public relation remains unresolved after required record selection."
+        ),
+        observed_evidence_state=FinanceStoppingObservedEvidenceState(
+            observed_record=observed,
+            required_record=required,
+        ),
+        public_relation_state=FinanceStoppingPublicRelationState(**relation_values),
+        shared_resolution_policy=(
+            "Choose the action whose stated effect resolves the sole unresolved relation "
+            "while preserving every aligned relation."
+        ),
+        oracle_conflict_dimension=dimension,
+        state_activation_phase="after_required_evidence_selection_before_calculation",
+        available_resolution_actions=(
+            FinanceStoppingResolutionAction(
+                tool_id="normalize_metric_unit_period",
+                applicable_when=("transform selected entries to a common interpretive convention"),
+            ),
+            FinanceStoppingResolutionAction(
+                tool_id="open_document",
+                applicable_when="inspect authoritative provenance when trust remains unsettled",
+            ),
+            FinanceStoppingResolutionAction(
+                tool_id="query_structured_fact",
+                applicable_when="obtain another archived entry through a revised selector",
+            ),
+        ),
+        resolution_step_count=2,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id=f"finance.test.context.sufficiency.{observed_update}",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="unresolved_conflict_cannot_stop",
+        expected_host_events=("observe:context", "resolve:context"),
+        evidence_roles=roles,
+        public_resolution_hint="Select required records, then apply the shared policy.",
+        stopping_shape_decision_contract=decision,
+    )
+    public_decision = public_submechanism_contract(scenario)["stopping_shape_decision_contract"]
+    assert public_decision["public_relation_state"][relation_field] == "unresolved"
+    assert public_decision["shared_resolution_policy"] == decision.shared_resolution_policy
+    assert "oracle_conflict_dimension" not in public_decision
+
+    runtime = _runtime(context, scenario)
+    index = 0
+    selected_evidence_ids = set(runtime.selected_evidence_ids)
+    for role in scenario.evidence_roles:
+        if role.evidence_id in selected_evidence_ids:
+            continue
+        index += 1
+        selected = _call(
+            runtime,
+            index,
+            "query_structured_fact",
+            {
+                "subject_alias": role.subject_alias,
+                "metric_alias": role.metric_alias,
+                "period_label": role.period_label,
+                "public_filters": {},
+            },
+        )
+        assert selected.status == "succeeded"
+        selected_evidence_ids.update(selected.evidence_ids)
+    assert selected_evidence_ids == {item.evidence_id for item in scenario.evidence_roles}
+    if wrong_tool == "normalize_metric_unit_period":
+        wrong_arguments = {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {},
+        }
+    else:
+        wrong_arguments = {
+            "subject_alias": required.subject_alias,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        }
+    wrong = _call(runtime, index + 1, wrong_tool, wrong_arguments)
+    assert wrong.status == "failed"
+    assert wrong.error_code == "submechanism_resolution_action_required"
+
+    if expected_tool == "query_structured_fact":
+        expected_arguments = {
+            "subject_alias": required.subject_alias,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        }
+    else:
+        expected_arguments = {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {
+                "definition_id": required.definition_id,
+                "time_basis": context.public_corpus.evidence[0].temporal_context.basis,
+                "frequency": context.public_corpus.evidence[0].temporal_context.frequency,
+            },
+        }
+    resolved = _call(runtime, index + 2, expected_tool, expected_arguments)
+    assert resolved.status == "succeeded"
+
+
+def test_v25_47_context_sufficiency_contract_is_version_and_relation_scoped() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    observed = required.model_copy(update={"definition_id": "definition:alternate"})
+    values = {
+        "contract_kind": "context_sufficient_counterfactual_evidence_choice_two_step",
+        "observed_conflict_signal": (
+            "One public relation remains unresolved after required record selection."
+        ),
+        "observed_evidence_state": FinanceStoppingObservedEvidenceState(
+            observed_record=observed,
+            required_record=required,
+        ),
+        "public_relation_state": FinanceStoppingPublicRelationState(
+            observation_identity_relation="unresolved",
+            meaning_compatibility_relation="aligned",
+            measurement_compatibility_relation="aligned",
+            authority_relation="aligned",
+        ),
+        "shared_resolution_policy": (
+            "Choose the action whose stated effect resolves the sole unresolved relation "
+            "while preserving every aligned relation."
+        ),
+        "oracle_conflict_dimension": "source_definition_compatibility",
+        "state_activation_phase": "after_required_evidence_selection_before_calculation",
+        "available_resolution_actions": (
+            FinanceStoppingResolutionAction(
+                tool_id="normalize_metric_unit_period",
+                applicable_when=("transform selected entries to a common interpretive convention"),
+            ),
+            FinanceStoppingResolutionAction(
+                tool_id="open_document",
+                applicable_when="inspect authoritative provenance when trust remains unsettled",
+            ),
+            FinanceStoppingResolutionAction(
+                tool_id="query_structured_fact",
+                applicable_when="obtain another archived entry through a revised selector",
+            ),
+        ),
+        "resolution_step_count": 2,
+    }
+    with pytest.raises(ValidationError):
+        FinanceStoppingShapeDecisionContract(**values)
+    with pytest.raises(ValidationError):
+        FinanceStoppingShapeDecisionContract(
+            schema_version=FINANCE_STOPPING_SHAPE_DECISION_V7_VERSION,
+            **values,
         )
 
 

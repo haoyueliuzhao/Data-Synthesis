@@ -93,6 +93,15 @@ class PublicObservedEvidenceState(PublicModel):
     required_record: PublicObservedRecord
 
 
+class PublicRelationState(PublicModel):
+    selected_evidence_exists: Literal[True]
+    target_record_coverage: Literal["complete"]
+    observation_identity_relation: Literal["aligned", "unresolved", "irrelevant"]
+    meaning_compatibility_relation: Literal["aligned", "unresolved", "irrelevant"]
+    measurement_compatibility_relation: Literal["aligned", "unresolved", "irrelevant"]
+    authority_relation: Literal["aligned", "unresolved", "irrelevant"]
+
+
 class PublicCandidateSubmissionContract(PublicModel):
     selector: tuple[str, ...]
     required_fields: tuple[str, ...]
@@ -109,6 +118,8 @@ class PublicSuggestedArgumentPatch(PublicModel):
     state_activation_phase: str | None = None
     observed_conflict_signal: str | None = None
     observed_evidence_state: PublicObservedEvidenceState | None = None
+    public_relation_state: PublicRelationState | None = None
+    shared_resolution_policy: str | None = None
     available_resolution_actions: tuple[PublicResolutionAction, ...] = ()
     candidate_submission_contract: PublicCandidateSubmissionContract | None = None
     public_filters: dict[str, str | int | float | bool | None] | None = None
@@ -190,15 +201,16 @@ class PublicRetryContract(PublicModel):
     policy: str
     maximum_identical_replays: int | None = None
     required_next_tools: tuple[str, ...] = ()
-    suggested_argument_patch: (
-        PublicSuggestedArgumentPatch | PublicOperationArgumentPatch | None
-    ) = None
+    suggested_argument_patch: PublicSuggestedArgumentPatch | PublicOperationArgumentPatch | None = (
+        None
+    )
     required_prerequisite_action: PublicPrerequisiteAction | None = None
     observed_conflict_dimensions: tuple[str, ...] = ()
     available_resolution_actions: tuple[PublicResolutionAction, ...] = ()
     decision_rule: str | None = None
     observed_conflict_signal: str | None = None
     observed_evidence_state: PublicObservedEvidenceState | None = None
+    public_relation_state: PublicRelationState | None = None
 
 
 class PublicMissingRole(PublicModel):

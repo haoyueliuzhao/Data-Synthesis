@@ -1458,3 +1458,66 @@ interpretable without changing the action set or leaking the correct action. All
 non-contextual Shape mechanisms, Runtime contracts, and the recursive instrument remain frozen.
 Pro, Beneficiary, Exact Target, GP-C, VTDO updates, Student training, and production Contribution
 remain blocked.
+
+### v25.47 public Context sufficiency and capability-limit decision
+
+v25.47 performs the single Contextual grammar repair authorized by v25.46. It exposes one typed,
+action-neutral public relation state and one shared policy while preserving identical action text,
+order, program, corpus, answer, tool budget, and Prompt length across each matched pair. Before API
+access, every pair must pass:
+
+```text
+unique publicly applicable action
+public Context sufficiency
+action-order permutation invariance
+action-label rewrite invariance
+Context removal -> indeterminate action
+Context swap -> correct action flip
+action-description symmetry
+zero lexical action leakage
+zero opaque branch-label leakage
+```
+
+The mechanism responses are frozen independently of aggregate Shape admission:
+
+```text
+Y_ctx  = first registered post-prerequisite action is correct
+Y_flip = period and definition branches are both correct for one paired replica
+```
+
+Later repair cannot rescue an incorrect first action. Branch-balanced accuracy is compared with a
+0.5 constant-action baseline, and uncertainty is estimated by a preregistered 10,000-draw paired
+hierarchical bootstrap over pair and replica identities. The frozen gates require accuracy at
+least 0.625, policy gain at least 0.125, bootstrap LCB95 above 0.5, four informative pairs, dual
+correctness at least 0.125, and maximum branch gap at most 0.75.
+
+The 48-task static audit passed all construct-validity gates. The 384-rollout Flash run passed the
+recursive instrument, while the mechanism did not:
+
+```text
+branch-balanced first-action accuracy = 0.34375
+constant-action baseline              = 0.50000
+contextual policy gain                = -0.15625
+paired hierarchical bootstrap LCB95   = 0.171875
+dual-correct consistency              = 0.21875
+informative pairs                     = 3 / 4
+contextual mechanism fidelity         = false
+```
+
+The frozen automatic report retained the inherited transition name
+`contextual_shape_redesign_only`. A separate immutable governance decision applies the stricter
+pre-outcome stopping rule without mutating that report:
+
+```text
+governance transition              = contextual_tool_selection_limitation_recorded
+same-grammar Prompt assistance     = forbidden
+threshold relaxation               = forbidden
+post-hoc task deletion             = forbidden
+additional Flash rollouts          = forbidden
+Pro / Beneficiary / Exact / GP-C   = blocked
+production Contribution            = 0
+```
+
+This is a local capability result under a construct-valid and contamination-free measurement
+contract. It is not a negative result for VTDO, and it does not authorize repeated Prompt helping
+within the same grammar.
