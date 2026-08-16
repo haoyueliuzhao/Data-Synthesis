@@ -15,10 +15,12 @@ from trusted_synthesis.hashing import canonical_hash
 
 CAPABILITY_PREREQUISITE_GRAPH_VERSION = "capability_prerequisite_graph.v1"
 PUBLIC_STATE_SUMMARY_SPEC_VERSION = "minimal_public_state_summary_spec.v1"
-CAPABILITY_SCAFFOLD_PROJECTION_VERSION = "capability_scaffold_public_projection.v1"
-CAPABILITY_SCAFFOLD_LADDER_VERSION = "capability_scaffold_ladder_compilation.v1"
-CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION = "capability_scaffold_gate_evidence.v1"
-CAPABILITY_SCAFFOLD_ADMISSION_VERSION = "capability_scaffold_admission.v1"
+CAPABILITY_SCAFFOLD_PROJECTION_VERSION = "capability_scaffold_public_projection.v2"
+CAPABILITY_SCAFFOLD_LADDER_VERSION = "capability_scaffold_ladder_compilation.v2"
+CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION = "capability_scaffold_gate_evidence.v2"
+CAPABILITY_SCAFFOLD_ADMISSION_VERSION = "capability_scaffold_admission.v2"
+SCAFFOLD_INVARIANT_STATE_MAPPING_VERSION = "scaffold_invariant_state_mapping.v1"
+SCAFFOLD_SEPARATED_TRAJECTORY_VIEW_VERSION = "scaffold_separated_trajectory_view.v1"
 
 ScaffoldLevel = Literal["gamma_0", "gamma_1", "gamma_2", "gamma_3"]
 ScaffoldAid = Literal[
@@ -73,8 +75,25 @@ ScaffoldGate = Literal[
     "public_sufficiency",
     "target_authority_preservation",
     "recursive_noninterference",
-    "minimality",
-    "scaffold_withdrawal",
+    "incremental_necessity",
+    "withdrawal_readiness",
+    "state_mapping_invariance",
+]
+BehaviorIdentityField = Literal[
+    "tool_choice",
+    "tool_arguments",
+    "evidence_selection",
+    "recovery_action",
+    "verification_action",
+    "stop_decision",
+]
+ScaffoldTraceField = Literal[
+    "scaffold_level",
+    "scaffold_policy_version",
+    "public_state_summary",
+    "capability_contract",
+    "action_effect_contract",
+    "public_subgoal_dag",
 ]
 
 SCAFFOLD_LEVELS: tuple[ScaffoldLevel, ...] = (
@@ -88,8 +107,9 @@ SCAFFOLD_GATES: tuple[ScaffoldGate, ...] = (
     "public_sufficiency",
     "target_authority_preservation",
     "recursive_noninterference",
-    "minimality",
-    "scaffold_withdrawal",
+    "incremental_necessity",
+    "withdrawal_readiness",
+    "state_mapping_invariance",
 )
 SCAFFOLD_AIDS_BY_LEVEL: dict[ScaffoldLevel, tuple[ScaffoldAid, ...]] = {
     "gamma_0": (),
@@ -106,7 +126,23 @@ SCAFFOLD_AIDS_BY_LEVEL: dict[ScaffoldLevel, tuple[ScaffoldAid, ...]] = {
         "public_subgoal_dag",
     ),
 }
-SCAFFOLD_GATE_CHECKS: dict[ScaffoldGate, tuple[str, ...]] = {
+BEHAVIOR_IDENTITY_FIELDS: tuple[BehaviorIdentityField, ...] = (
+    "tool_choice",
+    "tool_arguments",
+    "evidence_selection",
+    "recovery_action",
+    "verification_action",
+    "stop_decision",
+)
+SCAFFOLD_TRACE_FIELDS: tuple[ScaffoldTraceField, ...] = (
+    "scaffold_level",
+    "scaffold_policy_version",
+    "public_state_summary",
+    "capability_contract",
+    "action_effect_contract",
+    "public_subgoal_dag",
+)
+_COMMON_SCAFFOLD_GATE_CHECKS: dict[ScaffoldGate, tuple[str, ...]] = {
     "oracle_consistency": (
         "answer_contract_unchanged",
         "evidence_manifest_unchanged",
@@ -131,15 +167,49 @@ SCAFFOLD_GATE_CHECKS: dict[ScaffoldGate, tuple[str, ...]] = {
         "mechanism_labels_absent",
         "internal_completion_state_absent",
     ),
-    "minimality": (
-        "required_aid_ablation_registered",
+    "incremental_necessity": (),
+    "withdrawal_readiness": (
+        "gamma_zero_projection_exists",
+        "semantic_root_unchanged_on_removal",
+        "scaffold_absent_from_answer_and_gold",
+        "gamma_zero_evaluation_independently_executable",
+        "task_definition_unchanged_on_removal",
+    ),
+    "state_mapping_invariance": (
+        "state_mapper_root_unchanged",
+        "scaffold_fields_stripped_before_mapping",
+        "behavioral_decisions_preserved",
+        "scaffold_trace_side_channel_registered",
+        "cross_level_behavior_equivalence_registered",
+    ),
+}
+
+_INCREMENTAL_NECESSITY_CHECKS_BY_LEVEL: dict[ScaffoldLevel, tuple[str, ...]] = {
+    "gamma_0": (
+        "zero_aid_baseline_exact",
+        "unassisted_control_registered",
+        "scaffold_rank_order_preserved",
+    ),
+    "gamma_1": (
+        "incremental_aid_set_exact",
+        "predecessor_projection_registered",
+        "required_increment_ablation_registered",
         "irrelevant_aid_control_registered",
         "scaffold_rank_order_preserved",
     ),
-    "scaffold_withdrawal": (
-        "unassisted_evaluation_frozen",
-        "weaker_scaffold_evaluation_frozen",
-        "training_projection_identity_frozen",
+    "gamma_2": (
+        "incremental_aid_set_exact",
+        "predecessor_projection_registered",
+        "required_increment_ablation_registered",
+        "irrelevant_aid_control_registered",
+        "scaffold_rank_order_preserved",
+    ),
+    "gamma_3": (
+        "incremental_aid_set_exact",
+        "predecessor_projection_registered",
+        "required_increment_ablation_registered",
+        "irrelevant_aid_control_registered",
+        "scaffold_rank_order_preserved",
     ),
 }
 
@@ -157,6 +227,76 @@ _FORBIDDEN_PUBLIC_MARKERS = (
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+def scaffold_gate_checks(level: ScaffoldLevel, gate: ScaffoldGate) -> tuple[str, ...]:
+    if gate == "incremental_necessity":
+        return _INCREMENTAL_NECESSITY_CHECKS_BY_LEVEL[level]
+    return _COMMON_SCAFFOLD_GATE_CHECKS[gate]
+
+
+class ScaffoldInvariantStateMappingContract(FrozenModel):
+    mapping_contract_id: str = Field(min_length=1)
+    state_space_compilation_id: str = Field(min_length=1)
+    base_state_mapper_version: str = Field(min_length=1)
+    behavior_identity_fields: tuple[BehaviorIdentityField, ...] = BEHAVIOR_IDENTITY_FIELDS
+    stripped_scaffold_fields: tuple[ScaffoldTraceField, ...] = SCAFFOLD_TRACE_FIELDS
+    scaffold_trace_side_channel_fields: tuple[ScaffoldTraceField, ...] = SCAFFOLD_TRACE_FIELDS
+    strip_before_state_mapping: Literal[True] = True
+    scaffold_trace_excluded_from_state_identity: Literal[True] = True
+    scaffold_trace_preserved_for_audit: Literal[True] = True
+    quotient_state_semantics_unchanged_across_levels: Literal[True] = True
+    cross_level_behavior_equivalence_required: Literal[True] = True
+    schema_version: str = SCAFFOLD_INVARIANT_STATE_MAPPING_VERSION
+
+    @model_validator(mode="after")
+    def validate_mapping(self) -> ScaffoldInvariantStateMappingContract:
+        if self.behavior_identity_fields != BEHAVIOR_IDENTITY_FIELDS:
+            raise ValueError("scaffold mapping must preserve the complete behavioral identity")
+        if self.stripped_scaffold_fields != SCAFFOLD_TRACE_FIELDS:
+            raise ValueError("scaffold mapping strip policy is incomplete")
+        if self.scaffold_trace_side_channel_fields != SCAFFOLD_TRACE_FIELDS:
+            raise ValueError("scaffold audit side channel is incomplete")
+        if self.mapping_contract_id != scaffold_invariant_state_mapping_contract_id(self):
+            raise ValueError("scaffold-invariant state mapping identity is invalid")
+        return self
+
+
+class ScaffoldSeparatedTrajectoryView(FrozenModel):
+    view_id: str = Field(min_length=1)
+    mapping_contract_id: str = Field(min_length=1)
+    behavior_payload: dict[str, Any]
+    scaffold_trace: dict[str, Any]
+    behavior_state_identity: str = Field(min_length=1)
+    scaffold_trace_hash: str = Field(min_length=1)
+    schema_version: str = SCAFFOLD_SEPARATED_TRAJECTORY_VIEW_VERSION
+
+    @model_validator(mode="after")
+    def validate_view(self) -> ScaffoldSeparatedTrajectoryView:
+        if not self.behavior_payload:
+            raise ValueError("scaffold-separated trajectory view needs model behavior")
+        if not set(self.behavior_payload) <= set(BEHAVIOR_IDENTITY_FIELDS):
+            raise ValueError("behavior payload contains a non-behavioral field")
+        if not set(self.scaffold_trace) <= set(SCAFFOLD_TRACE_FIELDS):
+            raise ValueError("scaffold trace contains an unregistered field")
+        expected_behavior = canonical_hash(
+            {
+                "mapping_contract_id": self.mapping_contract_id,
+                "behavior_payload": self.behavior_payload,
+            },
+            prefix="scaffold_invariant_behavior_state:",
+        )
+        if self.behavior_state_identity != expected_behavior:
+            raise ValueError("scaffold-invariant behavior identity is invalid")
+        expected_trace = canonical_hash(
+            self.scaffold_trace,
+            prefix="scaffold_trace:",
+        )
+        if self.scaffold_trace_hash != expected_trace:
+            raise ValueError("scaffold trace hash is invalid")
+        if self.view_id != scaffold_separated_trajectory_view_id(self):
+            raise ValueError("scaffold-separated trajectory view identity is invalid")
+        return self
 
 
 class CapabilityPrerequisiteNode(FrozenModel):
@@ -259,6 +399,7 @@ class CapabilityAwarePublicProjection(FrozenModel):
     omega_component_manifest_id: str = Field(min_length=1)
     runtime_id: str = Field(min_length=1)
     base_runtime_projection: RuntimePublicProjection
+    state_mapping_contract_id: str = Field(min_length=1)
     target_capability_id: str = Field(min_length=1)
     scaffold_level: ScaffoldLevel
     scaffold_rank: Literal[0, 1, 2, 3]
@@ -322,7 +463,10 @@ class CapabilityScaffoldLadderCompilation(FrozenModel):
     scaffold_policy_version: str = Field(min_length=1)
     dependency_graph: CapabilityPrerequisiteGraph
     summary_spec: MinimalPublicStateSummarySpec
+    state_mapping_contract: ScaffoldInvariantStateMappingContract
     projections: tuple[CapabilityAwarePublicProjection, ...] = Field(min_length=4, max_length=4)
+    valid_state_space_invariant_across_levels: Literal[True] = True
+    scaffold_changes_reachability_only: Literal[True] = True
     schema_version: str = CAPABILITY_SCAFFOLD_LADDER_VERSION
 
     @model_validator(mode="after")
@@ -335,6 +479,13 @@ class CapabilityScaffoldLadderCompilation(FrozenModel):
             raise ValueError("capability ladder crosses Omega manifests")
         if self.dependency_graph.target_capability_id != self.target_capability_id:
             raise ValueError("capability ladder targets a different dependency graph")
+        if (
+            self.state_mapping_contract.state_space_compilation_id
+            != self.joint_admission.state_space_compilation_id
+            or self.state_mapping_contract.base_state_mapper_version
+            != self.joint_admission.state_mapper_version
+        ):
+            raise ValueError("capability ladder changes the admitted quotient state semantics")
         if tuple(item.scaffold_level for item in self.projections) != SCAFFOLD_LEVELS:
             raise ValueError("capability ladder levels are incomplete or unordered")
         if any(
@@ -342,6 +493,7 @@ class CapabilityScaffoldLadderCompilation(FrozenModel):
             or item.runtime_id != self.runtime_id
             or item.target_capability_id != self.target_capability_id
             or item.scaffold_policy_version != self.scaffold_policy_version
+            or item.state_mapping_contract_id != self.state_mapping_contract.mapping_contract_id
             for item in self.projections
         ):
             raise ValueError("capability ladder projections do not share one condition root")
@@ -366,7 +518,8 @@ class CapabilityScaffoldGateEvidence(FrozenModel):
 
     @model_validator(mode="after")
     def validate_evidence(self) -> CapabilityScaffoldGateEvidence:
-        if tuple(sorted(self.checks)) != tuple(sorted(SCAFFOLD_GATE_CHECKS[self.gate])):
+        expected_checks = scaffold_gate_checks(self.scaffold_level, self.gate)
+        if tuple(sorted(self.checks)) != tuple(sorted(expected_checks)):
             raise ValueError("capability scaffold gate checks are incomplete")
         if len(self.audit_case_ids) != len(set(self.audit_case_ids)):
             raise ValueError("capability scaffold audit cases must be unique")
@@ -382,7 +535,7 @@ class CapabilityScaffoldAdmissionArtifact(FrozenModel):
     ladder_id: str = Field(min_length=1)
     joint_admission_id: str = Field(min_length=1)
     joint_compilation_id: str = Field(min_length=1)
-    gate_evidence: tuple[CapabilityScaffoldGateEvidence, ...] = Field(min_length=24, max_length=24)
+    gate_evidence: tuple[CapabilityScaffoldGateEvidence, ...] = Field(min_length=28, max_length=28)
     gates_by_level: dict[str, dict[str, bool]]
     status: Literal["admitted", "blocked"]
     blockers: tuple[str, ...]
@@ -494,6 +647,57 @@ def make_minimal_public_state_summary_spec(
     )
 
 
+def make_scaffold_invariant_state_mapping_contract(
+    joint_admission: JointCompilationAdmissionArtifact,
+) -> ScaffoldInvariantStateMappingContract:
+    values = {
+        "state_space_compilation_id": joint_admission.state_space_compilation_id,
+        "base_state_mapper_version": joint_admission.state_mapper_version,
+        "behavior_identity_fields": BEHAVIOR_IDENTITY_FIELDS,
+        "stripped_scaffold_fields": SCAFFOLD_TRACE_FIELDS,
+        "scaffold_trace_side_channel_fields": SCAFFOLD_TRACE_FIELDS,
+        "schema_version": SCAFFOLD_INVARIANT_STATE_MAPPING_VERSION,
+    }
+    provisional = ScaffoldInvariantStateMappingContract.model_construct(
+        mapping_contract_id="pending",
+        **values,
+    )
+    return ScaffoldInvariantStateMappingContract(
+        mapping_contract_id=scaffold_invariant_state_mapping_contract_id(provisional),
+        **values,
+    )
+
+
+def separate_scaffold_trace_for_state_mapping(
+    mapping_contract: ScaffoldInvariantStateMappingContract,
+    *,
+    behavior_payload: Mapping[str, Any],
+    scaffold_trace: Mapping[str, Any],
+) -> ScaffoldSeparatedTrajectoryView:
+    values = {
+        "mapping_contract_id": mapping_contract.mapping_contract_id,
+        "behavior_payload": dict(sorted(behavior_payload.items())),
+        "scaffold_trace": dict(sorted(scaffold_trace.items())),
+        "behavior_state_identity": canonical_hash(
+            {
+                "mapping_contract_id": mapping_contract.mapping_contract_id,
+                "behavior_payload": dict(sorted(behavior_payload.items())),
+            },
+            prefix="scaffold_invariant_behavior_state:",
+        ),
+        "scaffold_trace_hash": canonical_hash(
+            dict(sorted(scaffold_trace.items())),
+            prefix="scaffold_trace:",
+        ),
+        "schema_version": SCAFFOLD_SEPARATED_TRAJECTORY_VIEW_VERSION,
+    }
+    provisional = ScaffoldSeparatedTrajectoryView.model_construct(view_id="pending", **values)
+    return ScaffoldSeparatedTrajectoryView(
+        view_id=scaffold_separated_trajectory_view_id(provisional),
+        **values,
+    )
+
+
 def compile_capability_scaffold_ladder(
     artifacts: CompiledProofCarryingArtifacts,
     joint_admission: JointCompilationAdmissionArtifact,
@@ -503,6 +707,7 @@ def compile_capability_scaffold_ladder(
     scaffold_policy_version: str,
     dependency_graph: CapabilityPrerequisiteGraph,
     summary_spec: MinimalPublicStateSummarySpec,
+    state_mapping_contract: ScaffoldInvariantStateMappingContract,
 ) -> CapabilityScaffoldLadderCompilation:
     joint = artifacts.joint_compilation
     if joint_admission.status != "admitted":
@@ -511,6 +716,12 @@ def compile_capability_scaffold_ladder(
         raise ValueError("capability scaffold admission belongs to another Joint Compilation")
     if dependency_graph.target_capability_id != target_capability_id:
         raise ValueError("capability dependency graph targets another capability")
+    if (
+        state_mapping_contract.state_space_compilation_id
+        != joint_admission.state_space_compilation_id
+        or state_mapping_contract.base_state_mapper_version != joint_admission.state_mapper_version
+    ):
+        raise ValueError("scaffold state mapping differs from Joint Compilation admission")
     by_runtime = {item.runtime_id: item for item in joint_admission.runtime_projections}
     if runtime_id not in by_runtime:
         raise ValueError("capability scaffold runtime was not admitted")
@@ -540,6 +751,7 @@ def compile_capability_scaffold_ladder(
             target_capability_id=target_capability_id,
             scaffold_level=level,
             scaffold_policy_version=scaffold_policy_version,
+            state_mapping_contract_id=state_mapping_contract.mapping_contract_id,
             summary_spec=summary_spec,
             public_nodes=public_nodes,
             public_edges=public_edges,
@@ -558,6 +770,7 @@ def compile_capability_scaffold_ladder(
         "scaffold_policy_version": scaffold_policy_version,
         "dependency_graph": dependency_graph,
         "summary_spec": summary_spec,
+        "state_mapping_contract": state_mapping_contract,
         "projections": projections,
         "schema_version": CAPABILITY_SCAFFOLD_LADDER_VERSION,
     }
@@ -680,6 +893,22 @@ def minimal_public_state_summary_spec_id(value: MinimalPublicStateSummarySpec) -
     )
 
 
+def scaffold_invariant_state_mapping_contract_id(
+    value: ScaffoldInvariantStateMappingContract,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"mapping_contract_id"}),
+        prefix="scaffold_invariant_state_mapping:",
+    )
+
+
+def scaffold_separated_trajectory_view_id(value: ScaffoldSeparatedTrajectoryView) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"view_id"}),
+        prefix="scaffold_separated_trajectory_view:",
+    )
+
+
 def compiled_task_condition_id(value: CapabilityAwarePublicProjection) -> str:
     identity = {
         "task_id": value.base_runtime_projection.task_id,
@@ -687,6 +916,7 @@ def compiled_task_condition_id(value: CapabilityAwarePublicProjection) -> str:
         "target_capability_id": value.target_capability_id,
         "scaffold_level": value.scaffold_level,
         "scaffold_policy_version": value.scaffold_policy_version,
+        "state_mapping_contract_id": value.state_mapping_contract_id,
         "base_projection_id": value.base_runtime_projection.projection_id,
         "schema_version": value.schema_version,
     }
@@ -728,6 +958,7 @@ def _make_capability_projection(
     target_capability_id: str,
     scaffold_level: ScaffoldLevel,
     scaffold_policy_version: str,
+    state_mapping_contract_id: str,
     summary_spec: MinimalPublicStateSummarySpec,
     public_nodes: tuple[PublicCapabilityNode, ...],
     public_edges: tuple[tuple[str, str], ...],
@@ -740,6 +971,7 @@ def _make_capability_projection(
         "omega_component_manifest_id": joint_admission.omega_component_manifest_id,
         "runtime_id": base.runtime_id,
         "base_runtime_projection": base,
+        "state_mapping_contract_id": state_mapping_contract_id,
         "target_capability_id": target_capability_id,
         "scaffold_level": scaffold_level,
         "scaffold_rank": rank,

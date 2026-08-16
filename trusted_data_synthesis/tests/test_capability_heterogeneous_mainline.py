@@ -24,6 +24,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_heterogeneo
 from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_bridge import (
     default_compiler_assisted_bridge_contract,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_state_support import (
+    make_state_support_discovery_plan,
+)
 
 
 def _observation(**updates: Any) -> MainlineSupportObservation:
@@ -44,6 +47,7 @@ def _observation(**updates: Any) -> MainlineSupportObservation:
 
 
 def _protocol() -> CapabilityHeterogeneousMainlineProtocol:
+    bridge = default_compiler_assisted_bridge_contract()
     values = {
         "run_id": "finance_v26_protocol_test",
         "prior_evidence": (
@@ -57,7 +61,8 @@ def _protocol() -> CapabilityHeterogeneousMainlineProtocol:
         ),
         "population": _population_contract(),
         "joint_compilation": JointCompilationAdmissionContract(),
-        "capability_bridge": default_compiler_assisted_bridge_contract(),
+        "capability_bridge": bridge,
+        "state_support_discovery": make_state_support_discovery_plan(bridge),
         "materialization": MainlineStateMaterializationContract(),
         "support": MainlineSupportContract(),
         "no_c": _no_c_contract(),
@@ -201,7 +206,11 @@ def test_v26_protocol_keeps_old_results_and_contribution_closed() -> None:
     assert protocol.joint_compilation.failure_transition == "joint_compilation_repair_only"
     assert protocol.capability_bridge.planned_development_rollout_count == 576
     assert protocol.capability_bridge.support_selected_per_mechanism_not_task
-    assert not protocol.capability_bridge.api_authorized_before_scaffold_admission
+    assert not protocol.capability_bridge.api_authorized_before_static_construct_audit
+    assert protocol.capability_bridge.development_three_state_gate_forbidden
+    assert protocol.capability_bridge.estimand_compression_forbidden
+    assert protocol.state_support_discovery.total_unconditional_rollouts_per_task == 18
+    assert protocol.state_support_discovery.support_freeze_required_before_no_c
 
 
 def test_v26_protocol_rejects_historical_task_promotion() -> None:

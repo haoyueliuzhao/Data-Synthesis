@@ -1524,53 +1524,58 @@ within the same grammar.
 
 ### v26 capability-heterogeneous mainline and Joint Compilation Phase 0
 
-v26 was first frozen under `finance_v26_capability_heterogeneous_vtdo_mainline.v1`; the current
-scaffold-aware contract advances to v2 without editing v25.47 or the v1 artifact. The old result is
-usable only as historical measurement evidence and promotes zero tasks.
+v26 was first frozen under `finance_v26_capability_heterogeneous_vtdo_mainline.v1`. The current
+contract is the incompatible v3 protocol. Earlier artifacts remain immutable historical protocol
+snapshots and are not reinterpreted.
 
 Every new task must pass `JointCompilationAdmissionArtifact` before an API or GPU call. The
-admission binds the Oracle context, runtime-specific public projections, State Space, canonical
-State Mapper, independent verifier, and materialization contract to one immutable Joint
-Compilation identity. Semantic, public, executable, verifier, recursive noninterference,
-state-lineage, and destructive-mutation gates are mandatory. Failure permits only
-`joint_compilation_repair_only`.
+admission binds Oracle Context, Runtime-specific Public Projection, valid State Space, canonical
+State Mapper, independent verifier, and Materialization Contract to one Joint Compilation root.
+Semantic, public, executable, verifier, recursive noninterference, state-lineage, and destructive
+mutation gates are mandatory. Failure permits only `joint_compilation_repair_only`.
 
-The v26 task partitions are 100 synthesis/training, 60 internal Agent evaluation, 30 Exact Target
+The task partitions remain 100 synthesis/training, 60 internal Agent evaluation, 30 Exact Target
 Development, and 60 sealed Exact Target Validation tasks. They are isolated by task, Evidence,
 Evidence Version, semantic signature, and trajectory identity. The synthesis marginal is fixed at
-`1/100`, independent of observed model success.
+`1/100`, independent of model success.
 
-Capability measurement keeps valid observations of model success and model failure. Positive SFT
-keeps only independently valid, replayable, on-target fresh materializations. Contribution support
-is a strict subset requiring Meaningful Exact Target, independent GP-C, update replay, and sealed
-authorization. No inverse-success weighting is permitted.
+Capability measurement retains attributed model failures. Positive SFT retains only independently
+valid, replayable, on-target fresh materializations. Contribution support is a strict subset that
+requires Meaningful Exact Target, independent GP-C, update replay, and sealed authorization. No
+inverse-success weighting is permitted. Before Contribution authorization, distribution
+experiments are `AEVTDR-NoC` or `novelty-anchored VTDO`, never full `C+N` VTDO.
 
-Before Contribution authorization, distribution experiments must be labeled `AEVTDR-NoC` or
-`novelty-anchored VTDO`, never full `C+N` VTDO. Student materialization uses Rounds 1 and 3; Round 5
-is dynamics-only. Contribution recovery proceeds on isolated tasks and does not block No-C.
+### v26 compiler-assisted capability bridge and state support
 
-### v26 compiler-assisted capability bridge
-
-The current protocol identity advances to
-`finance_v26_capability_heterogeneous_vtdo_mainline.v2`. The v1 freeze remains immutable and is not
-retroactively reinterpreted.
-
-Joint Compilation may now derive capability-aware public projections only after ordinary Joint
-Compilation admission. The exact experimental condition is:
+Joint Compilation may compile cumulative `gamma_0..gamma_3` public scaffolds after ordinary
+admission. The exact task condition is:
 
 ```text
 (task, runtime, target capability, scaffold level, scaffold policy version)
 ```
 
-The cumulative levels are unassisted `gamma_0`, typed-summary `gamma_1`, prerequisite/effect
-contract `gamma_2`, and public-subgoal-DAG `gamma_3`. All levels share one Evidence, Program,
-Answer, Proof Graph, Quality Contract, Runtime, and State Mapper root. Every level independently
-passes Oracle consistency, public sufficiency, target-authority preservation, recursive
-noninterference, minimality, and scaffold-withdrawal gates. Failure permits only scaffold repair.
+The valid quotient-state space, Evidence, Program, Answer, Proof Graph, Quality Contract, Runtime,
+and base State Mapper remain invariant across levels. Only reachability may change. Scaffold-only
+fields are stripped before quotient-state mapping and preserved in a separate audit trace.
 
-The Development Pilot uses 24 fresh tasks across context-conditioned action, semantic
-reconciliation, and recovery/stopping. Each task receives six Flash rollouts at each of four
-levels. The minimum boundary-producing scaffold is frozen per mechanism, not per task, then tested
-on 24 fresh confirmation tasks. Outcomes never change the task marginal. State discovery remains
-blocked until confirmation passes. Student evaluation must include scaffold withdrawal and weaker
-scaffold annealing conditions.
+Every level passes Oracle consistency, public sufficiency, target-authority preservation,
+recursive noninterference, incremental necessity, withdrawal readiness, and state-mapping
+invariance. Withdrawal readiness is static; empirical Withdrawal Transfer is measured only after
+Student training.
+
+The 24-task Development Pilot uses three Finance mechanisms and five mechanism-specific
+Estimands. Six rollouts at four levels produce 576 Development observations. This phase measures
+boundary response and validity; state occupancy is diagnostic and no three-state gate is applied.
+The minimum passing scaffold is frozen once per mechanism.
+
+Fresh Confirmation uses 24 disjoint tasks, a distinct static authorization, the selected level,
+and six rollouts per task. A passing result authorizes only `state_support_discovery`. The same
+confirmed task conditions then receive 12 additional unconditional rollouts, for 18 total per
+task. State support requires 3-5 independently accepted states, positive Wilson lower bounds for
+natural hits and conditioned acceptance, and a frozen materialization budget of at most 60 attempts
+for three realizations per state. State and task quota transfer are forbidden.
+
+Only a complete state-support freeze may authorize compilation of the 100-task fixed-scaffold
+No-C population. It does not authorize Contribution. Compiler Bridge efficacy changes `gamma` and
+is reported separately from VTDO distribution efficacy, where every arm receives the same frozen
+compiled task condition.

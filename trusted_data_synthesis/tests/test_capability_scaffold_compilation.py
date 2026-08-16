@@ -18,7 +18,6 @@ from trusted_synthesis.core.trajectory.admission import (
 )
 from trusted_synthesis.core.trajectory.scaffolding import (
     SCAFFOLD_AIDS_BY_LEVEL,
-    SCAFFOLD_GATE_CHECKS,
     SCAFFOLD_GATES,
     SCAFFOLD_LEVELS,
     CapabilityScaffoldLadderCompilation,
@@ -28,6 +27,9 @@ from trusted_synthesis.core.trajectory.scaffolding import (
     make_capability_prerequisite_node,
     make_capability_scaffold_gate_evidence,
     make_minimal_public_state_summary_spec,
+    make_scaffold_invariant_state_mapping_contract,
+    scaffold_gate_checks,
+    separate_scaffold_trace_for_state_mapping,
 )
 from trusted_synthesis.core.trajectory.specification import TrajectoryVerificationContext
 from trusted_synthesis.core.vtdo.state_space import (
@@ -171,6 +173,7 @@ def _summary():
 
 def _ladder(case: ContractCase) -> CapabilityScaffoldLadderCompilation:
     artifacts, admission = _compile_admitted(case)
+    mapping = make_scaffold_invariant_state_mapping_contract(admission)
     return compile_capability_scaffold_ladder(
         artifacts,
         admission,
@@ -179,6 +182,7 @@ def _ladder(case: ContractCase) -> CapabilityScaffoldLadderCompilation:
         scaffold_policy_version="bridge_policy.v1",
         dependency_graph=_graph(f"{case.domain}_target_capability"),
         summary_spec=_summary(),
+        state_mapping_contract=mapping,
     )
 
 
@@ -192,7 +196,7 @@ def _gate_evidence(
         for gate in SCAFFOLD_GATES:
             checks = {
                 check: (projection.scaffold_level, gate) != failed
-                for check in SCAFFOLD_GATE_CHECKS[gate]
+                for check in scaffold_gate_checks(projection.scaffold_level, gate)
             }
             rows.append(
                 make_capability_scaffold_gate_evidence(
@@ -228,6 +232,9 @@ def test_capability_scaffold_compiles_the_same_core_contract_across_domains(
     assert ladder.projections[2].public_capability_nodes
     assert not ladder.projections[2].public_dependency_edges
     assert ladder.projections[3].public_dependency_edges
+    assert ladder.valid_state_space_invariant_across_levels
+    assert ladder.scaffold_changes_reachability_only
+    assert len({item.state_mapping_contract_id for item in ladder.projections}) == 1
     public_payload = json.dumps(
         ladder.projections[3].model_dump(mode="json"),
         sort_keys=True,
@@ -241,21 +248,22 @@ def test_capability_scaffold_compiles_the_same_core_contract_across_domains(
     assert admission.gpu_jobs == 0
 
 
-def test_failed_minimality_gate_routes_only_to_scaffold_repair() -> None:
+def test_failed_incremental_necessity_routes_only_to_scaffold_repair() -> None:
     ladder = _ladder(build_contract_cases()[0])
     admission = admit_capability_scaffold_ladder(
         ladder,
-        _gate_evidence(ladder, failed=("gamma_2", "minimality")),
+        _gate_evidence(ladder, failed=("gamma_2", "incremental_necessity")),
     )
 
     assert admission.status == "blocked"
-    assert admission.blockers == ("gamma_2:minimality",)
+    assert admission.blockers == ("gamma_2:incremental_necessity",)
     assert admission.next_transition == "capability_scaffold_repair_only"
 
 
 def test_capability_scaffold_rejects_oracle_identity_in_public_requirement() -> None:
     case = build_contract_cases()[0]
     artifacts, admission = _compile_admitted(case)
+    mapping = make_scaffold_invariant_state_mapping_contract(admission)
     leaked_requirement = artifacts.joint_compilation.omega.task.oracle.gold_evidence_ids[0]
 
     with pytest.raises(ValueError, match="leaks Oracle-only content"):
@@ -270,6 +278,7 @@ def test_capability_scaffold_rejects_oracle_identity_in_public_requirement() -> 
                 requirement_override=leaked_requirement,
             ),
             summary_spec=_summary(),
+            state_mapping_contract=mapping,
         )
 
 
@@ -308,6 +317,7 @@ def test_capability_graph_rejects_cycles() -> None:
 def test_gamma_three_accepts_a_single_node_capability_dag() -> None:
     case = build_contract_cases()[1]
     artifacts, admission = _compile_admitted(case)
+    mapping = make_scaffold_invariant_state_mapping_contract(admission)
     target = make_capability_prerequisite_node(
         node_key="make_target_decision",
         capability_id="science_target_capability",
@@ -332,10 +342,44 @@ def test_gamma_three_accepts_a_single_node_capability_dag() -> None:
         scaffold_policy_version="bridge_policy.v1",
         dependency_graph=graph,
         summary_spec=_summary(),
+        state_mapping_contract=mapping,
     )
 
     assert ladder.projections[3].public_capability_nodes
     assert ladder.projections[3].public_dependency_edges == ()
+
+
+def test_scaffold_trace_changes_do_not_change_behavior_state_identity() -> None:
+    _, admission = _compile_admitted(build_contract_cases()[0])
+    mapping = make_scaffold_invariant_state_mapping_contract(admission)
+    behavior = {
+        "tool_choice": "retrieve",
+        "tool_arguments": {"query": "public rule"},
+        "evidence_selection": ["public:evidence:1"],
+        "stop_decision": "continue",
+    }
+
+    gamma_one = separate_scaffold_trace_for_state_mapping(
+        mapping,
+        behavior_payload=behavior,
+        scaffold_trace={
+            "scaffold_level": "gamma_1",
+            "public_state_summary": {"remaining_tool_budget": 2},
+        },
+    )
+    gamma_three = separate_scaffold_trace_for_state_mapping(
+        mapping,
+        behavior_payload=behavior,
+        scaffold_trace={
+            "scaffold_level": "gamma_3",
+            "public_state_summary": {"remaining_tool_budget": 2},
+            "public_subgoal_dag": [["identify", "decide"]],
+        },
+    )
+
+    assert gamma_one.behavior_state_identity == gamma_three.behavior_state_identity
+    assert gamma_one.scaffold_trace_hash != gamma_three.scaffold_trace_hash
+    assert gamma_one.view_id != gamma_three.view_id
 
 
 def test_public_summary_rejects_unregistered_fields() -> None:

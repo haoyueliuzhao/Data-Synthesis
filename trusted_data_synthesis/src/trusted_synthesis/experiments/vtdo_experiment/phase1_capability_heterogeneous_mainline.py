@@ -25,12 +25,16 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_brid
     CompilerAssistedBridgeContract,
     default_compiler_assisted_bridge_contract,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_state_support import (
+    StateSupportDiscoveryPlan,
+    make_state_support_discovery_plan,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_context_sufficiency_decision import (  # noqa: E501
     ContextSufficiencyScientificDecision,
 )
 from trusted_synthesis.hashing import canonical_hash
 
-FINANCE_V26_MAINLINE_VERSION = "finance_v26_capability_heterogeneous_vtdo_mainline.v2"
+FINANCE_V26_MAINLINE_VERSION = "finance_v26_capability_heterogeneous_vtdo_mainline.v3"
 MAINLINE_SUPPORT_OBSERVATION_VERSION = "vtdo_mainline_support_observation.v1"
 MAINLINE_SUPPORT_PARTITION_VERSION = "vtdo_mainline_support_partition.v1"
 MAINLINE_PREFLIGHT_VERSION = "finance_v26_mainline_preflight.v1"
@@ -320,6 +324,7 @@ class CapabilityHeterogeneousMainlineProtocol(FrozenModel):
     population: MainlinePopulationContract
     joint_compilation: JointCompilationAdmissionContract
     capability_bridge: CompilerAssistedBridgeContract
+    state_support_discovery: StateSupportDiscoveryPlan
     materialization: MainlineStateMaterializationContract
     support: MainlineSupportContract
     no_c: NoCDistributionContract
@@ -652,12 +657,14 @@ def build_mainline_protocol_and_preflight(
         path=str(prior_decision_path),
         sha256=_sha256(prior_decision_path),
     )
+    capability_bridge = default_compiler_assisted_bridge_contract()
     protocol_values: dict[str, Any] = {
         "run_id": run_id,
         "prior_evidence": (prior,),
         "population": _population_contract(),
         "joint_compilation": JointCompilationAdmissionContract(),
-        "capability_bridge": default_compiler_assisted_bridge_contract(),
+        "capability_bridge": capability_bridge,
+        "state_support_discovery": make_state_support_discovery_plan(capability_bridge),
         "materialization": MainlineStateMaterializationContract(),
         "support": MainlineSupportContract(),
         "no_c": _no_c_contract(),
@@ -688,10 +695,12 @@ def build_mainline_protocol_and_preflight(
             Path(__file__).resolve().parents[2] / "core" / "trajectory" / "scaffolding.py"
         ),
         "capability_bridge": module_root / "phase1_compiler_assisted_bridge.py",
+        "state_support_discovery": (module_root / "phase1_compiler_assisted_state_support.py"),
         "state_discovery": module_root / "phase1_initial_distribution.py",
         "state_materialization": module_root / "phase1_state_realizations.py",
         "student_training": module_root / "training.py",
     }
+    experiment_separation = protocol.capability_bridge.experiment_separation
     checks = {
         "v25_47_static_construct_valid": decision.static_construct_validity_passed,
         "v25_47_runtime_measurement_valid": decision.runtime_measurement_passed,
@@ -726,12 +735,36 @@ def build_mainline_protocol_and_preflight(
         ),
         "capability_bridge_pre_model_gate_frozen": (
             protocol.capability_bridge.next_permitted_stage == "bridge_joint_compilation_admission"
-            and not protocol.capability_bridge.api_authorized_before_scaffold_admission
-            and not protocol.capability_bridge.gpu_authorized_before_support_freeze
+            and not protocol.capability_bridge.api_authorized_before_static_construct_audit
+            and not protocol.capability_bridge.gpu_authorized_before_state_support_freeze
         ),
         "capability_bridge_selects_support_by_mechanism": (
             protocol.capability_bridge.support_selected_per_mechanism_not_task
             and protocol.capability_bridge.mechanisms[0].per_task_scaffold_selection_forbidden
+        ),
+        "capability_estimands_remain_mechanism_specific": (
+            protocol.capability_bridge.estimand_compression_forbidden
+            and all(item.estimands for item in protocol.capability_bridge.mechanisms)
+        ),
+        "bridge_boundary_and_state_support_separated": (
+            protocol.capability_bridge.support_discovery_separate_from_bridge
+            and protocol.capability_bridge.development_three_state_gate_forbidden
+            and protocol.state_support_discovery.bridge_boundary_result_not_state_support_proof
+        ),
+        "state_support_budget_frozen_before_rollout": (
+            protocol.state_support_discovery.total_unconditional_rollouts_per_task == 18
+            and protocol.state_support_discovery.minimum_accepted_state_count == 3
+            and protocol.state_support_discovery.maximum_accepted_state_count == 5
+            and protocol.state_support_discovery.support_freeze_required_before_no_c
+        ),
+        "withdrawal_readiness_and_transfer_separated": (
+            protocol.capability_bridge.withdrawal_readiness_is_static_gate
+            and protocol.capability_bridge.withdrawal_transfer_is_post_training_estimand
+            and protocol.capability_bridge.withdrawal_transfer.empirical_only_after_student_training
+        ),
+        "compiler_bridge_and_vtdo_estimands_separated": (
+            experiment_separation.bridge_experiment_is_not_vtdo_distribution_comparison
+            and experiment_separation.same_compiled_task_condition_for_all_vtdo_arms
         ),
         "support_sets_fail_closed": protocol.support.inverse_success_weighting_forbidden,
         "no_c_claim_boundary_explicit": (
@@ -810,7 +843,7 @@ def _population_contract() -> MainlinePopulationContract:
                 explorer_rollouts_per_task=0,
             ),
         ),
-        capability_axes=CAPABILITY_AXES,
+        capability_axes=cast(tuple[CapabilityAxis, ...], CAPABILITY_AXES),
         finance_task_families=CAPABILITY_SENSITIVE_FAMILIES,
     )
 

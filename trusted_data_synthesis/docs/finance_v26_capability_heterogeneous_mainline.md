@@ -11,7 +11,7 @@ closed authorizations are not promoted into v26.
 v26 returns to the VTDO mainline under a new immutable identity:
 
 ```text
-finance_v26_capability_heterogeneous_vtdo_mainline.v1
+finance_v26_capability_heterogeneous_vtdo_mainline.v3
 ```
 
 The experimental object is a capability-heterogeneous distribution of valid Agent behaviors.
@@ -61,12 +61,18 @@ consumer, not the specification of the admission API.
 For task-capability pairs whose valid quotient states are structurally available but unreachable
 to the Explorer, Joint Compilation may compile a cumulative `gamma_0..gamma_3` public scaffold
 ladder. The ladder binds the target capability and scaffold policy into the task condition, keeps
-the target decision under model authority, and admits each level only after Oracle consistency,
-public sufficiency, target-authority, recursive noninterference, minimality, and withdrawal gates.
+the target decision under model authority, and leaves the valid quotient-state space unchanged.
+It admits each level only after Oracle consistency, public sufficiency, target-authority,
+recursive noninterference, incremental necessity, withdrawal readiness, and scaffold-invariant
+state-mapping gates.
 
-Finance v26 preregisters a 24-task, three-mechanism Development Pilot. It selects the minimum
-passing scaffold once per mechanism and confirms it on 24 fresh tasks. Per-task scaffold choice is
-forbidden. See `docs/finance_v26_compiler_assisted_capability_bridge.md`.
+Finance v26 preregisters a 24-task, three-mechanism Development Pilot. Its 576 rollouts measure
+mechanism-specific capability boundaries; observed state count is diagnostic. It selects the
+minimum passing scaffold once per mechanism and confirms it on 24 independently admitted fresh
+tasks. Passing confirmation authorizes only a separate state-support study: 12 additional
+unconditional rollouts per task, 3-5 independently accepted states, Wilson lower bounds, and
+state-level materialization budgets. Per-task scaffold choice and quota transfer are forbidden.
+See `docs/finance_v26_compiler_assisted_capability_bridge.md`.
 
 ## Frozen Data Partitions
 
@@ -102,11 +108,18 @@ Exact Target and GP-C intermediate observations remain representable without bei
 
 ## State Discovery And Materialization
 
-Each of the 100 synthesis tasks must support 3-5 accepted quotient states. Discovery and
-materialization identities are separate. Every state requires at least three fresh positive
-training realizations; Exact Target uses five. Failed, off-target, and duplicate attempts remain
-in audit denominators and cannot be reallocated to easier states. A task with insufficient state
-capacity is replaced before the task marginal is frozen.
+The 24-task Bridge state-support study is a feasibility gate, not the final 100-task training
+population. It may authorize compilation of that population but cannot promote its trajectories.
+Each of the 100 synthesis tasks must independently support 3-5 accepted quotient states under its
+frozen compiled condition. Discovery and materialization identities are separate. Every state
+requires at least three fresh positive training realizations; Exact Target uses five. Failed,
+off-target, and duplicate attempts remain in audit denominators and cannot be reallocated to
+easier states. A task with insufficient state capacity is replaced before the task marginal is
+frozen.
+
+Scaffold fields never enter quotient-state identity or Novelty. They are preserved only in a
+separate audit trace. All VTDO arms share the same compiled task condition, including the same
+mechanism-level `gamma*`.
 
 ## No-C Mainline
 
@@ -148,10 +161,11 @@ GP-C remains unevaluated unless Development contains preregistered coordinates m
 beyond MPE. Full `C+N` rounds and Contribution-only training remain blocked until independent
 Validation and sealed authorization pass. Production Contribution is zero.
 
-## v26.0 Boundary
+## v26.0-v26.3 Boundary
 
-v26.0 implements and tests the protocol, support partition, Joint Compilation admission, and
-fail-closed transition. It does not yet claim:
+v26.3 implements and tests the protocol, support partition, Joint Compilation admission,
+capability-scaffold compilation, Bridge/state-support separation, and fail-closed transitions. It
+does not yet claim:
 
 ```text
 fresh task population availability

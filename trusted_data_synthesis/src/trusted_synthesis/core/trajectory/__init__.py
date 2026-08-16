@@ -39,12 +39,17 @@ if TYPE_CHECKING:
         CapabilityScaffoldGateEvidence,
         CapabilityScaffoldLadderCompilation,
         MinimalPublicStateSummarySpec,
+        ScaffoldInvariantStateMappingContract,
+        ScaffoldSeparatedTrajectoryView,
         admit_capability_scaffold_ladder,
         compile_capability_scaffold_ladder,
         make_capability_prerequisite_graph,
         make_capability_prerequisite_node,
         make_capability_scaffold_gate_evidence,
         make_minimal_public_state_summary_spec,
+        make_scaffold_invariant_state_mapping_contract,
+        scaffold_gate_checks,
+        separate_scaffold_trace_for_state_mapping,
     )
     from trusted_synthesis.core.trajectory.schema import (
         ActionType,
@@ -117,6 +122,14 @@ _EXPORTS = {
     "MinimalPublicStateSummarySpec": (
         "trusted_synthesis.core.trajectory.scaffolding",
         "MinimalPublicStateSummarySpec",
+    ),
+    "ScaffoldInvariantStateMappingContract": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "ScaffoldInvariantStateMappingContract",
+    ),
+    "ScaffoldSeparatedTrajectoryView": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "ScaffoldSeparatedTrajectoryView",
     ),
     "OmegaComponentManifest": (
         "trusted_synthesis.core.trajectory.specification",
@@ -234,9 +247,21 @@ _EXPORTS = {
         "trusted_synthesis.core.trajectory.scaffolding",
         "make_minimal_public_state_summary_spec",
     ),
+    "make_scaffold_invariant_state_mapping_contract": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_scaffold_invariant_state_mapping_contract",
+    ),
     "make_runtime_public_projection": (
         "trusted_synthesis.core.trajectory.admission",
         "make_runtime_public_projection",
+    ),
+    "scaffold_gate_checks": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "scaffold_gate_checks",
+    ),
+    "separate_scaffold_trace_for_state_mapping": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "separate_scaffold_trace_for_state_mapping",
     ),
     "make_joint_compilation_artifact": (
         "trusted_synthesis.core.trajectory.specification",
