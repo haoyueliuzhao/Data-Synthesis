@@ -10,6 +10,7 @@ from trusted_synthesis.core.evaluation.contracts import QualityContractCompiler
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_STOPPING_SHAPE_DECISION_V4_VERSION,
+    FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION,
     FINANCE_SUBMECHANISM_ORACLE_KEY,
     FinanceCapabilitySubmechanismRuntime,
     FinanceStoppingDependencyOption,
@@ -1019,6 +1020,154 @@ def test_v25_41_definition_normalization_blocks_calculation_after_selection() ->
     _, verified = _verify(runtime, index, operation_ref)
     assert verified.status == "succeeded"
     assert verified.result["verified"] is True
+
+
+@pytest.mark.parametrize(
+    ("dimension", "observed_update", "expected_tool", "wrong_tool"),
+    (
+        (
+            "temporal_alignment",
+            "period",
+            "query_structured_fact",
+            "normalize_metric_unit_period",
+        ),
+        (
+            "source_definition_compatibility",
+            "definition",
+            "normalize_metric_unit_period",
+            "query_structured_fact",
+        ),
+    ),
+)
+def test_v25_46_contextual_counterfactual_flips_action_after_equal_prerequisites(
+    dimension: str,
+    observed_update: str,
+    expected_tool: str,
+    wrong_tool: str,
+) -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    observed = (
+        required.model_copy(
+            update={
+                "temporal_identity": required.temporal_identity.model_copy(
+                    update={"label": f"{required.period_label} alternate"}
+                )
+            }
+        )
+        if observed_update == "period"
+        else required.model_copy(update={"definition_id": "definition:alternate"})
+    )
+    decision = FinanceStoppingShapeDecisionContract(
+        schema_version=FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION,
+        contract_kind="contextual_counterfactual_evidence_choice_two_step",
+        observed_conflict_signal=(
+            "The active observation differs in one registered identity component."
+        ),
+        observed_evidence_state=FinanceStoppingObservedEvidenceState(
+            observed_record=observed,
+            required_record=required,
+        ),
+        oracle_conflict_dimension=dimension,
+        state_activation_phase=("after_required_evidence_selection_before_calculation"),
+        available_resolution_actions=_state_actions(),
+        resolution_step_count=2,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id=f"finance.test.contextual.counterfactual.{observed_update}",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="unresolved_conflict_cannot_stop",
+        expected_host_events=("observe:context", "resolve:context"),
+        evidence_roles=roles,
+        public_resolution_hint="Select required records, then resolve the active state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+    index = 0
+    selected_evidence_ids = set(runtime.selected_evidence_ids)
+    for role in scenario.evidence_roles:
+        if role.evidence_id in selected_evidence_ids:
+            continue
+        index += 1
+        result = _call(
+            runtime,
+            index,
+            "query_structured_fact",
+            {
+                "subject_alias": role.subject_alias,
+                "metric_alias": role.metric_alias,
+                "period_label": role.period_label,
+                "public_filters": {},
+            },
+        )
+        assert result.status == "succeeded"
+        selected_evidence_ids.update(result.evidence_ids)
+    assert set(runtime.selected_evidence_ids) == {
+        item.evidence_id for item in scenario.evidence_roles
+    }
+
+    if wrong_tool == "normalize_metric_unit_period":
+        wrong_arguments = {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {},
+        }
+    else:
+        wrong_arguments = {
+            "subject_alias": required.subject_alias,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        }
+    wrong = _call(runtime, index + 1, wrong_tool, wrong_arguments)
+    assert wrong.status == "failed"
+    assert wrong.error_code == "submechanism_resolution_action_required"
+
+    if expected_tool == "query_structured_fact":
+        expected_arguments = {
+            "subject_alias": required.subject_alias,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        }
+    else:
+        expected_arguments = {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {
+                "definition_id": required.definition_id,
+                "time_basis": context.public_corpus.evidence[0].temporal_context.basis,
+                "frequency": context.public_corpus.evidence[0].temporal_context.frequency,
+            },
+        }
+    resolved = _call(runtime, index + 2, expected_tool, expected_arguments)
+    assert resolved.status == "succeeded"
+
+
+def test_v25_46_contextual_contract_is_version_scoped_fail_closed() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    state = FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(update={"definition_id": "definition:alternate"}),
+        required_record=required,
+    )
+    values = {
+        "contract_kind": "contextual_counterfactual_evidence_choice_two_step",
+        "observed_conflict_signal": "One registered identity component differs.",
+        "observed_evidence_state": state,
+        "oracle_conflict_dimension": "source_definition_compatibility",
+        "state_activation_phase": ("after_required_evidence_selection_before_calculation"),
+        "available_resolution_actions": _state_actions(),
+        "resolution_step_count": 2,
+    }
+    with pytest.raises(ValidationError):
+        FinanceStoppingShapeDecisionContract(**values)
+
+    with pytest.raises(ValidationError):
+        FinanceStoppingShapeDecisionContract(
+            schema_version=FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION,
+            **{**values, "contract_kind": "single_conflict_evidence_state_choice_one_step"},
+        )
 
 
 def test_submechanism_replay_and_failed_artifact_preserve_host_observations() -> None:

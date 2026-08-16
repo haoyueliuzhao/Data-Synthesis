@@ -33,6 +33,7 @@ FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenari
 FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v18"
 FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v10"
 FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v5"
+FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION = "finance_stopping_shape_decision_contract.v6"
 FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION = "finance_stopping_shape_decision_contract.v1"
 FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION = "finance_stopping_shape_decision_contract.v2"
 FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION = "finance_stopping_shape_decision_contract.v3"
@@ -299,6 +300,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
         "matched_contextual_resolution_choice",
         "single_conflict_evidence_grounded_choice_one_step",
         "matched_contextual_evidence_state_choice_two_step",
+        "contextual_counterfactual_evidence_choice_two_step",
         "single_conflict_evidence_state_choice_one_step",
     ]
     missing_role_disclosure: Literal["count_only"] | None = None
@@ -359,6 +361,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 "matched_contextual_resolution_choice",
                 "single_conflict_evidence_grounded_choice_one_step",
                 "matched_contextual_evidence_state_choice_two_step",
+                "contextual_counterfactual_evidence_choice_two_step",
                 "single_conflict_evidence_state_choice_one_step",
             }
         ):
@@ -371,6 +374,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 "matched_contextual_resolution_choice",
                 "single_conflict_evidence_grounded_choice_one_step",
                 "matched_contextual_evidence_state_choice_two_step",
+                "contextual_counterfactual_evidence_choice_two_step",
                 "single_conflict_evidence_state_choice_one_step",
             }
         ):
@@ -380,6 +384,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
             and self.contract_kind
             in {
                 "matched_contextual_evidence_state_choice_two_step",
+                "contextual_counterfactual_evidence_choice_two_step",
                 "single_conflict_evidence_state_choice_one_step",
             }
         ):
@@ -389,6 +394,16 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
             and self.state_activation_phase is not None
         ):
             raise ValueError("Finance Stopping Shape v5 activation uses a v4 schema identity")
+        if (
+            self.contract_kind == "contextual_counterfactual_evidence_choice_two_step"
+            and self.schema_version != FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION
+        ):
+            raise ValueError("Contextual counterfactual decisions require a v6 schema identity")
+        if (
+            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION
+            and self.contract_kind != "contextual_counterfactual_evidence_choice_two_step"
+        ):
+            raise ValueError("Finance Stopping Shape v6 is scoped to contextual counterfactuals")
         common_absent = (
             self.dependency_rule is None
             and self.dependency_decoy_option is None
@@ -478,6 +493,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
             "matched_contextual_resolution_choice",
             "single_conflict_evidence_grounded_choice_one_step",
             "matched_contextual_evidence_state_choice_two_step",
+            "contextual_counterfactual_evidence_choice_two_step",
             "single_conflict_evidence_state_choice_one_step",
         }:
             public_text = " ".join(
@@ -497,6 +513,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                     if self.contract_kind
                     in {
                         "matched_contextual_evidence_state_choice_two_step",
+                        "contextual_counterfactual_evidence_choice_two_step",
                         "single_conflict_evidence_state_choice_one_step",
                     }
                     else self.observed_evidence_state is None
@@ -513,14 +530,23 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                         in {
                             "source_definition_compatibility",
                             "temporal_alignment",
-                            "measurement_context_alignment",
                         }
                         if self.contract_kind
-                        in {
-                            "single_conflict_evidence_grounded_choice_one_step",
-                            "single_conflict_evidence_state_choice_one_step",
-                        }
-                        else self.oracle_conflict_dimension == "source_definition_compatibility"
+                        == "contextual_counterfactual_evidence_choice_two_step"
+                        else (
+                            self.oracle_conflict_dimension
+                            in {
+                                "source_definition_compatibility",
+                                "temporal_alignment",
+                                "measurement_context_alignment",
+                            }
+                            if self.contract_kind
+                            in {
+                                "single_conflict_evidence_grounded_choice_one_step",
+                                "single_conflict_evidence_state_choice_one_step",
+                            }
+                            else self.oracle_conflict_dimension == "source_definition_compatibility"
+                        )
                     )
                 )
                 and tuple(item.tool_id for item in self.available_resolution_actions)
@@ -540,6 +566,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                     in {
                         "matched_contextual_resolution_choice",
                         "matched_contextual_evidence_state_choice_two_step",
+                        "contextual_counterfactual_evidence_choice_two_step",
                     }
                     else 1
                 )
@@ -552,17 +579,26 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                     )
                     else (
                         self.state_activation_phase
-                        == (
-                            "before_required_evidence_selection"
-                            if self.oracle_conflict_dimension == "temporal_alignment"
-                            else "after_required_evidence_selection_before_calculation"
-                        )
+                        == "after_required_evidence_selection_before_calculation"
                         if (
-                            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_VERSION
+                            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V6_VERSION
                             and self.contract_kind
-                            == "single_conflict_evidence_state_choice_one_step"
+                            == "contextual_counterfactual_evidence_choice_two_step"
                         )
-                        else self.state_activation_phase is None
+                        else (
+                            self.state_activation_phase
+                            == (
+                                "before_required_evidence_selection"
+                                if self.oracle_conflict_dimension == "temporal_alignment"
+                                else "after_required_evidence_selection_before_calculation"
+                            )
+                            if (
+                                self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_VERSION
+                                and self.contract_kind
+                                == "single_conflict_evidence_state_choice_one_step"
+                            )
+                            else self.state_activation_phase is None
+                        )
                     )
                 )
                 and "source_definition_compatibility" not in public_text
@@ -654,6 +690,9 @@ class FinanceSubmechanismScenario(BaseModel):
                 "matched_contextual_resolution_choice": "unresolved_conflict_cannot_stop",
                 "single_conflict_evidence_grounded_choice_one_step": "evidence_conflict",
                 "matched_contextual_evidence_state_choice_two_step": (
+                    "unresolved_conflict_cannot_stop"
+                ),
+                "contextual_counterfactual_evidence_choice_two_step": (
                     "unresolved_conflict_cannot_stop"
                 ),
                 "single_conflict_evidence_state_choice_one_step": "evidence_conflict",
@@ -1051,7 +1090,18 @@ class FinanceCapabilitySubmechanismRuntime:
         required_ids = {item.evidence_id for item in self._scenario.evidence_roles}
 
         if not self._decision_action_observed:
-            if (
+            if decision.contract_kind == "contextual_counterfactual_evidence_choice_two_step":
+                if not required_ids <= selected:
+                    if call.tool_id in {
+                        "search_archive",
+                        "open_document",
+                        "query_structured_fact",
+                    }:
+                        return self._base.execute(call)
+                    return self._resolution_required_failure(
+                        code="evidence_selection_required_before_contextual_resolution"
+                    )
+            elif (
                 decision.state_activation_phase
                 == "after_required_evidence_selection_before_calculation"
             ):
@@ -1102,6 +1152,7 @@ class FinanceCapabilitySubmechanismRuntime:
             in {
                 "matched_contextual_resolution_choice",
                 "matched_contextual_evidence_state_choice_two_step",
+                "contextual_counterfactual_evidence_choice_two_step",
             }
             and decision.oracle_conflict_dimension == "entity_scope_alignment"
         ):
@@ -1109,6 +1160,13 @@ class FinanceCapabilitySubmechanismRuntime:
         if (
             decision is not None
             and decision.contract_kind == "single_conflict_evidence_state_choice_one_step"
+            and decision.oracle_conflict_dimension == "temporal_alignment"
+        ):
+            return "query_structured_fact"
+        if (
+            decision is not None
+            and decision.contract_kind
+            == "contextual_counterfactual_evidence_choice_two_step"
             and decision.oracle_conflict_dimension == "temporal_alignment"
         ):
             return "query_structured_fact"
@@ -1127,6 +1185,7 @@ class FinanceCapabilitySubmechanismRuntime:
             and decision.contract_kind
             in {
                 "matched_contextual_evidence_state_choice_two_step",
+                "contextual_counterfactual_evidence_choice_two_step",
                 "single_conflict_evidence_state_choice_one_step",
             }
         ):
@@ -1243,6 +1302,7 @@ class FinanceCapabilitySubmechanismRuntime:
             "matched_contextual_resolution_choice",
             "single_conflict_evidence_grounded_choice_one_step",
             "matched_contextual_evidence_state_choice_two_step",
+            "contextual_counterfactual_evidence_choice_two_step",
             "single_conflict_evidence_state_choice_one_step",
         }:
             return None
@@ -1298,6 +1358,7 @@ class FinanceCapabilitySubmechanismRuntime:
             "matched_contextual_resolution_choice",
             "single_conflict_evidence_grounded_choice_one_step",
             "matched_contextual_evidence_state_choice_two_step",
+            "contextual_counterfactual_evidence_choice_two_step",
             "single_conflict_evidence_state_choice_one_step",
         }:
             return []
@@ -1728,6 +1789,7 @@ class FinanceCapabilitySubmechanismRuntime:
         elif decision is not None and decision.contract_kind in {
             "matched_contextual_resolution_choice",
             "matched_contextual_evidence_state_choice_two_step",
+            "contextual_counterfactual_evidence_choice_two_step",
         }:
             retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
             if decision.observed_evidence_state is not None:

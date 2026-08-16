@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-16
+Audit date: 2026-08-17
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -15,24 +15,24 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active result is Finance v25.45 Stopping Instrument Reset. A recursive audit found that all
-eight inspected v25.34-v25.44 Stopping artifacts exposed Host-only fields or markers beneath
-model-visible business payloads. Those immutable runs are now diagnostic only; none transfers
-Shape support or authorization.
+The active result is Finance v25.46 Contextual Counterfactual Development. v25.45 first established
+a clean recursive Host-Agent measurement instrument but left `contextual_resolution_choice`
+blocked by between-task heterogeneity. v25.46 replaced only that Shape's task grammar with four
+strictly matched Context counterfactual pairs while freezing the other five Shape mechanisms,
+thresholds, Runtime, Public Result schemas, Host side channel, dual estimands, and Flash identity.
 
-v25.45 created a fresh 48-task, 384-rollout Flash population over Snapshot v3. The pre-API static
-mutation audit passed, and the post-run raw audit accounted for all 384 records, 3,284 tool
-observations, and 3,822 actual API request prompts. Every public, Host-side-channel, internal,
-and Prompt hash matched; recursive Host-field, Host-marker, unknown-side-channel, contamination,
-unattested-task, and public-contract violation counts were all zero. Recursive Host-Agent
-Observation Noninterference is therefore empirically passed for this run.
+The formal pre-API audit passed 48/48 tasks and 4/4 matched pairs. Pair branches had identical core
+tasks, public corpora, programs, answers, action sets, tool budgets, prompt byte lengths, and
+deterministic replay; only the active Context changed and the correct action flipped. The new
+384-rollout run was fully auditable, had zero recursive Host-field or marker violations, and all
+four boundary Shape contracts plus both Runtime controls passed.
 
-Shape analysis was authorized only after that audit. Three of four boundary candidates and both
-runtime controls passed. `contextual_resolution_choice` failed its preregistered
-`between_task_heterogeneity` gate, so all-Shape support remains false. The only permitted next
-stage is `stopping_shape_redesign_only`; Pro, Beneficiary screening, Exact Target, GP-C, VTDO
-updates, Student training, and production Contribution remain blocked. See
-`docs/finance_v25_45_stopping_instrument_reset_report.md`.
+The prospective Contextual Flip gate nevertheless failed: dual-correct consistency was 2/32
+(`0.0625`) against a frozen `0.125` minimum, and only 2/4 pairs were informative. Definition
+branches showed a strong incorrect archive-query preference. Consequently all v25.46 gates remain
+false and the only permitted next stage is `contextual_shape_redesign_only`. Pro, Beneficiary
+screening, Exact Target, GP-C, VTDO updates, Student training, and production Contribution remain
+blocked. See `docs/finance_v25_46_contextual_counterfactual_report.md`.
 
 ## Runtime And Data
 

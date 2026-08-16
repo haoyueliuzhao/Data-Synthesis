@@ -928,6 +928,21 @@ def replay_wrong_branch_rejection(
     calls = _ReplayCalls(runtime)
     kind = scenario.intervention_kind
     decision = scenario.stopping_shape_decision_contract
+    if (
+        decision is not None
+        and decision.contract_kind
+        == "contextual_counterfactual_evidence_choice_two_step"
+    ):
+        calls.select_all()
+        result = (
+            calls.normalize()
+            if decision.oracle_conflict_dimension == "temporal_alignment"
+            else calls.query_role(0, add_filter=True)
+        )
+        return (
+            result.status == "failed"
+            and result.error_code == "submechanism_resolution_action_required"
+        )
     if decision is not None and decision.state_activation_phase is not None:
         query_required = decision.oracle_conflict_dimension in {
             "entity_scope_alignment",
@@ -1196,6 +1211,10 @@ class _ReplayCalls:
                     decision.contract_kind == "single_conflict_evidence_state_choice_one_step"
                     and decision.oracle_conflict_dimension == "temporal_alignment"
                 )
+                or (
+                    decision.contract_kind == "contextual_counterfactual_evidence_choice_two_step"
+                    and decision.oracle_conflict_dimension == "temporal_alignment"
+                )
             )
         )
         if not causal:
@@ -1204,6 +1223,11 @@ class _ReplayCalls:
             first = self.verify()
             if bool(first.result.get("verified")):
                 raise ValueError("conflict trigger unexpectedly verified")
+        elif (
+            decision is not None
+            and decision.contract_kind == "contextual_counterfactual_evidence_choice_two_step"
+        ):
+            self.select_all()
         elif not query_required:
             self.select_all()
 

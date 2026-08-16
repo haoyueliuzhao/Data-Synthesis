@@ -1425,3 +1425,36 @@ The interrupted wrapper was completed by a deterministic finalizer that replayed
 required exact recomputation of every pre-existing audit and Shape artifact. A future Contextual
 redesign must use fresh identities and pass the same recursive instrument gates. Three-population
 stability, Pro, Beneficiary, Exact Target, GP-C, VTDO updates, and Student training remain blocked.
+
+### v25.46 contextual counterfactual matched development
+
+v25.46 implements the only redesign authorized by v25.45. Four contextual core tasks are expanded
+into period/definition counterfactual pairs. The pair branches must have identical public corpora,
+gold Evidence, program skeletons, answer schemas, action sets, tool budgets, prompt byte lengths,
+and answer burdens. They may differ only in one active public Evidence Context, and that Context
+must flip the correct first resolution action. The remaining five Shapes are fresh regression tasks
+under their frozen mechanisms and thresholds.
+
+The prospective Contextual Flip estimand is:
+
+```text
+P(first post-prerequisite action is correct in branch A
+  and first post-prerequisite action is correct in branch B)
+```
+
+All completed and fail-closed behavior records remain in its denominator. A later repair does not
+change an incorrect first action. The preregistered gate requires a dual-correct rate of at least
+`0.125`, at least one dual-correct replicate in every one of the four pairs, and no branch action
+rate gap above `0.75`.
+
+The formal fresh population passed every static pairing and identity gate. The 384-rollout Flash
+run also passed recursive noninterference and admitted all four boundary Shapes plus both controls.
+Contextual Flip did not pass: dual-correct consistency was `2/32 = 0.0625`, only `2/4` pairs were
+informative, and the maximum branch gap was `0.625`. The aggregate Contextual Shape admission does
+not override this prospective negative result.
+
+The only permitted next stage is a scoped Contextual grammar redesign that makes the public state
+interpretable without changing the action set or leaking the correct action. All thresholds,
+non-contextual Shape mechanisms, Runtime contracts, and the recursive instrument remain frozen.
+Pro, Beneficiary, Exact Target, GP-C, VTDO updates, Student training, and production Contribution
+remain blocked.
