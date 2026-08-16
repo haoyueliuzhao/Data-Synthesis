@@ -716,3 +716,44 @@ next_permitted_stage = stopping_shape_support_redesign_only
 No pooled estimate, post-hoc task selection, threshold relaxation, or post-hoc Finalizer repair was
 used. The only permitted transition is a fresh Shape-redesign Development. See
 `docs/finance_v25_36_stopping_shape_stability_report.md`.
+
+## v25.37 Stopping Shape Redesign Development
+
+v25.37 materialized 48 fully fresh Finance tasks: six Shapes, four structural strata, two tasks per
+Shape-stratum cell, and eight Flash realizations per task. The three v25.36 passing items were
+frozen as positive controls; only partial evidence, single conflict, and extra-call cost received
+typed redesigns.
+
+All 384/384 rollouts completed. Runtime execution, terminal resolution, API transport, bounded
+JSON, Observation replay, and authority integrity were 100%; Runtime pathology and L0-L2 failures
+were zero. All run-manifest hashes and four 384-row denominators verify.
+
+The Shape result remains negative:
+
+- authority coverage gap and contextual resolution choice replicated;
+- partial required evidence was saturated in six of eight tasks;
+- single-dimensional conflict moved from floor to ceiling but had only four nonzero tasks;
+- verified extra-call cost retained a full zero-to-one task range;
+- verified extra-call error risk regressed to 0.7188 and missed its 0.75 control threshold.
+
+~~~
+runtime_measurement_ready = true
+positive_control_regression_count = 1
+redesigned_shape_admission_count = 0
+all_shapes_admitted = false
+difficulty_policy_frozen = false
+fresh_three_population_preparation_authorized = false
+pro_api_call_count = 0
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = stopping_shape_redesign_only
+~~~
+
+Both post-completion controls had 100% ordered Host behavior but lower full valid-trajectory
+success. This is a preregistered-response diagnostic, not permission to rescue the failed controls.
+A future Development must prospectively freeze the Control estimand and redesign the task
+dependencies before any new API call. Pro, Beneficiary, Exact Target, GP-C, Contribution, VTDO
+updates, and Student training remain blocked.
+
+See `docs/finance_v25_37_stopping_shape_redesign_report.md`.

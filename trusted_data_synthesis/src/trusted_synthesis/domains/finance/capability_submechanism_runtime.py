@@ -26,9 +26,10 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v8"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v10"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v4"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v9"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v11"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v5"
+FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v1"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -192,6 +193,82 @@ class FinanceSubmechanismEvidenceRole(BaseModel):
     period_label: str = Field(min_length=1)
 
 
+class FinanceStoppingResolutionAction(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    tool_id: Literal["normalize_metric_unit_period", "open_document"]
+    applicable_when: str = Field(min_length=1)
+
+
+class FinanceStoppingShapeDecisionContract(BaseModel):
+    """Public, preregistered difficulty intervention for a Stopping Shape."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    contract_kind: Literal[
+        "partial_evidence_count_only",
+        "single_conflict_two_action_one_step",
+        "standardized_relative_extra_call_cost",
+    ]
+    missing_role_disclosure: Literal["count_only"] | None = None
+    conflict_dimensions: tuple[str, ...] = ()
+    available_resolution_actions: tuple[FinanceStoppingResolutionAction, ...] = ()
+    resolution_step_count: int | None = Field(default=None, ge=1, le=2)
+    remaining_call_budget_fraction: float | None = Field(default=None, gt=0, le=1)
+    remaining_token_budget_fraction: float | None = Field(default=None, gt=0, le=1)
+    terminal_utility_loss: float | None = Field(default=None, gt=0, le=1)
+    schema_version: str = FINANCE_STOPPING_SHAPE_DECISION_VERSION
+
+    @model_validator(mode="after")
+    def validate_contract(self) -> FinanceStoppingShapeDecisionContract:
+        if self.contract_kind == "partial_evidence_count_only":
+            valid = (
+                self.missing_role_disclosure == "count_only"
+                and not self.conflict_dimensions
+                and not self.available_resolution_actions
+                and self.resolution_step_count is None
+                and self.remaining_call_budget_fraction is None
+                and self.remaining_token_budget_fraction is None
+                and self.terminal_utility_loss is None
+            )
+        elif self.contract_kind == "single_conflict_two_action_one_step":
+            valid = (
+                self.missing_role_disclosure is None
+                and self.conflict_dimensions == ("source_definition_compatibility",)
+                and tuple(
+                    (item.tool_id, item.applicable_when)
+                    for item in self.available_resolution_actions
+                )
+                == (
+                    (
+                        "normalize_metric_unit_period",
+                        "source_definition_compatibility is conflicting",
+                    ),
+                    (
+                        "open_document",
+                        "source authority or provenance is unresolved",
+                    ),
+                )
+                and self.resolution_step_count == 1
+                and self.remaining_call_budget_fraction is None
+                and self.remaining_token_budget_fraction is None
+                and self.terminal_utility_loss is None
+            )
+        else:
+            valid = (
+                self.missing_role_disclosure is None
+                and not self.conflict_dimensions
+                and not self.available_resolution_actions
+                and self.resolution_step_count is None
+                and self.remaining_call_budget_fraction == 0.25
+                and self.remaining_token_budget_fraction == 0.20
+                and self.terminal_utility_loss == 1.0
+            )
+        if not valid:
+            raise ValueError("Finance Stopping Shape decision contract is inconsistent")
+        return self
+
+
 class FinanceSubmechanismScenario(BaseModel):
     """Oracle-frozen Host intervention with only public behavior exposed at runtime."""
 
@@ -207,6 +284,10 @@ class FinanceSubmechanismScenario(BaseModel):
     canonical_candidate: dict[str, Any] | None = None
     repair_target_field: str | None = None
     public_resolution_hint: str = Field(min_length=1)
+    stopping_shape_decision_contract: FinanceStoppingShapeDecisionContract | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
     schema_version: str = FINANCE_SUBMECHANISM_SCENARIO_VERSION
 
     @model_validator(mode="after")
@@ -228,6 +309,15 @@ class FinanceSubmechanismScenario(BaseModel):
         )
         if candidate != candidate_fields_present:
             raise ValueError("Finance candidate submechanism payload is inconsistent")
+        decision = self.stopping_shape_decision_contract
+        if decision is not None:
+            expected_kind = {
+                "partial_evidence_count_only": "incomplete_continue",
+                "single_conflict_two_action_one_step": "evidence_conflict",
+                "standardized_relative_extra_call_cost": "post_complete_cost",
+            }[decision.contract_kind]
+            if self.intervention_kind != expected_kind:
+                raise ValueError("Stopping Shape decision contract uses the wrong Runtime kind")
         if candidate:
             assert self.untrusted_candidate is not None
             assert self.canonical_candidate is not None
@@ -259,6 +349,7 @@ def make_finance_submechanism_scenario(
     untrusted_candidate: Mapping[str, Any] | None = None,
     canonical_candidate: Mapping[str, Any] | None = None,
     repair_target_field: str | None = None,
+    stopping_shape_decision_contract: FinanceStoppingShapeDecisionContract | None = None,
 ) -> FinanceSubmechanismScenario:
     values = {
         "submechanism_id": submechanism_id,
@@ -270,6 +361,7 @@ def make_finance_submechanism_scenario(
         "canonical_candidate": dict(canonical_candidate) if canonical_candidate else None,
         "repair_target_field": repair_target_field,
         "public_resolution_hint": public_resolution_hint,
+        "stopping_shape_decision_contract": stopping_shape_decision_contract,
         "schema_version": FINANCE_SUBMECHANISM_SCENARIO_VERSION,
     }
     provisional = FinanceSubmechanismScenario.model_construct(scenario_id="pending", **values)
@@ -526,7 +618,16 @@ class FinanceCapabilitySubmechanismRuntime:
         if self._trigger_observed and not self._normalization_observed:
             if call.tool_id != "normalize_metric_unit_period":
                 return self._resolution_required_failure()
-            return self._base.execute(call)
+            result = self._base.execute(call)
+            decision = self._scenario.stopping_shape_decision_contract
+            if (
+                result.status == "succeeded"
+                and decision is not None
+                and decision.contract_kind == "single_conflict_two_action_one_step"
+            ):
+                self._observe_resolution()
+                return self._with_resolution_event(result)
+            return result
         if self._trigger_observed and not self._resolution_observed:
             if call.tool_id != "cross_check_evidence":
                 return self._resolution_required_failure(
@@ -594,6 +695,9 @@ class FinanceCapabilitySubmechanismRuntime:
 
     def _required_prerequisite_action(self) -> dict[str, Any] | None:
         kind = self._scenario.intervention_kind
+        decision = self._scenario.stopping_shape_decision_contract
+        if decision is not None and decision.contract_kind == "single_conflict_two_action_one_step":
+            return None
         if kind in {"incomplete_continue", "unresolved_conflict_cannot_stop"}:
             # Stopping probes expose the state but leave action selection to the Agent.
             return None
@@ -639,6 +743,9 @@ class FinanceCapabilitySubmechanismRuntime:
         return None
 
     def _public_resolution_tools(self) -> list[str]:
+        decision = self._scenario.stopping_shape_decision_contract
+        if decision is not None and decision.contract_kind == "single_conflict_two_action_one_step":
+            return []
         if self._scenario.intervention_kind in {
             "incomplete_continue",
             "unresolved_conflict_cannot_stop",
@@ -803,11 +910,30 @@ class FinanceCapabilitySubmechanismRuntime:
             if item.evidence_id not in selected
         ]
         payload = dict(result.result)
-        payload["completion_state"] = {
+        decision = self._scenario.stopping_shape_decision_contract
+        completion_state: dict[str, Any] = {
             "complete": False,
             "resolved_role_ids": resolved,
             "missing_role_ids": missing,
-            "missing_roles": [
+            "host_event": self._scenario.expected_host_events[0],
+            "required_prerequisite_action": self._required_prerequisite_action(),
+        }
+        if decision is not None and decision.contract_kind == "partial_evidence_count_only":
+            completion_state = {
+                "complete": False,
+                "resolved_role_count": len(resolved),
+                "missing_role_count": len(missing),
+                "required_role_count": len(self._scenario.evidence_roles),
+                "missing_role_disclosure": "count_only",
+                "completeness_rule": (
+                    "Infer the unresolved evidence role from the public task contract and "
+                    "retrieve it before verification."
+                ),
+                "host_event": self._scenario.expected_host_events[0],
+                "required_prerequisite_action": None,
+            }
+        else:
+            completion_state["missing_roles"] = [
                 {
                     "role_id": item.role_id,
                     "subject_alias": item.subject_alias,
@@ -816,27 +942,40 @@ class FinanceCapabilitySubmechanismRuntime:
                 }
                 for item in self._scenario.evidence_roles
                 if item.evidence_id not in selected
-            ],
-            "host_event": self._scenario.expected_host_events[0],
-            "required_prerequisite_action": self._required_prerequisite_action(),
-        }
+            ]
+        payload["completion_state"] = completion_state
         return result.model_copy(update={"result": payload})
 
     def _with_completion_state(self, result: AgentToolResult, *, complete: bool) -> AgentToolResult:
         payload = dict(result.result)
         kind = self._scenario.intervention_kind
+        decision = self._scenario.stopping_shape_decision_contract
+        additional_action_assessment: dict[str, Any] = {
+            "marginal_cost": "positive" if kind == "post_complete_cost" else "none",
+            "evidence_integrity_risk": (
+                "elevated" if kind == "post_complete_error_risk" else "none"
+            ),
+        }
+        if (
+            decision is not None
+            and decision.contract_kind == "standardized_relative_extra_call_cost"
+        ):
+            additional_action_assessment = {
+                "marginal_cost": "standardized_relative",
+                "remaining_call_budget_fraction": decision.remaining_call_budget_fraction,
+                "remaining_token_budget_fraction": decision.remaining_token_budget_fraction,
+                "terminal_utility_loss": decision.terminal_utility_loss,
+                "decision_rule": (
+                    "When complete=true, finalization strictly dominates any additional call."
+                ),
+            }
         payload["completion_state"] = {
             "complete": complete,
             "resolved_role_ids": [item.role_id for item in self._scenario.evidence_roles],
             "missing_role_ids": [],
             "host_event_sequence": list(self._scenario.expected_host_events),
             "host_event": self._scenario.expected_host_events[1],
-            "additional_action_assessment": {
-                "marginal_cost": "positive" if kind == "post_complete_cost" else "none",
-                "evidence_integrity_risk": (
-                    "elevated" if kind == "post_complete_error_risk" else "none"
-                ),
-            },
+            "additional_action_assessment": additional_action_assessment,
         }
         return result.model_copy(update={"result": payload})
 
@@ -860,7 +999,17 @@ class FinanceCapabilitySubmechanismRuntime:
         public_tools = self._public_resolution_tools()
         if public_tools:
             retry_contract["required_next_tools"] = public_tools
-        if self._scenario.intervention_kind == "unresolved_conflict_cannot_stop":
+        decision = self._scenario.stopping_shape_decision_contract
+        if decision is not None and decision.contract_kind == "single_conflict_two_action_one_step":
+            retry_contract["observed_conflict_dimensions"] = list(decision.conflict_dimensions)
+            retry_contract["available_resolution_actions"] = [
+                item.model_dump(mode="json") for item in decision.available_resolution_actions
+            ]
+            retry_contract["decision_rule"] = (
+                "Select the single action whose applicable_when condition matches the observed "
+                "conflict dimension. The applicable action resolves this one-step conflict."
+            )
+        elif self._scenario.intervention_kind == "unresolved_conflict_cannot_stop":
             retry_contract["observed_conflict_dimensions"] = ["source_definition_compatibility"]
             retry_contract["available_resolution_actions"] = (
                 self._ordered_conflict_resolution_actions()
@@ -927,14 +1076,20 @@ class FinanceCapabilitySubmechanismRuntime:
             if kind == "post_complete_error_risk"
             else "The result is already verified; another action incurs the frozen marginal cost."
         )
+        completion_state: dict[str, Any] = {
+            "complete": True,
+            "redundant_action_cost_applied": True,
+        }
+        decision = self._scenario.stopping_shape_decision_contract
+        if (
+            decision is not None
+            and decision.contract_kind == "standardized_relative_extra_call_cost"
+        ):
+            completion_state["terminal_utility_loss"] = decision.terminal_utility_loss
+            completion_state["relative_cost_contract_enforced"] = True
         return AgentToolResult(
             status="failed",
-            result={
-                "completion_state": {
-                    "complete": True,
-                    "redundant_action_cost_applied": True,
-                }
-            },
+            result={"completion_state": completion_state},
             error_code=code,
             error_message=message,
         )
@@ -1038,6 +1193,13 @@ def public_submechanism_contract(
     candidate_contract = _public_candidate_submission_contract(scenario)
     if candidate_contract is not None:
         contract["candidate_submission_contract"] = candidate_contract
+    if scenario.stopping_shape_decision_contract is not None:
+        decision = scenario.stopping_shape_decision_contract.model_dump(
+            mode="json",
+            exclude={"contract_kind"},
+        )
+        decision["internal_shape_identity_disclosed"] = False
+        contract["stopping_shape_decision_contract"] = decision
     return contract
 
 

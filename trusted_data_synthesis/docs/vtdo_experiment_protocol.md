@@ -1248,3 +1248,55 @@ failed Shapes require a separately identified structural redesign with new tasks
 Evidence Versions, semantic signatures, and materializer identities. Only a future Development in
 which every Shape passes may freeze the Difficulty Policy and prepare a new three-population
 stable-support Confirmation.
+
+### v25.37 Stopping Shape redesign contract and result
+
+v25.37 preserves the three v25.36 positive Shapes without tuning and redesigns only
+partial required evidence, single-dimensional conflict, and verified extra-call cost.
+It freezes two independent tasks in each of four structural strata for every Shape, for eight
+tasks per Shape, 48 tasks total, and eight Flash realizations per task.
+
+The three interventions are preregistered as count-only completeness disclosure, a one-dimensional
+two-action one-step conflict, and a standardized relative post-completion cost. Candidate gates
+increase to four boundary tasks, six nonzero-information tasks, effective task count at least four,
+maximum task information share 0.35, maximum probability range 0.75, and a strictly positive
+hierarchical-bootstrap information lower bound. Control mean success remains at least 0.75.
+
+The static population passed every replay, isolation, freshness, and exact-cell gate before API
+access. The 384/384 Flash execution then passed every Runtime gate:
+
+~~~
+execution_integrity = 1.0
+terminal_resolution = 1.0
+api_transport_resolution = 1.0
+bounded_json_resolution = 1.0
+observation_replay = 1.0
+authority_integrity = 1.0
+runtime_pathology = 0
+l0_l2_failure_count = 0
+~~~
+
+Shape support did not pass. Both previously stable candidate Shapes replicated, but the
+error-risk Runtime control regressed below its 0.75 threshold. The partial-evidence redesign was
+too easy in six tasks; the single-conflict redesign moved from floor to ceiling but retained only
+four nonzero-information tasks; and relative cost still varied from zero to perfect success across
+tasks.
+
+~~~
+positive_control_regression_count = 1
+redesigned_shape_admission_count = 0
+all_shapes_admitted = false
+difficulty_policy_frozen = false
+fresh_three_population_preparation_authorized = false
+pro_api_call_count = 0
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = stopping_shape_redesign_only
+~~~
+
+The primary response remains the preregistered conjunction of valid final answer and ordered Host
+behavior. A post-hoc diagnostic found 100% Host behavior success for both post-completion
+controls, so a future experiment must resolve the Control estimand prospectively rather than
+changing the v25.37 response after seeing results. No pooled rescue or post-hoc task selection was
+used.
