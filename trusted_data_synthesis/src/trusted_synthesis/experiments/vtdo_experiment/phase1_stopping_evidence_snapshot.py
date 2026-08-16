@@ -37,12 +37,14 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stabili
 )
 from trusted_synthesis.hashing import canonical_hash
 
-FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION: Literal["finance_stopping_evidence_snapshot.v2"] = (
-    "finance_stopping_evidence_snapshot.v2"
+FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION: Literal["finance_stopping_evidence_snapshot.v3"] = (
+    "finance_stopping_evidence_snapshot.v3"
 )
 FINANCE_STOPPING_EVIDENCE_SNAPSHOT_SELECTION_VERSION: Literal[
-    "finance_stopping_evidence_snapshot_selection.v1"
-] = "finance_stopping_evidence_snapshot_selection.v1"
+    "finance_stopping_evidence_snapshot_selection.v2"
+] = "finance_stopping_evidence_snapshot_selection.v2"
+
+COMPANION_CLOSURE_FIELDS = ("definition", "payload_context")
 
 
 class FrozenModel(BaseModel):
@@ -56,7 +58,8 @@ class FinanceStoppingEvidenceSnapshotThresholds(FrozenModel):
     minimum_predicate_count: int = Field(default=8, ge=1)
     minimum_disjoint_gold_window_capacity: int = Field(default=72, ge=48)
     minimum_contextual_pair_capacity: int = Field(default=24, ge=8)
-    minimum_normalization_pair_capacity: int = Field(default=24, ge=8)
+    minimum_period_pair_capacity: int = Field(default=24, ge=8)
+    minimum_definition_pair_capacity: int = Field(default=8, ge=2)
 
 
 class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
@@ -68,7 +71,7 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
     archive_config_sha256: str = Field(min_length=64, max_length=64)
     kg_build_id: str = Field(min_length=1)
     graph_schema_version: str = Field(min_length=1)
-    selection_version: Literal["finance_stopping_evidence_snapshot_selection.v1"] = (
+    selection_version: Literal["finance_stopping_evidence_snapshot_selection.v2"] = (
         FINANCE_STOPPING_EVIDENCE_SNAPSHOT_SELECTION_VERSION
     )
     selection_salt: str = Field(min_length=1)
@@ -85,6 +88,8 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
     semantic_rejection_count: int = Field(ge=0)
     eligible_evidence_count: int = Field(ge=1)
     selected_evidence_count: int = Field(ge=1)
+    base_selected_evidence_count: int = Field(ge=1)
+    companion_evidence_count: int = Field(ge=0)
     selected_source_count: int = Field(ge=1)
     selected_subject_count: int = Field(ge=1)
     selected_predicate_count: int = Field(ge=1)
@@ -93,7 +98,9 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
     contiguous_window_count: int = Field(ge=1)
     disjoint_gold_window_capacity: int = Field(ge=0)
     contextual_pair_capacity: int = Field(ge=0)
-    normalization_pair_capacity: int = Field(ge=0)
+    period_pair_capacity: int = Field(ge=0)
+    definition_pair_capacity: int = Field(ge=0)
+    payload_context_pair_capacity: int = Field(ge=0)
     thresholds: FinanceStoppingEvidenceSnapshotThresholds
     historical_identity_disjoint: bool
     evidence_id_unique: bool
@@ -106,7 +113,7 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
         "stopping_shape_policy_protocol_build",
         "evidence_snapshot_repair_only",
     ]
-    schema_version: Literal["finance_stopping_evidence_snapshot.v2"] = (
+    schema_version: Literal["finance_stopping_evidence_snapshot.v3"] = (
         FINANCE_STOPPING_EVIDENCE_SNAPSHOT_VERSION
     )
 
@@ -124,6 +131,10 @@ class FinanceStoppingEvidenceSnapshotReport(FrozenModel):
             raise ValueError("Stopping Evidence Snapshot transition is inconsistent")
         if self.selected_evidence_count != sum(self.selected_evidence_by_source.values()):
             raise ValueError("Stopping Evidence Snapshot source accounting is inconsistent")
+        if self.selected_evidence_count != (
+            self.base_selected_evidence_count + self.companion_evidence_count
+        ):
+            raise ValueError("Stopping Evidence Snapshot companion accounting is inconsistent")
         if self.historical_reference_count != len(self.historical_population_references):
             raise ValueError("Stopping Evidence Snapshot history count is inconsistent")
         if len({item.artifact_id for item in self.historical_population_references}) != len(
@@ -278,7 +289,7 @@ def build_finance_stopping_evidence_snapshot(
     if not eligible:
         raise ValueError("Finance Archive has no fresh semantically valid Evidence")
 
-    selected = select_stopping_evidence_snapshot(
+    selected, base_selected_count = _select_stopping_evidence_snapshot_with_stats(
         tuple(eligible.values()),
         maximum_selected_evidence_count=maximum_selected_evidence_count,
         selection_salt=selection_salt,
@@ -346,6 +357,8 @@ def build_finance_stopping_evidence_snapshot(
         "semantic_rejection_count": semantic_rejections,
         "eligible_evidence_count": len(eligible),
         "selected_evidence_count": len(selected),
+        "base_selected_evidence_count": base_selected_count,
+        "companion_evidence_count": len(selected) - base_selected_count,
         "selected_source_count": len(source_counts),
         "selected_subject_count": len({item.subject.subject_id for item in selected}),
         "selected_predicate_count": len({item.predicate for item in selected}),
@@ -383,7 +396,23 @@ def select_stopping_evidence_snapshot(
     maximum_selected_evidence_count: int,
     selection_salt: str,
 ) -> tuple[EvidenceItem, ...]:
-    """Select complete contiguous series, stratified by source and peer support."""
+    """Select complete series and exact normalization companions."""
+
+    selected, _ = _select_stopping_evidence_snapshot_with_stats(
+        evidence,
+        maximum_selected_evidence_count=maximum_selected_evidence_count,
+        selection_salt=selection_salt,
+    )
+    return selected
+
+
+def _select_stopping_evidence_snapshot_with_stats(
+    evidence: tuple[EvidenceItem, ...],
+    *,
+    maximum_selected_evidence_count: int,
+    selection_salt: str,
+) -> tuple[tuple[EvidenceItem, ...], int]:
+    """Select contiguous series, then close exact normalization pairs."""
 
     series_values = _temporal_series(evidence)
     contextual_keys: dict[tuple[object, ...], set[str]] = defaultdict(set)
@@ -429,7 +458,64 @@ def select_stopping_evidence_snapshot(
         if not added and next_sources == source_order:
             break
         source_order = next_sources
-    return tuple(sorted(selected.values(), key=lambda item: item.evidence_id))
+    base_selected = tuple(sorted(selected.values(), key=lambda item: item.evidence_id))
+    closed = _add_exact_companion_closure(
+        evidence=evidence,
+        selected=base_selected,
+        maximum_selected_evidence_count=maximum_selected_evidence_count,
+        selection_salt=selection_salt,
+    )
+    return closed, len(base_selected)
+
+
+def _add_exact_companion_closure(
+    *,
+    evidence: tuple[EvidenceItem, ...],
+    selected: tuple[EvidenceItem, ...],
+    maximum_selected_evidence_count: int,
+    selection_salt: str,
+) -> tuple[EvidenceItem, ...]:
+    selected_by_id = {item.evidence_id: item for item in selected}
+    base = tuple(selected)
+    for field in COMPANION_CLOSURE_FIELDS:
+        target_values_by_key: dict[tuple[object, ...], set[object]] = defaultdict(set)
+        for item in base:
+            fields = _mismatch_identity_fields(item)
+            target_values_by_key[_one_difference_snapshot_key(item, field)].add(fields[field])
+        candidates: dict[str, EvidenceItem] = {}
+        for item in evidence:
+            if item.evidence_id in selected_by_id:
+                continue
+            key = _one_difference_snapshot_key(item, field)
+            target_values = target_values_by_key.get(key)
+            if target_values is None:
+                continue
+            if _mismatch_identity_fields(item)[field] in target_values:
+                continue
+            candidates[item.evidence_version_id] = item
+        ordered = sorted(
+            candidates.values(),
+            key=lambda item: canonical_hash(
+                {
+                    "selection_salt": selection_salt,
+                    "field": field,
+                    "evidence_version_id": item.evidence_version_id,
+                },
+                prefix="finance_stopping_snapshot_companion_order:",
+            ),
+        )
+        for item in ordered:
+            if len(selected_by_id) >= maximum_selected_evidence_count:
+                break
+            selected_by_id[item.evidence_id] = item
+    return tuple(sorted(selected_by_id.values(), key=lambda item: item.evidence_id))
+
+
+def _one_difference_snapshot_key(item: EvidenceItem, mismatch_field: str) -> tuple[object, ...]:
+    fields = _mismatch_identity_fields(item)
+    if mismatch_field not in fields:
+        raise ValueError("unknown one-dimensional mismatch field")
+    return tuple((field, value) for field, value in fields.items() if field != mismatch_field)
 
 
 def stopping_evidence_snapshot_capacity(
@@ -462,9 +548,10 @@ def stopping_evidence_snapshot_capacity(
         "contiguous_window_count": len(windows),
         "disjoint_gold_window_capacity": disjoint_windows,
         "contextual_pair_capacity": _single_mismatch_pair_capacity(evidence, "subject"),
-        "normalization_pair_capacity": sum(
-            _single_mismatch_pair_capacity(evidence, field)
-            for field in ("period", "definition", "payload_context")
+        "period_pair_capacity": _single_mismatch_pair_capacity(evidence, "period"),
+        "definition_pair_capacity": _single_mismatch_pair_capacity(evidence, "definition"),
+        "payload_context_pair_capacity": _single_mismatch_pair_capacity(
+            evidence, "payload_context"
         ),
     }
 
@@ -533,8 +620,11 @@ def _snapshot_rejection_reasons(
         "contextual_pair_capacity_below_minimum": (
             capacity["contextual_pair_capacity"] < thresholds.minimum_contextual_pair_capacity
         ),
-        "normalization_pair_capacity_below_minimum": (
-            capacity["normalization_pair_capacity"] < thresholds.minimum_normalization_pair_capacity
+        "period_pair_capacity_below_minimum": (
+            capacity["period_pair_capacity"] < thresholds.minimum_period_pair_capacity
+        ),
+        "definition_pair_capacity_below_minimum": (
+            capacity["definition_pair_capacity"] < thresholds.minimum_definition_pair_capacity
         ),
         "historical_identity_overlap": bool(
             {item.evidence_id for item in selected} & excluded["evidence_id"]

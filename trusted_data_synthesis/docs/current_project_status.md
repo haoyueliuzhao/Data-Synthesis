@@ -820,3 +820,14 @@ preparation of three fresh independent populations; it does not authorize
 Beneficiary, Exact Target, GP-C, VTDO updates, or Student training.
 
 See `docs/finance_v25_43_v25_44_stopping_role_position_validation_report.md`.
+
+A hardened fresh-population rehearsal then found that Snapshot v2's aggregate
+normalization capacity hid zero fresh exact Definition pairs. Snapshot v3 now
+retains exact SourceDefinition companions for selected time-series facts and
+uses field-specific readiness gates. The real Archive rebuild scanned 564,297
+records, selected 151,022 base facts plus 92 companions, and passed with period,
+Definition, and Contextual pair capacities of 75,509, 90, and 2,436. No API call
+was made for this repair; the next permitted action remains a static fresh
+Population build.
+
+See `docs/finance_v25_44_snapshot_v3_capacity_hardening_report.md`.
