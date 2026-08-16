@@ -26,12 +26,13 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_environment_manifest,
 )
 
-FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v11"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v14"
-FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v7"
-FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v3"
+FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v12"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v15"
+FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v8"
+FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v4"
 FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION = "finance_stopping_shape_decision_contract.v1"
 FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION = "finance_stopping_shape_decision_contract.v2"
+FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION = "finance_stopping_shape_decision_contract.v3"
 FINANCE_SUBMECHANISM_ORACLE_KEY = "v25_25_capability_submechanism_scenario"
 
 SubmechanismKind = Literal[
@@ -214,6 +215,70 @@ class FinanceStoppingDependencyOption(BaseModel):
     period_label: str = Field(min_length=1)
 
 
+class FinanceStoppingMeasurementContext(BaseModel):
+    """Public measurement attributes treated as one semantic comparison field."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    unit: str | None = None
+    currency: str | None = None
+
+
+class FinanceStoppingTemporalIdentity(BaseModel):
+    """Public temporal identity treated as one comparison field."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    label: str = Field(min_length=1)
+    valid_from: str | None = None
+    valid_to: str | None = None
+    observed_at: str | None = None
+
+
+class FinanceStoppingObservedRecord(BaseModel):
+    """One public record identity shown to the Agent by the Host decision state."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    subject_alias: str = Field(min_length=1)
+    metric_alias: str = Field(min_length=1)
+    temporal_identity: FinanceStoppingTemporalIdentity
+    source_id: str = Field(min_length=1)
+    definition_id: str | None = None
+    measurement_context: FinanceStoppingMeasurementContext
+
+    @property
+    def period_label(self) -> str:
+        return self.temporal_identity.label
+
+
+class FinanceStoppingObservedEvidenceState(BaseModel):
+    """Two public records with exactly one decision-relevant semantic difference."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    observed_record: FinanceStoppingObservedRecord
+    required_record: FinanceStoppingObservedRecord
+
+    @model_validator(mode="after")
+    def validate_single_difference(self) -> FinanceStoppingObservedEvidenceState:
+        fields = (
+            "subject_alias",
+            "metric_alias",
+            "temporal_identity",
+            "source_id",
+            "definition_id",
+            "measurement_context",
+        )
+        differences = sum(
+            getattr(self.observed_record, field) != getattr(self.required_record, field)
+            for field in fields
+        )
+        if differences != 1:
+            raise ValueError("Stopping public Evidence state must differ in exactly one field")
+        return self
+
+
 class FinanceStoppingShapeDecisionContract(BaseModel):
     """Preregistered public decision state plus Oracle-only scoring identity."""
 
@@ -229,12 +294,15 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
         "conditional_dependency_observation_required",
         "matched_contextual_resolution_choice",
         "single_conflict_evidence_grounded_choice_one_step",
+        "matched_contextual_evidence_state_choice_two_step",
+        "single_conflict_evidence_state_choice_one_step",
     ]
     missing_role_disclosure: Literal["count_only"] | None = None
     dependency_rule: str | None = Field(default=None, min_length=1)
     dependency_decoy_option: FinanceStoppingDependencyOption | None = None
     conflict_dimensions: tuple[str, ...] = ()
     observed_conflict_signal: str | None = Field(default=None, min_length=1)
+    observed_evidence_state: FinanceStoppingObservedEvidenceState | None = None
     oracle_conflict_dimension: str | None = Field(default=None, min_length=1)
     available_resolution_actions: tuple[FinanceStoppingResolutionAction, ...] = ()
     resolution_step_count: int | None = Field(default=None, ge=1, le=2)
@@ -256,6 +324,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 "dependency_rule",
                 "dependency_decoy_option",
                 "observed_conflict_signal",
+                "observed_evidence_state",
                 "oracle_conflict_dimension",
                 "archive_snapshot_sealed",
                 "maximum_additional_information_gain",
@@ -278,6 +347,8 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 "conditional_dependency_observation_required",
                 "matched_contextual_resolution_choice",
                 "single_conflict_evidence_grounded_choice_one_step",
+                "matched_contextual_evidence_state_choice_two_step",
+                "single_conflict_evidence_state_choice_one_step",
             }
         ):
             raise ValueError("Finance Stopping Shape v2 decision uses a v1 schema identity")
@@ -288,13 +359,25 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 "conditional_dependency_observation_required",
                 "matched_contextual_resolution_choice",
                 "single_conflict_evidence_grounded_choice_one_step",
+                "matched_contextual_evidence_state_choice_two_step",
+                "single_conflict_evidence_state_choice_one_step",
             }
         ):
             raise ValueError("Finance Stopping Shape v3 decision uses a v2 schema identity")
+        if (
+            self.schema_version == FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION
+            and self.contract_kind
+            in {
+                "matched_contextual_evidence_state_choice_two_step",
+                "single_conflict_evidence_state_choice_one_step",
+            }
+        ):
+            raise ValueError("Finance Stopping Shape v4 decision uses a v3 schema identity")
         common_absent = (
             self.dependency_rule is None
             and self.dependency_decoy_option is None
             and self.observed_conflict_signal is None
+            and self.observed_evidence_state is None
             and self.oracle_conflict_dimension is None
             and self.archive_snapshot_sealed is None
             and self.maximum_additional_information_gain is None
@@ -358,6 +441,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.dependency_decoy_option is not None
                 and not self.conflict_dimensions
                 and self.observed_conflict_signal is None
+                and self.observed_evidence_state is None
                 and self.oracle_conflict_dimension is None
                 and not self.available_resolution_actions
                 and self.resolution_step_count
@@ -375,6 +459,8 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
             "single_conflict_semantic_choice_one_step",
             "matched_contextual_resolution_choice",
             "single_conflict_evidence_grounded_choice_one_step",
+            "matched_contextual_evidence_state_choice_two_step",
+            "single_conflict_evidence_state_choice_one_step",
         }:
             public_text = " ".join(
                 (
@@ -389,8 +475,21 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and not self.conflict_dimensions
                 and self.observed_conflict_signal is not None
                 and (
+                    self.observed_evidence_state is not None
+                    if self.contract_kind
+                    in {
+                        "matched_contextual_evidence_state_choice_two_step",
+                        "single_conflict_evidence_state_choice_one_step",
+                    }
+                    else self.observed_evidence_state is None
+                )
+                and (
                     self.oracle_conflict_dimension == "entity_scope_alignment"
-                    if self.contract_kind == "matched_contextual_resolution_choice"
+                    if self.contract_kind
+                    in {
+                        "matched_contextual_resolution_choice",
+                        "matched_contextual_evidence_state_choice_two_step",
+                    }
                     else (
                         self.oracle_conflict_dimension
                         in {
@@ -398,7 +497,11 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                             "temporal_alignment",
                             "measurement_context_alignment",
                         }
-                        if self.contract_kind == "single_conflict_evidence_grounded_choice_one_step"
+                        if self.contract_kind
+                        in {
+                            "single_conflict_evidence_grounded_choice_one_step",
+                            "single_conflict_evidence_state_choice_one_step",
+                        }
                         else self.oracle_conflict_dimension == "source_definition_compatibility"
                     )
                 )
@@ -413,7 +516,15 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                     )
                 )
                 and self.resolution_step_count
-                == (2 if self.contract_kind == "matched_contextual_resolution_choice" else 1)
+                == (
+                    2
+                    if self.contract_kind
+                    in {
+                        "matched_contextual_resolution_choice",
+                        "matched_contextual_evidence_state_choice_two_step",
+                    }
+                    else 1
+                )
                 and "source_definition_compatibility" not in public_text
                 and self.remaining_call_budget_fraction is None
                 and self.remaining_token_budget_fraction is None
@@ -431,6 +542,7 @@ class FinanceStoppingShapeDecisionContract(BaseModel):
                 and self.dependency_decoy_option is None
                 and not self.conflict_dimensions
                 and self.observed_conflict_signal is None
+                and self.observed_evidence_state is None
                 and self.oracle_conflict_dimension is None
                 and not self.available_resolution_actions
                 and self.resolution_step_count is None
@@ -500,6 +612,10 @@ class FinanceSubmechanismScenario(BaseModel):
                 "conditional_dependency_observation_required": "incomplete_continue",
                 "matched_contextual_resolution_choice": "unresolved_conflict_cannot_stop",
                 "single_conflict_evidence_grounded_choice_one_step": "evidence_conflict",
+                "matched_contextual_evidence_state_choice_two_step": (
+                    "unresolved_conflict_cannot_stop"
+                ),
+                "single_conflict_evidence_state_choice_one_step": "evidence_conflict",
             }[decision.contract_kind]
             if self.intervention_kind != expected_kind:
                 raise ValueError("Stopping Shape decision contract uses the wrong Runtime kind")
@@ -843,6 +959,7 @@ class FinanceCapabilitySubmechanismRuntime:
                     "single_conflict_two_action_one_step",
                     "single_conflict_semantic_choice_one_step",
                     "single_conflict_evidence_grounded_choice_one_step",
+                    "single_conflict_evidence_state_choice_one_step",
                 }:
                     self._observe_resolution()
                     return self._with_resolution_event(result)
@@ -863,8 +980,18 @@ class FinanceCapabilitySubmechanismRuntime:
         decision = self._scenario.stopping_shape_decision_contract
         if (
             decision is not None
-            and decision.contract_kind == "matched_contextual_resolution_choice"
+            and decision.contract_kind
+            in {
+                "matched_contextual_resolution_choice",
+                "matched_contextual_evidence_state_choice_two_step",
+            }
             and decision.oracle_conflict_dimension == "entity_scope_alignment"
+        ):
+            return "query_structured_fact"
+        if (
+            decision is not None
+            and decision.contract_kind == "single_conflict_evidence_state_choice_one_step"
+            and decision.oracle_conflict_dimension == "temporal_alignment"
         ):
             return "query_structured_fact"
         return "normalize_metric_unit_period"
@@ -875,6 +1002,22 @@ class FinanceCapabilitySubmechanismRuntime:
             str(call.arguments.get("metric_alias", "")),
             str(call.arguments.get("period_label", "")),
         )
+        decision = self._scenario.stopping_shape_decision_contract
+        if (
+            decision is not None
+            and decision.observed_evidence_state is not None
+            and decision.contract_kind
+            in {
+                "matched_contextual_evidence_state_choice_two_step",
+                "single_conflict_evidence_state_choice_one_step",
+            }
+        ):
+            required = decision.observed_evidence_state.required_record
+            return observed == (
+                required.subject_alias,
+                required.metric_alias,
+                required.period_label,
+            )
         return observed in {
             (item.subject_alias, item.metric_alias, item.period_label)
             for item in self._scenario.evidence_roles
@@ -941,6 +1084,8 @@ class FinanceCapabilitySubmechanismRuntime:
             "single_conflict_semantic_choice_one_step",
             "matched_contextual_resolution_choice",
             "single_conflict_evidence_grounded_choice_one_step",
+            "matched_contextual_evidence_state_choice_two_step",
+            "single_conflict_evidence_state_choice_one_step",
         }:
             return None
         if kind in {"incomplete_continue", "unresolved_conflict_cannot_stop"}:
@@ -994,6 +1139,8 @@ class FinanceCapabilitySubmechanismRuntime:
             "single_conflict_semantic_choice_one_step",
             "matched_contextual_resolution_choice",
             "single_conflict_evidence_grounded_choice_one_step",
+            "matched_contextual_evidence_state_choice_two_step",
+            "single_conflict_evidence_state_choice_one_step",
         }:
             return []
         if (
@@ -1431,9 +1578,17 @@ class FinanceCapabilitySubmechanismRuntime:
             )
         elif (
             decision is not None
-            and decision.contract_kind == "matched_contextual_resolution_choice"
+            and decision.contract_kind
+            in {
+                "matched_contextual_resolution_choice",
+                "matched_contextual_evidence_state_choice_two_step",
+            }
         ):
             retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
+            if decision.observed_evidence_state is not None:
+                retry_contract["observed_evidence_state"] = (
+                    decision.observed_evidence_state.model_dump(mode="json")
+                )
             retry_contract["available_resolution_actions"] = [
                 item.model_dump(mode="json") for item in decision.available_resolution_actions
             ]
@@ -1444,9 +1599,17 @@ class FinanceCapabilitySubmechanismRuntime:
             )
         elif (
             decision is not None
-            and decision.contract_kind == "single_conflict_evidence_grounded_choice_one_step"
+            and decision.contract_kind
+            in {
+                "single_conflict_evidence_grounded_choice_one_step",
+                "single_conflict_evidence_state_choice_one_step",
+            }
         ):
             retry_contract["observed_conflict_signal"] = decision.observed_conflict_signal
+            if decision.observed_evidence_state is not None:
+                retry_contract["observed_evidence_state"] = (
+                    decision.observed_evidence_state.model_dump(mode="json")
+                )
             retry_contract["available_resolution_actions"] = [
                 item.model_dump(mode="json") for item in decision.available_resolution_actions
             ]
@@ -1592,6 +1755,10 @@ def make_submechanism_manifest(
                     "completion_state": (
                         "optional Host-owned partial or complete Evidence-role state with a "
                         "typed prerequisite action when work must continue"
+                    ),
+                    "dependency_branch_observation": (
+                        "optional Host-owned result of the registered conditional dependency "
+                        "probe; identifies the public candidate option required next"
                     ),
                 }
             }

@@ -1162,12 +1162,44 @@ class _ReplayCalls:
         if bool(first.result.get("verified")):
             raise ValueError("conflict trigger unexpectedly verified")
         decision = self.scenario.stopping_shape_decision_contract
-        if (
+        query_required = bool(
             decision is not None
-            and decision.contract_kind == "matched_contextual_resolution_choice"
-            and decision.oracle_conflict_dimension == "entity_scope_alignment"
-        ):
-            resolution = self.query_role(0, add_filter=True)
+            and (
+                (
+                    decision.contract_kind
+                    in {
+                        "matched_contextual_resolution_choice",
+                        "matched_contextual_evidence_state_choice_two_step",
+                    }
+                    and decision.oracle_conflict_dimension == "entity_scope_alignment"
+                )
+                or (
+                    decision.contract_kind
+                    == "single_conflict_evidence_state_choice_one_step"
+                    and decision.oracle_conflict_dimension == "temporal_alignment"
+                )
+            )
+        )
+        if query_required:
+            if decision is None or decision.observed_evidence_state is None:
+                resolution = self.query_role(0, add_filter=True)
+            else:
+                required = decision.observed_evidence_state.required_record
+                role_index = next(
+                    index
+                    for index, role in enumerate(self.scenario.evidence_roles)
+                    if (
+                        role.subject_alias,
+                        role.metric_alias,
+                        role.period_label,
+                    )
+                    == (
+                        required.subject_alias,
+                        required.metric_alias,
+                        required.period_label,
+                    )
+                )
+                resolution = self.query_role(role_index, add_filter=True)
         else:
             resolution = self.normalize()
         if resolution.status != "succeeded":

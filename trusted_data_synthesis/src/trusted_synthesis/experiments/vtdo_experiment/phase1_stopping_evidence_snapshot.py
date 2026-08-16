@@ -29,7 +29,6 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
     _temporal_series,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_dual_estimand_protocol import (
-    FinanceStoppingDualEstimandPopulation,
     FinanceStoppingDualEstimandProtocol,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stability_protocol import (
@@ -157,11 +156,20 @@ def build_finance_stopping_evidence_snapshot(
     source_protocol = FinanceStoppingDualEstimandProtocol.model_validate_json(
         source_protocol_path.read_text(encoding="utf-8")
     )
-    source_population = FinanceStoppingDualEstimandPopulation.model_validate_json(
+    source_population_payload = json.loads(
         source_population_path.read_text(encoding="utf-8")
     )
-    if source_population.protocol_id != source_protocol.protocol_id:
+    source_population_id = source_population_payload.get("population_id")
+    source_population_protocol_id = source_population_payload.get("protocol_id")
+    source_population_schema = source_population_payload.get("schema_version")
+    if not isinstance(source_population_id, str) or not source_population_id.startswith(
+        "finance_stopping_dual_estimand_population:"
+    ):
+        raise ValueError("v25.38 Population identity is missing or malformed")
+    if source_population_protocol_id != source_protocol.protocol_id:
         raise ValueError("v25.38 protocol and Population lineage is inconsistent")
+    if source_population_schema != "finance_stopping_dual_estimand_population.v1":
+        raise ValueError("v25.38 Population schema identity is unexpected")
 
     calibration_path = Path(source_protocol.source_calibration_contract.path).resolve()
     if _sha256(calibration_path) != source_protocol.source_calibration_contract.sha256:
@@ -178,7 +186,7 @@ def build_finance_stopping_evidence_snapshot(
         raise ValueError(f"Finance Archive is incompatible: {inspection['errors']}")
 
     population_reference = FrozenArtifactReference(
-        artifact_id=source_population.population_id,
+        artifact_id=source_population_id,
         path=str(source_population_path),
         sha256=_sha256(source_population_path),
     )

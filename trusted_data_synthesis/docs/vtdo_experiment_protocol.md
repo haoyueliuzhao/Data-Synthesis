@@ -1300,3 +1300,24 @@ behavior. A post-hoc diagnostic found 100% Host behavior success for both post-c
 controls, so a future experiment must resolve the Control estimand prospectively rather than
 changing the v25.37 response after seeing results. No pooled rescue or post-hoc task selection was
 used.
+
+### v25.40 typed Evidence-state Shape policy result
+
+v25.40 keeps stopping, valid-training-support, and answer-semantic responses
+separate. Public record pairs differ in exactly one semantic field; Oracle mismatch
+labels remain excluded. A 100,000-item snapshot and 48-task population passed all
+static gates before 384 Flash rollouts. Authority, Partial, and both controls passed;
+Contextual and Conflict did not.
+
+The run identifies a causal placement defect: query-based states were emitted after
+the required record had already been selected and used. The next experiment is
+therefore restricted to:
+
+```text
+query state -> before required Evidence selection
+normalization state -> after selection, before calculation
+public contract and thresholds -> unchanged
+Pro/Beneficiary/Exact Target/GP-C/Contribution -> forbidden
+```
+
+The v25.40 result remains immutable and cannot be reclassified by that repair.

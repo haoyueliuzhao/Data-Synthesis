@@ -757,3 +757,28 @@ dependencies before any new API call. Pro, Beneficiary, Exact Target, GP-C, Cont
 updates, and Student training remain blocked.
 
 See `docs/finance_v25_37_stopping_shape_redesign_report.md`.
+
+## v25.40 Stopping Shape Policy Development
+
+v25.40 completed 384/384 fresh Flash rollouts after repairing the Partial tool-output
+manifest and replacing descriptive conflict labels with typed public Evidence states.
+All Runtime integrity gates passed. Authority and Partial were admitted and both
+controls passed; Contextual and Conflict did not.
+
+A causal audit found query-based states were emitted only after their required record
+had already been selected and used, making the required query redundant. The next
+stage is restricted to a fresh causal-timing repair.
+
+```text
+estimand_semantics_frozen = true
+shape_support_policy_frozen = false
+boundary_candidate_admission_count = 2/4
+runtime_control_pass_count = 2/2
+pro_api_call_count = 0
+exact_target_evaluated = false
+gp_c_evaluated = false
+production_contribution = 0
+next_permitted_stage = stopping_shape_causal_timing_repair_only
+```
+
+See `docs/finance_v25_40_stopping_shape_policy_report.md`.

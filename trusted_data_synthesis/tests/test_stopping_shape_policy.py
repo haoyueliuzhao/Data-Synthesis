@@ -6,9 +6,14 @@ from pydantic import ValidationError
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION,
     FINANCE_STOPPING_SHAPE_DECISION_V2_VERSION,
+    FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION,
     FinanceStoppingDependencyOption,
+    FinanceStoppingMeasurementContext,
+    FinanceStoppingObservedEvidenceState,
+    FinanceStoppingObservedRecord,
     FinanceStoppingResolutionAction,
     FinanceStoppingShapeDecisionContract,
+    FinanceStoppingTemporalIdentity,
     FinanceSubmechanismEvidenceRole,
     make_finance_submechanism_scenario,
     public_submechanism_contract,
@@ -27,8 +32,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_policy 
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_policy_protocol import (
     ALL_SHAPES,
     BOUNDARY_CANDIDATE_SHAPES,
+    CONFLICT_MISMATCH_BY_CELL,
     RUNTIME_CONTROL_SHAPES,
     STRUCTURAL_STRATA,
+    StoppingConflictCellAllocation,
     StoppingShapePolicyThresholds,
     _semantic_content_tokens,
 )
@@ -76,53 +83,81 @@ def _dependency_decision() -> FinanceStoppingShapeDecisionContract:
     )
 
 
+def _state(*, field: str) -> FinanceStoppingObservedEvidenceState:
+    required = FinanceStoppingObservedRecord(
+        subject_alias="entity:required",
+        metric_alias="metric:required",
+        temporal_identity=FinanceStoppingTemporalIdentity(label="FY2024"),
+        source_id="source:official",
+        definition_id="definition:required",
+        measurement_context=FinanceStoppingMeasurementContext(
+            unit="USD",
+            currency="USD",
+        ),
+    )
+    updates: dict[str, object]
+    if field == "subject":
+        updates = {"subject_alias": "entity:observed"}
+    elif field == "period":
+        updates = {
+            "temporal_identity": FinanceStoppingTemporalIdentity(label="FY2023")
+        }
+    elif field == "definition":
+        updates = {"definition_id": "definition:observed"}
+    else:
+        updates = {
+            "measurement_context": FinanceStoppingMeasurementContext(
+                unit="thousand USD",
+                currency="USD",
+            )
+        }
+    return FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(update=updates),
+        required_record=required,
+    )
+
+
+def _state_actions() -> tuple[FinanceStoppingResolutionAction, ...]:
+    return (
+        FinanceStoppingResolutionAction(
+            tool_id="normalize_metric_unit_period",
+            applicable_when="establish a shared reporting or measurement basis",
+        ),
+        FinanceStoppingResolutionAction(
+            tool_id="open_document",
+            applicable_when="inspect document authority when provenance remains uncertain",
+        ),
+        FinanceStoppingResolutionAction(
+            tool_id="query_structured_fact",
+            applicable_when="retrieve an observation when subject or period coverage is absent",
+        ),
+    )
+
+
 def _contextual_decision() -> FinanceStoppingShapeDecisionContract:
     return FinanceStoppingShapeDecisionContract(
-        contract_kind="matched_contextual_resolution_choice",
+        contract_kind="matched_contextual_evidence_state_choice_two_step",
         observed_conflict_signal=(
-            "The requested relation is not warranted by the current evidence state."
+            "Two public records are shown below. Exactly one registered identity "
+            "component differs."
         ),
+        observed_evidence_state=_state(field="subject"),
         oracle_conflict_dimension="entity_scope_alignment",
-        available_resolution_actions=(
-            FinanceStoppingResolutionAction(
-                tool_id="normalize_metric_unit_period",
-                applicable_when="establish one comparison basis before evaluating measurements",
-            ),
-            FinanceStoppingResolutionAction(
-                tool_id="open_document",
-                applicable_when="inspect disclosure context before deciding record usability",
-            ),
-            FinanceStoppingResolutionAction(
-                tool_id="query_structured_fact",
-                applicable_when="retrieve another observation when the window lacks coverage",
-            ),
-        ),
+        available_resolution_actions=_state_actions(),
         resolution_step_count=2,
     )
 
 
 def _conflict_decision() -> FinanceStoppingShapeDecisionContract:
     return FinanceStoppingShapeDecisionContract(
-        contract_kind="single_conflict_evidence_grounded_choice_one_step",
+        contract_kind="single_conflict_evidence_state_choice_one_step",
         observed_conflict_signal=(
-            "Source lineage and coverage are complete, yet the selected values cannot be "
-            "combined directly without altering their interpretation."
+            "Two public records are shown below. Exactly one registered identity "
+            "component differs."
         ),
+        observed_evidence_state=_state(field="definition"),
         oracle_conflict_dimension="source_definition_compatibility",
-        available_resolution_actions=(
-            FinanceStoppingResolutionAction(
-                tool_id="normalize_metric_unit_period",
-                applicable_when="establish one shared reporting basis before evaluating the pair",
-            ),
-            FinanceStoppingResolutionAction(
-                tool_id="open_document",
-                applicable_when="inspect document authority when provenance remains uncertain",
-            ),
-            FinanceStoppingResolutionAction(
-                tool_id="query_structured_fact",
-                applicable_when="obtain another observation when the requested period is absent",
-            ),
-        ),
+        available_resolution_actions=_state_actions(),
         resolution_step_count=1,
     )
 
@@ -148,7 +183,7 @@ def _cost_decision() -> FinanceStoppingShapeDecisionContract:
         (_cost_decision(), "post_complete_cost"),
     ),
 )
-def test_v25_39_public_projection_omits_oracle_decision_fields(
+def test_v25_40_public_projection_omits_oracle_decision_fields(
     decision: FinanceStoppingShapeDecisionContract,
     runtime_kind: str,
 ) -> None:
@@ -197,7 +232,7 @@ def test_v25_39_public_projection_omits_oracle_decision_fields(
         },
     ),
 )
-def test_v25_39_decision_contracts_fail_closed(payload: dict[str, object]) -> None:
+def test_v25_40_decision_contracts_fail_closed(payload: dict[str, object]) -> None:
     with pytest.raises(ValidationError, match="decision contract is inconsistent"):
         FinanceStoppingShapeDecisionContract.model_validate(payload)
 
@@ -223,6 +258,58 @@ def test_v2_schema_rejects_v25_39_contract_kinds() -> None:
 
     with pytest.raises(ValidationError, match="v3 decision uses a v2 schema identity"):
         FinanceStoppingShapeDecisionContract.model_validate(payload)
+
+
+def test_v3_schema_rejects_v25_40_state_contracts() -> None:
+    payload = _contextual_decision().model_dump(mode="json")
+    payload["schema_version"] = FINANCE_STOPPING_SHAPE_DECISION_V3_VERSION
+
+    with pytest.raises(ValidationError, match="v4 decision uses a v3 schema identity"):
+        FinanceStoppingShapeDecisionContract.model_validate(payload)
+
+
+def test_public_evidence_state_rejects_more_than_one_difference() -> None:
+    state = _state(field="subject")
+    with pytest.raises(ValidationError, match="exactly one field"):
+        FinanceStoppingObservedEvidenceState(
+            observed_record=state.observed_record.model_copy(
+                update={
+                    "definition_id": "definition:also-different",
+                }
+            ),
+            required_record=state.required_record,
+        )
+
+
+def test_conflict_cell_map_freezes_supported_dimensions_and_resolution_tools() -> None:
+    counts = {
+        field: tuple(CONFLICT_MISMATCH_BY_CELL.values()).count(field)
+        for field in {"period", "definition", "payload_context"}
+    }
+
+    assert counts == {"period": 6, "definition": 2, "payload_context": 0}
+    assert set(CONFLICT_MISMATCH_BY_CELL) == {
+        (stratum, instance)
+        for stratum, _, _ in STRUCTURAL_STRATA
+        for instance in (0, 1)
+    }
+    thresholds = StoppingShapePolicyThresholds()
+    assert min(counts["period"], counts["definition"]) >= (
+        thresholds.minimum_conflict_tasks_per_resolution_tool
+    )
+    assert max(counts["period"], counts["definition"]) / 8 <= (
+        thresholds.maximum_conflict_resolution_tool_share
+    )
+
+
+def test_conflict_cell_allocation_rejects_wrong_resolution_tool() -> None:
+    with pytest.raises(ValidationError, match="wrong resolution tool"):
+        StoppingConflictCellAllocation(
+            stratum_id="retrieval_join_frontier",
+            instance_index=0,
+            mismatch_field="period",
+            expected_resolution_tool="normalize_metric_unit_period",
+        )
 
 
 def test_semantic_conflict_requires_semantics_not_content_word_copying() -> None:

@@ -16,11 +16,21 @@ from trusted_synthesis.core.operations.program import ProgramExecutionError
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_SUBMECHANISM_RUNTIME_VERSION,
     FinanceStoppingDependencyOption,
+    FinanceStoppingMeasurementContext,
+    FinanceStoppingObservedEvidenceState,
+    FinanceStoppingObservedRecord,
     FinanceStoppingResolutionAction,
     FinanceStoppingShapeDecisionContract,
+    FinanceStoppingTemporalIdentity,
     SubmechanismKind,
     make_finance_submechanism_scenario,
+    make_submechanism_manifest,
     submechanism_policy_manifest,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_boundary import (
+    MAXIMUM_FAILED_TOOL_CALLS,
+    MAXIMUM_OBSERVATION_BYTES,
+    MAXIMUM_TOOL_CALLS,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_ladder import (
     DifficultyTier,
@@ -49,11 +59,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanis
     replay_submechanism_runtime,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_dual_estimand import (
-    FinanceStoppingDualEstimandContract,
     FinanceStoppingDualEstimandReport,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_dual_estimand_protocol import (
-    FinanceStoppingDualEstimandPopulation,
     FinanceStoppingDualEstimandProtocol,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stability_protocol import (
@@ -69,10 +77,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stabili
 )
 from trusted_synthesis.hashing import canonical_hash
 
-STOPPING_SHAPE_POLICY_PROTOCOL_VERSION = "finance_stopping_shape_policy_protocol.v1"
-STOPPING_SHAPE_POLICY_POPULATION_VERSION = "finance_stopping_shape_policy_population.v1"
-STOPPING_SHAPE_POLICY_AUDIT_VERSION = "finance_stopping_shape_policy_static_audit.v1"
-STOPPING_SHAPE_POLICY_EXPERIMENT_LABEL = "finance_v25_39_stopping_shape_policy_development"
+STOPPING_SHAPE_POLICY_PROTOCOL_VERSION = "finance_stopping_shape_policy_protocol.v4"
+STOPPING_SHAPE_POLICY_POPULATION_VERSION = "finance_stopping_shape_policy_population.v4"
+STOPPING_SHAPE_POLICY_AUDIT_VERSION = "finance_stopping_shape_policy_static_audit.v4"
+STOPPING_SHAPE_POLICY_EXPERIMENT_LABEL = "finance_v25_40_stopping_shape_policy_development"
 
 TASKS_PER_STRATUM = 2
 TASKS_PER_SHAPE = len(STRUCTURAL_STRATA) * TASKS_PER_STRATUM
@@ -110,6 +118,17 @@ STRUCTURAL_REDESIGN_SHAPES = frozenset(
 )
 ALL_SHAPES = BOUNDARY_CANDIDATE_SHAPES | RUNTIME_CONTROL_SHAPES
 
+CONFLICT_MISMATCH_BY_CELL: dict[tuple[str, int], str] = {
+    ("retrieval_join_frontier", 0): "period",
+    ("retrieval_join_frontier", 1): "definition",
+    ("calculation_chain_frontier", 0): "definition",
+    ("calculation_chain_frontier", 1): "period",
+    ("definition_reconciliation_frontier", 0): "period",
+    ("definition_reconciliation_frontier", 1): "period",
+    ("verification_selection_frontier", 0): "period",
+    ("verification_selection_frontier", 1): "period",
+}
+
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -130,6 +149,8 @@ class StoppingShapePolicyThresholds(FrozenModel):
     minimum_authority_integrity_rate: float = Field(default=1.0, ge=1, le=1)
     maximum_runtime_pathology_rate: float = Field(default=0.0, ge=0, le=0)
     maximum_l0_l2_failure_count: int = Field(default=0, ge=0, le=0)
+    minimum_conflict_tasks_per_resolution_tool: int = Field(default=2, ge=2, le=4)
+    maximum_conflict_resolution_tool_share: float = Field(default=0.75, ge=0.5, le=0.75)
     bootstrap_replicates: int = Field(default=4_000, ge=1_000)
     bootstrap_seed: int = 20260818
 
@@ -161,14 +182,52 @@ class StoppingShapePolicyDefinition(FrozenModel):
     valid_training_support_response: Literal["full_valid_trajectory_success"] = (
         "full_valid_trajectory_success"
     )
-    contribution_authorized_support_response: Literal["not_evaluated_in_v25_39"] = (
-        "not_evaluated_in_v25_39"
+    contribution_authorized_support_response: Literal["not_evaluated_in_v25_40"] = (
+        "not_evaluated_in_v25_40"
     )
     cross_estimand_rescue_forbidden: Literal[True] = True
     invalid_trajectory_training_use_forbidden: Literal[True] = True
     estimand_semantics_frozen: Literal[True] = True
     shape_support_policy_frozen: Literal[False] = False
     historical_v25_38_reclassification_authorized: Literal[False] = False
+
+
+class StoppingConflictCellAllocation(FrozenModel):
+    stratum_id: str = Field(min_length=1)
+    instance_index: Literal[0, 1]
+    mismatch_field: Literal["period", "definition"]
+    expected_resolution_tool: Literal[
+        "query_structured_fact", "normalize_metric_unit_period"
+    ]
+
+    @model_validator(mode="after")
+    def validate_allocation(self) -> StoppingConflictCellAllocation:
+        expected_tool = (
+            "query_structured_fact"
+            if self.mismatch_field == "period"
+            else "normalize_metric_unit_period"
+        )
+        if self.expected_resolution_tool != expected_tool:
+            raise ValueError("Stopping conflict allocation uses the wrong resolution tool")
+        return self
+
+
+def _default_conflict_cell_allocations() -> tuple[StoppingConflictCellAllocation, ...]:
+    return tuple(
+        StoppingConflictCellAllocation(
+            stratum_id=stratum_id,
+            instance_index=cast(Any, instance_index),
+            mismatch_field=cast(Any, mismatch_field),
+            expected_resolution_tool=(
+                "query_structured_fact"
+                if mismatch_field == "period"
+                else "normalize_metric_unit_period"
+            ),
+        )
+        for (stratum_id, instance_index), mismatch_field in sorted(
+            CONFLICT_MISMATCH_BY_CELL.items()
+        )
+    )
 
 
 class StoppingShapePolicyDesign(FrozenModel):
@@ -185,8 +244,8 @@ class StoppingShapePolicyDesign(FrozenModel):
     decision_contract_kind: (
         Literal[
             "conditional_dependency_observation_required",
-            "matched_contextual_resolution_choice",
-            "single_conflict_evidence_grounded_choice_one_step",
+            "matched_contextual_evidence_state_choice_two_step",
+            "single_conflict_evidence_state_choice_one_step",
             "sealed_terminal_extra_call_cost",
         ]
         | None
@@ -214,7 +273,7 @@ class StoppingShapePolicyDesign(FrozenModel):
             "authority_coverage_gap": ("boundary_regression", None),
             "contextual_resolution_choice": (
                 "structural_redesign",
-                "matched_contextual_resolution_choice",
+                "matched_contextual_evidence_state_choice_two_step",
             ),
             "partial_required_evidence": (
                 "structural_redesign",
@@ -222,7 +281,7 @@ class StoppingShapePolicyDesign(FrozenModel):
             ),
             "single_dimension_conflict": (
                 "structural_redesign",
-                "single_conflict_evidence_grounded_choice_one_step",
+                "single_conflict_evidence_state_choice_one_step",
             ),
             "verified_extra_call_cost": (
                 "instrument_regression",
@@ -238,8 +297,8 @@ class StoppingShapePolicyDesign(FrozenModel):
 class FinanceStoppingShapePolicyProtocol(FrozenModel):
     protocol_id: str = Field(min_length=1)
     run_id: str = Field(min_length=1)
-    experiment_label: Literal["finance_v25_39_stopping_shape_policy_development"] = (
-        "finance_v25_39_stopping_shape_policy_development"
+    experiment_label: Literal["finance_v25_40_stopping_shape_policy_development"] = (
+        "finance_v25_40_stopping_shape_policy_development"
     )
     source_v25_38_protocol: FrozenArtifactReference
     source_v25_38_population: FrozenArtifactReference
@@ -253,6 +312,17 @@ class FinanceStoppingShapePolicyProtocol(FrozenModel):
     )
     shape_designs: tuple[StoppingShapePolicyDesign, ...] = Field(
         min_length=SHAPE_COUNT, max_length=SHAPE_COUNT
+    )
+    conflict_cell_allocations: tuple[StoppingConflictCellAllocation, ...] = Field(
+        default_factory=_default_conflict_cell_allocations,
+        min_length=8,
+        max_length=8,
+    )
+    conflict_allocation_basis: Literal[
+        "exact_one_difference_capacity_preflight_on_frozen_snapshot"
+    ] = "exact_one_difference_capacity_preflight_on_frozen_snapshot"
+    unsupported_conflict_dimensions: tuple[Literal["payload_context"], ...] = (
+        "payload_context",
     )
     structural_strata: tuple[tuple[str, str, DifficultyTier], ...] = STRUCTURAL_STRATA
     thresholds: StoppingShapePolicyThresholds = Field(default_factory=StoppingShapePolicyThresholds)
@@ -287,6 +357,19 @@ class FinanceStoppingShapePolicyProtocol(FrozenModel):
             raise ValueError("Stopping Shape policy coverage is incomplete")
         if len({item.intervention_kind for item in self.shape_designs}) != SHAPE_COUNT:
             raise ValueError("Stopping Shape policy Runtime kinds are duplicated")
+        if self.conflict_cell_allocations != _default_conflict_cell_allocations():
+            raise ValueError("Stopping Shape policy conflict allocation changed")
+        expected_cells = {
+            (stratum_id, instance_index)
+            for stratum_id, _, _ in STRUCTURAL_STRATA
+            for instance_index in range(TASKS_PER_STRATUM)
+        }
+        observed_cells = {
+            (item.stratum_id, item.instance_index)
+            for item in self.conflict_cell_allocations
+        }
+        if observed_cells != expected_cells:
+            raise ValueError("Stopping Shape policy conflict Cell coverage is incomplete")
         if len({item.artifact_id for item in self.historical_population_references}) != len(
             self.historical_population_references
         ):
@@ -320,8 +403,13 @@ class StoppingShapePolicyStaticAudit(FrozenModel):
     answer_contract_rate: float = Field(ge=0, le=1)
     public_decision_contract_rate: float = Field(ge=0, le=1)
     conditional_dependency_contract_rate: float = Field(ge=0, le=1)
+    conditional_dependency_output_contract_rate: float = Field(ge=0, le=1)
     matched_contextual_contract_rate: float = Field(ge=0, le=1)
     grounded_conflict_contract_rate: float = Field(ge=0, le=1)
+    conflict_mismatch_dimension_counts: dict[str, int]
+    conflict_resolution_tool_counts: dict[str, int]
+    conflict_mismatch_balance_frozen: bool
+    conflict_resolution_tool_diversity_frozen: bool
     sealed_cost_contract_rate: float = Field(ge=0, le=1)
     dependency_decoy_one_dimensional_rate: float = Field(ge=0, le=1)
     contextual_conflict_decoy_one_dimensional_rate: float = Field(ge=0, le=1)
@@ -467,6 +555,7 @@ def prepare_stopping_shape_policy_protocol(
     run_id: str,
     source_finance_artifacts_path: Path | None = None,
     source_finance_artifacts_id: str | None = None,
+    additional_historical_population_paths: tuple[Path, ...] = (),
 ) -> FinanceStoppingShapePolicyProtocol:
     if output_path.exists():
         raise ValueError("Stopping Shape policy protocol is immutable")
@@ -482,20 +571,30 @@ def prepare_stopping_shape_policy_protocol(
     source_protocol = FinanceStoppingDualEstimandProtocol.model_validate_json(
         paths[0].read_text(encoding="utf-8")
     )
-    source_population = FinanceStoppingDualEstimandPopulation.model_validate_json(
-        paths[1].read_text(encoding="utf-8")
-    )
-    source_contract = FinanceStoppingDualEstimandContract.model_validate_json(
-        paths[2].read_text(encoding="utf-8")
-    )
+    source_population_payload = json.loads(paths[1].read_text(encoding="utf-8"))
+    source_contract_payload = json.loads(paths[2].read_text(encoding="utf-8"))
+    if not isinstance(source_population_payload, Mapping) or not isinstance(
+        source_contract_payload, Mapping
+    ):
+        raise ValueError("v25.38 frozen Population or Contract is not a JSON object")
+    source_population_id = str(source_population_payload.get("population_id", ""))
+    source_contract_id = str(source_contract_payload.get("contract_id", ""))
+    contract_protocol = source_contract_payload.get("source_protocol")
+    contract_population = source_contract_payload.get("source_population")
+    if not isinstance(contract_protocol, Mapping) or not isinstance(
+        contract_population, Mapping
+    ):
+        raise ValueError("v25.38 frozen Contract lacks typed lineage references")
     source_report = FinanceStoppingDualEstimandReport.model_validate_json(
         paths[3].read_text(encoding="utf-8")
     )
     if not (
-        source_population.protocol_id == source_protocol.protocol_id
-        and source_contract.source_protocol.artifact_id == source_protocol.protocol_id
-        and source_contract.source_population.artifact_id == source_population.population_id
-        and source_report.contract_id == source_contract.contract_id
+        str(source_population_payload.get("protocol_id", "")) == source_protocol.protocol_id
+        and str(contract_protocol.get("artifact_id", "")) == source_protocol.protocol_id
+        and str(contract_population.get("artifact_id", "")) == source_population_id
+        and source_report.contract_id == source_contract_id
+        and source_population_id
+        and source_contract_id
     ):
         raise ValueError("v25.38 Stopping Shape lineage is inconsistent")
     if not (
@@ -518,17 +617,25 @@ def prepare_stopping_shape_policy_protocol(
         _make_shape_policy_design(item, result_by_shape[item.shape_id].admitted)
         for item in source_protocol.shape_designs
     )
+    additional_historical = tuple(
+        _reference(
+            path.resolve(),
+            str(json.loads(path.resolve().read_text(encoding="utf-8"))["population_id"]),
+        )
+        for path in additional_historical_population_paths
+    )
     historical = tuple(
         sorted(
             (
                 *source_protocol.historical_population_references,
-                _reference(paths[1], source_population.population_id),
+                _reference(paths[1], source_population_id),
+                *additional_historical,
             ),
             key=lambda item: item.artifact_id,
         )
     )
     if len({item.artifact_id for item in historical}) != len(historical):
-        raise ValueError("v25.39 historical exclusion set contains a duplicate")
+        raise ValueError("v25.40 historical exclusion set contains a duplicate")
     if (source_finance_artifacts_path is None) != (source_finance_artifacts_id is None):
         raise ValueError(
             "Stopping Shape policy Finance artifact path and identity must be supplied together"
@@ -542,8 +649,8 @@ def prepare_stopping_shape_policy_protocol(
     values = {
         "run_id": run_id,
         "source_v25_38_protocol": _reference(paths[0], source_protocol.protocol_id),
-        "source_v25_38_population": _reference(paths[1], source_population.population_id),
-        "source_v25_38_contract": _reference(paths[2], source_contract.contract_id),
+        "source_v25_38_population": _reference(paths[1], source_population_id),
+        "source_v25_38_contract": _reference(paths[2], source_contract_id),
         "source_v25_38_report": _reference(paths[3], source_report.report_id),
         "source_finance_artifacts": source_finance_reference,
         "source_calibration_contract": source_protocol.source_calibration_contract,
@@ -578,10 +685,19 @@ def build_stopping_shape_policy_population(
     _verify_protocol_inputs(protocol)
     excluded = _collect_excluded_identities(protocol.historical_population_references)
     pool = _load_evidence_pool(Path(protocol.source_finance_artifacts.path))
+    evidence_pool = tuple(pool.public.values())
+    one_difference_index = _build_one_difference_index(
+        evidence_pool,
+        fields=("subject", "period", "definition", "payload_context"),
+    )
     builder = _CapabilityTaskBuilder(pool, sampling_salt=f"{run_id}:stopping-shape-policy")
     candidate_cache = {
         (family, tier): tuple(_candidate_iterator(builder, family, tier))
         for _, family, tier in protocol.structural_strata
+    }
+    conflict_mismatch_by_cell = {
+        (item.stratum_id, item.instance_index): item.mismatch_field
+        for item in protocol.conflict_cell_allocations
     }
     used_ids = set(excluded["evidence_id"])
     used_versions = set(excluded["evidence_version_id"])
@@ -590,11 +706,13 @@ def build_stopping_shape_policy_population(
     statuses: dict[
         str, Literal["boundary_regression", "instrument_regression", "structural_redesign"]
     ] = {}
+    # Allocate the low-capacity exact-definition conflict pairs before shapes that can
+    # use arbitrary remaining evidence. Global identity reservation still applies.
     design_order = {
-        "authority_coverage_gap": 0,
-        "verified_extra_call_error_risk": 1,
-        "verified_extra_call_cost": 2,
-        "single_dimension_conflict": 3,
+        "single_dimension_conflict": 0,
+        "authority_coverage_gap": 1,
+        "verified_extra_call_error_risk": 2,
+        "verified_extra_call_cost": 3,
         "contextual_resolution_choice": 4,
         "partial_required_evidence": 5,
     }
@@ -609,7 +727,13 @@ def build_stopping_shape_policy_population(
                     family=family,
                     tier=tier,
                     instance_index=instance_index,
-                    evidence_pool=tuple(pool.public.values()),
+                    evidence_pool=evidence_pool,
+                    one_difference_index=one_difference_index,
+                    conflict_mismatch_field=(
+                        conflict_mismatch_by_cell[(stratum_id, instance_index)]
+                        if design.shape_id == "single_dimension_conflict"
+                        else None
+                    ),
                     used_ids=used_ids,
                     used_versions=used_versions,
                     sampling_salt=(f"{run_id}:{design.shape_id}:{stratum_id}:{instance_index}"),
@@ -710,7 +834,26 @@ def make_stopping_shape_policy_static_audit(
     dependency_checks = tuple(
         _conditional_dependency_contract_ready(item) for item in partial_tasks
     )
+    dependency_output_checks = tuple(
+        _dependency_branch_output_contract_ready(item) for item in partial_tasks
+    )
     grounded_checks = tuple(_grounded_conflict_contract_ready(item) for item in conflict_tasks)
+    conflict_mismatch_counts = Counter(
+        mismatch
+        for item in conflict_tasks
+        if (mismatch := _single_public_distractor_mismatch(item)) is not None
+    )
+    conflict_resolution_tool_counts = Counter(
+        tool
+        for item in conflict_tasks
+        if (tool := _expected_state_resolution_tool(item)) is not None
+    )
+    expected_conflict_mismatches = Counter(
+        item.mismatch_field for item in protocol.conflict_cell_allocations
+    )
+    expected_conflict_tools = Counter(
+        item.expected_resolution_tool for item in protocol.conflict_cell_allocations
+    )
     cost_checks = tuple(_sealed_cost_contract_ready(item) for item in cost_tasks)
     near_decoy_checks = tuple(_dependency_decoy_is_one_dimensional(item) for item in partial_tasks)
     contextual_conflict_decoy_checks = tuple(
@@ -763,8 +906,24 @@ def make_stopping_shape_policy_static_audit(
         and all(contextual_checks),
         "conditional_dependency_contract": len(dependency_checks) == TASKS_PER_SHAPE
         and all(dependency_checks),
+        "conditional_dependency_output_contract": (
+            len(dependency_output_checks) == TASKS_PER_SHAPE
+            and all(dependency_output_checks)
+        ),
         "grounded_conflict_contract": len(grounded_checks) == TASKS_PER_SHAPE
         and all(grounded_checks),
+        "conflict_mismatch_balance": conflict_mismatch_counts
+        == expected_conflict_mismatches,
+        "conflict_resolution_tool_balance": conflict_resolution_tool_counts
+        == expected_conflict_tools,
+        "conflict_resolution_tool_diversity": (
+            len(conflict_resolution_tool_counts) == 2
+            and min(conflict_resolution_tool_counts.values(), default=0)
+            >= protocol.thresholds.minimum_conflict_tasks_per_resolution_tool
+            and max(conflict_resolution_tool_counts.values(), default=0)
+            / max(sum(conflict_resolution_tool_counts.values()), 1)
+            <= protocol.thresholds.maximum_conflict_resolution_tool_share
+        ),
         "sealed_cost_contract": len(cost_checks) == TASKS_PER_SHAPE and all(cost_checks),
         "dependency_decoy_one_dimensional": len(near_decoy_checks) == TASKS_PER_SHAPE
         and all(near_decoy_checks),
@@ -837,8 +996,18 @@ def make_stopping_shape_policy_static_audit(
         "answer_contract_rate": _rate(_answer_contract_ready(item.artifact) for item in tasks),
         "public_decision_contract_rate": _rate(public_contract.values()),
         "conditional_dependency_contract_rate": _rate(dependency_checks),
+        "conditional_dependency_output_contract_rate": _rate(dependency_output_checks),
         "matched_contextual_contract_rate": _rate(contextual_checks),
         "grounded_conflict_contract_rate": _rate(grounded_checks),
+        "conflict_mismatch_dimension_counts": dict(sorted(conflict_mismatch_counts.items())),
+        "conflict_resolution_tool_counts": dict(
+            sorted(conflict_resolution_tool_counts.items())
+        ),
+        "conflict_mismatch_balance_frozen": checks["conflict_mismatch_balance"]
+        and checks["conflict_resolution_tool_balance"],
+        "conflict_resolution_tool_diversity_frozen": checks[
+            "conflict_resolution_tool_diversity"
+        ],
         "sealed_cost_contract_rate": _rate(cost_checks),
         "dependency_decoy_one_dimensional_rate": _rate(near_decoy_checks),
         "contextual_conflict_decoy_one_dimensional_rate": _rate(contextual_conflict_decoy_checks),
@@ -919,9 +1088,11 @@ def _make_shape_policy_design(
         source.spec.diagnostic_outcomes,
     )
     decision_kind = {
-        "contextual_resolution_choice": "matched_contextual_resolution_choice",
+        "contextual_resolution_choice": (
+            "matched_contextual_evidence_state_choice_two_step"
+        ),
         "partial_required_evidence": "conditional_dependency_observation_required",
-        "single_dimension_conflict": ("single_conflict_evidence_grounded_choice_one_step"),
+        "single_dimension_conflict": "single_conflict_evidence_state_choice_one_step",
         "verified_extra_call_cost": "sealed_terminal_extra_call_cost",
     }.get(shape_id)
     status = {
@@ -946,9 +1117,71 @@ def _make_shape_policy_design(
     )
 
 
+def _observed_record(item: EvidenceItem) -> FinanceStoppingObservedRecord:
+    temporal = item.temporal_context
+    return FinanceStoppingObservedRecord(
+        subject_alias=item.subject.subject_id,
+        metric_alias=item.predicate,
+        temporal_identity=FinanceStoppingTemporalIdentity(
+            label=str(temporal.label),
+            valid_from=temporal.valid_from.isoformat() if temporal.valid_from else None,
+            valid_to=temporal.valid_to.isoformat() if temporal.valid_to else None,
+            observed_at=temporal.observed_at.isoformat() if temporal.observed_at else None,
+        ),
+        source_id=item.source.source_id,
+        definition_id=item.definition.definition_id,
+        measurement_context=FinanceStoppingMeasurementContext(
+            unit=getattr(item.payload, "unit", None),
+            currency=getattr(item.payload, "currency", None),
+        ),
+    )
+
+
+def _observed_evidence_state(
+    *,
+    gold: tuple[EvidenceItem, ...],
+    distractor: EvidenceItem,
+    mismatch_field: str,
+) -> FinanceStoppingObservedEvidenceState:
+    matches = tuple(
+        item
+        for item in gold
+        if _minimum_mismatch_fields(distractor, (item,)) == (mismatch_field,)
+    )
+    if not matches:
+        raise ValueError("Stopping Shape lacks a one-dimensional public record pair")
+    required = min(matches, key=lambda item: item.evidence_version_id)
+    return FinanceStoppingObservedEvidenceState(
+        observed_record=_observed_record(distractor),
+        required_record=_observed_record(required),
+    )
+
+
+def _state_resolution_actions() -> tuple[FinanceStoppingResolutionAction, ...]:
+    return (
+        FinanceStoppingResolutionAction(
+            tool_id="normalize_metric_unit_period",
+            applicable_when=(
+                "establish a shared reporting or measurement basis before evaluation"
+            ),
+        ),
+        FinanceStoppingResolutionAction(
+            tool_id="open_document",
+            applicable_when="inspect document authority when provenance remains uncertain",
+        ),
+        FinanceStoppingResolutionAction(
+            tool_id="query_structured_fact",
+            applicable_when=(
+                "retrieve the requested observation when subject or period coverage is absent"
+            ),
+        ),
+    )
+
+
 def _task_decision_contract(
     *,
     shape_id: str,
+    gold: tuple[EvidenceItem, ...],
     distractor: EvidenceItem,
     mismatch_field: str,
     sampling_salt: str,
@@ -957,32 +1190,18 @@ def _task_decision_contract(
         return None
     if shape_id == "contextual_resolution_choice":
         return FinanceStoppingShapeDecisionContract(
-            contract_kind="matched_contextual_resolution_choice",
+            contract_kind="matched_contextual_evidence_state_choice_two_step",
             observed_conflict_signal=(
-                "The requested relation is not warranted by the current evidence state."
+                "Two public records are shown below. Exactly one registered identity "
+                "component differs."
+            ),
+            observed_evidence_state=_observed_evidence_state(
+                gold=gold,
+                distractor=distractor,
+                mismatch_field=mismatch_field,
             ),
             oracle_conflict_dimension={"subject": "entity_scope_alignment"}[mismatch_field],
-            available_resolution_actions=(
-                FinanceStoppingResolutionAction(
-                    tool_id="normalize_metric_unit_period",
-                    applicable_when=(
-                        "establish one comparison basis before evaluating the selected measurements"
-                    ),
-                ),
-                FinanceStoppingResolutionAction(
-                    tool_id="open_document",
-                    applicable_when=(
-                        "inspect disclosure context before deciding whether the records are usable"
-                    ),
-                ),
-                FinanceStoppingResolutionAction(
-                    tool_id="query_structured_fact",
-                    applicable_when=(
-                        "retrieve another observation when the available window lacks necessary "
-                        "coverage"
-                    ),
-                ),
-            ),
+            available_resolution_actions=_state_resolution_actions(),
             resolution_step_count=2,
         )
     if shape_id == "partial_required_evidence":
@@ -1010,36 +1229,22 @@ def _task_decision_contract(
         )
     if shape_id == "single_dimension_conflict":
         return FinanceStoppingShapeDecisionContract(
-            contract_kind="single_conflict_evidence_grounded_choice_one_step",
+            contract_kind="single_conflict_evidence_state_choice_one_step",
             observed_conflict_signal=(
-                "Source lineage and coverage are complete, yet the selected values cannot be "
-                "combined directly without altering their interpretation."
+                "Two public records are shown below. Exactly one registered identity "
+                "component differs."
+            ),
+            observed_evidence_state=_observed_evidence_state(
+                gold=gold,
+                distractor=distractor,
+                mismatch_field=mismatch_field,
             ),
             oracle_conflict_dimension={
                 "definition": "source_definition_compatibility",
                 "period": "temporal_alignment",
                 "payload_context": "measurement_context_alignment",
             }[mismatch_field],
-            available_resolution_actions=(
-                FinanceStoppingResolutionAction(
-                    tool_id="normalize_metric_unit_period",
-                    applicable_when=(
-                        "establish one shared reporting basis before evaluating the pair"
-                    ),
-                ),
-                FinanceStoppingResolutionAction(
-                    tool_id="open_document",
-                    applicable_when=(
-                        "inspect document authority when provenance remains uncertain"
-                    ),
-                ),
-                FinanceStoppingResolutionAction(
-                    tool_id="query_structured_fact",
-                    applicable_when=(
-                        "obtain another observation when the requested period is absent"
-                    ),
-                ),
-            ),
+            available_resolution_actions=_state_resolution_actions(),
             resolution_step_count=1,
         )
     if shape_id == "verified_extra_call_cost":
@@ -1052,7 +1257,7 @@ def _task_decision_contract(
             realized_token_budget_debit_fraction=0.20,
             additional_action_rejected=True,
         )
-    raise ValueError(f"Stopping Shape has no v25.39 decision contract: {shape_id}")
+    raise ValueError(f"Stopping Shape has no v25.40 decision contract: {shape_id}")
 
 
 def _evidence_query_identity(item: EvidenceItem) -> tuple[str, str, str]:
@@ -1128,16 +1333,93 @@ def _select_distinct_query_distractor(
     return None
 
 
+OneDifferenceKey = tuple[tuple[str, Any], ...]
+OneDifferenceIndex = dict[str, dict[OneDifferenceKey, tuple[EvidenceItem, ...]]]
+
+
+def _semantic_components(item: EvidenceItem) -> tuple[tuple[str, Any], ...]:
+    temporal = item.temporal_context
+    return (
+        ("subject", item.subject.subject_id),
+        ("predicate", item.predicate),
+        (
+            "period",
+            (
+                temporal.label,
+                temporal.valid_from.isoformat() if temporal.valid_from else None,
+                temporal.valid_to.isoformat() if temporal.valid_to else None,
+                temporal.observed_at.isoformat() if temporal.observed_at else None,
+            ),
+        ),
+        ("source", item.source.source_id),
+        ("definition", item.definition.definition_id),
+        (
+            "payload_context",
+            (getattr(item.payload, "unit", None), getattr(item.payload, "currency", None)),
+        ),
+    )
+
+
+def _one_difference_key(item: EvidenceItem, omitted_field: str) -> OneDifferenceKey:
+    return tuple(
+        (field, value)
+        for field, value in _semantic_components(item)
+        if field != omitted_field
+    )
+
+
+def _build_one_difference_index(
+    evidence_pool: tuple[EvidenceItem, ...],
+    *,
+    fields: tuple[str, ...],
+) -> OneDifferenceIndex:
+    mutable: dict[str, dict[OneDifferenceKey, list[EvidenceItem]]] = {
+        field: {} for field in fields
+    }
+    for item in evidence_pool:
+        for field in fields:
+            key = _one_difference_key(item, field)
+            mutable[field].setdefault(key, []).append(item)
+    return {
+        field: {
+            key: tuple(sorted(items, key=lambda item: item.evidence_version_id))
+            for key, items in buckets.items()
+        }
+        for field, buckets in mutable.items()
+    }
+
+
+def _indexed_one_difference_candidates(
+    *,
+    one_difference_index: OneDifferenceIndex,
+    gold: tuple[EvidenceItem, ...],
+    mismatch_field: str,
+) -> tuple[EvidenceItem, ...]:
+    field_index = one_difference_index.get(mismatch_field)
+    if field_index is None:
+        raise ValueError(f"unindexed Stopping Shape mismatch field: {mismatch_field}")
+    candidates = {
+        item.evidence_version_id: item
+        for target in gold
+        for item in field_index.get(_one_difference_key(target, mismatch_field), ())
+    }
+    return tuple(candidates[key] for key in sorted(candidates))
+
+
 def _select_contextual_distractor(
     *,
     gold: tuple[EvidenceItem, ...],
-    evidence_pool: tuple[EvidenceItem, ...],
+    one_difference_index: OneDifferenceIndex,
     used_ids: set[str],
     used_versions: set[str],
     sampling_salt: str,
 ) -> EvidenceItem | None:
     candidates: list[tuple[str, EvidenceItem]] = []
-    for item in evidence_pool:
+    for item in _indexed_one_difference_candidates(
+        one_difference_index=one_difference_index,
+        gold=gold,
+        mismatch_field="subject",
+    ):
         if item.evidence_id in used_ids or item.evidence_version_id in used_versions:
             continue
         if _minimum_mismatch_fields(item, gold) != ("subject",):
@@ -1156,29 +1438,33 @@ def _select_contextual_distractor(
 def _select_normalization_distractor(
     *,
     gold: tuple[EvidenceItem, ...],
-    evidence_pool: tuple[EvidenceItem, ...],
+    one_difference_index: OneDifferenceIndex,
     used_ids: set[str],
     used_versions: set[str],
     sampling_salt: str,
+    required_mismatch_field: str,
 ) -> EvidenceItem | None:
-    field_order = {"period": 0, "payload_context": 1, "definition": 2}
-    candidates: list[tuple[int, str, EvidenceItem]] = []
-    for item in evidence_pool:
+    candidates: list[tuple[str, EvidenceItem]] = []
+    for item in _indexed_one_difference_candidates(
+        one_difference_index=one_difference_index,
+        gold=gold,
+        mismatch_field=required_mismatch_field,
+    ):
         if item.evidence_id in used_ids or item.evidence_version_id in used_versions:
             continue
         mismatches = _minimum_mismatch_fields(item, gold)
-        if len(mismatches) != 1 or mismatches[0] not in field_order:
+        if mismatches != (required_mismatch_field,):
             continue
         rank = canonical_hash(
             {
                 "sampling_salt": sampling_salt,
                 "evidence_version_id": item.evidence_version_id,
-                "mismatch_field": mismatches[0],
+                "mismatch_field": required_mismatch_field,
             },
             prefix="finance_stopping_normalization_distractor_order:",
         )
-        candidates.append((field_order[mismatches[0]], rank, item))
-    return min(candidates, key=lambda row: (row[0], row[1]))[2] if candidates else None
+        candidates.append((rank, item))
+    return min(candidates, key=lambda row: row[0])[1] if candidates else None
 
 
 def _select_near_query_distractor(
@@ -1227,6 +1513,8 @@ def _materialize_shape_policy_task(
     tier: DifficultyTier,
     instance_index: int,
     evidence_pool: tuple[EvidenceItem, ...],
+    one_difference_index: OneDifferenceIndex,
+    conflict_mismatch_field: str | None,
     used_ids: set[str],
     used_versions: set[str],
     sampling_salt: str,
@@ -1263,18 +1551,21 @@ def _materialize_shape_policy_task(
         elif design.shape_id == "contextual_resolution_choice":
             distractor = _select_contextual_distractor(
                 gold=gold,
-                evidence_pool=evidence_pool,
+                one_difference_index=one_difference_index,
                 used_ids=used_ids | gold_ids,
                 used_versions=used_versions | gold_versions,
                 sampling_salt=sampling_salt,
             )
         elif design.shape_id == "single_dimension_conflict":
+            if conflict_mismatch_field is None:
+                raise ValueError("Stopping conflict task lacks a frozen mismatch allocation")
             distractor = _select_normalization_distractor(
                 gold=gold,
-                evidence_pool=evidence_pool,
+                one_difference_index=one_difference_index,
                 used_ids=used_ids | gold_ids,
                 used_versions=used_versions | gold_versions,
                 sampling_salt=sampling_salt,
+                required_mismatch_field=conflict_mismatch_field,
             )
         else:
             distractor = _select_distinct_query_distractor(
@@ -1320,6 +1611,7 @@ def _materialize_shape_policy_task(
         )
         decision = _task_decision_contract(
             shape_id=design.shape_id,
+            gold=gold,
             distractor=distractor,
             mismatch_field=_minimum_mismatch_fields(distractor, gold)[0],
             sampling_salt=sampling_salt,
@@ -1471,6 +1763,19 @@ def _conditional_dependency_contract_ready(task: StoppingShapeTask) -> bool:
     )
 
 
+def _dependency_branch_output_contract_ready(task: StoppingShapeTask) -> bool:
+    manifest = make_submechanism_manifest(
+        corpus=task.artifact.public_corpus,
+        scenario=task.scenario,
+        environment_id=f"finance_v25_40:manifest-audit:{task.artifact.artifact_id}",
+        maximum_tool_calls=MAXIMUM_TOOL_CALLS,
+        maximum_failed_tool_calls=MAXIMUM_FAILED_TOOL_CALLS,
+        maximum_total_observation_bytes=MAXIMUM_OBSERVATION_BYTES,
+    )
+    search = next(item for item in manifest.tools if item.tool_id == "search_archive")
+    return "dependency_branch_observation" in search.output_contract
+
+
 def _dependency_decoy_is_one_dimensional(task: StoppingShapeTask) -> bool:
     decision = task.scenario.stopping_shape_decision_contract
     if (
@@ -1526,12 +1831,39 @@ def _contextual_conflict_decoy_is_one_dimensional(
     return False
 
 
+def _observed_state_difference(
+    state: FinanceStoppingObservedEvidenceState | None,
+) -> str | None:
+    if state is None:
+        return None
+    observed = state.observed_record
+    required = state.required_record
+    differences = tuple(
+        field
+        for field, differs in (
+            ("subject", observed.subject_alias != required.subject_alias),
+            ("predicate", observed.metric_alias != required.metric_alias),
+            ("period", observed.temporal_identity != required.temporal_identity),
+            ("source", observed.source_id != required.source_id),
+            ("definition", observed.definition_id != required.definition_id),
+            (
+                "payload_context",
+                observed.measurement_context != required.measurement_context,
+            ),
+        )
+        if differs
+    )
+    return differences[0] if len(differences) == 1 else None
+
+
 def _matched_contextual_contract_ready(task: StoppingShapeTask) -> bool:
     decision = task.scenario.stopping_shape_decision_contract
     return bool(
         decision is not None
-        and decision.contract_kind == "matched_contextual_resolution_choice"
+        and decision.contract_kind
+        == "matched_contextual_evidence_state_choice_two_step"
         and decision.oracle_conflict_dimension == "entity_scope_alignment"
+        and _observed_state_difference(decision.observed_evidence_state) == "subject"
         and decision.observed_conflict_signal
         and tuple(item.tool_id for item in decision.available_resolution_actions)
         == ("normalize_metric_unit_period", "open_document", "query_structured_fact")
@@ -1555,9 +1887,10 @@ def _grounded_conflict_contract_ready(task: StoppingShapeTask) -> bool:
     )
     return bool(
         decision is not None
-        and decision.contract_kind == "single_conflict_evidence_grounded_choice_one_step"
+        and decision.contract_kind == "single_conflict_evidence_state_choice_one_step"
         and expected_dimension is not None
         and decision.oracle_conflict_dimension == expected_dimension
+        and _observed_state_difference(decision.observed_evidence_state) == mismatch
         and decision.observed_conflict_signal
         and tuple(item.tool_id for item in decision.available_resolution_actions)
         == ("normalize_metric_unit_period", "open_document", "query_structured_fact")
@@ -1565,6 +1898,23 @@ def _grounded_conflict_contract_ready(task: StoppingShapeTask) -> bool:
         and _conflict_public_text_isolated(task)
         and _public_decision_contract_matches(task)
     )
+
+
+def _expected_state_resolution_tool(task: StoppingShapeTask) -> str | None:
+    decision = task.scenario.stopping_shape_decision_contract
+    if (
+        decision is None
+        or decision.contract_kind != "single_conflict_evidence_state_choice_one_step"
+    ):
+        return None
+    if decision.oracle_conflict_dimension == "temporal_alignment":
+        return "query_structured_fact"
+    if decision.oracle_conflict_dimension in {
+        "source_definition_compatibility",
+        "measurement_context_alignment",
+    }:
+        return "normalize_metric_unit_period"
+    return None
 
 
 def _contextual_construction_signature(task: StoppingShapeTask) -> str:
@@ -1690,7 +2040,7 @@ def _render_population_report(
     population: FinanceStoppingShapePolicyPopulation,
 ) -> str:
     lines = [
-        "# Finance v25.39 Stopping Shape Policy Population",
+        "# Finance v25.40 Stopping Shape Policy Population",
         "",
         f"- Population: {population.population_id}",
         f"- Tasks: {len(population.tasks)}",
@@ -1729,7 +2079,7 @@ def _write_json(path: Path, value: Any) -> None:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Prepare or build v25.39 Stopping Shape Policy")
+    parser = argparse.ArgumentParser(description="Prepare or build v25.40 Stopping Shape Policy")
     subparsers = parser.add_subparsers(dest="command", required=True)
     prepare = subparsers.add_parser("prepare")
     prepare.add_argument("--source-protocol", required=True, type=Path)
@@ -1740,6 +2090,12 @@ def _parser() -> argparse.ArgumentParser:
     prepare.add_argument("--run-id", required=True)
     prepare.add_argument("--source-finance-artifacts", type=Path)
     prepare.add_argument("--source-finance-artifacts-id")
+    prepare.add_argument(
+        "--additional-historical-population",
+        action="append",
+        default=[],
+        type=Path,
+    )
     build = subparsers.add_parser("build")
     build.add_argument("--protocol", required=True, type=Path)
     build.add_argument("--output-dir", required=True, type=Path)
@@ -1759,6 +2115,9 @@ def main() -> None:
             run_id=args.run_id,
             source_finance_artifacts_path=args.source_finance_artifacts,
             source_finance_artifacts_id=args.source_finance_artifacts_id,
+            additional_historical_population_paths=tuple(
+                args.additional_historical_population
+            ),
         )
         print(protocol.model_dump_json(indent=2))
     else:

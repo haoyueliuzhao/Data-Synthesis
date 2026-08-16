@@ -11,8 +11,13 @@ from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.domains.finance.capability_submechanism_runtime import (
     FINANCE_SUBMECHANISM_ORACLE_KEY,
     FinanceCapabilitySubmechanismRuntime,
+    FinanceStoppingDependencyOption,
+    FinanceStoppingMeasurementContext,
+    FinanceStoppingObservedEvidenceState,
+    FinanceStoppingObservedRecord,
     FinanceStoppingResolutionAction,
     FinanceStoppingShapeDecisionContract,
+    FinanceStoppingTemporalIdentity,
     evidence_roles_from_items,
     make_finance_submechanism_scenario,
     make_submechanism_manifest,
@@ -561,6 +566,243 @@ def test_contextual_entity_scope_requires_matching_query_then_cross_check() -> N
     _, verified = _verify(runtime, index + 2, operation_ref)
     assert verified.status == "succeeded"
     assert verified.result["verified"] is True
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def _observed_record_from_role(
+    context: Any,
+    role: Any,
+    *,
+    subject_alias: str | None = None,
+    period_label: str | None = None,
+) -> FinanceStoppingObservedRecord:
+    item = next(
+        value
+        for value in context.public_corpus.evidence
+        if value.evidence_id == role.evidence_id
+    )
+    temporal = item.temporal_context
+    return FinanceStoppingObservedRecord(
+        subject_alias=subject_alias or role.subject_alias,
+        metric_alias=role.metric_alias,
+        temporal_identity=FinanceStoppingTemporalIdentity(
+            label=period_label or role.period_label,
+            valid_from=temporal.valid_from.isoformat() if temporal.valid_from else None,
+            valid_to=temporal.valid_to.isoformat() if temporal.valid_to else None,
+            observed_at=temporal.observed_at.isoformat() if temporal.observed_at else None,
+        ),
+        source_id=item.source.source_id,
+        definition_id=item.definition.definition_id,
+        measurement_context=FinanceStoppingMeasurementContext(
+            unit=getattr(item.payload, "unit", None),
+            currency=getattr(item.payload, "currency", None),
+        ),
+    )
+
+
+def _state_actions() -> tuple[FinanceStoppingResolutionAction, ...]:
+    return (
+        FinanceStoppingResolutionAction(
+            tool_id="normalize_metric_unit_period",
+            applicable_when="establish a shared reporting or measurement basis",
+        ),
+        FinanceStoppingResolutionAction(
+            tool_id="open_document",
+            applicable_when="inspect document authority when provenance is uncertain",
+        ),
+        FinanceStoppingResolutionAction(
+            tool_id="query_structured_fact",
+            applicable_when="retrieve a requested subject or period observation",
+        ),
+    )
+
+
+def test_conditional_dependency_probe_output_passes_frozen_manifest_contract() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    assert len(roles) >= 2
+    unresolved = roles[1]
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="conditional_dependency_observation_required",
+        dependency_rule="Probe the Archive, then select the required public option.",
+        dependency_decoy_option=FinanceStoppingDependencyOption(
+            option_id="option:decoy",
+            subject_alias=unresolved.subject_alias,
+            metric_alias=unresolved.metric_alias,
+            period_label="not-the-required-period",
+        ),
+        resolution_step_count=2,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.partial.conditional",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="incomplete_continue",
+        expected_host_events=("observe:partial", "resolve:partial"),
+        evidence_roles=roles,
+        public_resolution_hint="Follow the public dependency observation.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+    first = roles[0]
+    selected = _call(
+        runtime,
+        1,
+        "query_structured_fact",
+        {
+            "subject_alias": first.subject_alias,
+            "metric_alias": first.metric_alias,
+            "period_label": first.period_label,
+            "public_filters": {},
+        },
+    )
+    probe = selected.result["completion_state"]["dependency_probe"]
+    observed = _call(runtime, 2, probe["tool_id"], probe["arguments"])
+
+    assert observed.status == "succeeded"
+    assert "dependency_branch_observation" in observed.result
+    runtime.manifest.tools_by_id["search_archive"].validate_output(observed.result)
+
+    index = 3
+    resolved = observed
+    for required in roles[1:]:
+        resolved = _call(
+            runtime,
+            index,
+            "query_structured_fact",
+            {
+                "subject_alias": required.subject_alias,
+                "metric_alias": required.metric_alias,
+                "period_label": required.period_label,
+                "public_filters": {},
+            },
+        )
+        assert resolved.status == "succeeded"
+        index += 1
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_v25_40_contextual_state_requires_the_public_required_record() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    state = FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(update={"subject_alias": "entity:neighbor"}),
+        required_record=required,
+    )
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="matched_contextual_evidence_state_choice_two_step",
+        observed_conflict_signal="Two public records differ in one identity component.",
+        observed_evidence_state=state,
+        oracle_conflict_dimension="entity_scope_alignment",
+        available_resolution_actions=_state_actions(),
+        resolution_step_count=2,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.contextual.state",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="unresolved_conflict_cannot_stop",
+        expected_host_events=("observe:context", "resolve:context"),
+        evidence_roles=roles,
+        public_resolution_hint="Choose from the public Evidence state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+    index, conflict = _verify(runtime, index, operation_ref)
+
+    assert conflict.result["retry_contract"]["observed_evidence_state"] == state.model_dump(
+        mode="json"
+    )
+    wrong_role = roles[-1]
+    wrong = _call(
+        runtime,
+        index + 1,
+        "query_structured_fact",
+        {
+            "subject_alias": "entity:definitely-wrong",
+            "metric_alias": wrong_role.metric_alias,
+            "period_label": wrong_role.period_label,
+            "public_filters": {},
+        },
+    )
+    assert wrong.status == "failed"
+    assert wrong.error_code == "contextual_resolution_query_mismatch"
+
+    resolved = _call(
+        runtime,
+        index + 2,
+        "query_structured_fact",
+        {
+            "subject_alias": required.subject_alias,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        },
+    )
+    assert resolved.status == "succeeded"
+    _, verified = _verify(runtime, index + 2, operation_ref)
+    assert verified.status == "succeeded"
+    assert runtime.event_log == scenario.expected_host_events
+
+
+def test_v25_40_temporal_conflict_requires_query_instead_of_constant_normalization() -> None:
+    context = _omega()
+    roles = evidence_roles_from_items(tuple(context.public_corpus.evidence))
+    required = _observed_record_from_role(context, roles[0])
+    observed_temporal = required.temporal_identity.model_copy(
+        update={"label": f"{required.period_label} alternate"}
+    )
+    state = FinanceStoppingObservedEvidenceState(
+        observed_record=required.model_copy(update={"temporal_identity": observed_temporal}),
+        required_record=required,
+    )
+    decision = FinanceStoppingShapeDecisionContract(
+        contract_kind="single_conflict_evidence_state_choice_one_step",
+        observed_conflict_signal="Two public records differ in one identity component.",
+        observed_evidence_state=state,
+        oracle_conflict_dimension="temporal_alignment",
+        available_resolution_actions=_state_actions(),
+        resolution_step_count=1,
+    )
+    scenario = make_finance_submechanism_scenario(
+        submechanism_id="finance.test.conflict.temporal",
+        parent_mechanism_id="finance.test.parent",
+        intervention_kind="evidence_conflict",
+        expected_host_events=("observe:conflict", "resolve:conflict"),
+        evidence_roles=roles,
+        public_resolution_hint="Choose from the public Evidence state.",
+        stopping_shape_decision_contract=decision,
+    )
+    runtime = _runtime(context, scenario)
+    index = _select_all(runtime, scenario)
+    index, operation_ref = _calculate(runtime, index)
+    index, _ = _verify(runtime, index, operation_ref)
+
+    normalized = _call(
+        runtime,
+        index + 1,
+        "normalize_metric_unit_period",
+        {
+            "evidence_ids": list(runtime.selected_evidence_ids),
+            "target_definition": {},
+        },
+    )
+    assert normalized.status == "failed"
+    assert normalized.error_code == "submechanism_resolution_action_required"
+
+    resolved = _call(
+        runtime,
+        index + 2,
+        "query_structured_fact",
+        {
+            "subject_alias": required.subject_alias,
+            "metric_alias": required.metric_alias,
+            "period_label": required.period_label,
+            "public_filters": {},
+        },
+    )
+    assert resolved.status == "succeeded"
     assert runtime.event_log == scenario.expected_host_events
 
 
