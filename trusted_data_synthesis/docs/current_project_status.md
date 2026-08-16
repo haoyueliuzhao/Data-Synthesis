@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-15
+Audit date: 2026-08-16
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -15,23 +15,24 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The active result is Finance v25.34 paired Stopping-boundary calibration. v25.33 had passed its
-common Top-4 geometry but failed parent support because State-dependent Stopping supplied only
-3.16% of information and one nonzero task. v25.34 repaired two independently replayed measurement
-defects: an unreachable source-locator path and loss of typed prerequisite actions from the
-generic failed-action Prompt.
+The active result is Finance v25.45 Stopping Instrument Reset. A recursive audit found that all
+eight inspected v25.34-v25.44 Stopping artifacts exposed Host-only fields or markers beneath
+model-visible business payloads. Those immutable runs are now diagnostic only; none transfers
+Shape support or authorization.
 
-A fresh Population excluded all 29 prior submechanism Populations. Two paired 60-rollout Flash
-runs then isolated the Prompt repair. Runtime transport, bounded JSON, replay, and authority were
-100% in both, with zero Runtime pathology. The unresolved-conflict action changed from 0/12 to
-10/12 resolutions and from 0/12 to 9/12 complete capability contracts. Its response probability
-of 0.75 is non-degenerate. The source-coverage path remained reachable and had zero locator
-precondition failures.
+v25.45 created a fresh 48-task, 384-rollout Flash population over Snapshot v3. The pre-API static
+mutation audit passed, and the post-run raw audit accounted for all 384 records, 3,284 tool
+observations, and 3,822 actual API request prompts. Every public, Host-side-channel, internal,
+and Prompt hash matched; recursive Host-field, Host-marker, unknown-side-channel, contamination,
+unattested-task, and public-contract violation counts were all zero. Recursive Host-Agent
+Observation Noninterference is therefore empirically passed for this run.
 
-The v25.34-v2 result permits only construction of three fresh stable-support Development
-Populations. It does not reclassify v25.33 or authorize Confirmation, Pro, Beneficiary screening,
-Exact Target, GP-C, VTDO updates, Student training, or production Contribution. See
-`docs/finance_v25_34_stopping_boundary_calibration_report.md`.
+Shape analysis was authorized only after that audit. Three of four boundary candidates and both
+runtime controls passed. `contextual_resolution_choice` failed its preregistered
+`between_task_heterogeneity` gate, so all-Shape support remains false. The only permitted next
+stage is `stopping_shape_redesign_only`; Pro, Beneficiary screening, Exact Target, GP-C, VTDO
+updates, Student training, and production Contribution remain blocked. See
+`docs/finance_v25_45_stopping_instrument_reset_report.md`.
 
 ## Runtime And Data
 

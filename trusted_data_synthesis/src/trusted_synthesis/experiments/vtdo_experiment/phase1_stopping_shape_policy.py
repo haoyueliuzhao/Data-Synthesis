@@ -59,9 +59,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_policy_
     STRUCTURAL_STRATA,
     TASKS_PER_SHAPE,
     FinanceStoppingShapePolicyPopulation,
-    FinanceStoppingShapePolicyProtocol,
+    StoppingShapeGrammarProtocol,
     StoppingShapePolicyDefinition,
     StoppingShapePolicyThresholds,
+    load_stopping_shape_grammar_protocol,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_shape_stability_protocol import (  # noqa: E501
     FrozenArtifactReference,
@@ -620,9 +621,7 @@ def prepare_stopping_shape_policy_contract(
         raise ValueError("Stopping Shape policy contract is immutable")
     protocol_path = protocol_path.resolve()
     population_path = population_path.resolve()
-    protocol = FinanceStoppingShapePolicyProtocol.model_validate_json(
-        protocol_path.read_text(encoding="utf-8")
-    )
+    protocol = load_stopping_shape_grammar_protocol(protocol_path)
     population = FinanceStoppingShapePolicyPopulation.model_validate_json(
         population_path.read_text(encoding="utf-8")
     )
@@ -1176,7 +1175,7 @@ def _make_shape_policy(
 
 
 def _verify_population(
-    protocol: FinanceStoppingShapePolicyProtocol,
+    protocol: StoppingShapeGrammarProtocol,
     population: FinanceStoppingShapePolicyPopulation,
     population_path: Path,
 ) -> None:
@@ -1224,6 +1223,12 @@ def _implementation_manifest() -> dict[str, str]:
     root = Path(__file__).resolve().parents[4]
     paths = (
         "src/trusted_synthesis/runtime/tools.py",
+        "src/trusted_synthesis/runtime/agent/client.py",
+        "src/trusted_synthesis/runtime/agent/iterative.py",
+        "src/trusted_synthesis/domains/finance/agent_tools.py",
+        "src/trusted_synthesis/domains/finance/interactive_agent_runtime.py",
+        "src/trusted_synthesis/domains/finance/iterative_agent_verifier.py",
+        "src/trusted_synthesis/domains/finance/public_tool_results.py",
         "src/trusted_synthesis/domains/finance/capability_submechanism_runtime.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_population.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_flash_development.py",

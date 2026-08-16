@@ -43,11 +43,13 @@ class LLMClientError(RuntimeError):
         *,
         failure_artifact: Any | None = None,
         interaction_progress: HostInteractionProgress | None = None,
+        request_prompts: tuple[str, ...] = (),
     ) -> None:
         super().__init__(message)
         self.telemetry = telemetry
         self.failure_artifact = failure_artifact
         self.interaction_progress = interaction_progress
+        self.request_prompts = request_prompts
 
 
 class OpenAICompatibleJsonClient:

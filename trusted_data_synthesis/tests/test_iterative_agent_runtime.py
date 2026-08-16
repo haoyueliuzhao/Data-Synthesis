@@ -12,6 +12,7 @@ from trusted_synthesis.core.trajectory.schema import ActionType, StepStatus
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_cases,
 )
+from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent import (
     IterativeAgentProtocolProfile,
     IterativeAgentSolver,
@@ -19,6 +20,7 @@ from trusted_synthesis.runtime.agent import (
 from trusted_synthesis.runtime.agent.client import LLMClientError
 from trusted_synthesis.runtime.agent.iterative import (
     TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS,
+    _assert_no_model_forbidden_prompt,
     _bounded_observation_summary,
     _compact_public_value,
     _failed_action_repair_context,
@@ -378,6 +380,15 @@ def test_nested_host_metadata_is_rejected_from_business_results() -> None:
         spec.validate_output(contaminated)
     with pytest.raises(ValueError, match="reserved Host metadata"):
         AgentToolResult(status="succeeded", result=contaminated)
+
+    marker_contaminated = {
+        "value": 7,
+        "completion_state": {"status": "observe:typed_host_state"},
+    }
+    with pytest.raises(ValueError, match="reserved Host metadata"):
+        spec.validate_output(marker_contaminated)
+    with pytest.raises(ValueError, match="reserved Host metadata"):
+        AgentToolResult(status="succeeded", result=marker_contaminated)
 
 
 def test_tool_observation_rejects_unknown_schema_version() -> None:
@@ -770,6 +781,28 @@ def test_autonomous_agent_loop_preserves_host_owned_observations() -> None:
     assert result.audit.observation_ids == tuple(
         item.observation_id for item in result.observations
     )
+    assert result.audit.final_model_prompt_hash == result.audit.model_request_prompt_hashes[-1]
+    assert len(result.audit.decision_prompt_noninterference_attestation_hashes) == len(
+        result.audit.decision_prompt_hashes
+    )
+    assert result.audit.public_model_visible_result_hashes == tuple(
+        canonical_hash(item.result, prefix="agent_public_model_visible_result:")
+        for item in result.observations
+    )
+    assert result.audit.host_event_side_channel_hashes == tuple(
+        canonical_hash(item.host_events, prefix="agent_host_event_side_channel:")
+        for item in result.observations
+    )
+    assert result.audit.internal_tool_result_hashes == tuple(
+        item.content_hash for item in result.observations
+    )
+    assert result.audit.model_request_prompt_hashes == tuple(
+        hashlib.sha256(item.encode("utf-8")).hexdigest()
+        for item in result.audit.model_request_prompts
+    )
+    assert result.audit.model_request_prompt_hashes == tuple(
+        item.request_hash for item in result.audit.telemetry
+    )
     assert all(
         item.environment_manifest_id == runtime.manifest.manifest_id for item in result.observations
     )
@@ -993,7 +1026,7 @@ def test_transient_provider_retry_preserves_prompt_and_repair_budget(
     monkeypatch.setattr("trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append)
     client = _TransientThenValidClient(failure_count=2)
 
-    value, telemetry, repair_count = _request_contract(
+    value, telemetry, repair_count, prompts = _request_contract(
         client, "Return a scalar contract.", _ScalarContract
     )
 
@@ -1003,6 +1036,7 @@ def test_transient_provider_retry_preserves_prompt_and_repair_budget(
     assert [item.http_success for item in telemetry] == [False, False, True]
     assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[:2])
     assert len(set(client.prompts)) == 1
+    assert prompts == tuple(client.prompts)
 
 
 def test_transient_provider_retry_exhaustion_is_fail_closed(
@@ -1030,7 +1064,7 @@ def test_missing_usage_telemetry_retries_without_spending_contract_repair(
     monkeypatch.setattr("trusted_synthesis.runtime.agent.iterative.time.sleep", delays.append)
     client = _MissingUsageThenValidClient(failure_count=2)
 
-    value, telemetry, repair_count = _request_contract(
+    value, telemetry, repair_count, prompts = _request_contract(
         client, "Return a scalar contract.", _ScalarContract
     )
 
@@ -1045,6 +1079,17 @@ def test_missing_usage_telemetry_retries_without_spending_contract_repair(
     assert all(item.http_success for item in telemetry)
     assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[:2])
     assert len(set(client.prompts)) == 1
+    assert prompts == tuple(client.prompts)
+
+
+def test_serialized_model_prompt_rejects_recursive_host_metadata() -> None:
+    prompt = (
+        "Return JSON.\nPUBLIC_CONTEXT_JSON:\n"
+        '{"safe":{"completion_state":{"host_event":"observe:typed_host_state"}}}'
+    )
+
+    with pytest.raises(ValueError, match="forbidden Host marker|forbidden field"):
+        _assert_no_model_forbidden_prompt(prompt)
 
 
 def test_missing_usage_telemetry_exhaustion_is_fail_closed(
@@ -1060,6 +1105,7 @@ def test_missing_usage_telemetry_exhaustion_is_fail_closed(
         _request_contract(client, "Return a scalar contract.", _ScalarContract)
 
     assert len(captured.value.telemetry) == 4
+    assert len(captured.value.request_prompts) == 4
     assert all(item.error_type == "MissingTokenUsageTelemetry" for item in captured.value.telemetry)
     assert delays == list(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
     assert len(set(client.prompts)) == 1
@@ -1083,6 +1129,15 @@ def test_agent_cannot_stop_without_observed_evidence() -> None:
     assert artifact is not None
     assert len(artifact.stop_rejections) == 3
     assert {item.reason_code for item in artifact.stop_rejections} == {"missing_observed_evidence"}
+    assert artifact.model_request_prompts == captured.value.request_prompts
+    assert len(artifact.model_request_prompts) == len(artifact.telemetry)
+    assert artifact.model_request_prompt_hashes == tuple(
+        hashlib.sha256(item.encode("utf-8")).hexdigest()
+        for item in artifact.model_request_prompts
+    )
+    assert artifact.model_request_prompt_hashes == tuple(
+        item.request_hash for item in artifact.telemetry
+    )
 
 
 def test_agent_repairs_premature_stop_after_host_feedback() -> None:

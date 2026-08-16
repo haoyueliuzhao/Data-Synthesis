@@ -7,6 +7,7 @@ import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Literal, cast
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -44,6 +45,9 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_f
     _load_evidence_pool,
     _minimum_mismatch_fields,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_catalog import (  # noqa: E501
+    make_candidate_specs,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanism_direction_design import (  # noqa: E501
     CapabilitySubmechanismSpec,
     _graph,
@@ -75,6 +79,9 @@ from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import reserved_host_result_paths
 
 STOPPING_SHAPE_POLICY_PROTOCOL_VERSION = "finance_stopping_shape_policy_protocol.v8"
+STOPPING_INSTRUMENT_RESET_GRAMMAR_PROTOCOL_VERSION = (
+    "finance_stopping_instrument_reset_grammar_protocol.v9"
+)
 STOPPING_SHAPE_POLICY_POPULATION_VERSION = "finance_stopping_shape_policy_population.v8"
 STOPPING_SHAPE_POLICY_AUDIT_VERSION = "finance_stopping_shape_policy_static_audit.v8"
 STOPPING_SHAPE_POLICY_EXPERIMENT_LABEL = "finance_v25_44_stopping_shape_policy_development"
@@ -114,6 +121,45 @@ STRUCTURAL_REDESIGN_SHAPES = frozenset(
     }
 )
 ALL_SHAPES = BOUNDARY_CANDIDATE_SHAPES | RUNTIME_CONTROL_SHAPES
+
+SHAPE_SOURCE_SPEC_IDS: dict[str, str] = {
+    "partial_required_evidence": (
+        "finance.state_dependent_control_and_stopping.incomplete_continue"
+    ),
+    "authority_coverage_gap": (
+        "finance.state_dependent_control_and_stopping.uncertain_source_coverage"
+    ),
+    "single_dimension_conflict": "finance.cross_family_failure_recovery.evidence_conflict",
+    "contextual_resolution_choice": (
+        "finance.state_dependent_control_and_stopping.unresolved_conflict_cannot_stop"
+    ),
+    "verified_extra_call_error_risk": (
+        "finance.state_dependent_control_and_stopping.post_complete_error_risk"
+    ),
+    "verified_extra_call_cost": (
+        "finance.state_dependent_control_and_stopping.post_complete_cost"
+    ),
+}
+SHAPE_EARLY_STOP_CONSEQUENCES: dict[str, str] = {
+    "partial_required_evidence": (
+        "stopping before all required Evidence is retrieved invalidates the answer"
+    ),
+    "authority_coverage_gap": (
+        "stopping before provenance inspection leaves source authority unresolved"
+    ),
+    "single_dimension_conflict": (
+        "stopping before one definition conflict is normalized invalidates comparison"
+    ),
+    "contextual_resolution_choice": (
+        "stopping before selecting the applicable public resolution action preserves conflict"
+    ),
+    "verified_extra_call_error_risk": (
+        "continuing after verified completion introduces an asymmetric integrity risk"
+    ),
+    "verified_extra_call_cost": (
+        "continuing after verified completion incurs a positive marginal cost"
+    ),
+}
 
 TARGET_ROLE_INDEX_BY_SHAPE: dict[str, int] = {
     "contextual_resolution_choice": 1,
@@ -543,6 +589,94 @@ class FinanceStoppingShapePolicyProtocol(FrozenModel):
         return self
 
 
+class FinanceStoppingInstrumentResetGrammarProtocol(FrozenModel):
+    protocol_id: str = Field(min_length=1)
+    run_id: str = Field(min_length=1)
+    experiment_label: Literal["finance_v25_45_stopping_instrument_reset"] = (
+        "finance_v25_45_stopping_instrument_reset"
+    )
+    grammar_source: Literal["source_registry"] = "source_registry"
+    grammar_registry_manifest_hash: str = Field(min_length=1)
+    source_finance_artifacts: FrozenArtifactReference
+    source_calibration_contract: FrozenArtifactReference
+    historical_population_references: tuple[FrozenArtifactReference, ...] = Field(min_length=43)
+    source_outcome_artifacts_used: Literal[False] = False
+    historical_shape_support_transferred: Literal[False] = False
+    estimand_definition: StoppingShapePolicyDefinition = Field(
+        default_factory=StoppingShapePolicyDefinition
+    )
+    shape_designs: tuple[StoppingShapePolicyDesign, ...] = Field(
+        min_length=SHAPE_COUNT, max_length=SHAPE_COUNT
+    )
+    conflict_cell_allocations: tuple[StoppingConflictCellAllocation, ...] = Field(
+        default_factory=_default_conflict_cell_allocations,
+        min_length=8,
+        max_length=8,
+    )
+    target_role_ids: dict[str, str] = Field(default_factory=lambda: dict(TARGET_ROLE_ID_BY_SHAPE))
+    conflict_allocation_basis: Literal[
+        "exact_one_difference_capacity_preflight_on_frozen_snapshot"
+    ] = "exact_one_difference_capacity_preflight_on_frozen_snapshot"
+    unsupported_conflict_dimensions: tuple[Literal["payload_context"], ...] = (
+        "payload_context",
+    )
+    structural_strata: tuple[tuple[str, str, DifficultyTier], ...] = STRUCTURAL_STRATA
+    thresholds: StoppingShapePolicyThresholds = Field(default_factory=StoppingShapePolicyThresholds)
+    tasks_per_stratum: Literal[2] = 2
+    tasks_per_shape: Literal[8] = 8
+    task_count: Literal[48] = 48
+    replicas: Literal[8] = 8
+    rollout_count: Literal[384] = 384
+    task_instance_is_primary_sampling_unit: Literal[True] = True
+    same_task_replica_increase_forbidden: Literal[True] = True
+    pooled_result_may_rescue_shape_failure: Literal[False] = False
+    cross_estimand_rescue_forbidden: Literal[True] = True
+    posthoc_task_selection_authorized: Literal[False] = False
+    posthoc_task_deletion_authorized: Literal[False] = False
+    historical_results_reclassified: Literal[False] = False
+    historical_results_transfer_authorized: Literal[False] = False
+    pro_api_call_count: Literal[0] = 0
+    beneficiary_screening_authorized: Literal[False] = False
+    exact_target_evaluated: Literal[False] = False
+    gp_c_evaluated: Literal[False] = False
+    production_contribution: float = Field(default=0, ge=0, le=0)
+    next_permitted_stage: Literal["stopping_shape_policy_population_build"] = (
+        "stopping_shape_policy_population_build"
+    )
+    schema_version: str = STOPPING_INSTRUMENT_RESET_GRAMMAR_PROTOCOL_VERSION
+
+    @model_validator(mode="after")
+    def validate_protocol(self) -> FinanceStoppingInstrumentResetGrammarProtocol:
+        if self.structural_strata != STRUCTURAL_STRATA:
+            raise ValueError("Instrument-reset Grammar structural strata changed")
+        if self.shape_designs != _prospective_shape_designs():
+            raise ValueError("Instrument-reset Grammar differs from the source Registry")
+        if self.grammar_registry_manifest_hash != _prospective_shape_registry_manifest_hash():
+            raise ValueError("Instrument-reset Grammar Registry identity changed")
+        if self.conflict_cell_allocations != _default_conflict_cell_allocations():
+            raise ValueError("Instrument-reset conflict allocation changed")
+        if self.target_role_ids != TARGET_ROLE_ID_BY_SHAPE:
+            raise ValueError("Instrument-reset target-role policy changed")
+        if self.estimand_definition != StoppingShapePolicyDefinition():
+            raise ValueError("Instrument-reset estimand definition changed")
+        if any(
+            item.source_result_admitted or item.historical_result_transfer_authorized
+            for item in self.shape_designs
+        ):
+            raise ValueError("Instrument-reset Grammar transferred historical Shape support")
+        historical_ids = [item.artifact_id for item in self.historical_population_references]
+        if len(historical_ids) != len(set(historical_ids)):
+            raise ValueError("Instrument-reset historical populations are duplicated")
+        if self.protocol_id != instrument_reset_grammar_protocol_id(self):
+            raise ValueError("Instrument-reset Grammar protocol identity is invalid")
+        return self
+
+
+StoppingShapeGrammarProtocol = (
+    FinanceStoppingShapePolicyProtocol | FinanceStoppingInstrumentResetGrammarProtocol
+)
+
+
 class StoppingShapePolicyStaticAudit(FrozenModel):
     audit_id: str = Field(min_length=1)
     task_count: int = Field(ge=1)
@@ -691,6 +825,25 @@ def stopping_shape_policy_protocol_id(
         value.model_dump(mode="json", exclude={"protocol_id"}),
         prefix="finance_stopping_shape_policy_protocol:",
     )
+
+
+def instrument_reset_grammar_protocol_id(
+    value: FinanceStoppingInstrumentResetGrammarProtocol,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"protocol_id"}),
+        prefix="finance_stopping_instrument_reset_grammar_protocol:",
+    )
+
+
+def load_stopping_shape_grammar_protocol(path: Path) -> StoppingShapeGrammarProtocol:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    version = str(payload.get("schema_version", ""))
+    if version == STOPPING_SHAPE_POLICY_PROTOCOL_VERSION:
+        return FinanceStoppingShapePolicyProtocol.model_validate(payload)
+    if version == STOPPING_INSTRUMENT_RESET_GRAMMAR_PROTOCOL_VERSION:
+        return FinanceStoppingInstrumentResetGrammarProtocol.model_validate(payload)
+    raise ValueError(f"unsupported Stopping Shape Grammar protocol version: {version}")
 
 
 def stopping_shape_policy_static_audit_id(
@@ -1079,6 +1232,58 @@ def prepare_stopping_shape_policy_protocol(
     return protocol
 
 
+def prepare_instrument_reset_grammar_protocol(
+    *,
+    source_finance_artifacts_path: Path,
+    source_finance_artifacts_id: str,
+    source_calibration_contract_path: Path,
+    historical_population_paths: tuple[Path, ...],
+    output_path: Path,
+    run_id: str,
+) -> FinanceStoppingInstrumentResetGrammarProtocol:
+    if output_path.exists():
+        raise ValueError("Instrument-reset Grammar protocol is immutable")
+    snapshot_path = source_finance_artifacts_path.resolve()
+    calibration_path = source_calibration_contract_path.resolve()
+    calibration_payload = json.loads(calibration_path.read_text(encoding="utf-8"))
+    calibration_id = str(calibration_payload.get("contract_id", ""))
+    if not calibration_id:
+        raise ValueError("Instrument-reset calibration contract lacks an identity")
+    historical = tuple(
+        sorted(
+            (
+                _reference(
+                    path.resolve(),
+                    str(json.loads(path.resolve().read_text(encoding="utf-8"))["population_id"]),
+                )
+                for path in historical_population_paths
+            ),
+            key=lambda item: item.artifact_id,
+        )
+    )
+    if len(historical) < 43:
+        raise ValueError("Instrument-reset historical exclusion set is incomplete")
+    if len({item.artifact_id for item in historical}) != len(historical):
+        raise ValueError("Instrument-reset historical exclusion set contains duplicates")
+    values = {
+        "run_id": run_id,
+        "grammar_registry_manifest_hash": _prospective_shape_registry_manifest_hash(),
+        "source_finance_artifacts": _reference(snapshot_path, source_finance_artifacts_id),
+        "source_calibration_contract": _reference(calibration_path, calibration_id),
+        "historical_population_references": historical,
+        "shape_designs": _prospective_shape_designs(),
+    }
+    provisional = FinanceStoppingInstrumentResetGrammarProtocol.model_construct(
+        protocol_id="pending", **values
+    )
+    protocol = FinanceStoppingInstrumentResetGrammarProtocol(
+        protocol_id=instrument_reset_grammar_protocol_id(provisional), **values
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    _write_json(output_path, protocol.model_dump(mode="json"))
+    return protocol
+
+
 def build_stopping_shape_policy_population(
     *,
     protocol_path: Path,
@@ -1089,9 +1294,7 @@ def build_stopping_shape_policy_population(
     if output_path.exists():
         raise ValueError("Stopping Shape policy population is immutable")
     protocol_path = protocol_path.resolve()
-    protocol = FinanceStoppingShapePolicyProtocol.model_validate_json(
-        protocol_path.read_text(encoding="utf-8")
-    )
+    protocol = load_stopping_shape_grammar_protocol(protocol_path)
     _verify_protocol_inputs(protocol)
     excluded = _collect_excluded_identities(protocol.historical_population_references)
     pool = _load_evidence_pool(Path(protocol.source_finance_artifacts.path))
@@ -1105,7 +1308,7 @@ def build_stopping_shape_policy_population(
         (family, tier): tuple(_candidate_iterator(builder, family, tier))
         for _, family, tier in protocol.structural_strata
     }
-    conflict_mismatch_by_cell = {
+    conflict_mismatch_by_cell: dict[tuple[str, int], Literal["period", "definition"]] = {
         (item.stratum_id, item.instance_index): item.mismatch_field
         for item in protocol.conflict_cell_allocations
     }
@@ -1213,7 +1416,7 @@ def build_stopping_shape_policy_population(
 
 def make_stopping_shape_policy_static_audit(
     tasks: Sequence[StoppingShapeTask],
-    protocol: FinanceStoppingShapePolicyProtocol,
+    protocol: StoppingShapeGrammarProtocol,
     *,
     excluded: Mapping[str, set[str]],
     task_stratum_instance_indices: Mapping[str, int],
@@ -1462,6 +1665,41 @@ def make_stopping_shape_policy_static_audit(
     provisional = StoppingShapePolicyStaticAudit.model_construct(audit_id="pending", **values)
     return StoppingShapePolicyStaticAudit(
         audit_id=stopping_shape_policy_static_audit_id(provisional), **values
+    )
+
+
+def _prospective_shape_designs() -> tuple[StoppingShapePolicyDesign, ...]:
+    specs = {item.submechanism_id: item for item in make_candidate_specs()}
+    designs = []
+    for shape_id in sorted(ALL_SHAPES):
+        source_spec_id = SHAPE_SOURCE_SPEC_IDS[shape_id]
+        spec = specs.get(source_spec_id)
+        if spec is None:
+            raise ValueError(f"Stopping Shape source Registry lacks {source_spec_id}")
+        source = SimpleNamespace(
+            shape_id=shape_id,
+            shape_role=(
+                "boundary_candidate"
+                if shape_id in BOUNDARY_CANDIDATE_SHAPES
+                else "runtime_control"
+            ),
+            early_stop_consequence=SHAPE_EARLY_STOP_CONSEQUENCES[shape_id],
+            source_spec_id=source_spec_id,
+            spec=spec,
+        )
+        designs.append(_make_shape_policy_design(source, False))
+    return tuple(designs)
+
+
+def _prospective_shape_registry_manifest_hash() -> str:
+    return canonical_hash(
+        {
+            "source_spec_ids": SHAPE_SOURCE_SPEC_IDS,
+            "early_stop_consequences": SHAPE_EARLY_STOP_CONSEQUENCES,
+            "shape_designs": _prospective_shape_designs(),
+            "source_outcome_artifacts_used": False,
+        },
+        prefix="finance_stopping_instrument_reset_shape_registry:",
     )
 
 
@@ -2546,21 +2784,26 @@ def _mapping_keys(value: Any) -> set[str]:
 
 
 def _verify_protocol_inputs(
-    protocol: FinanceStoppingShapePolicyProtocol,
+    protocol: StoppingShapeGrammarProtocol,
 ) -> None:
-    references = (
-        protocol.source_v25_43_protocol,
-        protocol.source_v25_43_population,
-        protocol.source_v25_43_contract,
-        protocol.source_v25_43_report,
-        protocol.source_v25_43_manifest,
-        protocol.source_v25_43_records,
-        protocol.source_v25_43_terminal_outcomes,
-        protocol.source_v25_43_behavior_diagnostics,
+    shared = (
         protocol.source_finance_artifacts,
         protocol.source_calibration_contract,
         *protocol.historical_population_references,
     )
+    legacy: tuple[FrozenArtifactReference, ...] = ()
+    if isinstance(protocol, FinanceStoppingShapePolicyProtocol):
+        legacy = (
+            protocol.source_v25_43_protocol,
+            protocol.source_v25_43_population,
+            protocol.source_v25_43_contract,
+            protocol.source_v25_43_report,
+            protocol.source_v25_43_manifest,
+            protocol.source_v25_43_records,
+            protocol.source_v25_43_terminal_outcomes,
+            protocol.source_v25_43_behavior_diagnostics,
+        )
+    references = (*legacy, *shared)
     for reference in references:
         if _sha256(Path(reference.path)) != reference.sha256:
             raise ValueError(f"frozen Stopping Shape policy input changed: {reference.path}")
@@ -2574,6 +2817,12 @@ def _implementation_manifest() -> dict[str, str]:
     root = Path(__file__).resolve().parents[4]
     paths = (
         "src/trusted_synthesis/runtime/tools.py",
+        "src/trusted_synthesis/runtime/agent/client.py",
+        "src/trusted_synthesis/runtime/agent/iterative.py",
+        "src/trusted_synthesis/domains/finance/agent_tools.py",
+        "src/trusted_synthesis/domains/finance/interactive_agent_runtime.py",
+        "src/trusted_synthesis/domains/finance/iterative_agent_verifier.py",
+        "src/trusted_synthesis/domains/finance/public_tool_results.py",
         "src/trusted_synthesis/domains/finance/capability_submechanism_runtime.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_population.py",
         "src/trusted_synthesis/experiments/vtdo_experiment/phase1_capability_submechanism_flash_development.py",
@@ -2648,6 +2897,18 @@ def _parser() -> argparse.ArgumentParser:
         default=[],
         type=Path,
     )
+    reset = subparsers.add_parser("prepare-reset")
+    reset.add_argument("--source-finance-artifacts", required=True, type=Path)
+    reset.add_argument("--source-finance-artifacts-id", required=True)
+    reset.add_argument("--source-calibration-contract", required=True, type=Path)
+    reset.add_argument(
+        "--historical-population",
+        action="append",
+        required=True,
+        type=Path,
+    )
+    reset.add_argument("--output", required=True, type=Path)
+    reset.add_argument("--run-id", required=True)
     build = subparsers.add_parser("build")
     build.add_argument("--protocol", required=True, type=Path)
     build.add_argument("--output-dir", required=True, type=Path)
@@ -2672,6 +2933,16 @@ def main() -> None:
             source_finance_artifacts_path=args.source_finance_artifacts,
             source_finance_artifacts_id=args.source_finance_artifacts_id,
             additional_historical_population_paths=tuple(args.additional_historical_population),
+        )
+        print(protocol.model_dump_json(indent=2))
+    elif args.command == "prepare-reset":
+        protocol = prepare_instrument_reset_grammar_protocol(
+            source_finance_artifacts_path=args.source_finance_artifacts,
+            source_finance_artifacts_id=args.source_finance_artifacts_id,
+            source_calibration_contract_path=args.source_calibration_contract,
+            historical_population_paths=tuple(args.historical_population),
+            output_path=args.output,
+            run_id=args.run_id,
         )
         print(protocol.model_dump_json(indent=2))
     else:

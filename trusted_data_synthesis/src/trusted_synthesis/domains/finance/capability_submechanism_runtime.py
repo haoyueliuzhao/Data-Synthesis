@@ -16,6 +16,9 @@ from trusted_synthesis.domains.finance.agent_tools import (
 from trusted_synthesis.domains.finance.interactive_agent_runtime import (
     FinanceArchiveInteractiveToolRuntime,
 )
+from trusted_synthesis.domains.finance.public_tool_results import (
+    validate_finance_public_tool_result,
+)
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import (
     ARGUMENT_PATCH_REQUIRED_POLICY,
@@ -27,7 +30,7 @@ from trusted_synthesis.runtime.tools import (
 )
 
 FINANCE_SUBMECHANISM_SCENARIO_VERSION = "finance_capability_submechanism_scenario.v14"
-FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v17"
+FINANCE_SUBMECHANISM_RUNTIME_VERSION = "finance_capability_submechanism_runtime.v18"
 FINANCE_PUBLIC_DECISION_CONTRACT_VERSION = "finance_capability_decision_contract.v10"
 FINANCE_STOPPING_SHAPE_DECISION_VERSION = "finance_stopping_shape_decision_contract.v5"
 FINANCE_STOPPING_SHAPE_DECISION_V1_VERSION = "finance_stopping_shape_decision_contract.v1"
@@ -872,6 +875,7 @@ class FinanceCapabilitySubmechanismRuntime:
             self._resolution_observed
         ):
             self._verified_complete = True
+        validate_finance_public_tool_result(call.tool_id, result)
         return result
 
     def _execute_forced_failure(self, call: AgentToolCall) -> AgentToolResult:

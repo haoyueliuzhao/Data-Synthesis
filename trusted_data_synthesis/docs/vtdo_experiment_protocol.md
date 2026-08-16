@@ -1380,3 +1380,48 @@ task/Evidence/version/signature/materializer identities must be disjoint
 Pro calls, Beneficiary screening, Exact Target, GP-C, production Contribution,
 VTDO distribution updates, and Student training remain forbidden until that
 stability contract passes.
+
+### v25.45 recursive observation noninterference and instrument reset
+
+The preceding v25.34-v25.44 Shape outcomes are superseded for authorization purposes by a
+read-only recursive audit. All eight inspected historical artifacts contained Host-only fields or
+markers in descendants of model-visible tool results. They remain immutable diagnostics, but no
+historical Shape result, threshold, task deletion, or support decision transfers to v25.45.
+
+The Runtime Measurement Contract now requires:
+
+```text
+strict typed public result schemas, including nested extra=forbid
+Host events in a physically separate replayable side channel
+recursive Mapping / Sequence / Typed Object scans
+actual API request Prompt capture, hash binding, and recursive scan
+raw noninterference audit before any Shape aggregation
+one violation -> instrument failed and Shape aggregation forbidden
+```
+
+The fresh v25.45 population contains 48 tasks and 384 Flash rollouts. Its raw audit passed with
+384/384 auditable records, 3,284/3,284 strict public results and three-way observation hashes,
+3,822/3,822 clean hash-bound API request Prompts, and zero recursive Host-field, Host-marker,
+unknown-side-channel, contaminated-task, unattested-task, or public-contract violations. The 206
+fail-closed behavior outcomes remain part of the complete capability denominator and do not count
+as instrument failures.
+
+Only after the raw pass was Shape analysis performed. Authority, Partial, Conflict, and both
+runtime controls passed. Contextual failed only `between_task_heterogeneity`; therefore the final
+decision is:
+
+```text
+instrument_status = passed
+shape_analysis_authorized = true
+boundary_candidates = 3 / 4
+runtime_controls = 2 / 2
+all_shapes_admitted = false
+next_permitted_stage = stopping_shape_redesign_only
+historical_shape_support_transferred = false
+production_contribution = 0
+```
+
+The interrupted wrapper was completed by a deterministic finalizer that replayed no API call and
+required exact recomputation of every pre-existing audit and Shape artifact. A future Contextual
+redesign must use fresh identities and pass the same recursive instrument gates. Three-population
+stability, Pro, Beneficiary, Exact Target, GP-C, VTDO updates, and Student training remain blocked.

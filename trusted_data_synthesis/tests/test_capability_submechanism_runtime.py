@@ -50,8 +50,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_submechanis
     _public_mechanism_nondisclosed,
 )
 from trusted_synthesis.runtime.agent.iterative import (
-    IterativeAgentFailureArtifact,
-    iterative_agent_failure_artifact_id,
+    _make_failure_artifact,
 )
 from trusted_synthesis.runtime.tools import AgentToolCall, make_agent_tool_observation
 
@@ -1054,21 +1053,16 @@ def test_submechanism_replay_and_failed_artifact_preserve_host_observations() ->
         == ()
     )
 
-    values = {
-        "task_id": context.task.task_id,
-        "mode": "autonomous_agent",
-        "environment_manifest_id": runtime.manifest.manifest_id,
-        "protocol_profile_hash": "protocol:test",
-        "plan": None,
-        "decisions": (),
-        "observations": (observation,),
-        "telemetry": (),
-        "failure_message": "bounded model failure",
-        "stop_rejections": (),
-    }
-    provisional = IterativeAgentFailureArtifact.model_construct(artifact_id="pending", **values)
-    artifact = IterativeAgentFailureArtifact(
-        artifact_id=iterative_agent_failure_artifact_id(provisional), **values
+    artifact = _make_failure_artifact(
+        task=context.task,
+        mode="autonomous_agent",
+        environment_manifest_id=runtime.manifest.manifest_id,
+        protocol_profile_hash="protocol:test",
+        plan=None,
+        decisions=(),
+        observations=(observation,),
+        telemetry=(),
+        failure_message="bounded model failure",
     )
     record = SimpleNamespace(observations=(), failure_artifact=artifact)
     assert _all_observations(record) == (observation,)

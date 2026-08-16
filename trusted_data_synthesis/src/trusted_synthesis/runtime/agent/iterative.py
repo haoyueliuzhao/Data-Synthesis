@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from collections.abc import Mapping
@@ -23,6 +24,8 @@ from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
 from trusted_synthesis.runtime.tools import (
     ARGUMENT_PATCH_REQUIRED_POLICY,
     PREREQUISITE_ACTION_REQUIRED_POLICY,
+    RESERVED_HOST_RESULT_KEYS,
+    RESERVED_HOST_RESULT_MARKERS,
     AgentToolCall,
     AgentToolObservation,
     AgentToolResult,
@@ -31,12 +34,14 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v21"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v24"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
 ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v17"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v18"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v21"
+HOST_AGENT_NONINTERFERENCE_VERSION = "recursive_host_agent_noninterference.v2"
+MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v1"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v13"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v14"
 MAXIMUM_STOP_REJECTIONS = 2
 TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS = (1.0, 3.0, 7.0)
 _TRANSIENT_PROVIDER_ERROR_TYPES = frozenset(
@@ -64,8 +69,10 @@ MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
         "proof_graph",
         "target_quotient_state",
         "target_state_id",
+        *RESERVED_HOST_RESULT_KEYS,
     }
 )
+MODEL_FORBIDDEN_STRING_VALUES = RESERVED_HOST_RESULT_MARKERS
 
 InteractiveAgentMode = Literal["scripted_tool", "autonomous_agent"]
 InitialPlanMode = Literal["model_contract", "implicit_public"]
@@ -226,8 +233,20 @@ class IterativeAgentAudit(BaseModel):
     public_state_condition_hash: str | None = None
     plan_prompt_hash: str = Field(min_length=1)
     decision_prompt_hashes: tuple[str, ...] = Field(min_length=1)
+    final_model_prompt_hash: str = Field(min_length=1)
+    noninterference_scanner_manifest_hash: str = Field(min_length=1)
+    plan_prompt_noninterference_attestation_hash: str = Field(min_length=1)
+    decision_prompt_noninterference_attestation_hashes: tuple[str, ...] = Field(min_length=1)
+    model_request_prompts: tuple[str, ...] = Field(min_length=1)
+    model_request_prompt_hashes: tuple[str, ...] = Field(min_length=1)
+    model_request_prompt_noninterference_attestation_hashes: tuple[str, ...] = Field(
+        min_length=1
+    )
     observation_ids: tuple[str, ...] = Field(min_length=1)
     observation_content_hashes: tuple[str, ...] = Field(min_length=1)
+    public_model_visible_result_hashes: tuple[str, ...] = Field(min_length=1)
+    host_event_side_channel_hashes: tuple[str, ...] = Field(min_length=1)
+    internal_tool_result_hashes: tuple[str, ...] = Field(min_length=1)
     scripted_tool_sequence: tuple[str, ...] = ()
     successful_tool_call_count: int = Field(ge=0)
     failed_tool_call_count: int = Field(ge=0)
@@ -249,6 +268,57 @@ class IterativeAgentAudit(BaseModel):
     def validate_audit(self) -> IterativeAgentAudit:
         if len(self.observation_ids) != len(self.observation_content_hashes):
             raise ValueError("Agent audit observation identity accounting is inconsistent")
+        if not (
+            len(self.observation_ids)
+            == len(self.public_model_visible_result_hashes)
+            == len(self.host_event_side_channel_hashes)
+            == len(self.internal_tool_result_hashes)
+        ):
+            raise ValueError("Agent audit noninterference observation accounting is inconsistent")
+        if self.internal_tool_result_hashes != self.observation_content_hashes:
+            raise ValueError("Agent audit internal result identity accounting is inconsistent")
+        if self.final_model_prompt_hash != self.model_request_prompt_hashes[-1]:
+            raise ValueError("Agent audit final model prompt identity is inconsistent")
+        if len(self.decision_prompt_hashes) != len(
+            self.decision_prompt_noninterference_attestation_hashes
+        ):
+            raise ValueError("Agent audit prompt noninterference accounting is inconsistent")
+        expected_scanner = _noninterference_scanner_manifest_hash()
+        if self.noninterference_scanner_manifest_hash != expected_scanner:
+            raise ValueError("Agent audit used another noninterference scanner")
+        if self.plan_prompt_noninterference_attestation_hash != (
+            _prompt_noninterference_attestation_hash(self.plan_prompt_hash, expected_scanner)
+        ):
+            raise ValueError("Agent plan-prompt noninterference attestation is invalid")
+        expected_decisions = tuple(
+            _prompt_noninterference_attestation_hash(item, expected_scanner)
+            for item in self.decision_prompt_hashes
+        )
+        if self.decision_prompt_noninterference_attestation_hashes != expected_decisions:
+            raise ValueError("Agent decision-prompt noninterference attestations are invalid")
+        if not (
+            len(self.model_request_prompts)
+            == len(self.model_request_prompt_hashes)
+            == len(self.model_request_prompt_noninterference_attestation_hashes)
+            == len(self.telemetry)
+        ):
+            raise ValueError("Agent actual model-request prompt accounting is inconsistent")
+        expected_request_hashes = tuple(_sha256_text(item) for item in self.model_request_prompts)
+        if self.model_request_prompt_hashes != expected_request_hashes:
+            raise ValueError("Agent actual model-request prompt hashes are invalid")
+        if self.model_request_prompt_hashes != tuple(item.request_hash for item in self.telemetry):
+            raise ValueError("Agent prompts do not match Provider request telemetry")
+        expected_request_attestations = tuple(
+            _prompt_noninterference_attestation_hash(item, expected_scanner)
+            for item in self.model_request_prompt_hashes
+        )
+        if (
+            self.model_request_prompt_noninterference_attestation_hashes
+            != expected_request_attestations
+        ):
+            raise ValueError("Agent actual model-request prompt attestations are invalid")
+        for prompt in self.model_request_prompts:
+            _assert_no_model_forbidden_prompt(prompt)
         if self.successful_tool_call_count + self.failed_tool_call_count != len(
             self.observation_ids
         ):
@@ -281,6 +351,18 @@ class IterativeAgentSolveResult(BaseModel):
             raise ValueError("iterative Agent result crosses task identities")
         if tuple(item.observation_id for item in self.observations) != self.audit.observation_ids:
             raise ValueError("iterative Agent result lost Host observations")
+        expected_public = tuple(
+            canonical_hash(item.result, prefix="agent_public_model_visible_result:")
+            for item in self.observations
+        )
+        expected_host = tuple(
+            canonical_hash(item.host_events, prefix="agent_host_event_side_channel:")
+            for item in self.observations
+        )
+        if self.audit.public_model_visible_result_hashes != expected_public:
+            raise ValueError("iterative Agent result public-result hashes are inconsistent")
+        if self.audit.host_event_side_channel_hashes != expected_host:
+            raise ValueError("iterative Agent result Host side-channel hashes are inconsistent")
         return self
 
 
@@ -298,12 +380,96 @@ class IterativeAgentFailureArtifact(BaseModel):
     decisions: tuple[AgentLoopDecisionContract, ...] = ()
     observations: tuple[AgentToolObservation, ...] = ()
     telemetry: tuple[ModelCallTelemetry, ...]
+    plan_prompt_hash: str | None = None
+    decision_prompt_hashes: tuple[str, ...] = ()
+    last_model_prompt_hash: str | None = None
+    noninterference_scanner_manifest_hash: str = Field(min_length=1)
+    plan_prompt_noninterference_attestation_hash: str | None = None
+    decision_prompt_noninterference_attestation_hashes: tuple[str, ...] = ()
+    model_request_prompts: tuple[str, ...] = ()
+    model_request_prompt_hashes: tuple[str, ...] = ()
+    model_request_prompt_noninterference_attestation_hashes: tuple[str, ...] = ()
+    public_model_visible_result_hashes: tuple[str, ...] = ()
+    host_event_side_channel_hashes: tuple[str, ...] = ()
+    internal_tool_result_hashes: tuple[str, ...] = ()
     failure_message: str = Field(min_length=1)
     stop_rejections: tuple[AgentStopRejection, ...] = ()
     schema_version: str = ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION
 
     @model_validator(mode="after")
     def validate_identity(self) -> IterativeAgentFailureArtifact:
+        expected_scanner = _noninterference_scanner_manifest_hash()
+        if self.noninterference_scanner_manifest_hash != expected_scanner:
+            raise ValueError("failure Artifact used another noninterference scanner")
+        if (self.plan_prompt_hash is None) != (
+            self.plan_prompt_noninterference_attestation_hash is None
+        ):
+            raise ValueError("failure Artifact plan-prompt accounting is incomplete")
+        if self.plan_prompt_hash is not None and (
+            self.plan_prompt_noninterference_attestation_hash
+            != _prompt_noninterference_attestation_hash(
+                self.plan_prompt_hash, expected_scanner
+            )
+        ):
+            raise ValueError("failure Artifact plan-prompt attestation is invalid")
+        if len(self.decision_prompt_hashes) != len(
+            self.decision_prompt_noninterference_attestation_hashes
+        ):
+            raise ValueError("failure Artifact decision-prompt accounting is incomplete")
+        if self.decision_prompt_noninterference_attestation_hashes != tuple(
+            _prompt_noninterference_attestation_hash(item, expected_scanner)
+            for item in self.decision_prompt_hashes
+        ):
+            raise ValueError("failure Artifact decision-prompt attestations are invalid")
+        if not (
+            len(self.model_request_prompts)
+            == len(self.model_request_prompt_hashes)
+            == len(self.model_request_prompt_noninterference_attestation_hashes)
+            == len(self.telemetry)
+        ):
+            raise ValueError("failure Artifact actual request accounting is incomplete")
+        expected_request_hashes = tuple(
+            _sha256_text(item) for item in self.model_request_prompts
+        )
+        if self.model_request_prompt_hashes != expected_request_hashes:
+            raise ValueError("failure Artifact actual request hashes are invalid")
+        if self.model_request_prompt_hashes != tuple(
+            item.request_hash for item in self.telemetry
+        ):
+            raise ValueError("failure Artifact prompts do not match Provider telemetry")
+        if self.model_request_prompt_noninterference_attestation_hashes != tuple(
+            _prompt_noninterference_attestation_hash(item, expected_scanner)
+            for item in self.model_request_prompt_hashes
+        ):
+            raise ValueError("failure Artifact request attestations are invalid")
+        if self.model_request_prompts:
+            if self.last_model_prompt_hash != self.model_request_prompt_hashes[-1]:
+                raise ValueError("failure Artifact last request identity is invalid")
+        elif self.last_model_prompt_hash is not None:
+            raise ValueError("failure Artifact has a last request without a request")
+        for prompt in self.model_request_prompts:
+            _assert_no_model_forbidden_prompt(prompt)
+        if not (
+            len(self.observations)
+            == len(self.public_model_visible_result_hashes)
+            == len(self.host_event_side_channel_hashes)
+            == len(self.internal_tool_result_hashes)
+        ):
+            raise ValueError("failure Artifact observation accounting is incomplete")
+        if self.public_model_visible_result_hashes != tuple(
+            canonical_hash(item.result, prefix="agent_public_model_visible_result:")
+            for item in self.observations
+        ):
+            raise ValueError("failure Artifact public-result hashes are invalid")
+        if self.host_event_side_channel_hashes != tuple(
+            canonical_hash(item.host_events, prefix="agent_host_event_side_channel:")
+            for item in self.observations
+        ):
+            raise ValueError("failure Artifact Host side-channel hashes are invalid")
+        if self.internal_tool_result_hashes != tuple(
+            item.content_hash for item in self.observations
+        ):
+            raise ValueError("failure Artifact internal-result hashes are invalid")
         if self.artifact_id != iterative_agent_failure_artifact_id(self):
             raise ValueError("iterative Agent failure Artifact identity is invalid")
         return self
@@ -387,6 +553,7 @@ class IterativeAgentSolver:
                 raise ValueError("public Agent condition exceeds the environment tool budget")
 
         telemetry: list[ModelCallTelemetry] = []
+        model_request_prompts: list[str] = []
         if self._protocol_profile.initial_plan_mode == "model_contract":
             plan_prompt = _plan_prompt(
                 task,
@@ -394,8 +561,14 @@ class IterativeAgentSolver:
                 self._mode,
                 condition_payload,
             )
+            _assert_no_model_forbidden_prompt(plan_prompt)
+            plan_prompt_hash = canonical_hash(plan_prompt, prefix="agent_plan_prompt:")
+            scanner_manifest_hash = _noninterference_scanner_manifest_hash()
+            plan_prompt_attestation_hash = _prompt_noninterference_attestation_hash(
+                plan_prompt_hash, scanner_manifest_hash
+            )
             try:
-                plan, plan_telemetry, plan_repairs = _request_contract(
+                plan, plan_telemetry, plan_repairs, plan_request_prompts = _request_contract(
                     self._client,
                     plan_prompt,
                     AgentLoopPlanContract,
@@ -410,19 +583,55 @@ class IterativeAgentSolver:
                     decisions=(),
                     observations=(),
                     telemetry=exc.telemetry,
+                    plan_prompt_hash=plan_prompt_hash,
+                    model_request_prompts=exc.request_prompts,
                     failure_message=str(exc),
                 )
-                raise LLMClientError(str(exc), exc.telemetry, failure_artifact=artifact) from exc
+                raise LLMClientError(
+                    str(exc),
+                    exc.telemetry,
+                    failure_artifact=artifact,
+                    request_prompts=exc.request_prompts,
+                ) from exc
             telemetry.extend(plan_telemetry)
-            _enforce_token_budget(telemetry, self._maximum_total_tokens)
+            model_request_prompts.extend(plan_request_prompts)
+            try:
+                _enforce_token_budget(telemetry, self._maximum_total_tokens)
+            except LLMClientError as exc:
+                artifact = _make_failure_artifact(
+                    task=task,
+                    mode=self._mode,
+                    environment_manifest_id=manifest.manifest_id,
+                    protocol_profile_hash=self._protocol_profile.profile_hash,
+                    plan=plan,
+                    decisions=(),
+                    observations=(),
+                    telemetry=tuple(telemetry),
+                    plan_prompt_hash=plan_prompt_hash,
+                    model_request_prompts=tuple(model_request_prompts),
+                    failure_message=str(exc),
+                )
+                raise LLMClientError(
+                    str(exc),
+                    tuple(telemetry),
+                    failure_artifact=artifact,
+                    request_prompts=tuple(model_request_prompts),
+                ) from exc
             repair_count = plan_repairs
         else:
             plan = _implicit_public_plan(task)
             plan_prompt = _implicit_plan_manifest(task, self._mode, condition_payload)
+            _assert_no_model_forbidden_prompt(plan_prompt)
+            plan_prompt_hash = canonical_hash(plan_prompt, prefix="agent_plan_prompt:")
+            scanner_manifest_hash = _noninterference_scanner_manifest_hash()
+            plan_prompt_attestation_hash = _prompt_noninterference_attestation_hash(
+                plan_prompt_hash, scanner_manifest_hash
+            )
             repair_count = 0
         observations: list[AgentToolObservation] = []
         decisions: list[AgentLoopDecisionContract] = []
         prompt_hashes: list[str] = []
+        prompt_attestation_hashes: list[str] = []
         failed_count = 0
         total_observation_bytes = 0
         final_decision: AgentLoopDecisionContract | None = None
@@ -442,6 +651,9 @@ class IterativeAgentSolver:
                 decisions=tuple(decisions),
                 observations=tuple(observations),
                 telemetry=tuple(telemetry),
+                plan_prompt_hash=plan_prompt_hash,
+                decision_prompt_hashes=tuple(prompt_hashes),
+                model_request_prompts=tuple(model_request_prompts),
                 stop_rejections=tuple(stop_rejections),
             )
 
@@ -534,15 +746,28 @@ class IterativeAgentSolver:
                     observation_view=self._protocol_profile.observation_view,
                 )
                 response_type = AgentLoopDecisionContract
-            prompt_hashes.append(canonical_hash(decision_prompt, prefix="agent_decision_prompt:"))
+            _assert_no_model_forbidden_prompt(decision_prompt)
+            decision_prompt_hash = canonical_hash(decision_prompt, prefix="agent_decision_prompt:")
+            prompt_hashes.append(decision_prompt_hash)
+            prompt_attestation_hashes.append(
+                _prompt_noninterference_attestation_hash(
+                    decision_prompt_hash, scanner_manifest_hash
+                )
+            )
             try:
-                response, decision_telemetry, decision_repairs = _request_contract(
+                (
+                    response,
+                    decision_telemetry,
+                    decision_repairs,
+                    decision_request_prompts,
+                ) = _request_contract(
                     self._client,
                     decision_prompt,
                     response_type,
                 )
             except LLMClientError as exc:
                 telemetry.extend(exc.telemetry)
+                model_request_prompts.extend(exc.request_prompts)
                 raise failure(str(exc)) from exc
             if isinstance(response, AgentScriptedToolContract):
                 decision = AgentLoopDecisionContract(
@@ -565,6 +790,7 @@ class IterativeAgentSolver:
                     raise TypeError("unexpected iterative Agent response contract")
                 decision = response
             telemetry.extend(decision_telemetry)
+            model_request_prompts.extend(decision_request_prompts)
             try:
                 _enforce_token_budget(telemetry, self._maximum_total_tokens)
             except LLMClientError as exc:
@@ -726,10 +952,33 @@ class IterativeAgentSolver:
                 if public_state_condition is not None
                 else None
             ),
-            "plan_prompt_hash": canonical_hash(plan_prompt, prefix="agent_plan_prompt:"),
+            "plan_prompt_hash": plan_prompt_hash,
             "decision_prompt_hashes": tuple(prompt_hashes),
+            "final_model_prompt_hash": _sha256_text(model_request_prompts[-1]),
+            "noninterference_scanner_manifest_hash": scanner_manifest_hash,
+            "plan_prompt_noninterference_attestation_hash": plan_prompt_attestation_hash,
+            "decision_prompt_noninterference_attestation_hashes": tuple(prompt_attestation_hashes),
+            "model_request_prompts": tuple(model_request_prompts),
+            "model_request_prompt_hashes": tuple(
+                _sha256_text(item) for item in model_request_prompts
+            ),
+            "model_request_prompt_noninterference_attestation_hashes": tuple(
+                _prompt_noninterference_attestation_hash(
+                    _sha256_text(item), scanner_manifest_hash
+                )
+                for item in model_request_prompts
+            ),
             "observation_ids": tuple(item.observation_id for item in observations),
             "observation_content_hashes": tuple(item.content_hash for item in observations),
+            "public_model_visible_result_hashes": tuple(
+                canonical_hash(item.result, prefix="agent_public_model_visible_result:")
+                for item in observations
+            ),
+            "host_event_side_channel_hashes": tuple(
+                canonical_hash(item.host_events, prefix="agent_host_event_side_channel:")
+                for item in observations
+            ),
+            "internal_tool_result_hashes": tuple(item.content_hash for item in observations),
             "scripted_tool_sequence": self._scripted_tool_sequence,
             "successful_tool_call_count": successful_count,
             "stop_rejections": tuple(stop_rejections),
@@ -795,7 +1044,12 @@ def _make_failure_artifact(
     stop_rejections: tuple[AgentStopRejection, ...] = (),
     telemetry: tuple[ModelCallTelemetry, ...],
     failure_message: str,
+    plan_prompt_hash: str | None = None,
+    decision_prompt_hashes: tuple[str, ...] = (),
+    model_request_prompts: tuple[str, ...] = (),
 ) -> IterativeAgentFailureArtifact:
+    scanner_manifest_hash = _noninterference_scanner_manifest_hash()
+    request_hashes = tuple(_sha256_text(item) for item in model_request_prompts)
     values = {
         "task_id": task.task_id,
         "mode": mode,
@@ -806,6 +1060,36 @@ def _make_failure_artifact(
         "observations": observations,
         "stop_rejections": stop_rejections,
         "telemetry": telemetry,
+        "plan_prompt_hash": plan_prompt_hash,
+        "decision_prompt_hashes": decision_prompt_hashes,
+        "last_model_prompt_hash": request_hashes[-1] if request_hashes else None,
+        "noninterference_scanner_manifest_hash": scanner_manifest_hash,
+        "plan_prompt_noninterference_attestation_hash": (
+            _prompt_noninterference_attestation_hash(
+                plan_prompt_hash, scanner_manifest_hash
+            )
+            if plan_prompt_hash is not None
+            else None
+        ),
+        "decision_prompt_noninterference_attestation_hashes": tuple(
+            _prompt_noninterference_attestation_hash(item, scanner_manifest_hash)
+            for item in decision_prompt_hashes
+        ),
+        "model_request_prompts": model_request_prompts,
+        "model_request_prompt_hashes": request_hashes,
+        "model_request_prompt_noninterference_attestation_hashes": tuple(
+            _prompt_noninterference_attestation_hash(item, scanner_manifest_hash)
+            for item in request_hashes
+        ),
+        "public_model_visible_result_hashes": tuple(
+            canonical_hash(item.result, prefix="agent_public_model_visible_result:")
+            for item in observations
+        ),
+        "host_event_side_channel_hashes": tuple(
+            canonical_hash(item.host_events, prefix="agent_host_event_side_channel:")
+            for item in observations
+        ),
+        "internal_tool_result_hashes": tuple(item.content_hash for item in observations),
         "failure_message": failure_message,
         "schema_version": ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION,
     }
@@ -831,6 +1115,9 @@ def _iterative_failure(
     observations: tuple[AgentToolObservation, ...],
     stop_rejections: tuple[AgentStopRejection, ...] = (),
     telemetry: tuple[ModelCallTelemetry, ...],
+    plan_prompt_hash: str | None = None,
+    decision_prompt_hashes: tuple[str, ...] = (),
+    model_request_prompts: tuple[str, ...] = (),
 ) -> LLMClientError:
     artifact = _make_failure_artifact(
         task=task,
@@ -842,9 +1129,17 @@ def _iterative_failure(
         observations=observations,
         stop_rejections=stop_rejections,
         telemetry=telemetry,
+        plan_prompt_hash=plan_prompt_hash,
+        decision_prompt_hashes=decision_prompt_hashes,
+        model_request_prompts=model_request_prompts,
         failure_message=message,
     )
-    return LLMClientError(message, telemetry, failure_artifact=artifact)
+    return LLMClientError(
+        message,
+        telemetry,
+        failure_artifact=artifact,
+        request_prompts=model_request_prompts,
+    )
 
 
 def _is_transient_provider_error(error: LLMClientError) -> bool:
@@ -867,9 +1162,8 @@ def _complete_json_with_transient_retry(
             payload, telemetry = client.complete_json(prompt)
         except LLMClientError as exc:
             failed.extend(exc.telemetry)
-            if (
-                not _is_transient_provider_error(exc)
-                or attempt == len(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS)
+            if not _is_transient_provider_error(exc) or attempt == len(
+                TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS
             ):
                 raise LLMClientError(str(exc), tuple(failed)) from exc
             time.sleep(TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS[attempt])
@@ -898,8 +1192,9 @@ def _request_contract(
     client: JsonCompletionClient,
     base_prompt: str,
     model_type: type[ContractT],
-) -> tuple[ContractT, tuple[ModelCallTelemetry, ...], int]:
+) -> tuple[ContractT, tuple[ModelCallTelemetry, ...], int, tuple[str, ...]]:
     telemetry: list[ModelCallTelemetry] = []
+    request_prompts: list[str] = []
     validation_error = ""
     previous_payload_keys: tuple[str, ...] = ()
     expected_fields = tuple(model_type.model_fields)
@@ -923,18 +1218,18 @@ def _request_contract(
             + repair_note
             + "\nReturn only the corrected response object. Do not copy PUBLIC_CONTEXT_JSON."
         )
+        _assert_no_model_forbidden_prompt(prompt)
         try:
-            payload, call, recovered_transport = _complete_json_with_transient_retry(
-                client, prompt
-            )
+            payload, call, recovered_transport = _complete_json_with_transient_retry(client, prompt)
             telemetry.extend(
                 _with_prompt_component_bytes(item, prompt) for item in recovered_transport
             )
+            request_prompts.extend(prompt for _ in recovered_transport)
             call = _with_prompt_component_bytes(call, prompt)
+            request_prompts.append(prompt)
         except LLMClientError as exc:
-            telemetry.extend(
-                _with_prompt_component_bytes(item, prompt) for item in exc.telemetry
-            )
+            telemetry.extend(_with_prompt_component_bytes(item, prompt) for item in exc.telemetry)
+            request_prompts.extend(prompt for _ in exc.telemetry)
             if _is_transient_provider_error(exc):
                 break
             validation_error = f"provider_or_json_error:{exc}"[:1200]
@@ -944,7 +1239,12 @@ def _request_contract(
             continue
         previous_payload_keys = tuple(sorted(str(key) for key in payload))
         try:
-            return model_type.model_validate(payload), (*telemetry, call), attempt
+            return (
+                model_type.model_validate(payload),
+                (*telemetry, call),
+                attempt,
+                tuple(request_prompts),
+            )
         except ValidationError as exc:
             validation_error = "; ".join(
                 f"{'.'.join(str(item) for item in error['loc'])}:{error['msg']}"
@@ -960,7 +1260,11 @@ def _request_contract(
                     }
                 )
             )
-    raise LLMClientError("model failed the iterative Agent contract", tuple(telemetry))
+    raise LLMClientError(
+        "model failed the iterative Agent contract",
+        tuple(telemetry),
+        request_prompts=tuple(request_prompts),
+    )
 
 
 def _with_prompt_component_bytes(
@@ -1478,6 +1782,32 @@ def _error_recovery_count(observations: tuple[AgentToolObservation, ...]) -> int
     )
 
 
+def _noninterference_scanner_manifest_hash() -> str:
+    return canonical_hash(
+        {
+            "schema_version": HOST_AGENT_NONINTERFERENCE_VERSION,
+            "forbidden_field_names": sorted(MODEL_FORBIDDEN_FIELD_NAMES),
+            "forbidden_string_values": sorted(MODEL_FORBIDDEN_STRING_VALUES),
+            "recursive_mappings": True,
+            "recursive_sequences": True,
+            "serialized_json_prompt_scan": True,
+            "actual_api_prompt_artifact": True,
+        },
+        prefix="host_agent_noninterference_scanner:",
+    )
+
+
+def _prompt_noninterference_attestation_hash(prompt_hash: str, scanner_manifest_hash: str) -> str:
+    return canonical_hash(
+        {
+            "prompt_hash": prompt_hash,
+            "scanner_manifest_hash": scanner_manifest_hash,
+            "recursive_noninterference_passed": True,
+        },
+        prefix="agent_prompt_noninterference_attestation:",
+    )
+
+
 def _assert_no_model_forbidden_fields(value: Any, *, path: str = "public") -> None:
     if isinstance(value, dict):
         for key, item in value.items():
@@ -1488,6 +1818,41 @@ def _assert_no_model_forbidden_fields(value: Any, *, path: str = "public") -> No
     elif isinstance(value, (list, tuple)):
         for index, item in enumerate(value):
             _assert_no_model_forbidden_fields(item, path=f"{path}[{index}]")
+    elif isinstance(value, str) and value in MODEL_FORBIDDEN_STRING_VALUES:
+        raise ValueError(f"model-visible payload contains forbidden Host marker at {path}")
+
+
+def _assert_no_model_forbidden_prompt(prompt: str) -> None:
+    """Audit the exact serialized API prompt, including contract-repair requests."""
+
+    for marker in MODEL_FORBIDDEN_STRING_VALUES:
+        if marker in prompt:
+            raise ValueError("model prompt contains a forbidden Host marker")
+    for field in MODEL_FORBIDDEN_FIELD_NAMES:
+        if f'"{field}"' in prompt:
+            raise ValueError(f"model prompt contains a forbidden field: {field}")
+    context_marker = "\nPUBLIC_CONTEXT_JSON:\n"
+    repair_marker = "\nCONTRACT_REPAIR_JSON:\n"
+    _, separator, remainder = prompt.partition(context_marker)
+    if not separator:
+        return
+    context_text, repair_separator, repair_text = remainder.partition(repair_marker)
+    try:
+        context = json.loads(context_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError("model prompt public context is not valid JSON") from exc
+    _assert_no_model_forbidden_fields(context, path="prompt.public_context")
+    if repair_separator:
+        repair_json, _, _ = repair_text.partition("\nReturn only the corrected response object.")
+        try:
+            repair = json.loads(repair_json)
+        except json.JSONDecodeError as exc:
+            raise ValueError("model prompt contract-repair context is not valid JSON") from exc
+        _assert_no_model_forbidden_fields(repair, path="prompt.contract_repair")
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
 def _model_visible_environment(
@@ -1608,6 +1973,37 @@ _COMPACT_OMITTED_KEYS = frozenset(
 )
 
 
+def model_input_projection_manifest() -> dict[str, Any]:
+    payload = {
+        "schema_version": MODEL_INPUT_PROJECTION_VERSION,
+        "plan_prompt_version": ITERATIVE_AGENT_PLAN_PROMPT_VERSION,
+        "decision_prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
+        "observation_views": ("full", "compact", "bounded_summary"),
+        "full_observation_fields": (
+            "observation_id",
+            "call_index",
+            "tool_id",
+            "arguments",
+            "status",
+            "result",
+            "evidence_ids",
+            "error_code",
+            "error_message",
+        ),
+        "host_event_side_channel_model_visible": False,
+        "compact_omitted_keys": tuple(sorted(_COMPACT_OMITTED_KEYS)),
+        "public_context_marker": "PUBLIC_CONTEXT_JSON",
+        "contract_repair_marker": "CONTRACT_REPAIR_JSON",
+        "actual_model_request_prompts_frozen": True,
+        "actual_provider_request_hashes_matched": True,
+        "noninterference_scanner_manifest_hash": _noninterference_scanner_manifest_hash(),
+    }
+    return {
+        **payload,
+        "manifest_hash": canonical_hash(payload, prefix="iterative_agent_model_input_projection:"),
+    }
+
+
 def _compact_public_value(value: Any) -> Any:
     if isinstance(value, dict):
         return {
@@ -1678,9 +2074,7 @@ def _model_visible_task(task: TaskPublicSpec) -> dict[str, Any]:
         # operation_execution_progress. Repeating the complete future DAG in every
         # prompt creates token pressure and can pre-empt non-calculation Scripted steps.
         visible["agent_contract_guidance"] = {
-            key: value
-            for key, value in guidance.items()
-            if key != "operation_execution_contract"
+            key: value for key, value in guidance.items() if key != "operation_execution_contract"
         }
     return visible
 
@@ -1736,12 +2130,8 @@ def _failed_action_repair_context(
         "required_argument_patch": retry_contract.get("suggested_argument_patch"),
         "required_prerequisite_action": retry_contract.get("required_prerequisite_action"),
         "required_next_tools": retry_contract.get("required_next_tools"),
-        "observed_conflict_dimensions": retry_contract.get(
-            "observed_conflict_dimensions"
-        ),
-        "available_resolution_actions": retry_contract.get(
-            "available_resolution_actions"
-        ),
+        "observed_conflict_dimensions": retry_contract.get("observed_conflict_dimensions"),
+        "available_resolution_actions": retry_contract.get("available_resolution_actions"),
         "resolution_decision_rule": retry_contract.get("decision_rule"),
         "available_successful_operation_refs": operation_refs,
         "required_action": (

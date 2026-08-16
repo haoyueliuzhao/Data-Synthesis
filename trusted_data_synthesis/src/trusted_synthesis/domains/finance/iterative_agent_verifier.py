@@ -42,7 +42,7 @@ from trusted_synthesis.runtime.tools import (
     agent_tool_argument_rejection,
 )
 
-FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v4"
+FINANCE_ITERATIVE_AGENT_VERIFIER_VERSION = "finance_iterative_agent_verifier.v5"
 
 
 class FinanceIterativeAgentVerificationReport(BaseModel):
@@ -169,7 +169,7 @@ class FinanceIterativeAgentVerifier:
             submechanism_scenario=submechanism_scenario_from_oracle(task.oracle.selection_contract),
         )
         leakage_failures = _model_forbidden_field_paths(
-            trajectory.model_dump(mode="json", exclude_none=True)
+            _model_authored_trajectory_payload(trajectory)
         )
         graph_report = self._graph_validator.validate(
             context.proof_graph,
@@ -533,6 +533,21 @@ def _model_forbidden_field_paths(value: Any, *, path: str = "trajectory") -> tup
         for index, item in enumerate(value):
             failures.extend(_model_forbidden_field_paths(item, path=f"{path}[{index}]"))
     return tuple(failures)
+
+
+def _model_authored_trajectory_payload(trajectory: Any) -> dict[str, Any]:
+    """Exclude Host-owned tool observations from the model-generation leakage gate."""
+
+    steps = []
+    for step in trajectory.steps:
+        payload = step.model_dump(mode="json", exclude_none=True)
+        if step.action != ActionType.PLAN:
+            payload.pop("observation", None)
+        steps.append(payload)
+    return {
+        "steps": steps,
+        "final_answer": trajectory.final_answer,
+    }
 
 
 def _required_tool_failures(
