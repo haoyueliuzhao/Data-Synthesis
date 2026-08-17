@@ -15,6 +15,61 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.57-v26.59 Empirical Support Decision
+
+Finance v26.57 executed the two empirical stages authorized by v26.56 while preserving separate
+denominators: 96 unconditional Capability Development rollouts, 144 unconditional natural-state
+rollouts, and 216 state-conditioned attempts. The formal denominator was 456 DeepSeek V4-Flash
+jobs. Compiler Witnesses remained verifier fixtures and contributed zero empirical observations.
+
+The first aggregate contained 455 model-invalid outcomes and one Runtime failure. All 456 raw
+artifacts passed byte, Job identity, actual Prompt, Host side-channel, recursive noninterference,
+condition noninterference, and Provider-call uniqueness checks. The Runtime failure followed one
+transient SSL EOF whose same-request retry succeeded; token accounting incorrectly required usage
+telemetry from the failed HTTP attempt. The permanent Runtime repair ignores only
+`http_success=false` attempts while continuing to reject an HTTP-success response that omits usage.
+
+v26.58 prospectively authorized exactly that one transport retry and explicitly forbade retrying
+the 455 model-invalid rows. The replacement was a complete but independently invalid trajectory.
+The corrected experiment therefore contains 456/456 model outcomes, zero Runtime failures, zero
+instrument failures, and zero independently valid trajectories. It used 4,540 Provider calls,
+20,915,421 provider-reported tokens, estimated cost telemetry of USD 1.5227473128, exact requested
+model identity throughout, no fallback, and no local GPU job.
+
+No natural or conditioned valid state hit was observed. Consequently, 0/36 states and 0/12 VTDO
+candidate tasks passed the frozen reachability and realization-yield contract. Public conditions
+did alter pre-calculation acquisition behavior: conditioned adherence was 38/72 for
+`structured_direct`, 71/72 for `search_then_structured`, and 36/72 for `search_then_open`. These
+invalid-path diagnostics do not create state support.
+
+The credential-free v26.59 audit replayed all corrected raw artifacts. Of 456 rows, 40 first failed
+at the model contract, 86 at Evidence selection, and 330 at Operation execution. All 416 complete
+trajectories failed full frozen Program lineage: 106 matched zero Program nodes, 193 matched one,
+and 117 matched two. The audit also found 207 local verification passes before Program completion,
+67 projected-answer matches despite incomplete Program lineage, and 382 local mechanism successes
+without complete validity.
+
+Static inspection found that 24/24 tasks lacked a model-visible public
+`operation_execution_contract`. The conjunction of that omission, universal Program-lineage
+failure, prefix-only execution, and premature stop readiness supports a public Program/stop
+contract gap as the dominant engineering blocker. It is not claimed as the sole cause of all model
+errors; Reconciliation also retains an Evidence-support weakness.
+
+The authoritative v26.59 decision is:
+
+```text
+status                  = public_operation_contract_gap_observed
+next_permitted_stage    = fresh_public_operation_contract_rematerialization_only
+production_contribution = 0
+```
+
+The next Population must receive a fresh identity after Joint Compilation binds a model-visible
+ordered Operation contract, terminal-node stop readiness, symbolic public variables, and an
+early-stop counterfactual to the same semantic source and Verifier DAG. Capability Confirmation,
+state-support Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and production
+Contribution remain forbidden. See
+`docs/finance_v26_57_v26_59_empirical_support_and_failure_audit.md`.
+
 ## v26.56 Fresh Executable-Task Rematerialization
 
 Finance v26.56 completes the no-API task redesign required by v26.55. It does not patch the
@@ -476,9 +531,13 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | new v26 files passed; 127 historical baseline files remain unformatted |
-| Mypy | passed, 349 source files |
-| Pytest | passed, 875 tests in 388.80 seconds |
+| Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
+| Mypy | passed, 353 source files |
+| Pytest | passed, 890 tests in 402.87 seconds |
+| v26.57-v26.59 focused regression | 55 passed |
+| v26.58 completed-run replay | credential-free resume reused the existing result; four SHA-256 values unchanged |
+| v26.58 implementation manifest | all four frozen source-file SHA-256 values match the current tree |
+| v26.59 deterministic rebuild | zero API/GPU; diagnostics and report are byte-identical |
 | v26.56 executable-task rematerialization focus | 10 passed |
 | v26.56 dual build | all nine detail artifacts and report are byte-identical |
 | v26.56 implementation manifest | three source files content-hashed in report identity |
@@ -697,14 +756,33 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not rerun GP-C, open Authorization, issue the 60-task Validation contract, or launch the reserved
-v23 Discovery. The final v9 qualification is a negative outcome under its frozen gates. Any next
-attempt must be a separately identified Agent-environment redesign with new tasks and unchanged
-scientific claim boundaries; it cannot relax v9 thresholds or reinterpret its partial valid cells
-as a pass. Objective Support remains a separate unresolved bottleneck and cannot be repaired by
-changing Explorer models alone.
+Do not rerun the v26.57 conditions, relax the state gates, promote local mechanism successes, or
+open Capability Confirmation, State-support Confirmation, No-C VTDO, Student training, Exact
+Target, GP-C, or Contribution. The only permitted transition is:
+
+```text
+fresh_public_operation_contract_rematerialization_only
+```
+
+Joint Compilation must create a fresh, identity-incompatible Population. Before task identity
+freeze, each task must bind a public symbolic Operation-execution contract to the same semantic
+source, Program DAG, Answer Projection, Evidence Support Lattice, Citation Contract, and Verifier.
+The contract must expose ordered dependencies and a terminal Operation requirement, make stop
+readiness depend on complete Program progress, preserve model authority over the target mechanism
+and acquisition route, and fail an explicit early-stop counterfactual.
+
+That Population must first pass credential-free executable Witness, destructive Mechanism
+Necessity, public/Oracle isolation, and deterministic-replay audits. A new API Pilot may be frozen
+only after those static gates pass. The 456 v26.57-v26.58 outcomes remain immutable Development
+evidence and cannot be reused as fresh Confirmation. Objective Support remains a separate
+unresolved bottleneck and is not repaired by this Operation-contract redesign.
 
 ## Authoritative References
+
+- `docs/finance_v26_57_v26_59_empirical_support_and_failure_audit.md`
+- `artifacts/vtdo_experiment/finance_v26_57_empirical_support_pilot_20260818/report.json`
+- `artifacts/vtdo_experiment/finance_v26_58_transport_recovery_20260818/report.json`
+- `artifacts/vtdo_experiment/finance_v26_59_empirical_failure_audit_20260818/report.json`
 
 - `docs/finance_v26_56_executable_task_rematerialization_report.md`
 - `docs/finance_v26_55_executable_support_contract_hardening.md`

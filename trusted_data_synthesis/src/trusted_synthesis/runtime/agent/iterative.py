@@ -255,9 +255,7 @@ class IterativeAgentAudit(BaseModel):
     decision_prompt_noninterference_attestation_hashes: tuple[str, ...] = Field(min_length=1)
     model_request_prompts: tuple[str, ...] = Field(min_length=1)
     model_request_prompt_hashes: tuple[str, ...] = Field(min_length=1)
-    model_request_prompt_noninterference_attestation_hashes: tuple[str, ...] = Field(
-        min_length=1
-    )
+    model_request_prompt_noninterference_attestation_hashes: tuple[str, ...] = Field(min_length=1)
     observation_ids: tuple[str, ...] = Field(min_length=1)
     observation_content_hashes: tuple[str, ...] = Field(min_length=1)
     public_model_visible_result_hashes: tuple[str, ...] = Field(min_length=1)
@@ -423,9 +421,7 @@ class IterativeAgentFailureArtifact(BaseModel):
             raise ValueError("failure Artifact plan-prompt accounting is incomplete")
         if self.plan_prompt_hash is not None and (
             self.plan_prompt_noninterference_attestation_hash
-            != _prompt_noninterference_attestation_hash(
-                self.plan_prompt_hash, expected_scanner
-            )
+            != _prompt_noninterference_attestation_hash(self.plan_prompt_hash, expected_scanner)
         ):
             raise ValueError("failure Artifact plan-prompt attestation is invalid")
         if len(self.decision_prompt_hashes) != len(
@@ -444,14 +440,10 @@ class IterativeAgentFailureArtifact(BaseModel):
             == len(self.telemetry)
         ):
             raise ValueError("failure Artifact actual request accounting is incomplete")
-        expected_request_hashes = tuple(
-            _sha256_text(item) for item in self.model_request_prompts
-        )
+        expected_request_hashes = tuple(_sha256_text(item) for item in self.model_request_prompts)
         if self.model_request_prompt_hashes != expected_request_hashes:
             raise ValueError("failure Artifact actual request hashes are invalid")
-        if self.model_request_prompt_hashes != tuple(
-            item.request_hash for item in self.telemetry
-        ):
+        if self.model_request_prompt_hashes != tuple(item.request_hash for item in self.telemetry):
             raise ValueError("failure Artifact prompts do not match Provider telemetry")
         if self.model_request_prompt_noninterference_attestation_hashes != tuple(
             _prompt_noninterference_attestation_hash(item, expected_scanner)
@@ -1008,9 +1000,7 @@ class IterativeAgentSolver:
                 _sha256_text(item) for item in model_request_prompts
             ),
             "model_request_prompt_noninterference_attestation_hashes": tuple(
-                _prompt_noninterference_attestation_hash(
-                    _sha256_text(item), scanner_manifest_hash
-                )
+                _prompt_noninterference_attestation_hash(_sha256_text(item), scanner_manifest_hash)
                 for item in model_request_prompts
             ),
             "observation_ids": tuple(item.observation_id for item in observations),
@@ -1134,9 +1124,7 @@ def _make_failure_artifact(
         "last_model_prompt_hash": request_hashes[-1] if request_hashes else None,
         "noninterference_scanner_manifest_hash": scanner_manifest_hash,
         "plan_prompt_noninterference_attestation_hash": (
-            _prompt_noninterference_attestation_hash(
-                plan_prompt_hash, scanner_manifest_hash
-            )
+            _prompt_noninterference_attestation_hash(plan_prompt_hash, scanner_manifest_hash)
             if plan_prompt_hash is not None
             else None
         ),
@@ -1375,7 +1363,7 @@ def _prompt_component_bytes(prompt: str) -> dict[str, int]:
 
 
 def _total_model_tokens(telemetry: list[ModelCallTelemetry]) -> int:
-    totals = [item.total_tokens for item in telemetry]
+    totals = [item.total_tokens for item in telemetry if item.http_success]
     if any(item is None for item in totals):
         raise LLMClientError(
             "Agent provider omitted required token usage telemetry",

@@ -28,6 +28,7 @@ from trusted_synthesis.runtime.agent.iterative import (
     _operation_step_rejection,
     _request_contract,
     _scripted_operation_execution_progress,
+    _total_model_tokens,
     _validate_answer_observation_constraints,
 )
 from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTelemetry
@@ -1039,6 +1040,24 @@ def test_transient_provider_retry_preserves_prompt_and_repair_budget(
     assert prompts == tuple(client.prompts)
 
 
+def test_transient_transport_failure_does_not_invalidate_recovered_token_budget() -> None:
+    client = _TransientThenValidClient(failure_count=1)
+    _, telemetry, _, _ = _request_contract(client, "Return a scalar contract.", _ScalarContract)
+
+    assert [item.http_success for item in telemetry] == [False, True]
+    assert _total_model_tokens(list(telemetry)) == 10
+
+    missing_success_usage = telemetry[-1].model_copy(
+        update={
+            "total_tokens": None,
+            "json_contract_success": False,
+            "error_type": "MissingTokenUsageTelemetry",
+        }
+    )
+    with pytest.raises(LLMClientError, match="omitted required token usage"):
+        _total_model_tokens([missing_success_usage])
+
+
 def test_transient_provider_retry_exhaustion_is_fail_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1132,8 +1151,7 @@ def test_agent_cannot_stop_without_observed_evidence() -> None:
     assert artifact.model_request_prompts == captured.value.request_prompts
     assert len(artifact.model_request_prompts) == len(artifact.telemetry)
     assert artifact.model_request_prompt_hashes == tuple(
-        hashlib.sha256(item.encode("utf-8")).hexdigest()
-        for item in artifact.model_request_prompts
+        hashlib.sha256(item.encode("utf-8")).hexdigest() for item in artifact.model_request_prompts
     )
     assert artifact.model_request_prompt_hashes == tuple(
         item.request_hash for item in artifact.telemetry
