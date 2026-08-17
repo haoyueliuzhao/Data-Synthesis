@@ -15,6 +15,42 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.54 Executable-Support Precondition Audit
+
+Finance v26.54 implements the credential-free compiler redesign authorized by v26.53. It adds
+domain-neutral Core contracts for Typed Answer Projection, Public Executable Witness, Mechanism
+Necessity, Alternative Valid Paths, Evidence Support Lattices, and separate capability/VTDO task
+admission. The audit replays all 24 immutable v26.42 Development tasks without rescoring v26.43.
+
+A new public-tool compiler produced 226 content-addressed Observations. Eighteen of 24 tasks have
+a complete Public Executable Witness. The other six declare a Reconciliation axis while omitting
+`normalize_metric_unit_period` from Allowed Tools; the compiler blocks them as
+`required_normalization_tool_not_allowed`. Historical Oracle Reference Workflows are not counted
+as Witnesses because they use Oracle-only tools, and compiler Witnesses are explicitly not counted
+as model-owned VTDO paths.
+
+All 24 Typed Answer Projection contracts and Evidence Support Lattices compile, but zero are bound
+to the immutable historical TaskPackages or current Verifier. Mechanism Necessity is 0/24:
+Context wrong-action irreparability is 0/8, Reconciliation normalized-reference consumption is
+0/8, and the historical eight-task Recovery/Stopping mechanism remains combined. The prospective
+taxonomy records 8 Context, 8 Reconciliation, 4 Recovery, and 4 Stopping tasks without relabeling
+historical artifacts. No task has three independently valid, model-owned, state-distinct paths.
+
+The role-specific result is therefore:
+
+```text
+capability_measurement_eligible = 0/24
+vtdo_multistate_eligible        = 0/24
+```
+
+The authoritative report is
+`finance_v26_executable_support_audit:1c82f661174e1e62783272df1333fdfdaac9797422052b29c28f98f1784b7cc1`.
+The run used zero API calls and zero GPU jobs. It preserves
+`capability_task_or_scaffold_redesign_only`; Fresh Confirmation, State-support Discovery, No-C
+VTDO, Student training, Exact Target, GP-C, and production Contribution remain forbidden.
+Production Contribution is zero. See
+`docs/finance_v26_54_executable_support_precondition_audit.md`.
+
 ## v26.53 Read-only Statistical Audit
 
 Finance v26.53 completed a credential-free, non-authorizing audit of all 576 immutable v26.43
@@ -368,12 +404,14 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 127 historical baseline files remain unformatted |
-| Mypy | passed, 344 source files |
-| Pytest | passed, 855 tests in 353.97 seconds |
+| Mypy | passed, 346 source files |
+| Pytest | passed, 863 tests in 354.81 seconds |
+| v26.54 executable-support focus | 8 passed |
+| v26.54 dual build | all seven detail artifacts and report are byte-identical |
 | v26.53 statistical-audit focus | 9 passed |
 | v26.53 credential-free replay | authoritative and determinism builds each replayed |
 | v26.53 dual build | all three detail artifacts are byte-identical |
-| Core generalization boundary | 134 files, zero imports/branches/field accesses/violations |
+| Core generalization boundary | 135 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
 | v25.20 population deterministic replay | byte-identical SHA-256 `8ee0b10046af...` |
