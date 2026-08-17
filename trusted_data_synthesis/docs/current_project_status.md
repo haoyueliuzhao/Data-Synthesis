@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-17
+Audit date: 2026-08-18
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,42 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+## v26.53 Read-only Statistical Audit
+
+Finance v26.53 completed a credential-free, non-authorizing audit of all 576 immutable v26.43
+rollouts. It produced 576 rollout diagnostics, 96 mechanism/Scaffold/task Cell summaries, and 24
+task-level Scaffold influence records. Exact source and output hashes replay successfully; an
+independent rebuild reproduced all three detail artifacts byte for byte. Both builds used zero
+API calls and zero GPU jobs. v26.53 supersedes the uncommitted v26.50 through v26.52 development
+diagnostics.
+
+The ordered failure cascade accounts for all 553 invalid trajectories: 288 first fail at operation
+execution, 198 at answer projection, 32 at Evidence selection, 24 at verification, 8 at model
+contract, 2 at argument construction, and 1 at citation. The 198 answer-only failures are not all
+formatting defects: 137 combine value and reference errors, 26 are numeric/scalar only, 25
+exactly match the compiled human-facing Answer Projection, and 10 contain a wrong Evidence
+reference or projected label.
+
+The trajectory audit rejects a global template-collapse explanation. Across the 96 six-rollout
+Cells, mean unique normalized trace count is 5.323 and mean effective trace count is 5.188.
+However, this variation is carried predominantly by invalid paths. Only 23 trajectories are valid,
+covering 3/24 tasks and 9/96 Cells; 21/23 come from Semantic Reconciliation. Positive state-support
+inference therefore remains unsupported. All 23 valid trajectories have a Quotient State, with
+21 unique states, entropy 4.3496 bits, and effective count 20.3880. No invalid trajectory is mapped;
+its state entropy is undefined rather than zero.
+
+Citation equality is not an isolated observed blocker: all 183 citation-equality failures are strict
+Gold subsets, none are strict supersets, and none fail only the citation family. Semantic equivalence
+of alternative non-Gold Evidence remains unevaluated. Static inspection also finds one registered
+Reference Workflow per task and no dedicated Public Executable Witness, Mechanism Necessity, or
+Alternative Valid Path artifact.
+
+The final audit identity is
+`finance_v26_bridge_statistical_audit:c7851d1487fbab1c5d4814451ea3f46aa52f54e68f01bc841cd66acfcd43c64b`.
+It preserves `capability_task_or_scaffold_redesign_only`; no v26.43 outcome was rescored and no
+downstream stage was authorized. See
+`docs/finance_v26_53_failure_cascade_trace_statistical_audit.md`.
 
 ## Current v26 Mainline Decision
 
@@ -332,8 +368,11 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 127 historical baseline files remain unformatted |
-| Mypy | passed, 340 source files |
-| Pytest | passed, 830 tests in 162.41 seconds |
+| Mypy | passed, 344 source files |
+| Pytest | passed, 855 tests in 353.97 seconds |
+| v26.53 statistical-audit focus | 9 passed |
+| v26.53 credential-free replay | authoritative and determinism builds each replayed |
+| v26.53 dual build | all three detail artifacts are byte-identical |
 | Core generalization boundary | 134 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
