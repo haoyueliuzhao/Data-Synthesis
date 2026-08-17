@@ -6,7 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
-EXECUTABLE_SUPPORT_CONTRACT_VERSION = "executable_support_contract.v1"
+EXECUTABLE_SUPPORT_CONTRACT_VERSION_V1 = "executable_support_contract.v1"
+EXECUTABLE_SUPPORT_CONTRACT_VERSION = "executable_support_contract.v2"
 
 ProjectionView = Literal[
     "public_output_instruction",
@@ -163,6 +164,8 @@ class PublicExecutableWitnessArtifact(FrozenModel):
     steps: tuple[PublicWitnessStep, ...] = ()
     selected_evidence_ids: tuple[str, ...] = ()
     verification_support_ids: tuple[str, ...] = ()
+    cited_evidence_ids: tuple[str, ...] = ()
+    citation_complete: bool | None = None
     normalized_answer_hash: str = Field(min_length=1)
     independent_verifier_report_hash: str = Field(min_length=1)
     only_public_inputs: bool
@@ -185,6 +188,22 @@ class PublicExecutableWitnessArtifact(FrozenModel):
             raise ValueError("public witness reuses an observation")
         if not set(item.tool_id for item in self.steps) <= set(self.allowed_tools):
             raise ValueError("public witness step uses a disallowed tool")
+        if self.cited_evidence_ids != tuple(sorted(set(self.cited_evidence_ids))):
+            raise ValueError("public witness citations must be sorted and unique")
+        if not set(self.cited_evidence_ids) <= set(self.selected_evidence_ids):
+            raise ValueError("public witness cites Evidence it did not select")
+        if self.schema_version == EXECUTABLE_SUPPORT_CONTRACT_VERSION_V1:
+            if self.cited_evidence_ids or self.citation_complete is not None:
+                raise ValueError("v1 public witness cannot carry a v2 citation attestation")
+            citation_valid = True
+        elif self.schema_version == EXECUTABLE_SUPPORT_CONTRACT_VERSION:
+            if self.citation_complete is None:
+                raise ValueError("v2 public witness requires a citation attestation")
+            if self.citation_complete and not self.cited_evidence_ids:
+                raise ValueError("complete public witness citation set cannot be empty")
+            citation_valid = self.citation_complete
+        else:
+            raise ValueError("public witness schema version is unsupported")
         expected_valid = all(
             (
                 self.only_public_inputs,
@@ -193,6 +212,7 @@ class PublicExecutableWitnessArtifact(FrozenModel):
                 self.evidence_support_complete,
                 self.verification_complete,
                 self.answer_projection_complete,
+                citation_valid,
             )
         )
         if self.full_validity_passed != expected_valid:
@@ -239,6 +259,10 @@ class MechanismNecessityArtifact(FrozenModel):
             raise ValueError("mechanism necessity mutation kinds are duplicated")
         observed_kinds = {item.mutation_kind for item in self.counterfactual_results}
         mutations_complete = set(self.required_mutation_kinds) <= observed_kinds
+        if any(
+            item.mutation_target != self.target_mechanism_id for item in self.counterfactual_results
+        ):
+            raise ValueError("mechanism counterfactual targets another mechanism")
         expected_passed = bool(
             self.mechanism_observed_in_witness
             and mutations_complete
@@ -352,7 +376,8 @@ class ExecutableSupportTaskCompilation(FrozenModel):
         )
         if self.assigned_task_use != expected_use:
             raise ValueError("executable-support task use is inconsistent")
-        if bool(self.blockers) == (expected_use != "blocked"):
+        blockers_required = expected_use != "vtdo_multistate"
+        if bool(self.blockers) != blockers_required:
             raise ValueError("executable-support blockers are inconsistent")
         if self.compilation_id != executable_support_task_compilation_id(self):
             raise ValueError("executable-support task compilation identity is invalid")
@@ -406,8 +431,11 @@ def evidence_support_lattice_id(value: EvidenceSupportLattice) -> str:
 
 
 def public_executable_witness_id(value: PublicExecutableWitnessArtifact) -> str:
+    excluded = {"witness_id"}
+    if value.schema_version == EXECUTABLE_SUPPORT_CONTRACT_VERSION_V1:
+        excluded.update({"cited_evidence_ids", "citation_complete"})
     return canonical_hash(
-        value.model_dump(mode="json", exclude={"witness_id"}),
+        value.model_dump(mode="json", exclude=excluded),
         prefix="public_executable_witness:",
     )
 

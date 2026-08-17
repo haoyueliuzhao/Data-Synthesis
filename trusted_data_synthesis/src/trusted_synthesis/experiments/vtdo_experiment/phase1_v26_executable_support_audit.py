@@ -15,6 +15,7 @@ from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.synthesis.schema import CompiledProofCarryingArtifacts
 from trusted_synthesis.core.task.answer_schema import allowed_result_fields, required_answer_fields
 from trusted_synthesis.core.trajectory.executable_support import (
+    EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     PROJECTION_VIEWS,
     AlternativeValidPathCatalog,
     EvidenceSupportLattice,
@@ -60,9 +61,9 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-V26_EXECUTABLE_SUPPORT_AUDIT_VERSION = "finance_v26_executable_support_audit.v1"
+V26_EXECUTABLE_SUPPORT_AUDIT_VERSION = "finance_v26_executable_support_audit.v2"
 V26_EXECUTABLE_SUPPORT_COMPILER_ID = "finance.v26.executable_support_compiler"
-V26_EXECUTABLE_SUPPORT_COMPILER_VERSION = "1.0.0"
+V26_EXECUTABLE_SUPPORT_COMPILER_VERSION = "1.1.0"
 V26_TYPED_ANSWER_PROJECTION_VERSION = "typed_answer_projection.v2"
 V26_EVIDENCE_LATTICE_VERSION = "evidence_support_lattice.v1"
 
@@ -136,7 +137,7 @@ class TaskExecutableSupportAuditRecord(FrozenModel):
             raise ValueError("task audit capability eligibility is inconsistent")
         if self.vtdo_multistate_eligible != expected_vtdo:
             raise ValueError("task audit VTDO eligibility is inconsistent")
-        if bool(self.blockers) == expected_capability:
+        if bool(self.blockers) == expected_vtdo:
             raise ValueError("task audit blockers are inconsistent")
         if self.record_id != task_executable_support_audit_record_id(self):
             raise ValueError("task executable-support audit identity is invalid")
@@ -154,7 +155,7 @@ class V26ExecutableSupportAuditReport(FrozenModel):
     compiler_id: Literal["finance.v26.executable_support_compiler"] = (
         "finance.v26.executable_support_compiler"
     )
-    compiler_version: Literal["1.0.0"] = "1.0.0"
+    compiler_version: Literal["1.0.0", "1.1.0"] = "1.1.0"
     task_count: Literal[24] = 24
     typed_answer_projection_compiled_count: Literal[24] = 24
     typed_answer_projection_bound_count: int = Field(ge=0, le=24)
@@ -192,6 +193,12 @@ class V26ExecutableSupportAuditReport(FrozenModel):
 
     @model_validator(mode="after")
     def validate_report(self) -> V26ExecutableSupportAuditReport:
+        expected_compiler_version = {
+            "finance_v26_executable_support_audit.v1": "1.0.0",
+            V26_EXECUTABLE_SUPPORT_AUDIT_VERSION: V26_EXECUTABLE_SUPPORT_COMPILER_VERSION,
+        }.get(self.schema_version)
+        if expected_compiler_version is None or self.compiler_version != expected_compiler_version:
+            raise ValueError("v26 executable-support report compiler version is inconsistent")
         expected_counts: dict[TargetMechanism, int] = {
             "context_conditioned_action": 8,
             "semantic_reconciliation": 8,
@@ -286,7 +293,7 @@ def _projection_contract(task: CapabilitySensitiveTaskArtifact) -> TypedAnswerPr
         "internal_reference_projection": dict(sorted(task.answer_projection.items())),
         "public_reference_labels": labels,
         "public_output_instruction": render_public_output_instruction(required, labels),
-        "schema_version": "executable_support_contract.v1",
+        "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     }
     unhashed = TypedAnswerProjectionContract.model_construct(
         contract_id="pending",
@@ -393,7 +400,7 @@ def _evidence_lattice(
         "exact_equality_required": False,
         "current_verifier_bound": current_bound,
         "binding_status": "bound" if current_bound else "requires_verifier_binding",
-        "schema_version": "executable_support_contract.v1",
+        "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     }
     provisional = EvidenceSupportLattice.model_construct(lattice_id="pending", **values)
     return EvidenceSupportLattice(
@@ -494,6 +501,7 @@ def _compile_public_witness(
     final_result: Mapping[str, Any] | None = None
     failures: list[str] = []
     only_public_inputs = True
+    gold = set(task.task.oracle.gold_evidence_ids)
 
     def execute(tool_id: str, arguments: dict[str, Any]) -> AgentToolResult:
         nonlocal only_public_inputs
@@ -610,7 +618,6 @@ def _compile_public_witness(
             verification_support_ids.update(result.result.get("support") or ())
             verification_support_ids.update(result.evidence_ids)
 
-        gold = set(task.task.oracle.gold_evidence_ids)
         operation_lineage_complete = gold <= operation_evidence_ids
         evidence_support_complete = set(selected_ids) == gold
         verification_complete = gold <= verification_support_ids
@@ -630,6 +637,8 @@ def _compile_public_witness(
     only_allowed_tools = set(item.call.tool_id for item in observations) <= set(
         task.task.public.allowed_tools
     )
+    cited_ids = tuple(sorted(set(selected_ids)))
+    citation_complete = set(cited_ids) == gold
     checks = {
         "only_public_inputs": only_public_inputs,
         "only_allowed_tools": only_allowed_tools,
@@ -637,6 +646,7 @@ def _compile_public_witness(
         "evidence_support_complete": evidence_support_complete,
         "verification_complete": verification_complete,
         "answer_projection_complete": answer_projection_complete,
+        "citation_complete": citation_complete,
     }
     for key, passed in checks.items():
         if not passed and key not in failures:
@@ -647,6 +657,7 @@ def _compile_public_witness(
         "checks": checks,
         "selected_evidence_ids": sorted(set(selected_ids)),
         "verification_support_ids": sorted(verification_support_ids),
+        "cited_evidence_ids": cited_ids,
         "normalized_answer_hash": canonical_hash(projected, prefix="public_witness_answer:"),
     }
     steps = tuple(
@@ -674,6 +685,8 @@ def _compile_public_witness(
         "steps": steps,
         "selected_evidence_ids": tuple(sorted(set(selected_ids))),
         "verification_support_ids": tuple(sorted(verification_support_ids)),
+        "cited_evidence_ids": cited_ids,
+        "citation_complete": citation_complete,
         "normalized_answer_hash": verifier_report["normalized_answer_hash"],
         "independent_verifier_report_hash": canonical_hash(
             verifier_report, prefix="public_witness_independent_verifier:"
@@ -681,7 +694,7 @@ def _compile_public_witness(
         **checks,
         "full_validity_passed": all(checks.values()),
         "failure_reasons": tuple(sorted(set(failures))),
-        "schema_version": "executable_support_contract.v1",
+        "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     }
     provisional = PublicExecutableWitnessArtifact.model_construct(witness_id="pending", **values)
     return (
@@ -790,7 +803,7 @@ def _necessity_artifact(
         "mechanism_observed_in_witness": registered,
         "status": "blocked",
         "failure_reasons": failures or ("mechanism_counterfactuals_missing",),
-        "schema_version": "executable_support_contract.v1",
+        "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     }
     provisional = MechanismNecessityArtifact.model_construct(artifact_id="pending", **values)
     return MechanismNecessityArtifact(
@@ -814,7 +827,7 @@ def _alternative_catalog(
             "three_distinct_quotient_states_missing",
             "compiler_witness_is_not_model_owned",
         ),
-        "schema_version": "executable_support_contract.v1",
+        "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     }
     provisional = AlternativeValidPathCatalog.model_construct(catalog_id="pending", **values)
     return AlternativeValidPathCatalog(
@@ -867,7 +880,7 @@ def _task_compilation(
             "vtdo_multistate" if vtdo else "capability_measurement" if capability else "blocked"
         ),
         "blockers": tuple(sorted(blockers)),
-        "schema_version": "executable_support_contract.v1",
+        "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION,
     }
     provisional = ExecutableSupportTaskCompilation.model_construct(
         compilation_id="pending", **values

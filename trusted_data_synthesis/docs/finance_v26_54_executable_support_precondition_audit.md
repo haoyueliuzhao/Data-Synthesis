@@ -1,5 +1,11 @@
 # Finance v26.54 Executable-Support Precondition Audit
 
+> Historical contract note: v26.54 remains an immutable v1 result at source commit `c67671c`.
+> Finance v26.55 supersedes it for future task construction by adding explicit Citation
+> completeness, correcting capability-only role admission, and checking counterfactual target
+> identity. The 18/24 Witness result and all downstream blockers are unchanged. See
+> `docs/finance_v26_55_executable_support_contract_hardening.md`.
+
 Audit date: 2026-08-18
 
 ## Summary

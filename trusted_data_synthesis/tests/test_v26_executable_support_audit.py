@@ -7,12 +7,17 @@ import pytest
 from pydantic import ValidationError
 
 from trusted_synthesis.core.trajectory.executable_support import (
+    EXECUTABLE_SUPPORT_CONTRACT_VERSION_V1,
     AlternativeValidPath,
     AlternativeValidPathCatalog,
     EvidenceSupportLattice,
+    ExecutableSupportTaskCompilation,
+    PublicExecutableWitnessArtifact,
     TypedAnswerProjectionContract,
     alternative_valid_path_catalog_id,
     alternative_valid_path_id,
+    executable_support_task_compilation_id,
+    public_executable_witness_id,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_executable_support_audit import (
     CONDITIONAL_METRIC_DEFINITIONS,
@@ -83,6 +88,8 @@ def test_v26_executable_support_replays_current_blockers(
     assert report.conditional_metric_definitions == CONDITIONAL_METRIC_DEFINITIONS
     assert report.model_api_calls == report.gpu_jobs == 0
     assert report.production_contribution == 0
+    assert report.compiler_version == "1.1.0"
+    assert report.schema_version == "finance_v26_executable_support_audit.v2"
 
 
 def test_public_witness_failures_are_typed_task_contract_defects(
@@ -104,6 +111,8 @@ def test_public_witness_failures_are_typed_task_contract_defects(
     assert len(passed) == 18
     assert all(item["hidden_from_model"] for item in passed)
     assert all(not item["model_owned_path"] for item in passed)
+    assert all(item["citation_complete"] for item in passed)
+    assert all(item["cited_evidence_ids"] == item["selected_evidence_ids"] for item in passed)
 
 
 def test_compiler_witness_does_not_count_as_vtdo_path(
@@ -206,6 +215,65 @@ def test_vtdo_catalog_requires_three_distinct_quotient_states() -> None:
     collision_values["catalog_id"] = alternative_valid_path_catalog_id(collision_provisional)
     with pytest.raises(ValidationError, match="status is inconsistent"):
         AlternativeValidPathCatalog.model_validate(collision_values)
+
+
+def test_capability_only_task_is_admitted_without_vtdo_paths() -> None:
+    values = {
+        "task_id": "task:capability-only",
+        "joint_compilation_id": "joint:capability-only",
+        "source_mechanism_id": "source-mechanism",
+        "target_mechanism_id": "target-mechanism",
+        "answer_projection_contract_id": "projection:capability-only",
+        "public_witness_id": "witness:capability-only",
+        "mechanism_necessity_artifact_id": "necessity:capability-only",
+        "alternative_path_catalog_id": "catalog:capability-only",
+        "evidence_support_lattice_id": "lattice:capability-only",
+        "answer_projection_bound": True,
+        "evidence_lattice_bound": True,
+        "public_witness_passed": True,
+        "mechanism_necessity_passed": True,
+        "alternative_paths_passed": False,
+        "capability_measurement_eligible": True,
+        "vtdo_multistate_eligible": False,
+        "assigned_task_use": "capability_measurement",
+        "blockers": ("three_alternative_valid_paths_not_proven",),
+    }
+    provisional = ExecutableSupportTaskCompilation.model_construct(
+        compilation_id="pending",
+        **values,
+    )
+    compilation = ExecutableSupportTaskCompilation(
+        compilation_id=executable_support_task_compilation_id(provisional),
+        **values,
+    )
+
+    assert compilation.capability_measurement_eligible
+    assert not compilation.vtdo_multistate_eligible
+    assert compilation.assigned_task_use == "capability_measurement"
+
+
+def test_v1_public_witness_identity_remains_replayable(
+    built_audits: tuple[Path, Path],
+) -> None:
+    first, _ = built_audits
+    payload = _load_rows(first / "public_executable_witnesses.json")[0]
+    current = PublicExecutableWitnessArtifact.model_validate(payload)
+    provisional = current.model_copy(
+        update={
+            "witness_id": "pending",
+            "cited_evidence_ids": (),
+            "citation_complete": None,
+            "schema_version": EXECUTABLE_SUPPORT_CONTRACT_VERSION_V1,
+        }
+    )
+    legacy = provisional.model_copy(
+        update={"witness_id": public_executable_witness_id(provisional)}
+    )
+
+    replayed = PublicExecutableWitnessArtifact.model_validate(legacy.model_dump(mode="python"))
+    assert replayed.schema_version == EXECUTABLE_SUPPORT_CONTRACT_VERSION_V1
+    assert replayed.citation_complete is None
+    assert replayed.cited_evidence_ids == ()
 
 
 def test_historical_oracle_reference_is_not_a_public_witness() -> None:

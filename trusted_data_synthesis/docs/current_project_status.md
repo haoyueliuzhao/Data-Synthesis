@@ -15,6 +15,31 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.55 Executable-Support Contract v2
+
+Finance v26.55 is a credential-free hardening replication of v26.54. A prospective contract audit
+found that v1 did not explicitly include Citation completeness in Public Witness validity and
+would reject a future capability-measurement task merely because it lacked three VTDO paths. The
+v2 Core contract adds sorted selected Citation support to `V=1`, admits the capability-only role
+without weakening VTDO, and requires every necessity counterfactual to target its enclosing
+mechanism. Historical v1 Witness identities retain their original hash semantics.
+
+The same immutable 24-task source was rebuilt with compiler `1.1.0`. All 24 Witnesses have complete
+Citation support; complete Public Witness validity remains 18/24. The same six tasks fail because
+a declared Reconciliation axis has no allowed `normalize_metric_unit_period` tool. Projection and
+Lattice binding, Mechanism Necessity, and three-path support remain 0/24, so both capability and
+VTDO eligibility remain 0/24. This confirms that the v26.54 blocker was not caused by omitted
+Citation accounting or task-role conflation.
+
+The authoritative v2 report is
+`finance_v26_executable_support_audit:9f3b34ae4fcb75fb7226ba9d5e67a20fe5e596d8fb45bdf689208d5323c9bbae`.
+It used zero API calls and zero GPU jobs. Its transition remains
+`capability_task_or_scaffold_redesign_only`; Fresh Confirmation, State-support Discovery, No-C
+VTDO, Student training, Exact Target, GP-C, and production Contribution remain forbidden.
+Production Contribution is zero. v26.54 remains immutable historical evidence at source commit
+`c67671c`, while v26.55 is the required contract for all future rematerialized tasks. See
+`docs/finance_v26_55_executable_support_contract_hardening.md`.
+
 ## v26.54 Executable-Support Precondition Audit
 
 Finance v26.54 implements the credential-free compiler redesign authorized by v26.53. It adds
@@ -405,7 +430,9 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 127 historical baseline files remain unformatted |
 | Mypy | passed, 346 source files |
-| Pytest | passed, 863 tests in 354.81 seconds |
+| Pytest | passed, 865 tests in 355.81 seconds |
+| v26.55 executable-support v2 focus | 10 passed |
+| v26.55 dual build | all seven detail artifacts and report are byte-identical |
 | v26.54 executable-support focus | 8 passed |
 | v26.54 dual build | all seven detail artifacts and report are byte-identical |
 | v26.53 statistical-audit focus | 9 passed |
