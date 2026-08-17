@@ -44,6 +44,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_fresh_population i
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_stage_router import (
     V26_STAGE_ROUTER_VERSION,
     V26StageLedger,
+    _bridge_support_freeze_embeds_cells,
     _model_schema_version,
     advance_v26_stage,
     initialize_v26_stage_ledger,
@@ -100,10 +101,10 @@ def _write_population(
     path.write_text(population.model_dump_json(), encoding="utf-8")
 
 
-
 def _write_json(path: Path, payload: object) -> Path:
     path.write_text(json.dumps(payload), encoding="utf-8")
     return path
+
 
 def _protocol() -> CapabilityHeterogeneousMainlineProtocol:
     bridge = default_compiler_assisted_bridge_contract()
@@ -191,6 +192,20 @@ def test_v26_router_uses_joint_schema_for_compiled_artifacts() -> None:
     assert _model_schema_version(compiled) == "joint-compilation.test.v1"
 
 
+def test_bridge_support_freeze_cell_binding_is_identity_based_not_order_based() -> None:
+    first = SimpleNamespace(observation_id="bridge-cell:1")
+    second = SimpleNamespace(observation_id="bridge-cell:2")
+    freeze = SimpleNamespace(observations=(second, first))
+
+    assert _bridge_support_freeze_embeds_cells(  # type: ignore[arg-type]
+        freeze,
+        (first, second),
+    )
+    assert not _bridge_support_freeze_embeds_cells(  # type: ignore[arg-type]
+        freeze,
+        (first, SimpleNamespace(observation_id="bridge-cell:3")),
+    )
+
 
 def test_v26_router_rejects_legacy_untyped_population(tmp_path: Path) -> None:
     population_path = tmp_path / "legacy_population.json"
@@ -220,6 +235,7 @@ def test_v26_population_rejects_historical_task_promotion(tmp_path: Path) -> Non
             "fresh_task_population",
             _write_json(population_path, payload),
         )
+
 
 def test_v26_router_advances_only_the_next_stage(tmp_path: Path) -> None:
     population_path = tmp_path / "population.json"

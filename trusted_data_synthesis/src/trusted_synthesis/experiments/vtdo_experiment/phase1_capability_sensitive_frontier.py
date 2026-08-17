@@ -1392,6 +1392,20 @@ def _load_evidence_pool(path: Path) -> _EvidencePool:
         raise ValueError("source Finance population lacks the registered Evidence breadth")
     return pool
 
+
+def load_capability_source_public_evidence(path: Path) -> tuple[EvidenceItem, ...]:
+    """Return the exact public Evidence support available to the task builder."""
+
+    pool = _load_evidence_pool(path.resolve())
+    return tuple(pool.public[evidence_id] for evidence_id in sorted(pool.public))
+
+
+def capability_source_evidence_ids(path: Path) -> tuple[str, ...]:
+    return tuple(
+        item.evidence_id for item in load_capability_source_public_evidence(path)
+    )
+
+
 def _temporal_series(values: Iterable[EvidenceItem]) -> tuple[tuple[EvidenceItem, ...], ...]:
     grouped: dict[tuple[Any, ...], dict[date | datetime, EvidenceItem]] = defaultdict(dict)
     for item in values:

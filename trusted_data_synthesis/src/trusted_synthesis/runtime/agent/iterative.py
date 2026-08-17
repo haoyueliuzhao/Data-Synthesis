@@ -5,7 +5,7 @@ import json
 import time
 from collections.abc import Mapping
 from decimal import Decimal, InvalidOperation
-from typing import Any, Literal, TypeVar
+from typing import Any, Literal, Protocol, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
@@ -34,9 +34,9 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v24"
-ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v8"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v17"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v25"
+ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v9"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v18"
 ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v21"
 HOST_AGENT_NONINTERFERENCE_VERSION = "recursive_host_agent_noninterference.v2"
 MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v1"
@@ -86,6 +86,22 @@ StopRejectionCode = Literal[
     "invalid_final_answer_contract",
 ]
 ContractT = TypeVar("ContractT", bound=BaseModel)
+
+
+class PublicAgentScaffoldCompiler(Protocol):
+    """Compile model-visible assistance from public state only."""
+
+    @property
+    def manifest_hash(self) -> str: ...
+
+    def compile_public_context(
+        self,
+        *,
+        task: TaskPublicSpec,
+        tool_environment: Mapping[str, Any],
+        observations: tuple[AgentToolObservation, ...],
+        stop_rejections: tuple[AgentStopRejection, ...],
+    ) -> Mapping[str, Any]: ...
 
 
 class IterativeAgentProtocolProfile(BaseModel):
@@ -493,6 +509,7 @@ class IterativeAgentSolver:
         maximum_total_tokens: int,
         scripted_tool_sequence: tuple[str, ...] = (),
         protocol_profile: IterativeAgentProtocolProfile | None = None,
+        public_scaffold_compiler: PublicAgentScaffoldCompiler | None = None,
     ) -> None:
         if maximum_total_tokens < 1:
             raise ValueError("interactive Agent requires a positive token budget")
@@ -505,6 +522,7 @@ class IterativeAgentSolver:
         self._maximum_total_tokens = maximum_total_tokens
         self._scripted_tool_sequence = scripted_tool_sequence
         self._protocol_profile = protocol_profile or IterativeAgentProtocolProfile()
+        self._public_scaffold_compiler = public_scaffold_compiler
         reserved = (
             self._protocol_profile.contract_repair_token_reserve
             + self._protocol_profile.final_answer_token_reserve
@@ -554,12 +572,23 @@ class IterativeAgentSolver:
 
         telemetry: list[ModelCallTelemetry] = []
         model_request_prompts: list[str] = []
+        initial_tool_environment = _model_visible_environment(
+            manifest,
+            consumed_tool_calls=0,
+        )
+        initial_scaffold_context = self._compile_public_scaffold_context(
+            task=task,
+            tool_environment=initial_tool_environment,
+            observations=(),
+            stop_rejections=(),
+        )
         if self._protocol_profile.initial_plan_mode == "model_contract":
             plan_prompt = _plan_prompt(
                 task,
-                _model_visible_environment(manifest, consumed_tool_calls=0),
+                initial_tool_environment,
                 self._mode,
                 condition_payload,
+                initial_scaffold_context,
             )
             _assert_no_model_forbidden_prompt(plan_prompt)
             plan_prompt_hash = canonical_hash(plan_prompt, prefix="agent_plan_prompt:")
@@ -620,7 +649,12 @@ class IterativeAgentSolver:
             repair_count = plan_repairs
         else:
             plan = _implicit_public_plan(task)
-            plan_prompt = _implicit_plan_manifest(task, self._mode, condition_payload)
+            plan_prompt = _implicit_plan_manifest(
+                task,
+                self._mode,
+                condition_payload,
+                initial_scaffold_context,
+            )
             _assert_no_model_forbidden_prompt(plan_prompt)
             plan_prompt_hash = canonical_hash(plan_prompt, prefix="agent_plan_prompt:")
             scanner_manifest_hash = _noninterference_scanner_manifest_hash()
@@ -683,6 +717,16 @@ class IterativeAgentSolver:
                 selectable,
                 telemetry,
             )
+            decision_tool_environment = _model_visible_environment(
+                manifest,
+                consumed_tool_calls=len(observations),
+            )
+            public_scaffold_context = self._compile_public_scaffold_context(
+                task=task,
+                tool_environment=decision_tool_environment,
+                observations=tuple(observations),
+                stop_rejections=tuple(stop_rejections),
+            )
             if expected_tool is not None:
                 expected_spec = selectable[expected_tool]
                 decision_prompt = _scripted_tool_prompt(
@@ -703,6 +747,7 @@ class IterativeAgentSolver:
                         "missing_required_verification" if host_repair_tool else None
                     ),
                     public_state_condition=condition_payload,
+                    public_scaffold_context=public_scaffold_context,
                     host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     observation_view=self._protocol_profile.observation_view,
                 )
@@ -713,6 +758,7 @@ class IterativeAgentSolver:
                     plan,
                     tuple(observations),
                     public_state_condition=condition_payload,
+                    public_scaffold_context=public_scaffold_context,
                     host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     mode=self._mode,
                     observation_view=self._protocol_profile.observation_view,
@@ -725,6 +771,7 @@ class IterativeAgentSolver:
                     plan,
                     tuple(observations),
                     public_state_condition=condition_payload,
+                    public_scaffold_context=public_scaffold_context,
                     host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     mode=self._mode,
                     observation_view=self._protocol_profile.observation_view,
@@ -733,15 +780,13 @@ class IterativeAgentSolver:
             else:
                 decision_prompt = _decision_prompt(
                     task,
-                    _model_visible_environment(
-                        manifest,
-                        consumed_tool_calls=len(observations),
-                    ),
+                    decision_tool_environment,
                     plan,
                     tuple(observations),
                     mode=self._mode,
                     expected_tool=None,
                     public_state_condition=condition_payload,
+                    public_scaffold_context=public_scaffold_context,
                     host_feedback=tuple(item.feedback for item in stop_rejections[-1:]),
                     observation_view=self._protocol_profile.observation_view,
                 )
@@ -1023,6 +1068,30 @@ class IterativeAgentSolver:
         if not any(item.status == "succeeded" and item.evidence_ids for item in observations):
             return False
         return not _unmet_action_requirements(task, observations, selectable)
+
+    def _compile_public_scaffold_context(
+        self,
+        *,
+        task: TaskPublicSpec,
+        tool_environment: Mapping[str, Any],
+        observations: tuple[AgentToolObservation, ...],
+        stop_rejections: tuple[AgentStopRejection, ...],
+    ) -> dict[str, Any] | None:
+        compiler = self._public_scaffold_compiler
+        if compiler is None:
+            return None
+        payload = dict(
+            compiler.compile_public_context(
+                task=task,
+                tool_environment=tool_environment,
+                observations=observations,
+                stop_rejections=stop_rejections,
+            )
+        )
+        if not payload:
+            raise ValueError("public scaffold compiler returned an empty context")
+        _assert_no_model_forbidden_fields(payload, path="public_scaffold_context")
+        return payload
 
 
 def iterative_agent_audit_id(value: IterativeAgentAudit) -> str:
@@ -2034,6 +2103,7 @@ def _implicit_plan_manifest(
     task: TaskPublicSpec,
     mode: InteractiveAgentMode,
     public_state_condition: dict[str, Any] | None,
+    public_scaffold_context: dict[str, Any] | None,
 ) -> str:
     return _json_contract_prompt(
         "Host-declared implicit public plan; no model call was made.",
@@ -2041,6 +2111,7 @@ def _implicit_plan_manifest(
             "prompt_version": ITERATIVE_AGENT_PLAN_PROMPT_VERSION,
             "mode": mode,
             "public_behavior_condition": public_state_condition,
+            "public_scaffold": public_scaffold_context,
             "task_id": task.task_id,
             "requirements": [item.value for item in task.requirements],
         },
@@ -2465,6 +2536,7 @@ def _plan_prompt(
     environment_manifest: dict[str, Any],
     mode: InteractiveAgentMode,
     public_state_condition: dict[str, Any] | None,
+    public_scaffold_context: dict[str, Any] | None,
 ) -> str:
     tool_summary = [
         {
@@ -2484,6 +2556,7 @@ def _plan_prompt(
             "prompt_version": ITERATIVE_AGENT_PLAN_PROMPT_VERSION,
             "mode": mode,
             "public_behavior_condition": public_state_condition,
+            "public_scaffold": public_scaffold_context,
             "task": _model_visible_task(task),
             "tool_environment": {
                 "network_policy": environment_manifest["network_policy"],
@@ -2505,6 +2578,7 @@ def _scripted_tool_prompt(
     remaining_tool_ids: tuple[str, ...],
     host_repair_reason: str | None,
     public_state_condition: dict[str, Any] | None,
+    public_scaffold_context: dict[str, Any] | None,
     host_feedback: tuple[str, ...],
     observation_view: ObservationView,
 ) -> str:
@@ -2533,6 +2607,7 @@ def _scripted_tool_prompt(
             "mode": mode,
             "host_control": "scripted_progress" if scripted_step_index is not None else "repair",
             "public_behavior_condition": public_state_condition,
+            "public_scaffold": public_scaffold_context,
             "task": _model_visible_task(task),
             "plan": plan.model_dump(mode="json"),
             "expected_tool": {
@@ -2564,6 +2639,7 @@ def _final_answer_prompt(
     observations: tuple[AgentToolObservation, ...],
     *,
     public_state_condition: dict[str, Any] | None,
+    public_scaffold_context: dict[str, Any] | None,
     host_feedback: tuple[str, ...],
     mode: InteractiveAgentMode,
     observation_view: ObservationView,
@@ -2583,6 +2659,7 @@ def _final_answer_prompt(
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
             "mode": mode,
             "public_behavior_condition": public_state_condition,
+            "public_scaffold": public_scaffold_context,
             "task": _model_visible_task(task),
             "plan": plan.model_dump(mode="json"),
             "host_feedback": host_feedback,
@@ -2601,6 +2678,7 @@ def _decision_prompt(
     mode: InteractiveAgentMode,
     expected_tool: str | None,
     public_state_condition: dict[str, Any] | None,
+    public_scaffold_context: dict[str, Any] | None,
     host_feedback: tuple[str, ...],
     observation_view: ObservationView,
 ) -> str:
@@ -2643,6 +2721,7 @@ def _decision_prompt(
             "prompt_version": ITERATIVE_AGENT_DECISION_PROMPT_VERSION,
             "mode": mode,
             "public_behavior_condition": public_state_condition,
+            "public_scaffold": public_scaffold_context,
             "task": _model_visible_task(task),
             "plan": plan.model_dump(mode="json"),
             "tool_environment": environment_manifest,

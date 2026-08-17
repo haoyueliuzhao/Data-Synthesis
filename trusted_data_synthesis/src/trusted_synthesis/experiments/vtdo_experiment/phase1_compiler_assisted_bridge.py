@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import random
 from collections import Counter
 from collections.abc import Iterable, Mapping
 from typing import Any, Literal
@@ -18,16 +19,17 @@ from trusted_synthesis.core.trajectory.scaffolding import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION = "finance_compiler_assisted_bridge.v4"
+COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION = "finance_compiler_assisted_bridge.v5"
 BRIDGE_STATIC_CONSTRUCT_AUDIT_VERSION = "finance_bridge_static_construct_audit.v2"
 BRIDGE_DEVELOPMENT_AUTHORIZATION_VERSION = "finance_bridge_development_authorization.v2"
 BRIDGE_CONFIRMATION_AUTHORIZATION_VERSION = "finance_bridge_confirmation_authorization.v2"
 BRIDGE_ESTIMAND_OBSERVATION_VERSION = "finance_bridge_estimand_observation.v1"
 BRIDGE_EXECUTION_MANIFEST_VERSION = "finance_bridge_execution_manifest.v1"
-BRIDGE_ROLLOUT_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_rollout.v1"
-BRIDGE_CELL_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_cell.v4"
-BRIDGE_MECHANISM_SELECTION_VERSION = "finance_compiler_assisted_bridge_selection.v2"
-BRIDGE_SUPPORT_FREEZE_VERSION = "finance_compiler_assisted_bridge_support_freeze.v3"
+BRIDGE_ROLLOUT_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_rollout.v3"
+BRIDGE_CELL_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_cell.v5"
+BRIDGE_LEVEL_INFERENCE_VERSION = "finance_compiler_assisted_bridge_level_inference.v2"
+BRIDGE_MECHANISM_SELECTION_VERSION = "finance_compiler_assisted_bridge_selection.v3"
+BRIDGE_SUPPORT_FREEZE_VERSION = "finance_compiler_assisted_bridge_support_freeze.v5"
 BRIDGE_CONFIRMED_TASK_CONDITION_VERSION = "finance_bridge_confirmed_task_condition.v2"
 BRIDGE_CONFIRMATION_VERSION = "finance_compiler_assisted_bridge_confirmation.v3"
 
@@ -144,6 +146,7 @@ class ScaffoldSelectionThresholds(FrozenModel):
     estimand_rate_maximum: float = Field(default=0.85, ge=0, le=1)
     valid_trajectory_rate_minimum: float = Field(default=0.20, ge=0, le=1)
     fixed_policy_gain_minimum: float = Field(default=0.05, ge=-1, le=1)
+    paired_gamma_zero_gain_minimum: float = Field(default=0.05, ge=-1, le=1)
     instrument_valid_rate_required: float = Field(default=1.0, ge=1.0, le=1.0)
     maximum_host_interference_count: Literal[0] = 0
     maximum_oracle_leakage_count: Literal[0] = 0
@@ -163,6 +166,7 @@ class BridgeHierarchicalInferenceContract(FrozenModel):
     mechanism_level_confidence_intervals_required: Literal[True] = True
     confidence_level: float = Field(default=0.95, ge=0.9, le=0.99)
     bootstrap_replicates: int = Field(default=5000, ge=1000)
+    bootstrap_seed: int = Field(default=26062026, ge=0)
     minimal_passing_level_rule: Literal[
         "lowest_level_with_joint_ci_thresholds_and_all_fidelity_gates"
     ] = "lowest_level_with_joint_ci_thresholds_and_all_fidelity_gates"
@@ -290,8 +294,7 @@ class BridgeStaticConstructAudit(FrozenModel):
             admission_id: task_id for task_id, admission_id in self.task_admission_ids.items()
         }
         observed = {
-            (admission_to_task.get(item.subject_id), item.check_id)
-            for item in self.case_results
+            (admission_to_task.get(item.subject_id), item.check_id) for item in self.case_results
         }
         expected = {
             (task_id, check_id)
@@ -541,8 +544,7 @@ class BridgeExecutionManifest(FrozenModel):
         if (
             self.prompt_manifest.get("compiled_task_condition_id") is None
             or self.runtime_manifest.get("runtime_id") != self.runtime_id
-            or self.runtime_manifest.get("runtime_projection_id")
-            != self.runtime_projection_id
+            or self.runtime_manifest.get("runtime_projection_id") != self.runtime_projection_id
             or self.runtime_manifest.get("runtime_authority_policy_id")
             != self.runtime_authority_policy_id
         ):
@@ -575,12 +577,12 @@ class BridgeRolloutObservation(FrozenModel):
     replicate_index: int = Field(ge=0, le=5)
     condition_lineage: CompiledTaskConditionLineage
     execution_manifest: BridgeExecutionManifest
-    provider_call_ids: tuple[str, ...] = Field(min_length=1)
+    provider_call_ids: tuple[str, ...] = ()
     public_state_summary: CompiledPublicStateSummary | None = None
     terminal_category: BridgeRolloutTerminal
     independent_validity_passed: bool
     quotient_state_id: str | None = Field(default=None, min_length=1)
-    decision_trace_hash: str | None = Field(default=None, min_length=64, max_length=64)
+    decision_trace_hash: str | None = Field(default=None, min_length=1)
     estimand_outcomes: tuple[BridgeEstimandOutcome, ...] = Field(min_length=1)
     host_interference_detected: bool = False
     oracle_leakage_detected: bool = False
@@ -630,12 +632,21 @@ class BridgeRolloutObservation(FrozenModel):
             "model_valid_trajectory",
             "model_invalid_trajectory",
         }
-        if self.independent_validity_passed != (
-            self.terminal_category == "model_valid_trajectory"
-        ):
+        if model_outcome and not self.provider_call_ids:
+            raise ValueError("Bridge model outcomes require Provider-call lineage")
+        if self.independent_validity_passed != (self.terminal_category == "model_valid_trajectory"):
             raise ValueError("Bridge rollout validity differs from its terminal category")
         if model_outcome != bool(self.decision_trace_hash):
             raise ValueError("Bridge model outcomes require exactly one decision trace")
+        if self.decision_trace_hash is not None:
+            prefix = "trajectory_decision_trace:"
+            digest = self.decision_trace_hash.removeprefix(prefix)
+            if (
+                not self.decision_trace_hash.startswith(prefix)
+                or len(digest) != 64
+                or any(character not in "0123456789abcdef" for character in digest)
+            ):
+                raise ValueError("Bridge decision trace is not a canonical content identity")
         if self.independent_validity_passed and not self.quotient_state_id:
             raise ValueError("valid Bridge trajectories require a Quotient State")
         if not model_outcome and any(item.evaluated for item in self.estimand_outcomes):
@@ -657,10 +668,8 @@ class BridgeRolloutObservation(FrozenModel):
         if (
             self.raw_payload.get("task_id") != self.task_id
             or self.raw_payload.get("terminal_category") != self.terminal_category
-            or self.raw_payload.get("execution_manifest_id")
-            != self.execution_manifest.manifest_id
-            or tuple(self.raw_payload.get("provider_call_ids", ()))
-            != self.provider_call_ids
+            or self.raw_payload.get("execution_manifest_id") != self.execution_manifest.manifest_id
+            or tuple(self.raw_payload.get("provider_call_ids", ())) != self.provider_call_ids
         ):
             raise ValueError("Bridge raw payload identity is inconsistent")
         expected_payload_hash = canonical_hash(
@@ -716,12 +725,15 @@ class BridgeCellObservation(FrozenModel):
 
     @model_validator(mode="after")
     def validate_observation(self) -> BridgeCellObservation:
-        if tuple(
-            sorted(
-                self.rollout_observations,
-                key=lambda item: (item.task_id, item.replicate_index),
+        if (
+            tuple(
+                sorted(
+                    self.rollout_observations,
+                    key=lambda item: (item.task_id, item.replicate_index),
+                )
             )
-        ) != self.rollout_observations:
+            != self.rollout_observations
+        ):
             raise ValueError("Bridge atomic rollouts are not canonically ordered")
         if any(
             item.contract_id != self.contract_id
@@ -765,9 +777,7 @@ class BridgeCellObservation(FrozenModel):
         if derived_fields != expected:
             raise ValueError("Bridge cell aggregates were not derived from atomic rollouts")
         if (
-            self.model_outcome_count
-            + self.runtime_failure_count
-            + self.instrument_failure_count
+            self.model_outcome_count + self.runtime_failure_count + self.instrument_failure_count
             != self.rollout_count
         ):
             raise ValueError("Bridge rollout accounting is incomplete")
@@ -794,12 +804,78 @@ class BridgeCellObservation(FrozenModel):
         return self
 
 
+class BridgeMetricConfidenceInterval(FrozenModel):
+    metric_id: str = Field(min_length=1)
+    point_estimate: float = Field(ge=-1, le=1)
+    lower_bound: float = Field(ge=-1, le=1)
+    upper_bound: float = Field(ge=-1, le=1)
+    confidence_level: float = Field(ge=0.9, le=0.99)
+    bootstrap_replicates: int = Field(ge=1000)
+    method: Literal["task_first_rollout_second_percentile_bootstrap"] = (
+        "task_first_rollout_second_percentile_bootstrap"
+    )
+
+    @model_validator(mode="after")
+    def validate_interval(self) -> BridgeMetricConfidenceInterval:
+        if not self.lower_bound <= self.point_estimate <= self.upper_bound:
+            raise ValueError("Bridge confidence interval does not contain its point estimate")
+        return self
+
+
+class BridgeLevelInference(FrozenModel):
+    inference_id: str = Field(min_length=1)
+    contract_id: str = Field(min_length=1)
+    cell_observation_id: str = Field(min_length=1)
+    gamma_zero_cell_observation_id: str = Field(min_length=1)
+    phase: BridgePhase
+    mechanism_id: BridgeMechanism
+    scaffold_level: ScaffoldLevel
+    scaffold_rank: Literal[0, 1, 2, 3]
+    task_ids: tuple[str, ...] = Field(min_length=8, max_length=8)
+    task_metric_values: dict[str, dict[str, float]] = Field(min_length=8, max_length=8)
+    metric_intervals: tuple[BridgeMetricConfidenceInterval, ...] = Field(min_length=1)
+    paired_gamma_zero_intervals: tuple[BridgeMetricConfidenceInterval, ...]
+    failure_reasons: tuple[str, ...]
+    passed: bool
+    inference_contract: BridgeHierarchicalInferenceContract
+    schema_version: str = BRIDGE_LEVEL_INFERENCE_VERSION
+
+    @model_validator(mode="after")
+    def validate_inference(self) -> BridgeLevelInference:
+        if self.scaffold_rank != SCAFFOLD_LEVELS.index(self.scaffold_level):
+            raise ValueError("Bridge inference scaffold rank differs from its level")
+        if set(self.task_metric_values) != set(self.task_ids):
+            raise ValueError("Bridge inference task metrics are not canonically aligned")
+        expected_metric_ids = _metric_ids(self.mechanism_id)
+        metric_sets = {frozenset(values) for values in self.task_metric_values.values()}
+        if metric_sets != {frozenset(expected_metric_ids)}:
+            raise ValueError("Bridge inference task metrics are incomplete or reordered")
+        if tuple(item.metric_id for item in self.metric_intervals) != expected_metric_ids:
+            raise ValueError("Bridge inference intervals differ from task-level metrics")
+        paired_ids = tuple(item.metric_id for item in self.paired_gamma_zero_intervals)
+        expected_paired = (
+            _paired_metric_ids(self.mechanism_id)
+            if self.phase == "development" and self.scaffold_rank > 0
+            else ()
+        )
+        if paired_ids != expected_paired:
+            raise ValueError("Bridge paired scaffold intervals are incomplete or reordered")
+        if self.passed != (not self.failure_reasons):
+            raise ValueError("Bridge inference decision differs from its failure reasons")
+        if len(self.failure_reasons) != len(set(self.failure_reasons)):
+            raise ValueError("Bridge inference failure reasons are duplicated")
+        if self.inference_id != bridge_level_inference_id(self):
+            raise ValueError("Bridge level inference identity is invalid")
+        return self
+
+
 class MechanismScaffoldSelection(FrozenModel):
     selection_id: str = Field(min_length=1)
     mechanism_id: BridgeMechanism
     selected_scaffold_level: ScaffoldLevel | None = None
     passing_scaffold_levels: tuple[ScaffoldLevel, ...]
     status: Literal["selected", "blocked"]
+    level_inferences: tuple[BridgeLevelInference, ...] = Field(min_length=4, max_length=4)
     failure_reasons_by_level: dict[str, tuple[str, ...]]
     global_minimum_passing_level_only: Literal[True] = True
     higher_levels_are_diagnostic_only: Literal[True] = True
@@ -807,8 +883,17 @@ class MechanismScaffoldSelection(FrozenModel):
 
     @model_validator(mode="after")
     def validate_selection(self) -> MechanismScaffoldSelection:
+        if tuple(item.scaffold_level for item in self.level_inferences) != SCAFFOLD_LEVELS:
+            raise ValueError("Bridge selection inference ladder is incomplete or reordered")
+        if any(item.mechanism_id != self.mechanism_id for item in self.level_inferences):
+            raise ValueError("Bridge selection inference crosses mechanisms")
         if tuple(self.failure_reasons_by_level) != SCAFFOLD_LEVELS:
             raise ValueError("Bridge selection does not cover the complete scaffold ladder")
+        expected_failures = {
+            item.scaffold_level: item.failure_reasons for item in self.level_inferences
+        }
+        if self.failure_reasons_by_level != expected_failures:
+            raise ValueError("Bridge selection failures differ from hierarchical inference")
         passing = tuple(
             level for level in SCAFFOLD_LEVELS if not self.failure_reasons_by_level[level]
         )
@@ -829,6 +914,8 @@ class CompilerAssistedBridgeSupportFreeze(FrozenModel):
     freeze_id: str = Field(min_length=1)
     contract_id: str = Field(min_length=1)
     development_authorization_id: str = Field(min_length=1)
+    selection_thresholds: ScaffoldSelectionThresholds
+    inference_contract: BridgeHierarchicalInferenceContract
     observations: tuple[BridgeCellObservation, ...] = Field(min_length=12, max_length=12)
     selections: tuple[MechanismScaffoldSelection, ...] = Field(min_length=3, max_length=3)
     status: Literal["passed", "blocked"]
@@ -846,6 +933,34 @@ class CompilerAssistedBridgeSupportFreeze(FrozenModel):
 
     @model_validator(mode="after")
     def validate_freeze(self) -> CompilerAssistedBridgeSupportFreeze:
+        if (
+            tuple(
+                sorted(
+                    self.observations,
+                    key=lambda item: (
+                        BRIDGE_MECHANISMS.index(item.mechanism_id),
+                        item.scaffold_rank,
+                    ),
+                )
+            )
+            != self.observations
+        ):
+            raise ValueError("Bridge support observations are not canonically ordered")
+        by_mechanism = {
+            mechanism: tuple(item for item in self.observations if item.mechanism_id == mechanism)
+            for mechanism in BRIDGE_MECHANISMS
+        }
+        expected_selections = tuple(
+            _select_mechanism_scaffold(
+                mechanism,
+                by_mechanism[mechanism],
+                self.selection_thresholds,
+                self.inference_contract,
+            )
+            for mechanism in BRIDGE_MECHANISMS
+        )
+        if self.selections != expected_selections:
+            raise ValueError("Bridge selections were not derived from hierarchical inference")
         if tuple(item.mechanism_id for item in self.selections) != BRIDGE_MECHANISMS:
             raise ValueError("Bridge support selections are incomplete")
         expected_blockers = tuple(
@@ -1208,9 +1323,7 @@ def make_bridge_execution_manifest(
         "contract_id": contract_id,
         "model_id": model_id,
         "model_invocation_config": frozen_model,
-        "model_config_hash": canonical_hash(
-            frozen_model, prefix="finance_bridge_model_config:"
-        ),
+        "model_config_hash": canonical_hash(frozen_model, prefix="finance_bridge_model_config:"),
         "provider_route": frozen_provider,
         "provider_route_hash": canonical_hash(
             frozen_provider, prefix="finance_bridge_provider_route:"
@@ -1227,9 +1340,7 @@ def make_bridge_execution_manifest(
             frozen_runtime, prefix="finance_bridge_runtime_manifest:"
         ),
         "tool_manifest": frozen_tools,
-        "tool_manifest_hash": canonical_hash(
-            frozen_tools, prefix="finance_bridge_tool_manifest:"
-        ),
+        "tool_manifest_hash": canonical_hash(frozen_tools, prefix="finance_bridge_tool_manifest:"),
         "schema_version": BRIDGE_EXECUTION_MANIFEST_VERSION,
     }
     provisional = BridgeExecutionManifest.model_construct(manifest_id="pending", **values)
@@ -1284,6 +1395,83 @@ def aggregate_bridge_cell_observation(
     )
 
 
+def make_bridge_level_inference(
+    *,
+    cell: BridgeCellObservation,
+    gamma_zero_cell: BridgeCellObservation,
+    thresholds: ScaffoldSelectionThresholds,
+    inference_contract: BridgeHierarchicalInferenceContract,
+) -> BridgeLevelInference:
+    if gamma_zero_cell.scaffold_level != "gamma_0":
+        raise ValueError("Bridge inference baseline must be gamma_0")
+    if (
+        gamma_zero_cell.mechanism_id != cell.mechanism_id
+        or gamma_zero_cell.contract_id != cell.contract_id
+    ):
+        raise ValueError("Bridge inference baseline crosses mechanism or contract identities")
+    if cell.phase == "development" and gamma_zero_cell.task_ids != cell.task_ids:
+        raise ValueError("Bridge Development inference requires paired task identities")
+    metric_samples = _cell_metric_samples(cell)
+    metric_ids = _metric_ids(cell.mechanism_id)
+    task_metric_values = {
+        task_id: {metric_id: _mean(metric_samples[task_id][metric_id]) for metric_id in metric_ids}
+        for task_id in cell.task_ids
+    }
+    intervals = tuple(
+        _hierarchical_interval(
+            metric_id=metric_id,
+            samples_by_task={
+                task_id: metric_samples[task_id][metric_id] for task_id in cell.task_ids
+            },
+            inference_contract=inference_contract,
+            seed_scope=(cell.mechanism_id, cell.scaffold_level, metric_id),
+        )
+        for metric_id in metric_ids
+    )
+    paired_intervals: tuple[BridgeMetricConfidenceInterval, ...] = ()
+    if cell.phase == "development" and cell.scaffold_rank > 0:
+        paired_samples = _paired_gamma_zero_samples(cell, gamma_zero_cell)
+        paired_intervals = tuple(
+            _hierarchical_interval(
+                metric_id=metric_id,
+                samples_by_task={
+                    task_id: paired_samples[task_id][metric_id] for task_id in cell.task_ids
+                },
+                inference_contract=inference_contract,
+                seed_scope=(cell.mechanism_id, cell.scaffold_level, metric_id),
+            )
+            for metric_id in _paired_metric_ids(cell.mechanism_id)
+        )
+    failures = _hierarchical_failure_reasons(
+        cell,
+        intervals=intervals,
+        paired_intervals=paired_intervals,
+        thresholds=thresholds,
+    )
+    values = {
+        "contract_id": cell.contract_id,
+        "cell_observation_id": cell.observation_id,
+        "gamma_zero_cell_observation_id": gamma_zero_cell.observation_id,
+        "phase": cell.phase,
+        "mechanism_id": cell.mechanism_id,
+        "scaffold_level": cell.scaffold_level,
+        "scaffold_rank": cell.scaffold_rank,
+        "task_ids": cell.task_ids,
+        "task_metric_values": task_metric_values,
+        "metric_intervals": intervals,
+        "paired_gamma_zero_intervals": paired_intervals,
+        "failure_reasons": failures,
+        "passed": not failures,
+        "inference_contract": inference_contract,
+        "schema_version": BRIDGE_LEVEL_INFERENCE_VERSION,
+    }
+    provisional = BridgeLevelInference.model_construct(inference_id="pending", **values)
+    return BridgeLevelInference(
+        inference_id=bridge_level_inference_id(provisional),
+        **values,
+    )
+
+
 def freeze_compiler_assisted_bridge_support(
     contract: CompilerAssistedBridgeContract,
     authorization: BridgeDevelopmentAuthorization,
@@ -1334,6 +1522,7 @@ def freeze_compiler_assisted_bridge_support(
             mechanism,
             by_mechanism[mechanism],
             contract.selection_thresholds,
+            contract.inference,
         )
         for mechanism in BRIDGE_MECHANISMS
     )
@@ -1341,6 +1530,8 @@ def freeze_compiler_assisted_bridge_support(
     values = {
         "contract_id": contract.contract_id,
         "development_authorization_id": authorization.authorization_id,
+        "selection_thresholds": contract.selection_thresholds,
+        "inference_contract": contract.inference,
         "observations": rows,
         "selections": selections,
         "status": "blocked" if blockers else "passed",
@@ -1408,9 +1599,7 @@ def confirm_compiler_assisted_bridge(
         if _cell_failure_reasons(item, contract.selection_thresholds)
     )
     conditions = tuple(
-        _confirmed_task_condition(item, task_id)
-        for item in rows
-        for task_id in item.task_ids
+        _confirmed_task_condition(item, task_id) for item in rows for task_id in item.task_ids
     )
     values = {
         "contract_id": contract.contract_id,
@@ -1494,6 +1683,13 @@ def bridge_cell_observation_id(value: BridgeCellObservation) -> str:
     )
 
 
+def bridge_level_inference_id(value: BridgeLevelInference) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"inference_id"}),
+        prefix="finance_compiler_assisted_bridge_level_inference:",
+    )
+
+
 def mechanism_scaffold_selection_id(value: MechanismScaffoldSelection) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"selection_id"}),
@@ -1544,18 +1740,30 @@ def _select_mechanism_scaffold(
     mechanism: BridgeMechanism,
     observations: tuple[BridgeCellObservation, ...],
     thresholds: ScaffoldSelectionThresholds,
+    inference_contract: BridgeHierarchicalInferenceContract,
 ) -> MechanismScaffoldSelection:
-    failures_by_level = {
-        item.scaffold_level: _cell_failure_reasons(item, thresholds) for item in observations
-    }
+    if tuple(item.scaffold_level for item in observations) != SCAFFOLD_LEVELS:
+        raise ValueError("Bridge mechanism inference requires the complete scaffold ladder")
+    gamma_zero = observations[0]
+    inferences = tuple(
+        make_bridge_level_inference(
+            cell=item,
+            gamma_zero_cell=gamma_zero,
+            thresholds=thresholds,
+            inference_contract=inference_contract,
+        )
+        for item in observations
+    )
+    failures_by_level = {item.scaffold_level: item.failure_reasons for item in inferences}
     passing = tuple(
-        item.scaffold_level for item in observations if not failures_by_level[item.scaffold_level]
+        item.scaffold_level for item in inferences if not failures_by_level[item.scaffold_level]
     )
     values = {
         "mechanism_id": mechanism,
         "selected_scaffold_level": passing[0] if passing else None,
         "passing_scaffold_levels": passing,
         "status": "selected" if passing else "blocked",
+        "level_inferences": inferences,
         "failure_reasons_by_level": failures_by_level,
         "schema_version": BRIDGE_MECHANISM_SELECTION_VERSION,
     }
@@ -1564,6 +1772,219 @@ def _select_mechanism_scaffold(
         selection_id=mechanism_scaffold_selection_id(provisional),
         **values,
     )
+
+
+def _metric_ids(mechanism: BridgeMechanism) -> tuple[str, ...]:
+    return (
+        "instrument_valid_rate",
+        "valid_trajectory_rate",
+        *(
+            metric_id
+            for estimand_id in MECHANISM_ESTIMANDS[mechanism]
+            for metric_id in (
+                f"estimand.{estimand_id}.success_rate",
+                f"estimand.{estimand_id}.fixed_policy_gain",
+            )
+        ),
+    )
+
+
+def _paired_metric_ids(mechanism: BridgeMechanism) -> tuple[str, ...]:
+    return (
+        "paired_gamma_zero.valid_trajectory_rate",
+        *(
+            f"paired_gamma_zero.estimand.{estimand_id}.success_rate"
+            for estimand_id in MECHANISM_ESTIMANDS[mechanism]
+        ),
+    )
+
+
+def _cell_metric_samples(
+    cell: BridgeCellObservation,
+) -> dict[str, dict[str, tuple[float, ...]]]:
+    output: dict[str, dict[str, tuple[float, ...]]] = {}
+    for task_id in cell.task_ids:
+        rows = tuple(item for item in cell.rollout_observations if item.task_id == task_id)
+        values: dict[str, tuple[float, ...]] = {
+            "instrument_valid_rate": tuple(
+                float(
+                    item.terminal_category in {"model_valid_trajectory", "model_invalid_trajectory"}
+                )
+                for item in rows
+            ),
+            "valid_trajectory_rate": tuple(
+                float(item.independent_validity_passed) for item in rows
+            ),
+        }
+        for estimand_id in MECHANISM_ESTIMANDS[cell.mechanism_id]:
+            outcomes = tuple(
+                next(
+                    outcome
+                    for outcome in item.estimand_outcomes
+                    if outcome.estimand_id == estimand_id
+                )
+                for item in rows
+            )
+            evaluated = tuple(item for item in outcomes if item.evaluated)
+            success_values = tuple(float(item.success is True) for item in evaluated)
+            gain_values = tuple(
+                float(item.success is True) - float(item.fixed_policy_success is True)
+                for item in evaluated
+            )
+            values[f"estimand.{estimand_id}.success_rate"] = success_values
+            values[f"estimand.{estimand_id}.fixed_policy_gain"] = gain_values
+        output[task_id] = values
+    return output
+
+
+def _paired_gamma_zero_samples(
+    cell: BridgeCellObservation,
+    gamma_zero_cell: BridgeCellObservation,
+) -> dict[str, dict[str, tuple[float, ...]]]:
+    baseline_by_key = {
+        (item.task_id, item.replicate_index): item for item in gamma_zero_cell.rollout_observations
+    }
+    output: dict[str, dict[str, tuple[float, ...]]] = {}
+    for task_id in cell.task_ids:
+        rows = tuple(item for item in cell.rollout_observations if item.task_id == task_id)
+        values: dict[str, tuple[float, ...]] = {
+            "paired_gamma_zero.valid_trajectory_rate": tuple(
+                float(item.independent_validity_passed)
+                - float(
+                    baseline_by_key[(task_id, item.replicate_index)].independent_validity_passed
+                )
+                for item in rows
+            )
+        }
+        for estimand_id in MECHANISM_ESTIMANDS[cell.mechanism_id]:
+            paired_values: list[float] = []
+            for item in rows:
+                current = next(
+                    outcome
+                    for outcome in item.estimand_outcomes
+                    if outcome.estimand_id == estimand_id
+                )
+                baseline = next(
+                    outcome
+                    for outcome in baseline_by_key[
+                        (task_id, item.replicate_index)
+                    ].estimand_outcomes
+                    if outcome.estimand_id == estimand_id
+                )
+                if current.evaluated and baseline.evaluated:
+                    paired_values.append(
+                        float(current.success is True) - float(baseline.success is True)
+                    )
+            values[f"paired_gamma_zero.estimand.{estimand_id}.success_rate"] = tuple(paired_values)
+        output[task_id] = values
+    return output
+
+
+def _hierarchical_interval(
+    *,
+    metric_id: str,
+    samples_by_task: Mapping[str, tuple[float, ...]],
+    inference_contract: BridgeHierarchicalInferenceContract,
+    seed_scope: tuple[str, str, str],
+) -> BridgeMetricConfidenceInterval:
+    if not samples_by_task or any(not values for values in samples_by_task.values()):
+        raise ValueError(f"Bridge inference metric lacks task-level observations: {metric_id}")
+    task_ids = tuple(sorted(samples_by_task))
+    point = _mean(tuple(_mean(samples_by_task[task_id]) for task_id in task_ids))
+    seed_hash = canonical_hash(
+        {
+            "bootstrap_seed": inference_contract.bootstrap_seed,
+            "scope": seed_scope,
+        },
+        prefix="finance_bridge_hierarchical_bootstrap_seed:",
+    )
+    rng = random.Random(int(seed_hash.rsplit(":", 1)[-1][:16], 16))
+    draws: list[float] = []
+    for _ in range(inference_contract.bootstrap_replicates):
+        sampled_task_values: list[float] = []
+        for _ in task_ids:
+            task_id = task_ids[rng.randrange(len(task_ids))]
+            values = samples_by_task[task_id]
+            sampled_task_values.append(
+                _mean(tuple(values[rng.randrange(len(values))] for _ in values))
+            )
+        draws.append(_mean(tuple(sampled_task_values)))
+    draws.sort()
+    alpha = (1.0 - inference_contract.confidence_level) / 2.0
+    lower = min(point, _percentile(draws, alpha))
+    upper = max(point, _percentile(draws, 1.0 - alpha))
+    return BridgeMetricConfidenceInterval(
+        metric_id=metric_id,
+        point_estimate=point,
+        lower_bound=lower,
+        upper_bound=upper,
+        confidence_level=inference_contract.confidence_level,
+        bootstrap_replicates=inference_contract.bootstrap_replicates,
+    )
+
+
+def _hierarchical_failure_reasons(
+    cell: BridgeCellObservation,
+    *,
+    intervals: tuple[BridgeMetricConfidenceInterval, ...],
+    paired_intervals: tuple[BridgeMetricConfidenceInterval, ...],
+    thresholds: ScaffoldSelectionThresholds,
+) -> tuple[str, ...]:
+    reasons: list[str] = []
+    by_metric = {item.metric_id: item for item in intervals}
+    instrument = by_metric["instrument_valid_rate"]
+    if instrument.point_estimate < thresholds.instrument_valid_rate_required:
+        reasons.append("instrument_invalid")
+    if by_metric["valid_trajectory_rate"].lower_bound < (thresholds.valid_trajectory_rate_minimum):
+        reasons.append("valid_trajectory_rate_ci_low")
+    samples = _cell_metric_samples(cell)
+    for estimand_id in MECHANISM_ESTIMANDS[cell.mechanism_id]:
+        success_metric = by_metric[f"estimand.{estimand_id}.success_rate"]
+        gain_metric = by_metric[f"estimand.{estimand_id}.fixed_policy_gain"]
+        if any(
+            len(samples[task_id][f"estimand.{estimand_id}.success_rate"]) != 6
+            for task_id in cell.task_ids
+        ):
+            reasons.append(f"{estimand_id}:evaluation_coverage_incomplete")
+        if success_metric.lower_bound < thresholds.estimand_rate_minimum:
+            reasons.append(f"{estimand_id}:boundary_ci_low")
+        if success_metric.upper_bound > thresholds.estimand_rate_maximum:
+            reasons.append(f"{estimand_id}:saturation_ci_high")
+        if gain_metric.lower_bound < thresholds.fixed_policy_gain_minimum:
+            reasons.append(f"{estimand_id}:fixed_policy_gain_ci_low")
+    for interval in paired_intervals:
+        if interval.lower_bound < thresholds.paired_gamma_zero_gain_minimum:
+            reasons.append(f"{interval.metric_id}:gain_ci_low")
+    if cell.host_interference_count > thresholds.maximum_host_interference_count:
+        reasons.append("host_interference_detected")
+    if cell.oracle_leakage_count > thresholds.maximum_oracle_leakage_count:
+        reasons.append("oracle_leakage_detected")
+    unattributed = sum(
+        item.terminal_category != "model_valid_trajectory"
+        and not item.raw_payload.get("failure_attribution")
+        for item in cell.rollout_observations
+    )
+    if unattributed:
+        reasons.append("failure_attribution_incomplete")
+    return tuple(reasons)
+
+
+def _mean(values: tuple[float, ...]) -> float:
+    if not values:
+        raise ValueError("cannot average an empty Bridge metric")
+    return sum(values) / len(values)
+
+
+def _percentile(sorted_values: list[float], probability: float) -> float:
+    if not sorted_values:
+        raise ValueError("cannot compute a percentile from an empty bootstrap")
+    position = (len(sorted_values) - 1) * probability
+    lower_index = math.floor(position)
+    upper_index = math.ceil(position)
+    if lower_index == upper_index:
+        return sorted_values[lower_index]
+    weight = position - lower_index
+    return sorted_values[lower_index] * (1.0 - weight) + sorted_values[upper_index] * weight
 
 
 def _cell_failure_reasons(
@@ -1645,13 +2066,10 @@ def _derive_bridge_cell_values(
     model_rows = tuple(
         item
         for item in rollouts
-        if item.terminal_category
-        in {"model_valid_trajectory", "model_invalid_trajectory"}
+        if item.terminal_category in {"model_valid_trajectory", "model_invalid_trajectory"}
     )
     runtime_failures = sum(item.terminal_category == "runtime_failure" for item in rollouts)
-    instrument_failures = sum(
-        item.terminal_category == "instrument_failure" for item in rollouts
-    )
+    instrument_failures = sum(item.terminal_category == "instrument_failure" for item in rollouts)
     estimands = tuple(
         make_bridge_estimand_observation(
             estimand_id=estimand_id,
@@ -1670,15 +2088,12 @@ def _derive_bridge_cell_values(
         )
         for estimand_id in MECHANISM_ESTIMANDS[rollouts[0].mechanism_id]
     )
-    observed_states = tuple(
-        item.quotient_state_id for item in model_rows if item.quotient_state_id
-    )
+    observed_states = tuple(item.quotient_state_id for item in model_rows if item.quotient_state_id)
     state_counts = Counter(observed_states)
     state_total = sum(state_counts.values())
     state_entropy = (
         -sum(
-            (count / state_total) * math.log(count / state_total)
-            for count in state_counts.values()
+            (count / state_total) * math.log(count / state_total) for count in state_counts.values()
         )
         if state_total
         else 0.0
@@ -1696,12 +2111,8 @@ def _derive_bridge_cell_values(
     )
     return {
         "task_ids": task_ids,
-        "compiled_task_condition_ids": tuple(
-            item.compiled_task_condition_id for item in lineages
-        ),
-        "state_mapping_contract_ids": tuple(
-            item.state_mapping_contract_id for item in lineages
-        ),
+        "compiled_task_condition_ids": tuple(item.compiled_task_condition_id for item in lineages),
+        "state_mapping_contract_ids": tuple(item.state_mapping_contract_id for item in lineages),
         "condition_lineage_ids": tuple(item.lineage_id for item in lineages),
         "instrument_valid_rollout_count": len(model_rows),
         "model_outcome_count": len(model_rows),
@@ -1712,9 +2123,7 @@ def _derive_bridge_cell_values(
         "preliminary_unique_state_count": len(state_counts),
         "tasks_with_multiple_observed_states_count": tasks_with_multiple_states,
         "state_entropy": state_entropy,
-        "host_interference_count": sum(
-            item.host_interference_detected for item in rollouts
-        ),
+        "host_interference_count": sum(item.host_interference_detected for item in rollouts),
         "oracle_leakage_count": sum(item.oracle_leakage_detected for item in rollouts),
         "runtime_failure_count": runtime_failures,
         "instrument_failure_count": instrument_failures,
@@ -1725,10 +2134,17 @@ def _contains_sensitive_key(value: Any) -> bool:
     if isinstance(value, Mapping):
         for key, item in value.items():
             normalized = str(key).lower().replace("-", "_")
-            if any(
-                marker in normalized
-                for marker in ("api_key", "authorization", "password", "secret", "token")
-            ):
+            if normalized in {
+                "api_key",
+                "authorization",
+                "password",
+                "secret",
+                "access_token",
+                "refresh_token",
+                "bearer_token",
+                "credential",
+                "credentials",
+            } or normalized.endswith(("_api_key", "_password", "_secret", "_credential")):
                 return True
             if _contains_sensitive_key(item):
                 return True

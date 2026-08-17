@@ -139,48 +139,27 @@ def _bridge_cell(contract, authorization, mechanism, level, phase):
     rank = SCAFFOLD_LEVELS.index(level)
     mechanism_index = BRIDGE_MECHANISMS.index(mechanism)
     task_ids = tuple(f"{phase}:{mechanism_index}:{index}" for index in range(8))
-    summaries = {
-        task_id: (_summary(task_id) if rank >= 1 else None) for task_id in task_ids
-    }
-    lineages = {
-        task_id: _lineage(task_id, level, summaries[task_id]) for task_id in task_ids
-    }
-    valid_count = (4, 20, 24, 28)[rank]
-    targets = {
-        estimand_id: (
-            (3, 10, 12, 14)[rank]
-            if estimand_id == "counterfactual_branch_flip"
-            else (6, 20, 24, 28)[rank]
-        )
-        for estimand_id in MECHANISM_ESTIMANDS[mechanism]
-    }
-    counters = {estimand_id: 0 for estimand_id in MECHANISM_ESTIMANDS[mechanism]}
+    summaries = {task_id: (_summary(task_id) if rank >= 1 else None) for task_id in task_ids}
+    lineages = {task_id: _lineage(task_id, level, summaries[task_id]) for task_id in task_ids}
+    success_replicates = (1, 3, 4, 5)[rank]
+    fixed_policy_success_replicates = 1
     rollouts = []
     for task_index, task_id in enumerate(task_ids):
         for replicate_index in range(6):
             global_index = task_index * 6 + replicate_index
             outcomes = []
             for estimand_id in MECHANISM_ESTIMANDS[mechanism]:
-                evaluated = (
-                    replicate_index < 3
-                    if estimand_id == "counterfactual_branch_flip"
-                    else True
-                )
-                index = counters[estimand_id]
-                baseline = 2 if estimand_id == "counterfactual_branch_flip" else 4
                 outcomes.append(
                     BridgeEstimandOutcome(
                         estimand_id=estimand_id,
-                        evaluated=evaluated,
-                        success=(index < targets[estimand_id]) if evaluated else None,
-                        fixed_policy_success=(index < baseline) if evaluated else None,
+                        evaluated=True,
+                        success=replicate_index < success_replicates,
+                        fixed_policy_success=(replicate_index < fixed_policy_success_replicates),
                     )
                 )
-                if evaluated:
-                    counters[estimand_id] += 1
             terminal = (
                 "model_valid_trajectory"
-                if global_index < valid_count
+                if replicate_index < success_replicates
                 else "model_invalid_trajectory"
             )
             rollouts.append(
@@ -192,9 +171,7 @@ def _bridge_cell(contract, authorization, mechanism, level, phase):
                     scaffold_level=level,
                     replicate_index=replicate_index,
                     condition_lineage=lineages[task_id],
-                    execution_manifest=_execution_manifest(
-                        contract.contract_id, lineages[task_id]
-                    ),
+                    execution_manifest=_execution_manifest(contract.contract_id, lineages[task_id]),
                     provider_call_ids=(
                         f"call:{phase}:{mechanism}:{level}:{task_id}:{replicate_index}",
                     ),
@@ -202,12 +179,17 @@ def _bridge_cell(contract, authorization, mechanism, level, phase):
                     terminal_category=terminal,
                     independent_validity_passed=terminal == "model_valid_trajectory",
                     quotient_state_id=f"state:{replicate_index % 2}",
-                    decision_trace_hash=f"{global_index + 1:064x}",
+                    decision_trace_hash=f"trajectory_decision_trace:{global_index + 1:064x}",
                     estimand_outcomes=tuple(outcomes),
                     raw_payload={
                         "task_id": task_id,
                         "replicate_index": replicate_index,
                         "terminal_category": terminal,
+                        "failure_attribution": (
+                            None
+                            if terminal == "model_valid_trajectory"
+                            else "model_invalid_trajectory"
+                        ),
                     },
                     raw_artifact_uri=f"embedded://state-support/{task_id}/{replicate_index}",
                 )

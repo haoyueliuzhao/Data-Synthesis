@@ -416,8 +416,8 @@ def build_v26_cross_population_freshness_audit(
         raise ValueError("v26 freshness audit crosses protocol or phase identities")
     development_tasks = load_v26_selected_source_tasks(development)
     confirmation_tasks = load_v26_selected_source_tasks(confirmation)
-    development_values = _freshness_channel_values(development, development_tasks)
-    confirmation_values = _freshness_channel_values(confirmation, confirmation_tasks)
+    development_values = v26_freshness_channel_values(development, development_tasks)
+    confirmation_values = v26_freshness_channel_values(confirmation, confirmation_tasks)
     channels = tuple(
         _make_freshness_channel_audit(
             channel,
@@ -534,7 +534,7 @@ def load_v26_selected_source_tasks(
     return tuple(selected)
 
 
-def _freshness_channel_values(
+def v26_freshness_channel_values(
     population: V26FreshTaskPopulation,
     tasks: Sequence[CapabilitySensitiveTaskArtifact],
 ) -> dict[FreshnessChannel, set[str]]:

@@ -47,7 +47,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_fresh_population i
 )
 from trusted_synthesis.hashing import canonical_hash
 
-V26_STAGE_ROUTER_VERSION = "finance_v26_stage_router.v5"
+V26_STAGE_ROUTER_VERSION = "finance_v26_stage_router.v6"
 V26_STAGE_ARTIFACT_REFERENCE_VERSION = "finance_v26_stage_artifact_reference.v4"
 
 V26Stage = Literal[
@@ -151,9 +151,7 @@ _STAGE_ROLES: dict[V26Stage, tuple[StageArtifactRole, ...]] = {
     "state_support_observation": ("task_state_support_observation",),
     "state_support_freeze": ("state_support_freeze",),
 }
-_CLI_STAGE_ARTIFACT_ROLES = {
-    role for roles in _STAGE_ROLES.values() for role in roles
-}
+_CLI_STAGE_ARTIFACT_ROLES = {role for roles in _STAGE_ROLES.values() for role in roles}
 _API_STAGES: frozenset[V26Stage] = frozenset(
     {
         "bridge_rollout",
@@ -202,7 +200,7 @@ class V26StageLedger(FrozenModel):
     gpu_job_count: int = Field(ge=0)
     current_stage: V26Stage | Literal["initialized"]
     next_stage: V26Stage | Literal["complete"]
-    schema_version: Literal["finance_v26_stage_router.v5"] = "finance_v26_stage_router.v5"
+    schema_version: Literal["finance_v26_stage_router.v6"] = "finance_v26_stage_router.v6"
 
     @model_validator(mode="after")
     def validate_ledger(self) -> V26StageLedger:
@@ -236,9 +234,7 @@ class V26StageLedger(FrozenModel):
         scaffold_admitted = "scaffold_admission" in self.completed_stages
         if self.model_api_call_count and not scaffold_admitted:
             raise ValueError("v26 model API calls occurred before Scaffold Admission")
-        expected_api_stages = {
-            stage for stage in self.completed_stages if stage in _API_STAGES
-        }
+        expected_api_stages = {stage for stage in self.completed_stages if stage in _API_STAGES}
         if set(self.model_api_calls_by_stage) != expected_api_stages:
             raise ValueError("v26 per-stage API telemetry is incomplete or unexpected")
         if any(count < 0 for count in self.model_api_calls_by_stage.values()):
@@ -388,16 +384,12 @@ def _validate_v26_stage_ledger_contents(ledger: V26StageLedger) -> None:
         if stage in {"bridge_rollout", "bridge_confirmation_rollout"}:
             expected_calls = _bridge_provider_call_count(rows)
             if ledger.model_api_calls_by_stage.get(stage) != expected_calls:
-                raise ValueError(
-                    "v26 Bridge API telemetry differs from provider-call lineage"
-                )
+                raise ValueError("v26 Bridge API telemetry differs from provider-call lineage")
         if (
             stage == "state_support_observation"
             and ledger.model_api_calls_by_stage.get(stage, 0) <= 0
         ):
-            raise ValueError(
-                "v26 State-support observations require explicit API telemetry"
-            )
+            raise ValueError("v26 State-support observations require explicit API telemetry")
 
 
 def load_v26_stage_ledger(path: Path) -> V26StageLedger:
@@ -447,9 +439,7 @@ def _make_ledger(
         completed_stages[-1] if completed_stages else "initialized"
     )
     next_stage: V26Stage | Literal["complete"] = (
-        V26_STAGES[len(completed_stages)]
-        if len(completed_stages) < len(V26_STAGES)
-        else "complete"
+        V26_STAGES[len(completed_stages)] if len(completed_stages) < len(V26_STAGES) else "complete"
     )
     values = {
         "run_id": run_id,
@@ -584,6 +574,15 @@ def _validate_stage_cardinality(
         raise ValueError("Bridge Rollout stage must contain complete 48-rollout cells")
 
 
+def _bridge_support_freeze_embeds_cells(
+    freeze: CompilerAssistedBridgeSupportFreeze,
+    cells: Sequence[BridgeCellObservation],
+) -> bool:
+    embedded_ids = tuple(sorted(item.observation_id for item in freeze.observations))
+    cell_ids = tuple(sorted(item.observation_id for item in cells))
+    return len(embedded_ids) == len(cell_ids) and embedded_ids == cell_ids
+
+
 def _validate_cross_stage_bindings(
     ledger: V26StageLedger,
     stage: V26Stage,
@@ -664,7 +663,7 @@ def _validate_cross_stage_bindings(
     if stage == "bridge_support_freeze":
         cells = _stage_models(ledger, "bridge_aggregation", "bridge_cell")
         freezes = current["bridge_support_freeze"]
-        if len(freezes) != 1 or tuple(freezes[0].observations) != cells:
+        if len(freezes) != 1 or not _bridge_support_freeze_embeds_cells(freezes[0], cells):
             raise ValueError("Bridge support freeze does not embed the Development cells")
         return
     if stage == "fresh_confirmation_population":
@@ -676,12 +675,10 @@ def _validate_cross_stage_bindings(
             or confirmation.source_population_id == development.source_population_id
         ):
             raise ValueError("fresh Bridge confirmation crosses protocol, phase, or source roots")
-        freshness = _stage_models(
-            ledger, "joint_compilation", "cross_population_freshness_audit"
-        )[0]
-        replay_v26_cross_population_freshness_audit(
-            freshness, development, confirmation
-        )
+        freshness = _stage_models(ledger, "joint_compilation", "cross_population_freshness_audit")[
+            0
+        ]
+        replay_v26_cross_population_freshness_audit(freshness, development, confirmation)
         development_ids = set(development.task_ids)
         confirmation_ids = set(confirmation.task_ids)
         if development_ids & confirmation_ids:
@@ -768,8 +765,7 @@ def _validate_cross_stage_bindings(
             len(contracts) != 1
             or len(confirmations) != 1
             or contracts[0].bridge_confirmation_id != confirmations[0].confirmation_id
-            or contracts[0].confirmed_task_conditions
-            != confirmations[0].confirmed_task_conditions
+            or contracts[0].confirmed_task_conditions != confirmations[0].confirmed_task_conditions
         ):
             raise ValueError("State-support contract crosses Bridge confirmations")
         return
@@ -863,9 +859,7 @@ def _validate_joint_admissions(
     audits: tuple[Any, ...],
     admissions: tuple[Any, ...],
 ) -> None:
-    compiled_by_id = {
-        item.joint_compilation.artifact_id: item for item in compiled
-    }
+    compiled_by_id = {item.joint_compilation.artifact_id: item for item in compiled}
     audit_ids = {item.evidence_id for item in audits}
     if set(compiled_by_id) != {item.joint_compilation_id for item in admissions}:
         raise ValueError("Joint Admission coverage differs from Joint Compilation")
@@ -940,16 +934,12 @@ def _validate_bridge_rollouts(
 ) -> None:
     admissions_by_id = {item.admission_id: item for item in admissions}
     roots_by_task = {item.task_id: item for item in population.tasks}
-    task_ids = {
-        item.ladder.projections[0].base_runtime_projection.task_id for item in admissions
-    }
+    task_ids = {item.ladder.projections[0].base_runtime_projection.task_id for item in admissions}
     if {item.task_id for item in rollouts} != task_ids:
         raise ValueError("Bridge rollouts do not cover the admitted task population")
     if len(rollouts) != len(task_ids) * expected_levels_per_task * 6:
         raise ValueError("Bridge rollout budget differs from the frozen cell design")
-    provider_call_ids = [
-        call_id for rollout in rollouts for call_id in rollout.provider_call_ids
-    ]
+    provider_call_ids = [call_id for rollout in rollouts for call_id in rollout.provider_call_ids]
     if len(provider_call_ids) != len(set(provider_call_ids)):
         raise ValueError("Bridge provider-call identities are duplicated across rollouts")
     cells: dict[tuple[str, str], set[int]] = {}
@@ -1007,9 +997,7 @@ def _validate_bridge_authorization(
         item.ladder.projections[0].base_runtime_projection.task_id for item in admissions
     }
     observed_tasks = set(
-        authorization.confirmation_task_ids
-        if confirmation
-        else authorization.development_task_ids
+        authorization.confirmation_task_ids if confirmation else authorization.development_task_ids
     )
     expected_by_mechanism = {
         mechanism: {item.task_id for item in tasks}
@@ -1078,9 +1066,7 @@ def _stage_models(
     stage: V26Stage,
     role: StageArtifactRole,
 ) -> tuple[Any, ...]:
-    references = tuple(
-        item for item in ledger.artifacts_by_stage[stage] if item.role == role
-    )
+    references = tuple(item for item in ledger.artifacts_by_stage[stage] if item.role == role)
     if len(references) != 1:
         raise ValueError("v26 stage ledger has an invalid role cardinality")
     parsed = _replay_reference(references[0])
@@ -1108,8 +1094,7 @@ def _validate_preflight_manifest(
         "student_config": protocol.student_config_sha256,
     }
     expected_code = {
-        name: _sha256(path)
-        for name, path in sorted(mainline_implementation_paths().items())
+        name: _sha256(path) for name, path in sorted(mainline_implementation_paths().items())
     }
     if preflight.source_sha256 != expected_sources:
         raise ValueError("v26 preflight source manifest differs from the protocol")

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
@@ -174,12 +176,6 @@ def _execution_manifest(contract_id: str, lineage: CompiledTaskConditionLineage)
     )
 
 
-def _success_target(estimand_id: str, rank: int) -> tuple[int, int]:
-    if estimand_id == "counterfactual_branch_flip":
-        return (3, 10, 12, 14)[rank], 2
-    return (6, 20, 24, 28)[rank], 4
-
-
 def _cell(
     contract_id: str,
     authorization_id: str,
@@ -221,45 +217,37 @@ def _cell(
         )
     }
     summaries = {
-        task_id: (_summary(task_id) if rank >= 1 else None)
-        for task_id in selected_task_ids
+        task_id: (_summary(task_id) if rank >= 1 else None) for task_id in selected_task_ids
     }
-    valid_count = (4, 20, 24, 28)[rank]
+    successes_per_task = (1, 3, 4, 5)[rank]
+    fixed_policy_successes_per_task = 1
     rollouts = []
-    evaluated_index = {estimand_id: 0 for estimand_id in MECHANISM_ESTIMANDS[mechanism]}
     for task_index, task_id in enumerate(selected_task_ids):
         for replicate_index in range(6):
             global_index = task_index * 6 + replicate_index
             outcomes = []
             for estimand_id in MECHANISM_ESTIMANDS[mechanism]:
-                evaluated = (
-                    replicate_index < 3
-                    if estimand_id == "counterfactual_branch_flip"
-                    else True
-                )
-                success_target, baseline_target = _success_target(estimand_id, rank)
-                current = evaluated_index[estimand_id]
+                evaluated = True
                 outcomes.append(
                     BridgeEstimandOutcome(
                         estimand_id=estimand_id,
                         evaluated=evaluated,
-                        success=(current < success_target) if evaluated else None,
-                        fixed_policy_success=(
-                            current < baseline_target if evaluated else None
-                        ),
+                        success=replicate_index < successes_per_task,
+                        fixed_policy_success=(replicate_index < fixed_policy_successes_per_task),
                     )
                 )
-                if evaluated:
-                    evaluated_index[estimand_id] += 1
             terminal = (
                 "model_valid_trajectory"
-                if global_index < valid_count
+                if replicate_index < successes_per_task
                 else "model_invalid_trajectory"
             )
             raw_payload = {
                 "task_id": task_id,
                 "replicate_index": replicate_index,
                 "terminal_category": terminal,
+                "failure_attribution": (
+                    None if terminal == "model_valid_trajectory" else "model_contract_invalid"
+                ),
             }
             rollouts.append(
                 make_bridge_rollout_observation(
@@ -270,9 +258,7 @@ def _cell(
                     scaffold_level=level,  # type: ignore[arg-type]
                     replicate_index=replicate_index,
                     condition_lineage=lineages[task_id],
-                    execution_manifest=_execution_manifest(
-                        contract_id, lineages[task_id]
-                    ),
+                    execution_manifest=_execution_manifest(contract_id, lineages[task_id]),
                     provider_call_ids=(
                         f"call:{phase}:{mechanism}:{level}:{task_id}:{replicate_index}",
                     ),
@@ -280,7 +266,7 @@ def _cell(
                     terminal_category=terminal,
                     independent_validity_passed=terminal == "model_valid_trajectory",
                     quotient_state_id="state:shared",
-                    decision_trace_hash=f"{global_index + 1:064x}",
+                    decision_trace_hash=f"trajectory_decision_trace:{global_index + 1:064x}",
                     estimand_outcomes=tuple(outcomes),
                     raw_payload=raw_payload,
                     raw_artifact_uri=f"embedded://bridge/{task_id}/{replicate_index}",
@@ -413,8 +399,12 @@ def test_static_construct_audit_rejects_forged_aggregate_after_outer_rehash() ->
 
 def test_bridge_selects_minimum_boundary_level_without_three_state_gate() -> None:
     contract, _, freeze = _passing_freeze()
+    canonical_payload = json.loads(
+        json.dumps(freeze.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
+    )
 
     assert freeze.status == "passed"
+    assert type(freeze).model_validate(canonical_payload) == freeze
     assert freeze.next_transition == "fresh_bridge_confirmation"
     assert tuple(item.selected_scaffold_level for item in freeze.selections) == (
         "gamma_1",
@@ -540,6 +530,72 @@ def test_bridge_rollout_rejects_rehashed_raw_payload_tampering() -> None:
 
     with pytest.raises(ValidationError, match="raw payload identity is inconsistent"):
         type(rollout).model_validate(payload)
+
+
+def test_bridge_rollout_separates_attempt_and_provider_call_denominators() -> None:
+    contract = default_compiler_assisted_bridge_contract()
+    authorization = _authorization(contract)
+    task_id = _development_task_ids("context_conditioned_action")[0]
+    lineage = _lineage(
+        task_id,
+        "gamma_0",
+        compiled_id=f"condition:{task_id}:gamma_0",
+        mapping_id=f"mapping:{task_id}",
+    )
+    execution = _execution_manifest(contract.contract_id, lineage)
+    outcomes = tuple(
+        BridgeEstimandOutcome(estimand_id=item, evaluated=False)
+        for item in MECHANISM_ESTIMANDS["context_conditioned_action"]
+    )
+
+    failed = make_bridge_rollout_observation(
+        contract_id=contract.contract_id,
+        phase_authorization_id=authorization.authorization_id,
+        phase="development",
+        mechanism_id="context_conditioned_action",
+        scaffold_level="gamma_0",
+        replicate_index=0,
+        condition_lineage=lineage,
+        execution_manifest=execution,
+        provider_call_ids=(),
+        public_state_summary=None,
+        terminal_category="instrument_failure",
+        independent_validity_passed=False,
+        quotient_state_id=None,
+        decision_trace_hash=None,
+        estimand_outcomes=outcomes,
+        raw_payload={
+            "task_id": task_id,
+            "terminal_category": "instrument_failure",
+        },
+        raw_artifact_uri="raw://instrument-failure",
+        failure_reason="pre_request_manifest_failure",
+    )
+    assert failed.provider_call_ids == ()
+
+    with pytest.raises(ValidationError, match="require Provider-call lineage"):
+        make_bridge_rollout_observation(
+            contract_id=contract.contract_id,
+            phase_authorization_id=authorization.authorization_id,
+            phase="development",
+            mechanism_id="context_conditioned_action",
+            scaffold_level="gamma_0",
+            replicate_index=0,
+            condition_lineage=lineage,
+            execution_manifest=execution,
+            provider_call_ids=(),
+            public_state_summary=None,
+            terminal_category="model_invalid_trajectory",
+            independent_validity_passed=False,
+            quotient_state_id=None,
+            decision_trace_hash="trajectory_decision_trace:" + "a" * 64,
+            estimand_outcomes=outcomes,
+            raw_payload={
+                "task_id": task_id,
+                "terminal_category": "model_invalid_trajectory",
+            },
+            raw_artifact_uri="raw://invalid-model-outcome",
+        )
 
 
 def test_fresh_confirmation_authorizes_only_state_support_discovery() -> None:

@@ -36,7 +36,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_context_suffi
 from trusted_synthesis.hashing import canonical_hash
 
 FINANCE_V26_MAINLINE_VERSION = "finance_v26_capability_heterogeneous_vtdo_mainline.v3"
-MAINLINE_SUPPORT_OBSERVATION_VERSION = "vtdo_mainline_support_observation.v2"
+MAINLINE_SUPPORT_OBSERVATION_VERSION = "vtdo_mainline_support_observation.v3"
 MAINLINE_SUPPORT_PARTITION_VERSION = "vtdo_mainline_support_partition.v1"
 MAINLINE_PREFLIGHT_VERSION = "finance_v26_mainline_preflight.v1"
 
@@ -379,7 +379,7 @@ class MainlineSupportObservation(FrozenModel):
     quotient_state_id: str | None = Field(default=None, min_length=1)
     state_mapping_on_target: bool = False
     replayable: bool = False
-    decision_trace_hash: str | None = Field(default=None, min_length=64, max_length=64)
+    decision_trace_hash: str | None = Field(default=None, min_length=1)
     beneficiary_boundary_id: str | None = Field(default=None, min_length=1)
     contribution_authorization_id: str | None = Field(default=None, min_length=1)
     exact_target_exceeds_mpe: bool = False
@@ -447,6 +447,15 @@ class MainlineSupportObservation(FrozenModel):
             raise ValueError("on-target state mapping requires a Quotient State identity")
         if self.replayable and not self.decision_trace_hash:
             raise ValueError("replayable trajectories require a decision-trace hash")
+        if self.decision_trace_hash is not None:
+            prefix = "trajectory_decision_trace:"
+            digest = self.decision_trace_hash.removeprefix(prefix)
+            if (
+                not self.decision_trace_hash.startswith(prefix)
+                or len(digest) != 64
+                or any(character not in "0123456789abcdef" for character in digest)
+            ):
+                raise ValueError("decision-trace identity must contain a canonical SHA-256")
         if self.independent_validity_passed and self.terminal_status != "completed":
             raise ValueError("failed outcomes cannot pass independent trajectory validity")
         if (
@@ -834,12 +843,13 @@ def mainline_implementation_paths() -> dict[str, Path]:
             Path(__file__).resolve().parents[2] / "core" / "trajectory" / "scaffolding.py"
         ),
         "capability_bridge": module_root / "phase1_compiler_assisted_bridge.py",
+        "v26_bridge_rollout_contracts": module_root / "phase1_v26_bridge_rollout.py",
+        "v26_bridge_rollout_runner": module_root / "phase1_v26_bridge_rollout_runner.py",
+        "v26_exposure_clean_population": (module_root / "phase1_v26_exposure_clean_population.py"),
         "state_support_discovery": module_root / "phase1_compiler_assisted_state_support.py",
         "v26_stage_router": module_root / "phase1_v26_stage_router.py",
         "v26_no_api_contracts": module_root / "phase1_v26_no_api_contracts.py",
-        "v26_no_api_compilation_runner": (
-            module_root / "phase1_v26_no_api_compilation_runner.py"
-        ),
+        "v26_no_api_compilation_runner": (module_root / "phase1_v26_no_api_compilation_runner.py"),
         "v26_public_cli": Path(__file__).resolve().parents[2] / "cli.py",
         "state_discovery": module_root / "phase1_initial_distribution.py",
         "state_materialization": module_root / "phase1_state_realizations.py",

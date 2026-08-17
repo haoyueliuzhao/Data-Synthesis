@@ -15,59 +15,62 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The latest completed model result remains Finance v25.47 Context Sufficiency Development. The
-latest completed non-model result is the Finance v26.20 credential-free Joint/Scaffold experiment.
-Finance v26 freezes a separate capability-heterogeneous VTDO mainline protocol; it does not
-mutate or reauthorize v25.47. v26 restores Joint Compilation as mandatory Phase 0, separates
-`S_measure`, `S_train`, and `S_C`, freezes the 100/60/30/60 task partition, and defines the No-C
-Student matrix plus an isolated Contribution-recovery branch. Two fresh 70-task source
-populations and disjoint 24-task Development/Confirmation manifests exist. The Development set now
-has 24/24 Joint Admissions, 24/24 Scaffold Admissions, and a Bridge Development static
-authorization. No v26 API call, GPU job, Bridge rollout, Student run, Exact Target, or GP-C result
-exists.
-See
-`docs/finance_v26_capability_heterogeneous_mainline.md` and
-`docs/finance_v26_no_api_joint_scaffold_experiment.md`.
+## Current v26 Mainline Decision
 
-The Core now exposes a content-addressed `JointCompilationAdmissionArtifact`. It binds Oracle,
-Public, runtime authority, verifier, State Mapper, and Materialization views to one Joint
-Compilation root. Every gate is re-derived from content-addressed atomic audit cases with an
-independent replay implementation identity. Any failure transitions only to
-`joint_compilation_repair_only`. Legal and Science contract tests verify that this is a generic
-Core capability rather than a Finance branch.
+The latest completed model experiment is Finance v26.43 Bridge Development. It follows a new
+source-exposure and grounding audit, a fresh v26.42 protocol, and a complete credential-free
+24-task Joint/Scaffold prefix. It does not mutate or reauthorize v25.47.
 
-The next Joint Compilation layer compiles a capability prerequisite DAG, deterministic minimum
-public state summary, cumulative `gamma_0..gamma_3` projections, and one scaffold-invariant state
-mapping contract. Seven independent gates preserve Oracle identity, public sufficiency, model
-authority, recursive noninterference, incremental necessity, withdrawal readiness, and state
-mapping invariance. The compiler deterministically replays the complete ladder, and the exact task
-condition binds the complete scaffold payload and Joint/Omega/runtime roots.
+The v26.42 no-API chain completed 24 Joint Compilations, 24 State Spaces, 72 Joint audit Evidence
+records, 384 Joint atomic cases, 24 Joint Admissions, 24 Scaffold ladders, 672 Scaffold gate
+Evidence records, 3,024 Scaffold atomic cases, 24 Scaffold Admissions, 96 ordered-history collision
+cases, 96 cross-level mapping cases, and 3 Bridge static audits containing 144 atomic cases. All
+eight Development/Confirmation freshness intersections are zero. Credential-free replay reproduced
+the same Stage Ledger with zero API calls and zero GPU jobs.
 
-The Finance Bridge now uses five mechanism-specific Estimands. Its 576-rollout Development phase
-measures capability boundaries but does not gate on three-state occupancy. A separate 144-rollout
-Fresh Confirmation phase has its own static authorization and can release only a 288-additional-
-rollout State-support Discovery. That phase alone checks 3-5 accepted states, state-level Wilson
-lower bounds, independent conditioned acceptance, and materialization budgets. Compiler Bridge
-efficacy and fixed-scaffold VTDO efficacy are separate causal experiments. The 48 Bridge task
-roots are materialized, but no Bridge rollout, model API call, or GPU job has run. See
-`docs/finance_v26_compiler_assisted_capability_bridge.md`.
+The authorized v26.43 run then completed exactly 576 DeepSeek V4-Flash Development rollouts:
 
-Earlier v26 preflights and failed no-API attempts remain historical and cannot initialize the
-current runner. The immutable v26.20 run recompiled all 24 Development tasks, executed 384 Joint
-atomic cases and 3,024 Scaffold atomic cases, admitted all Joint and Scaffold artifacts, and passed
-three Bridge static audits. Its explicit eight-channel Development/Confirmation freshness audit
-has zero overlap in every channel. A credential-free child replay reproduced the same final Ledger
-ID with zero API calls and zero GPU jobs. The Ledger now stops at `bridge_rollout`. Exact identities
-are recorded in `docs/finance_v26_no_api_joint_scaffold_experiment.md`.
+```text
+3 mechanisms x 4 scaffold levels x 8 tasks x 6 rollouts = 576
+```
 
-`finance_v26_stage_router.v5` provides an executable, fail-closed route from typed fresh Development
-Population through Joint/Scaffold admission, Bridge Development, fresh confirmation, independent
-State-support observations, and State-support freeze. Protocol/preflight and every stage artifact
-are typed and content replayed on each transition and direct ledger deserialization. Audit
-cardinalities scale with Population size; rollout aggregates must exactly partition their atomic
-observations. The completed no-API prefix is independently replayable; empirical Bridge and
-downstream stages remain unexecuted. See `docs/finance_v26_joint_compilation_audit_closure.md` and
-`docs/finance_v26_no_api_joint_scaffold_experiment.md`.
+All 5,166 Provider calls returned HTTP 200 with no fallback. Raw byte, identity, actual Prompt,
+Scaffold, Host side-channel, and recursive noninterference checks passed for 576/576 artifacts.
+There were no Runtime or instrument failures. Only 23/576 trajectories passed independent semantic
+and evidential verification; 553 were model-invalid. Context-conditioned action produced 0 valid
+trajectories, semantic reconciliation 21, and recovery-and-stopping 2.
+
+Task-first, rollout-second hierarchical inference admitted no scaffold level for any mechanism.
+The content-addressed Support Freeze is `blocked`, selects no scaffold, and authorizes only:
+
+```text
+capability_task_or_scaffold_redesign_only
+```
+
+Fresh Confirmation, State-support Discovery, No-C VTDO, Student training, Exact Target, GP-C, and
+Contribution remain forbidden. Production Contribution is zero and unauthorized. This is a valid
+negative Bridge Development result, not a Runtime failure and not evidence against VTDO itself.
+See `docs/finance_v26_43_bridge_development_report.md`.
+
+The source layer now rejects both historically API-exposed Evidence and Evidence that fails the
+independent Finance source-grounding verifier before task resampling. Of 151,114 source Evidence
+items, 1,657 were historically exposed, 24,714 failed source entailment, the effective exclusion
+union contained 26,290 identities, and 124,824 remained eligible. The final 70-task source
+Population and 24/24 Development/Confirmation selections were built from that eligible set.
+
+The immutable v26.43 checkpoint required a zero-generation finalization recovery because the
+then-frozen postprocessor had collection-order and JSON mapping-order defects. The 576-record
+checkpoint SHA-256 was identical before and after recovery and no model call was repeated. The
+permanent implementation uses Bridge Rollout observation v3, Bridge Level Inference v2, Bridge
+Support Freeze v5, Bridge Runner v2, and Stage Router v6. It canonicalizes rollout/cell ordering,
+validates registered metric key sets independently of mapping insertion order, compares exact cell
+identity sets, persists raw-first failure telemetry, and derives the final report transition from
+the Support Freeze.
+
+The immutable v26.43 `report.json` retains the older blocking label
+`capability_scaffold_repair_only`; it is not rewritten post hoc. The authoritative Support Freeze
+uses `capability_task_or_scaffold_redesign_only`, and all future reports inherit that value
+directly. Both labels block downstream stages, but only the Support Freeze label is current.
 
 v25.47 replaced the opaque
 v25.46 branch cue with one typed, action-neutral public relation state and one shared decision
@@ -92,7 +95,7 @@ Production Contribution remains zero. See `docs/finance_v25_47_context_sufficien
 ## Runtime And Data
 
 The migrated environment is operational with Python 3.12, PyTorch 2.7.1+cu128, CUDA 12.8, and
-eight NVIDIA A100-SXM4-80GB GPUs. No sealed experiment process remained after aggregation.
+eight NVIDIA A100-SXM4-80GB GPUs. The completed v26.43 run used no local GPU. No sealed experiment process remained after aggregation.
 
 After all v22 workers had exited, a separate root-owned process
 `/opt/venv/render/bin/python3 --coin pearl` appeared at 10:22 and occupied GPUs 0, 1, 3, 4, 6, and

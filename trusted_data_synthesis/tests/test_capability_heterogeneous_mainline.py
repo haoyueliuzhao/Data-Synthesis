@@ -23,6 +23,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_heterogeneo
     _no_c_contract,
     _population_contract,
     capability_heterogeneous_mainline_protocol_id,
+    mainline_support_observation_id,
     make_mainline_support_observation,
     partition_mainline_support,
 )
@@ -143,7 +144,7 @@ def test_discovery_success_cannot_be_promoted_to_positive_sft() -> None:
         quotient_state_id="state:recovery",
         state_mapping_on_target=True,
         replayable=True,
-        decision_trace_hash="1" * 64,
+        decision_trace_hash="trajectory_decision_trace:" + "1" * 64,
     )
     partition = partition_mainline_support((discovery,))
 
@@ -162,7 +163,7 @@ def test_valid_materialization_enters_training_but_not_contribution() -> None:
         quotient_state_id="state:recovery",
         state_mapping_on_target=True,
         replayable=True,
-        decision_trace_hash="2" * 64,
+        decision_trace_hash="trajectory_decision_trace:" + "2" * 64,
     )
     partition = partition_mainline_support((materialized,))
 
@@ -192,7 +193,7 @@ def test_contribution_support_requires_the_complete_independent_chain() -> None:
         quotient_state_id="state:recovery",
         state_mapping_on_target=True,
         replayable=True,
-        decision_trace_hash="3" * 64,
+        decision_trace_hash="trajectory_decision_trace:" + "3" * 64,
         beneficiary_boundary_id="beneficiary:qwen:round0",
         contribution_authorization_id="authorization:sealed",
         exact_target_exceeds_mpe=True,
@@ -212,7 +213,7 @@ def test_duplicate_positive_decision_traces_are_rejected() -> None:
         quotient_state_id="state:first",
         state_mapping_on_target=True,
         replayable=True,
-        decision_trace_hash="4" * 64,
+        decision_trace_hash="trajectory_decision_trace:" + "4" * 64,
     )
     second = _observation(
         task_id="task:2",
@@ -223,7 +224,7 @@ def test_duplicate_positive_decision_traces_are_rejected() -> None:
         quotient_state_id="state:second",
         state_mapping_on_target=True,
         replayable=True,
-        decision_trace_hash="4" * 64,
+        decision_trace_hash="trajectory_decision_trace:" + "4" * 64,
     )
 
     with pytest.raises(ValueError, match="duplicate decision traces"):
@@ -270,4 +271,15 @@ def test_mainline_support_rejects_detached_compiled_condition_lineage() -> None:
     payload["condition_lineage"] = _lineage("task:other").model_dump(mode="json")
 
     with pytest.raises(ValidationError, match="crosses compiled task condition"):
+        MainlineSupportObservation.model_validate(payload)
+
+
+def test_mainline_support_rejects_noncanonical_decision_trace_identity() -> None:
+    observation = _observation()
+    payload = observation.model_dump(mode="json")
+    payload["decision_trace_hash"] = "a" * 64
+    provisional = observation.model_copy(update={"decision_trace_hash": "a" * 64})
+    payload["observation_id"] = mainline_support_observation_id(provisional)
+
+    with pytest.raises(ValidationError, match="canonical SHA-256"):
         MainlineSupportObservation.model_validate(payload)
