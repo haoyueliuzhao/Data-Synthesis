@@ -1601,3 +1601,119 @@ and Joint, Scaffold, history/mapping, and Bridge static results have distinct ty
 The next permitted stage is `bridge_rollout`;
 no empirical Bridge, State-support, VTDO, Contribution, or Student result has been produced. See
 `docs/finance_v26_no_api_joint_scaffold_experiment.md`.
+
+### v26 executable-support reset and role-specific task admission
+
+The v26.43 negative Bridge result and v26.53 read-only audit add a stronger precondition before a
+new Agent Development run. Joint Compilation and Scaffold admission alone do not prove that a task
+has a complete public executable solution, that its declared mechanism is necessary, or that it
+contains multiple valid model-owned states.
+
+The v26.54/v26.55 contract audit therefore introduces three ordered existence claims:
+
+```text
+Public Executability
+-> Mechanism Identifiability
+-> Multistate Optimisability
+```
+
+Historical task identities cannot receive these contracts after the fact. Every future task under
+this branch must be freshly rematerialized.
+
+#### Pre-identity tool closure
+
+Before an executable TaskPackage ID exists, the builder derives:
+
+```text
+RequiredTools(x)
+  = ProgramTools(x)
+  union VerificationTools(x)
+  union RecoveryTools(x)
+```
+
+and rejects the draft unless:
+
+```text
+RequiredTools(x) subseteq AllowedTools(x)
+```
+
+A task may not convert a missing required tool into a model capability failure.
+
+#### Single semantic source
+
+One `ExecutableTaskSemanticSource` must bind all of the following before package identity freeze:
+
+```text
+Tool Closure
+Typed Answer Projection
+Evidence Support Lattice
+Citation Contract
+Public Runtime Contract
+Mechanism Causal Contract
+Executable Verifier Binding
+```
+
+The Public Spec exposes only public bindings. Oracle-only lattice, mechanism, semantic-source, and
+Verifier identities remain private. The report must bind exact source-code bytes for Core,
+Domain Runtime, and Materializer in addition to version strings.
+
+#### Full public validity
+
+A Public Executable Witness is complete only if all public-input, allowed-tool, Operation-lineage,
+Evidence-support, Verification, Answer-Projection, Citation, target-mechanism, and post-completion
+checks pass. Compiler Witnesses remain hidden from the model and cannot count as model-generated
+paths.
+
+Citation completeness is lattice membership:
+
+```text
+cited Evidence contains one registered sufficient support set
+```
+
+Exact Gold equality is forbidden unless semantic-alternative search is complete, support
+uniqueness is proved, and exactly one sufficient set remains.
+
+#### Target mechanism necessity
+
+Every necessity mutation must target the enclosing Mechanism Contract. Its baseline must be fully
+valid, the registered mechanism events must be absent after mutation, and complete validity must
+fail. Context, Reconciliation, Recovery, and Stopping retain separate typed mutation families.
+Contract-level compiler counterfactuals prove only static construct validity; they are not model
+behavior observations.
+
+#### Role-specific admission
+
+Capability admission requires package binding, one complete Public Witness, and Mechanism
+Necessity. It does not require three paths.
+
+Static VTDO-candidate admission additionally requires at least three complete public paths with
+distinct model-owned Decision Signatures, Behavior Signatures, and Scaffold-invariant Quotient
+State IDs. This is only a static candidate gate. Empirical state support remains false until real
+model trajectories establish natural hits, conditioned acceptance, and realization yield.
+
+#### v26.56 frozen result
+
+The first fresh Population under this contract contains 24 tasks, with six tasks per mechanism and
+an equal 12/12 capability-only versus VTDO-candidate role split. It passes 24/24 tool closures,
+24/24 package bindings, 24/24 Public Witnesses, 24/24 Mechanism Necessity artifacts, and 12/12
+static VTDO-candidate admissions. It contains 36 compiler paths and 48 target-matched
+counterfactual Replay records.
+
+The authoritative report is:
+
+```text
+finance_v26_executable_task_rematerialization_report:abc3df8dfbb4c01e17693b48a777f3679c7d8656a88a96c3d1d41a6e5736ea81
+```
+
+The only permitted transition is:
+
+```text
+capability_development_and_state_reachability_pilot
+```
+
+The Pilot must preserve registered roles, retain all model capability outcomes, exclude compiler
+Witnesses from empirical counts, and separately estimate unconditional natural reachability and
+state-conditioned acceptance. It cannot authorize Fresh Confirmation, No-C VTDO, Student
+training, Exact Target, GP-C, or Contribution. A later state-support freeze must still satisfy the
+existing three-state reachability and realization-budget contract before any distribution
+optimization stage opens.

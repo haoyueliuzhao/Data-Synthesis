@@ -15,6 +15,54 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.56 Fresh Executable-Task Rematerialization
+
+Finance v26.56 completes the no-API task redesign required by v26.55. It does not patch the
+immutable v26.42 Development tasks. It uses the previously unopened v26.42 Confirmation source,
+retires that source from any future Confirmation role, and creates 24 new task identities only
+after required public tools are closed.
+
+The Population contains six tasks for each of Context-conditioned Action, Semantic
+Reconciliation, Failure Recovery, and State-dependent Stopping. Three tasks per mechanism are
+registered as capability-only and three as VTDO-multistate candidates. All 24 bind one semantic
+source to Tool Closure, Typed Answer Projection, Evidence Support Lattice, Citation Contract,
+Public Runtime, Mechanism Contract, and Verifier before TaskPackage identity freeze.
+
+The static result passed:
+
+```text
+required-tools closure                    24 / 24
+single-source package binding             24 / 24
+Citation-complete Public Witness          24 / 24
+target-matched Mechanism Necessity        24 / 24
+capability prerequisite eligibility       24 / 24
+static VTDO-candidate eligibility         12 / 12
+static model-authority paths                    36
+counterfactual Replay records                   48
+```
+
+The Finance Runtime now emits a typed normalization operation reference that the downstream
+Calculator consumes. Citation uses registered sufficient-set membership rather than exact Gold
+equality. The 48 counterfactual rows retain a fully valid baseline, target the exact enclosing
+mechanism, remove its registered events, and fail complete validity.
+
+All 36 VTDO paths are compiler generated. They record `model_generated=false` and empirical
+reachability `unmeasured`; no compiler Witness contributes to an empirical state count. Thus this
+is a positive static-executability and construct-validity result, not a positive Agent
+state-support result.
+
+The authoritative report is
+`finance_v26_executable_task_rematerialization_report:abc3df8dfbb4c01e17693b48a777f3679c7d8656a88a96c3d1d41a6e5736ea81`.
+Its three implementation source hashes and nine immutable detail-file hashes are part of the
+report identity. An independent build reproduced all ten JSON outputs byte for byte. The run used
+zero API calls and zero GPU jobs.
+
+The only newly permitted stages are capability Development on the 12 registered capability tasks
+and an empirical state-Reachability Pilot on the 12 registered VTDO candidates. Fresh
+Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and production Contribution remain
+forbidden. Production Contribution remains zero. See
+`docs/finance_v26_56_executable_task_rematerialization_report.md`.
+
 ## v26.55 Executable-Support Contract v2
 
 Finance v26.55 is a credential-free hardening replication of v26.54. A prospective contract audit
@@ -429,8 +477,11 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 127 historical baseline files remain unformatted |
-| Mypy | passed, 346 source files |
-| Pytest | passed, 865 tests in 355.81 seconds |
+| Mypy | passed, 349 source files |
+| Pytest | passed, 875 tests in 388.80 seconds |
+| v26.56 executable-task rematerialization focus | 10 passed |
+| v26.56 dual build | all nine detail artifacts and report are byte-identical |
+| v26.56 implementation manifest | three source files content-hashed in report identity |
 | v26.55 executable-support v2 focus | 10 passed |
 | v26.55 dual build | all seven detail artifacts and report are byte-identical |
 | v26.54 executable-support focus | 8 passed |
@@ -438,7 +489,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.53 statistical-audit focus | 9 passed |
 | v26.53 credential-free replay | authoritative and determinism builds each replayed |
 | v26.53 dual build | all three detail artifacts are byte-identical |
-| Core generalization boundary | 135 files, zero imports/branches/field accesses/violations |
+| Core generalization boundary | 136 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
 | v25.20 population deterministic replay | byte-identical SHA-256 `8ee0b10046af...` |
@@ -655,6 +706,10 @@ changing Explorer models alone.
 
 ## Authoritative References
 
+- `docs/finance_v26_56_executable_task_rematerialization_report.md`
+- `docs/finance_v26_55_executable_support_contract_hardening.md`
+- `docs/finance_v26_54_executable_support_precondition_audit.md`
+- `artifacts/vtdo_experiment/finance_v26_56_executable_task_rematerialization_20260818/report.json`
 - `docs/finance_v25_26_v25_29_answer_contract_and_confirmation_report.md`
 - `docs/finance_v20_target_identifiability_report.md`
 - `docs/finance_v22_development_power_plan.md`
