@@ -14,6 +14,7 @@ from trusted_synthesis.core.trajectory.admission import (
     DESTRUCTIVE_MUTATION_CHECKS,
     JOINT_COMPILATION_GATES,
 )
+from trusted_synthesis.core.trajectory.scaffolding import CompiledTaskConditionLineage
 from trusted_synthesis.core.trajectory.state import TRAJECTORY_CANONICALIZER_VERSION
 from trusted_synthesis.domains.finance.schema import FinanceArchiveConfig
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_frontier import (
@@ -35,7 +36,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_stopping_context_suffi
 from trusted_synthesis.hashing import canonical_hash
 
 FINANCE_V26_MAINLINE_VERSION = "finance_v26_capability_heterogeneous_vtdo_mainline.v3"
-MAINLINE_SUPPORT_OBSERVATION_VERSION = "vtdo_mainline_support_observation.v1"
+MAINLINE_SUPPORT_OBSERVATION_VERSION = "vtdo_mainline_support_observation.v2"
 MAINLINE_SUPPORT_PARTITION_VERSION = "vtdo_mainline_support_partition.v1"
 MAINLINE_PREFLIGHT_VERSION = "finance_v26_mainline_preflight.v1"
 
@@ -361,6 +362,11 @@ class MainlineSupportObservation(FrozenModel):
     observation_id: str = Field(min_length=1)
     task_id: str = Field(min_length=1)
     rollout_id: str = Field(min_length=1)
+    condition_lineage: CompiledTaskConditionLineage
+    rollout_artifact_uri: str = Field(min_length=1)
+    rollout_artifact_sha256: str = Field(min_length=64, max_length=64)
+    trajectory_content_hash: str = Field(min_length=64, max_length=64)
+    public_state_summary_id: str | None = Field(default=None, min_length=1)
     capability_axis: CapabilityAxis
     split_id: MainlineSplit
     phase: Literal["discovery", "materialization"]
@@ -423,6 +429,18 @@ class MainlineSupportObservation(FrozenModel):
 
     @model_validator(mode="after")
     def validate_observation(self) -> MainlineSupportObservation:
+        if self.condition_lineage.task_id != self.task_id:
+            raise ValueError("mainline support crosses compiled task condition identities")
+        if (
+            self.condition_lineage.scaffold_level != "gamma_0"
+            and self.public_state_summary_id is None
+        ):
+            raise ValueError("assisted mainline support requires a public state summary")
+        if (
+            self.condition_lineage.scaffold_level == "gamma_0"
+            and self.public_state_summary_id is not None
+        ):
+            raise ValueError("unassisted mainline support cannot contain a scaffold summary")
         if self.observation_id != mainline_support_observation_id(self):
             raise ValueError("mainline support observation identity is invalid")
         if self.state_mapping_on_target and not self.quotient_state_id:
@@ -568,6 +586,9 @@ def partition_mainline_support(
     trace_hashes = [item.decision_trace_hash for item in values if item.training_eligible]
     if len(trace_hashes) != len(set(trace_hashes)):
         raise ValueError("positive training support contains duplicate decision traces")
+    content_hashes = [item.trajectory_content_hash for item in values if item.training_eligible]
+    if len(content_hashes) != len(set(content_hashes)):
+        raise ValueError("positive training support contains duplicate trajectory content")
 
     measurement = tuple(sorted(item.observation_id for item in values if item.measurement_eligible))
     training = tuple(sorted(item.observation_id for item in values if item.training_eligible))
@@ -683,23 +704,7 @@ def build_mainline_protocol_and_preflight(
         **protocol_values,
     )
 
-    module_root = Path(__file__).resolve().parent
-    code_paths = {
-        "mainline_protocol": Path(__file__).resolve(),
-        "task_population": module_root / "phase1_agent_population.py",
-        "task_compiler": module_root / "phase1_capability_sensitive_frontier.py",
-        "joint_compilation_admission": (
-            Path(__file__).resolve().parents[2] / "core" / "trajectory" / "admission.py"
-        ),
-        "capability_scaffold_compiler": (
-            Path(__file__).resolve().parents[2] / "core" / "trajectory" / "scaffolding.py"
-        ),
-        "capability_bridge": module_root / "phase1_compiler_assisted_bridge.py",
-        "state_support_discovery": (module_root / "phase1_compiler_assisted_state_support.py"),
-        "state_discovery": module_root / "phase1_initial_distribution.py",
-        "state_materialization": module_root / "phase1_state_realizations.py",
-        "student_training": module_root / "training.py",
-    }
+    code_paths = mainline_implementation_paths()
     experiment_separation = protocol.capability_bridge.experiment_separation
     checks = {
         "v25_47_static_construct_valid": decision.static_construct_validity_passed,
@@ -779,6 +784,7 @@ def build_mainline_protocol_and_preflight(
         ),
         "historical_task_promotion_zero": protocol.historical_task_promotion_count == 0,
         "implementation_files_present": all(path.is_file() for path in code_paths.values()),
+        "v26_stage_router_present": code_paths["v26_stage_router"].is_file(),
     }
     blockers = tuple(sorted(name for name, passed in checks.items() if not passed))
     report_values: dict[str, Any] = {
@@ -809,6 +815,32 @@ def build_mainline_protocol_and_preflight(
     _write_json_atomic(protocol_path, protocol.model_dump(mode="json"))
     _write_json_atomic(preflight_path, report.model_dump(mode="json"))
     return protocol, report
+
+
+def mainline_implementation_paths() -> dict[str, Path]:
+    module_root = Path(__file__).resolve().parent
+    return {
+        "mainline_protocol": Path(__file__).resolve(),
+        "task_population": module_root / "phase1_agent_population.py",
+        "task_compiler": module_root / "phase1_capability_sensitive_frontier.py",
+        "v26_fresh_population": module_root / "phase1_v26_fresh_population.py",
+        "atomic_audit_artifacts": (
+            Path(__file__).resolve().parents[2] / "core" / "audit_artifacts.py"
+        ),
+        "joint_compilation_admission": (
+            Path(__file__).resolve().parents[2] / "core" / "trajectory" / "admission.py"
+        ),
+        "capability_scaffold_compiler": (
+            Path(__file__).resolve().parents[2] / "core" / "trajectory" / "scaffolding.py"
+        ),
+        "capability_bridge": module_root / "phase1_compiler_assisted_bridge.py",
+        "state_support_discovery": module_root / "phase1_compiler_assisted_state_support.py",
+        "v26_stage_router": module_root / "phase1_v26_stage_router.py",
+        "v26_public_cli": Path(__file__).resolve().parents[2] / "cli.py",
+        "state_discovery": module_root / "phase1_initial_distribution.py",
+        "state_materialization": module_root / "phase1_state_realizations.py",
+        "student_training": module_root / "training.py",
+    }
 
 
 def _population_contract() -> MainlinePopulationContract:

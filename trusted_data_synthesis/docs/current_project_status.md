@@ -16,16 +16,19 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 The latest completed model result remains Finance v25.47 Context Sufficiency Development.
-Finance v26.3 now freezes a separate capability-heterogeneous VTDO mainline protocol; it does not
+Finance v26 now freezes a separate capability-heterogeneous VTDO mainline protocol; it does not
 mutate or reauthorize v25.47. v26 restores Joint Compilation as mandatory Phase 0, separates
 `S_measure`, `S_train`, and `S_C`, freezes the 100/60/30/60 task partition, and defines the No-C
-Student matrix plus an isolated Contribution-recovery branch. No v26 API call, GPU job, fresh
-task, Student run, Exact Target, or GP-C result exists yet. See
+Student matrix plus an isolated Contribution-recovery branch. Two fresh 70-task source
+populations and disjoint 24-task Development/Confirmation manifests now exist, but no v26 API
+call, GPU job, Joint/Scaffold admission result, Student run, Exact Target, or GP-C result exists.
+See
 `docs/finance_v26_capability_heterogeneous_mainline.md`.
 
 The Core now exposes a content-addressed `JointCompilationAdmissionArtifact`. It binds Oracle,
-Public, Runtime, Verifier, State Mapper, and Materialization views to one Joint Compilation root.
-Its seven gates are fail-closed, and any failure transitions only to
+Public, runtime authority, verifier, State Mapper, and Materialization views to one Joint
+Compilation root. Every gate is re-derived from content-addressed atomic audit cases with an
+independent replay implementation identity. Any failure transitions only to
 `joint_compilation_repair_only`. Legal and Science contract tests verify that this is a generic
 Core capability rather than a Finance branch.
 
@@ -33,22 +36,32 @@ The next Joint Compilation layer compiles a capability prerequisite DAG, determi
 public state summary, cumulative `gamma_0..gamma_3` projections, and one scaffold-invariant state
 mapping contract. Seven independent gates preserve Oracle identity, public sufficiency, model
 authority, recursive noninterference, incremental necessity, withdrawal readiness, and state
-mapping invariance.
+mapping invariance. The compiler deterministically replays the complete ladder, and the exact task
+condition binds the complete scaffold payload and Joint/Omega/runtime roots.
 
 The Finance Bridge now uses five mechanism-specific Estimands. Its 576-rollout Development phase
 measures capability boundaries but does not gate on three-state occupancy. A separate 144-rollout
 Fresh Confirmation phase has its own static authorization and can release only a 288-additional-
 rollout State-support Discovery. That phase alone checks 3-5 accepted states, state-level Wilson
 lower bounds, independent conditioned acceptance, and materialization budgets. Compiler Bridge
-efficacy and fixed-scaffold VTDO efficacy are separate causal experiments. No Bridge task, API
-call, or GPU job has run yet. See `docs/finance_v26_compiler_assisted_capability_bridge.md`.
+efficacy and fixed-scaffold VTDO efficacy are separate causal experiments. The 48 Bridge task
+roots are materialized, but no Bridge rollout, model API call, or GPU job has run. See
+`docs/finance_v26_compiler_assisted_capability_bridge.md`.
 
-The replacement immutable v26.3 preflight passed 23/23 checks under protocol ID
-`finance_v26_capability_heterogeneous_vtdo_mainline:21acb9e8e6fed80241438580a02d45a3de4cc205622a474cd5c007129cacef4e`.
-Its report ID is
-`finance_v26_mainline_preflight:6fca2f741f595aeae2f9b16406fb3b2d72d179e069ef55efd0d292420d7c7688`.
-It recorded zero Flash calls, zero Pro calls, and zero GPU jobs and authorizes only
-`v26_1_joint_compilation_admission`.
+Earlier v26 preflights remain historical and cannot initialize the new runner. The immutable
+v26.10 preflight binds the current source/config manifests, including the typed Population,
+atomic-audit, and Stage Router implementations: all 24 checks passed and 14 implementation files
+were frozen. Its Stage Ledger has accepted the 24-task Development Population and now stops at
+`joint_compilation`; it records zero Flash calls, zero Pro calls, and zero GPU jobs. Exact
+identities are recorded in `docs/finance_v26_joint_compilation_audit_closure.md`.
+
+`finance_v26_stage_router.v4` now provides an executable, fail-closed route from typed fresh Development
+Population through Joint/Scaffold admission, Bridge Development, fresh confirmation, independent
+State-support observations, and State-support freeze. Protocol/preflight and every stage artifact
+are typed and content replayed on each transition and direct ledger deserialization. Audit
+cardinalities scale with Population size; rollout aggregates must exactly partition their atomic
+observations. See
+`docs/finance_v26_joint_compilation_audit_closure.md`.
 
 v25.47 replaced the opaque
 v25.46 branch cue with one typed, action-neutral public relation state and one shared decision

@@ -1548,11 +1548,16 @@ experiments are `AEVTDR-NoC` or `novelty-anchored VTDO`, never full `C+N` VTDO.
 ### v26 compiler-assisted capability bridge and state support
 
 Joint Compilation may compile cumulative `gamma_0..gamma_3` public scaffolds after ordinary
-admission. The exact task condition is:
+admission. The human-readable task condition is:
 
 ```text
 (task, runtime, target capability, scaffold level, scaffold policy version)
 ```
+
+Its executable identity additionally binds the Joint admission and compilation roots, Omega
+context/manifest, runtime authority policy and base projection, dependency graph, complete
+scaffold payload hash, summary spec, state-mapping contract, projection, ladder, and scaffold
+admission. Two conditions with the same level label but different public payloads are distinct.
 
 The valid quotient-state space, Evidence, Program, Answer, Proof Graph, Quality Contract, Runtime,
 and base State Mapper remain invariant across levels. Only reachability may change. Scaffold-only
@@ -1579,3 +1584,16 @@ Only a complete state-support freeze may authorize compilation of the 100-task f
 No-C population. It does not authorize Contribution. Compiler Bridge efficacy changes `gamma` and
 is reported separately from VTDO distribution efficacy, where every arm receives the same frozen
 compiled task condition.
+
+The incompatible `finance_v26_stage_router.v4` is the only permitted pre-training execution route.
+It accepts only `finance_v26_fresh_task_population.v1`, replays typed protocol/preflight manifests
+and every stage artifact, binds exact Task/Evidence/Corpus/Graph roots, scales Joint and Scaffold
+audit cardinality with the fresh Population, and rejects skipped stages, stale implementation
+hashes, detached roots, incomplete rollout partitions, pre-admission API calls, and all GPU jobs.
+The ordered route includes Development static authorization, fresh Confirmation, a distinct
+State-support contract/observation stage, and State-support freeze. Earlier v26 stage ledgers and
+preflights cannot be reinterpreted under this contract. The current immutable v26.10 preflight and
+ledger are stored under
+`artifacts/vtdo_experiment/finance_v26_0_capability_heterogeneous_mainline_protocol_v10_20260817/`;
+the ledger has completed the typed Development Population stage, stops at Joint Compilation, and
+records zero API calls and GPU jobs.

@@ -228,24 +228,24 @@ VTDO works, and a VTDO result cannot be used as a withdrawal-transfer claim.
 
 ## Current Boundary
 
-The implementation provides the incompatible v2/v3 contracts, content-addressed identities,
-independent Development and Confirmation admission, state-support budgeting, and fail-closed
-tests. No v26 Bridge population, API call, GPU job, Student run, or Contribution result exists.
+The implementation now provides evidence-derived Joint/Scaffold admission, executable public
+summary compilation, runtime authority policies, atomic Bridge rollouts, exact condition lineage,
+and the incompatible `finance_v26_stage_router.v4` chain through State-support freeze. This closes
+the static execution route; it does not create empirical evidence.
 
-The next permitted stage remains fresh per-task Joint Compilation and static scaffold admission.
-
-The replacement immutable preflight is stored at:
+Disjoint 24-task Development and Fresh Confirmation Population roots now exist. No per-task
+Joint/Scaffold admission, Bridge rollout, API call, GPU job, Student run, or Contribution result
+exists. The next permitted stage is per-task Joint Compilation and static scaffold admission
+through the Stage Router. The v26.10 immutable preflight freezes the typed Population, atomic
+admission, scaffold, Bridge, audit-artifact, and Stage Router source hashes. It passed 24/24 checks,
+froze 14 implementation files, and advanced a zero-call ledger through `fresh_task_population` to
+`joint_compilation`:
 
 ```text
 artifacts/vtdo_experiment/
-finance_v26_0_capability_heterogeneous_mainline_protocol_v6_20260817/
+finance_v26_0_capability_heterogeneous_mainline_protocol_v10_20260817/
 ```
 
-It passed 23/23 checks with these frozen identities:
-
-```text
-protocol_id = finance_v26_capability_heterogeneous_vtdo_mainline:
-              21acb9e8e6fed80241438580a02d45a3de4cc205622a474cd5c007129cacef4e
-report_id   = finance_v26_mainline_preflight:
-              6fca2f741f595aeae2f9b16406fb3b2d72d179e069ef55efd0d292420d7c7688
-```
+Earlier v26 preflights, including v6, remain historical and are stale against this implementation.
+No model client may be instantiated until the corresponding task has crossed Joint and Scaffold
+admission through this ledger. See `docs/finance_v26_joint_compilation_audit_closure.md`.

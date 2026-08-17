@@ -2,6 +2,10 @@
 
 Date: 2026-08-17
 
+Historical note: the reported v26.3 preflight remains immutable, but it predates the atomic audit
+contracts and `finance_v26_stage_router.v2`. It cannot authorize the current runner. See
+`docs/finance_v26_joint_compilation_audit_closure.md` for the active engineering boundary.
+
 ## Scope
 
 This revision implements the audit requirement to separate capability-boundary measurement from

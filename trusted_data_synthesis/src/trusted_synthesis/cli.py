@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast, get_args
 
 from trusted_synthesis.architecture.generalization import audit_generalization_contract
 from trusted_synthesis.core.evaluation.contracts import (
@@ -69,6 +69,20 @@ from trusted_synthesis.experiments.vtdo_experiment import (
     run_benchmark_predictions,
     run_vtdo_experiment,
     train_vtdo_arm,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_heterogeneous_mainline import (
+    CapabilityHeterogeneousMainlineProtocol,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_fresh_population import (
+    build_v26_fresh_task_population,
+)
+from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_stage_router import (
+    V26_STAGES,
+    StageArtifactRole,
+    advance_v26_stage,
+    initialize_v26_stage_ledger,
+    load_v26_stage_ledger,
+    make_v26_stage_artifact_reference,
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime import (
@@ -178,6 +192,47 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(validation_summary.model_dump(mode="json"), args.output)
         return 0 if validation_summary.status == "passed" else 1
+    if args.command == "v26-build-fresh-population":
+        protocol = CapabilityHeterogeneousMainlineProtocol.model_validate_json(
+            args.protocol.read_text(encoding="utf-8")
+        )
+        population = build_v26_fresh_task_population(
+            protocol_id=protocol.protocol_id,
+            phase=args.phase,
+            source_population_path=args.source_population,
+            selection_salt=args.selection_salt,
+            output_path=args.output,
+        )
+        _emit(population.model_dump(mode="json"), args.report)
+        return 0
+    if args.command == "v26-stage-init":
+        ledger = initialize_v26_stage_ledger(
+            run_id=args.run_id,
+            protocol_path=args.protocol,
+            preflight_path=args.preflight,
+        )
+        _emit(ledger.model_dump(mode="json"), args.output)
+        return 0
+    if args.command == "v26-stage-advance":
+        ledger = load_v26_stage_ledger(args.ledger)
+        artifact_args = tuple(_parse_v26_artifact(item) for item in args.artifact)
+        references = tuple(
+            make_v26_stage_artifact_reference(role, path)
+            for role, path in artifact_args
+        )
+        advanced = advance_v26_stage(
+            ledger,
+            stage=args.stage,
+            artifacts=references,
+            model_api_calls=args.model_api_calls,
+            gpu_jobs=args.gpu_jobs,
+        )
+        _emit(advanced.model_dump(mode="json"), args.output)
+        return 0
+    if args.command == "v26-stage-status":
+        ledger = load_v26_stage_ledger(args.ledger)
+        _emit(ledger.model_dump(mode="json"), args.output)
+        return 0
     adapter = FinanceArchiveAdapter(FinanceArchiveConfig.from_json(args.config))
     if args.command == "audit-finance-synthesis-capacity":
         provider = FinanceArchiveBindingProvider(
@@ -263,6 +318,32 @@ def _parser() -> argparse.ArgumentParser:
     counterfactual_validation = subparsers.add_parser("validate-counterfactuals")
     counterfactual_validation.add_argument("--tasks-per-domain", type=int, default=10)
     counterfactual_validation.add_argument("--output", type=Path)
+    v26_population = subparsers.add_parser("v26-build-fresh-population")
+    v26_population.add_argument("--protocol", type=Path, required=True)
+    v26_population.add_argument(
+        "--phase",
+        choices=("development", "fresh_confirmation"),
+        required=True,
+    )
+    v26_population.add_argument("--source-population", type=Path, required=True)
+    v26_population.add_argument("--selection-salt", required=True)
+    v26_population.add_argument("--output", type=Path, required=True)
+    v26_population.add_argument("--report", type=Path)
+    v26_init = subparsers.add_parser("v26-stage-init")
+    v26_init.add_argument("--run-id", required=True)
+    v26_init.add_argument("--protocol", type=Path, required=True)
+    v26_init.add_argument("--preflight", type=Path, required=True)
+    v26_init.add_argument("--output", type=Path, required=True)
+    v26_advance = subparsers.add_parser("v26-stage-advance")
+    v26_advance.add_argument("--ledger", type=Path, required=True)
+    v26_advance.add_argument("--stage", choices=V26_STAGES, required=True)
+    v26_advance.add_argument("--artifact", action="append", required=True)
+    v26_advance.add_argument("--model-api-calls", type=int, default=0)
+    v26_advance.add_argument("--gpu-jobs", type=int, default=0)
+    v26_advance.add_argument("--output", type=Path, required=True)
+    v26_status = subparsers.add_parser("v26-stage-status")
+    v26_status.add_argument("--ledger", type=Path, required=True)
+    v26_status.add_argument("--output", type=Path)
     vtdo_experiment = subparsers.add_parser("run-vtdo-experiment")
     vtdo_experiment.add_argument("--vtdo-config", type=Path, required=True)
     vtdo_experiment.add_argument("--output", type=Path)
@@ -470,9 +551,20 @@ def _emit(payload: Any, output: Path | None) -> None:
     text = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n"
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text, encoding="utf-8")
+        temporary = output.with_suffix(output.suffix + ".tmp")
+        temporary.write_text(text, encoding="utf-8")
+        temporary.replace(output)
     else:
         print(text, end="")
+
+
+def _parse_v26_artifact(value: str) -> tuple[StageArtifactRole, Path]:
+    role, separator, path = value.partition("=")
+    if not separator or not path:
+        raise ValueError("v26 artifact must use ROLE=PATH")
+    if role not in get_args(StageArtifactRole):
+        raise ValueError(f"unknown v26 stage artifact role: {role}")
+    return cast(StageArtifactRole, role), Path(path)
 
 
 if __name__ == "__main__":

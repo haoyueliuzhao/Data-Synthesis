@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import pytest
 from pydantic import ValidationError
 
+from trusted_synthesis.core.audit_artifacts import make_atomic_audit_case_result
 from trusted_synthesis.core.evaluation.contracts import QualityContractCompiler
 from trusted_synthesis.core.synthesis import ProofCarryingSampleCompiler
 from trusted_synthesis.core.trajectory.admission import (
@@ -13,6 +14,7 @@ from trusted_synthesis.core.trajectory.admission import (
     EXECUTABLE_CLOSURE_CHECKS,
     PUBLIC_SUFFICIENCY_CHECKS,
     admit_joint_compilation,
+    make_executable_component_manifest,
     make_joint_compilation_audit_evidence,
     make_runtime_public_projection,
 )
@@ -22,11 +24,16 @@ from trusted_synthesis.core.trajectory.scaffolding import (
     SCAFFOLD_LEVELS,
     CapabilityScaffoldLadderCompilation,
     admit_capability_scaffold_ladder,
+    capability_aware_public_projection_id,
+    capability_scaffold_ladder_id,
     compile_capability_scaffold_ladder,
+    compile_public_state_summary,
+    compiled_task_condition_id,
     make_capability_prerequisite_graph,
     make_capability_prerequisite_node,
     make_capability_scaffold_gate_evidence,
     make_minimal_public_state_summary_spec,
+    make_public_state_observation,
     make_scaffold_invariant_state_mapping_contract,
     scaffold_gate_checks,
     separate_scaffold_trace_for_state_mapping,
@@ -83,9 +90,58 @@ def _joint_audit(kind: str, joint_id: str):
     return make_joint_compilation_audit_evidence(
         audit_kind=kind,  # type: ignore[arg-type]
         joint_compilation_id=joint_id,
-        checks={item: True for item in expected},
+        case_results=tuple(
+            make_atomic_audit_case_result(
+                check_id=item,
+                subject_id=joint_id,
+                input_artifact_ids=(joint_id,),
+                output_artifact_ids=(f"audit:{kind}:{item}",),
+                implementation_manifest={
+                    "auditor_id": f"contract.{kind}",
+                    "auditor_version": "1.0.0",
+                    "check_id": item,
+                },
+                replay_implementation_manifest={
+                    "auditor_id": f"contract.{kind}.independent",
+                    "auditor_version": "1.0.0",
+                    "check_id": item,
+                },
+                check_passed=True,
+            )
+            for item in expected
+        ),
         auditor_id=f"contract.{kind}",
         auditor_version="1.0.0",
+    )
+
+
+def _component(kind: str, joint_id: str):
+    component_id = f"contract.{kind}"
+    replay = make_atomic_audit_case_result(
+        check_id=f"{kind}_contract_replay",
+        subject_id=component_id,
+        input_artifact_ids=(joint_id,),
+        output_artifact_ids=(component_id,),
+        implementation_manifest={
+            "component_id": component_id,
+            "component_version": "1.0.0",
+            "check_id": f"{kind}_contract_replay",
+        },
+        replay_implementation_manifest={
+            "component_id": f"{component_id}.independent",
+            "component_version": "1.0.0",
+            "check_id": f"{kind}_contract_replay",
+        },
+        check_passed=True,
+    )
+    return make_executable_component_manifest(
+        component_kind=kind,  # type: ignore[arg-type]
+        component_id=component_id,
+        component_version="1.0.0",
+        joint_compilation_id=joint_id,
+        input_schema={"joint_compilation_id": "string"},
+        output_schema={"passed": "boolean"},
+        replay_case=replay,
     )
 
 
@@ -121,10 +177,8 @@ def _compile_admitted(case: ContractCase):
         public_sufficiency_evidence=_joint_audit("public_sufficiency", joint_id),
         executable_closure_evidence=_joint_audit("executable_closure", joint_id),
         destructive_mutation_evidence=_joint_audit("destructive_mutation", joint_id),
-        verifier_id=f"{case.domain}.independent_verifier",
-        verifier_version="1.0.0",
-        materialization_contract_id=f"{case.domain}.materialization",
-        materialization_contract_version="1.0.0",
+        verifier_manifest=_component("independent_verifier", joint_id),
+        materialization_manifest=_component("trajectory_materializer", joint_id),
     )
     return artifacts, admission
 
@@ -205,8 +259,31 @@ def _gate_evidence(
                     joint_compilation_id=ladder.joint_compilation_id,
                     scaffold_level=projection.scaffold_level,
                     gate=gate,
-                    checks=checks,
-                    audit_case_ids=(f"case:{projection.scaffold_level}:{gate}",),
+                    case_results=tuple(
+                        make_atomic_audit_case_result(
+                            check_id=check,
+                            subject_id=projection.projection_id,
+                            input_artifact_ids=(
+                                ladder.ladder_id,
+                                projection.projection_id,
+                            ),
+                            output_artifact_ids=(
+                                f"audit:{projection.scaffold_level}:{gate}:{check}",
+                            ),
+                            implementation_manifest={
+                                "evaluator_id": f"contract.{gate}",
+                                "evaluator_version": "1.0.0",
+                                "check_id": check,
+                            },
+                            replay_implementation_manifest={
+                                "evaluator_id": f"contract.{gate}.independent",
+                                "evaluator_version": "1.0.0",
+                                "check_id": check,
+                            },
+                            check_passed=passed,
+                        )
+                        for check, passed in checks.items()
+                    ),
                     evaluator_id=f"contract.{gate}",
                     evaluator_version="1.0.0",
                 )
@@ -230,6 +307,9 @@ def test_capability_scaffold_compiles_the_same_core_contract_across_domains(
     )
     assert ladder.projections[1].public_summary_spec is not None
     assert ladder.projections[2].public_capability_nodes
+    assert ladder.projections[2].public_capability_nodes[1].prerequisite_node_keys == (
+        "identify_public_state",
+    )
     assert not ladder.projections[2].public_dependency_edges
     assert ladder.projections[3].public_dependency_edges
     assert ladder.valid_state_space_invariant_across_levels
@@ -390,3 +470,126 @@ def test_public_summary_rejects_unregistered_fields() -> None:
             source_kinds=("task_public",),
             included_fields=("correct_action",),  # type: ignore[arg-type]
         )
+
+
+def test_public_summary_compiler_replays_latest_registered_public_state() -> None:
+    summary_spec = _summary()
+    observations = (
+        make_public_state_observation(
+            task_id="task:summary",
+            sequence_index=0,
+            source_kind="task_public",
+            values={
+                "completed_operation_types": ["lookup"],
+                "remaining_tool_budget": 3,
+            },
+        ),
+        make_public_state_observation(
+            task_id="task:summary",
+            sequence_index=1,
+            source_kind="public_runtime_counter",
+            values={"remaining_tool_budget": 2},
+        ),
+    )
+    summary = compile_public_state_summary(summary_spec, observations)
+
+    assert summary.values == {
+        "completed_operation_types": ["lookup"],
+        "remaining_tool_budget": 2,
+    }
+    assert (
+        type(summary).model_validate(summary.model_dump(mode="json")).summary_id
+        == summary.summary_id
+    )
+
+
+def test_scaffold_admission_rejects_forged_aggregate_gate() -> None:
+    ladder = _ladder(build_contract_cases()[0])
+    admission = admit_capability_scaffold_ladder(ladder, _gate_evidence(ladder))
+    payload = admission.model_dump(mode="json")
+    payload["gates_by_level"]["gamma_2"]["public_sufficiency"] = False
+
+    with pytest.raises(ValidationError, match="not derived from Evidence"):
+        type(admission).model_validate(payload)
+
+
+def test_compiled_condition_changes_when_scaffold_payload_changes() -> None:
+    ladder = _ladder(build_contract_cases()[0])
+    gamma_two = ladder.projections[2]
+    payload = gamma_two.model_dump(mode="json")
+    payload["public_capability_nodes"][1]["public_requirement_id"] = "changed_requirement"
+
+    with pytest.raises(ValidationError):
+        type(gamma_two).model_validate(payload)
+
+
+def test_independently_compiled_scaffold_payloads_have_distinct_condition_ids() -> None:
+    case = build_contract_cases()[0]
+    artifacts, joint_admission = _compile_admitted(case)
+    mapping = make_scaffold_invariant_state_mapping_contract(joint_admission)
+    common = {
+        "artifacts": artifacts,
+        "joint_admission": joint_admission,
+        "runtime_id": "autonomous",
+        "target_capability_id": "legal_target_capability",
+        "scaffold_policy_version": "bridge_policy.v1",
+        "summary_spec": _summary(),
+        "state_mapping_contract": mapping,
+    }
+    original = compile_capability_scaffold_ladder(
+        **common,
+        dependency_graph=_graph("legal_target_capability"),
+    )
+    changed = compile_capability_scaffold_ladder(
+        **common,
+        dependency_graph=_graph(
+            "legal_target_capability",
+            requirement_override="changed_public_requirement",
+        ),
+    )
+
+    assert original.projections[2].compiled_task_condition_id != (
+        changed.projections[2].compiled_task_condition_id
+    )
+    assert original.projections[3].compiled_task_condition_id != (
+        changed.projections[3].compiled_task_condition_id
+    )
+
+
+def test_ladder_rejects_a_rehashed_projection_detached_from_omega() -> None:
+    ladder = _ladder(build_contract_cases()[0])
+    projection = ladder.projections[2]
+    provisional_projection = projection.model_copy(
+        update={
+            "omega_component_manifest_id": "omega:detached",
+            "compiled_task_condition_id": "pending",
+            "projection_id": "pending",
+        }
+    )
+    provisional_projection = provisional_projection.model_copy(
+        update={
+            "compiled_task_condition_id": compiled_task_condition_id(
+                provisional_projection
+            )
+        }
+    )
+    detached = provisional_projection.model_copy(
+        update={
+            "projection_id": capability_aware_public_projection_id(
+                provisional_projection
+            )
+        }
+    )
+    detached = type(projection).model_validate(detached.model_dump(mode="json"))
+
+    projections = list(ladder.projections)
+    projections[2] = detached
+    provisional_ladder = ladder.model_copy(
+        update={"projections": tuple(projections), "ladder_id": "pending"}
+    )
+    detached_ladder = provisional_ladder.model_copy(
+        update={"ladder_id": capability_scaffold_ladder_id(provisional_ladder)}
+    )
+
+    with pytest.raises(ValidationError, match="do not share one condition root"):
+        type(ladder).model_validate(detached_ladder.model_dump(mode="json"))

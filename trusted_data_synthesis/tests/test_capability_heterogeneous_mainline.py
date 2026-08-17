@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import hashlib
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
+from trusted_synthesis.core.trajectory.scaffolding import (
+    CompiledTaskConditionLineage,
+    compiled_task_condition_lineage_id,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_heterogeneous_mainline import (  # noqa: E501
     FINANCE_V26_MAINLINE_VERSION,
     CapabilityHeterogeneousMainlineProtocol,
@@ -29,10 +34,47 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_stat
 )
 
 
+def _lineage(task_id: str) -> CompiledTaskConditionLineage:
+    values = {
+        "task_id": task_id,
+        "compiled_task_condition_id": f"condition:{task_id}:gamma_0",
+        "projection_id": f"projection:{task_id}:gamma_0",
+        "ladder_id": f"ladder:{task_id}",
+        "scaffold_admission_id": f"scaffold-admission:{task_id}",
+        "joint_admission_id": f"joint-admission:{task_id}",
+        "joint_compilation_id": f"joint:{task_id}",
+        "omega_context_id": f"omega:{task_id}",
+        "omega_component_manifest_id": f"omega-manifest:{task_id}",
+        "runtime_projection_id": f"runtime-projection:{task_id}",
+        "runtime_authority_policy_id": "runtime-policy:autonomous",
+        "dependency_graph_id": f"dependency-graph:{task_id}",
+        "public_summary_spec_id": None,
+        "state_mapping_contract_id": f"mapping:{task_id}",
+        "scaffold_payload_hash": f"payload:{task_id}:gamma_0",
+        "scaffold_level": "gamma_0",
+        "schema_version": "compiled_task_condition_lineage.v1",
+    }
+    provisional = CompiledTaskConditionLineage.model_construct(
+        lineage_id="pending",
+        **values,
+    )
+    return CompiledTaskConditionLineage(
+        lineage_id=compiled_task_condition_lineage_id(provisional),
+        **values,
+    )
+
+
 def _observation(**updates: Any) -> MainlineSupportObservation:
+    task_id = updates.get("task_id", "task:1")
+    rollout_id = updates.get("rollout_id", "rollout:1")
+    artifact_sha = hashlib.sha256(rollout_id.encode()).hexdigest()
     values: dict[str, Any] = {
-        "task_id": "task:1",
-        "rollout_id": "rollout:1",
+        "task_id": task_id,
+        "rollout_id": rollout_id,
+        "condition_lineage": _lineage(task_id),
+        "rollout_artifact_uri": f"embedded://mainline/{rollout_id}",
+        "rollout_artifact_sha256": artifact_sha,
+        "trajectory_content_hash": artifact_sha,
         "capability_axis": "recovery",
         "split_id": "synthesis_training",
         "phase": "discovery",
@@ -220,3 +262,12 @@ def test_v26_protocol_rejects_historical_task_promotion() -> None:
 
     with pytest.raises(ValidationError):
         CapabilityHeterogeneousMainlineProtocol.model_validate(payload)
+
+
+def test_mainline_support_rejects_detached_compiled_condition_lineage() -> None:
+    observation = _observation()
+    payload = observation.model_dump(mode="json")
+    payload["condition_lineage"] = _lineage("task:other").model_dump(mode="json")
+
+    with pytest.raises(ValidationError, match="crosses compiled task condition"):
+        MainlineSupportObservation.model_validate(payload)

@@ -7,11 +7,15 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from trusted_synthesis.core.trajectory.admission import (
+        ExecutableComponentManifest,
         JointCompilationAdmissionArtifact,
         JointCompilationAuditEvidence,
+        RuntimeAuthorityPolicy,
         RuntimePublicProjection,
         admit_joint_compilation,
+        make_executable_component_manifest,
         make_joint_compilation_audit_evidence,
+        make_runtime_authority_policy,
         make_runtime_public_projection,
     )
     from trusted_synthesis.core.trajectory.attributes import (
@@ -38,15 +42,21 @@ if TYPE_CHECKING:
         CapabilityScaffoldAdmissionArtifact,
         CapabilityScaffoldGateEvidence,
         CapabilityScaffoldLadderCompilation,
+        CompiledPublicStateSummary,
+        CompiledTaskConditionLineage,
         MinimalPublicStateSummarySpec,
+        PublicStateObservation,
         ScaffoldInvariantStateMappingContract,
         ScaffoldSeparatedTrajectoryView,
         admit_capability_scaffold_ladder,
         compile_capability_scaffold_ladder,
+        compile_public_state_summary,
         make_capability_prerequisite_graph,
         make_capability_prerequisite_node,
         make_capability_scaffold_gate_evidence,
+        make_compiled_task_condition_lineage,
         make_minimal_public_state_summary_spec,
+        make_public_state_observation,
         make_scaffold_invariant_state_mapping_contract,
         scaffold_gate_checks,
         separate_scaffold_trace_for_state_mapping,
@@ -107,6 +117,18 @@ _EXPORTS = {
         "trusted_synthesis.core.trajectory.scaffolding",
         "CapabilityScaffoldLadderCompilation",
     ),
+    "CompiledPublicStateSummary": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CompiledPublicStateSummary",
+    ),
+    "CompiledTaskConditionLineage": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "CompiledTaskConditionLineage",
+    ),
+    "ExecutableComponentManifest": (
+        "trusted_synthesis.core.trajectory.admission",
+        "ExecutableComponentManifest",
+    ),
     "JointCompilationAdmissionArtifact": (
         "trusted_synthesis.core.trajectory.admission",
         "JointCompilationAdmissionArtifact",
@@ -123,6 +145,10 @@ _EXPORTS = {
         "trusted_synthesis.core.trajectory.scaffolding",
         "MinimalPublicStateSummarySpec",
     ),
+    "PublicStateObservation": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "PublicStateObservation",
+    ),
     "ScaffoldInvariantStateMappingContract": (
         "trusted_synthesis.core.trajectory.scaffolding",
         "ScaffoldInvariantStateMappingContract",
@@ -138,6 +164,10 @@ _EXPORTS = {
     "RuntimePublicProjection": (
         "trusted_synthesis.core.trajectory.admission",
         "RuntimePublicProjection",
+    ),
+    "RuntimeAuthorityPolicy": (
+        "trusted_synthesis.core.trajectory.admission",
+        "RuntimeAuthorityPolicy",
     ),
     "OracleExecutionSpecification": (
         "trusted_synthesis.core.trajectory.specification",
@@ -227,6 +257,18 @@ _EXPORTS = {
         "trusted_synthesis.core.trajectory.scaffolding",
         "compile_capability_scaffold_ladder",
     ),
+    "compile_public_state_summary": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "compile_public_state_summary",
+    ),
+    "make_compiled_task_condition_lineage": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_compiled_task_condition_lineage",
+    ),
+    "make_executable_component_manifest": (
+        "trusted_synthesis.core.trajectory.admission",
+        "make_executable_component_manifest",
+    ),
     "make_joint_compilation_audit_evidence": (
         "trusted_synthesis.core.trajectory.admission",
         "make_joint_compilation_audit_evidence",
@@ -247,6 +289,10 @@ _EXPORTS = {
         "trusted_synthesis.core.trajectory.scaffolding",
         "make_minimal_public_state_summary_spec",
     ),
+    "make_public_state_observation": (
+        "trusted_synthesis.core.trajectory.scaffolding",
+        "make_public_state_observation",
+    ),
     "make_scaffold_invariant_state_mapping_contract": (
         "trusted_synthesis.core.trajectory.scaffolding",
         "make_scaffold_invariant_state_mapping_contract",
@@ -254,6 +300,10 @@ _EXPORTS = {
     "make_runtime_public_projection": (
         "trusted_synthesis.core.trajectory.admission",
         "make_runtime_public_projection",
+    ),
+    "make_runtime_authority_policy": (
+        "trusted_synthesis.core.trajectory.admission",
+        "make_runtime_authority_policy",
     ),
     "scaffold_gate_checks": (
         "trusted_synthesis.core.trajectory.scaffolding",

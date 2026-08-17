@@ -3,18 +3,29 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from trusted_synthesis.core.trajectory.scaffolding import SCAFFOLD_LEVELS
+from trusted_synthesis.core.audit_artifacts import make_atomic_audit_case_result
+from trusted_synthesis.core.trajectory.scaffolding import (
+    SCAFFOLD_LEVELS,
+    CompiledTaskConditionLineage,
+    compile_public_state_summary,
+    compiled_task_condition_lineage_id,
+    make_minimal_public_state_summary_spec,
+    make_public_state_observation,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_bridge import (
     BRIDGE_MECHANISMS,
     MECHANISM_ESTIMANDS,
     STATIC_CONSTRUCT_CHECKS,
+    BridgeEstimandOutcome,
+    BridgeMechanism,
+    aggregate_bridge_cell_observation,
     authorize_bridge_confirmation,
     authorize_bridge_development,
     confirm_compiler_assisted_bridge,
     default_compiler_assisted_bridge_contract,
     freeze_compiler_assisted_bridge_support,
-    make_bridge_cell_observation,
-    make_bridge_estimand_observation,
+    make_bridge_execution_manifest,
+    make_bridge_rollout_observation,
     make_bridge_static_construct_audit,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_state_support import (
@@ -25,17 +36,102 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_stat
 )
 
 
-def _estimands(mechanism, rank: int):
-    return tuple(
-        make_bridge_estimand_observation(
-            estimand_id=estimand_id,
-            evaluation_count=(24 if estimand_id == "counterfactual_branch_flip" else 48),
-            success_count=(
-                (3, 10, 12, 14) if estimand_id == "counterfactual_branch_flip" else (6, 20, 24, 28)
-            )[rank],
-            fixed_policy_success_count=(2 if estimand_id == "counterfactual_branch_flip" else 4),
-        )
-        for estimand_id in MECHANISM_ESTIMANDS[mechanism]
+def _static_audit(contract_id: str, mechanism: BridgeMechanism, phase: str):
+    mechanism_index = BRIDGE_MECHANISMS.index(mechanism)
+    task_ids = tuple(f"{phase}:{mechanism_index}:{index}" for index in range(8))
+    task_admission_ids = {task_id: f"admission:{task_id}" for task_id in task_ids}
+    auditor_id = f"state_support_test.{phase}.{mechanism}"
+    auditor_version = "1.0.0"
+    return make_bridge_static_construct_audit(
+        contract_id=contract_id,
+        mechanism_id=mechanism,
+        task_admission_ids=task_admission_ids,
+        case_results=tuple(
+            make_atomic_audit_case_result(
+                check_id=check_id,
+                subject_id=task_admission_ids[task_id],
+                input_artifact_ids=(contract_id, task_admission_ids[task_id]),
+                output_artifact_ids=(f"bridge-audit:{task_id}:{check_id}",),
+                implementation_manifest={
+                    "auditor_id": auditor_id,
+                    "auditor_version": auditor_version,
+                    "check_id": check_id,
+                },
+                replay_implementation_manifest={
+                    "auditor_id": f"{auditor_id}.independent",
+                    "auditor_version": auditor_version,
+                    "check_id": check_id,
+                },
+                check_passed=True,
+            )
+            for task_id in task_ids
+            for check_id in STATIC_CONSTRUCT_CHECKS
+        ),
+        auditor_id=auditor_id,
+        auditor_version=auditor_version,
+    )
+
+
+def _summary(task_id: str):
+    spec = make_minimal_public_state_summary_spec(
+        compiler_id="state_support_test.summary",
+        compiler_version="1.0.0",
+        source_kinds=("task_public",),
+        included_fields=("remaining_tool_budget",),
+    )
+    return compile_public_state_summary(
+        spec,
+        (
+            make_public_state_observation(
+                task_id=task_id,
+                sequence_index=0,
+                source_kind="task_public",
+                values={"remaining_tool_budget": 4},
+            ),
+        ),
+    )
+
+
+def _lineage(task_id: str, level: str, summary):
+    values = {
+        "task_id": task_id,
+        "compiled_task_condition_id": f"condition:{task_id}:{level}",
+        "projection_id": f"projection:{task_id}:{level}",
+        "ladder_id": f"ladder:{task_id}",
+        "scaffold_admission_id": f"scaffold-admission:{task_id}",
+        "joint_admission_id": f"joint-admission:{task_id}",
+        "joint_compilation_id": f"joint:{task_id}",
+        "omega_context_id": f"omega:{task_id}",
+        "omega_component_manifest_id": f"omega-manifest:{task_id}",
+        "runtime_projection_id": f"runtime-projection:{task_id}",
+        "runtime_authority_policy_id": "runtime-policy:autonomous",
+        "dependency_graph_id": f"dependency-graph:{task_id}",
+        "public_summary_spec_id": summary.summary_spec.summary_spec_id if summary else None,
+        "state_mapping_contract_id": f"mapping:{task_id}",
+        "scaffold_payload_hash": f"scaffold-payload:{task_id}:{level}",
+        "scaffold_level": level,
+        "schema_version": "compiled_task_condition_lineage.v1",
+    }
+    provisional = CompiledTaskConditionLineage.model_construct(
+        lineage_id="pending",
+        **values,
+    )
+    return CompiledTaskConditionLineage(
+        lineage_id=compiled_task_condition_lineage_id(provisional),
+        **values,
+    )
+
+
+def _execution_manifest(contract_id: str, lineage: CompiledTaskConditionLineage):
+    return make_bridge_execution_manifest(
+        contract_id=contract_id,
+        condition_lineage=lineage,
+        model_id="deepseek-v4-flash",
+        model_config={"temperature": 0.2, "top_p": 0.95},
+        provider_route={"provider": "test", "route_id": "openai-compatible"},
+        prompt_manifest={"template_id": "state-support-test.v1"},
+        runtime_id="autonomous",
+        tool_manifest={"allowed_tools": ["evidence_lookup"]},
     )
 
 
@@ -43,45 +139,95 @@ def _bridge_cell(contract, authorization, mechanism, level, phase):
     rank = SCAFFOLD_LEVELS.index(level)
     mechanism_index = BRIDGE_MECHANISMS.index(mechanism)
     task_ids = tuple(f"{phase}:{mechanism_index}:{index}" for index in range(8))
-    return make_bridge_cell_observation(
+    summaries = {
+        task_id: (_summary(task_id) if rank >= 1 else None) for task_id in task_ids
+    }
+    lineages = {
+        task_id: _lineage(task_id, level, summaries[task_id]) for task_id in task_ids
+    }
+    valid_count = (4, 20, 24, 28)[rank]
+    targets = {
+        estimand_id: (
+            (3, 10, 12, 14)[rank]
+            if estimand_id == "counterfactual_branch_flip"
+            else (6, 20, 24, 28)[rank]
+        )
+        for estimand_id in MECHANISM_ESTIMANDS[mechanism]
+    }
+    counters = {estimand_id: 0 for estimand_id in MECHANISM_ESTIMANDS[mechanism]}
+    rollouts = []
+    for task_index, task_id in enumerate(task_ids):
+        for replicate_index in range(6):
+            global_index = task_index * 6 + replicate_index
+            outcomes = []
+            for estimand_id in MECHANISM_ESTIMANDS[mechanism]:
+                evaluated = (
+                    replicate_index < 3
+                    if estimand_id == "counterfactual_branch_flip"
+                    else True
+                )
+                index = counters[estimand_id]
+                baseline = 2 if estimand_id == "counterfactual_branch_flip" else 4
+                outcomes.append(
+                    BridgeEstimandOutcome(
+                        estimand_id=estimand_id,
+                        evaluated=evaluated,
+                        success=(index < targets[estimand_id]) if evaluated else None,
+                        fixed_policy_success=(index < baseline) if evaluated else None,
+                    )
+                )
+                if evaluated:
+                    counters[estimand_id] += 1
+            terminal = (
+                "model_valid_trajectory"
+                if global_index < valid_count
+                else "model_invalid_trajectory"
+            )
+            rollouts.append(
+                make_bridge_rollout_observation(
+                    contract_id=contract.contract_id,
+                    phase_authorization_id=authorization.authorization_id,
+                    phase=phase,
+                    mechanism_id=mechanism,
+                    scaffold_level=level,
+                    replicate_index=replicate_index,
+                    condition_lineage=lineages[task_id],
+                    execution_manifest=_execution_manifest(
+                        contract.contract_id, lineages[task_id]
+                    ),
+                    provider_call_ids=(
+                        f"call:{phase}:{mechanism}:{level}:{task_id}:{replicate_index}",
+                    ),
+                    public_state_summary=summaries[task_id],
+                    terminal_category=terminal,
+                    independent_validity_passed=terminal == "model_valid_trajectory",
+                    quotient_state_id=f"state:{replicate_index % 2}",
+                    decision_trace_hash=f"{global_index + 1:064x}",
+                    estimand_outcomes=tuple(outcomes),
+                    raw_payload={
+                        "task_id": task_id,
+                        "replicate_index": replicate_index,
+                        "terminal_category": terminal,
+                    },
+                    raw_artifact_uri=f"embedded://state-support/{task_id}/{replicate_index}",
+                )
+            )
+    return aggregate_bridge_cell_observation(
         contract_id=contract.contract_id,
         phase_authorization_id=authorization.authorization_id,
         phase=phase,
         mechanism_id=mechanism,
         scaffold_level=level,
-        scaffold_rank=rank,
-        task_ids=task_ids,
-        compiled_task_condition_ids=tuple(f"condition:{task_id}:{level}" for task_id in task_ids),
-        state_mapping_contract_ids=tuple(f"mapping:{task_id}" for task_id in task_ids),
-        instrument_valid_rollout_count=48,
-        model_outcome_count=48,
-        valid_trajectory_count=(4, 20, 24, 28)[rank],
-        estimand_observations=_estimands(mechanism, rank),
-        preliminary_unique_state_count=2,
-        tasks_with_multiple_observed_states_count=2,
-        state_entropy=0.4,
-        host_interference_count=0,
-        oracle_leakage_count=0,
-        runtime_failure_count=0,
+        rollout_observations=rollouts,
     )
 
 
 def _confirmation():
     contract = default_compiler_assisted_bridge_contract()
-    audits = []
-    for mechanism_index, mechanism in enumerate(BRIDGE_MECHANISMS):
-        task_ids = tuple(f"development:{mechanism_index}:{index}" for index in range(8))
-        checks = {
-            task_id: {check: True for check in STATIC_CONSTRUCT_CHECKS} for task_id in task_ids
-        }
-        audits.append(
-            make_bridge_static_construct_audit(
-                contract_id=contract.contract_id,
-                mechanism_id=mechanism,
-                task_admission_ids={task_id: f"admission:{task_id}" for task_id in task_ids},
-                checks_by_task=checks,
-            )
-        )
+    audits = [
+        _static_audit(contract.contract_id, mechanism, "development")
+        for mechanism in BRIDGE_MECHANISMS
+    ]
     authorization = authorize_bridge_development(contract, audits)
     development = tuple(
         _bridge_cell(contract, authorization, mechanism, level, "development")
@@ -93,20 +239,10 @@ def _confirmation():
         authorization,
         development,
     )
-    confirmation_audits = []
-    for mechanism_index, mechanism in enumerate(BRIDGE_MECHANISMS):
-        task_ids = tuple(f"fresh_confirmation:{mechanism_index}:{index}" for index in range(8))
-        checks = {
-            task_id: {check: True for check in STATIC_CONSTRUCT_CHECKS} for task_id in task_ids
-        }
-        confirmation_audits.append(
-            make_bridge_static_construct_audit(
-                contract_id=contract.contract_id,
-                mechanism_id=mechanism,
-                task_admission_ids={task_id: f"admission:{task_id}" for task_id in task_ids},
-                checks_by_task=checks,
-            )
-        )
+    confirmation_audits = [
+        _static_audit(contract.contract_id, mechanism, "fresh_confirmation")
+        for mechanism in BRIDGE_MECHANISMS
+    ]
     confirmation_authorization = authorize_bridge_confirmation(
         contract,
         freeze,

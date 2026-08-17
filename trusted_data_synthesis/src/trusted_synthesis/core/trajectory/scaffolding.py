@@ -6,6 +6,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from trusted_synthesis.core.audit_artifacts import AtomicAuditCaseResult
 from trusted_synthesis.core.synthesis.schema import CompiledProofCarryingArtifacts
 from trusted_synthesis.core.trajectory.admission import (
     JointCompilationAdmissionArtifact,
@@ -15,10 +16,13 @@ from trusted_synthesis.hashing import canonical_hash
 
 CAPABILITY_PREREQUISITE_GRAPH_VERSION = "capability_prerequisite_graph.v1"
 PUBLIC_STATE_SUMMARY_SPEC_VERSION = "minimal_public_state_summary_spec.v1"
-CAPABILITY_SCAFFOLD_PROJECTION_VERSION = "capability_scaffold_public_projection.v2"
-CAPABILITY_SCAFFOLD_LADDER_VERSION = "capability_scaffold_ladder_compilation.v2"
-CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION = "capability_scaffold_gate_evidence.v2"
-CAPABILITY_SCAFFOLD_ADMISSION_VERSION = "capability_scaffold_admission.v2"
+PUBLIC_STATE_OBSERVATION_VERSION = "public_state_observation.v1"
+COMPILED_PUBLIC_STATE_SUMMARY_VERSION = "compiled_public_state_summary.v1"
+COMPILED_TASK_CONDITION_LINEAGE_VERSION = "compiled_task_condition_lineage.v1"
+CAPABILITY_SCAFFOLD_PROJECTION_VERSION = "capability_scaffold_public_projection.v3"
+CAPABILITY_SCAFFOLD_LADDER_VERSION = "capability_scaffold_ladder_compilation.v3"
+CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION = "capability_scaffold_gate_evidence.v3"
+CAPABILITY_SCAFFOLD_ADMISSION_VERSION = "capability_scaffold_admission.v3"
 SCAFFOLD_INVARIANT_STATE_MAPPING_VERSION = "scaffold_invariant_state_mapping.v1"
 SCAFFOLD_SEPARATED_TRAJECTORY_VIEW_VERSION = "scaffold_separated_trajectory_view.v1"
 
@@ -381,10 +385,74 @@ class MinimalPublicStateSummarySpec(FrozenModel):
         return self
 
 
+class PublicStateObservation(FrozenModel):
+    observation_id: str = Field(min_length=1)
+    task_id: str = Field(min_length=1)
+    sequence_index: int = Field(ge=0)
+    source_kind: PublicSummarySource
+    values: dict[PublicSummaryField, Any] = Field(min_length=1)
+    schema_version: str = PUBLIC_STATE_OBSERVATION_VERSION
+
+    @model_validator(mode="after")
+    def validate_observation(self) -> PublicStateObservation:
+        serialized = json.dumps(self.values, ensure_ascii=False, sort_keys=True).lower()
+        if any(marker in serialized for marker in _FORBIDDEN_PUBLIC_MARKERS):
+            raise ValueError("public state observation contains a forbidden marker")
+        if self.observation_id != public_state_observation_id(self):
+            raise ValueError("public state observation identity is invalid")
+        return self
+
+
+class CompiledPublicStateSummary(FrozenModel):
+    summary_id: str = Field(min_length=1)
+    task_id: str = Field(min_length=1)
+    summary_spec: MinimalPublicStateSummarySpec
+    source_observations: tuple[PublicStateObservation, ...] = Field(min_length=1)
+    source_observation_hash: str = Field(min_length=1)
+    values: dict[PublicSummaryField, Any]
+    correct_action_exposed: Literal[False] = False
+    correct_arguments_exposed: Literal[False] = False
+    hidden_program_path_exposed: Literal[False] = False
+    schema_version: str = COMPILED_PUBLIC_STATE_SUMMARY_VERSION
+
+    @model_validator(mode="after")
+    def validate_summary(self) -> CompiledPublicStateSummary:
+        observation_ids = tuple(item.observation_id for item in self.source_observations)
+        if len(observation_ids) != len(set(observation_ids)):
+            raise ValueError("public state summary contains duplicate observations")
+        if tuple(item.sequence_index for item in self.source_observations) != tuple(
+            range(len(self.source_observations))
+        ):
+            raise ValueError("public state summary observations are incomplete or unordered")
+        if any(item.task_id != self.task_id for item in self.source_observations):
+            raise ValueError("public state summary crosses task identities")
+        if any(
+            item.source_kind not in self.summary_spec.source_kinds
+            for item in self.source_observations
+        ):
+            raise ValueError("public state summary uses an unregistered source kind")
+        expected_source_hash = canonical_hash(
+            [item.model_dump(mode="json") for item in self.source_observations],
+            prefix="public_state_summary_observations:",
+        )
+        if self.source_observation_hash != expected_source_hash:
+            raise ValueError("public state summary source hash is invalid")
+        expected_values = _compile_public_summary_values(
+            self.summary_spec,
+            self.source_observations,
+        )
+        if self.values != expected_values:
+            raise ValueError("public state summary does not deterministically replay")
+        if self.summary_id != compiled_public_state_summary_id(self):
+            raise ValueError("compiled public state summary identity is invalid")
+        return self
+
+
 class PublicCapabilityNode(FrozenModel):
     node_key: str = Field(min_length=1)
     capability_id: str = Field(min_length=1)
     public_requirement_id: str = Field(min_length=1)
+    prerequisite_node_keys: tuple[str, ...] = ()
     observable_input_kinds: tuple[ObservableInputKind, ...] = Field(min_length=1)
     model_decision_kind: ModelDecisionKind
     allowed_public_effects: tuple[PublicEffectKind, ...] = Field(min_length=1)
@@ -397,6 +465,7 @@ class CapabilityAwarePublicProjection(FrozenModel):
     joint_admission_id: str = Field(min_length=1)
     joint_compilation_id: str = Field(min_length=1)
     omega_component_manifest_id: str = Field(min_length=1)
+    dependency_graph_id: str = Field(min_length=1)
     runtime_id: str = Field(min_length=1)
     base_runtime_projection: RuntimePublicProjection
     state_mapping_contract_id: str = Field(min_length=1)
@@ -404,6 +473,7 @@ class CapabilityAwarePublicProjection(FrozenModel):
     scaffold_level: ScaffoldLevel
     scaffold_rank: Literal[0, 1, 2, 3]
     scaffold_policy_version: str = Field(min_length=1)
+    scaffold_payload_hash: str = Field(min_length=1)
     aid_kinds: tuple[ScaffoldAid, ...]
     public_summary_spec: MinimalPublicStateSummarySpec | None = None
     public_capability_nodes: tuple[PublicCapabilityNode, ...] = ()
@@ -425,6 +495,12 @@ class CapabilityAwarePublicProjection(FrozenModel):
             raise ValueError("capability scaffold crosses runtime identities")
         if self.base_runtime_projection.joint_compilation_id != self.joint_compilation_id:
             raise ValueError("capability scaffold crosses Joint Compilation identities")
+        node_keys = {item.node_key for item in self.public_capability_nodes}
+        if any(
+            not set(item.prerequisite_node_keys) <= node_keys
+            for item in self.public_capability_nodes
+        ):
+            raise ValueError("capability scaffold contains an unknown public prerequisite")
         if self.scaffold_rank == 0:
             if (
                 self.public_summary_spec
@@ -446,6 +522,8 @@ class CapabilityAwarePublicProjection(FrozenModel):
             raise ValueError("gamma_3 requires the complete public scaffold")
         if any(item.target_authority != "model" for item in self.public_capability_nodes):
             raise ValueError("capability scaffold cannot move target authority to the compiler")
+        if self.scaffold_payload_hash != capability_scaffold_payload_hash(self):
+            raise ValueError("capability scaffold payload hash is invalid")
         if self.compiled_task_condition_id != compiled_task_condition_id(self):
             raise ValueError("compiled task condition identity is invalid")
         if self.projection_id != capability_aware_public_projection_id(self):
@@ -488,15 +566,44 @@ class CapabilityScaffoldLadderCompilation(FrozenModel):
             raise ValueError("capability ladder changes the admitted quotient state semantics")
         if tuple(item.scaffold_level for item in self.projections) != SCAFFOLD_LEVELS:
             raise ValueError("capability ladder levels are incomplete or unordered")
+        admitted_by_runtime = {
+            item.runtime_id: item for item in self.joint_admission.runtime_projections
+        }
+        if self.runtime_id not in admitted_by_runtime:
+            raise ValueError("capability ladder runtime was not jointly admitted")
+        base = admitted_by_runtime[self.runtime_id]
         if any(
             item.joint_admission_id != self.joint_admission.admission_id
+            or item.joint_compilation_id != self.joint_compilation_id
+            or item.omega_component_manifest_id != self.omega_component_manifest_id
+            or item.dependency_graph_id != self.dependency_graph.graph_id
             or item.runtime_id != self.runtime_id
+            or item.base_runtime_projection != base
             or item.target_capability_id != self.target_capability_id
             or item.scaffold_policy_version != self.scaffold_policy_version
             or item.state_mapping_contract_id != self.state_mapping_contract.mapping_contract_id
             for item in self.projections
         ):
             raise ValueError("capability ladder projections do not share one condition root")
+        public_nodes = _public_capability_nodes(self.dependency_graph)
+        public_edges = _public_dependency_edges(self.dependency_graph)
+        expected_projections = tuple(
+            _make_capability_projection(
+                joint_admission=self.joint_admission,
+                base=base,
+                target_capability_id=self.target_capability_id,
+                scaffold_level=level,
+                scaffold_policy_version=self.scaffold_policy_version,
+                state_mapping_contract_id=self.state_mapping_contract.mapping_contract_id,
+                dependency_graph_id=self.dependency_graph.graph_id,
+                summary_spec=self.summary_spec,
+                public_nodes=public_nodes,
+                public_edges=public_edges,
+            )
+            for level in SCAFFOLD_LEVELS
+        )
+        if self.projections != expected_projections:
+            raise ValueError("capability ladder projections do not deterministically replay")
         if self.ladder_id != capability_scaffold_ladder_id(self):
             raise ValueError("capability scaffold ladder identity is invalid")
         return self
@@ -509,25 +616,68 @@ class CapabilityScaffoldGateEvidence(FrozenModel):
     joint_compilation_id: str = Field(min_length=1)
     scaffold_level: ScaffoldLevel
     gate: ScaffoldGate
-    checks: dict[str, bool]
-    audit_case_ids: tuple[str, ...] = Field(min_length=1)
+    case_results: tuple[AtomicAuditCaseResult, ...] = Field(min_length=1)
     evaluator_id: str = Field(min_length=1)
     evaluator_version: str = Field(min_length=1)
-    passed: bool
+    evaluator_manifest_hash: str = Field(min_length=1)
     schema_version: str = CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION
 
     @model_validator(mode="after")
     def validate_evidence(self) -> CapabilityScaffoldGateEvidence:
         expected_checks = scaffold_gate_checks(self.scaffold_level, self.gate)
-        if tuple(sorted(self.checks)) != tuple(sorted(expected_checks)):
+        observed_checks = tuple(sorted(item.check_id for item in self.case_results))
+        if (
+            observed_checks != tuple(sorted(expected_checks))
+            or len(observed_checks) != len(set(observed_checks))
+        ):
             raise ValueError("capability scaffold gate checks are incomplete")
-        if len(self.audit_case_ids) != len(set(self.audit_case_ids)):
-            raise ValueError("capability scaffold audit cases must be unique")
-        if self.passed != all(self.checks.values()):
-            raise ValueError("capability scaffold gate status is inconsistent")
+        if any(
+            item.subject_id != self.projection_id
+            or self.ladder_id not in item.input_artifact_ids
+            or self.projection_id not in item.input_artifact_ids
+            for item in self.case_results
+        ):
+            raise ValueError("capability scaffold audit case crosses compilation identities")
+        if any(
+            item.implementation_manifest
+            != {
+                "evaluator_id": self.evaluator_id,
+                "evaluator_version": self.evaluator_version,
+                "check_id": item.check_id,
+            }
+            or item.replay_implementation_manifest
+            != {
+                "evaluator_id": f"{self.evaluator_id}.independent",
+                "evaluator_version": self.evaluator_version,
+                "check_id": item.check_id,
+            }
+            for item in self.case_results
+        ):
+            raise ValueError("capability scaffold audit case uses an unknown implementation")
+        expected_manifest = canonical_hash(
+            {
+                "evaluator_id": self.evaluator_id,
+                "evaluator_version": self.evaluator_version,
+            },
+            prefix="capability_scaffold_evaluator_manifest:",
+        )
+        if self.evaluator_manifest_hash != expected_manifest:
+            raise ValueError("capability scaffold evaluator manifest identity is invalid")
         if self.evidence_id != capability_scaffold_gate_evidence_id(self):
             raise ValueError("capability scaffold gate Evidence identity is invalid")
         return self
+
+    @property
+    def checks(self) -> dict[str, bool]:
+        return {item.check_id: item.check_passed for item in self.case_results}
+
+    @property
+    def audit_case_ids(self) -> tuple[str, ...]:
+        return tuple(item.case_id for item in self.case_results)
+
+    @property
+    def passed(self) -> bool:
+        return all(item.check_passed for item in self.case_results)
 
 
 class CapabilityScaffoldAdmissionArtifact(FrozenModel):
@@ -535,6 +685,7 @@ class CapabilityScaffoldAdmissionArtifact(FrozenModel):
     ladder_id: str = Field(min_length=1)
     joint_admission_id: str = Field(min_length=1)
     joint_compilation_id: str = Field(min_length=1)
+    ladder: CapabilityScaffoldLadderCompilation
     gate_evidence: tuple[CapabilityScaffoldGateEvidence, ...] = Field(min_length=28, max_length=28)
     gates_by_level: dict[str, dict[str, bool]]
     status: Literal["admitted", "blocked"]
@@ -553,6 +704,23 @@ class CapabilityScaffoldAdmissionArtifact(FrozenModel):
         observed_keys = {(item.scaffold_level, item.gate) for item in self.gate_evidence}
         if observed_keys != expected_keys or len(observed_keys) != len(self.gate_evidence):
             raise ValueError("capability scaffold admission Evidence is incomplete or duplicated")
+        if (
+            self.ladder.ladder_id != self.ladder_id
+            or self.ladder.joint_admission.admission_id != self.joint_admission_id
+            or self.ladder.joint_compilation_id != self.joint_compilation_id
+        ):
+            raise ValueError("capability scaffold admission root identities are inconsistent")
+        expected_gates = _derive_scaffold_gates(self.ladder, self.gate_evidence)
+        if self.gates_by_level != expected_gates:
+            raise ValueError("capability scaffold gates were not derived from Evidence")
+        projections = {item.scaffold_level: item for item in self.ladder.projections}
+        if any(
+            item.ladder_id != self.ladder_id
+            or item.joint_compilation_id != self.joint_compilation_id
+            or item.projection_id != projections[item.scaffold_level].projection_id
+            for item in self.gate_evidence
+        ):
+            raise ValueError("capability scaffold gate Evidence crosses compilation identities")
         expected_blockers = tuple(
             sorted(
                 f"{level}:{gate}"
@@ -573,6 +741,33 @@ class CapabilityScaffoldAdmissionArtifact(FrozenModel):
             raise ValueError("capability scaffold admission transition is inconsistent")
         if self.admission_id != capability_scaffold_admission_id(self):
             raise ValueError("capability scaffold admission identity is invalid")
+        return self
+
+
+class CompiledTaskConditionLineage(FrozenModel):
+    lineage_id: str = Field(min_length=1)
+    task_id: str = Field(min_length=1)
+    compiled_task_condition_id: str = Field(min_length=1)
+    projection_id: str = Field(min_length=1)
+    ladder_id: str = Field(min_length=1)
+    scaffold_admission_id: str = Field(min_length=1)
+    joint_admission_id: str = Field(min_length=1)
+    joint_compilation_id: str = Field(min_length=1)
+    omega_context_id: str = Field(min_length=1)
+    omega_component_manifest_id: str = Field(min_length=1)
+    runtime_projection_id: str = Field(min_length=1)
+    runtime_authority_policy_id: str = Field(min_length=1)
+    dependency_graph_id: str = Field(min_length=1)
+    public_summary_spec_id: str | None = Field(default=None, min_length=1)
+    state_mapping_contract_id: str = Field(min_length=1)
+    scaffold_payload_hash: str = Field(min_length=1)
+    scaffold_level: ScaffoldLevel
+    schema_version: str = COMPILED_TASK_CONDITION_LINEAGE_VERSION
+
+    @model_validator(mode="after")
+    def validate_lineage(self) -> CompiledTaskConditionLineage:
+        if self.lineage_id != compiled_task_condition_lineage_id(self):
+            raise ValueError("compiled task condition lineage identity is invalid")
         return self
 
 
@@ -643,6 +838,52 @@ def make_minimal_public_state_summary_spec(
     provisional = MinimalPublicStateSummarySpec.model_construct(summary_spec_id="pending", **values)
     return MinimalPublicStateSummarySpec(
         summary_spec_id=minimal_public_state_summary_spec_id(provisional),
+        **values,
+    )
+
+
+def make_public_state_observation(
+    *,
+    task_id: str,
+    sequence_index: int,
+    source_kind: PublicSummarySource,
+    values: Mapping[PublicSummaryField, Any],
+) -> PublicStateObservation:
+    payload = {
+        "task_id": task_id,
+        "sequence_index": sequence_index,
+        "source_kind": source_kind,
+        "values": dict(sorted(values.items())),
+        "schema_version": PUBLIC_STATE_OBSERVATION_VERSION,
+    }
+    provisional = PublicStateObservation.model_construct(observation_id="pending", **payload)
+    return PublicStateObservation(
+        observation_id=public_state_observation_id(provisional),
+        **payload,
+    )
+
+
+def compile_public_state_summary(
+    summary_spec: MinimalPublicStateSummarySpec,
+    observations: Sequence[PublicStateObservation],
+) -> CompiledPublicStateSummary:
+    rows = tuple(sorted(observations, key=lambda item: item.sequence_index))
+    if not rows:
+        raise ValueError("public state summary compilation requires observations")
+    values = {
+        "task_id": rows[0].task_id,
+        "summary_spec": summary_spec,
+        "source_observations": rows,
+        "source_observation_hash": canonical_hash(
+            [item.model_dump(mode="json") for item in rows],
+            prefix="public_state_summary_observations:",
+        ),
+        "values": _compile_public_summary_values(summary_spec, rows),
+        "schema_version": COMPILED_PUBLIC_STATE_SUMMARY_VERSION,
+    }
+    provisional = CompiledPublicStateSummary.model_construct(summary_id="pending", **values)
+    return CompiledPublicStateSummary(
+        summary_id=compiled_public_state_summary_id(provisional),
         **values,
     )
 
@@ -726,24 +967,8 @@ def compile_capability_scaffold_ladder(
     if runtime_id not in by_runtime:
         raise ValueError("capability scaffold runtime was not admitted")
     base = by_runtime[runtime_id]
-    public_nodes = tuple(
-        PublicCapabilityNode(
-            node_key=item.node_key,
-            capability_id=item.capability_id,
-            public_requirement_id=item.public_requirement_id,
-            observable_input_kinds=item.observable_input_kinds,
-            model_decision_kind=item.model_decision_kind,
-            allowed_public_effects=item.allowed_public_effects,
-        )
-        for item in dependency_graph.nodes
-    )
-    public_edges = tuple(
-        sorted(
-            (prerequisite, item.node_key)
-            for item in dependency_graph.nodes
-            for prerequisite in item.prerequisite_node_keys
-        )
-    )
+    public_nodes = _public_capability_nodes(dependency_graph)
+    public_edges = _public_dependency_edges(dependency_graph)
     projections = tuple(
         _make_capability_projection(
             joint_admission=joint_admission,
@@ -752,6 +977,7 @@ def compile_capability_scaffold_ladder(
             scaffold_level=level,
             scaffold_policy_version=scaffold_policy_version,
             state_mapping_contract_id=state_mapping_contract.mapping_contract_id,
+            dependency_graph_id=dependency_graph.graph_id,
             summary_spec=summary_spec,
             public_nodes=public_nodes,
             public_edges=public_edges,
@@ -788,22 +1014,27 @@ def make_capability_scaffold_gate_evidence(
     joint_compilation_id: str,
     scaffold_level: ScaffoldLevel,
     gate: ScaffoldGate,
-    checks: Mapping[str, bool],
-    audit_case_ids: tuple[str, ...],
+    case_results: Sequence[AtomicAuditCaseResult],
     evaluator_id: str,
     evaluator_version: str,
 ) -> CapabilityScaffoldGateEvidence:
+    evaluator_manifest_hash = canonical_hash(
+        {
+            "evaluator_id": evaluator_id,
+            "evaluator_version": evaluator_version,
+        },
+        prefix="capability_scaffold_evaluator_manifest:",
+    )
     values = {
         "ladder_id": ladder_id,
         "projection_id": projection_id,
         "joint_compilation_id": joint_compilation_id,
         "scaffold_level": scaffold_level,
         "gate": gate,
-        "checks": dict(sorted(checks.items())),
-        "audit_case_ids": tuple(sorted(audit_case_ids)),
+        "case_results": tuple(sorted(case_results, key=lambda item: item.check_id)),
         "evaluator_id": evaluator_id,
         "evaluator_version": evaluator_version,
-        "passed": all(checks.values()),
+        "evaluator_manifest_hash": evaluator_manifest_hash,
         "schema_version": CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION,
     }
     provisional = CapabilityScaffoldGateEvidence.model_construct(evidence_id="pending", **values)
@@ -828,20 +1059,7 @@ def admit_capability_scaffold_ladder(
             or item.projection_id != projection.projection_id
         ):
             raise ValueError("capability scaffold gate Evidence crosses compilation identities")
-    gates_by_level = {
-        level: {
-            gate: next(
-                (
-                    item.passed
-                    for item in evidence
-                    if item.scaffold_level == level and item.gate == gate
-                ),
-                False,
-            )
-            for gate in SCAFFOLD_GATES
-        }
-        for level in SCAFFOLD_LEVELS
-    }
+    gates_by_level = _derive_scaffold_gates(ladder, evidence)
     blockers = tuple(
         sorted(
             f"{level}:{gate}"
@@ -854,6 +1072,7 @@ def admit_capability_scaffold_ladder(
         "ladder_id": ladder.ladder_id,
         "joint_admission_id": ladder.joint_admission.admission_id,
         "joint_compilation_id": ladder.joint_compilation_id,
+        "ladder": ladder,
         "gate_evidence": evidence,
         "gates_by_level": gates_by_level,
         "status": "blocked" if blockers else "admitted",
@@ -868,6 +1087,49 @@ def admit_capability_scaffold_ladder(
     )
     return CapabilityScaffoldAdmissionArtifact(
         admission_id=capability_scaffold_admission_id(provisional),
+        **values,
+    )
+
+
+def make_compiled_task_condition_lineage(
+    ladder: CapabilityScaffoldLadderCompilation,
+    admission: CapabilityScaffoldAdmissionArtifact,
+    *,
+    scaffold_level: ScaffoldLevel,
+) -> CompiledTaskConditionLineage:
+    if admission.status != "admitted" or admission.ladder != ladder:
+        raise ValueError("compiled task condition lineage requires the admitted ladder")
+    projection = next(
+        item for item in ladder.projections if item.scaffold_level == scaffold_level
+    )
+    values = {
+        "task_id": projection.base_runtime_projection.task_id,
+        "compiled_task_condition_id": projection.compiled_task_condition_id,
+        "projection_id": projection.projection_id,
+        "ladder_id": ladder.ladder_id,
+        "scaffold_admission_id": admission.admission_id,
+        "joint_admission_id": ladder.joint_admission.admission_id,
+        "joint_compilation_id": ladder.joint_compilation_id,
+        "omega_context_id": projection.base_runtime_projection.omega_context_id,
+        "omega_component_manifest_id": ladder.omega_component_manifest_id,
+        "runtime_projection_id": projection.base_runtime_projection.projection_id,
+        "runtime_authority_policy_id": (
+            projection.base_runtime_projection.authority_policy.policy_id
+        ),
+        "dependency_graph_id": ladder.dependency_graph.graph_id,
+        "public_summary_spec_id": (
+            projection.public_summary_spec.summary_spec_id
+            if projection.public_summary_spec
+            else None
+        ),
+        "state_mapping_contract_id": ladder.state_mapping_contract.mapping_contract_id,
+        "scaffold_payload_hash": projection.scaffold_payload_hash,
+        "scaffold_level": scaffold_level,
+        "schema_version": COMPILED_TASK_CONDITION_LINEAGE_VERSION,
+    }
+    provisional = CompiledTaskConditionLineage.model_construct(lineage_id="pending", **values)
+    return CompiledTaskConditionLineage(
+        lineage_id=compiled_task_condition_lineage_id(provisional),
         **values,
     )
 
@@ -893,6 +1155,20 @@ def minimal_public_state_summary_spec_id(value: MinimalPublicStateSummarySpec) -
     )
 
 
+def public_state_observation_id(value: PublicStateObservation) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"observation_id"}),
+        prefix="public_state_observation:",
+    )
+
+
+def compiled_public_state_summary_id(value: CompiledPublicStateSummary) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"summary_id"}),
+        prefix="compiled_public_state_summary:",
+    )
+
+
 def scaffold_invariant_state_mapping_contract_id(
     value: ScaffoldInvariantStateMappingContract,
 ) -> str:
@@ -913,14 +1189,45 @@ def compiled_task_condition_id(value: CapabilityAwarePublicProjection) -> str:
     identity = {
         "task_id": value.base_runtime_projection.task_id,
         "runtime_id": value.runtime_id,
+        "runtime_authority_policy_id": value.base_runtime_projection.authority_policy.policy_id,
+        "joint_admission_id": value.joint_admission_id,
+        "joint_compilation_id": value.joint_compilation_id,
+        "omega_context_id": value.base_runtime_projection.omega_context_id,
+        "omega_component_manifest_id": value.omega_component_manifest_id,
         "target_capability_id": value.target_capability_id,
         "scaffold_level": value.scaffold_level,
         "scaffold_policy_version": value.scaffold_policy_version,
         "state_mapping_contract_id": value.state_mapping_contract_id,
         "base_projection_id": value.base_runtime_projection.projection_id,
+        "dependency_graph_id": value.dependency_graph_id,
+        "scaffold_payload_hash": value.scaffold_payload_hash,
         "schema_version": value.schema_version,
     }
     return canonical_hash(identity, prefix="compiled_task_condition:")
+
+
+def capability_scaffold_payload_hash(value: CapabilityAwarePublicProjection) -> str:
+    return canonical_hash(
+        {
+            "scaffold_level": value.scaffold_level,
+            "scaffold_rank": value.scaffold_rank,
+            "aid_kinds": value.aid_kinds,
+            "public_summary_spec": (
+                value.public_summary_spec.model_dump(mode="json")
+                if value.public_summary_spec
+                else None
+            ),
+            "public_capability_nodes": [
+                item.model_dump(mode="json") for item in value.public_capability_nodes
+            ],
+            "public_dependency_edges": value.public_dependency_edges,
+            "correct_action_exposed": value.correct_action_exposed,
+            "correct_arguments_exposed": value.correct_arguments_exposed,
+            "hidden_program_path_exposed": value.hidden_program_path_exposed,
+            "host_completion_label_exposed": value.host_completion_label_exposed,
+        },
+        prefix="capability_scaffold_payload:",
+    )
 
 
 def capability_aware_public_projection_id(value: CapabilityAwarePublicProjection) -> str:
@@ -951,6 +1258,13 @@ def capability_scaffold_admission_id(value: CapabilityScaffoldAdmissionArtifact)
     )
 
 
+def compiled_task_condition_lineage_id(value: CompiledTaskConditionLineage) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"lineage_id"}),
+        prefix="compiled_task_condition_lineage:",
+    )
+
+
 def _make_capability_projection(
     *,
     joint_admission: JointCompilationAdmissionArtifact,
@@ -959,6 +1273,7 @@ def _make_capability_projection(
     scaffold_level: ScaffoldLevel,
     scaffold_policy_version: str,
     state_mapping_contract_id: str,
+    dependency_graph_id: str,
     summary_spec: MinimalPublicStateSummarySpec,
     public_nodes: tuple[PublicCapabilityNode, ...],
     public_edges: tuple[tuple[str, str], ...],
@@ -969,6 +1284,7 @@ def _make_capability_projection(
         "joint_admission_id": joint_admission.admission_id,
         "joint_compilation_id": joint_admission.joint_compilation_id,
         "omega_component_manifest_id": joint_admission.omega_component_manifest_id,
+        "dependency_graph_id": dependency_graph_id,
         "runtime_id": base.runtime_id,
         "base_runtime_projection": base,
         "state_mapping_contract_id": state_mapping_contract_id,
@@ -976,12 +1292,17 @@ def _make_capability_projection(
         "scaffold_level": scaffold_level,
         "scaffold_rank": rank,
         "scaffold_policy_version": scaffold_policy_version,
+        "scaffold_payload_hash": "pending",
         "aid_kinds": SCAFFOLD_AIDS_BY_LEVEL[scaffold_level],
         "public_summary_spec": summary_spec if rank >= 1 else None,
         "public_capability_nodes": public_nodes if rank >= 2 else (),
         "public_dependency_edges": public_edges if rank >= 3 else (),
         "schema_version": CAPABILITY_SCAFFOLD_PROJECTION_VERSION,
     }
+    payload_provisional = CapabilityAwarePublicProjection.model_construct(
+        projection_id="pending", **values
+    )
+    values["scaffold_payload_hash"] = capability_scaffold_payload_hash(payload_provisional)
     condition_provisional = CapabilityAwarePublicProjection.model_construct(
         projection_id="pending", **values
     )
@@ -991,6 +1312,73 @@ def _make_capability_projection(
         projection_id=capability_aware_public_projection_id(provisional),
         **values,
     )
+
+
+def _public_capability_nodes(
+    graph: CapabilityPrerequisiteGraph,
+) -> tuple[PublicCapabilityNode, ...]:
+    return tuple(
+        PublicCapabilityNode(
+            node_key=item.node_key,
+            capability_id=item.capability_id,
+            public_requirement_id=item.public_requirement_id,
+            prerequisite_node_keys=item.prerequisite_node_keys,
+            observable_input_kinds=item.observable_input_kinds,
+            model_decision_kind=item.model_decision_kind,
+            allowed_public_effects=item.allowed_public_effects,
+        )
+        for item in graph.nodes
+    )
+
+
+def _public_dependency_edges(
+    graph: CapabilityPrerequisiteGraph,
+) -> tuple[tuple[str, str], ...]:
+    return tuple(
+        sorted(
+            (prerequisite, item.node_key)
+            for item in graph.nodes
+            for prerequisite in item.prerequisite_node_keys
+        )
+    )
+
+
+def _derive_scaffold_gates(
+    ladder: CapabilityScaffoldLadderCompilation,
+    evidence: Sequence[CapabilityScaffoldGateEvidence],
+) -> dict[str, dict[str, bool]]:
+    by_key = {(item.scaffold_level, item.gate): item for item in evidence}
+    return {
+        level: {
+            gate: bool(
+                (row := by_key.get((level, gate)))
+                and row.ladder_id == ladder.ladder_id
+                and row.joint_compilation_id == ladder.joint_compilation_id
+                and row.projection_id
+                == next(
+                    item.projection_id
+                    for item in ladder.projections
+                    if item.scaffold_level == level
+                )
+                and row.passed
+            )
+            for gate in SCAFFOLD_GATES
+        }
+        for level in SCAFFOLD_LEVELS
+    }
+
+
+def _compile_public_summary_values(
+    summary_spec: MinimalPublicStateSummarySpec,
+    observations: Sequence[PublicStateObservation],
+) -> dict[PublicSummaryField, Any]:
+    compiled: dict[PublicSummaryField, Any] = {}
+    included = set(summary_spec.included_fields)
+    for observation in observations:
+        for field, value in observation.values.items():
+            if field in included:
+                compiled[field] = value
+    return dict(sorted(compiled.items()))
 
 
 def _projection_leaks_oracle(

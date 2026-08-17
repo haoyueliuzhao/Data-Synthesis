@@ -161,15 +161,16 @@ GP-C remains unevaluated unless Development contains preregistered coordinates m
 beyond MPE. Full `C+N` rounds and Contribution-only training remain blocked until independent
 Validation and sealed authorization pass. Production Contribution is zero.
 
-## v26.0-v26.3 Boundary
+## Current Engineering Boundary
 
-v26.3 implements and tests the protocol, support partition, Joint Compilation admission,
-capability-scaffold compilation, Bridge/state-support separation, and fail-closed transitions. It
-does not yet claim:
+The current revision implements and tests the protocol, support partition, typed fresh Population,
+evidence-derived Joint Compilation admission, deterministic capability-scaffold compilation,
+atomic Bridge accounting, Bridge/state-support separation, and fail-closed Stage Router v4. It has
+materialized disjoint 24-task Development and Confirmation roots, but does not yet claim:
 
 ```text
-fresh task population availability
 per-task Joint Compilation admission
+per-task Scaffold admission
 Flash state discovery
 state materialization
 No-C distribution updates
@@ -177,5 +178,10 @@ Student training
 Exact Target or GP-C
 ```
 
-The next permitted work is fresh-task Joint Compilation, capability-gap decomposition, and
-capability-scaffold admission. API and GPU work remain closed until those artifacts are complete.
+The next permitted work is exact per-task Joint Compilation, atomic audit, capability-gap
+decomposition, and capability-scaffold admission. API work remains closed until the corresponding
+Stage Router admissions are complete. GPU work is outside the pre-training router and remains
+closed until State-support freeze. The v26.10 preflight binds Stage Router v4, the typed Population
+compiler, and atomic-audit implementation manifests. Its zero-call ledger has completed
+`fresh_task_population` and now stops at `joint_compilation`. Earlier preflight artifacts remain
+historical and cannot be reused.

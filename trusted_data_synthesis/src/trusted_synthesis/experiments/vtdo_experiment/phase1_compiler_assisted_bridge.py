@@ -1,23 +1,35 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import math
+from collections import Counter
 from collections.abc import Iterable, Mapping
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from trusted_synthesis.core.trajectory.scaffolding import SCAFFOLD_LEVELS, ScaffoldLevel
+from trusted_synthesis.core.audit_artifacts import AtomicAuditCaseResult
+from trusted_synthesis.core.trajectory.scaffolding import (
+    SCAFFOLD_LEVELS,
+    CompiledPublicStateSummary,
+    CompiledTaskConditionLineage,
+    ScaffoldLevel,
+)
 from trusted_synthesis.hashing import canonical_hash
 
-COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION = "finance_compiler_assisted_bridge.v2"
-BRIDGE_STATIC_CONSTRUCT_AUDIT_VERSION = "finance_bridge_static_construct_audit.v1"
-BRIDGE_DEVELOPMENT_AUTHORIZATION_VERSION = "finance_bridge_development_authorization.v1"
-BRIDGE_CONFIRMATION_AUTHORIZATION_VERSION = "finance_bridge_confirmation_authorization.v1"
+COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION = "finance_compiler_assisted_bridge.v3"
+BRIDGE_STATIC_CONSTRUCT_AUDIT_VERSION = "finance_bridge_static_construct_audit.v2"
+BRIDGE_DEVELOPMENT_AUTHORIZATION_VERSION = "finance_bridge_development_authorization.v2"
+BRIDGE_CONFIRMATION_AUTHORIZATION_VERSION = "finance_bridge_confirmation_authorization.v2"
 BRIDGE_ESTIMAND_OBSERVATION_VERSION = "finance_bridge_estimand_observation.v1"
-BRIDGE_CELL_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_cell.v3"
+BRIDGE_EXECUTION_MANIFEST_VERSION = "finance_bridge_execution_manifest.v1"
+BRIDGE_ROLLOUT_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_rollout.v1"
+BRIDGE_CELL_OBSERVATION_VERSION = "finance_compiler_assisted_bridge_cell.v4"
 BRIDGE_MECHANISM_SELECTION_VERSION = "finance_compiler_assisted_bridge_selection.v2"
 BRIDGE_SUPPORT_FREEZE_VERSION = "finance_compiler_assisted_bridge_support_freeze.v3"
-BRIDGE_CONFIRMED_TASK_CONDITION_VERSION = "finance_bridge_confirmed_task_condition.v1"
-BRIDGE_CONFIRMATION_VERSION = "finance_compiler_assisted_bridge_confirmation.v2"
+BRIDGE_CONFIRMED_TASK_CONDITION_VERSION = "finance_bridge_confirmed_task_condition.v2"
+BRIDGE_CONFIRMATION_VERSION = "finance_compiler_assisted_bridge_confirmation.v3"
 
 BridgeMechanism = Literal[
     "context_conditioned_action",
@@ -25,6 +37,12 @@ BridgeMechanism = Literal[
     "recovery_and_stopping",
 ]
 BridgePhase = Literal["development", "fresh_confirmation"]
+BridgeRolloutTerminal = Literal[
+    "model_valid_trajectory",
+    "model_invalid_trajectory",
+    "runtime_failure",
+    "instrument_failure",
+]
 EstimandId = Literal[
     "context_action_alignment",
     "counterfactual_branch_flip",
@@ -187,9 +205,9 @@ class CompilerAssistedBridgeContract(FrozenModel):
     withdrawal_transfer: ScaffoldWithdrawalTransferContract
     experiment_separation: BridgeVTDOCausalSeparationContract
     task_identity_includes_scaffold: Literal[True] = True
-    compiled_condition_identity: Literal["task_runtime_capability_scaffold_policy_version"] = (
-        "task_runtime_capability_scaffold_policy_version"
-    )
+    compiled_condition_identity: Literal[
+        "joint_omega_runtime_capability_scaffold_payload_projection_admission"
+    ] = "joint_omega_runtime_capability_scaffold_payload_projection_admission"
     same_scaffold_for_all_methods_in_causal_comparison: Literal[True] = True
     same_oracle_across_scaffold_levels: Literal[True] = True
     capability_outcome_not_a_runtime_gate: Literal[True] = True
@@ -235,7 +253,10 @@ class BridgeStaticConstructAudit(FrozenModel):
     contract_id: str = Field(min_length=1)
     mechanism_id: BridgeMechanism
     task_admission_ids: dict[str, str] = Field(min_length=8, max_length=8)
-    checks_by_task: dict[str, dict[str, bool]] = Field(min_length=8, max_length=8)
+    case_results: tuple[AtomicAuditCaseResult, ...] = Field(min_length=48, max_length=48)
+    auditor_id: str = Field(min_length=1)
+    auditor_version: str = Field(min_length=1)
+    auditor_manifest_hash: str = Field(min_length=1)
     passed_task_count: int = Field(ge=0, le=8)
     construct_fidelity_rate: float = Field(ge=0, le=1)
     status: Literal["passed", "blocked"]
@@ -245,17 +266,56 @@ class BridgeStaticConstructAudit(FrozenModel):
 
     @model_validator(mode="after")
     def validate_audit(self) -> BridgeStaticConstructAudit:
-        if set(self.task_admission_ids) != set(self.checks_by_task):
-            raise ValueError("Bridge static audit task identities are incomplete")
         if len(set(self.task_admission_ids.values())) != len(self.task_admission_ids):
             raise ValueError("Bridge static audit reuses scaffold admissions")
-        for checks in self.checks_by_task.values():
-            if tuple(sorted(checks)) != tuple(sorted(STATIC_CONSTRUCT_CHECKS)):
-                raise ValueError("Bridge static construct checks are incomplete")
-        expected_passed = sum(all(checks.values()) for checks in self.checks_by_task.values())
+        admission_to_task = {
+            admission_id: task_id for task_id, admission_id in self.task_admission_ids.items()
+        }
+        observed = {
+            (admission_to_task.get(item.subject_id), item.check_id)
+            for item in self.case_results
+        }
+        expected = {
+            (task_id, check_id)
+            for task_id in self.task_admission_ids
+            for check_id in STATIC_CONSTRUCT_CHECKS
+        }
+        if observed != expected or len(observed) != len(self.case_results):
+            raise ValueError("Bridge static construct atomic checks are incomplete")
+        if any(
+            self.contract_id not in item.input_artifact_ids
+            or item.subject_id not in admission_to_task
+            or item.subject_id not in item.input_artifact_ids
+            for item in self.case_results
+        ):
+            raise ValueError("Bridge static construct case crosses contract identities")
+        if any(
+            item.implementation_manifest
+            != {
+                "auditor_id": self.auditor_id,
+                "auditor_version": self.auditor_version,
+                "check_id": item.check_id,
+            }
+            or item.replay_implementation_manifest
+            != {
+                "auditor_id": f"{self.auditor_id}.independent",
+                "auditor_version": self.auditor_version,
+                "check_id": item.check_id,
+            }
+            for item in self.case_results
+        ):
+            raise ValueError("Bridge static construct case uses an unknown implementation")
+        expected_manifest = canonical_hash(
+            {"auditor_id": self.auditor_id, "auditor_version": self.auditor_version},
+            prefix="bridge_static_construct_auditor_manifest:",
+        )
+        if self.auditor_manifest_hash != expected_manifest:
+            raise ValueError("Bridge static construct auditor manifest is invalid")
+        checks_by_task = self.checks_by_task
+        expected_passed = sum(all(checks.values()) for checks in checks_by_task.values())
         if self.passed_task_count != expected_passed:
             raise ValueError("Bridge static audit pass count is inconsistent")
-        expected_rate = expected_passed / len(self.checks_by_task)
+        expected_rate = expected_passed / len(checks_by_task)
         if self.construct_fidelity_rate != expected_rate:
             raise ValueError("Bridge static construct fidelity is inconsistent")
         expected_status = "passed" if expected_rate == 1.0 else "blocked"
@@ -264,6 +324,18 @@ class BridgeStaticConstructAudit(FrozenModel):
         if self.audit_id != bridge_static_construct_audit_id(self):
             raise ValueError("Bridge static construct audit identity is invalid")
         return self
+
+    @property
+    def checks_by_task(self) -> dict[str, dict[str, bool]]:
+        admission_to_task = {
+            admission_id: task_id for task_id, admission_id in self.task_admission_ids.items()
+        }
+        rows: dict[str, dict[str, bool]] = {
+            task_id: {} for task_id in sorted(self.task_admission_ids)
+        }
+        for item in self.case_results:
+            rows[admission_to_task[item.subject_id]][item.check_id] = item.check_passed
+        return {task_id: dict(sorted(checks.items())) for task_id, checks in rows.items()}
 
 
 class BridgeDevelopmentAuthorization(FrozenModel):
@@ -394,6 +466,198 @@ class BridgeEstimandObservation(FrozenModel):
         return self
 
 
+class BridgeEstimandOutcome(FrozenModel):
+    estimand_id: EstimandId
+    evaluated: bool
+    success: bool | None = None
+    fixed_policy_success: bool | None = None
+
+    @model_validator(mode="after")
+    def validate_outcome(self) -> BridgeEstimandOutcome:
+        if self.evaluated != (self.success is not None):
+            raise ValueError("Bridge Estimand evaluation status is inconsistent")
+        if self.evaluated != (self.fixed_policy_success is not None):
+            raise ValueError("Bridge fixed-policy evaluation status is inconsistent")
+        return self
+
+
+class BridgeExecutionManifest(FrozenModel):
+    manifest_id: str = Field(min_length=1)
+    contract_id: str = Field(min_length=1)
+    model_id: str = Field(min_length=1)
+    model_invocation_config: dict[str, Any]
+    model_config_hash: str = Field(min_length=1)
+    provider_route: dict[str, Any]
+    provider_route_hash: str = Field(min_length=1)
+    prompt_manifest: dict[str, Any]
+    prompt_manifest_hash: str = Field(min_length=1)
+    runtime_id: str = Field(min_length=1)
+    runtime_projection_id: str = Field(min_length=1)
+    runtime_authority_policy_id: str = Field(min_length=1)
+    runtime_manifest: dict[str, Any]
+    runtime_manifest_hash: str = Field(min_length=1)
+    tool_manifest: dict[str, Any]
+    tool_manifest_hash: str = Field(min_length=1)
+    schema_version: str = BRIDGE_EXECUTION_MANIFEST_VERSION
+
+    @model_validator(mode="after")
+    def validate_manifest(self) -> BridgeExecutionManifest:
+        expected_payloads = {
+            "model_config": (self.model_invocation_config, self.model_config_hash),
+            "provider_route": (self.provider_route, self.provider_route_hash),
+            "prompt_manifest": (self.prompt_manifest, self.prompt_manifest_hash),
+            "runtime_manifest": (self.runtime_manifest, self.runtime_manifest_hash),
+            "tool_manifest": (self.tool_manifest, self.tool_manifest_hash),
+        }
+        for label, (payload, observed_hash) in expected_payloads.items():
+            expected_hash = canonical_hash(
+                payload,
+                prefix=f"finance_bridge_{label}:",
+            )
+            if observed_hash != expected_hash:
+                raise ValueError(f"Bridge {label} hash is invalid")
+            if _contains_sensitive_key(payload):
+                raise ValueError(f"Bridge {label} contains credential material")
+        if self.model_invocation_config.get("model_id") != self.model_id:
+            raise ValueError("Bridge model config identity is inconsistent")
+        if (
+            self.prompt_manifest.get("compiled_task_condition_id") is None
+            or self.runtime_manifest.get("runtime_id") != self.runtime_id
+            or self.runtime_manifest.get("runtime_projection_id")
+            != self.runtime_projection_id
+            or self.runtime_manifest.get("runtime_authority_policy_id")
+            != self.runtime_authority_policy_id
+        ):
+            raise ValueError("Bridge execution manifest is detached from its runtime condition")
+        allowed_tools = self.tool_manifest.get("allowed_tools")
+        if (
+            not isinstance(allowed_tools, list)
+            or not allowed_tools
+            or any(not isinstance(item, str) or not item for item in allowed_tools)
+            or allowed_tools != sorted(set(allowed_tools))
+        ):
+            raise ValueError("Bridge execution manifest requires a canonical tool manifest")
+        if not self.provider_route.get("provider") or not self.provider_route.get("route_id"):
+            raise ValueError("Bridge execution manifest requires a frozen provider route")
+        if not self.prompt_manifest.get("template_id"):
+            raise ValueError("Bridge execution manifest requires a frozen Prompt template")
+        if self.manifest_id != bridge_execution_manifest_id(self):
+            raise ValueError("Bridge execution manifest identity is invalid")
+        return self
+
+
+class BridgeRolloutObservation(FrozenModel):
+    rollout_id: str = Field(min_length=1)
+    contract_id: str = Field(min_length=1)
+    phase_authorization_id: str = Field(min_length=1)
+    phase: BridgePhase
+    mechanism_id: BridgeMechanism
+    scaffold_level: ScaffoldLevel
+    scaffold_rank: Literal[0, 1, 2, 3]
+    replicate_index: int = Field(ge=0, le=5)
+    condition_lineage: CompiledTaskConditionLineage
+    execution_manifest: BridgeExecutionManifest
+    provider_call_ids: tuple[str, ...] = Field(min_length=1)
+    public_state_summary: CompiledPublicStateSummary | None = None
+    terminal_category: BridgeRolloutTerminal
+    independent_validity_passed: bool
+    quotient_state_id: str | None = Field(default=None, min_length=1)
+    decision_trace_hash: str | None = Field(default=None, min_length=64, max_length=64)
+    estimand_outcomes: tuple[BridgeEstimandOutcome, ...] = Field(min_length=1)
+    host_interference_detected: bool = False
+    oracle_leakage_detected: bool = False
+    failure_reason: str | None = Field(default=None, min_length=1)
+    raw_payload: dict[str, Any]
+    raw_payload_hash: str = Field(min_length=1)
+    raw_artifact_uri: str = Field(min_length=1)
+    raw_artifact_sha256: str = Field(min_length=64, max_length=64)
+    schema_version: str = BRIDGE_ROLLOUT_OBSERVATION_VERSION
+
+    @property
+    def task_id(self) -> str:
+        return self.condition_lineage.task_id
+
+    @model_validator(mode="after")
+    def validate_rollout(self) -> BridgeRolloutObservation:
+        if self.scaffold_rank != SCAFFOLD_LEVELS.index(self.scaffold_level):
+            raise ValueError("Bridge rollout scaffold rank differs from its level")
+        if self.condition_lineage.scaffold_level != self.scaffold_level:
+            raise ValueError("Bridge rollout crosses compiled scaffold conditions")
+        if (
+            self.execution_manifest.contract_id != self.contract_id
+            or self.execution_manifest.runtime_projection_id
+            != self.condition_lineage.runtime_projection_id
+            or self.execution_manifest.runtime_authority_policy_id
+            != self.condition_lineage.runtime_authority_policy_id
+            or self.execution_manifest.prompt_manifest.get("compiled_task_condition_id")
+            != self.condition_lineage.compiled_task_condition_id
+        ):
+            raise ValueError("Bridge execution manifest crosses compiled task conditions")
+        if len(set(self.provider_call_ids)) != len(self.provider_call_ids):
+            raise ValueError("Bridge provider calls are duplicated")
+        expected_estimands = MECHANISM_ESTIMANDS[self.mechanism_id]
+        if tuple(item.estimand_id for item in self.estimand_outcomes) != expected_estimands:
+            raise ValueError("Bridge rollout mechanism Estimands are incomplete or reordered")
+        if self.scaffold_rank == 0:
+            if self.public_state_summary is not None:
+                raise ValueError("unassisted Bridge rollout cannot contain a scaffold summary")
+        elif (
+            self.public_state_summary is None
+            or self.public_state_summary.task_id != self.task_id
+            or self.public_state_summary.summary_spec.summary_spec_id
+            != self.condition_lineage.public_summary_spec_id
+        ):
+            raise ValueError("assisted Bridge rollout lacks its compiled public summary")
+        model_outcome = self.terminal_category in {
+            "model_valid_trajectory",
+            "model_invalid_trajectory",
+        }
+        if self.independent_validity_passed != (
+            self.terminal_category == "model_valid_trajectory"
+        ):
+            raise ValueError("Bridge rollout validity differs from its terminal category")
+        if model_outcome != bool(self.decision_trace_hash):
+            raise ValueError("Bridge model outcomes require exactly one decision trace")
+        if self.independent_validity_passed and not self.quotient_state_id:
+            raise ValueError("valid Bridge trajectories require a Quotient State")
+        if not model_outcome and any(item.evaluated for item in self.estimand_outcomes):
+            raise ValueError("failed Bridge executions cannot enter Estimand denominators")
+        if self.terminal_category == "instrument_failure":
+            if not (
+                self.host_interference_detected
+                or self.oracle_leakage_detected
+                or self.failure_reason
+            ):
+                raise ValueError("instrument failure requires an auditable reason")
+        elif self.host_interference_detected or self.oracle_leakage_detected:
+            raise ValueError("instrument contamination requires instrument_failure")
+        if self.terminal_category in {"runtime_failure", "instrument_failure"}:
+            if not self.failure_reason:
+                raise ValueError("failed Bridge execution requires a failure reason")
+        elif self.failure_reason:
+            raise ValueError("model outcomes cannot carry a runtime failure reason")
+        if (
+            self.raw_payload.get("task_id") != self.task_id
+            or self.raw_payload.get("terminal_category") != self.terminal_category
+            or self.raw_payload.get("execution_manifest_id")
+            != self.execution_manifest.manifest_id
+            or tuple(self.raw_payload.get("provider_call_ids", ()))
+            != self.provider_call_ids
+        ):
+            raise ValueError("Bridge raw payload identity is inconsistent")
+        expected_payload_hash = canonical_hash(
+            self.raw_payload,
+            prefix="finance_bridge_raw_rollout:",
+        )
+        if self.raw_payload_hash != expected_payload_hash:
+            raise ValueError("Bridge raw payload hash is invalid")
+        if self.raw_artifact_sha256 != _sha256_payload(self.raw_payload):
+            raise ValueError("Bridge raw artifact SHA-256 is invalid")
+        if self.rollout_id != bridge_rollout_observation_id(self):
+            raise ValueError("Bridge rollout observation identity is invalid")
+        return self
+
+
 class BridgeCellObservation(FrozenModel):
     observation_id: str = Field(min_length=1)
     contract_id: str = Field(min_length=1)
@@ -405,6 +669,11 @@ class BridgeCellObservation(FrozenModel):
     task_ids: tuple[str, ...] = Field(min_length=8, max_length=8)
     compiled_task_condition_ids: tuple[str, ...] = Field(min_length=8, max_length=8)
     state_mapping_contract_ids: tuple[str, ...] = Field(min_length=8, max_length=8)
+    condition_lineage_ids: tuple[str, ...] = Field(min_length=8, max_length=8)
+    rollout_observations: tuple[BridgeRolloutObservation, ...] = Field(
+        min_length=48,
+        max_length=48,
+    )
     rollout_count: Literal[48] = 48
     instrument_valid_rollout_count: int = Field(ge=0, le=48)
     model_outcome_count: int = Field(ge=0, le=48)
@@ -416,6 +685,7 @@ class BridgeCellObservation(FrozenModel):
     host_interference_count: int = Field(ge=0, le=48)
     oracle_leakage_count: int = Field(ge=0, le=48)
     runtime_failure_count: int = Field(ge=0, le=48)
+    instrument_failure_count: int = Field(ge=0, le=48)
     schema_version: str = BRIDGE_CELL_OBSERVATION_VERSION
 
     @property
@@ -428,18 +698,70 @@ class BridgeCellObservation(FrozenModel):
 
     @model_validator(mode="after")
     def validate_observation(self) -> BridgeCellObservation:
+        if tuple(
+            sorted(
+                self.rollout_observations,
+                key=lambda item: (item.task_id, item.replicate_index),
+            )
+        ) != self.rollout_observations:
+            raise ValueError("Bridge atomic rollouts are not canonically ordered")
+        if any(
+            item.contract_id != self.contract_id
+            or item.phase_authorization_id != self.phase_authorization_id
+            or item.phase != self.phase
+            or item.mechanism_id != self.mechanism_id
+            or item.scaffold_level != self.scaffold_level
+            for item in self.rollout_observations
+        ):
+            raise ValueError("Bridge atomic rollouts cross cell identities")
         if len(self.task_ids) != len(set(self.task_ids)):
             raise ValueError("Bridge cell task identities must be unique")
         if len(self.compiled_task_condition_ids) != len(set(self.compiled_task_condition_ids)):
             raise ValueError("Bridge cell compiled conditions must be unique")
         if len(self.state_mapping_contract_ids) != len(set(self.state_mapping_contract_ids)):
             raise ValueError("Bridge cell state mapping contracts must be unique")
+        if len(self.condition_lineage_ids) != len(set(self.condition_lineage_ids)):
+            raise ValueError("Bridge cell condition lineages must be unique")
         if self.scaffold_rank != SCAFFOLD_LEVELS.index(self.scaffold_level):
             raise ValueError("Bridge cell scaffold rank differs from its level")
-        if self.model_outcome_count + self.runtime_failure_count != self.rollout_count:
+        expected = _derive_bridge_cell_values(self.rollout_observations)
+        derived_fields = {
+            "task_ids": self.task_ids,
+            "compiled_task_condition_ids": self.compiled_task_condition_ids,
+            "state_mapping_contract_ids": self.state_mapping_contract_ids,
+            "condition_lineage_ids": self.condition_lineage_ids,
+            "instrument_valid_rollout_count": self.instrument_valid_rollout_count,
+            "model_outcome_count": self.model_outcome_count,
+            "valid_trajectory_count": self.valid_trajectory_count,
+            "estimand_observations": self.estimand_observations,
+            "preliminary_unique_state_count": self.preliminary_unique_state_count,
+            "tasks_with_multiple_observed_states_count": (
+                self.tasks_with_multiple_observed_states_count
+            ),
+            "state_entropy": self.state_entropy,
+            "host_interference_count": self.host_interference_count,
+            "oracle_leakage_count": self.oracle_leakage_count,
+            "runtime_failure_count": self.runtime_failure_count,
+            "instrument_failure_count": self.instrument_failure_count,
+        }
+        if derived_fields != expected:
+            raise ValueError("Bridge cell aggregates were not derived from atomic rollouts")
+        if (
+            self.model_outcome_count
+            + self.runtime_failure_count
+            + self.instrument_failure_count
+            != self.rollout_count
+        ):
             raise ValueError("Bridge rollout accounting is incomplete")
-        if self.instrument_valid_rollout_count + self.runtime_failure_count != self.rollout_count:
+        if (
+            self.instrument_valid_rollout_count
+            + self.runtime_failure_count
+            + self.instrument_failure_count
+            != self.rollout_count
+        ):
             raise ValueError("Bridge instrument-valid accounting is incomplete")
+        if self.instrument_valid_rollout_count != self.model_outcome_count:
+            raise ValueError("Bridge capability denominator includes a non-model outcome")
         if self.valid_trajectory_count > self.model_outcome_count:
             raise ValueError("Bridge valid trajectories exceed model outcomes")
         observed_estimands = tuple(item.estimand_id for item in self.estimand_observations)
@@ -533,8 +855,13 @@ class ConfirmedBridgeTaskCondition(FrozenModel):
     task_id: str = Field(min_length=1)
     mechanism_id: BridgeMechanism
     scaffold_level: ScaffoldLevel
+    condition_lineage_id: str = Field(min_length=1)
     compiled_task_condition_id: str = Field(min_length=1)
     state_mapping_contract_id: str = Field(min_length=1)
+    projection_id: str = Field(min_length=1)
+    ladder_id: str = Field(min_length=1)
+    scaffold_admission_id: str = Field(min_length=1)
+    joint_admission_id: str = Field(min_length=1)
     schema_version: str = BRIDGE_CONFIRMED_TASK_CONDITION_VERSION
 
     @model_validator(mode="after")
@@ -574,14 +901,9 @@ class CompilerAssistedBridgeConfirmation(FrozenModel):
         expected_conditions = tuple(
             sorted(
                 (
-                    _confirmed_task_condition(item, task_id, compiled_id, mapping_id)
+                    _confirmed_task_condition(item, task_id)
                     for item in self.observations
-                    for task_id, compiled_id, mapping_id in zip(
-                        item.task_ids,
-                        item.compiled_task_condition_ids,
-                        item.state_mapping_contract_ids,
-                        strict=True,
-                    )
+                    for task_id in item.task_ids
                 ),
                 key=lambda item: (item.mechanism_id, item.task_id),
             )
@@ -638,21 +960,35 @@ def make_bridge_static_construct_audit(
     contract_id: str,
     mechanism_id: BridgeMechanism,
     task_admission_ids: Mapping[str, str],
-    checks_by_task: Mapping[str, Mapping[str, bool]],
+    case_results: Iterable[AtomicAuditCaseResult],
+    auditor_id: str,
+    auditor_version: str,
 ) -> BridgeStaticConstructAudit:
-    if len(task_admission_ids) != 8 or len(checks_by_task) != 8:
+    if len(task_admission_ids) != 8:
         raise ValueError("Bridge static construct audit requires exactly eight tasks")
-    if set(task_admission_ids) != set(checks_by_task):
-        raise ValueError("Bridge static construct audit task identities are incomplete")
-    normalized_checks = {
-        task_id: dict(sorted(checks.items())) for task_id, checks in sorted(checks_by_task.items())
+    rows = tuple(sorted(case_results, key=lambda item: (item.subject_id, item.check_id)))
+    admission_to_task = {
+        admission_id: task_id for task_id, admission_id in task_admission_ids.items()
     }
+    normalized_checks: dict[str, dict[str, bool]] = {
+        task_id: {} for task_id in sorted(task_admission_ids)
+    }
+    for item in rows:
+        task_id = admission_to_task.get(item.subject_id)
+        if task_id is not None:
+            normalized_checks[task_id][item.check_id] = item.check_passed
     passed = sum(all(checks.values()) for checks in normalized_checks.values())
     values = {
         "contract_id": contract_id,
         "mechanism_id": mechanism_id,
         "task_admission_ids": dict(sorted(task_admission_ids.items())),
-        "checks_by_task": normalized_checks,
+        "case_results": rows,
+        "auditor_id": auditor_id,
+        "auditor_version": auditor_version,
+        "auditor_manifest_hash": canonical_hash(
+            {"auditor_id": auditor_id, "auditor_version": auditor_version},
+            prefix="bridge_static_construct_auditor_manifest:",
+        ),
         "passed_task_count": passed,
         "construct_fidelity_rate": passed / len(normalized_checks),
         "status": "passed" if passed == len(normalized_checks) else "blocked",
@@ -762,7 +1098,166 @@ def make_bridge_estimand_observation(
     )
 
 
-def make_bridge_cell_observation(**values: Any) -> BridgeCellObservation:
+def make_bridge_rollout_observation(
+    *,
+    contract_id: str,
+    phase_authorization_id: str,
+    phase: BridgePhase,
+    mechanism_id: BridgeMechanism,
+    scaffold_level: ScaffoldLevel,
+    replicate_index: int,
+    condition_lineage: CompiledTaskConditionLineage,
+    execution_manifest: BridgeExecutionManifest,
+    provider_call_ids: tuple[str, ...],
+    public_state_summary: CompiledPublicStateSummary | None,
+    terminal_category: BridgeRolloutTerminal,
+    independent_validity_passed: bool,
+    quotient_state_id: str | None,
+    decision_trace_hash: str | None,
+    estimand_outcomes: tuple[BridgeEstimandOutcome, ...],
+    raw_payload: Mapping[str, Any],
+    raw_artifact_uri: str,
+    host_interference_detected: bool = False,
+    oracle_leakage_detected: bool = False,
+    failure_reason: str | None = None,
+) -> BridgeRolloutObservation:
+    frozen_raw_payload = {
+        **dict(raw_payload),
+        "execution_manifest_id": execution_manifest.manifest_id,
+        "provider_call_ids": list(provider_call_ids),
+    }
+    values = {
+        "contract_id": contract_id,
+        "phase_authorization_id": phase_authorization_id,
+        "phase": phase,
+        "mechanism_id": mechanism_id,
+        "scaffold_level": scaffold_level,
+        "scaffold_rank": SCAFFOLD_LEVELS.index(scaffold_level),
+        "replicate_index": replicate_index,
+        "condition_lineage": condition_lineage,
+        "execution_manifest": execution_manifest,
+        "provider_call_ids": provider_call_ids,
+        "public_state_summary": public_state_summary,
+        "terminal_category": terminal_category,
+        "independent_validity_passed": independent_validity_passed,
+        "quotient_state_id": quotient_state_id,
+        "decision_trace_hash": decision_trace_hash,
+        "estimand_outcomes": estimand_outcomes,
+        "host_interference_detected": host_interference_detected,
+        "oracle_leakage_detected": oracle_leakage_detected,
+        "failure_reason": failure_reason,
+        "raw_payload": frozen_raw_payload,
+        "raw_payload_hash": canonical_hash(
+            frozen_raw_payload,
+            prefix="finance_bridge_raw_rollout:",
+        ),
+        "raw_artifact_uri": raw_artifact_uri,
+        "raw_artifact_sha256": _sha256_payload(frozen_raw_payload),
+        "schema_version": BRIDGE_ROLLOUT_OBSERVATION_VERSION,
+    }
+    provisional = BridgeRolloutObservation.model_construct(rollout_id="pending", **values)
+    return BridgeRolloutObservation(
+        rollout_id=bridge_rollout_observation_id(provisional),
+        **values,
+    )
+
+
+def make_bridge_execution_manifest(
+    *,
+    contract_id: str,
+    condition_lineage: CompiledTaskConditionLineage,
+    model_id: str,
+    model_config: Mapping[str, Any],
+    provider_route: Mapping[str, Any],
+    prompt_manifest: Mapping[str, Any],
+    runtime_id: str,
+    tool_manifest: Mapping[str, Any],
+) -> BridgeExecutionManifest:
+    frozen_model = {**dict(model_config), "model_id": model_id}
+    frozen_provider = dict(provider_route)
+    frozen_prompt = {
+        **dict(prompt_manifest),
+        "compiled_task_condition_id": condition_lineage.compiled_task_condition_id,
+    }
+    frozen_runtime = {
+        "runtime_id": runtime_id,
+        "runtime_projection_id": condition_lineage.runtime_projection_id,
+        "runtime_authority_policy_id": condition_lineage.runtime_authority_policy_id,
+    }
+    frozen_tools = dict(tool_manifest)
+    values = {
+        "contract_id": contract_id,
+        "model_id": model_id,
+        "model_invocation_config": frozen_model,
+        "model_config_hash": canonical_hash(
+            frozen_model, prefix="finance_bridge_model_config:"
+        ),
+        "provider_route": frozen_provider,
+        "provider_route_hash": canonical_hash(
+            frozen_provider, prefix="finance_bridge_provider_route:"
+        ),
+        "prompt_manifest": frozen_prompt,
+        "prompt_manifest_hash": canonical_hash(
+            frozen_prompt, prefix="finance_bridge_prompt_manifest:"
+        ),
+        "runtime_id": runtime_id,
+        "runtime_projection_id": condition_lineage.runtime_projection_id,
+        "runtime_authority_policy_id": condition_lineage.runtime_authority_policy_id,
+        "runtime_manifest": frozen_runtime,
+        "runtime_manifest_hash": canonical_hash(
+            frozen_runtime, prefix="finance_bridge_runtime_manifest:"
+        ),
+        "tool_manifest": frozen_tools,
+        "tool_manifest_hash": canonical_hash(
+            frozen_tools, prefix="finance_bridge_tool_manifest:"
+        ),
+        "schema_version": BRIDGE_EXECUTION_MANIFEST_VERSION,
+    }
+    provisional = BridgeExecutionManifest.model_construct(manifest_id="pending", **values)
+    return BridgeExecutionManifest(
+        manifest_id=bridge_execution_manifest_id(provisional),
+        **values,
+    )
+
+
+def aggregate_bridge_cell_observation(
+    *,
+    contract_id: str,
+    phase_authorization_id: str,
+    phase: BridgePhase,
+    mechanism_id: BridgeMechanism,
+    scaffold_level: ScaffoldLevel,
+    rollout_observations: Iterable[BridgeRolloutObservation],
+) -> BridgeCellObservation:
+    rollouts = tuple(
+        sorted(
+            rollout_observations,
+            key=lambda item: (item.task_id, item.replicate_index),
+        )
+    )
+    if len(rollouts) != 48:
+        raise ValueError("Bridge cell requires exactly 48 atomic rollouts")
+    if any(
+        item.contract_id != contract_id
+        or item.phase_authorization_id != phase_authorization_id
+        or item.phase != phase
+        or item.mechanism_id != mechanism_id
+        or item.scaffold_level != scaffold_level
+        for item in rollouts
+    ):
+        raise ValueError("Bridge atomic rollouts cross cell identities")
+    derived = _derive_bridge_cell_values(rollouts)
+    values = {
+        "contract_id": contract_id,
+        "phase_authorization_id": phase_authorization_id,
+        "phase": phase,
+        "mechanism_id": mechanism_id,
+        "scaffold_level": scaffold_level,
+        "scaffold_rank": SCAFFOLD_LEVELS.index(scaffold_level),
+        **derived,
+        "rollout_observations": rollouts,
+        "schema_version": BRIDGE_CELL_OBSERVATION_VERSION,
+    }
     provisional = BridgeCellObservation.model_construct(observation_id="pending", **values)
     return BridgeCellObservation(
         observation_id=bridge_cell_observation_id(provisional),
@@ -894,14 +1389,9 @@ def confirm_compiler_assisted_bridge(
         if _cell_failure_reasons(item, contract.selection_thresholds)
     )
     conditions = tuple(
-        _confirmed_task_condition(item, task_id, compiled_id, mapping_id)
+        _confirmed_task_condition(item, task_id)
         for item in rows
-        for task_id, compiled_id, mapping_id in zip(
-            item.task_ids,
-            item.compiled_task_condition_ids,
-            item.state_mapping_contract_ids,
-            strict=True,
-        )
+        for task_id in item.task_ids
     )
     values = {
         "contract_id": contract.contract_id,
@@ -961,6 +1451,20 @@ def bridge_estimand_observation_id(value: BridgeEstimandObservation) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"observation_id"}),
         prefix="finance_bridge_estimand_observation:",
+    )
+
+
+def bridge_execution_manifest_id(value: BridgeExecutionManifest) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"manifest_id"}),
+        prefix="finance_bridge_execution_manifest:",
+    )
+
+
+def bridge_rollout_observation_id(value: BridgeRolloutObservation) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"rollout_id"}),
+        prefix="finance_compiler_assisted_bridge_rollout:",
     )
 
 
@@ -1069,15 +1573,23 @@ def _cell_failure_reasons(
 def _confirmed_task_condition(
     item: BridgeCellObservation,
     task_id: str,
-    compiled_task_condition_id: str,
-    state_mapping_contract_id: str,
 ) -> ConfirmedBridgeTaskCondition:
+    lineage = next(
+        rollout.condition_lineage
+        for rollout in item.rollout_observations
+        if rollout.task_id == task_id
+    )
     values = {
         "task_id": task_id,
         "mechanism_id": item.mechanism_id,
         "scaffold_level": item.scaffold_level,
-        "compiled_task_condition_id": compiled_task_condition_id,
-        "state_mapping_contract_id": state_mapping_contract_id,
+        "condition_lineage_id": lineage.lineage_id,
+        "compiled_task_condition_id": lineage.compiled_task_condition_id,
+        "state_mapping_contract_id": lineage.state_mapping_contract_id,
+        "projection_id": lineage.projection_id,
+        "ladder_id": lineage.ladder_id,
+        "scaffold_admission_id": lineage.scaffold_admission_id,
+        "joint_admission_id": lineage.joint_admission_id,
         "schema_version": BRIDGE_CONFIRMED_TASK_CONDITION_VERSION,
     }
     provisional = ConfirmedBridgeTaskCondition.model_construct(
@@ -1092,3 +1604,125 @@ def _confirmed_task_condition(
 
 def _ratio(numerator: int, denominator: int) -> float:
     return numerator / denominator if denominator else 0.0
+
+
+def _derive_bridge_cell_values(
+    rollouts: tuple[BridgeRolloutObservation, ...],
+) -> dict[str, Any]:
+    if len(rollouts) != 48 or len({item.rollout_id for item in rollouts}) != 48:
+        raise ValueError("Bridge cell atomic rollout identities are incomplete or duplicated")
+    task_ids = tuple(sorted({item.task_id for item in rollouts}))
+    if len(task_ids) != 8:
+        raise ValueError("Bridge cell must contain exactly eight task identities")
+    lineages: list[CompiledTaskConditionLineage] = []
+    for task_id in task_ids:
+        task_rows = tuple(item for item in rollouts if item.task_id == task_id)
+        if tuple(item.replicate_index for item in task_rows) != tuple(range(6)):
+            raise ValueError("Bridge task replicates are incomplete or unordered")
+        task_lineages = {item.condition_lineage for item in task_rows}
+        if len(task_lineages) != 1:
+            raise ValueError("Bridge task replicates cross compiled conditions")
+        lineages.append(next(iter(task_lineages)))
+    model_rows = tuple(
+        item
+        for item in rollouts
+        if item.terminal_category
+        in {"model_valid_trajectory", "model_invalid_trajectory"}
+    )
+    runtime_failures = sum(item.terminal_category == "runtime_failure" for item in rollouts)
+    instrument_failures = sum(
+        item.terminal_category == "instrument_failure" for item in rollouts
+    )
+    estimands = tuple(
+        make_bridge_estimand_observation(
+            estimand_id=estimand_id,
+            evaluation_count=len(
+                evaluated := tuple(
+                    outcome
+                    for item in model_rows
+                    for outcome in item.estimand_outcomes
+                    if outcome.estimand_id == estimand_id and outcome.evaluated
+                )
+            ),
+            success_count=sum(outcome.success is True for outcome in evaluated),
+            fixed_policy_success_count=sum(
+                outcome.fixed_policy_success is True for outcome in evaluated
+            ),
+        )
+        for estimand_id in MECHANISM_ESTIMANDS[rollouts[0].mechanism_id]
+    )
+    observed_states = tuple(
+        item.quotient_state_id for item in model_rows if item.quotient_state_id
+    )
+    state_counts = Counter(observed_states)
+    state_total = sum(state_counts.values())
+    state_entropy = (
+        -sum(
+            (count / state_total) * math.log(count / state_total)
+            for count in state_counts.values()
+        )
+        if state_total
+        else 0.0
+    )
+    tasks_with_multiple_states = sum(
+        len(
+            {
+                item.quotient_state_id
+                for item in model_rows
+                if item.task_id == task_id and item.quotient_state_id
+            }
+        )
+        >= 2
+        for task_id in task_ids
+    )
+    return {
+        "task_ids": task_ids,
+        "compiled_task_condition_ids": tuple(
+            item.compiled_task_condition_id for item in lineages
+        ),
+        "state_mapping_contract_ids": tuple(
+            item.state_mapping_contract_id for item in lineages
+        ),
+        "condition_lineage_ids": tuple(item.lineage_id for item in lineages),
+        "instrument_valid_rollout_count": len(model_rows),
+        "model_outcome_count": len(model_rows),
+        "valid_trajectory_count": sum(
+            item.terminal_category == "model_valid_trajectory" for item in rollouts
+        ),
+        "estimand_observations": estimands,
+        "preliminary_unique_state_count": len(state_counts),
+        "tasks_with_multiple_observed_states_count": tasks_with_multiple_states,
+        "state_entropy": state_entropy,
+        "host_interference_count": sum(
+            item.host_interference_detected for item in rollouts
+        ),
+        "oracle_leakage_count": sum(item.oracle_leakage_detected for item in rollouts),
+        "runtime_failure_count": runtime_failures,
+        "instrument_failure_count": instrument_failures,
+    }
+
+
+def _contains_sensitive_key(value: Any) -> bool:
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            normalized = str(key).lower().replace("-", "_")
+            if any(
+                marker in normalized
+                for marker in ("api_key", "authorization", "password", "secret", "token")
+            ):
+                return True
+            if _contains_sensitive_key(item):
+                return True
+    elif isinstance(value, (list, tuple)):
+        return any(_contains_sensitive_key(item) for item in value)
+    return False
+
+
+def _sha256_payload(payload: Mapping[str, Any]) -> str:
+    serialized = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(serialized).hexdigest()
