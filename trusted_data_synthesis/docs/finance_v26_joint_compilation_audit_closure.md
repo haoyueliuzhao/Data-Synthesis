@@ -2,6 +2,11 @@
 
 Date: 2026-08-17
 
+> Successor status: the real 24-task no-API chain requested by this closure has now completed in
+> v26.20. See `docs/finance_v26_no_api_joint_scaffold_experiment.md`. This document remains the
+> immutable design-closure record and is not rewritten as if those empirical artifacts existed at
+> the time of the original audit.
+
 ## Scope
 
 This revision closes the static engineering findings from the independent Joint Compilation and

@@ -18,7 +18,7 @@ from trusted_synthesis.core.trajectory.scaffolding import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION = "finance_compiler_assisted_bridge.v3"
+COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION = "finance_compiler_assisted_bridge.v4"
 BRIDGE_STATIC_CONSTRUCT_AUDIT_VERSION = "finance_bridge_static_construct_audit.v2"
 BRIDGE_DEVELOPMENT_AUTHORIZATION_VERSION = "finance_bridge_development_authorization.v2"
 BRIDGE_CONFIRMATION_AUTHORIZATION_VERSION = "finance_bridge_confirmation_authorization.v2"
@@ -155,6 +155,23 @@ class ScaffoldSelectionThresholds(FrozenModel):
         return self
 
 
+class BridgeHierarchicalInferenceContract(FrozenModel):
+    primary_sampling_unit: Literal["task"] = "task"
+    secondary_sampling_unit: Literal["rollout_within_task"] = "rollout_within_task"
+    task_first_rollout_second_bootstrap: Literal[True] = True
+    scaffold_levels_paired_within_task: Literal[True] = True
+    mechanism_level_confidence_intervals_required: Literal[True] = True
+    confidence_level: float = Field(default=0.95, ge=0.9, le=0.99)
+    bootstrap_replicates: int = Field(default=5000, ge=1000)
+    minimal_passing_level_rule: Literal[
+        "lowest_level_with_joint_ci_thresholds_and_all_fidelity_gates"
+    ] = "lowest_level_with_joint_ci_thresholds_and_all_fidelity_gates"
+    fixed_policy_baseline_paired_by_task: Literal[True] = True
+    failure_attribution_coverage_required: float = Field(default=1.0, ge=1.0, le=1.0)
+    rollout_pseudoreplication_forbidden: Literal[True] = True
+    task_level_success_probability_reported: Literal[True] = True
+
+
 class ScaffoldWithdrawalTransferContract(FrozenModel):
     conditions: tuple[WithdrawalCondition, ...] = (
         "unassisted_train_unassisted_eval",
@@ -202,6 +219,7 @@ class CompilerAssistedBridgeContract(FrozenModel):
     planned_development_rollout_count: Literal[576] = 576
     planned_confirmation_rollout_count: Literal[144] = 144
     selection_thresholds: ScaffoldSelectionThresholds
+    inference: BridgeHierarchicalInferenceContract
     withdrawal_transfer: ScaffoldWithdrawalTransferContract
     experiment_separation: BridgeVTDOCausalSeparationContract
     task_identity_includes_scaffold: Literal[True] = True
@@ -944,6 +962,7 @@ def default_compiler_assisted_bridge_contract() -> CompilerAssistedBridgeContrac
     values = {
         "mechanisms": mechanisms,
         "selection_thresholds": ScaffoldSelectionThresholds(),
+        "inference": BridgeHierarchicalInferenceContract(),
         "withdrawal_transfer": ScaffoldWithdrawalTransferContract(),
         "experiment_separation": BridgeVTDOCausalSeparationContract(),
         "schema_version": COMPILER_ASSISTED_BRIDGE_CONTRACT_VERSION,

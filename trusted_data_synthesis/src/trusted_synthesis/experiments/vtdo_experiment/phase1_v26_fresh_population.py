@@ -22,11 +22,38 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_brid
     BRIDGE_MECHANISMS,
     BridgeMechanism,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_matched_capability_ladder import (
+    core_task_semantic_signature,
+)
 from trusted_synthesis.hashing import canonical_hash
 
 V26_FRESH_TASK_ROOT_VERSION = "finance_v26_fresh_task_root.v1"
 V26_FRESH_TASK_POPULATION_VERSION = "finance_v26_fresh_task_population.v1"
 V26_FRESH_TASK_SELECTION_POLICY_VERSION = "finance_v26_bridge_task_selection.v1"
+V26_CROSS_POPULATION_FRESHNESS_AUDIT_VERSION = (
+    "finance_v26_cross_population_freshness_audit.v1"
+)
+
+FreshnessChannel = Literal[
+    "task_id",
+    "source_task_id",
+    "evidence_id",
+    "evidence_version_id",
+    "core_semantic_signature",
+    "task_signature",
+    "mechanism_instance_signature",
+    "source_record_id",
+]
+FRESHNESS_CHANNELS: tuple[FreshnessChannel, ...] = (
+    "task_id",
+    "source_task_id",
+    "evidence_id",
+    "evidence_version_id",
+    "core_semantic_signature",
+    "task_signature",
+    "mechanism_instance_signature",
+    "source_record_id",
+)
 
 V26FreshPopulationPhase = Literal["development", "fresh_confirmation"]
 
@@ -156,6 +183,78 @@ class V26FreshTaskPopulation(FrozenModel):
             mechanism: tuple(item for item in self.tasks if item.mechanism_id == mechanism)
             for mechanism in BRIDGE_MECHANISMS
         }
+
+
+class V26FreshnessChannelAudit(FrozenModel):
+    channel: FreshnessChannel
+    development_values: tuple[str, ...] = Field(min_length=1)
+    confirmation_values: tuple[str, ...] = Field(min_length=1)
+    development_set_hash: str = Field(min_length=1)
+    confirmation_set_hash: str = Field(min_length=1)
+    overlap_values: tuple[str, ...] = ()
+    overlap_count: Literal[0] = 0
+
+    @model_validator(mode="after")
+    def validate_channel(self) -> V26FreshnessChannelAudit:
+        if self.development_values != tuple(sorted(set(self.development_values))):
+            raise ValueError("v26 Development freshness identities are not canonical")
+        if self.confirmation_values != tuple(sorted(set(self.confirmation_values))):
+            raise ValueError("v26 Confirmation freshness identities are not canonical")
+        expected_overlap = tuple(
+            sorted(set(self.development_values) & set(self.confirmation_values))
+        )
+        if self.overlap_values != expected_overlap or self.overlap_count != len(expected_overlap):
+            raise ValueError("v26 freshness overlap result is inconsistent")
+        if self.development_set_hash != _freshness_set_hash(
+            self.channel, self.development_values
+        ):
+            raise ValueError("v26 Development freshness set hash is invalid")
+        if self.confirmation_set_hash != _freshness_set_hash(
+            self.channel, self.confirmation_values
+        ):
+            raise ValueError("v26 Confirmation freshness set hash is invalid")
+        return self
+
+
+class V26CrossPopulationFreshnessAudit(FrozenModel):
+    audit_id: str = Field(min_length=1)
+    protocol_id: str = Field(min_length=1)
+    development_population_id: str = Field(min_length=1)
+    confirmation_population_id: str = Field(min_length=1)
+    development_population: V26FreshTaskPopulation
+    confirmation_population: V26FreshTaskPopulation
+    development_source_population_id: str = Field(min_length=1)
+    confirmation_source_population_id: str = Field(min_length=1)
+    development_source_population_content_hash: str = Field(min_length=1)
+    confirmation_source_population_content_hash: str = Field(min_length=1)
+    channels: tuple[V26FreshnessChannelAudit, ...] = Field(min_length=8, max_length=8)
+    status: Literal["passed"] = "passed"
+    model_api_calls: Literal[0] = 0
+    gpu_jobs: Literal[0] = 0
+    schema_version: Literal["finance_v26_cross_population_freshness_audit.v1"] = (
+        "finance_v26_cross_population_freshness_audit.v1"
+    )
+
+    @model_validator(mode="after")
+    def validate_audit(self) -> V26CrossPopulationFreshnessAudit:
+        if tuple(item.channel for item in self.channels) != FRESHNESS_CHANNELS:
+            raise ValueError("v26 freshness channels are incomplete or reordered")
+        if any(item.overlap_count for item in self.channels):
+            raise ValueError("v26 cross-population freshness is not disjoint")
+        if (
+            self.development_population.population_id != self.development_population_id
+            or self.confirmation_population.population_id != self.confirmation_population_id
+            or self.development_population.protocol_id != self.protocol_id
+            or self.confirmation_population.protocol_id != self.protocol_id
+        ):
+            raise ValueError("v26 freshness audit embeds detached typed Populations")
+        if self.development_population_id == self.confirmation_population_id:
+            raise ValueError("v26 freshness audit reuses one typed Population")
+        if self.development_source_population_id == self.confirmation_source_population_id:
+            raise ValueError("v26 freshness audit reuses one source Population")
+        if self.audit_id != v26_cross_population_freshness_audit_id(self):
+            raise ValueError("v26 cross-population freshness audit identity is invalid")
+        return self
 
 
 def make_v26_fresh_task_root(
@@ -303,6 +402,180 @@ def validate_population_compilation(
         )
         if not all(checks):
             raise ValueError("Joint Compilation semantic roots differ from the fresh Population")
+
+
+def build_v26_cross_population_freshness_audit(
+    development: V26FreshTaskPopulation,
+    confirmation: V26FreshTaskPopulation,
+) -> V26CrossPopulationFreshnessAudit:
+    if (
+        development.phase != "development"
+        or confirmation.phase != "fresh_confirmation"
+        or development.protocol_id != confirmation.protocol_id
+    ):
+        raise ValueError("v26 freshness audit crosses protocol or phase identities")
+    development_tasks = load_v26_selected_source_tasks(development)
+    confirmation_tasks = load_v26_selected_source_tasks(confirmation)
+    development_values = _freshness_channel_values(development, development_tasks)
+    confirmation_values = _freshness_channel_values(confirmation, confirmation_tasks)
+    channels = tuple(
+        _make_freshness_channel_audit(
+            channel,
+            development_values[channel],
+            confirmation_values[channel],
+        )
+        for channel in FRESHNESS_CHANNELS
+    )
+    values = {
+        "protocol_id": development.protocol_id,
+        "development_population_id": development.population_id,
+        "confirmation_population_id": confirmation.population_id,
+        "development_population": development,
+        "confirmation_population": confirmation,
+        "development_source_population_id": development.source_population_id,
+        "confirmation_source_population_id": confirmation.source_population_id,
+        "development_source_population_content_hash": (
+            development.source_population_content_hash
+        ),
+        "confirmation_source_population_content_hash": (
+            confirmation.source_population_content_hash
+        ),
+        "channels": channels,
+        "status": "passed",
+        "model_api_calls": 0,
+        "gpu_jobs": 0,
+        "schema_version": V26_CROSS_POPULATION_FRESHNESS_AUDIT_VERSION,
+    }
+    provisional = V26CrossPopulationFreshnessAudit.model_construct(
+        audit_id="pending", **values
+    )
+    return V26CrossPopulationFreshnessAudit(
+        audit_id=v26_cross_population_freshness_audit_id(provisional),
+        **values,
+    )
+
+
+def replay_v26_cross_population_freshness_audit(
+    audit: V26CrossPopulationFreshnessAudit,
+    development: V26FreshTaskPopulation,
+    confirmation: V26FreshTaskPopulation,
+) -> None:
+    replay = build_v26_cross_population_freshness_audit(development, confirmation)
+    if replay != audit:
+        raise ValueError("v26 cross-population freshness audit replay failed")
+
+
+def v26_cross_population_freshness_audit_id(
+    value: V26CrossPopulationFreshnessAudit,
+) -> str:
+    return canonical_hash(
+        value.model_dump(mode="json", exclude={"audit_id"}),
+        prefix="finance_v26_cross_population_freshness_audit:",
+    )
+
+
+def _make_freshness_channel_audit(
+    channel: FreshnessChannel,
+    development_values: set[str],
+    confirmation_values: set[str],
+) -> V26FreshnessChannelAudit:
+    development = tuple(sorted(development_values))
+    confirmation = tuple(sorted(confirmation_values))
+    overlap = tuple(sorted(development_values & confirmation_values))
+    if overlap:
+        raise ValueError(f"v26 freshness channel {channel} is not disjoint")
+    return V26FreshnessChannelAudit(
+        channel=channel,
+        development_values=development,
+        confirmation_values=confirmation,
+        development_set_hash=_freshness_set_hash(channel, development),
+        confirmation_set_hash=_freshness_set_hash(channel, confirmation),
+        overlap_values=overlap,
+        overlap_count=0,
+    )
+
+
+def _freshness_set_hash(channel: FreshnessChannel, values: Sequence[str]) -> str:
+    return canonical_hash(
+        {"channel": channel, "values": tuple(values)},
+        prefix="finance_v26_freshness_identity_set:",
+    )
+
+
+def load_v26_selected_source_tasks(
+    population: V26FreshTaskPopulation,
+) -> tuple[CapabilitySensitiveTaskArtifact, ...]:
+    source_path = Path(population.source_population_path)
+    if not source_path.is_file() or _sha256(source_path) != population.source_population_sha256:
+        raise ValueError("v26 source Population byte replay failed")
+    source_payload = json.loads(source_path.read_text(encoding="utf-8"))
+    if canonical_hash(source_payload) != population.source_population_content_hash:
+        raise ValueError("v26 source Population canonical replay failed")
+    source = CapabilitySensitiveFrontierPopulation.model_validate(source_payload)
+    if (
+        source.population_id != population.source_population_id
+        or source.run_id != population.source_population_run_id
+        or source.schema_version != population.source_population_schema_version
+    ):
+        raise ValueError("v26 source Population identity replay failed")
+    by_id = {item.artifact_id: item for item in source.tasks}
+    selected = []
+    for root in population.tasks:
+        task = by_id.get(root.source_task_artifact_id)
+        if (
+            task is None
+            or canonical_hash(task.model_dump(mode="json"))
+            != root.source_task_content_hash
+        ):
+            raise ValueError("v26 source task content replay failed")
+        if _root_from_source_task(task, mechanism_id=root.mechanism_id) != root:
+            raise ValueError("v26 source task semantic-root replay failed")
+        selected.append(task)
+    return tuple(selected)
+
+
+def _freshness_channel_values(
+    population: V26FreshTaskPopulation,
+    tasks: Sequence[CapabilitySensitiveTaskArtifact],
+) -> dict[FreshnessChannel, set[str]]:
+    mechanism_by_source = {
+        item.source_task_artifact_id: item.mechanism_id for item in population.tasks
+    }
+    core_by_source = {item.artifact_id: core_task_semantic_signature(item) for item in tasks}
+    return {
+        "task_id": {item.task.task_id for item in tasks},
+        "source_task_id": {item.artifact_id for item in tasks},
+        "evidence_id": {
+            evidence.evidence_id
+            for item in tasks
+            for evidence in item.public_corpus.evidence
+        },
+        "evidence_version_id": {
+            evidence.evidence_version_id
+            for item in tasks
+            for evidence in item.public_corpus.evidence
+        },
+        "core_semantic_signature": set(core_by_source.values()),
+        "task_signature": {item.task.task_hash for item in tasks},
+        "mechanism_instance_signature": {
+            canonical_hash(
+                {
+                    "mechanism_id": mechanism_by_source[item.artifact_id],
+                    "task_family": item.family,
+                    "difficulty_tier": item.tier.value,
+                    "core_semantic_signature": core_by_source[item.artifact_id],
+                    "structure": item.structure.model_dump(mode="json"),
+                },
+                prefix="finance_v26_mechanism_instance:",
+            )
+            for item in tasks
+        },
+        "source_record_id": {
+            evidence.provenance.source_record_id
+            for item in tasks
+            for evidence in item.public_corpus.evidence
+        },
+    }
 
 
 def v26_fresh_task_root_id(value: V26FreshTaskRoot) -> str:

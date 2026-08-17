@@ -3,11 +3,13 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Literal
 
 import pytest
 from pydantic import ValidationError
 
+from trusted_synthesis.core.synthesis.schema import CompiledProofCarryingArtifacts
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_heterogeneous_mainline import (
     FINANCE_V26_MAINLINE_VERSION,
     CapabilityHeterogeneousMainlineProtocol,
@@ -42,6 +44,7 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_fresh_population i
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_stage_router import (
     V26_STAGE_ROUTER_VERSION,
     V26StageLedger,
+    _model_schema_version,
     advance_v26_stage,
     initialize_v26_stage_ledger,
     make_v26_stage_artifact_reference,
@@ -178,6 +181,14 @@ def _empty_ledger(tmp_path: Path) -> V26StageLedger:
         protocol_path=protocol_path,
         preflight_path=preflight_path,
     )
+
+
+def test_v26_router_uses_joint_schema_for_compiled_artifacts() -> None:
+    compiled = CompiledProofCarryingArtifacts.model_construct(
+        joint_compilation=SimpleNamespace(schema_version="joint-compilation.test.v1")
+    )
+
+    assert _model_schema_version(compiled) == "joint-compilation.test.v1"
 
 
 

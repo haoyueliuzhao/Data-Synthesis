@@ -836,6 +836,10 @@ def mainline_implementation_paths() -> dict[str, Path]:
         "capability_bridge": module_root / "phase1_compiler_assisted_bridge.py",
         "state_support_discovery": module_root / "phase1_compiler_assisted_state_support.py",
         "v26_stage_router": module_root / "phase1_v26_stage_router.py",
+        "v26_no_api_contracts": module_root / "phase1_v26_no_api_contracts.py",
+        "v26_no_api_compilation_runner": (
+            module_root / "phase1_v26_no_api_compilation_runner.py"
+        ),
         "v26_public_cli": Path(__file__).resolve().parents[2] / "cli.py",
         "state_discovery": module_root / "phase1_initial_distribution.py",
         "state_materialization": module_root / "phase1_state_realizations.py",

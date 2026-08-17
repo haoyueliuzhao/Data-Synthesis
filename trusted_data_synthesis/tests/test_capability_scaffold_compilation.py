@@ -503,6 +503,68 @@ def test_public_summary_compiler_replays_latest_registered_public_state() -> Non
     )
 
 
+def test_public_summary_preserves_ordered_failure_and_completion_history() -> None:
+    summary_spec = make_minimal_public_state_summary_spec(
+        compiler_id="contract.public_state_summary.history",
+        compiler_version="1.0.0",
+        source_kinds=("public_tool_observation",),
+        included_fields=(
+            "typed_failure_category_history",
+            "public_completion_conditions",
+            "public_completion_condition_history",
+        ),
+    )
+
+    def compile_history(first_failure: str):
+        return compile_public_state_summary(
+            summary_spec,
+            (
+                make_public_state_observation(
+                    task_id="task:history",
+                    sequence_index=0,
+                    source_kind="public_tool_observation",
+                    values={
+                        "typed_failure_category_history": first_failure,
+                        "public_completion_conditions": ["retry_required"],
+                        "public_completion_condition_history": "retry_required",
+                    },
+                ),
+                make_public_state_observation(
+                    task_id="task:history",
+                    sequence_index=1,
+                    source_kind="public_tool_observation",
+                    values={
+                        "typed_failure_category_history": "recovered",
+                        "public_completion_conditions": ["ready"],
+                        "public_completion_condition_history": "ready",
+                    },
+                ),
+            ),
+        )
+
+    timeout_history = compile_history("timeout")
+    invalid_payload_history = compile_history("invalid_payload")
+
+    assert timeout_history.values["typed_failure_category_history"] == [
+        "timeout",
+        "recovered",
+    ]
+    assert invalid_payload_history.values["typed_failure_category_history"] == [
+        "invalid_payload",
+        "recovered",
+    ]
+    assert timeout_history.values["public_completion_condition_history"] == [
+        "retry_required",
+        "ready",
+    ]
+    assert timeout_history.values["public_completion_conditions"] == ["ready"]
+    assert timeout_history.summary_id != invalid_payload_history.summary_id
+    assert (
+        type(timeout_history).model_validate_json(timeout_history.model_dump_json())
+        == timeout_history
+    )
+
+
 def test_scaffold_admission_rejects_forged_aggregate_gate() -> None:
     ladder = _ladder(build_contract_cases()[0])
     admission = admit_capability_scaffold_ladder(ladder, _gate_evidence(ladder))

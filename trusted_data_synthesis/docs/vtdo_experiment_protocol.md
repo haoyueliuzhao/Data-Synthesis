@@ -1585,15 +1585,19 @@ No-C population. It does not authorize Contribution. Compiler Bridge efficacy ch
 is reported separately from VTDO distribution efficacy, where every arm receives the same frozen
 compiled task condition.
 
-The incompatible `finance_v26_stage_router.v4` is the only permitted pre-training execution route.
+The incompatible `finance_v26_stage_router.v5` is the only permitted pre-training execution route.
 It accepts only `finance_v26_fresh_task_population.v1`, replays typed protocol/preflight manifests
 and every stage artifact, binds exact Task/Evidence/Corpus/Graph roots, scales Joint and Scaffold
 audit cardinality with the fresh Population, and rejects skipped stages, stale implementation
 hashes, detached roots, incomplete rollout partitions, pre-admission API calls, and all GPU jobs.
 The ordered route includes Development static authorization, fresh Confirmation, a distinct
 State-support contract/observation stage, and State-support freeze. Earlier v26 stage ledgers and
-preflights cannot be reinterpreted under this contract. The current immutable v26.10 preflight and
-ledger are stored under
-`artifacts/vtdo_experiment/finance_v26_0_capability_heterogeneous_mainline_protocol_v10_20260817/`;
-the ledger has completed the typed Development Population stage, stops at Joint Compilation, and
-records zero API calls and GPU jobs.
+preflights cannot be reinterpreted under this contract. The immutable v26.20 no-API run is stored
+under `artifacts/vtdo_experiment/finance_v26_20_no_api_joint_scaffold_20260817/`. It completed
+24/24 Joint Admissions, 24/24 Scaffold Admissions, all eight cross-population freshness checks,
+and the three mechanism-level Bridge static audits. A credential-free replay reproduced the same
+final Ledger with zero API calls and zero GPU jobs. Its counts are derived from persisted artifacts,
+and Joint, Scaffold, history/mapping, and Bridge static results have distinct typed replay paths.
+The next permitted stage is `bridge_rollout`;
+no empirical Bridge, State-support, VTDO, Contribution, or Student result has been produced. See
+`docs/finance_v26_no_api_joint_scaffold_experiment.md`.

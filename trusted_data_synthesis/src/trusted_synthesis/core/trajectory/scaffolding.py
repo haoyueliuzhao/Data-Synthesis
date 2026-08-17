@@ -15,14 +15,14 @@ from trusted_synthesis.core.trajectory.admission import (
 from trusted_synthesis.hashing import canonical_hash
 
 CAPABILITY_PREREQUISITE_GRAPH_VERSION = "capability_prerequisite_graph.v1"
-PUBLIC_STATE_SUMMARY_SPEC_VERSION = "minimal_public_state_summary_spec.v1"
+PUBLIC_STATE_SUMMARY_SPEC_VERSION = "minimal_public_state_summary_spec.v2"
 PUBLIC_STATE_OBSERVATION_VERSION = "public_state_observation.v1"
-COMPILED_PUBLIC_STATE_SUMMARY_VERSION = "compiled_public_state_summary.v1"
-COMPILED_TASK_CONDITION_LINEAGE_VERSION = "compiled_task_condition_lineage.v1"
-CAPABILITY_SCAFFOLD_PROJECTION_VERSION = "capability_scaffold_public_projection.v3"
-CAPABILITY_SCAFFOLD_LADDER_VERSION = "capability_scaffold_ladder_compilation.v3"
-CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION = "capability_scaffold_gate_evidence.v3"
-CAPABILITY_SCAFFOLD_ADMISSION_VERSION = "capability_scaffold_admission.v3"
+COMPILED_PUBLIC_STATE_SUMMARY_VERSION = "compiled_public_state_summary.v3"
+COMPILED_TASK_CONDITION_LINEAGE_VERSION = "compiled_task_condition_lineage.v2"
+CAPABILITY_SCAFFOLD_PROJECTION_VERSION = "capability_scaffold_public_projection.v4"
+CAPABILITY_SCAFFOLD_LADDER_VERSION = "capability_scaffold_ladder_compilation.v4"
+CAPABILITY_SCAFFOLD_GATE_EVIDENCE_VERSION = "capability_scaffold_gate_evidence.v4"
+CAPABILITY_SCAFFOLD_ADMISSION_VERSION = "capability_scaffold_admission.v4"
 SCAFFOLD_INVARIANT_STATE_MAPPING_VERSION = "scaffold_invariant_state_mapping.v1"
 SCAFFOLD_SEPARATED_TRAJECTORY_VIEW_VERSION = "scaffold_separated_trajectory_view.v1"
 
@@ -43,6 +43,8 @@ PublicSummaryField = Literal[
     "remaining_tool_budget",
     "public_completion_conditions",
     "typed_failure_category",
+    "typed_failure_category_history",
+    "public_completion_condition_history",
 ]
 PublicSummarySource = Literal[
     "task_public",
@@ -158,6 +160,7 @@ _COMMON_SCAFFOLD_GATE_CHECKS: dict[ScaffoldGate, tuple[str, ...]] = {
         "decision_information_present",
         "critical_information_ablation_registered",
         "runtime_projection_replayable",
+        "history_collision_sufficiency",
     ),
     "target_authority_preservation": (
         "model_selects_target_decision",
@@ -1374,9 +1377,22 @@ def _compile_public_summary_values(
 ) -> dict[PublicSummaryField, Any]:
     compiled: dict[PublicSummaryField, Any] = {}
     included = set(summary_spec.included_fields)
+    history_fields = {
+        "typed_failure_category_history",
+        "public_completion_condition_history",
+    }
     for observation in observations:
         for field, value in observation.values.items():
-            if field in included:
+            if field not in included:
+                continue
+            if field in history_fields:
+                history = list(compiled.get(field, ()))
+                if isinstance(value, (list, tuple)):
+                    history.extend(value)
+                else:
+                    history.append(value)
+                compiled[field] = history
+            else:
                 compiled[field] = value
     return dict(sorted(compiled.items()))
 

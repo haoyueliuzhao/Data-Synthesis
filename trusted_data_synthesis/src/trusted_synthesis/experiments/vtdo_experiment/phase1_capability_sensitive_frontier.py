@@ -20,6 +20,7 @@ from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.operations.program import (
     ProgramExecution,
+    ProgramExecutionError,
     ProgramVerification,
     TaskProgramExecutor,
     TaskProgramOracleVerifier,
@@ -581,12 +582,17 @@ def build_capability_sensitive_frontier_population(
     output_path: Path,
     run_id: str,
     sampling_salt: str,
+    excluded_evidence_ids: Sequence[str] = (),
 ) -> CapabilitySensitiveFrontierPopulation:
     if output_path.exists():
         raise ValueError("capability-sensitive Frontier population is immutable")
     source_artifacts_path = source_artifacts_path.resolve()
     pool = _load_evidence_pool(source_artifacts_path)
-    builder = _CapabilityTaskBuilder(pool, sampling_salt=sampling_salt)
+    builder = _CapabilityTaskBuilder(
+        pool,
+        sampling_salt=sampling_salt,
+        excluded_evidence_ids=excluded_evidence_ids,
+    )
     tasks = builder.build_registered_population()
     audit = make_capability_sensitive_frontier_audit(tasks)
     values = {
@@ -619,11 +625,17 @@ def build_capability_sensitive_frontier_population(
 
 
 class _CapabilityTaskBuilder:
-    def __init__(self, pool: _EvidencePool, *, sampling_salt: str) -> None:
+    def __init__(
+        self,
+        pool: _EvidencePool,
+        *,
+        sampling_salt: str,
+        excluded_evidence_ids: Sequence[str] = (),
+    ) -> None:
         self._pool = pool
         self._sampling_salt = sampling_salt
         self._registry = default_registry()
-        self._used_evidence_ids: set[str] = set()
+        self._used_evidence_ids: set[str] = set(excluded_evidence_ids)
         self._temporal_series = _temporal_series(pool.gold.values())
         self._cross_entity_windows = _cross_entity_windows(self._temporal_series)
 
@@ -664,16 +676,21 @@ class _CapabilityTaskBuilder:
             all_ids = gold_ids | {item.evidence_id for item in distractors}
             if all_ids & self._used_evidence_ids:
                 continue
-            artifact = self._materialize(
-                family=family,
-                tier=tier,
-                gold=gold,
-                distractors=distractors,
-                recovery_branches=recovery,
-                program=program,
-                instruction=instruction,
-                answer_projection=answer_projection,
-            )
+            try:
+                artifact = self._materialize(
+                    family=family,
+                    tier=tier,
+                    gold=gold,
+                    distractors=distractors,
+                    recovery_branches=recovery,
+                    program=program,
+                    instruction=instruction,
+                    answer_projection=answer_projection,
+                )
+            except ProgramExecutionError:
+                # Operator-invalid archive windows are ineligible bindings, not a reason to
+                # abort discovery of later deterministic candidates.
+                continue
             built.append(artifact)
             self._used_evidence_ids.update(all_ids)
             if len(built) == target:

@@ -15,15 +15,19 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-The latest completed model result remains Finance v25.47 Context Sufficiency Development.
-Finance v26 now freezes a separate capability-heterogeneous VTDO mainline protocol; it does not
+The latest completed model result remains Finance v25.47 Context Sufficiency Development. The
+latest completed non-model result is the Finance v26.20 credential-free Joint/Scaffold experiment.
+Finance v26 freezes a separate capability-heterogeneous VTDO mainline protocol; it does not
 mutate or reauthorize v25.47. v26 restores Joint Compilation as mandatory Phase 0, separates
 `S_measure`, `S_train`, and `S_C`, freezes the 100/60/30/60 task partition, and defines the No-C
 Student matrix plus an isolated Contribution-recovery branch. Two fresh 70-task source
-populations and disjoint 24-task Development/Confirmation manifests now exist, but no v26 API
-call, GPU job, Joint/Scaffold admission result, Student run, Exact Target, or GP-C result exists.
+populations and disjoint 24-task Development/Confirmation manifests exist. The Development set now
+has 24/24 Joint Admissions, 24/24 Scaffold Admissions, and a Bridge Development static
+authorization. No v26 API call, GPU job, Bridge rollout, Student run, Exact Target, or GP-C result
+exists.
 See
-`docs/finance_v26_capability_heterogeneous_mainline.md`.
+`docs/finance_v26_capability_heterogeneous_mainline.md` and
+`docs/finance_v26_no_api_joint_scaffold_experiment.md`.
 
 The Core now exposes a content-addressed `JointCompilationAdmissionArtifact`. It binds Oracle,
 Public, runtime authority, verifier, State Mapper, and Materialization views to one Joint
@@ -48,20 +52,22 @@ efficacy and fixed-scaffold VTDO efficacy are separate causal experiments. The 4
 roots are materialized, but no Bridge rollout, model API call, or GPU job has run. See
 `docs/finance_v26_compiler_assisted_capability_bridge.md`.
 
-Earlier v26 preflights remain historical and cannot initialize the new runner. The immutable
-v26.10 preflight binds the current source/config manifests, including the typed Population,
-atomic-audit, and Stage Router implementations: all 24 checks passed and 14 implementation files
-were frozen. Its Stage Ledger has accepted the 24-task Development Population and now stops at
-`joint_compilation`; it records zero Flash calls, zero Pro calls, and zero GPU jobs. Exact
-identities are recorded in `docs/finance_v26_joint_compilation_audit_closure.md`.
+Earlier v26 preflights and failed no-API attempts remain historical and cannot initialize the
+current runner. The immutable v26.20 run recompiled all 24 Development tasks, executed 384 Joint
+atomic cases and 3,024 Scaffold atomic cases, admitted all Joint and Scaffold artifacts, and passed
+three Bridge static audits. Its explicit eight-channel Development/Confirmation freshness audit
+has zero overlap in every channel. A credential-free child replay reproduced the same final Ledger
+ID with zero API calls and zero GPU jobs. The Ledger now stops at `bridge_rollout`. Exact identities
+are recorded in `docs/finance_v26_no_api_joint_scaffold_experiment.md`.
 
-`finance_v26_stage_router.v4` now provides an executable, fail-closed route from typed fresh Development
+`finance_v26_stage_router.v5` provides an executable, fail-closed route from typed fresh Development
 Population through Joint/Scaffold admission, Bridge Development, fresh confirmation, independent
 State-support observations, and State-support freeze. Protocol/preflight and every stage artifact
 are typed and content replayed on each transition and direct ledger deserialization. Audit
 cardinalities scale with Population size; rollout aggregates must exactly partition their atomic
-observations. See
-`docs/finance_v26_joint_compilation_audit_closure.md`.
+observations. The completed no-API prefix is independently replayable; empirical Bridge and
+downstream stages remain unexecuted. See `docs/finance_v26_joint_compilation_audit_closure.md` and
+`docs/finance_v26_no_api_joint_scaffold_experiment.md`.
 
 v25.47 replaced the opaque
 v25.46 branch cue with one typed, action-neutral public relation state and one shared decision
@@ -322,10 +328,10 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format, non-manifest-bound changed files | passed |
-| Mypy | passed, 300 source files |
-| Pytest | passed, 626 tests in 145.21 seconds |
-| Core generalization boundary | 131 files, zero imports/branches/field accesses/violations |
+| Ruff format | new v26 files passed; 127 historical baseline files remain unformatted |
+| Mypy | passed, 340 source files |
+| Pytest | passed, 830 tests in 162.41 seconds |
+| Core generalization boundary | 134 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
 | v25.20 population deterministic replay | byte-identical SHA-256 `8ee0b10046af...` |

@@ -40,13 +40,15 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_compiler_assisted_stat
     TaskStateSupportObservation,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_fresh_population import (
+    V26CrossPopulationFreshnessAudit,
     V26FreshTaskPopulation,
+    replay_v26_cross_population_freshness_audit,
     validate_population_compilation,
 )
 from trusted_synthesis.hashing import canonical_hash
 
-V26_STAGE_ROUTER_VERSION = "finance_v26_stage_router.v4"
-V26_STAGE_ARTIFACT_REFERENCE_VERSION = "finance_v26_stage_artifact_reference.v3"
+V26_STAGE_ROUTER_VERSION = "finance_v26_stage_router.v5"
+V26_STAGE_ARTIFACT_REFERENCE_VERSION = "finance_v26_stage_artifact_reference.v4"
 
 V26Stage = Literal[
     "fresh_task_population",
@@ -74,6 +76,7 @@ StageArtifactRole = Literal[
     "mainline_protocol",
     "mainline_preflight",
     "fresh_task_population",
+    "cross_population_freshness_audit",
     "compiled_proof_artifacts",
     "trajectory_state_space",
     "joint_audit_evidence",
@@ -116,7 +119,11 @@ V26_STAGES: tuple[V26Stage, ...] = (
 )
 _STAGE_ROLES: dict[V26Stage, tuple[StageArtifactRole, ...]] = {
     "fresh_task_population": ("fresh_task_population",),
-    "joint_compilation": ("compiled_proof_artifacts", "trajectory_state_space"),
+    "joint_compilation": (
+        "cross_population_freshness_audit",
+        "compiled_proof_artifacts",
+        "trajectory_state_space",
+    ),
     "joint_audit": ("joint_audit_evidence",),
     "joint_admission": ("joint_admission",),
     "scaffold_compilation": ("scaffold_ladder",),
@@ -170,8 +177,8 @@ class V26StageArtifactReference(FrozenModel):
     payload_hash: str = Field(min_length=1)
     record_count: int = Field(ge=1)
     schema_contract_replayed: Literal[True] = True
-    schema_version: Literal["finance_v26_stage_artifact_reference.v3"] = (
-        "finance_v26_stage_artifact_reference.v3"
+    schema_version: Literal["finance_v26_stage_artifact_reference.v4"] = (
+        "finance_v26_stage_artifact_reference.v4"
     )
 
     @model_validator(mode="after")
@@ -195,7 +202,7 @@ class V26StageLedger(FrozenModel):
     gpu_job_count: int = Field(ge=0)
     current_stage: V26Stage | Literal["initialized"]
     next_stage: V26Stage | Literal["complete"]
-    schema_version: Literal["finance_v26_stage_router.v4"] = "finance_v26_stage_router.v4"
+    schema_version: Literal["finance_v26_stage_router.v5"] = "finance_v26_stage_router.v5"
 
     @model_validator(mode="after")
     def validate_ledger(self) -> V26StageLedger:
@@ -502,6 +509,7 @@ def _validate_role_payload(role: StageArtifactRole, payload: Any) -> Any:
         "task_state_support_observation": TaskStateSupportObservation,
         "state_support_freeze": StateSupportFreeze,
         "fresh_task_population": V26FreshTaskPopulation,
+        "cross_population_freshness_audit": V26CrossPopulationFreshnessAudit,
     }
     model = model_by_role[role]
     if isinstance(payload, list):
@@ -518,7 +526,7 @@ def _artifact_identity(parsed: Any, payload: Any) -> tuple[str, str, int]:
         ids = tuple(_model_artifact_id(item) for item in parsed)
         if len(ids) != len(set(ids)) or ids != tuple(sorted(ids)):
             raise ValueError("v26 stage artifact list identities must be unique and sorted")
-        versions = {cast(str, item.schema_version) for item in parsed}
+        versions = {_model_schema_version(item) for item in parsed}
         if len(versions) != 1:
             raise ValueError("v26 stage artifact list mixes schema versions")
         return (
@@ -527,7 +535,7 @@ def _artifact_identity(parsed: Any, payload: Any) -> tuple[str, str, int]:
             len(parsed),
         )
     if isinstance(parsed, BaseModel):
-        return _model_artifact_id(parsed), cast(str, parsed.schema_version), 1
+        return _model_artifact_id(parsed), _model_schema_version(parsed), 1
     raise TypeError("v26 stage payload did not resolve to a typed artifact")
 
 
@@ -536,6 +544,7 @@ def _model_artifact_id(value: BaseModel) -> str:
         "artifact_id",
         "population_id",
         "report_id",
+        "audit_id",
         "protocol_id",
         "authorization_id",
         "confirmation_id",
@@ -552,6 +561,15 @@ def _model_artifact_id(value: BaseModel) -> str:
         if candidate:
             return cast(str, candidate)
     return canonical_hash(value.model_dump(mode="json"), prefix="v26_typed_stage_artifact:")
+
+
+def _model_schema_version(value: BaseModel) -> str:
+    version = getattr(value, "schema_version", None)
+    if isinstance(version, str) and version:
+        return version
+    if isinstance(value, CompiledProofCarryingArtifacts):
+        return value.joint_compilation.schema_version
+    raise ValueError("v26 typed stage artifact lacks a registered schema version")
 
 
 def _validate_stage_cardinality(
@@ -581,6 +599,7 @@ def _validate_cross_stage_bindings(
         _validate_compilation_bundle(
             population=_stage_population(ledger, "fresh_task_population"),
             models=current,
+            freshness_audit=current["cross_population_freshness_audit"][0],
         )
         return
     if stage == "joint_audit":
@@ -657,6 +676,12 @@ def _validate_cross_stage_bindings(
             or confirmation.source_population_id == development.source_population_id
         ):
             raise ValueError("fresh Bridge confirmation crosses protocol, phase, or source roots")
+        freshness = _stage_models(
+            ledger, "joint_compilation", "cross_population_freshness_audit"
+        )[0]
+        replay_v26_cross_population_freshness_audit(
+            freshness, development, confirmation
+        )
         development_ids = set(development.task_ids)
         confirmation_ids = set(confirmation.task_ids)
         if development_ids & confirmation_ids:
@@ -778,14 +803,21 @@ def _validate_compilation_bundle(
     *,
     population: V26FreshTaskPopulation,
     models: Mapping[str, tuple[Any, ...]],
+    freshness_audit: V26CrossPopulationFreshnessAudit | None = None,
 ) -> None:
+    if freshness_audit is not None:
+        replay_v26_cross_population_freshness_audit(
+            freshness_audit,
+            population,
+            freshness_audit.confirmation_population,
+        )
     compiled = models["compiled_proof_artifacts"]
     spaces = models["trajectory_state_space"]
     if len(compiled) != population.task_count or len(spaces) != population.task_count:
         raise ValueError("Joint Compilation does not cover the complete task population")
     validate_population_compilation(population, compiled)
     joint_ids = {item.joint_compilation.artifact_id for item in compiled}
-    if joint_ids != {item.joint_compilation_id for item in spaces}:
+    if joint_ids != {item.joint_compilation_artifact_id for item in spaces}:
         raise ValueError("Joint Compilation and state-space roots differ")
 
 
