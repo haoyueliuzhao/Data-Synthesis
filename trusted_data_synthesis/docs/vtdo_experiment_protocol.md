@@ -1717,3 +1717,91 @@ state-conditioned acceptance. It cannot authorize Fresh Confirmation, No-C VTDO,
 training, Exact Target, GP-C, or Contribution. A later state-support freeze must still satisfy the
 existing three-state reachability and realization-budget contract before any distribution
 optimization stage opens.
+### v26 public Operation closure and empirical instrument gate
+
+The v26.57-v26.59 result distinguishes three support claims:
+
+```text
+static public path existence
+-> operational public closure in the real Agent Runtime
+-> model-conditional empirical reachability
+```
+
+A Compiler Witness establishes only the first claim. A model reachability experiment is invalid
+until the second claim has its own public contract and Runtime gate.
+
+Every task rematerialized after v26.59 must bind a `PublicOperationExecutionContract` before its
+TaskPackage identity is frozen. The contract is compiled from the same Semantic Source, Program
+DAG, Verifier DAG, Answer Projection, Evidence Support Lattice, and Citation Contract as the
+private Verifier.
+
+The model-visible contract must expose semantic nodes, public symbolic input roles, dependency
+edges, output schemas, and a terminal node. It must not expose Gold Evidence IDs, Oracle node IDs,
+private DAG hashes, the correct operator for a model-choice node, or one exact complete tool
+sequence. Multiple registered acquisition paths remain model-owned behavior.
+
+Runtime progress must be derived from public tool Observations and must expose resolved variables,
+unresolved requirements, completed nodes, dependency-ready nodes, terminal completion, and
+post-terminal verification. One next step may be shown only when the dependency graph has exactly
+one ready node.
+
+The Host stop gate is:
+
+```text
+StopReady =
+  every required semantic node completed
+  and terminal node completed
+  and verification completed after the terminal node
+  and no action occurred after complete closure
+```
+
+One successful calculation or one local verification is never sufficient. A final answer attempted
+before this conjunction must be rejected. An action after complete closure must fail and make the
+trajectory invalid.
+
+The Public Runtime Witness must use the same Operation step gate, progress projection, tool
+Runtime, and stop gate as the Agent. A hidden Reference Policy may choose a deterministic action
+from current public progress, but it may not query the private Program for its next action. Compiler
+Witnesses continue to contribute zero empirical observations.
+
+Before any model call, every task must pass destructive replay for:
+
+- every required-node ablation;
+- terminal execution before an unmet prerequisite;
+- first calculation only;
+- local verification before terminal completion;
+- missing terminal;
+- post-completion action;
+- a target-matched wrong-mechanism mutation;
+- every registered acquisition path reaching the same semantic terminal closure.
+
+v26.60 is the first Population admitted under this gate. It contains 24 fresh tasks, passes all 24
+Operation-closure audits and 192 Operation mutations, and retains 36 static model-authority paths.
+Its report identity is:
+
+```text
+finance_v26_public_operation_rematerialization_report:1b82fb0bcc1c3be058b48789e1e7c7cb65c46c7e8e968bef66186ae540a0907f
+```
+
+Before repeating Capability or Reachability, a small outcome-blind instrument regression must use
+fresh selected capability-only tasks. It must not select tasks from responses, compare models,
+condition on states, map trajectories to states, or use independent validity as an instrument
+gate. It reports Program closure and semantic validity separately.
+
+The v26.61 frozen design is eight tasks, two per mechanism, with four unconditional exact
+DeepSeek V4-Flash replicas per task. Its pass rule requires a complete 32-job denominator, passing
+raw and Prompt audits, 32 model outcomes, zero Runtime or instrument failures, exact model identity,
+zero fallback, complete Public Contract and Public Progress projection, no private identity leak,
+zero Stop-ready false positives, and zero Stop-ready false negatives. Resource limits are checked
+separately.
+
+A passing instrument regression authorizes only:
+
+```text
+capability_development_and_state_reachability_protocol_only
+```
+
+Capability and Reachability execution remain unauthorized until a new protocol separately freezes
+their denominators. Independent validity remains mandatory before any future Quotient State
+mapping. Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and Contribution remain
+closed.

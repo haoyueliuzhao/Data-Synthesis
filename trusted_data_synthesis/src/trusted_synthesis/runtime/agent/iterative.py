@@ -20,6 +20,12 @@ from trusted_synthesis.core.trajectory.schema import (
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.client import JsonCompletionClient, LLMClientError
+from trusted_synthesis.runtime.agent.public_operation import (
+    public_operation_progress,
+    public_operation_step_rejection,
+    public_postcompletion_action_rejection,
+    public_stop_readiness_payload,
+)
 from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
 from trusted_synthesis.runtime.tools import (
     ARGUMENT_PATCH_REQUIRED_POLICY,
@@ -34,14 +40,14 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v25"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v26"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v9"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v18"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v21"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v19"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v22"
 HOST_AGENT_NONINTERFERENCE_VERSION = "recursive_host_agent_noninterference.v2"
-MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v1"
+MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v2"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v14"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v15"
 MAXIMUM_STOP_REJECTIONS = 2
 TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS = (1.0, 3.0, 7.0)
 _TRANSIENT_PROVIDER_ERROR_TYPES = frozenset(
@@ -924,7 +930,13 @@ class IterativeAgentSolver:
                 )
             else:
                 result = (
-                    agent_tool_argument_rejection(spec, call)
+                    public_postcompletion_action_rejection(
+                        task,
+                        tuple(observations),
+                        call,
+                    )
+                    or agent_tool_argument_rejection(spec, call)
+                    or public_operation_step_rejection(task, tuple(observations), call)
                     or _operation_step_rejection(task, tuple(observations), call)
                     or _execute_tool(runtime, call)
                 )
@@ -1474,14 +1486,17 @@ def _stop_readiness_payload(
 ) -> dict[str, Any]:
     required = tuple(item for item in _ACTION_REQUIREMENT_ORDER if item in task.requirements)
     unmet = _unmet_action_requirements(task, observations, tools_by_id)
+    operational = public_stop_readiness_payload(task, observations)
+    final_answer_allowed = not unmet and (operational is None or operational["stop_ready"] is True)
     return {
         "required_action_requirements": tuple(item.value for item in required),
         "completed_semantic_roles": tuple(
             sorted(_successful_semantic_roles(observations, tools_by_id))
         ),
         "unmet_action_requirements": tuple(item.value for item in unmet),
-        "final_answer_allowed": not unmet,
+        "final_answer_allowed": final_answer_allowed,
         "required_order": tuple(item.value for item in required),
+        "public_operation_readiness": operational,
     }
 
 
@@ -1496,6 +1511,9 @@ def _validate_final_answer(
         raise LLMClientError(
             f"Agent stopped with unmet public requirements: {[item.value for item in unmet]}"
         )
+    operational = public_stop_readiness_payload(task, observations)
+    if operational is not None and not operational["stop_ready"]:
+        raise LLMClientError(f"Agent stopped before public Program closure: {operational}")
     operation_progress = _operation_execution_progress(task, observations)
     if operation_progress is not None and not operation_progress["all_steps_completed"]:
         next_step = operation_progress.get("next_required_step") or {}
@@ -2129,9 +2147,7 @@ def _model_visible_task(task: TaskPublicSpec) -> dict[str, Any]:
     if guidance is not None:
         if not isinstance(guidance, dict):
             raise ValueError("agent_contract_guidance must be an object")
-        # The ordered public frontier is supplied separately by
-        # operation_execution_progress. Repeating the complete future DAG in every
-        # prompt creates token pressure and can pre-empt non-calculation Scripted steps.
+        # Retire the historical exact-step script but retain the semantic DAG contract.
         visible["agent_contract_guidance"] = {
             key: value for key, value in guidance.items() if key != "operation_execution_contract"
         }
@@ -2215,6 +2231,9 @@ def _operation_execution_progress(
     task: TaskPublicSpec,
     observations: tuple[AgentToolObservation, ...],
 ) -> dict[str, Any] | None:
+    operational = public_operation_progress(task, observations)
+    if operational is not None:
+        return operational
     guidance = task.metadata.get("agent_contract_guidance")
     if not isinstance(guidance, dict):
         return None
@@ -2371,6 +2390,9 @@ def _operation_step_rejection(
     observations: tuple[AgentToolObservation, ...],
     call: AgentToolCall,
 ) -> AgentToolResult | None:
+    operational = public_operation_step_rejection(task, observations, call)
+    if operational is not None:
+        return operational
     if call.tool_id != "calculator":
         return None
     progress = _operation_execution_progress(task, observations)
@@ -2583,8 +2605,11 @@ def _scripted_tool_prompt(
         "encoded strings. Copy operation_ref verbatim from the prior successful calculator "
         "observation. A selector is relative to its result.result.output object: use 'value' "
         "for scalar output and never use 'output' or 'output.value'. Never invent a short "
-        "operation name. When operation_execution_progress is present, the next calculator "
-        "call must execute next_required_step and no later step. When failed_action_repair is "
+        "operation name. When operation_execution_progress is present, resolve its public "
+        "unresolved_variable_requirements before calculation, then execute any compatible "
+        "ready_nodes entry; do not execute a node whose dependencies are incomplete. A single "
+        "next_required_step is supplied only when exactly one node is ready. When "
+        "failed_action_repair is "
         "present, perform required_prerequisite_action first when supplied; otherwise apply "
         "required_argument_patch and change the failed arguments. Never repeat identical "
         "arguments after a failure. "
@@ -2691,8 +2716,11 @@ def _decision_prompt(
         "Copy operation_ref verbatim from a successful calculator observation. A selector is "
         "relative to result.result.output: use 'value' for scalar output and never use "
         "'output' or 'output.value'. Never invent a short operation name. "
-        "When operation_execution_progress is present, execute next_required_step before any "
-        "later operation. When failed_action_repair is present, perform "
+        "When operation_execution_progress is present, resolve its public "
+        "unresolved_variable_requirements before calculation, then execute any compatible "
+        "ready_nodes entry; do not execute a node whose dependencies are incomplete. A single "
+        "next_required_step is supplied only when exactly one node is ready. When "
+        "failed_action_repair is present, perform "
         "required_prerequisite_action first when supplied. Otherwise, if "
         "available_resolution_actions are present, choose one listed tool whose "
         "applicable_when condition matches observed_conflict_dimensions; do not repeat the "
