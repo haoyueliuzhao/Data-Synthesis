@@ -15,6 +15,9 @@ from urllib.parse import urlparse
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.trajectory.executable_task import StaticModelAuthorityPathCatalog
+from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_authority_preserving_operation_hardening import (  # noqa: E501
+    AuthorityPreservingHardeningReport,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_empirical_support_pilot import (  # noqa: E501
     EmpiricalPilotJob,
     EmpiricalPilotRollout,
@@ -33,7 +36,8 @@ from trusted_synthesis.runtime.agent.public_operation import public_operation_pr
 from trusted_synthesis.runtime.agent.schema import AgentModelConfig
 from trusted_synthesis.runtime.tools import AgentToolEnvironmentManifest, AgentToolObservation
 
-V26_OPERATION_CLOSURE_REGRESSION_VERSION = "finance_v26_operation_closure_regression.v2"
+LEGACY_OPERATION_CLOSURE_REGRESSION_VERSION = "finance_v26_operation_closure_regression.v2"
+V26_OPERATION_CLOSURE_REGRESSION_VERSION = "finance_v26_operation_closure_regression.v3"
 V26_OPERATION_CLOSURE_SELECTION_VERSION = "finance_v26_operation_closure_selection.v1"
 EXPECTED_TASK_COUNT = 8
 ROLLOUTS_PER_TASK = 4
@@ -71,7 +75,28 @@ _PRIVATE_PROMPT_FIELD_NAMES = frozenset(
         "verifier_binding_id",
     }
 )
-IMPLEMENTATION_SOURCE_PATHS = (
+_REPAIR_ACTION_BINDING_FIELDS = frozenset(
+    {
+        "available_resolution_actions",
+        "expected_arguments",
+        "operator",
+        "parameters",
+        "required_argument_patch",
+        "required_next_tools",
+        "required_prerequisite_action",
+        "suggested_argument_patch",
+    }
+)
+_REPAIR_CONTEXT_FIELDS = frozenset(
+    {
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements",
+    }
+)
+LEGACY_IMPLEMENTATION_SOURCE_PATHS = (
     "src/trusted_synthesis/core/trajectory/public_operation.py",
     "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
     ("src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py"),
@@ -83,6 +108,27 @@ IMPLEMENTATION_SOURCE_PATHS = (
     (
         "src/trusted_synthesis/experiments/vtdo_experiment/"
         "phase1_v26_public_operation_rematerialization.py"
+    ),
+    "src/trusted_synthesis/runtime/agent/iterative.py",
+    "src/trusted_synthesis/runtime/agent/public_operation.py",
+)
+IMPLEMENTATION_SOURCE_PATHS = (
+    "src/trusted_synthesis/core/trajectory/public_operation.py",
+    "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+    "src/trusted_synthesis/domains/finance/public_tool_results.py",
+    ("src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py"),
+    ("src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_runner.py"),
+    (
+        "src/trusted_synthesis/experiments/vtdo_experiment/"
+        "phase1_v26_operation_closure_regression.py"
+    ),
+    (
+        "src/trusted_synthesis/experiments/vtdo_experiment/"
+        "phase1_v26_public_operation_rematerialization.py"
+    ),
+    (
+        "src/trusted_synthesis/experiments/vtdo_experiment/"
+        "phase1_v26_authority_preserving_operation_hardening.py"
     ),
     "src/trusted_synthesis/runtime/agent/iterative.py",
     "src/trusted_synthesis/runtime/agent/public_operation.py",
@@ -138,6 +184,15 @@ class OperationClosureRegressionContract(FrozenModel):
     validity_not_an_instrument_gate: Literal[True] = True
     invalid_model_outcomes_retained: Literal[True] = True
     compiler_witnesses_excluded: Literal[True] = True
+    authority_preserving_contract_required: Literal[True] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    action_neutral_repair_required: Literal[True] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    unified_terminal_verification_required: Literal[True] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     fresh_confirmation_authorized: Literal[False] = False
     no_c_vtdo_authorized: Literal[False] = False
     student_training_authorized: Literal[False] = False
@@ -145,7 +200,7 @@ class OperationClosureRegressionContract(FrozenModel):
     gp_c_authorized: Literal[False] = False
     production_contribution: Literal[0] = 0
     implementation_source_files: tuple[ImplementationSourceFile, ...] = Field(
-        min_length=8, max_length=8
+        min_length=8, max_length=10
     )
     schema_version: str = V26_OPERATION_CLOSURE_REGRESSION_VERSION
 
@@ -172,10 +227,21 @@ class OperationClosureRegressionContract(FrozenModel):
             prefix="finance_v26_operation_regression_provider_route:",
         ):
             raise ValueError("regression Provider route hash is invalid")
+        expected_sources = (
+            LEGACY_IMPLEMENTATION_SOURCE_PATHS
+            if self.schema_version == LEGACY_OPERATION_CLOSURE_REGRESSION_VERSION
+            else IMPLEMENTATION_SOURCE_PATHS
+        )
         if tuple(item.relative_path for item in self.implementation_source_files) != tuple(
-            sorted(IMPLEMENTATION_SOURCE_PATHS)
+            sorted(expected_sources)
         ):
             raise ValueError("regression implementation manifest is incomplete")
+        if self.schema_version == V26_OPERATION_CLOSURE_REGRESSION_VERSION and (
+            self.authority_preserving_contract_required is not True
+            or self.action_neutral_repair_required is not True
+            or self.unified_terminal_verification_required is not True
+        ):
+            raise ValueError("authority-preserving requalification gates are incomplete")
         if self.contract_id != operation_closure_regression_contract_id(self):
             raise ValueError("Operation-closure regression contract identity is invalid")
         return self
@@ -232,6 +298,30 @@ class OperationClosureRolloutDiagnostic(FrozenModel):
     decision_prompt_observed: bool
     public_progress_in_decision_prompt: bool
     initial_prompt_private_identity_free: bool
+    authority_contract_in_initial_prompt: bool | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    terminal_target_in_initial_prompt: bool | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    repair_prompt_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    action_bearing_repair_prompt_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    failed_observation_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    action_bearing_failed_observation_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    repair_prompts_action_neutral: bool | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    failed_observations_action_neutral: bool | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     schema_version: str = V26_OPERATION_CLOSURE_REGRESSION_VERSION
 
     @model_validator(mode="after")
@@ -242,6 +332,25 @@ class OperationClosureRolloutDiagnostic(FrozenModel):
             self.completed_node_count == self.required_node_count
         ):
             raise ValueError("regression full-lineage flag differs from node completion")
+        if self.schema_version == V26_OPERATION_CLOSURE_REGRESSION_VERSION:
+            required = (
+                self.authority_contract_in_initial_prompt,
+                self.terminal_target_in_initial_prompt,
+                self.repair_prompt_count,
+                self.action_bearing_repair_prompt_count,
+                self.failed_observation_count,
+                self.action_bearing_failed_observation_count,
+                self.repair_prompts_action_neutral,
+                self.failed_observations_action_neutral,
+            )
+            if any(item is None for item in required):
+                raise ValueError("authority-preserving rollout diagnostics are incomplete")
+            if self.repair_prompts_action_neutral != (self.action_bearing_repair_prompt_count == 0):
+                raise ValueError("repair Prompt authority diagnostic is inconsistent")
+            if self.failed_observations_action_neutral != (
+                self.action_bearing_failed_observation_count == 0
+            ):
+                raise ValueError("failed-observation authority diagnostic is inconsistent")
         if self.diagnostic_id != operation_closure_rollout_diagnostic_id(self):
             raise ValueError("Operation-closure rollout diagnostic identity is invalid")
         return self
@@ -311,6 +420,30 @@ class OperationClosureRegressionReport(FrozenModel):
     decision_prompt_observed_count: int = Field(ge=0, le=32)
     public_progress_prompt_count: int = Field(ge=0, le=32)
     initial_prompt_private_identity_free_count: int = Field(ge=0, le=32)
+    authority_contract_prompt_count: int | None = Field(
+        default=None, ge=0, le=32, exclude_if=lambda value: value is None
+    )
+    terminal_target_prompt_count: int | None = Field(
+        default=None, ge=0, le=32, exclude_if=lambda value: value is None
+    )
+    repair_prompt_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    action_bearing_repair_prompt_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    repair_prompt_action_neutral_rollout_count: int | None = Field(
+        default=None, ge=0, le=32, exclude_if=lambda value: value is None
+    )
+    failed_observation_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    action_bearing_failed_observation_count: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
+    failed_observation_action_neutral_rollout_count: int | None = Field(
+        default=None, ge=0, le=32, exclude_if=lambda value: value is None
+    )
     full_program_lineage_count: int = Field(ge=0, le=32)
     terminal_node_completion_count: int = Field(ge=0, le=32)
     postterminal_verification_count: int = Field(ge=0, le=32)
@@ -406,6 +539,37 @@ class OperationClosureRegressionReport(FrozenModel):
                 item.independent_validity for item in self.diagnostics
             ),
         }
+        if self.schema_version == V26_OPERATION_CLOSURE_REGRESSION_VERSION:
+            expected_aggregates.update(
+                {
+                    "authority_contract_prompt_count": sum(
+                        item.authority_contract_in_initial_prompt is True
+                        for item in self.diagnostics
+                    ),
+                    "terminal_target_prompt_count": sum(
+                        item.terminal_target_in_initial_prompt is True for item in self.diagnostics
+                    ),
+                    "repair_prompt_count": sum(
+                        item.repair_prompt_count or 0 for item in self.diagnostics
+                    ),
+                    "action_bearing_repair_prompt_count": sum(
+                        item.action_bearing_repair_prompt_count or 0 for item in self.diagnostics
+                    ),
+                    "repair_prompt_action_neutral_rollout_count": sum(
+                        item.repair_prompts_action_neutral is True for item in self.diagnostics
+                    ),
+                    "failed_observation_count": sum(
+                        item.failed_observation_count or 0 for item in self.diagnostics
+                    ),
+                    "action_bearing_failed_observation_count": sum(
+                        item.action_bearing_failed_observation_count or 0
+                        for item in self.diagnostics
+                    ),
+                    "failed_observation_action_neutral_rollout_count": sum(
+                        item.failed_observations_action_neutral is True for item in self.diagnostics
+                    ),
+                }
+            )
         if any(
             getattr(self, field_name) != expected
             for field_name, expected in expected_aggregates.items()
@@ -425,6 +589,16 @@ class OperationClosureRegressionReport(FrozenModel):
             and self.stop_ready_false_positive_count == 0
             and self.stop_ready_false_negative_count == 0
         )
+        if self.schema_version == V26_OPERATION_CLOSURE_REGRESSION_VERSION:
+            instrument = bool(
+                instrument
+                and self.authority_contract_prompt_count == EXPECTED_ROLLOUT_COUNT
+                and self.terminal_target_prompt_count == EXPECTED_ROLLOUT_COUNT
+                and self.action_bearing_repair_prompt_count == 0
+                and self.repair_prompt_action_neutral_rollout_count == EXPECTED_ROLLOUT_COUNT
+                and self.action_bearing_failed_observation_count == 0
+                and self.failed_observation_action_neutral_rollout_count == EXPECTED_ROLLOUT_COUNT
+            )
         if self.instrument_ready != instrument:
             raise ValueError("regression instrument decision is inconsistent")
         resource = Decimal(self.estimated_cost_usd) <= Decimal(
@@ -479,10 +653,17 @@ def _implementation_source_files(package_root: Path) -> tuple[ImplementationSour
     return tuple(values)
 
 
+def _load_source_report(
+    source_dir: Path,
+) -> PublicOperationRematerializationReport | AuthorityPreservingHardeningReport:
+    payload = json.loads((source_dir / "report.json").read_text(encoding="utf-8"))
+    if payload.get("schema_version") == "finance_v26_authority_preserving_operation_hardening.v1":
+        return AuthorityPreservingHardeningReport.model_validate(payload)
+    return PublicOperationRematerializationReport.model_validate(payload)
+
+
 def _source_artifact_files(source_dir: Path) -> tuple[SourceArtifactFile, ...]:
-    report = PublicOperationRematerializationReport.model_validate_json(
-        (source_dir / "report.json").read_text(encoding="utf-8")
-    )
+    report = _load_source_report(source_dir)
     values = [
         SourceArtifactFile(
             relative_path="report.json",
@@ -508,24 +689,31 @@ def _load_source(
     source_dir: Path,
     package_root: Path,
 ) -> tuple[
-    PublicOperationRematerializationReport,
+    PublicOperationRematerializationReport | AuthorityPreservingHardeningReport,
     tuple[OperationalTaskRecord, ...],
     tuple[AgentToolEnvironmentManifest, ...],
     tuple[StaticModelAuthorityPathCatalog, ...],
 ]:
-    report = PublicOperationRematerializationReport.model_validate_json(
-        (source_dir / "report.json").read_text(encoding="utf-8")
-    )
-    if (
-        report.status != "passed"
-        or not report.small_regression_protocol_authorized
-        or report.next_permitted_stage != "fresh_operation_closure_regression_protocol_only"
-    ):
-        raise ValueError("v26.60 does not authorize the small regression protocol")
+    report = _load_source_report(source_dir)
+    if isinstance(report, AuthorityPreservingHardeningReport):
+        source_authorized = (
+            report.status == "passed"
+            and report.small_instrument_requalification_authorized
+            and report.next_permitted_stage
+            == "fresh_authority_preserving_instrument_requalification_protocol_only"
+        )
+    else:
+        source_authorized = (
+            report.status == "passed"
+            and report.small_regression_protocol_authorized
+            and report.next_permitted_stage == "fresh_operation_closure_regression_protocol_only"
+        )
+    if not source_authorized:
+        raise ValueError("source Population does not authorize the small regression protocol")
     _source_artifact_files(source_dir)
     for item in report.implementation_source_files:
         if _sha256(package_root / item.relative_path) != item.sha256:
-            raise ValueError(f"v26.60 implementation changed: {item.relative_path}")
+            raise ValueError(f"source implementation changed: {item.relative_path}")
     records = tuple(
         OperationalTaskRecord.model_validate(item)
         for item in json.loads((source_dir / "operational_task_records.json").read_text())
@@ -541,11 +729,11 @@ def _load_source(
         )
     )
     if {item.record_id for item in records} != {item.record_id for item in report.task_records}:
-        raise ValueError("v26.60 record identities differ from its report")
+        raise ValueError("source record identities differ from its report")
     if {item.environment_manifest_id for item in records} != {
         item.manifest_id for item in environments
     }:
-        raise ValueError("v26.60 environment identities differ from its task records")
+        raise ValueError("source environment identities differ from its task records")
     return report, records, environments, catalogs
 
 
@@ -610,6 +798,10 @@ def build_operation_closure_regression_contract(
             prefix="finance_v26_operation_regression_provider_route:",
         ),
         "implementation_source_files": _implementation_source_files(package_root),
+        "authority_preserving_contract_required": True,
+        "action_neutral_repair_required": True,
+        "unified_terminal_verification_required": True,
+        "schema_version": V26_OPERATION_CLOSURE_REGRESSION_VERSION,
     }
     provisional = OperationClosureRegressionContract.model_construct(
         contract_id="pending", **values
@@ -929,6 +1121,56 @@ def _stop_decision_readiness(
     return tuple(rows)
 
 
+def _prompt_public_context(prompt: str) -> Mapping[str, Any] | None:
+    marker = "\nPUBLIC_CONTEXT_JSON:\n"
+    _, found, remainder = prompt.partition(marker)
+    if not found:
+        return None
+    context_text, _, _ = remainder.partition("\nCONTRACT_REPAIR_JSON:\n")
+    try:
+        value = json.loads(context_text)
+    except json.JSONDecodeError:
+        return None
+    return value if isinstance(value, Mapping) else None
+
+
+def _contains_repair_action_binding(value: Any) -> bool:
+    if isinstance(value, Mapping):
+        if _REPAIR_ACTION_BINDING_FIELDS & set(value):
+            return True
+        return any(_contains_repair_action_binding(item) for item in value.values())
+    if isinstance(value, (list, tuple)):
+        return any(_contains_repair_action_binding(item) for item in value)
+    return False
+
+
+def _repair_prompt_counts(prompts: Sequence[str]) -> tuple[int, int]:
+    observed = action_bearing = 0
+    for prompt in prompts:
+        context = _prompt_public_context(prompt)
+        if context is None:
+            continue
+        repair = context.get("failed_action_repair")
+        if repair is None:
+            continue
+        observed += 1
+        if (
+            not isinstance(repair, Mapping)
+            or set(repair) != _REPAIR_CONTEXT_FIELDS
+            or _contains_repair_action_binding(repair)
+        ):
+            action_bearing += 1
+    return observed, action_bearing
+
+
+def _failed_observation_counts(
+    observations: Sequence[AgentToolObservation],
+) -> tuple[int, int]:
+    failed = [item for item in observations if item.status == "failed"]
+    action_bearing = sum(_contains_repair_action_binding(item.result) for item in failed)
+    return len(failed), action_bearing
+
+
 def _diagnostic(
     rollout: EmpiricalPilotRollout,
     record: OperationalTaskRecord,
@@ -940,6 +1182,10 @@ def _diagnostic(
         raise ValueError("regression rollout lost its public Operation contract")
     prompts = tuple(str(item) for item in payload["actual_model_request_prompts"])
     initial = prompts[0] if prompts else ""
+    repair_prompt_count, action_bearing_repair_prompt_count = _repair_prompt_counts(prompts)
+    failed_observation_count, action_bearing_failed_observation_count = _failed_observation_counts(
+        observations
+    )
     stop_rows = _stop_decision_readiness(record, payload)
     early_stop_rejected = any(
         rejected and not stop_ready for _, rejected, stop_ready, _ in stop_rows
@@ -991,6 +1237,22 @@ def _diagnostic(
         "initial_prompt_private_identity_free": bool(initial)
         and all(str(value) not in initial for value in private_values)
         and all(f'"{field}"' not in initial for field in _PRIVATE_PROMPT_FIELD_NAMES),
+        "authority_contract_in_initial_prompt": (
+            "public_action_neutral_repair_contract" in initial
+            and "public_terminal_verification_target" in initial
+        ),
+        "terminal_target_in_initial_prompt": (
+            '"public_terminal_verification_target"' in initial
+            and '"additional_claim_fields_policy":"forbid"' in initial
+            and '"terminal_reference_field":"operation_ref"' in initial
+        ),
+        "repair_prompt_count": repair_prompt_count,
+        "action_bearing_repair_prompt_count": action_bearing_repair_prompt_count,
+        "failed_observation_count": failed_observation_count,
+        "action_bearing_failed_observation_count": (action_bearing_failed_observation_count),
+        "repair_prompts_action_neutral": action_bearing_repair_prompt_count == 0,
+        "failed_observations_action_neutral": (action_bearing_failed_observation_count == 0),
+        "schema_version": V26_OPERATION_CLOSURE_REGRESSION_VERSION,
     }
     provisional = OperationClosureRolloutDiagnostic.model_construct(
         diagnostic_id="pending", **values
@@ -1072,6 +1334,14 @@ def _make_report(
         == EXPECTED_ROLLOUT_COUNT
         and not any(item.stop_ready_false_positive for item in diagnostics)
         and not any(item.stop_ready_false_negative for item in diagnostics)
+        and sum(item.authority_contract_in_initial_prompt is True for item in diagnostics)
+        == EXPECTED_ROLLOUT_COUNT
+        and sum(item.terminal_target_in_initial_prompt is True for item in diagnostics)
+        == EXPECTED_ROLLOUT_COUNT
+        and not any((item.action_bearing_repair_prompt_count or 0) > 0 for item in diagnostics)
+        and all(item.repair_prompts_action_neutral is True for item in diagnostics)
+        and not any((item.action_bearing_failed_observation_count or 0) > 0 for item in diagnostics)
+        and all(item.failed_observations_action_neutral is True for item in diagnostics)
     )
     status = (
         "preflight"
@@ -1122,6 +1392,26 @@ def _make_report(
         "initial_prompt_private_identity_free_count": sum(
             item.initial_prompt_private_identity_free for item in diagnostics
         ),
+        "authority_contract_prompt_count": sum(
+            item.authority_contract_in_initial_prompt is True for item in diagnostics
+        ),
+        "terminal_target_prompt_count": sum(
+            item.terminal_target_in_initial_prompt is True for item in diagnostics
+        ),
+        "repair_prompt_count": sum(item.repair_prompt_count or 0 for item in diagnostics),
+        "action_bearing_repair_prompt_count": sum(
+            item.action_bearing_repair_prompt_count or 0 for item in diagnostics
+        ),
+        "repair_prompt_action_neutral_rollout_count": sum(
+            item.repair_prompts_action_neutral is True for item in diagnostics
+        ),
+        "failed_observation_count": sum(item.failed_observation_count or 0 for item in diagnostics),
+        "action_bearing_failed_observation_count": sum(
+            item.action_bearing_failed_observation_count or 0 for item in diagnostics
+        ),
+        "failed_observation_action_neutral_rollout_count": sum(
+            item.failed_observations_action_neutral is True for item in diagnostics
+        ),
         "full_program_lineage_count": sum(
             item.full_program_lineage_completed for item in diagnostics
         ),
@@ -1148,6 +1438,7 @@ def _make_report(
         "instrument_ready": instrument,
         "status": status,
         "next_permitted_stage": next_stage,
+        "schema_version": V26_OPERATION_CLOSURE_REGRESSION_VERSION,
     }
     provisional = OperationClosureRegressionReport.model_construct(report_id="pending", **values)
     return OperationClosureRegressionReport(

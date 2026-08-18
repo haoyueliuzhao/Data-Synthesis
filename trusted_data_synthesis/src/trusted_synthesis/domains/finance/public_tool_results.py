@@ -211,6 +211,9 @@ class PublicRetryContract(PublicModel):
     observed_conflict_signal: str | None = None
     observed_evidence_state: PublicObservedEvidenceState | None = None
     public_relation_state: PublicRelationState | None = None
+    unresolved_semantic_requirements: tuple[str, ...] = ()
+    unresolved_public_variables: tuple[str, ...] = ()
+    model_decision_required: bool | None = None
 
 
 class PublicMissingRole(PublicModel):

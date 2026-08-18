@@ -22,10 +22,13 @@ from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.client import JsonCompletionClient, LLMClientError
 from trusted_synthesis.runtime.agent.public_operation import (
     model_visible_public_operation_progress,
+    public_action_neutral_repair_context,
+    public_action_neutral_repair_result,
     public_operation_progress,
     public_operation_step_rejection,
     public_postcompletion_action_rejection,
     public_stop_readiness_payload,
+    public_terminal_verification_rejection,
 )
 from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
 from trusted_synthesis.runtime.tools import (
@@ -41,14 +44,14 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v27"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v28"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v9"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v20"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v23"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v21"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v24"
 HOST_AGENT_NONINTERFERENCE_VERSION = "recursive_host_agent_noninterference.v3"
 MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v3"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v16"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v17"
 MAXIMUM_STOP_REJECTIONS = 2
 TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS = (1.0, 3.0, 7.0)
 _TRANSIENT_PROVIDER_ERROR_TYPES = frozenset(
@@ -945,10 +948,21 @@ class IterativeAgentSolver:
                         call,
                     )
                     or agent_tool_argument_rejection(spec, call)
+                    or public_terminal_verification_rejection(
+                        task,
+                        tuple(observations),
+                        call,
+                    )
                     or public_operation_step_rejection(task, tuple(observations), call)
                     or _operation_step_rejection(task, tuple(observations), call)
                     or _execute_tool(runtime, call)
                 )
+            result = public_action_neutral_repair_result(
+                task,
+                tuple(observations),
+                call,
+                result,
+            )
             _assert_no_model_forbidden_fields(result.result)
             if result.status == "succeeded":
                 try:
@@ -2179,7 +2193,13 @@ def _json_contract_prompt(instruction: str, context: dict[str, Any]) -> str:
 
 def _failed_action_repair_context(
     observations: tuple[AgentToolObservation, ...],
+    *,
+    task: TaskPublicSpec | None = None,
 ) -> dict[str, Any] | None:
+    if task is not None:
+        neutral = public_action_neutral_repair_context(task, observations)
+        if neutral is not None:
+            return neutral
     if not observations or observations[-1].status != "failed":
         return None
     failed = observations[-1]
@@ -2625,10 +2645,12 @@ def _scripted_tool_prompt(
         "next_required_step names only a semantic requirement and never supplies a tool, "
         "operator, parameters, or arguments; derive those from the public contract and "
         "observations. When "
-        "failed_action_repair is "
-        "present, perform required_prerequisite_action first when supplied; otherwise apply "
-        "required_argument_patch and change the failed arguments. Never repeat identical "
-        "arguments after a failure. "
+        "failed_action_repair is present, use only its typed error category, unresolved public "
+        "variables, and unresolved semantic requirements to choose a different repair. It does "
+        "not provide the correct tool, operator, parameters, or arguments. Never repeat "
+        "identical arguments after a failure. When public_terminal_verification_target is "
+        "present, verify exactly the observed terminal operation reference with its registered "
+        "claim schema before stopping. "
         "rationale_summary must be one short sentence of at most 240 characters. Do not "
         "provide hidden chain-of-thought.",
         {
@@ -2651,7 +2673,7 @@ def _scripted_tool_prompt(
                 "host_repair_reason": host_repair_reason,
             },
             "host_feedback": host_feedback,
-            "failed_action_repair": _failed_action_repair_context(observations),
+            "failed_action_repair": _failed_action_repair_context(observations, task=task),
             "operation_execution_progress": _scripted_operation_execution_progress(
                 task,
                 expected_tool,
@@ -2740,12 +2762,12 @@ def _decision_prompt(
         "next_required_step names only a semantic requirement and never supplies a tool, "
         "operator, parameters, or arguments; derive those from the public contract and "
         "observations. When "
-        "failed_action_repair is present, perform "
-        "required_prerequisite_action first when supplied. Otherwise, if "
-        "available_resolution_actions are present, choose one listed tool whose "
-        "applicable_when condition matches observed_conflict_dimensions; do not repeat the "
-        "failed tool. Only when no resolution action is listed should you apply "
-        "required_argument_patch and change the failed arguments. For a final answer, copy "
+        "failed_action_repair is present, use only its typed error category, unresolved public "
+        "variables, and unresolved semantic requirements to choose a different repair. It does "
+        "not provide the correct tool, operator, parameters, or arguments. When "
+        "public_terminal_verification_target is present, verify exactly the observed terminal "
+        "operation reference with its registered claim schema before stopping. For a final "
+        "answer, copy "
         "the exact terminal "
         "successful calculator result without "
         "rounding values, renaming reference IDs, or changing numeric types; follow "
@@ -2763,7 +2785,7 @@ def _decision_prompt(
             "tool_environment": environment_manifest,
             "stop_readiness": readiness,
             "host_feedback": host_feedback,
-            "failed_action_repair": _failed_action_repair_context(observations),
+            "failed_action_repair": _failed_action_repair_context(observations, task=task),
             "operation_execution_progress": model_visible_public_operation_progress(
                 task, observations
             ),

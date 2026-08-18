@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-18
+Audit date: 2026-08-19
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,80 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+## v26.65-v26.68 Authority-Preserving Instrument And Protocol Decision
+
+Finance v26.65 repaired the two prospective contract gaps found by v26.64 under fresh task and
+contract identities. Failed-action feedback now exposes only the failed tool, typed error,
+unresolved public semantics, unresolved public variables, and the identical-retry rule. One typed
+Public Terminal Verification Target now governs the cross-check tool, Runtime Progress, Stop
+Readiness, Runtime Witness, and independent Verifier.
+
+The credential-free v26.65 build passed 24/24 Repair Prompt audits, Terminal Verification audits,
+Operation Closure audits, Public Runtime Witnesses, and Mechanism Necessity artifacts. All 48
+compiler Witness paths passed. All 192 legacy Operation mutations and 144 new repair/verification
+mutations failed closed. The 12 VTDO candidates retain 36 static paths. Formal and independent
+builds reproduced all twelve JSON files byte for byte with zero API calls and zero GPU jobs. The
+report is
+finance_v26_authority_preserving_hardening_report:1bd44d38c3b75db70928eeafb72e0e88837dc4f010bcf17decfc3ed60f875221.
+
+v26.66 then executed the frozen 32-job authority-preserving instrument requalification:
+
+~~~text
+4 mechanisms x 2 capability-only tasks x 4 unconditional replicas = 32 jobs
+~~~
+
+All 32 jobs produced model outcomes with zero Runtime failure, zero instrument failure, exact
+DeepSeek V4-Flash identity, zero fallback, and zero Stop-readiness false positive or false
+negative. Raw byte, Job identity, actual Prompt, recursive noninterference, public contract,
+semantic Progress, private-identity, repair-neutrality, and terminal-target audits passed for
+32/32. The run made 294 Provider calls, used 3,029,733 provider-reported tokens, recorded estimated
+cost telemetry of USD 0.3621166696, passed the USD 2.00 ceiling, and used no local GPU.
+
+There were 81 failed-action repair contexts and 92 failed tool Observations; none contained a
+registered action-bearing Tool, Operator, parameter, expected-argument, or repair-patch binding.
+Five trajectories completed the full Program, terminal Operation, and exact typed post-terminal
+verification. Four were independently valid: one Context-conditioned Action and three
+State-dependent Stopping trajectories, covering three tasks. Reconciliation and Recovery each had
+zero valid trajectories. This is a positive model-validity smoke, not balanced mechanism support.
+
+The initial execution persisted all 32 checkpoint rows and complete aggregate detail, then failed
+only because the immutable preflight report occupied the formal report path. A zero-generation
+recovery copied the exact Contract, Job Manifest, and checkpoint to a separate directory and
+resumed at 32/32 with zero pending jobs and no model client. Checkpoint, rollout aggregate, raw
+audit, and diagnostics are byte-identical before and after recovery. No model row or Provider call
+was repeated. The recovered report is
+finance_v26_operation_closure_regression_report:a48da87c17a703819673c9e4d8c468e9e7685a7ee0ef9efcbebdad17b85389a3.
+
+The credential-free v26.67 audit replayed 53 source files and all 32 raw Artifacts. It independently
+reproduced the frozen raw-integrity audit and rollout diagnostics, retained the instrument pass,
+and bound the zero-generation recovery. Its report is
+finance_v26_authority_preserving_postrun_audit:7675e7cbce93713a53f94c8da85bbb47fb93961dd67d1f2d8eb08e8205d3e658.
+Formal and independent builds reproduced all four outputs byte for byte with zero API/GPU.
+
+v26.68 then froze separate empirical role protocols without executing either. The v26.65 source
+has 12 capability tasks, but v26.66 exposed eight and left only four unopened; this is below the
+12-task balanced Development minimum. Capability execution therefore requires an entirely fresh
+identity-incompatible 12-task Population. Its prospective denominator remains 96 rollouts.
+
+All 12 VTDO candidates and all 36 static states remain unopened. v26.68 freezes 144 natural
+unconditional attempts and 216 conditioned attempts, 360 total. Natural hits and conditioned
+acceptance remain separate; only independently valid model-generated trajectories may enter State
+Mapping; compiler Witnesses contribute zero. The 360 rows remain a static design because the
+historical v26.57 runner is not bound to v3 repair and terminal-target audits. Formal and
+independent v26.68 builds are byte-identical. The protocol is
+finance_v26_empirical_role_protocol:647274046b92ae6c8320ee376e58c06e18d580fbbd0b625f5e6b3fa4c0d27f19.
+
+The current transition is:
+
+~~~text
+fresh_capability_population_and_authority_preserving_reachability_runner_only
+~~~
+
+Capability Development execution, State Reachability execution, Fresh Confirmation, No-C VTDO,
+Student training, Exact Target, GP-C, and production Contribution remain forbidden. Production
+Contribution is zero. See
+docs/finance_v26_65_v26_68_authority_preserving_instrument_and_protocol_report.md.
 
 ## v26.61-v26.64 Operation Instrument Decision
 
@@ -342,9 +416,9 @@ It preserves `capability_task_or_scaffold_redesign_only`; no v26.43 outcome was 
 downstream stage was authorized. See
 `docs/finance_v26_53_failure_cascade_trace_statistical_audit.md`.
 
-## Current v26 Mainline Decision
+## Historical v26.43 Mainline Decision
 
-The latest completed model experiment is Finance v26.43 Bridge Development. It follows a new
+The earlier Finance v26.43 Bridge Development experiment followed a new
 source-exposure and grounding audit, a fresh v26.42 protocol, and a complete credential-free
 24-task Joint/Scaffold prefix. It does not mutate or reauthorize v25.47.
 
@@ -659,9 +733,19 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | passed, 361 source files |
-| Pytest | passed, 919 tests in 464.56 seconds |
-| v26.64 post-run audit focus | 7 passed |
+| Mypy | passed, 364 source files |
+| Pytest | passed, 939 tests in 491.38 seconds |
+| v26.68 empirical role protocol focus | 6 passed |
+| v26.68 dual build | all four output files are byte-identical; zero API/GPU |
+| v26.67 authority-preserving post-run focus | 7 passed |
+| v26.67 dual build | all four output files are byte-identical; zero API/GPU |
+| v26.67 source replay | 53 source files and 32 raw Artifacts passed exact hash replay |
+| v26.66 instrument requalification | 32/32 model outcomes; all instrument/resource gates passed |
+| v26.66 finalization recovery | 32/32 resumed; zero model jobs; four aggregate hashes unchanged |
+| v26.65 authority-preserving hardening focus | 6 passed |
+| v26.65 dual build | all twelve JSON files are byte-identical; zero API/GPU |
+| v26.65-v26.66 type-hardening successor | current-source focused regression 34 passed |
+| v26.64 post-run audit focus | 8 passed |
 | v26.64 dual build | all three output files are byte-identical; zero API/GPU |
 | v26.64 source replay | 51 source files and 32 raw Artifacts passed exact hash replay |
 | v26.63 instrument requalification | 32/32 model outcomes; all instrument and resource gates passed |
@@ -671,7 +755,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.60 Public Operation rematerialization focus | 8 passed |
 | v26.60 v2 dual build | all eleven detail artifacts and report are byte-identical |
 | v26.60 v1-v2 scientific details | all eleven detail artifacts are byte-identical |
-| v26.60 implementation manifest | all nine frozen source-file SHA-256 values match the current tree |
+| v26.60 implementation manifest | historical hashes retained; current successor bytes intentionally differ |
 | v26.63 Operation-closure requalification focus | 7 passed |
 | v26.61 v2 dual preflight | execution Contract, Job Manifest, and report are byte-identical; zero API/GPU |
 | Public Operation / Iterative Agent Runtime focus | 6 / 41 passed |
@@ -897,33 +981,39 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not rerun v26.61 or v26.63, relax the frozen terminal-reference predicate, reinterpret local
-mechanism success as complete validity, or promote any v26.63 trajectory to state support. The
-only permitted transition is:
+Do not treat the four v26.66 valid trajectories as balanced capability support or map them to
+VTDO states. Do not execute the 96-job Capability denominator or the 360-row Reachability design.
+The only permitted transition is:
 
 ```text
-public_repair_and_postterminal_verification_contract_hardening_only
+fresh_capability_population_and_authority_preserving_reachability_runner_only
 ```
 
-The next design must remove exact action bindings from failed-action repair while retaining typed
-error and unresolved-semantic information. It must also compile one typed public terminal
-verification target shared by the cross-check tool, Runtime Progress, Stop Readiness, Runtime
-Witness, and independent Verifier. Whether extra claim fields are accepted must be frozen
-prospectively; wrong or missing terminal references must fail closed.
+The Capability branch must materialize a fresh balanced 12-task Population under the v26.65
+authority-preserving contracts. It must be disjoint from every v26.65-v26.66 empirical input by
+task, Evidence, Evidence Version, semantic signature, source record, and trajectory identity. The
+four unopened capability tasks are not combined post hoc with eight newly selected tasks.
 
-The repaired design requires fresh TaskPackage and all dependent contract identities. Before any
-new API call it must pass action-neutral repair-Prompt audits, public/private isolation, complete
-Runtime Witnesses, wrong/missing/extra-reference mutations, early-verification and post-completion
-mutations, Mechanism Necessity, source-manifest replay, and an independent byte rebuild. A passing
-static result may authorize only another small instrument requalification, not Capability or
-Reachability execution.
+The Reachability branch must implement a v3 authority-preserving runner for the frozen 360-row
+design. It must bind exact v26.65 TaskPackage, repair, terminal-target, Runtime, Verifier, condition,
+mapper, and source identities; retain raw-first Provider and Prompt telemetry; audit
+action-neutral repair and terminal-target projection per rollout; and fail before model-client
+construction on any mismatch. A static preflight and independent byte rebuild are required before
+any API call.
 
 Capability Confirmation, State-support Confirmation, No-C VTDO, Student training, Exact Target,
-GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes and 32 v26.63 outcomes
-remain immutable Development evidence and cannot be reused as Fresh Confirmation. Objective
-Support remains a separate unresolved bottleneck.
+GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes, 32 v26.63 outcomes, and
+32 v26.66 outcomes remain immutable Development/instrument evidence and cannot be reused as Fresh
+Confirmation. Objective Support remains a separate unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_65_v26_68_authority_preserving_instrument_and_protocol_report.md`
+- `artifacts/vtdo_experiment/finance_v26_65_authority_preserving_operation_hardening_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_66_authority_preserving_instrument_requalification_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_66_authority_preserving_instrument_requalification_finalization_recovery_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_67_authority_preserving_postrun_audit_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_68_empirical_role_protocol_20260819/report.json`
 
 - `docs/finance_v26_61_v26_64_operation_instrument_repair_and_requalification.md`
 - `artifacts/vtdo_experiment/finance_v26_61_operation_closure_regression_v2_20260818/report.json`

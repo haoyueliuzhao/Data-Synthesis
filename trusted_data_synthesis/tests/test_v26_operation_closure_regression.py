@@ -11,6 +11,9 @@ from pydantic import ValidationError
 from trusted_synthesis.experiments.vtdo_experiment import (
     phase1_v26_operation_closure_regression as regression,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_authority_preserving_operation_hardening import (  # noqa: E501
+    build_authority_preserving_operation_hardening,
+)
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_operation_closure_regression import (
     EXPECTED_ROLLOUT_COUNT,
     EXPECTED_TASK_COUNT,
@@ -31,14 +34,28 @@ from trusted_synthesis.runtime.tools import AgentToolObservation
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ROOT = PACKAGE_ROOT / "artifacts" / "vtdo_experiment"
-SOURCE = ARTIFACT_ROOT / "finance_v26_62_public_operation_instrument_hardening_20260818"
+HARDENING_SOURCE = ARTIFACT_ROOT / "finance_v26_62_public_operation_instrument_hardening_20260818"
 MODEL_CONFIG = PACKAGE_ROOT / "config" / "deepseek_v4_flash_agent_v23_paired_pilot.json"
-RUN_ID = "finance_v26_63_operation_closure_requalification_20260818"
-SELECTION_SALT = "finance-v26.63-operation-closure-requalification-20260818"
+RUN_ID = "finance_v26_66_authority_preserving_instrument_requalification_20260819"
+SELECTION_SALT = "finance-v26.66-authority-preserving-instrument-requalification-20260819"
 
 
 @pytest.fixture(scope="module")
-def frozen_design() -> tuple[
+def current_source(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    output = tmp_path_factory.mktemp("v26_65_current_source") / "source"
+    build_authority_preserving_operation_hardening(
+        run_id="finance_v26_65_authority_preserving_operation_hardening_current_test",
+        source_dir=HARDENING_SOURCE,
+        output_dir=output,
+        package_root=PACKAGE_ROOT,
+    )
+    return output
+
+
+@pytest.fixture(scope="module")
+def frozen_design(
+    current_source: Path,
+) -> tuple[
     OperationClosureRegressionContract,
     OperationClosureRegressionJobManifest,
 ]:
@@ -46,7 +63,7 @@ def frozen_design() -> tuple[
     model_config = AgentModelConfig.model_validate(payload["model"])
     contract, records = build_operation_closure_regression_contract(
         run_id=RUN_ID,
-        source_dir=SOURCE,
+        source_dir=current_source,
         model_config=model_config,
         package_root=PACKAGE_ROOT,
         selection_salt=SELECTION_SALT,
@@ -99,6 +116,9 @@ def test_regression_contract_keeps_scientific_claims_closed(
     assert contract.model_comparison_forbidden
     assert contract.state_mapping_forbidden
     assert contract.compiler_witnesses_excluded
+    assert contract.authority_preserving_contract_required
+    assert contract.action_neutral_repair_required
+    assert contract.unified_terminal_verification_required
     assert not contract.fresh_confirmation_authorized
     assert not contract.no_c_vtdo_authorized
     assert not contract.student_training_authorized
@@ -111,6 +131,7 @@ def test_regression_contract_keeps_scientific_claims_closed(
 
 
 def test_regression_replays_every_source_and_implementation_byte(
+    current_source: Path,
     frozen_design: tuple[
         OperationClosureRegressionContract,
         OperationClosureRegressionJobManifest,
@@ -120,7 +141,10 @@ def test_regression_replays_every_source_and_implementation_byte(
 
     assert len(contract.source_artifact_files) == 12
     for item in contract.source_artifact_files:
-        assert hashlib.sha256((SOURCE / item.relative_path).read_bytes()).hexdigest() == item.sha256
+        assert (
+            hashlib.sha256((current_source / item.relative_path).read_bytes()).hexdigest()
+            == item.sha256
+        )
     assert tuple(item.relative_path for item in contract.implementation_source_files) == tuple(
         sorted(IMPLEMENTATION_SOURCE_PATHS)
     )
@@ -132,6 +156,7 @@ def test_regression_replays_every_source_and_implementation_byte(
 
 
 def test_regression_selection_and_job_manifest_are_deterministic(
+    current_source: Path,
     frozen_design: tuple[
         OperationClosureRegressionContract,
         OperationClosureRegressionJobManifest,
@@ -141,7 +166,7 @@ def test_regression_selection_and_job_manifest_are_deterministic(
     payload = json.loads(MODEL_CONFIG.read_text(encoding="utf-8"))
     second_contract, second_records = build_operation_closure_regression_contract(
         run_id=RUN_ID,
-        source_dir=SOURCE,
+        source_dir=current_source,
         model_config=AgentModelConfig.model_validate(payload["model"]),
         package_root=PACKAGE_ROOT,
         selection_salt=SELECTION_SALT,
@@ -152,18 +177,22 @@ def test_regression_selection_and_job_manifest_are_deterministic(
     assert second_manifest.model_dump(mode="json") == manifest.model_dump(mode="json")
 
 
-def test_multi_ready_public_call_never_falls_through_to_legacy_single_step_gate() -> None:
+def test_multi_ready_public_call_never_falls_through_to_legacy_single_step_gate(
+    current_source: Path,
+) -> None:
     records = tuple(
         OperationalTaskRecord.model_validate(item)
-        for item in json.loads((SOURCE / "operational_task_records.json").read_text())
+        for item in json.loads((current_source / "operational_task_records.json").read_text())
     )
     by_task = {item.task_package.package_id: item for item in records}
     observations = tuple(
         AgentToolObservation.model_validate(item)
-        for item in json.loads((SOURCE / "operational_witness_observations.json").read_text())
+        for item in json.loads(
+            (current_source / "operational_witness_observations.json").read_text()
+        )
     )
     by_observation = {item.observation_id: item for item in observations}
-    witnesses = json.loads((SOURCE / "operational_public_witnesses.json").read_text())
+    witnesses = json.loads((current_source / "operational_public_witnesses.json").read_text())
     reproduced = 0
     for witness in witnesses:
         record = by_task[witness["task_package_id"]]
@@ -193,6 +222,7 @@ def test_multi_ready_public_call_never_falls_through_to_legacy_single_step_gate(
 def test_audit_only_preflight_constructs_no_model_client(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    current_source: Path,
 ) -> None:
     def forbidden_client(*args: object, **kwargs: object) -> None:
         del args, kwargs
@@ -202,7 +232,7 @@ def test_audit_only_preflight_constructs_no_model_client(
     output = tmp_path / "preflight"
     report = run_operation_closure_regression(
         run_id=RUN_ID,
-        source_dir=SOURCE,
+        source_dir=current_source,
         model_config_path=MODEL_CONFIG,
         output_dir=output,
         package_root=PACKAGE_ROOT,
@@ -240,6 +270,11 @@ def test_contract_and_manifest_mutations_fail_closed(
     contract_payload["validity_not_an_instrument_gate"] = False
     with pytest.raises(ValidationError):
         OperationClosureRegressionContract.model_validate(contract_payload)
+
+    authority_payload = contract.model_dump(mode="python")
+    authority_payload["action_neutral_repair_required"] = None
+    with pytest.raises(ValidationError):
+        OperationClosureRegressionContract.model_validate(authority_payload)
 
     budget_payload = contract.model_dump(mode="python")
     budget_payload["maximum_total_estimated_cost_usd"] = 2.01

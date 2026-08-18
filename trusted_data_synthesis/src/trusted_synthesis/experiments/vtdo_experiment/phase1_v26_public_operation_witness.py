@@ -43,9 +43,11 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_public_operation_r
 )
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.public_operation import (
+    public_action_neutral_repair_result,
     public_operation_progress,
     public_operation_step_rejection,
     public_postcompletion_action_rejection,
+    public_terminal_verification_rejection,
 )
 from trusted_synthesis.runtime.tools import (
     AgentToolCall,
@@ -187,8 +189,15 @@ def compile_operational_witness(
         result = (
             public_postcompletion_action_rejection(task, tuple(observations), call)
             or agent_tool_argument_rejection(spec, call)
+            or public_terminal_verification_rejection(task, tuple(observations), call)
             or public_operation_step_rejection(task, tuple(observations), call)
             or runtime.execute(call)
+        )
+        result = public_action_neutral_repair_result(
+            task,
+            tuple(observations),
+            call,
+            result,
         )
         if result.status == "succeeded":
             spec.validate_output(result.result)

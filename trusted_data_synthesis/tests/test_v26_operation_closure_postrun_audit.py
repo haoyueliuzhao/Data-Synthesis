@@ -4,7 +4,10 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_operation_closure_postrun_audit import (  # noqa: E501
+    OperationClosurePostrunAuditReport,
     build_operation_closure_postrun_audit,
     operation_closure_postrun_report_id,
 )
@@ -13,40 +16,50 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ROOT = PACKAGE_ROOT / "artifacts" / "vtdo_experiment"
 TASK_SOURCE = ARTIFACT_ROOT / "finance_v26_62_public_operation_instrument_hardening_20260818"
 REGRESSION_SOURCE = ARTIFACT_ROOT / "finance_v26_63_operation_closure_requalification_20260818"
+AUDIT_SOURCE = ARTIFACT_ROOT / "finance_v26_64_operation_closure_postrun_audit_20260818"
 RUN_ID = "finance_v26_64_operation_closure_postrun_audit_20260818"
+EXPECTED_HASHES = {
+    "rollout_postrun_diagnostics.json": (
+        "eb1ab07bf0e9cda07c87f1f997a8f03f394d3762b65531e6211e2ecf40050730"
+    ),
+    "mechanism_postrun_summaries.json": (
+        "23c3c8fd752b861fcfab987f356b7dae165b5db3a6cc3d4f4cfc3d3bd8624e2d"
+    ),
+    "report.json": "255fbee3482b9e223b1fa1bd0ab03f8941c8e32b8a07519e91fe28e0b395e593",
+}
 
 
 def _build(output_dir: Path):
-    return build_operation_closure_postrun_audit(
-        run_id=RUN_ID,
-        regression_dir=REGRESSION_SOURCE,
-        task_source_dir=TASK_SOURCE,
-        output_dir=output_dir,
-        package_root=PACKAGE_ROOT,
+    del output_dir
+    return OperationClosurePostrunAuditReport.model_validate_json(
+        (AUDIT_SOURCE / "report.json").read_text(encoding="utf-8")
     )
 
 
-def test_postrun_audit_replays_every_source_and_is_byte_deterministic(tmp_path: Path) -> None:
-    first_dir = tmp_path / "first"
-    second_dir = tmp_path / "second"
-    first = _build(first_dir)
-    second = _build(second_dir)
+def test_postrun_audit_retains_immutable_bytes_and_identity(tmp_path: Path) -> None:
+    report = _build(tmp_path)
 
-    assert first == second
-    assert first.report_id == operation_closure_postrun_report_id(first)
-    assert len(first.source_files) == 51
+    assert report.report_id == operation_closure_postrun_report_id(report)
+    assert len(report.source_files) == 51
+    for name, expected in EXPECTED_HASHES.items():
+        assert hashlib.sha256((AUDIT_SOURCE / name).read_bytes()).hexdigest() == expected
     assert (
-        first.implementation_source.sha256
+        report.implementation_source.sha256
         == hashlib.sha256(
-            (PACKAGE_ROOT / first.implementation_source.relative_path).read_bytes()
+            (PACKAGE_ROOT / report.implementation_source.relative_path).read_bytes()
         ).hexdigest()
     )
-    for name in (
-        "rollout_postrun_diagnostics.json",
-        "mechanism_postrun_summaries.json",
-        "report.json",
-    ):
-        assert (first_dir / name).read_bytes() == (second_dir / name).read_bytes()
+
+
+def test_postrun_audit_rejects_rebuild_under_successor_source(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="implementation changed"):
+        build_operation_closure_postrun_audit(
+            run_id=RUN_ID,
+            regression_dir=REGRESSION_SOURCE,
+            task_source_dir=TASK_SOURCE,
+            output_dir=tmp_path,
+            package_root=PACKAGE_ROOT,
+        )
 
 
 def test_postrun_audit_retains_the_passing_instrument_result(tmp_path: Path) -> None:
@@ -139,10 +152,9 @@ def test_postrun_audit_keeps_all_downstream_authority_closed(tmp_path: Path) -> 
 
 
 def test_postrun_detail_outputs_have_complete_denominators(tmp_path: Path) -> None:
-    output_dir = tmp_path / "audit"
-    report = _build(output_dir)
-    diagnostics = json.loads((output_dir / "rollout_postrun_diagnostics.json").read_text())
-    summaries = json.loads((output_dir / "mechanism_postrun_summaries.json").read_text())
+    report = _build(tmp_path)
+    diagnostics = json.loads((AUDIT_SOURCE / "rollout_postrun_diagnostics.json").read_text())
+    summaries = json.loads((AUDIT_SOURCE / "mechanism_postrun_summaries.json").read_text())
 
     assert len(diagnostics) == len(report.diagnostics) == 32
     assert len(summaries) == len(report.mechanism_summaries) == 4

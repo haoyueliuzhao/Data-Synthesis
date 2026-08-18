@@ -5,10 +5,12 @@ from typing import Any
 
 from trusted_synthesis.core.task.schema import TaskPublicSpec
 from trusted_synthesis.core.trajectory.public_operation import (
+    PublicActionNeutralRepairView,
     PublicOperationContractView,
     PublicOperationNode,
     PublicOperationVariable,
     PublicStopReadinessView,
+    PublicTerminalVerificationTargetView,
 )
 from trusted_synthesis.runtime.tools import (
     ARGUMENT_PATCH_REQUIRED_POLICY,
@@ -26,7 +28,7 @@ def public_operation_progress(
     loaded = _load_contracts(task)
     if loaded is None:
         return None
-    contract, stop_contract = loaded
+    contract, stop_contract, _, verification_target = loaded
     variables = {item.symbol: item for item in contract.variables}
     nodes = {item.node_id: item for item in contract.nodes}
     completed: dict[str, dict[str, Any]] = {}
@@ -84,6 +86,7 @@ def public_operation_progress(
         observations,
         terminal_operation_ref=terminal_ref,
         terminal_observation_index=terminal_index,
+        target=verification_target,
     )
     verification_complete = verification_index is not None
     postcompletion_ids = (
@@ -122,6 +125,9 @@ def public_operation_progress(
         "terminal_node_id": stop_contract.terminal_node_id,
         "terminal_node_completed": terminal_complete,
         "terminal_operation_ref": terminal_ref,
+        "terminal_verification_target": (
+            verification_target.model_dump(mode="json") if verification_target is not None else None
+        ),
         "verification_after_terminal_completed": verification_complete,
         "verification_observation_index": verification_index,
         "postcompletion_violation": postcompletion_violation,
@@ -164,7 +170,7 @@ def public_operation_step_rejection(
     loaded = _load_contracts(task)
     if loaded is None:
         return None
-    contract, _ = loaded
+    contract, _, _, _ = loaded
     if call.tool_id not in {item.tool_id for item in contract.nodes}:
         return None
     progress = public_operation_progress(task, observations)
@@ -245,6 +251,125 @@ def public_postcompletion_action_rejection(
     )
 
 
+def public_terminal_verification_rejection(
+    task: TaskPublicSpec,
+    observations: tuple[AgentToolObservation, ...],
+    call: AgentToolCall,
+) -> AgentToolResult | None:
+    loaded = _load_contracts(task)
+    if loaded is None:
+        return None
+    _, _, _, target = loaded
+    if target is None or call.tool_id != target.verification_tool_id:
+        return None
+    progress = public_operation_progress(task, observations)
+    if progress is None:
+        raise ValueError("terminal verification lost the public Operation contract")
+    terminal_ref = progress["terminal_operation_ref"]
+    if not isinstance(terminal_ref, str) or not terminal_ref:
+        return _terminal_verification_failure(
+            "terminal_verification_before_terminal",
+            "complete_terminal_operation_before_verification",
+            progress,
+        )
+    claim = call.arguments.get(target.claim_argument_field)
+    if not isinstance(claim, Mapping) or target.terminal_reference_field not in claim:
+        return _terminal_verification_failure(
+            "terminal_verification_reference_missing",
+            "bind_verification_to_terminal_operation_reference",
+            progress,
+        )
+    if claim.get(target.terminal_reference_field) != terminal_ref:
+        return _terminal_verification_failure(
+            "terminal_verification_reference_wrong",
+            "bind_verification_to_observed_terminal_operation_reference",
+            progress,
+        )
+    if set(claim) != set(target.required_claim_fields):
+        return _terminal_verification_failure(
+            "terminal_verification_extra_claim_fields",
+            "use_registered_terminal_verification_claim_schema",
+            progress,
+        )
+    return None
+
+
+def public_action_neutral_repair_result(
+    task: TaskPublicSpec,
+    observations: tuple[AgentToolObservation, ...],
+    call: AgentToolCall,
+    result: AgentToolResult,
+) -> AgentToolResult:
+    loaded = _load_contracts(task)
+    if loaded is None or loaded[2] is None or result.status != "failed":
+        return result
+    progress = public_operation_progress(task, observations)
+    unresolved_variables: tuple[str, ...] = ()
+    requirements: tuple[str, ...] = ("satisfy_public_tool_contract",)
+    if progress is not None:
+        unresolved_variables = tuple(str(item) for item in progress["unresolved_symbols"])
+        ready = tuple(
+            f"{item['node_id']}:{item['semantic_role']}"
+            for item in progress["ready_nodes"]
+            if isinstance(item, Mapping)
+        )
+        if ready:
+            requirements = ready
+        elif (
+            progress["terminal_node_completed"]
+            and not progress["verification_after_terminal_completed"]
+        ):
+            requirements = ("verify_terminal_operation_reference",)
+        elif progress["postcompletion_violation"]:
+            requirements = ("trajectory_invalid_after_postcompletion_action",)
+    return AgentToolResult(
+        status="failed",
+        result={
+            "retry_contract": {
+                "policy": "model_owned_semantic_repair_required",
+                "maximum_identical_replays": 0,
+                "unresolved_semantic_requirements": requirements,
+                "unresolved_public_variables": unresolved_variables,
+                "model_decision_required": True,
+            }
+        },
+        evidence_ids=result.evidence_ids,
+        provenance_hashes=result.provenance_hashes,
+        host_events=result.host_events,
+        error_code=result.error_code,
+        error_message=(
+            "The attempted public action failed. Use the typed error category, unresolved "
+            "public semantics, and prior public observations to choose a different repair."
+        ),
+    )
+
+
+def public_action_neutral_repair_context(
+    task: TaskPublicSpec,
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, Any] | None:
+    loaded = _load_contracts(task)
+    if loaded is None or loaded[2] is None:
+        return None
+    if not observations or observations[-1].status != "failed":
+        return None
+    failed = observations[-1]
+    retry = failed.result.get("retry_contract")
+    if not isinstance(retry, Mapping):
+        retry = {}
+    return {
+        "error_category": failed.error_code,
+        "failed_tool_id": failed.call.tool_id,
+        "identical_arguments_forbidden": True,
+        "unresolved_public_variables": tuple(
+            str(item) for item in retry.get("unresolved_public_variables") or ()
+        ),
+        "unresolved_semantic_requirements": tuple(
+            str(item) for item in retry.get("unresolved_semantic_requirements") or ()
+        ),
+    }
+
+
 def public_stop_readiness_payload(
     task: TaskPublicSpec,
     observations: tuple[AgentToolObservation, ...],
@@ -252,7 +377,7 @@ def public_stop_readiness_payload(
     loaded = _load_contracts(task)
     if loaded is None:
         return None
-    _, stop_contract = loaded
+    _, stop_contract, _, verification_target = loaded
     progress = public_operation_progress(task, observations)
     if progress is None:
         raise ValueError("public Operation progress unexpectedly disappeared")
@@ -262,6 +387,9 @@ def public_stop_readiness_payload(
         "completed_node_ids": progress["completed_node_ids"],
         "terminal_node_completed": progress["terminal_node_completed"],
         "verification_after_terminal_completed": progress["verification_after_terminal_completed"],
+        "terminal_verification_target_view_id": (
+            verification_target.view_id if verification_target is not None else None
+        ),
         "postcompletion_violation": progress["postcompletion_violation"],
         "stop_ready": progress["stop_ready"],
         "final_answer_allowed": progress["final_answer_allowed"],
@@ -270,12 +398,22 @@ def public_stop_readiness_payload(
 
 def _load_contracts(
     task: TaskPublicSpec,
-) -> tuple[PublicOperationContractView, PublicStopReadinessView] | None:
+) -> (
+    tuple[
+        PublicOperationContractView,
+        PublicStopReadinessView,
+        PublicActionNeutralRepairView | None,
+        PublicTerminalVerificationTargetView | None,
+    ]
+    | None
+):
     guidance = task.metadata.get("agent_contract_guidance")
     if not isinstance(guidance, Mapping):
         return None
     raw_operation = guidance.get("public_operation_execution_contract")
     raw_stop = guidance.get("public_stop_readiness_contract")
+    raw_repair = guidance.get("public_action_neutral_repair_contract")
+    raw_target = guidance.get("public_terminal_verification_target")
     if raw_operation is None and raw_stop is None:
         return None
     if not isinstance(raw_operation, Mapping) or not isinstance(raw_stop, Mapping):
@@ -288,7 +426,33 @@ def _load_contracts(
         raise ValueError("public stop contract does not require every Operation node")
     if stop.terminal_node_id != operation.terminal_node_id:
         raise ValueError("public stop and Operation terminal nodes differ")
-    return operation, stop
+    if (raw_repair is None) != (raw_target is None):
+        raise ValueError("repair and terminal verification contracts must be jointly present")
+    if raw_repair is None:
+        if stop.terminal_verification_target_id is not None:
+            raise ValueError("legacy public task unexpectedly binds a verification target")
+        return operation, stop, None, None
+    if not isinstance(raw_repair, Mapping) or not isinstance(raw_target, Mapping):
+        raise ValueError("repair and terminal verification contracts must be objects")
+    repair = PublicActionNeutralRepairView.model_validate(raw_repair)
+    target = PublicTerminalVerificationTargetView.model_validate(raw_target)
+    if repair.operation_contract_id != operation.view_id and (
+        repair.operation_contract_id
+        != task.metadata.get("executable_support_bindings", {}).get("operation_contract_id")
+    ):
+        raise ValueError("repair view is detached from public Operation execution")
+    if target.operation_contract_id != task.metadata.get("executable_support_bindings", {}).get(
+        "operation_contract_id"
+    ):
+        raise ValueError("terminal verification target is detached from Operation execution")
+    bindings = task.metadata.get("executable_support_bindings")
+    if not isinstance(bindings, Mapping):
+        raise ValueError("authority-preserving task lacks public binding identities")
+    if repair.contract_id != bindings.get("action_neutral_repair_contract_id"):
+        raise ValueError("repair view identity differs from TaskPackage binding")
+    if stop.terminal_verification_target_id != bindings.get("terminal_verification_target_id"):
+        raise ValueError("stop readiness differs from terminal verification binding")
+    return operation, stop, repair, target
 
 
 def _semantic_ready_node(value: Mapping[str, Any]) -> dict[str, Any]:
@@ -463,21 +627,69 @@ def _postterminal_verification_index(
     *,
     terminal_operation_ref: str | None,
     terminal_observation_index: int | None,
+    target: PublicTerminalVerificationTargetView | None,
 ) -> int | None:
     if terminal_operation_ref is None or terminal_observation_index is None:
         return None
     for index, observation in enumerate(observations):
         if index <= terminal_observation_index:
             continue
-        if (
+        if _terminal_verification_observation_matches(
+            observation,
+            terminal_operation_ref=terminal_operation_ref,
+            target=target,
+        ):
+            return index
+    return None
+
+
+def _terminal_verification_observation_matches(
+    observation: AgentToolObservation,
+    *,
+    terminal_operation_ref: str,
+    target: PublicTerminalVerificationTargetView | None,
+) -> bool:
+    if target is None:
+        return bool(
             observation.status == "succeeded"
             and observation.call.tool_id == "cross_check_evidence"
             and observation.call.arguments.get("claim_or_result")
             == {"operation_ref": terminal_operation_ref}
             and observation.result.get("verified") is True
-        ):
-            return index
-    return None
+        )
+    claim = observation.call.arguments.get(target.claim_argument_field)
+    return bool(
+        observation.status == "succeeded"
+        and observation.call.tool_id == target.verification_tool_id
+        and isinstance(claim, Mapping)
+        and set(claim) == set(target.required_claim_fields)
+        and claim.get(target.terminal_reference_field) == terminal_operation_ref
+        and observation.result.get(target.verification_result_field)
+        is target.verification_success_value
+    )
+
+
+def _terminal_verification_failure(
+    error_code: str,
+    semantic_requirement: str,
+    progress: Mapping[str, Any],
+) -> AgentToolResult:
+    return AgentToolResult(
+        status="failed",
+        result={
+            "retry_contract": {
+                "policy": "model_owned_semantic_repair_required",
+                "maximum_identical_replays": 0,
+                "unresolved_semantic_requirements": (semantic_requirement,),
+                "unresolved_public_variables": tuple(progress["unresolved_symbols"]),
+                "model_decision_required": True,
+            }
+        },
+        error_code=error_code,
+        error_message=(
+            "The public verification call does not satisfy the registered terminal target."
+        ),
+    )
 
 
 def _required_action(
