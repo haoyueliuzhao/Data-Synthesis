@@ -15,6 +15,68 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.74-v26.75 Failure Audit And Verifier Replay Decision
+
+Finance v26.74 completed the read-only root-cause audit requested after v26.71-v26.72. It
+replayed all 456 raw Artifacts without a model call, GPU job, historical rescore, mapping change,
+or State Support change. The frozen results remain 4/96 Capability-valid, 21/360
+Reachability-valid and mapped, 2 releases, 0/36 admitted states, and 0/12 admitted tasks.
+
+The Capability cascade contains 82 model-contract failures and 10 frozen Runtime Replay failures.
+Across all mechanisms, local mechanism success is 30/96, independent validity is 4/96,
+`P(V=1 | Y=1)=4/30`, and `P(Y=1 | V=1)=4/4`. Recovery has 12 local successes but only one
+Program closure and no independently verified row: seven terminate at the failed-tool budget,
+three select unavailable `open_document`, and two reach the model-token budget.
+
+The audit found a prior instrument interpretation blocker before task or condition redesign. The
+Agent Runtime applies public Operation gates and the v26.65 action-neutral failed-result
+projection, while the frozen v1 Verifier Replay reconstructed the legacy failed-action result.
+Eighteen completed trajectories therefore have `runtime_replay_passed=false` under mismatched
+Replay semantics: ten Capability rows and eight Reachability rows. Fifteen have Replay as their
+only frozen failed check.
+
+All eight Capability Stopping local-success rows complete Program, terminal Operation, exact
+post-terminal verification, Evidence Support, Answer Projection, Citation, mechanism, and
+post-completion control; only frozen Replay fails. Consequently the historical Stopping 0/24
+cannot be interpreted as a clean task-support result. Capability and Reachability Stopping also
+use disjoint tasks, Semantic Sources, structural profiles, roles, and conditions, so their 0 versus
+16 historical-valid contrast remains descriptive.
+
+The route audit retains the frozen adherence counts `52/72`, `6/72`, and `7/72`.
+The six historical-valid rows requested as `search_then_structured` and eight requested as
+`search_then_open` all map to `structured_direct`, leaving 14/14 search-requested valid rows
+Off-target. Four states have any valid natural or conditioned hit. The two released Stopping
+states each still have one release, below the frozen minimum of three.
+
+The authoritative v26.74 v2 report is
+`finance_v26_capability_reachability_failure_audit:aa3787b164a9df684f05744110a44001dfcf01cea9cabff54a1c4532c6cc0e95`.
+Its seven scientific detail files are byte-identical to the initial zero-API v1 build. The v2
+identity records the local type-complete source and supersedes v1 without changing a scientific
+count. Its transition is `authority_preserving_verifier_replay_repair_only`.
+
+v26.75 implemented a prospective Verifier v2. Replay now mirrors the executed gate order, applies
+the same action-neutral result projection, and uses canonical JSON semantic equality. All 45
+historical completed trajectories pass v2 Replay and preserve every non-Replay Gate value. The 15
+potential validity flips, eight Capability Stopping and seven Reachability Context, are diagnostic
+candidates only: no historical validity, path assignment, release, or Freeze is changed.
+
+Verifier v2 rejected 108/108 destructive mutations: 45 environment-identity changes, 45 result
+payload changes, and 18 action-bearing failed-result injections. The authoritative v26.75 v2 report
+is `finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1`.
+The initial zero-API v1 build remains immutable and is superseded because the final implementation
+manifest did not include its imported v26.74 source dependency.
+
+The current transition is:
+
+~~~text
+fresh_verifier_bound_task_rematerialization_and_instrument_preflight_only
+~~~
+
+Capability Development, State Reachability execution, Fresh Confirmation, No-C VTDO, Student
+training, Exact Target, GP-C, and production Contribution remain forbidden. Production
+Contribution is zero. See
+`docs/finance_v26_74_v26_75_failure_audit_and_verifier_repair.md`.
+
 ## v26.69-v26.73 Capability And Reachability Decision
 
 Finance v26.69-v26.73 completed the two empirical roles designed in v26.68 after supplying their
@@ -805,8 +867,16 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 367 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | passed, 951 tests in 569.38 seconds |
+| Mypy | 369 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | passed, 964 tests in 597.18 seconds |
+| v26.75 authority-preserving Verifier focus | 6 passed |
+| v26.75 v2 dual build | all four output files are byte-identical; zero API/GPU |
+| v26.75 completed-trajectory qualification | 45/45 v2 Replay passes; all non-Replay Gates retained |
+| v26.75 destructive Replay mutations | 108/108 rejected |
+| v26.74 Capability/Reachability failure audit focus | 7 passed |
+| v26.74 v2 dual build | all eight output files are byte-identical; zero API/GPU |
+| v26.74 raw replay | 456/456 immutable raw Artifacts passed exact-byte replay |
+| v26.74 v1-v2 scientific details | all seven detail files are byte-identical |
 | v26.69 fresh Capability and v26.70 Runner focus | 6 passed |
 | v26.69 dual build | all fourteen detail files and report are byte-identical; zero API/GPU |
 | v26.70 dual preflights | four Capability and four Reachability files are byte-identical; zero API/GPU |
@@ -1069,35 +1139,39 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not treat the four v26.71 Capability-valid trajectories as balanced support. Do not promote the
-five natural hits, two conditioned on-target hits, or two released realizations to state support;
-the frozen result remains 0/36 states and 0/12 VTDO tasks. Do not pool states, relax the
-three-realization requirement, promote off-target valid outcomes, or count local mechanism
-successes as complete trajectories. The only permitted transition is:
+Do not reclassify the 15 prospective Verifier v2 candidates, add their paths to State Mapping,
+or alter the historical v26.71 Capability and v26.72 Reachability reports. The 0/36 State Support
+Freeze remains authoritative. Do not proceed directly to Capability task redesign or
+Reachability condition redesign while using a v1-bound TaskPackage.
+
+The only permitted transition is:
 
 ```text
-capability_task_or_reachability_condition_redesign_only
+fresh_verifier_bound_task_rematerialization_and_instrument_preflight_only
 ```
 
-The Capability branch may redesign fresh support for Reconciliation, Recovery, and Stopping,
-which produced zero independently valid v26.71 trajectories despite nonzero local mechanism
-activity. A successor Population must use fresh identities and cannot select or delete tasks based
-on the v26.71 outcomes.
+Materialize fresh TaskPackages after binding the v2 Verifier implementation and Replay Contract to
+the same Semantic Source, public Operation Contract, action-neutral repair Contract, typed
+terminal target, Runtime, and independent Verifier. Every dependent TaskPackage, Verifier,
+execution Contract, Job, trajectory, and report identity must be fresh. Historical outcomes,
+including all 15 diagnostic candidates, may not enter task selection.
 
-The Reachability branch may redesign the public condition and route-realization interface,
-especially for `search_then_structured` and `search_then_open`. Any successor must use fresh
-condition, Job, and execution-contract identities while retaining separate natural and
-conditioned denominators, invalid model outcomes, valid-only state mapping, and the existing
-authority/noninterference audits. A static preflight and independent byte rebuild remain required
-before another API call.
+Before any API call, freeze a small balanced Instrument Manifest and pass exact source replay,
+complete compiler Runtime Witnesses, public/private isolation, action-neutral repair audits,
+wrong-environment and changed-result mutations, action-bearing repair mutations,
+wrong/missing/extra terminal-reference mutations, early-verification and post-completion
+mutations, and an independent byte rebuild.
 
-Capability Confirmation, State-support Confirmation, No-C VTDO, Student training, Exact Target,
-GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes, 32 v26.63 outcomes, 32
-v26.66 outcomes, 96 v26.71 outcomes, and 360 v26.72 outcomes remain immutable
-Development/instrument evidence and cannot be reused as Fresh Confirmation. Objective Support
-remains a separate unresolved bottleneck.
+A passing static preflight may authorize only a small fresh Instrument requalification.
+Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
+Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
+unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_74_v26_75_failure_audit_and_verifier_repair.md`
+- `artifacts/vtdo_experiment/finance_v26_74_capability_reachability_failure_audit_v2_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/report.json`
 
 - `docs/finance_v26_69_v26_73_capability_and_reachability_report.md`
 - `artifacts/vtdo_experiment/finance_v26_69_fresh_capability_population_20260819/report.json`
