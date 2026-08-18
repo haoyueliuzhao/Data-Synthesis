@@ -15,6 +15,78 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.69-v26.73 Capability And Reachability Decision
+
+Finance v26.69-v26.73 completed the two empirical roles designed in v26.68 after supplying their
+missing prerequisites. v26.69 created a fully fresh 12-task capability-only Population, balanced
+at three tasks for each of Context-conditioned Action, Semantic Reconciliation, Failure Recovery,
+and State-dependent Stopping. It is disjoint from prior v26 empirical inputs on source task,
+semantic signature, source hash, Evidence, Evidence Version, source record, Semantic Source, and
+TaskPackage identity. No historical outcome entered selection.
+
+All 12 fresh tasks passed Public Runtime Witness, Operation Closure, authority/terminal-target,
+Mechanism Necessity, and Capability admission gates. All 98 legacy Operation mutations and 60
+authority/verification mutations failed closed. The zero-API report is
+`finance_v26_fresh_capability_population_report:8b7aeb2a9d9044640d41b73eb17d13780cc4bcf5229a1794b751bceee4b12f1e`.
+
+v26.70 implemented one authority-preserving Runner with separate frozen Contracts and Job
+Manifests for the 96-job Capability denominator and the unchanged 360-row Reachability design. It
+replays all source and implementation bytes before client construction, preserves raw-first
+Provider and Prompt telemetry, audits action-neutral repair and the typed terminal target per
+rollout, and permits only independently valid model-generated trajectories to enter State
+Mapping. Independent preflights reproduced both four-file outputs byte for byte with zero API/GPU.
+
+v26.71 completed all 96 exact DeepSeek V4-Flash Capability jobs with zero Runtime or instrument
+failure, zero fallback, and zero Stop-readiness error. All raw-byte, identity, Prompt,
+noninterference, repair-neutrality, and terminal-target audits passed. It used 811 Provider calls,
+7,755,553 provider-reported tokens, estimated cost telemetry of USD 0.8699810616, and no local GPU.
+Four trajectories were independently valid, all in Context-conditioned Action. Reconciliation,
+Recovery, and Stopping had zero independently valid trajectories despite 2, 12, and 8 local
+mechanism successes respectively. This is a complete balanced Development measurement, not
+balanced Capability support.
+
+v26.72 completed the exact v26.68 Reachability denominator: 144 natural unconditional attempts
+and 216 state-conditioned attempts. All 360 jobs were model outcomes with zero Runtime or
+instrument failure, zero fallback, zero Stop-readiness error, and passing raw/instrument audits.
+The run used 3,415 Provider calls, 32,960,134 provider-reported tokens, estimated cost telemetry of
+USD 3.4768128360, and no local GPU.
+
+Twenty-one Reachability trajectories were independently valid and all were mapped. There were
+five natural on-state hits across three states, two conditioned on-target hits across two states,
+and two released realizations. Every state still lacked three independent releases. Therefore
+0/36 states and 0/12 tasks passed the frozen reachability and realization-yield contract. The
+State Support Freeze is
+`finance_v26_empirical_state_support_freeze:4b451c2d3d94937331c46ae5c7089f13f86f6b67c8ea62a26b3c4ab8c897f6ed`
+and remains `blocked`.
+
+Conditioned route adherence was 52/72 for `structured_direct`, 6/72 for
+`search_then_structured`, and 7/72 for `search_then_open`. Only the two `structured_direct` rows
+were on-target valid. This is an observed route-realization diagnostic, not proof that condition
+adherence is the sole cause of all failures.
+
+The credential-free v26.73 audit replayed all 456 raw artifacts, both frozen preflights, 31
+contract source files, and 13 implementation files per role. It independently reproduced both raw
+audits, diagnostics, and reports. Capability and Reachability have zero overlap in TaskPackage,
+Semantic Source, Evidence, Evidence Version, source record, source-design Job, execution Job,
+Provider call, and trajectory identities. Formal and independent builds reproduced all five audit
+files byte for byte. The authoritative report is
+`finance_v26_authority_role_postrun_audit:2b3cdbec5671c1cdc38c3f978cca1eb5ef07ed59afcda91298625976edf1331e`.
+The initial zero-API v1 audit remains immutable but is superseded because it reused the Runner's
+private aggregation functions. v2 independently rebuilds Prompt/Observation diagnostics,
+Capability summaries, state intervals and releases, and the global Freeze. v3 adds only explicit
+local type annotations required by package-wide Mypy and is authoritative; the empirical result
+is unchanged.
+
+The final transition is:
+
+```text
+capability_task_or_reachability_condition_redesign_only
+```
+
+Capability Confirmation, State-support Confirmation, No-C VTDO, Student training, Exact Target,
+GP-C, and production Contribution remain forbidden. Production Contribution remains zero. See
+`docs/finance_v26_69_v26_73_capability_and_reachability_report.md`.
+
 ## v26.65-v26.68 Authority-Preserving Instrument And Protocol Decision
 
 Finance v26.65 repaired the two prospective contract gaps found by v26.64 under fresh task and
@@ -733,8 +805,18 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | passed, 364 source files |
-| Pytest | passed, 939 tests in 491.38 seconds |
+| Mypy | 367 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | passed, 951 tests in 569.38 seconds |
+| v26.69 fresh Capability and v26.70 Runner focus | 6 passed |
+| v26.69 dual build | all fourteen detail files and report are byte-identical; zero API/GPU |
+| v26.70 dual preflights | four Capability and four Reachability files are byte-identical; zero API/GPU |
+| v26.71 Capability Development | 96/96 model outcomes; zero Runtime/instrument failure |
+| v26.72 State Reachability | 360/360 model outcomes; 0/36 states and 0/12 tasks admitted |
+| v26.71-v26.72 completed-run replay | 96/96 and 360/360 resumed; zero jobs and unchanged report IDs |
+| v26.73 independent post-run focus | 6 passed |
+| v26.73 source/raw replay | 456/456 raw rows, both reports, and all source manifests reproduced |
+| v26.73 dual build | all five output files are byte-identical; zero API/GPU |
+| v26.69-v26.73 focused regression | 46 passed |
 | v26.68 empirical role protocol focus | 6 passed |
 | v26.68 dual build | all four output files are byte-identical; zero API/GPU |
 | v26.67 authority-preserving post-run focus | 7 passed |
@@ -792,6 +874,12 @@ version. Those unrelated files were deliberately not reformatted. The v25.20 con
 exact bytes of `phase1_multitier_capability_population.py`; its pre-run formatting is retained so
 the executed contract remains reproducible. All changed Python files pass lint, while the new
 non-manifest-bound source and tests also pass the formatter.
+
+Repository-wide Mypy reports one `var-annotated` diagnostic for the local `provider_ids` list in
+the v26.70 Runner. Adding the obvious `list[str]` annotation would not change runtime values, but
+would change source bytes already bound by the executed v26.70-v26.72 Contracts and the v26.73
+source replay. The exact executed source is therefore retained. No global Mypy rule was relaxed;
+the diagnostic is recorded rather than hidden.
 
 The v17 tests reject altered plans, implementation manifests, profiles, splits, source jobs,
 result rows, selection lineage, uncertainty envelopes, and stale contracts. Validation cannot run
@@ -981,32 +1069,43 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not treat the four v26.66 valid trajectories as balanced capability support or map them to
-VTDO states. Do not execute the 96-job Capability denominator or the 360-row Reachability design.
-The only permitted transition is:
+Do not treat the four v26.71 Capability-valid trajectories as balanced support. Do not promote the
+five natural hits, two conditioned on-target hits, or two released realizations to state support;
+the frozen result remains 0/36 states and 0/12 VTDO tasks. Do not pool states, relax the
+three-realization requirement, promote off-target valid outcomes, or count local mechanism
+successes as complete trajectories. The only permitted transition is:
 
 ```text
-fresh_capability_population_and_authority_preserving_reachability_runner_only
+capability_task_or_reachability_condition_redesign_only
 ```
 
-The Capability branch must materialize a fresh balanced 12-task Population under the v26.65
-authority-preserving contracts. It must be disjoint from every v26.65-v26.66 empirical input by
-task, Evidence, Evidence Version, semantic signature, source record, and trajectory identity. The
-four unopened capability tasks are not combined post hoc with eight newly selected tasks.
+The Capability branch may redesign fresh support for Reconciliation, Recovery, and Stopping,
+which produced zero independently valid v26.71 trajectories despite nonzero local mechanism
+activity. A successor Population must use fresh identities and cannot select or delete tasks based
+on the v26.71 outcomes.
 
-The Reachability branch must implement a v3 authority-preserving runner for the frozen 360-row
-design. It must bind exact v26.65 TaskPackage, repair, terminal-target, Runtime, Verifier, condition,
-mapper, and source identities; retain raw-first Provider and Prompt telemetry; audit
-action-neutral repair and terminal-target projection per rollout; and fail before model-client
-construction on any mismatch. A static preflight and independent byte rebuild are required before
-any API call.
+The Reachability branch may redesign the public condition and route-realization interface,
+especially for `search_then_structured` and `search_then_open`. Any successor must use fresh
+condition, Job, and execution-contract identities while retaining separate natural and
+conditioned denominators, invalid model outcomes, valid-only state mapping, and the existing
+authority/noninterference audits. A static preflight and independent byte rebuild remain required
+before another API call.
 
 Capability Confirmation, State-support Confirmation, No-C VTDO, Student training, Exact Target,
-GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes, 32 v26.63 outcomes, and
-32 v26.66 outcomes remain immutable Development/instrument evidence and cannot be reused as Fresh
-Confirmation. Objective Support remains a separate unresolved bottleneck.
+GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes, 32 v26.63 outcomes, 32
+v26.66 outcomes, 96 v26.71 outcomes, and 360 v26.72 outcomes remain immutable
+Development/instrument evidence and cannot be reused as Fresh Confirmation. Objective Support
+remains a separate unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_69_v26_73_capability_and_reachability_report.md`
+- `artifacts/vtdo_experiment/finance_v26_69_fresh_capability_population_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_70_capability_development_preflight_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_70_state_reachability_preflight_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_71_capability_development_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_72_state_reachability_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_73_authority_role_postrun_audit_v3_20260819/report.json`
 
 - `docs/finance_v26_65_v26_68_authority_preserving_instrument_and_protocol_report.md`
 - `artifacts/vtdo_experiment/finance_v26_65_authority_preserving_operation_hardening_20260819/report.json`
