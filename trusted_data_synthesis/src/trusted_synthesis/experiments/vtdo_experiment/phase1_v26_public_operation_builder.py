@@ -33,6 +33,7 @@ from trusted_synthesis.core.trajectory.public_operation import (
     public_operation_execution_contract_id,
     public_operation_runtime_projection_id,
     public_stop_readiness_contract_id,
+    public_stop_readiness_view,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_capability_sensitive_frontier import (
     CapabilitySensitiveFrontierPopulation,
@@ -738,6 +739,10 @@ def _operation_contracts(
                 (
                     "evidence_symbol_bindings",
                     "expected_operator_ids",
+                    "next_required_action",
+                    "ready_node_argument_contracts",
+                    "ready_node_parameters",
+                    "ready_node_tool_ids",
                     "source_program_node_ids",
                     "verifier_ids",
                 )
@@ -829,7 +834,7 @@ def _upgrade_task(
     metadata["executable_support_bindings"] = public_bindings
     metadata["agent_contract_guidance"] = {
         "public_operation_execution_contract": operation.public_view.model_dump(mode="json"),
-        "public_stop_readiness_contract": stop.model_dump(mode="json"),
+        "public_stop_readiness_contract": public_stop_readiness_view(stop).model_dump(mode="json"),
         "answer_observation_constraints": _answer_observation_constraints(draft),
     }
     public_template = base.task.public.model_copy(

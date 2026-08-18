@@ -21,6 +21,7 @@ from trusted_synthesis.core.trajectory.schema import (
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.client import JsonCompletionClient, LLMClientError
 from trusted_synthesis.runtime.agent.public_operation import (
+    model_visible_public_operation_progress,
     public_operation_progress,
     public_operation_step_rejection,
     public_postcompletion_action_rejection,
@@ -40,14 +41,14 @@ from trusted_synthesis.runtime.tools import (
     make_agent_tool_observation,
 )
 
-ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v26"
+ITERATIVE_AGENT_SOLVER_VERSION = "iterative_agent_solver.v27"
 ITERATIVE_AGENT_PLAN_PROMPT_VERSION = "iterative_agent_plan_prompt.v9"
-ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v19"
-ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v22"
-HOST_AGENT_NONINTERFERENCE_VERSION = "recursive_host_agent_noninterference.v2"
-MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v2"
+ITERATIVE_AGENT_DECISION_PROMPT_VERSION = "iterative_agent_decision_prompt.v20"
+ITERATIVE_AGENT_AUDIT_VERSION = "iterative_agent_audit.v23"
+HOST_AGENT_NONINTERFERENCE_VERSION = "recursive_host_agent_noninterference.v3"
+MODEL_INPUT_PROJECTION_VERSION = "iterative_agent_model_input_projection.v3"
 
-ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v15"
+ITERATIVE_AGENT_FAILURE_ARTIFACT_VERSION = "iterative_agent_failure_artifact.v16"
 MAXIMUM_STOP_REJECTIONS = 2
 TRANSIENT_PROVIDER_RETRY_DELAYS_SECONDS = (1.0, 3.0, 7.0)
 _TRANSIENT_PROVIDER_ERROR_TYPES = frozenset(
@@ -70,11 +71,19 @@ MODEL_FORBIDDEN_FIELD_NAMES = frozenset(
         "oracle",
         "oracle_contract",
         "oracle_program",
+        "expected_operator_id",
+        "mechanism_private_state",
+        "semantic_source_id",
+        "source_program_dag_hash",
+        "source_program_node_id",
+        "source_verifier_dag_hash",
         "task_program",
+        "target_program_evidence_ids",
         "reference_answer",
         "proof_graph",
         "target_quotient_state",
         "target_state_id",
+        "verifier_binding_id",
         *RESERVED_HOST_RESULT_KEYS,
     }
 )
@@ -2148,9 +2157,15 @@ def _model_visible_task(task: TaskPublicSpec) -> dict[str, Any]:
         if not isinstance(guidance, dict):
             raise ValueError("agent_contract_guidance must be an object")
         # Retire the historical exact-step script but retain the semantic DAG contract.
-        visible["agent_contract_guidance"] = {
+        visible_guidance = {
             key: value for key, value in guidance.items() if key != "operation_execution_contract"
         }
+        stop = visible_guidance.get("public_stop_readiness_contract")
+        if isinstance(stop, dict):
+            visible_guidance["public_stop_readiness_contract"] = {
+                key: value for key, value in stop.items() if key != "semantic_source_id"
+            }
+        visible["agent_contract_guidance"] = visible_guidance
     return visible
 
 
@@ -2382,7 +2397,7 @@ def _scripted_operation_execution_progress(
 
     if str(expected_tool.get("semantic_role") or "") != "calculate":
         return None
-    return _operation_execution_progress(task, observations)
+    return model_visible_public_operation_progress(task, observations)
 
 
 def _operation_step_rejection(
@@ -2390,9 +2405,8 @@ def _operation_step_rejection(
     observations: tuple[AgentToolObservation, ...],
     call: AgentToolCall,
 ) -> AgentToolResult | None:
-    operational = public_operation_step_rejection(task, observations, call)
-    if operational is not None:
-        return operational
+    if public_operation_progress(task, observations) is not None:
+        return public_operation_step_rejection(task, observations, call)
     if call.tool_id != "calculator":
         return None
     progress = _operation_execution_progress(task, observations)
@@ -2607,8 +2621,10 @@ def _scripted_tool_prompt(
         "for scalar output and never use 'output' or 'output.value'. Never invent a short "
         "operation name. When operation_execution_progress is present, resolve its public "
         "unresolved_variable_requirements before calculation, then execute any compatible "
-        "ready_nodes entry; do not execute a node whose dependencies are incomplete. A single "
-        "next_required_step is supplied only when exactly one node is ready. When "
+        "ready_nodes entry; do not execute a node whose dependencies are incomplete. "
+        "next_required_step names only a semantic requirement and never supplies a tool, "
+        "operator, parameters, or arguments; derive those from the public contract and "
+        "observations. When "
         "failed_action_repair is "
         "present, perform required_prerequisite_action first when supplied; otherwise apply "
         "required_argument_patch and change the failed arguments. Never repeat identical "
@@ -2676,7 +2692,9 @@ def _final_answer_prompt(
             "task": _model_visible_task(task),
             "plan": plan.model_dump(mode="json"),
             "host_feedback": host_feedback,
-            "operation_execution_progress": _operation_execution_progress(task, observations),
+            "operation_execution_progress": model_visible_public_operation_progress(
+                task, observations
+            ),
             "observations": _model_visible_observations(observations, view=observation_view),
         },
     )
@@ -2718,8 +2736,10 @@ def _decision_prompt(
         "'output' or 'output.value'. Never invent a short operation name. "
         "When operation_execution_progress is present, resolve its public "
         "unresolved_variable_requirements before calculation, then execute any compatible "
-        "ready_nodes entry; do not execute a node whose dependencies are incomplete. A single "
-        "next_required_step is supplied only when exactly one node is ready. When "
+        "ready_nodes entry; do not execute a node whose dependencies are incomplete. "
+        "next_required_step names only a semantic requirement and never supplies a tool, "
+        "operator, parameters, or arguments; derive those from the public contract and "
+        "observations. When "
         "failed_action_repair is present, perform "
         "required_prerequisite_action first when supplied. Otherwise, if "
         "available_resolution_actions are present, choose one listed tool whose "
@@ -2744,7 +2764,9 @@ def _decision_prompt(
             "stop_readiness": readiness,
             "host_feedback": host_feedback,
             "failed_action_repair": _failed_action_repair_context(observations),
-            "operation_execution_progress": _operation_execution_progress(task, observations),
+            "operation_execution_progress": model_visible_public_operation_progress(
+                task, observations
+            ),
             "observations": _model_visible_observations(observations, view=observation_view),
         },
     )

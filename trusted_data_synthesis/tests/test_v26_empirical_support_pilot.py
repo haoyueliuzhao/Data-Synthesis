@@ -23,9 +23,11 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_empirical_support_
     replay_empirical_observations,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_empirical_support_runner import (
+    _RawFirstRecordingClient,
     run_empirical_support_pilot,
 )
-from trusted_synthesis.runtime.agent.schema import AgentModelConfig
+from trusted_synthesis.runtime.agent.client import LLMClientError
+from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTelemetry
 from trusted_synthesis.runtime.tools import AgentToolObservation
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -239,6 +241,45 @@ def test_audit_only_preflight_is_credential_free_and_deterministic(
     assert reports[0].next_permitted_stage == "model_discovery_and_parallel_execution"
     for name in ("execution_contract.json", "job_manifest.json", "report.json"):
         assert (outputs[0] / name).read_bytes() == (outputs[1] / name).read_bytes()
+
+
+def test_raw_first_client_retains_success_and_failure_telemetry() -> None:
+    payload = json.loads(MODEL_CONFIG.read_text(encoding="utf-8"))
+    model = AgentModelConfig.model_validate(payload["model"])
+    success = ModelCallTelemetry(
+        provider=model.provider,
+        endpoint_host="api.deepseek.com",
+        model_requested=model.model,
+        model_selected=model.model,
+        request_hash="a" * 64,
+        http_status=200,
+        http_success=True,
+        json_contract_success=True,
+        total_tokens=10,
+    )
+    failure = success.model_copy(
+        update={
+            "request_hash": "b" * 64,
+            "http_success": False,
+            "json_contract_success": False,
+            "error_type": "TimeoutError",
+        }
+    )
+
+    class Delegate:
+        config = model
+
+        def complete_json(self, prompt: str) -> tuple[dict[str, object], ModelCallTelemetry]:
+            if prompt == "failed":
+                raise LLMClientError("failed", (failure,))
+            return {"ok": True}, success
+
+    recorder = _RawFirstRecordingClient(Delegate())  # type: ignore[arg-type]
+    assert recorder.complete_json("passed")[0] == {"ok": True}
+    with pytest.raises(LLMClientError):
+        recorder.complete_json("failed")
+    assert recorder.telemetry == [success, failure]
+    assert recorder.prompts == ["passed", "failed"]
 
 
 def test_contract_rejects_incomplete_implementation_manifest(

@@ -1805,3 +1805,66 @@ Capability and Reachability execution remain unauthorized until a new protocol s
 their denominators. Independent validity remains mandatory before any future Quotient State
 mapping. Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and Contribution remain
 closed.
+
+#### v26.61-v26.64 executed instrument decision
+
+The historical v26.61 execution completed 32 jobs but failed its instrument gate with 20 Host
+instrument failures. Credential-free replay showed that a valid public Operation call with
+multiple ready nodes passed the new gate and then fell through to a legacy single-step gate that
+dereferenced `next_required_step=null`. The historical result remains immutable and cannot be
+reclassified.
+
+v26.62 repaired this composition defect under fresh TaskPackage, Runtime, public-contract,
+Verifier, execution-contract, and Job identities. Public Progress now projects semantic node
+requirements without concrete tools or arguments, the public stop view omits Semantic Source
+identity, and the public Operation gate takes precedence over the legacy gate. The fresh static
+Population passed 24/24 closure audits, 48/48 Witness paths, and 192/192 destructive Operation
+mutations before a model client was constructed.
+
+The v26.63 fresh requalification then passed the frozen instrument and resource gates with 32/32
+model outcomes, zero Runtime or instrument failure, zero fallback, zero Stop-ready false positive
+or false negative, and complete raw, Prompt, public-Progress, and private-identity audits. This
+positive instrument result remains authoritative under its preregistered estimand.
+
+A separate credential-free v26.64 audit adds two stronger prospective preconditions. First, every
+model-visible failed-action repair must be action-neutral. It may communicate the failed action,
+typed error, unresolved semantic roles, and unchanged public constraints, but it may not provide a
+ready node's target tool, correct operator, parameters, selected Evidence identities, or complete
+expected arguments. This requirement applies recursively to tool results and every subsequent
+Prompt, not only to `operation_execution_progress`.
+
+Second, local verification and Stop Readiness must use one typed public terminal-verification
+contract. The contract must:
+
+- bind the terminal operation reference observed in the model's own successful tool result;
+- freeze whether additional claim fields are allowed;
+- require verification to occur after terminal completion;
+- reject missing or wrong terminal references;
+- distinguish local tool success from contract-complete terminal verification;
+- be shared by the public tool schema, Runtime Progress, Stop Readiness, Runtime Witness, and
+  independent Verifier.
+
+Historical v26.63 rows are not rescored under a future contract. The observed 73 local
+`verified=true` calls remain descriptive because none used the exact frozen terminal-reference
+shape. Likewise, 24 local mechanism successes and 24 terminal-complete trajectories do not create
+valid trajectories or Quotient States.
+
+The current transition is therefore:
+
+```text
+public_repair_and_postterminal_verification_contract_hardening_only
+```
+
+The hardening requires fresh dependent identities and must pass, without a model call:
+
+- recursive action-neutral Progress and repair-Prompt audits;
+- public/private isolation;
+- complete Runtime Witnesses through terminal verification and stopping;
+- wrong-reference, missing-reference, extra-field, early-verification, and post-completion
+  destructive mutations;
+- target-matched Mechanism Necessity;
+- source-manifest validation and an independent byte rebuild.
+
+Only a passing static result may authorize another small instrument requalification. Capability
+Development, State Reachability execution, Confirmation, No-C VTDO, Student training, Exact
+Target, GP-C, and Contribution remain closed.

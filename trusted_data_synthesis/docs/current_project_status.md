@@ -15,6 +15,77 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.61-v26.64 Operation Instrument Decision
+
+Finance v26.61-v26.64 executed the frozen 32-job Operation-closure regression, repaired its Host
+instrument defect under fresh identities, passed a fresh real-model requalification, and then
+completed a credential-free post-run contract audit before freezing any Capability Development or
+State Reachability protocol.
+
+The first v26.61 run completed 32 jobs but produced 20 instrument failures and only 12 model
+outcomes. Credential-free Witness replay localized all 20 failures to a new-gate/legacy-gate
+composition defect: the public Operation gate accepted a valid call with two ready nodes and
+`next_required_step=null`, then the legacy single-step gate dereferenced that null step. Historical
+v26.61 remains blocked and immutable. Its 143 recorded Provider calls, 1,184,311 tokens, and USD
+0.1193173296 estimate omit post-call telemetry from the crashed rows and are therefore lower-bound
+telemetry rather than a complete cost denominator.
+
+v26.62 created a fresh 24-task Population after making public Progress semantic-only, removing
+Semantic Source identity from the public stop view, giving the new public gate precedence over the
+legacy gate, strengthening recursive private-field rejection, and persisting raw-first Prompt and
+Provider telemetry. It passed 24/24 Operation contracts, closure audits, primary Runtime Witnesses,
+and Mechanism Necessity artifacts; 48/48 compiler Witness paths, 192/192 destructive mutations,
+24/24 capability prerequisites, 12/12 VTDO-candidate prerequisites, and 36 static paths also
+passed. The run used zero API calls and zero GPU jobs. Its report is
+`finance_v26_public_operation_rematerialization_report:0a73cb6e9d90313bdeafd4dd7b42c455c25a1bcfab8300a943d49ed0f157fba3`.
+
+The fresh v26.63 requalification completed 32/32 exact DeepSeek V4-Flash jobs. All 32 were model
+outcomes; Runtime and instrument failures, fallback, Stop-ready false positives, and Stop-ready
+false negatives were zero. Raw byte, identity, Prompt hash, recursive noninterference, Public
+Contract, semantic-only Public Progress, and private-identity audits passed for 32/32 rows. The run
+made 403 Provider calls, used 3,930,087 provider-reported tokens, recorded estimated cost telemetry
+of USD 0.4368207872, passed its USD 2.00 resource ceiling, and used no local GPU. The authoritative
+instrument report is
+`finance_v26_operation_closure_regression_report:04cd426a734f4fe6fcbf90e4e07ee750bc19ed6b17809ad43bac5fa4a107a599`.
+A credential-free completed-run replay executed zero jobs and left all seven top-level hashes and
+the report identity unchanged.
+
+Independent validity remained descriptive. All 32 trajectories were model-invalid; 24/32
+completed every required Program node and the terminal Operation, 0/32 satisfied the frozen
+post-terminal verification predicate, and 0/32 were independently valid. Twenty-one early final
+answers were rejected, with zero premature-verification flag and zero Stop-readiness error.
+
+The v26.64 read-only audit replayed 51 source files and retained the passing v26.63 instrument
+result. Public Progress had zero action-bearing ready/next projections. A separate failed-action
+path still returned 27 repair patches containing exact action bindings across 22 rollouts; 27 such
+patches entered later Prompts across 21 rollouts. This prevents a prospective model-owned repair
+claim even though it does not retroactively alter the narrower v26.63 Progress gate.
+
+The audit also found 73 local `verified=true` cross-checks after terminal completion across 23
+rollouts. Sixty-six verified answer-shaped payloads and seven verified a matching terminal
+`operation_ref` plus extra fields; zero used the exact terminal-reference shape required by frozen
+Stop Readiness. This is evidence of a public verification-binding mismatch, not evidence that
+Flash performed no useful verification behavior. Historical outcomes were not rescored.
+
+Successful-tool traces had 15 unique sequences, effective count 12.563884, and maximum share
+0.21875. All 32 acquisition routes were `structured_direct`, but these were unconditional
+capability-only tasks without requested VTDO paths, so multiroute support and path collapse remain
+unevaluable.
+
+The authoritative v26.64 report is
+`finance_v26_operation_closure_postrun_audit:75ba366bac4afba3efc7784029b5e53aadd855cbab9509ed2489b7cdc71f030e`.
+The formal and independent builds reproduced all three output files byte for byte with zero API
+calls and zero GPU jobs. Its transition is:
+
+```text
+public_repair_and_postterminal_verification_contract_hardening_only
+```
+
+Capability Development, State Reachability execution, Fresh Confirmation, No-C VTDO, Student
+training, Exact Target, GP-C, and production Contribution remain forbidden. Production
+Contribution remains zero. See
+`docs/finance_v26_61_v26_64_operation_instrument_repair_and_requalification.md`.
+
 ## v26.60 Public Operation Closure
 
 Finance v26.60 completed the fresh identity-incompatible rematerialization authorized by v26.59.
@@ -52,33 +123,24 @@ v2 build has byte-identical eleven detail artifacts and a new source-bound repor
 model call, task outcome, or task selection occurred between the builds.
 
 
-## v26.61 Operation-closure Regression Preflight
+## v26.61 Historical Failure And v26.62 Repair
 
-v26.61 freezes an outcome-blind instrument regression over eight capability-only v26.60 tasks:
-two tasks per mechanism and four unconditional DeepSeek V4-Flash replicas per task, for 32 jobs.
-It performs no task selection, model comparison, state conditioning, or state mapping. Independent
-validity is descriptive and is not an instrument gate.
-
-The frozen Contract and Job Manifest identities are:
+The v26.61 preflights remain immutable zero-denominator records. The formal v26.61 execution is
+also immutable and is the authoritative negative result for that historical implementation:
 
 ```text
-finance_v26_operation_closure_regression_contract:367a02811efc1e7f8f691a23a1cd3b4babfd33f8935638947b2d7ee1b6266591
-finance_v26_operation_closure_regression_jobs:6f20f39d997642239cb69722a0145388edb982e79becca3db69ceb34c51160f1
+completed jobs       = 32 / 32
+model outcomes       = 12 / 32
+instrument failures  = 20 / 32
+status               = blocked
+next permitted stage = runtime_or_public_operation_instrument_repair_only
 ```
 
-The credential-free preflight constructed no model client and reproduced its three JSON outputs
-byte for byte. Its status is `preflight`, with `next_permitted_stage=model_execution_only`.
-The formal 32 jobs have not started because `DEEPSEEK_API_KEY` is absent from the inherited
-process environment and the documented project activation path; the documented archive `.env`
-is also absent on the migrated server. This is an execution-environment blocker, not a scientific
-result. No model, Runtime, state-support, or VTDO conclusion is drawn from the zero denominator.
-
-The authoritative preflight report is
-`finance_v26_operation_closure_regression_report:b566a595464c5cb0549a208f37acc8b1dd00f36e319644c01ca41f4e552c9f93`.
-The earlier preflight without the `v2` suffix is immutable but superseded; it bound the stale
-v26.60 v1 report and made zero model or GPU calls.
-
-All downstream stages remain forbidden and production Contribution remains zero.
+Its report identity is
+`finance_v26_operation_closure_regression_report:1520782d212f40e9d4bc88c8eab3cbb5e2bb03a96f21957c9cd04ac9615e25b3`.
+No v26.61 row was retried or reclassified. v26.62 used fresh task, public-contract, Runtime,
+Verifier, execution-contract, and Job identities. Its independent static rebuild was byte
+identical and authorized only the fresh v26.63 instrument protocol.
 
 ## v26.57-v26.59 Empirical Support Decision
 
@@ -597,15 +659,22 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | passed, 360 source files |
-| Pytest | passed, 909 tests in 452.70 seconds |
+| Mypy | passed, 361 source files |
+| Pytest | passed, 919 tests in 464.56 seconds |
+| v26.64 post-run audit focus | 7 passed |
+| v26.64 dual build | all three output files are byte-identical; zero API/GPU |
+| v26.64 source replay | 51 source files and 32 raw Artifacts passed exact hash replay |
+| v26.63 instrument requalification | 32/32 model outcomes; all instrument and resource gates passed |
+| v26.63 completed-run replay | 32/32 resumed, zero jobs, all seven top-level hashes unchanged |
+| v26.62 static hardening dual build | all twelve JSON files are byte-identical; zero API/GPU |
+| v26.61 historical execution | 32/32 completed; 20 instrument failures retained as blocked |
 | v26.60 Public Operation rematerialization focus | 8 passed |
 | v26.60 v2 dual build | all eleven detail artifacts and report are byte-identical |
 | v26.60 v1-v2 scientific details | all eleven detail artifacts are byte-identical |
 | v26.60 implementation manifest | all nine frozen source-file SHA-256 values match the current tree |
-| v26.61 Operation-closure regression focus | 6 passed |
+| v26.63 Operation-closure requalification focus | 7 passed |
 | v26.61 v2 dual preflight | execution Contract, Job Manifest, and report are byte-identical; zero API/GPU |
-| Public Operation / Iterative Agent Runtime focus | 5 / 41 passed |
+| Public Operation / Iterative Agent Runtime focus | 6 / 41 passed |
 | v26.57-v26.59 focused regression | 55 passed |
 | v26.58 completed-run replay | credential-free resume reused the existing result; four SHA-256 values unchanged |
 | v26.58 implementation manifest | all four frozen source-file SHA-256 values match the current tree |
@@ -828,28 +897,39 @@ and no fresh Validation result exists.
 
 ## Next Step
 
-Do not rerun the v26.57 conditions, change the v26.60 Population, relax any state or
-Operation gate, or promote compiler Witnesses to empirical support. v26.60 has closed the required
-credential-free static stage. The only permitted empirical action is to execute exactly the frozen
-v26.61 32-Job Manifest after `DEEPSEEK_API_KEY` is restored to the process environment:
+Do not rerun v26.61 or v26.63, relax the frozen terminal-reference predicate, reinterpret local
+mechanism success as complete validity, or promote any v26.63 trajectory to state support. The
+only permitted transition is:
 
 ```text
-8 capability-only tasks x 4 unconditional Flash replicas = 32 jobs
+public_repair_and_postterminal_verification_contract_hardening_only
 ```
 
-Do not change task selection, replica counts, Runtime or Prompt bytes, model identity, fallback
-policy, token budget, cost ceiling, or instrument gates. Invalid model outcomes must remain in the
-denominator, validity must remain outside the instrument pass rule, and no trajectory may be
-mapped to a state in this regression.
+The next design must remove exact action bindings from failed-action repair while retaining typed
+error and unresolved-semantic information. It must also compile one typed public terminal
+verification target shared by the cross-check tool, Runtime Progress, Stop Readiness, Runtime
+Witness, and independent Verifier. Whether extra claim fields are accepted must be frozen
+prospectively; wrong or missing terminal references must fail closed.
 
-A passing v26.61 result would authorize only construction of a new protocol with separate
-Capability Development and State Reachability denominators. It would not directly authorize either
-execution stage. Capability Confirmation, State-support Confirmation, No-C VTDO, Student training,
-Exact Target, GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes remain
-immutable Development evidence and cannot be reused as fresh Confirmation. Objective Support
-remains a separate unresolved bottleneck.
+The repaired design requires fresh TaskPackage and all dependent contract identities. Before any
+new API call it must pass action-neutral repair-Prompt audits, public/private isolation, complete
+Runtime Witnesses, wrong/missing/extra-reference mutations, early-verification and post-completion
+mutations, Mechanism Necessity, source-manifest replay, and an independent byte rebuild. A passing
+static result may authorize only another small instrument requalification, not Capability or
+Reachability execution.
+
+Capability Confirmation, State-support Confirmation, No-C VTDO, Student training, Exact Target,
+GP-C, and Contribution remain forbidden. The 456 v26.57-v26.58 outcomes and 32 v26.63 outcomes
+remain immutable Development evidence and cannot be reused as Fresh Confirmation. Objective
+Support remains a separate unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_61_v26_64_operation_instrument_repair_and_requalification.md`
+- `artifacts/vtdo_experiment/finance_v26_61_operation_closure_regression_v2_20260818/report.json`
+- `artifacts/vtdo_experiment/finance_v26_62_public_operation_instrument_hardening_20260818/report.json`
+- `artifacts/vtdo_experiment/finance_v26_63_operation_closure_requalification_20260818/report.json`
+- `artifacts/vtdo_experiment/finance_v26_64_operation_closure_postrun_audit_20260818/report.json`
 
 - `docs/finance_v26_60_public_operation_and_v26_61_preflight_report.md`
 - `artifacts/vtdo_experiment/finance_v26_60_public_operation_rematerialization_v2_20260818/report.json`

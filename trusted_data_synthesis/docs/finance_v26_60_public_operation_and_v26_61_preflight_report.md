@@ -2,6 +2,16 @@
 
 Audit date: 2026-08-18
 
+## Execution Update
+
+This document remains the historical v26.60 static and v26.61 preflight record. The frozen v26.61
+Manifest was subsequently executed, failed its instrument gate, and was repaired only under fresh
+v26.62 identities. A fresh v26.63 requalification passed the preregistered instrument gate, while
+the credential-free v26.64 post-run audit restricted the current transition to
+`public_repair_and_postterminal_verification_contract_hardening_only`. See
+`docs/finance_v26_61_v26_64_operation_instrument_repair_and_requalification.md` for the current
+decision. The historical identities and preflight observations below are unchanged.
+
 ## Summary
 
 Finance v26.60 implements the only transition authorized by v26.59:

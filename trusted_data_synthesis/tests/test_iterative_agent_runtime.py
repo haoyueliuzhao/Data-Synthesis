@@ -633,7 +633,7 @@ def test_operation_progress_requires_ordered_real_operation_references() -> None
     assert completed["terminal_operation_ref"] == "operation:result"
 
 
-def test_scripted_retrieval_is_not_preempted_by_pending_calculation() -> None:
+def test_legacy_scripted_contract_is_not_projected_as_public_operation_progress() -> None:
     task = _task_with_operation_contract()
 
     assert (
@@ -644,13 +644,14 @@ def test_scripted_retrieval_is_not_preempted_by_pending_calculation() -> None:
         )
         is None
     )
-    calculation_progress = _scripted_operation_execution_progress(
-        task,
-        {"tool_id": "calculator", "semantic_role": "calculate"},
-        (),
+    assert (
+        _scripted_operation_execution_progress(
+            task,
+            {"tool_id": "calculator", "semantic_role": "calculate"},
+            (),
+        )
+        is None
     )
-    assert calculation_progress is not None
-    assert calculation_progress["next_required_step"]["step_id"] == "d1"
 
 
 def test_operation_step_rejection_requires_selection_then_exact_operand_order() -> None:

@@ -14,6 +14,7 @@ from trusted_synthesis.core.trajectory.public_operation import (
     PublicOperationContractView,
     PublicStopReadinessContract,
     operational_executable_verifier_binding_id,
+    public_stop_readiness_view,
 )
 from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_public_operation_pipeline import (
     build_v26_public_operation_rematerialization,
@@ -177,6 +178,8 @@ def test_public_contract_binds_program_verifier_progress_and_stop_without_privat
         stop = package.stop_readiness_contract
         public_payload = json.dumps(package.task.public.model_dump(mode="json"), sort_keys=True)
         assert all(item not in public_payload for item in record.target_program_evidence_ids)
+        assert package.semantic_source.semantic_source_id not in public_payload
+        assert '"semantic_source_id"' not in public_payload
         assert "source_program_node_id" not in public_payload
         assert "expected_operator_id" not in public_payload
         assert not view.exact_tool_sequence_required
@@ -196,7 +199,9 @@ def test_public_contract_binds_program_verifier_progress_and_stop_without_privat
         }
         guidance = package.task.public.metadata["agent_contract_guidance"]
         assert guidance["public_operation_execution_contract"] == view.model_dump(mode="json")
-        assert guidance["public_stop_readiness_contract"] == stop.model_dump(mode="json")
+        assert guidance["public_stop_readiness_contract"] == public_stop_readiness_view(
+            stop
+        ).model_dump(mode="json")
 
 
 def test_every_runtime_witness_and_acquisition_path_closes_the_same_terminal(

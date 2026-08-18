@@ -33,7 +33,7 @@ from trusted_synthesis.runtime.agent.public_operation import public_operation_pr
 from trusted_synthesis.runtime.agent.schema import AgentModelConfig
 from trusted_synthesis.runtime.tools import AgentToolEnvironmentManifest, AgentToolObservation
 
-V26_OPERATION_CLOSURE_REGRESSION_VERSION = "finance_v26_operation_closure_regression.v1"
+V26_OPERATION_CLOSURE_REGRESSION_VERSION = "finance_v26_operation_closure_regression.v2"
 V26_OPERATION_CLOSURE_SELECTION_VERSION = "finance_v26_operation_closure_selection.v1"
 EXPECTED_TASK_COUNT = 8
 ROLLOUTS_PER_TASK = 4
@@ -47,6 +47,29 @@ TARGET_MECHANISMS = (
     "semantic_reconciliation",
     "failure_recovery",
     "state_dependent_stopping",
+)
+_PROGRESS_ACTION_BINDING_FIELDS = frozenset(
+    {
+        "allowed_operators",
+        "argument_contract",
+        "expected_arguments",
+        "operator",
+        "operator_selection_rule",
+        "parameters",
+        "tool_id",
+    }
+)
+_PRIVATE_PROMPT_FIELD_NAMES = frozenset(
+    {
+        "expected_operator_id",
+        "mechanism_private_state",
+        "semantic_source_id",
+        "source_program_dag_hash",
+        "source_program_node_id",
+        "source_verifier_dag_hash",
+        "target_program_evidence_ids",
+        "verifier_binding_id",
+    }
 )
 IMPLEMENTATION_SOURCE_PATHS = (
     "src/trusted_synthesis/core/trajectory/public_operation.py",
@@ -927,26 +950,15 @@ def _diagnostic(
     )
     decision_prompts = tuple(item for item in prompts if '"operation_execution_progress"' in item)
     progress_projection_passed = all(
-        '"unresolved_variable_requirements"' in item
-        and '"terminal_node_completed"' in item
-        and '"all_steps_completed"' in item
-        for item in decision_prompts
+        _semantic_progress_projection_passed(item) for item in decision_prompts
     )
     package = record.task_package
     private_values = (
         *record.target_program_evidence_ids,
-        *(item.node_id for item in package.task.oracle.task_program.nodes),
         package.semantic_source.semantic_source_id,
         package.verifier_binding.binding_id,
         package.verifier_binding.source_program_dag_hash,
         package.verifier_binding.source_verifier_dag_hash,
-        "mechanism_private_state",
-        "target_program_evidence_ids",
-        "source_program_node_id",
-        "expected_operator_id",
-        "source_program_dag_hash",
-        "source_verifier_dag_hash",
-        "verifier_binding_id",
     )
     values = {
         "rollout_id": rollout.rollout_id,
@@ -976,9 +988,9 @@ def _diagnostic(
         "public_contract_in_initial_prompt": ("public_operation_execution_contract" in initial),
         "decision_prompt_observed": bool(decision_prompts),
         "public_progress_in_decision_prompt": progress_projection_passed,
-        "initial_prompt_private_identity_free": all(
-            str(value) not in initial for value in private_values
-        ),
+        "initial_prompt_private_identity_free": bool(initial)
+        and all(str(value) not in initial for value in private_values)
+        and all(f'"{field}"' not in initial for field in _PRIVATE_PROMPT_FIELD_NAMES),
     }
     provisional = OperationClosureRolloutDiagnostic.model_construct(
         diagnostic_id="pending", **values
@@ -986,6 +998,37 @@ def _diagnostic(
     return OperationClosureRolloutDiagnostic(
         diagnostic_id=operation_closure_rollout_diagnostic_id(provisional),
         **values,
+    )
+
+
+def _semantic_progress_projection_passed(prompt: str) -> bool:
+    marker = "\nPUBLIC_CONTEXT_JSON:\n"
+    repair_marker = "\nCONTRACT_REPAIR_JSON:\n"
+    _, separator, remainder = prompt.partition(marker)
+    if not separator:
+        return False
+    context_text, _, _ = remainder.partition(repair_marker)
+    try:
+        context = json.loads(context_text)
+    except json.JSONDecodeError:
+        return False
+    progress = context.get("operation_execution_progress")
+    if not isinstance(progress, Mapping):
+        return False
+    if (
+        progress.get("action_binding_fields_exposed") is not False
+        or "unresolved_variable_requirements" not in progress
+        or "terminal_node_completed" not in progress
+        or "all_steps_completed" not in progress
+    ):
+        return False
+    nodes = list(progress.get("ready_nodes") or ())
+    next_step = progress.get("next_required_step")
+    if next_step is not None:
+        nodes.append(next_step)
+    return all(
+        isinstance(item, Mapping) and not (_PROGRESS_ACTION_BINDING_FIELDS & set(item))
+        for item in nodes
     )
 
 

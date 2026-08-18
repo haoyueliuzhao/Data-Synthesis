@@ -8,7 +8,7 @@ from trusted_synthesis.core.trajectory.public_operation import (
     PublicOperationContractView,
     PublicOperationNode,
     PublicOperationVariable,
-    PublicStopReadinessContract,
+    PublicStopReadinessView,
 )
 from trusted_synthesis.runtime.tools import (
     ARGUMENT_PATCH_REQUIRED_POLICY,
@@ -138,6 +138,24 @@ def public_operation_progress(
     }
 
 
+def model_visible_public_operation_progress(
+    task: TaskPublicSpec,
+    observations: tuple[AgentToolObservation, ...],
+) -> dict[str, Any] | None:
+    """Project semantic progress without supplying the next tool invocation."""
+
+    progress = public_operation_progress(task, observations)
+    if progress is None:
+        return None
+    ready_nodes = tuple(_semantic_ready_node(item) for item in progress["ready_nodes"])
+    return {
+        **progress,
+        "ready_nodes": ready_nodes,
+        "next_required_step": ready_nodes[0] if len(ready_nodes) == 1 else None,
+        "action_binding_fields_exposed": False,
+    }
+
+
 def public_operation_step_rejection(
     task: TaskPublicSpec,
     observations: tuple[AgentToolObservation, ...],
@@ -252,7 +270,7 @@ def public_stop_readiness_payload(
 
 def _load_contracts(
     task: TaskPublicSpec,
-) -> tuple[PublicOperationContractView, PublicStopReadinessContract] | None:
+) -> tuple[PublicOperationContractView, PublicStopReadinessView] | None:
     guidance = task.metadata.get("agent_contract_guidance")
     if not isinstance(guidance, Mapping):
         return None
@@ -263,12 +281,28 @@ def _load_contracts(
     if not isinstance(raw_operation, Mapping) or not isinstance(raw_stop, Mapping):
         raise ValueError("public Operation and stop-readiness contracts must both be objects")
     operation = PublicOperationContractView.model_validate(raw_operation)
-    stop = PublicStopReadinessContract.model_validate(raw_stop)
+    stop_payload = dict(raw_stop)
+    stop_payload.pop("semantic_source_id", None)
+    stop = PublicStopReadinessView.model_validate(stop_payload)
     if stop.required_node_ids != tuple(sorted(item.node_id for item in operation.nodes)):
         raise ValueError("public stop contract does not require every Operation node")
     if stop.terminal_node_id != operation.terminal_node_id:
         raise ValueError("public stop and Operation terminal nodes differ")
     return operation, stop
+
+
+def _semantic_ready_node(value: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        key: value[key]
+        for key in (
+            "node_id",
+            "node_kind",
+            "semantic_role",
+            "dependency_node_ids",
+            "unresolved_symbols",
+        )
+        if key in value
+    }
 
 
 def _resolved_variables(

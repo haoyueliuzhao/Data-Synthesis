@@ -20,11 +20,12 @@ from trusted_synthesis.core.trajectory.executable_task import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-PUBLIC_OPERATION_CONTRACT_VERSION = "public_operation_execution_contract.v1"
-PUBLIC_STOP_READINESS_VERSION = "public_stop_readiness_contract.v1"
-PUBLIC_OPERATION_RUNTIME_PROJECTION_VERSION = "public_operation_runtime_projection.v1"
-OPERATIONAL_EXECUTABLE_TASK_PACKAGE_VERSION = "operational_executable_task_package.v1"
-OPERATIONAL_EXECUTABLE_VERIFIER_VERSION = "operational_executable_verifier_binding.v1"
+PUBLIC_OPERATION_CONTRACT_VERSION = "public_operation_execution_contract.v2"
+PUBLIC_STOP_READINESS_VERSION = "public_stop_readiness_contract.v2"
+PUBLIC_STOP_READINESS_VIEW_VERSION = "public_stop_readiness_view.v1"
+PUBLIC_OPERATION_RUNTIME_PROJECTION_VERSION = "public_operation_runtime_projection.v2"
+OPERATIONAL_EXECUTABLE_TASK_PACKAGE_VERSION = "operational_executable_task_package.v2"
+OPERATIONAL_EXECUTABLE_VERIFIER_VERSION = "operational_executable_verifier_binding.v2"
 
 OperationNodeKind = Literal["normalization", "calculation"]
 OperatorChoiceMode = Literal["not_applicable", "fixed_semantics", "model_context_choice"]
@@ -255,6 +256,32 @@ class PublicStopReadinessContract(FrozenModel):
         return self
 
 
+class PublicStopReadinessView(FrozenModel):
+    """Model-visible stop semantics with source-binding identities removed."""
+
+    contract_id: str = Field(min_length=1)
+    operation_contract_id: str = Field(min_length=1)
+    required_node_ids: tuple[str, ...] = Field(min_length=1)
+    terminal_node_id: str = Field(min_length=1)
+    verification_after_terminal_required: Literal[True] = True
+    final_answer_requires_stop_ready: Literal[True] = True
+    maximum_postcompletion_tool_calls: Literal[0] = 0
+    readiness_formula: Literal[
+        "all_required_nodes_and_terminal_and_postterminal_verification_and_no_extra_action"
+    ] = "all_required_nodes_and_terminal_and_postterminal_verification_and_no_extra_action"
+    source_binding_identity_exposed: Literal[False] = False
+    schema_version: str = PUBLIC_STOP_READINESS_VIEW_VERSION
+
+    @model_validator(mode="after")
+    def validate_view(self) -> PublicStopReadinessView:
+        if self.required_node_ids != tuple(sorted(set(self.required_node_ids))):
+            raise ValueError("public stop view required nodes are not canonical")
+        if self.terminal_node_id not in self.required_node_ids:
+            raise ValueError("public stop view omits the terminal node")
+        _reject_private_disclosures(self.model_dump(mode="json"))
+        return self
+
+
 class PublicOperationRuntimeProjection(FrozenModel):
     projection_id: str = Field(min_length=1)
     operation_contract_id: str = Field(min_length=1)
@@ -421,9 +448,16 @@ class OperationalExecutableTaskPackage(FrozenModel):
             "public_operation_execution_contract"
         ) != self.operation_contract.public_view.model_dump(mode="json"):
             raise ValueError("Task Public Spec exposes another Operation contract")
-        if guidance.get(
-            "public_stop_readiness_contract"
-        ) != self.stop_readiness_contract.model_dump(mode="json"):
+        observed_stop = guidance.get("public_stop_readiness_contract")
+        expected_stop = public_stop_readiness_view(self.stop_readiness_contract).model_dump(
+            mode="json"
+        )
+        legacy_stop = self.stop_readiness_contract.model_dump(mode="json")
+        if self.schema_version == OPERATIONAL_EXECUTABLE_TASK_PACKAGE_VERSION:
+            stop_matches = observed_stop == expected_stop
+        else:
+            stop_matches = observed_stop in (expected_stop, legacy_stop)
+        if not stop_matches:
             raise ValueError("Task Public Spec exposes another stop contract")
         oracle_bindings = self.task.oracle.selection_contract.get("executable_support_bindings")
         expected_oracle = {
@@ -461,6 +495,21 @@ def public_stop_readiness_contract_id(value: PublicStopReadinessContract) -> str
     )
 
 
+def public_stop_readiness_view(
+    value: PublicStopReadinessContract,
+) -> PublicStopReadinessView:
+    return PublicStopReadinessView(
+        contract_id=value.contract_id,
+        operation_contract_id=value.operation_contract_id,
+        required_node_ids=value.required_node_ids,
+        terminal_node_id=value.terminal_node_id,
+        verification_after_terminal_required=value.verification_after_terminal_required,
+        final_answer_requires_stop_ready=value.final_answer_requires_stop_ready,
+        maximum_postcompletion_tool_calls=value.maximum_postcompletion_tool_calls,
+        readiness_formula=value.readiness_formula,
+    )
+
+
 def public_operation_runtime_projection_id(value: PublicOperationRuntimeProjection) -> str:
     return canonical_hash(
         value.model_dump(mode="json", exclude={"projection_id"}),
@@ -492,6 +541,7 @@ def _reject_private_disclosures(value: object) -> None:
         "gold_evidence",
         "hidden_program",
         "oracle_node",
+        "semantic_source",
         "source_program",
         "expected_operator",
         "selected_operator",

@@ -21,14 +21,20 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_operation_closure_
     build_operation_closure_regression_manifest,
     run_operation_closure_regression,
 )
+from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_public_operation_rematerialization import (  # noqa: E501
+    OperationalTaskRecord,
+)
+from trusted_synthesis.runtime.agent.iterative import _operation_step_rejection
+from trusted_synthesis.runtime.agent.public_operation import public_operation_progress
 from trusted_synthesis.runtime.agent.schema import AgentModelConfig
+from trusted_synthesis.runtime.tools import AgentToolObservation
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ROOT = PACKAGE_ROOT / "artifacts" / "vtdo_experiment"
-SOURCE = ARTIFACT_ROOT / "finance_v26_60_public_operation_rematerialization_v2_20260818"
+SOURCE = ARTIFACT_ROOT / "finance_v26_62_public_operation_instrument_hardening_20260818"
 MODEL_CONFIG = PACKAGE_ROOT / "config" / "deepseek_v4_flash_agent_v23_paired_pilot.json"
-RUN_ID = "finance_v26_61_operation_closure_regression_v2_20260818"
-SELECTION_SALT = "finance-v26.61-operation-closure-regression-20260818"
+RUN_ID = "finance_v26_63_operation_closure_requalification_20260818"
+SELECTION_SALT = "finance-v26.63-operation-closure-requalification-20260818"
 
 
 @pytest.fixture(scope="module")
@@ -144,6 +150,44 @@ def test_regression_selection_and_job_manifest_are_deterministic(
 
     assert second_contract.model_dump(mode="json") == contract.model_dump(mode="json")
     assert second_manifest.model_dump(mode="json") == manifest.model_dump(mode="json")
+
+
+def test_multi_ready_public_call_never_falls_through_to_legacy_single_step_gate() -> None:
+    records = tuple(
+        OperationalTaskRecord.model_validate(item)
+        for item in json.loads((SOURCE / "operational_task_records.json").read_text())
+    )
+    by_task = {item.task_package.package_id: item for item in records}
+    observations = tuple(
+        AgentToolObservation.model_validate(item)
+        for item in json.loads((SOURCE / "operational_witness_observations.json").read_text())
+    )
+    by_observation = {item.observation_id: item for item in observations}
+    witnesses = json.loads((SOURCE / "operational_public_witnesses.json").read_text())
+    reproduced = 0
+    for witness in witnesses:
+        record = by_task[witness["task_package_id"]]
+        history: list[AgentToolObservation] = []
+        for step in witness["steps"]:
+            observation = by_observation[step["observation_id"]]
+            progress = public_operation_progress(record.task_package.task.public, tuple(history))
+            if (
+                observation.call.tool_id == "calculator"
+                and progress is not None
+                and len(progress["ready_nodes"]) > 1
+            ):
+                assert progress["next_required_step"] is None
+                assert (
+                    _operation_step_rejection(
+                        record.task_package.task.public,
+                        tuple(history),
+                        observation.call,
+                    )
+                    is None
+                )
+                reproduced += 1
+            history.append(observation)
+    assert reproduced > 0
 
 
 def test_audit_only_preflight_constructs_no_model_client(

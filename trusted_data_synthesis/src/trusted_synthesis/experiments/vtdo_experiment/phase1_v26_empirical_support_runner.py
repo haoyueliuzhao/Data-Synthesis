@@ -64,6 +64,30 @@ from trusted_synthesis.runtime.tools import AgentToolEnvironmentManifest
 DEFAULT_WORKERS = 24
 
 
+class _RawFirstRecordingClient:
+    """Retain every attempted prompt and telemetry row across unexpected Host failures."""
+
+    def __init__(self, delegate: OpenAICompatibleJsonClient) -> None:
+        self._delegate = delegate
+        self.telemetry: list[ModelCallTelemetry] = []
+        self.prompts: list[str] = []
+
+    @property
+    def config(self) -> AgentModelConfig:
+        return self._delegate.config
+
+    def complete_json(self, prompt: str) -> tuple[dict[str, Any], ModelCallTelemetry]:
+        try:
+            payload, telemetry = self._delegate.complete_json(prompt)
+        except LLMClientError as exc:
+            self.telemetry.extend(exc.telemetry)
+            self.prompts.extend(prompt for _ in exc.telemetry)
+            raise
+        self.telemetry.append(telemetry)
+        self.prompts.append(prompt)
+        return payload, telemetry
+
+
 def run_empirical_support_pilot(
     *,
     run_id: str,
@@ -282,9 +306,10 @@ def _run_one(
         "instrument_failure",
     ]
     failure_attribution: dict[str, Any] | None = None
+    recording_client = _RawFirstRecordingClient(client)
     try:
         result = IterativeAgentSolver(
-            client,
+            recording_client,
             mode="autonomous_agent",
             maximum_total_tokens=contract.maximum_total_model_tokens_per_rollout,
             protocol_profile=IterativeAgentProtocolProfile(),
@@ -320,8 +345,13 @@ def _run_one(
             "reason": _safe_error(exc),
         }
     except Exception as exc:
+        telemetry = tuple(recording_client.telemetry)
         terminal = "instrument_failure"
-        failure_attribution = {"category": "instrument_failure", "reason": _safe_error(exc)}
+        failure_attribution = {
+            "category": "instrument_failure",
+            "reason": _safe_error(exc),
+            "raw_first_provider_call_count": len(recording_client.telemetry),
+        }
 
     if result is not None:
         mechanism = evaluate_mechanism_estimand(
@@ -345,7 +375,7 @@ def _run_one(
         if result is not None
         else failure_artifact.model_request_prompts
         if failure_artifact is not None
-        else ()
+        else tuple(recording_client.prompts)
     )
     prompt_hashes = tuple(hashlib.sha256(item.encode("utf-8")).hexdigest() for item in prompt_rows)
     recursive_noninterference = bool(

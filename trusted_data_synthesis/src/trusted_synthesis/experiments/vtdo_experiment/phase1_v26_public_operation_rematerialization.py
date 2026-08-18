@@ -18,11 +18,11 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_executable_task_re
 )
 from trusted_synthesis.hashing import canonical_hash
 
-V26_PUBLIC_OPERATION_REMATERIALIZATION_VERSION = "finance_v26_public_operation_rematerialization.v1"
-V26_PUBLIC_OPERATION_COMPILER_VERSION = "finance_v26_public_operation_compiler.v1"
-V26_OPERATION_CLOSURE_AUDIT_VERSION = "finance_v26_operation_closure_audit.v1"
+V26_PUBLIC_OPERATION_REMATERIALIZATION_VERSION = "finance_v26_public_operation_rematerialization.v2"
+V26_PUBLIC_OPERATION_COMPILER_VERSION = "finance_v26_public_operation_compiler.v2"
+V26_OPERATION_CLOSURE_AUDIT_VERSION = "finance_v26_operation_closure_audit.v2"
 V26_OPERATIONAL_VERIFIER_ID = "core.operational_executable_task_verifier"
-V26_OPERATIONAL_VERIFIER_VERSION = "operational_executable_task_verifier.v1"
+V26_OPERATIONAL_VERIFIER_VERSION = "operational_executable_task_verifier.v2"
 
 PATH_STRATEGIES = (
     "structured_direct",

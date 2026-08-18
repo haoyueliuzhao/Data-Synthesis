@@ -16,11 +16,13 @@ from trusted_synthesis.core.trajectory.public_operation import (
     PublicVariableResolutionRule,
     public_operation_contract_view_id,
     public_stop_readiness_contract_id,
+    public_stop_readiness_view,
 )
 from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_cases,
 )
 from trusted_synthesis.runtime.agent.public_operation import (
+    model_visible_public_operation_progress,
     public_operation_progress,
     public_operation_step_rejection,
     public_postcompletion_action_rejection,
@@ -130,7 +132,9 @@ def _task():
                 **task.metadata,
                 "agent_contract_guidance": {
                     "public_operation_execution_contract": view.model_dump(mode="json"),
-                    "public_stop_readiness_contract": stop.model_dump(mode="json"),
+                    "public_stop_readiness_contract": public_stop_readiness_view(stop).model_dump(
+                        mode="json"
+                    ),
                 },
             }
         }
@@ -282,6 +286,39 @@ def test_public_progress_requires_full_terminal_and_postterminal_verification() 
     assert terminal_only["verification_after_terminal_completed"] is False
     assert complete is not None and complete["stop_ready"] is True
     assert complete["final_answer_allowed"] is True
+
+
+def test_model_visible_progress_never_supplies_tool_or_arguments() -> None:
+    task = _task()
+    first, second, *_ = _complete_history()
+
+    progress = model_visible_public_operation_progress(task, (first, second))
+
+    assert progress is not None
+    assert progress["action_binding_fields_exposed"] is False
+    node = progress["next_required_step"]
+    assert node is not None
+    assert set(node) == {
+        "dependency_node_ids",
+        "node_id",
+        "node_kind",
+        "semantic_role",
+        "unresolved_symbols",
+    }
+    assert all(
+        not (
+            {
+                "allowed_operators",
+                "argument_contract",
+                "expected_arguments",
+                "operator_selection_rule",
+                "parameters",
+                "tool_id",
+            }
+            & set(item)
+        )
+        for item in progress["ready_nodes"]
+    )
 
 
 def test_early_verification_and_reordered_nodes_fail_closed() -> None:
