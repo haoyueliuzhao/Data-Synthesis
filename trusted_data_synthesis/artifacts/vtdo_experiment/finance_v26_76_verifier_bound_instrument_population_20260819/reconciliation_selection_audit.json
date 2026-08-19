@@ -1,0 +1,22 @@
+{
+  "audit_id": "finance_v26_verifier_bound_reconciliation_selection:c2d3bc74fa48c0b1865f1923763bfbdd1125f09e9848810787803a9969fe10f9",
+  "eligible_definition_pair_count": 8,
+  "eligible_reconciliation_task_capacity": 4,
+  "historical_outcomes_consulted": false,
+  "instrument_selected_pair_count": 4,
+  "instrument_task_count": 2,
+  "schema_version": "finance_v26_verifier_bound_reconciliation_selection.v1",
+  "selected_evidence_ids": [
+    "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+  ],
+  "selection_policy": "first_four_canonical_period_order_after_frozen_identity_exclusions",
+  "source_capacity_audit_id": "finance_v26_verifier_bound_definition_pair_capacity:249d7334b8736505d3a80a41bd41d52d9642537b22e548e92b0d5c9da83a5787",
+  "status": "passed"
+}

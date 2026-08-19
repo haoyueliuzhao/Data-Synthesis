@@ -1,0 +1,96 @@
+{
+  "audit_id": "finance_v26_verifier_bound_freshness:0d3fc3aee0d88100d42b047953b20c8cd1622097b9406fdcbbb7cfec2a99c6cb",
+  "channels": [
+    {
+      "channel": "source_task_artifact_id",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 70,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:b65e78dd64f06d4a2e13bab4ced4eaf1eb3f455551c16689a9c3f35179cb682d",
+      "selected_count": 6,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:dcfa8ec2dc0cea873fb5abdfc9de22f4191ab89b9586ce2f74a1d5d4456c292b"
+    },
+    {
+      "channel": "source_task_semantic_signature",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 69,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:b1568bbd3e59f4f441c0f83c2fb784eafeb05211fe734a24ddf5d00771e2ae9b",
+      "selected_count": 6,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:89e9f5792fe00a8bf4f379d3e15dad7d3eed4cc1556992de66e2833e89f5ac8f"
+    },
+    {
+      "channel": "source_task_hash",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 69,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:729e736f5021e5c33cfcdbe2703b00ed0c20f7b3015e7eef558598f195fee473",
+      "selected_count": 6,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:c0c6545c6de67fbff2f6c939113b3da10e75f101ed3282fc336b2030c40f9c8f"
+    },
+    {
+      "channel": "evidence_id",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 494,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:fc9a5cba561383b2e3e3e61d3ef28d49efacab987b332dd5356ca9bd487dd1b0",
+      "selected_count": 47,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:1a7905ed9706f41523c316e6d247c595516afd3cb76a019a681bd171216bbb42"
+    },
+    {
+      "channel": "evidence_version_id",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 494,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:d2a0c9669493b04525d1a85f24cd8dd3ab5bc83f790030eed73072a1a22bcb06",
+      "selected_count": 47,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:d578ececaed9285003e99b81cf029ab11fcd4b3bb4adf774f29a1a0f44a16665"
+    },
+    {
+      "channel": "source_record_id",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 494,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:cb5c97a45cc7a881ad0e6eaf014e87abfbb3cbd9ae296ac46c48ca5e77949da9",
+      "selected_count": 47,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:b1a282b4e0d64a4d46dff53e0e2040bc09fef80f59c021fc5ed8e3d3aa7961fe"
+    },
+    {
+      "channel": "semantic_source_id",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 60,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:3e70e163784fbc64f05cae4b32bc5cb16cb40512c822fca5f4d2eb03c8907413",
+      "selected_count": 8,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:a5c8fcdbe9859c118ab1eeb813a13a7ae67803e92089e22e63f6b42b11da5799"
+    },
+    {
+      "channel": "task_package_id",
+      "overlap_count": 0,
+      "overlap_values": [],
+      "prior_count": 60,
+      "prior_set_hash": "finance_v26_verifier_bound_prior_set:c8199ae4474980e9e3285053d59545d3a06ef2f882ebb70440f258eb03396fcb",
+      "selected_count": 8,
+      "selected_set_hash": "finance_v26_verifier_bound_selected_set:ce27b157ad1ccc74eec5decee9f4374840f38a08fd3d80308592cbec83ecae65"
+    }
+  ],
+  "development_population_id": "finance_v26_fresh_task_population:bd7969f69246b0e71310763fe19da54e284a36e97827ca6349ed2ae9ee9f9dcc",
+  "generated_trajectory_count": 0,
+  "historical_diagnostic_candidates_used_for_selection": false,
+  "historical_model_outcomes_used_for_selection": false,
+  "historical_trajectory_reuse_forbidden": true,
+  "schema_version": "finance_v26_verifier_bound_freshness.v1",
+  "selected_nonreconciliation_source_task_count": 6,
+  "selected_reconciliation_evidence_count": 8,
+  "selected_task_count": 8,
+  "selection_salt": "finance_v26_76_verifier_bound_instrument_population_v1",
+  "source_population_ids": [
+    "finance_capability_sensitive_frontier_population:1ac3e8d337649a92488249ccfc01b168063312ad361bc923547a417094174af8",
+    "finance_capability_sensitive_frontier_population:564f70faa05db45c202e7413a9c4d7f0f9dcfe867ab4ee6bfb02be06a0df939a",
+    "finance_capability_sensitive_frontier_population:a4d02686fc21ecb7f610e9f2524c35b6c1133ea7170a540047406579ab50b4da"
+  ],
+  "status": "passed",
+  "v26_56_report_id": "finance_v26_executable_task_rematerialization_report:abc3df8dfbb4c01e17693b48a777f3679c7d8656a88a96c3d1d41a6e5736ea81",
+  "v26_65_report_id": "finance_v26_authority_preserving_hardening_report:1bd44d38c3b75db70928eeafb72e0e88837dc4f010bcf17decfc3ed60f875221",
+  "v26_69_report_id": "finance_v26_fresh_capability_population_report:8b7aeb2a9d9044640d41b73eb17d13780cc4bcf5229a1794b751bceee4b12f1e"
+}

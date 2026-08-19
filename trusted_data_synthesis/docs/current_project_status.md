@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-19
+Audit date: 2026-08-20
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,67 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+## v26.76-v26.77 Verifier-Bound Rematerialization And Preflight Decision
+
+Finance v26.76-v26.77 completed the only zero-API transition authorized by v26.75. The formal
+experiment identities and directories were frozen on 2026-08-19; the independent rebuild,
+repository validation, documentation, and commit completed after local midnight on 2026-08-20.
+The content-addressed `20260819` identities were not renamed post hoc.
+
+v26.76 materialized eight entirely fresh Instrument TaskPackages, two for each of
+Context-conditioned Action, Semantic Reconciliation, Failure Recovery, and State-dependent
+Stopping. Every package binds the qualified Verifier v2 report, Replay Contract, implementation
+source hashes, Semantic Source, Public Operation, action-neutral Repair, typed terminal target,
+Runtime, Stop Readiness, Answer Projection, Evidence Support, Citation, Mechanism Contract,
+Program DAG, Verifier DAG, and Environment before TaskPackage identity freeze.
+
+The Population is zero-overlap against the v26.42 Development and v26.56, v26.65, and v26.69
+inputs on source task, semantic signature, source hash, Evidence, Evidence Version, source record,
+Semantic Source, and TaskPackage identity. No historical model outcome or any of the 15 v26.75
+diagnostic candidates entered selection. After all exclusions, the Snapshot retained 124,329
+eligible Evidence items, eight Definition pairs, and four Reconciliation-task capacity; four
+pairs were selected for the two frozen Instrument tasks.
+
+All 8/8 Compiler Runtime Witnesses, Operation Closure audits, authority-preserving Task audits,
+Mechanism Necessity artifacts, and operational admissions passed. The build produced 81 Compiler
+Witness Observations. All 64 legacy Operation mutations and 40 authority/terminal mutations
+failed closed. Compiler Witnesses remain model-hidden and contribute zero empirical rows. The
+authoritative v26.76 report is
+`finance_v26_verifier_bound_instrument_population_report:4c810296a03f0491d60b20d6e74061a269e70eb35f8054cfa34eb34ea5547cb0`.
+
+v26.77 froze a 32-job Instrument-only design: four mechanisms, two tasks per mechanism, and four
+unconditional replicas per task. Before client construction it replayed 52 source and
+implementation files, replayed all 81 Compiler Witness Observations through Verifier v2, passed
+public/private isolation for 8/8 tasks, and found zero Job identity overlap against the v26.63,
+v26.66, v26.71, and v26.72 Manifests.
+
+The preflight rejected 8/8 wrong-environment mutations, 8/8 changed-result mutations, and 8/8
+content-addressed action-bearing failed-result injections. The latter first pass an unmodified
+action-neutral failed-result baseline and then fail by exact Replay mismatch, rather than by a
+stale hash. The existing 40/40 authority/terminal and 64/64 Operation mutation rejections were
+retained. Formal and independent v26.76 builds reproduced all sixteen files byte for byte;
+formal and independent v26.77 builds reproduced all seven files byte for byte. Both stages made
+zero API calls and zero GPU jobs.
+
+The authoritative v26.77 report is
+`finance_v26_verifier_bound_instrument_preflight:d8c88785a217da74a6772a51a658ff7a0ee40ee77d3a11ebe5454f795721b263`.
+Its frozen Contract is
+`finance_v26_verifier_bound_instrument_contract:3ecdc9bff3a2a846ede932c28763abbac1c67c345553eacfec69b2de0985afda`,
+and its Job Manifest is
+`finance_v26_verifier_bound_instrument_manifest:300bc703e726e04bbf22138a01bf8e09302a54906be8e7510ffa012d7256e724`.
+
+The current transition is:
+
+```text
+fresh_verifier_v2_bound_instrument_requalification_only
+```
+
+This is a positive static Instrument precondition, not an online Instrument result or a
+Capability/Reachability result. Capability Development, State Reachability, Fresh Confirmation,
+No-C VTDO, Student training, Exact Target, GP-C, and production Contribution remain forbidden.
+Production Contribution remains zero. See
+`docs/finance_v26_76_v26_77_verifier_bound_rematerialization_and_preflight.md`.
 
 ## v26.74-v26.75 Failure Audit And Verifier Replay Decision
 
@@ -867,8 +928,15 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 369 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | passed, 964 tests in 597.18 seconds |
+| Mypy | 371 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | passed, 977 tests in 646.95 seconds; one existing destructive-test warning |
+| v26.76-v26.77 focused regression | 13 passed in 51.77 seconds |
+| v26.76 Verifier-bound Population dual build | all sixteen output files are byte-identical; zero API/GPU |
+| v26.76 freshness | zero overlap on all eight channels; 8 fresh TaskPackages |
+| v26.76 static task audit | 8/8 Witnesses; 64/64 Operation and 40/40 authority mutations rejected |
+| v26.77 Instrument preflight dual build | all seven output files are byte-identical; zero API/GPU |
+| v26.77 source and Compiler replay | 52/52 files and 81/81 Observations replayed |
+| v26.77 destructive Replay mutations | 24/24 rejected with content-addressed mutated Observations |
 | v26.75 authority-preserving Verifier focus | 6 passed |
 | v26.75 v2 dual build | all four output files are byte-identical; zero API/GPU |
 | v26.75 completed-trajectory qualification | 45/45 v2 Replay passes; all non-Replay Gates retained |
@@ -1141,33 +1209,43 @@ and no fresh Validation result exists.
 
 Do not reclassify the 15 prospective Verifier v2 candidates, add their paths to State Mapping,
 or alter the historical v26.71 Capability and v26.72 Reachability reports. The 0/36 State Support
-Freeze remains authoritative. Do not proceed directly to Capability task redesign or
-Reachability condition redesign while using a v1-bound TaskPackage.
+Freeze remains authoritative. The passing Compiler Witnesses are static verifier fixtures and may
+not enter any empirical denominator.
 
 The only permitted transition is:
 
 ```text
-fresh_verifier_bound_task_rematerialization_and_instrument_preflight_only
+fresh_verifier_v2_bound_instrument_requalification_only
 ```
 
-Materialize fresh TaskPackages after binding the v2 Verifier implementation and Replay Contract to
-the same Semantic Source, public Operation Contract, action-neutral repair Contract, typed
-terminal target, Runtime, and independent Verifier. Every dependent TaskPackage, Verifier,
-execution Contract, Job, trajectory, and report identity must be fresh. Historical outcomes,
-including all 15 diagnostic candidates, may not enter task selection.
+Execute exactly the frozen v26.77 32-job Manifest: four mechanisms, two fresh tasks per mechanism,
+and four unconditional replicas per task. The run must use exact `deepseek-v4-flash`, no fallback,
+the frozen Provider route and model configuration, a 120,000-token per-rollout ceiling, and a USD
+2.00 aggregate estimated-cost ceiling. It must persist raw Prompt and Provider payloads before
+parsing or scoring.
 
-Before any API call, freeze a small balanced Instrument Manifest and pass exact source replay,
-complete compiler Runtime Witnesses, public/private isolation, action-neutral repair audits,
-wrong-environment and changed-result mutations, action-bearing repair mutations,
-wrong/missing/extra terminal-reference mutations, early-verification and post-completion
-mutations, and an independent byte rebuild.
+The primary admission criteria are Instrument criteria, not model accuracy: all Jobs require one
+terminal classification; Runtime and Instrument failures must be zero; every completed
+Observation sequence must pass Verifier v2 Replay; all non-Replay Gates must be independently
+computed; repair neutrality, terminal target, and Stop Readiness must pass per rollout; Provider
+call identities must be unique; invalid model outcomes remain in the denominator.
 
-A passing static preflight may authorize only a small fresh Instrument requalification.
+Independent validity, Program closure, local mechanism behavior, and trace diversity may be
+reported descriptively. They cannot rescue a failed Instrument gate or authorize Capability
+support. A passing online Instrument result may authorize only fresh Capability and Reachability
+protocol design, not either empirical denominator itself.
+
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_76_v26_77_verifier_bound_rematerialization_and_preflight.md`
+- `artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_77_verifier_bound_instrument_preflight_20260819/report.json`
+- `artifacts/vtdo_experiment/finance_v26_77_verifier_bound_instrument_preflight_20260819/execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_77_verifier_bound_instrument_preflight_20260819/job_manifest.json`
 
 - `docs/finance_v26_74_v26_75_failure_audit_and_verifier_repair.md`
 - `artifacts/vtdo_experiment/finance_v26_74_capability_reachability_failure_audit_v2_20260819/report.json`

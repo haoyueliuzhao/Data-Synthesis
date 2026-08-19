@@ -1,0 +1,1449 @@
+[
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:1ed5f2d5a10d3fbd97f6b07d1f5b1e36229acbacacacc3712e6707459fa6c75b",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "context_action_selected"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "difference": "20.50998249536549759004333289",
+      "higher_ref": "Mexico"
+    },
+    "normalized_answer_hash": "executable_witness_answer:2d342b7602ff7de123e7721784d7200eb1fc85917b2752ccf793d52961b08cf6",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:c5bf98a8e5619db8611c4b871f4963ef56437acccea25b45c56bd49d9e2d6005",
+    "satisfying_support_set_id": "bound_evidence_support_set:58ceecb29874800c0584d0760a6ff4b7cdbbba6794d9de5171af69817d555e2a",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0b2295391e645ac5b1a571f8@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_2c13678433d7233b1eea2d0e@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_56a647a06686266c158759a9@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:2971ceacdcd7cfc3dd97274919f2070ea512e7a91cf15af2f65279336ea82bd4",
+        "evidence_ids": [
+          "evidence:finance:fact_0b2295391e645ac5b1a571f8@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:ae168f94d61df49a23382927d60880481e6a0afb105d9b0bfdf90ec8392fa0ae",
+        "observation_id": "agent_tool_observation:88e1c5a887ed6f62db4b736e2ee4b6583bba8b8315fb665fc5dd01e30637bbfa",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:3b18728cc5f1f851ca226e314457c47659ffce1d9bc41e8661f6800bd0f2440c",
+        "evidence_ids": [
+          "evidence:finance:fact_2c13678433d7233b1eea2d0e@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:5d32396dadee7b51d3df7a8eb3f5d0a71f5d287c8f70ad252cd2f2421092ebda",
+        "observation_id": "agent_tool_observation:a7e5b4eab097bfe69ac587c9d3183017dd316b7a2f412378dc9a771b6d067e17",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:56aff4ff95030f12cd864f75cfadc64c65c4f7eb122e2188990ab5a5f301742b",
+        "evidence_ids": [
+          "evidence:finance:fact_56a647a06686266c158759a9@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:81b3bd4423fca616cbcc9ef939d5426b15a0f83e3a9aef80d98b8819d503af04",
+        "observation_id": "agent_tool_observation:93afd41b37ac1ca2f9694b5c2e4f9071ead7675e1a3961f7483f5c81f5f64ce8",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:1696ad7a1449301e5d905111eb0ab42f83c721c0fc72137ad25ab0faac622305",
+        "evidence_ids": [
+          "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:62bbca501f8bba123487580d1c6ad62e942ff3b7512bef9024193a66a429c306",
+        "observation_id": "agent_tool_observation:1ec595ba35cf8349cac7a3dbbbdc3d32e00af283c6accdedd16a82c17e0bd072",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:03a239a706a36f73aa1901e0e413658365e557c8cbcd7ce78f5d2953ba409cac",
+        "evidence_ids": [
+          "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:31383e2814af677e6942ca26ad0cc3ea73f049e12095c507189c9bc83e081e59",
+        "observation_id": "agent_tool_observation:a3e46724e26c3c89b58a937471fdde80bd766ec48e36b26e3e55e1573865f02b",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:efec1597149376de94653cc434b2030e4fbbe6e95e1aeb6f9d04b88de4e3b247",
+        "evidence_ids": [
+          "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:b9e87138a38b71ce42f8d6c55167c1169642e106d3ede7f8ceb3ef943a97e01e",
+        "observation_id": "agent_tool_observation:f0d738e73e7a39e91a2058a0dbfac8d47943d719fa9414f2c8095c77fd064b43",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:0a688f3734e6503854539a90a3d88a2f8aa909ba611e97689c987e4eb5ffeea6",
+        "evidence_ids": [
+          "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:fe1881672aafbac2d6986a5ee90d65b4fb2ac531f4d7d137633a644950883660",
+        "observation_id": "agent_tool_observation:16726ead023dd3d477a94a97b79fa0e08cd9233a9e13d27a1e2dee0b190d6c6a",
+        "operation_ref": null,
+        "step_index": 7,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:f25c3cc00d2556626764080376c506960f45203075bb3f10a9ad2496ef4eb644",
+        "evidence_ids": [
+          "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:914507fd63e2f504ba3db7c3099c56e2b3006caffb3f1aaeb61259e6537d839b",
+        "observation_id": "agent_tool_observation:15077deabaf76ad3e09fb735a626f64c46ca081507f77c6a16c079926377423f",
+        "operation_ref": "operation:finance_agent_operation:9486ad49de45f05ebec0405b3a346fc8165fd227eca68318e0f5e1a26664b19b",
+        "step_index": 8,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:78aea7ddce70ce4bdb80e3e7f1d0614edeb0b00d4f8542f59ca1f8b98a391967",
+        "evidence_ids": [
+          "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:08be2ea4b68d68f2573a37519ae898ea58667c961c7b742b6d2a7b6314ac70d4",
+        "observation_id": "agent_tool_observation:baf129a90dde8b6c3ad021dc225e4e496ab22b469c5e375638b6794ab5959a9e",
+        "operation_ref": "operation:finance_agent_operation:5069f7ed17169bf7e0ddfc6496beaefc9fa433311516fc68555d2fc0a0b4b62c",
+        "step_index": 9,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:9a3f1bf9b8189bc27025ed123159ef9deb503dbd6e27c4731d8ca61257eda631",
+        "evidence_ids": [
+          "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:13e84e3a3994d48023ebd0650adc966134ba30d1576b608bef9dd5d90b096a86",
+        "observation_id": "agent_tool_observation:70bc564075b2b164e84ff8b3ae3c2ef5814189589d9be001098637765e72565e",
+        "operation_ref": "operation:finance_agent_operation:b1682c2633e8b6d19ad575ff6942c7e198b793c9fd9696a4931196930505403a",
+        "step_index": 10,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:aa6ae269cd59e1ca6760764b228b2961ad6508c0c82bb8357d3fd204f8bdc995",
+        "evidence_ids": [
+          "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:5dbf9be6d91fae1b936c421ffc80734e9b1bd4fc3599ae7dcae59695935cfb9a",
+        "observation_id": "agent_tool_observation:3b5f360cfaa96a4bd0a8813eacbca3862eb65b8a0e62bada78ecb50f5cab0178",
+        "operation_ref": null,
+        "step_index": 11,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:986af1ae8fd8000c740dbbbdb497fbd589e4090327000ec1018f1a6074a1a0ce",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_8dc990d8be367b59b16a5443@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_aa6eb0075b9994a8e1baf3e1@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_eaba90de8891f9a2287d6165@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f35cee6cb2b72f261ee44727@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:0216f405b0d769e2f15a51ab1f879b6c713c32fbc062683b6438362e5e0e24ec"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:ce0416cd225368ca47fc0e249dc4fcd52e43da753a509bdf207dc36dade51dc9",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "completion_verified",
+      "stopped_after_completion"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "difference": "0.5412719891745602165087956698",
+      "higher_ref": "as of 1969-11-07–as of 1969-11-10"
+    },
+    "normalized_answer_hash": "executable_witness_answer:74b075f19dbdabd703ed5d3f6d0e0966f800585ca220c19be0b3ca653018501f",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:aea261fd730bf1283d88c0c87cab9b0c1d3bf54b433f88283a2b923b336ac300",
+    "satisfying_support_set_id": "bound_evidence_support_set:201dc6d4b0bd780326a6ddf8c9920bc76442d9786897f7147b47b35fa6b1cc63",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0732530f9e06ac3acdf5f28a@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_0a7865e92467c0c8d61404c2@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9393105c8068cae4d8d10bf7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:0013e212068b260b5f2991bc872660859790587095a3c3a565d5ec49eac5a5da",
+        "evidence_ids": [
+          "evidence:finance:fact_0732530f9e06ac3acdf5f28a@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:b25f230f17e9cb64af992218608da275056f5b8da084709a53fb0eb0d5416d9c",
+        "observation_id": "agent_tool_observation:97a3b200fb7bf638fd9bef85bd24f1383a3200840e5d1a5e69af42f60b5366ff",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:283e1acea18a11d20d846da4992a421b9423354198baa365b51fc2f9ea1a16db",
+        "evidence_ids": [
+          "evidence:finance:fact_0a7865e92467c0c8d61404c2@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:4474da348b51626db292865bbf597b6e44f4d6021274867fa37fcd456960d594",
+        "observation_id": "agent_tool_observation:d865a74e8655eae261fb69cf17fbd920b577f9323c6f16e374b6b5cdc69f8ca6",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:d214a176e413b0894871e00aa569d182d160c24ca1e852821748d666045db240",
+        "evidence_ids": [
+          "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:e76fd4d45be42fc68c7abe79a8c7ce1f8e022ba6545ac892a3957126faf55f7d",
+        "observation_id": "agent_tool_observation:d6fd5d2466cb6a74301f34c62564152f7af29b6528d1e6c6f2cfe2bd0c498121",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:d0776fde37f4dde8e646be0ab0de9f55118264bb99a199d2281be69e72ef6ec0",
+        "evidence_ids": [
+          "evidence:finance:fact_9393105c8068cae4d8d10bf7@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:2902cd68f7b6504efceb58a7f1343429168588ade6324028b44b0c13347c39da",
+        "observation_id": "agent_tool_observation:8ee173a0c63b8bac583e537ddc8035c7fd7dc081729dbe7857958c48437862f8",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:0e23c3d2e399b85b400295375d5c0d9b9766dd7d99ed0da2b5e2a6877711a3e6",
+        "evidence_ids": [
+          "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:16dcf33fe1bf31d5d5340d8d8129fdbfa30db3e039d17db0e12cb84dba264217",
+        "observation_id": "agent_tool_observation:48f001155fe3ab662eace54f2c495b3e11d72bf7144265bef988d04ad524e619",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:76bbb215b681140614f8c53519d48de5e67b040a2371438e59b3a8aa883a86ab",
+        "evidence_ids": [
+          "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:31c9ea44b986f2384fb193199862df509943cf00ce3353e7108376bdc7882d6b",
+        "observation_id": "agent_tool_observation:2daa9c62e87e1351067ea048cc421246f593dab019e161b66f31398ae0ab74e7",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:6e292aef0c1783498de875ccf96d67348172a8648e4705fdbd77cacd0c91cea4",
+        "evidence_ids": [
+          "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:1535f7f7bc788e283822352c3c6b311664ba03cfa11a9e9e57586dd1aaaea396",
+        "observation_id": "agent_tool_observation:654090caa113c197dfed6d23299fad80e37e199d4981d433b12773b125546610",
+        "operation_ref": "operation:finance_agent_operation:e62da3ce169c9fe06bd261f71b1e9868f7e899d23823bd3af3be6903994897d1",
+        "step_index": 7,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:bdb373615cf83feca5ea33dbfeb5408d4c75f881123068e5a155c6284e362a52",
+        "evidence_ids": [
+          "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:2bc29c8ba704f32dd874ddbfc68909ac57fbe5b6ce17cf6c8aaf44474363b4f9",
+        "observation_id": "agent_tool_observation:9ca2afe790a8217949ff1338db9b43fac576fa0c174e79553a64ef5307438cd0",
+        "operation_ref": "operation:finance_agent_operation:8c8952d2045dffe10fde17cb01e34879f43d42bf977e2175185d192642001426",
+        "step_index": 8,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:815860e54d3e259abbe56d3864538a26ceff359b34b2bf01abfc4c1c421f841a",
+        "evidence_ids": [
+          "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:16c1fd38a227174fa0b39c593ecef1ddeeaa86b59ce1f95687d8f077028874d0",
+        "observation_id": "agent_tool_observation:e67436cd72a469a3ca538006353f988f4406c64114641eb960c772b57e5ef005",
+        "operation_ref": "operation:finance_agent_operation:1b065f6e5fce44443057fc8b25bf3afe0efd244c29850aaada709f6e3378dcf2",
+        "step_index": 9,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:84b02dc165e51e27bc158bef846f7bf289575ce2bc79376d2acfd5f75bdf3544",
+        "evidence_ids": [
+          "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:78e71191d75030b5ff9619981776543de21c3b44a0e153349ab141d2edba6327",
+        "observation_id": "agent_tool_observation:3b73a4270054e1f3f5d4f9c2efc81a56a2bbd852171fc878348fd9920197ec0b",
+        "operation_ref": null,
+        "step_index": 10,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:5604fee1057360d11cc438718aff64452b12c23dc2cd4b635b16702128d5eb73",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_92215ede248ca6e7a45abb3b@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_955c9812c52ec9463e4b6cf3@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9acf4ee5e45b2aee038fb8f8@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:0d305ecb06d9f474f7b3af7c8be444d147a93f1ed4f7a29723cba9602084575f"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:b70970404df50e57ad62a65bc33b4be0677e8fe792d8b1b795629faf712d9feb",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "recovery_succeeded",
+      "selector_revised",
+      "typed_failure_observed"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "difference": "0.4896638351323156841455366077",
+      "higher_ref": "as of 1974-08-01–as of 1974-09-01"
+    },
+    "normalized_answer_hash": "executable_witness_answer:cf2e3676cf9a0069488673638ef7741fdae354ff6ec3ea055160064aa8a424e0",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:e8bf68877e3aafa3c0b4284cc3d73b30869055d79f54e0e8d94177b400f2e709",
+    "satisfying_support_set_id": "bound_evidence_support_set:d4af89e405c26263c6bec80b52a09c9f141c6ee57e950b4f9f34ea36dc81b863",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_2c26eaaaf187e2f1fc077599@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_49f1e49c5c5bce89302940de@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_d10a3b1f238b1b4666ab1d6a@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:e7048e28752b60b0c4098f3f617ed0ed95a20fd8f2238392108f2d51d813e068",
+        "evidence_ids": [],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:76d023b6353c78c8aba133c316f4de381e5d39b3d0a2d66df1a026bca4bdbed6",
+        "observation_id": "agent_tool_observation:a995780830f828ae64d665d0d9adb5b889be96a5d9da3bdf0d1e3d3cd810a6e9",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:68d85ae1827976208de749f7eab80932b7d29fc750686c52c83a68927c89bb6b",
+        "evidence_ids": [
+          "evidence:finance:fact_2c26eaaaf187e2f1fc077599@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:d89eeffa67744a4cf0c537d45f47f6c735441a8852049b8c69e09d9b63ab311a",
+        "observation_id": "agent_tool_observation:5967eac664d4e95528eed41dc603a532d93fabb7f8c442960ff9c6a145ec534a",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:b69cf85aff01afae7ed57223bf8f9b3dd6efa15307574326f2996ce76533f38f",
+        "evidence_ids": [
+          "evidence:finance:fact_49f1e49c5c5bce89302940de@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:8fe319f0a72de44cc5eb5669766fdca77cd80d5053349fcb1af11e23c192fc0e",
+        "observation_id": "agent_tool_observation:bd6aca8a676d936ec05e2649827daada438419a7b4cee0e9b9d12a76e10ef86d",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:feffadd86532daac0bbb931d55b331646ad35f602fc33f04e092a7ef0f2d0644",
+        "evidence_ids": [
+          "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:4b5f917e0f575eaa3e6adf3cffb4ea32a1c101999925b5f768adba425787f2a4",
+        "observation_id": "agent_tool_observation:55ff7dc83c187c4d085ddf341e368784ba68c12190d2724646d00516fe43971b",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:6d870a07a1200f17a0678aa5afeab65b41f664ce6ec1875438f587b76e853991",
+        "evidence_ids": [
+          "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:0c109ce81eeb3709b7666d26fd73e33dbca291afd919569c847be5bfbb23ddbd",
+        "observation_id": "agent_tool_observation:2d0a95ef6252c25cdd5a182574a7ce5ae2ea2634f73527acbf6efffe092a472a",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:460876b04f348a7b4ac6fe4b48e9fcc9c146ccd385ba2b21844fa25ff0a36643",
+        "evidence_ids": [
+          "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:0c89a1536a136d942787bfaceea9368f671a406ad9b6adf59d2bf67395e7109d",
+        "observation_id": "agent_tool_observation:b6bd58035301acfeaace30d5307e563134841b953f569ba477a51cc9250ff618",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:0c6e3154fb45927b4ca1ac6acc6898647ff6d64ba7ea7ab65f91237e433a1ffc",
+        "evidence_ids": [
+          "evidence:finance:fact_d10a3b1f238b1b4666ab1d6a@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:e5064a6c67ac704f04f598370b741bd29d464e2f98b32a3d2c3abd7970bfcb55",
+        "observation_id": "agent_tool_observation:8c558e674d627a3e80cb0a7c130d48592d6babde9e8a690a300fc3dd746d3bb0",
+        "operation_ref": null,
+        "step_index": 7,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:9fc98d59ee9e82f0ce7de7216003c0732aa6ac4b9c4a686e8ccb7f577b45fc15",
+        "evidence_ids": [
+          "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:412e0c28906356e823a0e939e29be880b57b3fb60be112b788ad090c04b4d89e",
+        "observation_id": "agent_tool_observation:722715f8cbfe72126f8e01b8fc594c2f28c1d40fc077bb6ef64e021ad7ef5790",
+        "operation_ref": "operation:finance_agent_operation:d29415dc0186348fef49734c5c200387c6dd28b3a0063e078ecb7e8cc51f4f16",
+        "step_index": 8,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:cf8ae5a7e232d2186bafa082b15cdc567fc331370e141fa611a062380d8fde02",
+        "evidence_ids": [
+          "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:596a0d3c7ca1844f667ffac1c915b395f05d226e4aade3fd77ca5950e2685faa",
+        "observation_id": "agent_tool_observation:109bfcd3694bd398285c70753adcf2a7618360b25b2456c5037cdc37d6883541",
+        "operation_ref": "operation:finance_agent_operation:ac8faa7c1e98736b7adfe07a87788f024337677d9bb85c700859997dda019728",
+        "step_index": 9,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:118532e1fa5ecd9943f7d600eb54c9ff93e2c7e29dbb0e87c2e7e5d25a15c295",
+        "evidence_ids": [
+          "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:0935010865ff8a62dbe5cc7ee75119f204d61c088b630a65b456ef394d78a6fd",
+        "observation_id": "agent_tool_observation:7f13c8c7b5d160ffcdcc76ceb2d0867838d7beb1164f3527eff6b03ae4975c9c",
+        "operation_ref": "operation:finance_agent_operation:2212fe23f8f441b8b0e4a622a5023b7c76db954ffcafec0dab87644e597d0150",
+        "step_index": 10,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:dbe2709879a3e29bb0617577a00148a4550185d78560c484a136b378e8def71a",
+        "evidence_ids": [
+          "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:10796cde7fab1501a65afcca855413998cb1ba400674697d64bde2c1de93ec26",
+        "observation_id": "agent_tool_observation:17e525de100ea1cd0c27481da0ca205dfe507e91277428e38b251b5970c1354a",
+        "operation_ref": null,
+        "step_index": 11,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:99fdaac60b7caa990ad36c387164b35a4d864981283859eded79a1d64edf7e84",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_4bd518e3600a4dc90655ab03@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5e3af658bf3cb148c58442c0@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_70a5004e195cb77aac77c692@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:45cce8440a6f82ea66ad9d7f68581d294d18a8f0c0e4defb9bd17f33d67bcd33"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:389af5abc314f1314e8084acf6477574a9c8afb604632cbb5cf3829746eaa8f5",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "normalization_reference_consumed",
+      "normalization_reference_emitted"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "value": "1.32"
+    },
+    "normalized_answer_hash": "executable_witness_answer:0d162fb6bb18c6b0307c94d2604b430d16b566ef6d3a8a7aa53ece656b670333",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:fb7056d52c7c627a289931bb745d21c35370a6b926d462fe787428d1c1be1e4f",
+    "satisfying_support_set_id": "bound_evidence_support_set:207b65dec359f94dfc8e33604d00a9c31f303592bc72ec8f2a8b8d6a5b744ae9",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:942087886278463d780d8a39c40b154281e430993887e15c54bdcd969fcea575",
+        "evidence_ids": [
+          "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:fe67c49919065f87c66168c4662eab38cb858fea98623f4696623e0c7b63c9da",
+        "observation_id": "agent_tool_observation:621ff91c5644b0bf244aabe9916df72a3bea6ad50659cea7b8651c786d5310ae",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:01d8c34c28d178d8a7bbec1d29abf6606124cb5a1321b3e090b5d8c1ccf05e00",
+        "evidence_ids": [
+          "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:97d17e93fbb80c2e1adb01fc5edbc7f7e94ee6e4ca24f923d239fee97336335f",
+        "observation_id": "agent_tool_observation:e8cdb7bb5439ad4de66aa15ce56254b11dab907e9c37f97c91e4a230c518c3ea",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:7daf7a8dcb54f5afb3d1756bc8f6c65191012800e284c4013c1b2ac772a21c05",
+        "evidence_ids": [
+          "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:99ef9931e94a5c39917a3e7ba0955fbcba9797aa3837c21428c1c0e8229049bb",
+        "observation_id": "agent_tool_observation:9f70109bc478fc8d34040dca75b4b87f2a4e854c58008dd67a335db9c12989d0",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:ed45603114b94775bc248d5c282f9aa632a37d84d26dbf5f734c42a15c4b9bdd",
+        "evidence_ids": [
+          "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:e31cab9c182d470169e9b69a92fe4b9954dfc037dc8cff7e1eb291fef1346189",
+        "observation_id": "agent_tool_observation:cbeff01e42fd927702320e109a45693c5d61a22b69eb672bafd9a1fe230427fe",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:7489375d64f4b80ae3eff4583e29d435aafedb23cd3284a615c68b45c3915146",
+        "evidence_ids": [
+          "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": "operation:finance_executable_normalization_operation:9406fe31dda8adc564835dc6c95ae15c9c6ee3fddaf716298fe2c805fddd6bfc",
+        "observation_content_hash": "agent_tool_content:1f2043bb8d493af64606e74ecc91cc6ab5e66f23053074a00c65212f4ddbab0d",
+        "observation_id": "agent_tool_observation:8cab793949499ea6e333c4aa6d0f841552fdbb815a7834973d57f5372c085787",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "normalize_metric_unit_period"
+      },
+      {
+        "call_hash": "operational_witness_call:8736aeb795c48fef0e654986a805fc86ff00496606f129ce6d1b2abad960445e",
+        "evidence_ids": [
+          "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": "operation:finance_executable_normalization_operation:d08a58fcff8182a4b648eb314194b52e228e8e1c4fcf0289abfea6609ea46453",
+        "observation_content_hash": "agent_tool_content:d14a028c2584d0e8d18d893cb12726b7a84173c0e3006e9ee7a38040356f62f1",
+        "observation_id": "agent_tool_observation:e019f0cb7f1b61a0f7755a519b92f38557758b3df468efdee08c316d484e5dc9",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "normalize_metric_unit_period"
+      },
+      {
+        "call_hash": "operational_witness_call:3dcd2cef199ceef18ea2bc902ad83a3003e66906eeaf4877d603315fb56a22a9",
+        "evidence_ids": [
+          "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:649bcddb0b5dc91f703d6d4cce4363ba2cc0b95fcd95845a99a4f426d492ebb6",
+        "observation_id": "agent_tool_observation:222b8af4dbecf37c6d110dcd6aa7f242957be8e9cc153e9cbec4dbbb97436201",
+        "operation_ref": "operation:finance_agent_operation:2b0f13859c5d848494e8fa4e6e05d15eecc77b65b7d8c66ba420d7342ff392f6",
+        "step_index": 7,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:4e6581031eed8e906f347d6070f1afd4bc7b7cea703b17175ce454f61d7c2dd7",
+        "evidence_ids": [
+          "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:9e1d4f3d95c7a72939bf6a0ad2655333a3586a0ab3f9151f8245e131e93b7d1f",
+        "observation_id": "agent_tool_observation:27a3acdf3af95d39ca2ddedfb0dd0a1e4e18ddd63f1748880149dcc72895891d",
+        "operation_ref": null,
+        "step_index": 8,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:fdae6c23f9417f4f744e7ab8fe2ef10c9b6e10bf4ff5dddd3fe715ee36ca04bc",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_115688c46a8a919565d313ee@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_52a9dc6e48f0fffefa1305d2@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_83d31bfb91b07f680d27ff85@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_b35714c44bc0f95e865c2b5b@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:89a781bba3f7285cc4ab2a3b41cb12c899cfd9122b61a375ca1d77bc43dddb27"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:0655dffbb328db479d788e3495e345c5f2bce3ea32314be0e675218f306e2a12",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "context_action_selected"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "difference": "5.839823294526319044888296552",
+      "higher_ref": "mean of Canada and Switzerland"
+    },
+    "normalized_answer_hash": "executable_witness_answer:b9a7aeb4e9b9feae325fd8cac895aa74b0ce5846d7acf69cfb73307ef0a25c3c",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:f1e08517f4f049fc06af18298112b841be1117002b36358ef080416b284db2b9",
+    "satisfying_support_set_id": "bound_evidence_support_set:e17fae4b20722a9e3e9db9a06327966110c97ae2c4c958337c2b19114fc15973",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0d61899dfa2a890736756909@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_13f134d6e435556f58fc68fd@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_4dfbbe92b33449b673599b7a@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_bdd67af97fe7a6fa68c18ac4@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_c26b7d5c0f49c5939000189a@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_c59f4d91f2125945daf7bdf7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:ea9aa5eb3dac3c0e66426676c61b7826789a6b4b690dbc06e6524d7921df78e0",
+        "evidence_ids": [
+          "evidence:finance:fact_0d61899dfa2a890736756909@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:c27b3d1e6c79d387a6d1c11d4e7e0ab2c1f86438f5b3ccd972a855a8a2a978e7",
+        "observation_id": "agent_tool_observation:9ff2d5f9c7aee8a0db4f159db6933bfaf1cdf5c726e11564ab5c52397ab6e424",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:21bfff95e8d04cd0ac59547874d3a0bad195e464332dd603309533c23a816d2f",
+        "evidence_ids": [
+          "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:9a3eec29c7fe28ecfa6b654defb3193b9961386379bd91281f57838fdf1d034d",
+        "observation_id": "agent_tool_observation:b56480be8986eb87b411391b4310c3cdfa8553d86ac396f28a954afc1a911c83",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:e5d7d14a9f101b254c350536e5598594e7619b002d03fc6c67392a702b625ec6",
+        "evidence_ids": [
+          "evidence:finance:fact_13f134d6e435556f58fc68fd@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:729cd6245146f25ba77f3e4c9482a071e92b09185caa1803ad7ac9a10faf7188",
+        "observation_id": "agent_tool_observation:57e6a6480554c7e5f84cf56ead69af13ce90c8c91b02ed02e0388b4f09aa5a2d",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:811ba266a2fa7143655ea6b55056332653aed4150884d871a51e75895fffb5da",
+        "evidence_ids": [
+          "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:b84d449698572445c85ebfcf0fc4e5f98aaeff462c858737b2a2ee5f22a1f537",
+        "observation_id": "agent_tool_observation:2bcb426b490de99c6736f63fc169f589917e0d28e19136dcdc1453869e8d91ba",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:193d1b750bae839233c37f2da8f595947ee2547b748a7478db4662c6a4c01e3f",
+        "evidence_ids": [
+          "evidence:finance:fact_4dfbbe92b33449b673599b7a@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:6f8eab94707411c53706e175b476dd24e3f17e704587410bb03c91cd78037513",
+        "observation_id": "agent_tool_observation:2e296925c95545fdd90e16f091a38fa06bf8caab9bc5014371df15aa3f443c06",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:fa461b399226ba38b740330ca4abe2548ee9ac7a719e3cdc3dc8ef38e095d9ae",
+        "evidence_ids": [
+          "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:7adaf13d5c47f8153a83fd4e83a3dbd279a9600ae5ab9f902256840d2fad85e7",
+        "observation_id": "agent_tool_observation:9fb3d5269a0e4708cd93040414ddb13729f138e58861e4b60ce0f1f790a38001",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:b172866909332e0cd712a3340bf53c2883640fa5bbee3d773c04404c33ffe9b7",
+        "evidence_ids": [
+          "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:8b21b84d485b0b32d4f891bada6b34387d9b7d5bf97ddb1eb22c4f794846f22d",
+        "observation_id": "agent_tool_observation:e814d0430aa0961d4f2061230cafa243ef0a57be345437a47639f11578a1f884",
+        "operation_ref": null,
+        "step_index": 7,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:41d12229e823381a5411bef46a97225133a4b2d33dbcb52226bca6193b823e6a",
+        "evidence_ids": [
+          "evidence:finance:fact_bdd67af97fe7a6fa68c18ac4@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:415f778a3b71ee4bda3e053b4e59330098ccb37eaf92d2a5ea7fd0db65cdb71c",
+        "observation_id": "agent_tool_observation:bbd4bacac057abe39f28cd16993df6c37be603062d4e8626f7e2024538faea5a",
+        "operation_ref": null,
+        "step_index": 8,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:c1f7abc28ad0643e0f2137c70429eaeee778a62455ffcb1c3843879424f1505d",
+        "evidence_ids": [
+          "evidence:finance:fact_c26b7d5c0f49c5939000189a@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:f58d135a88816e69056c19fb04f9a586fac32089218a925d32ddfafe3692be5a",
+        "observation_id": "agent_tool_observation:00393df47b1ac025a75e2c3a872c91244c898170a2948f6c493f65927a87de63",
+        "operation_ref": null,
+        "step_index": 9,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:8e17e386cfd88b784d14f965a841cddb4d7b056be24a5dd47f548e192b1772c4",
+        "evidence_ids": [
+          "evidence:finance:fact_c59f4d91f2125945daf7bdf7@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:6f987f8520d259a855c91363ae6ea4b0054f1678cb455f42b0d9fc4cb4a7ff31",
+        "observation_id": "agent_tool_observation:5c57eca3d7e68ec2aa0bb3cadcb52b7560730005564788f54169d83af37109b8",
+        "operation_ref": null,
+        "step_index": 10,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:dd8a7b37ffad6bca8aae1e83b357361c406b9b56a4fb1c4a6e96982b802af175",
+        "evidence_ids": [
+          "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:4c2cf7946399d7b9a89764ad2453dd03287aced736d6735292d0d7060f766fe5",
+        "observation_id": "agent_tool_observation:9739690f461e640dea3a0ef195355090b05707683dbcd17530bd5e56324ed7d2",
+        "operation_ref": null,
+        "step_index": 11,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:b661b2ae24897b079c888c3db9fc0aebbc181083ae5d16bec90230ce8d61db2a",
+        "evidence_ids": [
+          "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:3bd23153e70812ed796b75181219c124de4851f7105ada0911ffc495c1696fd9",
+        "observation_id": "agent_tool_observation:4dbc2d13ce8776f215a91cd45dae51d9b990ec41f3195298fb6b7a7919cdb9a4",
+        "operation_ref": null,
+        "step_index": 12,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:e9dbb59150f9a5ce2b3b571882142f89540b0a79ae5237145757680125a8eaed",
+        "evidence_ids": [
+          "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:101aa8e93b47bfbe162fc59d1cd114e3ac8d84fb6209eaafd2bdfc798fdb236c",
+        "observation_id": "agent_tool_observation:51d56675bffab3fe06a70bb46a421e68962e943121c2db756d9f8dc9512526a0",
+        "operation_ref": "operation:finance_agent_operation:84ef38b65211da43de14b2a1d956280768bf74f49ce4d742defe2a6dbcf7954c",
+        "step_index": 13,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:9e4b8df9be1f164e4d6150a4f1a6dc8ad55d51b758c1520738e1101bce9552e5",
+        "evidence_ids": [
+          "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:5303b56f3502a4c739fb6b0f552a72855cc6ceb262b037b796d2291198836117",
+        "observation_id": "agent_tool_observation:5fa5a8a90b43232181a330b273ef10c4460e6be737fc412c4b01e78ae92382b5",
+        "operation_ref": "operation:finance_agent_operation:3ba992a04902997e8825ff4713bd6ba8d8a72ab99f0f6a9609c60c65a2ddc8dc",
+        "step_index": 14,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:733330b5fac877335815812c737e44e357ce614bac4a6122cb34bcbfdaf4ff83",
+        "evidence_ids": [
+          "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:4beffee7e1821d50094f55603f833b1d9a2c598cf90af39cf07b8cc90529b54d",
+        "observation_id": "agent_tool_observation:774dd6058d574ccef3cc01a2dd988e94a7d824a19d7ff9cf352cdfdf9d48fa44",
+        "operation_ref": "operation:finance_agent_operation:c07c02c30740c7f482ece0774d980c464ab07b5d4ba747381c6d9c50eb7ded1f",
+        "step_index": 15,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:020b600b0382bd60a9517669ba72a252dc3c587d17c0a44ad7de343770ec6e9d",
+        "evidence_ids": [
+          "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:5723016fdb663b74ee74e33bb686abd954019592c6b0f9d407ed8601578e58e7",
+        "observation_id": "agent_tool_observation:19a0481fa7dec651fcd52e3740cc0b8d5f2be1642237828f70d56de80fb39c84",
+        "operation_ref": "operation:finance_agent_operation:097ec20b6627949a3cb0d9cd6809c3acadb8fcad3ce27363e141547e889cbe56",
+        "step_index": 16,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:645f4873b01a2c955f5edf5b27c2359c1e86dab983c8e2b8cd018102244b8f3f",
+        "evidence_ids": [
+          "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:dfa2e8ed19fd9b195e2c03ad9696d2c4b3ad302ae5e3c09ec6226a58cdcc80e7",
+        "observation_id": "agent_tool_observation:22e9c8bc45110910a49ea346d737d0c24d1748fc58dfb993a96626e26ac8b87c",
+        "operation_ref": "operation:finance_agent_operation:5abca09ebde776891e23fd246d5b4e5b1ed06095ce4e2b81a5c455b65edfd702",
+        "step_index": 17,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:da0cce67b2aacb7d936371a1424d232047e1a71d5dba9561608ea507bafeaac6",
+        "evidence_ids": [
+          "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:58d3f20e31b0f15f6fddc10287dc7baaea6066b05604902ab53228e4accaa7ca",
+        "observation_id": "agent_tool_observation:309e907e063a3979cc93bad8c484da4737f35e6187885658483847022ec7189f",
+        "operation_ref": null,
+        "step_index": 18,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:c5b0337a2d4fde2e816cd753dd23dbceb928bfb9aef798597e4de5b981271549",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_11bf7b30d88e2d83819dbb7c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_1c681a59337bd4a633fd7aa7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_8d5c65ff7f833a52a267479e@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_96363553522404f25b5bb330@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_e3c3cb754f7aed90f53e1bbd@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f6abdb872cd6d2ad4812fb13@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:95bb9fe7aaa661f5cb52b40c896d0a080b91b5e2c16d45e255de2f41157ef7b1"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:a5aa9edaebceff29d4a061e932519e3427940731813efcc5b9ecc800160460e7",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "normalization_reference_consumed",
+      "normalization_reference_emitted"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "value": "-1.44"
+    },
+    "normalized_answer_hash": "executable_witness_answer:eb891dc3e07a26db443d90603028487aca21d71f48dd633d4d4ab6503f358ea6",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:4a1fec610144256f5a2584c7ef3318e352fa38ce2cb5e27ea52057feff823733",
+    "satisfying_support_set_id": "bound_evidence_support_set:d4b927304244d3e6847628436e8b0148d5cb8635c71ea8011dcd9364b7ea97e8",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:5452114b37ea7255833b4c7b2eb5f3dff15a22d0f92de2ac4371c3b60aee5de7",
+        "evidence_ids": [
+          "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:404a73b5d9bec919ebef1579719cd1c2a5554beabfee42d282abced217b67622",
+        "observation_id": "agent_tool_observation:e5b6505c7046204f51a8dc31fe7215a2d91f1134ecc838315891d82e2f0b97fe",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:1482d50f78fdcf65ae6b80c7520fad2438acdb2ad230616087309229dd2d75fc",
+        "evidence_ids": [
+          "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:3030f813e305f31767031ecbe32277eeae52b73741e67dfc808c645b05e7f2d3",
+        "observation_id": "agent_tool_observation:4bc68a0832dc3e3418b367b7fd63f9a71f55d54979d516e31984a51ca074c5cf",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:abe61ca81c648393c9751b7439251c2a38b64faceb54a806f5e1f73fded211dd",
+        "evidence_ids": [
+          "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:c2dd3374e29c28880269af9a5cd582e156008ad3311a0a1cde0e6dd2e8ce29a9",
+        "observation_id": "agent_tool_observation:f117a4583ede332696acd9212c16b190bd3927577db3d89051060555f146ea4b",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:e22c284bde1514e8c00692393a15d223e617d58bf6836d7cc7223f150fed84ef",
+        "evidence_ids": [
+          "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:0ef44d7982ab2e3ab5ea98201315fe1a94832cbcb19cc6bc72eb3afd21e76cb7",
+        "observation_id": "agent_tool_observation:8a1841fec1b22c193b4042f5b4a051ef7864e1a479c33dbecec6416dc06dafaa",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:cd66b25e1ba8a94be5eec402caa451f99a288d9f3a20af425ae03813d02d3264",
+        "evidence_ids": [
+          "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": "operation:finance_executable_normalization_operation:3055bf270315489c316f10ed9cfa8a21d503d9f555e22ebbe1f7ef1068858746",
+        "observation_content_hash": "agent_tool_content:11f0b3b12193e5145dfa96cb12f105ee2e93735dfea22b62c7c7a1a4d5ac610f",
+        "observation_id": "agent_tool_observation:5a84eae0c82df9f69a45c633ed00206c9b8e20a2655056b3c80d21e841e2f9fc",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "normalize_metric_unit_period"
+      },
+      {
+        "call_hash": "operational_witness_call:d7b0402434c0c876fd47a612f346d457e19293ae65dcdc9379040ac9dd976c45",
+        "evidence_ids": [
+          "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": "operation:finance_executable_normalization_operation:886c84f257267c1fc9d1f3edfec18aca87a6535202a5d237011fa23edb2fc6a0",
+        "observation_content_hash": "agent_tool_content:ce7a3bc9e87240a4dd4f395f95bfd6fe911065a26b570d37422e655f995e27db",
+        "observation_id": "agent_tool_observation:b97b4414a6e9015697e853f711323ed14e697a6f0dbe0306cdf98d820934ccb5",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "normalize_metric_unit_period"
+      },
+      {
+        "call_hash": "operational_witness_call:cf33b81b7277f96e108be3b04afd1a418a28948df791d172c28412c6100fa40f",
+        "evidence_ids": [
+          "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:731f8f0817a0bb0b40d2e729505fe8d16bc1a8b5d67329c23be72ec2d3ff1c36",
+        "observation_id": "agent_tool_observation:829de7cdd85e0eee77d6bbdf2295538a48faaa9ffa85a409f8abf0d0f97f4d14",
+        "operation_ref": "operation:finance_agent_operation:fc7251742c3f6cbe75e7cecfaf282afa08f64919f67df16dbf1d4f796040a421",
+        "step_index": 7,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:71cc651e967d50469cdc9f150c59e45de056d655b21c9ec1904f5e05649e19f7",
+        "evidence_ids": [
+          "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:e353e13fd59a62f2585d5b8d8f8a38bad5a75936a6b399e80c5f31fc3fc0ac25",
+        "observation_id": "agent_tool_observation:6cfd73077e96bd37ef06243f4b3e0ec7795ba0907ed238a1ef388011e8a5b59c",
+        "operation_ref": null,
+        "step_index": 8,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:bcc8cfefdd06f36a96e086816bdeff5ab08b50ffec54a7debab76a8fe68a6893",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_3eda6de29b0d1041ff4e6260@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5a817a05b18597ad5272011c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_647b9e025e154f061a559374@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_a905794626d670a8c4c66f04@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:a42cf9579a99527bbe1e6887991d685e8fad5b93a12e9564fe275c817435bff6"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:076b51b9a9da1e6f1caec0e0be1d785f5f8d460382f3356af3f8bec664ae975e",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "recovery_succeeded",
+      "selector_revised",
+      "typed_failure_observed"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "difference": "1.077742954999272688803374724",
+      "higher_ref": "as of 1998-07-07–as of 1998-07-08"
+    },
+    "normalized_answer_hash": "executable_witness_answer:d4c527d80555f2251fbcba26e61b40930f853dd7ec6b7048725d068af03fa901",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:bac3ed571e50f86c22e700bf61c4b6566e53f4aa8d26c0f4182183be9831713c",
+    "satisfying_support_set_id": "bound_evidence_support_set:dced940ccf89bd189fbbf09b1e7be6e24ec5ffc17090eec9ea6451c30c826049",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_36750cbcf785200e95e48477@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_94488bf8e86394c6878df269@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_b5eb09ba67f2e2d9c1f90372@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:6e30ae0b29e3ae7c5d85d087ca5c51d34b0e45f698c1bb13c89e6866b4f877ca",
+        "evidence_ids": [],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:d62f6776fc6eff0231a512995eb3eadd6b118767a4c3524848fe4e290481a339",
+        "observation_id": "agent_tool_observation:72a60e68579128fbc6291074fb55f16850109f3f5efa799447ae4521fb818695",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:ee03abc9c4789e1e959dae28d8574bb26a82f186dc8808ed68f458a087638242",
+        "evidence_ids": [
+          "evidence:finance:fact_36750cbcf785200e95e48477@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:93c7bff97aee197a785d338f349da0b7560c168406b3e30366bdb24b3fbe21f5",
+        "observation_id": "agent_tool_observation:b9c58002080ff76aee1478a6a9e9acfe582f32912ed890dcd78e15e240ace8a1",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:9c20d3533a0b6f07ffd7ec39528ebf32a0213dcbf7f38e5c92dcb96b32fab8ae",
+        "evidence_ids": [
+          "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:df4186df56f9fdbb54cfc46d49a0505f6d0a6d8df26f1d460cdd3f34a1d18e0d",
+        "observation_id": "agent_tool_observation:2cd1e8ec197015247d6687fddbc32311e377a56fa3a64a8ba4ab61767842c597",
+        "operation_ref": null,
+        "step_index": 3,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:d2b5be3f3a83a8a3fe29675dd9ae1c90f84aeb76b5366bcab2f5ae9adfbfc15c",
+        "evidence_ids": [
+          "evidence:finance:fact_94488bf8e86394c6878df269@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:e811fde5c6dd8a482a6daaba20d02fcb04b86fe2e77fb34943dfb7382bea246e",
+        "observation_id": "agent_tool_observation:fc14ac13900e1b67f27725184143d1a9554569f35ea1e85d24fb2d65a253bed6",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:76598b332ab2c7d2e039f2cf1e485a71f38e5ae8af45e81eb5d812f8a5bf2609",
+        "evidence_ids": [
+          "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:381151a3462323092e7e3805fda14ed43bbc607b6b999e0d83e60d9742babebd",
+        "observation_id": "agent_tool_observation:7ef830dbbd44fa483f585370c6f59066f7a828aac49ba9866f4ac507c1ca8ff3",
+        "operation_ref": null,
+        "step_index": 5,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:434ff93c01057707a61b48e14b1366102091148510044f3255f6b4d370fc3c84",
+        "evidence_ids": [
+          "evidence:finance:fact_b5eb09ba67f2e2d9c1f90372@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:c686019559f5628092c072cc1cd35f221d651828c5fe3e5d432f4bdb77551b22",
+        "observation_id": "agent_tool_observation:53e081977f4d1cd3c5709d8afdb62150b8423f19df5a2c509b1808500682542a",
+        "operation_ref": null,
+        "step_index": 6,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:8eddfa3c859e89f0b8a66da1ebad8d6d2dff4911af140864d4e4ab2b297f5825",
+        "evidence_ids": [
+          "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:5c695d26385a6eb32aae38fd7e936f178dfba020f609574c825c4e612ddf4c26",
+        "observation_id": "agent_tool_observation:1733ee6820bf3ed679e90264bb301ea3d8d575a2c44c43402020b399eda665ed",
+        "operation_ref": null,
+        "step_index": 7,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:611d3b339fd04e0f56cd5bd7ad5a72cc6a87923b4917955d0052ee1cd8b1635f",
+        "evidence_ids": [
+          "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:ac8819dc3ded351ce3146d3f676dae9f9e4c0ee6e1005455b905e5397e85cb21",
+        "observation_id": "agent_tool_observation:6580c809fdd0a52bbe29af2b047b639e0e15d58aa8504c403371575dc0416d9e",
+        "operation_ref": "operation:finance_agent_operation:254e8a06012838c57974065998857b200dae9006da464680facfba6ce49d2f2a",
+        "step_index": 8,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:c0e3c9fdad7608c4fe6e39dc0c5762fd77c38688e9c0eaae575f1caffebf670c",
+        "evidence_ids": [
+          "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:32bd74e6016d2e5b2abcd006c7862538108dd17dfd2e21a6100823c1ae46f79e",
+        "observation_id": "agent_tool_observation:76fb13766697520da171c649b1177c38ea4d7817376ded7f294f82ca86405cb1",
+        "operation_ref": "operation:finance_agent_operation:811a1400f6bd3eff29dc8cb4471fa12eda496adefd0d4c53257dcb0416d83896",
+        "step_index": 9,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:bc228fb302e2499f13cd46c720a6953315cbf7edd7fa2b646f4daf528b716e72",
+        "evidence_ids": [
+          "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:a30a84c2d53b54bb973b6ccc61ed294d109b8b16d13b7e3848f7d129817beb90",
+        "observation_id": "agent_tool_observation:261c24392692e5d4b8e2b0ad315668a80fdf639c385dd4af2d62917eae4947c6",
+        "operation_ref": "operation:finance_agent_operation:9ce93747964f7324bcc7264fe44c2e98a72f41acf677487229ff0af67e415636",
+        "step_index": 10,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:4bd92e1f29602740cd1a1bd0ee67a9aa1dc9ccc11fb7ccc4510940c14a7edb81",
+        "evidence_ids": [
+          "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:7ac8a541f3cefbb358b63e6632a3c9f0e8731b99b8b49b8d6e658eb798395d80",
+        "observation_id": "agent_tool_observation:84b810af6d45287a7b6652c7b19eddc57f156ebbc694df3350cb0d2db129323c",
+        "operation_ref": null,
+        "step_index": 11,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:b5f4df00d2d951acdeb01ea6d80735893f75bb2e19dd331d38a279573fccefcc",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_5fcd45e7b7dfd17757e74a19@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_986c516ae45c68c6282828c7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_d7b2053bbc63b0c5010576ed@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:a53f74e411ed5e440188541e6aaf88b6f6a1e9cbe717851a9b3c9fb11099ae51"
+  },
+  {
+    "answer_projection_complete": true,
+    "citation_complete": true,
+    "cited_evidence_ids": [
+      "evidence:finance:fact_ceba0f6b9abaf9dc42343094@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_de14c7f51ba20aae093a23ff@kg_20260711_062123_bc4b4394"
+    ],
+    "compiler_generated": true,
+    "evidence_support_complete": true,
+    "failure_reasons": [],
+    "full_validity_passed": true,
+    "hidden_from_model": true,
+    "independent_verifier_report_hash": "operational_witness_verifier_report:2cc9f53e771584cab53775a51ab2b03b1b803c05b948b8de13e4047987491bee",
+    "mechanism_complete": true,
+    "mechanism_event_ids": [
+      "completion_verified",
+      "stopped_after_completion"
+    ],
+    "model_generated": false,
+    "no_postcompletion_violation": true,
+    "normalized_answer": {
+      "difference": "0.11",
+      "higher_ref": "as of 2010-08-13"
+    },
+    "normalized_answer_hash": "executable_witness_answer:9f2aa93b2b99511d92d11a7316744a758ea6dd44170b70fa0593fa053b7c0e4e",
+    "only_allowed_tools": true,
+    "only_public_inputs": true,
+    "operation_lineage_complete": true,
+    "path_strategy_id": "structured_direct",
+    "public_runtime_contract_id": "public_runtime_contract:2a42b5a9bd10c5073f1bb58433f1cbc120a5f3903976de1a665af652c603a8b8",
+    "satisfying_support_set_id": "bound_evidence_support_set:1ae0b78b58b654f833c065737f7b61a2941aa4e136784c2e5b0bd59d02f1b570",
+    "schema_version": "executable_task_witness.v1",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_ceba0f6b9abaf9dc42343094@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_de14c7f51ba20aae093a23ff@kg_20260711_062123_bc4b4394"
+    ],
+    "steps": [
+      {
+        "call_hash": "operational_witness_call:f7fa6344f4e0a43094f52c6be2b93f1f92c88353301684a26e0fff8aa4ec54d4",
+        "evidence_ids": [
+          "evidence:finance:fact_ceba0f6b9abaf9dc42343094@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:539017a26cd6822047317b60c8a88461e33e3d5fd3a2dd3911c58ba9da750960",
+        "observation_id": "agent_tool_observation:a20b3dfd6962d50640ead0280eeae5793de85e59bb92ece1c57e4261128fc315",
+        "operation_ref": null,
+        "step_index": 1,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:d4dfe710e98972f8da95e5aa0dc251516ffc93928a60644211c7f781b150a7fa",
+        "evidence_ids": [
+          "evidence:finance:fact_de14c7f51ba20aae093a23ff@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:95ea7cd16dd4b2dc37d2a1c3a38d2e9c68f52a6f864875b2f28dc2912e1d576d",
+        "observation_id": "agent_tool_observation:98cc87eb8d6ef0fd34f126441d0c32138cf975f34974b683badc70fc553ecff9",
+        "operation_ref": null,
+        "step_index": 2,
+        "tool_id": "query_structured_fact"
+      },
+      {
+        "call_hash": "operational_witness_call:aa25faf7055ffe22247e06803661f527bd87e57789a2773033242f371d9eebb4",
+        "evidence_ids": [
+          "evidence:finance:fact_ceba0f6b9abaf9dc42343094@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_de14c7f51ba20aae093a23ff@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:4f047d12f5854481fa72200131c108e08b6d0ace9c614bb0dd8d0a2874b6f1f4",
+        "observation_id": "agent_tool_observation:1c742d97f0e512faba667bc339ad6c5ddc0b98746c52811e28d016932ba11be1",
+        "operation_ref": "operation:finance_agent_operation:c504c4101419b588d2e08b9703500f8a77c40857cd69a6a33865d439633edd86",
+        "step_index": 3,
+        "tool_id": "calculator"
+      },
+      {
+        "call_hash": "operational_witness_call:d8470288937b7bbd6c975c751a557272754987ae31031fdace4a11770c9b8fab",
+        "evidence_ids": [
+          "evidence:finance:fact_ceba0f6b9abaf9dc42343094@kg_20260711_062123_bc4b4394",
+          "evidence:finance:fact_de14c7f51ba20aae093a23ff@kg_20260711_062123_bc4b4394"
+        ],
+        "normalized_operation_ref": null,
+        "observation_content_hash": "agent_tool_content:cfc3df945c08fb72706f884ffc64345f1471ef982ac37f7e1e24ec5762f94b17",
+        "observation_id": "agent_tool_observation:ad3425f9c48b4da801611cfe6d28ffbe01e4df2883814e6630994972a5c9ddf5",
+        "operation_ref": null,
+        "step_index": 4,
+        "tool_id": "cross_check_evidence"
+      }
+    ],
+    "task_package_id": "operational_executable_task_package:5fa74b47fcc41ec7ae1f56c69e58a8e24698163a7aa2acfeac6322583be4fe04",
+    "verification_complete": true,
+    "verification_support_ids": [
+      "evidence:finance:fact_ceba0f6b9abaf9dc42343094@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_de14c7f51ba20aae093a23ff@kg_20260711_062123_bc4b4394"
+    ],
+    "witness_id": "bound_public_executable_witness:c3d17596b25df9eaa7cf441652ff00b717bf5a0352a15856229904e4a73835c1"
+  }
+]

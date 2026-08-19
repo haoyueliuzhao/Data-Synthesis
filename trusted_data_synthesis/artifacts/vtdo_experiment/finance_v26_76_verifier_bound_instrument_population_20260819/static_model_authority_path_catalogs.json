@@ -1,0 +1,90 @@
+[
+  {
+    "catalog_id": "static_model_authority_path_catalog:0ad1024e0f8e47c0e40db8d3b1e13eca457452aae8126ac77d40b9b349c5aa01",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:b5f4df00d2d951acdeb01ea6d80735893f75bb2e19dd331d38a279573fccefcc"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:301a97eb165e74d3ced08e5c4996b6719d0bdc1ebe10befee28b1a2b5b061944",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:5604fee1057360d11cc438718aff64452b12c23dc2cd4b635b16702128d5eb73"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:37e8ffb0de13fc6d4ccdf24aba78271ab4d92cc3997042b9ecedab313ac9c52d",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:986af1ae8fd8000c740dbbbdb497fbd589e4090327000ec1018f1a6074a1a0ce"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:4d5dd46ff7ce50580c48e93d9071e2fdb7cb37f8fb09e155b3e2043a477e99bc",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:c5b0337a2d4fde2e816cd753dd23dbceb928bfb9aef798597e4de5b981271549"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:a23e24fcf9a79177428acb9db67ad7c730901caad40eaf5c6c9de1a69e02ced1",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:99fdaac60b7caa990ad36c387164b35a4d864981283859eded79a1d64edf7e84"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:b0fea7dcc93e64ebad1c8467cb0cc22692fa8d5b75a5c0905e2d82d8d22999b5",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:bcc8cfefdd06f36a96e086816bdeff5ab08b50ffec54a7debab76a8fe68a6893"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:c07d68b9086de19a4a67efc38f055664bd845d0636499ab67d918c14905c5670",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:5fa74b47fcc41ec7ae1f56c69e58a8e24698163a7aa2acfeac6322583be4fe04"
+  },
+  {
+    "catalog_id": "static_model_authority_path_catalog:d181d89990fe22cfef0a2e58b53238da694d0fd9fdcc7d0dc0ede6f39c58cf01",
+    "empirical_reachability_evaluated": false,
+    "failure_reasons": [],
+    "intended_use": "capability_measurement",
+    "minimum_path_count": 3,
+    "paths": [],
+    "schema_version": "static_model_authority_path.v1",
+    "status": "not_required",
+    "task_package_id": "operational_executable_task_package:fdae6c23f9417f4f744e7ab8fe2ef10c9b6e10bf4ff5dddd3fe715ee36ca04bc"
+  }
+]
