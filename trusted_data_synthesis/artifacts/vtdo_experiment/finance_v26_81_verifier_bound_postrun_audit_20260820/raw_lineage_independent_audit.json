@@ -1,0 +1,22 @@
+{
+  "audit_id": "finance_v26_recovery_raw_lineage_independent_audit:25f0f85d3aea7260a3d1cb5b80f77218d003c87b92095db8db16b85118b2f41e",
+  "continuation_job_count": 15,
+  "continuation_provider_artifact_count": 123,
+  "expected_job_count": 32,
+  "exposed_job_model_call_count": 0,
+  "historical_failed_artifacts_are_instrument_gate_failures": true,
+  "historical_report_failed_artifact_count": 7,
+  "historical_report_lineage_status": "failed",
+  "lineage_and_instrument_failure_lists_coupled": true,
+  "lineage_only_passed": true,
+  "observed_raw_execution_count": 32,
+  "original_provider_artifact_count": 146,
+  "original_provider_exact_byte_pass_count": 146,
+  "provider_binding_pass_count": 269,
+  "provider_call_ids_unique": true,
+  "provider_telemetry_pre_host_augmentation_pass_count": 269,
+  "raw_execution_recovery_binding_pass_count": 32,
+  "schema_version": "finance_v26_recovery_raw_lineage_independent_audit.v1",
+  "status": "passed",
+  "zero_generation_replay_job_count": 17
+}

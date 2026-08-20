@@ -15,6 +15,71 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.78-v26.81 Verifier-Bound Instrument Execution And Failure Decision
+
+Finance v26.78 attempted the exact v26.77 32-job Instrument Manifest. Raw Provider payloads were
+persisted before Agent parsing, but the run failed after 17 Jobs had been exposed because the
+Runner compared raw Provider telemetry to telemetry after the Host had added
+`response_shape.prompt_component_bytes`. The immutable failure contains 146 successful Provider
+calls, 1,336,075 provider-reported tokens, USD 0.168894560800000016264 estimated cost telemetry,
+zero Raw Execution Artifacts, and zero Rollout rows. The other 15 Jobs were never opened.
+
+A zero-generation audit consumed all 146 stored responses in exact order. All Prompts and all
+Provider fields before the single Host augmentation matched. It reconstructed 5 completed
+trajectories, 12 model-contract failures, and 118 Observations without an API call. No v26.78 Job
+was repeated.
+
+v26.79 froze a Recovery Contract that forbids model calls for the 17 exposed Jobs and permits
+exactly one execution of each of the 15 unopened Jobs. It replayed 73 source and failed-run files,
+146/146 Provider Artifacts, and 17/17 complete streams before client construction. Formal and
+independent builds reproduced all eight files byte for byte. The authoritative preflight is
+`finance_v26_verifier_bound_recovery_preflight:a25d500a2ea292f2274b7b1e305d4f5bfadc9b82b8ebaa0ee59474368aff8ccc`.
+
+v26.80 then zero-generation replayed the 17 exposed Jobs and executed only the 15 unopened Jobs.
+The continuation made 123 Provider calls, used 1,247,381 tokens, and recorded USD
+0.140205408000000015860 estimated cost telemetry. The complete 32-job denominator contains 269
+unique Provider calls, 2,583,456 tokens, and USD 0.309099968800000032124 estimated cost telemetry.
+All 32 rows used exact DeepSeek V4-Flash with zero fallback and zero Runtime failure; all 32
+Verifier v2 Replays passed.
+
+The frozen v26.80 aggregate remains blocked with 25 model-invalid outcomes and 7 Instrument
+failures. All seven Instrument failures are completed trajectories that encounter
+`AttributeError: 'TrajectoryStep' object has no attribute 'observation_id'` while constructing a
+descriptive decision-trace hash after Verifier scoring. The authoritative Recovery report is
+`finance_v26_verifier_bound_instrument_recovery:645531ad63c93055f9a29f6a179e6bce16a65441ea7facca4f2d7e8381e52a67`.
+
+The credential-free v26.81 audit replayed 19 implementation files and 477 experiment files. It
+independently reproduced 32/32 Replay passes and all non-Replay Gate vectors. A schema-valid,
+diagnostic-only reconstruction classifies the seven completed rows as six prospective valid and
+one prospective invalid trajectory. These candidates do not reclassify v26.80.
+
+The strict resource gate fails independently. Five Jobs consumed 122,752 to 132,963
+provider-reported tokens, exceeding the frozen 120,000 ceiling by 2,752 to 12,963. Aggregate cost
+passed, but the Runtime checks cumulative usage only after each response and the frozen profile
+has no certified pre-call token upper bound. Therefore the six diagnostic validity candidates
+cannot rescue Instrument admission.
+
+The independent lineage-only audit passes 32/32 Raw Executions, 146/146 original exact-byte
+Provider files, 269/269 binding and pre-Host telemetry checks, and 269 unique Provider identities.
+The v26.80 lineage object's `failed` label is caused by coupling its failure list to the seven
+downstream scoring failures, not by a raw lineage breach. Historical files remain unchanged.
+
+The authoritative v26.81 report is
+`finance_v26_verifier_bound_postrun_audit:eb7316f9b5e9dcd09013bf3662da64b5f8290f02f1a9e966e3a0268f92d87297`.
+Its transition is:
+
+```text
+fresh_budget_closed_verifier_bound_task_rematerialization_and_instrument_preflight_only
+```
+
+All eight v26.76 tasks are now empirically exposed. A successor requires fresh TaskPackage,
+Contract, Manifest, Job, execution, trajectory, and report identities; a schema-valid completed
+trace scorer; separated lineage and Instrument failures; and a certified pre-call token bound.
+Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
+Exact Target, GP-C, and production Contribution remain forbidden. Production Contribution is
+zero. See
+`docs/finance_v26_78_v26_81_verifier_bound_instrument_recovery_and_audit.md`.
+
 ## v26.76-v26.77 Verifier-Bound Rematerialization And Preflight Decision
 
 Finance v26.76-v26.77 completed the only zero-API transition authorized by v26.75. The formal
@@ -928,8 +993,18 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 371 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | passed, 977 tests in 646.95 seconds; one existing destructive-test warning |
+| Mypy | 374 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 995 passed, 2 expected v26.78 success-state tests skipped in 686.63 seconds; one existing destructive-test warning |
+| v26.76-v26.81 verifier-bound focused regression | 31 passed, 2 expected v26.78 success-state tests skipped in 72.58 seconds |
+| v26.79-v26.81 recovery/audit focus | 13 passed in 21.28 seconds |
+| v26.78 failed execution | 17 exposed and 15 unopened Jobs; 146 Provider calls; zero Raw Execution or Rollout rows |
+| v26.79 Recovery preflight dual build | all eight output files are byte-identical; zero API/GPU |
+| v26.79 failed-run Replay | 17/17 streams, 146/146 calls, and 118 Observations reproduced with zero generation |
+| v26.80 recovered denominator | 17 zero-generation plus 15 first-execution Jobs; 32/32 Replay passes; zero repeated exposed Jobs |
+| v26.80 Provider accounting | 269 unique calls; 2,583,456 tokens; USD 0.309099968800000032124 estimate |
+| v26.81 post-run audit dual build | all five output files are byte-identical; zero API/GPU |
+| v26.81 source/raw replay | 19 implementation and 477 experiment files; 32/32 Raw Executions replayed |
+| v26.81 failure localization | 7 completed-trace scoring defects; 5 strict token-ceiling failures; lineage-only audit passed |
 | v26.76-v26.77 focused regression | 13 passed in 51.77 seconds |
 | v26.76 Verifier-bound Population dual build | all sixteen output files are byte-identical; zero API/GPU |
 | v26.76 freshness | zero overlap on all eight channels; 8 fresh TaskPackages |
@@ -1215,31 +1290,46 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_verifier_v2_bound_instrument_requalification_only
+fresh_budget_closed_verifier_bound_task_rematerialization_and_instrument_preflight_only
 ```
 
-Execute exactly the frozen v26.77 32-job Manifest: four mechanisms, two fresh tasks per mechanism,
-and four unconditional replicas per task. The run must use exact `deepseek-v4-flash`, no fallback,
-the frozen Provider route and model configuration, a 120,000-token per-rollout ceiling, and a USD
-2.00 aggregate estimated-cost ceiling. It must persist raw Prompt and Provider payloads before
-parsing or scoring.
+Do not rerun or reclassify any v26.78-v26.80 Job. All eight v26.76 TaskPackages and all 32
+Manifest Jobs are empirically exposed. The six v26.81 prospective valid candidates remain
+diagnostic only and may not enter task selection, Capability support, State Mapping, or release
+counts.
 
-The primary admission criteria are Instrument criteria, not model accuracy: all Jobs require one
-terminal classification; Runtime and Instrument failures must be zero; every completed
-Observation sequence must pass Verifier v2 Replay; all non-Replay Gates must be independently
-computed; repair neutrality, terminal target, and Stop Readiness must pass per rollout; Provider
-call identities must be unique; invalid model outcomes remain in the denominator.
+First repair the completed-trajectory scorer under a fresh source identity. Its descriptive trace
+hash may use only fields present in the current Trajectory schema, and complete Compiler
+trajectories must execute the same post-Replay scoring path. Raw-lineage failures and downstream
+Instrument Gate failures must have separate audit channels.
 
-Independent validity, Program closure, local mechanism behavior, and trace diversity may be
-reported descriptively. They cannot rescue a failed Instrument gate or authorize Capability
-support. A passing online Instrument result may authorize only fresh Capability and Reachability
-protocol design, not either empirical denominator itself.
+Then implement a certified pre-call Provider-token upper bound. Before every model request, the
+Host must prove that cumulative provider-reported usage plus the bound for that request cannot
+exceed 120,000. If the bound does not fit, the Runtime must emit a typed no-call budget terminal.
+Exact-boundary, one-token-over, changed-usage, missing-usage, and oversized-Prompt mutations must
+fail closed.
+
+Only after those repairs are content-bound may a fully fresh balanced eight-task Instrument
+Population be materialized. Before any API call, freeze a new Contract and Job Manifest, replay
+all source and Compiler paths, run completed-trace scoring, verify repair neutrality and typed
+terminal targets, reject the new scoring/resource/lineage mutations, and reproduce every static
+output byte for byte independently. A passing static result may authorize only another small
+fresh Instrument requalification.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_78_v26_81_verifier_bound_instrument_recovery_and_audit.md`
+- `artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/execution_binding.json`
+- `artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_81_verifier_bound_postrun_audit_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_81_verifier_bound_postrun_audit_20260820/completed_trace_scoring_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_81_verifier_bound_postrun_audit_20260820/resource_budget_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_81_verifier_bound_postrun_audit_20260820/raw_lineage_independent_audit.json`
 
 - `docs/finance_v26_76_v26_77_verifier_bound_rematerialization_and_preflight.md`
 - `artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/report.json`

@@ -1,0 +1,2990 @@
+{
+  "artifact_file_count": 477,
+  "audit_id": "finance_v26_verifier_bound_postrun_source_replay:92fef212e7ef9367ee51798871cfd1f74394b694d083de0798b7f572cbdbc97c",
+  "entries": [
+    {
+      "byte_count": 5167,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/execution_binding.json",
+      "sha256": "493947af4a82b439b904ac61c18a749555f8bcc0d1c3f948aefcd6fcc5d5fc4b",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 16371,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/frozen_execution_contract.json",
+      "sha256": "b89de088e00892cc19e8b8588b65b24156ef2f03329df43832fbc5da24ea8f6f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 34156,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/frozen_job_manifest.json",
+      "sha256": "6688cc2a5dde961ede862dcf8988be8b07c385de4057d65770394938072d99b8",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 28353,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/online_source_replay_audit.json",
+      "sha256": "cba48f238c7228833d5b648026ae7335a934615beef8c3acf5aeff3668cec06b",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 24330,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0000.json",
+      "sha256": "fe7c9bfec2969fc0ea157dc7476dbe844bfe702b4bc313f4e10fc0dc1c14ef6a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38878,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0001.json",
+      "sha256": "455dc153487e5b112a3436a6196fa0413c157904af7a3297c2a0f8fe5aaec858",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38327,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0002.json",
+      "sha256": "cc62a1d83debe893c2f46ff8f111731651f0d4dbca6621fe8602752013a22988",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37844,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0003.json",
+      "sha256": "17022ba4cbb3f610c83b3d34121213da7d13b0c9aa5a6d2da6e4290c560c94f2",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37400,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0004.json",
+      "sha256": "0e2a20c4acc8e05fcd63b83912812289f52906fd5049880a6eddd4aadfe4bf1c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38648,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0005.json",
+      "sha256": "70a2ef33445fec7725b0bae297021e59851c00f2924b5c1f863c25c720200b15",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 40036,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0006.json",
+      "sha256": "82a391a838e52044974feb11c7588c1e298833e0e74714a56b82a3ae7ab3320a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41349,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0007.json",
+      "sha256": "f6d198eb708864a9654e223940b82e781b476db87c2284932a8873f289390468",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42578,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0008.json",
+      "sha256": "22230ba478b0d6016f8282692cfeaa755e8a5b1d4dd0c1094629479362e72994",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42708,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0009.json",
+      "sha256": "7d5b785d63f9cefdd3429b8e042580ec7a72807e96a22bdaefb8232ea7d07f1c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 24393,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0000.json",
+      "sha256": "132f98b0433d596e8a56743585428958b221ef669ddcdb615bbb00efa1288570",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38910,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0001.json",
+      "sha256": "7f22653b9694864ef0c1343deadf23ebc95c398174ac508180960579954e4ae5",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38386,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0002.json",
+      "sha256": "ec267cc041f86f30673cc58381721edf33d86007b68c5f63e72b84081a1a18c6",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37890,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0003.json",
+      "sha256": "700df67436e21c6c61e66727df925aa78fa364c8e20007059e429fcabff3feb1",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37493,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0004.json",
+      "sha256": "fc6a005c67a1dc2e48dd98575c77023df0133917760c1c46c8c78a664b7b2344",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38679,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0005.json",
+      "sha256": "60b491635ccffe18cca5164186e2521ad73a1df2e6bb7d7b4dcfa2eea3e13f03",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 40102,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0006.json",
+      "sha256": "33907aeb10bcdfbf0f60d6188fba5bc065943ea7f8538136ac2f5bde015ff23f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41413,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0007.json",
+      "sha256": "83c3ddd8fa226d9a1af2078ddb8fe7e4f8df80ec9aa5de14abb61d0847057a3e",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42646,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0008.json",
+      "sha256": "eac5f28885ffd2e3e74c96bf0da9f3429379eabd20269d17eb139ad4e7f36e33",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 24822,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0000.json",
+      "sha256": "9fa17ba5b58cf966677cf098a6ee30951b03674fd19166cc06c60c67465b1f58",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39835,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0001.json",
+      "sha256": "c6ad28710d97d8c3a413436733a8bbe8f46afb268ab06fa108d7bf24d7dab38c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41508,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0002.json",
+      "sha256": "522c81922a05322edf9eacf496a3bf2d3c8335354aa12e00cdd1080ab35fdf64",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42509,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0003.json",
+      "sha256": "e87fabd32602c100403f848f326d7fcb23eb6bc43bf4d7c99178a8f6afbd9e4e",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 24702,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0000.json",
+      "sha256": "b89585b6400e4d30abad1df784e6b9f4be4e3eefdc3821f5572bce25ad55510f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39690,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0001.json",
+      "sha256": "1e19322fd595532f68faba6378393cffc1cea72f2c0638059cb5c7f4f14a1d7a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41380,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0002.json",
+      "sha256": "d887038b49a3b6182a96931f42221b5de97f562d43610516898e5350f53785d0",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42521,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0003.json",
+      "sha256": "ca2a695942540771411ee0f0104c9b147b17a8285ed4b3444dc94352fd75cf50",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 24698,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0000.json",
+      "sha256": "78d870ad48331ad4d26adc35b638b2aa5dc25bc44906dd5f68f5f158728b4bd7",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39722,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0001.json",
+      "sha256": "c724427b0223fa901dcae1bbbda3456c0d31e11d21a77a0e4429adb91502414a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41386,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0002.json",
+      "sha256": "4cce43694df2bc616586bb682b5387f42d2cb05806bfd1ad655635f4afdb4eb0",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42634,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0003.json",
+      "sha256": "b693d79592039feb1d0bdcea68415ddc884d6123aa4ddad011e7a6b4ef3765d0",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 20721,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0000.json",
+      "sha256": "6500ef5846c7aaa26e6711f7dfc043bd6f424e7e457f309a9fdc1adf4feb7f36",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37834,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0001.json",
+      "sha256": "b5d9c1e18a44cfde139c41f63daf4201d917d1297f64def60488d8d3b721b813",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37502,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0002.json",
+      "sha256": "96254808cb021a3f4b2c94fee54f2c7b4eae5045e1ff1038a9ee792ff0b09681",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37210,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0003.json",
+      "sha256": "71bb756ebad789b3ea0df575c658a778d01240b46e0661bfaf08c33bb320511a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36904,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0004.json",
+      "sha256": "e2ec32be741cf0d79005e4619566eeac18c2fd95c28cdd967ef8d52b9ac62a16",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36687,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0005.json",
+      "sha256": "c9ec6a65f56686d445aaccad7cfc37c883324684c5b5064d0dfd9704272fb67d",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38176,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0006.json",
+      "sha256": "9692007079b1a6e506aca45840f8f2eabf4a7c32d8669623a0cd35e2884bb56e",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39728,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0007.json",
+      "sha256": "f95e236e744b27e520c1ed8e5a3a81bee9a62fb3b2457b43f7b0ff7cff4ad0b4",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41690,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0008.json",
+      "sha256": "f835d99762d9ab536640df34e9f63bb887e3245ef0f42571676d70b4dc561def",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42635,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0009.json",
+      "sha256": "e1b5df2f253a1eed638adb87365155157458c1cf41bed90d9b180364ba8bc99a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43534,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0010.json",
+      "sha256": "0eb25a620213609fc3e0774179f310d11237508d5d7e70d3071e99e48493e36c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 20758,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0000.json",
+      "sha256": "320af059946a06e4d5e7673f9803ca74a1e8d33adfbaeeb729501cb6faaeff70",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37923,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0001.json",
+      "sha256": "fa49b429cdfad3fd0702a8cba17d9fec08e81349260f93c6ce469c22f535ea06",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37576,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0002.json",
+      "sha256": "f4a0fae9e7f5b27c83739e7960513baa10995e79497be091c66782b3dff6fd52",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37296,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0003.json",
+      "sha256": "4fbd66a72231bf2accfb5dcbbce5622fd88903e57ac6cf9b1856145c6611a06f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36990,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0004.json",
+      "sha256": "d28c834011e5bb3a4e3cc00815af23c91ac7066555a303cab109e8f2b5fb0677",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36727,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0005.json",
+      "sha256": "bbecd37538a26a78c75d20942bd44845a1260b0acdba827c718b7421377bb35d",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38332,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0006.json",
+      "sha256": "dcc39b667f982c4688be4dbf2b73386573ca0371eec3f7d18718b89dbd3e3989",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39468,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0007.json",
+      "sha256": "067b9f09bc9ae31d17862ff762d1df8d7ae72b891d4a1900a5c1b12888c5cbac",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 40608,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0008.json",
+      "sha256": "6ff36e686c7b17929fc743ea54f4b490cd20af3c2613b79844cae3a5580bab86",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42204,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0009.json",
+      "sha256": "f00d4cc3dd0f32944ecb0bf54b011d14e63f939cf5c664475e033d4c2e59fbfa",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43754,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0010.json",
+      "sha256": "7153ccb471d4d4fbe4d140f1bd4bcb1078b54f3873b22ca235b09d5d1b695ffd",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 20650,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0000.json",
+      "sha256": "7d4f686c0618295de38cf29dee57afe82dcfc7f9aea42498dc642609fff1b112",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37764,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0001.json",
+      "sha256": "b73a23d619871205de7a430c2847568bef705948eea7154812d06ff419110364",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37418,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0002.json",
+      "sha256": "6295d498332842a8a792cc2d3749018cc2314da63b92bd798fe212453790e361",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37121,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0003.json",
+      "sha256": "d21207f9605ad16a90bc9c6b428a3b04b6da1f05e698fcf271a9ffa019d1f65c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36835,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0004.json",
+      "sha256": "824b4b9a9cf39c7bb582688277219842775d49deda660806adc131e9bd60606a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36524,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0005.json",
+      "sha256": "1e20867dcb8cc1a03fe8d71be68d6a89b4eb06e5e958e4d27d5bffdcb0ab493c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37981,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0006.json",
+      "sha256": "6dea54dd5cfdb69e379c7d8a9d4764b03ef33bb61c76d779d8e32b828ffb9303",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39515,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0007.json",
+      "sha256": "6cb0854d3ad7b69fe2b9204f130e3d51c4062d9d0003a8c4e4c5773598b56848",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 40996,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0008.json",
+      "sha256": "bfceae13d31a574eb4915664d9ecbb00e68e2dac41298b5566b38855b1f555f5",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42549,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0009.json",
+      "sha256": "c5df1122b01a8c405dbf73435a9b516ee6e9ad325bc313a7cca4e3d93dbc4f8b",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 44033,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0010.json",
+      "sha256": "9550e91f9fe0859969619d2d4bb274036373fbeb074c86e1b2014ac72fdad22e",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 45234,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0011.json",
+      "sha256": "c3076b7049a077069de55f5324a772eb91648e71131c84496b4a42049ea7292f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 14219,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0000.json",
+      "sha256": "06cb5bf9ea3aa77ecefcf29fb02be1d91d7e62defe584cabda00e3ead1e8568d",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26487,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0001.json",
+      "sha256": "14332da503caf0eea622489ac1d3eefe4df0e49d714db0206e29506025a39206",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 25966,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0002.json",
+      "sha256": "d4c1aba0559485cd795dbfbb862389ea33791714f0afb62f73ef6abc760487df",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 25513,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0003.json",
+      "sha256": "47a65f595621617045a2b2f68a766c750e2676976c0ede987c9d60fd55ea89e4",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26756,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0004.json",
+      "sha256": "be2d196ac856eea95c07b67db2bf4ed956dc5b1c9c7444e2de440f614a6d1b32",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 27610,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0005.json",
+      "sha256": "f9ee251ee162ca75f83ce32856362749d6a8c3e7ef60d4d81d91ebbff8b91304",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 28609,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0006.json",
+      "sha256": "60b6e20e791dbaa2d8293d9fdff4d06c5cbcd03cce03a138d9ec84e5c0f91642",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 29493,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0007.json",
+      "sha256": "5311a3cf1fa40e8ebffb72c016e8195a52dea57d0970b5600204bdc11fa15178",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 30472,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0008.json",
+      "sha256": "0abdb081d072c1d0bd2ba41573565d99f17d3301a69727d2717e9784eaf02c1d",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 14228,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0000.json",
+      "sha256": "85f9557dd18a8579554a33de30bd4750c9fb758e74ac75d6cb8a926d15b1ee66",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26526,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0001.json",
+      "sha256": "f0e03139aa63bb811469211578894a232fa1e1492bf12114410a5f9c2f991b0a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 25960,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0002.json",
+      "sha256": "d88bc256ecff4afeb9129a1c9056d3c7a28bf5f95a9c6f29db2bebcd147af7d2",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 25517,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0003.json",
+      "sha256": "04045063b0833252094fdd94a91ed434a86dee7ea9ccfa6109858d76c813da8e",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26710,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0004.json",
+      "sha256": "d41a1b9942f9afc80cd4ff030cb39fa42d5042830cfcc23701e27741036e02f6",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 27652,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0005.json",
+      "sha256": "e7f5a47be78b298194dad9e2b97dae6150e9c4989e07b235be2f8342b656f22f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 28588,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0006.json",
+      "sha256": "6f4381099a35548e13712f9ca780811186f6b175704ddaaeb566d0768eddca62",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 29563,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0007.json",
+      "sha256": "06e5f90d9e5f707ea110b38fff1983046faebcc9303fd8c2d30fedd754d71a7a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 14270,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0000.json",
+      "sha256": "a16f05e35c3d0b2ac8633f99d34b8b512e3988e26b5b3582177fb9b2b0ffc7b4",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26555,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0001.json",
+      "sha256": "aa2d83010b1dbc2276c937c4037e5fc6aa6104771b5fe10f4b5865512840ba5b",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 25987,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0002.json",
+      "sha256": "596e79b4d592a4ef6f86e60853e2ecfee16edc0646b9fd2abf3173c7a9d5cd06",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 25561,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0003.json",
+      "sha256": "7ba18d40dcfca95731d2e703e62399905f79446eb88f57aab44437970ed44a3f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26777,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0004.json",
+      "sha256": "75040aca12a73c74380a2ee6c0ca34693521319ed4dd342a63f87d060a0cb8ce",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 27666,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0005.json",
+      "sha256": "adfccb835e6d92c7be47adb59d04f02ac9947c4fb4a691c07cadbdaac48ab25f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 28696,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0006.json",
+      "sha256": "146a81e8a663cdeb23259865f1de962f94c678aeb0a51334715065a85e421a11",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 29509,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0007.json",
+      "sha256": "20d0894b0e5460f2f2a690a47fc0d9be621eb3d3a2b3eeca3f36f87e72a25c01",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 20805,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0000.json",
+      "sha256": "dfbe773517a7f89273e2a7e14143d60f77a915e155f14c8144a07c528c8c6d3f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37902,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0001.json",
+      "sha256": "4a7d9641dee5cdbb067c17d3cb9a49d422009505a2782abeda59426b9fa2faab",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37587,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0002.json",
+      "sha256": "9d4a5fc6a91c8da8a2cc3adb63d40aeb61d345ee18ac59e4f8c6d6995ab17d29",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39486,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0003.json",
+      "sha256": "9fb1e295fc83307c91c484fac39c9a61055ac344bbf9c6e19937e65612d8f422",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39224,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0004.json",
+      "sha256": "2c29f5568588cc91f84467f6302ccc23a4babfbe002141850a58004d3096ac54",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38910,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0005.json",
+      "sha256": "ee6bbe6be0966797376e8d48a6d7bd44e161a27930d5dc7e480fb84190996a35",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38684,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0006.json",
+      "sha256": "7ffc3a906fbc994696055233951f5564b977a8d99e35d10beaec1077ce0c186d",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 40262,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0007.json",
+      "sha256": "1f2ee724801c09e3cde4f785d3e9372dcad387c6e01401c8bfa8ece93e367f6c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41316,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0008.json",
+      "sha256": "ccef4af8915465a09cad16ba481b4aa4014ea88f5b6941cc3fff6fc205113dba",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42526,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0009.json",
+      "sha256": "0650b339e50ade1924827369aa5e16420afa1335225e892ba5b90418d1212432",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 44113,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0010.json",
+      "sha256": "3b2455f0449e2675aca935ba04b92b39dcdd59598166724ab766f493447f0e37",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 45658,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0011.json",
+      "sha256": "460c7192d8084bbce56a1b32753f5a0afbcebdaf36aacd1d352f2778c216dd1c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 20788,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0000.json",
+      "sha256": "4010f66e448a6ed95a400a571f43bf2c4ea73b8ce99ab96ee6672c464fd8cc38",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37897,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0001.json",
+      "sha256": "a06829946c29d739acab41e32931fda9008fbbc08fb7ecf3a4a9bc2c0a592768",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37582,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0002.json",
+      "sha256": "0359196d40ef32741591ea7e416369f8225951e3cbec989f1cbf0d5ab584f02b",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 37257,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0003.json",
+      "sha256": "2c55d090bd1071670a7c914a205d733d6d8cbdefcd76cbadd18f331112d8d71c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36957,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0004.json",
+      "sha256": "295a07f346d2509dc9c27785b7cb1ab68aca943202e91a4e95695498925f5be2",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 36751,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0005.json",
+      "sha256": "c87488fe84a1c1a33d22f7aa675b9fa47723845ef2a3c47ef97df2e3325269f4",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38241,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0006.json",
+      "sha256": "b845b44648c928dff5c7577a1a87a18d4dcae64497ce130cfc40cbb86b9dbaf7",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39440,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0007.json",
+      "sha256": "4995afe72a44500cce7c0c330d60bf8605ab5b7d3239b3699b450be846430984",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 40611,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0008.json",
+      "sha256": "24278ec6518984ce0c04337a50873654ac69c9740497bfcdc2d52ef350c4d6a0",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41910,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0009.json",
+      "sha256": "d254b391ceb6a1fcf08e162af9acc1e48513ecff0b88d1434a416bccc0aca4a2",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 38950,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0000.json",
+      "sha256": "7a24d00ec45440e82a32471c985f4cae3a43420ad0297d35d892d9d2fcf667aa",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 60667,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0001.json",
+      "sha256": "b72fb6fea030a98004450bcbac14d27051d8f2cff943c43fc46cb7a0afbdc876",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 60420,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0002.json",
+      "sha256": "59891aba2ab33b0b1e7e972d2096028be7da747a0da3e01f18b754bbe9d3f7c6",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 60231,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0003.json",
+      "sha256": "63132abd1cd825206135ea524a887dc464151cd7320a107f11d67b885754ee4f",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 60035,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0004.json",
+      "sha256": "cf1174a9677de759d48fc94acc6c240095c1f12c0cb9f8d89e4f02d24eea53f9",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 59866,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0005.json",
+      "sha256": "afd005e829d885db1eef9545dd95ee0c160a8c43e3e6ccb149ea0a97ee89c716",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 59671,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0006.json",
+      "sha256": "0e3479deed581d0aabd569266c58649aa2b79df8f496ab888b2ca5b54e865966",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 59296,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0007.json",
+      "sha256": "e3606ed6adefae96feaf6acd804422db6fcf88f04954ff6c7688ed7812d075b0",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 60902,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0008.json",
+      "sha256": "1b0becd2674f03cf96fe71cf186bd85e2df13b75448d483b2a64c1295dd8dcad",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26713,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0000.json",
+      "sha256": "d28cb748d06fcce0f8d5b99aad660ec8bdbc13174019f3b783df968d880a68fc",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43440,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0001.json",
+      "sha256": "313fdf63f6224e29f7a013373e6f8b218e19168c51e501dd1f1cb146dd36bf20",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42988,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0002.json",
+      "sha256": "f72794cf6fea8102b6bd1e8174190e453cd75f4f785d144e2ff1f4519dc66e7e",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42535,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0003.json",
+      "sha256": "7c924928dd051d16d8467796f6584b2618a39acd201c752de3ecc64d0df27298",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42086,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0004.json",
+      "sha256": "3d3e09cc791a182071e77df1a44d00fddc65d4a5a9f20c68e361d9850b9e9a86",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41719,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0005.json",
+      "sha256": "7b75c41c8269d443a542f60fc9e8ade1ac4a1266e9b77b39e0e765ebf313afe1",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42998,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0006.json",
+      "sha256": "69bf8d4f882d28b2eedb74a8b90a2674aea1bc15885ae7a6ba984519e2a83eab",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 44026,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0007.json",
+      "sha256": "5ae9171beaabd1aff5f4f34be5b69787029125dc358fd5db0da36422d3a704d7",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 45014,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0008.json",
+      "sha256": "6d61eca906f0e3fbdb8f8641c36b56f5e3d9d5257855b9fb50b33cab3cad6062",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 46022,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0009.json",
+      "sha256": "d203bd3ecae7d1eb9fe928a9d8cef58d709b08443f9c7a6c128bc90255022b88",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 26536,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0000.json",
+      "sha256": "f7515946d9bbc3513471da994059e078ce6d690787c9f2ba9e6618ece677969a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43486,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0001.json",
+      "sha256": "0bd3fddb6d5769c7b0ec9019b008ecd44baf39d91030711f40c657984e3b7f3c",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43267,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0002.json",
+      "sha256": "e2cf107f77b74623b87e90562e3e836ae0aa6c307e8cce68f02899583faf5058",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43084,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0003.json",
+      "sha256": "c5a00fd056608be5be21d7e5ccdde87a61f3d348021cbb1d05cc54be9d4d6609",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42883,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0004.json",
+      "sha256": "2bc5c3ccbbbb03905005eb0065d844ce5ed4f9b50bbcfdacbd05d26517023ed7",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42569,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0005.json",
+      "sha256": "fb40921e77d242cb3ca6bf5fbec86f3e0d5515415d7f487b84447199c3290b92",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 43923,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0006.json",
+      "sha256": "423e94941c669dff0d765c4c240bd87fe8e9dd56bbe09ac56d8dbe8b3113f801",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 44832,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0007.json",
+      "sha256": "100cfcdd91662c1aa848006d3d6b1adea734107791d1ca08a6c60a3b6c5cf9ad",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 46256,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0008.json",
+      "sha256": "710d7e01a724ddd14c2ef5aac2b33b3cfc25af760a5141dded6570ff2fca6099",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 47707,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0009.json",
+      "sha256": "7a59a9e5c2d0d722756f6f4b0fbc9e93b36f0130355804f62f68974d05a64c75",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 49138,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0010.json",
+      "sha256": "e1d1a832e1fb857880700be2da1ec9e0c27d44b1d8d571a2dc3088e7a23290c4",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 24765,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0000.json",
+      "sha256": "62e1ac053c3ceed3ba0811892e1ee6dcccafceb2146379b8b30fe715b2081179",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 39718,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0001.json",
+      "sha256": "f22463d2ce500500b151eaa6632e4e59e4864abf534dd5d5b12d4566aba7f790",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 41382,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0002.json",
+      "sha256": "9c2ffb19d4365352a3b506228707c45b17570895a43c6ac643174148702ee33a",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 42584,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0003.json",
+      "sha256": "6a058af31cefb7f2f11dcb69f631becd37fe55de51b251c75e6751238cea3b69",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 201,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/runner_failures.checkpoint.jsonl",
+      "sha256": "a87db1b5ba772576d4087fd439ebabd22230b562e45956a4a978c2c571684649",
+      "source_kind": "failed_run"
+    },
+    {
+      "byte_count": 23330,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/failed_run_audit.json",
+      "sha256": "47664a3bfb556bf29c31b301dcc9c5a59d5872d9c8bf00beb5937a2bc8a1dae8",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 17084,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/failed_run_job_audits.json",
+      "sha256": "56b4ec75e872d61e672d3451ff690a391804689876002b5970482fcf551b8f0f",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 89362,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/raw_provider_artifact_manifest.json",
+      "sha256": "385141f050e7a3541d78f9c937913b2d39d9a73f7e7093856fa61520856fe511",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 9162,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/recovery_contract.json",
+      "sha256": "7319460923df404ae0f2caece08bd8c4d3a1cadaa138a6838abc9b4b4cae1e25",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 4697,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/recovery_execution_binding.json",
+      "sha256": "515fd5e52fdb81417dd0d9324f2bcb77fb17fb3ffe1cf4438ce8732728a41879",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 53441,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/recovery_manifest.json",
+      "sha256": "f609e2711a44319fd9fb6cf756e8876091298147df9e5a2d2073d652827b6828",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 27909,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/recovery_source_replay_audit.json",
+      "sha256": "0935a468b60d4e61d80d8f96e2e3d9b8f4a6dcc39a3cdea0efe8d9c8459d6653",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 1828,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/report.json",
+      "sha256": "a5988356fe239eb76a2743f8dde33008974218b0a365c5c0b972eef4fb398bd0",
+      "source_kind": "preflight"
+    },
+    {
+      "byte_count": 23330,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/failed_run_audit.json",
+      "sha256": "47664a3bfb556bf29c31b301dcc9c5a59d5872d9c8bf00beb5937a2bc8a1dae8",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41493,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/independent_non_replay_gate_audits.json",
+      "sha256": "d5262c5d5d1b9f57ac2afe26f6a7a3fe164f594070c2d56b43ed13fdf78133e1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 82203,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/instrument_result.json",
+      "sha256": "67e4205eee25fb42c5949de4c3ecfd29f1b908a69bf386f0be046a226e8d33d4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 282221,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/instrument_rollouts.json",
+      "sha256": "82505055677253377be797ea39129f59d5dff65ac1ee0261b2acac0295577c0f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1464,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/mechanism_summaries.json",
+      "sha256": "b11ee849f2c381d511fc7627b690cd8ab43be6692c23fd16f0cd26b5ea4e30b9",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 31023,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/online_replay_results.json",
+      "sha256": "8c16cec84146b2129d7e1df98172f86d2e2782f99c8f9415234ffd0924ac69ec",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 798516,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_0.json",
+      "sha256": "4e3b303364656cc2030dbbb371d41e29c325e4b03976d5617ac9653fb048aaf4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1071392,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_1.json",
+      "sha256": "16d86fea0375b82570fa1b6102469ed815903c960efc6ffb14e2142e62075b08",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 713273,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_2.json",
+      "sha256": "8116a42224a1ef5a6c80f49b71010c7a8e82e5af25d84354bf9466ec8ef5b48b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 803548,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_3.json",
+      "sha256": "9172010ce73d6547ca62ca71d0d95ca2d0b6ff5c1acf6b950ed1f7fbbca41637",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 566705,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/936951edd2d801cf/replicate_0.json",
+      "sha256": "03c29c085d9870b37266f6c748e293693b3e170c773103512071f3affa134013",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 301533,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/936951edd2d801cf/replicate_1.json",
+      "sha256": "3ee8465616f6d74bdefa2f7adc54bea7c51020d4ea0edca4447b30efc161b8cf",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 300689,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/936951edd2d801cf/replicate_2.json",
+      "sha256": "ba610f50caf0e4d98d6b5e5ca5f02d86201b5bddac73c584f2a4e45aeb077c88",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 300931,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/936951edd2d801cf/replicate_3.json",
+      "sha256": "de7d5109a8341e845eeb19e6f5a9bf6de3ca629674af1f1e0bfae7f3857df783",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 867897,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/abc47c23da26cd97/replicate_0.json",
+      "sha256": "7aa1c9d5d8e276f0390c0a3fc8a7b8954f93dacab22f9f645d74f2e66cff4681",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 839809,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/abc47c23da26cd97/replicate_1.json",
+      "sha256": "a9f4396a6a42d8c6a9f52262f52a49828ad532283224c0de542aad3d10b11c43",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 931825,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/abc47c23da26cd97/replicate_2.json",
+      "sha256": "179bf61a6a0aa94cc39c14a552594a48ff9777d1756c703dcdf4c382da0792bd",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 578866,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/abc47c23da26cd97/replicate_3.json",
+      "sha256": "909d29f15b092b0742a1ae5eae0c74c5f4533683c2027904f1a5b00f4d86529d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 499347,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/aed4aba64e7ed993/replicate_0.json",
+      "sha256": "35395d13e5b7b82bcd5f68c13462205b41306afba21bb16bc4421efd9de0f1a8",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 420519,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/aed4aba64e7ed993/replicate_1.json",
+      "sha256": "10e535f3e2b4360d899a6f73b410125a9d12073ef9a506d7a7a433927c1ff893",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 420975,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/aed4aba64e7ed993/replicate_2.json",
+      "sha256": "02ef6c1936bdb4859de639b746962e917243474ddb09cd6efc93c0018dc54af5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 421915,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/aed4aba64e7ed993/replicate_3.json",
+      "sha256": "b0648acf64022d0cc830ac69284752a0d99464bcdc45022c746cdea7ecb42281",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 951348,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/baa63b1e8fcd5837/replicate_0.json",
+      "sha256": "2b7cc36aac835a8b86fa3919f6760f1c16db11997237e03c1e60593345a2450e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 748248,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/baa63b1e8fcd5837/replicate_1.json",
+      "sha256": "fdfb451b64832e9100ade159cc1dc6eaefbb2a64f244742ba75cb9d7f9b3547b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 579524,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/baa63b1e8fcd5837/replicate_2.json",
+      "sha256": "06bf2ccdaa27c3d67ef1517917925720542c56fb25a9d3db932a49af76ca66e6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 749658,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/baa63b1e8fcd5837/replicate_3.json",
+      "sha256": "6cab2740f788a3e3a623f4042d32568914272d6aaca6f598518bd5020d6eb078",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1039217,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/d54fca1e7c36ed98/replicate_0.json",
+      "sha256": "5ab0b114fa39dd30b4f23810deb38ae8a71ca31b23eb5613bb42d8fd875f945f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1055256,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/d54fca1e7c36ed98/replicate_1.json",
+      "sha256": "bda463e97602775b6f5c361344a4c33dc95c8802ab308490a0f1498ea18b6384",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1051471,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/d54fca1e7c36ed98/replicate_2.json",
+      "sha256": "a8fc566e5e481023ecd7204f251464450d815111a4f6a00c6ccc68521c7603f6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1053852,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/d54fca1e7c36ed98/replicate_3.json",
+      "sha256": "66f55f5d88d63e154087578e103824a30417e3237b73bb9a03bd8fb0fd36cef0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 850559,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_0.json",
+      "sha256": "ed897ef5c3dad8fbb50750394caacc4b09f5649b9282dfabb7c9ee5a7693b152",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 850334,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_1.json",
+      "sha256": "305d3503044d33ba3dea23703e4c798067dc5ce60a59806a30d7386e620f27fb",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 878767,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_2.json",
+      "sha256": "099ec886dd0ccc26d9ddb89d801ba7a8732c5f8fbacc273b7ee3e6bbcc6df8f6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 991445,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_3.json",
+      "sha256": "038ea629f3d6c2e935d0580b25715841db8c5780e3be8cc69c1921e76e5eb7e5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 300967,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/fa0e6ec0237b0593/replicate_0.json",
+      "sha256": "f7c1c9688c1f01129f438cbb6bd1bb071f714f8fa60e506c4018f12539dd8d44",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 298465,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/fa0e6ec0237b0593/replicate_1.json",
+      "sha256": "3f0a324527ddbd6a3b67567a98790ea51ca1787f39f14d18d7bede49762c64d2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 300236,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/fa0e6ec0237b0593/replicate_2.json",
+      "sha256": "1b263edfa5dc9d33d7ba9e5234a893080466594b551a294e8dc358b6ef1b3d7a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 299286,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/fa0e6ec0237b0593/replicate_3.json",
+      "sha256": "c5de51c50e3c501a71b34ea01ee9558d1922b740bd6c770534319fd739f9d34f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 2854,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_integrity_audit.json",
+      "sha256": "6fe921c54d34e288d08f6e613797898fe2735a3a6c1ca783eaa9596c5e81426b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 89362,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_artifact_manifest.json",
+      "sha256": "385141f050e7a3541d78f9c937913b2d39d9a73f7e7093856fa61520856fe511",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24330,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0000.json",
+      "sha256": "fe7c9bfec2969fc0ea157dc7476dbe844bfe702b4bc313f4e10fc0dc1c14ef6a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38878,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0001.json",
+      "sha256": "455dc153487e5b112a3436a6196fa0413c157904af7a3297c2a0f8fe5aaec858",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38327,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0002.json",
+      "sha256": "cc62a1d83debe893c2f46ff8f111731651f0d4dbca6621fe8602752013a22988",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37844,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0003.json",
+      "sha256": "17022ba4cbb3f610c83b3d34121213da7d13b0c9aa5a6d2da6e4290c560c94f2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37400,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0004.json",
+      "sha256": "0e2a20c4acc8e05fcd63b83912812289f52906fd5049880a6eddd4aadfe4bf1c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38648,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0005.json",
+      "sha256": "70a2ef33445fec7725b0bae297021e59851c00f2924b5c1f863c25c720200b15",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40036,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0006.json",
+      "sha256": "82a391a838e52044974feb11c7588c1e298833e0e74714a56b82a3ae7ab3320a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41349,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0007.json",
+      "sha256": "f6d198eb708864a9654e223940b82e781b476db87c2284932a8873f289390468",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42578,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0008.json",
+      "sha256": "22230ba478b0d6016f8282692cfeaa755e8a5b1d4dd0c1094629479362e72994",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42708,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_0/call_0009.json",
+      "sha256": "7d5b785d63f9cefdd3429b8e042580ec7a72807e96a22bdaefb8232ea7d07f1c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24353,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0000.json",
+      "sha256": "40f24216276dc8cca25c288773a495bd39cfd17268b48554608464a98d2ab019",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38923,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0001.json",
+      "sha256": "92995ab63282226b5192853582cb0089a6a1a63796f36b343d5cdf09d5af09b8",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38346,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0002.json",
+      "sha256": "cb3ae5945643e07c6c475bf1256248af58cf6995c62fe4d62a6317efe60360b1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37839,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0003.json",
+      "sha256": "5a05f69c407c8e0720a3e476832686a03d3b68cd7b5faea534d80151c1258fdc",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37436,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0004.json",
+      "sha256": "29aac8120d3f679580177b74f3e56f17a437f45906011627b03e03bb28009d17",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38659,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0005.json",
+      "sha256": "947d3488a77c67f93a072ae2548a705587c0b9a0348a10404087774da9cc93d1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40078,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0006.json",
+      "sha256": "2e8a6692b46d6daff78fd77ae6de55f5b446cf5b76db590cdd0efc62cb4fda05",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41328,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0007.json",
+      "sha256": "05e62e900253569b78e3c617d3b2efa8d1c58af226e6035de0d0e5358bf8c8cf",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42750,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0008.json",
+      "sha256": "078fe901cb1b53b4d8f08c4fe56aea2e6233344c21bc87f6aa90846f3a5aca62",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44507,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0009.json",
+      "sha256": "fbf1595fa431cf5e0f2b01553c0ee85b9241cd5b2ee980202bbd42ce3ddb0f50",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 45742,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0010.json",
+      "sha256": "ad0fe52b8e25add4ce77c78585c7cd3893a4befb5f62dd608538bdb5f410323d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 47155,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0011.json",
+      "sha256": "d7bfa027100857536c93aa1668e4f02059647e14bb131c90d78d477ed613d159",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 48953,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_1/call_0012.json",
+      "sha256": "2f9fd1360993960d7bc675c4d10d9300e3334b88dcde9f99cde7c03b4ba9fcd5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24393,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0000.json",
+      "sha256": "132f98b0433d596e8a56743585428958b221ef669ddcdb615bbb00efa1288570",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38910,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0001.json",
+      "sha256": "7f22653b9694864ef0c1343deadf23ebc95c398174ac508180960579954e4ae5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38386,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0002.json",
+      "sha256": "ec267cc041f86f30673cc58381721edf33d86007b68c5f63e72b84081a1a18c6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37890,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0003.json",
+      "sha256": "700df67436e21c6c61e66727df925aa78fa364c8e20007059e429fcabff3feb1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37493,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0004.json",
+      "sha256": "fc6a005c67a1dc2e48dd98575c77023df0133917760c1c46c8c78a664b7b2344",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38679,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0005.json",
+      "sha256": "60b491635ccffe18cca5164186e2521ad73a1df2e6bb7d7b4dcfa2eea3e13f03",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40102,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0006.json",
+      "sha256": "33907aeb10bcdfbf0f60d6188fba5bc065943ea7f8538136ac2f5bde015ff23f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41413,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0007.json",
+      "sha256": "83c3ddd8fa226d9a1af2078ddb8fe7e4f8df80ec9aa5de14abb61d0847057a3e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42646,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_2/call_0008.json",
+      "sha256": "eac5f28885ffd2e3e74c96bf0da9f3429379eabd20269d17eb139ad4e7f36e33",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24497,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0000.json",
+      "sha256": "49fbed4e8a6f031e2ece77d3f7cd84a042a1d1b14eb0280ba086472f1ae87d7d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39000,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0001.json",
+      "sha256": "6beb53760a2eb530490e2ad47df32bd6a232fb9c868d55612b7d8bf8dc38c739",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38481,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0002.json",
+      "sha256": "43f8a955687d7172e47080758961461b60cb899e6956bbfe2a56bcd544d02c39",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37987,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0003.json",
+      "sha256": "91de0805f7e04028cb7e2a45f3f985a13e554561203aff8c3b653364dae9011c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37505,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0004.json",
+      "sha256": "432e38354d6030c2830da32cacc2ac9907cd782bd2a38ba9629cf86039f942f3",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38864,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0005.json",
+      "sha256": "8fe55a8b7321056417d242aeea2463ecb1d32b9e9d9f7f8a89c5726624be91f2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39777,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0006.json",
+      "sha256": "fc46a30550ddeb951813bbe9429d5292e8bbb2cf8bad86300b2674c9cd4e3d0e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41196,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0007.json",
+      "sha256": "c274a92a999ad624f85d7d5714a7b64b53c4f99f2386f4d5502ceabde371396e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42472,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0008.json",
+      "sha256": "5f47da25d00a253566017f2aab8549132b447faeafdac3edfe0d8d2def17586e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43741,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/5f13e9086c04355e/replicate_3/call_0009.json",
+      "sha256": "9c76f90e5acb58f9703817287821c33ba0463d6c27eada49a1c3cd8b2b8117f4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24761,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0000.json",
+      "sha256": "ffaefbffc8fb36e76fb8e624cbd66923b02418003c58ecfe3881d38bb35358bc",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39747,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0001.json",
+      "sha256": "e20836d4dc2bb4df9a98a85234996f0ee31a6ef5ad4a03306bf87eadd4cce2cb",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41408,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0002.json",
+      "sha256": "7b37658948508fdb78d706ffde190cec9240fdd88691d095d8fec22958de30d5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42603,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0003.json",
+      "sha256": "a2d43a960e37759f536643e1d8735e729257e9fde27d3b764991009149bffe0c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41871,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0004.json",
+      "sha256": "f62d341201344c69d888fabb05cdb73cc459ea312a5df830f73405ffa1be7c8f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43446,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0005.json",
+      "sha256": "acf6af560f076a7dcd81fde6953e07222cfb219675866b71bfc522dd4b81bf98",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44613,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_0/call_0006.json",
+      "sha256": "bedc45baf19156ee05e02c6b3ab422051a4633b2beb50a9e06ac7d4cac785e0c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24822,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0000.json",
+      "sha256": "9fa17ba5b58cf966677cf098a6ee30951b03674fd19166cc06c60c67465b1f58",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39835,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0001.json",
+      "sha256": "c6ad28710d97d8c3a413436733a8bbe8f46afb268ab06fa108d7bf24d7dab38c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41508,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0002.json",
+      "sha256": "522c81922a05322edf9eacf496a3bf2d3c8335354aa12e00cdd1080ab35fdf64",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42509,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_1/call_0003.json",
+      "sha256": "e87fabd32602c100403f848f326d7fcb23eb6bc43bf4d7c99178a8f6afbd9e4e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24702,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0000.json",
+      "sha256": "b89585b6400e4d30abad1df784e6b9f4be4e3eefdc3821f5572bce25ad55510f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39690,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0001.json",
+      "sha256": "1e19322fd595532f68faba6378393cffc1cea72f2c0638059cb5c7f4f14a1d7a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41380,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0002.json",
+      "sha256": "d887038b49a3b6182a96931f42221b5de97f562d43610516898e5350f53785d0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42521,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_2/call_0003.json",
+      "sha256": "ca2a695942540771411ee0f0104c9b147b17a8285ed4b3444dc94352fd75cf50",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24698,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0000.json",
+      "sha256": "78d870ad48331ad4d26adc35b638b2aa5dc25bc44906dd5f68f5f158728b4bd7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39722,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0001.json",
+      "sha256": "c724427b0223fa901dcae1bbbda3456c0d31e11d21a77a0e4429adb91502414a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41386,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0002.json",
+      "sha256": "4cce43694df2bc616586bb682b5387f42d2cb05806bfd1ad655635f4afdb4eb0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42634,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/936951edd2d801cf/replicate_3/call_0003.json",
+      "sha256": "b693d79592039feb1d0bdcea68415ddc884d6123aa4ddad011e7a6b4ef3765d0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20721,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0000.json",
+      "sha256": "6500ef5846c7aaa26e6711f7dfc043bd6f424e7e457f309a9fdc1adf4feb7f36",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37834,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0001.json",
+      "sha256": "b5d9c1e18a44cfde139c41f63daf4201d917d1297f64def60488d8d3b721b813",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37502,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0002.json",
+      "sha256": "96254808cb021a3f4b2c94fee54f2c7b4eae5045e1ff1038a9ee792ff0b09681",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37210,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0003.json",
+      "sha256": "71bb756ebad789b3ea0df575c658a778d01240b46e0661bfaf08c33bb320511a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36904,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0004.json",
+      "sha256": "e2ec32be741cf0d79005e4619566eeac18c2fd95c28cdd967ef8d52b9ac62a16",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36687,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0005.json",
+      "sha256": "c9ec6a65f56686d445aaccad7cfc37c883324684c5b5064d0dfd9704272fb67d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38176,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0006.json",
+      "sha256": "9692007079b1a6e506aca45840f8f2eabf4a7c32d8669623a0cd35e2884bb56e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39728,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0007.json",
+      "sha256": "f95e236e744b27e520c1ed8e5a3a81bee9a62fb3b2457b43f7b0ff7cff4ad0b4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41690,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0008.json",
+      "sha256": "f835d99762d9ab536640df34e9f63bb887e3245ef0f42571676d70b4dc561def",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42635,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0009.json",
+      "sha256": "e1b5df2f253a1eed638adb87365155157458c1cf41bed90d9b180364ba8bc99a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43534,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_0/call_0010.json",
+      "sha256": "0eb25a620213609fc3e0774179f310d11237508d5d7e70d3071e99e48493e36c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20758,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0000.json",
+      "sha256": "320af059946a06e4d5e7673f9803ca74a1e8d33adfbaeeb729501cb6faaeff70",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37923,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0001.json",
+      "sha256": "fa49b429cdfad3fd0702a8cba17d9fec08e81349260f93c6ce469c22f535ea06",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37576,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0002.json",
+      "sha256": "f4a0fae9e7f5b27c83739e7960513baa10995e79497be091c66782b3dff6fd52",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37296,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0003.json",
+      "sha256": "4fbd66a72231bf2accfb5dcbbce5622fd88903e57ac6cf9b1856145c6611a06f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36990,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0004.json",
+      "sha256": "d28c834011e5bb3a4e3cc00815af23c91ac7066555a303cab109e8f2b5fb0677",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36727,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0005.json",
+      "sha256": "bbecd37538a26a78c75d20942bd44845a1260b0acdba827c718b7421377bb35d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38332,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0006.json",
+      "sha256": "dcc39b667f982c4688be4dbf2b73386573ca0371eec3f7d18718b89dbd3e3989",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39468,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0007.json",
+      "sha256": "067b9f09bc9ae31d17862ff762d1df8d7ae72b891d4a1900a5c1b12888c5cbac",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40608,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0008.json",
+      "sha256": "6ff36e686c7b17929fc743ea54f4b490cd20af3c2613b79844cae3a5580bab86",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42204,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0009.json",
+      "sha256": "f00d4cc3dd0f32944ecb0bf54b011d14e63f939cf5c664475e033d4c2e59fbfa",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43754,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_1/call_0010.json",
+      "sha256": "7153ccb471d4d4fbe4d140f1bd4bcb1078b54f3873b22ca235b09d5d1b695ffd",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20650,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0000.json",
+      "sha256": "7d4f686c0618295de38cf29dee57afe82dcfc7f9aea42498dc642609fff1b112",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37764,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0001.json",
+      "sha256": "b73a23d619871205de7a430c2847568bef705948eea7154812d06ff419110364",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37418,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0002.json",
+      "sha256": "6295d498332842a8a792cc2d3749018cc2314da63b92bd798fe212453790e361",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37121,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0003.json",
+      "sha256": "d21207f9605ad16a90bc9c6b428a3b04b6da1f05e698fcf271a9ffa019d1f65c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36835,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0004.json",
+      "sha256": "824b4b9a9cf39c7bb582688277219842775d49deda660806adc131e9bd60606a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36524,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0005.json",
+      "sha256": "1e20867dcb8cc1a03fe8d71be68d6a89b4eb06e5e958e4d27d5bffdcb0ab493c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37981,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0006.json",
+      "sha256": "6dea54dd5cfdb69e379c7d8a9d4764b03ef33bb61c76d779d8e32b828ffb9303",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39515,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0007.json",
+      "sha256": "6cb0854d3ad7b69fe2b9204f130e3d51c4062d9d0003a8c4e4c5773598b56848",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40996,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0008.json",
+      "sha256": "bfceae13d31a574eb4915664d9ecbb00e68e2dac41298b5566b38855b1f555f5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42549,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0009.json",
+      "sha256": "c5df1122b01a8c405dbf73435a9b516ee6e9ad325bc313a7cca4e3d93dbc4f8b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44033,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0010.json",
+      "sha256": "9550e91f9fe0859969619d2d4bb274036373fbeb074c86e1b2014ac72fdad22e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 45234,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_2/call_0011.json",
+      "sha256": "c3076b7049a077069de55f5324a772eb91648e71131c84496b4a42049ea7292f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20662,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0000.json",
+      "sha256": "b16c6610fe67963181d139dde0b5a080d9101b56045b9e8853ae91c91c8846c6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37772,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0001.json",
+      "sha256": "f8afc9b00aa78f3a8bfd1884a9d73cb059240f521e1834567309befeaf4bee13",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37432,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0002.json",
+      "sha256": "e38d5dbc59406740a23066ff8a1fb2bc44acd965b3436eb961dc48542aabaa7b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37130,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0003.json",
+      "sha256": "066108ab9148b8e9c9e808b299cf9cd76e8e58833bc9f44997c56b27cd6e4429",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36821,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0004.json",
+      "sha256": "209a3dd8e1fe0183b1ecbedb35d99a7b578c0c145d23a3972ba025ae6c09f79f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36595,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0005.json",
+      "sha256": "23888d0576b8f36c4da81ed8050e2d7285d9a2c9c228ed12475f3fb4e6b879c0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38101,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0006.json",
+      "sha256": "5bab7c0e33ad46e500a0d5f9bc92e47f7a9df53161b3f9861925529efa250a27",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39260,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/abc47c23da26cd97/replicate_3/call_0007.json",
+      "sha256": "a332b2af112f33a95d3ab97f0c2134107af16ef2afc57fd0212cee6d7b91c3c1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 14219,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0000.json",
+      "sha256": "06cb5bf9ea3aa77ecefcf29fb02be1d91d7e62defe584cabda00e3ead1e8568d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26487,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0001.json",
+      "sha256": "14332da503caf0eea622489ac1d3eefe4df0e49d714db0206e29506025a39206",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25966,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0002.json",
+      "sha256": "d4c1aba0559485cd795dbfbb862389ea33791714f0afb62f73ef6abc760487df",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25513,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0003.json",
+      "sha256": "47a65f595621617045a2b2f68a766c750e2676976c0ede987c9d60fd55ea89e4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26756,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0004.json",
+      "sha256": "be2d196ac856eea95c07b67db2bf4ed956dc5b1c9c7444e2de440f614a6d1b32",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 27610,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0005.json",
+      "sha256": "f9ee251ee162ca75f83ce32856362749d6a8c3e7ef60d4d81d91ebbff8b91304",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 28609,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0006.json",
+      "sha256": "60b6e20e791dbaa2d8293d9fdff4d06c5cbcd03cce03a138d9ec84e5c0f91642",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 29493,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0007.json",
+      "sha256": "5311a3cf1fa40e8ebffb72c016e8195a52dea57d0970b5600204bdc11fa15178",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 30472,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0008.json",
+      "sha256": "0abdb081d072c1d0bd2ba41573565d99f17d3301a69727d2717e9784eaf02c1d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 14228,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0000.json",
+      "sha256": "85f9557dd18a8579554a33de30bd4750c9fb758e74ac75d6cb8a926d15b1ee66",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26526,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0001.json",
+      "sha256": "f0e03139aa63bb811469211578894a232fa1e1492bf12114410a5f9c2f991b0a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25960,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0002.json",
+      "sha256": "d88bc256ecff4afeb9129a1c9056d3c7a28bf5f95a9c6f29db2bebcd147af7d2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25517,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0003.json",
+      "sha256": "04045063b0833252094fdd94a91ed434a86dee7ea9ccfa6109858d76c813da8e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26710,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0004.json",
+      "sha256": "d41a1b9942f9afc80cd4ff030cb39fa42d5042830cfcc23701e27741036e02f6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 27652,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0005.json",
+      "sha256": "e7f5a47be78b298194dad9e2b97dae6150e9c4989e07b235be2f8342b656f22f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 28588,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0006.json",
+      "sha256": "6f4381099a35548e13712f9ca780811186f6b175704ddaaeb566d0768eddca62",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 29563,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0007.json",
+      "sha256": "06e5f90d9e5f707ea110b38fff1983046faebcc9303fd8c2d30fedd754d71a7a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 14270,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0000.json",
+      "sha256": "a16f05e35c3d0b2ac8633f99d34b8b512e3988e26b5b3582177fb9b2b0ffc7b4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26555,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0001.json",
+      "sha256": "aa2d83010b1dbc2276c937c4037e5fc6aa6104771b5fe10f4b5865512840ba5b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25987,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0002.json",
+      "sha256": "596e79b4d592a4ef6f86e60853e2ecfee16edc0646b9fd2abf3173c7a9d5cd06",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25561,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0003.json",
+      "sha256": "7ba18d40dcfca95731d2e703e62399905f79446eb88f57aab44437970ed44a3f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26777,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0004.json",
+      "sha256": "75040aca12a73c74380a2ee6c0ca34693521319ed4dd342a63f87d060a0cb8ce",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 27666,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0005.json",
+      "sha256": "adfccb835e6d92c7be47adb59d04f02ac9947c4fb4a691c07cadbdaac48ab25f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 28696,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0006.json",
+      "sha256": "146a81e8a663cdeb23259865f1de962f94c678aeb0a51334715065a85e421a11",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 29509,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0007.json",
+      "sha256": "20d0894b0e5460f2f2a690a47fc0d9be621eb3d3a2b3eeca3f36f87e72a25c01",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 14325,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0000.json",
+      "sha256": "db1171ff20d328cd5c99a58620760c8636dc83035d20c08faa7c9de7ed26a5ea",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26613,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0001.json",
+      "sha256": "74056196baef501a135d343e024b97ad0985f5114f5d6a283eadf3a2b9fe6cd4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26072,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0002.json",
+      "sha256": "e1a9189cd88eaece42db3e6c0f6611ec3d8888b891da7729c0827f8e7b078315",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 25617,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0003.json",
+      "sha256": "1ee4a4b1bfe6a30b591f860c3fd5d7462dc27b9eb4422c7b83c4fd248c03c6ec",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26787,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0004.json",
+      "sha256": "d3d7bb879cfb5402849d2c00b3a6a81f2f3c3d15e6b251ea861f789b389c3e92",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 27774,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0005.json",
+      "sha256": "87f57d8f66ce7d971a3505f39e4f8c69e84ab39c36b468051563d88960aa8fef",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 28693,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0006.json",
+      "sha256": "2e8ea92592467e66165412b9824323ea23053ded6283bcc629232d79ae97cf99",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 29626,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/aed4aba64e7ed993/replicate_3/call_0007.json",
+      "sha256": "1b63c86dc810ddeab79deef678c303a572c4799bd6fbea5b3482ae001b579b9c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20805,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0000.json",
+      "sha256": "dfbe773517a7f89273e2a7e14143d60f77a915e155f14c8144a07c528c8c6d3f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37902,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0001.json",
+      "sha256": "4a7d9641dee5cdbb067c17d3cb9a49d422009505a2782abeda59426b9fa2faab",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37587,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0002.json",
+      "sha256": "9d4a5fc6a91c8da8a2cc3adb63d40aeb61d345ee18ac59e4f8c6d6995ab17d29",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39486,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0003.json",
+      "sha256": "9fb1e295fc83307c91c484fac39c9a61055ac344bbf9c6e19937e65612d8f422",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39224,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0004.json",
+      "sha256": "2c29f5568588cc91f84467f6302ccc23a4babfbe002141850a58004d3096ac54",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38910,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0005.json",
+      "sha256": "ee6bbe6be0966797376e8d48a6d7bd44e161a27930d5dc7e480fb84190996a35",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38684,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0006.json",
+      "sha256": "7ffc3a906fbc994696055233951f5564b977a8d99e35d10beaec1077ce0c186d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40262,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0007.json",
+      "sha256": "1f2ee724801c09e3cde4f785d3e9372dcad387c6e01401c8bfa8ece93e367f6c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41316,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0008.json",
+      "sha256": "ccef4af8915465a09cad16ba481b4aa4014ea88f5b6941cc3fff6fc205113dba",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42526,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0009.json",
+      "sha256": "0650b339e50ade1924827369aa5e16420afa1335225e892ba5b90418d1212432",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44113,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0010.json",
+      "sha256": "3b2455f0449e2675aca935ba04b92b39dcdd59598166724ab766f493447f0e37",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 45658,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0011.json",
+      "sha256": "460c7192d8084bbce56a1b32753f5a0afbcebdaf36aacd1d352f2778c216dd1c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20788,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0000.json",
+      "sha256": "2ed5d5acf6840b4e4e7a78f52a241176d177799adb8b3554d465cf3377122089",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37922,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0001.json",
+      "sha256": "31819469e5410dfbf2f042c85b058d3bdb115b4d44913ab6d72e5edc64fdd442",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37572,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0002.json",
+      "sha256": "34ec31fb0abf74bb94d0a5a790dff78fc5cedc3ea57149b4a71f12ea50cb2608",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37264,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0003.json",
+      "sha256": "92172f7bc7ffe792f7e920cc6864a92aa7924b020ab9c2c83c9109c69daeab66",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36959,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0004.json",
+      "sha256": "e7a75f3045b137466f73a2aa9b974fa3501c4746fd0a74749ced919d09d58195",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36726,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0005.json",
+      "sha256": "e8493056852d3f20f7c2760f191ba54ac120c882e1c0adc9ba0044b344d164de",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38150,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0006.json",
+      "sha256": "860151fc994862954634d604e59ea754c2cc6b31a23aef82219b9c41a111f4dc",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39307,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0007.json",
+      "sha256": "540a4589bbdca2c7cfa879fe026f65742e057782552c96408a17680947bc771a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40470,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0008.json",
+      "sha256": "14542eef7034e002f4a269629046e69535871de4ed0dfd4e81800e6dc6f1ad39",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41514,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_1/call_0009.json",
+      "sha256": "5a4f892aa4d608bb4a4770aa85ad625ceb29bbaef276877a77e0f917f103d589",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20714,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0000.json",
+      "sha256": "83512bd41c7442c00b715722396df85622356397b2804121483d9bfe620c6050",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37821,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0001.json",
+      "sha256": "6c5c4a88aa075aa281a469ea2334a664f7ce525b177d6e8b7578e0c0b908bf76",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37474,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0002.json",
+      "sha256": "3e3af4d2bac2eab59f608ef6cece7b6edfa16b441172845d16ab213b3abc2cec",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37208,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0003.json",
+      "sha256": "c6dd1d7304aaedc0bacc201db4d5ac5619a5bb8687755d14fd34fa09d9a6e0f4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36874,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0004.json",
+      "sha256": "c0683887d51c2dfabf157963812a60ba44fdb7a916efba60ad8f0669841fa879",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36632,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0005.json",
+      "sha256": "9dd52e58d40f4298ca4aa83ab620a4fd5fc7c38b3847b3a08cbc80c251f32bc7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38188,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0006.json",
+      "sha256": "de78b478dd77a3006536afc3d820799eb911a2f89123cfaabc649ce617c9323e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39199,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_2/call_0007.json",
+      "sha256": "bc44b0218fcc4b88e5e4cb6a02d5edc07d8e3befc2739160775642db6fceb51b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 20788,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0000.json",
+      "sha256": "4010f66e448a6ed95a400a571f43bf2c4ea73b8ce99ab96ee6672c464fd8cc38",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37897,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0001.json",
+      "sha256": "a06829946c29d739acab41e32931fda9008fbbc08fb7ecf3a4a9bc2c0a592768",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37582,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0002.json",
+      "sha256": "0359196d40ef32741591ea7e416369f8225951e3cbec989f1cbf0d5ab584f02b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 37257,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0003.json",
+      "sha256": "2c55d090bd1071670a7c914a205d733d6d8cbdefcd76cbadd18f331112d8d71c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36957,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0004.json",
+      "sha256": "295a07f346d2509dc9c27785b7cb1ab68aca943202e91a4e95695498925f5be2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 36751,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0005.json",
+      "sha256": "c87488fe84a1c1a33d22f7aa675b9fa47723845ef2a3c47ef97df2e3325269f4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38241,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0006.json",
+      "sha256": "b845b44648c928dff5c7577a1a87a18d4dcae64497ce130cfc40cbb86b9dbaf7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39440,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0007.json",
+      "sha256": "4995afe72a44500cce7c0c330d60bf8605ab5b7d3239b3699b450be846430984",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40611,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0008.json",
+      "sha256": "24278ec6518984ce0c04337a50873654ac69c9740497bfcdc2d52ef350c4d6a0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41910,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0009.json",
+      "sha256": "d254b391ceb6a1fcf08e162af9acc1e48513ecff0b88d1434a416bccc0aca4a2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38952,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0000.json",
+      "sha256": "b283eefd6868938758b8113f5cd73a0ca7a9c29fe17a0f61f097e87fb9a1e2ef",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60424,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0001.json",
+      "sha256": "2e14a3f805ac837b953345917efaf3386b1d205660681e74ae8048ef5bd4e230",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59938,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0002.json",
+      "sha256": "2d0e953d2e5ad05cefc550245c202466fe2a25ed0815607ed834cc26f6d75d52",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59543,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0003.json",
+      "sha256": "786908fd0c35a53a95257c900fd387077b0c0cda7ec0d13c2ad4a2a191cfbbf8",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59090,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0004.json",
+      "sha256": "aef648599408a6964c021ba6aa8b0cdfec2fe89ecaad1fcd48d117f3e84d0079",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 58649,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0005.json",
+      "sha256": "fcdb3caf13f4af9b39070e2c1bc679c2b0495c15928bd963444ae57d00b861c5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 58177,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0006.json",
+      "sha256": "163485976bc337238438bac0aded2cab682e886856ac3d3785b075a63a0923fe",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 57753,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0007.json",
+      "sha256": "92352c032c681e7c62a954de255386639ec87c47965716650ce609e286487937",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59685,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_0/call_0008.json",
+      "sha256": "45b48a19cb73f2aa48532a946144462bd496c916d9beb60c7a8a1363c152f278",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39044,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0000.json",
+      "sha256": "fee0fd6baa297e1b2b71c7472b1d4d654ba31bc0b1a050318c082747a380dbdf",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60766,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0001.json",
+      "sha256": "f1e806be9d68d2b6b6fb9e57e7cc55abe318bfd03124b3d71a6fd6b3b632a091",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60539,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0002.json",
+      "sha256": "7e466c6e27973e7e096b2b640f72f799a2b3e520e5af0de0d6709d254a012bcc",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60353,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0003.json",
+      "sha256": "3637d3afb132e209edce8301e0a38815f64b3fdcfec97c34eb8a3907d8987f2a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60142,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0004.json",
+      "sha256": "2a6e5b66cefddcc842b5b8294882ffa7958e9919fe9f3ccd68ef5cfaa7f34fb6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59967,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0005.json",
+      "sha256": "d39dae7f7df0602f93a33e20ca5f9886b171a9dd4eb48897cdf9ee18f990f023",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59776,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0006.json",
+      "sha256": "ffbddf6858160687b0778abb547844c82ff21be4eb8584dffd213ab0e9ebe6ea",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59454,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0007.json",
+      "sha256": "62ae48750e3084c3bdada8e23b67501016ce529b051d3927368659f3660b64cb",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60668,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_1/call_0008.json",
+      "sha256": "c13d36ed6b591d7a6d929c2168fd3f1061f5e34749abbcf55e9b7dbfb9001ed5",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38963,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0000.json",
+      "sha256": "83f3e4dd3a5bc56bc6b32579c6aea993187ac2e4196b87b2dedbda9136fefaac",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60606,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0001.json",
+      "sha256": "9daa0661c5fac15e688b78a56c31a54813f7b35e92552877d0a4bb16d9f42875",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60316,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0002.json",
+      "sha256": "e60ec445fca151e24a2d4097d2eec109538b0e9950cf10a7480afec3482b7bcf",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60059,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0003.json",
+      "sha256": "75c0f285757f2068f914cbaba9fbab0346f1e4d18095b178b5cfcfb5084f4ec8",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59778,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0004.json",
+      "sha256": "00d6c07235fd07be58ae82043e01c44941691bbaf22446242a079c47fa2eb1bd",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59524,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0005.json",
+      "sha256": "d8f65ef5692878eaf9695c1048a44ac52d24bc88b48ce58a637dd1e8f89cc669",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59200,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0006.json",
+      "sha256": "2e7a0654e3b38620c8521564ddb45bfb2ed233a06e28f60408345c31c24c6133",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 58988,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0007.json",
+      "sha256": "80b89bbf0a2f1ebaca9ac04a4eca0deff83d3cf772795eacce7a287b71aa5e00",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60860,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_2/call_0008.json",
+      "sha256": "59a1978b0d40841eefe78a4a8df8ab5991961c073d4648398fdb59eb5bd55415",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 38950,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0000.json",
+      "sha256": "7a24d00ec45440e82a32471c985f4cae3a43420ad0297d35d892d9d2fcf667aa",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60667,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0001.json",
+      "sha256": "b72fb6fea030a98004450bcbac14d27051d8f2cff943c43fc46cb7a0afbdc876",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60420,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0002.json",
+      "sha256": "59891aba2ab33b0b1e7e972d2096028be7da747a0da3e01f18b754bbe9d3f7c6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60231,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0003.json",
+      "sha256": "63132abd1cd825206135ea524a887dc464151cd7320a107f11d67b885754ee4f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60035,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0004.json",
+      "sha256": "cf1174a9677de759d48fc94acc6c240095c1f12c0cb9f8d89e4f02d24eea53f9",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59866,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0005.json",
+      "sha256": "afd005e829d885db1eef9545dd95ee0c160a8c43e3e6ccb149ea0a97ee89c716",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59671,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0006.json",
+      "sha256": "0e3479deed581d0aabd569266c58649aa2b79df8f496ab888b2ca5b54e865966",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 59296,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0007.json",
+      "sha256": "e3606ed6adefae96feaf6acd804422db6fcf88f04954ff6c7688ed7812d075b0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 60902,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0008.json",
+      "sha256": "1b0becd2674f03cf96fe71cf186bd85e2df13b75448d483b2a64c1295dd8dcad",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26668,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0000.json",
+      "sha256": "04e762d09d34be5f3b488e1f18f3e5e2fbb6847bc7cf3794ab01aef52006d5d6",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43424,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0001.json",
+      "sha256": "b6354c2bb6fe1cb2122beea727abbd75b06de11e0c42449bc2e56f2469c98058",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42941,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0002.json",
+      "sha256": "319c8baae14a9c7956a00baa8f7439ef78dfbf5e5c6f41e07c92e9f59a7e9bb7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42513,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0003.json",
+      "sha256": "b9ef1d63f41e7d78f2da86ed318a824d98a89a14212996e531be43f11ccc4789",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42032,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0004.json",
+      "sha256": "e180793fb4ec660b695063267c45df8058374f735c3af982598e48f351c1f6be",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41698,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0005.json",
+      "sha256": "8b58e3825d5dc9d8d92ac0d2423125ec85c468c96e356e1011a98cf886ee423c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43031,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0006.json",
+      "sha256": "264c0db7dd35714715e7e3de27e5b4eb29ae96d9a02f241bf9aeadcf3745e5ea",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44088,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0007.json",
+      "sha256": "2c7dbb6cb8e8139d9b5aa74985406f4f00e7161c80ef0ff7c2f10951ec7d9e57",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 45109,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0008.json",
+      "sha256": "d6f757f1b0d0008b9809350b83567b88422a8eabdf57047c2eb8d29b9f6276b9",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 46130,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_0/call_0009.json",
+      "sha256": "065019e2f35f0e54212c3a597e4bd9302f013ed3d5acd9596ae6fad27a6d1623",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26713,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0000.json",
+      "sha256": "d28cb748d06fcce0f8d5b99aad660ec8bdbc13174019f3b783df968d880a68fc",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43440,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0001.json",
+      "sha256": "313fdf63f6224e29f7a013373e6f8b218e19168c51e501dd1f1cb146dd36bf20",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42988,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0002.json",
+      "sha256": "f72794cf6fea8102b6bd1e8174190e453cd75f4f785d144e2ff1f4519dc66e7e",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42535,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0003.json",
+      "sha256": "7c924928dd051d16d8467796f6584b2618a39acd201c752de3ecc64d0df27298",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42086,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0004.json",
+      "sha256": "3d3e09cc791a182071e77df1a44d00fddc65d4a5a9f20c68e361d9850b9e9a86",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41719,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0005.json",
+      "sha256": "7b75c41c8269d443a542f60fc9e8ade1ac4a1266e9b77b39e0e765ebf313afe1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42998,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0006.json",
+      "sha256": "69bf8d4f882d28b2eedb74a8b90a2674aea1bc15885ae7a6ba984519e2a83eab",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44026,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0007.json",
+      "sha256": "5ae9171beaabd1aff5f4f34be5b69787029125dc358fd5db0da36422d3a704d7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 45014,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0008.json",
+      "sha256": "6d61eca906f0e3fbdb8f8641c36b56f5e3d9d5257855b9fb50b33cab3cad6062",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 46022,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_1/call_0009.json",
+      "sha256": "d203bd3ecae7d1eb9fe928a9d8cef58d709b08443f9c7a6c128bc90255022b88",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26645,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0000.json",
+      "sha256": "90d86a515e9f6c16194b2d06f5143b43ebbc8f07d3b3d16bf32c49ac9de5c1bb",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43398,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0001.json",
+      "sha256": "29c84da01847f3995522dab91cd4d4e502870d811203f737d03d284f754baba2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42925,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0002.json",
+      "sha256": "d7d16b4d83b0d84d0d80ffd65eaa3444515488329d18a49d91e2fac6fcb86e65",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42467,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0003.json",
+      "sha256": "b843671eac7e1897c21c028f47b3b32455376315667b80c586a3baf629a82907",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42010,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0004.json",
+      "sha256": "d39077c2481af7754e29d72a00a1b62cbceec89b2f40557589a83c9d354a5058",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41683,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0005.json",
+      "sha256": "b8206c18c47b4cceea4fed5b5842a46695498627ef67e5b363235316e7f9509f",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42914,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0006.json",
+      "sha256": "cb918763624b40cdef3d3fad94d6b1291a6bc7b648fa2768cd1200a8e76b0dbf",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44323,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0007.json",
+      "sha256": "1d26fc8f2ac88a622af2633ef31e9c96a766e3bb797daa24b076aeba24ec371b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 45787,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0008.json",
+      "sha256": "69479300759b581bd6a7b0a48099e77ca44d693ef121692cfc7f9666425625b2",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 47232,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_2/call_0009.json",
+      "sha256": "3213ab0b41c944404fe66d858dafbd56daf94279d852b10e3642da5cd50406df",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 26536,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0000.json",
+      "sha256": "f7515946d9bbc3513471da994059e078ce6d690787c9f2ba9e6618ece677969a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43486,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0001.json",
+      "sha256": "0bd3fddb6d5769c7b0ec9019b008ecd44baf39d91030711f40c657984e3b7f3c",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43267,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0002.json",
+      "sha256": "e2cf107f77b74623b87e90562e3e836ae0aa6c307e8cce68f02899583faf5058",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43084,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0003.json",
+      "sha256": "c5a00fd056608be5be21d7e5ccdde87a61f3d348021cbb1d05cc54be9d4d6609",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42883,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0004.json",
+      "sha256": "2bc5c3ccbbbb03905005eb0065d844ce5ed4f9b50bbcfdacbd05d26517023ed7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42569,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0005.json",
+      "sha256": "fb40921e77d242cb3ca6bf5fbec86f3e0d5515415d7f487b84447199c3290b92",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 43923,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0006.json",
+      "sha256": "423e94941c669dff0d765c4c240bd87fe8e9dd56bbe09ac56d8dbe8b3113f801",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 44832,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0007.json",
+      "sha256": "100cfcdd91662c1aa848006d3d6b1adea734107791d1ca08a6c60a3b6c5cf9ad",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 46256,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0008.json",
+      "sha256": "710d7e01a724ddd14c2ef5aac2b33b3cfc25af760a5141dded6570ff2fca6099",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 47707,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0009.json",
+      "sha256": "7a59a9e5c2d0d722756f6f4b0fbc9e93b36f0130355804f62f68974d05a64c75",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 49138,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/e04d164f1744e003/replicate_3/call_0010.json",
+      "sha256": "e1d1a832e1fb857880700be2da1ec9e0c27d44b1d8d571a2dc3088e7a23290c4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24765,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0000.json",
+      "sha256": "62e1ac053c3ceed3ba0811892e1ee6dcccafceb2146379b8b30fe715b2081179",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39718,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0001.json",
+      "sha256": "f22463d2ce500500b151eaa6632e4e59e4864abf534dd5d5b12d4566aba7f790",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41382,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0002.json",
+      "sha256": "9c2ffb19d4365352a3b506228707c45b17570895a43c6ac643174148702ee33a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42584,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0003.json",
+      "sha256": "6a058af31cefb7f2f11dcb69f631becd37fe55de51b251c75e6751238cea3b69",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24697,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_1/call_0000.json",
+      "sha256": "d6496070647a5abdab90a088381f8df7af40b5694afb6d6beaaf05b8293309b9",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39480,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_1/call_0001.json",
+      "sha256": "390df4009c8f38a28048844151911691af2bbc48f4ef11ee8979febf726ceba1",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 40953,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_1/call_0002.json",
+      "sha256": "1dc01562e7ca41f4aa115a4b88fe7ded74d8c7c62d659b17d3373e925bbb8621",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41979,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_1/call_0003.json",
+      "sha256": "ba9b99dbbba1f32ab00774f3a95a0fe87149ebf04ca708ed7c46b38f925c027d",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24673,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_2/call_0000.json",
+      "sha256": "d53514ba6d9977acd4e0dac3e55e8c43a33787e6ac5dd74b7598a0ff3af42797",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39628,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_2/call_0001.json",
+      "sha256": "31bece98de4c2e615b1eebf5063b5f1f96a9286c384c5d5b09de55902eb4fe9b",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41293,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_2/call_0002.json",
+      "sha256": "5050c4bebb9151f3f7667a4425760fa2b12adf3042f0c53f437437f9eae630a8",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42405,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_2/call_0003.json",
+      "sha256": "963cc6fe2717cf0e2e3d18d5f4bf6b4e1198b457d66cf0c3079f4fe541b2a5a0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 24839,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_3/call_0000.json",
+      "sha256": "f9c7d494e2b741bc133b431ed8f90eeb48c3c3164106270c6ca79bba302f2362",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 39611,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_3/call_0001.json",
+      "sha256": "9ee2bef34dceb218a1f6c2d36077f9816c753e9cb88e406adac88abb6c963c52",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 41050,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_3/call_0002.json",
+      "sha256": "51358860abd035d14150f3f7846d6c5c2c169610f0d50f2093b99dac40fe5bcc",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 42001,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_provider_calls/fa0e6ec0237b0593/replicate_3/call_0003.json",
+      "sha256": "8fdc0208eff1f29170d09fc202e9e65343cfacd4e1d2b3cf27e43982e48dee56",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 9162,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_contract.json",
+      "sha256": "7319460923df404ae0f2caece08bd8c4d3a1cadaa138a6838abc9b4b4cae1e25",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 4697,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_execution_binding.json",
+      "sha256": "515fd5e52fdb81417dd0d9324f2bcb77fb17fb3ffe1cf4438ce8732728a41879",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 53441,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_manifest.json",
+      "sha256": "f609e2711a44319fd9fb6cf756e8876091298147df9e5a2d2073d652827b6828",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 1828,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_preflight_report.json",
+      "sha256": "a5988356fe239eb76a2743f8dde33008974218b0a365c5c0b972eef4fb398bd0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 2917,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_raw_lineage_audit.json",
+      "sha256": "8f0f2b9b5f84fc4625dd2f78c3545803f47d0dbc7b299efbaad195d7ebfbd7e7",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 27909,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_source_replay_audit.json",
+      "sha256": "0935a468b60d4e61d80d8f96e2e3d9b8f4a6dcc39a3cdea0efe8d9c8459d6653",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 92200,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/report.json",
+      "sha256": "c663a312cf0034ce7313ecfac74ea35bd4bdd53415ce349f2416eb05d8a368d0",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 71756,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/rollout_diagnostics.json",
+      "sha256": "899dd3759b7dd6de23450c5f92402b4e7d4454b571269d8f11d9174f153c87f4",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 251652,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/rollout_observations.checkpoint.jsonl",
+      "sha256": "30f8acbd61fa3b6d445b00615eece6962ddc9472ffe7b27d8ec315ab8a060f1a",
+      "source_kind": "recovery_run"
+    },
+    {
+      "byte_count": 28061,
+      "relative_path": "src/trusted_synthesis/core/trajectory/executable_task.py",
+      "sha256": "9556791c47df831852976dc86319989bdc19eca87c8dcf5583e99ad19ac9c7be",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 43784,
+      "relative_path": "src/trusted_synthesis/core/trajectory/public_operation.py",
+      "sha256": "de301066b6a44a03eff77d05461e67cbd26ae325be39836ef93a35237604881b",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 7100,
+      "relative_path": "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+      "sha256": "6722da53a86ea220e113309b1109c57bf7f35a7ecb222e9ebfa84266ee9839a3",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 52759,
+      "relative_path": "src/trusted_synthesis/domains/finance/interactive_agent_runtime.py",
+      "sha256": "4c222cdba710de53e43e5c2eb5d764e1c6e5bde10ace17bc6a3bfe6ab7dc8124",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 55361,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_operation_hardening.py",
+      "sha256": "1522336dd34823a751ac0b19b79db34cff0a0c79ce9cc9fa65c6244c7638119d",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 49762,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+      "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 81476,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+      "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 72124,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_operation_closure_regression.py",
+      "sha256": "0a9cba9965c8568a8dbcde74b265980b585c91e39734088e08084fcfbd25fa71",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 21904,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_rematerialization.py",
+      "sha256": "e2a7705edba2d358e6da9c2c05c437b11994b9e438b508d213bcefb3cc998e23",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 43306,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_postrun_audit.py",
+      "sha256": "6415847437f32b21d64202730b9ac22a961d6eda9809285bbf80e8d7ef1df7ac",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 58954,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_preflight.py",
+      "sha256": "390bd5848674ae94d13a0d11b35ac8e12660ab3d476094bab9bad21bff1a658d",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 94587,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_recovery.py",
+      "sha256": "a734123dfebc658e402a655d1dc13f2bdcebcb13fc10405b4f9950d7856498c1",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 111224,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_requalification.py",
+      "sha256": "ea6b2eaf22c09eebd75231281b3833d1985713a6308f13597ddabd4fbe31248b",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 69342,
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_task_rematerialization.py",
+      "sha256": "87173f21df6574f58982253957cae5c8dc534cfd54637a71f3f9ad1de3e6d329",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 15449,
+      "relative_path": "src/trusted_synthesis/runtime/agent/client.py",
+      "sha256": "9fd15187608a065d1214f47f0dd83a40a1e53d7718153487586d4ac1a2866ef0",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 123544,
+      "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+      "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 28630,
+      "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+      "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 18712,
+      "relative_path": "src/trusted_synthesis/runtime/agent/schema.py",
+      "sha256": "fa39085dd8ac580529d9204f1b169aab8dcf8d4e0268b16a0a046d54bdc5f16e",
+      "source_kind": "implementation"
+    },
+    {
+      "byte_count": 21369,
+      "relative_path": "src/trusted_synthesis/runtime/tools.py",
+      "sha256": "aa0a1193c58a3d373d21e2760c81f3e65aac850dad61cdd81dc9084a7664023e",
+      "source_kind": "implementation"
+    }
+  ],
+  "gpu_jobs": 0,
+  "implementation_file_count": 19,
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "replay_pass_count": 496,
+  "replayed_file_count": 496,
+  "schema_version": "finance_v26_verifier_bound_postrun_source_replay.v1",
+  "status": "passed"
+}

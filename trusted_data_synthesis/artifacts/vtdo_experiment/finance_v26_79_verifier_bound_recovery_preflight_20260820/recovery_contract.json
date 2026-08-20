@@ -1,0 +1,137 @@
+{
+  "compiler_witness_empirical_count": 0,
+  "contract_id": "finance_v26_verifier_bound_recovery_contract:4dc98e9c6f48d101439695eb38742d8c7779ce3293bdac33fc033b12f152f4c5",
+  "expected_job_count": 32,
+  "exposed_job_ids": [
+    "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "finance_v26_verifier_bound_instrument_job:2bc0b304af4e67d2e807c1b2838634d72c92f383bbe6f418e2b768cc88655d71",
+    "finance_v26_verifier_bound_instrument_job:2d373a1b7090027e5782a3e3edade70ed668800e60f33c379e27ec66daef95c7",
+    "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "finance_v26_verifier_bound_instrument_job:5e88365313336e92e799d1e2e92f8f40c5f35d584f1d126dadc3bf2830318dde",
+    "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "finance_v26_verifier_bound_instrument_job:761369ba29bcffb1f5e1a5e7deecfa180550c2940697ac3052c17f145112e82f",
+    "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea"
+  ],
+  "exposed_job_model_calls_forbidden": true,
+  "failed_run_audit_id": "finance_v26_verifier_bound_failed_run_audit:5bbd4fd482dbef78e5a17075011e2049e4fe7289120f5a3dcbb645078689c9b1",
+  "fallback_models": [],
+  "historical_diagnostic_candidate_count": 0,
+  "implementation_source_files": [
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/executable_task.py",
+      "sha256": "9556791c47df831852976dc86319989bdc19eca87c8dcf5583e99ad19ac9c7be"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/public_operation.py",
+      "sha256": "de301066b6a44a03eff77d05461e67cbd26ae325be39836ef93a35237604881b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+      "sha256": "6722da53a86ea220e113309b1109c57bf7f35a7ecb222e9ebfa84266ee9839a3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/interactive_agent_runtime.py",
+      "sha256": "4c222cdba710de53e43e5c2eb5d764e1c6e5bde10ace17bc6a3bfe6ab7dc8124"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_operation_hardening.py",
+      "sha256": "1522336dd34823a751ac0b19b79db34cff0a0c79ce9cc9fa65c6244c7638119d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+      "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+      "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_operation_closure_regression.py",
+      "sha256": "0a9cba9965c8568a8dbcde74b265980b585c91e39734088e08084fcfbd25fa71"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_rematerialization.py",
+      "sha256": "e2a7705edba2d358e6da9c2c05c437b11994b9e438b508d213bcefb3cc998e23"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_preflight.py",
+      "sha256": "390bd5848674ae94d13a0d11b35ac8e12660ab3d476094bab9bad21bff1a658d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_recovery.py",
+      "sha256": "a734123dfebc658e402a655d1dc13f2bdcebcb13fc10405b4f9950d7856498c1"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_requalification.py",
+      "sha256": "ea6b2eaf22c09eebd75231281b3833d1985713a6308f13597ddabd4fbe31248b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_task_rematerialization.py",
+      "sha256": "87173f21df6574f58982253957cae5c8dc534cfd54637a71f3f9ad1de3e6d329"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/client.py",
+      "sha256": "9fd15187608a065d1214f47f0dd83a40a1e53d7718153487586d4ac1a2866ef0"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+      "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+      "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/schema.py",
+      "sha256": "fa39085dd8ac580529d9204f1b169aab8dcf8d4e0268b16a0a046d54bdc5f16e"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/tools.py",
+      "sha256": "aa0a1193c58a3d373d21e2760c81f3e65aac850dad61cdd81dc9084a7664023e"
+    }
+  ],
+  "invalid_model_outcomes_retained": true,
+  "maximum_total_estimated_cost_usd": 2.0,
+  "maximum_total_model_tokens_per_rollout": 120000,
+  "model_id": "deepseek-v4-flash",
+  "no_job_selected_by_model_outcome": true,
+  "original_contract_id": "finance_v26_verifier_bound_instrument_contract:3ecdc9bff3a2a846ede932c28763abbac1c67c345553eacfec69b2de0985afda",
+  "original_execution_binding_id": "finance_v26_verifier_bound_instrument_execution_binding:27250c6b577243a7c87f321c72877dd7ff3ccfaa0d5ea48a92d7a6db6eda2ae2",
+  "original_job_manifest_id": "finance_v26_verifier_bound_instrument_manifest:300bc703e726e04bbf22138a01bf8e09302a54906be8e7510ffa012d7256e724",
+  "provider_vs_host_telemetry_comparison_rule": "provider_fields_equal_before_prompt_component_bytes_augmentation",
+  "raw_execution_before_verifier_scoring_required": true,
+  "recorded_payload_replay_must_consume_all_calls": true,
+  "recorded_prompt_exact_equality_required": true,
+  "recovery_run_id": "finance_v26_80_verifier_bound_instrument_recovery_20260820",
+  "schema_version": "finance_v26_verifier_bound_recovery_contract.v1",
+  "source_replay_audit_id": "finance_v26_verifier_bound_recovery_source_replay:dabafe1fdf9ccb8ead80ae069e990688362f22f34a228408514eeff77270335a",
+  "unopened_job_exactly_once_execution_required": true,
+  "unopened_job_ids": [
+    "finance_v26_verifier_bound_instrument_job:85f67679a0982be1b38aa20470eef845d08a8373ff17f24246587a9527d140b3",
+    "finance_v26_verifier_bound_instrument_job:8afad2080a7bddb13c3175a08dd9824b84fc7ab256d060c1f23aa9d7ebb90656",
+    "finance_v26_verifier_bound_instrument_job:99176d5f67aea25c56471096c54f3172f554fcc3082cffb4afa837a6bd6e8c47",
+    "finance_v26_verifier_bound_instrument_job:acb8c362ea0b82d310431d86d407a953bb1b8aabfadcf5ba74ea1a23ae582a78",
+    "finance_v26_verifier_bound_instrument_job:b710f157c7a9a110cf43e43ed4793ebd727af624cdb892218de72d94e45cfdb2",
+    "finance_v26_verifier_bound_instrument_job:b8759d8138e21fe885247687ae9f4062a34365fb683bf63c7342c778c223dffb",
+    "finance_v26_verifier_bound_instrument_job:bb24cb90c99518a74bb64a67ec956180846fb5c4143aef8ac069772b9eab51b0",
+    "finance_v26_verifier_bound_instrument_job:cb88d417d10d517244b61927218f85359e35ef4cf91c5843a6e20715b06ce732",
+    "finance_v26_verifier_bound_instrument_job:d2e2ab5148804b52c01ee54e65455550480f9420537d2038d212fb1fa15264d3",
+    "finance_v26_verifier_bound_instrument_job:d498b7721bb584e22b3b18009bb77f3b7388c811dd9ae745ae4c79e75fd0c7dd",
+    "finance_v26_verifier_bound_instrument_job:d57fa50b4bb8aa39b80c109524b82c4708e68c41263fc760c8fbea2e630ef3d9",
+    "finance_v26_verifier_bound_instrument_job:db370d4dbf182b05c5520f49c89982c2e144c9c57f372d006ac4ca7e76406c26",
+    "finance_v26_verifier_bound_instrument_job:e11c4345928db8a93b88b189a22386b4bf9b25a012c5baccd94ddcaa74e88aa2",
+    "finance_v26_verifier_bound_instrument_job:e46a249aefd67ecf7ab929bcc45f409f10addb878db9f3917527ab9cc850b825",
+    "finance_v26_verifier_bound_instrument_job:fb57854e1443e00bc361b7c3b7543ab43cd74cde218b2e91736c657c8216ee28"
+  ],
+  "unopened_model_continuation_job_count": 15,
+  "zero_generation_replay_job_count": 17
+}

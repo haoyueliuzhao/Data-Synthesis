@@ -1,0 +1,32 @@
+{
+  "audit_id": "finance_v26_verifier_bound_instrument_raw_audit:439f0b1a390dbe2df129dbdc45540315ecfdf02b0366795129b43db96cbfa393",
+  "authority_contract_pass_count": 25,
+  "duplicate_provider_call_ids": [],
+  "execution_binding_id": "finance_v26_verifier_bound_recovery_execution_binding:04a9e19cbd132be2c6bf07f333e782a6f5499f84694eae349cbf7f34898a6ac6",
+  "expected_rollout_count": 32,
+  "failed_artifacts": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_0.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_2.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_3.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/abc47c23da26cd97/replicate_0.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/aed4aba64e7ed993/replicate_0.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_2.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_3.json:ValueError:independent non-Replay Gate audit failed"
+  ],
+  "non_replay_gate_audit_pass_count": 25,
+  "observed_rollout_count": 32,
+  "prompt_telemetry_pass_count": 32,
+  "provider_call_ids_unique": true,
+  "raw_before_scoring_pass_count": 32,
+  "raw_execution_byte_pass_count": 32,
+  "raw_execution_identity_pass_count": 32,
+  "raw_provider_artifact_rollout_pass_count": 32,
+  "raw_provider_call_artifact_count": 269,
+  "recursive_noninterference_pass_count": 32,
+  "repair_neutrality_pass_count": 25,
+  "replay_pass_count": 32,
+  "schema_version": "finance_v26_verifier_bound_instrument_raw_audit.v1",
+  "status": "failed",
+  "stop_readiness_audit_pass_count": 25,
+  "terminal_target_pass_count": 25
+}

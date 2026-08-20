@@ -1,0 +1,1316 @@
+[
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:6c24c711dd841484203b215dc18881624252fb9d7a8525e06c5cfcbcf6173cf4",
+    "byte_count": 24393,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:8298049335f90ff6bc00bc9961dfbec0a602dab5530b5201542dba029015321b",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0000.json",
+    "sha256": "132f98b0433d596e8a56743585428958b221ef669ddcdb615bbb00efa1288570"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:aa7fd8ab3e102089f734b84bec2e3a317456857496527872a3700a856d3fe9e7",
+    "byte_count": 38910,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e1941c57029455c3ebcced989922fb9c7678892819065f27f8d24a43fe68a633",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0001.json",
+    "sha256": "7f22653b9694864ef0c1343deadf23ebc95c398174ac508180960579954e4ae5"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:761fd02a640209d1ac3eff0a4ac459e700df896cdc1e200f2ed533ce97c81d83",
+    "byte_count": 38386,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:162ca16b875b067b9a6225fd8181dd3303a9d8b21ef90765cbe31386c2edfd3b",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0002.json",
+    "sha256": "ec267cc041f86f30673cc58381721edf33d86007b68c5f63e72b84081a1a18c6"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:1ac3b91e8fbd15db6f9cfd339d54c554507ed5fd7425802ef559cae15072f479",
+    "byte_count": 37890,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e38e5210e64648f8a9aed244182cb4ea4e61951f8cf4172b88e9246656602a09",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0003.json",
+    "sha256": "700df67436e21c6c61e66727df925aa78fa364c8e20007059e429fcabff3feb1"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:18a16997800ebe6b793e273ddfc0b46ba4d024f9b0f871108fb908ac242e7ae3",
+    "byte_count": 37493,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:cf17b7386fadeaf9029a2861918943557b8894984d303044ac80ed39e1e18bcb",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0004.json",
+    "sha256": "fc6a005c67a1dc2e48dd98575c77023df0133917760c1c46c8c78a664b7b2344"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:d76fd71cb29f79d2a3bff3db8a75350d6b50568db24d72dab26ba7cf9fcf8293",
+    "byte_count": 38679,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:2267b6baf0505a028be3c3ce763896f1f0371419ee7647487d580888299e77c1",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0005.json",
+    "sha256": "60b491635ccffe18cca5164186e2521ad73a1df2e6bb7d7b4dcfa2eea3e13f03"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:1a90b051bf597429c777a7b7366dc010350750ef0d2ded18eb27ee91400e9b63",
+    "byte_count": 40102,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:93dfc3287ea79d38bea6dd1c4f3f1e94038d84b41125fffbe4e56ea73de6e2c2",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0006.json",
+    "sha256": "33907aeb10bcdfbf0f60d6188fba5bc065943ea7f8538136ac2f5bde015ff23f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:d5ee4f9d6d10b85a38ec51d82e8c04c09f49ae050f5d23e3f14fb60ec454b546",
+    "byte_count": 41413,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e9532ad7f79b613a94b01f21d727658905c43109b422b79319172fc8774bff1a",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0007.json",
+    "sha256": "83c3ddd8fa226d9a1af2078ddb8fe7e4f8df80ec9aa5de14abb61d0847057a3e"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:89b4b4b2c62ad5665dca42e2c9f7aec4caba91eaf02dad194a3d87300d622b73",
+    "byte_count": 42646,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:085aae806e9d34f6290b619789873f42c0db57eb112b6c0b9ce4780e9e2e65e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:dc963aefb0bb5fc2169744241a48e36951514fef682fc80b958a23a8e71a66f8",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_2/call_0008.json",
+    "sha256": "eac5f28885ffd2e3e74c96bf0da9f3429379eabd20269d17eb139ad4e7f36e33"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:d675fa4ebdd30340522365734a8f5bb92d90944c90dcb4273d25d999ecf764dc",
+    "byte_count": 20805,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:ea29c637086165ee5233ee2757758218e5eb3eaed3a85c3f2fe137daa0db544f",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0000.json",
+    "sha256": "dfbe773517a7f89273e2a7e14143d60f77a915e155f14c8144a07c528c8c6d3f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:dc2a645c458e6a77c6afeae73e9e7e39bed4f237f78d70c3c1939173399fb43b",
+    "byte_count": 37902,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:cb9ad4aeabe9620d5b42146295b40bf49743d63ed1bedd85d233808b4bcc98b0",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0001.json",
+    "sha256": "4a7d9641dee5cdbb067c17d3cb9a49d422009505a2782abeda59426b9fa2faab"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:cc6b21e7b504678fe8cc38d0cc9719f60f64f9223f25b4a7fdac0544f3966bfd",
+    "byte_count": 37587,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:3a4fab10eb8e74a5430c437e88d055f5f9ec0265665f51b114151584aa4e1ae9",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0002.json",
+    "sha256": "9d4a5fc6a91c8da8a2cc3adb63d40aeb61d345ee18ac59e4f8c6d6995ab17d29"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e8a07ba56f3886387c9f45179f093470fbe13217db40417132ebee0d5a3b860a",
+    "byte_count": 39486,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:462f59fee19dd081eb755e2c0906cd9ff1140f35cdd2ca47c8bafb0388caae70",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0003.json",
+    "sha256": "9fb1e295fc83307c91c484fac39c9a61055ac344bbf9c6e19937e65612d8f422"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a1dae03ea89df0a98d32305c4c679ef688f22c4687237cb622456d9bd0f99696",
+    "byte_count": 39224,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:30a4721d81d04c7529258ce5e4ec5c9da475496197fbdbdd89ca9ef156e82825",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0004.json",
+    "sha256": "2c29f5568588cc91f84467f6302ccc23a4babfbe002141850a58004d3096ac54"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:4723e5f9208540e366c74f210f5589135111a0f48b92ab4cc9782add7ab257a4",
+    "byte_count": 38910,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:3b2da0eea719236a0fb227183bea390e6f5fd7a79efcd0f018eb51fb2da1beb3",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0005.json",
+    "sha256": "ee6bbe6be0966797376e8d48a6d7bd44e161a27930d5dc7e480fb84190996a35"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:8c8b7b48fac520a376c8a799b243bcc56f208e00388924fd53777f96ac3b862e",
+    "byte_count": 38684,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:701f4d23bd4047defd087265f2832a0bf0d57a42e0126bc3049e37514d466a4a",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0006.json",
+    "sha256": "7ffc3a906fbc994696055233951f5564b977a8d99e35d10beaec1077ce0c186d"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:3317924e3e0d702747a502c1301153b1e08fec99b9e293d54aea6ec8cce22feb",
+    "byte_count": 40262,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:96bf2775572381eb266535ee2c7bdc682da2b5993ec0a52aab690ead1ca53677",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0007.json",
+    "sha256": "1f2ee724801c09e3cde4f785d3e9372dcad387c6e01401c8bfa8ece93e367f6c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:20b4ec713cfa90d4a169b062bf3519cbb838af3ba56e8df7b757aeb76527caaf",
+    "byte_count": 41316,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:45cd11576773d3d93784820059e69204056d0d9f8cde9b4358f6146c5a1ca3f5",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0008.json",
+    "sha256": "ccef4af8915465a09cad16ba481b4aa4014ea88f5b6941cc3fff6fc205113dba"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ce4d5332ba6a8854f6eca7a42eb63429874126e44e1610cb1e88c9bbdc606312",
+    "byte_count": 42526,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:299237a7abebf50f83ebadcbdfde34aa990f8af6802a2ca96a85bc277cf804c9",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0009.json",
+    "sha256": "0650b339e50ade1924827369aa5e16420afa1335225e892ba5b90418d1212432"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:32e5ec6b5dd702719eb4a573c4269d896c284bbb47e0975f0936edf8da9a8100",
+    "byte_count": 44113,
+    "call_index": 10,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:5b935c2c4a62cd05da292098a65dba4e4c07c2926e30a2c6c5b1b47c95117309",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0010.json",
+    "sha256": "3b2455f0449e2675aca935ba04b92b39dcdd59598166724ab766f493447f0e37"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:264535fc4b818eec4b1fe3de942ab152a42dce2ebac024f8e68e1693529eff12",
+    "byte_count": 45658,
+    "call_index": 11,
+    "job_id": "finance_v26_verifier_bound_instrument_job:096668559ff44f77ba54045147882d13e5d6802970b6cba96a5ce77b8f4fd417",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:5f9a7c058d579ef4427f36fed3e0b6cd8042f8f97bc9530e38576656aae54cda",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_0/call_0011.json",
+    "sha256": "460c7192d8084bbce56a1b32753f5a0afbcebdaf36aacd1d352f2778c216dd1c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c1df747d3ff42e5dae5b2f4f05e5dfec52dc3846b8d9418bc710a726bbac565d",
+    "byte_count": 20788,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:18d20f20e4e33d5ac63ca60be531acf7c52bb610fe48a7553cbf72bc1877a87f",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0000.json",
+    "sha256": "4010f66e448a6ed95a400a571f43bf2c4ea73b8ce99ab96ee6672c464fd8cc38"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ad49b4e0c1bad5fc2b0a786fb48f0fccc644e1f1935f6d9cd9186efcd71239b8",
+    "byte_count": 37897,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:47602b37eb1e4e3ec89bef6d43dcef20660ebf103225559d367568aa7ca0e64b",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0001.json",
+    "sha256": "a06829946c29d739acab41e32931fda9008fbbc08fb7ecf3a4a9bc2c0a592768"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e6bfe920ccb5e84a4445767fd25060c8fdc5cabca7fbee3eb75718550fd5e38d",
+    "byte_count": 37582,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:566c675e97119637da5b6242b1bf0e4e463875b504358bc7736ac1380d5118f5",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0002.json",
+    "sha256": "0359196d40ef32741591ea7e416369f8225951e3cbec989f1cbf0d5ab584f02b"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:be113dd6d136f4c8bd761a727acc8d13400f3227515674dca75bb361db9981c5",
+    "byte_count": 37257,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:06a4a2d51e778e302554ef04b7ab82df4df920b45891620649ae036803fec237",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0003.json",
+    "sha256": "2c55d090bd1071670a7c914a205d733d6d8cbdefcd76cbadd18f331112d8d71c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e6e1fe512eae839f412121735c69244f7cc1d1006aa01c38f97a6c9343eeaa8f",
+    "byte_count": 36957,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:a3bf44cfaadb2d23c8d1ba8dc9e0c1791b996bfb51d3d8104a7edae6467c45da",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0004.json",
+    "sha256": "295a07f346d2509dc9c27785b7cb1ab68aca943202e91a4e95695498925f5be2"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ba77800f1af987be9fbcf780314bb1cddc27279fbc8b01ab4b4ef5fd7ef01d72",
+    "byte_count": 36751,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:45204b5176fd8a08a3b75e18d99bb8d9caa54e2b2bcc4851d63b96ed5aa13bb1",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0005.json",
+    "sha256": "c87488fe84a1c1a33d22f7aa675b9fa47723845ef2a3c47ef97df2e3325269f4"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:4601d2fffb32f1a476e20cd93a69e59c12f707aa249cc2d7c8eba774293a45e2",
+    "byte_count": 38241,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:76106e9822ea3ae800ab54faf2e1340cfa11780828a76417d28161692e027f9a",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0006.json",
+    "sha256": "b845b44648c928dff5c7577a1a87a18d4dcae64497ce130cfc40cbb86b9dbaf7"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e88fe394b3ae543012e3b79ca1c320fc5480ebec3f08098880c8257473d59bb0",
+    "byte_count": 39440,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:ed53a21d96b6007a11c225436b168dc86fc83424c2d6c06f7255018154c5253f",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0007.json",
+    "sha256": "4995afe72a44500cce7c0c330d60bf8605ab5b7d3239b3699b450be846430984"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:5ade03fa7978ca6f9cf0be75f244ed9993300c2b50afa002819659a1a0cb5c2d",
+    "byte_count": 40611,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:dc6920967abb4cae399632513699c8eaab95cd1e5bde3bc10e371fe70c520e45",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0008.json",
+    "sha256": "24278ec6518984ce0c04337a50873654ac69c9740497bfcdc2d52ef350c4d6a0"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:7faba760af30336bba30362b33fb48b8ffc3df05cf7530fd4a6867573fc4585f",
+    "byte_count": 41910,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:0a1a7a6d284078b91e7735b81b45e8db7eafbf89a0e42ca384239456d8c26485",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:2bab744d64c35f602b8ea5dcdeabfc711e53e327d3477d02e70ad56a134646a4",
+    "relative_path": "raw_provider_calls/baa63b1e8fcd5837/replicate_3/call_0009.json",
+    "sha256": "d254b391ceb6a1fcf08e162af9acc1e48513ecff0b88d1434a416bccc0aca4a2"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:177d74ad7e7253c53a3217cce596d9c71a20f5fe267338e68eaa3864ae68dd3e",
+    "byte_count": 20650,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:8887bd92d262a6b55702ca8ece074be98ee01342414c114c1b828e1a31462a47",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0000.json",
+    "sha256": "7d4f686c0618295de38cf29dee57afe82dcfc7f9aea42498dc642609fff1b112"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a55eb5154f6ca96b21f3ef2ccdcb95da29e9b2776a92b4f19899621d2f64d392",
+    "byte_count": 37764,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:174136e13c00eff40d2783c118d7be622a1a139fa44ce6bb31b8561140304e5f",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0001.json",
+    "sha256": "b73a23d619871205de7a430c2847568bef705948eea7154812d06ff419110364"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:0493a10e6ed23047c859911b1f0f3688f8fa007f885b42d2015de027236749aa",
+    "byte_count": 37418,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:d63630d53923abbb4892ef581b398f8a0f508cccd2b79346caf005deac38bb72",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0002.json",
+    "sha256": "6295d498332842a8a792cc2d3749018cc2314da63b92bd798fe212453790e361"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ee1c5d8402288015a34fc80ff70ee448ffb8a737628b4a8d3ab3d8c02da144f0",
+    "byte_count": 37121,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b2020cc02b6017d2bd9c34656651d61e75dbbedae59ce4716598d33896ea45d1",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0003.json",
+    "sha256": "d21207f9605ad16a90bc9c6b428a3b04b6da1f05e698fcf271a9ffa019d1f65c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:d3ac30ab2bc542e8c7b4ddd397b038ffbab4689e364af8bbef5495a5c3a34d85",
+    "byte_count": 36835,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:8e7b7983c55fc26e3899f9fd8894b467d9f346ced6ff57cb4c3526598bdec6a7",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0004.json",
+    "sha256": "824b4b9a9cf39c7bb582688277219842775d49deda660806adc131e9bd60606a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:f87cac85b667b227a69749af17925c0c1e135cdcd7f402f116cec24e060ee069",
+    "byte_count": 36524,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:7cc529d4fad55a38e1357324bebb7ec662a57bd2202deb9c96bde6e51d3f9630",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0005.json",
+    "sha256": "1e20867dcb8cc1a03fe8d71be68d6a89b4eb06e5e958e4d27d5bffdcb0ab493c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:190519ede957f134f29bbb683491afd8ede224418d580d66cdd46d759cb553fd",
+    "byte_count": 37981,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:fc9ae4da222a885cbfae96a5c088406f6be16b71860e02d36e18c3bbb0220f5c",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0006.json",
+    "sha256": "6dea54dd5cfdb69e379c7d8a9d4764b03ef33bb61c76d779d8e32b828ffb9303"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:6041ae53f1d0a85d09f32bb069581d408c00c9521b10d66e184a9c1445acb154",
+    "byte_count": 39515,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e852aacf1efd8e4f64bce7073b28a2a5f924c35a03e8fd7cde5b0202fda987db",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0007.json",
+    "sha256": "6cb0854d3ad7b69fe2b9204f130e3d51c4062d9d0003a8c4e4c5773598b56848"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:47fb9e101cf3f92ffcdf7665a9ba36bcd98c0179396bc731c42c7a36978bcff8",
+    "byte_count": 40996,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:2e73aff45b253d4d8b65eb252b44efdad89ccb371598441c5594c9976a0a7629",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0008.json",
+    "sha256": "bfceae13d31a574eb4915664d9ecbb00e68e2dac41298b5566b38855b1f555f5"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:dfb91f9f8393732321c35b4fc0954b03cd7ff6dce5e554e08959501e3f82c380",
+    "byte_count": 42549,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:2afc05df0966307f1d9d53f98d9a822468ed1b84163315ab7b18b86e8ddfdb51",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0009.json",
+    "sha256": "c5df1122b01a8c405dbf73435a9b516ee6e9ad325bc313a7cca4e3d93dbc4f8b"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:55693931c41cdc3807ab8d2ca72e3e64401f728789208f3550f1526113d4a696",
+    "byte_count": 44033,
+    "call_index": 10,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c5c4bb4723ef4b6446bbbff7b953cab2b7f1705f9fb8503bfa5923f4b882bc4d",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0010.json",
+    "sha256": "9550e91f9fe0859969619d2d4bb274036373fbeb074c86e1b2014ac72fdad22e"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:36444f152bb2019be6e2911951697085a7ad727f3ceedbf8afeb9bd82968c1de",
+    "byte_count": 45234,
+    "call_index": 11,
+    "job_id": "finance_v26_verifier_bound_instrument_job:1d59d9a195b8acd28db1cfb5a0d45d274311865413107dc9fbcb559de123eff9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:fe35cbaa2890077c1913f3170a59204021ea0607c6514728b4cd8be385220290",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_2/call_0011.json",
+    "sha256": "c3076b7049a077069de55f5324a772eb91648e71131c84496b4a42049ea7292f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c0dda161135520a26ba38f53eca8a0274b3f4abef70b3d532966d95f1f83a3f0",
+    "byte_count": 24822,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2bc0b304af4e67d2e807c1b2838634d72c92f383bbe6f418e2b768cc88655d71",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:a72a98467bac807a446b65ec8133bf9fe26a00efba63e184e1237bb0ffd02276",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_1/call_0000.json",
+    "sha256": "9fa17ba5b58cf966677cf098a6ee30951b03674fd19166cc06c60c67465b1f58"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a6a3ad3a4aa8d316f7440c9950b6e67bfe54e60e67eaaf2025f50f6305ad8d0a",
+    "byte_count": 39835,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2bc0b304af4e67d2e807c1b2838634d72c92f383bbe6f418e2b768cc88655d71",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:f3ff507ddcf30d1a800ed210514c2278e0b907fbaf21ed423212b629d3e07247",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_1/call_0001.json",
+    "sha256": "c6ad28710d97d8c3a413436733a8bbe8f46afb268ab06fa108d7bf24d7dab38c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:9afac79978a897c2c1632705f2da41cd39caaaca23c152fe10508d3d8d5a0cfc",
+    "byte_count": 41508,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2bc0b304af4e67d2e807c1b2838634d72c92f383bbe6f418e2b768cc88655d71",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:1a50a31aef62f47142fc060d9d27c5e1c28adcb741519bd5c56059634877b54c",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_1/call_0002.json",
+    "sha256": "522c81922a05322edf9eacf496a3bf2d3c8335354aa12e00cdd1080ab35fdf64"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:4c367a23a41fb52ae17608f24c7386612df965f88c0788fe437dcf5eed737f4d",
+    "byte_count": 42509,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2bc0b304af4e67d2e807c1b2838634d72c92f383bbe6f418e2b768cc88655d71",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:70ba848eacb0a25110b1edaa330750dd04b56fb4da1183ea62da5a58f0654f3a",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_1/call_0003.json",
+    "sha256": "e87fabd32602c100403f848f326d7fcb23eb6bc43bf4d7c99178a8f6afbd9e4e"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:8f50db25be0fc5c2c9129bdd03536349da59a2ac5b983eabe07c28623b9bd269",
+    "byte_count": 24698,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2d373a1b7090027e5782a3e3edade70ed668800e60f33c379e27ec66daef95c7",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:11ec0734382e96c364e52c06f9cfa5a2a00c87008ac1c6adecb8b4af6da5d793",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_3/call_0000.json",
+    "sha256": "78d870ad48331ad4d26adc35b638b2aa5dc25bc44906dd5f68f5f158728b4bd7"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a242368e4e5637b92de266a535fc9c207b7bcda24982062560ca886dab527ca3",
+    "byte_count": 39722,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2d373a1b7090027e5782a3e3edade70ed668800e60f33c379e27ec66daef95c7",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:ba6b6f3b7383257683a74113ad0943e371368f125fd9fd156a9a7e1596d57459",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_3/call_0001.json",
+    "sha256": "c724427b0223fa901dcae1bbbda3456c0d31e11d21a77a0e4429adb91502414a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:37e51e3ef73e4b2006c74354fb12d5dac92a638c759940c5b7c92250d811b318",
+    "byte_count": 41386,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2d373a1b7090027e5782a3e3edade70ed668800e60f33c379e27ec66daef95c7",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b5f6274f3a0b91a77351a5ad888e73b1daf478f49fc27ee7b51bcc29d86737a0",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_3/call_0002.json",
+    "sha256": "4cce43694df2bc616586bb682b5387f42d2cb05806bfd1ad655635f4afdb4eb0"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:5e0dc96c390bbb800847d72ecd83b9a6b26220f4f4e08d48abfe372cbda23158",
+    "byte_count": 42634,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2d373a1b7090027e5782a3e3edade70ed668800e60f33c379e27ec66daef95c7",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:3a1c27750903f7c112c41e6aa6ba056934b0ac9ae775d0fa858053dc133ea2c7",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_3/call_0003.json",
+    "sha256": "b693d79592039feb1d0bdcea68415ddc884d6123aa4ddad011e7a6b4ef3765d0"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c8613c093657af9bf1b60c73d9eca8c1aae828bc3efd66c177c23c32c6565969",
+    "byte_count": 26536,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c6a7b8fbbce535a8d57bbc941979fbc6c03337175c638922de0284458264cc77",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0000.json",
+    "sha256": "f7515946d9bbc3513471da994059e078ce6d690787c9f2ba9e6618ece677969a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:cb2696a95a21e261a431fa6757bbcde41640900814445675059809c6271e560e",
+    "byte_count": 43486,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b23f530dd9b00a0ca1fe0c56d80a77608247cdfd56c778b79997bdc120003505",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0001.json",
+    "sha256": "0bd3fddb6d5769c7b0ec9019b008ecd44baf39d91030711f40c657984e3b7f3c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:d0759be348f1f7d1f7c88c2dd705517864fbe2f68567914587a0b6f9973399fe",
+    "byte_count": 43267,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:666abc04a09ad2839c25d585bfd5ec08be5c3521b6f9fc708f411cf71423733e",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0002.json",
+    "sha256": "e2cf107f77b74623b87e90562e3e836ae0aa6c307e8cce68f02899583faf5058"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e96804335696bcc16ecb91819d51501145c203a264908f7997dc8f0fe2e29487",
+    "byte_count": 43084,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:d2bc33c4b6397fc03280eca530806aebc610926f6174c5b8078d61432f36de92",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0003.json",
+    "sha256": "c5a00fd056608be5be21d7e5ccdde87a61f3d348021cbb1d05cc54be9d4d6609"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:0954e184ee911e5d5d483acbd8218fb03c78b52b85a1afdec210e3213702710c",
+    "byte_count": 42883,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:30cf89f470babd47b0969b6a72771ee7602d6592cf7bc227394f9a7b94e20c2b",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0004.json",
+    "sha256": "2bc5c3ccbbbb03905005eb0065d844ce5ed4f9b50bbcfdacbd05d26517023ed7"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:54ef997b35476957a8d9cde03ea2397f525939266e581a9fd646b60dcc8cefcb",
+    "byte_count": 42569,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b2a38a29cf7273200f332579f4e9fcb9bd30413536ba9cb8c0c68f35a6343a0e",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0005.json",
+    "sha256": "fb40921e77d242cb3ca6bf5fbec86f3e0d5515415d7f487b84447199c3290b92"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:6378c4fe38e530f2c7e7f645cf8a2323883da379753f42a90ab4dc22c90c8e6d",
+    "byte_count": 43923,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b59a50387aa24bb1569bb671d0ab62a883e48427e693218493448b0fc27a73e3",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0006.json",
+    "sha256": "423e94941c669dff0d765c4c240bd87fe8e9dd56bbe09ac56d8dbe8b3113f801"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:2558c697abdee390994b524590343be5d4708fd0408136ce629b560fa9083009",
+    "byte_count": 44832,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:afed25bbe0158c8a30f1927eb95f7693074eb31fe15c5073c0a7d50e9d30366c",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0007.json",
+    "sha256": "100cfcdd91662c1aa848006d3d6b1adea734107791d1ca08a6c60a3b6c5cf9ad"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:faba891419695f9585aa5552a5965bae07b16e8e6ee25b5915bdd6d0c273fcdd",
+    "byte_count": 46256,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:61fce6c1f720b1cb3e9faf1f804dea44d33382c8141110242496ee2d56c6c1dd",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0008.json",
+    "sha256": "710d7e01a724ddd14c2ef5aac2b33b3cfc25af760a5141dded6570ff2fca6099"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ab96b71c50a7ef58124c62ffa74a8cd2a121bf4508ec975746dfb05557e6637d",
+    "byte_count": 47707,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:8b0edfabce33bfcead363a4b05092c686bcb6fb90572d2bc1b7f28825f091b97",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0009.json",
+    "sha256": "7a59a9e5c2d0d722756f6f4b0fbc9e93b36f0130355804f62f68974d05a64c75"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ef7a328da202673f87184525927987d1bfd67582ef769ff946888b29c0038657",
+    "byte_count": 49138,
+    "call_index": 10,
+    "job_id": "finance_v26_verifier_bound_instrument_job:2f66da1333d7b2289327c754864ee3aa724edc4e985037357503aabcd4f73cb0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:9f78eb942975ac10ae4b54e8b2471369e50fe96dff064fc0d58b0b11a4d3f360",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_3/call_0010.json",
+    "sha256": "e1d1a832e1fb857880700be2da1ec9e0c27d44b1d8d571a2dc3088e7a23290c4"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:06893217230d28cf8e09123b89e38218a09ca0af5f4bc0dea2487d1ffdc5fcc9",
+    "byte_count": 20721,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c625cc2d4a97f44ad6f0c641d00fe8786519b2999f3ef7fee54a40147a8e720f",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0000.json",
+    "sha256": "6500ef5846c7aaa26e6711f7dfc043bd6f424e7e457f309a9fdc1adf4feb7f36"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:1778029ae4a892c3c5d0ca77b8cf7c8f85a2514ce6cb04620e78cc734e05e496",
+    "byte_count": 37834,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:69533b020f616abef05bd496b7062f01a314ef86309f52594c13c92495aff39f",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0001.json",
+    "sha256": "b5d9c1e18a44cfde139c41f63daf4201d917d1297f64def60488d8d3b721b813"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:250a4c97fa57cce7e054255680f491d2b5699e305cbe25361534f043a6c64d18",
+    "byte_count": 37502,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:f6b36d4f0231ff858375fb1b7d5026329c3d6289f578bdff4a55f062d2d2d762",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0002.json",
+    "sha256": "96254808cb021a3f4b2c94fee54f2c7b4eae5045e1ff1038a9ee792ff0b09681"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:f7a7a8bdbd1a10ab550cdc29b989fdbef857869490f4d3a91fcacfe9d9198e91",
+    "byte_count": 37210,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:22410e2fc8d2d44347225ae5682b3fdd3124b6022437afc628452ce6f90b3e2c",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0003.json",
+    "sha256": "71bb756ebad789b3ea0df575c658a778d01240b46e0661bfaf08c33bb320511a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e15fe513da49e5175516096ad48b88ae192184cc77759f063d519532f7d44848",
+    "byte_count": 36904,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:6b64a2b9db5c5dfacd30b228be9696472ef0ae0f1e10bd221014e79e7e1459c8",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0004.json",
+    "sha256": "e2ec32be741cf0d79005e4619566eeac18c2fd95c28cdd967ef8d52b9ac62a16"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:3a8b53f78ca6494bf6ee7cb1be2d8aa15cb4e8f55c9f0eb8a75cf5ecb101318a",
+    "byte_count": 36687,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:5b1fb8959f51fd3a832eec2bfce810df8f7fa60dc368d59d93142a0f706cc9b4",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0005.json",
+    "sha256": "c9ec6a65f56686d445aaccad7cfc37c883324684c5b5064d0dfd9704272fb67d"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:dd3eb079a12c4a0b924823e089af2b8c85abdb70c9df236e3c34844d939d901d",
+    "byte_count": 38176,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:2ce60f03c9beb704285aacc236b97683dee43474d45fd5aa498675b799f090c3",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0006.json",
+    "sha256": "9692007079b1a6e506aca45840f8f2eabf4a7c32d8669623a0cd35e2884bb56e"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:6a39c5f0868d8f872bcb4840712834c2a6dd37d92b2f060ef16f4a72bb997d96",
+    "byte_count": 39728,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:94251702ddba9bb8ef475d156b1a9f58c4ad3a2e383c7ded5d8ec210ad5b8851",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0007.json",
+    "sha256": "f95e236e744b27e520c1ed8e5a3a81bee9a62fb3b2457b43f7b0ff7cff4ad0b4"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:1b7113ddcb9747000cfe6a446c36ea4cb2aa57fd1e7be2a34b8c7171cacde585",
+    "byte_count": 41690,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c203791c46c21b411a50f81e471af7c14b61ad2bfb8866074d31409b1c68572b",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0008.json",
+    "sha256": "f835d99762d9ab536640df34e9f63bb887e3245ef0f42571676d70b4dc561def"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:407e38c3ec0d2bc9d4b8ef99e78ff694eade13fe7d6e68c658bf07d83f246de5",
+    "byte_count": 42635,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:dc6ac66a19e59e5dad4511ce8c271e8fb6fe63a53e6355ec313aac5fba8f07d6",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0009.json",
+    "sha256": "e1b5df2f253a1eed638adb87365155157458c1cf41bed90d9b180364ba8bc99a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:2faec5d05c84522d51d2a0711c75959458fc7a11fb09f0c72c08704e3f24f00c",
+    "byte_count": 43534,
+    "call_index": 10,
+    "job_id": "finance_v26_verifier_bound_instrument_job:3b698f1072c1c0cd1da4d1ca7946a840bffddab7c7a6eff6bc8a889c1f65458d",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:0cc279c15a25b944f1b0645c6b1892c8c2ac1f6e252abaa623466b8005d7dcaf",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_0/call_0010.json",
+    "sha256": "0eb25a620213609fc3e0774179f310d11237508d5d7e70d3071e99e48493e36c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:84829a1cf81d3bd90fa505855a6b8f8096afb34f73e3dc31a12873d068c3994d",
+    "byte_count": 38950,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:d7665ab8c3244652c03799b4d0d554a099a419312e1dfbc760275d3519bcf8da",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0000.json",
+    "sha256": "7a24d00ec45440e82a32471c985f4cae3a43420ad0297d35d892d9d2fcf667aa"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:21003b4ba3d717ffbb6ad2b465c3f112da51bbdcbd519f34e67e64963e35eee1",
+    "byte_count": 60667,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:d554b0ef3e351923114cd88f25b26f94fd245a1895122806c83048788c4c4aff",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0001.json",
+    "sha256": "b72fb6fea030a98004450bcbac14d27051d8f2cff943c43fc46cb7a0afbdc876"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:611b0e4398de2030a12b42decb7ebdb66095161bbab0e6292d1401aacdacd8fb",
+    "byte_count": 60420,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:47307ae7f273d3ddddc9c10667df6ad8cda02f29a844ed5678a4bbba2ac59e07",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0002.json",
+    "sha256": "59891aba2ab33b0b1e7e972d2096028be7da747a0da3e01f18b754bbe9d3f7c6"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:bafa1b8a80cb137c76be9ed7862ce8de7dba05a554594d0df7a17017e17283e3",
+    "byte_count": 60231,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:cb59b976c4499e1320f53e1dec0d5c4db9c805e70edea0388ff163c830ca2edb",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0003.json",
+    "sha256": "63132abd1cd825206135ea524a887dc464151cd7320a107f11d67b885754ee4f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:bc79ecaf104595f33759cc354e93637ccd113dedf8224021749853d99cbe18de",
+    "byte_count": 60035,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:6d509a1376c185bf33b602f7632403fc9f0c7e57820e873f2258b4a49bc1a005",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0004.json",
+    "sha256": "cf1174a9677de759d48fc94acc6c240095c1f12c0cb9f8d89e4f02d24eea53f9"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a07844300eed6bb0f281fe5929b321a48d30ef0fdf376ca650fc3ba7d29fa708",
+    "byte_count": 59866,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:386d6d0acbae7399835b79c779b0bf635c651665428e9e6a5a142b132b50d4b4",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0005.json",
+    "sha256": "afd005e829d885db1eef9545dd95ee0c160a8c43e3e6ccb149ea0a97ee89c716"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:654c48c7c20040df80547dfe81a1b8202f5065a2af2565fea6b500b1ac557c27",
+    "byte_count": 59671,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:874eb87c55a77f8bb37d7b71e8d9055c27dff200317ea0d006ce52b1454542ab",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0006.json",
+    "sha256": "0e3479deed581d0aabd569266c58649aa2b79df8f496ab888b2ca5b54e865966"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:9d04f4e92e74aca0e1de37c8607f9baff4e9c9a8d43e09d294ccd6397a1316ee",
+    "byte_count": 59296,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:a9357abafd3397b4b4a18737a5afd7f4391b05e4c6a46e41dc257f3d246635ae",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0007.json",
+    "sha256": "e3606ed6adefae96feaf6acd804422db6fcf88f04954ff6c7688ed7812d075b0"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:6070aae2afaba230a8ad82ba361844004e10c737522e57fca700e9fcca81d9fa",
+    "byte_count": 60902,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:513c93363dbc0542f7a36b856b2ba34ce7e81c3a06eec7dd7bd8d0bc95bf1f6a",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:eb46d6ca92cc6fefc4576d7e5d52676788338addfe7616216d214e6191186c2a",
+    "relative_path": "raw_provider_calls/d54fca1e7c36ed98/replicate_3/call_0008.json",
+    "sha256": "1b0becd2674f03cf96fe71cf186bd85e2df13b75448d483b2a64c1295dd8dcad"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:eae0cc9cca0847c498310c80ffb9e09fb9a356f418bc18cafbc10d69e3179670",
+    "byte_count": 24702,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:5e88365313336e92e799d1e2e92f8f40c5f35d584f1d126dadc3bf2830318dde",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:fe31eb52ee930c100ff650376fdf36878bfa8e78e66b852ca97d39c4f397bab5",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_2/call_0000.json",
+    "sha256": "b89585b6400e4d30abad1df784e6b9f4be4e3eefdc3821f5572bce25ad55510f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:2fae49b8e582874cd677f356cf7e33e376174ca9718f48429fcebe8c44677b11",
+    "byte_count": 39690,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:5e88365313336e92e799d1e2e92f8f40c5f35d584f1d126dadc3bf2830318dde",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:0829e3cf94cfa593738fd080c237dd2fab786ff9d28fca30536f2090b7b26eae",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_2/call_0001.json",
+    "sha256": "1e19322fd595532f68faba6378393cffc1cea72f2c0638059cb5c7f4f14a1d7a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c547e325e4b06a9a47bf3639a7998434e8cc27bcf2c730ccfe5a4da611b655e2",
+    "byte_count": 41380,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:5e88365313336e92e799d1e2e92f8f40c5f35d584f1d126dadc3bf2830318dde",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:bc5615db005c9764b9f943a4569227082ec09371e3f3f5223b56eca63c032e1f",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_2/call_0002.json",
+    "sha256": "d887038b49a3b6182a96931f42221b5de97f562d43610516898e5350f53785d0"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c6e07e5fe0e999f221fcc29d4e3e31ff43080da7c96d7f89fe9d3236007aa4a3",
+    "byte_count": 42521,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:5e88365313336e92e799d1e2e92f8f40c5f35d584f1d126dadc3bf2830318dde",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:220c1729179625bf118727e4fd2ad78dfe8ce79fae397b503076004a7aa39a6b",
+    "relative_path": "raw_provider_calls/936951edd2d801cf/replicate_2/call_0003.json",
+    "sha256": "ca2a695942540771411ee0f0104c9b147b17a8285ed4b3444dc94352fd75cf50"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:b3f2e150d583e42b9343f96c31902c97896e686565cc51e3eb7c5c74096054af",
+    "byte_count": 24330,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:8b9b4ac7a2e0dffe7e2264294f5be97020b286f2a4aa999a427c04a57847fc1a",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0000.json",
+    "sha256": "fe7c9bfec2969fc0ea157dc7476dbe844bfe702b4bc313f4e10fc0dc1c14ef6a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:4b5422c14b7f3ec9ecd7998d4aea15f2997ce0d042861cdb8b21b2eb4806ad86",
+    "byte_count": 38878,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:48662e6dfd000d2ac17ceaf5a6906e54675abcb37c2231f2e49219019a74873f",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0001.json",
+    "sha256": "455dc153487e5b112a3436a6196fa0413c157904af7a3297c2a0f8fe5aaec858"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:b6e0a66b1c7c83459e0cea445a1bbc2968bc7ef559b0e8e99642e8da1b7d2485",
+    "byte_count": 38327,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:25dd10823e39bcaadb9f75538fc638ac487d0fd92f9fc3757ee38045d9a5cff4",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0002.json",
+    "sha256": "cc62a1d83debe893c2f46ff8f111731651f0d4dbca6621fe8602752013a22988"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:8467be1774e3fa86b5035015fca83d8a4f5c42aa96e35b44d46835239cf696d1",
+    "byte_count": 37844,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:28bec43a20ec594f0ee54ef354c3de46326e53a9157b17a5a60c85cf2d3ae7ba",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0003.json",
+    "sha256": "17022ba4cbb3f610c83b3d34121213da7d13b0c9aa5a6d2da6e4290c560c94f2"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:34ac052c22c2ce879097b65dead0c96e1bf922024abddc900a697bc73ea96394",
+    "byte_count": 37400,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:da5489a23bbb26c4bdece1edc55309bcde38ccbc9be6033d947e759a0b5952a0",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0004.json",
+    "sha256": "0e2a20c4acc8e05fcd63b83912812289f52906fd5049880a6eddd4aadfe4bf1c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:4bd97af0c3368f8c2c6b66eaf71fea44f60df3fae371ff95966c86f16b5d8024",
+    "byte_count": 38648,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:1706c9ece413db6dcf8626f5df9a5dc7ff10c1ad3c21a9f7a0e0711719458716",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0005.json",
+    "sha256": "70a2ef33445fec7725b0bae297021e59851c00f2924b5c1f863c25c720200b15"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:5f76f950f5bad4ffcf4be6bb46ba6984415b31ef5588b8f7bde781dd917113c3",
+    "byte_count": 40036,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:049090fd5b652ccdba138c002fea4b98b39dc21ad7d4717c7e7193d15fb35063",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0006.json",
+    "sha256": "82a391a838e52044974feb11c7588c1e298833e0e74714a56b82a3ae7ab3320a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:6683bf688463801597ef155c0aaecc2789fbf12d9684a4249324d1f4f9035536",
+    "byte_count": 41349,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:10a9713a841c4257d3640ee200f48d20283ef4822f37b9c273dd7d09e29f7577",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0007.json",
+    "sha256": "f6d198eb708864a9654e223940b82e781b476db87c2284932a8873f289390468"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:b248ad572a2f30e4622f48ca5872c90aa9cab2c36c14825a2f0f4deff1143876",
+    "byte_count": 42578,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:74a64d3d3320a90987edcef67cc07a6ef5804b58cf93677f37edc53e9613eeb9",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0008.json",
+    "sha256": "22230ba478b0d6016f8282692cfeaa755e8a5b1d4dd0c1094629479362e72994"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:db856a03a180e9d17830b04919ef4c6298b0490e85d19e6a5502aff4bf15431d",
+    "byte_count": 42708,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6389564d234168c415cedf638e1e371a26726a1dfe0e26cdcab50730b045d2c9",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e9911739bdc6f7ca2612f662cc76580671418f4fc007945434a9e497a9fba01d",
+    "relative_path": "raw_provider_calls/5f13e9086c04355e/replicate_0/call_0009.json",
+    "sha256": "7d5b785d63f9cefdd3429b8e042580ec7a72807e96a22bdaefb8232ea7d07f1c"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a69df94df43cd5a1dfb6ed3adc99dfa5355d2a3e8f297f225bc5bb094e736b44",
+    "byte_count": 14270,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:1fab72b1913aac651c05b05c60ab861de9572ee0b09a5808105198d2933112cc",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0000.json",
+    "sha256": "a16f05e35c3d0b2ac8633f99d34b8b512e3988e26b5b3582177fb9b2b0ffc7b4"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:86e59e884cfc07dddf81149f32c26f5053dd699cb2b4e03ade26cb71a0746b69",
+    "byte_count": 26555,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:44557e8e1f699ed3f7939222c3383ce1b15d1670701d8b5e0ca58381533f9382",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0001.json",
+    "sha256": "aa2d83010b1dbc2276c937c4037e5fc6aa6104771b5fe10f4b5865512840ba5b"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:701ccbfd9fb487aa925fa2c980838256e64c93e188b83b5e3226d23da37242db",
+    "byte_count": 25987,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c91618c51c57ad65d755dba35925d7c10f2c83983363e5770c1be4fe320b43ea",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0002.json",
+    "sha256": "596e79b4d592a4ef6f86e60853e2ecfee16edc0646b9fd2abf3173c7a9d5cd06"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:a824df2dd2ed5392f882659f62a129681aba33227b2ca9bc8a13c05d7fbf3fbd",
+    "byte_count": 25561,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:ea0277b4b562006834c263158400bf87052d679cbd19cb995645bee8ca60147f",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0003.json",
+    "sha256": "7ba18d40dcfca95731d2e703e62399905f79446eb88f57aab44437970ed44a3f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:feed7f1bb8ed971757241081f4e4f1ae2218ae1d8e3a9c90a2f5c46073738c21",
+    "byte_count": 26777,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:fe71601046fdfef11e5c4a450632e83f53ace8127385cd758f2d3b460564e1b4",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0004.json",
+    "sha256": "75040aca12a73c74380a2ee6c0ca34693521319ed4dd342a63f87d060a0cb8ce"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e037dbdae5fb06329fba9f9ce630705b04d6e7a75548ce6acf61edeaba590801",
+    "byte_count": 27666,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:debcb81ab1ce04d158ecede5024fc3d616885bfec1c97eabd8a777f7745849e6",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0005.json",
+    "sha256": "adfccb835e6d92c7be47adb59d04f02ac9947c4fb4a691c07cadbdaac48ab25f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ea20684043c3804116d32708db9ab3980ea62e2b7f26f276fddecdb82ebddc8e",
+    "byte_count": 28696,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b1ed6876465f3ac2266bec5acd8557d7e0948f18b9cc6b10ce29aef6c7a44dc6",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0006.json",
+    "sha256": "146a81e8a663cdeb23259865f1de962f94c678aeb0a51334715065a85e421a11"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:41412d731b8a2371d837c7bf3bf1501f422ba10ae3d6eb987c0484d245281b58",
+    "byte_count": 29509,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6a8722b82183a0c58976513d3f4207b216dc64cd2d69cfb85bd52e14921ee0ab",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:745757c88c04b87139309edf8ffd94e0680fe08a99af29100036eb7e9b5be063",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_2/call_0007.json",
+    "sha256": "20d0894b0e5460f2f2a690a47fc0d9be621eb3d3a2b3eeca3f36f87e72a25c01"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:0947f04be348cb4d0b64d921a9486caa8f199098621dc0e242d0cb9865305299",
+    "byte_count": 20758,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:ea9da2d0dc48a984050d592028566972fa7d83af18e0bd213480d763d27f9bbb",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0000.json",
+    "sha256": "320af059946a06e4d5e7673f9803ca74a1e8d33adfbaeeb729501cb6faaeff70"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ff17f865f0bb41ebe7bb601df702c82feca3e4275c6869665426c69aead8c0a0",
+    "byte_count": 37923,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c3ba1766beac02540c072af4bf2becb0fc3f33b063846944bba114369f0387a3",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0001.json",
+    "sha256": "fa49b429cdfad3fd0702a8cba17d9fec08e81349260f93c6ce469c22f535ea06"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:19971d7fa75d3a6909c8dea08f5c298f78bc2796d3318dbc9b21180aaea3f7b0",
+    "byte_count": 37576,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e91359a8244631b42584408c390924551360a4763e7730c420d45d1740409afb",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0002.json",
+    "sha256": "f4a0fae9e7f5b27c83739e7960513baa10995e79497be091c66782b3dff6fd52"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:103f8ccfa4608f799f9ceca452bfbabc3854ad6645fe572c0d286fbb2a46334c",
+    "byte_count": 37296,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:89c3a6f68a8dc833445eec26cfd1e60c482fe572a71f3663f11f46e322ea8367",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0003.json",
+    "sha256": "4fbd66a72231bf2accfb5dcbbce5622fd88903e57ac6cf9b1856145c6611a06f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:0233291cfaed0872a644110b27436d3e85ea556e8e8412c6bf652ef041a89d5c",
+    "byte_count": 36990,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e55eefe6ac26db465882114faa2d0a7dbb5df1bb11fd49d6a40cf52b61fbb051",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0004.json",
+    "sha256": "d28c834011e5bb3a4e3cc00815af23c91ac7066555a303cab109e8f2b5fb0677"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c09f9670e6e797cc61f5897778f2730d31b00ca5b72a278f88e8dd485f08194c",
+    "byte_count": 36727,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:11fe00ae9f6670e41336bd506e9d3a5c24e04ab45b30a290703f6a7c49276bf8",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0005.json",
+    "sha256": "bbecd37538a26a78c75d20942bd44845a1260b0acdba827c718b7421377bb35d"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:d3f1e6cecf1a9a5f34da805ee30b108090592c302512a5b83169bbe48f09100d",
+    "byte_count": 38332,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:afb5b7384cec1b09d27b08a6d2904c74a9ada612dc62099394160d9edd97d6ef",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0006.json",
+    "sha256": "dcc39b667f982c4688be4dbf2b73386573ca0371eec3f7d18718b89dbd3e3989"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:29732ca8152ad66935ebc609f630dea44443f62a29a6735a8ac68f8bb1926618",
+    "byte_count": 39468,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:2bcdf325d74da19d4ef8c447d82932b9c2f82f4e3f9b8bab165916334ef581ed",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0007.json",
+    "sha256": "067b9f09bc9ae31d17862ff762d1df8d7ae72b891d4a1900a5c1b12888c5cbac"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:985ff120fb677868c8ff70356e8535e611a4472ef01f1879d068d6d9ad987e94",
+    "byte_count": 40608,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:9ea201cab3942dd2e99b392cc87800ffea2051f788d5fd28666f724961b42fb2",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0008.json",
+    "sha256": "6ff36e686c7b17929fc743ea54f4b490cd20af3c2613b79844cae3a5580bab86"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:86b27039158fdaf9f742b9934a4a02be761b29b517df3c3365d67d51c1fb90e8",
+    "byte_count": 42204,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:bdd620276373335ce5f7c8d578691284e1f1f1c692f09b2f4b41b3481f6bf1e0",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0009.json",
+    "sha256": "f00d4cc3dd0f32944ecb0bf54b011d14e63f939cf5c664475e033d4c2e59fbfa"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:f9d1e1335df27df3627e3d0ca03dda6789192fc6d5d0d30483f47c384aa6e521",
+    "byte_count": 43754,
+    "call_index": 10,
+    "job_id": "finance_v26_verifier_bound_instrument_job:6e9557ae8da6a490bb5e50e3b5db002804115455c8c9d842170c8b81756bdc22",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:beb74dd67b85c1aaced0ee61fa4a8e151f11fb48ab200f05b9dd2472a588553d",
+    "relative_path": "raw_provider_calls/abc47c23da26cd97/replicate_1/call_0010.json",
+    "sha256": "7153ccb471d4d4fbe4d140f1bd4bcb1078b54f3873b22ca235b09d5d1b695ffd"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ff96777114e919c89b7ec6e53937a534c4de79d04a6fe187d65b2588dd10df11",
+    "byte_count": 26713,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:09e26acdb525ad4de4e5e1758da36ed3a23c04afb95fe63f31b5e980f2a24b1f",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0000.json",
+    "sha256": "d28cb748d06fcce0f8d5b99aad660ec8bdbc13174019f3b783df968d880a68fc"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e9520fc1719950998bf0e7064c4ce811248153cca64678668846426d8d992b7d",
+    "byte_count": 43440,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:0d48bcf2fa3808a75acbbdafa39cb4e7ff233af8c2d0f9773712a106b7fee06b",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0001.json",
+    "sha256": "313fdf63f6224e29f7a013373e6f8b218e19168c51e501dd1f1cb146dd36bf20"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:7a624374c79b0024aeaae83ac8497fc86418270225ad778023207c02b7d4aedd",
+    "byte_count": 42988,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:cf29ae5bc44ed0367cb17747cbca74795eb55a46c666a0bb7b17f635ee0c2997",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0002.json",
+    "sha256": "f72794cf6fea8102b6bd1e8174190e453cd75f4f785d144e2ff1f4519dc66e7e"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:5680e6fd99347a6abc79c6d89b2bdd9b282660202bf3432b00b4571ab3ca7300",
+    "byte_count": 42535,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:527dfe952dfa071ee4e859ccb7835109c50a8cf7af9f836f4b7540899b5fe28c",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0003.json",
+    "sha256": "7c924928dd051d16d8467796f6584b2618a39acd201c752de3ecc64d0df27298"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:72490754cbf19c79c5bc4398a0381f98e1607aa6f41717966ecaedfd21213dc6",
+    "byte_count": 42086,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:989fcc1ea2c04c53d70388e137c905e5518788543d2ef443a02a08f94caeb7e0",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0004.json",
+    "sha256": "3d3e09cc791a182071e77df1a44d00fddc65d4a5a9f20c68e361d9850b9e9a86"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:86788dd6ee4d69f2154ed81d8d2dc5d8e2a3e11a66e15ac77edb569c744ce7e6",
+    "byte_count": 41719,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:7093fbdf92abd1c6622ccd27422940bbb92cba183f469a09061092c58e36a9c4",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0005.json",
+    "sha256": "7b75c41c8269d443a542f60fc9e8ade1ac4a1266e9b77b39e0e765ebf313afe1"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:56e73fab2e1afbe9f8e60c8abc07e898661455f23781dc3a5ee839bb1b893e08",
+    "byte_count": 42998,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:4719cd82f49876a7af3441e0282e82b2aa02755ebd69f96999576cb24d9fdbd2",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0006.json",
+    "sha256": "69bf8d4f882d28b2eedb74a8b90a2674aea1bc15885ae7a6ba984519e2a83eab"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:418cdcecbf1d5ddb933a6d07b554983ce00f0c97b5ccf12202660b370cb6784b",
+    "byte_count": 44026,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:e1cd8a30ff3336d6bdffa9c1c72e5f54de7fb1553f25138a78dddf4483ff49aa",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0007.json",
+    "sha256": "5ae9171beaabd1aff5f4f34be5b69787029125dc358fd5db0da36422d3a704d7"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:b4f587c3ca782e6005f4dd39c19385fe9ae0ee9f2b01e403e5122e0ed1cc9327",
+    "byte_count": 45014,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:51ff1be3c3452ff53cf535e5af470ee2734ff5fa4c5202b6d34d6275bb4afa2f",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0008.json",
+    "sha256": "6d61eca906f0e3fbdb8f8641c36b56f5e3d9d5257855b9fb50b33cab3cad6062"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:3a96fa33a75047ca2656c6d24d34c3defdeec3742eca066ac56eacb50637cc68",
+    "byte_count": 46022,
+    "call_index": 9,
+    "job_id": "finance_v26_verifier_bound_instrument_job:70b96ce8d8473a94ba3d52d1c32663db5ad4bd6c0b2d37382645d90a3bb8eef0",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:00d25ccc9b66e8b3c2c12792989d839cb525d9d85a99d06980a967befe80c77d",
+    "relative_path": "raw_provider_calls/e04d164f1744e003/replicate_1/call_0009.json",
+    "sha256": "d203bd3ecae7d1eb9fe928a9d8cef58d709b08443f9c7a6c128bc90255022b88"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:120c10970628122277c8af68895c7474ed3d35f17304bacbf0433591607284c7",
+    "byte_count": 24765,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:761369ba29bcffb1f5e1a5e7deecfa180550c2940697ac3052c17f145112e82f",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:4f2bf592e41b82abb85e031818838cfd3c4832f1cf8f77d98d8ec79468201cd3",
+    "relative_path": "raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0000.json",
+    "sha256": "62e1ac053c3ceed3ba0811892e1ee6dcccafceb2146379b8b30fe715b2081179"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:044254484614d459f8ae1fd792f5f10d26f5499d21e7bf2a4bb9d28e420f8dc9",
+    "byte_count": 39718,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:761369ba29bcffb1f5e1a5e7deecfa180550c2940697ac3052c17f145112e82f",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b114bdb8d9ed8bc7675090a25e05c46c26a695e2da445a8e1cf545f42f165d6f",
+    "relative_path": "raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0001.json",
+    "sha256": "f22463d2ce500500b151eaa6632e4e59e4864abf534dd5d5b12d4566aba7f790"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:8d2f07b394d8a2edd1730984ac47abcad0fccda717681dae8f27ce22bb5751c1",
+    "byte_count": 41382,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:761369ba29bcffb1f5e1a5e7deecfa180550c2940697ac3052c17f145112e82f",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:7e3ab94e22ef2d1a727f5b6a6411871bf1fe1034eabbc86fcf8b729ace36dd5f",
+    "relative_path": "raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0002.json",
+    "sha256": "9c2ffb19d4365352a3b506228707c45b17570895a43c6ac643174148702ee33a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:959f192d840de2a5fba15cbf67cba8d9d512949c342dac7cb9bd810d51acd1f8",
+    "byte_count": 42584,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:761369ba29bcffb1f5e1a5e7deecfa180550c2940697ac3052c17f145112e82f",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:866377a33e595e3b947d912fe1981a7063f4f924aca5dbf276be5f093516535b",
+    "relative_path": "raw_provider_calls/fa0e6ec0237b0593/replicate_0/call_0003.json",
+    "sha256": "6a058af31cefb7f2f11dcb69f631becd37fe55de51b251c75e6751238cea3b69"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:e6c8632dcbeaa2ca60329b5b82644c97f651c3c2f4fd5e00cdf4662262a8b2b2",
+    "byte_count": 14228,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:532038c3c27c56c7865afe794c6e2ce31051d7ffa6c74ac32271832d7b774983",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0000.json",
+    "sha256": "85f9557dd18a8579554a33de30bd4750c9fb758e74ac75d6cb8a926d15b1ee66"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:1c813f9549994830a789397c7605e68991fdb486b2c133f99ea308cf94b7f926",
+    "byte_count": 26526,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:3e2a4439c10ae9d82aff08709bb014fd986954b2d4931fa552127dc43eb1adc2",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0001.json",
+    "sha256": "f0e03139aa63bb811469211578894a232fa1e1492bf12114410a5f9c2f991b0a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:22ecd7b598206ac4ab2a80393eea96e5c6893e9e1abca52ef37dfd175e96c8c3",
+    "byte_count": 25960,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:ea59c46570aa43ec70ec1d98322ab4805b355763348f11d50709c81d7e7768e9",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0002.json",
+    "sha256": "d88bc256ecff4afeb9129a1c9056d3c7a28bf5f95a9c6f29db2bebcd147af7d2"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ed22084a13507f259136c139e40e499129f1f2d37fb3b09174f208ca38916673",
+    "byte_count": 25517,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:c218f586ce14f7916353d7ae0a9be3d7b50cb2c84f265bdbde67f61f33adeb1b",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0003.json",
+    "sha256": "04045063b0833252094fdd94a91ed434a86dee7ea9ccfa6109858d76c813da8e"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:0c4c09d400c2d35a4cf368225302e1d1701e53af2149f264c201383546ed6bcf",
+    "byte_count": 26710,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:fc677a7481271412da81fe5695c0b884f88dad96cc4c492afdd4f6c620034361",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0004.json",
+    "sha256": "d41a1b9942f9afc80cd4ff030cb39fa42d5042830cfcc23701e27741036e02f6"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:4425f4bc3c1b511c995053eaee91d0bdbd1f6e6554e5ac0aa2c3c568e341b04f",
+    "byte_count": 27652,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:a3826692a1411679c2bc7d57924f2d8be3af73254ed94e8a983cfeb12669b469",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0005.json",
+    "sha256": "e7f5a47be78b298194dad9e2b97dae6150e9c4989e07b235be2f8342b656f22f"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:171bcd0652bbca4173cec2b10641dade874ce3657154f2f3a21153a7f131db0e",
+    "byte_count": 28588,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:a717e577ec8318a2b2fa4d6cb287a42d9979ea01fc73bff5bed076ad73c9545c",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0006.json",
+    "sha256": "6f4381099a35548e13712f9ca780811186f6b175704ddaaeb566d0768eddca62"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:0463dfaf674f2ea5a54a231029560ec8deeef0242aa896e04f2b41f5502fdcf3",
+    "byte_count": 29563,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7e7158a349e80dd96f17068b5760de866ba8e33278a95c5025fda5a7fff054e3",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:f3f55f19f964bdb0a96a4da5cb3d9fa515d8477bf3556c67900500b98d808c50",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_1/call_0007.json",
+    "sha256": "06e5f90d9e5f707ea110b38fff1983046faebcc9303fd8c2d30fedd754d71a7a"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:fd8dd15aceb29d44c350a095c7b51f4a5fcd8f9cc6bcc8fb93587e958fc416cb",
+    "byte_count": 14219,
+    "call_index": 0,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:b730604bd13b672ca66ec7bb697ea3743116a1749cefb4fabc7d891c2516bfa4",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0000.json",
+    "sha256": "06cb5bf9ea3aa77ecefcf29fb02be1d91d7e62defe584cabda00e3ead1e8568d"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:f3ea756a84b6a47823eddb994507fdd88a040e2ec647ed4161574875cd271328",
+    "byte_count": 26487,
+    "call_index": 1,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:8f9956cde9f97a2ff539cf1f9c81e938913d2ca70c7306d6221b8ffb6a37ef0f",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0001.json",
+    "sha256": "14332da503caf0eea622489ac1d3eefe4df0e49d714db0206e29506025a39206"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:5188c3ec14e2cc71f5e289e3fef2b515d6f10b6b84d9848ecac719e33c83b14b",
+    "byte_count": 25966,
+    "call_index": 2,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:71484f7888fdcbe27fc3a586b1f434b87fc0ec7c20edf85d585306e61da64a17",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0002.json",
+    "sha256": "d4c1aba0559485cd795dbfbb862389ea33791714f0afb62f73ef6abc760487df"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:92844c39c40d3f9afd104a8e5a6c3c11e9c32d41f9472a9b461dd6230fb07622",
+    "byte_count": 25513,
+    "call_index": 3,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:03e7ced07ee3bf76c1c85408a6c2e9ec5f98f31aa376a7d4edfd61af39b738a8",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0003.json",
+    "sha256": "47a65f595621617045a2b2f68a766c750e2676976c0ede987c9d60fd55ea89e4"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c4c6e3b61f7e67d1b6bf3c4edfb748e9a3e9925800b101ebe6e2e9a07279a3d4",
+    "byte_count": 26756,
+    "call_index": 4,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:14a22f2d369e700e1a0c2f33d87c69add7306e20456bb300090478b728116b81",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0004.json",
+    "sha256": "be2d196ac856eea95c07b67db2bf4ed956dc5b1c9c7444e2de440f614a6d1b32"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:80ad34ba3534dee33cae2870e3179f2ac84cb762976fed938dee6f1c7a507dab",
+    "byte_count": 27610,
+    "call_index": 5,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:9ae68c7674a80128fba647bb0b52a1e68908d668124c8246af7dc75ab6cf2606",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0005.json",
+    "sha256": "f9ee251ee162ca75f83ce32856362749d6a8c3e7ef60d4d81d91ebbff8b91304"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:c69bb381cc53278217302f108f32727697b02615475644a733955cf00fcbd185",
+    "byte_count": 28609,
+    "call_index": 6,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:18045cac31cd3cec993c5390aaf0b4d3e9d1170dac0510f21f7dfc49b9d22bc6",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0006.json",
+    "sha256": "60b6e20e791dbaa2d8293d9fdff4d06c5cbcd03cce03a138d9ec84e5c0f91642"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:ebdca2a305568bc52403d05a118f0076f3f43f92ba270fb0dfc3ccb8b1f5bf1e",
+    "byte_count": 29493,
+    "call_index": 7,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:a402fd677b9330d35976c423460f226cb2d8656a635b094a0afa6f77e6e1cb6f",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0007.json",
+    "sha256": "5311a3cf1fa40e8ebffb72c016e8195a52dea57d0970b5600204bdc11fa15178"
+  },
+  {
+    "artifact_id": "finance_v26_verifier_bound_raw_provider_call:8df4a3e098b86e770732bc53b8300588175b9c44fa57d93e2364e82650df929e",
+    "byte_count": 30472,
+    "call_index": 8,
+    "job_id": "finance_v26_verifier_bound_instrument_job:7f2c51f4011194e6d7da5459c6f077f209bfbd330e2d2fb8358628eae270e5ea",
+    "provider_call_id": "finance_v26_verifier_bound_provider_call:f127b20ba00d9b5347ffe2f06a623448df73d61b976d39fc3e84f15f259889cf",
+    "relative_path": "raw_provider_calls/aed4aba64e7ed993/replicate_0/call_0008.json",
+    "sha256": "0abdb081d072c1d0bd2ba41573565d99f17d3301a69727d2717e9784eaf02c1d"
+  }
+]

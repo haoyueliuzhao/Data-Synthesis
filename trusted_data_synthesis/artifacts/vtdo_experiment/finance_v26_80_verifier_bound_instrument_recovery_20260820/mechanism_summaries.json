@@ -1,0 +1,46 @@
+[
+  {
+    "attempted_count": 8,
+    "descriptive_only": true,
+    "full_program_lineage_count": 2,
+    "independently_valid_count": 0,
+    "local_mechanism_success_count": 3,
+    "mechanism_id": "context_conditioned_action",
+    "model_outcome_count": 6,
+    "replay_pass_count": 8,
+    "schema_version": "finance_v26_verifier_bound_instrument_mechanism_summary.v1"
+  },
+  {
+    "attempted_count": 8,
+    "descriptive_only": true,
+    "full_program_lineage_count": 1,
+    "independently_valid_count": 0,
+    "local_mechanism_success_count": 1,
+    "mechanism_id": "semantic_reconciliation",
+    "model_outcome_count": 7,
+    "replay_pass_count": 8,
+    "schema_version": "finance_v26_verifier_bound_instrument_mechanism_summary.v1"
+  },
+  {
+    "attempted_count": 8,
+    "descriptive_only": true,
+    "full_program_lineage_count": 0,
+    "independently_valid_count": 0,
+    "local_mechanism_success_count": 1,
+    "mechanism_id": "failure_recovery",
+    "model_outcome_count": 8,
+    "replay_pass_count": 8,
+    "schema_version": "finance_v26_verifier_bound_instrument_mechanism_summary.v1"
+  },
+  {
+    "attempted_count": 8,
+    "descriptive_only": true,
+    "full_program_lineage_count": 4,
+    "independently_valid_count": 0,
+    "local_mechanism_success_count": 4,
+    "mechanism_id": "state_dependent_stopping",
+    "model_outcome_count": 4,
+    "replay_pass_count": 8,
+    "schema_version": "finance_v26_verifier_bound_instrument_mechanism_summary.v1"
+  }
+]

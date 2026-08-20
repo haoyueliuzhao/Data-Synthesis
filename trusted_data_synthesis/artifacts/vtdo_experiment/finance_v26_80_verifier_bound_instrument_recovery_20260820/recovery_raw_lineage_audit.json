@@ -1,0 +1,29 @@
+{
+  "audit_id": "finance_v26_verifier_bound_recovery_raw_lineage_audit:b83d1cccd57aeff40de9cba51ba17ebb1890492350aec526e9be59480b876b83",
+  "continuation_job_count": 15,
+  "continuation_provider_artifact_count": 123,
+  "duplicate_provider_call_ids": [],
+  "expected_job_count": 32,
+  "exposed_job_model_call_count": 0,
+  "failed_artifacts": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_0.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_2.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/5f13e9086c04355e/replicate_3.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/abc47c23da26cd97/replicate_0.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/aed4aba64e7ed993/replicate_0.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_2.json:ValueError:independent non-Replay Gate audit failed",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/raw_execution/e04d164f1744e003/replicate_3.json:ValueError:independent non-Replay Gate audit failed"
+  ],
+  "observed_job_count": 32,
+  "original_execution_binding_id": "finance_v26_verifier_bound_instrument_execution_binding:27250c6b577243a7c87f321c72877dd7ff3ccfaa0d5ea48a92d7a6db6eda2ae2",
+  "original_provider_artifact_count": 146,
+  "original_provider_exact_byte_pass_count": 146,
+  "provider_artifact_binding_pass_count": 269,
+  "provider_call_ids_unique": true,
+  "provider_telemetry_pre_host_augmentation_pass_count": 269,
+  "raw_execution_recovery_binding_pass_count": 32,
+  "recovery_execution_binding_id": "finance_v26_verifier_bound_recovery_execution_binding:04a9e19cbd132be2c6bf07f333e782a6f5499f84694eae349cbf7f34898a6ac6",
+  "schema_version": "finance_v26_verifier_bound_recovery_raw_lineage_audit.v1",
+  "status": "failed",
+  "zero_generation_replay_job_count": 17
+}

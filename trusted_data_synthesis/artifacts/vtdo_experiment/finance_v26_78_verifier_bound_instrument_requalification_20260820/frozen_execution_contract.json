@@ -1,0 +1,281 @@
+{
+  "action_neutral_repair_audit_per_rollout": true,
+  "contract_id": "finance_v26_verifier_bound_instrument_contract:3ecdc9bff3a2a846ede932c28763abbac1c67c345553eacfec69b2de0985afda",
+  "environment_manifest_ids": [
+    "agent_tool_environment:3e65743993601a9e8ba2e47259ead7131f6d409397cb860e5ab4eff583be372f",
+    "agent_tool_environment:42251be9ffab30377dc3e6537f651ceec20a4bc30e923de65659b5a7cb0e9328",
+    "agent_tool_environment:55f1e3686477ba59676bbcb2b280b96a5d25611e4702b8c9d921a436105b2f78",
+    "agent_tool_environment:787ed0516f74a591971b72320b304d2c2396379e58cd63c7f9b57b8038c2b133",
+    "agent_tool_environment:788a656803adb579d64a72a3d3154e26504679401a735cf7d8f6cd522c964356",
+    "agent_tool_environment:9fd380abb6cca260211258bc5379a82183ef072566c5bf3a3746c1dedc471c73",
+    "agent_tool_environment:b585cd84d8369eb7435af722c136564770639e22f2da54310e07c852804cde26",
+    "agent_tool_environment:dff651adc5afac5b9dd5e2036fb9b9cc769cf3d116e347007f5e1262b067c883"
+  ],
+  "expected_job_count": 32,
+  "fallback_models": [],
+  "historical_diagnostic_candidates_forbidden": true,
+  "implementation_source_files": [
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/executable_task.py",
+      "sha256": "9556791c47df831852976dc86319989bdc19eca87c8dcf5583e99ad19ac9c7be"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/public_operation.py",
+      "sha256": "de301066b6a44a03eff77d05461e67cbd26ae325be39836ef93a35237604881b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+      "sha256": "6722da53a86ea220e113309b1109c57bf7f35a7ecb222e9ebfa84266ee9839a3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_operation_hardening.py",
+      "sha256": "1522336dd34823a751ac0b19b79db34cff0a0c79ce9cc9fa65c6244c7638119d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+      "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_rematerialization.py",
+      "sha256": "e2a7705edba2d358e6da9c2c05c437b11994b9e438b508d213bcefb3cc998e23"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_preflight.py",
+      "sha256": "390bd5848674ae94d13a0d11b35ac8e12660ab3d476094bab9bad21bff1a658d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_task_rematerialization.py",
+      "sha256": "87173f21df6574f58982253957cae5c8dc534cfd54637a71f3f9ad1de3e6d329"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+      "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/tools.py",
+      "sha256": "aa0a1193c58a3d373d21e2760c81f3e65aac850dad61cdd81dc9084a7664023e"
+    }
+  ],
+  "invalid_model_outcomes_retained": true,
+  "maximum_total_estimated_cost_usd": 2.0,
+  "maximum_total_model_tokens_per_rollout": 120000,
+  "measurement_instrument_only": true,
+  "mechanism_task_counts": {
+    "context_conditioned_action": 2,
+    "failure_recovery": 2,
+    "semantic_reconciliation": 2,
+    "state_dependent_stopping": 2
+  },
+  "model_comparison_forbidden": true,
+  "model_config_hash": "finance_v26_verifier_bound_instrument_model_config:3f8ce817ea9664e0882dbca6e684178dcb50357d49c53bbd19b198279aa58974",
+  "model_id": "deepseek-v4-flash",
+  "model_invocation_config": {
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "auto_discover_models": true,
+    "contract_repair_attempts": 1,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "extra_headers": {},
+    "fallback_models": [],
+    "input_cache_hit_cost_per_million": 0.0028,
+    "input_cache_miss_cost_per_million": 0.14,
+    "input_cost_per_million": 0.0,
+    "interaction_protocol": "host_instrumented",
+    "max_output_tokens": 4096,
+    "maximum_model_attempts": 1,
+    "model": "deepseek-v4-flash",
+    "models_endpoint": "https://api.deepseek.com/models",
+    "output_cost_per_million": 0.28,
+    "preferred_model_patterns": [],
+    "pricing_checked_at": "2026-08-11",
+    "pricing_source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "provider": "deepseek",
+    "request_body_overrides": {
+      "thinking": {
+        "type": "disabled"
+      },
+      "top_p": 0.9
+    },
+    "require_requested_model": true,
+    "temperature": 0.6,
+    "timeout_seconds": 180.0
+  },
+  "non_replay_gates_independently_computed": true,
+  "provider_route": {
+    "endpoint_host": "api.deepseek.com",
+    "model": "deepseek-v4-flash",
+    "provider": "deepseek"
+  },
+  "provider_route_hash": "finance_v26_verifier_bound_instrument_provider_route:c4c13e71fc8f90de3c0ab0ea648a806ea104da46c2dc462fe5887b81139adff4",
+  "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+  "raw_first_provider_and_prompt_telemetry": true,
+  "replay_binding_contract_ids": [
+    "finance_v26_verifier_v2_task_replay_binding:038ec1c1048fe850ad53d511c8ad21481cf6dd8190259fde2c86ea24f120bb7b",
+    "finance_v26_verifier_v2_task_replay_binding:12c19ded6ff16419ed5e2f795e4f604bb64072438eb787269d25dba0f3b73bfb",
+    "finance_v26_verifier_v2_task_replay_binding:1488aeb08e78da442816b1beebbacc3e8da466b5ed03b459df2cb50fb4790e50",
+    "finance_v26_verifier_v2_task_replay_binding:2892cce7749c90b7d6fe9dd772720aec0ef26107217660573575eaf909ebcf81",
+    "finance_v26_verifier_v2_task_replay_binding:2ecec0356db5d68ef269f0080ce8d2a09ec7494615268359ec288352d33d2b83",
+    "finance_v26_verifier_v2_task_replay_binding:6dd771ad4293dc345465c59a3ae443328054e1bfb09ba4e9f093778e2d51c975",
+    "finance_v26_verifier_v2_task_replay_binding:f4e4108efbe9e305e320aa1a3499364553265b3bbea71979dc373a9ad83ae95b",
+    "finance_v26_verifier_v2_task_replay_binding:f9712f9cbb4a939263af78759218c4b649d36fa259f787b1ef1d0940ff91a6bf"
+  ],
+  "replicas_per_task": 4,
+  "require_requested_model": true,
+  "run_id": "finance_v26_77_verifier_bound_instrument_preflight_20260819",
+  "runtime_verifier_semantic_commutativity_required": true,
+  "schema_version": "finance_v26_verifier_bound_instrument_contract.v1",
+  "source_artifact_files": [
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_63_operation_closure_requalification_20260818/job_manifest.json",
+      "sha256": "9dee81ba8c2ad45ea4722c89be145cde7683246a255f62e2311f39b0f25a0611"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_66_authority_preserving_instrument_requalification_finalization_recovery_20260819/job_manifest.json",
+      "sha256": "f0dd2afe9a39bd002bfb4ca5abb4e48fb2b83acaf1d1a2955c825d9aa3672dd9"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_71_capability_development_20260819/job_manifest.json",
+      "sha256": "1d94d9762ba126dd15f438682588bb749dadd37e8b9231ce32ca8a138d5a562d"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_72_state_reachability_20260819/job_manifest.json",
+      "sha256": "d0ec21f2e27556f41d70ce50a8e1f169fff2c6d9f302dc2d7015068536d90497"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/replay_contract.json",
+      "sha256": "e2e7acfdc32d601a9dfe85e850ee80d1921211f43f2ebac07881aaa136e12076"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/report.json",
+      "sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/authority_preserving_task_audits.json",
+      "sha256": "eaf2771db4ff80928f74a717759ca0f440d4a8b0c2e878994129c2928f66ed8a"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/contract_lineage_audit.json",
+      "sha256": "77316a6433d3e16042c27d412b16bea2b85ceca598e18b18fa40087d1c12ff53"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/definition_pair_capacity_audit.json",
+      "sha256": "9929e3aa6954293210caf2d1c4e6923a6976fd2e9491abfefd1583ded20e4989"
+    },
+    {
+      "record_count": 16,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/mechanism_counterfactual_replays.json",
+      "sha256": "17e5c78482f0b352c03669eaafcac9e0c4edf1239ca659488fd53344f284ba22"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/mechanism_necessity_artifacts.json",
+      "sha256": "02b3179cc54c7c587b76bd7a233e3066ab1d18435ea9ca3534ce7c23ebc1848e"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operation_closure_audits.json",
+      "sha256": "b0d7524db11f1a318b78a70598759880aee84ed3ab48e808e5e33ba0ffdad46e"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operational_public_witnesses.json",
+      "sha256": "49b612ba7a7ff27f0cacfcfccb5282d4f41151a14467a42c6af9d5ac9add661e"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operational_task_admissions.json",
+      "sha256": "016d6edc85f811db4236dd489d6b7b4b05b61c9bbb5be681bb24d0a722cb4445"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operational_task_records.json",
+      "sha256": "6522d78d2b789ed67ee60acbef59119c91743f013e04798724e2700e0d1dded3"
+    },
+    {
+      "record_count": 81,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operational_witness_observations.json",
+      "sha256": "315ae7b5e5b18055f4d2dcaeba96373e579d498ff78836ec1305bde6c21fb664"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/reconciliation_selection_audit.json",
+      "sha256": "83d90e7411a844b6fffc730e8945ef1034096e5fc9675603c80432ef8392f82a"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/report.json",
+      "sha256": "066036f99cfd77b8e60cfe2ae73d1f74c4831db42de37879ff91d0da798baca7"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/source_freshness_audit.json",
+      "sha256": "f39b9e8e53b5e90b8b2b5d5aeae342928c726c3c371d12340b6d8785094bc34e"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/static_model_authority_path_catalogs.json",
+      "sha256": "fa795789b367497e279d5f54c2eafdff384fc584d2fc42384ce1aac270bbede3"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/tool_environment_manifests.json",
+      "sha256": "151b498dc318b2306a6d897e14c6bae4d21921a2994ba198c3b153336b40429b"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/verifier_v2_replay_bindings.json",
+      "sha256": "846f50daba699bcff62fc11cdd436dadb3b302b2878979bdeed0fd282a6e636e"
+    }
+  ],
+  "source_replay_audit_id": "finance_v26_verifier_bound_source_replay:29cc2f10042683d76ad60c12cc7ed6495894c1fea488ac046e9543dab611dfdb",
+  "stop_readiness_audit_per_rollout": true,
+  "task_package_ids": [
+    "operational_executable_task_package:5604fee1057360d11cc438718aff64452b12c23dc2cd4b635b16702128d5eb73",
+    "operational_executable_task_package:5fa74b47fcc41ec7ae1f56c69e58a8e24698163a7aa2acfeac6322583be4fe04",
+    "operational_executable_task_package:986af1ae8fd8000c740dbbbdb497fbd589e4090327000ec1018f1a6074a1a0ce",
+    "operational_executable_task_package:99fdaac60b7caa990ad36c387164b35a4d864981283859eded79a1d64edf7e84",
+    "operational_executable_task_package:b5f4df00d2d951acdeb01ea6d80735893f75bb2e19dd331d38a279573fccefcc",
+    "operational_executable_task_package:bcc8cfefdd06f36a96e086816bdeff5ab08b50ffec54a7debab76a8fe68a6893",
+    "operational_executable_task_package:c5b0337a2d4fde2e816cd753dd23dbceb928bfb9aef798597e4de5b981271549",
+    "operational_executable_task_package:fdae6c23f9417f4f744e7ab8fe2ef10c9b6e10bf4ff5dddd3fe715ee36ca04bc"
+  ],
+  "task_record_ids": [
+    "finance_v26_operational_task_record:099481db1ffee55a2cf34fa60282dd69d70213bf262d94a96f8dfbb46b01d3ca",
+    "finance_v26_operational_task_record:3007f8be4aefa2bbe939be53f61728c90d053f4b91c8dd865537b1cd30a9974f",
+    "finance_v26_operational_task_record:4b82fd59830c1789cfc44be0685f84db4229ca06001690f664870ace9c002682",
+    "finance_v26_operational_task_record:4b9c3a7de8357de8b282c3c66f0ec24ee9027aa9e5e2538a69a43f028a3b6930",
+    "finance_v26_operational_task_record:ca666edb2e9cb23cde244dc7e4506132482a09ba10daa685c0a7afade1da409f",
+    "finance_v26_operational_task_record:e5b815c6ddab26e0929a1563991618fd842a7a9c90297a6989b3db45f168856b",
+    "finance_v26_operational_task_record:e8a95439818b5f6ecbc8dfe205dd7a2db5939671d198cc5abb4924dd3ce8cd77",
+    "finance_v26_operational_task_record:f0715ef80397ee4ea3ac3faaa407fc9f4f2a4ee53b4e2136df06afe940a8fa2b"
+  ],
+  "task_source_report_id": "finance_v26_verifier_bound_instrument_population_report:4c810296a03f0491d60b20d6e74061a269e70eb35f8054cfa34eb34ea5547cb0",
+  "task_source_report_sha256": "066036f99cfd77b8e60cfe2ae73d1f74c4831db42de37879ff91d0da798baca7",
+  "terminal_target_audit_per_rollout": true,
+  "verifier_manifest": {
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "task_replay_binding_contract_ids": [
+      "finance_v26_verifier_v2_task_replay_binding:038ec1c1048fe850ad53d511c8ad21481cf6dd8190259fde2c86ea24f120bb7b",
+      "finance_v26_verifier_v2_task_replay_binding:12c19ded6ff16419ed5e2f795e4f604bb64072438eb787269d25dba0f3b73bfb",
+      "finance_v26_verifier_v2_task_replay_binding:1488aeb08e78da442816b1beebbacc3e8da466b5ed03b459df2cb50fb4790e50",
+      "finance_v26_verifier_v2_task_replay_binding:2892cce7749c90b7d6fe9dd772720aec0ef26107217660573575eaf909ebcf81",
+      "finance_v26_verifier_v2_task_replay_binding:2ecec0356db5d68ef269f0080ce8d2a09ec7494615268359ec288352d33d2b83",
+      "finance_v26_verifier_v2_task_replay_binding:6dd771ad4293dc345465c59a3ae443328054e1bfb09ba4e9f093778e2d51c975",
+      "finance_v26_verifier_v2_task_replay_binding:f4e4108efbe9e305e320aa1a3499364553265b3bbea71979dc373a9ad83ae95b",
+      "finance_v26_verifier_v2_task_replay_binding:f9712f9cbb4a939263af78759218c4b649d36fa259f787b1ef1d0940ff91a6bf"
+    ],
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  "verifier_manifest_hash": "finance_v26_verifier_bound_instrument_verifier_manifest:be4d90c9261e70f2484192839308e6007443992b511b4e632563a518b1734c78",
+  "verifier_qualification_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+  "verifier_qualification_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32"
+}
