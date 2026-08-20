@@ -1,0 +1,364 @@
+{
+  "audit_id": "finance_v26_budget_adequacy_group_audit:96b99a5dae319c37fcc5cf9a663288b6b913ce703e7ab200dcc03f5a513b93c6",
+  "job_count": 32,
+  "mechanism_count": 4,
+  "mechanism_summaries": [
+    {
+      "attempted_count": 8,
+      "denial_attribution_counts": {
+        "request_bound": 5,
+        "required_reserve": 2
+      },
+      "denial_reason_counts": {
+        "request_bound_exceeds_remaining_budget": 5,
+        "required_reserve_not_available": 2
+      },
+      "denied_request_kind_counts": {
+        "decision": 7
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 18,
+      "group_id": "context_conditioned_action",
+      "group_type": "mechanism",
+      "identical_call_repeat_count": 8,
+      "maximum_headroom_deficit": 9333,
+      "maximum_prompt_growth_bytes": 17836,
+      "median_headroom_deficit": 8346,
+      "median_prompt_growth_bytes": 17187,
+      "minimum_headroom_deficit": 8127,
+      "minimum_prompt_growth_bytes": 17023,
+      "model_invalid_count": 1,
+      "no_call_count": 7,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:84ce3d950739359061530d7e2434328b2689bcf98ac24cdd2e4cdb4bd756ed61",
+      "terminal_completed_unverified_no_call_count": 1,
+      "zero_progress_no_call_count": 5
+    },
+    {
+      "attempted_count": 8,
+      "denial_attribution_counts": {
+        "required_reserve": 1
+      },
+      "denial_reason_counts": {
+        "required_reserve_not_available": 1
+      },
+      "denied_request_kind_counts": {
+        "decision": 1
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 20,
+      "group_id": "failure_recovery",
+      "group_type": "mechanism",
+      "identical_call_repeat_count": 12,
+      "maximum_headroom_deficit": 6775,
+      "maximum_prompt_growth_bytes": 18474,
+      "median_headroom_deficit": 6775,
+      "median_prompt_growth_bytes": 18474,
+      "minimum_headroom_deficit": 6775,
+      "minimum_prompt_growth_bytes": 18474,
+      "model_invalid_count": 7,
+      "no_call_count": 1,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:faf4ba6add8d3c016769acd3502f3d057a6bc692bde840c6c53348bd3139c5a2",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 1
+    },
+    {
+      "attempted_count": 8,
+      "denial_attribution_counts": {
+        "request_bound": 3,
+        "required_reserve": 5
+      },
+      "denial_reason_counts": {
+        "request_bound_exceeds_remaining_budget": 3,
+        "required_reserve_not_available": 5
+      },
+      "denied_request_kind_counts": {
+        "decision": 8
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 25,
+      "group_id": "semantic_reconciliation",
+      "group_type": "mechanism",
+      "identical_call_repeat_count": 16,
+      "maximum_headroom_deficit": 9082,
+      "maximum_prompt_growth_bytes": 20490,
+      "median_headroom_deficit": 7722,
+      "median_prompt_growth_bytes": 19704,
+      "minimum_headroom_deficit": 7279,
+      "minimum_prompt_growth_bytes": 19300,
+      "model_invalid_count": 0,
+      "no_call_count": 8,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:4e5a647d9d20c202ea3e947149f9255666200f67bd2df05ecc504594ac6b3ed0",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 7
+    },
+    {
+      "attempted_count": 8,
+      "denial_attribution_counts": {
+        "required_reserve": 8
+      },
+      "denial_reason_counts": {
+        "required_reserve_not_available": 8
+      },
+      "denied_request_kind_counts": {
+        "decision": 8
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 13,
+      "group_id": "state_dependent_stopping",
+      "group_type": "mechanism",
+      "identical_call_repeat_count": 18,
+      "maximum_headroom_deficit": 4820,
+      "maximum_prompt_growth_bytes": 18581,
+      "median_headroom_deficit": 3384,
+      "median_prompt_growth_bytes": 17683,
+      "minimum_headroom_deficit": 1755,
+      "minimum_prompt_growth_bytes": 16716,
+      "model_invalid_count": 0,
+      "no_call_count": 8,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:b78cb07c3db98b96a07a9b9797210d4a2c12486d9abaf1549dd43e072422a93f",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 8
+    }
+  ],
+  "schema_version": "finance_v26_budget_adequacy_group_audit.v1",
+  "status": "passed",
+  "task_count": 8,
+  "task_summaries": [
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "request_bound": 2,
+        "required_reserve": 2
+      },
+      "denial_reason_counts": {
+        "request_bound_exceeds_remaining_budget": 2,
+        "required_reserve_not_available": 2
+      },
+      "denied_request_kind_counts": {
+        "decision": 4
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 12,
+      "group_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f",
+      "group_type": "task",
+      "identical_call_repeat_count": 6,
+      "maximum_headroom_deficit": 8459,
+      "maximum_prompt_growth_bytes": 17187,
+      "median_headroom_deficit": 8136,
+      "median_prompt_growth_bytes": 17056,
+      "minimum_headroom_deficit": 8127,
+      "minimum_prompt_growth_bytes": 17023,
+      "model_invalid_count": 0,
+      "no_call_count": 4,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:766a84a109cff6f5f02f2b753426175f2d3be52b867a113c94bb7a1bd3c0afbf",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 4
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "request_bound": 3
+      },
+      "denial_reason_counts": {
+        "request_bound_exceeds_remaining_budget": 3
+      },
+      "denied_request_kind_counts": {
+        "decision": 3
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 6,
+      "group_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7",
+      "group_type": "task",
+      "identical_call_repeat_count": 2,
+      "maximum_headroom_deficit": 9333,
+      "maximum_prompt_growth_bytes": 17836,
+      "median_headroom_deficit": 9218,
+      "median_prompt_growth_bytes": 17807,
+      "minimum_headroom_deficit": 8346,
+      "minimum_prompt_growth_bytes": 17608,
+      "model_invalid_count": 1,
+      "no_call_count": 3,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:d06419543849629cdf64e1fac9d7f1e79802c0cb292d097495dbcd27ff20f77e",
+      "terminal_completed_unverified_no_call_count": 1,
+      "zero_progress_no_call_count": 1
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "request_bound": 1,
+        "required_reserve": 3
+      },
+      "denial_reason_counts": {
+        "request_bound_exceeds_remaining_budget": 1,
+        "required_reserve_not_available": 3
+      },
+      "denied_request_kind_counts": {
+        "decision": 4
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 13,
+      "group_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73",
+      "group_type": "task",
+      "identical_call_repeat_count": 9,
+      "maximum_headroom_deficit": 9082,
+      "maximum_prompt_growth_bytes": 20490,
+      "median_headroom_deficit": 7503,
+      "median_prompt_growth_bytes": 19413,
+      "minimum_headroom_deficit": 7279,
+      "minimum_prompt_growth_bytes": 19300,
+      "model_invalid_count": 0,
+      "no_call_count": 4,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:fea84617f5a791e81ba9a9c8b32e9533efce4d076f226761bbb3fb083400cf9c",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 4
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "required_reserve": 4
+      },
+      "denial_reason_counts": {
+        "required_reserve_not_available": 4
+      },
+      "denied_request_kind_counts": {
+        "decision": 4
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 6,
+      "group_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1",
+      "group_type": "task",
+      "identical_call_repeat_count": 8,
+      "maximum_headroom_deficit": 3720,
+      "maximum_prompt_growth_bytes": 18059,
+      "median_headroom_deficit": 3384,
+      "median_prompt_growth_bytes": 17683,
+      "minimum_headroom_deficit": 2849,
+      "minimum_prompt_growth_bytes": 17421,
+      "model_invalid_count": 0,
+      "no_call_count": 4,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:28a79e4893871d7aa614d6a7428194a43ed51f7bdb4fa1bd447e23579083f9b0",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 4
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "required_reserve": 4
+      },
+      "denial_reason_counts": {
+        "required_reserve_not_available": 4
+      },
+      "denied_request_kind_counts": {
+        "decision": 4
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 7,
+      "group_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b",
+      "group_type": "task",
+      "identical_call_repeat_count": 10,
+      "maximum_headroom_deficit": 4820,
+      "maximum_prompt_growth_bytes": 18581,
+      "median_headroom_deficit": 1797,
+      "median_prompt_growth_bytes": 16779,
+      "minimum_headroom_deficit": 1755,
+      "minimum_prompt_growth_bytes": 16716,
+      "model_invalid_count": 0,
+      "no_call_count": 4,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:12eb64d589a83d043a41d55ab458a208696faaca05218e49d13433ef28e56a4a",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 4
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "request_bound": 2,
+        "required_reserve": 2
+      },
+      "denial_reason_counts": {
+        "request_bound_exceeds_remaining_budget": 2,
+        "required_reserve_not_available": 2
+      },
+      "denied_request_kind_counts": {
+        "decision": 4
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 12,
+      "group_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153",
+      "group_type": "task",
+      "identical_call_repeat_count": 7,
+      "maximum_headroom_deficit": 8486,
+      "maximum_prompt_growth_bytes": 20204,
+      "median_headroom_deficit": 7847,
+      "median_prompt_growth_bytes": 19841,
+      "minimum_headroom_deficit": 7293,
+      "minimum_prompt_growth_bytes": 19407,
+      "model_invalid_count": 0,
+      "no_call_count": 4,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:ead69ca8029ad8a15d5da7dc4375b87ce24038cc2cacc145ff0c5373b61f935e",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 3
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {},
+      "denial_reason_counts": {},
+      "denied_request_kind_counts": {},
+      "descriptive_only": true,
+      "failed_observation_count": 10,
+      "group_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3",
+      "group_type": "task",
+      "identical_call_repeat_count": 6,
+      "maximum_headroom_deficit": null,
+      "maximum_prompt_growth_bytes": null,
+      "median_headroom_deficit": null,
+      "median_prompt_growth_bytes": null,
+      "minimum_headroom_deficit": null,
+      "minimum_prompt_growth_bytes": null,
+      "model_invalid_count": 4,
+      "no_call_count": 0,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:90dce3a5eecec904f10f7cbf4c1156af3c57394fc48e3a2c458da0a3280d1c2f",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 0
+    },
+    {
+      "attempted_count": 4,
+      "denial_attribution_counts": {
+        "required_reserve": 1
+      },
+      "denial_reason_counts": {
+        "required_reserve_not_available": 1
+      },
+      "denied_request_kind_counts": {
+        "decision": 1
+      },
+      "descriptive_only": true,
+      "failed_observation_count": 10,
+      "group_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73",
+      "group_type": "task",
+      "identical_call_repeat_count": 6,
+      "maximum_headroom_deficit": 6775,
+      "maximum_prompt_growth_bytes": 18474,
+      "median_headroom_deficit": 6775,
+      "median_prompt_growth_bytes": 18474,
+      "minimum_headroom_deficit": 6775,
+      "minimum_prompt_growth_bytes": 18474,
+      "model_invalid_count": 3,
+      "no_call_count": 1,
+      "schema_version": "finance_v26_budget_adequacy_group_summary.v1",
+      "summary_id": "finance_v26_budget_adequacy_group_summary:841703f448deec5f62db93ca6fa2c2bd1c95328072e6cc787ae17fdf1a6e3ebe",
+      "terminal_completed_unverified_no_call_count": 0,
+      "zero_progress_no_call_count": 1
+    }
+  ]
+}

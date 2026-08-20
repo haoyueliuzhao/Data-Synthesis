@@ -15,6 +15,81 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.88-v26.89 Budget Adequacy Audit And Static Role Preflight Decision
+
+Finance v26.88 completed the credential-free root-cause audit authorized after the passing v26.87
+Instrument audit. It replayed 545 source and experiment files and independently reconstructed all
+32 v26.86 budget histories without a model client, API call, GPU job, historical rescore, or task
+selection.
+
+All 24 typed no-call terminals occurred at a decision request. Sixteen were caused by required
+repair/final reserves not being available and eight by the next request upper bound exceeding the
+remaining rollout budget; zero were caused by the 60,000-byte Prompt ceiling. Provider Usage
+before denial ranged from 72,689 to 79,489 tokens, denied Prompts from 35,859 to 39,494 bytes, and
+certified deficits from 1,755 to 9,333 tokens.
+
+Twenty-one no-call rows had completed zero registered Program nodes, three had positive but
+incomplete progress, one had completed the terminal node without verification, and none was a
+final-answer-only candidate. The rows contain 57 failed Observations, 43 repeated call signatures,
+and 25 repeated failed-call signatures. These are descriptive associations, not a causal
+attribution to Prompt growth or repeated failures.
+
+The diagnostic common ceiling of 129,333 would fit only the observed next denied calls. It does
+not imply trajectory completion and does not authorize a budget change. v26.88 retains budget
+compliance but rejects budget adequacy. Its authoritative report is
+finance_v26_budget_adequacy_root_cause_report:bfc54e2c179a475e6f7e6996d844cf4df2e162094668e51e701dd4ce8385ae3f.
+
+Finance v26.89 then froze a prospective Budget Adequacy Contract while retaining the 120,000-token
+rollout ceiling, 60,000-byte Prompt ceiling, 4,096-token completion upper bound, 256-token chat
+envelope, and both 4,096-token reserves. Every future Capability task requires one Budgeted Public
+Witness; every Reachability task requires three budget-qualified public paths under the same
+Contract. Resource terminals remain in their role denominator and remain excluded from validity,
+State Mapping, and release.
+
+The prospective independent calibration requires at least 32 Jobs and a one-sided 95%
+Clopper-Pearson no-call upper bound at or below 0.10. The threshold was selected as an operational
+design requirement without using v26.86 outcomes. No calibration was executed.
+
+v26.89 also exercised the previously unobserved completed Runner path with eight fresh-identity
+local controls driven by the exposed v26.82 Compiler Witnesses. Raw Execution persistence,
+Verifier v2 Replay, independently reconstructed non-Replay Gates, shared completed scoring,
+schema-closed sidecars, and report aggregation passed 8/8. The controls made 96 deterministic
+local fixture calls, zero API calls, and contribute zero empirical rows.
+
+The separate static full-path audit sums every certified request upper bound plus the current
+required reserve. All 8/8 individual Prompts pass the 60,000-byte ceiling, but 0/8 complete paths
+fit 120,000 tokens. Conservative path upper bounds range from 366,569 to 575,686. These are static
+qualification diagnostics, not expected Usage estimates or permission to raise the ceiling.
+
+No fresh Capability or Reachability task exists, the exposed Instrument fixture catalogs contain
+zero Reachability paths, and no role Contract or Manifest was materialized. Formal and independent
+v26.89 builds reproduced all fourteen output files byte for byte after replaying
+551 source and experiment files. Both used zero API calls and zero GPU jobs.
+
+The authoritative v26.89 identities are:
+
+- Contract:
+  finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe;
+- Runner control audit:
+  finance_v26_budget_adequacy_runner_control_audit:3275551e0df1085131e107fc17a240a8699e8b10ee9d0e339a8adcc8a56e034d;
+- static Witness audit:
+  finance_v26_budgeted_public_witness_audit:a202dbd97e1959d4bdf671d81188233934c090aa5aa8501a057e7adc7b797ccb;
+- role preflight:
+  finance_v26_budget_adequacy_role_protocol_preflight:c10c62c9d0c9af295503ce4514d7bf17ba29a54b07839d31ecb38f3c6fbd2ca3;
+- report:
+  finance_v26_budget_adequacy_contract_preflight_report:805432345e0fb8db286daaa80bbbf49b509857eb89861af88086db20ccc8c71f.
+
+The only permitted transition is:
+
+~~~text
+fresh_budget_feasible_role_task_rematerialization_only
+~~~
+
+Capability Development execution, State Reachability execution, Fresh Confirmation, No-C VTDO,
+Student training, Exact Target, GP-C, and production Contribution remain forbidden. Production
+Contribution remains zero. See
+docs/finance_v26_88_v26_89_budget_adequacy_audit_and_contract_preflight.md.
+
 ## v26.84-v26.87 Budget-Closed Instrument Execution, Recovery, And Audit Decision
 
 Finance v26.84 attempted exactly the frozen v26.83 32-Job Manifest. It exposed 20 Jobs and left
@@ -1125,8 +1200,17 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 381 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1021 passed, 4 expected v26.78/v26.84 success-state tests skipped in 769.25 seconds; one existing destructive-test warning |
+| Mypy | 383 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1034 passed, 4 expected v26.78/v26.84 success-state tests skipped in 790.15 seconds; one existing destructive-test warning |
+| v26.88-v26.89 Budget Adequacy focused regression | 13 passed in 21.00 seconds |
+| v26.89 dual build | all fourteen output files are byte-identical; zero API/GPU |
+| v26.89 source replay | 551/551 source and experiment files replayed |
+| v26.89 complete Runner controls | 8/8 Raw, Replay, non-Replay, shared-score, sidecar, and aggregation passes; zero empirical rows |
+| v26.89 static Budgeted Public Witness audit | 8/8 Prompt ceilings; 0/8 full-path 120k qualifications; path bounds 366,569 to 575,686 |
+| v26.89 role preflight | 0 fresh role tasks; zero Contracts/Manifests; Capability and Reachability execution forbidden |
+| v26.88 dual build | all five output files are byte-identical; zero API/GPU |
+| v26.88 source replay | 545/545 source and experiment files replayed |
+| v26.88 denial audit | 24 decision no-calls: 16 reserve-bound and 8 request-bound; 21 zero-progress rows |
 | v26.82-v26.87 budget-closed full focused regression | 26 passed, 2 expected v26.84 success-state tests skipped in 104.54 seconds |
 | v26.87 independent post-run audit focus | 4 passed in 23.03 seconds |
 | v26.87 dual build | all six output files are byte-identical; zero API/GPU |
@@ -1443,7 +1527,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_capability_and_reachability_protocol_design_only
+fresh_budget_feasible_role_task_rematerialization_only
 ```
 
 Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. All v26.76 and v26.82
@@ -1451,29 +1535,47 @@ TaskPackages and their 32-Job Manifests are empirically exposed. The six v26.81 
 candidates, all v26.82 Compiler Witnesses, and all v26.86 descriptive local successes remain
 ineligible for task selection, Capability support, State Mapping, or release counts.
 
-The next stage may only design fresh, role-separated Capability and Reachability protocols and
-their credential-free preflights. It must use fresh TaskPackage, Contract, Manifest, Job,
-execution, trajectory, and report identities and preserve zero overlap against all exposed source
-tasks, semantic signatures, source hashes, Evidence, Evidence Versions, source records, Semantic
-Sources, TaskPackages, and Jobs. Historical model outcomes may not influence task selection.
+The next stage may only rematerialize fresh, role-separated Capability and Reachability task
+Populations and their credential-free static audits. It must use fresh TaskPackage and static
+artifact identities and preserve zero overlap against all exposed source tasks, semantic
+signatures, source hashes, Evidence, Evidence Versions, source records, Semantic Sources,
+TaskPackages, and Jobs. Historical model outcomes may not influence task selection. No empirical
+Contract or Job Manifest may be materialized in this stage.
 
-The protocol must retain raw-first Provider capture, exact-model and zero-fallback binding,
-Verifier v2 Replay, independently reconstructed non-Replay Gates, the schema-closed completed
-scorer, separated failure namespaces, and certified pre-call budget closure. The observed 24/32
-typed no-call rate is a prospective design constraint, not permission to relabel a no-call as a
-valid trajectory, relax the 120,000-token ceiling, remove required reserves, or discard resource
-terminals from a denominator.
+Every fresh Capability task requires one complete Budgeted Public Witness. Every fresh
+Reachability task requires three model-authority paths that independently pass the same static
+Budget Adequacy Contract. The full-path accounting must sum certified request upper bounds plus
+the current required reserve. Individual Prompt fit is insufficient. The 120,000-token rollout
+ceiling, 60,000-byte Prompt ceiling, 4,096-token completion bound, and both 4,096-token reserves
+remain unchanged.
 
-Capability and Reachability must retain separate denominators and admission rules. Only
-independently valid model-generated trajectories may enter State Mapping. Compiler Witnesses
-contribute zero empirical rows. A protocol-design result may freeze later execution contracts but
-may not itself execute either role.
+Task and Prompt representation, observation projection, Program dependency shape, and certified
+token-bound methodology may be redesigned prospectively. The 129,333 next-call diagnostic and the
+366,569 to 575,686 fixture-path bounds do not authorize a budget increase. The exposed v26.82
+controls contribute zero empirical rows and remain ineligible for selection.
+
+After fresh tasks pass all static gates, a later stage must freeze and run a disjoint budget
+calibration of at least 32 Jobs. Its one-sided 95% Clopper-Pearson no-call upper bound must be at
+most 0.10. This calibration is not authorized by the current transition. Capability and
+Reachability must retain separate denominators and admission rules, and only independently valid
+model-generated trajectories may enter State Mapping.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_88_v26_89_budget_adequacy_audit_and_contract_preflight.md`
+- `artifacts/vtdo_experiment/finance_v26_88_budget_adequacy_root_cause_audit_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_88_budget_adequacy_root_cause_audit_20260820/job_budget_diagnostics.json`
+- `artifacts/vtdo_experiment/finance_v26_88_budget_adequacy_root_cause_audit_20260820/group_budget_summary.json`
+- `artifacts/vtdo_experiment/finance_v26_88_budget_adequacy_root_cause_audit_20260820/budget_adequacy_decision.json`
+- `artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/budget_adequacy_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_completion_control_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/budgeted_public_witness_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/role_protocol_preflight.json`
 
 - `docs/finance_v26_84_v26_87_budget_closed_instrument_recovery_and_audit.md`
 - `artifacts/vtdo_experiment/finance_v26_84_budget_closed_verifier_bound_instrument_requalification_20260820/execution_binding.json`

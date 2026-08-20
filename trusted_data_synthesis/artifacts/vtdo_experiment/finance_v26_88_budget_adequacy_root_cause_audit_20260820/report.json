@@ -1,0 +1,38 @@
+{
+  "decision_id": "finance_v26_budget_adequacy_decision:ad12e014992c31e995e981af1de3cfabf0425595491f5b31ad0e29a9465927a6",
+  "gpu_jobs": 0,
+  "group_audit_id": "finance_v26_budget_adequacy_group_audit:96b99a5dae319c37fcc5cf9a663288b6b913ce703e7ab200dcc03f5a513b93c6",
+  "immutable_detail_files": [
+    {
+      "byte_count": 1928,
+      "relative_path": "budget_adequacy_decision.json",
+      "sha256": "b4e8e01ae890e8a2f45219872aaf98fc21b89a2ec8ec844b36a34f83371eaba2"
+    },
+    {
+      "byte_count": 13964,
+      "relative_path": "group_budget_summary.json",
+      "sha256": "a7d09e61ae5a1916ef614c721268b67f5d3cb6e131287dd479f348a061a62f1f"
+    },
+    {
+      "byte_count": 119242,
+      "relative_path": "job_budget_diagnostics.json",
+      "sha256": "5cfe8edb67722c7528badcacd3bd7c80670651c2f58455329372447090433879"
+    },
+    {
+      "byte_count": 257788,
+      "relative_path": "source_replay_audit.json",
+      "sha256": "98042b47d2906a9623b63c7e0134f24a59792d335ee63a8077c61d69ce0d818f"
+    }
+  ],
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "next_permitted_stage": "fresh_budget_adequacy_contract_and_static_role_preflight_only",
+  "postrun_audit_report_id": "finance_v26_budget_closed_postrun_audit:a7318da72819ce66bdc93ab5117faec5f9f59b32aebd33f5324f2198bd705939",
+  "production_contribution": 0,
+  "recovery_report_id": "finance_v26_budget_recovery_report:4afbad8525b598269630912e79048490dbe4e3235d8789aad0f10b922798c4ea",
+  "report_id": "finance_v26_budget_adequacy_root_cause_report:bfc54e2c179a475e6f7e6996d844cf4df2e162094668e51e701dd4ce8385ae3f",
+  "root_cause_audit_id": "finance_v26_budget_adequacy_root_cause:7b925454b3335cec4f0a7c4fe5baf4a78bdb8004b9714ecbc0d068637c7bbd5e",
+  "schema_version": "finance_v26_budget_adequacy_root_cause_report.v1",
+  "source_replay_audit_id": "finance_v26_budget_adequacy_source_replay:07249627d9ee2d16462a67267a4a20c7c29ec57c573427595b043837d2cc7cd9",
+  "status": "passed"
+}

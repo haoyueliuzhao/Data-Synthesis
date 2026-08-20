@@ -1,0 +1,95 @@
+{
+  "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+  "budgeted_public_witness_audit_id": "finance_v26_budgeted_public_witness_audit:a202dbd97e1959d4bdf671d81188233934c090aa5aa8501a057e7adc7b797ccb",
+  "capability_execution_authorized": false,
+  "exact_target_authorized": false,
+  "fresh_confirmation_authorized": false,
+  "gp_c_authorized": false,
+  "gpu_jobs": 0,
+  "immutable_detail_files": [
+    {
+      "byte_count": 2728,
+      "relative_path": "budget_adequacy_contract.json",
+      "sha256": "26c67b235bf2ecca2c9381cbcb9ba4e2577a533678b2795ad0313e09af41c277"
+    },
+    {
+      "byte_count": 17594,
+      "relative_path": "budgeted_public_witness_audit.json",
+      "sha256": "e9853abf74284aef021b56ee37683c3a959e7119f9e9662089164764328b5e4e"
+    },
+    {
+      "byte_count": 2176,
+      "relative_path": "role_protocol_preflight.json",
+      "sha256": "1837d3434a533deb5999074fb3b5740484a8e36ec25535f57ca83b3a4ee3582a"
+    },
+    {
+      "byte_count": 88156,
+      "relative_path": "runner_completion_control_audit.json",
+      "sha256": "2c82433847c97d1aeecad513995415bf7e5f07ef8dacfb37c4e7ef9251c6044c"
+    },
+    {
+      "byte_count": 260246,
+      "relative_path": "source_replay_audit.json",
+      "sha256": "01808cf847132a4a086227ffb90d4e8753bd1ea9001609c2b67315c4d5143ccd"
+    }
+  ],
+  "immutable_raw_control_files": [
+    {
+      "byte_count": 1268433,
+      "relative_path": "runner_control_raw/00_71534a63aaeb4bac.json",
+      "sha256": "a1ac1568e75db02ce4998ea7fb20db493c5ade7565c0f42c9df230b4d5e063dd"
+    },
+    {
+      "byte_count": 1253583,
+      "relative_path": "runner_control_raw/01_e5f1baf5b9ae591f.json",
+      "sha256": "3c36cef42ed8cb5417898ab63a17146ed9921af38eb08f0cedb8ef8693e4dc0e"
+    },
+    {
+      "byte_count": 797305,
+      "relative_path": "runner_control_raw/02_95532f246cc5bbf2.json",
+      "sha256": "7ef2353571491fed0bc37523d8a29536e9b8c2964c7fa5b04a9a82e46b6ed860"
+    },
+    {
+      "byte_count": 1086376,
+      "relative_path": "runner_control_raw/03_0a03887a16e7956a.json",
+      "sha256": "9092f878e3a6524c8184c8f7b34e5c59ca00b7fc0373ba97e35b5e7fe3645284"
+    },
+    {
+      "byte_count": 1093050,
+      "relative_path": "runner_control_raw/04_35fbb0b02981eb1d.json",
+      "sha256": "f1b39ba8ec43c04d504b57afc5c2eb3c4f0647f77d19667f1dee007aef9671b4"
+    },
+    {
+      "byte_count": 797297,
+      "relative_path": "runner_control_raw/05_e5b4fe8dadcbb7dd.json",
+      "sha256": "12a801cf6309508f7b048fb61a6f22579ee80b0afc82ad6c4d8600fabdbdbb5e"
+    },
+    {
+      "byte_count": 1212983,
+      "relative_path": "runner_control_raw/06_51d087bc539a8db0.json",
+      "sha256": "850af5b12b0357228c036581a868ef279c561d13520dc5b8de1564052e570e6a"
+    },
+    {
+      "byte_count": 1199724,
+      "relative_path": "runner_control_raw/07_03c3897df6f71b5b.json",
+      "sha256": "5fc70fea1a12231b88be08484dd959b897a5d9d81d64a59676f8b21984c4557f"
+    }
+  ],
+  "inherited_120k_budget_adequacy_established": false,
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "next_permitted_stage": "fresh_budget_feasible_role_task_rematerialization_only",
+  "no_c_vtdo_authorized": false,
+  "production_contribution": 0,
+  "reachability_execution_authorized": false,
+  "report_id": "finance_v26_budget_adequacy_contract_preflight_report:805432345e0fb8db286daaa80bbbf49b509857eb89861af88086db20ccc8c71f",
+  "role_protocol_preflight_id": "finance_v26_budget_adequacy_role_protocol_preflight:c10c62c9d0c9af295503ce4514d7bf17ba29a54b07839d31ecb38f3c6fbd2ca3",
+  "role_protocol_preflight_passed": false,
+  "run_id": "finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820",
+  "runner_control_audit_id": "finance_v26_budget_adequacy_runner_control_audit:3275551e0df1085131e107fc17a240a8699e8b10ee9d0e339a8adcc8a56e034d",
+  "runner_control_passed": true,
+  "schema_version": "finance_v26_budget_adequacy_contract_preflight_report.v1",
+  "source_replay_audit_id": "finance_v26_budget_adequacy_contract_source_replay:5cfae986d3c7690c30fa3b205d9061d99eacb2ee784bc1aa94e8275108c93298",
+  "status": "passed",
+  "student_training_authorized": false
+}
