@@ -15,6 +15,81 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.82-v26.83 Budget-Closed Rematerialization And Preflight Decision
+
+Finance v26.82-v26.83 completed the only zero-API transition authorized by v26.81. The successor
+uses fresh TaskPackage, Contract, Manifest, Job, trajectory, and report identities. No Job from
+v26.78-v26.80 was rerun or reclassified, and none of the six v26.81 prospective-valid candidates
+entered selection, Capability support, State Mapping, or release counts.
+
+The prospective completed-trajectory scorer now binds the current twelve-field `TrajectoryStep`
+schema and uses `observation`, not the nonexistent `observation_id`. Core terminal classification
+is frozen after Verifier v2 Replay and independent non-Replay scoring but before the descriptive
+trace sidecar. Raw lineage, Provider capture, Runtime Replay, core scoring, diagnostic sidecar,
+resource, and report-aggregation failures have separate content-addressed namespaces.
+
+The Provider budget wrapper now certifies every token-bearing call before invoking the underlying
+client. It freezes a conservative Prompt bound of UTF-8 bytes plus a 256-token chat envelope, a
+4,096-token completion bound, 4,096-token Contract-repair and final-answer reserves, a 60,000-byte
+Prompt ceiling, and the existing 120,000-token rollout ceiling. If the request plus required
+reserves cannot fit, the Runtime emits a typed `budget_exhausted_no_call` model-invalid terminal
+without a Provider call; the Job remains in the denominator.
+
+v26.82 materialized eight fully fresh Instrument TaskPackages, two for each of Context-conditioned
+Action, Semantic Reconciliation, Failure Recovery, and State-dependent Stopping. Selection used
+four frozen source Populations and no historical model outcome. Freshness overlap is zero on
+source task, semantic signature, source hash, Evidence, Evidence Version, source record, Semantic
+Source, and TaskPackage identity. After all exclusions, Reconciliation retained 124,284 eligible
+Evidence items, four Definition pairs, and exactly two-task capacity.
+
+All 8/8 Compiler Runtime Witnesses, Verifier v2 Replays, shared completed scores, schema-closed
+trace sidecars, Operation Closure audits, Mechanism Necessity artifacts, and operational
+admissions passed. The build produced 80 Compiler Observations, rejected all 64 legacy Operation
+and 40 authority/terminal mutations, and contributed zero empirical rows. The authoritative
+v26.82 report is
+`finance_v26_budget_closed_verifier_bound_instrument_population_report:9f60f8d7c7522a1fd934bb5a7cdfefb2c91becc73f7e68b2f815dea352ad6484`.
+
+v26.83 froze a balanced 32-Job Instrument-only design. Before any client construction it replayed
+67 source files, independently reproduced 8/8 Compiler trajectories and completed scores, passed
+public/private isolation, and found zero overlap against 584 historical Job or Recovery-Job
+identities from six Manifests.
+
+All 24 destructive Replay mutations failed closed. The budget audit allowed the exact-boundary
+positive control, rejected one-token-over, oversized-Prompt, missing-final-reserve, and
+missing-repair-reserve cases before Provider invocation, and failed changed or missing successful
+Usage after exactly one fixture response. The legacy `observation_id`, Trajectory schema, and
+failure-namespace mutations were also rejected without reclassifying the frozen core terminal.
+Formal and independent v26.82 builds reproduced all nineteen files byte for byte; formal and
+independent v26.83 builds reproduced all ten files byte for byte. Both stages made zero API calls
+and zero GPU jobs.
+
+The initial zero-API v1 builds remain immutable and are superseded. Package-wide Mypy found eight
+Optional-narrowing diagnostics in the budget Usage implementation after the focused source check
+had passed. The v2 successor caches the same telemetry fields in local variables and applies the
+identical checks. All eighteen v26.82 scientific detail files are byte-identical across v1/v2;
+six v26.83 scientific audits are byte-identical, while source replay, Contract, Manifest, and
+report identities bind the type-complete source. No task, Witness, mutation, or scientific count
+changed.
+
+The authoritative v26.83 report is
+`finance_v26_budget_closed_instrument_preflight:6c279f69cb080458952dfb000633f17c4f901aa8098dfac0cb423656ad9684a7`.
+Its Contract is
+`finance_v26_budget_closed_instrument_contract:12c9789ccbe3d557411cf5428a15ee0e3d26337b846f47b61b830c86e1415121`,
+and its Job Manifest is
+`finance_v26_budget_closed_instrument_manifest:38f4a8f5b40c2c576c690c3069c66bc1f43a64f52ef554a16ea28a4656c2434c`.
+
+The current transition is:
+
+```text
+fresh_budget_closed_verifier_bound_instrument_requalification_only
+```
+
+This is a positive static Instrument precondition, not an online Instrument result or a
+Capability/Reachability result. Capability Development, State Reachability, Fresh Confirmation,
+No-C VTDO, Student training, Exact Target, GP-C, and production Contribution remain forbidden.
+Production Contribution remains zero. See
+`docs/finance_v26_82_v26_83_budget_closed_rematerialization_and_preflight.md`.
+
 ## v26.78-v26.81 Verifier-Bound Instrument Execution And Failure Decision
 
 Finance v26.78 attempted the exact v26.77 32-job Instrument Manifest. Raw Provider payloads were
@@ -993,8 +1068,17 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 374 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 995 passed, 2 expected v26.78 success-state tests skipped in 686.63 seconds; one existing destructive-test warning |
+| Mypy | 378 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1006 passed, 2 expected v26.78 success-state tests skipped in 702.52 seconds; one existing destructive-test warning |
+| v26.82-v26.83 budget-closed focused regression | 11 passed in 31.81 seconds |
+| v26.82 v2 fresh Population dual build | all nineteen output files are byte-identical; zero API/GPU |
+| v26.82 v1-v2 scientific details | all eighteen detail files are byte-identical; v2 source-bound report is authoritative |
+| v26.82 freshness and capacity | zero overlap on eight channels; 8 fresh TaskPackages; exact 2-task Reconciliation capacity |
+| v26.82 Compiler shared scoring | 8/8 Replay and completed-score passes; 80 Observations; zero empirical rows |
+| v26.83 v2 Instrument preflight dual build | all ten output files are byte-identical; zero API/GPU |
+| v26.83 v1-v2 scientific audits | six audit files are byte-identical; v2 source/Contract/Manifest/report are authoritative |
+| v26.83 source and Job isolation | 67/67 files replayed; zero overlap against 584 historical Job identities |
+| v26.83 destructive mutations | 24/24 Replay, 7/7 budget, and 3/3 scoring/namespace cases passed |
 | v26.76-v26.81 verifier-bound focused regression | 31 passed, 2 expected v26.78 success-state tests skipped in 72.58 seconds |
 | v26.79-v26.81 recovery/audit focus | 13 passed in 21.28 seconds |
 | v26.78 failed execution | 17 exposed and 15 unopened Jobs; 146 Provider calls; zero Raw Execution or Rollout rows |
@@ -1290,7 +1374,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_budget_closed_verifier_bound_task_rematerialization_and_instrument_preflight_only
+fresh_budget_closed_verifier_bound_instrument_requalification_only
 ```
 
 Do not rerun or reclassify any v26.78-v26.80 Job. All eight v26.76 TaskPackages and all 32
@@ -1298,29 +1382,41 @@ Manifest Jobs are empirically exposed. The six v26.81 prospective valid candidat
 diagnostic only and may not enter task selection, Capability support, State Mapping, or release
 counts.
 
-First repair the completed-trajectory scorer under a fresh source identity. Its descriptive trace
-hash may use only fields present in the current Trajectory schema, and complete Compiler
-trajectories must execute the same post-Replay scoring path. Raw-lineage failures and downstream
-Instrument Gate failures must have separate audit channels.
+Execute exactly the frozen v26.83 32-Job Manifest: four mechanisms, two fresh tasks per mechanism,
+and four unconditional replicas per task. The run must use exact `deepseek-v4-flash`, no fallback,
+the frozen Provider route and model configuration, a 120,000-token per-rollout ceiling, and a USD
+2.00 aggregate estimated-cost ceiling. It must persist each actual Prompt and raw Provider payload
+before parsing or scoring.
 
-Then implement a certified pre-call Provider-token upper bound. Before every model request, the
-Host must prove that cumulative provider-reported usage plus the bound for that request cannot
-exceed 120,000. If the bound does not fit, the Runtime must emit a typed no-call budget terminal.
-Exact-boundary, one-token-over, changed-usage, missing-usage, and oversized-Prompt mutations must
-fail closed.
+Before every token-bearing request, the Host must issue a passing frozen pre-call certificate. If
+the conservative request bound plus required repair/final reserves cannot fit, it must make zero
+Provider calls and emit the typed `budget_exhausted_no_call` terminal. Successful responses must
+carry complete, internally consistent Usage and remain within every Prompt, completion, request,
+and rollout bound. Invalid model outcomes and typed no-call outcomes remain in the denominator.
 
-Only after those repairs are content-bound may a fully fresh balanced eight-task Instrument
-Population be materialized. Before any API call, freeze a new Contract and Job Manifest, replay
-all source and Compiler paths, run completed-trace scoring, verify repair neutrality and typed
-terminal targets, reject the new scoring/resource/lineage mutations, and reproduce every static
-output byte for byte independently. A passing static result may authorize only another small
-fresh Instrument requalification.
+All 32 Jobs require exactly one terminal classification. Runtime and Instrument failures must be
+zero; every completed Observation sequence must pass Verifier v2 Replay; all non-Replay Gates
+must be independently computed; completed trajectories must use the shared schema-closed scorer;
+repair neutrality, terminal target, and Stop Readiness must pass per rollout; raw lineage and
+downstream failures must remain separate; and Provider call identities must be unique.
+
+Independent validity, Program closure, local mechanism behavior, and trace diversity may be
+reported descriptively. They cannot rescue a failed Instrument or resource gate. A passing online
+Instrument result may authorize only fresh Capability and Reachability protocol design, not either
+empirical denominator itself.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_82_v26_83_budget_closed_rematerialization_and_preflight.md`
+- `artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_v2_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_v2_20260820/provider_token_budget_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_83_budget_closed_verifier_bound_instrument_preflight_v2_20260820/report.json`
+- `artifacts/vtdo_experiment/finance_v26_83_budget_closed_verifier_bound_instrument_preflight_v2_20260820/execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_83_budget_closed_verifier_bound_instrument_preflight_v2_20260820/job_manifest.json`
 
 - `docs/finance_v26_78_v26_81_verifier_bound_instrument_recovery_and_audit.md`
 - `artifacts/vtdo_experiment/finance_v26_78_verifier_bound_instrument_requalification_20260820/execution_binding.json`

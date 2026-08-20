@@ -1,0 +1,95 @@
+[
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:03ef739ef6be965f15478d5e38c20fb324aa8b857b83a3ee9ab101e27d643834",
+    "budget_failure_ids": [
+      "resource_budget:completion_upper_bound_respected",
+      "resource_budget:prompt_completion_sum_match",
+      "resource_budget:prompt_upper_bound_respected",
+      "resource_budget:request_upper_bound_respected",
+      "resource_budget:rollout_ceiling_respected",
+      "resource_budget:successful_usage_present"
+    ],
+    "expected_behavior": "budget_contract_failed",
+    "mutation_kind": "missing_usage",
+    "mutation_rejected": true,
+    "no_call_reason": null,
+    "observed_behavior": "budget_contract_failed",
+    "passed": true,
+    "provider_call_count": 1,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:073ddcb2921e945adacf7ac41e306f47e2c1a9c706a3edb946ca1bb46d6d13aa",
+    "budget_failure_ids": [],
+    "expected_behavior": "typed_no_call",
+    "mutation_kind": "final_answer_reserve_insufficient",
+    "mutation_rejected": true,
+    "no_call_reason": "required_reserve_not_available",
+    "observed_behavior": "typed_no_call",
+    "passed": true,
+    "provider_call_count": 0,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:1855a9cdea67e6524b8c051b55e1bc352430338062601e2ff64ae1fbc37489f7",
+    "budget_failure_ids": [
+      "resource_budget:prompt_completion_sum_match"
+    ],
+    "expected_behavior": "budget_contract_failed",
+    "mutation_kind": "changed_usage",
+    "mutation_rejected": true,
+    "no_call_reason": null,
+    "observed_behavior": "budget_contract_failed",
+    "passed": true,
+    "provider_call_count": 1,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:3a926b25dce44b0caa8a1174c246e6a6f6a4762c690c25c209dafbac019874ec",
+    "budget_failure_ids": [],
+    "expected_behavior": "typed_no_call",
+    "mutation_kind": "oversized_prompt",
+    "mutation_rejected": true,
+    "no_call_reason": "oversized_prompt",
+    "observed_behavior": "typed_no_call",
+    "passed": true,
+    "provider_call_count": 0,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:688a63c1516ea9c2bfdb0c226e6b5225f78f0bbd9dcfd0dd0d200567d33d4d0a",
+    "budget_failure_ids": [],
+    "expected_behavior": "provider_call_allowed",
+    "mutation_kind": "exact_boundary",
+    "mutation_rejected": true,
+    "no_call_reason": null,
+    "observed_behavior": "provider_call_allowed",
+    "passed": true,
+    "provider_call_count": 1,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:69db8bc96f5786ee44e4273ea3f2ffbf78cdb16309b2d9964c31d335aa13a231",
+    "budget_failure_ids": [],
+    "expected_behavior": "typed_no_call",
+    "mutation_kind": "contract_repair_reserve_insufficient",
+    "mutation_rejected": true,
+    "no_call_reason": "required_reserve_not_available",
+    "observed_behavior": "typed_no_call",
+    "passed": true,
+    "provider_call_count": 0,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_budget_mutation:e2518bf1adfca72ea8fd60e239f5fa9cabd31a19290faf4c3357e5ba74c94254",
+    "budget_failure_ids": [],
+    "expected_behavior": "typed_no_call",
+    "mutation_kind": "one_token_over",
+    "mutation_rejected": true,
+    "no_call_reason": "request_bound_exceeds_remaining_budget",
+    "observed_behavior": "typed_no_call",
+    "passed": true,
+    "provider_call_count": 0,
+    "schema_version": "finance_v26_budget_closed_budget_mutation.v1"
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "audit_id": "finance_v26_budget_closed_scoring_mutation:0276fd5d2837c0c9795fa865f5a071c62ac1b5d2017543d4176c23c324210048",
+    "baseline_core_terminal": "valid_trajectory",
+    "mutation_kind": "failure_namespace_cross_contamination",
+    "mutation_rejected": true,
+    "observed_core_terminal": "valid_trajectory",
+    "passed": true,
+    "raw_lineage_passed": true,
+    "report_completeness_blocked": false,
+    "schema_version": "finance_v26_budget_closed_scoring_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_scoring_mutation:64bd9b20131d271af1cde0d31e32aae4979ca2b1fcbcd87bda9c1dcaf36d8a21",
+    "baseline_core_terminal": "valid_trajectory",
+    "mutation_kind": "legacy_observation_id_access",
+    "mutation_rejected": true,
+    "observed_core_terminal": "valid_trajectory",
+    "passed": true,
+    "raw_lineage_passed": true,
+    "report_completeness_blocked": true,
+    "schema_version": "finance_v26_budget_closed_scoring_mutation.v1"
+  },
+  {
+    "audit_id": "finance_v26_budget_closed_scoring_mutation:700e6447ccae25d0bca02d542c3bdacca26e17252f89aefb80a64c61216e6ac0",
+    "baseline_core_terminal": "valid_trajectory",
+    "mutation_kind": "trajectory_step_schema_change",
+    "mutation_rejected": true,
+    "observed_core_terminal": "valid_trajectory",
+    "passed": true,
+    "raw_lineage_passed": true,
+    "report_completeness_blocked": false,
+    "schema_version": "finance_v26_budget_closed_scoring_mutation.v1"
+  }
+]

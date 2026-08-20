@@ -1,0 +1,690 @@
+[
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:287b99b55609ad819161669efe01958d7593136113230c15062b8997c6707a29",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "failure_recovery",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:392b32e195cd0a64dd36569f4835d54b76491a0e23a7f2a72d97f90ea9b635c3",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "c95d7fcf9339e1cb8009ca0140d1b5b61f2b098a46d35bf142fdbb8b6a2c42ac",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:30b73227bed91e635ac7f8c87301db4e53361bcaa6fcbb414f694115c9cfa187",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3",
+    "terminal_verification_target_id": "public_terminal_verification_target:0979211e3f9348fac55651ae6781b7ba876ff8d1a1d302eee885bdc222aed88f",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:2f0d246c3eb077f3e25402ae137026f7305cbd05e130d35c97badfe65e1b8a6b",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:3ab5d449e44d48dad79dcd22136f9f5473e7adbaed4e1c0a84db84700db7a301",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:36daeba5e3e7399dbff7fb962b467df362aa0b5a22e39b8d6933222ccf432658",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:83fa72d9ce498a35571495758322358d84ca09bfd1e25e67b23b982b433a7970",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:62ded8b46130fef2001593df8580362d5f81a06c7a764d0a106ab0f61e6cb5ec",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:3c5f4f8aa8ec73df774db044cfe7e5b643ad24d0a02f8cb1bade1dffb701e217",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "context_conditioned_action",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:637ebc71e1bcffa846db41f77c9427b075e9534cfc6a96c6dbeb23cc0fba8d15",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "dffc681cfc4fe334f1892c51078f7e9bc4f7f41cbb84d1f1b8d81f046fc90a4b",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:db59c21c180ba3d05ca205ba52cd6d1456bd826b6f62b57950eb53ffda11fbb3",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f",
+    "terminal_verification_target_id": "public_terminal_verification_target:5371e152c204cb20fb68c3582c9e56b988ff65f97de64e1faaf7cef5a5af2798",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:8e5975826e8d6de51c4c932773b6fd24f04d60001bb356d6bb460c5e203c75ec",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:227c762b7bb79a5a1bdac6141650945041b972711648c32494ed5c2ef7211014",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:800128af315a1142d986a7809f51abc60e06208efd7f8b5d11503ad996d1ba20",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:c210972e647764d6c940a86a7e0baeffd1e22977ef9502d38ed58d360676b7d9",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:3ff631c73b8d7f114eb30dfe19029014a8ada1256e3822a0e63da6d2ea35de73",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:59d98d203f769e29c5ae3e11f37acc16663465585bf545abd783a5046cdec5b7",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "semantic_reconciliation",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:a93fad210611a78ea1e82fedb1d6d08a4231218bc4f246cc3caa3999e57e46c6",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "0d322fba3b0e098bd2041008ed4e68fe459aeb07a726c274e2cc715d2e75c0e1",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:28e819a0a0710aa4771616b447d50a0f4284a62752428006eaa4987d7af1d9b7",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73",
+    "terminal_verification_target_id": "public_terminal_verification_target:df92e86759f98f4cacd53350b036fc85402bf1112fb1b925d304d010d9923983",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:b3fb4482896f29635a6fa5a11e916559e8a55d164f1050396b8509d112039c29",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:c8b17f1eea6e5a243abfb01def5c3425477eae29ec92138b797ebf3daa011cfa",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:abf9e7eba335a6f8c1e254549f209759ec4b89d9521fd5868cc352e129efda41",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:851450f6162bb67aa542ffb09836c8d2a45a4996b60428b15d1f3e4068d6a19a",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:af72a8b266f9d129d06cafd9d876fffb991f79216243fa8bfda5e99fbb6dc407",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:8cf245398375a21545ec791be13903290a1ce40eff81b6c0a089e4a0461fc282",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "state_dependent_stopping",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:5345868ea3eaf331f5a7bfbc5e07d7ba8e4ddb326dcc0382b54da983bbe969ac",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "8994c346530bddc652164bdc3f4b18646d41086575b0cf13700af6bb185d38e6",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:08181b302077b1434133bc6df55655a6c02a1d1cee844f2c47e7ce74da2a26e3",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b",
+    "terminal_verification_target_id": "public_terminal_verification_target:6b238d8d1de8c8aac802f60dc7590545087f13c5d25be7f45f1d8293e92074ad",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:14cde376bf019736c50c71f4737196e4f73b7106b1d7c737be1539544ee584ed",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:412b9c055fe7dbf20ca4047372fdcb4645dde47ac4ba90bdb4f08c3846a50e04",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:5545006164e5976a33c434b1d681c66b54268737518680b8e8ee8bbace234be4",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:8522c0c14ded623d45e0af4de5f7e4a8d301f582c9c03d4f8c6d8955c6feebd7",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:7e351afd80b03870c7dafe5e8a9e84e532bc412b1e956ab9f7efb91f8e72097b",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:ae350dc5595f3e3b2e35f697f2ebb541b10b631788c9444fa9a0f857c1f6cffc",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "semantic_reconciliation",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:ac4e8b28c307b99171c1b60ff4156f16db1b366f7563837a5c55a7ec42166b37",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "ceca23e588e88a36c086d20fda394d05e5673c9ae5a229506070f2408dfeb509",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:cd7b8cc953086c47fac571992c7806b5751252618959a81eb62f5b46956d1a3f",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153",
+    "terminal_verification_target_id": "public_terminal_verification_target:b1bc67fe7220e8eea63f0be383e0f5418e602f87b0ebf518595fdc67845bb425",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:a5435d669acd09c5c71989a41006f00eaa510a4b8547d36611df5f80e2c20ab6",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:91460e74e52c4001cd8eea3bf0b2ed5322ec238a6bab4a7233b9a169171daf62",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:38ee2c313286e1493879d419bfb20dda83d61b2e362cc4047b7b09febaddb315",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:79915973c1328939bb36926620e202a8eeb3bd6e5ebb4c31a38b31915a9f4aec",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:50cb886430da38cd837e51b048831023930b54358258b1e7ac6499f43441fb49",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:cf3a4766292d586dff7bbc3a4559d97a3f3d289ce1197389407a1d5921277481",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "context_conditioned_action",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:45b4e013163babf168e73a7bdb65dd398dc8993307841155d5d248fa636d3055",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "5f48b333cf1f6e989a2068f14885075ea060985b4565e16468a51f173b7e6379",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:0da62d26a66fe0ba32b6bb542418f6b6501dc4de2d8f8e4bcd58a59e4c423d6e",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7",
+    "terminal_verification_target_id": "public_terminal_verification_target:37f6a084136171a9ba33446f36ce1b1fddd55a76d85a953ca77908c472c8fbac",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:321cc1283b57ee00f90eebc7d1d85b4cf5ddfae6147ddf21275a9ca2fde5e6b9",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:e6618b7a795eb391fa4390feb76b6b5874858b8b46cdb1d0990f456caa57824d",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:6611780d5446ebd1f6715fc42e77d71b250f2d2c2ed6aeb644c4bc77c8a03053",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:de27c6cff2ef8986521170ed2e503c8c366f08905c4b77fad41ab5d92847756c",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:811ba8df21db3519908226e08709ca6a482948f860f00e268144bea3876ce032",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:de826944f07767c4f0aa5195d3184d156f8f19d93cc1ae471fe26f778a35367d",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "failure_recovery",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:32ebee6ea9e187e792f4271f0df6ade43890bb4d31708692e0017b524342b727",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "230eefdc785b7d173fec54bbb631782a7712474141b917f8626e95189c1e7ca4",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:dd714072864b8a8fde4e6068074f26049ddb338f4cf72773e48f6efb5ff78d61",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73",
+    "terminal_verification_target_id": "public_terminal_verification_target:402e3c939966fb15907ea286cc85a9324c6623bcbe04578a95bab79d5a62f35a",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:4a67602d91ebe5a63f050c9e7292c21c51712cfd992cf6685a89718a14d432dc",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:95053bda73261cbf5937a82d0e3e984f10ab7bf430e8736a45ca736db2ae4d53",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:0b397fabafc3fde0ebcd6a44782a47098a2b2b82ae715bd410d02f361984e078",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:b435935b75829ef0c1274868e7bc5ba485f056c43155857c0e629d775990f41b",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:7b6efa97c6be6bbf69a70b3dfed02756975912a63febc2279a1db92154c311bb",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73"
+      }
+    ]
+  },
+  {
+    "audit_id": "finance_v26_authority_preserving_task_audit:e37553a1c970bfff7b75b73b9687ad12387605fcaea9379307b4883d8fb64e4b",
+    "exact_terminal_reference_accepted": true,
+    "mechanism_id": "state_dependent_stopping",
+    "mechanism_necessity_passed": true,
+    "operation_closure_passed": true,
+    "public_oracle_isolation_passed": true,
+    "repair_prompt_audit": {
+      "action_binding_paths": [],
+      "audit_id": "finance_v26_action_neutral_repair_prompt_audit:442a80b3b3d3aebc0bf3cae2f5365f92ac22d32b6595cb4375abd91418aa3328",
+      "correct_operator_disclosed": false,
+      "correct_parameters_disclosed": false,
+      "correct_tool_disclosed": false,
+      "expected_arguments_disclosed": false,
+      "exposed_context_fields": [
+        "error_category",
+        "failed_tool_id",
+        "identical_arguments_forbidden",
+        "unresolved_public_variables",
+        "unresolved_semantic_requirements"
+      ],
+      "failed_tool_id_exposed": true,
+      "model_repair_authority_retained": true,
+      "prompt_sha256": "c5f335ff00b222a2f452f87e0212db37d631cd92a908467e843f1afe534c9f46",
+      "raw_action_patch_removed": true,
+      "repair_contract_id": "public_action_neutral_repair_contract:d1e0e704ae2c29b683030d40a3665f74e8a7100c6ece7cff29b09828925d8b5b",
+      "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+      "status": "passed",
+      "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1",
+      "typed_error_category_exposed": true,
+      "unresolved_public_variables_exposed": true,
+      "unresolved_semantics_exposed": true
+    },
+    "runtime_witness_stop_ready": true,
+    "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+    "status": "passed",
+    "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1",
+    "terminal_verification_target_id": "public_terminal_verification_target:36476e056204bb4e7e5588e3be605b77cb6ef63466b4c891752b342733256948",
+    "verification_mutations": [
+      {
+        "expected_error_code": "terminal_verification_reference_missing",
+        "failed_closed": true,
+        "mutation_kind": "missing_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_missing",
+        "result_id": "finance_v26_terminal_verification_mutation:03f0b9d86f5d29f03d8827c40e50bb64987d3bf153f03ef61e2dc1fb809704d7",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1"
+      },
+      {
+        "expected_error_code": "terminal_verification_reference_wrong",
+        "failed_closed": true,
+        "mutation_kind": "wrong_terminal_reference",
+        "observed_error_code": "terminal_verification_reference_wrong",
+        "result_id": "finance_v26_terminal_verification_mutation:979dcac814747338814974fe052b9bd93ee4e67ef95e41265c7b87c4e7f46ead",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1"
+      },
+      {
+        "expected_error_code": "terminal_verification_extra_claim_fields",
+        "failed_closed": true,
+        "mutation_kind": "extra_terminal_claim_field",
+        "observed_error_code": "terminal_verification_extra_claim_fields",
+        "result_id": "finance_v26_terminal_verification_mutation:d41a4ce658d8593433aa29f391a263b1a06ec29883b30a85a8de84f481a4581d",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1"
+      },
+      {
+        "expected_error_code": "terminal_verification_before_terminal",
+        "failed_closed": true,
+        "mutation_kind": "verification_before_terminal",
+        "observed_error_code": "terminal_verification_before_terminal",
+        "result_id": "finance_v26_terminal_verification_mutation:a5ce63c4289b5db31f5a2db01ceb32a29a9fd7136627ed175bc0e3a24349e7aa",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1"
+      },
+      {
+        "expected_error_code": "redundant_action_after_public_operation_completion",
+        "failed_closed": true,
+        "mutation_kind": "postcompletion_action",
+        "observed_error_code": "redundant_action_after_public_operation_completion",
+        "result_id": "finance_v26_terminal_verification_mutation:3c2d64cab48756ec018deec794ac014a6ee46fc921126daab5ea2d76c56b4e9d",
+        "schema_version": "finance_v26_authority_preserving_task_audit.v1",
+        "task_package_id": "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1"
+      }
+    ]
+  }
+]

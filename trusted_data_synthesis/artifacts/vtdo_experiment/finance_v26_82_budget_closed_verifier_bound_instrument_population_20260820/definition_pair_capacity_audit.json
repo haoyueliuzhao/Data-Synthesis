@@ -1,0 +1,29 @@
+{
+  "additional_exclusion_count": 579,
+  "audit_id": "finance_v26_verifier_bound_definition_pair_capacity:90814e5f154bc5923c476ac851f66a2f943bac3997f47bb20138364b439f00d7",
+  "eligible_definition_pair_count": 4,
+  "eligible_evidence_count": 124284,
+  "eligible_reconciliation_task_capacity": 2,
+  "excluded_evidence_count": 26290,
+  "exposure_receipt_id": "finance_v26_exposure_clean_population_receipt:c7986e19da5c9b63bf25c0af8bc6c9783c6942abe5f33db49919cc2f0478d6d7",
+  "exposure_receipt_sha256": "7652f7fb06e3925abbf6542145328fda81a2c278dd50d33d41b4202919617195",
+  "historical_outcomes_consulted": false,
+  "schema_version": "finance_v26_verifier_bound_definition_pair_capacity.v1",
+  "selected_definition_pair_count": 4,
+  "selected_evidence_ids": [
+    "evidence:finance:fact_3122a2d54e05dfa861f120f0@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_5c59365f2eeca928ac650775@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_7a228c28e4978408b787521b@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_7d3faeb768211ba0e723306f@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_7e87511a5abd9fee91ed634c@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_b290fce7c98eced3efb39aad@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_e4a174003088cb0ed9d38599@kg_20260711_062123_bc4b4394",
+    "evidence:finance:fact_ec9f2ce4fa7f50da2ae862e3@kg_20260711_062123_bc4b4394"
+  ],
+  "selected_evidence_set_hash": "finance_v26_verifier_bound_reconciliation_evidence_set:50e7acdef82585e2106bf87933e10e5daa86d56be09f1d6cd460a6b701f87174",
+  "selected_reconciliation_task_count": 2,
+  "snapshot_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/vtdo_experiment/finance_v25_44_hardened_stopping_evidence_snapshot_v3_20260816/finance_stopping_evidence_snapshot.jsonl",
+  "snapshot_sha256": "c6ac2b985607a0f964cb919010bd9a7c9eee9ac57534983e4ab09a7b10c3f17e",
+  "source_evidence_count": 151114,
+  "status": "passed"
+}

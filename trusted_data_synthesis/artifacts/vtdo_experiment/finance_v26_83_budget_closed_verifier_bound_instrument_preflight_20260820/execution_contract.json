@@ -1,0 +1,437 @@
+{
+  "completed_trace_shared_scoring_required": true,
+  "contract_id": "finance_v26_budget_closed_instrument_contract:acbd40467ed2a7dee5142ea17f96797596adf3610ab3c70a8ed88a0f8675801b",
+  "core_terminal_frozen_before_sidecar": true,
+  "environment_manifest_ids": [
+    "agent_tool_environment:00ff5ff7a81518daa38951a32dbb5d1316f8975b3892eca3b34b62f9dc908401",
+    "agent_tool_environment:043c4d0ff8babd441fb862d9cb3ddcad72dd1fb0075780c69bd0b7119e6c80d3",
+    "agent_tool_environment:3f1d9716e5a2d717e3403f7f12b28cb19a43e96797c0ef31de01148d4c933533",
+    "agent_tool_environment:48c89955cdd54c0f49b59c299453f085ea45d0d8b8ace124a2edb5c95e46d339",
+    "agent_tool_environment:5bfecb83aac3a73b8ca21ca8b35ee9aae55a4246beb993338a82abb81f443718",
+    "agent_tool_environment:b2754f166e4475e626b527619faeacaa28fe097475d29c819311ffb31b3fd740",
+    "agent_tool_environment:bd8fe324130fc07c531ac7e320c5b01b6e70ee68abc73b6a55255a658fcd7de1",
+    "agent_tool_environment:ced0900afdc4fc02897cf6eff6b73b816799be3aa2193f3fa8afe482396a58b2"
+  ],
+  "expected_job_count": 32,
+  "failure_namespaces_separated": true,
+  "fallback_models": [],
+  "historical_diagnostic_candidates_forbidden": true,
+  "implementation_source_files": [
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/executable_task.py",
+      "sha256": "9556791c47df831852976dc86319989bdc19eca87c8dcf5583e99ad19ac9c7be"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/public_operation.py",
+      "sha256": "de301066b6a44a03eff77d05461e67cbd26ae325be39836ef93a35237604881b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+      "sha256": "6722da53a86ea220e113309b1109c57bf7f35a7ecb222e9ebfa84266ee9839a3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_operation_hardening.py",
+      "sha256": "1522336dd34823a751ac0b19b79db34cff0a0c79ce9cc9fa65c6244c7638119d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+      "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument.py",
+      "sha256": "7a82802188e576146f93c37ea2dbb42934d9c0ec0e79d570fbfb8b30b8ca3917"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument_preflight.py",
+      "sha256": "6757dcb138432649f228b93ca176c2d0e0b5e314743ac557ede3d96beec57485"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_task_rematerialization.py",
+      "sha256": "01f3530ffe245fd3165993ffb99f870bd16aad7c2959a4047c2f3b87ad215cb3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_rematerialization.py",
+      "sha256": "e2a7705edba2d358e6da9c2c05c437b11994b9e438b508d213bcefb3cc998e23"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_preflight.py",
+      "sha256": "390bd5848674ae94d13a0d11b35ac8e12660ab3d476094bab9bad21bff1a658d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_task_rematerialization.py",
+      "sha256": "87173f21df6574f58982253957cae5c8dc534cfd54637a71f3f9ad1de3e6d329"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/budget_closed.py",
+      "sha256": "631ed1d2358dbf811655cfdfd0bfcd4f210e7b9c105e23c649f97b6bd2e3e451"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+      "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/tools.py",
+      "sha256": "aa0a1193c58a3d373d21e2760c81f3e65aac850dad61cdd81dc9084a7664023e"
+    }
+  ],
+  "invalid_model_outcomes_retained": true,
+  "maximum_total_estimated_cost_usd": 2.0,
+  "measurement_instrument_only": true,
+  "mechanism_task_counts": {
+    "context_conditioned_action": 2,
+    "failure_recovery": 2,
+    "semantic_reconciliation": 2,
+    "state_dependent_stopping": 2
+  },
+  "model_config_hash": "finance_v26_budget_closed_model_config:3f8ce817ea9664e0882dbca6e684178dcb50357d49c53bbd19b198279aa58974",
+  "model_id": "deepseek-v4-flash",
+  "model_invocation_config": {
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "auto_discover_models": true,
+    "contract_repair_attempts": 1,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "extra_headers": {},
+    "fallback_models": [],
+    "input_cache_hit_cost_per_million": 0.0028,
+    "input_cache_miss_cost_per_million": 0.14,
+    "input_cost_per_million": 0.0,
+    "interaction_protocol": "host_instrumented",
+    "max_output_tokens": 4096,
+    "maximum_model_attempts": 1,
+    "model": "deepseek-v4-flash",
+    "models_endpoint": "https://api.deepseek.com/models",
+    "output_cost_per_million": 0.28,
+    "preferred_model_patterns": [],
+    "pricing_checked_at": "2026-08-11",
+    "pricing_source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "provider": "deepseek",
+    "request_body_overrides": {
+      "thinking": {
+        "type": "disabled"
+      },
+      "top_p": 0.9
+    },
+    "require_requested_model": true,
+    "temperature": 0.6,
+    "timeout_seconds": 180.0
+  },
+  "pre_call_budget_certificate_required": true,
+  "provider_and_host_telemetry_separately_bound": true,
+  "provider_route": {
+    "endpoint_host": "api.deepseek.com",
+    "model": "deepseek-v4-flash",
+    "provider": "deepseek"
+  },
+  "provider_route_hash": "finance_v26_budget_closed_provider_route:c4c13e71fc8f90de3c0ab0ea648a806ea104da46c2dc462fe5887b81139adff4",
+  "provider_token_budget_contract": {
+    "cache_partition_sum_required_when_present": true,
+    "contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "contract_repair_reserve_tokens": 4096,
+    "fallback_forbidden": true,
+    "final_answer_reserve_tokens": 4096,
+    "http_failure_usage_policy": "exclude_http_unsuccessful_attempts",
+    "maximum_model_attempts": 1,
+    "maximum_output_tokens": 4096,
+    "maximum_prompt_utf8_bytes": 60000,
+    "maximum_total_tokens": 120000,
+    "model_id": "deepseek-v4-flash",
+    "prompt_completion_sum_required": true,
+    "prompt_token_upper_bound_method": "utf8_bytes_plus_provider_chat_envelope",
+    "provider": "deepseek",
+    "provider_chat_envelope_token_upper_bound": 256,
+    "schema_version": "provider_token_budget_contract.v1",
+    "successful_http_usage_required": true
+  },
+  "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+  "raw_first_provider_and_prompt_telemetry": true,
+  "replay_binding_contract_ids": [
+    "finance_v26_verifier_v2_task_replay_binding:19ff06fa4316d95cf37e42f54d1d724776bf1aa9ea065b5d1e52ce2e86baabf3",
+    "finance_v26_verifier_v2_task_replay_binding:241e559690d34b6f1e5fc5b49e3681e635205fa9f054626ae3660562ebb0f0c7",
+    "finance_v26_verifier_v2_task_replay_binding:295b24193f8875c6588d2f1ac6372cfadbd8c3d35ac98965c41af984c481288b",
+    "finance_v26_verifier_v2_task_replay_binding:656f89f40628c7c0a92b67620687a9a56baee71c5f0872ca3f54e8cf3694f150",
+    "finance_v26_verifier_v2_task_replay_binding:679ba5bcdb52c667f18b3f8ebbc14dd9423eb2bb8c6cc7011eec392d100cfe14",
+    "finance_v26_verifier_v2_task_replay_binding:a646fb804f8c3c2c7d7b78c955ca65dae2c2cd5ca6694737c36a173099e1fdda",
+    "finance_v26_verifier_v2_task_replay_binding:e1ff2b75cbf7217226e81a3b72bdf3e18da2bc3682ac887dd87988937bdf593e",
+    "finance_v26_verifier_v2_task_replay_binding:ede3f2765f6d991fbe5a6b73e05f680b96c3255e35165ccfcb780bd04d7b096e"
+  ],
+  "replicas_per_task": 4,
+  "require_requested_model": true,
+  "run_id": "finance_v26_83_budget_closed_verifier_bound_instrument_preflight_20260820",
+  "schema_version": "finance_v26_budget_closed_instrument_contract.v1",
+  "source_artifact_files": [
+    {
+      "record_count": 151114,
+      "relative_path": "artifacts/vtdo_experiment/finance_v25_44_hardened_stopping_evidence_snapshot_v3_20260816/finance_stopping_evidence_snapshot.jsonl",
+      "sha256": "c6ac2b985607a0f964cb919010bd9a7c9eee9ac57534983e4ab09a7b10c3f17e"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_29_exposure_grounded_source_20260817/exposure_clean_receipt.json",
+      "sha256": "7652f7fb06e3925abbf6542145328fda81a2c278dd50d33d41b4202919617195"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_29_exposure_grounded_source_20260817/population.json",
+      "sha256": "db6773b5afa81b2ba99f4055300d2d63e911e8c8c44f256a0cad6c0a16eac871"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_36_no_api_joint_scaffold_20260817/population/confirmation_source.json",
+      "sha256": "78beb627b9f9ffea068aa60f59e51c59061155a5fb237b29abe02c111dacc667"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_36_no_api_joint_scaffold_20260817/report.json",
+      "sha256": "4dbe2a135e18880ae504497e8cc8bcc8efabfc9839c243a72f1d1507af3c378f"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_40_no_api_joint_scaffold_20260817/population/confirmation_source.json",
+      "sha256": "55b6ecb07544b94ccbe77f4219fb6347e85556fe1ec295cbc83a01a4af97f6f1"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_40_no_api_joint_scaffold_20260817/report.json",
+      "sha256": "56184ec7b4bfba493b7c1b647cde0380ea5ed2e680cc7ea1d84b62b7fea655b5"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_42_no_api_joint_scaffold_20260817/population/confirmation_source.json",
+      "sha256": "2df06127493675baac77d805b59512fdac12a0164828eff87ef286aac72b1ca9"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_42_no_api_joint_scaffold_20260817/population/development.json",
+      "sha256": "effac9dd84012ed15dfa734b62a04dc1861c49d95938d442054cf1de0e3164fd"
+    },
+    {
+      "record_count": 24,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_56_executable_task_rematerialization_20260818/rematerialized_task_records.json",
+      "sha256": "2e9c0f75707de2b4935b5b693717d8ca656da7b7df87d68c8840d9971b1a7e7d"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_56_executable_task_rematerialization_20260818/report.json",
+      "sha256": "9ae06bb76fa945ada4c56a9187ce88c35bd313015c877e6a4195e70239e2d541"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_63_operation_closure_requalification_20260818/job_manifest.json",
+      "sha256": "9dee81ba8c2ad45ea4722c89be145cde7683246a255f62e2311f39b0f25a0611"
+    },
+    {
+      "record_count": 24,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_65_authority_preserving_operation_hardening_20260819/operational_task_records.json",
+      "sha256": "8926fa0bd7a723a5407a373119c4167e27f2d6ec21c4a1f09bf15b7a5db657b3"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_65_authority_preserving_operation_hardening_20260819/report.json",
+      "sha256": "daba4ed5d9f72304cb1229ae2b42d16aa1a85ea17555f370e5f5c79f1bf5158b"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_66_authority_preserving_instrument_requalification_20260819/job_manifest.json",
+      "sha256": "f0dd2afe9a39bd002bfb4ca5abb4e48fb2b83acaf1d1a2955c825d9aa3672dd9"
+    },
+    {
+      "record_count": 12,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_69_fresh_capability_population_20260819/operational_task_records.json",
+      "sha256": "dbe86be7e4a6c38ac4cddc42f6f6c0637e032e169e79ac93a58f60bdaabd34e8"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_69_fresh_capability_population_20260819/report.json",
+      "sha256": "8b1c3a3bd19a5a0de690a70bc5c05b11e3c9634034bea9de899865ecc67f0490"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_71_capability_development_20260819/job_manifest.json",
+      "sha256": "1d94d9762ba126dd15f438682588bb749dadd37e8b9231ce32ca8a138d5a562d"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_72_state_reachability_20260819/job_manifest.json",
+      "sha256": "d0ec21f2e27556f41d70ce50a8e1f169fff2c6d9f302dc2d7015068536d90497"
+    },
+    {
+      "record_count": 108,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/destructive_mutation_audits.json",
+      "sha256": "735ede051319b0038fb3f40d4b2c45b57e2ebebb0540bc729bc9e1c33816ff8e"
+    },
+    {
+      "record_count": 45,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/historical_verifier_diagnostics.json",
+      "sha256": "039525682aff2e30be848447f2eb4b4230a2632fbde7624d1d5637a683acb9b4"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/replay_contract.json",
+      "sha256": "e2e7acfdc32d601a9dfe85e850ee80d1921211f43f2ebac07881aaa136e12076"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/report.json",
+      "sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operational_task_records.json",
+      "sha256": "6522d78d2b789ed67ee60acbef59119c91743f013e04798724e2700e0d1dded3"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/report.json",
+      "sha256": "066036f99cfd77b8e60cfe2ae73d1f74c4831db42de37879ff91d0da798baca7"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_77_verifier_bound_instrument_preflight_20260819/job_manifest.json",
+      "sha256": "6688cc2a5dde961ede862dcf8988be8b07c385de4057d65770394938072d99b8"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/recovery_manifest.json",
+      "sha256": "f609e2711a44319fd9fb6cf756e8876091298147df9e5a2d2073d652827b6828"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/authority_preserving_task_audits.json",
+      "sha256": "60f70692e203e9efec97a22ffceced574e60c9cf0c5cfb94094fa9048e5c9459"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/compiler_trajectories.json",
+      "sha256": "b48ec141b569826d3b927c71e3cf5a2ded4fa18d02f368de506f152a3d8efb14"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/completed_compiler_trajectory_scores.json",
+      "sha256": "6db1138ee9946ba5ae509991e4960724223714efa96dda7a3681bdcfca6ffd41"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/contract_lineage_audit.json",
+      "sha256": "02b84e95c2ca942b5776466a23eb6e03a11032dbd2d586cd9e5eaf58a1ede928"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/definition_pair_capacity_audit.json",
+      "sha256": "8a55ad3e3a61b2ee59491e660d1ad758ba1ff9ffb81c340768a17039b51482c0"
+    },
+    {
+      "record_count": 16,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/mechanism_counterfactual_replays.json",
+      "sha256": "de5769a903587e8b8eea4d5f44bd93eefd04d5200f59488014fdf5a33fe6aa79"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/mechanism_necessity_artifacts.json",
+      "sha256": "bbb5fabe2c58fe6086849618375edb03e2064eacf40f715f35c38a0b2033a896"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/operation_closure_audits.json",
+      "sha256": "6f008e8171f0638d1093adb0cfa6f18fd8ce41000aab406ee8d39906a5a0f492"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/operational_public_witnesses.json",
+      "sha256": "840cfa8801d9b9f012e232a61886588926fdc546eed0d6ed92ca403df0139e40"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/operational_task_admissions.json",
+      "sha256": "606495ffeab33f17e16b6e60f086233e2e81ab50cfdc1cb8e05200ae66ff9261"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/operational_task_records.json",
+      "sha256": "53b6270383ac459e5dea63dd7a395c431a3c1f18ad8426474235f15ea8e8971e"
+    },
+    {
+      "record_count": 80,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/operational_witness_observations.json",
+      "sha256": "aa1c42db7b16108ae13039976a064fc0114a7ed73e6acf09bd9529e426bf02e6"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/provider_token_budget_contract.json",
+      "sha256": "acf0685bd0f331eedf357a999de27f19262499bd8f1998013281ce41a3bf8b98"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/reconciliation_selection_audit.json",
+      "sha256": "211da76630b42fe08ccee197e467bcbae7bd376594ef25178a55280bfe18193c"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/report.json",
+      "sha256": "89cbd8e5e3b627ade5d6a41c3a0790a1dc4c12b650252821a7d85a2729d2794d"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/source_freshness_audit.json",
+      "sha256": "05b29314595327cd0056152ccf6e03401df6b891f58ee8b6ea36a5466f4192f5"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/static_model_authority_path_catalogs.json",
+      "sha256": "113f72e65e3b695f3610b4fd2cc061f99528bdd1e818159071a562a18ac5b5da"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/tool_environment_manifests.json",
+      "sha256": "c8592f0248bc1b4650a15da20590741425ee586ae504abc8115e72df400d126f"
+    },
+    {
+      "record_count": 8,
+      "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/verifier_v2_replay_bindings.json",
+      "sha256": "c51e3044c1c29d0b25c92d116f3337c01fe882bfd02f206dbf984e82f7d6aaeb"
+    }
+  ],
+  "source_replay_audit_id": "finance_v26_verifier_bound_source_replay:e3151081dfa3558e2728cd613ac5c67f2227844992f3966dbfcce844f2a1f3f4",
+  "successful_usage_required": true,
+  "task_package_ids": [
+    "operational_executable_task_package:03b7a26979e1de3be7a5657e4a5044df1519a81db94168a8a3d176c46924739f",
+    "operational_executable_task_package:3ff24289c5e8d5a12727431455d20729655558f8005bc5126d605b77572ed9c7",
+    "operational_executable_task_package:94b31ac1888eeb28f36fb79c2cfbfdb252e449c5e8332bf24033d5f8006b2b73",
+    "operational_executable_task_package:a54b69c6f3a4d7e726c31f5e882f12418f37055053158bfb6df168040c36b2f1",
+    "operational_executable_task_package:a92bd5783c792c86368028b06648ca92c8b08cfa72e736ba9ea3d0f955a56c8b",
+    "operational_executable_task_package:bb3a38345a9414369b6f62dd72a863fc45239c65bdae5affcadebdbef0991153",
+    "operational_executable_task_package:e115e62b9a5e6a061099b9c1d9dce29b7693020bae250b817d65e65d2815b5e3",
+    "operational_executable_task_package:f3ccc1082d994b9e7d61597a28353acb746450b580757fe9d7cae26ccf21ee73"
+  ],
+  "task_record_ids": [
+    "finance_v26_operational_task_record:0bb3c50967fa2f041d18393bef1526b52ce1d7368a361c38c2389107f6e0ae77",
+    "finance_v26_operational_task_record:47eccaf9eb271eb0a4b128661a968815e1789322e218859f0b88ed07d472c6dc",
+    "finance_v26_operational_task_record:5be3b1096ec8d243ce6c03a309694983feb3cc288500886509938b3da92ef091",
+    "finance_v26_operational_task_record:6f585e5a0f963b8f1b86b90e5f6d5253b21457d1ae14b8c0e84bbf11ebb0ff2f",
+    "finance_v26_operational_task_record:7f1d3bffd4c006cc922b0374834839cb010ab51fcd02d4344f7c7a7f1672010f",
+    "finance_v26_operational_task_record:8097506a2e9822a5fee89d32201a5b0b5a422b407d2fa01b6c0cd4164f7375a8",
+    "finance_v26_operational_task_record:960ac35a2f4298ae990240d29afdc25ef5b3fc2cbcc5f34b6f190c67e53fb350",
+    "finance_v26_operational_task_record:e7cb86587e1368c92b2e46d9e3b47ee2d156c5a32979ba3597ddf269a492e2ba"
+  ],
+  "task_source_report_id": "finance_v26_budget_closed_verifier_bound_instrument_population_report:bb76295c89d293d297863fccbb4a137bdec7bdcc4219018723d6adf6d1e32c2a",
+  "task_source_report_sha256": "89cbd8e5e3b627ade5d6a41c3a0790a1dc4c12b650252821a7d85a2729d2794d",
+  "typed_no_call_terminal_required": true,
+  "verifier_manifest": {
+    "completed_trace_scorer": "schema_closed_shared_post_replay.v1",
+    "failure_namespace_policy": "strictly_separated.v1",
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "task_replay_binding_contract_ids": [
+      "finance_v26_verifier_v2_task_replay_binding:19ff06fa4316d95cf37e42f54d1d724776bf1aa9ea065b5d1e52ce2e86baabf3",
+      "finance_v26_verifier_v2_task_replay_binding:241e559690d34b6f1e5fc5b49e3681e635205fa9f054626ae3660562ebb0f0c7",
+      "finance_v26_verifier_v2_task_replay_binding:295b24193f8875c6588d2f1ac6372cfadbd8c3d35ac98965c41af984c481288b",
+      "finance_v26_verifier_v2_task_replay_binding:656f89f40628c7c0a92b67620687a9a56baee71c5f0872ca3f54e8cf3694f150",
+      "finance_v26_verifier_v2_task_replay_binding:679ba5bcdb52c667f18b3f8ebbc14dd9423eb2bb8c6cc7011eec392d100cfe14",
+      "finance_v26_verifier_v2_task_replay_binding:a646fb804f8c3c2c7d7b78c955ca65dae2c2cd5ca6694737c36a173099e1fdda",
+      "finance_v26_verifier_v2_task_replay_binding:e1ff2b75cbf7217226e81a3b72bdf3e18da2bc3682ac887dd87988937bdf593e",
+      "finance_v26_verifier_v2_task_replay_binding:ede3f2765f6d991fbe5a6b73e05f680b96c3255e35165ccfcb780bd04d7b096e"
+    ]
+  },
+  "verifier_manifest_hash": "finance_v26_budget_closed_verifier_manifest:3a7e28cc28d1e4caec5d9e47cb640864a3eefc194ef9e681a28fcc318f77511f",
+  "verifier_qualification_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+  "verifier_qualification_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32"
+}
