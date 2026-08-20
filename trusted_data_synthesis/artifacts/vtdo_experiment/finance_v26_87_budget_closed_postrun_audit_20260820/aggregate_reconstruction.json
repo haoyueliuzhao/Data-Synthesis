@@ -1,0 +1,30 @@
+{
+  "audit_id": "finance_v26_budget_postrun_aggregate_reconstruction:848825593e7fd0a3ca76468022f92bc0367ddc2c0ed818aba5a0cbff69c4d9e4",
+  "completed_rollout_count": 32,
+  "continuation_job_count": 12,
+  "core_terminal_counts": {
+    "invalid_trajectory": 8,
+    "model_invalid_resource_terminal": 24
+  },
+  "estimated_cost_usd": "0.268686852000000027363",
+  "historical_report_vector_exact_match": true,
+  "independent_non_replay_audit_count": 32,
+  "independently_reconstructed": true,
+  "instrument_admitted_count": 32,
+  "mismatch_fields": [],
+  "next_permitted_stage": "fresh_capability_and_reachability_protocol_design_only",
+  "provider_call_count": 241,
+  "provider_total_tokens": 2204169,
+  "raw_lineage_passed": true,
+  "recovery_instrument_ready": true,
+  "recovery_report_id": "finance_v26_budget_recovery_report:4afbad8525b598269630912e79048490dbe4e3235d8789aad0f10b922798c4ea",
+  "replay_pass_count": 32,
+  "resource_budget_passed": true,
+  "schema_version": "finance_v26_budget_postrun_aggregate.v1",
+  "status": "passed",
+  "terminal_counts": {
+    "budget_exhausted_no_call": 24,
+    "model_invalid_trajectory": 8
+  },
+  "zero_generation_replayed_job_count": 20
+}

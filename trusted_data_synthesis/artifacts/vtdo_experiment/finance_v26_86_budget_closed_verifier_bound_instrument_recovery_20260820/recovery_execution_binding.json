@@ -1,0 +1,112 @@
+{
+  "binding_id": "finance_v26_budget_recovery_execution_binding:69de2b9a62ae0e478a79247ee2eb6d8c09706e43c87b37d59ddd59d8f6b8de8c",
+  "implementation_source_files": [
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/executable_task.py",
+      "sha256": "9556791c47df831852976dc86319989bdc19eca87c8dcf5583e99ad19ac9c7be"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/public_operation.py",
+      "sha256": "de301066b6a44a03eff77d05461e67cbd26ae325be39836ef93a35237604881b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/schema.py",
+      "sha256": "107192a227c07d08101bd5b1ce480139801d52f95162cb260ab68fe2684b7dc6"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/state.py",
+      "sha256": "750997e9f15579254bb7568f2b90dc40199ccf9dc33c52b4eee6331f7d9320b5"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+      "sha256": "6722da53a86ea220e113309b1109c57bf7f35a7ecb222e9ebfa84266ee9839a3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/interactive_agent_runtime.py",
+      "sha256": "4c222cdba710de53e43e5c2eb5d764e1c6e5bde10ace17bc6a3bfe6ab7dc8124"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_operation_hardening.py",
+      "sha256": "1522336dd34823a751ac0b19b79db34cff0a0c79ce9cc9fa65c6244c7638119d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+      "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument.py",
+      "sha256": "7a82802188e576146f93c37ea2dbb42934d9c0ec0e79d570fbfb8b30b8ca3917"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument_preflight.py",
+      "sha256": "6757dcb138432649f228b93ca176c2d0e0b5e314743ac557ede3d96beec57485"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument_recovery.py",
+      "sha256": "a3682bef32aa2d040042e843a547863ac501b98b7df912fefd59fdf3559e5c12"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument_requalification.py",
+      "sha256": "0217fe94ed9fa495ee8dfe6b366d2455cf5dd7c5cbc194da31045c7b518b85bf"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_task_rematerialization.py",
+      "sha256": "01f3530ffe245fd3165993ffb99f870bd16aad7c2959a4047c2f3b87ad215cb3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+      "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_operation_closure_regression.py",
+      "sha256": "0a9cba9965c8568a8dbcde74b265980b585c91e39734088e08084fcfbd25fa71"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_rematerialization.py",
+      "sha256": "e2a7705edba2d358e6da9c2c05c437b11994b9e438b508d213bcefb3cc998e23"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_instrument_preflight.py",
+      "sha256": "390bd5848674ae94d13a0d11b35ac8e12660ab3d476094bab9bad21bff1a658d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_task_rematerialization.py",
+      "sha256": "87173f21df6574f58982253957cae5c8dc534cfd54637a71f3f9ad1de3e6d329"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/budget_closed.py",
+      "sha256": "3c4551c6aa1b3ed2a0056000203cb7b48e1cabe008bed7828c4c2c9b98e7668b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/client.py",
+      "sha256": "9fd15187608a065d1214f47f0dd83a40a1e53d7718153487586d4ac1a2866ef0"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+      "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+      "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/schema.py",
+      "sha256": "fa39085dd8ac580529d9204f1b169aab8dcf8d4e0268b16a0a046d54bdc5f16e"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/tools.py",
+      "sha256": "aa0a1193c58a3d373d21e2760c81f3e65aac850dad61cdd81dc9084a7664023e"
+    }
+  ],
+  "original_execution_binding_id": "finance_v26_budget_closed_instrument_execution_binding:772d296b3c42aa43e786affa35f8759b47d056384719524f19fdc8c57fd6a40c",
+  "original_provider_call_artifact_count": 152,
+  "original_provider_payloads_replayed_before_continuation": true,
+  "post_terminal_short_circuits_explicitly_bound": true,
+  "raw_only_recovery_supported": true,
+  "recovery_contract_id": "finance_v26_budget_recovery_contract:5b3f9efe759d22b1159a3a854a3bb3f6628d80645c833e9c7c43d043ec15730f",
+  "recovery_manifest_id": "finance_v26_budget_recovery_manifest:19876887f71863af1152aa43ea9eda599a18baf3c468710b0c171b489164d3ee",
+  "recovery_run_id": "finance_v26_86_budget_closed_verifier_bound_instrument_recovery_20260820",
+  "schema_version": "finance_v26_budget_recovery_binding.v1",
+  "source_replay_audit_id": "finance_v26_budget_recovery_source_replay:ec5bdd64882656596282b12b25e97d32f535c74487cb663fb0990650806450e1",
+  "source_replay_before_client_construction": true
+}

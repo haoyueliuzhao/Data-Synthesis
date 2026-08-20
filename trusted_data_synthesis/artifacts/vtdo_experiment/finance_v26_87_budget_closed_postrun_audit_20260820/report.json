@@ -1,0 +1,51 @@
+{
+  "aggregate_reconstruction_audit_id": "finance_v26_budget_postrun_aggregate_reconstruction:848825593e7fd0a3ca76468022f92bc0367ddc2c0ed818aba5a0cbff69c4d9e4",
+  "budget_terminal_audit_id": "finance_v26_budget_postrun_terminal_audit:3cf98cd39f884bed0a3b70dbe0b1d04594a711c00b1659864d0c730c15ed1317",
+  "capability_development_execution_authorized": false,
+  "exact_target_authorized": false,
+  "fresh_confirmation_authorized": false,
+  "gp_c_authorized": false,
+  "gpu_jobs": 0,
+  "immutable_detail_files": [
+    {
+      "byte_count": 1180,
+      "relative_path": "aggregate_reconstruction.json",
+      "sha256": "2bf7ca960974880589e1e60b58af0b1be182ccbad92a2f7649c866d40958efb2"
+    },
+    {
+      "byte_count": 41444,
+      "relative_path": "budget_terminal_audit.json",
+      "sha256": "7404b03d87ac95c75582a5f29e157061a711bd296d8f878eafa8897e060485d2"
+    },
+    {
+      "byte_count": 1262,
+      "relative_path": "provider_lineage_audit.json",
+      "sha256": "cc0ecf22e863833aa0dc03d98f9b1d4a9929e44b2d838a19e5eb697ec90999e8"
+    },
+    {
+      "byte_count": 257045,
+      "relative_path": "source_replay_audit.json",
+      "sha256": "fe4386c8f05ac2daf556d52d609b982a20633d8b3ddf52f9d98b67b773b7c005"
+    },
+    {
+      "byte_count": 48394,
+      "relative_path": "verifier_scoring_audit.json",
+      "sha256": "87ce0689436ca6bca87eb21df48c0eef0477c9f4f2ae9945671de0800cec9839"
+    }
+  ],
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "next_permitted_stage": "fresh_capability_and_reachability_protocol_design_only",
+  "no_c_vtdo_authorized": false,
+  "production_contribution": 0,
+  "provider_lineage_audit_id": "finance_v26_budget_postrun_provider_lineage:038b37a470d9bee151d070d7edeba1e0beac14cb09acb685646eccfcde7f21ca",
+  "recovery_instrument_retained": true,
+  "recovery_report_id": "finance_v26_budget_recovery_report:4afbad8525b598269630912e79048490dbe4e3235d8789aad0f10b922798c4ea",
+  "report_id": "finance_v26_budget_closed_postrun_audit:a7318da72819ce66bdc93ab5117faec5f9f59b32aebd33f5324f2198bd705939",
+  "schema_version": "finance_v26_budget_postrun_audit_report.v1",
+  "source_replay_audit_id": "finance_v26_budget_postrun_source_replay:4834d467963c327d0ccd8aeca247700fcffdb74a339c58ca887371cc3df2f367",
+  "state_reachability_execution_authorized": false,
+  "status": "passed",
+  "student_training_authorized": false,
+  "verifier_scoring_audit_id": "finance_v26_budget_postrun_verifier_audit:acadd85292b7f56a155cea93926e4c5ee57735d4b45ca74ebca231de0cd32d84"
+}

@@ -2,7 +2,9 @@
 
 > Historical protocol note: the online attempt failed after 20 Jobs were exposed. The immutable
 > outcome and the only authorized Recovery transition are recorded in
-> `docs/finance_v26_84_v26_85_budget_closed_failure_and_recovery_preflight.md`.
+> `docs/finance_v26_84_v26_85_budget_closed_failure_and_recovery_preflight.md`. The Recovery was
+> subsequently completed and independently audited; see
+> `docs/finance_v26_84_v26_87_budget_closed_instrument_recovery_and_audit.md`.
 
 Date: 2026-08-20
 

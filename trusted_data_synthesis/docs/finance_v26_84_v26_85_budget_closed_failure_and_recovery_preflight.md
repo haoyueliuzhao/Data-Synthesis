@@ -1,5 +1,9 @@
 # Finance v26.84-v26.85 Budget-Closed Failure And Recovery Preflight
 
+> Historical preflight note: v26.86 completed the frozen Recovery and v26.87 independently
+> retained its passing Instrument result. See
+> `docs/finance_v26_84_v26_87_budget_closed_instrument_recovery_and_audit.md`.
+
 Audit and protocol date: 2026-08-20
 
 ## Scope
