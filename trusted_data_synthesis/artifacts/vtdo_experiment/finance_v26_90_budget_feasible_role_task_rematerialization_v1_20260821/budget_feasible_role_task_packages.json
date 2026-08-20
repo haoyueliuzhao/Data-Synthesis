@@ -1,0 +1,1106 @@
+[
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:1792335f77ac30d9f7f944b0b0354c797e058ddc50bdb6ab0d873b4d376e79c8",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:4fee4b0f5212576c23d77b0d725e0c752bfc51d3d37a336cc98c0fdd5a240a43",
+      "finance_v26_budget_closed_compiler_trajectory:5a75cd703ea29c37ed0b344f3ff4daab49eb685372d129969f262d98cedb7d33",
+      "finance_v26_budget_closed_compiler_trajectory:fa2191954fc989d94bd267187c3eb9e2d9be653f848fe0559ac71b54e4b259f9"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:8cf392ffc80a4978be330890a44af3bbc205f8cc7c692b4766f2a885d7b8ce8f",
+      "bound_public_executable_witness:d350c8764e61e23b37ff6c5ead0172c3019d13bc87e0323b4f4e13c19af92a71",
+      "bound_public_executable_witness:72409b7894dad1972d5715d852d84506f90f3fb06040d6104e70049c56965c9b"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:f32359e49a764768c548c40975352dfb5c0bc745c2caf1c778eeb2d165c4c267",
+    "job_manifest_materialized": false,
+    "mechanism_id": "state_dependent_stopping",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:14bbb9b799d304477c66013e7bf7f6bc7dde0db9beacabaa4632620375f4e29e",
+    "operational_admission_id": "finance_v26_operational_task_admission:15797c8686b6d88d7de6e75eb268764c4ca558865217b08facee1ce6eb2be0f2",
+    "operational_record_id": "finance_v26_operational_task_record:f96cc27ff905d4e09619e82fa50ad6fca6b0340c566f4da77c2e6ff28b2fe5b5",
+    "operational_task_package_id": "operational_executable_task_package:600a01982d3fbae6f3e5aa0420f9ec3f92b9127ca88f54eb0bf11f21f3c1b474",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:e83461893c4fa7c1ea348ef4c77e9a91c20f2fac37d50b61694d57cea3086597",
+      "finance_v26_budget_qualified_path_audit:6c8da1ae453b5d23cd427afa22ca6367a247b7ffe5f9b5d4631ec0676aef578d",
+      "finance_v26_budget_qualified_path_audit:a98f04a6b090284e421aa114cfb590dc16e6515168ea584291e7813a8352f844"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:0f3cf2b8bb11cb04c779ed1ab7f7d18e18209e5530fca64843ccea30991c2f7e",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:8ec03fe687125be0c190ecdc8920edf3654c7ece6de821edc64acec5355992e7",
+    "source_task_artifact_id": "finance_capability_sensitive_task:6642f3b19e21cd9336caa3f8e5b4564fd8d63e824e66edea902a4a1676301b8b",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:09cc2840943bfd2afed4fdba520d97e8c436fa01ec576f12207be432d8faba62",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:c4f46d5b5b000f3afc50cc406cf7c47578938d38720f1d98ecae306996d7ace6",
+      "finance_v26_authority_verifier_replay:739baf40bf57b06763cc61936dfac50e4c44870661a21f4df77dd2d115ebdfb9",
+      "finance_v26_authority_verifier_replay:739baf40bf57b06763cc61936dfac50e4c44870661a21f4df77dd2d115ebdfb9"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:a371deb6eadd97c6e3e12da6c267da2843a5257f5a63adcbbfd9773e285577a5",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:9d33159e19361339356e8e5b662e1661498254d6f46937ccb7c08fc08714eb3d"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:cdc84a0c0d83635a7710362df78f79cbba6f69093c129a8dc8385817e379223b"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:9ada6da85eb5d9766b758aff9d2aa8a8d354fc56e42ee87205cc5bd299cb967f",
+    "job_manifest_materialized": false,
+    "mechanism_id": "context_conditioned_action",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:ce76b4ad12535b624679ab88f2d640bd92b50edd7cc3c891c85026ba77e7ac19",
+    "operational_admission_id": "finance_v26_operational_task_admission:a1defe6549f29ececaef33a96a3dae8ba0af567c3a5942a807a08fa2b12ab786",
+    "operational_record_id": "finance_v26_operational_task_record:97224b14ed0351c8b72c04095feee8213beeb53e12aa264dad7b5632633cc3b7",
+    "operational_task_package_id": "operational_executable_task_package:5c83e7d8969e516187edffa97505aea2879457604dc50d46493065ed563b2454",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:9cc89b170fa13665c4d59f265f0fded246f1804d982fbc2b7e76aec10f9238a0"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:7b349084dc8ade832df15ad7a2f4def42f47d496b238da671927b31077e2d8c8",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:a20824a880caeb3f36eb497c8d76075c7b927e9723d74c6223776026cd8945af",
+    "source_task_artifact_id": "finance_capability_sensitive_task:b33972fa170ac08a678190178d1ee6db1c5d132ed9527e5685ce59209fc86ffd",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:1f3b811b116d15c1696ddd5ac2b68111916772b367134a2cfa9d4491f9547e6c",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:b2e6d193ef9158399f57fa321fc2b713224051cc3c486d7740cf501e5b1372b6"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:e86f4228a3c690e16b3a9a42bbbb612b3d8d76e62d202b0473238f6b95ee55d8",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:e83e100af4a5c941d1a816ab47d2d0ac048e49ff6dde1168b99429eb42291d81"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:1c388e4cf425bc9b2bbfbe6e596fce81932b793e1cbdf724b4d55f5233f068fc"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:80fdf55ef5e3867edf8edab08b3bfe600268eb8c7dbbabf63e78278ae18ca3a2",
+    "job_manifest_materialized": false,
+    "mechanism_id": "state_dependent_stopping",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:3ac83ab8614ab75d87151f0af99fe62c07acc45643118aecd12f9e4504326ad4",
+    "operational_admission_id": "finance_v26_operational_task_admission:2086a08826c78bb85a8267bfbf5a425152a9e859e7241a592a1fcb2e9ff7c9a2",
+    "operational_record_id": "finance_v26_operational_task_record:8666c6fe552ab145b0b3e2f3e5c0d4fe3260f5e698de44dd2d96025101098b09",
+    "operational_task_package_id": "operational_executable_task_package:50da684ddfd6fd2cff1bcd6aeb7d464483587d2bab98e64110e9b09fbd02f7de",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:94df26b92fe0386071479393786de2a1485b6a37f8483e20b1badc9a2d49d148"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:3478d46858c51a9052cd14cbf7be9091b0933b15189f43622a1df2fcfc5b47f1",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:cd79bf6690e30211c63c7e8b0902c3ca4ac82ff25a23e563126322c83a1b9164",
+    "source_task_artifact_id": "finance_capability_sensitive_task:ff4d52940ca469e7ec10f31bbd7efe1253e81ba2f744f6e1017ce1056163a178",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:21481a0f021d3d38d15bb10a920e2e901431d62a848fec8ae7d4f77058b8e60c",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:3d38e095beea2b72de5c658dd0ed4a8d8032b5e97a8e46087b2315253fe9b394"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:b7210cc3dd073ca37cd526bd988e1b3dcc0da9a426545d3ee39137d0feb4fa0b",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:d2049c2be394a25946ef13580e6b7fb5afa6035394e8046936b95e5bcbe86944"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:861bfc439883d56b90577fa74490f74eedd290c798cda95b6c82e811407e50a1"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:acef8b081c00cefa1a3f135454a8cff51ef94bd159e09f8c1b5665a5729b10bd",
+    "job_manifest_materialized": false,
+    "mechanism_id": "semantic_reconciliation",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:24923df6414d8bb154413b95997fc1d3d5e835fd125b98e4ac51bdfb95cf131d",
+    "operational_admission_id": "finance_v26_operational_task_admission:bda838139f501a1e5f26c4662f1450bb0072546a7f3d112b082a8f77950b5dfa",
+    "operational_record_id": "finance_v26_operational_task_record:2fd2123a3de9cddded1f1037d90c173bb798e2954098c2164400ebc3b1beba40",
+    "operational_task_package_id": "operational_executable_task_package:ec823e6f3d224977b6ff813cee20086e8c0579ea53380e83eecf7c2b30e6b919",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:b8da79a06c55a6c22a9ff344bdd3524fa055cfd1cdcbd4f16d505fb89182e756"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:d8dbe26c7cc0ca73efc1014edeb5e236a6a348387d4da2925d9b79e5637b7c99",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:9e2b023b09233c92b58a4b46e9d8223bbb6914ba7bc5e0ea7ed1090830237039",
+    "source_task_artifact_id": "finance_capability_sensitive_task:fe6662c3b629a63192bf505152159154bf9ccb44f74542fbd0d27c61b620b8c4",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:2edd5f1a450ac4369d2270fbe7b0f7efaa62c3d44d53cac392561b45b7fbf011",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:071079d73d3f4d4c88fc1210b2a66b9d7a1bcdb5bcb74622e7b08133896eb398"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:2d9a12ea670af2ceb2f9e9b3051ac5f10ae0fe829014e0e34773f5b3f3f8787e",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:0bed4cd504988c4bd8f9921451695561fb3fca29c89b20b9905b869eba68f442",
+      "finance_v26_budget_closed_compiler_trajectory:50cadca786454db2ff58b2551ab21d4e88ad267adad96ce88722218e59b54e49",
+      "finance_v26_budget_closed_compiler_trajectory:249ff8665a09111b3546685b306d0aebd5eb09b6687afd00db727731801036dc"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:f3d73855bd7a7fa9cff04e73927291cfd59ea0c9af885894242d67b4c9cbdb95",
+      "bound_public_executable_witness:7c769ea36dc056786c68cf5c8e0e9aff02cc0c66e0730d6741f5e51dd0fd7a82",
+      "bound_public_executable_witness:9c3cf3a6a9c2b9aa3873e8f17e77862de6eaa68fa7ca638337a35f253d27d20c"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:d6a8ee8ac60d91d888fccdb9d4a7d2ab77c99ee3c2e0fc62ce9047a8493d66fd",
+    "job_manifest_materialized": false,
+    "mechanism_id": "context_conditioned_action",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:60b7307a3ee7baaa45380bd26f1fddf469a82c2e75a4f12f7cbb0e205e70f7db",
+    "operational_admission_id": "finance_v26_operational_task_admission:0ee7bc8cccad5ca271d024e3cfb67ca3e4c8464789b5e0c04c69063b1d842f03",
+    "operational_record_id": "finance_v26_operational_task_record:15956a65fc752a54a32a0c7167422caee8b627cc21fbc06cc87aebdf2ba62971",
+    "operational_task_package_id": "operational_executable_task_package:b5514c3d6374e7002d018687ea8a9095f33ec9630b58bae090ef70ad854f8a57",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:15b8db1dee3510586cc2db2d4158e62a05f0086107bbf08f5cf61e92b8d0ca6a",
+      "finance_v26_budget_qualified_path_audit:3d8f6b2967add920b80ada85040e3fbad0afc295b1e8b8ee7853066c69bf34ae",
+      "finance_v26_budget_qualified_path_audit:c5cda38f33d07da6bea11f59ffb3fc053a7978678df37dc736cc7af8703864f7"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:389000f6ce7046f36ca772afc1e95410ba10b20d705148a47985fa2e9e826436",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:54b4c82b0978f3bb1a29672e8c82e4c8973ad7554c4e07fed044d062ae25d27d",
+    "source_task_artifact_id": "finance_capability_sensitive_task:f0462a4ad448c68b32ab455f6dc2df2cad16a32401f51db6b32d3731f9bfaf92",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:370785bd7753a515bd659c9ae74657798ff0c06a1bc0e3852f567f5835802e1c",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:19cdd5bf9696e1d8c44487cc1ea5171930742b192e41fed427625e5050e4711e",
+      "finance_v26_authority_verifier_replay:c972e0743dbc367acec6bdba75a169fcd0cc60dbf136df604cbfe3adc82e5349",
+      "finance_v26_authority_verifier_replay:c972e0743dbc367acec6bdba75a169fcd0cc60dbf136df604cbfe3adc82e5349"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:1a8f1a6ee23ec3316359f0199a665f40655095ee7025e368b1a230eb06a07d0d",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:12cb67dc5c8630ef0eac6033950a7b6d3c8f9233cdf136079409d12513ff40e5"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:f5893268af2196dff9bd6e8c293120f146de923269c24ce801a874fda2330cff"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:12127834478f81131bdc47948b3bd9397787a60b94483c407169a317a2d200bf",
+    "job_manifest_materialized": false,
+    "mechanism_id": "state_dependent_stopping",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:434d266c5874344415676340a8c121c3ab9b825e37b7fe23c8c6f5ed699009a3",
+    "operational_admission_id": "finance_v26_operational_task_admission:400d99d742f00ec773d822314636438921a7d036cc5f7fc7b1ed24319014b0ad",
+    "operational_record_id": "finance_v26_operational_task_record:d846f1e42461aeafd2ae71025a8ab2d7ab872550da3cca16d9c9830935de15ca",
+    "operational_task_package_id": "operational_executable_task_package:6b1098cd7ff15628f07aad68330a73f13e92f2ca52a92a04d0500dc6fe152aa0",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:56033042e67043a12331201ed54a5cc1689784527e51a30648371db771319b5c"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:5e631462c5cf57c68b49cfe93754805a072f3581946518c76ebe08f4b9eab6e0",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:c112faf4f883700942cece36dea672d520f3a2f7e41e11760fb6fe8276dce555",
+    "source_task_artifact_id": "finance_capability_sensitive_task:8813a7f78da4eeedc1ec0854081863ea336532d629ba5868e9bffca2343a8dfc",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:37bf167005b762f518ddd956c1f61c3236c24746b4dd1bb729f637de34ff9bc7",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:d98406ffeb0327f60e67b1d30be1aa05ca82a9789493bbf130e77c6485808825"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:f923918c265e198feea53082f8310b5d5be83eb63bdcc9dd6e11e56c3d2787f7",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:9c386a57197e6fcb14160bf276e66420feaf19b946dd7f702cc0eca26af14c0a",
+      "finance_v26_budget_closed_compiler_trajectory:cc3f8f39d53fcca1137c2c8e6bdec3c67e47d72e38032ce3c3b33f340c555786",
+      "finance_v26_budget_closed_compiler_trajectory:ae863d4aa090b9eab499ac29310f7e69520168cf99bf9b470180669334f53acb"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:11f930394229bcea572f41e4efa18b420aa64ebaaf9b5e20dc7213af055c7957",
+      "bound_public_executable_witness:37f85cad175e973e044ac88936b1e6bbc3954236c35473cafcddf3ab719cc77e",
+      "bound_public_executable_witness:289c22ceea3789de8dce2ddde2e470493d6e5afac47b0034b6fe1f252d154b31"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:cafb9a4d7f94aa820d5661038145dd2f3412231c826e6ae9221bc4af02a03b1d",
+    "job_manifest_materialized": false,
+    "mechanism_id": "semantic_reconciliation",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:485be68a892c74b7409e0b6ef346cd3cbfd96cb289ff03a2a103e09f7dd86293",
+    "operational_admission_id": "finance_v26_operational_task_admission:e6aebe4ddcd3ad3fc013b33520f4e65499a319f28bedef532b908a0233f13414",
+    "operational_record_id": "finance_v26_operational_task_record:6a8cdf1a6d44a064f6a7a7ff1d37cb8c859618d2394c9c869a4886c18692cfa3",
+    "operational_task_package_id": "operational_executable_task_package:ea00206b92780f1246777a671d92e6b52fa60b236b99974b7dc3378f17bc29a8",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:cf28b19a6c9b4df4cf182e8b7dfce77a5d1909a03cc9a085225f4e94ae086986",
+      "finance_v26_budget_qualified_path_audit:f6e223266e8e41f52678c52d27fbb311ac7ecf689ab52ef4dea9bf4be3d7ac50",
+      "finance_v26_budget_qualified_path_audit:ab48800153310caeacbd718521be0296288838064843583ce7b4a143557b1d9c"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:76b1699dfec1d36f7c376c9da27bfa2f6ee9cd966c29167a4b69edef1ad676cb",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:7f5ffedcb2543fa22408b8bcab24caf8c802699c1c8e2568ea71138a31d5aeda",
+    "source_task_artifact_id": "finance_capability_sensitive_task:9c3aae57174dd13282c9f2272c7926def7f3f9e352a7547eea194feebdd53a4b",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:40cfb70b7d651fd7fb8f1e450d2762d94049f7e32c0dc24c067e3fb465637c8e",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:63dbcae6c6615dc684867544f4bbef3369bdafe55a05b98afd40278899b85d97",
+      "finance_v26_authority_verifier_replay:adaecb9d2a9cb9699f1220ba36dfe0509076b050fea9ca7e809397068e3e80ee",
+      "finance_v26_authority_verifier_replay:adaecb9d2a9cb9699f1220ba36dfe0509076b050fea9ca7e809397068e3e80ee"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:4ff88ce83a8d8d71296e1cbdbba98576fb3602c04de5712f39b3b08fbfcdab06",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:bb6dce0fa7ad56702f74ea2f9ea2357f0f0d6f30312a452c70ec17cfd9d3f667",
+      "finance_v26_budget_closed_compiler_trajectory:6c4c32bd6f75edfd9b9828f9f634d8684f6af7e7b4d840563808aa495579bbbb",
+      "finance_v26_budget_closed_compiler_trajectory:766a66744824c2406eaaaec3e86efea6849aa6385eef7f747055da0c4e9746c9"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:ba46ec61bbc4b76902a5735abc03582b54a128a1599c69e1c306e8b0064e319d",
+      "bound_public_executable_witness:62c5e8a37567bc456125798730c2adaeef57430bb78499b009ae8db2fe9b347b",
+      "bound_public_executable_witness:4f1dc9bd0de382747853a5cb167bb3edcca358d0e49ebc1548e7da5b92abf160"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:dc30b9ce3e568adf4237c5cc67bab005e293570ef6c8e18c03b03633af7db291",
+    "job_manifest_materialized": false,
+    "mechanism_id": "failure_recovery",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:70d01e0649f31ce6ca7dcc368599d20adc99668f3299dfda7876602ec9946898",
+    "operational_admission_id": "finance_v26_operational_task_admission:6d81c5f368343c7e37196c1bcf25ca3ee2312137abd5ebd38f030ee654408adb",
+    "operational_record_id": "finance_v26_operational_task_record:f546501aac2cc94cd14bb8d105af521738d67564d11ee7397ac8bfa5eb7de96b",
+    "operational_task_package_id": "operational_executable_task_package:8276645f1510b51c14c11c093c0f44818f3617fa2a5aa9638e54ba2f91d5a37e",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:a1a33f76b2725eb6053d5058656ed9919beb56fbb26472ee2929014e7ce4ce28",
+      "finance_v26_budget_qualified_path_audit:ef863b8ad88936192ecd523829a62c93cd6b0efd0d9026bac70a580765a4068a",
+      "finance_v26_budget_qualified_path_audit:b502177ed105921970864e213c28a4e6daabf5d66345b35f3088c3528f84361b"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:485e64862967790d041f646df9a78c6212bd29a8ce0b0dfe1fc08633834c2adf",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:613337bfadbf0802bcb4829a0acaa3c49ee1f173e1acae5fe6427a3d717fabee",
+    "source_task_artifact_id": "finance_capability_sensitive_task:a039d2cdb87a1cc5e0e568e1caf6e3018132717af5807b879c6a0ea0a38f448e",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:44b2e9c715b799a0e978f037d8f274d10ab64b365a46e32acafc2cbb668f2dc8",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:7ee604140639718b53f07c931ca992471146a57ea2c83bdf41a33c959fab5d95",
+      "finance_v26_authority_verifier_replay:c328fa72e8c2e446a4c6e002a80a4106503248d38175995c931b6539be254bd7",
+      "finance_v26_authority_verifier_replay:c328fa72e8c2e446a4c6e002a80a4106503248d38175995c931b6539be254bd7"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:c384981b07a5ed3230cf0c1ea049614b716cefadf4e3342f4b28b8bb81c98947",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:39fae909067c03c98c2e1bd71b74b5db952e4167a90b39eb08d19d239a9a24ff"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:ab1d551c943a049f885969fde0753582df7a91160c8487875e7e0868d08ab504"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:d90d0b2d0e66926251ea19fcc67870a385e4e16ad61cedebed8577395a344fe7",
+    "job_manifest_materialized": false,
+    "mechanism_id": "semantic_reconciliation",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:c162e8318928e76f63c7bebc5c0618c208e88353108e15290cf04e9424570045",
+    "operational_admission_id": "finance_v26_operational_task_admission:f8475544f75a5ed8c71d958c69181e04c73da5aa179a750f25bf009c241e7ec6",
+    "operational_record_id": "finance_v26_operational_task_record:8ef4258a335cd0b9f1eaf3765f19faa037f3c7f64bbe3556dea812740dd3d280",
+    "operational_task_package_id": "operational_executable_task_package:d46a54f5f3aa53bb85bd065009d04813afcaf3edb0446562eed521466b6c7d80",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:e2da5c69c053b0f62a28c724b28ff6a830345ec0b7af44aa8bd1c2f1b247bdc8"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:18484bea068c998d4b3e90799c67a93b8fb5631663f1a4aaf232eb2984f6171f",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:7d1459e1c3353c6039434d94a438272cc1cf23036777e25c91875c5802c84ab5",
+    "source_task_artifact_id": "finance_capability_sensitive_task:b3f411e97e08a2991e356418ace458d10ace6d3c148472e68113f639cfcd637c",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:45998a2e72cdbd4bf927beea89db17f8b4f3c5e36a8f158e319a6f5f9343893e",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:ab45a24315ed715f1c40440198c3a8f61513ae6cc37cd27d41791d9f41154bf2"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:cfecbbd7de62dd937f0abf530f300ab6d7b80a39537b6300b90c15beedc5fdc3",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:1bbf04f550c7da16cc9910e5960827ba9d7e4b2f90ea717d78ddf452f36c8940"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:a9478e0dd90749404e7e2df0cbf6f2523b4ef25acbb46b521c92ca0b8411b5f4"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:b7bacbba032250c5e7dcb219f0d5bfeb563eaa4a8f4ff9144f580ad9d97e79b9",
+    "job_manifest_materialized": false,
+    "mechanism_id": "failure_recovery",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:c0567ea223a4568d0a48e1aeb6b290d0900f73a8360e66996b350f8fada84b1a",
+    "operational_admission_id": "finance_v26_operational_task_admission:a62341c9bf34acd681f26bfdeb64cf2c1f6b9e9edd748fa8ad8bd1940700c6d6",
+    "operational_record_id": "finance_v26_operational_task_record:a9dcbc85bda70091fe3237641500fa46795aaee8ad6bdde655cdfb1f79921b3e",
+    "operational_task_package_id": "operational_executable_task_package:e8deb3b7815c8194a1dcf1f7c8cf49fbb325e3664b36d9a63eb5140d59cab163",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:3a6dcfd5c3095ff3dd09b832d6182dd862c32b5077fa66a1ffaaf111b914d166"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:06358e33ee674d85b00f633dbc1777c0ed0bb72810da6af924842a3aafb32099",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:94afcdc95d8c563328ea2d7f6cfaebfca103dc2b7f8a345833a63288d1168871",
+    "source_task_artifact_id": "finance_capability_sensitive_task:aad057436a1ba422138b33e24fb55ac70f107b06a72675570a9f78c17564a1a3",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:46f43663d602a4d840a7ae346479fa12ac362554bfe9ecf6139d43505c8a8a98",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:ab254c65d2b07e0827fbc00274fa85569db385ce7f26b7b3d980880cbd0060c1"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:54324c912aeef3b3110d259cc0c54369eff0dd369328b40c83275f580e405a5a",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:183839d2acbf789e3a6a1d66473d9b8f607d1405c34058cd67f3f9c4e3f23230",
+      "finance_v26_budget_closed_compiler_trajectory:b50d8f16d195c0ee21d4cd8a60fe1afcb1bcbc145c505b18ee52ddc5bf676044",
+      "finance_v26_budget_closed_compiler_trajectory:ab3f9fb4a7277fe3fd1f280ecc0ae429d8e7f53a59360dc556613f1ca070fb52"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:5cc103f8cd0d761b9f96f5364611463bc5f8e953dd6642353803101426807fb9",
+      "bound_public_executable_witness:0c677945c389e1da06fbc96a1ac960d23d2d119a9dbd5833aa7fc3fb8f5dc46d",
+      "bound_public_executable_witness:0b0b8bcae8a8b131f5070c4696aab393d6f7409221bfa4342f240e82274938d0"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:f85c24fc75d2bc265f84db9e0270df53e06c7921ae37d73beadc755f7d55ee3b",
+    "job_manifest_materialized": false,
+    "mechanism_id": "failure_recovery",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:9cd10108da502b02c33c0731c971a21a7a4ac8c579926300782f7efbc76cefe9",
+    "operational_admission_id": "finance_v26_operational_task_admission:71ba665c2970491e6d6da6d40717b9103f04f68a79fa3dd9a5cfd2c625eb890e",
+    "operational_record_id": "finance_v26_operational_task_record:4d31ba283aab8335823cacd83b2351e2bc501006c4a9c06fe1659545e21dce64",
+    "operational_task_package_id": "operational_executable_task_package:5c1a6ae10124483f6493ab087d26d59113b1d09fddc214cb80c30a518c7f69c8",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:b2d8647515f8370a41ea3c74c75a45b1efea45c66ab6e1f74e45e19c09934db9",
+      "finance_v26_budget_qualified_path_audit:1d462eb46ce70f34a25ed2867b4ec8bc2e94990c8f8c74d74bba54f9f78f90e2",
+      "finance_v26_budget_qualified_path_audit:5892fe1b26a0f8987b0709439a1d1f5654b4a08e05f8f15dd7a7f783f9910d5b"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:a68f1f64dd1b13d3888d77468e27a66bd0275b4adfdeafde3b32b80e2ec36895",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:f5cc0a38b4b53ea9a336a33fe0139d9a2787313a56cfc92bcaa6fb299a5724f0",
+    "source_task_artifact_id": "finance_capability_sensitive_task:a3c4bf53a892d446c4a9fcff4be36bdeb31b48a19ca0976fef93d4a40c61bca2",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:52db35236e39e54bd30bf782c14a1596dde71bcf7d4b2eb29691d8a1dd4ce223",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:f6c37e6f30eceb71f19b54ac5370e1f42f57f626352eb3a14cd15895e95caa5c",
+      "finance_v26_authority_verifier_replay:f3389a735c72c5b6f8a33c4423f6193474224d29d5ba3e66572cc12d756f38bc",
+      "finance_v26_authority_verifier_replay:f3389a735c72c5b6f8a33c4423f6193474224d29d5ba3e66572cc12d756f38bc"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:167f8a29a8c69020ebcc3c2cffbe774b79b89e2526d3530fe1fabd6b01d1cb6b",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:314d767ad045be7dbcd0beb154b3ee599237f188c7314d5543ca8d869b1162d5",
+      "finance_v26_budget_closed_compiler_trajectory:96c90ccb464d7e5995dda29d0e6f67a404eb1b56e95734f65b982c9e37bda595",
+      "finance_v26_budget_closed_compiler_trajectory:b40d1dd71d6e80bebd2940fb7a4ef78d2cba9202cf1db75e2ad6dae81f859cc0"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:b465088fc8caabd769508e1da0a4bca5c2474bad9ce306111f79c7e378dd91e8",
+      "bound_public_executable_witness:8c1fbadc4bf7661264f69fd0df49a5f5a197e12907b6805e792915c45a9b3ab9",
+      "bound_public_executable_witness:1979c5830edc916aa9302351bae3eff63d6c8db0aa9a21a2458515dc758f2c39"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:186c9863e31e00ff42c3c7cc876d9dac5e4f4c90b20faad8604042c6c92d9c32",
+    "job_manifest_materialized": false,
+    "mechanism_id": "failure_recovery",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:bb9a346d1810cde86082c2b18519cbcb61cc0d49032f7eef9bfe58039673df9d",
+    "operational_admission_id": "finance_v26_operational_task_admission:9adc809dd8c49dbd9fe33618991ca3fdbb1a2f3778fdb5274428d3592d8a3715",
+    "operational_record_id": "finance_v26_operational_task_record:0429ec3358e03086803b7fb27d3c57c2c6d1abe00f4f57e22c199b20202ff66d",
+    "operational_task_package_id": "operational_executable_task_package:1ee75930652ad72b0138030b6517bcb2337fb1af3fc9cfd1086da0228121d712",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:3afd67e151a2161ad6c24d494dee843f95fcb059c67e08f05ea4306252b1ad1b",
+      "finance_v26_budget_qualified_path_audit:eae0080c4101e6cd72c4b03ab6a094c7ced177d46c91d6df8e89c1b349cb10e6",
+      "finance_v26_budget_qualified_path_audit:9d46c8546d0ad2141ad380257cb0a007a4a9d9587d84ccf8b6b226c928018d9e"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:501862afc5e98158a2eba04e8eddff59e9c37a62a66a3ab031f8bf965ea24b9a",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:42bfeac21ef727a0da30e55a6cda33044a523371a4cff92637e367d97c1b661d",
+    "source_task_artifact_id": "finance_capability_sensitive_task:19ae0b34f9101b1b37840f5c237ac1178e7b7e4dd224bffde2adc91e2fba5394",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:58acecdaba25ae71f3ca0eb9371dffca2835e816dbbb22d2d24abea5347ec0d8",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:ee9c132693377caf94679857e02cdefff8bc3ea660dc6dfde1ebec86a4c8a2a5",
+      "finance_v26_authority_verifier_replay:84d67ac50ac01f9ecedf9460cf9d676f427f8bdbd2568f4995107489aa4d15cc",
+      "finance_v26_authority_verifier_replay:84d67ac50ac01f9ecedf9460cf9d676f427f8bdbd2568f4995107489aa4d15cc"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:95429c2a65aee70ba9cdd9ff041909c4b681d6640ec3429dbeca8e7263e9d766",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:297ee38c956aac4c8c0a93935b510414780cd064b5c0cb29673698f65f87d6e5"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:e3a6d8e9479c409c9a89a40130ade06be910fb358e79a44981cba64080b265c6"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:a1b39e542bb77c4ca884542d8b70034a01b5ad092857d5f32733bb0b803c6082",
+    "job_manifest_materialized": false,
+    "mechanism_id": "context_conditioned_action",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:7fa5d98e1db1642da29b041d90aec151f8e63f6296364012197f71c36db7c876",
+    "operational_admission_id": "finance_v26_operational_task_admission:1c6bc111ab3b7aab368c38b3c70e4ab6107fd0624ef498200a697e408612cb30",
+    "operational_record_id": "finance_v26_operational_task_record:a7983a440c92ba937466c6fbdb8bce69cff79c7385a584a850bd439f1f506a45",
+    "operational_task_package_id": "operational_executable_task_package:1194281dcec8725280ef83470a992bd5c7b39038fdf873c7815e602670b87d72",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:82a01457e756d7ab1f2055fe8c04f8d063db05d39986e0a6ec1cf48b6a005072"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:0db0edf2051ed8da6b23fdd47dff5b33fd3053d14bb7a9d56f51a720c5d70baf",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:9b882b2098f9385fec74f7dbdeb83c5fd62cab654a8c10a17f37c10620856f77",
+    "source_task_artifact_id": "finance_capability_sensitive_task:6d2f69cce70d20e4f6150d489ba93e6a2875a2092cf2e7e47d33bf7d018fedbd",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:6ae0230eb2dc2651c1c62613a73349ad968ed872738fed906a0b183b35a98fa7",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:cdf5323397a7f380159d06668ec793c6a739f9a87c6b8875d928439c7702f0a0"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:cea5ac24d0012ca247a0b41c5a88bb6b65e2702313c58b1575d5d317b1a316f8",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:f4d2f6a347adbeeee12bfa3c2f21457d7ca43ca6c584503714613ff1e043f43f",
+      "finance_v26_budget_closed_compiler_trajectory:d9052b29815c49510368f07847d763c396a897279427b24defa8e748ec2699ce",
+      "finance_v26_budget_closed_compiler_trajectory:32f3372f560cf414761dadc3e3bddf5af812be1d090cf8f5c3da45b2bbdefceb"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:256c2023a2cc9e3d85c3d7ada4037743144c4b75b0f8d7663818c047270add90",
+      "bound_public_executable_witness:5a49bbfce0208878dff62dded0ee427ea72228015f2a84b12b61f84357f68369",
+      "bound_public_executable_witness:7f948f19f134167c8248c61960fd7c3b9cc614bbacb2d32e137502aa1ecb9278"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:a7a7bbdb01600878cdfbda74f5769cc0831520d19ade68009c06dfd5336bf452",
+    "job_manifest_materialized": false,
+    "mechanism_id": "context_conditioned_action",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:0b33dc29e5ce67c30813694a809d7a72773d24560e6fa53e32f5e55463525beb",
+    "operational_admission_id": "finance_v26_operational_task_admission:b4c3c832b11ed89017fb84708256e9036ad6a698959278865dd21b995871eb9a",
+    "operational_record_id": "finance_v26_operational_task_record:023db3a60b08735e89a9d6b8c527a26a968818afb0056d6aa245a9165525a52a",
+    "operational_task_package_id": "operational_executable_task_package:74b7ea842a56006945257361fcbf27d3f1708888c1452221f1099ead545f5797",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6755bdf072c7664a8b3f427d2d7e3511af2cf223c371eaffbfb27853a7b6ac0e",
+      "finance_v26_budget_qualified_path_audit:7045bfff77f732c9f3a0207a2578a12f56bca91074a506156338ae5d146661a4",
+      "finance_v26_budget_qualified_path_audit:e3bf35a4cdb576f9a8813d44cd7fce59ac7d7918f5f7889847b3907ccd890edf"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:821bd2d682659c82ebece99fdcc2f684eecfe2d5860b36577e948ca358264285",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:bea404f52101f0b62042c71f1fe24eff98849337fb2e76784a7e6088f1782090",
+    "source_task_artifact_id": "finance_capability_sensitive_task:671773dbc481420317c129450d920463269654c2d994269f792f16e9b02bc5f8",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:6d54ac14750a6144e1de41e65f5d0fa6f0c7357602c56ec370d567d3350101af",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:5b9290074c9e57b612336db2b1eee1f8c4d70da6c0ccb391f88503f030af439a",
+      "finance_v26_authority_verifier_replay:b06848eeb3cf69fd264d264e9b311a7e5329431755801fb316d83e6d2cc003ae",
+      "finance_v26_authority_verifier_replay:b06848eeb3cf69fd264d264e9b311a7e5329431755801fb316d83e6d2cc003ae"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:12fc75b79a8800bd891b08202c0a238427a51a14d8101fb24cafeb2290075971",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:a05d1d12a261e4f73106315b5e1ba3d1da2ef5af63c1d2d6d355b4e2e302a862"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:920565eb6c3089eee5e7dfe9e03f68bce633496e373c9698341d56fa8c7b7784"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:4a0f1b8c590b4025aa244d2eb6ad9f7a78c19335ebe5274cf1332838f2727c7c",
+    "job_manifest_materialized": false,
+    "mechanism_id": "state_dependent_stopping",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:a1add4b507a22156a713b26702b5caff18132ccaeb7a8bb27b3a0105a66147e0",
+    "operational_admission_id": "finance_v26_operational_task_admission:cdef371929bec2e0ff497e6125a6e66100c192a43eee9aa72642f02ef6d679be",
+    "operational_record_id": "finance_v26_operational_task_record:1a4e1a3eeda9cc1a02b24ef7aa4e5db80499643111cd3393850dd78a425be9fa",
+    "operational_task_package_id": "operational_executable_task_package:e73804f14a8a40956b816d44d81725eb368d77708338fc1c9e75ba948bb4a732",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:571e8d45b53708db722ef7830bd4530dc645c23f84673ce160bb2d22d95d503b"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:dacc26e391dce3c11c63d8f259a38df78e92217114e261efcabd8d40ea4d4629",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:ba0ba69e6f7c13d3f6fc5247a57637e2946772bdb40d9657bf42f0d8e65c7d79",
+    "source_task_artifact_id": "finance_capability_sensitive_task:68feda40f622cc6feb1570ffe6b1255eeb1e38019d01e9653731fc4723a4376d",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:6e0c251af29e732c07e5e5d93563df0c520a27be3e2e5e35723696f65e5ffa69",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:fcc33f2492d5f98da1602016dddfe7d0b09f83296e641814a099cb4b0dbc2ecb"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:9b08a4f98bf3bd378cc8251b7930371ded8672495370280af4f9c498822f4f79",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:f420cbac7b8aa1cdb47016879952ea87eb3c3113076ac5696eaa791722a24b7a",
+      "finance_v26_budget_closed_compiler_trajectory:88a38aca1a9a1863e5e9acc6113525494e1f91f7766f6dd07ae3369e299940aa",
+      "finance_v26_budget_closed_compiler_trajectory:190c34c17e817d29fa04f0b8d8def3e45bd529241123fbf8cc262a3c3efcd093"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:149a3142e9d0b200388630c63c4a28b1b96bc17ca2adf77cb58e8e1d3aa87ac9",
+      "bound_public_executable_witness:365b89b9d1e828b0e77ef460ea5e6952e1342affd3fca1634cd349f9d43e95cd",
+      "bound_public_executable_witness:2679eeeb0397c80473ea65868c84c8a646e138d7f309ecd0d36e15b0458536dd"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:4227f6b0a1da1d30883294d4a37a32841dbc91ed10e9e26119100fd7db63f8fc",
+    "job_manifest_materialized": false,
+    "mechanism_id": "state_dependent_stopping",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:d1d4796752e15218d5dad824454cbcc66c5964e2e7a122f04bb053b8ce1ad171",
+    "operational_admission_id": "finance_v26_operational_task_admission:6075e242a517386f82c8ed25a42796f455dbf431171d4ee45388eab5c4535563",
+    "operational_record_id": "finance_v26_operational_task_record:3a4af8966bdf204e55cb521e0c60a12bc8ec208e703fe2bb3f9230b32937ae23",
+    "operational_task_package_id": "operational_executable_task_package:816fb4f6d1a70a12945e1201a6ebbed56a84ad208f8b021af17ccb12aa8a1dda",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:bbcbbd760e874b6c566cab167908687c14669c31621a373f3561a0235665fb9b",
+      "finance_v26_budget_qualified_path_audit:de2128052d334017e199008995155a2dd884e1dd1f65886b2b3129ea7a310d1c",
+      "finance_v26_budget_qualified_path_audit:1559e49dcac1e9ab793b6876130b92295ba90e6c239fa193ce53cd65388ce8c6"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:b456caafb336c060ee6a41c9d0fced91adc347acca49ad48753205c0e35dc08a",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:d22f9a8d8d2137151e3a7fe12778d41f4fb12b319b09f1eddf18b5e47021a8e7",
+    "source_task_artifact_id": "finance_capability_sensitive_task:b145d0bee510dcd59e24df3024404a883de40b6e94e2b941f5cbae887a151be5",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:7a5a1bfa02d8400899a95135a22042fc35e974985b9016f4546c78bb038429db",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:aaed9abf517ec129d4db147b3c759011cb265d27e21043f8e2935d9009d71b18",
+      "finance_v26_authority_verifier_replay:5dff9139632560c3d0fae48b9a26a18896129b0c346bcea004ea5c95bd8908d2",
+      "finance_v26_authority_verifier_replay:5dff9139632560c3d0fae48b9a26a18896129b0c346bcea004ea5c95bd8908d2"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:c7d0d2b533e931a411aaea2da39002b18b34baa7aadb8c5f0a3970cb22154e70",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:b93ef5f1aecb76da74c693d37f00ae047fc6242dbba7bbe7b163e101e8409891",
+      "finance_v26_budget_closed_compiler_trajectory:f9aa3e695e31d4f49e38dcee96ca5125bc17429faae3dd9a1d7a5bc1271ef4c0",
+      "finance_v26_budget_closed_compiler_trajectory:54124ea6334973d823af47e98bf0555131c21d8cf33e7de20e812db61f804660"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:0927593d44fd88081e7a922b24fdbcfe0ca3db5f5a3e8d28c166ea303c57acb1",
+      "bound_public_executable_witness:78259ca1925ac7ce16e7ef82f85d0ae8e7442a13c53d488fee4419a465ab81c3",
+      "bound_public_executable_witness:e1b7a11f617ffcddf86e56799509ab124b2f70a49f75f0533ac26022a385a1ab"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:c302d2e67b9bde1c0c2cb7987269d216798c696d5cc0fb7b7beb144f0441029c",
+    "job_manifest_materialized": false,
+    "mechanism_id": "state_dependent_stopping",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:36511d57e973b6b564f0508a5562a9a0210f7576e568095d96870cce182bfb09",
+    "operational_admission_id": "finance_v26_operational_task_admission:2719c9d6a0d4a3565356db366a61d38ab2cbebcc58f49319168fb1094d51fee7",
+    "operational_record_id": "finance_v26_operational_task_record:b3816ef080c68fbec04634b25e52e814522f5c394727617c70d484e87e34cf51",
+    "operational_task_package_id": "operational_executable_task_package:bdbec8b82eb24bd8e217cee564a9c6658daad3b377a8dc8e81bd641efc165df3",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6191d273c304bcdb65d881d392d0a4d5be2e2c7a645f54ee1d4c1410214a514f",
+      "finance_v26_budget_qualified_path_audit:a3af7c94da37cf6c048caa23f30c4d2cdf80124a00b4b506a97e8fa4f7a3de59",
+      "finance_v26_budget_qualified_path_audit:6b9da0f7f68fad2ee87bfc93a55efe5f19cfc3f9a8bf4dec1debe73db5d88836"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:4598113f794278c2182102a65b4ae2958a9c546ba48d99b74b5fbead41b2a899",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:bf16b7e62299553aae026cab271c1a6fa8821b45078a207159ea27911aca2872",
+    "source_task_artifact_id": "finance_capability_sensitive_task:29fa271e95437ef893edf7973dc7c4d407b82e743caf571b0703de7753c10b05",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:83236a42445533f78ecd4388cdde70fb1febc20a9237b0ea0d10566130baa8f6",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:7d916226f2442bd1d6d0690fb6867ca4c9bb7ddd042a0ee26239675dc43a3755",
+      "finance_v26_authority_verifier_replay:26aedfc0754fd08a0a04c4b66ec14f1224f75a1ac01626619a5322978c580975",
+      "finance_v26_authority_verifier_replay:26aedfc0754fd08a0a04c4b66ec14f1224f75a1ac01626619a5322978c580975"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:eae2c4e8115b5d175024e9593e3dad8ded18fed2246f91d37e4f518e07ea7c81",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:227bbfd9ffdf81ea7c3d289d73718a0e835d9dc7e9e6ad2269ac5005ee536f92",
+      "finance_v26_budget_closed_compiler_trajectory:8b7429761db8bb11a68b80f47b5231f272ea68f1f9752c2a3b4251fbe53ea129",
+      "finance_v26_budget_closed_compiler_trajectory:b5f65b592562c5bd10575b28115841f17c80f778635a2d68034fe24c790d1736"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:45a43088eeadbcadb0d93e9655eb7350f8c60bf2ffb844d58395b5cdae2fa727",
+      "bound_public_executable_witness:e8faa9af4b9d9cc76180cf5be6df8cef02f58335e58157dcfec286bd902f34e1",
+      "bound_public_executable_witness:fdb94d71a0f06c07b4b26e8c5620197ce9a7902021a3c1693583ff979685eb28"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:decc78e14c1797559f04ab4444288f743814ab627fc6d1787134c9d374aae025",
+    "job_manifest_materialized": false,
+    "mechanism_id": "semantic_reconciliation",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:58d490c62d1c499f14035690bd1cc68989fff06293a9fdba06701cc414491c8b",
+    "operational_admission_id": "finance_v26_operational_task_admission:58917c7c18b61b83b989ebdf5eb4de4ee8c7dc3ed131346cfb977851e238f7e2",
+    "operational_record_id": "finance_v26_operational_task_record:5a5532a5fedf4de31c17a608c31a53f35e9769e8bd0534ecad6fde735b9af95a",
+    "operational_task_package_id": "operational_executable_task_package:b6c15e8a1083cc19edc1048e0dbad449168f2453f81f18592df02181e2e7ecec",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:bbf0e63222f878d0acac285596f0be7511bf51f066a0317c5cbc04c1701a68e7",
+      "finance_v26_budget_qualified_path_audit:587f4c19c64547101e2db86f97ccafd4826a2de783ecceda071c2e445670c1b5",
+      "finance_v26_budget_qualified_path_audit:aa826213c187071c34eba8ec64dcc6080e5a213e80aff98bcfb9f15cfeec4602"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:992b6f52eca26bd92b2b79085785263de2daf89a0689640280b7bd6e03ac2884",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:7ee5ec5917f01ebedf0bd1d1e26f5e2ef2d5a539d5e6f7455e51f73e9cfe73be",
+    "source_task_artifact_id": "finance_capability_sensitive_task:ed482636042b57968b31d4a2d310967742587102a5e24b587e68abb9af4cfac4",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:959024564e412c6c051a341096ab66ce835148e0c6fce40bb0815c2d4ecbdeb2",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:7106630009bd566eb80821620cd3934b2df0e6deb8771266f7d8bdb4b823fb88",
+      "finance_v26_authority_verifier_replay:5e9c04ee9f30f48afc3cf550c9ac8458863e326259005797c8ce8e0dec58d682",
+      "finance_v26_authority_verifier_replay:5e9c04ee9f30f48afc3cf550c9ac8458863e326259005797c8ce8e0dec58d682"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:93d722950cbbd13873381b0c9e74a448d5d67f3ec33e29c59d26ee9ee04aa0e4",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:e83dbebc6e14d9543e39716ac11a2de73e8d6601ffc9867632375dc120b43f73"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:5c1c6892eda5c0cdc6b4de857584ef0c22a34fb1279fd86703a34a36ed8e7826"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:db9a9be3b1f8f4238adcddb918d90712b6b6d3f872124e2ecf107ced1170fb1a",
+    "job_manifest_materialized": false,
+    "mechanism_id": "failure_recovery",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:2fbd6a23b92c2031a7ad4d74da296839d21049d9adc91992fa42b2651f873580",
+    "operational_admission_id": "finance_v26_operational_task_admission:218285cab63c91d11740ec88afeb8835bf79cebde7dc3241666b87b6c76bf383",
+    "operational_record_id": "finance_v26_operational_task_record:bd161ebb181f681bf8a1f63f6b72aa73d07b3ce9d1ccbc07ecec2bf28ebe273a",
+    "operational_task_package_id": "operational_executable_task_package:f0485559d0d4a9c57f56218924f1351ee866de4d81a1ab83e6112d5e4d454ead",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:d4311016b52893142cc3c21ccd8dc2d9364653a615783c7895b4ec2243841711"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:23b785bf78c4bea67312718315d8d66e882b31f7f62feba72e8eb5a69f9fd237",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:4859a56f99a0a639628de28e80fea85ad75ffcd8cf575dfa5c44e4c3721b7bb9",
+    "source_task_artifact_id": "finance_capability_sensitive_task:528cf959ea59d908696aa965e4242f9634c170567177aad8da96cf6fb1301baa",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:aa2d2dc8f98e252da39f433e81774ba600c39621c690f43c5c6fb9ce51d9019b",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:9b31247d6e697595858212ca10bb1a06f315abe776e5cbc17b82efa172f13839"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:e5e92a7b1d2652e5c96aac025e4d2ee11d203f78cfd4481a0ac106444c516268",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:b71889560f888e44b4aa26ae0ff30781ddd4cad47229e35045ba590999517c70"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:dbc89101fedf856f591716b31a895e245bd2c0345e8857681cb8d4f7186ff829"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:64ae2db0d5073f1d02f7bda5ba7b7ba0ec28a6825d1111c2b93efb2e99349ba7",
+    "job_manifest_materialized": false,
+    "mechanism_id": "semantic_reconciliation",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:4945c585258af3b088572e5aeb2aef759b2962050a41647eeffa1f8b3df5b786",
+    "operational_admission_id": "finance_v26_operational_task_admission:1e08ac783970a8a024f4625c7d847164aeb2b6e4cd06b9c165da56448bfb2c64",
+    "operational_record_id": "finance_v26_operational_task_record:d5211966d39a08973d6fa3bdf0bc9a9e87d129d5ea26e1113184180044944426",
+    "operational_task_package_id": "operational_executable_task_package:574f6860987c8e19795058c3a622f8cb17dc0323f21780ea4412c2e2996cd4af",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6a4a1b79527bb8da4671803ffa2b5cac51803935d368bc2796fcd4a7a2b794fb"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:bc81178e553c6e8c9d1a8cc4cac0a0731570622a48a79fd4eec54386ea8d505b",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:e43a23fd111b786e948235313a3c105e3819f30866ee216b005374645f629219",
+    "source_task_artifact_id": "finance_capability_sensitive_task:76f4998033e04d7470c6d16d3e52bb200454ac3f4effa8055ccebe356b7ccf5a",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:b1d83c16f8d196946af86f562e899ef847e276f804c9c669080b38dda7a5f3aa",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:a7edde82fd766a290e216e0e76659d62e7c3ba8072bba9775ee9d9fd3eaaac2f"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:16f3f68c416698692dd5843131982d41ff49fb34bbe539eb26519ef9add54b90",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:56fc04e54d17a9f7bb863f216164d1542ad56862f2b397c0e66c906aeb64a61b"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:41da82cf080946b0ee78637f8c4b8f8d9ac1178709d3473a5b2e68639276336e"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:1a7220a40de9df2ea4162d5d6f282bd3ca7ce753696e8fa00ecace9f4f727bea",
+    "job_manifest_materialized": false,
+    "mechanism_id": "failure_recovery",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:cd9c22fa5f7e3e63b9451699056b7e5acde388f7fa2094f3f8cbd94698b8ab9b",
+    "operational_admission_id": "finance_v26_operational_task_admission:a6a182f82c828d74b068f4f5ebd29e69f963b6bbff43e52f8c8b948a22756310",
+    "operational_record_id": "finance_v26_operational_task_record:b67e9e1038f52e6a82bc39e187d944d58cfc37072818b638e3469b69501e6f04",
+    "operational_task_package_id": "operational_executable_task_package:7a23c41c2c5d3bf8d31646c28b65f39a7bc64c9719a3b8b0afc55256e4c5f7db",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:cdf75dca9d18d83c1a2093ea8d821d68d83f0eb38350620b0f376530c8f5faba"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:9f0aedae2cf7c11eed1c8849ce2611352fc1317c85f675bc67963d5087cd662b",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:84b539a703b19c5b8c392e92c434c5aaf75f72fb15a7863fe1a403e4424bbcbe",
+    "source_task_artifact_id": "finance_capability_sensitive_task:9925fd917fb71ee5885c183a7b5c5c86a69935d9c4c1ee359cb559e60b0d553e",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:e5cbc0b8fa5c84ccf9ec98de40cdd38501619e9f34b9162e018436553b75c2ad",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:d11c0783b61e8062f1b9a8eae8208d8b20c46787105c8ed8371ad7cf4dd1e4cc"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:1cb68b7a9a5e935c514203ba9517d9b9c87803cc4d99f1453fd036bb92eee28b",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:5c8b180fdd3fc72aae523e0a7f3bcc367a9f759c2de02f6a52b25301fe03bb88"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:28e53b9ac8b4a586580981cfce0a9206853b9258d57f7044bfd8234ed5e876c5"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:593fc68613600b1ccc0c7141c127d09acca502adbb71439af4b8961c54839fed",
+    "job_manifest_materialized": false,
+    "mechanism_id": "context_conditioned_action",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:f33fa20bc9ddf9ad48578b70425e6bc42e9e58b3ef99f96170a1671166011f74",
+    "operational_admission_id": "finance_v26_operational_task_admission:6300d3accf71cf44d6a15d4036e7afdb4121cf683f9654ff722e8b9a389ea487",
+    "operational_record_id": "finance_v26_operational_task_record:8c90f6796f40e60647490cb112728201c41c79c6e9b6b262416df30dea57eba3",
+    "operational_task_package_id": "operational_executable_task_package:7379b3bd3daa12414a99883693c54e628c88c40628400a4463fbda8fb5359880",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:cd2cdc2351ee3bd305cda3aa597116030e50fce6890cc1e91d9c7869d40d906e"
+    ],
+    "path_strategy_ids": [
+      "structured_direct"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:da9744d5f86dd381f8f441171742c3b88ef3b16bbcb9a797bec4ec03166fc55d",
+    "role": "capability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:bcb004f644c79514603477cf90ddb718bbd5980e28086babe46fc98b5b513c0d",
+    "source_task_artifact_id": "finance_capability_sensitive_task:2c99e9fb829cb95d20f9a4b51dc0a6c82536b338d202b1e26a4634587e8fd917",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:ef0bb48158957ff40d985ccd70bc3e311cbaff6af5930253256e7bef02597dd1",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:a5ecca336f08d9447aad6bb39b6dabfb2ee730c4d1903bfdf7f0137576a3a38b"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:1f955e9c983b63a46a2ecb5ffee3e08ac0dcaa651ebdc64957d9f9fad4d31277",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:6347ca6782b0eafea04b90d27db82c53a236836038327a4357f1e2dbe309c9e1",
+      "finance_v26_budget_closed_compiler_trajectory:ba819ae0344194da37c2ac0a231215c561df9d0836693ede9b808b200a248ff6",
+      "finance_v26_budget_closed_compiler_trajectory:a723d6a9f5ffe9c25c3aca0990a408fd21d67e9b71e606f6f41ad4c2caac1ac5"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:fefcb34e25e5beb7df1009bb253a149ccab030e232d7ef099d5ba2691f590358",
+      "bound_public_executable_witness:492de67de39c076f88f4853a9b5539a6a25c5cf3a1357626423c818f1ae888f0",
+      "bound_public_executable_witness:1e3b3d05523d9b5d0ee37acaf56855c5d117b3368fabb35e439cebd861e66f76"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:955ad96881ec6696820970fad962ba67a4f98750c8f50c07b34c4d37bb53e7ba",
+    "job_manifest_materialized": false,
+    "mechanism_id": "semantic_reconciliation",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:4d4dbe0ca4d1cbaebfe9f63de0832e4e14780a80c4031e6e6e26c4c7055fa4a1",
+    "operational_admission_id": "finance_v26_operational_task_admission:3716b8db7b079b81da2796ced63fa7610a7a4d1ba9da96fdabe60d6d1cfb979e",
+    "operational_record_id": "finance_v26_operational_task_record:0ea0925a712fe0b69fcfc3651e2886f91f84671ce31772f1ef0fb578770a903c",
+    "operational_task_package_id": "operational_executable_task_package:dba792ad3f54585fc2d1c7373651ff6f64498fa3f6d07f3a26c88e305fa6a374",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:8729d91a05e87e19728caed330170eb18e5b896a2f7bc57c92efaca742b787dd",
+      "finance_v26_budget_qualified_path_audit:b7845ff1d0556757d8de9d170b83c548064a9d113c720de391b608bfe57f432e",
+      "finance_v26_budget_qualified_path_audit:5c4c83db85a4d2aababe4f76d1dc4368bf7699bf6eb73c789e62bb55d92de98a"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:63de6c3b6e63a8688b19e74d89f458ef3331cc80b2884bc67e3735aa720dd118",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:4b26ca27a3fbb07f91d81de5fc92d30e93fc975a17bd0219c0081c4ccd641acc",
+    "source_task_artifact_id": "finance_capability_sensitive_task:a674a5d9506e2326682d9b4ff647655354cd6d4cb2ce759442abe7501f29d2c7",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:f2e05993ecb49083416c0e0bc583e6430f192788db0951c6a7089f59188dc9b0",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:0f3a2baf3da5a61e6f4e9fe4e1cd00bd88ed0d21c95fe9c5d1b284db6147d3d7",
+      "finance_v26_authority_verifier_replay:d34e2e1466dfbc0c44d8200fe7ccf7f63ce6b6006c63d40c37b5a2a9d226383d",
+      "finance_v26_authority_verifier_replay:d34e2e1466dfbc0c44d8200fe7ccf7f63ce6b6006c63d40c37b5a2a9d226383d"
+    ]
+  },
+  {
+    "all_static_paths_budget_qualified": true,
+    "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+    "budget_proved_before_identity_freeze": true,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:c7705f61414f6ab12ee8d183402ffa02788205624848de6ed2a493d7231a7a32",
+    "compiler_trajectory_ids": [
+      "finance_v26_budget_closed_compiler_trajectory:fb22c7b844f0180ccbc7b9f5f53e908797c957d989808abd48f85624a4a2ec31",
+      "finance_v26_budget_closed_compiler_trajectory:63f82a5c22ef3f573ebf1e341d4a68a39d827be9dabb362f4db5e31029993329",
+      "finance_v26_budget_closed_compiler_trajectory:de778707c02e4b1c56969741f27efcee2b50d44548271b18e7a0479fe0edb397"
+    ],
+    "compiler_witness_ids": [
+      "bound_public_executable_witness:00c5541fe8aa6878be23890557dca94062ed550d5603023f2886cb32fa5e25fc",
+      "bound_public_executable_witness:a6baa2e482b35385280eb3fa3f24ab61113178fbcdf1633741e4ed8918e8ca48",
+      "bound_public_executable_witness:3a0fca23d64c3ca9614a64b039d61a7248fec9e440b8f2e29d97df4a351d3dbf"
+    ],
+    "empirical_contract_materialized": false,
+    "empirical_job_count": 0,
+    "environment_manifest_id": "agent_tool_environment:e9ea6e695a2c22ac5df9003effd88e7b7a9a9da2638e25203a1d89581a84487b",
+    "job_manifest_materialized": false,
+    "mechanism_id": "context_conditioned_action",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "operation_closure_audit_id": "finance_v26_operation_closure_audit:debe87588f8a072342dbe8d8e6ff2c49fc260f86db914a2215d9136e4ae6feef",
+    "operational_admission_id": "finance_v26_operational_task_admission:1a02d098b99778a11125a45c8ebd2e0d3a048f1665ff3ce6d8d05955034fba03",
+    "operational_record_id": "finance_v26_operational_task_record:6860a6a558ade894162fb526f16f29915775d4f2db757685f70d29514206726d",
+    "operational_task_package_id": "operational_executable_task_package:7eb65cdb56146340bb8adf3b7a245dc10767e28f4bdef25f1efe39d42b076892",
+    "path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:98ba150e563405aa90f81e690de56de3c8aad1e5ac57fd9d2f49d61f884b8b66",
+      "finance_v26_budget_qualified_path_audit:ed1ee95e061e028a74de6d2c716d7458d7c7a2142c94337496233d061e7e451b",
+      "finance_v26_budget_qualified_path_audit:6b60db98d4358a6b87de1f3fc1a81cd58c679c7992a12f84dd7da0fddcb992a7"
+    ],
+    "path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150",
+    "replay_binding_contract_id": "finance_v26_verifier_v2_task_replay_binding:1488f6cf64bfa43fcd7e6aa29595ec2cd9bb24845bfa068d014a98a143a1dbd4",
+    "role": "reachability",
+    "schema_version": "finance_v26_budget_feasible_role_task.v1",
+    "semantic_source_id": "executable_task_semantic_source:0d61ad22ccfe8aedf939b476493f991f7be8f4bc137cc2302423eb689427c478",
+    "source_task_artifact_id": "finance_capability_sensitive_task:3db9df15407829a77585356912cfe8745d695a45ce5ae8dc2e9333df6b499501",
+    "task_package_id": "finance_v26_budget_feasible_role_task_package:f4ea2e03db4556360e2f5a3417e5527f70578ddbe0aebce68dcc79e243092e28",
+    "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "thinking_policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "thinking_required_before_client_construction": true,
+    "verifier_replay_result_ids": [
+      "finance_v26_authority_verifier_replay:387a156a7a29216eb987a95109ff14fcd4a296d06cf3777b38303c8ef3d2ce63",
+      "finance_v26_authority_verifier_replay:c47563aabc91dd1ae181d5e95ff39a8594ea3a20496f3a063b0358e5b90f7a90",
+      "finance_v26_authority_verifier_replay:c47563aabc91dd1ae181d5e95ff39a8594ea3a20496f3a063b0358e5b90f7a90"
+    ]
+  }
+]

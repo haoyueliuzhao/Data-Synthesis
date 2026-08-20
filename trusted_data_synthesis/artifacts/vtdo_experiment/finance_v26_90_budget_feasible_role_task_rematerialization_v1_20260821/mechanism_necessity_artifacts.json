@@ -1,0 +1,926 @@
+[
+  {
+    "artifact_id": "mechanism_necessity_artifact:03168d0688f8096ca2c2d45d082151e22a236c8cc2a20190e68de60299dbbd19",
+    "closure_checks": {
+      "failure_trigger_typed": true,
+      "recovery_separate_from_stopping": true,
+      "selector_revision_observed": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:f4c098490212842c91222f5b2b85375e707c1b6f3de91405ac6dd300960f541e",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:a12e15ec2aea88adda96018d32cd2d4069f0fed7d35469bbf429864dcca9a76c",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:562b1e3eca6c51215aaa411424221459db1a44ea2840e8b0050c486cac383f26",
+        "result_id": "mechanism_counterfactual_result:38cdf0afe432e879acf60122ca505b10626424e865052932bb56741d0fa545a3",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:5a82244084079142c294f831d28511cc20a15830133b5e10d603d6fe54998725",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:1942bb51d756bb22bf85c51a4a969da25d1452362b4eadfec090e7d426822475",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:562b1e3eca6c51215aaa411424221459db1a44ea2840e8b0050c486cac383f26",
+        "result_id": "mechanism_counterfactual_result:17f1480e569febb74f3fb3612e82334ef0e796a8674676cfa5e32004610e9feb",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:5c1c6892eda5c0cdc6b4de857584ef0c22a34fb1279fd86703a34a36ed8e7826",
+    "required_mutation_kinds": [
+      "delete",
+      "replace"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:562b1e3eca6c51215aaa411424221459db1a44ea2840e8b0050c486cac383f26",
+    "task_id": "operational_executable_task_package:f0485559d0d4a9c57f56218924f1351ee866de4d81a1ab83e6112d5e4d454ead"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:08faee0bb234638ef4ad006f2cf77e08c6fe25e32be874b2592f2226102cc754",
+    "closure_checks": {
+      "normalized_operation_reference_consumed": true,
+      "normalized_operation_reference_emitted": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:796daa39eda25b97a629e6b47301549533e623032e137d5fe27eb563a70f9e67",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:d8ce965c172f864c6692b8ed7440560cbac951c483c68f92bf9c6eaae10b1de1",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:45a8a79cfaa73c21faf673a126f869183b12de93bfd7e5dab7e539725fa20449",
+        "result_id": "mechanism_counterfactual_result:28c272f995174d9bd0d96468b5d0265167dee7ff88781048a57a21dab41a02c1",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:3a04b91f06087f4a261661dd32cba85b6c6cbb5975a818cb506e8f215994c99d",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:d1ecebf917cbc366563520db98971fda3725e9c7b25bdd95187abc94207aff8b",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:45a8a79cfaa73c21faf673a126f869183b12de93bfd7e5dab7e539725fa20449",
+        "result_id": "mechanism_counterfactual_result:49590e0319107f574e5b5e82c4bb42686c82b7f9566a5336aaa3a0571589cd00",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:ab1d551c943a049f885969fde0753582df7a91160c8487875e7e0868d08ab504",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:45a8a79cfaa73c21faf673a126f869183b12de93bfd7e5dab7e539725fa20449",
+    "task_id": "operational_executable_task_package:d46a54f5f3aa53bb85bd065009d04813afcaf3edb0446562eed521466b6c7d80"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:11370283bbecb4a88cc2c8531651692dfeb5a0e1c92f117e694a7fcf37c28378",
+    "closure_checks": {
+      "single_irreversible_decision_slot": true,
+      "wrong_action_changes_projected_result": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:f9f901b3f2ef85be9084e7f96fcb15196ff526e3c2c4b78e6fb2f6497a0478c4",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:26fb3239cad1e2db715504a5d169ae7a2a53335b0afe38856524e4a7085fe01e",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:86a6bc7a1e77eb8070629e7a1b873fc43bb195ab744987f909520a4b10c4efbb",
+        "result_id": "mechanism_counterfactual_result:817d474c37e26432aeeae9aa1cc549dc584bd6c91cbfae0047873d61623e9c3d",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:349d4ef46a4cac086f51f7beabe85cb6f3a0a879bcd961182e9a6ed802b9e6ff",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:ad9e3283f8dd7a2eec26706a79f6c436753d8bc93ab6d33d0ef67c627a77d897",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:86a6bc7a1e77eb8070629e7a1b873fc43bb195ab744987f909520a4b10c4efbb",
+        "result_id": "mechanism_counterfactual_result:36e32e00b5b70023c3f506f8828f4e51a80a0bd6e7f2432caa4a0d01f3ae710b",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:cdc84a0c0d83635a7710362df78f79cbba6f69093c129a8dc8385817e379223b",
+    "required_mutation_kinds": [
+      "replace",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:86a6bc7a1e77eb8070629e7a1b873fc43bb195ab744987f909520a4b10c4efbb",
+    "task_id": "operational_executable_task_package:5c83e7d8969e516187edffa97505aea2879457604dc50d46493065ed563b2454"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:14688d61f13743f17928a13c353abe5feb6da55a48d062078faf99fd569d72a9",
+    "closure_checks": {
+      "single_irreversible_decision_slot": true,
+      "wrong_action_changes_projected_result": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:3f4880b08a13bd76f815c095972db17f1e015598df140b3ea3be30804343353f",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:2007e38efb653a40f8bef2e0fefc1a42384fe9e41cb9cf6750b8ffd441bc8a26",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:c463bba046e4e70dc3a936a6cbecface0f94b8a01d7711af3fd5e57cfbc9e183",
+        "result_id": "mechanism_counterfactual_result:fb29b35c69afb7b3bb9f344e7b6a535b9aa28a894100cd0f7976b87be44c8752",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:7d90dedad7b54bb14247d0eaa4849a9b94d9a300d640b4e8cb1c38333e1f591a",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:7418fddb4fa2143923f7963a951da7a461ebe343f8f9a9db600984c9dc1e29f7",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:c463bba046e4e70dc3a936a6cbecface0f94b8a01d7711af3fd5e57cfbc9e183",
+        "result_id": "mechanism_counterfactual_result:2df91897a7315e64aca18e8edc24cbd027cf0e2bd8cb51e15f78e83e5a6a592d",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:256c2023a2cc9e3d85c3d7ada4037743144c4b75b0f8d7663818c047270add90",
+    "required_mutation_kinds": [
+      "replace",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:c463bba046e4e70dc3a936a6cbecface0f94b8a01d7711af3fd5e57cfbc9e183",
+    "task_id": "operational_executable_task_package:74b7ea842a56006945257361fcbf27d3f1708888c1452221f1099ead545f5797"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:16f4b6cb6ec8632a960fb64203d55a8dc12fd980f01306c4bd8c7dc16dac17d9",
+    "closure_checks": {
+      "failure_trigger_typed": true,
+      "recovery_separate_from_stopping": true,
+      "selector_revision_observed": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:8bec32033b22c2faf40ed14aa99e3495e4d269222c0d1c7d30168eafcef55fce",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:c4aa994982ebd1c2a0de3cdcff92e7b6b4e8e9608be585b4b4fc6a6700dd8669",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:078f6925c0783094166fd279a478f0665bea39847fa1a84df677b367c154ceb4",
+        "result_id": "mechanism_counterfactual_result:b459ed5e54c96fe7861c89c8f39d1ab351c7b4bda598c59323053f728c583f73",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:25187c1337b457a364295c2e6b2cd5a4faf9d7043c5bd7d49ea35e77a7245304",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:8d18494421dfa8f071abe2383614000282e1b727cbf63ef82caac93686c3f12e",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:078f6925c0783094166fd279a478f0665bea39847fa1a84df677b367c154ceb4",
+        "result_id": "mechanism_counterfactual_result:bfeda2d7b2d5cd74e57bb42f87ac730abb3d21d1df7ac4c4c6a0aadabae06713",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:ba46ec61bbc4b76902a5735abc03582b54a128a1599c69e1c306e8b0064e319d",
+    "required_mutation_kinds": [
+      "delete",
+      "replace"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:078f6925c0783094166fd279a478f0665bea39847fa1a84df677b367c154ceb4",
+    "task_id": "operational_executable_task_package:8276645f1510b51c14c11c093c0f44818f3617fa2a5aa9638e54ba2f91d5a37e"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:17c1048efeed0ee76d7e222e001c4062e4ab08fde96abf1c683b4a79553dd1dd",
+    "closure_checks": {
+      "single_irreversible_decision_slot": true,
+      "wrong_action_changes_projected_result": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:77dc650b6475e2568d7131a889c09857a0d282f8a8a70d5fa42121d2dc4cd4a5",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:08d3e94c080ed0d0cbeb45b91247f7e2efddfc909afdf5b081a56b83fabaeff4",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:f89fdb160a3ff8fca2f44e3d9f6eb8c16b79053290ca94aefaef9c4a83453324",
+        "result_id": "mechanism_counterfactual_result:c46494870fa8787c1019e3037c0ace180f6427d08e67a9bfaaa5c408b9ce545d",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:4dd13bee7cdc77798b6df6e62ef4a62203d6e99f276b7743ca988683e34220d2",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:c22b5760a95573e4c095380f1d50fea8f191e00c26cc7b475629136a122f4bba",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:f89fdb160a3ff8fca2f44e3d9f6eb8c16b79053290ca94aefaef9c4a83453324",
+        "result_id": "mechanism_counterfactual_result:cd5ddc52495b8ef6639c21eb2b68724fcf635f9120897690b932cbe5f6ae69ee",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:f3d73855bd7a7fa9cff04e73927291cfd59ea0c9af885894242d67b4c9cbdb95",
+    "required_mutation_kinds": [
+      "replace",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:f89fdb160a3ff8fca2f44e3d9f6eb8c16b79053290ca94aefaef9c4a83453324",
+    "task_id": "operational_executable_task_package:b5514c3d6374e7002d018687ea8a9095f33ec9630b58bae090ef70ad854f8a57"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:190aa876076701738db7f3e72f00fea3e4a27fdd712c2e213cce9c68a246ab1d",
+    "closure_checks": {
+      "early_stop_invalid": true,
+      "postcompletion_action_invalid": true,
+      "stopping_separate_from_recovery": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:dfd5d746301cfb91eea4506d238f1958620ebe5edf872cf0537d0792751ca91e",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:748b7ca0cc71eab0cd9105e0b33c21d946e721644055aee907250e135ea11e52",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:e1a1f301bf21a06fea8b5378e09e6158a74bd84bc3fed8420b59fcff6588b4fc",
+        "result_id": "mechanism_counterfactual_result:2c26897c6b7f1a0ba2ffbe2960712c9ea48c2d83ef7ab36a01d03d30a7e4e744",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:6775b4487fb9e80512b3f3edb58927885004160b22df38cf48ac787901abe913",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:e2ab2638ae19bf5f88799bfd2eb96eef1c875fd6a6a5583222f9f2448eff6fde",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:e1a1f301bf21a06fea8b5378e09e6158a74bd84bc3fed8420b59fcff6588b4fc",
+        "result_id": "mechanism_counterfactual_result:9b7925b2b746e5441fbe3b50e5aa7ad2833f56cfcaf53b8a42e34d8bf3d5d16f",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:149a3142e9d0b200388630c63c4a28b1b96bc17ca2adf77cb58e8e1d3aa87ac9",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:e1a1f301bf21a06fea8b5378e09e6158a74bd84bc3fed8420b59fcff6588b4fc",
+    "task_id": "operational_executable_task_package:816fb4f6d1a70a12945e1201a6ebbed56a84ad208f8b021af17ccb12aa8a1dda"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:1f6901ede33db23806ecda0b0485740e668f5a8e22f743d4dec6dfcf27b2fd27",
+    "closure_checks": {
+      "early_stop_invalid": true,
+      "postcompletion_action_invalid": true,
+      "stopping_separate_from_recovery": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:d7021c6625890fb3ca7f17f7eb33389fda4ab112e488e9e0f8747a046f96a470",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:5f79d6bc2b46a6d381a08a3dee21b56bbcae7f619014e13b6651540020a3c2ce",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:91082dfe6bb9680d07ea2ac5115572f859175bf10636a95010d78766c63d58bf",
+        "result_id": "mechanism_counterfactual_result:48eb8b71258b5f3dbdba2af829d5754a1fdeda7f33e2044b5be52ff817ff3ee0",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:2f04d456069e255949ab1076ce09e317b55f01e4b58dfb633e832bb28cc72a87",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:85635fd748a990646fba1e102deda81f447d19f52accf6ea0e3da0765ebe06b0",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:91082dfe6bb9680d07ea2ac5115572f859175bf10636a95010d78766c63d58bf",
+        "result_id": "mechanism_counterfactual_result:201437f5f1963cbf17ef8e0bb68d2b26c95745d37ae092d046eee8d17d7439f5",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:0927593d44fd88081e7a922b24fdbcfe0ca3db5f5a3e8d28c166ea303c57acb1",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:91082dfe6bb9680d07ea2ac5115572f859175bf10636a95010d78766c63d58bf",
+    "task_id": "operational_executable_task_package:bdbec8b82eb24bd8e217cee564a9c6658daad3b377a8dc8e81bd641efc165df3"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:3d233757dae36df8fee7587d0d0a3f84c101599d0e28c0c103701e164b8a46ab",
+    "closure_checks": {
+      "normalized_operation_reference_consumed": true,
+      "normalized_operation_reference_emitted": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:f3ebc303c12898b3c76ad7760575135bfcd412cc7895e6538c21ae3d420dbfc4",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:100dc947b26eec8fa5016584e97448f7b691a5a9c49acb1f331584fe440c6d63",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:656b784424d699f4c118727c52f4fcbf8c4652dfa3c976a28bafc00ae94ff282",
+        "result_id": "mechanism_counterfactual_result:d9248f006353d2591d72da63e244182f3d6d9605e1372a171b916da9a2d23d48",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:c8cd9fec143df12459e1c0a14d0c4a43ac44dc561b96d26d02913e9ae91a3067",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:9381b30cf8566d68ae3c073eb93fc43c6e91d20903f8f3914f9e25cf75d80944",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:656b784424d699f4c118727c52f4fcbf8c4652dfa3c976a28bafc00ae94ff282",
+        "result_id": "mechanism_counterfactual_result:b02afdc70f08faaf6ba205f8ecddfa5d196ba1988707bac3cf1267b88c0fb2e9",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:11f930394229bcea572f41e4efa18b420aa64ebaaf9b5e20dc7213af055c7957",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:656b784424d699f4c118727c52f4fcbf8c4652dfa3c976a28bafc00ae94ff282",
+    "task_id": "operational_executable_task_package:ea00206b92780f1246777a671d92e6b52fa60b236b99974b7dc3378f17bc29a8"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:644942886f887cff492ddb0a57e820c7aa860115a47f12f7075c85765e8df6d2",
+    "closure_checks": {
+      "normalized_operation_reference_consumed": true,
+      "normalized_operation_reference_emitted": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:25fe986626bd8d0c026153e1bdfc4e7459bcc1d678600353ceed1e160a347ba2",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:f5b5aabfb7d58f62041938b7dfa25fa60a8de1bb618ee559010b00f523e0a5fe",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:0bab5cf9b83500f630a0ca133198bf99ce01c2fc070206a3f9b863ba798b5572",
+        "result_id": "mechanism_counterfactual_result:298b8bc43b762acf0486ba3cdc01b0e6891c1c41eff4166d9c73123580e3698e",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:4f9600f99bd021c892b4f2dcddf69a432c4d376a872a1d360dd945c822a50463",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:e0d73f1758c2a60dd08efffce99f2b803ac39c0810a6eb961b9a5429d6906295",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:0bab5cf9b83500f630a0ca133198bf99ce01c2fc070206a3f9b863ba798b5572",
+        "result_id": "mechanism_counterfactual_result:9cf1fff9f459da12d9a910c7520ab198da8ef28c512a944eac1a4902185a15e3",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:861bfc439883d56b90577fa74490f74eedd290c798cda95b6c82e811407e50a1",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:0bab5cf9b83500f630a0ca133198bf99ce01c2fc070206a3f9b863ba798b5572",
+    "task_id": "operational_executable_task_package:ec823e6f3d224977b6ff813cee20086e8c0579ea53380e83eecf7c2b30e6b919"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:66bd478cc7f45edd1a758d80b612ddc6fd569d697bc2c01816b8b669a65b5494",
+    "closure_checks": {
+      "single_irreversible_decision_slot": true,
+      "wrong_action_changes_projected_result": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:4f73f8c71ed67b253a9f011ce7ffcb8a52946290f4eb6239dbf2c86ab7bf1876",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:3e0e864652e89e2b0a741bc00e7c5dc174a5139e8cf21ac518da30beb76955cb",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:f643a4f8adb06510216fdc1da387bd1487e1cd130ac561546fbd46a75cc07a28",
+        "result_id": "mechanism_counterfactual_result:27d7152b580b0a9fa17492755a3bf3dee6ba2e0e3688578aa7c8848d1ff97ff7",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:4a8d0d0b2ab981efd01dffd732a213526fccf708b7883f845d55b70a6cf09113",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:51c861d98c5b4142ec878d82487c5ee0a13d7baa89e005e66d3803f0edf523d1",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:f643a4f8adb06510216fdc1da387bd1487e1cd130ac561546fbd46a75cc07a28",
+        "result_id": "mechanism_counterfactual_result:a96b832e575b9c676546ab24c75c8ae935bda1faf754feea0d2b4e981c1e0baa",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:28e53b9ac8b4a586580981cfce0a9206853b9258d57f7044bfd8234ed5e876c5",
+    "required_mutation_kinds": [
+      "replace",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:f643a4f8adb06510216fdc1da387bd1487e1cd130ac561546fbd46a75cc07a28",
+    "task_id": "operational_executable_task_package:7379b3bd3daa12414a99883693c54e628c88c40628400a4463fbda8fb5359880"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:6eb6af9c0aff3e83b3867f69f9525124b1aca698b1932353911df43c32825516",
+    "closure_checks": {
+      "early_stop_invalid": true,
+      "postcompletion_action_invalid": true,
+      "stopping_separate_from_recovery": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:46efac1b63f6741b81bf6781e800b809d058c8749fb4ca7e8c6527df3ef7a1e1",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:589718df0456e41129fcb0cbca699321a0518324c4737ae38c6aa5eace7eae49",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:7934ffb605329c8247db80553861be1e8b0fc374c2e83f239ff52bb484395a49",
+        "result_id": "mechanism_counterfactual_result:21d7bdfdbc27e0d8518f1cd80a0ef4a3c7e48a48294529783ec05535eefced4a",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:e10d2bf98fe8a6ba417b796dc8a9dddc49e9e258c4636f0db36ee7bb3ba896a0",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:96091fb955a2358f8a4cbc8030b7a1ceee5a1eb48295984b6d8e9c1decd75443",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:7934ffb605329c8247db80553861be1e8b0fc374c2e83f239ff52bb484395a49",
+        "result_id": "mechanism_counterfactual_result:f20e62b5a88eb0059c0d45b0c74bae6634b5e182e8d9b644ffa260a5471731b6",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:920565eb6c3089eee5e7dfe9e03f68bce633496e373c9698341d56fa8c7b7784",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:7934ffb605329c8247db80553861be1e8b0fc374c2e83f239ff52bb484395a49",
+    "task_id": "operational_executable_task_package:e73804f14a8a40956b816d44d81725eb368d77708338fc1c9e75ba948bb4a732"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:7f5cffa93b896934c6dd514b9b377b5b1e80fc4760b071b15b1392031643170e",
+    "closure_checks": {
+      "failure_trigger_typed": true,
+      "recovery_separate_from_stopping": true,
+      "selector_revision_observed": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:73ce53d08ae246d4ea8efc178914217e0eb645231d474ea3afccb64d76042845",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:44c313f9989751897b8a93678252f675b52e1cc21c44b9373164bd8dd243e31a",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:d982b53aaa1d8875a125eadb2a5cbee36f92aef4f8604058b0bf8f2a2e934a9d",
+        "result_id": "mechanism_counterfactual_result:fd21806e9a16eb658783d22a30472177ce568a7ddd28f8d38b92f0f60e05f0b4",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:c8d65c88bdae1a7f8cbfb9f43f95a11c9fa462fd26f962d0b29357f9e9386f8e",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:da03d89d2052de9b9e4058037deb47cfa326da969259a696d099866ca6e8fb75",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:d982b53aaa1d8875a125eadb2a5cbee36f92aef4f8604058b0bf8f2a2e934a9d",
+        "result_id": "mechanism_counterfactual_result:4a7c9dc925a6877e5b4512008b23f5abb6ec00ec50cb3c5eb037c4d41bceb949",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:41da82cf080946b0ee78637f8c4b8f8d9ac1178709d3473a5b2e68639276336e",
+    "required_mutation_kinds": [
+      "delete",
+      "replace"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:d982b53aaa1d8875a125eadb2a5cbee36f92aef4f8604058b0bf8f2a2e934a9d",
+    "task_id": "operational_executable_task_package:7a23c41c2c5d3bf8d31646c28b65f39a7bc64c9719a3b8b0afc55256e4c5f7db"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:8164532f13009cc3fdd2a78c9dc8a11e94eadda18c12b75a6a8cc8b28846d9d6",
+    "closure_checks": {
+      "failure_trigger_typed": true,
+      "recovery_separate_from_stopping": true,
+      "selector_revision_observed": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:b21c2fe1ddfbd5ca10c064e5148efe84dc35b308617e5ce758916a4f7456a65e",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:c8db8311a43cd0d3025222822792be80dd3a98920305394ba887b4b76c909fd8",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:0c0d93cb68791dceafbae678f03ff1d3db41ad790cc671e76c8f402148f176bf",
+        "result_id": "mechanism_counterfactual_result:bcf741014159ef1bc4204295d5be99f9069ed015eafd7319727047ceadb69615",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:05112600e3bf82ce12b23a21816a043a4e0de82348ff5ec5f008174dcd590f11",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:fe40821f9bd37bd47f5f17e54879faa97785ec884280f3ae3acf654ccdc31957",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:0c0d93cb68791dceafbae678f03ff1d3db41ad790cc671e76c8f402148f176bf",
+        "result_id": "mechanism_counterfactual_result:3338b51a04ad795fe9ea0cd0a7bc034bc485160ef188f07217835a76dcc1f875",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:a9478e0dd90749404e7e2df0cbf6f2523b4ef25acbb46b521c92ca0b8411b5f4",
+    "required_mutation_kinds": [
+      "delete",
+      "replace"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:0c0d93cb68791dceafbae678f03ff1d3db41ad790cc671e76c8f402148f176bf",
+    "task_id": "operational_executable_task_package:e8deb3b7815c8194a1dcf1f7c8cf49fbb325e3664b36d9a63eb5140d59cab163"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:91c4c014438b10b523101cc1ccf675b324d018e365a73b53bb41a4db112b6823",
+    "closure_checks": {
+      "failure_trigger_typed": true,
+      "recovery_separate_from_stopping": true,
+      "selector_revision_observed": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:47f8ba938185967788c3fa1ca7b0952f7c908edef535a9e35c222fed81917ba3",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:5581be378bcef84f06c53972a77c63e1076083c9e671aed96030019ad4c217a7",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:e4642f687e9dd2afa421e8d00257a17947d9b118d8e22729d483e1424be0849f",
+        "result_id": "mechanism_counterfactual_result:00f4ab7475b8d0f54323fd8ff2a2e3b011cf9db4f48c0f3bf0ab0d48c7cfaedf",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:b2680489fcd0b01d432183b88d78d6f9541e86cc98ee9c59befe2eddb492c12c",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:7495271ef6c5b3f812cef90d2f9cddfcc1d2e31f13405fd34d38b06d41a0c941",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:e4642f687e9dd2afa421e8d00257a17947d9b118d8e22729d483e1424be0849f",
+        "result_id": "mechanism_counterfactual_result:6a58d2833461c4a516860ed63573bab2c6e1c06d9475c021b801fccaa3a30b95",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:5cc103f8cd0d761b9f96f5364611463bc5f8e953dd6642353803101426807fb9",
+    "required_mutation_kinds": [
+      "delete",
+      "replace"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:e4642f687e9dd2afa421e8d00257a17947d9b118d8e22729d483e1424be0849f",
+    "task_id": "operational_executable_task_package:5c1a6ae10124483f6493ab087d26d59113b1d09fddc214cb80c30a518c7f69c8"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:9e1ca98b35c3b49cd16d600cbb0aa316b049d6e93ee2861ac3b92239a2b5fa28",
+    "closure_checks": {
+      "normalized_operation_reference_consumed": true,
+      "normalized_operation_reference_emitted": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:163d7f4f3d42c4328e4b994987a293a562e37f323c6d5fde0775a17d64ed7b97",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:4646c76209e102e4810a6d06080c4b3e38e4b636270c56635fba9e10dfc0d2fa",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:b3dbc19cd7f6d7821ab5dd358e436bf4e747a041b4a99e26d96f31ca9d74a1c3",
+        "result_id": "mechanism_counterfactual_result:c18074a9a5929b4f9693018204a6d507f68527d6d46e37fb1ae4980d81834b74",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:cbe9603f85054b15a4f8ec371d7051673a9fe6443501584a1e486464981ae0ea",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:27b733e781fdbf3f17c15ed1447e2953dc2f1acb4698f25e7dca64d77910c1cf",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:b3dbc19cd7f6d7821ab5dd358e436bf4e747a041b4a99e26d96f31ca9d74a1c3",
+        "result_id": "mechanism_counterfactual_result:423eca5022196270649ec4d11a4e147aabcc5187c01832a48bab667aed47781a",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:dbc89101fedf856f591716b31a895e245bd2c0345e8857681cb8d4f7186ff829",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:b3dbc19cd7f6d7821ab5dd358e436bf4e747a041b4a99e26d96f31ca9d74a1c3",
+    "task_id": "operational_executable_task_package:574f6860987c8e19795058c3a622f8cb17dc0323f21780ea4412c2e2996cd4af"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:a530a92db9f1de450e29b144705a1ebaa76ff6e2a816f9554126c1c81c106bc8",
+    "closure_checks": {
+      "early_stop_invalid": true,
+      "postcompletion_action_invalid": true,
+      "stopping_separate_from_recovery": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:ec7a779296dc1fa1233cd8aeefd718f99e7d438f8cd275334edebe98c70fb36d",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:dcb7d83f132ce18ac5edbabf39b2c70b5f05549e3469a5d23c289ba8d9addf1d",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:71888cf4f5c9ce294bafb97debb6e1a411d5125d8e69a4f4025859c240d64564",
+        "result_id": "mechanism_counterfactual_result:0fd05f4cf1772d3908b495547be9bfe57e43d855fe56e4729ca0d1c9d0abece1",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:f12eec28e708d9e20edb0dd884f0c008b519793af204f3b07a1f3cbcadb20fa7",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:454337499f2fec1944c5bf70cadde6c940e512cd6725d3845ad9cb3f471a882d",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:71888cf4f5c9ce294bafb97debb6e1a411d5125d8e69a4f4025859c240d64564",
+        "result_id": "mechanism_counterfactual_result:ccd4d9072e5874c129c3f2c805b3cf63e705539ad6db1104f47d9cb78e807f6e",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:1c388e4cf425bc9b2bbfbe6e596fce81932b793e1cbdf724b4d55f5233f068fc",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:71888cf4f5c9ce294bafb97debb6e1a411d5125d8e69a4f4025859c240d64564",
+    "task_id": "operational_executable_task_package:50da684ddfd6fd2cff1bcd6aeb7d464483587d2bab98e64110e9b09fbd02f7de"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:a813e228d8c296ae49d649e2f921a768016a01493d5fd13f90cc9bd1f18a8c64",
+    "closure_checks": {
+      "normalized_operation_reference_consumed": true,
+      "normalized_operation_reference_emitted": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:ee8a8c7b468095f882ae15164ebd5d49d0c538ac8b623a650f360bbf1934311f",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:75995a1227fd2971ece406354a7b4d6c931d78692af8a99b57fe7c51ac3b25c8",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:2e4f7ca7df49233dc18b00ef9ecdd92debfa95272acf5ed75577591c92404104",
+        "result_id": "mechanism_counterfactual_result:eac9923c821d8d4e3b620d7043b5bbb3fa612581896acde990e92b0888d40d69",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:caac8b85b8b6d1d4f38a6d82ff838df1c06bea44c7723d2abe58ac6c6c9fab49",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:b5c34948a97ae22d4ea3c2fdc8e8066caac9887e1acbd066541dce402e798960",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:2e4f7ca7df49233dc18b00ef9ecdd92debfa95272acf5ed75577591c92404104",
+        "result_id": "mechanism_counterfactual_result:0ab5dbf7167767d65b46f01c73d66080d81dbdbe8fd86d55d1a9205e9815e266",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:45a43088eeadbcadb0d93e9655eb7350f8c60bf2ffb844d58395b5cdae2fa727",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:2e4f7ca7df49233dc18b00ef9ecdd92debfa95272acf5ed75577591c92404104",
+    "task_id": "operational_executable_task_package:b6c15e8a1083cc19edc1048e0dbad449168f2453f81f18592df02181e2e7ecec"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:adfc8a6e42688bb90e7cfcadc39844c8922b01e1a5f9d3c9c50921a75744e13a",
+    "closure_checks": {
+      "failure_trigger_typed": true,
+      "recovery_separate_from_stopping": true,
+      "selector_revision_observed": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:a8a3daad12512d059a84e5e8e0c9085f45a80e2ed6aa99ab58ca36ad1e2dc1f7",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:b83e5f3e972ebb074f08c6e728873783b727781d7e6fb579bc52d71c75abb4af",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:47fcc1fd4be18e5b28dcb2332917b91dbd395d4c6bb781a5b94798d7ad4cb443",
+        "result_id": "mechanism_counterfactual_result:b00e6dadb5a82f3f5219591723ef12f51912e9971d4bef03cbf923831ce68f43",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:08be9d45d2c80d8a46e7dc3e8273e2ab5256dac53e935da2d3ec6956a02e5494",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:f40ec7055b6df6a35a3344a1c89bc193bd977338736871c7147d2e61f42f58b2",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:47fcc1fd4be18e5b28dcb2332917b91dbd395d4c6bb781a5b94798d7ad4cb443",
+        "result_id": "mechanism_counterfactual_result:fe8606098d6fcedfb31a6678ef2492add8f05b5ec58d21f8e354f14fd135ce5a",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:b465088fc8caabd769508e1da0a4bca5c2474bad9ce306111f79c7e378dd91e8",
+    "required_mutation_kinds": [
+      "delete",
+      "replace"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:47fcc1fd4be18e5b28dcb2332917b91dbd395d4c6bb781a5b94798d7ad4cb443",
+    "task_id": "operational_executable_task_package:1ee75930652ad72b0138030b6517bcb2337fb1af3fc9cfd1086da0228121d712"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:d92932d64b6d905cd4afafd2b9a56d5b2502c349360848f458c3f46f6653085d",
+    "closure_checks": {
+      "early_stop_invalid": true,
+      "postcompletion_action_invalid": true,
+      "stopping_separate_from_recovery": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:a24a74526cbf0ce162167ca490adfc337c1a3ac4b90bc33512646b17485245be",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:0f166441157071302acb90a1f3127ae097ba2c51f36d79661ba3d2f16680ccfc",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:c1c831b07252de231a75b8a4e08fd891a8d081b586a441a4cb3dc2847bfa0dcd",
+        "result_id": "mechanism_counterfactual_result:145248eadaef5cab62ee7eb07b2854f0b0bb39657d346a5a5aecae276ed293c3",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:cfa6b0086337864bd0d067705b45bce21af688b7fe7dcd8a69c2b64d9cbb263a",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:51ae78fff71f76dc579b9bbf6564ac631e3f9d9d9aa9a7ce3d31b3839020e7cf",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:c1c831b07252de231a75b8a4e08fd891a8d081b586a441a4cb3dc2847bfa0dcd",
+        "result_id": "mechanism_counterfactual_result:83826d77b146b076dd993f33840d844dc9362737481d14dfdb968e02bf2da27a",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:f5893268af2196dff9bd6e8c293120f146de923269c24ce801a874fda2330cff",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:c1c831b07252de231a75b8a4e08fd891a8d081b586a441a4cb3dc2847bfa0dcd",
+    "task_id": "operational_executable_task_package:6b1098cd7ff15628f07aad68330a73f13e92f2ca52a92a04d0500dc6fe152aa0"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:de2d5f4d8f155a30a4302a1bfca4f76da8dd3bdf7f8367418d40590a9cfec18a",
+    "closure_checks": {
+      "early_stop_invalid": true,
+      "postcompletion_action_invalid": true,
+      "stopping_separate_from_recovery": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:39a9cfe3940862056d5bb894448b40aea667104299b6c9aa13ef681cf4f9b502",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:94d8b0bbf76e8ddb1310062734ffa95b03c4573134a18f24ae9648e39bf00cf1",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:4c231469aafb2603bc255154588c7b940393be852245b86fe9b62f86b879562a",
+        "result_id": "mechanism_counterfactual_result:35f88b8d8b73f7a222bcae89be2ec47881fa8360d202b12f01e1efd9a579f1fe",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:ec9c02ac91dc869a4155d9f4a59c605092f419a3c6f7c36f036a4a09468392eb",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:3ba3f3a18c21beb1c7933d2ec2debeab3df0e9e0f349fcd62da7dcab8f1a348c",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:4c231469aafb2603bc255154588c7b940393be852245b86fe9b62f86b879562a",
+        "result_id": "mechanism_counterfactual_result:af6d2bebcbb417bf38fa4a357e3f6cc7282be7717836baaa5c2c8c37cd30079e",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:8cf392ffc80a4978be330890a44af3bbc205f8cc7c692b4766f2a885d7b8ce8f",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:4c231469aafb2603bc255154588c7b940393be852245b86fe9b62f86b879562a",
+    "task_id": "operational_executable_task_package:600a01982d3fbae6f3e5aa0420f9ec3f92b9127ca88f54eb0bf11f21f3c1b474"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:dee800068fd74a0db864cd57f1fe26fc134cdc5c2a50f9d4519e6d5c030aac0d",
+    "closure_checks": {
+      "single_irreversible_decision_slot": true,
+      "wrong_action_changes_projected_result": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:550582fc0e81be22bce28c571a9aa2c7c1f3454ab13eb9cbbbea68f4b89b2a14",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:93d4e39568201bbf52513998d413dab924c2c759abc597c7911a34a8f24bbec7",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:8413b196e3b96cea9012652230deaa66ee72b00ac5d7e1dcd89727639c6edc7e",
+        "result_id": "mechanism_counterfactual_result:a315219d25f1415f1031373a99c844b9567260c13d7acdccaf75df8e7283e164",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:1964254a50a6993f2cadad66f2e7007f33732ad5669d4fdb42bfc43f776042fb",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:d9d07d8d2902d8cd891f0a4b588cd382014574e10ca2b371cfb47fa3903301d7",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:8413b196e3b96cea9012652230deaa66ee72b00ac5d7e1dcd89727639c6edc7e",
+        "result_id": "mechanism_counterfactual_result:6da4b20aada99bbf0154077b8b1021204defaf1703699a668acdfd163288f97e",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:00c5541fe8aa6878be23890557dca94062ed550d5603023f2886cb32fa5e25fc",
+    "required_mutation_kinds": [
+      "replace",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:8413b196e3b96cea9012652230deaa66ee72b00ac5d7e1dcd89727639c6edc7e",
+    "task_id": "operational_executable_task_package:7eb65cdb56146340bb8adf3b7a245dc10767e28f4bdef25f1efe39d42b076892"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:e28bd5a34cd40f91f28315a6c654fb9b041bfc2c25f6a3710ed1b81c8cbdeb60",
+    "closure_checks": {
+      "normalized_operation_reference_consumed": true,
+      "normalized_operation_reference_emitted": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:a35000362384e8f9655622779b35afb6cdbe8381654a2e007e44037af75b3345",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:6dd4e908150f187b0b2a8422b49331b7c0075680c060e0cdd84bafa3fc18e518",
+        "mutation_kind": "delete",
+        "mutation_target": "mechanism_causal_contract:0c90cb3b8aff78f6b5492d3f2524fb198019afbd525aa99a2807af48f5d5527b",
+        "result_id": "mechanism_counterfactual_result:343625a99f17b6f853406063e0f89c05f6433b2f1930868694de8852ec7a8efb",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:7d2d0e8fc5335c50ced4526536fcf155562f6b5ba55b5dac272dd47df9f0e1c5",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:371e3c55e459854ac94df6ecea77048389d41f2a3275d462bb3e984328baf872",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:0c90cb3b8aff78f6b5492d3f2524fb198019afbd525aa99a2807af48f5d5527b",
+        "result_id": "mechanism_counterfactual_result:643b153a47227cdd4b813668839ca0a4236903b19aa7ca4f4191a49e97deb6d6",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:fefcb34e25e5beb7df1009bb253a149ccab030e232d7ef099d5ba2691f590358",
+    "required_mutation_kinds": [
+      "delete",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:0c90cb3b8aff78f6b5492d3f2524fb198019afbd525aa99a2807af48f5d5527b",
+    "task_id": "operational_executable_task_package:dba792ad3f54585fc2d1c7373651ff6f64498fa3f6d07f3a26c88e305fa6a374"
+  },
+  {
+    "artifact_id": "mechanism_necessity_artifact:f79eea077ae04615ee99782d1028eda3760b7a65545b7ee8f972a5654681dccd",
+    "closure_checks": {
+      "single_irreversible_decision_slot": true,
+      "wrong_action_changes_projected_result": true
+    },
+    "counterfactual_results": [
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:c86e7ec508ad36e9ed94c0e33f700aaf38ed21f88e17a898f2c1d828e4c77a5c",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:83c3ea8eddd2169e4778ed02f7e02bd06da6f8f1f7fd187604775bb8529842a8",
+        "mutation_kind": "replace",
+        "mutation_target": "mechanism_causal_contract:e2527c3494ed0dd1cdd756594d58a174fa3c6f2b220fb89900f64f557893a0c2",
+        "result_id": "mechanism_counterfactual_result:8326a357aaf67b5288a6bc39866c8e64f4138c8269567fa5a1b0681e30e63c99",
+        "target_mechanism_absent": true
+      },
+      {
+        "full_validity_passed": false,
+        "independent_verifier_report_hash": "finance_v26_mechanism_counterfactual_report:ea17cf41454efe2e2aa293794ae6e1d13727002f6c2fa82163bd9e55fc975cd2",
+        "mutated_trace_hash": "finance_v26_mechanism_counterfactual_trace:41e8d099f4be9f2b596b652c85444ab86df22e280b9d43408e347b0d3994523d",
+        "mutation_kind": "bypass",
+        "mutation_target": "mechanism_causal_contract:e2527c3494ed0dd1cdd756594d58a174fa3c6f2b220fb89900f64f557893a0c2",
+        "result_id": "mechanism_counterfactual_result:86674254aa5b44b3e88f74a6b71e06845a599fb32d1e3e99077f10d831c8a797",
+        "target_mechanism_absent": true
+      }
+    ],
+    "failure_reasons": [],
+    "mechanism_observed_in_witness": true,
+    "public_witness_id": "bound_public_executable_witness:e3a6d8e9479c409c9a89a40130ade06be910fb358e79a44981cba64080b265c6",
+    "required_mutation_kinds": [
+      "replace",
+      "bypass"
+    ],
+    "schema_version": "executable_support_contract.v2",
+    "status": "passed",
+    "target_mechanism_id": "mechanism_causal_contract:e2527c3494ed0dd1cdd756594d58a174fa3c6f2b220fb89900f64f557893a0c2",
+    "task_id": "operational_executable_task_package:1194281dcec8725280ef83470a992bd5c7b39038fdf873c7815e602670b87d72"
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "authorized_input_transition": "fresh_budget_feasible_role_task_rematerialization_only",
+  "budget_adequacy_contract_id": "finance_v26_budget_adequacy_contract:e3f16d80ca6953dcb77c7e153df5b8881c16fd1bec60240e3285168543db3cfe",
+  "predecessor_report_id": "finance_v26_budget_adequacy_contract_preflight_report:805432345e0fb8db286daaa80bbbf49b509857eb89861af88086db20ccc8c71f",
+  "predecessor_report_sha256": "9a4a570ed49b1b2fd450339fa16421b3f40816923cb3ce5de5246a401274889d",
+  "provider_budget_contract_id": "provider_token_budget_contract:27e7e524cb3139b9dd29b1ca7f2c7eae1956c96af8a982524f814b3ef4415150"
+}

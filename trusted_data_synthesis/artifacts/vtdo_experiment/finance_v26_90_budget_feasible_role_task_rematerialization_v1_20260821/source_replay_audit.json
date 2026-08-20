@@ -1,0 +1,287 @@
+[
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_29_exposure_grounded_source_20260817/exposure_clean_receipt.json",
+    "sha256": "7652f7fb06e3925abbf6542145328fda81a2c278dd50d33d41b4202919617195"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_29_exposure_grounded_source_20260817/population.json",
+    "sha256": "db6773b5afa81b2ba99f4055300d2d63e911e8c8c44f256a0cad6c0a16eac871"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_33_bridge_development_20260817/job_manifest.json",
+    "sha256": "0837d18b632b3653fe40f3c7de1682758ea6adaf08fca9b8ce7e696959ed3bd6"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_36_no_api_joint_scaffold_20260817/population/confirmation_source.json",
+    "sha256": "78beb627b9f9ffea068aa60f59e51c59061155a5fb237b29abe02c111dacc667"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_36_no_api_joint_scaffold_20260817/report.json",
+    "sha256": "4dbe2a135e18880ae504497e8cc8bcc8efabfc9839c243a72f1d1507af3c378f"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_37_bridge_development_20260817/job_manifest.json",
+    "sha256": "7d6177338b7ff030a1eb5f1dc2e161371d3436f1652104694c45d6acadb31866"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_40_no_api_joint_scaffold_20260817/population/confirmation_source.json",
+    "sha256": "55b6ecb07544b94ccbe77f4219fb6347e85556fe1ec295cbc83a01a4af97f6f1"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_40_no_api_joint_scaffold_20260817/report.json",
+    "sha256": "56184ec7b4bfba493b7c1b647cde0380ea5ed2e680cc7ea1d84b62b7fea655b5"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_41_bridge_development_20260817/job_manifest.json",
+    "sha256": "44adc754e58e9f6edf1454c49bb66c2b2b938041f375c037a246324175288694"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_42_no_api_joint_scaffold_20260817/population/confirmation_source.json",
+    "sha256": "2df06127493675baac77d805b59512fdac12a0164828eff87ef286aac72b1ca9"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_42_no_api_joint_scaffold_20260817/population/development.json",
+    "sha256": "effac9dd84012ed15dfa734b62a04dc1861c49d95938d442054cf1de0e3164fd"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_43_bridge_development_20260817/job_manifest.json",
+    "sha256": "9d7c259c2d51fddead962bfb1d3cf71ba38b3e03f299351081be375757681043"
+  },
+  {
+    "record_count": 24,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_56_executable_task_rematerialization_20260818/rematerialized_task_records.json",
+    "sha256": "2e9c0f75707de2b4935b5b693717d8ca656da7b7df87d68c8840d9971b1a7e7d"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_57_empirical_support_pilot_20260818/job_manifest.json",
+    "sha256": "3b161b33470b64bdcd52bf62f21ad2bc4564db8b4ae7e985cafd4887b17c50c3"
+  },
+  {
+    "record_count": 24,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_60_public_operation_rematerialization_20260818/operational_task_records.json",
+    "sha256": "89f7e8362edb57064c4635d0255ef92263a9f24640c72f71c4ce15293d0c020f"
+  },
+  {
+    "record_count": 24,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_60_public_operation_rematerialization_v2_20260818/operational_task_records.json",
+    "sha256": "89f7e8362edb57064c4635d0255ef92263a9f24640c72f71c4ce15293d0c020f"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_61_operation_closure_regression_preflight_20260818/job_manifest.json",
+    "sha256": "6272d00d41146b1c934f7c75b90bac7ecceccd86e425c8409e361482d6b888e7"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_61_operation_closure_regression_preflight_v2_20260818/job_manifest.json",
+    "sha256": "059f15f1319b6775de0d933f21939e23932bda4f822006a998775ebbd15167f5"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_61_operation_closure_regression_v2_20260818/job_manifest.json",
+    "sha256": "059f15f1319b6775de0d933f21939e23932bda4f822006a998775ebbd15167f5"
+  },
+  {
+    "record_count": 24,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_62_public_operation_instrument_hardening_20260818/operational_task_records.json",
+    "sha256": "b1125a2ab0bdbaf0cd7eef1edc4550d60bb00df7711bbabf36189624a854a2a9"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_63_operation_closure_requalification_20260818/job_manifest.json",
+    "sha256": "9dee81ba8c2ad45ea4722c89be145cde7683246a255f62e2311f39b0f25a0611"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_63_operation_closure_requalification_preflight_20260818/job_manifest.json",
+    "sha256": "9dee81ba8c2ad45ea4722c89be145cde7683246a255f62e2311f39b0f25a0611"
+  },
+  {
+    "record_count": 24,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_65_authority_preserving_operation_hardening_20260819/operational_task_records.json",
+    "sha256": "8926fa0bd7a723a5407a373119c4167e27f2d6ec21c4a1f09bf15b7a5db657b3"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_66_authority_preserving_instrument_requalification_20260819/job_manifest.json",
+    "sha256": "f0dd2afe9a39bd002bfb4ca5abb4e48fb2b83acaf1d1a2955c825d9aa3672dd9"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_66_authority_preserving_instrument_requalification_finalization_recovery_20260819/job_manifest.json",
+    "sha256": "f0dd2afe9a39bd002bfb4ca5abb4e48fb2b83acaf1d1a2955c825d9aa3672dd9"
+  },
+  {
+    "record_count": 12,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_69_fresh_capability_population_20260819/operational_task_records.json",
+    "sha256": "dbe86be7e4a6c38ac4cddc42f6f6c0637e032e169e79ac93a58f60bdaabd34e8"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_70_capability_development_preflight_20260819/job_manifest.json",
+    "sha256": "1d94d9762ba126dd15f438682588bb749dadd37e8b9231ce32ca8a138d5a562d"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_70_state_reachability_preflight_20260819/job_manifest.json",
+    "sha256": "d0ec21f2e27556f41d70ce50a8e1f169fff2c6d9f302dc2d7015068536d90497"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_71_capability_development_20260819/job_manifest.json",
+    "sha256": "1d94d9762ba126dd15f438682588bb749dadd37e8b9231ce32ca8a138d5a562d"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_72_state_reachability_20260819/job_manifest.json",
+    "sha256": "d0ec21f2e27556f41d70ce50a8e1f169fff2c6d9f302dc2d7015068536d90497"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/replay_contract.json",
+    "sha256": "e2e7acfdc32d601a9dfe85e850ee80d1921211f43f2ebac07881aaa136e12076"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_75_authority_preserving_verifier_qualification_v2_20260819/report.json",
+    "sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32"
+  },
+  {
+    "record_count": 8,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_76_verifier_bound_instrument_population_20260819/operational_task_records.json",
+    "sha256": "6522d78d2b789ed67ee60acbef59119c91743f013e04798724e2700e0d1dded3"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_77_verifier_bound_instrument_preflight_20260819/job_manifest.json",
+    "sha256": "6688cc2a5dde961ede862dcf8988be8b07c385de4057d65770394938072d99b8"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_79_verifier_bound_recovery_preflight_20260820/recovery_manifest.json",
+    "sha256": "f609e2711a44319fd9fb6cf756e8876091298147df9e5a2d2073d652827b6828"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_80_verifier_bound_instrument_recovery_20260820/recovery_manifest.json",
+    "sha256": "f609e2711a44319fd9fb6cf756e8876091298147df9e5a2d2073d652827b6828"
+  },
+  {
+    "record_count": 8,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_20260820/operational_task_records.json",
+    "sha256": "53b6270383ac459e5dea63dd7a395c431a3c1f18ad8426474235f15ea8e8971e"
+  },
+  {
+    "record_count": 8,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_v2_20260820/operational_task_records.json",
+    "sha256": "53b6270383ac459e5dea63dd7a395c431a3c1f18ad8426474235f15ea8e8971e"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_82_budget_closed_verifier_bound_instrument_population_v2_20260820/provider_token_budget_contract.json",
+    "sha256": "acf0685bd0f331eedf357a999de27f19262499bd8f1998013281ce41a3bf8b98"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_83_budget_closed_verifier_bound_instrument_preflight_20260820/job_manifest.json",
+    "sha256": "f8b61818b5fe565e62097e64316947a3f5ecb40f11ba1530ef99df072a990648"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_83_budget_closed_verifier_bound_instrument_preflight_v2_20260820/job_manifest.json",
+    "sha256": "48ba58d7d18d489f122f9e2cb1642b4c983492e133b6459523dc31e09e0ab7c3"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_85_budget_closed_recovery_preflight_20260820/recovery_manifest.json",
+    "sha256": "1ecfeaf95b293df9e81894fc67dfe026886b60dff0048a843bfb6684e69fdf7f"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/budget_adequacy_contract.json",
+    "sha256": "26c67b235bf2ecca2c9381cbcb9ba4e2577a533678b2795ad0313e09af41c277"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/budgeted_public_witness_audit.json",
+    "sha256": "e9853abf74284aef021b56ee37683c3a959e7119f9e9662089164764328b5e4e"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/report.json",
+    "sha256": "9a4a570ed49b1b2fd450339fa16421b3f40816923cb3ce5de5246a401274889d"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/role_protocol_preflight.json",
+    "sha256": "1837d3434a533deb5999074fb3b5740484a8e36ec25535f57ca83b3a4ee3582a"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_completion_control_audit.json",
+    "sha256": "2c82433847c97d1aeecad513995415bf7e5f07ef8dacfb37c4e7ef9251c6044c"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/00_71534a63aaeb4bac.json",
+    "sha256": "a1ac1568e75db02ce4998ea7fb20db493c5ade7565c0f42c9df230b4d5e063dd"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/01_e5f1baf5b9ae591f.json",
+    "sha256": "3c36cef42ed8cb5417898ab63a17146ed9921af38eb08f0cedb8ef8693e4dc0e"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/02_95532f246cc5bbf2.json",
+    "sha256": "7ef2353571491fed0bc37523d8a29536e9b8c2964c7fa5b04a9a82e46b6ed860"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/03_0a03887a16e7956a.json",
+    "sha256": "9092f878e3a6524c8184c8f7b34e5c59ca00b7fc0373ba97e35b5e7fe3645284"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/04_35fbb0b02981eb1d.json",
+    "sha256": "f1b39ba8ec43c04d504b57afc5c2eb3c4f0647f77d19667f1dee007aef9671b4"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/05_e5b4fe8dadcbb7dd.json",
+    "sha256": "12a801cf6309508f7b048fb61a6f22579ee80b0afc82ad6c4d8600fabdbdbb5e"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/06_51d087bc539a8db0.json",
+    "sha256": "850af5b12b0357228c036581a868ef279c561d13520dc5b8de1564052e570e6a"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/runner_control_raw/07_03c3897df6f71b5b.json",
+    "sha256": "5fc70fea1a12231b88be08484dd959b897a5d9d81d64a59676f8b21984c4557f"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "artifacts/vtdo_experiment/finance_v26_89_budget_adequacy_contract_and_static_role_preflight_20260820/source_replay_audit.json",
+    "sha256": "01808cf847132a4a086227ffb90d4e8753bd1ea9001609c2b67315c4d5143ccd"
+  },
+  {
+    "record_count": 1,
+    "relative_path": "config/deepseek_v4_flash_agent_thinking_v1.json",
+    "sha256": "ac02238a9b7079e3c409cf8d1bfb789c41ff26e58bcff35882adf81536ea4de6"
+  }
+]

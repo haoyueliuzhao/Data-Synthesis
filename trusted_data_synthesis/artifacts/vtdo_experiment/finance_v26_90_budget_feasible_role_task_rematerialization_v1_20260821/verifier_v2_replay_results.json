@@ -1,0 +1,722 @@
+[
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:acef8b081c00cefa1a3f135454a8cff51ef94bd159e09f8c1b5665a5729b10bd",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:071079d73d3f4d4c88fc1210b2a66b9d7a1bcdb5bcb74622e7b08133896eb398",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_4d2cdf07d39f2ec5da512d99@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_c20d8e6126f6eaaa871c8aa3@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:ec823e6f3d224977b6ff813cee20086e8c0579ea53380e83eecf7c2b30e6b919"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:955ad96881ec6696820970fad962ba67a4f98750c8f50c07b34c4d37bb53e7ba",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:0f3a2baf3da5a61e6f4e9fe4e1cd00bd88ed0d21c95fe9c5d1b284db6147d3d7",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3dcc2678a8e8936f186bcf60@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_985fcc1a8a78918f8a8be9dc@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:dba792ad3f54585fc2d1c7373651ff6f64498fa3f6d07f3a26c88e305fa6a374"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:d6a8ee8ac60d91d888fccdb9d4a7d2ab77c99ee3c2e0fc62ce9047a8493d66fd",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:19cdd5bf9696e1d8c44487cc1ea5171930742b192e41fed427625e5050e4711e",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_2965d4aacc20ac56d94907a4@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_33c50accef2d67b5a365fdc0@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:b5514c3d6374e7002d018687ea8a9095f33ec9630b58bae090ef70ad854f8a57"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:c302d2e67b9bde1c0c2cb7987269d216798c696d5cc0fb7b7beb144f0441029c",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:26aedfc0754fd08a0a04c4b66ec14f1224f75a1ac01626619a5322978c580975",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0750c597a4073eab82048d7c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9326c9d52993468a059cdb25@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:bdbec8b82eb24bd8e217cee564a9c6658daad3b377a8dc8e81bd641efc165df3"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:c302d2e67b9bde1c0c2cb7987269d216798c696d5cc0fb7b7beb144f0441029c",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:26aedfc0754fd08a0a04c4b66ec14f1224f75a1ac01626619a5322978c580975",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0750c597a4073eab82048d7c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9326c9d52993468a059cdb25@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:bdbec8b82eb24bd8e217cee564a9c6658daad3b377a8dc8e81bd641efc165df3"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:e9ea6e695a2c22ac5df9003effd88e7b7a9a9da2638e25203a1d89581a84487b",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:387a156a7a29216eb987a95109ff14fcd4a296d06cf3777b38303c8ef3d2ce63",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_18fac5252b323970358374c7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_eb2ccaf36385a2781e65da03@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:7eb65cdb56146340bb8adf3b7a245dc10767e28f4bdef25f1efe39d42b076892"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:80fdf55ef5e3867edf8edab08b3bfe600268eb8c7dbbabf63e78278ae18ca3a2",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:3d38e095beea2b72de5c658dd0ed4a8d8032b5e97a8e46087b2315253fe9b394",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_e1f9fe27410f567fd0427c98@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_f7af8614963a499b1f3634ab@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:50da684ddfd6fd2cff1bcd6aeb7d464483587d2bab98e64110e9b09fbd02f7de"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:a7a7bbdb01600878cdfbda74f5769cc0831520d19ade68009c06dfd5336bf452",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:5b9290074c9e57b612336db2b1eee1f8c4d70da6c0ccb391f88503f030af439a",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_33448f10ee7995085550e1a1@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_454c47ff92dca42335ebb78a@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:74b7ea842a56006945257361fcbf27d3f1708888c1452221f1099ead545f5797"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:4227f6b0a1da1d30883294d4a37a32841dbc91ed10e9e26119100fd7db63f8fc",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:5dff9139632560c3d0fae48b9a26a18896129b0c346bcea004ea5c95bd8908d2",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_ae71bfd74c4be8f02e293105@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_c2d153627dbda11b7b8463ee@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:816fb4f6d1a70a12945e1201a6ebbed56a84ad208f8b021af17ccb12aa8a1dda"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:4227f6b0a1da1d30883294d4a37a32841dbc91ed10e9e26119100fd7db63f8fc",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:5dff9139632560c3d0fae48b9a26a18896129b0c346bcea004ea5c95bd8908d2",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_ae71bfd74c4be8f02e293105@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_c2d153627dbda11b7b8463ee@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:816fb4f6d1a70a12945e1201a6ebbed56a84ad208f8b021af17ccb12aa8a1dda"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:decc78e14c1797559f04ab4444288f743814ab627fc6d1787134c9d374aae025",
+    "failure_ids": [],
+    "observation_count": 8,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:5e9c04ee9f30f48afc3cf550c9ac8458863e326259005797c8ce8e0dec58d682",
+    "replayed_observation_count": 8,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_1be593b8a688df0e03ac1810@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_452a505bd616cbbf177781ca@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:b6c15e8a1083cc19edc1048e0dbad449168f2453f81f18592df02181e2e7ecec"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:decc78e14c1797559f04ab4444288f743814ab627fc6d1787134c9d374aae025",
+    "failure_ids": [],
+    "observation_count": 8,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:5e9c04ee9f30f48afc3cf550c9ac8458863e326259005797c8ce8e0dec58d682",
+    "replayed_observation_count": 8,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_1be593b8a688df0e03ac1810@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_452a505bd616cbbf177781ca@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:b6c15e8a1083cc19edc1048e0dbad449168f2453f81f18592df02181e2e7ecec"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:cafb9a4d7f94aa820d5661038145dd2f3412231c826e6ae9221bc4af02a03b1d",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:63dbcae6c6615dc684867544f4bbef3369bdafe55a05b98afd40278899b85d97",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_73238bb7e0a46e6b6e7c151a@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_be576ec6001a563ae024d27f@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:ea00206b92780f1246777a671d92e6b52fa60b236b99974b7dc3378f17bc29a8"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:decc78e14c1797559f04ab4444288f743814ab627fc6d1787134c9d374aae025",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:7106630009bd566eb80821620cd3934b2df0e6deb8771266f7d8bdb4b823fb88",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_1be593b8a688df0e03ac1810@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_452a505bd616cbbf177781ca@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:b6c15e8a1083cc19edc1048e0dbad449168f2453f81f18592df02181e2e7ecec"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:f32359e49a764768c548c40975352dfb5c0bc745c2caf1c778eeb2d165c4c267",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:739baf40bf57b06763cc61936dfac50e4c44870661a21f4df77dd2d115ebdfb9",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_632bbbbe8a6ef6e93f72a7df@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7a357e84a685906e8f7e6552@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:600a01982d3fbae6f3e5aa0420f9ec3f92b9127ca88f54eb0bf11f21f3c1b474"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:f32359e49a764768c548c40975352dfb5c0bc745c2caf1c778eeb2d165c4c267",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:739baf40bf57b06763cc61936dfac50e4c44870661a21f4df77dd2d115ebdfb9",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_632bbbbe8a6ef6e93f72a7df@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7a357e84a685906e8f7e6552@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:600a01982d3fbae6f3e5aa0420f9ec3f92b9127ca88f54eb0bf11f21f3c1b474"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:c302d2e67b9bde1c0c2cb7987269d216798c696d5cc0fb7b7beb144f0441029c",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:7d916226f2442bd1d6d0690fb6867ca4c9bb7ddd042a0ee26239675dc43a3755",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0750c597a4073eab82048d7c@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_9326c9d52993468a059cdb25@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:bdbec8b82eb24bd8e217cee564a9c6658daad3b377a8dc8e81bd641efc165df3"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:dc30b9ce3e568adf4237c5cc67bab005e293570ef6c8e18c03b03633af7db291",
+    "failure_ids": [],
+    "observation_count": 5,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:7ee604140639718b53f07c931ca992471146a57ea2c83bdf41a33c959fab5d95",
+    "replayed_observation_count": 5,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_13edfe43123ac78f4498103f@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7800149326a275663437f6fa@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:8276645f1510b51c14c11c093c0f44818f3617fa2a5aa9638e54ba2f91d5a37e"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:186c9863e31e00ff42c3c7cc876d9dac5e4f4c90b20faad8604042c6c92d9c32",
+    "failure_ids": [],
+    "observation_count": 7,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:84d67ac50ac01f9ecedf9460cf9d676f427f8bdbd2568f4995107489aa4d15cc",
+    "replayed_observation_count": 7,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3f0ec33fdc195a39809b2e65@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_db47f227668752620b33e7f9@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:1ee75930652ad72b0138030b6517bcb2337fb1af3fc9cfd1086da0228121d712"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:186c9863e31e00ff42c3c7cc876d9dac5e4f4c90b20faad8604042c6c92d9c32",
+    "failure_ids": [],
+    "observation_count": 7,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:84d67ac50ac01f9ecedf9460cf9d676f427f8bdbd2568f4995107489aa4d15cc",
+    "replayed_observation_count": 7,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3f0ec33fdc195a39809b2e65@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_db47f227668752620b33e7f9@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:1ee75930652ad72b0138030b6517bcb2337fb1af3fc9cfd1086da0228121d712"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:db9a9be3b1f8f4238adcddb918d90712b6b6d3f872124e2ecf107ced1170fb1a",
+    "failure_ids": [],
+    "observation_count": 5,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:9b31247d6e697595858212ca10bb1a06f315abe776e5cbc17b82efa172f13839",
+    "replayed_observation_count": 5,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_815fc64d9b92dd6943843995@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_ef78f391d50c5f701f992cca@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:f0485559d0d4a9c57f56218924f1351ee866de4d81a1ab83e6112d5e4d454ead"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:593fc68613600b1ccc0c7141c127d09acca502adbb71439af4b8961c54839fed",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:a5ecca336f08d9447aad6bb39b6dabfb2ee730c4d1903bfdf7f0137576a3a38b",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0a13b35df802e419db076472@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7d418253420ce2379470fef8@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:7379b3bd3daa12414a99883693c54e628c88c40628400a4463fbda8fb5359880"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:64ae2db0d5073f1d02f7bda5ba7b7ba0ec28a6825d1111c2b93efb2e99349ba7",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:a7edde82fd766a290e216e0e76659d62e7c3ba8072bba9775ee9d9fd3eaaac2f",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_633d0eedbba189202e9bd357@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_b9a0ffdb4af1309f21baab4a@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:574f6860987c8e19795058c3a622f8cb17dc0323f21780ea4412c2e2996cd4af"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:4227f6b0a1da1d30883294d4a37a32841dbc91ed10e9e26119100fd7db63f8fc",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:aaed9abf517ec129d4db147b3c759011cb265d27e21043f8e2935d9009d71b18",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_ae71bfd74c4be8f02e293105@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_c2d153627dbda11b7b8463ee@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:816fb4f6d1a70a12945e1201a6ebbed56a84ad208f8b021af17ccb12aa8a1dda"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:b7bacbba032250c5e7dcb219f0d5bfeb563eaa4a8f4ff9144f580ad9d97e79b9",
+    "failure_ids": [],
+    "observation_count": 5,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:ab254c65d2b07e0827fbc00274fa85569db385ce7f26b7b3d980880cbd0060c1",
+    "replayed_observation_count": 5,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_0038b157757cb7b4c9d35aea@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_829bed63d12baf646e20194d@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:e8deb3b7815c8194a1dcf1f7c8cf49fbb325e3664b36d9a63eb5140d59cab163"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:d90d0b2d0e66926251ea19fcc67870a385e4e16ad61cedebed8577395a344fe7",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:ab45a24315ed715f1c40440198c3a8f61513ae6cc37cd27d41791d9f41154bf2",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_c3390544af31a59ec99af0e5@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_d1e0f02245c62284d099cb9a@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:d46a54f5f3aa53bb85bd065009d04813afcaf3edb0446562eed521466b6c7d80"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:cafb9a4d7f94aa820d5661038145dd2f3412231c826e6ae9221bc4af02a03b1d",
+    "failure_ids": [],
+    "observation_count": 8,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:adaecb9d2a9cb9699f1220ba36dfe0509076b050fea9ca7e809397068e3e80ee",
+    "replayed_observation_count": 8,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_73238bb7e0a46e6b6e7c151a@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_be576ec6001a563ae024d27f@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:ea00206b92780f1246777a671d92e6b52fa60b236b99974b7dc3378f17bc29a8"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:cafb9a4d7f94aa820d5661038145dd2f3412231c826e6ae9221bc4af02a03b1d",
+    "failure_ids": [],
+    "observation_count": 8,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:adaecb9d2a9cb9699f1220ba36dfe0509076b050fea9ca7e809397068e3e80ee",
+    "replayed_observation_count": 8,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_73238bb7e0a46e6b6e7c151a@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_be576ec6001a563ae024d27f@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:ea00206b92780f1246777a671d92e6b52fa60b236b99974b7dc3378f17bc29a8"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:a7a7bbdb01600878cdfbda74f5769cc0831520d19ade68009c06dfd5336bf452",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:b06848eeb3cf69fd264d264e9b311a7e5329431755801fb316d83e6d2cc003ae",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_33448f10ee7995085550e1a1@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_454c47ff92dca42335ebb78a@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:74b7ea842a56006945257361fcbf27d3f1708888c1452221f1099ead545f5797"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:a7a7bbdb01600878cdfbda74f5769cc0831520d19ade68009c06dfd5336bf452",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:b06848eeb3cf69fd264d264e9b311a7e5329431755801fb316d83e6d2cc003ae",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_33448f10ee7995085550e1a1@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_454c47ff92dca42335ebb78a@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:74b7ea842a56006945257361fcbf27d3f1708888c1452221f1099ead545f5797"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:9ada6da85eb5d9766b758aff9d2aa8a8d354fc56e42ee87205cc5bd299cb967f",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:b2e6d193ef9158399f57fa321fc2b713224051cc3c486d7740cf501e5b1372b6",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_1aa96fe7305fab18c04bbff8@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_8287a158618b7ba83f55e7de@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:5c83e7d8969e516187edffa97505aea2879457604dc50d46493065ed563b2454"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:dc30b9ce3e568adf4237c5cc67bab005e293570ef6c8e18c03b03633af7db291",
+    "failure_ids": [],
+    "observation_count": 7,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c328fa72e8c2e446a4c6e002a80a4106503248d38175995c931b6539be254bd7",
+    "replayed_observation_count": 7,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_13edfe43123ac78f4498103f@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7800149326a275663437f6fa@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:8276645f1510b51c14c11c093c0f44818f3617fa2a5aa9638e54ba2f91d5a37e"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:dc30b9ce3e568adf4237c5cc67bab005e293570ef6c8e18c03b03633af7db291",
+    "failure_ids": [],
+    "observation_count": 7,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c328fa72e8c2e446a4c6e002a80a4106503248d38175995c931b6539be254bd7",
+    "replayed_observation_count": 7,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_13edfe43123ac78f4498103f@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7800149326a275663437f6fa@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:8276645f1510b51c14c11c093c0f44818f3617fa2a5aa9638e54ba2f91d5a37e"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:e9ea6e695a2c22ac5df9003effd88e7b7a9a9da2638e25203a1d89581a84487b",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c47563aabc91dd1ae181d5e95ff39a8594ea3a20496f3a063b0358e5b90f7a90",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_18fac5252b323970358374c7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_eb2ccaf36385a2781e65da03@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:7eb65cdb56146340bb8adf3b7a245dc10767e28f4bdef25f1efe39d42b076892"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:e9ea6e695a2c22ac5df9003effd88e7b7a9a9da2638e25203a1d89581a84487b",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c47563aabc91dd1ae181d5e95ff39a8594ea3a20496f3a063b0358e5b90f7a90",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_18fac5252b323970358374c7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_eb2ccaf36385a2781e65da03@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:7eb65cdb56146340bb8adf3b7a245dc10767e28f4bdef25f1efe39d42b076892"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:f32359e49a764768c548c40975352dfb5c0bc745c2caf1c778eeb2d165c4c267",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c4f46d5b5b000f3afc50cc406cf7c47578938d38720f1d98ecae306996d7ace6",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_632bbbbe8a6ef6e93f72a7df@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_7a357e84a685906e8f7e6552@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:600a01982d3fbae6f3e5aa0420f9ec3f92b9127ca88f54eb0bf11f21f3c1b474"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:d6a8ee8ac60d91d888fccdb9d4a7d2ab77c99ee3c2e0fc62ce9047a8493d66fd",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c972e0743dbc367acec6bdba75a169fcd0cc60dbf136df604cbfe3adc82e5349",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_2965d4aacc20ac56d94907a4@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_33c50accef2d67b5a365fdc0@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:b5514c3d6374e7002d018687ea8a9095f33ec9630b58bae090ef70ad854f8a57"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:d6a8ee8ac60d91d888fccdb9d4a7d2ab77c99ee3c2e0fc62ce9047a8493d66fd",
+    "failure_ids": [],
+    "observation_count": 6,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:c972e0743dbc367acec6bdba75a169fcd0cc60dbf136df604cbfe3adc82e5349",
+    "replayed_observation_count": 6,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_2965d4aacc20ac56d94907a4@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_33c50accef2d67b5a365fdc0@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:b5514c3d6374e7002d018687ea8a9095f33ec9630b58bae090ef70ad854f8a57"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:a1b39e542bb77c4ca884542d8b70034a01b5ad092857d5f32733bb0b803c6082",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:cdf5323397a7f380159d06668ec793c6a739f9a87c6b8875d928439c7702f0a0",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_4b26d88a4fff7035d5cc50db@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_a03ffe0baa71efd78a95d1e1@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:1194281dcec8725280ef83470a992bd5c7b39038fdf873c7815e602670b87d72"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:1a7220a40de9df2ea4162d5d6f282bd3ca7ce753696e8fa00ecace9f4f727bea",
+    "failure_ids": [],
+    "observation_count": 5,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:d11c0783b61e8062f1b9a8eae8208d8b20c46787105c8ed8371ad7cf4dd1e4cc",
+    "replayed_observation_count": 5,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_1ad9514acf2a32fb432cbb4e@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_8aade48c9ba6573c70a4ca37@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:7a23c41c2c5d3bf8d31646c28b65f39a7bc64c9719a3b8b0afc55256e4c5f7db"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:955ad96881ec6696820970fad962ba67a4f98750c8f50c07b34c4d37bb53e7ba",
+    "failure_ids": [],
+    "observation_count": 8,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:d34e2e1466dfbc0c44d8200fe7ccf7f63ce6b6006c63d40c37b5a2a9d226383d",
+    "replayed_observation_count": 8,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3dcc2678a8e8936f186bcf60@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_985fcc1a8a78918f8a8be9dc@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:dba792ad3f54585fc2d1c7373651ff6f64498fa3f6d07f3a26c88e305fa6a374"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:955ad96881ec6696820970fad962ba67a4f98750c8f50c07b34c4d37bb53e7ba",
+    "failure_ids": [],
+    "observation_count": 8,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:d34e2e1466dfbc0c44d8200fe7ccf7f63ce6b6006c63d40c37b5a2a9d226383d",
+    "replayed_observation_count": 8,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3dcc2678a8e8936f186bcf60@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_985fcc1a8a78918f8a8be9dc@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:dba792ad3f54585fc2d1c7373651ff6f64498fa3f6d07f3a26c88e305fa6a374"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:12127834478f81131bdc47948b3bd9397787a60b94483c407169a317a2d200bf",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:d98406ffeb0327f60e67b1d30be1aa05ca82a9789493bbf130e77c6485808825",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_14f70d9b136efd709491cd12@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_bbb3095a6381103367da4c5f@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:6b1098cd7ff15628f07aad68330a73f13e92f2ca52a92a04d0500dc6fe152aa0"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:186c9863e31e00ff42c3c7cc876d9dac5e4f4c90b20faad8604042c6c92d9c32",
+    "failure_ids": [],
+    "observation_count": 5,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:ee9c132693377caf94679857e02cdefff8bc3ea660dc6dfde1ebec86a4c8a2a5",
+    "replayed_observation_count": 5,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_3f0ec33fdc195a39809b2e65@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_db47f227668752620b33e7f9@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:1ee75930652ad72b0138030b6517bcb2337fb1af3fc9cfd1086da0228121d712"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:f85c24fc75d2bc265f84db9e0270df53e06c7921ae37d73beadc755f7d55ee3b",
+    "failure_ids": [],
+    "observation_count": 7,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:f3389a735c72c5b6f8a33c4423f6193474224d29d5ba3e66572cc12d756f38bc",
+    "replayed_observation_count": 7,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_048ffb9a748862bff9d823b7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_1508f94bbad0c206849c0c1b@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:5c1a6ae10124483f6493ab087d26d59113b1d09fddc214cb80c30a518c7f69c8"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:f85c24fc75d2bc265f84db9e0270df53e06c7921ae37d73beadc755f7d55ee3b",
+    "failure_ids": [],
+    "observation_count": 7,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:f3389a735c72c5b6f8a33c4423f6193474224d29d5ba3e66572cc12d756f38bc",
+    "replayed_observation_count": 7,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_048ffb9a748862bff9d823b7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_1508f94bbad0c206849c0c1b@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:5c1a6ae10124483f6493ab087d26d59113b1d09fddc214cb80c30a518c7f69c8"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:f85c24fc75d2bc265f84db9e0270df53e06c7921ae37d73beadc755f7d55ee3b",
+    "failure_ids": [],
+    "observation_count": 5,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:f6c37e6f30eceb71f19b54ac5370e1f42f57f626352eb3a14cd15895e95caa5c",
+    "replayed_observation_count": 5,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_048ffb9a748862bff9d823b7@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_1508f94bbad0c206849c0c1b@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:5c1a6ae10124483f6493ab087d26d59113b1d09fddc214cb80c30a518c7f69c8"
+  },
+  {
+    "contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "environment_manifest_id": "agent_tool_environment:4a0f1b8c590b4025aa244d2eb6ad9f7a78c19335ebe5274cf1332838f2727c7c",
+    "failure_ids": [],
+    "observation_count": 4,
+    "passed": true,
+    "replay_id": "finance_v26_authority_verifier_replay:fcc33f2492d5f98da1602016dddfe7d0b09f83296e641814a099cb4b0dbc2ecb",
+    "replayed_observation_count": 4,
+    "schema_version": "finance_v26_authority_verifier_replay.v2",
+    "selected_evidence_ids": [
+      "evidence:finance:fact_640b6367447668ddcc142234@kg_20260711_062123_bc4b4394",
+      "evidence:finance:fact_71358998bc0df5eb0ffdf481@kg_20260711_062123_bc4b4394"
+    ],
+    "task_package_id": "operational_executable_task_package:e73804f14a8a40956b816d44d81725eb368d77708338fc1c9e75ba948bb4a732"
+  }
+]

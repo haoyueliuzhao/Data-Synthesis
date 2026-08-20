@@ -1,0 +1,80 @@
+{
+  "audit_id": "finance_v26_role_destructive_preflight:fe227323dea3dbee5debe86f02f419ec3257258fa95252ea9e7971bd4187add6",
+  "gpu_jobs": 0,
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "mutation_results": [
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:038524bede9c9e4e6a4d6be41b92f73a11bb3bd20610238b644af42b9adf2903",
+      "mutation_kind": "reachability_role_swap",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:1cea2f00a89fdcd065af495997e2e51c224c8bcb88233bc05e80f91c29b25878",
+      "mutation_kind": "prompt_expected_arguments_injection",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:2d76dc9c519247aa67801f7fdb764fa835f9e4d5cb919c1144063c9b4cf4c38a",
+      "mutation_kind": "thinking_disabled",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:3391604f77497f56be36654ade474b6a8f12dc7abcbbb5f6d902e2171af236a4",
+      "mutation_kind": "thinking_missing",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:3a0789a317740f38d1f27d3cf9b1074e3fd47afe42b1ccd5f41ef1bb238c388d",
+      "mutation_kind": "prompt_oracle_injection",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:624c898b7b6426674bc63de414f7b48f833b858d4c5e31c59ce4ef0f0d074c9a",
+      "mutation_kind": "reachability_path_ablation",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:7180e3836e2963aafb65d0cb63bdd08e5f1a9c35100b2ebb3e9bc76372c8fe0b",
+      "mutation_kind": "thinking_structurally_extended",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:cd5fde2249b19edbecb3d09e14e0e6362cacf92a2fb53d8bd92f684b45992a35",
+      "mutation_kind": "role_task_package_stale_identity",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:e09da62f097a1c8b6f1718082b23ddc6221eb0b1bca36f7a70202c739556e463",
+      "mutation_kind": "thinking_changed_case",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:f08449f5f3fe59c405b1684254f222db2ab94935572d65e3ad1568aa22877ad3",
+      "mutation_kind": "prompt_action_binding_flag",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_role_destructive_mutation:faa0bebe43f768f1713650af5566d314b02307d465fe5cf9d12a6633b0e6b708",
+      "mutation_kind": "prompt_target_evidence_injection",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    }
+  ],
+  "prompt_projection_mutation_count": 4,
+  "rejected_mutation_count": 11,
+  "role_package_mutation_count": 3,
+  "schema_version": "finance_v26_role_destructive_preflight.v1",
+  "status": "passed",
+  "thinking_mutation_count": 4
+}

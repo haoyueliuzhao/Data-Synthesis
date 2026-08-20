@@ -1,0 +1,296 @@
+{
+  "audit_id": "finance_v26_budget_feasible_role_capacity:ed5a8712cf16943840b99d43e16e92b19273583a743e7897a4be90e6b2f59da5",
+  "eligible_task_counts": {
+    "context_conditioned_action": 11,
+    "failure_recovery": 15,
+    "semantic_reconciliation": 30,
+    "state_dependent_stopping": 14
+  },
+  "reachability_single_node_two_evidence_count": 12,
+  "role_mechanism_counts": {
+    "capability:context_conditioned_action": 3,
+    "capability:failure_recovery": 3,
+    "capability:semantic_reconciliation": 3,
+    "capability:state_dependent_stopping": 3,
+    "reachability:context_conditioned_action": 3,
+    "reachability:failure_recovery": 3,
+    "reachability:semantic_reconciliation": 3,
+    "reachability:state_dependent_stopping": 3
+  },
+  "schema_version": "finance_v26_budget_feasible_role_capacity.v1",
+  "selected_rows": [
+    {
+      "evidence_count": 2,
+      "mechanism_id": "state_dependent_stopping",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:76450c8107b297d0acf6a06f026198c8bd3c0ce8ce46d5c88d6c721d1d730702",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:0199f594748f67419b75d99fc4631c24adca0b598945e1fcace3b223731b1d39",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:68feda40f622cc6feb1570ffe6b1255eeb1e38019d01e9653731fc4723a4376d",
+      "source_task_hash": "task:dfde4a4fb669a90da78f9d78e68811f4aadfeb8f031502e7233632f0d089fd35"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "failure_recovery",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:46470cbce3f09ee997a1eb27cdd7d423a8ac20c4cdc318395deb6fe3d3d68344",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:0c9e0918d6e4137ab2f79820eb33483c75cd2f3f742ac277f71c239c6580c7be",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:a039d2cdb87a1cc5e0e568e1caf6e3018132717af5807b879c6a0ea0a38f448e",
+      "source_task_hash": "task:22ba124e124c67f1e250bee17b53b05fc8fc6892fc22c16d8063fb821e497642"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "failure_recovery",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:30527b4e8a902bad6324ea0590babcd62182fd05a07dc98c358562bddf30f0db",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:178427cbb4028589aff1d02712ce620002df7ed5513914dec25918481db04357",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:19ae0b34f9101b1b37840f5c237ac1178e7b7e4dd224bffde2adc91e2fba5394",
+      "source_task_hash": "task:ea5162d7af1d621122fd98bc3109019a7555403e6f21d0b212b932d6109ba93a"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "context_conditioned_action",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:874f35160e56f0a7bdc66e4766f835549493e87edfadad241d2ee9c306ddb9f2",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:1a7aedb1f5948e528895a1656b59a0baa04f0f34ac5bb05ad989097e73727be8",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:671773dbc481420317c129450d920463269654c2d994269f792f16e9b02bc5f8",
+      "source_task_hash": "task:b29097361d2dbb9712278a7b19f5ec58feb3c281d2cc08739af3cfa83a9eb2d5"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "failure_recovery",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:275a7a24541246f923727cd10c84b0a799027dc8bd1c9c2cd361e60eb664608e",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:1a964dd457315120f41393d5ee39202a0b2e17668bc36f997bd88846bf2c55bd",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:528cf959ea59d908696aa965e4242f9634c170567177aad8da96cf6fb1301baa",
+      "source_task_hash": "task:dc77efc0bacd881e64f32d1224347e10efc4c889579a95cd463f556aa43ac72f"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "semantic_reconciliation",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:5f03965f2489aeb9e8b5810424a3cb32562aed85d2e5593711c193b3615a36f3",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:1d893c99db39755a71aeb0201e0b496b3d02172cb2276c3dfdfade9626584b77",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:ed482636042b57968b31d4a2d310967742587102a5e24b587e68abb9af4cfac4",
+      "source_task_hash": "task:f84a0c78b0ea47c09d01319d76c9d855d13ab92825e56a4fe78e680ba5af5eab"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "failure_recovery",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:55248972387e3b815f1ca895598c45cbea8f335acaa700e362989b23b38653ab",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:1f5e0a3358d432b73e0bcd0c309580fd29d5a4b634b45f334b77f847e8a04bef",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:a3c4bf53a892d446c4a9fcff4be36bdeb31b48a19ca0976fef93d4a40c61bca2",
+      "source_task_hash": "task:55031c78621e80df52ddd89b5eb619aff14f0a37eaf22d65c144a31f7b4e7e56"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "state_dependent_stopping",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:03c8346ecf0279fa376ecad949682ced4303e2c20ce64af9a93213074630c1cc",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:20fd8a7b6e0dae8098e435b88165fc78baea161332ddd46174831ac6a5d85f43",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:6642f3b19e21cd9336caa3f8e5b4564fd8d63e824e66edea902a4a1676301b8b",
+      "source_task_hash": "task:1c433c4f305940b299a37d6872062799149d3ddd8cc301c0d96c706bb50b6b33"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "state_dependent_stopping",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:b47aacbd3313023130b530dc6a10d721c34031421cc592949494349da4261b65",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:2c41d3567a920856016949f9eb3ad451aa65c4ae99621db0cb031f5a41092495",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:ff4d52940ca469e7ec10f31bbd7efe1253e81ba2f744f6e1017ce1056163a178",
+      "source_task_hash": "task:6528ccff764463a0526bfb735875c147c0a1333ef5b7662097ca250f77d801d4"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "context_conditioned_action",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:45102e3b23b44c8168ca8cdbd4600ccfb644565a828c8fcee89c2bb4f1157a16",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:2f854300fa55f25475f0b86312ed3d90d45b5a4d028463ec05665a7d31d7f10e",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:3db9df15407829a77585356912cfe8745d695a45ce5ae8dc2e9333df6b499501",
+      "source_task_hash": "task:b6432ccd04a41620760451f367735ec5c8444ebd3ac96985056a5e6f8b2b6041"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "state_dependent_stopping",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:2f69296355d2908a8b7b8e85188de4dc9d7ba68823978e29a0151a40fe9f4887",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:4a54a8684d0c01bb75bb082dbbbcdb6ce26ec8cdc927f35eb14fdb9d9486d34c",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:b145d0bee510dcd59e24df3024404a883de40b6e94e2b941f5cbae887a151be5",
+      "source_task_hash": "task:b244bc1beeef9458991b97dee908ac650454b4917d1967100e9437171df79734"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "semantic_reconciliation",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:062afbc4060f9fb46ee155da591047d5b74402d37242c660f453b56c4fa78f86",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:653d331f97d6064f090347baee23a62816a2d97a9e7a32959b9b93767b292286",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:b3f411e97e08a2991e356418ace458d10ace6d3c148472e68113f639cfcd637c",
+      "source_task_hash": "task:596441d90f976e0676ad78295bf75ae558efab2bdeef2129aa1273fc25eb289e"
+    },
+    {
+      "evidence_count": 7,
+      "mechanism_id": "context_conditioned_action",
+      "program_node_count": 3,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:0db4edb7832f0fa9a0ccef93c6b031cd25fd1b456cf19e5c04a99a6675299938",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:6de52d5f436bfab6fd1832b3294d186935a3d4740bcbd362cae5b8306c9d5405",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:6d2f69cce70d20e4f6150d489ba93e6a2875a2092cf2e7e47d33bf7d018fedbd",
+      "source_task_hash": "task:2776d46da5618e20764c260b5b11beafd83e1f11d890daa9c63dfaefbe013aa1"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "failure_recovery",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:2b3b438db1dad8036508ba91cf891358d2363d1c82dfa0301869187e37d38a71",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:842c22ba8eef8f3d9c4476c6320174788f7f27be29849c657858708998b6598e",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:aad057436a1ba422138b33e24fb55ac70f107b06a72675570a9f78c17564a1a3",
+      "source_task_hash": "task:49c4191fe25bf4a153622d771421a4bc9e325b2ee8ff596e222de0a045229255"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "context_conditioned_action",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:17b51882a6b0cb2c6014dcb2646749b6d8ece443465260dbf70beb4629a00f94",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:9684f9b931b4969dc7795edb92b27fbbcc85bcbe4d36ff163a5570f9940bdcb0",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:b33972fa170ac08a678190178d1ee6db1c5d132ed9527e5685ce59209fc86ffd",
+      "source_task_hash": "task:6a4fb84f9134f3de2d982f664e2fb9a9605378e344c688d016c2e8008e927270"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "semantic_reconciliation",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:1859c463be404b63db5d471244f731545bd43010e7047b5c7ecb7f45051436d0",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:c3f783827d5cb6000679c65250ce4186ee0ef4554c072c3979a265ebe8d739e0",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:76f4998033e04d7470c6d16d3e52bb200454ac3f4effa8055ccebe356b7ccf5a",
+      "source_task_hash": "task:34b830765282654f4c7fcc10962fe7ab81133411065e6bf69b484cf2dd91e207"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "semantic_reconciliation",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:8ecc878d8c29998e3961600ddc69cd80746e57591c0dae187e430c82d5d93e9d",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:c8b2fd708ab67ba7cb9df6e5ae27906d8adb1b5702f1051405288f013145b0f5",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:a674a5d9506e2326682d9b4ff647655354cd6d4cb2ce759442abe7501f29d2c7",
+      "source_task_hash": "task:b1b14d88b9293815c552785463451327ef74c49802aff11a16c6c8aba008ca1b"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "semantic_reconciliation",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:13236f9859f1e7db38517aa4dea45922c92ec93604cc361b6072f04da80d706c",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:d06ade5a35d2d630b2a0f2dd35a49c4542d7e720f8fe7310876d09e666067e06",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:fe6662c3b629a63192bf505152159154bf9ccb44f74542fbd0d27c61b620b8c4",
+      "source_task_hash": "task:46e8b677439f551dd71d15b1f427eb3c5dded66fe6910cd74ea590c859426648"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "context_conditioned_action",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:92651aa33ffce3fbcf912cb8f56a2280c660e4b7c9a72454eceb180d33e04f1e",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:d091ca8a8842f9b79e6513ff30b47db7f84ba91ca1305284af8c418c2cf73973",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:f0462a4ad448c68b32ab455f6dc2df2cad16a32401f51db6b32d3731f9bfaf92",
+      "source_task_hash": "task:4731a2b1cc47cf056e92a05da91be0edcc3d13003fe50c0a1be6b83c9bbec24a"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "state_dependent_stopping",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:8045a95bf75f241b741e0b23e260d7c0f78ac014891ba29b2e4401c13292a3dc",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:d988b5ef967626e70310b9e5060eaa7e13d031aeb136e8aa0052fb95058d9e53",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:29fa271e95437ef893edf7973dc7c4d407b82e743caf571b0703de7753c10b05",
+      "source_task_hash": "task:c2f0c5a65a0c21f60befab55d226831c19f55af25c28ee4be57559dbce6fbf4c"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "state_dependent_stopping",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:fa7263d054c1db0b91d66a3d5b8e9ac43147485b9ac88bac667c6049cf650263",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:dea59ca5069ec3dd1d3a9e434e3c63f9e7b2ed031f1fe004747648b3bdf19e1d",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:8813a7f78da4eeedc1ec0854081863ea336532d629ba5868e9bffca2343a8dfc",
+      "source_task_hash": "task:cd53c3d7f0d6e5e74dbdf512d9b59464d4e58f31b2f73994a4859033c0f36224"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "semantic_reconciliation",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:4b3497059fadecf6ce727d524d1056412a73c966e5fce303cc3f2d76b90fa1b2",
+      "role": "reachability",
+      "row_id": "finance_v26_budget_feasible_source_selection:ec59072b95b65858fd8d7f3a3cb42deeb86431a6b0ec90c2da4d1b9493ff164a",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:9c3aae57174dd13282c9f2272c7926def7f3f9e352a7547eea194feebdd53a4b",
+      "source_task_hash": "task:4723beab724751cba7878373d9a014a5990f206cb2991643d87047c7c3ba152b"
+    },
+    {
+      "evidence_count": 2,
+      "mechanism_id": "failure_recovery",
+      "program_node_count": 1,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:28d609e1b4814846c326d4e49398139e161a3d8d6cbeb943131933ad312f4b6c",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:fa52b23a10eac24b2486a3d1944c4ce77162cc97dddbb722899df09ba1a8234f",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:9925fd917fb71ee5885c183a7b5c5c86a69935d9c4c1ee359cb559e60b0d553e",
+      "source_task_hash": "task:2846df1d14100da7334792bfb05b62d0231c3e3d6ee88f9272488cc3a34102b6"
+    },
+    {
+      "evidence_count": 7,
+      "mechanism_id": "context_conditioned_action",
+      "program_node_count": 3,
+      "rank_hash": "finance_v26_budget_feasible_source_rank:1763fb59a11d47e55195c83fc74bc503b875a200c04caac2eb78225803264bae",
+      "role": "capability",
+      "row_id": "finance_v26_budget_feasible_source_selection:fba377434398daeaab9ff62ce056a36d6021ea145126074042531e527181739b",
+      "selection_uses_static_structure_only": true,
+      "source_task_artifact_id": "finance_capability_sensitive_task:2c99e9fb829cb95d20f9a4b51dc0a6c82536b338d202b1e26a4634587e8fd917",
+      "source_task_hash": "task:26c453099405e1dac02f4c66595bc49deb1afb1e77942358534619b9f6fe112d"
+    }
+  ],
+  "source_population_ids": [
+    "finance_capability_sensitive_frontier_population:069aa4321804e63e6e3d136b6aafd08ef02f744b84580d08c100b335d6b07d32",
+    "finance_capability_sensitive_frontier_population:1ac3e8d337649a92488249ccfc01b168063312ad361bc923547a417094174af8",
+    "finance_capability_sensitive_frontier_population:564f70faa05db45c202e7413a9c4d7f0f9dcfe867ab4ee6bfb02be06a0df939a",
+    "finance_capability_sensitive_frontier_population:a4d02686fc21ecb7f610e9f2524c35b6c1133ea7170a540047406579ab50b4da"
+  ],
+  "source_task_outcomes_loaded": false,
+  "source_task_outcomes_used": false,
+  "status": "passed"
+}

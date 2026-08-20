@@ -1,0 +1,33 @@
+{
+  "binding": {
+    "binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+    "model": "deepseek-v4-flash",
+    "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+    "policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "provider": "deepseek",
+    "schema_version": "prospective_thinking_model_binding.v1",
+    "thinking_type": "enabled"
+  },
+  "client_construction_permitted_in_this_stage": false,
+  "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+  "model_profile_sha256": "ac02238a9b7079e3c409cf8d1bfb789c41ff26e58bcff35882adf81536ea4de6",
+  "policy": {
+    "completion_usage_counts_toward_rollout_budget": true,
+    "configuration_admission": "exact_match_before_client_construction",
+    "effective_date": "2026-08-21",
+    "historical_provider_calls_in_scope": false,
+    "historical_results_reclassified": false,
+    "non_provider_fixture_calls_in_scope": false,
+    "policy_id": "prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f",
+    "reasoning_content_persisted": false,
+    "reasoning_length_and_token_telemetry_retained": true,
+    "reasoning_tokens_count_toward_completion_usage": true,
+    "required_request_body_fragment": {
+      "thinking": {
+        "type": "enabled"
+      }
+    },
+    "schema_version": "prospective_thinking_mode_policy.v1",
+    "scope": "all_new_provider_model_calls"
+  }
+}

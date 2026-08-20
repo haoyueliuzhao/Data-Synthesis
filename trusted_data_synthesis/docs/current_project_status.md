@@ -37,8 +37,73 @@ tokens remain completion Usage and count against the unchanged 4,096-token compl
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
-does not change the current permitted transition. See
+did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.90 Budget-Feasible Role Task Rematerialization Decision
+
+Finance v26.90 completed the only static transition authorized by v26.89. It replayed 57 source,
+contract, verifier, model-profile, historical task-record, and historical Job-manifest files
+before materializing 24 fresh role TaskPackages: 12 Capability and 12 Reachability tasks, with
+three tasks per mechanism in each role. Selection used only immutable source structure and a
+frozen salt; source-task outcomes, historical model outcomes, v26.81 diagnostic candidates, and
+Compiler fixture outcomes were neither loaded nor used.
+
+The Population has zero historical overlap and zero Capability/Reachability overlap on all nine
+frozen channels: source task, semantic signature, source hash, Evidence, Evidence Version, source
+record, Semantic Source, TaskPackage, and Job identity. The exclusion denominator contains 156
+historical task records and 1,200 historical Job or Recovery-Job identities. No Job was selected
+or materialized.
+
+v26.90 prospectively reduces each fresh public Program to an independently replayed two-Evidence
+leaf Operation, then rebuilds its Public Operation, action-neutral repair, Stop Readiness, exact
+terminal-verification target, Environment, and Verifier v2 binding. A new compact public Prompt
+representation retains unresolved semantic state, selected facts, operation references, typed
+failures, and exact stop state while dropping superseded search candidates and replay telemetry.
+It exposes no Oracle, target Evidence, expected arguments, correct next action, or private
+mechanism state.
+
+All 12 Capability tasks have one complete budget-qualified `structured_direct` Witness. All 12
+Reachability tasks have three independently qualified public paths, for 36/36 paths across
+`structured_direct`, `search_then_structured`, and `search_then_open`. Every prefix uses the
+unchanged v26.89 arithmetic: UTF-8 Prompt bytes plus the 256-token chat envelope, the 4,096-token
+completion bound, and the currently required 4,096-token repair and final-answer reserves.
+
+All 48/48 complete paths pass the 60,000-byte Prompt and 120,000-token rollout ceilings. Static
+path upper bounds range from 57,634 to 115,612, minimum headroom is 4,388 tokens, and the largest
+Prompt is 8,438 bytes. These are conservative certification bounds, not expected Provider Usage,
+model-success estimates, or permission to weaken the resource Contract.
+
+The 48 Compiler paths produced 276 deterministic local Observations. Verifier v2 Replay, shared
+completed scoring, trace sidecars, Operation Closure, mechanism necessity, authority, and
+operational admission all passed. All 11 thinking, Prompt-projection, and role-package destructive
+mutations failed closed. Compiler fixtures contribute zero empirical rows, State Mapping rows, or
+releases.
+
+Every future model-bearing identity binds exact `thinking.type=enabled` before client
+construction. v26.90 itself constructed no client, made zero API calls, ran zero GPU jobs, and
+materialized neither an empirical role Contract nor a Job Manifest. Formal and independent builds
+reproduced all 25 output files byte for byte.
+
+The initial v1 build remains immutable and is superseded because package-wide Mypy found seven
+local dictionary-inference diagnostics after the focused source check had passed. The v2 successor
+uses distinct local variable names and changes no runtime value. All 24 scientific detail files
+are byte-identical across v1/v2; only the source-bound report identity changes. Package-wide Mypy
+returns to the one retained historical v26.70 diagnostic.
+
+The authoritative report is
+`finance_v26_budget_feasible_role_rematerialization_report:9d6e1de192bf267aa45dfbf7b49c1270c0ec995e03b734f208663763a01ef17e`.
+Its only permitted transition is:
+
+```text
+thinking_budget_calibration_preflight_only
+```
+
+This is a positive static path-feasibility result, not empirical Budget Adequacy or a model
+Capability/Reachability result. Calibration execution, Capability Development, State
+Reachability, Fresh Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and production
+Contribution remain forbidden. Production Contribution remains zero. See
+`docs/finance_v26_90_budget_feasible_role_task_rematerialization.md`.
 
 ## v26.88-v26.89 Budget Adequacy Audit And Static Role Preflight Decision
 
@@ -1225,9 +1290,17 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 384 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1034 passed, 4 expected v26.78/v26.84 success-state tests skipped in 790.15 seconds; one existing destructive-test warning |
+| Mypy | 386 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1053 passed, 4 expected v26.78/v26.84 success-state tests skipped in 803.23 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.90 focused regression | 9 passed in 16.69 seconds; zero API/GPU |
+| v26.90 adjacent thinking/budget regression | 32 passed in 55.21 seconds |
+| v26.90 dual build | all 25 output files are byte-identical; zero API/GPU |
+| v26.90 v1-v2 scientific details | all 24 detail files are byte-identical; v2 source-bound report is authoritative |
+| v26.90 source replay | 57/57 source, contract, verifier, profile, task-record, and Job-manifest files replayed |
+| v26.90 role Population | 12 Capability plus 12 Reachability tasks; zero overlap on nine historical and cross-role channels |
+| v26.90 static Budgeted Public Witnesses | 12/12 Capability and 36/36 Reachability paths qualified; bounds 57,634 to 115,612; minimum headroom 4,388 |
+| v26.90 Compiler and destructive controls | 48/48 Replay/shared-score passes, 24/24 admissions, and 11/11 destructive rejections; zero empirical rows |
 | v26.88-v26.89 Budget Adequacy focused regression | 13 passed in 21.00 seconds |
 | v26.89 dual build | all fourteen output files are byte-identical; zero API/GPU |
 | v26.89 source replay | 551/551 source and experiment files replayed |
@@ -1553,50 +1626,56 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_budget_feasible_role_task_rematerialization_only
+thinking_budget_calibration_preflight_only
 ```
 
-All later Provider calls must bind the prospective thinking-mode policy and a fresh
-thinking-enabled model configuration before client construction. This requirement does not itself
-authorize a call during the current static task-rematerialization stage. Historical non-thinking
-rows and future thinking rows are separate generation kernels and may not be pooled without a
-prospectively frozen comparison design.
+v26.90 has now frozen 24 fresh role TaskPackages and proved all 48 required static public paths.
+They remain model-unexposed, but their Compiler Witnesses are static fixtures and may not enter an
+empirical denominator, Capability support, State Mapping, or release counts.
 
-Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. All v26.76 and v26.82
-TaskPackages and their 32-Job Manifests are empirically exposed. The six v26.81 prospective-valid
-candidates, all v26.82 Compiler Witnesses, and all v26.86 descriptive local successes remain
-ineligible for task selection, Capability support, State Mapping, or release counts.
+The next stage may only design and freeze a fresh, disjoint, thinking-enabled Budget Calibration
+Contract and Job Manifest and run credential-free preflight checks. It may not execute a model
+Job. The preflight must replay the v26.90 report, all 25 output files, all 57 source bindings, the
+exact thinking policy, and every registered path bound before any future client construction.
 
-The next stage may only rematerialize fresh, role-separated Capability and Reachability task
-Populations and their credential-free static audits. It must use fresh TaskPackage and static
-artifact identities and preserve zero overlap against all exposed source tasks, semantic
-signatures, source hashes, Evidence, Evidence Versions, source records, Semantic Sources,
-TaskPackages, and Jobs. Historical model outcomes may not influence task selection. No empirical
-Contract or Job Manifest may be materialized in this stage.
+The prospective calibration must contain at least 32 independent Jobs drawn from identities
+disjoint from both v26.90 role Populations and all historical empirical Jobs. At the minimum
+denominator, zero typed no-calls gives a one-sided 95% Clopper-Pearson upper bound of approximately
+0.08937 and passes the frozen 0.10 Gate; one typed no-call gives approximately 0.13985 and fails.
+The threshold, denominator, and no-call semantics may not be relaxed after observing outcomes.
 
-Every fresh Capability task requires one complete Budgeted Public Witness. Every fresh
-Reachability task requires three model-authority paths that independently pass the same static
-Budget Adequacy Contract. The full-path accounting must sum certified request upper bounds plus
-the current required reserve. Individual Prompt fit is insufficient. The 120,000-token rollout
-ceiling, 60,000-byte Prompt ceiling, 4,096-token completion bound, and both 4,096-token reserves
-remain unchanged.
+All future Provider calls must bind exact `thinking.type=enabled` before credential lookup and
+client construction. Reasoning tokens remain completion Usage under the unchanged 4,096-token
+completion bound. Historical non-thinking rows and future thinking rows are separate generation
+kernels and may not be pooled without a prospectively frozen comparison design.
 
-Task and Prompt representation, observation projection, Program dependency shape, and certified
-token-bound methodology may be redesigned prospectively. The 129,333 next-call diagnostic and the
-366,569 to 575,686 fixture-path bounds do not authorize a budget increase. The exposed v26.82
-controls contribute zero empirical rows and remain ineligible for selection.
+The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope, and both
+4,096-token reserves remain unchanged. The 129,333 next-call diagnostic, historical 366,569 to
+575,686 fixture bounds, and new 57,634 to 115,612 static bounds do not authorize a budget change.
+Calibration execution remains forbidden until a passing preflight authorizes it.
 
-After fresh tasks pass all static gates, a later stage must freeze and run a disjoint budget
-calibration of at least 32 Jobs. Its one-sided 95% Clopper-Pearson no-call upper bound must be at
-most 0.10. This calibration is not authorized by the current transition. Capability and
-Reachability must retain separate denominators and admission rules, and only independently valid
-model-generated trajectories may enter State Mapping.
+Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. The six v26.81
+prospective-valid candidates, all v26.82 Compiler Witnesses, all v26.86 descriptive local
+successes, and all v26.90 Compiler fixtures remain ineligible for task selection, empirical role
+support, State Mapping, or release counts. Calibration rows must remain separate from Capability
+and Reachability denominators.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_90_budget_feasible_role_task_rematerialization.md`
+- `src/trusted_synthesis/runtime/agent/compact_budget_prompt.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_feasible_role_task_rematerialization.py`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/report.json`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/source_capacity_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/source_freshness_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/budget_feasible_role_task_packages.json`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/budget_qualified_path_audits.json`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/thinking_mode_binding.json`
+- `artifacts/vtdo_experiment/finance_v26_90_budget_feasible_role_task_rematerialization_v2_20260821/destructive_preflight_audit.json`
 
 - `docs/finance_v26_prospective_thinking_mode_policy.md`
 - `config/deepseek_v4_flash_agent_thinking_v1.json`

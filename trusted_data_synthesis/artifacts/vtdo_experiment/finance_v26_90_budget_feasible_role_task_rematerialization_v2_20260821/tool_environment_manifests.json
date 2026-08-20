@@ -1,0 +1,3773 @@
+[
+  {
+    "corpus_hash": "evidence_corpus_content:e6c463574c15edf7b361886f2036930827937bc19b88b23f630b808848890e19",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:771604453d34aa4cb94946979d5d69d21a2bc2fe8d7d72472b23826cee794020",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:c112faf4f883700942cece36dea672d520f3a2f7e41e11760fb6fe8276dce555.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:12127834478f81131bdc47948b3bd9397787a60b94483c407169a317a2d200bf",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:e6c463574c15edf7b361886f2036930827937bc19b88b23f630b808848890e19",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:5d59aee775741cb15478b8efd97e17c67f91fb273d016289a2a24f0b8f30ffe9",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:5d8176b41755d3162647b5987d7b5778245ad04f7b8dd9d0538567585e7f2c9a",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:42bfeac21ef727a0da30e55a6cda33044a523371a4cff92637e367d97c1b661d.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:186c9863e31e00ff42c3c7cc876d9dac5e4f4c90b20faad8604042c6c92d9c32",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "finance_archive_runtime_snapshot:3dbed4eee00e50767f5925b8b4778db9351be61930fc2b32b99e21bd8a97f496",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:6d45fd7103d2fb478cf5bc8eb5292aec646a9581b5eeb4925dfa6c4caab425f3",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:d57c548c188bc9323dfceb3762654eaab611decfd5710019c30895583ce85d1f",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:84b539a703b19c5b8c392e92c434c5aaf75f72fb15a7863fe1a403e4424bbcbe.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:1a7220a40de9df2ea4162d5d6f282bd3ca7ce753696e8fa00ecace9f4f727bea",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "finance_archive_runtime_snapshot:f8bc97455ac0a7b951e8330898e94cf5ab14f7afc0c11f9fdff321ffe8a0b259",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:4f5f3ac7995cc4bf6c82ad77ec0b969d069a727c3d13d5a2ffe0dafb149a8d85",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:dde6f316d14281963f5b9bba2b01195a84e2c0b5b43a24473ac890519a5ba892",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:d22f9a8d8d2137151e3a7fe12778d41f4fb12b319b09f1eddf18b5e47021a8e7.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:4227f6b0a1da1d30883294d4a37a32841dbc91ed10e9e26119100fd7db63f8fc",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:4f5f3ac7995cc4bf6c82ad77ec0b969d069a727c3d13d5a2ffe0dafb149a8d85",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:63fa0a02e4cb7662ea677a0905911f5d779bca9842276e7d0745a3b929c82ba5",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:e275d53ba5bf875f20435e6a6a6ae33d5f617e3aaa4c4819b673b288f38469a9",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:ba0ba69e6f7c13d3f6fc5247a57637e2946772bdb40d9657bf42f0d8e65c7d79.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:4a0f1b8c590b4025aa244d2eb6ad9f7a78c19335ebe5274cf1332838f2727c7c",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:63fa0a02e4cb7662ea677a0905911f5d779bca9842276e7d0745a3b929c82ba5",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:1e882406038a01969269012e23969af0c14add193feb812ffd5307e048efbfaf",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:efe5066361e494ab5537fe66f38ac3ce869ebebdbecb8e0e3e8a354e21b44214",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:bcb004f644c79514603477cf90ddb718bbd5980e28086babe46fc98b5b513c0d.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:593fc68613600b1ccc0c7141c127d09acca502adbb71439af4b8961c54839fed",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:1e882406038a01969269012e23969af0c14add193feb812ffd5307e048efbfaf",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:5b3dc0d50feced1c5d0c82b7c9a98f33d0502d04c95dd4f172f52467e71f44d5",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:46aa653fda05c8c98bc9d25ccf2e12426d81d0dfcb2e2752fc030904b85a6f9d",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:e43a23fd111b786e948235313a3c105e3819f30866ee216b005374645f629219.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:64ae2db0d5073f1d02f7bda5ba7b7ba0ec28a6825d1111c2b93efb2e99349ba7",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:5b3dc0d50feced1c5d0c82b7c9a98f33d0502d04c95dd4f172f52467e71f44d5",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Resolve selected Finance Evidence against one public target definition. On success, copy normalized_operation_ref and each normalized value's selector into downstream calculator operands; raw Evidence bypass is not a normalized execution.",
+        "host_executes": true,
+        "input_contract": {
+          "evidence_ids": "array[string]",
+          "target_definition": "object"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "compatibility_report": "object",
+          "normalized_operation_ref": "string",
+          "normalized_values": "array[typed normalized value with selector]",
+          "policy_hash": "string"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "target_definition"
+        ],
+        "required_output_fields": [
+          "normalized_values",
+          "compatibility_report",
+          "policy_hash",
+          "normalized_operation_ref"
+        ],
+        "semantic_role": "normalize",
+        "tool_id": "normalize_metric_unit_period",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:aef86d1f15569341d67764ace2a13f21b718569ed69b0458b99ee632b67fd210",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:d9d2a12959bd7866a55d42a9c47474c2e31d65791903e3bd3b12f793e5e69f67",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:cd79bf6690e30211c63c7e8b0902c3ca4ac82ff25a23e563126322c83a1b9164.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:80fdf55ef5e3867edf8edab08b3bfe600268eb8c7dbbabf63e78278ae18ca3a2",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:aef86d1f15569341d67764ace2a13f21b718569ed69b0458b99ee632b67fd210",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:dbdb2fea8efe0749dab70c9b213aab26249d5f1fee8d7f0358b2274bc78a584c",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:c698cc8b0e8578dc706c007f57722a967c938b194bb16c6ee890fc684fef47a6",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:4b26ca27a3fbb07f91d81de5fc92d30e93fc975a17bd0219c0081c4ccd641acc.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:955ad96881ec6696820970fad962ba67a4f98750c8f50c07b34c4d37bb53e7ba",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:dbdb2fea8efe0749dab70c9b213aab26249d5f1fee8d7f0358b2274bc78a584c",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Resolve selected Finance Evidence against one public target definition. On success, copy normalized_operation_ref and each normalized value's selector into downstream calculator operands; raw Evidence bypass is not a normalized execution.",
+        "host_executes": true,
+        "input_contract": {
+          "evidence_ids": "array[string]",
+          "target_definition": "object"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "compatibility_report": "object",
+          "normalized_operation_ref": "string",
+          "normalized_values": "array[typed normalized value with selector]",
+          "policy_hash": "string"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "target_definition"
+        ],
+        "required_output_fields": [
+          "normalized_values",
+          "compatibility_report",
+          "policy_hash",
+          "normalized_operation_ref"
+        ],
+        "semantic_role": "normalize",
+        "tool_id": "normalize_metric_unit_period",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:3b3156e38558ba87e4d6de3a08f9e2367ca109fef1b71312ded255c9fbe31738",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:761211e13c0bd69b186b3d28566fa63afe8c6143bbb46d681b91d3dab95be484",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:a20824a880caeb3f36eb497c8d76075c7b927e9723d74c6223776026cd8945af.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:9ada6da85eb5d9766b758aff9d2aa8a8d354fc56e42ee87205cc5bd299cb967f",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:3b3156e38558ba87e4d6de3a08f9e2367ca109fef1b71312ded255c9fbe31738",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:940cd7bb3ed2dce4551aac83ae1433ad26ac67a8da752b3ae4ec4141f176d6a1",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:e6250715a9b9667a9c7cd22789f28649712e493e3d4243692b669b0b306183d2",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:9b882b2098f9385fec74f7dbdeb83c5fd62cab654a8c10a17f37c10620856f77.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:a1b39e542bb77c4ca884542d8b70034a01b5ad092857d5f32733bb0b803c6082",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:940cd7bb3ed2dce4551aac83ae1433ad26ac67a8da752b3ae4ec4141f176d6a1",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:80bc054bd9766ba9a5bb1d90bbc08018402a9d2f595d8d0f8bc78e80837fa277",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:792f8a795560e326db29ef112db61da63d54093991083dfada3bd3e1b3873b69",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:bea404f52101f0b62042c71f1fe24eff98849337fb2e76784a7e6088f1782090.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:a7a7bbdb01600878cdfbda74f5769cc0831520d19ade68009c06dfd5336bf452",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:80bc054bd9766ba9a5bb1d90bbc08018402a9d2f595d8d0f8bc78e80837fa277",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:9780661a8faf5ac82792b5afcd3ba9d88a1a07d77313817331d2cda427d9e3ea",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:79d894a3879359605571a83fb357a6da76e41c84c888195c6aec2a5fe0ae560d",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:9e2b023b09233c92b58a4b46e9d8223bbb6914ba7bc5e0ea7ed1090830237039.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:acef8b081c00cefa1a3f135454a8cff51ef94bd159e09f8c1b5665a5729b10bd",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:9780661a8faf5ac82792b5afcd3ba9d88a1a07d77313817331d2cda427d9e3ea",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Resolve selected Finance Evidence against one public target definition. On success, copy normalized_operation_ref and each normalized value's selector into downstream calculator operands; raw Evidence bypass is not a normalized execution.",
+        "host_executes": true,
+        "input_contract": {
+          "evidence_ids": "array[string]",
+          "target_definition": "object"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "compatibility_report": "object",
+          "normalized_operation_ref": "string",
+          "normalized_values": "array[typed normalized value with selector]",
+          "policy_hash": "string"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "target_definition"
+        ],
+        "required_output_fields": [
+          "normalized_values",
+          "compatibility_report",
+          "policy_hash",
+          "normalized_operation_ref"
+        ],
+        "semantic_role": "normalize",
+        "tool_id": "normalize_metric_unit_period",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:0cc5512e7e2897f4d3bbbd1b6f984ae4aa6fa579682326c6ae2cf0c5267d1ae8",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:360b6b6ebd1bf740dcde9877757ee7dbf2714416f73b7eeeec7504ed9706e04f",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:94afcdc95d8c563328ea2d7f6cfaebfca103dc2b7f8a345833a63288d1168871.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:b7bacbba032250c5e7dcb219f0d5bfeb563eaa4a8f4ff9144f580ad9d97e79b9",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "finance_archive_runtime_snapshot:97328f26a1e438d1d29330f28e42b8f01dbd1b6caf1eb369c96d2478965c07b6",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:c65241dfbf7ac8083893e6c626383f7031adbb92a44229e6c120d1e2f0894277",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:ead4304eabf988103f1a09c4684d5c035dc7f4e7db6cd81b1c5baa457011cd39",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:bf16b7e62299553aae026cab271c1a6fa8821b45078a207159ea27911aca2872.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:c302d2e67b9bde1c0c2cb7987269d216798c696d5cc0fb7b7beb144f0441029c",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:c65241dfbf7ac8083893e6c626383f7031adbb92a44229e6c120d1e2f0894277",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:a17b863d4e03317a09d200d9fb43356dd217a49a9bb7848b3c998bb0768021ca",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:63c7cfec751b52c8fedb830fc57ee9380b722bbedf96452e8e27ae2f941867b2",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:7f5ffedcb2543fa22408b8bcab24caf8c802699c1c8e2568ea71138a31d5aeda.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:cafb9a4d7f94aa820d5661038145dd2f3412231c826e6ae9221bc4af02a03b1d",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:a17b863d4e03317a09d200d9fb43356dd217a49a9bb7848b3c998bb0768021ca",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Resolve selected Finance Evidence against one public target definition. On success, copy normalized_operation_ref and each normalized value's selector into downstream calculator operands; raw Evidence bypass is not a normalized execution.",
+        "host_executes": true,
+        "input_contract": {
+          "evidence_ids": "array[string]",
+          "target_definition": "object"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "compatibility_report": "object",
+          "normalized_operation_ref": "string",
+          "normalized_values": "array[typed normalized value with selector]",
+          "policy_hash": "string"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "target_definition"
+        ],
+        "required_output_fields": [
+          "normalized_values",
+          "compatibility_report",
+          "policy_hash",
+          "normalized_operation_ref"
+        ],
+        "semantic_role": "normalize",
+        "tool_id": "normalize_metric_unit_period",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:a1bcc78f02a663eda7fd3072682a6fc7eb4ef9e0875f4a0c86e394728794f2bd",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:2f725d6c6a72ef284cb6acf715b4c7a4c3bd276fedd162025b95f441ed07ee39",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:54b4c82b0978f3bb1a29672e8c82e4c8973ad7554c4e07fed044d062ae25d27d.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:d6a8ee8ac60d91d888fccdb9d4a7d2ab77c99ee3c2e0fc62ce9047a8493d66fd",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:a1bcc78f02a663eda7fd3072682a6fc7eb4ef9e0875f4a0c86e394728794f2bd",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:2cef9a273716230ad7c16a0316a9b3cbc9ffbb14e491da8a461812b9ba5f0db6",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:0d26915018a165b6359e7c4318d600ca24b0c44566ecb8dfa11ff684a7fff7b9",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:7d1459e1c3353c6039434d94a438272cc1cf23036777e25c91875c5802c84ab5.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:d90d0b2d0e66926251ea19fcc67870a385e4e16ad61cedebed8577395a344fe7",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:2cef9a273716230ad7c16a0316a9b3cbc9ffbb14e491da8a461812b9ba5f0db6",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Resolve selected Finance Evidence against one public target definition. On success, copy normalized_operation_ref and each normalized value's selector into downstream calculator operands; raw Evidence bypass is not a normalized execution.",
+        "host_executes": true,
+        "input_contract": {
+          "evidence_ids": "array[string]",
+          "target_definition": "object"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "compatibility_report": "object",
+          "normalized_operation_ref": "string",
+          "normalized_values": "array[typed normalized value with selector]",
+          "policy_hash": "string"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "target_definition"
+        ],
+        "required_output_fields": [
+          "normalized_values",
+          "compatibility_report",
+          "policy_hash",
+          "normalized_operation_ref"
+        ],
+        "semantic_role": "normalize",
+        "tool_id": "normalize_metric_unit_period",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:e5fb992fa1c8f5d18216e09be69d9fb52294c689fad764f3ecb8acc818b8a6c9",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:40d3aad03d5c5f4d7fa4969f01fb2f9d0e646052b543663d4b368b2fb97729e2",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:4859a56f99a0a639628de28e80fea85ad75ffcd8cf575dfa5c44e4c3721b7bb9.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:db9a9be3b1f8f4238adcddb918d90712b6b6d3f872124e2ecf107ced1170fb1a",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "finance_archive_runtime_snapshot:709256f64ceb575df1195e91f163216b8a3a778ce3f4f838fed02f1591eb299b",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:336515c6168519324ef00dcf8291b158b628d26bad82a3b5dd38d8b2c49b808d",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:400358cd7464b27f67cff15aee9d57b203d07fd3925c52fb062a5e090eb64345",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:613337bfadbf0802bcb4829a0acaa3c49ee1f173e1acae5fe6427a3d717fabee.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:dc30b9ce3e568adf4237c5cc67bab005e293570ef6c8e18c03b03633af7db291",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "finance_archive_runtime_snapshot:7e6e6a84201a9f266c756fe279796f3c46f3af6cb6a16f50bff5e026bce9e505",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:340888f118e9d5d1bcbc00f34982c469adb01b1f65f59c7829962e11d051094d",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:b97dde729a2948be6995ad3ad3ec3cdaeeeb6e8b1d6687460fe475111c265dbd",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:7ee5ec5917f01ebedf0bd1d1e26f5e2ef2d5a539d5e6f7455e51f73e9cfe73be.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:decc78e14c1797559f04ab4444288f743814ab627fc6d1787134c9d374aae025",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:340888f118e9d5d1bcbc00f34982c469adb01b1f65f59c7829962e11d051094d",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Resolve selected Finance Evidence against one public target definition. On success, copy normalized_operation_ref and each normalized value's selector into downstream calculator operands; raw Evidence bypass is not a normalized execution.",
+        "host_executes": true,
+        "input_contract": {
+          "evidence_ids": "array[string]",
+          "target_definition": "object"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "compatibility_report": "object",
+          "normalized_operation_ref": "string",
+          "normalized_values": "array[typed normalized value with selector]",
+          "policy_hash": "string"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "target_definition"
+        ],
+        "required_output_fields": [
+          "normalized_values",
+          "compatibility_report",
+          "policy_hash",
+          "normalized_operation_ref"
+        ],
+        "semantic_role": "normalize",
+        "tool_id": "normalize_metric_unit_period",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:3f1175bc40322c0cecf3aa0f2b4287afc8da85a38c0c06587a40fb8805ce64a8",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:70018b4f2e72e809c761f0bf398dc05b1ae2c0c54f4d9ef3b8a812cea5716e3a",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:0d61ad22ccfe8aedf939b476493f991f7be8f4bc137cc2302423eb689427c478.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:e9ea6e695a2c22ac5df9003effd88e7b7a9a9da2638e25203a1d89581a84487b",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:3f1175bc40322c0cecf3aa0f2b4287afc8da85a38c0c06587a40fb8805ce64a8",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:0f2da223e4ac910991567bda5398b34f5dde42875035d0975ac31de461f2ee0f",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:a9c63b166dff897e5db3264f9fbd93fff464ae704f99bdf6a9b4853986bfeddd",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:8ec03fe687125be0c190ecdc8920edf3654c7ece6de821edc64acec5355992e7.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:f32359e49a764768c548c40975352dfb5c0bc745c2caf1c778eeb2d165c4c267",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "evidence_corpus_content:0f2da223e4ac910991567bda5398b34f5dde42875035d0975ac31de461f2ee0f",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  },
+  {
+    "corpus_hash": "evidence_corpus_content:e36b838a38e81b073a58e58a8c90f8f937103b4e70a2cfc903b9cb3030f172ee",
+    "corpus_id": "finance_v26_budget_feasible_atomic_corpus:e5306938f9220cda753ffa4b364846366bd8f86cadfac2e92fd2fb99a7b77ce0",
+    "environment_id": "finance_v26_executable_task:executable_task_semantic_source:f5cc0a38b4b53ea9a336a33fe0139d9a2787313a56cfc92bcaa6fb299a5724f0.authority_preserving_v1.verifier_v2_bound_v1",
+    "manifest_id": "agent_tool_environment:f85c24fc75d2bc265f84db9e0270df53e06c7921ae37d73beadc755f7d55ee3b",
+    "maximum_failed_tool_calls": 4,
+    "maximum_tool_calls": 64,
+    "maximum_total_observation_bytes": 2000000,
+    "network_policy": "forbidden",
+    "schema_version": "agent_tool_environment.v1",
+    "snapshot_hash": "finance_archive_runtime_snapshot:24389986bb93ff2174a83c038d6bdc7148d57f61eddcd8bee6b97a887144a5de",
+    "snapshot_id": "kg_20260711_062123_bc4b4394",
+    "tool_timeout_seconds": 30.0,
+    "tools": [
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Search the frozen financial Archive using public text and typed filters. Matches are discovery summaries only; select Evidence with open_document or query_structured_fact before normalization, calculation, verification, or citation.",
+        "host_executes": true,
+        "input_contract": {
+          "limit": "integer",
+          "period_labels": "array[string]",
+          "query": "string",
+          "source_filters": "array[string]",
+          "subject_aliases": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "matches": "array[public evidence summary]",
+          "query_hash": "string",
+          "snapshot_hash": "string"
+        },
+        "required_input_fields": [
+          "query",
+          "limit"
+        ],
+        "required_output_fields": [
+          "matches",
+          "query_hash",
+          "snapshot_hash"
+        ],
+        "semantic_role": "acquire",
+        "tool_id": "search_archive",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "search"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Open a document or Evidence item returned by the frozen Archive search.",
+        "host_executes": true,
+        "input_contract": {
+          "public_locator": "string",
+          "section_or_page": "string|null"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "content": "typed public content",
+          "evidence_ids": "array[string]",
+          "source_locator_hash": "string"
+        },
+        "required_input_fields": [
+          "public_locator"
+        ],
+        "required_output_fields": [
+          "content",
+          "evidence_ids",
+          "source_locator_hash"
+        ],
+        "semantic_role": "inspect",
+        "tool_id": "open_document",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Query frozen structured facts without hidden Gold identifiers. A successful exact query selects its returned Evidence IDs for downstream tools. Use the public subject ID/name, metric predicate/name, and exact period label copied verbatim from search results; do not abbreviate period labels. Canonical short subject IDs such as LOW for LOW_US and USA for USA_COUNTRY are accepted. public_filters may be {} or contain only scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, and subject_type keys.",
+        "host_executes": true,
+        "input_contract": {
+          "metric_alias": "string",
+          "period_label": "string",
+          "public_filters": "object with only optional scalar source_id, source_authority, unit, currency, definition_id, time_basis, frequency, subject_type keys; use {} when no exact filter is needed",
+          "subject_alias": "string"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "evidence_ids": "array[string]",
+          "facts": "array[typed public fact]",
+          "query_hash": "string"
+        },
+        "required_input_fields": [
+          "subject_alias",
+          "metric_alias",
+          "period_label",
+          "public_filters"
+        ],
+        "required_output_fields": [
+          "facts",
+          "evidence_ids",
+          "query_hash"
+        ],
+        "semantic_role": "query",
+        "tool_id": "query_structured_fact",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "select_evidence"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Execute lookup, compare, difference, ratio, growth, or aggregate on selected Evidence or prior operation outputs while retaining Evidence lineage.",
+        "host_executes": true,
+        "input_contract": {
+          "operands": "array of selected evidence_id strings, actual JSON {evidence_id} objects, or actual JSON {operation_ref,selector} objects; copy operation_ref verbatim from a prior successful calculator observation's result.result.operation_ref; selector is relative to that observation's result.result.output object, so use selector='value' for a scalar output and never use output, output.value, result, or result.output; never encode an operand object as a string; ordered for difference/growth/ratio",
+          "operator": "lookup|compare|difference|ratio|growth|aggregate",
+          "parameters": "{} except ratio requires registered_pair='<numerator predicate>/<denominator predicate>' exactly as exposed in agent_contract_guidance; aggregate requires method=mean|sum"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "operation_hash": "string",
+          "result": "typed numeric result"
+        },
+        "required_input_fields": [
+          "operator",
+          "operands",
+          "parameters"
+        ],
+        "required_output_fields": [
+          "result",
+          "operation_hash"
+        ],
+        "semantic_role": "calculate",
+        "tool_id": "calculator",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "calculate"
+      },
+      {
+        "allow_additional_input_fields": false,
+        "allow_additional_output_fields": false,
+        "content_addressed_observation": true,
+        "description": "Cross-check selected Evidence against the task's typed public terminal verification target. After terminal completion, claim_or_result must contain exactly the observed terminal operation_ref.",
+        "host_executes": true,
+        "input_contract": {
+          "claim_or_result": "object exactly {operation_ref: terminal_operation_ref}; additional claim fields are forbidden by the task PublicTerminalVerificationTarget",
+          "evidence_ids": "array[string]"
+        },
+        "model_selectable": true,
+        "output_contract": {
+          "candidate_repair": "optional object describing localized candidate mismatch and verified repair",
+          "completion_state": "optional object describing required-role coverage and redundant-action cost",
+          "conflicts": "array[object]",
+          "support": "array[string]",
+          "verification_hash": "string",
+          "verified": "boolean"
+        },
+        "required_input_fields": [
+          "evidence_ids",
+          "claim_or_result"
+        ],
+        "required_output_fields": [
+          "verified",
+          "support",
+          "conflicts",
+          "verification_hash"
+        ],
+        "semantic_role": "verify",
+        "tool_id": "cross_check_evidence",
+        "tool_version": "finance_authority_preserving_executable_support_toolset.v1",
+        "trajectory_action": "verify"
+      }
+    ]
+  }
+]
