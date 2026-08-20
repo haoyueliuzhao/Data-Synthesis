@@ -1,5 +1,9 @@
 # Finance v26.84 Budget-closed Instrument Execution Protocol
 
+> Historical protocol note: the online attempt failed after 20 Jobs were exposed. The immutable
+> outcome and the only authorized Recovery transition are recorded in
+> `docs/finance_v26_84_v26_85_budget_closed_failure_and_recovery_preflight.md`.
+
 Date: 2026-08-20
 
 ## Status
