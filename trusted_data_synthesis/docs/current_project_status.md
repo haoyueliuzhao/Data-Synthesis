@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-20
+Audit date: 2026-08-21
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,31 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+## Prospective Thinking-Mode Policy
+
+Effective 2026-08-21, every newly materialized Provider model call must explicitly request
+`thinking.type=enabled`. A new future-only policy layer rejects missing, disabled, differently
+cased, or structurally extended `thinking` values before credential lookup and client
+construction. It creates a content-addressed binding between the policy and each prospective
+`AgentModelConfig`.
+
+The policy identity is
+`prospective_thinking_mode_policy:b9ba7be1e8ee2ab343e31fe57b3c50cbbd604abf26b3da4297f5ad76dfbb158f`.
+The initial prospective exact-Flash profile binds model configuration
+`agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1`.
+
+This is a prospective generation-kernel constraint, not an empirical result. The v26.83 Contract
+and all 241 v26.86 Provider calls remain immutable evidence from `thinking.type=disabled`; no
+historical outcome is rerun, rescored, pooled, or reclassified. Future thinking responses retain
+only reasoning presence, length, and token telemetry, never private reasoning content. Reasoning
+tokens remain completion Usage and count against the unchanged 4,096-token completion bound and
+120,000-token rollout ceiling.
+
+The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
+zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
+does not change the current permitted transition. See
+`docs/finance_v26_prospective_thinking_mode_policy.md`.
 
 ## v26.88-v26.89 Budget Adequacy Audit And Static Role Preflight Decision
 
@@ -1200,8 +1225,9 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 383 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Mypy | 384 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
 | Pytest | 1034 passed, 4 expected v26.78/v26.84 success-state tests skipped in 790.15 seconds; one existing destructive-test warning |
+| Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
 | v26.88-v26.89 Budget Adequacy focused regression | 13 passed in 21.00 seconds |
 | v26.89 dual build | all fourteen output files are byte-identical; zero API/GPU |
 | v26.89 source replay | 551/551 source and experiment files replayed |
@@ -1305,7 +1331,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.53 statistical-audit focus | 9 passed |
 | v26.53 credential-free replay | authoritative and determinism builds each replayed |
 | v26.53 dual build | all three detail artifacts are byte-identical |
-| Core generalization boundary | 138 files, zero imports/branches/field accesses/violations |
+| Core generalization boundary | 140 files, zero imports/branches/field accesses/violations |
 | Tracked credential pattern scan | zero `sk-` plus 32-alphanumeric hits |
 | v25.19 policy deterministic replay | byte-identical SHA-256 `01ff658e46a6...` |
 | v25.20 population deterministic replay | byte-identical SHA-256 `8ee0b10046af...` |
@@ -1530,6 +1556,12 @@ The only permitted transition is:
 fresh_budget_feasible_role_task_rematerialization_only
 ```
 
+All later Provider calls must bind the prospective thinking-mode policy and a fresh
+thinking-enabled model configuration before client construction. This requirement does not itself
+authorize a call during the current static task-rematerialization stage. Historical non-thinking
+rows and future thinking rows are separate generation kernels and may not be pooled without a
+prospectively frozen comparison design.
+
 Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. All v26.76 and v26.82
 TaskPackages and their 32-Job Manifests are empirically exposed. The six v26.81 prospective-valid
 candidates, all v26.82 Compiler Witnesses, and all v26.86 descriptive local successes remain
@@ -1565,6 +1597,10 @@ Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_prospective_thinking_mode_policy.md`
+- `config/deepseek_v4_flash_agent_thinking_v1.json`
+- `src/trusted_synthesis/runtime/agent/prospective_thinking.py`
 
 - `docs/finance_v26_88_v26_89_budget_adequacy_audit_and_contract_preflight.md`
 - `artifacts/vtdo_experiment/finance_v26_88_budget_adequacy_root_cause_audit_20260820/report.json`
