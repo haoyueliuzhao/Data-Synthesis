@@ -1767,9 +1767,10 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | Ruff check | passed |
 | Ruff format | all three v26.97 Python files passed; 116 historical baseline files remain unformatted |
 | Mypy | 398 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1103 passed, 4 expected v26.78/v26.84 success-state tests skipped in 855.86 seconds; one existing destructive-test warning |
+| Pytest | 1111 passed, 4 expected v26.78/v26.84 success-state tests skipped in 862.56 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
-| v26.97 focused regression | 8 passed in 8.92 seconds; zero API/GPU |
+| v26.97 focused regression | 8 passed in 9.02 seconds; zero API/GPU |
+| v26.88-v26.97 adjacent thinking/budget regression | 90 passed in two commands (90.77 seconds plus 0.40 seconds) |
 | v26.97 dual build | all twelve output files are byte-identical; zero API/GPU |
 | v26.97 source replay | 733/733 files: 723 v26.96 transitive bindings, 8 v26.96 outputs, and 2 implementation files |
 | v26.97 candidate ladder | 8K/160K initial candidate has 32 Jobs; 16K/240K fallback has zero Jobs and no automatic escalation |
