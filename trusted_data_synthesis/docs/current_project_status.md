@@ -40,6 +40,84 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## v26.95 Thinking Completion Repair Execution-Runner Preflight Decision
+
+Finance v26.95 completed the only credential-free transition authorized by v26.94. It implements
+the exact Runner for the frozen v26.94 32-Job Thinking Completion and response-telemetry repair
+Manifest without executing that Manifest. Before credential lookup and client construction, the
+preflight replayed 498/498 files: all eleven v26.94 outputs, all 485 v26.94 replay bindings, and
+the exact two v26.95 implementation files.
+
+The Runner directly implements the v26.94 primary and rescue protocol. Provider Plan calls remain
+zero, the generic JSON Contract-repair loop is disabled, transient Provider retries are zero, and
+at most one independently rendered public rescue is available for the entire Job. The rescue sees
+the current public state and one typed failure only; it never sees previous final content, private
+reasoning, a reasoning hash, expected arguments, or a Host-selected action.
+
+Every attempt receives an explicit request-kind budget certificate before Provider invocation.
+The Runner persists a canonical privacy-redacted Provider artifact before projection, retaining
+only response model, finish reason, public content hash and length, explicit native-tool presence,
+reasoning presence and length, and Usage. It never persists private reasoning content or hashes or
+raw HTTP bodies. A response-envelope failure is an Instrument outcome and does not consume the
+public Completion rescue.
+
+Recovery is raw-only. A complete Raw Execution is byte-replayed with zero Provider calls; an
+orphan Provider artifact fails closed rather than triggering an automatic retry. Completed
+aggregation requires all 32 Raw Executions and every Provider artifact to reparse under the strong
+schemas with unique Provider identities and zero private-reasoning payloads.
+
+The zero-generation direct control executed all 32 exact Manifest Jobs against public Compiler
+paths using a scripted client. It produced 224 logical requests, 224 scripted Provider calls, and
+192 public Observations. All 224 primary Prompts matched their registered hashes; all 32 Jobs
+matched Compiler-semantic Observations, passed Verifier v2 Replay, passed independent validity,
+and passed mechanism scoring across all twelve Mechanism x Path cells. These are implementation
+fixtures and contribute zero empirical rows.
+
+The complete aggregate control contains 32 Raw Executions plus 224 Provider artifacts, all 256
+canonical files. It has 32 valid fixture terminals and reaches the prospective pass transition
+`thinking_role_protocol_freeze_only`. Separate controls recovered all five registered Completion
+failures with exactly one rescue. A second Completion failure exhausted the global rescue and
+ended `completion_unusable`; malformed response telemetry ended `instrument_failure` with zero
+rescue. Oversized Prompt, second rescue, and orphan-artifact controls all failed before an
+unauthorized Provider call.
+
+The prospective outcome Contract freezes the audit-recommended decision tree. Any length or
+reasoning-only Completion terminal requires a Completion-bound change or true two-stage redesign;
+another same-bound Prompt-only retuning is forbidden. A non-length Completion terminal permits
+only Contract root-cause audit. A telemetry-only response-envelope failure may authorize only a
+wrapper repair with the Completion protocol held fixed; all other Instrument failures require a
+broader root-cause audit. If Completion and all execution Gates pass but Program closure is low,
+Completion tuning stops and the behavior result remains descriptive. Only a fully passing exact
+denominator can authorize a role-protocol freeze, which must still use a fresh role Population.
+
+All 17 destructive Runner mutations failed closed. Formal and independent builds reproduced all
+seven outputs byte for byte. The exact Runner also completed `--prepare-only` against the formal
+preflight with 498/498 replayed files, 32 expected Jobs, and no client construction. The formal and
+independent builds made zero API calls and used zero GPU jobs.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_thinking_repair_execution_preflight_report:986591ddd3b7251cf183f52193bc3868ccec52816cb83715585d76fd4ef07ca5`;
+- execution Contract:
+  `finance_v26_thinking_repair_execution_contract:78e40804aa6fa489223991a40bd84c68935a1b4ce8aa0de311e2663538a469b2`;
+- outcome interpretation Contract:
+  `finance_v26_thinking_repair_outcome_interpretation:23f89eddd4bdeefe706134d0a2444076ea68b66a368ad389e79797568a7ad50f`;
+- Runner fixture audit:
+  `finance_v26_thinking_repair_runner_fixture:ffb29963ef99c11434d3b35499ef234ad3f6adb0f81853593969964e069bf854`.
+
+The only permitted transition is:
+
+```text
+thinking_completion_telemetry_repair_execution_only
+```
+
+This is a positive execution-Instrument preflight, not empirical Completion usability or an
+online result. It authorizes only the exact v26.95 32-Job repair execution. Capability
+Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training, Exact Target,
+GP-C, and production Contribution remain forbidden. Production Contribution remains zero. See
+`docs/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight.md`.
+
 ## v26.94 Thinking Completion And Response-Telemetry Repair Preflight Decision
 
 Finance v26.94 completed the only credential-free transition authorized by v26.93. Before
@@ -1517,10 +1595,19 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | v26.94 source/tests passed; 116 historical baseline files remain unformatted |
-| Mypy | 393 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1088 passed, 4 expected v26.78/v26.84 success-state tests skipped in 848.39 seconds; one existing destructive-test warning |
+| Ruff format | v26.95 source/tests passed; 116 historical baseline files remain unformatted |
+| Mypy | 395 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1096 passed, 4 expected v26.78/v26.84 success-state tests skipped in 856.13 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.95 focused regression | 8 passed in 11.77 seconds; zero API/GPU |
+| v26.88-v26.95 adjacent thinking/budget regression | 55 passed in 84.73 seconds |
+| v26.95 dual build | all seven output files are byte-identical; zero API/GPU |
+| v26.95 source replay | 498/498 files: 11 v26.94 outputs, 485 replay bindings, and 2 exact implementation files |
+| v26.95 exact Runner direct controls | 32 Jobs, 224 requests/calls, 192 Observations; 32/32 Replay, validity, and mechanism passes |
+| v26.95 aggregate Raw Lineage control | 32 Raw plus 224 Provider files; 256/256 canonical; 224 unique Provider identities |
+| v26.95 rescue and recovery controls | 5/5 rescue types recovered; one global rescue enforced; raw-only recovery used zero Provider calls |
+| v26.95 outcome and destructive controls | four-way audit decision frozen; 17/17 mutations rejected |
+| v26.95 formal Runner prepare-only | 498/498 source replay; 32 expected Jobs; no client/API/GPU |
 | v26.94 focused regression | 16 passed in 5.01 seconds; zero API/GPU |
 | v26.88-v26.94 adjacent thinking/budget regression | 66 passed in 72.86 seconds |
 | v26.94 dual build | all eleven output files are byte-identical; zero API/GPU |
@@ -1884,7 +1971,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_completion_telemetry_repair_execution_runner_and_preflight_only
+thinking_completion_telemetry_repair_execution_only
 ```
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
@@ -1904,12 +1991,20 @@ and an exact 32-Job Manifest. All 24 v26.90 source role packages are retired fro
 Reachability execution. The 324 Compiler projections remain fixtures and may not enter the later
 repair denominator, Capability support, State Mapping, or release counts.
 
-The next stage may only implement an exact v26.95 execution Runner and complete a credential-free
-preflight. Before credential lookup and client construction it must replay the authoritative
-v26.94 report, all eleven v26.94 outputs, all 485 replay bindings, and the exact Runner
-implementation. v26.94 itself does not authorize a model call. Any TaskPackage, path selection,
-Prompt projection, rescue policy, response-envelope field, model profile, Contract, Manifest,
-seed, or resource-bound change requires a new preflight identity.
+v26.95 has now frozen the exact execution Runner, execution Contract, outcome-interpretation
+Contract, source replay, Raw persistence, Verifier-bound scorer, aggregation, and recovery rules.
+Its formal and independent preflights are byte-identical and authorize only the exact v26.95
+execution identity. Before credential lookup and client construction, the online Runner must
+validate the v26.95 report and all six detail hashes and replay all 498 bound files. Any change to
+a TaskPackage, path selection, Prompt projection, rescue policy, response-envelope field, model
+profile, Contract, Manifest, Job seed, resource bound, Runner byte, or interpretation rule
+requires a fresh preflight identity.
+
+The next stage may execute each of the exact 32 frozen Jobs at most once. No historical Job or
+Compiler fixture may be submitted to the Provider. If a complete Raw Execution already exists,
+recovery must replay it with zero Provider calls. If a Provider artifact exists without a complete
+Raw Execution, the Runner must fail closed; automatic network retry is forbidden until an
+explicit fresh recovery Contract determines exposure.
 
 The Runner must use the frozen primary projection and at most one independent public
 decision-terminal rescue per Job. It may not pass back previous final content or private
@@ -1930,6 +2025,20 @@ zero-failure Gates at one-sided 95% upper bound 0.10. Zero failures gives
 0.08936819898626475 and passes; one gives 0.139849460274226 and fails. Provider transport is a
 separate execution-integrity outcome, and semantic validity cannot rescue either Gate.
 
+The postrun transition is prospectively frozen. Provider transport permits only recovery or
+transport audit. Typed no-call permits only budget-deviation audit. A terminal length or
+reasoning-only Completion failure requires a Completion-bound change or true two-stage redesign;
+another same-bound Prompt-only retuning is forbidden. A non-length Completion failure permits
+only Contract root-cause audit. A strict response-envelope-only Instrument failure may permit
+only wrapper repair with the Completion protocol held fixed; any other Instrument failure
+requires a broader root-cause audit.
+
+Only zero typed no-calls, zero Completion-unusable Jobs, complete response telemetry, and passing
+execution integrity may authorize `thinking_role_protocol_freeze_only`. Even then, low Program
+closure or validity is a behavior/task/tool result and cannot reopen Completion tuning. The
+execution cannot directly freeze a role protocol, and any later role protocol requires a fully
+fresh role Population.
+
 The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope,
 4,096-token Completion bound, and both 4,096-token reserves remain unchanged. The v26.92
 reasoning-token share, 78 completion-limit hits, and repair outcomes motivate a prospective
@@ -1944,15 +2053,26 @@ prospective-valid candidates, all v26.82 Compiler Witnesses, all v26.86 descript
 successes, all v26.90 Compiler fixtures, and all v26.94 Compiler projections remain ineligible
 for empirical support.
 
-A later passing Runner preflight may authorize only execution of the exact v26.95 repair
-Manifest. It cannot freeze a Thinking-enabled role protocol. Completion usability, task depth,
-and capability informativeness remain unresolved.
+The passing v26.95 Runner preflight authorizes only execution of the exact v26.95 repair
+Manifest. The execution has not occurred. Completion usability, task depth, and capability
+informativeness remain unresolved.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight.md`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_completion_telemetry_repair_execution.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_completion_telemetry_repair_execution_preflight.py`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/report.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/outcome_interpretation_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/runner_fixture_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/budget_recovery_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight_v1_20260821/destructive_preflight_audit.json`
 
 - `docs/finance_v26_94_thinking_completion_telemetry_repair_preflight.md`
 - `src/trusted_synthesis/runtime/agent/prospective_thinking_completion.py`
