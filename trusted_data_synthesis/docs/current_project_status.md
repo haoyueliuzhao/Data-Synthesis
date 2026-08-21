@@ -40,6 +40,86 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## v26.92-v26.93 Thinking Calibration Execution And Audit Decision
+
+Finance v26.92 executed exactly the frozen v26.91 32-Job Thinking Budget Calibration Manifest.
+Before credential lookup and client construction it replayed 160/160 files: all 31 v26.91
+outputs, all 104 predecessor bindings, and 25 execution implementation bindings. The frozen
+TaskPackages, paths, stress padding, Contract, Manifest, seeds, model profile, Thinking policy,
+Prompt ceiling, completion bound, rollout ceiling, and reserves were unchanged. Each Job was
+opened once, and no historical Job was rerun.
+
+All 32 Jobs completed after 318 HTTP-success Provider calls. The run used 1,294,797
+provider-reported tokens, including 682,847 reasoning tokens within 708,632 completion tokens,
+and recorded estimated cost telemetry of USD 0.24562028400000002152. It used no local GPU.
+Every successful call had positive reasoning presence, length, and token telemetry; private
+reasoning content and hashes were never persisted.
+
+The empirical Budget Adequacy Gate passed with zero typed no-call outcomes. Its frozen one-sided
+95% Clopper-Pearson upper bound is 0.08936819898626475, below 0.10. Provider transport failures,
+Thinking-continuity failures, and per-rollout budget failures were all zero.
+
+The separately frozen Completion Usability Gate failed. Thirty of 32 Jobs ended with an unusable
+Completion, giving a one-sided 95% upper bound of 0.9887805056361199. The distinct-source
+sensitivity result was 29/31 failures with upper bound 0.9884146841385564. There were 78
+completion-limit hits across 199 logical requests. All 32 Jobs invoked Contract repair: 119
+repair requests produced 89 usable repaired decisions and 30 terminal repair failures. The
+Provider-level outcomes were 80 directly usable decisions, 89 usable repaired decisions, 27
+reasoning-only length truncations, one partial length truncation, and two unrepaired Decision
+Contract failures.
+
+Exact-model execution integrity also failed because 79 HTTP-success parse failures did not retain
+response-model telemetry. All 318 calls requested and selected exact `deepseek-v4-flash`, all
+fallback flags were false, and all 239 retained response-model values were exact. The missing
+values cover 74 `ReasoningBudgetExhaustedError` and five `JSONDecodeError` responses and cannot be
+recovered from persisted payloads. Thus zero model mismatches were observed, but exact model
+identity cannot be proved for the complete denominator. Provider-native-tool absence was also not
+explicitly captured before content parsing.
+
+All 32 persisted terminals are `instrument_failure`, because every Job contains at least one
+exact-model telemetry gap. The behavioral diagnostics remain descriptive: requested-path
+adherence is 10/32, local mechanism success is 6/32, Program closure is 0/32, and independent
+validity is 0/32. The calibration rows do not enter Capability, Reachability, State Mapping, or
+release denominators.
+
+The Raw Lineage audit passed all 32 Raw Executions and 318 Provider artifacts. All 350 files are
+canonical JSON and reparse under strong schemas, checkpoint and final results match 32/32, and
+private reasoning payload count is zero. A credential-free completed-run replay resumed at 32/32,
+executed zero Jobs, constructed no client, and reproduced the same report and top-level hashes.
+The authoritative v26.92 report is
+`finance_v26_thinking_budget_calibration_execution:f3bd9954b1c1f8e465bcca968ef5165d037a7da52b0c0f54ec87e1b9a34aec9b`.
+
+Finance v26.93 then independently replayed 393 execution, Raw Lineage, and implementation files
+with a separate credential-free implementation. It reproduced the Completion counts, Usage,
+cost, Thinking telemetry, both Clopper-Pearson bounds, the 79-call response-model gap, all schema
+reparses, and the zero-private-reasoning result. Formal and independent builds reproduced all
+seven outputs byte for byte with zero API calls and zero GPU jobs.
+
+v26.93 freezes a prospective privacy-redacted response envelope before content parsing. It must
+retain response model, finish reason, public content hash and length, explicit native-tool
+presence, reasoning presence and length, and token telemetry even when parsing fails. Private
+reasoning content, reasoning hashes, and raw HTTP bodies remain forbidden. Five local mutations
+for missing or changed model, native tool presence, missing reasoning telemetry, and private
+reasoning persistence all failed closed.
+
+The authoritative v26.93 report is
+`finance_v26_thinking_postrun_audit_report:c6cb718b06f403e8603f4a2520bef8e374aefea2357245a16a8b982071529d44`.
+Its prospective repair Contract is
+`finance_v26_thinking_telemetry_repair_contract:10f084cc4aac9172cede50ab7f0fbaf339997c9a1cac43f74aed8f107d886343`.
+The only permitted transition is:
+
+```text
+fresh_thinking_completion_and_response_telemetry_repair_preflight_only
+```
+
+The successor requires fresh task, Contract, Manifest, and Job identities and a Completion
+protocol redesign before execution. It may not rerun or reclassify v26.92, relax the Completion
+threshold, or infer missing response models. A thinking-enabled role protocol is not frozen.
+Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
+Exact Target, GP-C, and production Contribution remain forbidden. Production Contribution
+remains zero. See
+`docs/finance_v26_92_v26_93_thinking_budget_calibration_execution_and_audit.md`.
+
 ## v26.91 Thinking Budget Calibration Preflight Decision
 
 Finance v26.91 completed the credential-free preflight authorized by v26.90. Before freezing a
@@ -1364,10 +1444,22 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 388 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1063 passed, 4 expected v26.78/v26.84 success-state tests skipped in 829.99 seconds; one existing destructive-test warning |
+| Ruff format | v26.92-v26.93 source/tests passed; 116 historical baseline files remain unformatted |
+| Mypy | 390 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1072 passed, 4 expected v26.78/v26.84 success-state tests skipped in 839.74 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.92-v26.93 focused regression | 9 passed in 10.31 seconds |
+| v26.88-v26.93 adjacent thinking/budget regression | 41 passed in 68.71 seconds |
+| v26.92 online source replay | 160/160 files before credential lookup and client construction |
+| v26.92 calibration execution | 32/32 Jobs; 318 HTTP-success calls; 1,294,797 tokens; zero GPU |
+| v26.92 Budget/Thinking Gates | zero typed no-calls and zero Thinking-continuity failures; both passed |
+| v26.92 Completion Gate | 30/32 unusable; 29/31 unique-source sensitivity; failed |
+| v26.92 response-model telemetry | 239 known exact, 79 missing, zero known mismatch; exact-model Gate failed |
+| v26.92 Raw Lineage and replay | 32 Raw plus 318 Provider files passed; completed replay executed zero Jobs |
+| v26.93 independent source replay | 393/393 execution, Raw Lineage, and implementation files |
+| v26.93 independent audit | Completion failure, persistence integrity, and response-model gap reproduced; zero API/GPU |
+| v26.93 dual build | all seven output files are byte-identical; zero API/GPU |
+| v26.93 repair fixtures | 5/5 telemetry/privacy mutations rejected |
 | v26.91 focused regression | 10 passed in 24.76 seconds; zero API/GPU |
 | v26.91 adjacent v26.89-v26.91 thinking/budget regression | 42 passed in 59.17 seconds |
 | v26.91 dual build | all 31 output files are byte-identical; zero API/GPU |
@@ -1709,54 +1801,70 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_budget_calibration_execution_only
+fresh_thinking_completion_and_response_telemetry_repair_preflight_only
 ```
 
-v26.91 has frozen 31 fresh calibration TaskPackages and an exact 32-Job Manifest. The Jobs remain
-model-unexposed. All 93 Compiler paths, 580 local Observations, and static scoring rows remain
-fixtures and may not enter the calibration denominator, Capability support, State Mapping, or
-release counts.
+The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
+reclassify any of its 32 Jobs. Its positive typed-no-call result and negative Completion result
+remain jointly authoritative: zero typed no-calls pass empirical Budget Adequacy for this
+calibration denominator, while 30/32 Completion-unusable outcomes independently block release.
+No semantic outcome can rescue the Completion Gate.
 
-The next stage may only bind and execute the exact v26.91 Calibration Manifest. Before credential
-lookup and client construction it must replay the authoritative v26.91 report, all 31 output
-files, all 104 predecessor bindings, and the exact execution implementation. Each frozen Job may
-be executed at most once; changing a TaskPackage, path condition, stress-padding schedule,
-Contract, Job seed, model profile, or thinking policy requires a new preflight identity.
+The 79 missing response-model values are an unrecoverable historical telemetry gap. All known
+response models are exact and zero mismatches were observed, but missing values may not be
+inferred from the requested model, selected model, fallback flag, or neighboring responses. The
+v26.92 exact-model Gate remains failed and all 32 historical terminals remain
+`instrument_failure`.
 
-At the exact denominator, both typed no-call and Completion-Unusable outcomes use separate
-one-sided 95% Clopper-Pearson Gates at 0.10. Zero failures gives an upper bound of
-0.08936819898626475 and passes; one gives 0.13984946027422601 and fails. Provider transport
-failures remain a separate execution-integrity outcome. Semantic validity cannot rescue either
-Gate.
+The next stage may only freeze a credential-free preflight under fresh task, Contract, Manifest,
+Job, execution, and report identities. It must redesign the Completion protocol under the
+unchanged 4,096-token Completion bound, explicitly capture a privacy-redacted response envelope
+before content parsing, preserve response-model and native-tool telemetry on every HTTP success,
+and validate typed failure artifacts before serialization. It may not relax the Completion Gate
+or directly execute a successor.
 
-All future Provider calls must bind exact `thinking.type=enabled` before credential lookup and
-client construction. Reasoning tokens remain completion Usage under the unchanged 4,096-token
-completion bound. Historical non-thinking rows and future thinking rows are separate generation
-kernels and may not be pooled without a prospectively frozen comparison design.
+The response envelope may retain only response model, finish reason, public content hash and
+length, explicit native-tool presence, reasoning presence and length, and Usage telemetry.
+Private reasoning content, private reasoning hashes, and raw HTTP bodies remain forbidden.
+Provider-native tool use must fail closed. All future model-bearing identities must continue to
+bind exact `thinking.type=enabled` before credential lookup and client construction.
 
-The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope, 4,096-token
-completion bound, and both 4,096-token reserves remain unchanged. The 129,333 next-call
-diagnostic, historical 366,569 to 575,686 fixture bounds, v26.90 57,634 to 115,612 role bounds,
-and v26.91 58,760 to 115,676 stress bounds do not authorize a budget change.
+The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope,
+4,096-token Completion bound, and both 4,096-token reserves remain unchanged. The v26.92
+reasoning-token share, 78 completion-limit hits, and repair outcomes motivate a prospective
+Completion redesign but do not authorize a larger bound or identify one uniquely valid repair.
 
-Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. The six v26.81
+All 93 v26.91 Compiler paths and 580 local Observations remain fixtures. The 32 model-generated
+v26.92 rows remain separate from Capability, Reachability, State Mapping, and release
+denominators. Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. The six v26.81
 prospective-valid candidates, all v26.82 Compiler Witnesses, all v26.86 descriptive local
-successes, and all v26.90 Compiler fixtures remain ineligible for task selection, empirical role
-support, State Mapping, or release counts. All v26.91 Compiler fixtures have the same exclusion.
-The later model-generated calibration rows must remain separate from Capability and Reachability
-denominators even if they are independently valid.
+successes, and all v26.90 Compiler fixtures remain ineligible for empirical support.
 
-A passing calibration may authorize only `thinking_role_protocol_freeze_only`. It must also
-report reasoning presence/length/tokens, completion-limit hits, reasoning-token fractions,
-Contract repair, repeated call and failed-call signatures, requested-path adherence, Program
-closure, mechanism success, validity, and floor/saturation diagnostics. Those behavior diagnostics
-are descriptive and do not resolve whether the one-leaf role tasks are capability-informative.
+A later passing repair preflight can authorize only a fresh repair calibration execution
+preflight or another explicitly frozen intermediate stage. It cannot freeze a thinking-enabled
+role protocol from v26.92. Task depth and capability informativeness remain unresolved.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_92_v26_93_thinking_budget_calibration_execution_and_audit.md`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_budget_calibration_execution.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_calibration_postrun_audit.py`
+- `artifacts/vtdo_experiment/finance_v26_92_thinking_budget_calibration_execution_v1_20260821/report.json`
+- `artifacts/vtdo_experiment/finance_v26_92_thinking_budget_calibration_execution_v1_20260821/raw_lineage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_92_thinking_budget_calibration_execution_v1_20260821/calibration_job_results.json`
+- `artifacts/vtdo_experiment/finance_v26_92_thinking_budget_calibration_execution_v1_20260821/completion_usability_classifications.json`
+- `artifacts/vtdo_experiment/finance_v26_92_thinking_budget_calibration_execution_v1_20260821/thinking_history_audits.json`
+- `artifacts/vtdo_experiment/finance_v26_92_thinking_budget_calibration_execution_v1_20260821/provider_budget_audits.json`
+- `artifacts/vtdo_experiment/finance_v26_93_thinking_calibration_postrun_audit_and_telemetry_repair_v1_20260821/report.json`
+- `artifacts/vtdo_experiment/finance_v26_93_thinking_calibration_postrun_audit_and_telemetry_repair_v1_20260821/completion_root_cause_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_93_thinking_calibration_postrun_audit_and_telemetry_repair_v1_20260821/provider_telemetry_gap_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_93_thinking_calibration_postrun_audit_and_telemetry_repair_v1_20260821/persistence_integrity_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_93_thinking_calibration_postrun_audit_and_telemetry_repair_v1_20260821/telemetry_repair_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_93_thinking_calibration_postrun_audit_and_telemetry_repair_v1_20260821/repair_fixture_audit.json`
 
 - `docs/finance_v26_91_thinking_budget_calibration_preflight.md`
 - `src/trusted_synthesis/runtime/agent/thinking_history.py`
