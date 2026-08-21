@@ -34,12 +34,88 @@ historical outcome is rerun, rescored, pooled, or reclassified. Future thinking 
 only reasoning presence, length, and token telemetry, never private reasoning content. Reasoning
 tokens remain Completion Usage and count against the Completion and rollout bounds frozen by each
 successor Contract. At policy freeze those bounds were 4,096 and 120,000 tokens; v26.97 now
-prospectively registers larger engineering-calibration candidates under fresh identities.
+prospectively registers larger engineering-calibration candidates under fresh identities, and
+v26.99 persists the exact 8K profile selected for the initial calibration under a fresh binding.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.99 Thinking Exact-8K Binding Rematerialization Decision
+
+Finance v26.99 completed the only credential-free repair authorized by v26.98. It first replayed
+755/755 files: all 746 v26.98 transitive source bindings, all seven v26.98 outputs, the exact
+v26.99 implementation, and the persisted 8K profile. The six predecessor detail files matched
+the hashes bound by the v26.98 report, and the report matched its separately frozen SHA-256.
+
+The tracked profile
+`config/deepseek_v4_flash_agent_thinking_8k_v1.json` differs from the frozen 4K profile only in
+`max_output_tokens=8192`. It retains exact `deepseek-v4-flash`, `thinking.type=enabled`, and all
+other Provider, generation, retry, selection, and pricing fields. Its SHA-256 is
+`efef0545f4a5467956ecdbcc3442341af1b4f158558d41f0b8e607859ef7d256` and it materializes the exact
+identities already derived diagnostically by v26.98:
+
+- model configuration:
+  `agent_model_config:c07d13207cba89d1e1cc3790151e2b5a32b7bf06f0ee6974f8e761fce5562b2e`;
+- Thinking binding:
+  `prospective_thinking_model_binding:9ed92eb9c7326eaf8b083633cda2e10cbfdb454322bcffffcd0d2f5e1329ac57`.
+
+The stage rematerialized all 24 TaskPackages, all 48 Path Audits, the Completion Contract, the
+8K-only Manifest, and all 32 Jobs under fresh identities. It preserved the exact source tasks,
+source roles, paths, Compiler state rows, Prompt and Rescue values, response telemetry, Job
+assignments, all 32 seed values, candidate ladder, one-Rescue limit, zero-failure Gates, and
+Mechanism x Path layout. Semantic outcomes were not used. The repeated-source partition remains
+22 model-exposed and two model-unexposed sources; all remain engineering-only and ineligible for
+role, State Mapping, State Support, or release evidence.
+
+All 24 TaskPackage semantic projections, 48 Path Prompt/budget projections, and 32 ordered Job
+seed/assignment projections match v26.97. Identity overlap with the corresponding v26.97
+TaskPackages, Paths, Jobs, Contract, and Manifest is zero. The 48 static calculations retain the
+8K range 76,817-151,653 with 8,347 minimum headroom and the non-executable 16K range
+125,969-233,573 with 6,427 minimum headroom. The maximum bounded Rescue remains 5,702 of 6,144
+bytes.
+
+A new unified 104-row Gate closes the static candidate/profile/TaskPackage/Contract/Manifest/Job
+chain. It verifies 24 TaskPackage, 48 Path, and 32 Job bindings; exact Contract memberships;
+Path-to-Task parents; Manifest-to-Contract binding; and every Job-to-Contract/Task/Path parent.
+Candidate, profile SHA-256, model identity, Thinking identity, Completion bound, and rollout bound
+agree at every layer. The actual client and request binding is explicitly deferred to a separate
+Runner preflight.
+
+All 25 destructive mutations failed closed. Five cross-artifact mutations first recomputed valid
+content identities before changing Contract membership, Path-to-Task, Job-to-Path,
+Manifest-to-Contract, or TaskPackage-profile lineage, so their rejection does not depend only on
+a stale hash. Formal and independent builds reproduced all eleven outputs byte for byte. The
+stage constructed no Runner or client, performed no credential lookup, made zero API calls, used
+zero GPU jobs, and produced zero empirical rows.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_exact_8k_rematerialization_report:fb21fa81d33db5e7b4622007598bcef27d226e9804385176eb12509ac5069b3f`;
+- profile-binding audit:
+  `finance_v26_exact_8k_profile_binding:b7922047d9630556d5dc154568d39a79468a7effbdcc8adb87e0d4376b60c292`;
+- Completion Contract:
+  `finance_v26_exact_8k_completion_contract:2f752e61533e3a358d7e9ab02c4cb825b9c32ee9340a1310e5f533b53656365d`;
+- Manifest:
+  `finance_v26_exact_8k_manifest:e50b85b55d76fe3f9e74b24cfde98d40d2c4a1f1608a85fcead6eebe6bd1c118`;
+- cross-artifact binding audit:
+  `finance_v26_exact_8k_cross_artifact_binding:8be2fa5e586165f19a2b9f740bf3efac39e71bb1031ca732769631533ea40c3c`.
+
+The only permitted transition is:
+
+```text
+thinking_8k_completion_calibration_runner_and_preflight_only
+```
+
+This is a positive static binding result, not empirical 8K Completion usability or permission to
+execute the Manifest. The next stage may only implement the exact Runner and complete a
+credential-free preflight that proves actual client and request binding before Provider
+invocation. Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student
+training, Exact Target, GP-C, and production Contribution remain forbidden. Production
+Contribution remains zero. See
+`docs/finance_v26_99_thinking_8k_binding_rematerialization.md`.
 
 ## v26.98 Thinking 8K Execution-Profile Binding Preflight Decision
 
@@ -1848,10 +1924,21 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | both new v26.98 Python files passed; 116 historical baseline files remain unformatted |
-| Mypy | 399 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Ruff format | both new v26.99 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
+| Mypy | 400 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
 | Pytest | 1117 passed, 4 expected v26.78/v26.84 success-state tests skipped in 863.24 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.99 focused regression | 8 passed in 2.39 seconds; zero API/GPU |
+| v26.88-v26.99 adjacent thinking/budget regression | 104 passed in three commands (91.61 seconds plus 0.40 seconds plus 2.39 seconds) |
+| v26.99 dual build | all eleven output files are byte-identical; zero API/GPU |
+| v26.99 source replay | 755/755 files: 746 v26.98 transitive bindings, 7 v26.98 outputs, 1 implementation file, and 1 exact 8K profile |
+| v26.99 exact 8K profile | one persisted profile; only `max_output_tokens` differs from 4K; exact model config `agent_model_config:c07d...62b2e` and Thinking binding `prospective_thinking_model_binding:9ed9...9ac57` |
+| v26.99 rematerialized identities | 24 fresh TaskPackages, 48 fresh Paths, 1 fresh Contract, 1 fresh Manifest, and 32 fresh Jobs; all 32 seed values preserved |
+| v26.99 design preservation | 24/24 Task semantic, 48/48 Path Prompt/budget, and 32/32 ordered seed/assignment projections pass; zero selection, layout, Prompt, Rescue, or telemetry changes |
+| v26.99 cross-artifact binding | 104/104 TaskPackage/Path/Job rows pass exact candidate, profile, model, Thinking, resource, membership, and parent-lineage checks |
+| v26.99 repeated-source boundary | 22 model-exposed plus 2 model-unexposed sources; engineering-only and zero role/State/release eligibility |
+| v26.99 destructive controls | 25/25 mutations rejected, including 5 valid-rehashed cross-artifact parent mismatches |
+| v26.99 transition | static 8K identity chain closed; zero Runner/client/API/GPU; exact Runner implementation and credential-free preflight only |
 | v26.98 focused regression | 6 passed in 2.19 seconds; zero API/GPU |
 | v26.88-v26.98 adjacent thinking/budget regression | 96 passed in 92.03 seconds |
 | v26.98 dual build | all seven output files are byte-identical; zero API/GPU |
@@ -2253,7 +2340,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_8k_model_profile_taskpackage_contract_manifest_rematerialization_only
+thinking_8k_completion_calibration_runner_and_preflight_only
 ```
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
@@ -2298,13 +2385,22 @@ against this mismatched chain, override the Provider request to 8K under the 4K 
 new 8K profile to old TaskPackages, or edit v26.97 artifacts. Exact 8K binding is 0/24 and all
 32 Jobs are blocked before credential lookup or client construction.
 
-The next stage may only persist an exact 8K model profile and Thinking binding, then rematerialize
-24 TaskPackages, 48 path-audit identities, the Contract, Manifest, 32 Job identities, future
-execution identity, and report identity under a fresh credential-free preflight. It must preserve
-the source-task and path selections, exact Job assignments, all 32 unexposed seed values,
-Mechanism x Path layout, candidate ladder, Prompt and Rescue renderer, 6,144-byte Rescue ceiling,
-telemetry envelope, resource bounds, interpretation tree, and zero-failure Gates. A Runner may
-not be materialized and no Provider call may occur in this repair stage.
+v26.99 persisted the exact 8K model profile and Thinking binding and rematerialized 24
+TaskPackages, 48 Path identities, the Contract, Manifest, 32 Job identities, and future run
+identities. The unified 104-row static Gate closes candidate, profile, TaskPackage, Path,
+Contract, Manifest, and Job bindings. It preserves the source-task and path selections, exact Job
+assignments, all 32 unexposed seed values, Mechanism x Path layout, candidate ladder, Prompt and
+Rescue renderer, 6,144-byte Rescue ceiling, telemetry envelope, resource bounds, interpretation
+tree, and zero-failure Gates. This completed repair contains no Runner and authorizes no Provider
+call.
+
+The next stage may only implement the exact Runner for the v26.99 Contract and Manifest and
+complete a credential-free preflight. Before credential lookup and client construction it must
+replay the complete v26.99 binding, require the persisted 8K model configuration and Thinking
+binding, and prove that every actual request uses the 8,192-token Completion bound. It must also
+exercise dynamic request-kind, Primary, Rescue, resource, raw-first persistence, raw-only
+recovery, orphan, exact-model, native-tool, Usage, privacy, and completed-aggregation controls.
+Execution remains forbidden until that preflight passes.
 
 The 24 sources are repeated engineering sources, not a fresh Population: 22 were model-exposed
 in v26.95 and two were unexposed. They, their Compiler fixtures, and any later 8K calibration rows
@@ -2331,15 +2427,31 @@ successes, all v26.90 Compiler fixtures, and all v26.94 Compiler projections rem
 for empirical support.
 
 The v26.95 execution has occurred and is permanently blocked. v26.97 is a zero-generation static
-design, while v26.98 is a zero-generation negative execution preflight. Neither freezes a
-Thinking role protocol or authorizes Manifest execution. Task depth and capability
-informativeness remain unresolved independently of the Completion channel.
+design, v26.98 is a zero-generation negative execution preflight, and v26.99 is a zero-generation
+positive static binding rematerialization. None freezes a Thinking role protocol or authorizes
+Manifest execution. Task depth and capability informativeness remain unresolved independently of
+the Completion channel.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_99_thinking_8k_binding_rematerialization.md`
+- `config/deepseek_v4_flash_agent_thinking_8k_v1.json`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_8k_binding_rematerialization.py`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/exact_8k_profile_binding.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/exact_8k_task_packages.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/exact_8k_path_audits.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/exact_8k_completion_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/exact_8k_job_manifest.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/design_preservation_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/cross_artifact_binding_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/freshness_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_99_thinking_8k_binding_rematerialization_v1_20260822/destructive_preflight_audit.json`
 
 - `docs/finance_v26_98_thinking_8k_execution_binding_preflight.md`
 - `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_8k_execution_binding_preflight.py`
