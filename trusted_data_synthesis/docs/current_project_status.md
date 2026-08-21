@@ -1926,10 +1926,10 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | Ruff check | passed |
 | Ruff format | both new v26.99 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
 | Mypy | 400 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1117 passed, 4 expected v26.78/v26.84 success-state tests skipped in 863.24 seconds; one existing destructive-test warning |
+| Pytest | 1125 passed, 4 expected v26.78/v26.84 success-state tests skipped in 863.73 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
-| v26.99 focused regression | 8 passed in 2.39 seconds; zero API/GPU |
-| v26.88-v26.99 adjacent thinking/budget regression | 104 passed in three commands (91.61 seconds plus 0.40 seconds plus 2.39 seconds) |
+| v26.99 focused regression | 8 passed in 2.35 seconds on integrated main; zero API/GPU |
+| v26.88-v26.99 adjacent thinking/budget regression | 104 passed in three commands (91.61 seconds plus 0.40 seconds plus 2.35 seconds) |
 | v26.99 dual build | all eleven output files are byte-identical; zero API/GPU |
 | v26.99 source replay | 755/755 files: 746 v26.98 transitive bindings, 7 v26.98 outputs, 1 implementation file, and 1 exact 8K profile |
 | v26.99 exact 8K profile | one persisted profile; only `max_output_tokens` differs from 4K; exact model config `agent_model_config:c07d...62b2e` and Thinking binding `prospective_thinking_model_binding:9ed9...9ac57` |

@@ -340,16 +340,19 @@ constructed no client, made zero API calls, and used zero GPU jobs.
 Validation at artifact freeze:
 
 ```text
-Ruff focused checks: passed
+Ruff focused and repository-wide checks: passed
 Ruff format for both new Python files: passed
 Mypy focused source check: passed
-v26.99 focused tests: 8 passed in 2.39 seconds
-v26.88-v26.98 adjacent Thinking/Budget tests: 96 passed
+Package-wide Mypy: 400 files checked; one retained v26.70 diagnostic
+v26.99 focused tests on integrated main: 8 passed in 2.35 seconds
+v26.88-v26.99 adjacent Thinking/Budget tests: 104 passed
 formal/independent artifact comparison: 11/11 byte-identical
+Full Pytest: 1,125 passed, 4 expected skips, 1 retained warning in 863.73 seconds
 ```
 
-Repository-wide validation results are recorded in `docs/current_project_status.md` after the
-integrated-tree run. No historical source-bound file was reformatted or modified.
+The repository-wide formatter would rewrite 118 historical baseline files under the currently
+installed Ruff version. Those unrelated files were not reformatted. No historical source-bound
+file was modified.
 
 ## Interpretation
 
