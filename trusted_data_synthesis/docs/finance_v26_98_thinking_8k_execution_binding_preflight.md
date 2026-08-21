@@ -284,11 +284,12 @@ Ruff focused and repository-wide checks: passed
 Ruff format for both new Python files: passed
 Mypy focused source check: passed
 Package-wide Mypy: 399 files checked; one retained v26.70 diagnostic
-v26.98 focused tests: 6 passed in 2.34 seconds
+v26.98 focused tests on integrated main: 6 passed in 2.19 seconds
+v26.88-v26.98 adjacent Thinking/Budget regression: 96 passed in 92.03 seconds
+Full Pytest: 1,117 passed, 4 expected skips, 1 retained warning in 863.24 seconds
 ```
 
-Adjacent and full-suite validation are recorded in the project status after integration. No
-historical source-bound file was reformatted or modified.
+No historical source-bound file was reformatted or modified.
 
 ## Interpretation And Next Stage
 

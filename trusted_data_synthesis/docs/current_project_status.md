@@ -1848,10 +1848,19 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | all three v26.97 Python files passed; 116 historical baseline files remain unformatted |
-| Mypy | 398 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1111 passed, 4 expected v26.78/v26.84 success-state tests skipped in 862.56 seconds; one existing destructive-test warning |
+| Ruff format | both new v26.98 Python files passed; 116 historical baseline files remain unformatted |
+| Mypy | 399 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1117 passed, 4 expected v26.78/v26.84 success-state tests skipped in 863.24 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.98 focused regression | 6 passed in 2.19 seconds; zero API/GPU |
+| v26.88-v26.98 adjacent thinking/budget regression | 96 passed in 92.03 seconds |
+| v26.98 dual build | all seven output files are byte-identical; zero API/GPU |
+| v26.98 source replay | 746/746 files: 733 v26.97 transitive bindings, 12 v26.97 outputs, and 1 implementation file |
+| v26.98 profile binding | 24/24 TaskPackages bind 4K; 0/24 bind exact 8K; derived 8K model and Thinking identities are distinct |
+| v26.98 Job binding | 32/32 8K Jobs blocked before credential/client/Provider; zero Runner, execution Contract, API, or GPU |
+| v26.98 root cause | `completion_candidate_not_bound_to_taskpackage_model_config`; v26.97 static claims retained |
+| v26.98 rebinding transition | preserve candidates, Prompts, paths, Job assignments, and 32 seed values; rematerialize the affected 8K identity chain only |
+| v26.98 destructive controls | 12/12 identity-shortcut mutations rejected before any Provider call |
 | v26.97 focused regression | 8 passed in 9.02 seconds; zero API/GPU |
 | v26.88-v26.97 adjacent thinking/budget regression | 90 passed in two commands (90.77 seconds plus 0.40 seconds) |
 | v26.97 dual build | all twelve output files are byte-identical; zero API/GPU |
