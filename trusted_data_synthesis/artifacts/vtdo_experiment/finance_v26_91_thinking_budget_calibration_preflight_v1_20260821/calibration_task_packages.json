@@ -1,0 +1,901 @@
+[
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:c9371e7eafd26c56dd36c8ff78963846d36e08f5912b8a4120cccbcfb128aa68",
+      "finance_v26_budget_qualified_path_audit:30798c3a62bafa538cb63c2930595586c2300e742125f371d3960ae800e92c85",
+      "finance_v26_budget_qualified_path_audit:e8c7479beabf65fbd9f70dfe6e54a649b1eb9b8e9c251dc05cf1532b72535753"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:6f53fe343dac344003e2c901d1c474574385b83909a497350f5a5d842c2988f0",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:1165230d14a4526787c2cc30d3706886312800c1c54881f2612f842b81ff2fbc",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:d96c58d59ec822a01753d0e9b0e3008a909282f6106f18038dcf90bde60b547e",
+    "operational_task_package_id": "operational_executable_task_package:1e037aef98b9678b8685e282522282e7685ab4d478a78757efbeba31e5a9e2e6",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:bf61ab8fdc3f0a9c556e6b6b234ca11147d6404d3be690127e8fa93cb9dd0282",
+    "source_task_artifact_id": "finance_capability_sensitive_task:f823005827c4456f1b8e1bdd0880db4b997b3d5c94d09a9c42c5ac431570128d",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:376eb0eb5d44fba4d9e4c49e255ddb6c9be443d030c52faabfae3c0d693ea6bb",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:77f8ed0fe6a3ddb53146b212b93a78082409f091b20152d2180d01d117a28086"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:8ddad4873378c0278b28240e96fa9ebec196e0ac05d37c6f545cce8edc4f92e0",
+      "finance_v26_budget_qualified_path_audit:70234f5fe7ea2f036f333b2d32ec2e0f6cbb122c0f6e3958c0a6e4998190db26",
+      "finance_v26_budget_qualified_path_audit:dd2305b6ddaa4ce9e59af4f06a60e46bd5dd154710107f6a87d21b51850760e3"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:0b14ef150bc4e27c2f857f3632711caeb768c0179bb9fb5e6924c490ee6e7a49",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:ae9f6d94db0fd93e97781f4df23df3ac7012756836e9167b7ad620ef8cdf613a",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:99cc69591c87357a664abd9c4774806f574fc7d3b45b1b919c9fa254b5420051",
+    "operational_task_package_id": "operational_executable_task_package:662b2c954c3efd02ef6feecb7fffdf829765f85c0caf1aec551484fe0239037e",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:0404e21d39c42c093464fe0e7bd5956d7eeec27518d661bacf033db649c706f3",
+    "source_task_artifact_id": "finance_capability_sensitive_task:eb6c29e1e7bde9ffde8e43a5a88f701a7ce9a2541d1d477cfa1502ad8af139ac",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:4619d1cdfdb2cca5cd9f1c464d7ccdfac3c44c18de3c201d1b4244c5c57f896b",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:509b42c09f232c76cc11878eec3a497c994cccf3f3a789b1f379ef77f988506e"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:cb4c2a78b5bf5a9d1e748648c69e0556ac5946a5fca7d9458f122dec7297170e",
+      "finance_v26_budget_qualified_path_audit:d5d096f6ae5a0a4a9c814f7f25d73fc813a6f1e76d46db87415195cc8fa358f2",
+      "finance_v26_budget_qualified_path_audit:79a6fbd27870466b6562598294a3b6dc6858339b8b4b516551965ef5bdf52e42"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:e6734c42443c4bcca6b9222855d78c810c2e9d5a98ab1b1382b87f3afe6cea50",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:342eb503cfd6dbaa6f5165afa07b4e500a15358bd0a057a24d6b427f306db887",
+    "mechanism_id": "context_conditioned_action",
+    "operational_record_id": "finance_v26_operational_task_record:38557fdad18d9ba450340de3e939f4617c111da7ba05e8160f614a7a408042bc",
+    "operational_task_package_id": "operational_executable_task_package:64bddb921c0fef0831dc0e36626998837dfc9075daf52099a864634e8c92ca17",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:012e9b4b8b9f250f79bef1439027b81de758f7715b1a5ccc71d9c5a6aedad0ac",
+    "source_task_artifact_id": "finance_capability_sensitive_task:747fa550c78db90155e883260ba70c1a339be1cdd82c4974ac9da2bc3c154c60",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:46e852b90260bb1708f02c1903c633d28670b804a1ed320c6ab2a63ee6233074",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:422bbb65a69577afb15ddad0361c324796a46b5edba30acc3d76b04ce2221559"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:e376bf169722275e461457df3786beca2fe3def86cb5e1caa0f9a2dd250d1140",
+      "finance_v26_budget_qualified_path_audit:06002be6c439a6c225e1c0924acb38c59e0a4c0f85e7248c41e35cac54c8ab6c",
+      "finance_v26_budget_qualified_path_audit:6211478c3a57aa05559f6c978882c4b30ef0c1f7dbeaf17c78ff3771de851661"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:3315c24c6086145015507acdedc9bc6484339c017ab9a061e4487f5038d363c4",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:24b2e4f32f1c30ee1da42dda38f012ee731c11876f0a1f3023f7635656eb7843",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:a0054414ea9b7e21458b7afe64c5b4a6ffb57f746009bbd72635c84cbc04e74e",
+    "operational_task_package_id": "operational_executable_task_package:8f4a857efe8cf0b43ca372ba2bcd10fc5c5d5383935cf94e7a0be7f38aa24f39",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:d758ffb3d937b9d695817cc1cd15da8e28f0ed01f38b4d24d5ebca8d2f4e8c51",
+    "source_task_artifact_id": "finance_capability_sensitive_task:f43db2aaf04feb21d01b776621403e366d0ad1b1da687b69ccacd885774993a9",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:479e37285243684ece1324f761572feb9fee0e98d00b433472abe9d87f346708",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:30a29c85ecbbc7eebb7ba79fda2a12775c8d562b11d7e5323d9a27f1aea71f71"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:d941de4b79cf418f20324731a81eed416e5c5f3e6f1ea1e97bd0ed179d53b038",
+      "finance_v26_budget_qualified_path_audit:b895f21668daec55492f75ef81e13c10bac9ec778e269b9dcc5a79de056e563e",
+      "finance_v26_budget_qualified_path_audit:280a21b9c79508345809eabbdfa1c67be61dfe934915e8c8ce07f60cde41e557"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:49ff04fe873f08429d1b843127badf56ea8041425a66c505ba7935126876b796",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:ce5ff771378d43f6527b0d50c25445badcd82a8682eca4c93ec74801c4b5fa9d",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:bf5010c539e301b87c3a580be58c24b2bd751b4389e030c22c22c9f6692b9491",
+    "operational_task_package_id": "operational_executable_task_package:8c7d62fe02ea5aa0cc6cba66304214ddf070f356ac0a4ae53345cfc1db1a6d4d",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:7311a3cf630840007790773fd7061a3e913ad509421975d657f10d38571d41ce",
+    "source_task_artifact_id": "finance_capability_sensitive_task:7d1e0bdb453c0ba87b770162b0c70724143a02ebd6592a17e453764d12597752",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:4d9cf7d0196444c2e4c1e9437aa51d44694fde1512e5b0285674b4901b6d3387",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:bdda1ec2e64b1abda921376fae963ef20c0feb7c5d72a7dec34c942e7e9496bf"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:7b02799b79001ee19192032e129e5bcca045f12a0aa243e426aff4cf4ac06716",
+      "finance_v26_budget_qualified_path_audit:eec2d89180ce057adb683849f40f5ef2f2ceadc3d40d723c4de398aa857e0aac",
+      "finance_v26_budget_qualified_path_audit:01823831a768d80c4b7cf374fe831bb98f929bccab54f52200bf50e259191795"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:c021de303d52fbaa7c61186c9d257eb7e643d14fc6b82ca8499fd7551758b15b",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:4e522060100bc029ffa37d0092e2a13e81dfbde22dfe58440d91a5e53347ad54",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:536a5da76a8980744b1ec2ab91a2965aa1d3dd104c6b3c69649a3418f525a45f",
+    "operational_task_package_id": "operational_executable_task_package:aea182d90a9e8f802855d0eae1c61d46ecb1cfdcdc7d226d40d3aebc8c23525f",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:9a14aedb5132bce01baa1dc30b4775f1fc89912d40153df73d4df8cd17ae9a5d",
+    "source_task_artifact_id": "finance_capability_sensitive_task:46bb7e93942961e91c06a133fef900daac9f7b08b0274e85f108027c20135df4",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:4ef2c28b82dd45b3e2a799fbbaf62d3a982b51102ddba84c7d602f74420f6349",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:a954d4b0cdd3fba5de261c17b88b5b18d3d2709e0392cdb3bc2d874c9cfa682e"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:631fcda8ed2ac215f9919757fabb197136f2b76f33585941749d31db11c4dbd4",
+      "finance_v26_budget_qualified_path_audit:937e69c5b0b3c9fee02651b3226ecbd79d955334fb343f8cb73151c7f4cc8ba4",
+      "finance_v26_budget_qualified_path_audit:6196cbccdc467d9141dff8ca85a7480ae4ac343731e38fa5f27639483b26622b"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:c2cf3b68b8b8235a71f825b7c6824ff38c63a82cd896c656139c39182592b1f1",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:a61959c240b2696f729393c0878f5ab33b23e914b254bea019e1f1a4264d01aa",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:50b23c9fb39f7e34a871d2965a249d1b1717b0f040ce930dba67047e6b5dceef",
+    "operational_task_package_id": "operational_executable_task_package:ee80a72d2725bb2d91bfd970466e499211b436e5f27489da4d269f5bf17504f2",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:f0323b5e1397ae4460bcefc5fde6eebf333ecc1b512850b5a395e3864ef07c1b",
+    "source_task_artifact_id": "finance_capability_sensitive_task:664f0dd295fb146978ac3f9a950479e8460d4b0619161115476d24a0f6af840f",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:5451a2ecd1a9dfd6544bc712e812d58b72ddc0cf5b318a5da48e809e59010d46",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:859a07d1324bd86ec28b4c113a5a9ad0ada7486f63929cec13bcb5a018ab5f72"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:04138440c0eda597e9f342b2e021f304e177e03e301b99c6983eb779d1c1e5db",
+      "finance_v26_budget_qualified_path_audit:fd93e711628a6d4533d021942baf419f9216c754800fff409a36f9929ea12958",
+      "finance_v26_budget_qualified_path_audit:0af28bbb01b5201b92fd9688d2c9a43b2017a966933255a11b73f2bbcf9341d9"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:23e59c81ae94632b7527c21b8e04fe4ca1d87f8abc66d121aef0f9f7a102e0f4",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:a1d712b9148a97d4f5ea9e57f4b5449767163299078d7285e291f6d34a9aa05e",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:db5ac0c88683b38a791c5478319e5a85a39c66c8e860dedea0162fbc1c85345c",
+    "operational_task_package_id": "operational_executable_task_package:8511b2cec630ffd6818e38d1213aecfd0d1a57b71cf1b7e86acc750a17f1e866",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:423fb5216c0de3c47951678cc3d403b4161210b0d658b73895b2afd32a74ad92",
+    "source_task_artifact_id": "finance_capability_sensitive_task:5799fea7ea6286c6065afcdb756fe2eae947b3cb6d5e7ea48e97c2c319082539",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:5b3f8bf78cf121641bca2d45baf95190dcdf6f343cee2e1819df83fcdfec47a3",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:aba5c3470552fec587d5db5e8232cc4bb62e0587210f66982f09683de3d8b4e2"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:56afde26ebdac98392fed2603993a87e6d2502de8b5232a44e466cc806b342a8",
+      "finance_v26_budget_qualified_path_audit:6fc686d73d79123c963100ff23d9781d3231b57873573d100950f65d0001a405",
+      "finance_v26_budget_qualified_path_audit:abba68b41dddec33510133b2d49aef6ea84a185257c6ac0530822b074e492fe0"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:4df017f6382995657b5e5994d5c4e3ee67422d105b3d50b82172fed46cc33ae9",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:60469c577ec6cf0512fd2e2569f3fdae8673f64fa025e225079474c5684ddf58",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:220ec1dfd720e23cb68719d4f26deaf8b9a371871ddbc7760c11bb7b7b4768cd",
+    "operational_task_package_id": "operational_executable_task_package:def1bb2c0039656a1913a2f0d8a5bf2b97d73eda3f8462ceaebdac8811699168",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:fdd3037998a5d3c45f9431af33a02a205b34c32b090117d71450451919c01088",
+    "source_task_artifact_id": "finance_capability_sensitive_task:67ecbb0c2fe8453b10a8fc25707b7e3203a05b490f0f64b5af9001e727dac558",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:627e167896f23c6adb0b9d7172a64b4ed0867d7a404a9d7f712873e75ba4366d",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:fc76621ccd216b7c9586343cbe6064b4272b9a5c0480c28fce4cece624cf19b1"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:593af8708d6cda6eeeda975103caa47869825d3cec63c10966a6a5229d576c4f",
+      "finance_v26_budget_qualified_path_audit:3782ac7262739eafa54221ba63c4229000050f97e8b3bdc483ea8247016d6f83",
+      "finance_v26_budget_qualified_path_audit:6ef40bc2cdd0bd80fcbba6227d08a5ccaeff54047788c23c9cfad472c633217c"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:ae454d6c42870b097957582172d1df138f11f60dd72ddb952c213b031ddae941",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:70247c0fe001005c8919e849842bb4611e25817a67ac92d5d13bdd4f31a5eff0",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:5004c08d1fe12fef37cc4b229ef61efa2d6fca7f250254ac4ece1be51eaed604",
+    "operational_task_package_id": "operational_executable_task_package:fee4a5ca1609e8693ce8f8f8148586343d4124d33ad84dd3982069b9bd87a244",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:8e0a4cafb1ac46011ec5d5524a46620997a5ae8ab0dcdc838ee7bbda39608436",
+    "source_task_artifact_id": "finance_capability_sensitive_task:16aeb0680a06776a77e8c9ccee29a5bb635d1f8df00563eb5cd6109c98533387",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:69ea0558ce490815751d4cdb41ca41fb2e5d1a24b12e7873ce417c90ad53567f",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:0b5eef6603a51a34ae3207fa95bd40d563032f68c1a0909d52be0c0602292ce3"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:7d6dfaad6da7ee2201f89d048cb72673fdd3686b53b268eb75d1a17ed71a4c0d",
+      "finance_v26_budget_qualified_path_audit:d7d09fd1abd58634a73bf8da92bf2766d38bfaf1e3923610a991e951bf1dd117",
+      "finance_v26_budget_qualified_path_audit:8eb7b3d84fbd24678c5a5b0edd83234d768a6d57de644c33800dcdb6b081bc4f"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:6214dff2d00f77ed2ab8808b2ed002244dd8bff684544add838653825ace77be",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:2819a0db9d0e6c6f137e0f393925b88bd085d5ef16ec34d4e6c5d436232bb321",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:4de9ae4123c44e971ea572c35d76c3f1c468482ce1623e3b678406ac81b67c67",
+    "operational_task_package_id": "operational_executable_task_package:4478b1bee5f31720aa3d8f3751a3eec88a92ea9dae046dc9ce44e6ed5e787931",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:174099425ab68322541c4b7bc6c07cd0e103178e00ce50ebf39bf78b8c820b23",
+    "source_task_artifact_id": "finance_capability_sensitive_task:18335532efcedda34fc213cc788004e3d16f8f2900a1332f903f7570e4280230",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:6d7109f6b5407f7662d388996a6344d6d63140e43a42ef8d1471ec20bee6b2e6",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:331cfb433f36e31f33fa8165896f9ab2307d5d02839f52cfc1aa3c5a2c3388cf"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:c16990b233713169ae4d061c0234915d2a58562edca41efd05e29eb977099165",
+      "finance_v26_budget_qualified_path_audit:49f357dee256e71112e3d5855cd1c7953685aee754763ef9fd07c0841e243a29",
+      "finance_v26_budget_qualified_path_audit:ed190dbfa5af6499293ef00229ba51ae0d34faa068403136378c9d83b963cc1a"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:84b01c2f9e39de633210aec35a5e3b60acada3c415f84da7005e3483a33610f7",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:bd2f8ccc31c38338efb1c90a3d1cb1fbdf91a123a67bfd2bbcd08133c6838a81",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:5d6b45b593ba3a8788c956f79124edac7a9c939ab40323bd0308635f526bb1c6",
+    "operational_task_package_id": "operational_executable_task_package:531a9b70d4b65acb1eb6adcc049d1fdebe90966d803dffe8ee7e51a331c43934",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:198588a77d76f55b794bb8b8ad4a556b485cda70abfd310e6294dfafee9c285a",
+    "source_task_artifact_id": "finance_capability_sensitive_task:e3b216cec3338e3c0bf1b41e23d7ee5f0c92cb0b6d26bdeb7605c30987022fcb",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:6f30b84233a9a5274a3e7d69813edd85ab957503ea4ef299dff0899fdf691daa",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:487517fe3540b271c70855b4c0bc8d081997aa7f5a1edc2a191c67c138c0a16d"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:7a18fb62d25533277651c003ae9445484318c5437d477ca79cd0bfd83ebbd00b",
+      "finance_v26_budget_qualified_path_audit:c23f7f36d5453b3b590bfab139bcb2d622ed96c22b7aad6e23a0a4426a31a336",
+      "finance_v26_budget_qualified_path_audit:33505bbc859b9228b932fb75de092f01bbac7540ff2901ff0b00b72b3bce801d"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:f3a71ef6ad5b141eb09e60f0bef19fa106f8d4603c62df9bd6e8bd74379635b2",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:282a4112926ebcc180f149b0b6af688278d1da0d30299ab8c794264fa2ffd24c",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:c57787e2cd396592c24d77bebd3380ce1bf1ed1e8ee0f7d786259fcef6823a9a",
+    "operational_task_package_id": "operational_executable_task_package:51348e05ac9a4f828e2e2869d546c191a447b13747f705a377468a5eed70adb0",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:652dbf29655eeb7fef8b235df14bd6c609dbf9c3a5d8ef08683e9497ac41893a",
+    "source_task_artifact_id": "finance_capability_sensitive_task:a597cb1cc491c46c37323d4afef7222bd996c07a465dd884f63fb13b9aaa4536",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:702cc689491c776fe0932112bbbed277cac223eb41decee70cb09ca11b50c6cc",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:9451b90145e6b9b45cdd94adfca201e794c979f652e9e7ab6a5d82cd83f18f36"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:b7a217c0174b1fab3977f1be6cc50edfd851ea7763f4233128caa326a88a6a1a",
+      "finance_v26_budget_qualified_path_audit:a2ed5363f31fcc0669efbc9b9104443bac06f5a249cd2b46da86407dd6a1c9ba",
+      "finance_v26_budget_qualified_path_audit:074e7fa8c73eeb205fc240ab6d39032f7d1c5b0511c5623febef991c28adee25"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:47ca792b25cc183424a5f83241ed1a4e155df87669a2bd28ce0f4e2f3da8d7c4",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:4f9df6a05e7481f96ac05b9fa4699a9c1a1d731f21405ff4f063065bc36c6e8a",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:dd6ceb600e06bc9d0118b7f9f83297339ad5ee48c899bdfa4eefab62a92721dc",
+    "operational_task_package_id": "operational_executable_task_package:0308cc776c8b8ba1ea365a3342ce31124e204b4d8899ed0520c753f512cd9ddc",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:5f0b961d9da4944ef680463eb0a3eb8ee57e4e1d5f3a2cb42701caa73a3e38e6",
+    "source_task_artifact_id": "finance_capability_sensitive_task:3ad62f6386d597cdd15bccacc87a3b19a01a91f9630317ea369a9ae9394a7b5b",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:7be15a975c2abfbdaa2ef0074a644cb2f0d59b0d04d7bda69b09a88214e97b92",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:8eea75f6d2892c7c533512557640685b8e06f149034da78c2240f20055249c23"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:22a4ccabecb03aae4e14e63bfd0d1e5d3cda1229f1d393ff6b6d03beb9660bbe",
+      "finance_v26_budget_qualified_path_audit:a1b2868e8e6dc6f7e1b196da13101e2cc987d9005d5bff371e5cd821a92e002f",
+      "finance_v26_budget_qualified_path_audit:e2151bb941767e706625031a157b57c5edd2d6ef11a3ca0518e7c92d89492bf8"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:68fc41104fd386e5e073baa8446ed3442d90109d53e5d4dc2392b5744513735d",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:b205697bec355a34fb8ab48d80e25974e5d907deaf44731bb9c98eee4fdeee2f",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:2b6d878ee0cecab308806f03b57708c52008d798960b08f445d9d55e3d9801d5",
+    "operational_task_package_id": "operational_executable_task_package:49f62b10357ac967beff1ff58ecdd4f11ac2507ef5dfeabaa2f07a42b4c06513",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:f899831d74bb7c5554e5224ee539997fb6162b91c7bfbad1df6316ecf0d3a18f",
+    "source_task_artifact_id": "finance_capability_sensitive_task:6618d5e391ec7789f9541b46ddecb186a30b7f487bf4eed22a73144bfd773fbf",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:81281825459e47e4cb40da0bea9c7b6755a07b74cfc86ea3a6ab3b8107e203af",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:e1b7f470a20cbd8ffed7d41c1c205c4c151ed05b0c61ea49aec7a28138038830"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:165e3fd7d953ad8548036ab89012bb27bf5c14f32e0d8e7e526119ee0f5b24e4",
+      "finance_v26_budget_qualified_path_audit:6000a20c3e87efaa3c9a4eb56ff475657f43f71524a6255ce9da195db5b9d252",
+      "finance_v26_budget_qualified_path_audit:e2f062be0580b0a6b402fbb57b8212e9f6a5c00716d2721b416c987c20034293"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:45c1f7e076b8141c7d51d55d333d0d1fbfce93012d41c191060e6015bdcc0202",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:0537fe25e762dceb299da91458c2e4b312d6ebfd1b156fce8f9eb0b7be6b874a",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:0c9259ebb8a0da1922ab0aa40b08fc8e3158029b8d23a9305b0ca86dd11bfb4f",
+    "operational_task_package_id": "operational_executable_task_package:b0c9b700170eac92f2965bb0f8fe048abe98bfe584f671f028bd87b2668d6438",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:8f41c5a8a677af716873817b5a418ced15e9561deebfaf0ebfecda6d6f7958b3",
+    "source_task_artifact_id": "finance_capability_sensitive_task:0f79b238a2304627d3b7ce97f30c21357335b84f4412f12e2bee5a2762d0484f",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:91061285b8c3c02632a5edf1ce227c39a49368bdb85043ae42757d122cd7dc12",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:0166c2468d4812d3c28a0013495bc98d599b3f8f6dc55af3b4dd6562cffaf01a"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:fdeb071be0a38da2f0634791699daf5262ef46f497c1ca6e4dabb27e6f3574e0",
+      "finance_v26_budget_qualified_path_audit:c8c105a2372d82f78df06325d841e834026d8e3226188c41a713e2fa2e1f2bff",
+      "finance_v26_budget_qualified_path_audit:795fa8aa493fa60df7fdc8e20af65905d2379987440292560d8627898f4a0b0f"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:77fb2d2c893544501d6ca4fb41a1211fcebe648ed3da73369e59d1c14cbaaf49",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:e406d96c77f05824bbc47dad13a7a8370b799bbcc305dbdbb7741d5cb2defecb",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:957de9cbfac4624a925a73227b1e55e59118d4073325f496c084923528c5b2ce",
+    "operational_task_package_id": "operational_executable_task_package:7297a018a1438f9c4da0b4d44a0cc9344624f2153e9e51e9789b9a7d641c23ad",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:9ceb2d6c395caeba66baedc2240eb0357e038db01cea832610b29080e5c32658",
+    "source_task_artifact_id": "finance_capability_sensitive_task:b2b6caa8ded0af3eccd142bcedeb453a02538d8950a6c8db0632ee0ac690dc66",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:9283c98aba3575cbf285e35f72bf339b7ff685e547c5c93fcda1b431cd321622",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:0e3d7bf94b563369a170ad7fac9a59aa10d9968b6e9a5cbc321d089bd8033c4f"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:98f8ed565cc008499cb9f0f110cde5f8d63ae2c22dead471c78c52c46d2ce017",
+      "finance_v26_budget_qualified_path_audit:4e1dce88aa7a561c704264b2791582dc8fd5d3c5871e7aa76e758082fd4e31a8",
+      "finance_v26_budget_qualified_path_audit:cf668cb864008e74693eb9281ec21c46a6bc59ad17a7b353b7d68af7c1871c4e"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:b8a87634d491512721aa8edfac18f29cfcaa34487c1b937d6a10e17ee0e1534f",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:243579f10c141f4a79290c8d4ebec2a3d8799470c3af302e2792c69d353bc16d",
+    "mechanism_id": "context_conditioned_action",
+    "operational_record_id": "finance_v26_operational_task_record:5eac825f0cdc4cde28196334cb7b4805a9e9c0725d2061aeb879f8b404a15452",
+    "operational_task_package_id": "operational_executable_task_package:a213fef62ae96b912a6ab41ae55ab08d6482f41ee5c637b9e7bbe4b0429d031e",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:312a0f1df74ef0c00561c5e0a2eed0b0affd74fb79d2deac3785302f030b3ebd",
+    "source_task_artifact_id": "finance_capability_sensitive_task:a7d8707213a54d36825f141769d266a669f3a55168801bc12c73cffdba4e2bc2",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:9620ea9e8a343d32459710fcb7b3a07cf8d3d89cf98dfb775a5178f506836fea",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:9137f52d35c39fdd8d1d49d8e1a58af0f18cfbe61acd023b0b4807a95775d773"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:b1d64d7302c7b177e07871f5bc336442a9f803cfe4ffea21cdf9094566cfbef8",
+      "finance_v26_budget_qualified_path_audit:3a690a277ebd02f1fe63a529be990d56963aa74b93dd55f881e9f17f0292d75a",
+      "finance_v26_budget_qualified_path_audit:27f7384a5229cb9e3f0cbeb8ad6ab2d67e1a742bad4c18f5b1f6ca84bb33e17c"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:0fc77f2b5ab1f6f7151d6d582cc61bd4fc98f5937a9c7b5158c0389eb928c299",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:467006158e2183e7c36764ec4c3252547ae514d010d7af62e8107728099ef2f1",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:c51a72d4295971e35e5aa7f42f590857629f0a4acac8d2bff05c9aa4b19f097f",
+    "operational_task_package_id": "operational_executable_task_package:5adf1117466e1ef0f0aaff97d20bfb95d4c6207b69981f8dc5ee647366dc7344",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:c5bcfe4d70b2b37bebb29820b92cdf41f02d0ea1b3df67a4a9ca473c4af00a6c",
+    "source_task_artifact_id": "finance_capability_sensitive_task:24165e779b8922751783504a7b0108b20b4d6ee6df8242c1330c8779a4714876",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:9fce427bffb4091bd67e61bcbc4c7fa9097072b6f72a657951e49744c48f78b6",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:895d6b84ab4ae1de00d90fdd6ec466cb47c6b91da18a3c143566b2e99d211bc1"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:a68cf582994ee779f0ae29a64cf52dcb373a39f677642e90b6d161097be41939",
+      "finance_v26_budget_qualified_path_audit:82c49ad353c302ae2fbb3da638e9baa4ecbc73b146cb72b9b7ff6b34b166cfac",
+      "finance_v26_budget_qualified_path_audit:879aa827ffb899a841061606099687f2d16afdbcae22bec1cf1335206a3f6fa0"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:20d5271edeb934268ac913308c644697b98e74508ba39c660911cdaa444532cf",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:c967b9649828d39b8a76b4e6a8e4e1186cfe7fd930b059a421beb2f8725c9689",
+    "mechanism_id": "context_conditioned_action",
+    "operational_record_id": "finance_v26_operational_task_record:a19c2dcad4190b06c8bca1d5339f70f3738c2b868b82fd3733426ca35c9f8238",
+    "operational_task_package_id": "operational_executable_task_package:592c1caebdf4034880c70c47fe6fc85ba0a0817e1d0887de55b138d50978150f",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:bb612b88fd7cb6e6e9c07fe5d2e458be774f60676634d416374eb1727083c236",
+    "source_task_artifact_id": "finance_capability_sensitive_task:0fcc9c65d12709aa054ce992dffeed65e5c7eab95c572eefb4d49956baa72c76",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:b1142f28b20e93e7c03784e0b0155cfd59b5cde7105e7194d568ac885c098f57",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:c9756d06ed1772f1521826c8c7836a426cdd5e1bdb121fe84ef33313e91c059e"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6e83ddf56e2bb841d3153d4b7e625c6183ec1b7f32e3cdaa15164f9115ab6a16",
+      "finance_v26_budget_qualified_path_audit:1f2a22018168320c92ce586437d89593214e72c41ee24a024e2d723187b9a560",
+      "finance_v26_budget_qualified_path_audit:d39139cf5fa658a96dc75983dfc41a4acbd0cc84311fb0f032109e5a3670b08c"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:9ea259734664db4ad5ab7209e55284ee8cbd04bcd98243f452139d32bb750cd5",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:536661170d4c277f0b99ae2719b6b483ce7a4916dc2e924aa307fdca70a1b3a3",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:0366276abb51980758b49660da66fde81fbad5430b55f703deb8f1a19f7392f4",
+    "operational_task_package_id": "operational_executable_task_package:69583e327a70864d3f878a63ba13fb82a3c4200939e320c378d86294cdfef726",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:43dfa62f969d2897ec606a8e81f4ae9789e576e03318bdb05b695754ddb26943",
+    "source_task_artifact_id": "finance_capability_sensitive_task:c0620564c29853458896ad262f86ba66c2a06f2068a805edfa96c25f58229f38",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:b4cfee887bf672e151daa8a38090de75075f981c15e27622744777d6bbc54a9d",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:ef96516254c1ab4dff878b190b51e8c56838467f5a0c0f6a404624574238c598"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:f0feeeb73fe2e70cd6720e1c47a7984ad8b5665912f0dabbdc8e920d14c5c436",
+      "finance_v26_budget_qualified_path_audit:b5a56dd505cfc1047578ba4f53bc6f0f851173169466b2d0185dc97cfc66384c",
+      "finance_v26_budget_qualified_path_audit:15606ee3ddb1b0ce0602c17dc54ca50928c3f93b6bcc86de8be0c4ef558be5a4"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:56ac2d2d623d632ec98710753c0e79e903fa6683d4c60f2f2554572123d21761",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:ad5d36a7ebd02b6a077ae55b7d9f4dc40bd014b96e39cf72a15e402f1a61c0f8",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:59089bf7b77104b9361e1a3710b8a7e37c6c4b2abaa46469374dc7426607bc5e",
+    "operational_task_package_id": "operational_executable_task_package:9b913628be14bea7150d658e942e56fccf30b6c77909f3d794378912630ad9df",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:de4866233af62c4a87d457009dc140f0fb3f41ab93b24ed393f69434c47869c2",
+    "source_task_artifact_id": "finance_capability_sensitive_task:670b330a9bd4047242d17bd2a94dd2d0ae5af248953553f234d564c7a520baa8",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:b6c8e919b9b488ed84c713ee39290db4765aef622b0d3d89cf1c490ad3e4d979",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:9affa00ede3062eeb55a6376e1cedbd5bf11f724a7c26537daea3038aa7d67de"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:917ba99a36790063fcaa11c75b94a511778dc3f8f642cf5af3b723d846aa734b",
+      "finance_v26_budget_qualified_path_audit:247f61438ce0ac1fbbd355579dab6bed45e2a94dc63c9fd9c70d0e453c264ce3",
+      "finance_v26_budget_qualified_path_audit:4fc077ba726c8a44d3260cdcd2277ae1ce5f491d1d0c0f660ccb0ceefb81a3ae"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:1d50f4aa2715b8fcdc3bd7832a77c7d6dfd05bc025c41ce25179853a167d8bfb",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:12121eaaed74ee2890949aa2b9c210449680bba5f9b0b8a3f90fa947c355aa72",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:aa87a0804d6c0ec9396fca9ef8ee3d59ea58b279cc636162f93f41dce1df8df4",
+    "operational_task_package_id": "operational_executable_task_package:0168dd2906804575bc23ec51fc74432b6c6b03a9ef5e7071cdb42266ac35e2cd",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:8b17597e393cc223dcffb74dfb35d98e79a0da12bcacbc93045d274ed1a9be33",
+    "source_task_artifact_id": "finance_capability_sensitive_task:7328ba898775b5627b299f4953326e81ee23ed0c1addc5803a62d280d232b2cb",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:b9589614505c29804643379b997caee7daef370ea92cda9f2aae541233a227fc",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:162b38b93770b35b715a1f635930ec14fe0f67b53a3f5ca923e1eef52e24737a"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:620460138e78b93146999bf8e6fa8ad14f37f7de548d9bcfff1841c38641b39c",
+      "finance_v26_budget_qualified_path_audit:a5e13b3fbe02bcefc2ded0e2c0ecf556dc5371796b936d0a815aafd198afa18c",
+      "finance_v26_budget_qualified_path_audit:56578fbbc07a2bcf34bb1038ff61051f3f253599421619b8508452e247d9ae79"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:fcb969701ccecc331e03c3dcfcc8eb4937e9af7f366b258780c0981b4749f531",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:ba2a3ef8a02c139bb755045e86021d1ff1b2a0ef4f5d6e4a3580aea0a22fa2a5",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:ac964997c12d38db6ef5f97eccd56aa9a773fbb3325c9ea7ae63ff72bd517ffd",
+    "operational_task_package_id": "operational_executable_task_package:0e7732a2e79482d79a1ba83f29bd28e1b7329b71ca755d544ec8094d38332918",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:c215e319ca620e67ffec3ef72cdb920785c25dea3799d227c126bb9e5e9f5b08",
+    "source_task_artifact_id": "finance_capability_sensitive_task:e18955ab69ccd171e79a9e928da354aac8ca5d72d58e155558a787c6eeb34831",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:be7ee661a89f13c3567d2d5469a3479d29448dd35302a66d5e863581dbd9b6f7",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:484c1e84b2af76862176c80f320b27c6317feb57353f1958e59983064f9adf65"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:a0c69e60a1e0ce22246f60e54cd42ac11c2306496382386bb191ece04863706e",
+      "finance_v26_budget_qualified_path_audit:78f750dfbdc26b2db4c65701a72bc50d8d0234ac0ca3d38486c31dba0b3fd6c7",
+      "finance_v26_budget_qualified_path_audit:d9df472c43c10ff65650bb50b9b5bc85163cf723d7ebb7916a48a4f44cd956db"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:e447dc91b2f984e7b7956b5e604dcc290999ac17fd857d99d5e442ea341c46ee",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:586dd911ee619ea40dddbae0f9eee10e7073269492b45ab9f11fe36e688f981c",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:48756fa9b0b2e53d3cc8202f84f3842ad2560ee4c0328a411b58bb4ee6dd953f",
+    "operational_task_package_id": "operational_executable_task_package:612dc06c199630db02d16a8fbcc68d1f78af3480773b89ce44423fc01fe52a93",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:953b1be9ddde66cd63db0cccd8e00150dc94076605544a7f790eaf76bde9aed1",
+    "source_task_artifact_id": "finance_capability_sensitive_task:c210eccf021514b23f1bed5d9021a35f44271452ec339eebd8bd809ad8b6ec8c",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:c64b639c25d4429cb06216b594fb5bcad690015935b609a17f522dd5a6818062",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:f2946f21607f365629d3caff2d8f8a9bb8463582969009dfe12fa9317f729c8e"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:f50bdbd13a36e8ded1cf4f86066f53195eab2e06f4fa1e150051b0bd35eff8c3",
+      "finance_v26_budget_qualified_path_audit:b3a2f46171436f65c355dfa632ad1cd6f414d0a0baea44285a875bd5763fd18e",
+      "finance_v26_budget_qualified_path_audit:ab142d9a2fa31a346bf84fbe181305299ac7b8121ed35323be9a636d22828194"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:36da14c98a6517011a8dd1cd8278ecdd990c7cfb619b4180142717479b4e0d8b",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:046ed63de77a38cc8e5ac336d8d555f86cc7a033cd63eea8103b5f3a5bbe3a54",
+    "mechanism_id": "semantic_reconciliation",
+    "operational_record_id": "finance_v26_operational_task_record:699d3d40109effbb74ac8dadc40e5d77c7343801de2480970d3a9b9efe8dc2b3",
+    "operational_task_package_id": "operational_executable_task_package:167cd17012bf1b7b1790186a17f414b632905466a82e957f75919671db3d8b52",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:1d6712cbbe0a67bdf960e340d35b16f2885be3ecd02707377d5e02934f36e973",
+    "source_task_artifact_id": "finance_capability_sensitive_task:9b6ba26c0e2ba76b0fec4836b1e299e3a8f6e473c26d3695621f0f6acf5cb80b",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:def2a75f75582ad6a40b7de36d68b6d6aa5161f0ee868c4995399cf26cbf96ec",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:48414a75a3f6d95a04f87e87b2b9e065dde9e468debbe28039d28714ca4bf204"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:7250b9ae01c90ea4dac5bce3a85a4c6358ccf900706bbbe3f65ddf62e668116f",
+      "finance_v26_budget_qualified_path_audit:7e7ba1fd9ae37bebcd215749c61203cd967fb0702d1c6f0f8f7ce16b5fa5fdc5",
+      "finance_v26_budget_qualified_path_audit:50aa330468f16ae3767d3d45145996ea738a7f60c7b185fc9052ce8c803b9e9d"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:1ce2501cc72610b466131e9fcc3eec61105653fa93b1e98270ac3fe83e30abbb",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:963116faf2a0abde13452944809e58592e323ba4652760b22a4f514d95c287f0",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:70b18d4f48c0c81a3c29e7b3c8bc9c948ccbfdaf2a6ea5f3919b5e14645bb4b7",
+    "operational_task_package_id": "operational_executable_task_package:8e930138fd7e4322a7b77357e42f6aa6981ab6c234bb2b820728cb8e03c707aa",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:d5044acceb8bfe8cc542013d141565f87952308a184414812d273c93b09dccb0",
+    "source_task_artifact_id": "finance_capability_sensitive_task:d281a8b55caa7f0e4886086c81dcd76470876f08ac9f09a4d1c78e5e1b874bec",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:def3f242922ea83679c40c8a11b367e906f050378079e500675807f9904f4f4f",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:3b0c37a22f62a1dbac9a9a8c74cad28369e0b3ea4af2541ac719e499221a3228"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:1020499d4590676d6f4395f0c521de4b2c53a8569163f15260d635162c2519e4",
+      "finance_v26_budget_qualified_path_audit:d91735163d6ef9055e7efd01231d6daec4b737733f11a1e802b1cc644678e6c7",
+      "finance_v26_budget_qualified_path_audit:ee0019dc8422760eac0b4cb385ba15587b81c47fff1f60c54bc98b8379e7e3c0"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:75db3763a004276f1abe3673151465db6af60338cb6588cbf66ab0a25fafe3d0",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:ae1187376de75c9cdef990d5d5445a40919633be16551b4d73b62889967538c1",
+    "mechanism_id": "state_dependent_stopping",
+    "operational_record_id": "finance_v26_operational_task_record:8caca4d9b76d82e29d28f3c904ba469c7b1e653f6efd40be420a08a1a39891ad",
+    "operational_task_package_id": "operational_executable_task_package:528b45f67c85da65509b5422973a69643bbefecaf4ec628849c46874cd26fa6c",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:57b1ff2301c55d3c840d6a8542fc9b9ab3ad4999156f8a94149513f398ae7297",
+    "source_task_artifact_id": "finance_capability_sensitive_task:1639048c998547a81d099f4bdb5e45197d18416ca51656d6cc0e298885e3bedc",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:e36992a2328610b7fa8667def92fdc1113da8613c14a189a3a8c726f9296b646",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:459039c6dfa9b39fd8a14faaea0c31dfa37feb89fb796ff3e00b38d498bbc1e4"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:2abd1b689b8807f29830c1d348dcaaf1edd0a658cfe1626285b9c2093f600857",
+      "finance_v26_budget_qualified_path_audit:19daa46249923329e28d672c860b8236e7d40cd9b3d401ebbdf7a8526f25238e",
+      "finance_v26_budget_qualified_path_audit:3c70825b02cf613c75606e1086fd0aa3b35038fc8989a7200394fd67d221dc1a"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:165b75f58666af4af3082082eee56c4d23f02bd2380ee4e89899757d6545558e",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:fd0a685fe37f9b87c9e11945542c5930f505dfd9491a928589d7293eb8241369",
+    "mechanism_id": "failure_recovery",
+    "operational_record_id": "finance_v26_operational_task_record:f6f300d3aa5ac79402dfc21f714c33f2ca930501989e3e6d95e9577829988d61",
+    "operational_task_package_id": "operational_executable_task_package:73bc3d04cc317345c088ba5b5450138b39d4495248ebb5dbc77ff22c8671ce1f",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:0bc4446c7b38b2f227e28f84ad864b7b7a5ea049730d7901ab12c5484e055743",
+    "source_task_artifact_id": "finance_capability_sensitive_task:3b8a53b452b0fe9f60a1e7c3a70da41373d2cc6a088e033801aace933eeabf0a",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:e595f820d7a1668fce03af068310b54600b1f2acaa052f73616e6bce84ed078c",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:bbcb148f6c4a33a73fad9e2942ffb5fcbf58000fc51f154073f8a61cb95b428f"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:25fd2dab93a98dd291520801fbd6dc294c37ec91199226e3475314a8b2730049",
+      "finance_v26_budget_qualified_path_audit:264bd4bdc3e687e9bf5a43e87cd9363aa972374ea01b37c1b4dc968784d7af2a",
+      "finance_v26_budget_qualified_path_audit:a8e83cef1b98042cae6dbfb61852b5a3b2794349c6c5cc0e692a6de08e36c2f3"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:f2547fa0c1c17d099bf0a5a4f417830aca00d47ed25c3553873b49d8d8e44233",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:88ab16711b4a62a4fcf5f1904b1f6d25f677054273b03736ef90ca47afc7a4dd",
+    "mechanism_id": "context_conditioned_action",
+    "operational_record_id": "finance_v26_operational_task_record:2a672e7b2886020fc9ad3bf98b9fda8117beb929a0909eef363f97292c517553",
+    "operational_task_package_id": "operational_executable_task_package:21a182980a7bcf1aec4ec82a3568e48aaec7852391a78128eb670d778fab56c0",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:0f8ec70d0906dfa4864f98ba34ae0909578239ba26de54b7e163b1a4463e1f32",
+    "source_task_artifact_id": "finance_capability_sensitive_task:34dfd30e64b51e27afc76758e46e370cc44886c91be6c50246fd0186049c40b2",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:effa869d8b74ab92260b63c89415ba5ffacb2cf43ea38c13daf6815df52e0255",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:cbfc59e75319f0aa374ffcbeb4726c4f6065c2bb4756175dd9f7f61bfba3b526"
+  },
+  {
+    "base_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:46d8127b80523a7ee091934243fbe48cbc9b33764bf5527dfbbf20efceaead86",
+      "finance_v26_budget_qualified_path_audit:ad4347a7f58ffb815af9bf18b86f870cd9951cf074746ff8a3d62c1bf89816c4",
+      "finance_v26_budget_qualified_path_audit:24ff7778b7e3e3c4ec9a4e451700f1e1746b4fd8ebd5c9446f039a2d71ed1e07"
+    ],
+    "base_path_strategy_ids": [
+      "structured_direct",
+      "search_then_structured",
+      "search_then_open"
+    ],
+    "calibration_only_override": true,
+    "capability_denominator_eligible": false,
+    "compact_prompt_contract_id": "finance_v26_compact_prompt_contract:009829bfb6d3ba60b8fc5e48495485ccf98a8f36c2d4237a2d6addc19df5ca49",
+    "empirical_job_count_at_preflight": 0,
+    "environment_manifest_id": "agent_tool_environment:1165067256a8ce3a50e5d443aa57ab88999f5ac8d896b2e8b6b460e4940c50f8",
+    "mechanism_id": "context_conditioned_action",
+    "operational_record_id": "finance_v26_operational_task_record:87abad1faf319cd7154404580972af58e897a599e307ddc069100b28479c4678",
+    "operational_task_package_id": "operational_executable_task_package:9a80684e87aae8f65e229cd3644dbf93894a57c8ae1a841073b8e9d8473f78d0",
+    "reachability_denominator_eligible": false,
+    "release_eligible": false,
+    "schema_version": "finance_v26_calibration_task_package.v1",
+    "semantic_source_id": "executable_task_semantic_source:95dfbcad1cd044cb0b6cb802234f82f90e70f2adea563a2025034840163b7413",
+    "source_task_artifact_id": "finance_capability_sensitive_task:48f39d7779a3f18ef37d3c26645ecdebe7fb953658c80878c48dd1d485c19216",
+    "state_mapping_eligible": false,
+    "task_package_id": "finance_v26_calibration_task_package:f9af26db0ecc5380bb315101733de5c58818169a76580f051c524b67ea23e9d0",
+    "underlying_operational_intended_use": "vtdo_multistate_candidate",
+    "verifier_replay_binding_id": "finance_v26_verifier_v2_task_replay_binding:fd584239b6d99359a1e7849ffb5fe336ff0625277c62d676ab50837fcfe488c8"
+  }
+]

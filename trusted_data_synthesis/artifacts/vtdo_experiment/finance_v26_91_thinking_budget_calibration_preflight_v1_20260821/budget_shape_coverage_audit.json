@@ -1,0 +1,147 @@
+{
+  "audit_id": "finance_v26_thinking_budget_shape_coverage:819bbb61c7bfa3bc809049ed85d69660c274beaacfd51288facb681a3f301fa8",
+  "calibration_job_count": 32,
+  "cell_count": 12,
+  "cells": [
+    {
+      "calibration_job_count": 2,
+      "calibration_maximum_path_upper_bound": 83295,
+      "calibration_minimum_path_upper_bound": 83295,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "context_conditioned_action",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_open",
+      "role_maximum_path_upper_bound": 83231,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:643825df536506d4860e9d83cb05c9b48b1784f885f7d00161f2a150fc96d0eb"
+    },
+    {
+      "calibration_job_count": 2,
+      "calibration_maximum_path_upper_bound": 82771,
+      "calibration_minimum_path_upper_bound": 82771,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "context_conditioned_action",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_structured",
+      "role_maximum_path_upper_bound": 82707,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:5bef724c963290396fe2ceb4498156d7bae2e03e0b33cd76fa43fd26925c663e"
+    },
+    {
+      "calibration_job_count": 2,
+      "calibration_maximum_path_upper_bound": 60055,
+      "calibration_minimum_path_upper_bound": 60055,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "context_conditioned_action",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "structured_direct",
+      "role_maximum_path_upper_bound": 59991,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:052f503ca55a0374b30e866498c05de7a06ff9eadee03165a2ec405670640fd8"
+    },
+    {
+      "calibration_job_count": 3,
+      "calibration_maximum_path_upper_bound": 94705,
+      "calibration_minimum_path_upper_bound": 94701,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "failure_recovery",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_open",
+      "role_maximum_path_upper_bound": 94637,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:bec3997e8adc7389ee45e27a195470fe40c59d036a0bab491cea36a3913b477c"
+    },
+    {
+      "calibration_job_count": 3,
+      "calibration_maximum_path_upper_bound": 94947,
+      "calibration_minimum_path_upper_bound": 94612,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "failure_recovery",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_structured",
+      "role_maximum_path_upper_bound": 94548,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:1661e625366cc1297f5b3b6298e2fd3bece232736b655a96c2da35d6cb72caef"
+    },
+    {
+      "calibration_job_count": 2,
+      "calibration_maximum_path_upper_bound": 71862,
+      "calibration_minimum_path_upper_bound": 71862,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "failure_recovery",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "structured_direct",
+      "role_maximum_path_upper_bound": 71798,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:6abce6a6db631fd64439feb03f427f41f662f80c12d7045d71524b6f7e9d2d1d"
+    },
+    {
+      "calibration_job_count": 4,
+      "calibration_maximum_path_upper_bound": 115676,
+      "calibration_minimum_path_upper_bound": 115676,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "semantic_reconciliation",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_open",
+      "role_maximum_path_upper_bound": 115612,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:c28de84746847090872591cb9b04fa5377ea052bae47800f47ed7dbb56694e46"
+    },
+    {
+      "calibration_job_count": 4,
+      "calibration_maximum_path_upper_bound": 114883,
+      "calibration_minimum_path_upper_bound": 114878,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "semantic_reconciliation",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_structured",
+      "role_maximum_path_upper_bound": 114814,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:7b608657d3857c9517488172caf5da58612c71e648f8f9f769817cde62d7c5a7"
+    },
+    {
+      "calibration_job_count": 2,
+      "calibration_maximum_path_upper_bound": 89880,
+      "calibration_minimum_path_upper_bound": 89880,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "semantic_reconciliation",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "structured_direct",
+      "role_maximum_path_upper_bound": 89816,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:7291f4401f4920eaca5124aec9dccdcc9d9553cbe9a3d2422d8a3378614e718a"
+    },
+    {
+      "calibration_job_count": 3,
+      "calibration_maximum_path_upper_bound": 81298,
+      "calibration_minimum_path_upper_bound": 81298,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "state_dependent_stopping",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_open",
+      "role_maximum_path_upper_bound": 81234,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:ab3b1d2e6ed15baba5e830ecc60cae49b8dbcf62850cb87036ecbdbe044f190d"
+    },
+    {
+      "calibration_job_count": 3,
+      "calibration_maximum_path_upper_bound": 80774,
+      "calibration_minimum_path_upper_bound": 80774,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "state_dependent_stopping",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "search_then_structured",
+      "role_maximum_path_upper_bound": 80710,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:bcd1f686142b08ec2a2d01cffc11b544496a2a611de8cad989618e2f526341b7"
+    },
+    {
+      "calibration_job_count": 2,
+      "calibration_maximum_path_upper_bound": 58760,
+      "calibration_minimum_path_upper_bound": 58760,
+      "every_job_dominates_every_role_prefix": true,
+      "mechanism_id": "state_dependent_stopping",
+      "minimum_prefix_margin": 64,
+      "path_strategy_id": "structured_direct",
+      "role_maximum_path_upper_bound": 58696,
+      "role_prefix_envelope_id": "finance_v26_role_prefix_budget_envelope:204cbff6c5dd2d3952f1ece8ace2f3c45d162f7370f0d6f2f30cc03fecd04aaf"
+    }
+  ],
+  "covered_mechanism_count": 4,
+  "covered_path_strategy_count": 3,
+  "every_cell_covered": true,
+  "every_job_prefix_dominates_role_envelope": true,
+  "maximum_calibration_path_upper_bound": 115676,
+  "minimum_calibration_headroom_tokens": 4324,
+  "schema_version": "finance_v26_thinking_budget_shape_coverage.v1",
+  "status": "passed"
+}

@@ -40,6 +40,81 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## v26.91 Thinking Budget Calibration Preflight Decision
+
+Finance v26.91 completed the credential-free preflight authorized by v26.90. Before freezing a
+new calibration identity it replayed all 25 v26.90 output files, 57 source bindings, and 22
+implementation bindings, for 104/104 exact-file passes. It then selected 31 fresh calibration
+source tasks using immutable structure and a frozen salt. Historical model outcomes and Compiler
+fixture outcomes were neither loaded nor used for selection.
+
+The selected Population contains five Context, ten Reconciliation, eight Recovery, and eight
+Stopping tasks. It has zero historical or v26.90 role overlap on all nine frozen channels. The
+audit covers 156 historical task records and 1,200 historical Job or Recovery-Job identities; the
+fresh sets contain 31 source tasks, 209 Evidence/Evidence Version/source-record identities, 31
+Semantic Sources, 62 operational plus calibration TaskPackages, and 32 Jobs.
+
+All three public paths were compiled for each task, producing 93 Compiler paths and 580 local
+Observations. Verifier v2 Replay, shared completed scoring, Operation Closure, authority,
+mechanism necessity, and operational admission all passed. These fixtures remain model-hidden and
+contribute zero empirical rows.
+
+The frozen 32-Job Manifest covers every Mechanism x Path cell with at least two Jobs. Context has
+only five fully disjoint source tasks after exclusion, so one Context source task binds two
+different-path Jobs; all 32 Job identities and seeds remain distinct. Reconciliation Search
+receives four Jobs per path, Recovery and Stopping Search receive three, and all other cells
+receive two.
+
+Each registered Compiler prefix is stress-qualified against the maximum v26.90 role prefix in its
+cell plus a frozen 64-token margin. Calibration-only trailing ASCII-space padding is content
+addressed and never enters role measurement; semantic equivalence is explicitly not assumed.
+All 32 registered stress paths pass the unchanged 60,000-byte Prompt and 120,000-token rollout
+ceilings. Bounds range from 58,760 to 115,676, minimum headroom is 4,324, and the largest Prompt is
+8,432 bytes.
+
+The prospective Completion Usability Contract keeps typed no-call, transport failure, and model
+completion usability separate. At 32 Jobs, the frozen one-sided 95% Clopper-Pearson upper bounds
+are 0.08936819898626475 for zero failures and 0.13984946027422601 for one; therefore both the
+typed-no-call and Completion-Unusable Gates require zero failures at the exact denominator.
+Reasoning-only truncation, partial truncation, empty content, missing Thinking telemetry, and
+unrepaired JSON or Decision Contract failures are tracked separately.
+
+The Thinking Continuity Contract uses Host-instrumented JSON decisions and forbids Provider-native
+tool calls. Every HTTP-success turn requires positive reasoning presence, length, and token
+telemetry. Ordered attestations bind only public request hashes, public final-content hashes,
+telemetry, and parent identities. Private reasoning content is neither persisted nor hashed, and
+Verifier or State Mapper dependence on it is forbidden.
+
+The main destructive preflight rejected 13/13 mutations; separate Thinking and Completion fixtures
+rejected 6/6 and 2/2 mutations. Formal and independent builds reproduced all 31 output files byte
+for byte with zero API calls and zero GPU jobs. Calibration execution has not occurred.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_thinking_budget_calibration_preflight_report:4af68e0667d05639885b985dd7d9091ed8fba03202e6b6c4ebf1d243586a8324`;
+- Contract:
+  `finance_v26_thinking_budget_calibration_contract:e147742ac18e0766b84162a25f87880340f0f2c57c79883e75db03fef935973d`;
+- Job Manifest:
+  `finance_v26_thinking_budget_calibration_manifest:3c6877014f6fdd2de41cc3e0c52983b4242942967ec674fecc3630cbccdc630b`;
+- Thinking Continuity Contract:
+  `thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8`;
+- Completion Usability Contract:
+  `finance_v26_completion_usability_contract:e7ebf169c798a6af386024652e5b720d1157cd0c825c3c634bed9629cbe5498b`.
+
+The only permitted transition is:
+
+```text
+thinking_budget_calibration_execution_only
+```
+
+This is a positive preflight, not empirical Budget Adequacy, Thinking usability, Capability, or
+Reachability evidence. A passing later calibration may authorize only a thinking-enabled role
+protocol freeze. Task-depth and capability-informativeness remain unresolved. Capability
+Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training, Exact Target,
+GP-C, and production Contribution remain forbidden. Production Contribution remains zero. See
+`docs/finance_v26_91_thinking_budget_calibration_preflight.md`.
+
 ## v26.90 Budget-Feasible Role Task Rematerialization Decision
 
 Finance v26.90 completed the only static transition authorized by v26.89. It replayed 57 source,
@@ -1290,9 +1365,17 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | new v26 files passed; 116 historical baseline files remain unformatted |
-| Mypy | 386 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1053 passed, 4 expected v26.78/v26.84 success-state tests skipped in 803.23 seconds; one existing destructive-test warning |
+| Mypy | 388 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1063 passed, 4 expected v26.78/v26.84 success-state tests skipped in 829.99 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.91 focused regression | 10 passed in 24.76 seconds; zero API/GPU |
+| v26.91 adjacent v26.89-v26.91 thinking/budget regression | 42 passed in 59.17 seconds |
+| v26.91 dual build | all 31 output files are byte-identical; zero API/GPU |
+| v26.91 predecessor replay | 104/104 files: 25 outputs, 57 source bindings, and 22 implementation bindings |
+| v26.91 Calibration Population | 31 tasks and 32 Jobs; zero overlap on nine historical and v26.90 role channels |
+| v26.91 static Compiler controls | 93/93 paths, 580 Observations, 31/31 admissions; zero empirical rows |
+| v26.91 budget-shape coverage | 12/12 cells and 32/32 paths; bounds 58,760 to 115,676; minimum headroom 4,324 |
+| v26.91 Thinking/Completion controls | 6/6 continuity, 2/2 completion, and 13/13 main destructive mutations rejected |
 | v26.90 focused regression | 9 passed in 16.69 seconds; zero API/GPU |
 | v26.90 adjacent thinking/budget regression | 32 passed in 55.21 seconds |
 | v26.90 dual build | all 25 output files are byte-identical; zero API/GPU |
@@ -1626,45 +1709,72 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_budget_calibration_preflight_only
+thinking_budget_calibration_execution_only
 ```
 
-v26.90 has now frozen 24 fresh role TaskPackages and proved all 48 required static public paths.
-They remain model-unexposed, but their Compiler Witnesses are static fixtures and may not enter an
-empirical denominator, Capability support, State Mapping, or release counts.
+v26.91 has frozen 31 fresh calibration TaskPackages and an exact 32-Job Manifest. The Jobs remain
+model-unexposed. All 93 Compiler paths, 580 local Observations, and static scoring rows remain
+fixtures and may not enter the calibration denominator, Capability support, State Mapping, or
+release counts.
 
-The next stage may only design and freeze a fresh, disjoint, thinking-enabled Budget Calibration
-Contract and Job Manifest and run credential-free preflight checks. It may not execute a model
-Job. The preflight must replay the v26.90 report, all 25 output files, all 57 source bindings, the
-exact thinking policy, and every registered path bound before any future client construction.
+The next stage may only bind and execute the exact v26.91 Calibration Manifest. Before credential
+lookup and client construction it must replay the authoritative v26.91 report, all 31 output
+files, all 104 predecessor bindings, and the exact execution implementation. Each frozen Job may
+be executed at most once; changing a TaskPackage, path condition, stress-padding schedule,
+Contract, Job seed, model profile, or thinking policy requires a new preflight identity.
 
-The prospective calibration must contain at least 32 independent Jobs drawn from identities
-disjoint from both v26.90 role Populations and all historical empirical Jobs. At the minimum
-denominator, zero typed no-calls gives a one-sided 95% Clopper-Pearson upper bound of approximately
-0.08937 and passes the frozen 0.10 Gate; one typed no-call gives approximately 0.13985 and fails.
-The threshold, denominator, and no-call semantics may not be relaxed after observing outcomes.
+At the exact denominator, both typed no-call and Completion-Unusable outcomes use separate
+one-sided 95% Clopper-Pearson Gates at 0.10. Zero failures gives an upper bound of
+0.08936819898626475 and passes; one gives 0.13984946027422601 and fails. Provider transport
+failures remain a separate execution-integrity outcome. Semantic validity cannot rescue either
+Gate.
 
 All future Provider calls must bind exact `thinking.type=enabled` before credential lookup and
 client construction. Reasoning tokens remain completion Usage under the unchanged 4,096-token
 completion bound. Historical non-thinking rows and future thinking rows are separate generation
 kernels and may not be pooled without a prospectively frozen comparison design.
 
-The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope, and both
-4,096-token reserves remain unchanged. The 129,333 next-call diagnostic, historical 366,569 to
-575,686 fixture bounds, and new 57,634 to 115,612 static bounds do not authorize a budget change.
-Calibration execution remains forbidden until a passing preflight authorizes it.
+The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope, 4,096-token
+completion bound, and both 4,096-token reserves remain unchanged. The 129,333 next-call
+diagnostic, historical 366,569 to 575,686 fixture bounds, v26.90 57,634 to 115,612 role bounds,
+and v26.91 58,760 to 115,676 stress bounds do not authorize a budget change.
 
 Do not rerun or reclassify any v26.78-v26.80 or v26.84-v26.86 Job. The six v26.81
 prospective-valid candidates, all v26.82 Compiler Witnesses, all v26.86 descriptive local
 successes, and all v26.90 Compiler fixtures remain ineligible for task selection, empirical role
-support, State Mapping, or release counts. Calibration rows must remain separate from Capability
-and Reachability denominators.
+support, State Mapping, or release counts. All v26.91 Compiler fixtures have the same exclusion.
+The later model-generated calibration rows must remain separate from Capability and Reachability
+denominators even if they are independently valid.
+
+A passing calibration may authorize only `thinking_role_protocol_freeze_only`. It must also
+report reasoning presence/length/tokens, completion-limit hits, reasoning-token fractions,
+Contract repair, repeated call and failed-call signatures, requested-path adherence, Program
+closure, mechanism success, validity, and floor/saturation diagnostics. Those behavior diagnostics
+are descriptive and do not resolve whether the one-leaf role tasks are capability-informative.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_91_thinking_budget_calibration_preflight.md`
+- `src/trusted_synthesis/runtime/agent/thinking_history.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_budget_calibration_preflight.py`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/report.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/predecessor_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/calibration_source_capacity_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/calibration_task_packages.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/role_prefix_budget_envelopes.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/calibration_stress_path_audits.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/thinking_continuity_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/completion_usability_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/calibration_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/calibration_job_manifest.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/calibration_freshness_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/budget_shape_coverage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_91_thinking_budget_calibration_preflight_v1_20260821/destructive_preflight_audit.json`
+
 
 - `docs/finance_v26_90_budget_feasible_role_task_rematerialization.md`
 - `src/trusted_synthesis/runtime/agent/compact_budget_prompt.py`

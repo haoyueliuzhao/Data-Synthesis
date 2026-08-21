@@ -1,0 +1,120 @@
+{
+  "audit_id": "finance_v26_thinking_continuity_fixture_audit:c5350c6b4eeed6a0109761c38afa28479d3d78810c6dc64499a15440e31ba7ac",
+  "continuity_contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+  "history_audit": {
+    "audit_id": "thinking_history_audit:3c322fe162baced0a4934b9e63dc04c9a3c0b3a9c5829900d42e5679eaa5321e",
+    "contiguous_order_passed": true,
+    "continuity_contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+    "parent_binding_passed": true,
+    "private_reasoning_content_absent": true,
+    "provider_native_tool_call_absent": true,
+    "schema_version": "thinking_history_audit.v1",
+    "state_mapper_reasoning_independence_passed": true,
+    "status": "passed",
+    "turn_count": 3,
+    "turns": [
+      {
+        "attestation_id": "thinking_turn_attestation:4dff274196630dde1a2b4c08717a946d552d426be0e15d1bac441d448e647208",
+        "call_index": 0,
+        "completion_tokens": 12,
+        "continuity_action": "omit_reasoning_for_host_instrumented_json_turn",
+        "continuity_contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+        "final_content_sha256": "7f6fb464ab3ea016ee96d932b42cc6facfb5c40425613afdb4e8b14ebb1b654b",
+        "finish_reason": "stop",
+        "json_contract_success": true,
+        "parent_attestation_id": null,
+        "private_reasoning_content_hashed": false,
+        "private_reasoning_content_persisted": false,
+        "provider_native_tool_call_observed": false,
+        "reasoning_content_length": 24,
+        "reasoning_content_present": true,
+        "reasoning_tokens": 8,
+        "request_hash": "c1185fd39a300b0e112647404e3fbf535c94802eb8546025f6c2a046b5710dee",
+        "schema_version": "thinking_turn_attestation.v1"
+      },
+      {
+        "attestation_id": "thinking_turn_attestation:f54020a9d7c433589dec4e1e646cd992f57021c3982ad7dcb1517cc3ba391038",
+        "call_index": 1,
+        "completion_tokens": 12,
+        "continuity_action": "omit_reasoning_for_host_instrumented_json_turn",
+        "continuity_contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+        "final_content_sha256": "169b662cf059820589c145a0b6f3c99a078e6d5117c31b4082634cb40b19d6a9",
+        "finish_reason": "stop",
+        "json_contract_success": true,
+        "parent_attestation_id": "thinking_turn_attestation:4dff274196630dde1a2b4c08717a946d552d426be0e15d1bac441d448e647208",
+        "private_reasoning_content_hashed": false,
+        "private_reasoning_content_persisted": false,
+        "provider_native_tool_call_observed": false,
+        "reasoning_content_length": 24,
+        "reasoning_content_present": true,
+        "reasoning_tokens": 8,
+        "request_hash": "19f1064b619d49d35392eac7261cd7266c720671fc594f4b226f32bf0bee74ba",
+        "schema_version": "thinking_turn_attestation.v1"
+      },
+      {
+        "attestation_id": "thinking_turn_attestation:7828e194f1ef632c7260b91357d1ce02745419be1783fcd950549f30bb6d230d",
+        "call_index": 2,
+        "completion_tokens": 12,
+        "continuity_action": "omit_reasoning_for_host_instrumented_json_turn",
+        "continuity_contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+        "final_content_sha256": "6dc610ef0e0211658b721e7e596f899f634af51015680de8215893db37673f3d",
+        "finish_reason": "stop",
+        "json_contract_success": true,
+        "parent_attestation_id": "thinking_turn_attestation:f54020a9d7c433589dec4e1e646cd992f57021c3982ad7dcb1517cc3ba391038",
+        "private_reasoning_content_hashed": false,
+        "private_reasoning_content_persisted": false,
+        "provider_native_tool_call_observed": false,
+        "reasoning_content_length": 24,
+        "reasoning_content_present": true,
+        "reasoning_tokens": 8,
+        "request_hash": "6fc63565247226593c49a36e9da488e6e1c33a9a1fcd8a76f55573483136b880",
+        "schema_version": "thinking_turn_attestation.v1"
+      }
+    ],
+    "verifier_reasoning_independence_passed": true
+  },
+  "mutation_results": [
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:8ea6ae716009c971cfcc035beff23f6d4b9ef0e4a12e0167de2037fe374bb5e1",
+      "mutation_kind": "thinking_history_out_of_order",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:33e0198640c9d2016bcb1460646546c42e079e30125bd0eeff7e130c5bd62f62",
+      "mutation_kind": "thinking_history_missing_parent",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:0ff72ad980f74b7af51f6614ba6d4fe767e683c13bbff6655bf15d7149efdce5",
+      "mutation_kind": "provider_native_tool_call",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:090e86cf4833107f245f5aacfbd92088ab8a3ab2a57ef39f4a59472356e1b950",
+      "mutation_kind": "thinking_response_without_reasoning",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:a056c58a0e0edff94d45012d9fb6775a480fc80d351709d66c204ef933dc8e48",
+      "mutation_kind": "thinking_response_without_reasoning_usage",
+      "rejected": true,
+      "rejection_type": "ValueError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:a740ba7ed935b13f8e8283d5860469d6d764ecf5ceaa20a2a9b44050b844210b",
+      "mutation_kind": "private_reasoning_content_persistence",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    }
+  ],
+  "private_reasoning_content_persisted": false,
+  "provider_calls": 0,
+  "rejected_mutation_count": 6,
+  "schema_version": "finance_v26_thinking_continuity_fixture_audit.v1",
+  "status": "passed",
+  "successful_turn_count": 3
+}

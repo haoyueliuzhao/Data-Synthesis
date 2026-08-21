@@ -1,0 +1,315 @@
+[
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:052f503ca55a0374b30e866498c05de7a06ff9eadee03165a2ec405670640fd8",
+    "maximum_role_path_upper_bound": 59991,
+    "maximum_role_prefix_bounds": [
+      17814,
+      27746,
+      38034,
+      48270,
+      56496,
+      59991
+    ],
+    "mechanism_id": "context_conditioned_action",
+    "path_strategy_id": "structured_direct",
+    "request_count": 6,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:15b8db1dee3510586cc2db2d4158e62a05f0086107bbf08f5cf61e92b8d0ca6a",
+      "finance_v26_budget_qualified_path_audit:6755bdf072c7664a8b3f427d2d7e3511af2cf223c371eaffbfb27853a7b6ac0e",
+      "finance_v26_budget_qualified_path_audit:82a01457e756d7ab1f2055fe8c04f8d063db05d39986e0a6ec1cf48b6a005072",
+      "finance_v26_budget_qualified_path_audit:98ba150e563405aa90f81e690de56de3c8aad1e5ac57fd9d2f49d61f884b8b66",
+      "finance_v26_budget_qualified_path_audit:9cc89b170fa13665c4d59f265f0fded246f1804d982fbc2b7e76aec10f9238a0",
+      "finance_v26_budget_qualified_path_audit:cd2cdc2351ee3bd305cda3aa597116030e50fce6890cc1e91d9c7869d40d906e"
+    ],
+    "source_role_path_count": 6
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:1661e625366cc1297f5b3b6298e2fd3bece232736b655a96c2da35d6cb72caef",
+    "maximum_role_path_upper_bound": 94548,
+    "maximum_role_prefix_bounds": [
+      17570,
+      27258,
+      38147,
+      48444,
+      59069,
+      70895,
+      81499,
+      90396,
+      94548
+    ],
+    "mechanism_id": "failure_recovery",
+    "path_strategy_id": "search_then_structured",
+    "request_count": 9,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:1d462eb46ce70f34a25ed2867b4ec8bc2e94990c8f8c74d74bba54f9f78f90e2",
+      "finance_v26_budget_qualified_path_audit:eae0080c4101e6cd72c4b03ab6a094c7ced177d46c91d6df8e89c1b349cb10e6",
+      "finance_v26_budget_qualified_path_audit:ef863b8ad88936192ecd523829a62c93cd6b0efd0d9026bac70a580765a4068a"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:204cbff6c5dd2d3952f1ece8ace2f3c45d162f7370f0d6f2f30cc03fecd04aaf",
+    "maximum_role_path_upper_bound": 58696,
+    "maximum_role_prefix_bounds": [
+      17504,
+      27126,
+      37076,
+      47005,
+      55227,
+      58696
+    ],
+    "mechanism_id": "state_dependent_stopping",
+    "path_strategy_id": "structured_direct",
+    "request_count": 6,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:56033042e67043a12331201ed54a5cc1689784527e51a30648371db771319b5c",
+      "finance_v26_budget_qualified_path_audit:571e8d45b53708db722ef7830bd4530dc645c23f84673ce160bb2d22d95d503b",
+      "finance_v26_budget_qualified_path_audit:6191d273c304bcdb65d881d392d0a4d5be2e2c7a645f54ee1d4c1410214a514f",
+      "finance_v26_budget_qualified_path_audit:94df26b92fe0386071479393786de2a1485b6a37f8483e20b1badc9a2d49d148",
+      "finance_v26_budget_qualified_path_audit:bbcbbd760e874b6c566cab167908687c14669c31621a373f3561a0235665fb9b",
+      "finance_v26_budget_qualified_path_audit:e83461893c4fa7c1ea348ef4c77e9a91c20f2fac37d50b61694d57cea3086597"
+    ],
+    "source_role_path_count": 6
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:5bef724c963290396fe2ceb4498156d7bae2e03e0b33cd76fa43fd26925c663e",
+    "maximum_role_path_upper_bound": 82707,
+    "maximum_role_prefix_bounds": [
+      17819,
+      27756,
+      38921,
+      49214,
+      60735,
+      70976,
+      79207,
+      82707
+    ],
+    "mechanism_id": "context_conditioned_action",
+    "path_strategy_id": "search_then_structured",
+    "request_count": 8,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:3d8f6b2967add920b80ada85040e3fbad0afc295b1e8b8ee7853066c69bf34ae",
+      "finance_v26_budget_qualified_path_audit:7045bfff77f732c9f3a0207a2578a12f56bca91074a506156338ae5d146661a4",
+      "finance_v26_budget_qualified_path_audit:ed1ee95e061e028a74de6d2c716d7458d7c7a2142c94337496233d061e7e451b"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:643825df536506d4860e9d83cb05c9b48b1784f885f7d00161f2a150fc96d0eb",
+    "maximum_role_path_upper_bound": 83231,
+    "maximum_role_prefix_bounds": [
+      17813,
+      27744,
+      38903,
+      49333,
+      60991,
+      71512,
+      79737,
+      83231
+    ],
+    "mechanism_id": "context_conditioned_action",
+    "path_strategy_id": "search_then_open",
+    "request_count": 8,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6b60db98d4358a6b87de1f3fc1a81cd58c679c7992a12f84dd7da0fddcb992a7",
+      "finance_v26_budget_qualified_path_audit:c5cda38f33d07da6bea11f59ffb3fc053a7978678df37dc736cc7af8703864f7",
+      "finance_v26_budget_qualified_path_audit:e3bf35a4cdb576f9a8813d44cd7fce59ac7d7918f5f7889847b3907ccd890edf"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:6abce6a6db631fd64439feb03f427f41f662f80c12d7045d71524b6f7e9d2d1d",
+    "maximum_role_path_upper_bound": 71798,
+    "maximum_role_prefix_bounds": [
+      17565,
+      27248,
+      37540,
+      48160,
+      58759,
+      67651,
+      71798
+    ],
+    "mechanism_id": "failure_recovery",
+    "path_strategy_id": "structured_direct",
+    "request_count": 7,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:3a6dcfd5c3095ff3dd09b832d6182dd862c32b5077fa66a1ffaaf111b914d166",
+      "finance_v26_budget_qualified_path_audit:3afd67e151a2161ad6c24d494dee843f95fcb059c67e08f05ea4306252b1ad1b",
+      "finance_v26_budget_qualified_path_audit:a1a33f76b2725eb6053d5058656ed9919beb56fbb26472ee2929014e7ce4ce28",
+      "finance_v26_budget_qualified_path_audit:b2d8647515f8370a41ea3c74c75a45b1efea45c66ab6e1f74e45e19c09934db9",
+      "finance_v26_budget_qualified_path_audit:cdf75dca9d18d83c1a2093ea8d821d68d83f0eb38350620b0f376530c8f5faba",
+      "finance_v26_budget_qualified_path_audit:d4311016b52893142cc3c21ccd8dc2d9364653a615783c7895b4ec2243841711"
+    ],
+    "source_role_path_count": 6
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:7291f4401f4920eaca5124aec9dccdcc9d9553cbe9a3d2422d8a3378614e718a",
+    "maximum_role_path_upper_bound": 89816,
+    "maximum_role_prefix_bounds": [
+      18887,
+      29994,
+      41437,
+      52980,
+      64663,
+      74789,
+      84717,
+      89816
+    ],
+    "mechanism_id": "semantic_reconciliation",
+    "path_strategy_id": "structured_direct",
+    "request_count": 8,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6a4a1b79527bb8da4671803ffa2b5cac51803935d368bc2796fcd4a7a2b794fb",
+      "finance_v26_budget_qualified_path_audit:8729d91a05e87e19728caed330170eb18e5b896a2f7bc57c92efaca742b787dd",
+      "finance_v26_budget_qualified_path_audit:b8da79a06c55a6c22a9ff344bdd3524fa055cfd1cdcbd4f16d505fb89182e756",
+      "finance_v26_budget_qualified_path_audit:bbf0e63222f878d0acac285596f0be7511bf51f066a0317c5cbc04c1701a68e7",
+      "finance_v26_budget_qualified_path_audit:cf28b19a6c9b4df4cf182e8b7dfce77a5d1909a03cc9a085225f4e94ae086986",
+      "finance_v26_budget_qualified_path_audit:e2da5c69c053b0f62a28c724b28ff6a830345ec0b7af44aa8bd1c2f1b247bdc8"
+    ],
+    "source_role_path_count": 6
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:7b608657d3857c9517488172caf5da58612c71e648f8f9f769817cde62d7c5a7",
+    "maximum_role_path_upper_bound": 114814,
+    "maximum_role_prefix_bounds": [
+      18892,
+      30004,
+      42315,
+      53763,
+      66410,
+      77958,
+      89646,
+      99777,
+      109710,
+      114814
+    ],
+    "mechanism_id": "semantic_reconciliation",
+    "path_strategy_id": "search_then_structured",
+    "request_count": 10,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:587f4c19c64547101e2db86f97ccafd4826a2de783ecceda071c2e445670c1b5",
+      "finance_v26_budget_qualified_path_audit:b7845ff1d0556757d8de9d170b83c548064a9d113c720de391b608bfe57f432e",
+      "finance_v26_budget_qualified_path_audit:f6e223266e8e41f52678c52d27fbb311ac7ecf689ab52ef4dea9bf4be3d7ac50"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:ab3b1d2e6ed15baba5e830ecc60cae49b8dbcf62850cb87036ecbdbe044f190d",
+    "maximum_role_path_upper_bound": 81234,
+    "maximum_role_prefix_bounds": [
+      17503,
+      27124,
+      37946,
+      48038,
+      59331,
+      69545,
+      77766,
+      81234
+    ],
+    "mechanism_id": "state_dependent_stopping",
+    "path_strategy_id": "search_then_open",
+    "request_count": 8,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:1559e49dcac1e9ab793b6876130b92295ba90e6c239fa193ce53cd65388ce8c6",
+      "finance_v26_budget_qualified_path_audit:6b9da0f7f68fad2ee87bfc93a55efe5f19cfc3f9a8bf4dec1debe73db5d88836",
+      "finance_v26_budget_qualified_path_audit:a98f04a6b090284e421aa114cfb590dc16e6515168ea584291e7813a8352f844"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:bcd1f686142b08ec2a2d01cffc11b544496a2a611de8cad989618e2f526341b7",
+    "maximum_role_path_upper_bound": 80710,
+    "maximum_role_prefix_bounds": [
+      17509,
+      27136,
+      37964,
+      47919,
+      59075,
+      69009,
+      77236,
+      80710
+    ],
+    "mechanism_id": "state_dependent_stopping",
+    "path_strategy_id": "search_then_structured",
+    "request_count": 8,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:6c8da1ae453b5d23cd427afa22ca6367a247b7ffe5f9b5d4631ec0676aef578d",
+      "finance_v26_budget_qualified_path_audit:a3af7c94da37cf6c048caa23f30c4d2cdf80124a00b4b506a97e8fa4f7a3de59",
+      "finance_v26_budget_qualified_path_audit:de2128052d334017e199008995155a2dd884e1dd1f65886b2b3129ea7a310d1c"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:bec3997e8adc7389ee45e27a195470fe40c59d036a0bab491cea36a3913b477c",
+    "maximum_role_path_upper_bound": 94637,
+    "maximum_role_prefix_bounds": [
+      17564,
+      27246,
+      38129,
+      48420,
+      59039,
+      70859,
+      81600,
+      90491,
+      94637
+    ],
+    "mechanism_id": "failure_recovery",
+    "path_strategy_id": "search_then_open",
+    "request_count": 9,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:5892fe1b26a0f8987b0709439a1d1f5654b4a08e05f8f15dd7a7f783f9910d5b",
+      "finance_v26_budget_qualified_path_audit:9d46c8546d0ad2141ad380257cb0a007a4a9d9587d84ccf8b6b226c928018d9e",
+      "finance_v26_budget_qualified_path_audit:b502177ed105921970864e213c28a4e6daabf5d66345b35f3088c3528f84361b"
+    ],
+    "source_role_path_count": 3
+  },
+  {
+    "derived_without_model_outcomes": true,
+    "envelope_id": "finance_v26_role_prefix_budget_envelope:c28de84746847090872591cb9b04fa5377ea052bae47800f47ed7dbb56694e46",
+    "maximum_role_path_upper_bound": 115612,
+    "maximum_role_prefix_bounds": [
+      18886,
+      29992,
+      42297,
+      53882,
+      66666,
+      78494,
+      90462,
+      100587,
+      110514,
+      115612
+    ],
+    "mechanism_id": "semantic_reconciliation",
+    "path_strategy_id": "search_then_open",
+    "request_count": 10,
+    "schema_version": "finance_v26_role_prefix_budget_envelope.v1",
+    "source_role_path_audit_ids": [
+      "finance_v26_budget_qualified_path_audit:5c4c83db85a4d2aababe4f76d1dc4368bf7699bf6eb73c789e62bb55d92de98a",
+      "finance_v26_budget_qualified_path_audit:aa826213c187071c34eba8ec64dcc6080e5a213e80aff98bcfb9f15cfeec4602",
+      "finance_v26_budget_qualified_path_audit:ab48800153310caeacbd718521be0296288838064843583ce7b4a143557b1d9c"
+    ],
+    "source_role_path_count": 3
+  }
+]

@@ -1,0 +1,95 @@
+{
+  "audit_id": "finance_v26_thinking_budget_calibration_freshness:11f92290d52b1bdb31fa7e6c9652e67fa5509d81b13b889b57d0f4d8dcab00ea",
+  "calibration_job_count": 32,
+  "calibration_task_count": 31,
+  "channels": [
+    {
+      "channel": "source_task_artifact_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 106,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_source_task_artifact_id:8e69828473ff30a63e66edcc97be75bb893e24d63b6ccdf3f23c129fa2457f1f",
+      "selected_count": 31,
+      "selected_set_hash": "finance_v26_calibration_selected_source_task_artifact_id:4a7687c1966a69d5a7be50715603041bec0541bb9bc2e63ce098fd137e5878b5"
+    },
+    {
+      "channel": "source_task_semantic_signature",
+      "internal_duplicate_count": 0,
+      "prior_count": 105,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_source_task_semantic_signature:fcf6c705326503a1e6579110c7fcfbe852594bd2314720547d58e02bfb08cdb9",
+      "selected_count": 31,
+      "selected_set_hash": "finance_v26_calibration_selected_source_task_semantic_signature:f80739e09e287023f45811e03da3f4b84fdf07e997be473722b984418a661b81"
+    },
+    {
+      "channel": "source_task_hash",
+      "internal_duplicate_count": 0,
+      "prior_count": 105,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_source_task_hash:b984d55d953035fc406af28dc453cc3173012b028108e5472ac1a94418a6addd",
+      "selected_count": 31,
+      "selected_set_hash": "finance_v26_calibration_selected_source_task_hash:1aee6fc3aca1cf37dba30463de5c97a5ff48ac755d7b39565fcbba78de062dec"
+    },
+    {
+      "channel": "evidence_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 645,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_evidence_id:ed3dd84d65013639557320c1d1ec632050c119a65ffdcef3158f85f393163b79",
+      "selected_count": 209,
+      "selected_set_hash": "finance_v26_calibration_selected_evidence_id:115671912dd36434ff3f0e0bcae650b50fc17969fe84c62a27f916954c272319"
+    },
+    {
+      "channel": "evidence_version_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 645,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_evidence_version_id:60f111b6ccae52b38ca25bfcaeb7104defa82c7d5f218d389cc5424105085346",
+      "selected_count": 209,
+      "selected_set_hash": "finance_v26_calibration_selected_evidence_version_id:8125354d6b32ee444c488a799bbe6055aa79f6907d7697e3037aeb44d49b22c6"
+    },
+    {
+      "channel": "source_record_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 645,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_source_record_id:cf941620fdd95b116e9f15ff3562baf963bd29fae7b04f0e530eb56685b77322",
+      "selected_count": 209,
+      "selected_set_hash": "finance_v26_calibration_selected_source_record_id:419ed443ffc6df1a0e61fa31f5173981bc95b17a3947b1fb822c88a2dbe7b5df"
+    },
+    {
+      "channel": "semantic_source_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 100,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_semantic_source_id:84af1f723db5572a895fc7587c34f898f39bf8220f059523f2ef4ae1558bf019",
+      "selected_count": 31,
+      "selected_set_hash": "finance_v26_calibration_selected_semantic_source_id:e1e89ce4499716733a11a0b7839a26fabcae98eb1bd585c5d6f6dc72e5400ab7"
+    },
+    {
+      "channel": "task_package_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 172,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_task_package_id:6df692ea530b5c5a94c02fa7a86d48b55bcb6221589a8618625f6a80a2228d62",
+      "selected_count": 62,
+      "selected_set_hash": "finance_v26_calibration_selected_task_package_id:b71b78fcbc933617a7915288060856845df5042d2e1da2a7402c94885df10382"
+    },
+    {
+      "channel": "job_id",
+      "internal_duplicate_count": 0,
+      "prior_count": 1200,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_calibration_prior_job_id:f3571febf2f62fccf0af9cd8953bda70d5b4d6a9962553b638ffd55503dc6e9a",
+      "selected_count": 32,
+      "selected_set_hash": "finance_v26_calibration_selected_job_id:73cde455a31af2c850b9f28506422273ce4e6c7e41416865beaf1fffae086478"
+    }
+  ],
+  "historical_job_identity_count": 1200,
+  "historical_model_outcomes_used": false,
+  "historical_task_record_count": 156,
+  "role_tasks_used_for_calibration": false,
+  "schema_version": "finance_v26_thinking_budget_calibration_freshness.v1",
+  "status": "passed",
+  "v26_90_role_task_count": 24
+}

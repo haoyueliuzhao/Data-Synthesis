@@ -1,0 +1,1831 @@
+[
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:234f9ce7b56b31197632a3f428772e84bab5f0a7a18bdf3ae29429f979eb4b0d",
+    "answer_projection_contract_id": "typed_answer_projection_contract:78201cbc51060d32dfdc498c7a323e31eb02b3c5de87192a9bafcd282b6b73f4",
+    "citation_contract_id": "citation_completeness_contract:fd4284bbcd2c088dfc77c744da0de0fe98d5fb23aa0624dce696a5aa98bd00cf",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:0166c2468d4812d3c28a0013495bc98d599b3f8f6dc55af3b4dd6562cffaf01a",
+    "environment_manifest_hash": "finance_v26_executable_environment:9d272ce2e14a2b55f601798300bd9e284f1894fe21582d3fa69db734b332e298",
+    "environment_manifest_id": "agent_tool_environment:0537fe25e762dceb299da91458c2e4b312d6ebfd1b156fce8f9eb0b7be6b874a",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:bb2d501f03c6e0bfca088522bdd08e213f8801475706ad7b184e1ce0d2d024df",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:4ee44dc0cb00ff206ee88504491e68d9902d4f5e051abaa656bcf2c3875efecb",
+    "public_operation_contract_id": "public_operation_execution_contract:5e9b71d3af39336cf80c20fadef731879ab6e9253201fb0f18e517ccedf68d9d",
+    "public_runtime_contract_id": "public_runtime_contract:4c94d4c06f3373c2802b451a129984900b52c14cfc902f81dd51420e255bda05",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:895ef3352181371b0e9318580a11d721d85b3031c10677c2afdf684c2beb47b8",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:8f41c5a8a677af716873817b5a418ced15e9561deebfaf0ebfecda6d6f7958b3",
+    "source_program_dag_hash": "program:6d6da8697493958def8401269f19b4e03b0c263ffd1e553717f568c88b14fb05",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:ff0830511479426e5a83bc36e3ababb0e07d78f13699b24193c6636e6a28fd0d",
+    "terminal_verification_target_id": "public_terminal_verification_target:1aba52e000cb5bcf529a7255ef1015a6e1c3e994e1c2ec95da0d3310b5be985f",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:636afd8fe7ea79d1d6f14f8228a1122b543eca8adfe962c9faf0cd58d3c6e49b",
+    "answer_projection_contract_id": "typed_answer_projection_contract:981b564773c8451d6fef1fd789b2625365d2cdbd0b8f13da6daeb8875023b95b",
+    "citation_contract_id": "citation_completeness_contract:1fbe71c7f2f857e2fe28ad6a2cec65ebf86609ff6be7f027ee58c3041bb74e7e",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:0b5eef6603a51a34ae3207fa95bd40d563032f68c1a0909d52be0c0602292ce3",
+    "environment_manifest_hash": "finance_v26_executable_environment:63f0315c58e73a225e0890b844577cfc52cfd988320892376617dcf095051774",
+    "environment_manifest_id": "agent_tool_environment:70247c0fe001005c8919e849842bb4611e25817a67ac92d5d13bdd4f31a5eff0",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:80fe4da5902204607cf9f1f2327310d9a2fcbeb86373e23f91dca64f4e0da824",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:05a79f31a52c19f9b308c277d1bdf31f708beb1c1becb897add61075f3ae2f6d",
+    "public_operation_contract_id": "public_operation_execution_contract:13c053ae429e6c089a1fdc3ffa5a5fed064aae5516c6b70f8c115f0efa56109c",
+    "public_runtime_contract_id": "public_runtime_contract:1611447bfc6e15e9f48c5cd581898202e2218d3af059867be18c6a7a98e48d75",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:c83d9e28c94456834ee208154347360d9e668566aaf46aa4025dff6b9801e6b4",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:8e0a4cafb1ac46011ec5d5524a46620997a5ae8ab0dcdc838ee7bbda39608436",
+    "source_program_dag_hash": "program:e620fd2afec495774d1922cb09a257c03b7b9f8f5194019927177384246dc050",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:bdeb4036771f6ae301a2b6f5f178fd6ecf914f9262bcc6d0f51a0b9e1b384202",
+    "terminal_verification_target_id": "public_terminal_verification_target:abea994a08a2b830e2342977a83da3829d22755651cd068c7d6ae043f39a6dba",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:f335ef06ca4364fa6dbcd14c6de35ac8ce71425f5e870af3f4c78b4fb8df76f7",
+    "answer_projection_contract_id": "typed_answer_projection_contract:d17d84767bca27ff06e21f65b6a24b289df14f58ddbd5f3c5369ae05b01649e9",
+    "citation_contract_id": "citation_completeness_contract:9a31b1f7e277fe22a01ccbb856807d5aea1f5456c7839d9e720b14b327512d1f",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:0e3d7bf94b563369a170ad7fac9a59aa10d9968b6e9a5cbc321d089bd8033c4f",
+    "environment_manifest_hash": "finance_v26_executable_environment:0caf2f5b348fe23266d1fee1f08ddeefccfe8fb3dab171f3d87561a59459ec97",
+    "environment_manifest_id": "agent_tool_environment:e406d96c77f05824bbc47dad13a7a8370b799bbcc305dbdbb7741d5cb2defecb",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:36ba5994dda504992c91041365bd9b2503e3558e651fc588daaf8102bd582783",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:28b537c7b98ba975af7eef409bcede4053248ac1fc8adc8fd102cca3cdcc677b",
+    "public_operation_contract_id": "public_operation_execution_contract:6919643e516cfe4f377f6b658b98e1af5d602c8aaa1a72cdea9598ded5707d59",
+    "public_runtime_contract_id": "public_runtime_contract:353f2c7e369a2d33342939df503857f4c2e0858e21fa73e6304a7f308ad6eb91",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:adeaa18321824cbf75214e0b85b3f55c549cb4a03a9fbf15eef193d597371531",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:9ceb2d6c395caeba66baedc2240eb0357e038db01cea832610b29080e5c32658",
+    "source_program_dag_hash": "program:bfd69fc09fb477f6148b3b3a3ad9e81e84e258cc67d0025912649b4f49e80190",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:a73b3ab485295696b2e9926aba1ffb649e7ca54e784e1c084510956f672c752c",
+    "terminal_verification_target_id": "public_terminal_verification_target:97981d08bf2fa80e096c7abbc870fa2ce7ecfaa5f64f311e4474eeb0f5265ff6",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:6d7c01e36c4ee79e70a86529b3193f098692ada22a89b09a1b9c9591ff8600aa",
+    "answer_projection_contract_id": "typed_answer_projection_contract:b28c242342f1ab2de3c4830596bd67c64d8254b4e978081161448630748a6130",
+    "citation_contract_id": "citation_completeness_contract:a7d047da3c666c6334321958b113730084533ed81404dd31d9faf7cd7fdca4e7",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:162b38b93770b35b715a1f635930ec14fe0f67b53a3f5ca923e1eef52e24737a",
+    "environment_manifest_hash": "finance_v26_executable_environment:c5243adbef954319aa30a8dfe973257ab95e9e2cd9af25d624ce8aec1d81fac9",
+    "environment_manifest_id": "agent_tool_environment:12121eaaed74ee2890949aa2b9c210449680bba5f9b0b8a3f90fa947c355aa72",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:bba55788d686b0261766928c32f3fa3a416a3e88e90a43bc212800e2bf14d8f5",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:77efe5cebb3ad3df5782b0fb4b911558962ed72c2891d5fa28128fbea4d42a87",
+    "public_operation_contract_id": "public_operation_execution_contract:db97f0e55fc9e4914b73347368cd96878177c0f516c7d6290939176377a0351e",
+    "public_runtime_contract_id": "public_runtime_contract:54785b493510d4fa8971c459cc6837ccdba62a84d1548352373e5b19faa536d5",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:53084ad72d4b58b5cb6d1376018da699d6304476be218d24813ba0e064bcacc6",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:8b17597e393cc223dcffb74dfb35d98e79a0da12bcacbc93045d274ed1a9be33",
+    "source_program_dag_hash": "program:01a49d4743081e09f2b1a906b474f6949db2efde37e3344607337d506c2eecf6",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:edd7ddfd1e23b8b2da47f2e30e0b9b1873d5d98aefc5e9ff857eabdecec61c88",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:2373d528e139770feb4ea4f0f9e263949c5f8e78e0a5a9bf803a17b81d6f2c79",
+    "terminal_verification_target_id": "public_terminal_verification_target:36f3834244bb896727c40a56fdd10e7083a8ff146b2b6c3f950c152768fd06e7",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:7834dbdac7bf1de8fe2bc5b55a0a0572980fb109b31f68b61c2d3180e532676e",
+    "answer_projection_contract_id": "typed_answer_projection_contract:c75218cc93d7eec040f50ca55d0a6eba7fe6b92a729107027893cf04df5183a6",
+    "citation_contract_id": "citation_completeness_contract:bf2898a6561c68451648a2677610e5f8ed531cdc3730ab1fc97055f38fdbd0c4",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:30a29c85ecbbc7eebb7ba79fda2a12775c8d562b11d7e5323d9a27f1aea71f71",
+    "environment_manifest_hash": "finance_v26_executable_environment:5b7f99656eaed17391290e528903ad59d22ba6bba2f1066991fd330a07aa0e9b",
+    "environment_manifest_id": "agent_tool_environment:24b2e4f32f1c30ee1da42dda38f012ee731c11876f0a1f3023f7635656eb7843",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:42dcaf5a8ddd26cb3f8b04f0f9a088b7d0762896b73891579037d02bfaa538ec",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:64f9b91b0b31450f84d234401ade7f63c1732a83fd65913332284f7aabe57126",
+    "public_operation_contract_id": "public_operation_execution_contract:b8a535cc8603dfcc6a8a1b9806e1efa2120d7b60595a5b4c5aeace9812520035",
+    "public_runtime_contract_id": "public_runtime_contract:c5afa4f0456124bb6edbaae4dcd6e0fce4631405de0c70c52f72488c4fde754a",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:d04dc216da37fb0de14b9fa78ea2ddc0e7214d4a37421f9abf1d27a2fe5214a9",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:d758ffb3d937b9d695817cc1cd15da8e28f0ed01f38b4d24d5ebca8d2f4e8c51",
+    "source_program_dag_hash": "program:0faea26d72cf288ad33a4f212df28ff0aa964f6837e36fde031de69098f64539",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:e29b7bb6bd59f9fa398fd8a49183e10d9016871c421baf211dd94825c68fcfcb",
+    "terminal_verification_target_id": "public_terminal_verification_target:73f95385eb2c2b1e484e0a20aa18acf9c159df837290e5397d0f528d14e34268",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:74338ab6ef455c21a4b7f265d7d645831705ae25067789ca2037396a3599bb7e",
+    "answer_projection_contract_id": "typed_answer_projection_contract:52ea1b0d122a8cb54044f1607b825e757553a01a3cfb4ed1819252b701e1fc3c",
+    "citation_contract_id": "citation_completeness_contract:41e9df4f52a4e036da8f3ce416bfa606e95684ef116fa27db7cf788818fc13bc",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:331cfb433f36e31f33fa8165896f9ab2307d5d02839f52cfc1aa3c5a2c3388cf",
+    "environment_manifest_hash": "finance_v26_executable_environment:5b594a233ce8482487024ce809b0bd0d7eb7936356eb87e48b6bbd43f168c782",
+    "environment_manifest_id": "agent_tool_environment:2819a0db9d0e6c6f137e0f393925b88bd085d5ef16ec34d4e6c5d436232bb321",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:ee865a766c0ba4575863eb0626ff2c604f7e0f8efe5b8e4515c2d9adc16ae4ad",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:de555ad82dd5c7df334ff38c73b5fad19a994cef362ed5267ff364163de3b0d2",
+    "public_operation_contract_id": "public_operation_execution_contract:c70af8a920fb12fdc9d6c420ede2d5fa1f701892748e958618a50451a58e53cc",
+    "public_runtime_contract_id": "public_runtime_contract:d5f5620249e41ffa02ad74df93178bfecea385d0a7e7e996dd34b4c9fce361ca",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:aeaac21f9c0c90fe29443711c3ee12674847e30140ab1dcc0f18993c52568001",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:174099425ab68322541c4b7bc6c07cd0e103178e00ce50ebf39bf78b8c820b23",
+    "source_program_dag_hash": "program:3b780aa303e6b7ca1dee640343a2d4a9b2e14df37bc467e09ad2ebcb1299a1af",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:747bcfe4c4e594ddee7f93bb80ef37d5a6bcdc613d8058e1c4b996d8bb72b884",
+    "terminal_verification_target_id": "public_terminal_verification_target:3bc409be9b68739a89c28c138284ca47dc70d39dbc8c72927d317dee2cdedb61",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:08ba3ff4cf2da6153d76e6b4d60ad408206b57e2e305079b1a055c578999562c",
+    "answer_projection_contract_id": "typed_answer_projection_contract:ecc1e09637896f7ab9cd059551a29526b68df1dbf6c8abf5be4af1ff26c2017e",
+    "citation_contract_id": "citation_completeness_contract:190eac63051b378287cfce12193c8b733288ff7e60b8fe22c9dc1a052a4893c6",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:3b0c37a22f62a1dbac9a9a8c74cad28369e0b3ea4af2541ac719e499221a3228",
+    "environment_manifest_hash": "finance_v26_executable_environment:9e67eed4aa33b05a3d7b3a6165445f7e31ad6e4611245f796d73e7fb3b38ac5e",
+    "environment_manifest_id": "agent_tool_environment:963116faf2a0abde13452944809e58592e323ba4652760b22a4f514d95c287f0",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:0d18d2ee20b7c141df166137fb06aac93791a9091f10c876dbd7d5a913f55218",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:45cb0a6efd81ec93570e0b31471b94a7f7697e0c0f67814dfd375cce9ace05da",
+    "public_operation_contract_id": "public_operation_execution_contract:dd686d86b3d0a120f88d73a1afb0d1004e85c1bf9129a292216b0a8c8f5b1558",
+    "public_runtime_contract_id": "public_runtime_contract:4b0dbd165c81038eebf63aac63d6670337294f9660142ab9325b7c7b8a8180e3",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:6637322047d8759814ac9b11869c99f52e932f41bf11fbd27efdbe8383da38d1",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:d5044acceb8bfe8cc542013d141565f87952308a184414812d273c93b09dccb0",
+    "source_program_dag_hash": "program:59e8e1a112e40c0223db0bd48b3eb0f73a5c6e0a15262d6761cc3e2911d40c4a",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:81c884d015a784c7c55e07ecc8c3b1d147d4d60ae4fc3122e8a8379cfddcf6d7",
+    "terminal_verification_target_id": "public_terminal_verification_target:38b5acaae62470099a6329ef2a9af1cbf8dcea1d705a2bc171961f66ed668d49",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:639c381c2ae4cd3c6542615e2ad664e5f4b95ad40eaeb198c7ffd88508ead9fd",
+    "answer_projection_contract_id": "typed_answer_projection_contract:f0ea9ef986ba9c19ce744c2fe44519317719ac8396742c1320a9f929786b3faf",
+    "citation_contract_id": "citation_completeness_contract:6ab810b0f0df45656eb7dcc28cb817b73adaf96514792e94a590bec688a2b8fd",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:422bbb65a69577afb15ddad0361c324796a46b5edba30acc3d76b04ce2221559",
+    "environment_manifest_hash": "finance_v26_executable_environment:c0f85a30877602094ebc6da36fe7f05441ebf99973f58858c82439db8c56e063",
+    "environment_manifest_id": "agent_tool_environment:342eb503cfd6dbaa6f5165afa07b4e500a15358bd0a057a24d6b427f306db887",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:a038a209390a2341dd33581d2d2a3f87385f11af4b6196ab80d2f2a795c836c0",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:eaf556871486c2d754366cf875fcee76c5e14b5d79c4ef6bea3ab1bc745763ea",
+    "public_operation_contract_id": "public_operation_execution_contract:9af8047b21363a120c72651e702aaf656f9a49954412f93f7c459ab2a6de4022",
+    "public_runtime_contract_id": "public_runtime_contract:e886b980e74917e06962968b90db6f8845514df33bd1fc7e18f9194e8cc19488",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:be6ee6be8e3be8bcf4a4a9810610ea8a04a9d6c9f2a44ec54cd5eaa3130f0be5",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:012e9b4b8b9f250f79bef1439027b81de758f7715b1a5ccc71d9c5a6aedad0ac",
+    "source_program_dag_hash": "program:8b3947cbaaf8cb58cb74173aa70fc52066b6daeb3366d135f1a081492040318e",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:064616cfe01f42ec147a9482def175d9ea5140cd9590e0491358ceee3ffaf041",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:6b906344766a82af2f06502368079ab99b71d858d3be4f247bdda785025b9886",
+    "terminal_verification_target_id": "public_terminal_verification_target:b6d0e7aab807d24f0d75ece7eb3b86dee4142fd660d1296bfd2d0ba7effd2edc",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:413922246646f26762946991fdca28bb086cc77554e94b2fb6e37378fb739c3c",
+    "answer_projection_contract_id": "typed_answer_projection_contract:48ec6f6fef4263538bb092f3b341a582023695b48a84ddfce78db914dc746914",
+    "citation_contract_id": "citation_completeness_contract:ca79b0b050dd51f7a43c5abeb895b21557f05b36363ac7194bd07fd501290ce4",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:459039c6dfa9b39fd8a14faaea0c31dfa37feb89fb796ff3e00b38d498bbc1e4",
+    "environment_manifest_hash": "finance_v26_executable_environment:d9d9c4e5f1e375230f7c456b12c037ec3740fd8c67ee89996d89d4721623de73",
+    "environment_manifest_id": "agent_tool_environment:ae1187376de75c9cdef990d5d5445a40919633be16551b4d73b62889967538c1",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:f8d5855b9cc48a768dd52a7181c19313523bc549e79e42fa1869a8b1b4e09075",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:d0c2113d6202aa190eacc667739bbe6aee2d4f5caa40e3bd4df1796673b98db1",
+    "public_operation_contract_id": "public_operation_execution_contract:b4b03707c4ddad70a6bafa182d6e47b1b2d1bca0d590f0d2d6399bf243801f1b",
+    "public_runtime_contract_id": "public_runtime_contract:d335a7c4c598b9dbcd79dc2cbb50d4c9c5680419661cc2889ae941bcf8032ee2",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:eac18920736dc3eea98b2b1ca50b45d1b872966d7ae181d41a460666e388fdda",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:57b1ff2301c55d3c840d6a8542fc9b9ab3ad4999156f8a94149513f398ae7297",
+    "source_program_dag_hash": "program:17a0f5a235b7c6f554339a7990e6859ffe6cea8b1fccdd08a1ebbb5d3cf4e9e5",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:d6f0b8d2f4d5d02938bcb8cbcc4439ee8fb0b8c73e3c0cbeb3e6891cb2987bbc",
+    "terminal_verification_target_id": "public_terminal_verification_target:6539999d755d51eead56309d41d043f331211458c4b566d04a6edb075cd391f8",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:9c705f66256e43f7c77cfd09ee90d98e16827eb77f034391c40bbaaf95ad53ce",
+    "answer_projection_contract_id": "typed_answer_projection_contract:ef0f03f7e6edf7493a7853b03a33027064dff96b6891711de182503f6dfbad6f",
+    "citation_contract_id": "citation_completeness_contract:9178cce55ae8c43febb544617c1ac22a93e2fe8690d8e0be24beec7f4504ec7a",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:48414a75a3f6d95a04f87e87b2b9e065dde9e468debbe28039d28714ca4bf204",
+    "environment_manifest_hash": "finance_v26_executable_environment:1253bea71cace710b7fb1b69c0434749d8c10d1e8dfe3b1c12385a10962d3b3c",
+    "environment_manifest_id": "agent_tool_environment:046ed63de77a38cc8e5ac336d8d555f86cc7a033cd63eea8103b5f3a5bbe3a54",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:3d3581706b04942a470c4db87a3ac95e4d7c492faf342d65c7ec042ac6a08044",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:a54e2e41aba5fd3ff9b58dfa1652a9cf08cdb98d9191eeb6796108fe2e1b7e76",
+    "public_operation_contract_id": "public_operation_execution_contract:0532f99e8cee9b7afefbe42457d2be35681c9339b9223ca644cbd3b50b3143f8",
+    "public_runtime_contract_id": "public_runtime_contract:5af41d874388e186c9b170593b4253c154eeaff26076c49471635cddeaf17502",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:f088efc0fde307bd67f849708d73335aaab42a32e9e3e4cf6b39b9079f48d283",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:1d6712cbbe0a67bdf960e340d35b16f2885be3ecd02707377d5e02934f36e973",
+    "source_program_dag_hash": "program:d52557b943eac78be50c5d205f78ea7c5e6f935e73a26fa18bd4c55b183f4029",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:9edb680e889c5af971d5dd76de022f0a4c9bbed93e20c67185b6ad180a3ba1d5",
+    "terminal_verification_target_id": "public_terminal_verification_target:0a4be2f48e5d10e1fcca9e13249267e92e865746850f99f182aa95ec77ada96e",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:7d2ead905c309d717aae7082b35d469bdf2e3f56502f625993cc27df07b050ea",
+    "answer_projection_contract_id": "typed_answer_projection_contract:7c8622a77f53cc7762c98c25ab12cd3d5103a860f587bf3c97c94b9becf5b738",
+    "citation_contract_id": "citation_completeness_contract:2a9533237fb012f5379e76e49c91ac4ab59a56827543477687783efb28429500",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:484c1e84b2af76862176c80f320b27c6317feb57353f1958e59983064f9adf65",
+    "environment_manifest_hash": "finance_v26_executable_environment:44300c7c1a0399cccd36c6fc93923fbae5be8b05f29c896d6e56a7f18709dd13",
+    "environment_manifest_id": "agent_tool_environment:ba2a3ef8a02c139bb755045e86021d1ff1b2a0ef4f5d6e4a3580aea0a22fa2a5",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:13aaab59855c2afcc392d7c35f69fa14c21b41d66292a994f90b25e3832e5b0e",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:b06f23df22b41efaec28e79c5f2f206e880a5ac3094d9fa56a65691935aacb03",
+    "public_operation_contract_id": "public_operation_execution_contract:0151f97e26f4ff502d6206aed6609edeb44cdaba7c0306e935b0d440a7b5b5f7",
+    "public_runtime_contract_id": "public_runtime_contract:93e28c40601cb11c339bb62c639833ccbefeb957a9f477b6fe68849554f435ce",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:398aeee344c6898bd6755f1212e2ce4e3c7d1c1da177b9c4c8dd2b1b23fd5c5b",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:c215e319ca620e67ffec3ef72cdb920785c25dea3799d227c126bb9e5e9f5b08",
+    "source_program_dag_hash": "program:07a4e486932d02ac8dfb5c10befe05932cbce66ed362ac7787e1a3c0c428271e",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:072eae97e88fb5aac6cc565884e715a96195d1c314606cee165a8b9eae98f6d8",
+    "terminal_verification_target_id": "public_terminal_verification_target:7f5caf40b4efe748e548d6d554692cadff98f3a3bc7f2469056b9bc8ce65c376",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:db38ccdd87e523bdd8a229b02d12882636543ea9db917165bba54c8faee4c71d",
+    "answer_projection_contract_id": "typed_answer_projection_contract:4b11fdac6e2f3ca46c3986f269fd16eb8f75cc52e31d30d32db5f690fd09c345",
+    "citation_contract_id": "citation_completeness_contract:efd57003630f93df0d70f74d4bf87c3dddb22e6ab242efb30bac1b3f5bdf74c1",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:487517fe3540b271c70855b4c0bc8d081997aa7f5a1edc2a191c67c138c0a16d",
+    "environment_manifest_hash": "finance_v26_executable_environment:0da012406d4386c4831290e5c29cfb986af27ae080d5e171a1b7e4fd75f52e1d",
+    "environment_manifest_id": "agent_tool_environment:bd2f8ccc31c38338efb1c90a3d1cb1fbdf91a123a67bfd2bbcd08133c6838a81",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:dea8d44add9617e0928d06b90a95bfd88e14b4b2ef5735de7e452660fd084932",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:5271c4c4e0d163727518a7e0f413cd369a1de0ecb38d9c013fddc4848d2fe080",
+    "public_operation_contract_id": "public_operation_execution_contract:410a1422ede915db9e13a10f2f92ecb0a5005f48f2bc8c76ccc4c590690d0e5b",
+    "public_runtime_contract_id": "public_runtime_contract:e73ad8a65da15079486398ad6a365ae2bd655b3449c8ae5485294d222362b554",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:ea3ce3ad4314656cedee78d3a080a1d6a78439fe79c6d7472fed3c337a5ab0da",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:198588a77d76f55b794bb8b8ad4a556b485cda70abfd310e6294dfafee9c285a",
+    "source_program_dag_hash": "program:fc38f5293074d86f0cca57cdc610a00dd1123921e245d98561194e1daac97ddd",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:05955726edbbece4f826466fd9b28e7c6ca8fcbc4e3970233706bb44ea838c69",
+    "terminal_verification_target_id": "public_terminal_verification_target:dcf4efea3e655909b382a62215cbbb88a65d12186ebb684bb3f8392c4ff63099",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:694f05daa14dc82cc5600b706bae11483aaf7baf488e432b3d980173adc75c4a",
+    "answer_projection_contract_id": "typed_answer_projection_contract:775e98b4a6644470b02bbf608c46f4b40cee28a5ebe7fa2ceb926d6802f6e9bb",
+    "citation_contract_id": "citation_completeness_contract:61145f5428fe262e6e4604593051e3f2fe207925665d65e40044788520f4198d",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:509b42c09f232c76cc11878eec3a497c994cccf3f3a789b1f379ef77f988506e",
+    "environment_manifest_hash": "finance_v26_executable_environment:2ac5fe5114682d5a900420b922ab86adfd9b29fe4c81e7a63a59c2654157c796",
+    "environment_manifest_id": "agent_tool_environment:ae9f6d94db0fd93e97781f4df23df3ac7012756836e9167b7ad620ef8cdf613a",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:597831db30f4d8f8768229e5c947d1624b8bd71f6507818b51b85d4d7d06acf0",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:6bc4951da6b61f3782baf16846b707b27f151f827dc3d72a2fe6e6ad978bd2db",
+    "public_operation_contract_id": "public_operation_execution_contract:f1899c77b668d1aa0d0d1802542ef1ffaa39f2ffa621df54415e947a9c3ede6d",
+    "public_runtime_contract_id": "public_runtime_contract:5fdb848e678c6abc8f7966f6bd8f672ac63fa54e2d1a29fb43b7be00ba8807ac",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:3f37e331f86ec7df78a59bac807371939fda285287bf02a2a48fa92e1e1d5463",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:0404e21d39c42c093464fe0e7bd5956d7eeec27518d661bacf033db649c706f3",
+    "source_program_dag_hash": "program:29e07d2030fa87d52a9ac52ad34c1f68b46efe838ddb647b83949781b7e3d50b",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:edd7ddfd1e23b8b2da47f2e30e0b9b1873d5d98aefc5e9ff857eabdecec61c88",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:a572d90a3787b87821560f5c9bc8e785b29d4c86d205da410ec3e3b31b69b5bd",
+    "terminal_verification_target_id": "public_terminal_verification_target:7b43caa0f18aedc9282cfa9f5d14e40c6836ddfad5b67b20aaddf51059123ddd",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:ca712708115514ea4446a5aa42274a57268bf8ef9d9454fe154cb027deb2b428",
+    "answer_projection_contract_id": "typed_answer_projection_contract:a49de9eac2d8c2c12a3ed3f0a03c7c57f89902bd7b2fbcd8d4b6c3da70068abe",
+    "citation_contract_id": "citation_completeness_contract:94387d53b3bbf41462702c3389984e78a12699329a8722cccc42cf1243486d3e",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:77f8ed0fe6a3ddb53146b212b93a78082409f091b20152d2180d01d117a28086",
+    "environment_manifest_hash": "finance_v26_executable_environment:e6ff1d78972a01d5d2e5d96a9d5d41eb49be98afa683e4f29badb26317690d3f",
+    "environment_manifest_id": "agent_tool_environment:1165230d14a4526787c2cc30d3706886312800c1c54881f2612f842b81ff2fbc",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:e53e4054083689ee8bb070d997102d99a30399aafe8c8b0b8cdafb17ff628ec2",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:e6d6474cff3472d4be1075d30640b2479ab6902b1a87de141f10e1370d8cb0bc",
+    "public_operation_contract_id": "public_operation_execution_contract:e9fa9f1e6749603b579216117f99fe5d7e442dd0a364dc529c1c731b9e295bbe",
+    "public_runtime_contract_id": "public_runtime_contract:5878170664d96f848cadf6a37cbbfdaf5a9afbc5e0b3fdd6906dece591c91c84",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:c2f3408efd04d42b32a2463da28e4e4f324ab7308df676fa825996d6feb8c734",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:bf61ab8fdc3f0a9c556e6b6b234ca11147d6404d3be690127e8fa93cb9dd0282",
+    "source_program_dag_hash": "program:f7fb789a5c575735ff530eeee4684df352583eace4a801d8452f311f84cbd1cf",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:dc3636cadf4f6f1e8a66c381b04e2968391d9e9c469e1c59b5c6953246dd9a9e",
+    "terminal_verification_target_id": "public_terminal_verification_target:9a2bb167d16fa04a4e6c4427d486d69c08c78d36852cb99c1fcf7ea5fef6d7b9",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:d79e88004db449fe0b2eeedc49b62167eb26e8799171cc2823f56e04437b967e",
+    "answer_projection_contract_id": "typed_answer_projection_contract:960d22501be7d9a37b053a37d7d25b7428fcbc792ff26f441ed5a0187da92403",
+    "citation_contract_id": "citation_completeness_contract:484127768e79f65d7d47b92cfe3a9ebb008cef93c802f55b022a08115c776e3c",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:859a07d1324bd86ec28b4c113a5a9ad0ada7486f63929cec13bcb5a018ab5f72",
+    "environment_manifest_hash": "finance_v26_executable_environment:c7dc986553d8971179391fa403e00dd79d4932dfab722d59ffe0fa5cf7016c3b",
+    "environment_manifest_id": "agent_tool_environment:a61959c240b2696f729393c0878f5ab33b23e914b254bea019e1f1a4264d01aa",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:1f4f552cbe951be236c17ed59be6af747a3355a6ce5817ffd99c7f85ebbc87ae",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:4d0b81346afe5f1927208d345f532c778f98904e815ab6dc8284da8dbc31bc28",
+    "public_operation_contract_id": "public_operation_execution_contract:132a95132eb39f037fbff71e6b165af7fea6ad74f22a213d478622607aac46ac",
+    "public_runtime_contract_id": "public_runtime_contract:3e366162823c5df20c7a1f73fbd3ebcf4a51fb5440baa0851f174352700f6010",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:8f679158a172744157ca92a7a4a50ae417ae59fad4c5e6bd785c5f11311e4744",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:f0323b5e1397ae4460bcefc5fde6eebf333ecc1b512850b5a395e3864ef07c1b",
+    "source_program_dag_hash": "program:6d966d2c235bbb280504703789509149dab7d755aef8af9cb9c3bcca15a5af04",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:dc23bd09fe9fe0f3d7c48d550d74044f7f2e4408660255c0e4544b45e5ba6fea",
+    "terminal_verification_target_id": "public_terminal_verification_target:f6a20e71021a95314f4f4fbf075817db414b3d25c4679b1f91f6728c50bd54d4",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:a071d0ee9f54cfb95aff41c589c3a23e66f8bb3c7ae7a9f595f41a74d563dd7c",
+    "answer_projection_contract_id": "typed_answer_projection_contract:0a73626a6fa63153f24ccc208e0db92e43993253fe9d484991da21c53cb66d26",
+    "citation_contract_id": "citation_completeness_contract:25c9c427836e65e9b85916503b7f1f4414cba8448acf5c4e941c0fc5f1e0e833",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:895d6b84ab4ae1de00d90fdd6ec466cb47c6b91da18a3c143566b2e99d211bc1",
+    "environment_manifest_hash": "finance_v26_executable_environment:d9cfb3f6e521e9f57b02ad96f5964292f4fd076510cef21296dfbbceffc89391",
+    "environment_manifest_id": "agent_tool_environment:467006158e2183e7c36764ec4c3252547ae514d010d7af62e8107728099ef2f1",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:0bf2ef73a54c9d322e405f263a296e97c56539a30e50c729a7bd3d9789b20d6f",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:2beaa726b572071b7abeaa6895cedd41164639f54c0d69d8a56dbbf159a5ed17",
+    "public_operation_contract_id": "public_operation_execution_contract:cee22ce138789f411d423d17fe158e2959eed2d16d2b2214f254f1c584a1d5be",
+    "public_runtime_contract_id": "public_runtime_contract:99fc7d01648bbc93ea854ee6cd3e62679be302ff69464c2d941551b03cb6f1e3",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:895f52322fa6cd531a5191ccf277ee3a05bd9fa7d4cdecf2978b18c1d33faeae",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:c5bcfe4d70b2b37bebb29820b92cdf41f02d0ea1b3df67a4a9ca473c4af00a6c",
+    "source_program_dag_hash": "program:dcb49656f661e4c8afbbed741044270d9ebc23dbf2f2fe395ef1da3833c28bbd",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:9495a597ef3578ab5fe1757138d9f8187eab419d34ffdc23c41879e0c03fdf22",
+    "terminal_verification_target_id": "public_terminal_verification_target:afbeaa105c92baad3fa815df4f88086ac552d13f8b88888e1509124f758fa9b8",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:0a0f44ad7d5f80b241533f018023cba2683950f7e4666b63177d67227ca5c0a4",
+    "answer_projection_contract_id": "typed_answer_projection_contract:10131c415762064a74ac7707cfe77d0341bf9fac93ef813613d7fe5f4462df76",
+    "citation_contract_id": "citation_completeness_contract:ae071a73ad6293b5274b32cb6fa0cc3fd41a4bde1e076b71397b122720a61978",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:8eea75f6d2892c7c533512557640685b8e06f149034da78c2240f20055249c23",
+    "environment_manifest_hash": "finance_v26_executable_environment:2d9e18899db6af55362d89aa5a270cbd4e18808762afed9f9bf17018d842c345",
+    "environment_manifest_id": "agent_tool_environment:4f9df6a05e7481f96ac05b9fa4699a9c1a1d731f21405ff4f063065bc36c6e8a",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:728772949c203cd8a032219d5dc87ff2a72b508d5f5bb2daf226cebe5c51e2c5",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:45397ecc5249d781ff875fe54911d241446d5f0d13547fecd353b870b3b530b7",
+    "public_operation_contract_id": "public_operation_execution_contract:9a628db8d98c8f02b2fc175f1a8d6091b1975bfd0d229b560566ee6906f6842e",
+    "public_runtime_contract_id": "public_runtime_contract:af2f2eedf8bc0b674dbbedc2faf4160520691418eeebae046f735c691ec7ea41",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:8aa53e6c7f4f17960f7d7499a27571d1e688f101c663528793f6feea6fbebb27",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:5f0b961d9da4944ef680463eb0a3eb8ee57e4e1d5f3a2cb42701caa73a3e38e6",
+    "source_program_dag_hash": "program:d634814ed12dec861149b293a60d4842a95155402487225e7d4c209e610c701a",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:d69dcb02949048a804d0572efcf2bd364d1f4301442bb2269327e53fda6dd83a",
+    "terminal_verification_target_id": "public_terminal_verification_target:f26834fb21c2252cd26ff6a26e5867a9a73c8d28ca362ad4e1a885ea535c2781",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:b262cc3170ef375ca57de2e771fac54c7fd6404ff32e73f80901d19d8d5ead01",
+    "answer_projection_contract_id": "typed_answer_projection_contract:60cfcb4162a16b161e8d3ba0bb525ef1765929ef3b1693eaf54c86829076413f",
+    "citation_contract_id": "citation_completeness_contract:0eda5dc43c2328df2de091d7fadc55414cd2d54b8d5db7a0a3ebbacc39e91a9f",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:9137f52d35c39fdd8d1d49d8e1a58af0f18cfbe61acd023b0b4807a95775d773",
+    "environment_manifest_hash": "finance_v26_executable_environment:3a5e7314185775ee526475f85f7d461726c48e2b439a744f6a691fa461aecf43",
+    "environment_manifest_id": "agent_tool_environment:243579f10c141f4a79290c8d4ebec2a3d8799470c3af302e2792c69d353bc16d",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:1dc3777efce1c686772a43e11f01fc0499d2200a4b7bf9c6d95a6a188b8f96c2",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:96cfabc3cf117378f9f4356abc7d030ca6e1335c4f31a8f5b030545974b2a09b",
+    "public_operation_contract_id": "public_operation_execution_contract:17f32e0ae9dcc3bfeb639c48dfcb7e193f9800cd0f42de4f1f805c4944caee0e",
+    "public_runtime_contract_id": "public_runtime_contract:49c675f5ea20bcd9253566ebf4fbd7e030f371e83b8b91c4969197d5b7243207",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:a0211ac72bfb0184b979d22cba4611439ed24ed621e3263665385d969378a786",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:312a0f1df74ef0c00561c5e0a2eed0b0affd74fb79d2deac3785302f030b3ebd",
+    "source_program_dag_hash": "program:432f1621b19d84b8806c146ae7b64ec0302f7315cb9a01d08ed6115ca19c892e",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:064616cfe01f42ec147a9482def175d9ea5140cd9590e0491358ceee3ffaf041",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:c913004a84930a8280b8f682f4f075b0dc7a6824ac73b25945ac4d80a489ab4b",
+    "terminal_verification_target_id": "public_terminal_verification_target:6aa29711a3453f3f6f1909431e571b95e98c35fe2a1ac9186459c4f78ab6393a",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:6b1426097cd5421422f7c6c0b02c7e3cd699906d7607e933f0e916bf86d02f47",
+    "answer_projection_contract_id": "typed_answer_projection_contract:b9d79606c9d036c14ef0c492b95fc65d9122277dc91ee6f6bdb5793abbcc0e98",
+    "citation_contract_id": "citation_completeness_contract:18fedcb63b82b632dfef2e7d0f160f74863cb5e5b794378130ed5ecb0b97c964",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:9451b90145e6b9b45cdd94adfca201e794c979f652e9e7ab6a5d82cd83f18f36",
+    "environment_manifest_hash": "finance_v26_executable_environment:ccaa353399bf0878a91ef506ef283fd2eceb238b3996d74851829122ca36e6ce",
+    "environment_manifest_id": "agent_tool_environment:282a4112926ebcc180f149b0b6af688278d1da0d30299ab8c794264fa2ffd24c",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:649b45674f43eaff5ef68a872466a53dddd48f3e824cf03a2b7a51b67d4f579c",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:56af74dde26252080ac02d9d0c503d348af387d450d9e6e7227036769914b845",
+    "public_operation_contract_id": "public_operation_execution_contract:8274160992112ac57b2e9278a97ec230e7476787eb3e20427c737f7c2405a036",
+    "public_runtime_contract_id": "public_runtime_contract:741d094886b6b24e4b21379778fef7b95b109dddca6f27827cc077021beeb08f",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:e7a22a93decdf3992d3156f84c208d13ef2ac2cd45d23775d29bde42e3541748",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:652dbf29655eeb7fef8b235df14bd6c609dbf9c3a5d8ef08683e9497ac41893a",
+    "source_program_dag_hash": "program:b40971ac8a385dc1bd6ad06c0ad7cc8a0220578786c329f1f143337b2a9a0247",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:e831b6d54ff2bfa6dcfb4ed62484b1eabaeb5b059d262f0f97fd4d56ed788116",
+    "terminal_verification_target_id": "public_terminal_verification_target:d2e9a697ad6bfd3535cb6cea2982e513a21ff9be5f19b0fc50e945b77c243fed",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:8803586c85d44ab68e08c53bd325b24be81c44024a989b6e867d80fc14d17f0d",
+    "answer_projection_contract_id": "typed_answer_projection_contract:40729bc49d09270ef3a95039dd6eedd42f99900ac2a9f0ee7cc3ff0d3c7183f6",
+    "citation_contract_id": "citation_completeness_contract:44c50466eb4f12b85cfcd21b6332347ffba75c4c47cd5b6a5c00ba07f3f713a6",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:9affa00ede3062eeb55a6376e1cedbd5bf11f724a7c26537daea3038aa7d67de",
+    "environment_manifest_hash": "finance_v26_executable_environment:ad091d938c8ccaa1c94cfa86917bcc6e5828caccf73f268ae1f39e193026d5d6",
+    "environment_manifest_id": "agent_tool_environment:ad5d36a7ebd02b6a077ae55b7d9f4dc40bd014b96e39cf72a15e402f1a61c0f8",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:ab7d5f55bc326846380348ffb870fb4ea2505253df7487ad4448dbe08bb7a0ff",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:2c9c52e27cd57d0696be4cb2a2f43e017dafdd7bf3540106e4dbe2c1100fa683",
+    "public_operation_contract_id": "public_operation_execution_contract:f5d76bc761d5296545a7ce6e7e0b2d9c23b0ddac4f33dfb5a6fc2764fb57b2b5",
+    "public_runtime_contract_id": "public_runtime_contract:f827340af9c5730dd573ece5609904950670c7350d5363ddf536c93e5994096b",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:2dd91c117392ada570669429d2b3ea05dc1dd8b499cd9fa8da34abfb5bcd1ab7",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:de4866233af62c4a87d457009dc140f0fb3f41ab93b24ed393f69434c47869c2",
+    "source_program_dag_hash": "program:89c2461f49494e07cbca3d61ac59525b8194646d8af75776d59fff7f7781a2ba",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:edd7ddfd1e23b8b2da47f2e30e0b9b1873d5d98aefc5e9ff857eabdecec61c88",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:30ec91e54f379134458a96fc3f9967cace6ddef844ff9e2722b6f93fd8da7787",
+    "terminal_verification_target_id": "public_terminal_verification_target:46a3a3f704594d500075755af88765fdeef880176e21796f18cb2f27df0ec81f",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:ef6238dce895e255d44c8aceec7fc3742be7b0d6bceb80e146d32ac4f2f1a55d",
+    "answer_projection_contract_id": "typed_answer_projection_contract:9c6e3d66fdb4b742fd7920c405b80f9a485572cdd188785ab99a6a169b4b2d57",
+    "citation_contract_id": "citation_completeness_contract:5e639ec4f37fb22bac6e7a7958a52b00f35eae1b5d9918199631fa9df77de0c4",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:a954d4b0cdd3fba5de261c17b88b5b18d3d2709e0392cdb3bc2d874c9cfa682e",
+    "environment_manifest_hash": "finance_v26_executable_environment:e17fd5640f5f4f44eb105bf9ae3f957d2a81d477f2f8491baa4bbbd5b9d80303",
+    "environment_manifest_id": "agent_tool_environment:4e522060100bc029ffa37d0092e2a13e81dfbde22dfe58440d91a5e53347ad54",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:aa01d5d94a6f2f91e94c75f8aaac326de5e7b5196e5ee0fbb3f93b671f555097",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:c5667714929b5e995c975fc1a63bc475f5ebda06f33bf56d6817e571816a7543",
+    "public_operation_contract_id": "public_operation_execution_contract:7f816c66de44be0e97fb5ed8cdfe0024a97ceb9e47dcbb55342c90f76570e6bb",
+    "public_runtime_contract_id": "public_runtime_contract:b3a1bef65cd02341c90170f20f4903791a05c7ff0d40b7590a367e831552890b",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:b0fba37d8354d9e61ee8be77b8b66a9110cf14bc4a38724a3618983379c44797",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:9a14aedb5132bce01baa1dc30b4775f1fc89912d40153df73d4df8cd17ae9a5d",
+    "source_program_dag_hash": "program:eb24f7cf9f79f7f832530ab6a05cdc40a5b0114c5211cfb245464ba9a297d92b",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:628e828dbf8137c7b566cee975c313d9eb5f2fed67ae16ee0d3bb820addd2bbf",
+    "terminal_verification_target_id": "public_terminal_verification_target:e5283efeb7b7531fd55fe60459e10a4a136e3cd6196395823625d3c59d73fc31",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:0a231209a14aa5821268cc19701befb22d734afbac0340ccdfa8796db6592175",
+    "answer_projection_contract_id": "typed_answer_projection_contract:47e27ddbd46ce75ba1c1ffc0b77bf5b038567474615c7b72509b2504ffde51f5",
+    "citation_contract_id": "citation_completeness_contract:a9525e4830933ad0182be470edc16a0c87b11e43e35386d2e0f27643fa513792",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:aba5c3470552fec587d5db5e8232cc4bb62e0587210f66982f09683de3d8b4e2",
+    "environment_manifest_hash": "finance_v26_executable_environment:c22806d3572c2809b92ab32055f98ac37af4e95edffa911bd9998cd2242fc8a8",
+    "environment_manifest_id": "agent_tool_environment:a1d712b9148a97d4f5ea9e57f4b5449767163299078d7285e291f6d34a9aa05e",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:80bd7e489e13f77d64190a2911caa972cc8945c605d7d2eb1f71fa91f88bfc0e",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:70d9f72a35f44becb5002a79151d4082693cbe83736ccb491f5debf8d59cfde7",
+    "public_operation_contract_id": "public_operation_execution_contract:a3b566c08af71baca09e0278239f74c08b10498b09914475a61cb963a799ddea",
+    "public_runtime_contract_id": "public_runtime_contract:bcd248c5c0c13b0eb9346dee96f53910d6803255c50f2fc78686c8ceda568492",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:8dddeca180eb85a5fe7f9df6b27c5f06e982eef6d0b5192907238b125364712f",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:423fb5216c0de3c47951678cc3d403b4161210b0d658b73895b2afd32a74ad92",
+    "source_program_dag_hash": "program:a10d346ca9b69eb8129f3fa62e3dbbd2ffefc1b6980eeb8d9d3725e8b739e925",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:9b6b6c65f0e5aa592c93fd578f1edbfc777a658f1fa454e6c4eee0567abf35f3",
+    "terminal_verification_target_id": "public_terminal_verification_target:af095441c4ba1d259835aeb70fdf25cc41c28145f2f8c0d5b199ab57ed27b94a",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:1fcf0647c1bc9781f026058984fec53aac6d7c47726b5291a57cb796f1f80155",
+    "answer_projection_contract_id": "typed_answer_projection_contract:66c38e7c96a9fc8cb4d6e5ce925d3b986322aee9c0913225afb225d6f9f87cde",
+    "citation_contract_id": "citation_completeness_contract:b5c7b7ce7ccb4ae10d335aee9c4285c5f6ef96bd7df12a3cf6a187bf253ac796",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:bbcb148f6c4a33a73fad9e2942ffb5fcbf58000fc51f154073f8a61cb95b428f",
+    "environment_manifest_hash": "finance_v26_executable_environment:fe56ebd78b4265176acffc55c91df5ef140aa268daabfdb9593c63e844c60fe2",
+    "environment_manifest_id": "agent_tool_environment:fd0a685fe37f9b87c9e11945542c5930f505dfd9491a928589d7293eb8241369",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:3174a06a011daf14ec826fe57bc87ccd12fbe9e24cb9eb628c72cde616db4979",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:4d9fcee2d7a2da89ca5e1366cb800cd5e16cbd2461e835758fb40f539a6ffcf1",
+    "public_operation_contract_id": "public_operation_execution_contract:0a4961880d8a5f3c23d9be9c8b8d8d567565c98e858c666bc75c06579b7f3f9e",
+    "public_runtime_contract_id": "public_runtime_contract:c75259cb9b5a6baaf2a3302ca3aafe5b21c5db8227189ae22cb67f93b34aa7b1",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:b41de8d6ddd48e6d0863128470fcf7d0ff0650b3269c56076cba7ead84f11e9c",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:0bc4446c7b38b2f227e28f84ad864b7b7a5ea049730d7901ab12c5484e055743",
+    "source_program_dag_hash": "program:15f13a92ae64500d4fd5fa0ff898e334556db30d24a8884eedd5b8d48930a606",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:edd7ddfd1e23b8b2da47f2e30e0b9b1873d5d98aefc5e9ff857eabdecec61c88",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:8f9b38025ed9ff4dc1c6d36e0f3220a99d1de08437455e5f6646f0dbe64aa90e",
+    "terminal_verification_target_id": "public_terminal_verification_target:a8e1b742a56d904c5b037fe6093aa62468512c03d2c035be25f9398223f6afff",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:95926ea1988ec0c74b44d06f8696a695a77db6a2cb650de488a4f511abd9bbfc",
+    "answer_projection_contract_id": "typed_answer_projection_contract:8cb731025f6bf30becb2523f66bd25b07426e381f8681018f5578d0777d5aa9c",
+    "citation_contract_id": "citation_completeness_contract:6d28eb699d57fc6f2440c174e49b698ac55f7dba53dfe15003d29460a22c196f",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:bdda1ec2e64b1abda921376fae963ef20c0feb7c5d72a7dec34c942e7e9496bf",
+    "environment_manifest_hash": "finance_v26_executable_environment:8d8873d650d24a5461a9ade765fb8382b7635a7f9a50387d9b92a8358e764ca0",
+    "environment_manifest_id": "agent_tool_environment:ce5ff771378d43f6527b0d50c25445badcd82a8682eca4c93ec74801c4b5fa9d",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:ecba2c72b0f956c08a6f2270ebeb376f68943e3966a2b8bbcbdfea8fa605a290",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:9a3757749d89018e69e889718db3afc18f1932d306033f1c59e0401297e4cf4d",
+    "public_operation_contract_id": "public_operation_execution_contract:eb3071ddb7ecdddda2e37b091b1246b883489e2ec7f9057bc8e28f2684f8cad2",
+    "public_runtime_contract_id": "public_runtime_contract:4222e523a866725b9685e601778a9ba494555f0b2adabd82dad5b08634c8809d",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:14419852df21026adcadd4cef201302c4d9d8e7de3157365bc50d78b1a2d8746",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:7311a3cf630840007790773fd7061a3e913ad509421975d657f10d38571d41ce",
+    "source_program_dag_hash": "program:b5c159864f9f65438097615c2795eb5185d368801f2a5efd3c3c8bdc43c14889",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:c078af429447ef0606d804940af04afd3ccdcb49e05af2ed32bb9ce30b16f0a8",
+    "terminal_verification_target_id": "public_terminal_verification_target:d09b6b3ccdd7e804583e1e89e3a2db76534cbc668197e8de2d87019f378f8a13",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:a682cf6de736ee078e6e797916bd2175425ff4b51953139d595efba3574d2b52",
+    "answer_projection_contract_id": "typed_answer_projection_contract:3137801237bb70baa801a3efa8ac5bc54ea85c61a3eb7003fef511c2724d07da",
+    "citation_contract_id": "citation_completeness_contract:2e77bcf0d0b7b84be34694f2695d2e89df8d8b64ae82e3154586f1734e7afa36",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:c9756d06ed1772f1521826c8c7836a426cdd5e1bdb121fe84ef33313e91c059e",
+    "environment_manifest_hash": "finance_v26_executable_environment:72edbe5732d4d04927cdf0b9a0823f3efedbda28f1c6e564af8efe0337241689",
+    "environment_manifest_id": "agent_tool_environment:c967b9649828d39b8a76b4e6a8e4e1186cfe7fd930b059a421beb2f8725c9689",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:6b8ede071fc16242e982f1d3e1e0157c998a1a7ed5a2d702a1792b2049359f16",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:960b9220614935155cac4b1c181dab57148c1a3b966878375237850dbb0cf94b",
+    "public_operation_contract_id": "public_operation_execution_contract:8418a16ad57ca7ad5d40fb7dcd37c5ab2405076db2d56cbcf771d0e57e85873b",
+    "public_runtime_contract_id": "public_runtime_contract:8f27925d7e8a64edb114c53cb1bc38d3e9db9b2c9551aea7227a47f822b6be48",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:837852926dc5ed160387e0e9c4aa8505a066c1bdda15ea907218802988b47dd1",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:bb612b88fd7cb6e6e9c07fe5d2e458be774f60676634d416374eb1727083c236",
+    "source_program_dag_hash": "program:492545a88bd64b6a60380a4eb39d9dc05f2225d2fbfdb8796824c08bdd1476e9",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:064616cfe01f42ec147a9482def175d9ea5140cd9590e0491358ceee3ffaf041",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:81f261ae50cf1ed2d75c58ff5b637ee754775fc8f0fe2b57b51f22be5ea355bb",
+    "terminal_verification_target_id": "public_terminal_verification_target:ff0b412927797770861f8e834fb1c23ef53ab3678d63a3194516c04a1abd9d24",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:25dc57c09886972cfa2ce3bdbc0e1140fa2ee6d0e6888fa3b72f4a319fa4d025",
+    "answer_projection_contract_id": "typed_answer_projection_contract:2dc4b6ad0dcbcaa9670bce438d2f2bd30e9f6943409d6d80fe94d2dac8c56490",
+    "citation_contract_id": "citation_completeness_contract:428eba29e2b56ce2054592f236e611378c434e080d8f3316949a1417797c2562",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:cbfc59e75319f0aa374ffcbeb4726c4f6065c2bb4756175dd9f7f61bfba3b526",
+    "environment_manifest_hash": "finance_v26_executable_environment:2f27095027b74cc765e7e82763ae8dac09b30ea8681b9a5cd71d5d90c9693e27",
+    "environment_manifest_id": "agent_tool_environment:88ab16711b4a62a4fcf5f1904b1f6d25f677054273b03736ef90ca47afc7a4dd",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:724f56057ea88f4bc3286b5c1a8037dd35675c42406b8e91d704d226f726bbf5",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:cbb8fc092cdbef85d2d5118697c699736e82d5e6e5a343e44e4da2a6e9124e02",
+    "public_operation_contract_id": "public_operation_execution_contract:26a196a55638faa53286b01165bb45b386f7b5d6114703fd1a750fe2092f704f",
+    "public_runtime_contract_id": "public_runtime_contract:12f03a35dbe4c68d7003556cd59a46170926ae11e07a3b7f9571c896f95699ed",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:cee907a1fd3b950cb88d7d7c82ec348f0108e28c0d49be5ec8155c2019f2daf7",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:0f8ec70d0906dfa4864f98ba34ae0909578239ba26de54b7e163b1a4463e1f32",
+    "source_program_dag_hash": "program:5b3a2e9e43e10c0aa88347147c06cd34cc070fb68a9c4bd20342985298ebd6d4",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:064616cfe01f42ec147a9482def175d9ea5140cd9590e0491358ceee3ffaf041",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:0a85eb095c0d7e99a174a7b20b27afea480ed0891ca119151ed987813de2d4ca",
+    "terminal_verification_target_id": "public_terminal_verification_target:8360425612df2edb1cdaa5c89b734612375e2ee03efb93f0745fb2fa57ec0bab",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:1790639d9f52f592556602dae99a1fe77ac0361267141dec8ff7bc1f0cf6f753",
+    "answer_projection_contract_id": "typed_answer_projection_contract:447dabed352b8e0c675b51e93d8476543da03155af77958687b09a029a982042",
+    "citation_contract_id": "citation_completeness_contract:36f51c1814cb9f1e1b9524e7fbc06c72cc72faf9cbb0b10acbf250dc1a791330",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:e1b7f470a20cbd8ffed7d41c1c205c4c151ed05b0c61ea49aec7a28138038830",
+    "environment_manifest_hash": "finance_v26_executable_environment:8803ea6b6b918f91eb2068152b2a6bc2ccdc367bdc026bae9a29bb7b5c191b68",
+    "environment_manifest_id": "agent_tool_environment:b205697bec355a34fb8ab48d80e25974e5d907deaf44731bb9c98eee4fdeee2f",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:34f052f5dc3581a4c25e607e7d0f7a7cd68afa6ccca21679f3fba646e84b1da0",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:462aca25711b17bb48b17e0c28c2fcbd15d69de01d23e59a8973fcc46dfb2211",
+    "public_operation_contract_id": "public_operation_execution_contract:75ae386f8c9363cdb815fbefd1072224c65c15e8abbe70ad9f41582f5ab56b8e",
+    "public_runtime_contract_id": "public_runtime_contract:e4908b7b62d094fb04467df766de87f1a8a1c0d0a0cf509a4306a44dbfb638dc",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:3031f77d76f52ae7b70cc6511ae4ce1d0ff6dbbea819dbfe2152d3a0608d5302",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:f899831d74bb7c5554e5224ee539997fb6162b91c7bfbad1df6316ecf0d3a18f",
+    "source_program_dag_hash": "program:33d953f3cd5af693bdab039e90aa27cb615451d28198e6081a4c67aef01327b9",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:a1b2aea39f24f4a9db33ab9784f50c6443e63deefc11b5e5f6d076f8029fc15d",
+    "terminal_verification_target_id": "public_terminal_verification_target:542873189e49fd7fff4a32ca10da06b3f1aa09e3f9c42082c850309eeaea6b6a",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:3639f463797f786a6ba1f5adfa35085cf841a1c76a6ca6358513b496849943f3",
+    "answer_projection_contract_id": "typed_answer_projection_contract:3a76e7666e051d528e2b6622d21bb4e67d59e9b12e54c2c8ea95a899947e3279",
+    "citation_contract_id": "citation_completeness_contract:ffdeecc13922d8f90fe1420cd817b2b6a5d790d6fbcd31198bd6d10a0b7d4076",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:ef96516254c1ab4dff878b190b51e8c56838467f5a0c0f6a404624574238c598",
+    "environment_manifest_hash": "finance_v26_executable_environment:4d2cf17c9ce73c18b160871a510fe2e6552c1ab41229cde3aa954c60d9dfb564",
+    "environment_manifest_id": "agent_tool_environment:536661170d4c277f0b99ae2719b6b483ce7a4916dc2e924aa307fdca70a1b3a3",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:7b26429cace45083fd90fad4af78bc7fb14be5ea165e9b5968a465140f74bb92",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:f26c6c2551ab861337f1707b0c58e769e7ad431b904330479bdb08a685fcd9d7",
+    "public_operation_contract_id": "public_operation_execution_contract:091a6a0af99fae5bcd23d986475141fe1e6b765b38c0112f11733f431e4d7681",
+    "public_runtime_contract_id": "public_runtime_contract:ba295683e5af94d14117d7ef120d055585173e8f7c461d89eec06a1bc2c5af9f",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:83222e10015f2bfa7143c7095b5c361b96bffa1bbb4f3e688b99f85b2cafca5d",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:43dfa62f969d2897ec606a8e81f4ae9789e576e03318bdb05b695754ddb26943",
+    "source_program_dag_hash": "program:0133e553fd4cfb5fe6eacf7384be8d6a89ecf6d63a1c9f7b2d3a30f6b0632afd",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:edd7ddfd1e23b8b2da47f2e30e0b9b1873d5d98aefc5e9ff857eabdecec61c88",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:1988920ac4b041b7134e2cdb7fdc14cd69739905c31f32ffff19424acf6d2566",
+    "terminal_verification_target_id": "public_terminal_verification_target:ab73e63900127565fd63bda97d201d43eacfc0595e52fdb8d5c79a25d58d49e3",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:fa4d75e50a420a1ee03a4ba77031121154382867a51c3b828c8a6fa9ee51168f",
+    "answer_projection_contract_id": "typed_answer_projection_contract:9bad2e3c1a76923513625508149350a570c2cafaa445ca9298d841e61090ebbe",
+    "citation_contract_id": "citation_completeness_contract:b33773468aa0198a6d009cf2c2d2a54516402fe1e2d897abbe6b1aeba9f5bc27",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:f2946f21607f365629d3caff2d8f8a9bb8463582969009dfe12fa9317f729c8e",
+    "environment_manifest_hash": "finance_v26_executable_environment:36bede6923e709e74603951a5bb97dc5100301db400b1361fd19a59b9411683c",
+    "environment_manifest_id": "agent_tool_environment:586dd911ee619ea40dddbae0f9eee10e7073269492b45ab9f11fe36e688f981c",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:320edd1e4c6aa77cbb20a495c298eda8a5006f8a093a48d99d440f6da1efe382",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:7f8a689291567977411e90fa2ab73040472e6b585232a45b2395a1c7382c759a",
+    "public_operation_contract_id": "public_operation_execution_contract:31559d1db579b66806ec9bf9f2105b1d94161979ee11f82e894de6ef7520360c",
+    "public_runtime_contract_id": "public_runtime_contract:2458f776090926b1a5fec5e338ed2a0361179d6a2109628af478c05e2fe400e6",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:f101da33abd9b5b800a39228e76be5eb226ac561d272a2e3a259b537771fd55e",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:953b1be9ddde66cd63db0cccd8e00150dc94076605544a7f790eaf76bde9aed1",
+    "source_program_dag_hash": "program:438d24d983ba38f1efa4f3125b6c19bb057d3ab7254fb2ab979b2efe43976577",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:e561dbf1a3ca450ee8066f6675f3db8869d0f22f97b7238ea197602dd7447cfe",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:31a2f3bfa7836e588e994bec16a313c42222d8040ff75c1af2c0227799ff3966",
+    "terminal_verification_target_id": "public_terminal_verification_target:238d490b64fd1ae26b538b261c0597232475204875f5f3b4588bed1d304b3064",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:de64a87c7382a7e8eec3434985dcc3ba013e90100b43f696bcbc6e2032dc2912",
+    "answer_projection_contract_id": "typed_answer_projection_contract:6519851d294f22e8fefb48a44edad14a0d29d9c2ab413f6c493701403e023019",
+    "citation_contract_id": "citation_completeness_contract:f8cf42ae9b6f9aeca37f708e69555df44252b3389b21f16c5dce10790c1a3aa1",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:fc76621ccd216b7c9586343cbe6064b4272b9a5c0480c28fce4cece624cf19b1",
+    "environment_manifest_hash": "finance_v26_executable_environment:63bee637aa1ed617d7ee7cb5065fdedb2287fbc7986451490466c857cc20e63d",
+    "environment_manifest_id": "agent_tool_environment:60469c577ec6cf0512fd2e2569f3fdae8673f64fa025e225079474c5684ddf58",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:8c043f22047cc287a1bc678840b9236029ce30cb664fe26f160ed1e71012a1c1",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:4b9893aeb12799d3d7db4620d91306b350ed0b1356fcf01e1a07cce0c14d56f8",
+    "public_operation_contract_id": "public_operation_execution_contract:61a5f6d489c8dc091d3fd2e53108df0f00240755cdbcfc7d4e3bc487ac1d036d",
+    "public_runtime_contract_id": "public_runtime_contract:18e58cafa6d5c73a5e7416eac9e5b6fa499e0922d77546229a14a5c204ecfc84",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:7fc94b9ba6d1cbf0e1e10cef0b7468c4406abd5c9fb6aff78399d4d93e9c2a7e",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:fdd3037998a5d3c45f9431af33a02a205b34c32b090117d71450451919c01088",
+    "source_program_dag_hash": "program:eab2a02e5693dfbd1cbfd70d203be96afba22683b7c9631b049956540ed30c68",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:b052ff01de7b20fc111c1e9f27766cf70cd6f1fde2356ce09f6f918d99a4c5fd",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:575e40b0451873597ab729414d57a3fda5d4867e33c67a0bb47cd52256fa2d65",
+    "terminal_verification_target_id": "public_terminal_verification_target:3e09f87b37fc9e84b2be3d5242e5a270954552e333abb66ec18dda42eeadc3fb",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  },
+  {
+    "action_neutral_repair_contract_id": "public_action_neutral_repair_contract:a8d78777937618dba76c99b191452988471d5b59d15a6bbfe9cef2b1704eb23d",
+    "answer_projection_contract_id": "typed_answer_projection_contract:2e7ed81cbfbaf95cf57597b664879f983cc0b799ef571cda5400583fd6f846a2",
+    "citation_contract_id": "citation_completeness_contract:f3c95c6319c619b121f87db0f4787bd8b25c3467695685adb37e63c0477ade2a",
+    "comparison_rule": "canonical_json_semantic_equality",
+    "contract_id": "finance_v26_verifier_v2_task_replay_binding:fd584239b6d99359a1e7849ffb5fe336ff0625277c62d676ab50837fcfe488c8",
+    "environment_manifest_hash": "finance_v26_executable_environment:e1cf4ced60fead1af0096bde3ffec23f6ba78065dd6da6c84d142494d6df65ee",
+    "environment_manifest_id": "agent_tool_environment:1165067256a8ce3a50e5d443aa57ab88999f5ac8d896b2e8b6b460e4940c50f8",
+    "evidence_support_lattice_id": "bound_evidence_support_lattice:9da9b8af5db52ec138f2eaeb15b5942693953e0c720715b96bfb55c4e4931995",
+    "failed_result_projection": "typed_action_neutral_semantics_only",
+    "mechanism_contract_id": "mechanism_causal_contract:b2334e42b823983c75c9a2e4d443ba7a56974bbf133054b80c7622054ab32be6",
+    "public_operation_contract_id": "public_operation_execution_contract:283226821d1b27a8d61caebde0a77e8ac6373e6e8854437d0a118c649fc13113",
+    "public_runtime_contract_id": "public_runtime_contract:ffb9d50e7650bb7826a2b23e6430197e7533c920f371dc6bd092a34e469197af",
+    "qualified_implementation_sources": [
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+        "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_capability_reachability_failure_audit.py",
+        "sha256": "5a29b7ae902ae78cefa0056169f3910a317021300a066bf28707b05781edc96f"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_empirical_support_pilot.py",
+        "sha256": "c7c1be3e4821ebd3236f5d082e0f3d0d7797278ef98f6322af3fb28cc3123160"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+        "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+      },
+      {
+        "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+        "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+      }
+    ],
+    "qualified_replay_contract_id": "finance_v26_authority_verifier_contract:b979c6651df9722d4b903e0cd69cd9b22493c37eed15efe4aa74d52c8832d53e",
+    "qualified_verifier_report_id": "finance_v26_authority_verifier_qualification:f61be6be022c2c8506e818e3bb9690e71fa316c6820fec69458c7ab7c8fa7bb1",
+    "qualified_verifier_report_sha256": "8925c151f6cf5383ebb68376e45a16805e70666032f08489a1fef13983117f32",
+    "replay_execution_order": [
+      "identical_failed_action_gate",
+      "public_postcompletion_gate",
+      "public_tool_argument_gate",
+      "public_terminal_verification_gate",
+      "public_operation_gate",
+      "finance_tool_runtime",
+      "public_action_neutral_projection",
+      "tool_output_contract",
+      "canonical_json_semantic_comparison"
+    ],
+    "runtime_projection_id": "public_operation_runtime_projection:c90556bbcdde4b623a448e063fbdd17cf6c395bfeb798359821bfd9b049c987f",
+    "schema_version": "finance_v26_authority_preserving_replay_binding.v1",
+    "semantic_source_id": "executable_task_semantic_source:95dfbcad1cd044cb0b6cb802234f82f90e70f2adea563a2025034840163b7413",
+    "source_program_dag_hash": "program:cb870fa55ca75f5aed3e5bd1af6632eb3ade02bdf223b9a7707fadad52c813a9",
+    "source_verifier_dag_hash": "finance_v26_source_verifier_dag:064616cfe01f42ec147a9482def175d9ea5140cd9590e0491358ceee3ffaf041",
+    "stop_readiness_contract_id": "public_stop_readiness_contract:4e24eaa1cf76be378385f7663e5d62c83ab1666afbf9f7b385a2b3a15b94290c",
+    "terminal_verification_target_id": "public_terminal_verification_target:80af37a6de0341f126f804a26342c3fbc1af14ebc9af2054721a91c3e57eb8a2",
+    "verifier_implementation_id": "core.authority_preserving_executable_task_verifier",
+    "verifier_implementation_version": "authority_preserving_executable_task_verifier.v2"
+  }
+]

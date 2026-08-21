@@ -1,0 +1,27 @@
+{
+  "compact_public_state_reconstructed_per_request": true,
+  "contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+  "current_turn_continuity_action": "omit_reasoning_for_host_instrumented_json_turn",
+  "current_turn_reasoning_passback_required": false,
+  "final_content_hash_excludes_reasoning_content": true,
+  "interaction_protocol": "host_instrumented_json_decision",
+  "missing_or_out_of_order_attestation_fails_closed": true,
+  "parent_attestation_binding_required": true,
+  "private_reasoning_content_hashed": false,
+  "private_reasoning_content_persisted": false,
+  "provider": "deepseek",
+  "provider_guide_checked_at": "2026-08-21",
+  "provider_guide_url": "https://api-docs.deepseek.com/guides/thinking_mode",
+  "provider_native_tool_call_fails_closed": true,
+  "provider_native_tool_call_reasoning_passback_required": true,
+  "provider_native_tool_calls_allowed": false,
+  "retained_reasoning_fields": [
+    "reasoning_content_present",
+    "reasoning_content_length",
+    "reasoning_tokens"
+  ],
+  "schema_version": "thinking_continuity_contract.v1",
+  "state_mapper_reasoning_content_dependency_forbidden": true,
+  "turn_order_attestation_required": true,
+  "verifier_reasoning_content_dependency_forbidden": true
+}

@@ -1,0 +1,296 @@
+{
+  "base_compiler_path_count": 93,
+  "budget_shape_coverage_audit_id": "finance_v26_thinking_budget_shape_coverage:819bbb61c7bfa3bc809049ed85d69660c274beaacfd51288facb681a3f301fa8",
+  "calibration_contract_id": "finance_v26_thinking_budget_calibration_contract:e147742ac18e0766b84162a25f87880340f0f2c57c79883e75db03fef935973d",
+  "calibration_execution_authorized": true,
+  "calibration_execution_completed": false,
+  "calibration_freshness_audit_id": "finance_v26_thinking_budget_calibration_freshness:11f92290d52b1bdb31fa7e6c9652e67fa5509d81b13b889b57d0f4d8dcab00ea",
+  "calibration_job_count": 32,
+  "calibration_manifest_id": "finance_v26_thinking_budget_calibration_manifest:3c6877014f6fdd2de41cc3e0c52983b4242942967ec674fecc3630cbccdc630b",
+  "calibration_task_count": 31,
+  "capability_execution_authorized": false,
+  "completion_usability_contract_id": "finance_v26_completion_usability_contract:e7ebf169c798a6af386024652e5b720d1157cd0c825c3c634bed9629cbe5498b",
+  "completion_usability_fixture_audit_id": "finance_v26_completion_usability_fixture_audit:83eca8e04d2e10028a3d274235d00aa1b68e1228a02a97d74f16c5caaba6dbe4",
+  "destructive_preflight_audit_id": "finance_v26_thinking_calibration_destructive_preflight:30ac9dbb573cf23b905c11060a97884dda30e3295e6695cf1676a25cb0338e84",
+  "detail_files": [
+    {
+      "record_count": 1,
+      "relative_path": "budget_shape_coverage_audit.json",
+      "sha256": "ad2a697fe1e249ae51d7fb89dc3e3d819bd2ae4e05f7db3e91d15a467eeb3e46"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_authority_task_audits.json",
+      "sha256": "47bbe7edb1f1051b92404d2b0d6cb0acf8932444089c4db0e5f2a4a99786b2ad"
+    },
+    {
+      "record_count": 93,
+      "relative_path": "calibration_base_path_audits.json",
+      "sha256": "423b04df59f79a95fe6572d5a16bb13144e3f818ab72fdaa1d127d39e5f9b0fe"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_compact_prompt_contracts.json",
+      "sha256": "bf40791139cfe1c926fcb2216a5c947c7dc7f80b532ac1f76d1468734d201687"
+    },
+    {
+      "record_count": 93,
+      "relative_path": "calibration_compiler_trajectories.json",
+      "sha256": "ef045a90035ab122573c2dbbf9b44872992f8d6d6f97cdf7ae812b3b3520a483"
+    },
+    {
+      "record_count": 93,
+      "relative_path": "calibration_compiler_witnesses.json",
+      "sha256": "f82aedb2328f742cd6bcc27c7026cc8d6abdc05d25694ded0f8ef790f78f2d23"
+    },
+    {
+      "record_count": 93,
+      "relative_path": "calibration_completed_trajectory_scores.json",
+      "sha256": "b3f6cafb128c5e39a811df89f14d2ead08a96c1eeae087f1289556eba3f1dd91"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "calibration_contract.json",
+      "sha256": "d334816cbebdbb70600e4a907130a83d46369ca51fb24bddf2f94fc36d590e6a"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "calibration_freshness_audit.json",
+      "sha256": "3528e0122b5358ed42b97882182e71e764c0caca6c83b265566b2732e4625544"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "calibration_job_manifest.json",
+      "sha256": "deafb8e74384ddb17e8c96748a0a260ceacf2e7c24856db6fd2ceeb92a91fcfb"
+    },
+    {
+      "record_count": 62,
+      "relative_path": "calibration_mechanism_counterfactual_replays.json",
+      "sha256": "e9bc973c5b03959fe8853a3128a9b7193132be44cbc27228f0c21be372e1c1ef"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_mechanism_necessity_artifacts.json",
+      "sha256": "d6f4bd0eb9e4f5e653179a71fe7794e4dc2f298ea56b038bf90f129691bb87eb"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_operation_closure_audits.json",
+      "sha256": "c9d478ab4a2ff6eb1583e9aa3cb5e8f69dc7faac94e03e6218f12cc21fb09a7c"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_operational_admissions.json",
+      "sha256": "2b5782512bec79d03e602a3625dd6dee0d308f7896841c8bb8df95d8d508f2e5"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_operational_task_records.json",
+      "sha256": "ebd2e417f306e3b9ca407a54f8b9d4eccf4b0eb4c0f9ea5d30d6f96b08ee950d"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "calibration_source_capacity_audit.json",
+      "sha256": "b0f8d7eed2aee1a17ac8c03aacfd6f4521f6bb80308120758fc5dce2e5156f98"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_static_path_catalogs.json",
+      "sha256": "b25d944ffe8ab9d5872603ae492745a3402b03cc02c66b4f97a45bab4c5392a5"
+    },
+    {
+      "record_count": 32,
+      "relative_path": "calibration_stress_path_audits.json",
+      "sha256": "35f9a64262955db6c6adda2d80bc87f56e34e48715f3ef3a25bbedb8c0953715"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_task_packages.json",
+      "sha256": "7d17eab834bdb0ae08d5cc442e31c83e19ea823a17be357dba37276a4fb0e403"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_tool_environment_manifests.json",
+      "sha256": "25bfa9ca4e23508e1b5c878e6ef3ba7425edb284582d7ae10a5a8e31ccd1fc62"
+    },
+    {
+      "record_count": 31,
+      "relative_path": "calibration_verifier_replay_bindings.json",
+      "sha256": "25f40669622fd15d0331316ccc5fae19e3e77e0fc17e68932df1cfba354dfa3d"
+    },
+    {
+      "record_count": 93,
+      "relative_path": "calibration_verifier_replay_results.json",
+      "sha256": "3ecd65115b1bac9599276a50086b83d5454952b1b43a44820c4a749d146989ac"
+    },
+    {
+      "record_count": 580,
+      "relative_path": "calibration_witness_observations.json",
+      "sha256": "84f54679ff8e220e911503701a6cb5d9bdcefe3deecc3ea3701b61376de2e3e8"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "completion_usability_contract.json",
+      "sha256": "5e5c96395a6f21cc10b48abcdb382a278197ae4531fee7ffd975ad177826a2b1"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "completion_usability_fixture_audit.json",
+      "sha256": "8452f8950bf04e4b24be8a486c5c9e40969972be53b1bf56a869ee97b51212a3"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "destructive_preflight_audit.json",
+      "sha256": "5712bd6fdf20121502168542049f8642cf0e3dd6a98312869f4611d2b8e85d6f"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "predecessor_replay_audit.json",
+      "sha256": "e5a7e0307ffe6a522fd1ef0eaf888743a6f635865b245f0b4aa12b47a3c9c7b6"
+    },
+    {
+      "record_count": 12,
+      "relative_path": "role_prefix_budget_envelopes.json",
+      "sha256": "fb0e74eaf9d7bde80f7061f3ca6725560d5249e6fac088d3953b79623a82e8d4"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "thinking_continuity_contract.json",
+      "sha256": "9a4747498692644f1bdc9bc27320fef978894e77f6b24b18c658e4577d2e8fe0"
+    },
+    {
+      "record_count": 1,
+      "relative_path": "thinking_continuity_fixture_audit.json",
+      "sha256": "1a977e8e9d8ae011d5e102d11c2629d1abb1bcd45767096bf60cf10384caa513"
+    }
+  ],
+  "empirical_result_count": 0,
+  "exact_target_authorized": false,
+  "formal_independent_rebuild_required": true,
+  "fresh_confirmation_authorized": false,
+  "gp_c_authorized": false,
+  "gpu_jobs": 0,
+  "implementation_source_files": [
+    {
+      "relative_path": "src/trusted_synthesis/core/task/schema.py",
+      "sha256": "b8ca271d0629393cfa17edafc94a8c820a2e387c90aeb974d450eadb4190ff07"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/core/trajectory/public_operation.py",
+      "sha256": "de301066b6a44a03eff77d05461e67cbd26ae325be39836ef93a35237604881b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/executable_support_runtime.py",
+      "sha256": "6722da53a86ea220e113309b1109c57bf7f35a7ecb222e9ebfa84266ee9839a3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/domains/finance/public_tool_results.py",
+      "sha256": "843af5ac842a134c5e3f139f343b0d32a6851ba7e4b402da71bbb6a6b1ee2ad0"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_operation_hardening.py",
+      "sha256": "1522336dd34823a751ac0b19b79db34cff0a0c79ce9cc9fa65c6244c7638119d"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay.py",
+      "sha256": "e4078cf7bf0076502b8a911e0f7fe4588a8282d2366b0eb4504e03dbc7408d5c"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_adequacy_contract_preflight.py",
+      "sha256": "c6aa95e75ae767ebc9e613d416baa70319bd99dc7574563fa74adaaacaa426e2"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_instrument.py",
+      "sha256": "7a82802188e576146f93c37ea2dbb42934d9c0ec0e79d570fbfb8b30b8ca3917"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_closed_task_rematerialization.py",
+      "sha256": "01f3530ffe245fd3165993ffb99f870bd16aad7c2959a4047c2f3b87ad215cb3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_budget_feasible_role_task_rematerialization.py",
+      "sha256": "6c0d025841c8ba126aa1bfb0c6be2242221fd4531d8c7c07e179063b6b3c48f1"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_executable_task_rematerialization.py",
+      "sha256": "d7d361a71a81a2b96634b190cfd8f7a2bcf0c1390105c01322757cfcf9072e34"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_fresh_capability_population.py",
+      "sha256": "01f8b8bdb48ddd20f0c0db1eb937b4bdc70b32415d020e8df02aa711d327d4ab"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_builder.py",
+      "sha256": "8326b675e96117a463edcf57228453cdd335df92a0e4943c3173a33fae99fd65"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_rematerialization.py",
+      "sha256": "e2a7705edba2d358e6da9c2c05c437b11994b9e438b508d213bcefb3cc998e23"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_public_operation_witness.py",
+      "sha256": "c1965d913b6f31c69c078f2ee996626251a77428d987488ea79565ec9e169a57"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_budget_calibration_preflight.py",
+      "sha256": "27c24a46d7200698c425edbbc23e5b13c1f96617c692cae86b62f9ca1de4a23a"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_verifier_bound_task_rematerialization.py",
+      "sha256": "87173f21df6574f58982253957cae5c8dc534cfd54637a71f3f9ad1de3e6d329"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/budget_closed.py",
+      "sha256": "3c4551c6aa1b3ed2a0056000203cb7b48e1cabe008bed7828c4c2c9b98e7668b"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/compact_budget_prompt.py",
+      "sha256": "06835af2a3f225b84439feae3dfb0c74ae8771661cf06898b3475b57603a97e3"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/iterative.py",
+      "sha256": "750cd027a7bdbbe901d750bc0c422a139872e91dcb7345c0bae7c56b318729c4"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/prospective_thinking.py",
+      "sha256": "80acca5238de1b06968323ffd4224fb602874da5863b999911708712c9ace58f"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/public_operation.py",
+      "sha256": "1989d793f9e98c8860c2112586481dfdf1e708d2c1e1125ee776588bb8d32604"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/agent/thinking_history.py",
+      "sha256": "31c87168155d39dcab025faea33950f811567ea6adc27eabfefb1bdbbb89c2d0"
+    },
+    {
+      "relative_path": "src/trusted_synthesis/runtime/tools.py",
+      "sha256": "aa0a1193c58a3d373d21e2760c81f3e65aac850dad61cdd81dc9084a7664023e"
+    }
+  ],
+  "maximum_calibration_path_upper_bound": 115676,
+  "maximum_calibration_prompt_utf8_bytes": 8432,
+  "minimum_calibration_headroom_tokens": 4324,
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "model_config_id": "agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1",
+  "next_permitted_stage": "thinking_budget_calibration_execution_only",
+  "no_c_vtdo_authorized": false,
+  "predecessor_replay_audit_id": "finance_v26_thinking_calibration_source_replay:718f6f516bcd1092c6f23fc9b04cd2806e291ce853e41d6e6d303a3db4b672af",
+  "predecessor_replayed_file_count": 104,
+  "predecessor_report_id": "finance_v26_budget_feasible_role_rematerialization_report:9d6e1de192bf267aa45dfbf7b49c1270c0ec995e03b734f208663763a01ef17e",
+  "production_contribution": 0,
+  "reachability_execution_authorized": false,
+  "report_id": "finance_v26_thinking_budget_calibration_preflight_report:4af68e0667d05639885b985dd7d9091ed8fba03202e6b6c4ebf1d243586a8324",
+  "role_prefix_envelope_count": 12,
+  "run_id": "finance_v26_91_thinking_budget_calibration_preflight_v1_20260821",
+  "schema_version": "finance_v26_thinking_budget_calibration_preflight_report.v1",
+  "source_capacity_audit_id": "finance_v26_thinking_calibration_source_capacity:e36fca454b9a2622dab46b7097906ee8ae5a193d40a28dd79537b47728905a84",
+  "state_mapping_authorized": false,
+  "status": "passed",
+  "stress_path_count": 32,
+  "student_training_authorized": false,
+  "thinking_binding_id": "prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d",
+  "thinking_continuity_contract_id": "thinking_continuity_contract:a4c8025741e13e38025ac6250e18d57ad5e317a2f2db23d66b54d9d8de2144e8",
+  "thinking_continuity_fixture_audit_id": "finance_v26_thinking_continuity_fixture_audit:c5350c6b4eeed6a0109761c38afa28479d3d78810c6dc64499a15440e31ba7ac"
+}

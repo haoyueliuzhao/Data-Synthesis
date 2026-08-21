@@ -1,0 +1,89 @@
+{
+  "audit_id": "finance_v26_thinking_calibration_destructive_preflight:30ac9dbb573cf23b905c11060a97884dda30e3295e6695cf1676a25cb0338e84",
+  "gpu_jobs": 0,
+  "model_api_calls": 0,
+  "model_client_constructed": false,
+  "mutation_results": [
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:2481c939d95ef942e20429c20732ca8841585e584c7fd88e61d9000222521a45",
+      "mutation_kind": "provider_native_tool_calls_enabled",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:df0d36d57795edd097f4bcb0ce94b24dbc1f86ddbaa955a1f352a7199dadca35",
+      "mutation_kind": "private_reasoning_hash_enabled",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:56479bb76feb96a25592d1a926ea2eb4f2f4f68a037526be67383ce0b2ed000d",
+      "mutation_kind": "completion_no_call_conflation",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:153ea0ac245a6bd3b39288c15ec5878347c50ead59c5d940a72622103307c2d5",
+      "mutation_kind": "completion_threshold_relaxation",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:bc236b4699e66dc7c63774d2d182f6c566f309d60658fba0dedb486bef130dfb",
+      "mutation_kind": "completion_cp_boundary_change",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:f5fb31cb9255ae41c412fac450c53dc0389eae965078a8b511f1e1c8c21df207",
+      "mutation_kind": "calibration_cell_ablation",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:f6aa173fc4a6483d0af5cc73a00377308e4e29e8a215da253b896b9716710a8e",
+      "mutation_kind": "calibration_preflight_execution",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:4295e309fc59db3a48e4578ec72edae339f2f36b6d0484d584a9ee8336759334",
+      "mutation_kind": "calibration_job_ablation",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:0003808c49157782efacbe28ed8d721b1873772f73697e1eb4febf7e70c414a5",
+      "mutation_kind": "calibration_duplicate_job",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:69ddbe662b86f70fbaaca0da023e37a65a2d0c1cdb3770d1e722749a22977da7",
+      "mutation_kind": "calibration_historical_overlap",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:6fa813f3674cf13db5cd59544ad124a981caffb567ddd6046de9a45b6a02f34c",
+      "mutation_kind": "budget_shape_cell_ablation",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:c9344f8a8b9c5b2169f6b0d9007b20ff0de86c86a2fadcea8bed388bf424393b",
+      "mutation_kind": "prefix_padding_stale_identity",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    },
+    {
+      "mutation_id": "finance_v26_thinking_calibration_mutation:38c8bace67c61cb23ac081105f77e45bd02539684baa30e606fc79f02fe22254",
+      "mutation_kind": "calibration_role_eligibility",
+      "rejected": true,
+      "rejection_type": "ValidationError"
+    }
+  ],
+  "rejected_mutation_count": 13,
+  "schema_version": "finance_v26_thinking_calibration_destructive_preflight.v1",
+  "status": "passed"
+}
