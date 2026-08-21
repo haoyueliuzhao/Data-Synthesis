@@ -41,6 +41,89 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## v26.98 Thinking 8K Execution-Profile Binding Preflight Decision
+
+Finance v26.98 began the credential-free Runner transition authorized by v26.97 but failed closed
+before Runner implementation. It first replayed 746/746 files: all 733 v26.97 transitive source
+bindings, all twelve v26.97 outputs, and the exact v26.98 implementation. The eleven predecessor
+detail files matched the hashes bound by the v26.97 report, and the report matched its separately
+frozen SHA-256. Formal and independent builds reproduced all seven v26.98 outputs byte for byte.
+
+The new cross-artifact check found that the v26.97 8K execution identity chain is not closed.
+The selected candidate and all 32 Manifest Jobs require an 8,192-token Completion bound, while all
+24 Completion-bound TaskPackages still bind the tracked 4,096-token `AgentModelConfig` and its
+corresponding prospective Thinking binding.
+
+The exact frozen 4K identities are:
+
+- model configuration:
+  `agent_model_config:727b3867544c4eac844eb260b9673dee41be7b8787b07ea2e3d6c69113e68bd1`;
+- Thinking binding:
+  `prospective_thinking_model_binding:51315bb03b5df2751c0cfada843fc75627c45b544d26efdd9ddac746a780f77d`.
+
+Deriving the otherwise identical profile with `max_output_tokens=8192` changes those
+content-addressed identities to:
+
+- model configuration:
+  `agent_model_config:c07d13207cba89d1e1cc3790151e2b5a32b7bf06f0ee6974f8e761fce5562b2e`;
+- Thinking binding:
+  `prospective_thinking_model_binding:9ed92eb9c7326eaf8b083633cda2e10cbfdb454322bcffffcd0d2f5e1329ac57`.
+
+The derived 8K profile matches the selected candidate but matches zero frozen TaskPackage
+bindings. The 4K profile matches all 24 TaskPackages but does not match the candidate or Jobs.
+Thus exact 8K TaskPackage binding is 0/24, and all 32/32 Jobs are blocked before credential lookup,
+client construction, or Provider invocation.
+
+The root cause is:
+
+```text
+completion_candidate_not_bound_to_taskpackage_model_config
+```
+
+A request-level 8K override would execute an unbound model configuration. Using the derived 8K
+profile with old TaskPackage identities would break their model-config and Thinking-binding
+references. Editing v26.97 in place would mutate its Contract, path, Manifest, and Job evidence.
+v26.98 therefore materialized neither a Runner nor an execution Contract and made zero API calls
+and zero GPU jobs.
+
+The v26.97 static candidate ladder, bounded Rescue renderer, 480-state coverage set, 2,400 local
+projections, 48 path calculations, repeated-source boundary, and zero-failure Gates remain valid
+within their stated static scope. v26.98 narrows only the execution-readiness claim: the v26.97
+Manifest is not an exact executable-profile Manifest. It does not measure 8K Completion usability,
+invalidate the 8K candidate, or reclassify any historical outcome.
+
+The repair freezes the candidate, Prompt and Rescue surfaces, telemetry envelope, sources, paths,
+Job assignments, all 32 unexposed seed values, Mechanism x Path layout, and resource ceilings.
+It requires one persisted exact 8K profile and Thinking binding, 24 fresh TaskPackage identities,
+48 fresh path-audit identities, a fresh Contract and Manifest, 32 fresh Job identities, and fresh
+future execution and report identities. The Job identities must change through corrected lineage,
+not through resampling. Runner implementation and all Provider calls remain forbidden until that
+rebinding passes.
+
+All twelve identity-shortcut mutations failed closed. The authoritative identities are:
+
+- report:
+  `finance_v26_8k_execution_binding_preflight_report:61d98194329348a5d0e6e915025276f524aec4b25a13807bed08644b34e6ebc4`;
+- profile-binding audit:
+  `finance_v26_8k_execution_profile_binding_audit:a435cff41ebcd91e07d5381c57f774bfa086457169b8092f0cc3c5b93dee6dfc`;
+- Job-binding audit:
+  `finance_v26_8k_job_execution_binding_audit:7da4433af38be002acccdc0fe89b64bf8822f61ff73d515a0611c25881a333fe`;
+- root-cause audit:
+  `finance_v26_8k_execution_binding_root_cause:4f8a9a02abfa86c7e72bf05890d3c667ab0af581daa22785ba7351fd66b0c35f`;
+- prospective rebinding Contract:
+  `finance_v26_8k_execution_binding_transition:5aa2371756e3478f862a172d83d61b21291e8cfe11c9d100db0a448ab448fd58`.
+
+The only permitted transition is:
+
+```text
+fresh_8k_model_profile_taskpackage_contract_manifest_rematerialization_only
+```
+
+This is a negative execution preflight, not an online result. Capability Development, State
+Reachability, Fresh Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and production
+Contribution remain forbidden. Production Contribution remains zero. See
+`docs/finance_v26_98_thinking_8k_execution_binding_preflight.md`.
+
 ## v26.97 Thinking Completion-Bound Redesign Preflight Decision
 
 Finance v26.97 completed the credential-free redesign authorized by v26.96. It replayed 733/733
@@ -2161,7 +2244,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_8k_completion_calibration_runner_and_preflight_only
+fresh_8k_model_profile_taskpackage_contract_manifest_rematerialization_only
 ```
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
@@ -2194,25 +2277,31 @@ contracts. This lower bound alone fails a zero-failure Gate. Because the exact d
 incomplete, do not report an exact-denominator Clopper-Pearson result. The correct statement is
 that the Completion Gate is irreversibly failed, not that a complete 32-Job rate was measured.
 
-v26.97 has now frozen the minimum first 8K Completion candidate, its 160,000-token rollout
-ceiling, a 6,144-byte absolute Rescue ceiling, 24 fresh engineering TaskPackages, 48 qualified
-paths, and 32 fresh Jobs. It separately registers a 16K/240,000 fallback but materializes zero
-fallback Jobs. The 16K candidate is not execution-authorizing evidence and may not run
-automatically in the 8K denominator.
+v26.97 froze the minimum first 8K Completion candidate, its 160,000-token rollout ceiling, a
+6,144-byte absolute Rescue ceiling, 24 engineering TaskPackages, 48 qualified paths, and 32 Jobs.
+It separately registers a 16K/240,000 fallback but materializes zero fallback Jobs. The 16K
+candidate is not execution-authorizing evidence and may not run automatically in an 8K
+denominator.
 
-The next stage may only implement an exact 8K Runner and complete another credential-free
-preflight. Before credential lookup it must replay the v26.97 report, all eleven detail outputs,
-all 733 source bindings, and its exact implementation. Before every Provider invocation it must
-certify the actual request kind, actual Primary Prompt, actual Rescue Prompt when applicable, and
-actual cumulative resource state including all required future reserves. It must reject an
-oversized dynamic Rescue before exposure and may use at most one Rescue per Job.
+v26.98 then found that all 24 v26.97 TaskPackages still bind the exact 4K model configuration and
+Thinking identity even though the candidate and all 32 Jobs require 8K. Do not implement a Runner
+against this mismatched chain, override the Provider request to 8K under the 4K identity, attach a
+new 8K profile to old TaskPackages, or edit v26.97 artifacts. Exact 8K binding is 0/24 and all
+32 Jobs are blocked before credential lookup or client construction.
+
+The next stage may only persist an exact 8K model profile and Thinking binding, then rematerialize
+24 TaskPackages, 48 path-audit identities, the Contract, Manifest, 32 Job identities, future
+execution identity, and report identity under a fresh credential-free preflight. It must preserve
+the source-task and path selections, exact Job assignments, all 32 unexposed seed values,
+Mechanism x Path layout, candidate ladder, Prompt and Rescue renderer, 6,144-byte Rescue ceiling,
+telemetry envelope, resource bounds, interpretation tree, and zero-failure Gates. A Runner may
+not be materialized and no Provider call may occur in this repair stage.
 
 The 24 sources are repeated engineering sources, not a fresh Population: 22 were model-exposed
 in v26.95 and two were unexposed. They, their Compiler fixtures, and any later 8K calibration rows
 remain ineligible for Capability, Reachability, State Mapping, State Support, or release evidence.
-No v26.95 Job or identity may be reused. Any change to the renderer, absolute Rescue ceiling,
-candidate ladder, TaskPackages, paths, Contract, Manifest, Jobs, seeds, Thinking profile,
-telemetry envelope, or resource bounds requires a fresh preflight identity.
+No v26.95 Job or identity may be reused. The corrected identities must arise only from the 8K
+profile binding, not from resampling or unrelated protocol changes.
 
 If a complete later 8K denominator has any length or reasoning-only Completion failure, the only
 Completion transition is a fresh 16K Runner/preflight. A non-length Completion failure permits
@@ -2233,14 +2322,25 @@ successes, all v26.90 Compiler fixtures, and all v26.94 Compiler projections rem
 for empirical support.
 
 The v26.95 execution has occurred and is permanently blocked. v26.97 is a zero-generation static
-preflight and does not freeze a Thinking role protocol or authorize its Manifest execution. Task
-depth and capability informativeness remain unresolved independently of the Completion channel.
+design, while v26.98 is a zero-generation negative execution preflight. Neither freezes a
+Thinking role protocol or authorizes Manifest execution. Task depth and capability
+informativeness remain unresolved independently of the Completion channel.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_98_thinking_8k_execution_binding_preflight.md`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_8k_execution_binding_preflight.py`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/execution_profile_binding_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/job_execution_binding_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/execution_binding_root_cause_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/prospective_rebinding_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_98_thinking_8k_execution_binding_preflight_v1_20260822/destructive_preflight_audit.json`
 
 - `docs/finance_v26_97_thinking_completion_bound_redesign_preflight.md`
 - `src/trusted_synthesis/runtime/agent/prospective_thinking_completion_bound.py`
