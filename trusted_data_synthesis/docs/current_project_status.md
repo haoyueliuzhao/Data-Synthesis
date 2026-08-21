@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-21
+Audit date: 2026-08-22
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -39,6 +39,99 @@ The policy implementation and concrete profile pass 10/10 focused tests with zer
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.95-v26.96 Thinking Repair Execution And Failure-Audit Decision
+
+Finance v26.95 attempted the exact frozen 32-Job Thinking Completion and response-telemetry
+repair Manifest after a final 498/498-file `--prepare-only` replay. The online Runner started at
+0/32 with zero Raw-recovery Jobs and eight workers. It used the exact committed v26.95 source,
+Contract, Manifest, TaskPackages, Prompts, one-Rescue policy, Thinking model profile, seeds, and
+resource bounds.
+
+The attempt failed closed after one online decision Rescue was only 9.32% shorter than its
+Primary Prompt, below the frozen 10% Gate. The main thread had persisted 19 Job-result
+checkpoints. Eight concurrent workers subsequently completed full Raw Executions before the
+executor exited. The immutable failed directory therefore contains 27 complete Raw Executions,
+one Provider-orphan Job with eight calls, four unopened Jobs, one failure checkpoint, and no
+completed report. No Job was retried.
+
+The complete exposure partition is 19 checkpoint-plus-Raw, eight Raw-only, one Provider-orphan,
+and four unopened Jobs. Twenty-eight Jobs are model-exposed. All 28 are permanently ineligible
+for rerun. The four unopened v26.95 Job identities are retired and may not be executed as a
+continuation.
+
+The attempt persisted 184 unique HTTP-success completion artifacts: 156 Primary and 28 Rescue
+decision calls. All 184 requested, selected, and returned exact `deepseek-v4-flash`; fallback,
+Provider-native-tool use, transport failure, response-model gaps, Thinking-telemetry gaps, and
+Usage gaps are all zero. Provider-reported Usage was 775,292 total tokens, including 433,062
+reasoning tokens within 444,089 Completion tokens. Estimated cost telemetry was USD
+0.16411017840000001316. Private reasoning content and hashes and raw HTTP bodies were never
+persisted.
+
+All 27 complete Raw Executions ended `completion_unusable`, used one Rescue, passed their budget
+audit, and emitted no completed final result. Their terminal causes were 24 reasoning-only length
+truncations, one partial length truncation, and two invalid response contracts. Across all 184
+calls, the pre-parse client recorded 48 reasoning-only truncations, two partial length
+truncations, and 134 public JSON payloads. No final-answer request was reached.
+
+The exact denominator is incomplete, so no exact-denominator Clopper-Pearson interval is issued.
+The formal lower bound is nevertheless 27 Completion-unusable Jobs in a 32-Job Manifest whose
+Gate required zero. The Completion Gate is therefore irreversibly failed even if every remaining
+Job were a nonfailure. The orphan's Primary and Rescue each also used 4,096 reasoning tokens and
+ended reasoning-only, but its historical Job terminal is not reclassified.
+
+Finance v26.96 independently replayed 723/723 files with zero model calls, zero client
+construction, and zero GPU jobs. It reproduced all 27 Raw and 184 Provider schemas and identities,
+the 19 checkpoint bindings, the one orphan lineage, all Usage and privacy counts, the Completion
+lower bound, and the failure arithmetic. Formal and independent v2 builds reproduced all eight
+outputs byte for byte.
+
+The initial v1 audit build remains immutable and is superseded because package-wide Mypy found
+one local set-inference diagnostic after the focused source check had passed. The v2 successor
+adds only an explicit `set[str]` annotation. Failed lineage, Provider telemetry, Completion lower
+bound, and Instrument root cause are byte-identical across v1/v2; source replay, transition,
+destructive audit, and report bind the final type-complete source.
+
+The root cause is
+`dynamic_off_path_rescue_contract_not_precall_closed`. The failing Compiler path registered a
+2,865-byte final-answer Primary and at most a 1,609-byte Rescue at request index 6. The online
+trajectory was still in a decision state at that index and rendered 7,914-byte Primary and
+7,176-byte Rescue Prompts, a 932-basis-point reduction. The v26.94 static claim remains valid for
+its 324 registered Compiler requests; it did not certify arbitrary model-generated Runtime
+states.
+
+The Runner also invoked and journaled the Rescue Provider response before calculating the dynamic
+reduction and constructing the strongly validated Request Attempt. Thus Pydantic correctly failed
+932 basis points, but only after the HTTP-success exposure. Future Runners must validate actual
+dynamic request kind and actual Rescue reduction before Provider invocation and must cover or
+mechanically constrain reachable off-Compiler public states.
+
+All twelve v26.96 destructive mutations failed closed. The authoritative identities are:
+
+- report:
+  `finance_v26_thinking_repair_failure_audit_report:7ee7fb7963ccaa862496a0ee1664815904fc4a009a1748a45a6920b6496d3cde`;
+- failed lineage:
+  `finance_v26_thinking_repair_failed_lineage:0b21dfd1bad25d122d76104f28c2cb65f1dc85986bbf79ef1d68b29dbf24d79e`;
+- Completion lower bound:
+  `finance_v26_thinking_repair_completion_lower_bound:e3fbe9341aad15c77954163ea6a24318956ab97752972e5246265ddcb48b5afa`;
+- Instrument root cause:
+  `finance_v26_thinking_repair_instrument_root_cause:84d0c4efe7cbb3aac1bfb45d61edf31a63d6e24d546c254d18495764404c63f4`;
+- prospective transition Contract:
+  `finance_v26_thinking_repair_failure_transition:9036133329a0b6cff0e900773b19cd4fd3f7e33b72b09bde388fd49227bea6f4`.
+
+The only permitted transition is:
+
+```text
+thinking_completion_bound_or_two_stage_protocol_redesign_only
+```
+
+The evidence does not uniquely choose a larger Completion bound or a true two-stage protocol.
+It forbids another Prompt-only repair under the same 4,096-token bound. Any successor requires
+fresh TaskPackage, Contract, Manifest, Job, execution, and report identities. A Thinking-enabled
+role protocol remains unfrozen. Capability Development, State Reachability, Fresh Confirmation,
+No-C VTDO, Student training, Exact Target, GP-C, and production Contribution remain forbidden.
+Production Contribution remains zero. See
+`docs/finance_v26_95_v26_96_thinking_repair_execution_failure_audit.md`.
 
 ## v26.95 Thinking Completion Repair Execution-Runner Preflight Decision
 
@@ -1595,10 +1688,20 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | v26.95 source/tests passed; 116 historical baseline files remain unformatted |
-| Mypy | 395 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1096 passed, 4 expected v26.78/v26.84 success-state tests skipped in 856.13 seconds; one existing destructive-test warning |
+| Ruff format | v26.96 source/tests passed; 116 historical baseline files remain unformatted |
+| Mypy | 396 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1103 passed, 4 expected v26.78/v26.84 success-state tests skipped in 855.86 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.96 focused regression | 7 passed in 2.56 seconds; zero API/GPU |
+| v26.88-v26.96 adjacent thinking/budget regression | 82 passed in 85.49 seconds |
+| v26.96 v2 dual build | all eight output files are byte-identical; zero API/GPU |
+| v26.96 v1-v2 scientific details | failed lineage, Provider telemetry, Completion lower bound, and Instrument root cause are byte-identical; v2 source-bound outputs are authoritative |
+| v26.96 source replay | 723/723 files: 498 bound sources, 7 preflight outputs, 217 failed-execution files, and 1 implementation file |
+| v26.95 failed execution exposure | 19 checkpoint-plus-Raw, 8 Raw-only, 1 Provider-orphan, and 4 unopened Jobs; 28 exposed; zero reruns |
+| v26.95 failed execution Provider accounting | 184 HTTP-success exact-model calls; 775,292 tokens; USD 0.16411017840000001316 estimate; zero telemetry/privacy gaps |
+| v26.95 failed execution Completion | 27 complete Raw Jobs all unusable; exact denominator incomplete; zero-failure Gate irreversibly failed |
+| v26.96 Instrument root cause | online decision Primary/Rescue 7,914/7,176 bytes; 932 basis points; dynamic off-path pre-call closure absent |
+| v26.96 destructive controls | 12/12 mutations rejected; four unopened v26.95 identities retired |
 | v26.95 focused regression | 8 passed in 11.77 seconds; zero API/GPU |
 | v26.88-v26.95 adjacent thinking/budget regression | 55 passed in 84.73 seconds |
 | v26.95 dual build | all seven output files are byte-identical; zero API/GPU |
@@ -1971,7 +2074,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_completion_telemetry_repair_execution_only
+thinking_completion_bound_or_two_stage_protocol_redesign_only
 ```
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
@@ -1986,65 +2089,39 @@ inferred from the requested model, selected model, fallback flag, or neighboring
 v26.92 exact-model Gate remains failed and all 32 historical terminals remain
 `instrument_failure`.
 
-v26.94 has frozen 24 fresh Completion-repair TaskPackages, 48 static path audits, a new Contract,
-and an exact 32-Job Manifest. All 24 v26.90 source role packages are retired from Capability and
-Reachability execution. The 324 Compiler projections remain fixtures and may not enter the later
-repair denominator, Capability support, State Mapping, or release counts.
+v26.94 froze 24 Completion-repair TaskPackages, 48 static path audits, and 32 Jobs. v26.95 opened
+28 of those Jobs before its Instrument failed closed. Nineteen have checkpoint rows, eight have
+complete Raw Executions without checkpoints, one has eight Provider artifacts without a complete
+Raw, and four were never opened. Do not rerun or reclassify any of the 28 exposed Jobs. Do not
+execute the four unopened v26.95 Job identities; v26.96 retires them because the Completion Gate
+is already impossible to pass.
 
-v26.95 has now frozen the exact execution Runner, execution Contract, outcome-interpretation
-Contract, source replay, Raw persistence, Verifier-bound scorer, aggregation, and recovery rules.
-Its formal and independent preflights are byte-identical and authorize only the exact v26.95
-execution identity. Before credential lookup and client construction, the online Runner must
-validate the v26.95 report and all six detail hashes and replay all 498 bound files. Any change to
-a TaskPackage, path selection, Prompt projection, rescue policy, response-envelope field, model
-profile, Contract, Manifest, Job seed, resource bound, Runner byte, or interpretation rule
-requires a fresh preflight identity.
+The failed v26.95 directory is immutable evidence. It must retain 27 Raw files, 184 Provider
+files, 19 Job-result checkpoint rows, one Runner failure row, and no completed report. The orphan
+Job must not be converted post hoc into `completion_unusable`, even though both its Primary and
+Rescue responses were reasoning-only length truncations. The eight Raw-only Jobs must not be
+inserted into the historical checkpoint after the fact.
 
-The next stage may execute each of the exact 32 frozen Jobs at most once. No historical Job or
-Compiler fixture may be submitted to the Provider. If a complete Raw Execution already exists,
-recovery must replay it with zero Provider calls. If a Provider artifact exists without a complete
-Raw Execution, the Runner must fail closed; automatic network retry is forbidden until an
-explicit fresh recovery Contract determines exposure.
+All 27 complete Raw Jobs are Completion-unusable under valid per-Raw budget and telemetry
+contracts. This lower bound alone fails a zero-failure Gate. Because the exact denominator is
+incomplete, do not report an exact-denominator Clopper-Pearson result. The correct statement is
+that the Completion Gate is irreversibly failed, not that a complete 32-Job rate was measured.
 
-The Runner must use the frozen primary projection and at most one independent public
-decision-terminal rescue per Job. It may not pass back previous final content or private
-reasoning, request repeated rescue planning, insert a Host-selected action, or restore a Provider
-Plan call. Every Provider call must continue to bind exact `thinking.type=enabled` before
-credential lookup and client construction.
+The next stage may only design a new Completion bound or a true two-stage output protocol. The
+choice remains unresolved and must be frozen prospectively. Another Prompt-only change under the
+same 4,096-token bound is forbidden. The v26.95 120,000-token rollout result does not by itself
+authorize a new Completion or rollout ceiling.
 
-On every HTTP success the Runner must persist only the privacy-redacted response model, finish
-reason, public final-content hash and length, explicit native-tool presence, reasoning presence
-and length, and token telemetry before final-content parsing. A nullable redacted capture may
-retain actually observed values when another field is malformed, but the strict response
-envelope must still fail closed. Missing model values may never be inferred. Typed failure
-artifacts must validate before serialization. Private reasoning content, private reasoning
-hashes, and raw HTTP bodies remain forbidden.
+Any successor must use fresh TaskPackage, Contract, Manifest, Job, execution, and report
+identities. Before a Provider call, its Runner must validate the actual dynamic request kind and
+actual Primary/Rescue reduction. It must cover reachable off-Compiler public states or use a
+renderer that mechanically guarantees the frozen reduction rule. Passing Compiler paths alone
+cannot certify arbitrary model-generated Runtime histories.
 
-At the exact 32-Job denominator, typed no-call and Completion-unusable remain separate
-zero-failure Gates at one-sided 95% upper bound 0.10. Zero failures gives
-0.08936819898626475 and passes; one gives 0.139849460274226 and fails. Provider transport is a
-separate execution-integrity outcome, and semantic validity cannot rescue either Gate.
-
-The postrun transition is prospectively frozen. Provider transport permits only recovery or
-transport audit. Typed no-call permits only budget-deviation audit. A terminal length or
-reasoning-only Completion failure requires a Completion-bound change or true two-stage redesign;
-another same-bound Prompt-only retuning is forbidden. A non-length Completion failure permits
-only Contract root-cause audit. A strict response-envelope-only Instrument failure may permit
-only wrapper repair with the Completion protocol held fixed; any other Instrument failure
-requires a broader root-cause audit.
-
-Only zero typed no-calls, zero Completion-unusable Jobs, complete response telemetry, and passing
-execution integrity may authorize `thinking_role_protocol_freeze_only`. Even then, low Program
-closure or validity is a behavior/task/tool result and cannot reopen Completion tuning. The
-execution cannot directly freeze a role protocol, and any later role protocol requires a fully
-fresh role Population.
-
-The 120,000-token rollout ceiling, 60,000-byte Prompt ceiling, 256-token chat envelope,
-4,096-token Completion bound, and both 4,096-token reserves remain unchanged. The v26.92
-reasoning-token share, 78 completion-limit hits, and repair outcomes motivate a prospective
-Completion redesign but do not authorize a larger bound. The v26.94 static path bounds of 52,898
-to 111,966 and minimum headroom of 8,034 are certification bounds, not expected Provider Usage or
-empirical Completion adequacy.
+Every future Provider call must continue to bind exact `thinking.type=enabled` before credential
+lookup and client construction. Privacy-redacted telemetry capture before content parsing remains
+required; private reasoning content, private reasoning hashes, and raw HTTP bodies remain
+forbidden from persistence.
 
 All 93 v26.91 Compiler paths and 580 local Observations remain fixtures. The 32 model-generated
 v26.92 rows remain separate from Capability, Reachability, State Mapping, and release
@@ -2053,15 +2130,31 @@ prospective-valid candidates, all v26.82 Compiler Witnesses, all v26.86 descript
 successes, all v26.90 Compiler fixtures, and all v26.94 Compiler projections remain ineligible
 for empirical support.
 
-The passing v26.95 Runner preflight authorizes only execution of the exact v26.95 repair
-Manifest. The execution has not occurred. Completion usability, task depth, and capability
-informativeness remain unresolved.
+The v26.95 execution has occurred and is permanently blocked. It does not freeze a Thinking role
+protocol. Task depth and capability informativeness remain unresolved independently of the failed
+Completion channel.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_95_v26_96_thinking_repair_execution_failure_audit.md`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_repair_execution_failure_audit.py`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_v1_20260821/online_source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_v1_20260821/thinking_repair_job_results.checkpoint.jsonl`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_v1_20260821/runner_failures.checkpoint.jsonl`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_v1_20260821/raw_execution/`
+- `artifacts/vtdo_experiment/finance_v26_95_thinking_completion_telemetry_repair_execution_v1_20260821/raw_provider_calls/`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/report.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/failed_execution_lineage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/provider_telemetry_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/completion_lower_bound_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/instrument_root_cause_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/prospective_transition_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_96_thinking_repair_execution_failure_audit_v2_20260821/destructive_audit.json`
 
 - `docs/finance_v26_95_thinking_completion_telemetry_repair_execution_preflight.md`
 - `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_completion_telemetry_repair_execution.py`
