@@ -268,9 +268,10 @@ implementation files. Package-wide Mypy is not a passing Gate in the migrated en
 currently installed, unpinned Mypy 2.3.0 reports 6,936 diagnostics across 193 of 419 source files,
 including diagnostics in historical Pydantic construction patterns and the already frozen v26.108
 builder. This tool-version migration result is recorded without relaxing a rule or rewriting
-source-bound evidence. The formal and independent builds perform zero credential lookup,
-construct zero real model clients, make zero real Provider calls, use zero GPU jobs, and produce
-zero empirical rows.
+source-bound evidence. The canonical-root full Pytest suite passes 1,189 tests, with four expected
+historical skips and one retained Pydantic destructive-test warning, in 945.66 seconds. The formal
+and independent builds perform zero credential lookup, construct zero real model clients, make
+zero real Provider calls, use zero GPU jobs, and produce zero empirical rows.
 
 The Runner Contract is
 `finance_v26_two_stage_runner_contract:34c9bc91fbab6fb571127a3904b318bf33ca533fa670aa4ca3eccf1de611bac1`.

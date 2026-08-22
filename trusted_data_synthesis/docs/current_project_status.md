@@ -2485,8 +2485,8 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.109 Provider Usage controls | 16,384 and 16,385 admitted and charged; length classification retained; 16,386 rejected as Instrument with Rescue blocked |
 | v26.109 recovery and destructive controls | complete Raw byte-identical with zero calls; orphan/oversize/reuse/kind/budget blocked; 30/30 mutations rejected |
 | v26.109 dual build | all 10 outputs byte-identical; zero credential lookup, real client/API/GPU, Stage 2 Provider calls, and empirical rows |
-| v26.108-v26.109 focused validation | 13 passed; focused Ruff check/format passed for all new source and tests; focused Mypy passed for the four v26.109 Runner implementation files |
-| v26.103-v26.109 adjacent regression | 48 passed in 42.13 seconds against the canonical immutable artifact root |
+| v26.108-v26.109 focused validation | 13 passed in 14.18 seconds; focused Ruff check/format passed for all new source and tests; focused Mypy passed for the four v26.109 Runner implementation files |
+| v26.103-v26.109 adjacent regression | 48 passed in 44.20 seconds against the canonical immutable artifact root |
 | v26.109 transition | exact v26.110 32-Job two-stage engineering calibration execution only; no 32K, role experiment, State Mapping, or production claim authorized |
 | v26.107 source replay | 1,872/1,872 files: 1,860 v26.106 transitive bindings, 9 v26.106 outputs, and 3 exact implementation files |
 | v26.107 historical action interface | 382 Calculator Observations across 30 Jobs; 1 success; exact shape partition 188/158/22/12/1/1; 79 contradictory Tool-affordance Prompts across 12 Jobs |
@@ -2541,7 +2541,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | Ruff check | passed |
 | Ruff format | all seven new v26.100/v26.102 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
 | Mypy 2.3.0 migration audit | 419 source files checked; 6,936 diagnostics across 193 files under the currently installed unpinned version; focused v26.109 check passes; no rule was relaxed and source-bound evidence was not rewritten |
-| Pytest | 1,141 passed, 4 expected v26.78/v26.84 success-state tests skipped in 878.93 seconds against the v26.104 source; one existing destructive-test warning |
+| Pytest | 1,189 passed, 4 expected v26.78/v26.84 success-state tests skipped in 945.66 seconds against the v26.109 source and canonical immutable artifact root; one existing Pydantic destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
 | v26.101 exact 8K execution | 32/32 Jobs completed; 391 HTTP-success exact-model calls; 2,498,889 provider-reported tokens; zero GPU |
 | v26.101 terminal denominator | 28 Completion-unusable, 1 Instrument failure, and 3 model-valid trajectories; no rerun or reclassification |
