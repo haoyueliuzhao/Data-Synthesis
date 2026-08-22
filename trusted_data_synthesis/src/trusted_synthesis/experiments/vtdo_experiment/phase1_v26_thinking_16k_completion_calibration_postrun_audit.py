@@ -35,8 +35,8 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_thinking_completio
 from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
 
-RUN_ID: Literal["finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822"] = (
-    "finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822"
+RUN_ID: Literal["finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822"] = (
+    "finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822"
 )
 PREFLIGHT_DIR = (
     "artifacts/vtdo_experiment/"
@@ -656,7 +656,7 @@ class DetailFile(FrozenModel):
 class PostrunAuditReport(FrozenModel):
     report_id: str = Field(min_length=1)
     run_id: Literal[
-        "finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822"
+        "finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822"
     ] = RUN_ID
     predecessor_preflight_report_id: str = EXPECTED_PREFLIGHT_REPORT_ID
     predecessor_execution_report_id: str = EXPECTED_EXECUTION_REPORT_ID
@@ -1453,6 +1453,9 @@ def _build_dynamic_budget(loaded: LoadedExecution) -> DynamicBudgetAudit:
         if terminal is None:
             continue
         result = results_by_job[raw.job.job_id]
+        replay = result.replay_result
+        if replay is None:
+            raise ValueError("v26.106 typed no-call result lacks Verifier Replay")
         certificates = {
             item.certificate_id: item for item in raw.provider_budget_audit.certificates
         }
@@ -1493,7 +1496,7 @@ def _build_dynamic_budget(loaded: LoadedExecution) -> DynamicBudgetAudit:
                 program_closed=result.program_closed,
                 terminal_node_completed=result.terminal_node_completed,
                 postterminal_verification_completed=(result.postterminal_verification_completed),
-                verifier_replay_passed=result.replay_result.passed,
+                verifier_replay_passed=replay.passed,
                 repeated_call_signature_count=result.repeated_call_signature_count,
                 repeated_failed_call_signature_count=(result.repeated_failed_call_signature_count),
             )
@@ -1608,7 +1611,10 @@ def _build_instrument_root_cause(
     rows = []
     for result in instrument_results:
         raw = raw_by_job[result.job_id]
-        failures = result.replay_result.failure_ids
+        replay = result.replay_result
+        if replay is None:
+            raise ValueError("v26.106 Instrument result lacks Verifier Replay")
+        failures = replay.failure_ids
         if len(failures) != 1:
             raise ValueError("v26.106 Instrument Replay failure denominator changed")
         match = re.fullmatch(r"observation:(\d+):unknown_tool", failures[0])
@@ -1623,8 +1629,8 @@ def _build_instrument_root_cause(
         if (
             terminal is None
             or raw.terminal_disposition != "typed_budget_no_call"
-            or result.replay_result.passed
-            or result.replay_result.replayed_observation_count != len(raw.observations) - 1
+            or replay.passed
+            or replay.replayed_observation_count != len(raw.observations) - 1
             or observation.call.tool_id != "open_document"
             or observation.status != "failed"
             or observation.error_code != "unknown_or_unselectable_tool"
@@ -1644,7 +1650,7 @@ def _build_instrument_root_cause(
                 provider_call_count=len(raw.provider_call_ids),
                 no_call_reason=terminal.reason_code,
                 observation_count=len(raw.observations),
-                replayed_observation_count=result.replay_result.replayed_observation_count,
+                replayed_observation_count=replay.replayed_observation_count,
                 replay_failure_id=failures[0],
                 failing_observation_index=index,
                 failing_observation_id=observation.observation_id,

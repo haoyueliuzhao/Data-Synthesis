@@ -93,8 +93,14 @@ No 32K single-stage profile or same-protocol 16K rerun is permitted.
 Finance v26.106 independently replayed 1,860 files: 1,237 v26.104 bound sources, ten v26.104
 outputs, 612 v26.105 execution files, and its exact implementation. It reparsed 32 checkpoint
 rows, 32 final results, 32 Raw Executions, 572 Provider artifacts, and 604 Raw descriptors. Formal
-and independent builds reproduced all nine outputs byte for byte with zero credential lookup,
+and independent v2 builds reproduced all nine outputs byte for byte with zero credential lookup,
 client construction, Provider calls, or GPU jobs. All 30 destructive mutations failed closed.
+
+The initial v26.106 v1 audit remains immutable and is superseded because package-wide Mypy found
+five local Optional-narrowing diagnostics after the focused source check passed. The v2 successor
+validates and caches the same Replay result before access. All seven scientific detail artifacts
+are byte-identical across v1 and v2; only source replay and the top-level report change to bind
+the type-complete source. No empirical value, terminal, diagnosis, or transition changed.
 
 The two Instrument failures share root cause
 `runtime_unknown_or_unselectable_tool_observation_not_replayed_by_verifier_v2`. In each, the
@@ -117,7 +123,7 @@ The authoritative identities are:
 - v26.105 Raw Lineage:
   `finance_v26_exact_16k_raw_lineage:dcc992eb0d2bc23853233e6007e279964366f42f6b07863027d503becf3baff4`;
 - v26.106 report:
-  `finance_v26_exact_16k_postrun_audit_report:c32d1c5bd8aee46d444a2a6f4e82352179a71fa83c87be7dbae8e805e44805f2`;
+  `finance_v26_exact_16k_postrun_audit_report:ba83dc516a0d4dbdf527cd9f630fd2e1ea513c1855c566c751aad86235cd1fd8`;
 - v26.106 Instrument root cause:
   `finance_v26_exact_16k_instrument_root_cause:6bf1ed0afd63196998a80b48c6fc41b559c597749d7e6371499fb29e809adcdb`;
 - v26.106 dynamic-budget audit:
@@ -2280,12 +2286,13 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.105 dynamic Budget Gate | 17/32 typed no-calls; CP95 upper bound 0.6845587338890586; all denied before decision calls with zero unauthorized calls; next-call-plus-reserve deficits 733-14,912 |
 | v26.105 Reasoning telemetry | 3,001,271/3,105,100 Reasoning/Completion tokens; aggregate fraction 0.966561785450; per-call median 0.975892584681 and p95 0.993100000000 |
 | v26.105 completed-run replay | resumed 32/32 without credential or client; zero new Provider calls; 572 Provider files and report SHA-256 unchanged |
-| v26.106 source replay | 1,860/1,860 files: 1,237 v26.104 bound sources, 10 v26.104 outputs, 612 v26.105 execution files, and 1 implementation file |
+| v26.106 v2 source replay | 1,860/1,860 files: 1,237 v26.104 bound sources, 10 v26.104 outputs, 612 v26.105 execution files, and 1 implementation file |
 | v26.106 independent lineage | 32 checkpoint, 32 result, 32 Raw, 572 Provider, and 604 Raw-descriptor records reparsed; all parent, Usage, privacy, and canonical-byte checks passed |
 | v26.106 Instrument root cause | 2 unavailable `open_document` typed Runtime failures were not replayed by Verifier v2; 16/17 and 18/19 Replay; historical terminals retained |
-| v26.106 dual build and destructive controls | all 9 outputs byte-identical; 30/30 mutations rejected; zero credential/client/API/GPU |
-| v26.106 focused regression | 9 passed; focused Ruff format/check and Mypy passed |
-| v26.97-v26.106 adjacent Completion regression | 64 passed in 42.67 seconds against the canonical immutable artifact root |
+| v26.106 v1-v2 scientific details | all 7 scientific detail files byte-identical; only source replay and report bind the type-complete v2 source |
+| v26.106 v2 dual build and destructive controls | all 9 outputs byte-identical; 30/30 mutations rejected; zero credential/client/API/GPU |
+| v26.106 focused regression | 9 passed in 6.39 seconds; focused Ruff format/check passed |
+| v26.97-v26.106 adjacent Completion regression | 64 passed in 42.48 seconds against the canonical immutable artifact root |
 | v26.106 transition | unknown-tool Replay repair plus true two-stage Thinking/Decision protocol static design and preflight only; no Provider call, 32K, role experiment, or State Mapping authorized |
 | v26.103 source replay | 1,221/1,221 files: 1,211 v26.102 transitive bindings, 8 v26.102 outputs, 1 implementation file, and 1 exact 16K profile |
 | v26.103 exact 16K profile | SHA-256 `f820ec425d17...`; exact model config `agent_model_config:3803...d437` and Thinking binding `prospective_thinking_model_binding:4041...eae2` |
@@ -2310,7 +2317,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | all seven new v26.100/v26.102 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
-| Mypy | 405 source files checked; one source-bound v26.70 local-list annotation diagnostic retained; v26.102 adds zero diagnostics |
+| Mypy | 411 source files checked; one source-bound v26.70 local-list annotation diagnostic retained; v26.106 v2 adds zero diagnostics |
 | Pytest | 1,141 passed, 4 expected v26.78/v26.84 success-state tests skipped in 878.93 seconds against the v26.104 source; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
 | v26.101 exact 8K execution | 32/32 Jobs completed; 391 HTTP-success exact-model calls; 2,498,889 provider-reported tokens; zero GPU |
@@ -2888,15 +2895,17 @@ unresolved bottleneck.
 - `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/raw_lineage_audit.json`
 - `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/raw_execution/`
 - `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/raw_provider_calls/`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/report.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/source_replay_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/execution_lineage_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/provider_telemetry_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/completion_outcome_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/dynamic_budget_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/instrument_root_cause_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/prospective_transition_contract.json`
-- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/destructive_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/execution_lineage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/provider_telemetry_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/completion_outcome_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/dynamic_budget_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/instrument_root_cause_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/prospective_transition_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/destructive_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/`
+  (immutable superseded initial audit)
 
 - `docs/finance_v26_103_v26_104_thinking_16k_binding_and_runner_preflight.md`
 - `config/deepseek_v4_flash_agent_thinking_16k_v1.json`

@@ -22,6 +22,13 @@ credential lookup, model-client construction, Provider call, or GPU job. It loca
 Instrument failures, reconstructed all Completion and resource denominators, and retained every
 historical terminal unchanged.
 
+The initial v26.106 v1 audit remains immutable and is superseded because package-wide Mypy found
+five local Optional-narrowing diagnostics after the focused source check passed. The v2 successor
+validates and caches the same Replay result before reading it. All seven scientific detail
+artifacts are byte-identical across v1 and v2; only source replay and the top-level report change
+to bind the type-complete source. The empirical execution, every historical terminal, every
+diagnostic count, and the prospective transition are unchanged.
+
 The authoritative result is blocked. A single 16,384-token reasoning-only length failure ends the
 single-stage Completion-bound ladder under the frozen v26.104 rule. A 32K single-stage profile,
 same-protocol 16K rerun, role protocol, Capability execution, Reachability execution, State
@@ -269,11 +276,12 @@ descriptors. Checkpoint, final result, Raw parent, Provider parent, request cert
 certificate, Usage record, and persisted descriptor identities all reproduced.
 
 Private reasoning content and hashes, raw HTTP bodies, and raw request bodies remain absent. The
-audit retained only Reasoning presence, length, and token telemetry. Formal and independent
+audit retained only Reasoning presence, length, and token telemetry. Formal and independent v2
 builds produced all nine v26.106 output files byte for byte. All 30 destructive mutations failed
 before any model-client construction or Provider call. The focused v26.106 suite passes 9/9
 tests, the adjacent v26.97-v26.106 Completion-bound/8K/16K suite passes 64/64 tests, and focused
-Ruff and Mypy checks pass.
+Ruff checks pass. Package-wide Mypy returns to the one retained historical v26.70 diagnostic;
+v26.106 v2 adds zero diagnostics.
 
 ## Prospective Contract
 
@@ -303,7 +311,7 @@ No empirical execution is currently authorized by this transition.
 - v26.105 Raw Lineage:
   `finance_v26_exact_16k_raw_lineage:dcc992eb0d2bc23853233e6007e279964366f42f6b07863027d503becf3baff4`;
 - v26.106 report:
-  `finance_v26_exact_16k_postrun_audit_report:c32d1c5bd8aee46d444a2a6f4e82352179a71fa83c87be7dbae8e805e44805f2`;
+  `finance_v26_exact_16k_postrun_audit_report:ba83dc516a0d4dbdf527cd9f630fd2e1ea513c1855c566c751aad86235cd1fd8`;
 - v26.106 execution-lineage audit:
   `finance_v26_exact_16k_execution_lineage_audit:2ad93603b048022a7a36b5d77d8e82473488759a529a244c1fcce70412a14a35`;
 - v26.106 Provider telemetry audit:
@@ -323,4 +331,6 @@ No empirical execution is currently authorized by this transition.
 - `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_16k_completion_calibration_postrun_audit.py`
 - `tests/test_v26_thinking_16k_completion_calibration_postrun_audit.py`
 - `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v2_20260822/`
 - `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/`
+  (immutable superseded initial audit)
