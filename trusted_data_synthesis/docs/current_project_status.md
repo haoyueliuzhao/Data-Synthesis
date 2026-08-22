@@ -36,12 +36,107 @@ tokens remain Completion Usage and count against the Completion and rollout boun
 successor Contract. At policy freeze those bounds were 4,096 and 120,000 tokens; v26.97 now
 prospectively registers larger engineering-calibration candidates under fresh identities.
 v26.99 persisted the exact 8K profile selected for the initial calibration; v26.103 now persists
-the exact 16K profile as the last authorized single-stage Completion-bound candidate.
+the exact 16K profile as the last authorized single-stage Completion-bound candidate. v26.105
+has now executed that candidate, and its reasoning-only length failure closes the single-stage
+Completion-bound ladder.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.105-v26.106 Thinking 16K Completion Calibration Execution And Audit Decision
+
+Finance v26.105 executed exactly the 32-Job engineering-calibration Manifest authorized by
+v26.104. Immediately before credential lookup it completed the exact `--prepare-only` replay and
+constructed no client. The online run then started at 0/32 with eight workers and no historical
+Job rerun, recovery, or reclassification.
+
+All 32 Jobs completed after 572 HTTP-success Provider calls. Every call requested, selected, and
+returned exact `deepseek-v4-flash`, used `thinking.type=enabled`, bound exact
+`max_tokens=16384`, and had its dynamic, request-body, and accounting-aware Provider certificates
+before invocation. Fallback, Provider-native tools, model discovery, transport failure,
+response-model gaps, Thinking-telemetry gaps, Usage gaps, one-token accounting-margin calls, and
+two-or-more-token excess calls were zero. Actual Provider Usage was charged without clipping.
+
+The run used 4,780,636 provider-reported tokens: 1,675,536 Prompt, 3,105,100 Completion, and
+3,001,271 Reasoning tokens. The aggregate Reasoning fraction was `0.966561785450`; the per-call
+median and p95 were `0.975892584681` and `0.993100000000`. Estimated cost telemetry was USD
+0.98291580800000008797, and no local GPU job ran. Private reasoning content and hashes, raw HTTP
+bodies, and raw request bodies were not persisted.
+
+The historical terminal denominator is 14 `completion_unusable`, 15
+`typed_budget_no_call`, two `instrument_failure`, and one `model_invalid_trajectory`. The two
+Instrument rows also contain valid typed no-call Raw terminals, so the typed-no-call Job count is
+17/32. Its one-sided 95% Clopper-Pearson upper bound is `0.6845587338890586`; the frozen
+zero-failure Budget Adequacy Gate failed.
+
+All 17 no-calls occurred before decision requests with reason
+`required_reserve_not_available` and zero calls for the denied requests. Cumulative Usage was
+171,114-199,811; the next-request-plus-required-reserve projection exceeded 240,000 by
+733-14,912 tokens. Nine rows still required Rescue plus final-answer reserve, while eight had
+already consumed Rescue. No row exceeded the rollout ceiling after a response. These next-call
+deficits do not establish a sufficient full-trajectory budget and authorize no budget increase.
+
+There were 37 Primary Completion failures: 33 invalid response Contracts, two invalid JSON
+responses, one empty final content, and one reasoning-only length truncation. All 23 Rescue calls
+were usable, but 14 Jobs later encountered a second Primary Completion failure after Rescue had
+been consumed. The Completion-unusable count is 14/32 with one-sided 95% upper bound
+`0.5968316155208788`; the zero-failure Completion Gate failed.
+
+The single length call reported exactly 16,384 Completion and Reasoning tokens,
+`finish_reason=length`, and no usable public final content. There were 571 below-bound calls, one
+at-bound call, zero one-token-margin calls, and zero calls at two or more excess tokens. Under the
+frozen v26.104 stop rule, this one reasoning-only failure ends the single-stage Completion ladder.
+No 32K single-stage profile or same-protocol 16K rerun is permitted.
+
+Finance v26.106 independently replayed 1,860 files: 1,237 v26.104 bound sources, ten v26.104
+outputs, 612 v26.105 execution files, and its exact implementation. It reparsed 32 checkpoint
+rows, 32 final results, 32 Raw Executions, 572 Provider artifacts, and 604 Raw descriptors. Formal
+and independent builds reproduced all nine outputs byte for byte with zero credential lookup,
+client construction, Provider calls, or GPU jobs. All 30 destructive mutations failed closed.
+
+The two Instrument failures share root cause
+`runtime_unknown_or_unselectable_tool_observation_not_replayed_by_verifier_v2`. In each, the
+model selected unavailable `open_document`; the Runtime persisted the exact public typed failure
+`unknown_or_unselectable_tool`, while Verifier v2 recorded `unknown_tool` and continued without
+replaying that deterministic result. Replay covered 16/17 and 18/19 Observations. Provider
+telemetry, Usage, pre-call binding, and Raw typed budget termination remained valid. Historical
+terminals are not reclassified; a prospective repair must reproduce the exact typed Runtime
+failure without inserting or choosing a model action.
+
+The complete denominator has one Program closure, nine mechanism successes, twelve requested-path
+adherences, and zero independently valid trajectories. These values are descriptive and cannot
+rescue any Gate. The repeated engineering sources and every v26.105 row remain ineligible for
+Capability, Reachability, State Mapping, State Support, release, or production evidence.
+
+The authoritative identities are:
+
+- v26.105 report:
+  `finance_v26_exact_16k_execution_report:fa01ca877d5f6c50861c6f145a6c3f2ee8ef22a372f57884a8d5714f283658d0`;
+- v26.105 Raw Lineage:
+  `finance_v26_exact_16k_raw_lineage:dcc992eb0d2bc23853233e6007e279964366f42f6b07863027d503becf3baff4`;
+- v26.106 report:
+  `finance_v26_exact_16k_postrun_audit_report:c32d1c5bd8aee46d444a2a6f4e82352179a71fa83c87be7dbae8e805e44805f2`;
+- v26.106 Instrument root cause:
+  `finance_v26_exact_16k_instrument_root_cause:6bf1ed0afd63196998a80b48c6fc41b559c597749d7e6371499fb29e809adcdb`;
+- v26.106 dynamic-budget audit:
+  `finance_v26_exact_16k_dynamic_budget_audit:669bede793c026ba29ecd302b534a96ef237226baa4b3ff4c29c4629a9df0eb5`;
+- prospective transition:
+  `finance_v26_exact_16k_postrun_transition:3b521a4324e067c94fa19b219514a7b9666e4638b8f31b5d8472dd673564ee90`.
+
+The only permitted transition is:
+
+```text
+authority_preserving_unknown_tool_replay_repair_and_true_two_stage_protocol_preflight_only
+```
+
+This authorizes credential-free design and preflight only. The successor requires fresh protocol,
+per-stage Completion and Usage, dynamic resource, TaskPackage, Contract, Manifest, Job,
+execution, and report identities. Every future Provider call must remain Thinking-enabled, and
+private reasoning may not be persisted, hashed, or transferred between stages. No Provider call,
+role experiment, State Mapping, release, or production Contribution is authorized. See
+`docs/finance_v26_105_v26_106_thinking_16k_completion_calibration_execution_and_audit.md`.
 
 ## v26.103-v26.104 Thinking 16K Binding And Runner Preflight Decision
 
@@ -129,17 +224,16 @@ The authoritative identities are:
 - Runner fixture:
   `finance_v26_exact_16k_runner_fixture:b965c842b5965d58225f00e3321c9ab91bc02024b3b1dda34b4b479b71245522`.
 
-The only permitted transition is:
+At the v26.104 preflight freeze, the only permitted transition was:
 
 ```text
 thinking_16k_completion_calibration_execution_only
 ```
 
-This is a positive static-binding and execution-Instrument preflight, not empirical 16K
-Completion usability. v26.105 has not executed. Any future 16K reasoning-only or partial length
-failure ends the single-stage Completion-bound ladder and permits only a true two-stage
-Thinking/Decision redesign, never automatic 32K escalation. A Completion-usable but behavior-floor
-denominator stops Completion tuning and remains descriptive. Capability Development, State
+This remains a positive static-binding and execution-Instrument preflight, not empirical 16K
+Completion usability. v26.105 has now consumed its execution authorization and produced the
+negative result recorded above. Its reasoning-only length failure ends the single-stage ladder;
+the historical v26.104 transition is no longer current. Capability Development, State
 Reachability, Fresh Confirmation, No-C VTDO, Student training, Exact Target, GP-C, and production
 Contribution remain forbidden. Production Contribution remains zero. See
 `docs/finance_v26_103_v26_104_thinking_16k_binding_and_runner_preflight.md`.
@@ -2177,6 +2271,22 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
 | Check | Result |
 | --- | --- |
+| v26.105 exact 16K execution | 32/32 Jobs completed; 572 HTTP-success exact-model calls; 4,780,636 provider-reported tokens; USD 0.98291580800000008797 estimated cost telemetry; zero GPU |
+| v26.105 terminal denominator | 14 Completion-unusable, 15 typed-budget terminals, 2 Instrument failures, and 1 model-invalid trajectory; typed no-call observed in 17 Jobs |
+| v26.105 request and Provider Gates | exact 16K request binding, dynamic pre-call binding, response telemetry, actual-Usage charging, one-token margin, two-plus excess rejection, exact model, fallback absence, and privacy passed |
+| v26.105 Usage delta | 571 below-bound calls, 1 exact-bound reasoning-only length call, 0 one-token-margin calls, and 0 calls at two or more excess tokens |
+| v26.105 Completion Gate | 14/32 unusable; CP95 upper bound 0.5968316155208788; 33 response-contract, 2 JSON, 1 empty-content, and 1 reasoning-only length failure |
+| v26.105 Rescue | 23/23 Rescue calls usable; 14 Jobs later failed a second Primary Completion after the one Rescue was consumed |
+| v26.105 dynamic Budget Gate | 17/32 typed no-calls; CP95 upper bound 0.6845587338890586; all denied before decision calls with zero unauthorized calls; next-call-plus-reserve deficits 733-14,912 |
+| v26.105 Reasoning telemetry | 3,001,271/3,105,100 Reasoning/Completion tokens; aggregate fraction 0.966561785450; per-call median 0.975892584681 and p95 0.993100000000 |
+| v26.105 completed-run replay | resumed 32/32 without credential or client; zero new Provider calls; 572 Provider files and report SHA-256 unchanged |
+| v26.106 source replay | 1,860/1,860 files: 1,237 v26.104 bound sources, 10 v26.104 outputs, 612 v26.105 execution files, and 1 implementation file |
+| v26.106 independent lineage | 32 checkpoint, 32 result, 32 Raw, 572 Provider, and 604 Raw-descriptor records reparsed; all parent, Usage, privacy, and canonical-byte checks passed |
+| v26.106 Instrument root cause | 2 unavailable `open_document` typed Runtime failures were not replayed by Verifier v2; 16/17 and 18/19 Replay; historical terminals retained |
+| v26.106 dual build and destructive controls | all 9 outputs byte-identical; 30/30 mutations rejected; zero credential/client/API/GPU |
+| v26.106 focused regression | 9 passed; focused Ruff format/check and Mypy passed |
+| v26.97-v26.106 adjacent Completion regression | 64 passed in 42.67 seconds against the canonical immutable artifact root |
+| v26.106 transition | unknown-tool Replay repair plus true two-stage Thinking/Decision protocol static design and preflight only; no Provider call, 32K, role experiment, or State Mapping authorized |
 | v26.103 source replay | 1,221/1,221 files: 1,211 v26.102 transitive bindings, 8 v26.102 outputs, 1 implementation file, and 1 exact 16K profile |
 | v26.103 exact 16K profile | SHA-256 `f820ec425d17...`; exact model config `agent_model_config:3803...d437` and Thinking binding `prospective_thinking_model_binding:4041...eae2` |
 | v26.103 Provider Usage semantics | exact request remains 16,384; 16,385 is accounting-only and fully charged; 16,386 or larger fails closed; no Completion reclassification |
@@ -2192,7 +2302,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.104 dual build and destructive controls | all 10 outputs byte-identical; 30/30 mutations rejected; zero real API/GPU and zero empirical rows |
 | v26.103-v26.104 focused regression | 17 passed; Ruff check/format and focused Mypy passed for all new implementation source |
 | v26.88-v26.104 adjacent thinking/budget regression | 100 passed in 108.91 seconds against the canonical immutable artifact root |
-| v26.104 transition | exact v26.105 32-Job 16K engineering-calibration execution only; no higher Completion bound or role experiment authorized |
+| v26.104 historical transition | exact v26.105 execution authorization was consumed; its negative result is now audited by v26.106 |
 | Development target/design focus | 10 passed |
 | v24 Agent/runtime focus | 38 passed |
 | v25 capability-identifiability focus | 11 passed |
@@ -2639,13 +2749,21 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_16k_completion_calibration_execution_only
+authority_preserving_unknown_tool_replay_repair_and_true_two_stage_protocol_preflight_only
 ```
 
-v26.103 has persisted and exactly bound the 16K profile, rematerialized the complete affected
-identity chain, and frozen the Provider Usage semantics Contract. v26.104 has implemented the
-exact Runner and passed its credential-free preflight. The only newly authorized action is the
-exact v26.105 32-Job engineering-calibration execution; it has not started.
+v26.105 has consumed the exact 32-Job 16K authorization. Do not rerun, recover, or reclassify any
+of its Jobs. Its 14 Completion-unusable Jobs, 17 typed no-calls, two historical Instrument
+terminals, and one reasoning-only length failure are jointly immutable. v26.106 independently
+reproduced the complete denominator and localized the Instrument and dynamic-budget roots.
+
+The successor may only repair prospective Verifier Replay for the Runtime-defined unavailable-tool
+typed failure and design a true two-stage Thinking/Decision protocol under fresh identities. It
+must freeze separate per-stage Completion and Usage bounds, a fresh dynamic resource Contract,
+the public cross-stage boundary, privacy, client/request binding, recovery, aggregation, and
+destructive controls before any Provider call. It may not register a 32K single-stage candidate,
+rerun the 16K protocol, persist or transfer private reasoning, or infer that the observed
+733-14,912 next-call deficits are sufficient full-trajectory budgets.
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
 reclassify any of its 32 Jobs. Its positive typed-no-call result and negative Completion result
@@ -2719,17 +2837,15 @@ exact client, request, Runner, recovery, and aggregation route before any real P
 The 24 sources are repeated engineering sources, not a fresh Population: 22 were model-exposed
 in v26.95 and two were unexposed. They, their Compiler fixtures, and all v26.101 calibration rows
 remain ineligible for Capability, Reachability, State Mapping, State Support, or release evidence.
-No v26.95 or v26.101 Job may be reused. The successor identities must arise only from the exact
-16K profile and corrected Provider Usage lineage, not from resampling or unrelated protocol
-changes.
+No v26.95, v26.101, or v26.105 Job may be reused. The successor identities must arise from the
+new two-stage protocol and corrected Replay/resource lineage, not from resampling or unrelated
+protocol changes.
 
-The complete v26.101 denominator contains length and reasoning-only Completion failures, so the
-only Completion transition now authorized is the exact fresh v26.105 16K execution. Its
-non-length Completion failures do not authorize a parallel same-bound repair. Any v26.105
-reasoning-only or partial length failure ends the single-stage bound ladder and permits only a
-true two-stage protocol redesign, never 32K escalation. A fully Completion-usable denominator may
-authorize only a fresh Thinking role-protocol freeze; low Program closure or semantic validity
-must stop Completion tuning and remain descriptive.
+The complete v26.105 denominator contains a reasoning-only exact-bound length failure, so the
+single-stage bound ladder has ended. Its non-length Completion failures do not authorize a
+parallel same-bound repair. The true two-stage transition is design and preflight only; it does
+not authorize empirical calibration. Low Program closure, mechanism success, path adherence, or
+semantic validity remains descriptive and cannot rescue Completion, Budget, or Instrument Gates.
 
 Every future Provider call must continue to bind exact `thinking.type=enabled` before credential
 lookup and client construction. Privacy-redacted telemetry capture before content parsing remains
@@ -2748,16 +2864,39 @@ design, v26.98 is a zero-generation negative execution preflight, v26.99 is a ze
 positive static binding rematerialization, v26.100 is a zero-generation positive Runner
 preflight, v26.101 is the completed negative 8K calibration, and v26.102 is its zero-generation
 post-run audit. v26.103 is the zero-generation 16K binding and Usage-semantics rematerialization,
-and v26.104 is its zero-generation positive Runner preflight. None freezes a Thinking role
-protocol. Only the exact v26.105 16K engineering calibration is now authorized online; no other
-experiment is. Task depth and capability informativeness remain unresolved independently of the
-Completion channel.
+v26.104 is its zero-generation positive Runner preflight, v26.105 is the completed negative 16K
+calibration, and v26.106 is its zero-generation independent post-run audit. None freezes a
+Thinking role protocol. No online experiment is currently authorized. Task depth and capability
+informativeness remain unresolved independently of the Completion channel.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_105_v26_106_thinking_16k_completion_calibration_execution_and_audit.md`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_16k_completion_calibration_postrun_audit.py`
+- `tests/test_v26_thinking_16k_completion_calibration_postrun_audit.py`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/online_source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/frozen_exact_16k_completion_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/frozen_exact_16k_job_manifest.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/exact_16k_job_results.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/exact_16k_job_results.checkpoint.jsonl`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/raw_lineage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/raw_execution/`
+- `artifacts/vtdo_experiment/finance_v26_105_thinking_16k_completion_calibration_execution_v1_20260822/raw_provider_calls/`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/execution_lineage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/provider_telemetry_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/completion_outcome_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/dynamic_budget_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/instrument_root_cause_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/prospective_transition_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_106_thinking_16k_completion_calibration_postrun_audit_v1_20260822/destructive_audit.json`
 
 - `docs/finance_v26_103_v26_104_thinking_16k_binding_and_runner_preflight.md`
 - `config/deepseek_v4_flash_agent_thinking_16k_v1.json`
