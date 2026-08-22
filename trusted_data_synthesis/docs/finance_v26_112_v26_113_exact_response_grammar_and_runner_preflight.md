@@ -250,7 +250,8 @@ Formal and independent v26.112 builds reproduce all ten outputs byte for byte. F
 independent v26.113 builds reproduce all seven outputs byte for byte. The focused test suite passes
 5/5 in 15.92 seconds. Focused Ruff format/check passes for all five new Python files, and focused
 Mypy reports no issue in the four implementation modules. All formal and test builds use zero
-credential lookup, real API calls, and GPU jobs.
+credential lookup, real API calls, and GPU jobs. The canonical v26.103-v26.113 adjacent
+Completion and two-stage regression passes 60/60 against the complete immutable artifact root.
 
 ## Decision
 

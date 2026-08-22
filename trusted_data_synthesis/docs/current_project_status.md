@@ -2666,6 +2666,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.113 Rescue, Usage, and recovery | one invalid Primary recovered by exact-v2 Rescue; 16,384/16,385 admitted and charged; 16,386 rejected with Rescue blocked; complete Raw recovery zero-call and byte-identical; orphan/oversize/reuse/budget denied |
 | v26.113 dual build and destructive controls | all 7 outputs byte-identical; 10/10 object-revalidation mutations rejected; zero credential/real client/API/GPU, Stage 2 Provider calls, and empirical rows |
 | v26.112-v26.113 focused validation | 5 passed in 15.92 seconds; focused Ruff format/check and Mypy for all 4 implementation modules passed |
+| v26.103-v26.113 adjacent regression | 60 passed against the canonical complete immutable artifact root |
 | v26.113 transition | exact fresh 32-Job response-Grammar calibration execution only; no v26.110 rerun, bound/profile change, role experiment, State Mapping, release, or production authorization |
 | v26.110 source replay | 1,911/1,911 files: 1,900 v26.109 transitive bindings, 10 v26.109 outputs, and 1 exact implementation file; zero credential/client/API/GPU |
 | v26.110 computed preexecution validity | 32 Jobs, 256 scripted Stage 1 calls, 224 reversible Stage 2 Commits; 32/32 Verifier v3, independent validity, and mechanism passes; zero real or Stage 2 Provider calls |
