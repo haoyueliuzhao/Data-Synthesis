@@ -127,7 +127,8 @@ bodies remained absent.
 
 Formal and independent builds reproduced all ten v26.111 outputs byte for byte. Focused tests
 passed 4/4; focused Ruff format/check and focused Mypy passed. All 20 destructive mutations were
-rejected with zero Provider calls.
+rejected with zero Provider calls. The canonical v26.103-v26.111 adjacent regression passed
+55/55 in 90.10 seconds against the complete immutable artifact root.
 
 ## Response-Interface Root Cause
 

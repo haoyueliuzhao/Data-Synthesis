@@ -2582,6 +2582,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.111 dual build and destructive controls | all 10 outputs byte-identical; 20/20 mutations rejected; zero credential/client/API/GPU |
 | v26.111 focused validation | 4 passed in 8.79 seconds; focused Ruff format/check and focused Mypy passed |
 | v26.110 source focused validation | 3 passed in 42.55 seconds; v26.103-v26.110 adjacent regression 51 passed in 83.49 seconds |
+| v26.103-v26.111 adjacent regression | 55 passed in 90.10 seconds against the canonical immutable artifact root |
 | v26.111 transition | fresh exact response grammar, TaskPackage, Contract, Manifest, Job, Runner, and credential-free preflight only; no Provider call or bound/profile change authorized |
 | v26.108 source replay | 1,884/1,884 files: 1,872 v26.107 transitive bindings, 10 v26.107 outputs, 1 Stage 1 profile, and 1 exact implementation file |
 | v26.108 Stage profiles | fresh exact Flash 16K Thinking Stage 1; deterministic reversible Stage 2; zero Stage 2 profile/client/Provider route |
