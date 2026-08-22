@@ -56,6 +56,9 @@ def test_v26_102_replays_every_bound_and_execution_file_before_diagnostics(
     assert not replay.credential_lookup_attempted
     assert replay.model_api_calls == replay.gpu_jobs == 0
     assert report.source_replay_audit_id == replay.audit_id
+    assert report.run_id == (
+        "finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822"
+    )
 
 
 def test_v26_102_reconstructs_complete_raw_and_provider_lineage(

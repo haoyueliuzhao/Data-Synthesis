@@ -32,9 +32,10 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_thinking_completio
     ThinkingRepairJobResult,
 )
 from trusted_synthesis.hashing import canonical_hash
+from trusted_synthesis.runtime.agent.schema import ModelCallTelemetry
 
-RUN_ID: Literal["finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822"] = (
-    "finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822"
+RUN_ID: Literal["finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822"] = (
+    "finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822"
 )
 PREFLIGHT_DIR = (
     "artifacts/vtdo_experiment/"
@@ -470,7 +471,7 @@ class DetailFile(FrozenModel):
 class PostrunAuditReport(FrozenModel):
     report_id: str = Field(min_length=1)
     run_id: Literal[
-        "finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822"
+        "finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822"
     ] = RUN_ID
     predecessor_preflight_report_id: str = EXPECTED_PREFLIGHT_REPORT_ID
     predecessor_execution_report_id: str = EXPECTED_EXECUTION_REPORT_ID
@@ -926,6 +927,29 @@ def _telemetry_payload(item: Exact8KRawProviderCall) -> dict[str, Any]:
     return item.provider_telemetry.model_dump(mode="json")
 
 
+def _required_usage(telemetry: ModelCallTelemetry) -> tuple[int, int, int, int, int]:
+    prompt_tokens = telemetry.prompt_tokens
+    completion_tokens = telemetry.completion_tokens
+    total_tokens = telemetry.total_tokens
+    reasoning_tokens = telemetry.reasoning_tokens
+    reasoning_content_length = telemetry.reasoning_content_length
+    if (
+        prompt_tokens is None
+        or completion_tokens is None
+        or total_tokens is None
+        or reasoning_tokens is None
+        or reasoning_content_length is None
+    ):
+        raise ValueError("v26.102 Provider Usage or Thinking telemetry is incomplete")
+    return (
+        prompt_tokens,
+        completion_tokens,
+        total_tokens,
+        reasoning_tokens,
+        reasoning_content_length,
+    )
+
+
 def _build_provider_telemetry(loaded: LoadedExecution) -> ProviderTelemetryAudit:
     calls = loaded.provider_calls
     telemetry = [item.provider_telemetry for item in calls]
@@ -939,8 +963,15 @@ def _build_provider_telemetry(loaded: LoadedExecution) -> ProviderTelemetryAudit
         bool(item.get("response_shape", {}).get("response_envelope_captured_before_content_parse"))
         for item in payloads
     ]
+    usage = [_required_usage(item) for item in telemetry]
+    prompt_tokens = [item[0] for item in usage]
+    completion_tokens = [item[1] for item in usage]
+    total_tokens = [item[2] for item in usage]
+    reasoning_tokens = [item[3] for item in usage]
+    reasoning_content_lengths = [item[4] for item in usage]
     overruns = [
-        item.provider_telemetry.completion_tokens - item.request_max_tokens for item in calls
+        completion - item.request_max_tokens
+        for item, completion in zip(calls, completion_tokens, strict=True)
     ]
     values = {
         "provider_call_count": len(calls),
@@ -956,16 +987,12 @@ def _build_provider_telemetry(loaded: LoadedExecution) -> ProviderTelemetryAudit
         "provider_native_tool_call_count": sum(native),
         "model_discovery_call_count": sum(item.discovery_attempted for item in telemetry),
         "usage_complete_count": sum(
-            item.prompt_tokens >= 0
-            and item.completion_tokens >= 0
-            and item.total_tokens == item.prompt_tokens + item.completion_tokens
-            for item in telemetry
+            prompt >= 0 and completion >= 0 and total == prompt + completion
+            for prompt, completion, total, _, _ in usage
         ),
         "thinking_telemetry_complete_count": sum(
-            item.reasoning_content_present
-            and item.reasoning_content_length > 0
-            and item.reasoning_tokens > 0
-            for item in telemetry
+            item.reasoning_content_present and usage_row[4] > 0 and usage_row[3] > 0
+            for item, usage_row in zip(telemetry, usage, strict=True)
         ),
         "response_envelope_preparse_count": sum(preparse),
         "exact_8k_request_certificate_count": sum(
@@ -977,18 +1004,18 @@ def _build_provider_telemetry(loaded: LoadedExecution) -> ProviderTelemetryAudit
         ),
         "primary_provider_call_count": sum(item.phase == "primary" for item in calls),
         "rescue_provider_call_count": sum(item.phase == "rescue" for item in calls),
-        "provider_total_tokens": sum(item.total_tokens for item in telemetry),
-        "prompt_tokens_total": sum(item.prompt_tokens for item in telemetry),
-        "completion_tokens_total": sum(item.completion_tokens for item in telemetry),
-        "reasoning_tokens_total": sum(item.reasoning_tokens for item in telemetry),
-        "reasoning_content_length_total": sum(item.reasoning_content_length for item in telemetry),
+        "provider_total_tokens": sum(total_tokens),
+        "prompt_tokens_total": sum(prompt_tokens),
+        "completion_tokens_total": sum(completion_tokens),
+        "reasoning_tokens_total": sum(reasoning_tokens),
+        "reasoning_content_length_total": sum(reasoning_content_lengths),
         "estimated_cost_usd": format(
             sum((Decimal(item.estimated_cost_usd) for item in loaded.results), Decimal("0")),
             "f",
         ),
         "completion_usage_within_request_bound_count": sum(value <= 0 for value in overruns),
         "completion_usage_over_request_bound_count": sum(value > 0 for value in overruns),
-        "maximum_completion_usage_tokens": max(item.completion_tokens for item in telemetry),
+        "maximum_completion_usage_tokens": max(completion_tokens),
         "maximum_request_bound_tokens": max(item.request_max_tokens for item in calls),
         "maximum_observed_overrun_tokens": max(overruns),
         "private_reasoning_payload_count": sum(
@@ -1050,7 +1077,7 @@ def _build_root_cause(loaded: LoadedExecution) -> InstrumentRootCauseAudit:
     overrun_calls = [
         item
         for item in loaded.provider_calls
-        if item.provider_telemetry.completion_tokens > item.request_max_tokens
+        if _required_usage(item.provider_telemetry)[1] > item.request_max_tokens
     ]
     instrument_results = [
         item for item in loaded.results if item.terminal_category == "instrument_failure"
@@ -1079,6 +1106,9 @@ def _build_root_cause(loaded: LoadedExecution) -> InstrumentRootCauseAudit:
         or final_attempt.error != "ValueError: v26.100 cannot prepare after a terminal budget state"
     ):
         raise ValueError("v26.102 Instrument root-cause lineage changed")
+    prompt_tokens, completion_tokens, total_tokens, reasoning_tokens, _ = _required_usage(
+        call.provider_telemetry
+    )
     values = {
         "request_certificate_max_tokens": call.request_binding_certificate.request_max_tokens,
         "dynamic_certificate_completion_bound": (
@@ -1089,13 +1119,11 @@ def _build_root_cause(loaded: LoadedExecution) -> InstrumentRootCauseAudit:
             for item in raw.provider_budget_audit.certificates
             if item.request_index == call.call_index
         ),
-        "provider_reported_completion_tokens": call.provider_telemetry.completion_tokens,
-        "provider_reported_reasoning_tokens": call.provider_telemetry.reasoning_tokens,
-        "provider_reported_prompt_tokens": call.provider_telemetry.prompt_tokens,
-        "provider_reported_total_tokens": call.provider_telemetry.total_tokens,
-        "provider_reported_overrun_tokens": (
-            call.provider_telemetry.completion_tokens - call.request_max_tokens
-        ),
+        "provider_reported_completion_tokens": completion_tokens,
+        "provider_reported_reasoning_tokens": reasoning_tokens,
+        "provider_reported_prompt_tokens": prompt_tokens,
+        "provider_reported_total_tokens": total_tokens,
+        "provider_reported_overrun_tokens": completion_tokens - call.request_max_tokens,
         "public_content_length": envelope["public_content_length"],
         "failure_type": call.failure_artifact.failure_type if call.failure_artifact else None,
         "exact_model_requested_selected_returned": (
@@ -1109,7 +1137,7 @@ def _build_root_cause(loaded: LoadedExecution) -> InstrumentRootCauseAudit:
         ],
         "response_envelope_schema_valid": response_shape["response_envelope_schema_valid"],
         "other_provider_calls_within_bound_count": sum(
-            item.provider_telemetry.completion_tokens <= item.request_max_tokens
+            _required_usage(item.provider_telemetry)[1] <= item.request_max_tokens
             for item in loaded.provider_calls
         ),
         "other_budget_contract_failure_count": sum(

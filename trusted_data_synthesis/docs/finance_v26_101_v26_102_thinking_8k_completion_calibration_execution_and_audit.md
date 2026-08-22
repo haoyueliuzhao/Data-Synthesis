@@ -47,7 +47,7 @@ finance_v26_exact_8k_execution_report:5eb7cc814364afa4cf15a3406d31c4ff4a4919092c
 The authoritative v26.102 audit report is:
 
 ```text
-finance_v26_exact_8k_postrun_audit_report:af7661f2a6d8697f8912f91d90710aed402833df64caaa86b29df1053c871fab
+finance_v26_exact_8k_postrun_audit_report:1248ac237af69c5b3657b1c70e765dbf9eedb33ad1b4e94d6580711d4cc8de0f
 ```
 
 The only permitted transition is:
@@ -239,13 +239,20 @@ changed exact model or request bound, disabled Thinking, private payload persist
 clipping, semantic rescue, automatic or direct 16K execution, and a prospective accounting margin
 of two tokens.
 
-Formal and independent builds reproduced all eight outputs byte for byte. Each made zero model
-calls and used zero GPU jobs.
+Formal and independent v2 builds reproduced all eight outputs byte for byte. Each made zero
+model calls and used zero GPU jobs.
+
+The initial v1 build remains immutable and is superseded because package-wide Mypy found 17 local
+Optional-narrowing diagnostics after the focused source check had passed. The v2 source validates
+and caches the same five non-null Provider Usage and Thinking telemetry values as concrete
+integers. Execution lineage, Provider telemetry, Completion outcome, Instrument root cause,
+prospective transition, and destructive-audit files are byte-identical across v1/v2. Only source
+replay and the top-level report differ because they bind the type-complete source.
 
 The authoritative audit identities are:
 
 - source replay:
-  `finance_v26_exact_8k_postrun_source_replay:1f3c060b1ad2d89d7efd9b9e3b62ff539cb3b57cec8aec65370f618ed52cb806`;
+  `finance_v26_exact_8k_postrun_source_replay:82e087de1b384329f252673ced2f4a012d9942b66b226de366cda32cc707cb7b`;
 - execution lineage:
   `finance_v26_exact_8k_execution_lineage_audit:e2d19af4c165ff2a2595c3e23e0877a91a5a5c5223a6cf18961935231fa5096c`;
 - Provider telemetry:
@@ -292,20 +299,25 @@ Production Contribution remains zero.
 
 ## Validation
 
-Validation at initial audit freeze:
+Validation at final v2 freeze:
 
 ```text
-Ruff focused check: passed
+Ruff focused and repository-wide checks: passed
 Ruff format for the new implementation and test: passed
 Focused Mypy: 1 source file checked, no issues
-v26.102 focused regression: 8 passed in 4.94 seconds
-formal/independent artifact comparison: 8/8 byte-identical
-v26.102 source replay: 1,211/1,211 passed
+Package-wide Mypy: 405 source files checked; one retained v26.70 diagnostic
+v26.102 v2 focused regression: 8 passed in 7.61 seconds
+v26.88-v26.102 adjacent regression: 120 passed in 108.48 seconds
+formal/independent v2 artifact comparison: 8/8 byte-identical
+v1/v2 scientific detail comparison: 6/6 byte-identical
+v26.102 v2 source replay: 1,211/1,211 passed
+Full Pytest: 1,141 passed, 4 expected skips, 1 retained warning in 903.56 seconds
 model API calls / GPU jobs: 0 / 0
 ```
 
-Adjacent and repository-wide validation are rerun after integration. Those checks do not alter
-the eight source-bound scientific outputs.
+Repository-wide Ruff passed. Package-wide Mypy retains only the source-bound v26.70 local-list
+annotation diagnostic; v26.102 adds none. These checks do not alter the eight source-bound
+scientific outputs.
 
 ## Authoritative Artifacts
 
@@ -316,11 +328,11 @@ the eight source-bound scientific outputs.
 - `artifacts/vtdo_experiment/finance_v26_101_thinking_8k_completion_calibration_execution_v1_20260822/raw_lineage_audit.json`
 - `artifacts/vtdo_experiment/finance_v26_101_thinking_8k_completion_calibration_execution_v1_20260822/raw_execution/`
 - `artifacts/vtdo_experiment/finance_v26_101_thinking_8k_completion_calibration_execution_v1_20260822/raw_provider_calls/`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/report.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/source_replay_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/execution_lineage_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/provider_telemetry_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/completion_outcome_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/instrument_root_cause_audit.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/prospective_transition_contract.json`
-- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v1_20260822/destructive_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/execution_lineage_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/provider_telemetry_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/completion_outcome_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/instrument_root_cause_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/prospective_transition_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_102_thinking_8k_completion_calibration_postrun_audit_v2_20260822/destructive_audit.json`
