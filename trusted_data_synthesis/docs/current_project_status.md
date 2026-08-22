@@ -8,8 +8,8 @@ messages are not treated as experimental evidence.
 
 ## Repository Identity
 
-- Canonical implementation repository: `/data1/zhuxinrui/projects/Data-Synthesis`
-- Immutable experiment artifact root: `/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis`
+- Canonical implementation repository: `/home/zhuxinrui/datatmp/projects/Data-Synthesis`
+- Immutable experiment artifact root: `/home/zhuxinrui/datatmp/projects/Data-Synthesis/trusted_data_synthesis`
 - Integration branch: `main`; isolated worktrees are temporary implementation staging only
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
@@ -38,12 +38,116 @@ prospectively registers larger engineering-calibration candidates under fresh id
 v26.99 persisted the exact 8K profile selected for the initial calibration; v26.103 now persists
 the exact 16K profile as the last authorized single-stage Completion-bound candidate. v26.105
 has now executed that candidate, and its reasoning-only length failure closes the single-stage
-Completion-bound ladder.
+Completion-bound ladder. v26.108 now binds a fresh 16K Stage 1 profile inside a true two-stage
+protocol; v26.109 preflights the exact Runner while keeping Stage 2 at zero Provider calls.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.108-v26.109 Two-Stage Profile, Manifest, And Runner Preflight Decision
+
+Finance v26.108 completed the fresh static identity transition authorized by v26.107. Before
+profile parsing it replayed 1,884/1,884 files: all 1,872 v26.107 transitive bindings, all ten
+v26.107 outputs, its exact implementation, and the new Stage 1 profile. Formal and independent
+builds reproduced all twelve outputs byte for byte. The stage performed no credential lookup,
+constructed no client, made zero Provider calls, used zero GPU jobs, and produced zero empirical
+rows.
+
+The tracked Stage 1 profile
+`config/deepseek_v4_flash_agent_two_stage_stage1_thinking_16k_v1.json` freezes exact
+`deepseek-v4-flash`, `max_tokens=16384`, `thinking.type=enabled`, JSON response format, one model
+attempt, zero generic repair, zero fallback, and zero discovery. Its SHA-256 is
+`2043fac92b0ef286c368091eb2ec424489dd94e5b6bdf5954810ecdca403615f` and it binds:
+
+- model configuration:
+  `agent_model_config:05eb110b4269f3a569d24918f356cb905d871aace45b9024c4575295b05a1015`;
+- Thinking binding:
+  `prospective_thinking_model_binding:5afdd81c4318c89d5c31f9398e77b28822eb338578c2bc3533ed77d6291d33c8`;
+- Stage 1 profile:
+  `finance_v26_stage_one_thinking_profile:9d89a504a3fee25a60ae392e10cab063b0604f36fb0672e19bc8f1ec45bb3045`.
+
+The Stage 2 profile
+`finance_v26_stage_two_commit_profile:024f2543b11f26ebc40000c7342d6ff6b4067d78b3dc11be466514fc765734a5`
+binds the exact v26.107 public semantic compiler. It has no Provider profile, constructs no model
+client, makes zero Provider calls, chooses no semantic field, and must reverse every serialized
+call to the exact Stage 1 proposal. Private reasoning cannot cross the boundary.
+
+The fresh resource Contract retains the exact 16,384-token request and one-token accounting
+margin, charges actual Usage without clipping, and rejects 16,386 or larger as Instrument
+failure. Complete two-stage Compiler paths require 6-10 Primary Stage 1 requests. Their static
+bounds are 150,514-246,235 tokens; the old 240,000 ceiling would not contain the deepest path.
+v26.108 therefore freezes 260,000 from all 48 complete paths, leaving minimum headroom 13,765.
+This bound is not selected from the v26.105 observed next-call deficits.
+
+v26.108 rematerialized 24 TaskPackages, 48 Paths, one Contract, one Manifest, and 32 Jobs under
+fresh identities while preserving source, role, mechanism, Compiler path, exact Job assignment,
+and all 32 seeds. The 104-row cross-artifact Gate closes every parent, profile, resource,
+Contract, and Manifest binding. All 30 static mutations failed closed. All 24 sources are already
+model-exposed repeated engineering sources and remain ineligible for Capability, Reachability,
+State Mapping, State Support, release, or production evidence.
+
+Finance v26.109 then implemented and credential-free preflighted the exact future Runner. Before
+profile parsing, credential lookup, or client construction it replayed 1,900/1,900 files: all
+1,884 v26.108 transitive bindings, all twelve v26.108 outputs, and four exact implementation
+files. Formal and independent builds reproduced all ten outputs byte for byte with zero real
+Provider calls, zero GPU jobs, and zero empirical rows.
+
+Every Stage 1 call now requires a dynamic public-state certificate, an exact profile/request-kind/
+phase/request-body certificate, a cumulative resource certificate, and one single-use invocation
+authorization before Provider behavior. Raw privacy-redacted telemetry is persisted before
+response projection. Stage 2 has no client or Provider route.
+
+The 32-Job direct control made 256 scripted Stage 1 calls, 224 deterministic Stage 2 Commits, and
+192 public Observations. It produced 32 Raw Execution and 256 Raw Provider fixtures. All 32 Jobs
+matched the preserved Compiler semantic projection and final answer, passed reversible Commit,
+Verifier v3 Replay, independent validity, and mechanism scoring. These 288 files are local
+implementation fixtures and contribute zero empirical rows.
+
+The prospective outcome Contract classifies response serialization, wrong phase, Prompt echo,
+semantic compile rejection, unavailable semantic choice, and duplicate failed proposal as model
+results. Certificate, Usage, telemetry, parent, privacy, or Stage 2 Provider breaches remain
+Instrument failures. One global Rescue may handle a channel Completion failure or a serialization,
+phase, or Prompt-echo failure; semantic compile rejection receives no Rescue.
+
+Usage controls admitted 16,384 and 16,385 reported Completion tokens, charged 16,385 without
+clipping, preserved the original length classification, rejected 16,386 as Instrument failure,
+and blocked Rescue after that failure. Complete Raw recovery was byte-identical with zero calls;
+orphan artifacts, oversized Prompts, reused requests, wrong request kind or phase, and insufficient
+remaining budget failed closed. All 30 Runner mutations were rejected with zero unauthorized
+Provider calls and zero Stage 2 Provider calls.
+
+The authoritative identities are:
+
+- v26.108 report:
+  `finance_v26_two_stage_static_preflight_report:5ec8e8c6b22463f7a77fc75cb46b3d13139e6b43c5494fb81fcf106579230c7a`;
+- resource Contract:
+  `finance_v26_two_stage_resource_contract:a54be4f1c8344fc0f35eaef1a73f04136bec872cb4817273b8fb8c7e2b57a0ca`;
+- v26.108 Manifest:
+  `finance_v26_two_stage_manifest:c11af7e8a4bc20e7d136b68c564b98abd884f9310e153d009ef14b80d75d8dd2`;
+- v26.109 report:
+  `finance_v26_two_stage_runner_preflight_report:1b907cbb962f68dd798764a514db4a4cbf7e3091cfadd35a6702f1e85a0d633b`;
+- Runner Contract:
+  `finance_v26_two_stage_runner_contract:34c9bc91fbab6fb571127a3904b318bf33ca533fa670aa4ca3eccf1de611bac1`;
+- Runner fixture:
+  `finance_v26_two_stage_runner_fixture:53ea52b029b072291a0e541c6ed5768768b229cf1490aad2904c3ff389b37220`;
+- model-failure audit:
+  `finance_v26_two_stage_model_failure:d56ce44718909ea24c7a095896a1fdeb9c015d9ef4859a06ee45bb663db09acb`;
+- Usage fixture:
+  `finance_v26_two_stage_provider_usage_fixture:8e8a6ec6a82712403aa836dc95b8d66d4b0c651ee836a8f8406b96b408a491aa`.
+
+The only permitted transition is:
+
+```text
+two_stage_semantic_proposal_calibration_execution_only
+```
+
+This is a positive static-binding and Runner-Instrument preflight, not empirical two-stage
+Completion usability. The exact future 32-Job engineering calibration has not started. No 32K
+single-stage candidate, role experiment, State Mapping, release, or production Contribution is
+authorized. See
+`docs/finance_v26_108_v26_109_two_stage_profile_manifest_and_runner_preflight.md`.
 
 ## v26.107 Action Constructibility And True Two-Stage Protocol Preflight Decision
 
@@ -2367,6 +2471,23 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
 | Check | Result |
 | --- | --- |
+| v26.108 source replay | 1,884/1,884 files: 1,872 v26.107 transitive bindings, 10 v26.107 outputs, 1 Stage 1 profile, and 1 exact implementation file |
+| v26.108 Stage profiles | fresh exact Flash 16K Thinking Stage 1; deterministic reversible Stage 2; zero Stage 2 profile/client/Provider route |
+| v26.108 resource qualification | 48/48 complete paths; 6-10 Primary Stage 1 requests; bounds 150,514-246,235; 13,765 minimum headroom under fresh 260K ceiling |
+| v26.108 identity rematerialization | 24 fresh TaskPackages, 48 fresh Paths, 1 Contract, 1 Manifest, and 32 fresh Jobs; source/path/assignment/seed projections preserved |
+| v26.108 static cross-artifact Gate | 104/104 TaskPackage/Path/Job rows passed exact Stage profile, resource, membership, and parent bindings |
+| v26.108 dual build and destructive controls | all 12 outputs byte-identical; 30/30 mutations rejected; zero credential/client/API/GPU and zero empirical rows |
+| v26.109 source replay | 1,900/1,900 files: 1,884 v26.108 transitive bindings, 12 v26.108 outputs, and 4 exact implementation files |
+| v26.109 exact client binding | exact `deepseek-v4-flash`, `max_tokens=16384`, `thinking.type=enabled`, JSON format, request kind/phase binding, zero fallback/discovery |
+| v26.109 direct Runner controls | 32 Jobs, 256 Stage 1 scripted calls, 224 Stage 2 Commits, 192 Observations, and 256 dynamic/exact/resource certificate triples |
+| v26.109 Stage 2 and Verifier controls | 0 Stage 2 Provider calls; 32/32 reversible Commit, semantic projection, final answer, Verifier v3, validity, and mechanism passes |
+| v26.109 model/Instrument boundary | 9/9 serialization/phase/echo/semantic/duplicate controls retained as model results; 0 historical reclassifications |
+| v26.109 Provider Usage controls | 16,384 and 16,385 admitted and charged; length classification retained; 16,386 rejected as Instrument with Rescue blocked |
+| v26.109 recovery and destructive controls | complete Raw byte-identical with zero calls; orphan/oversize/reuse/kind/budget blocked; 30/30 mutations rejected |
+| v26.109 dual build | all 10 outputs byte-identical; zero credential lookup, real client/API/GPU, Stage 2 Provider calls, and empirical rows |
+| v26.108-v26.109 focused validation | 13 passed; focused Ruff check/format passed for all new source and tests; focused Mypy passed for the four v26.109 Runner implementation files |
+| v26.103-v26.109 adjacent regression | 48 passed in 42.13 seconds against the canonical immutable artifact root |
+| v26.109 transition | exact v26.110 32-Job two-stage engineering calibration execution only; no 32K, role experiment, State Mapping, or production claim authorized |
 | v26.107 source replay | 1,872/1,872 files: 1,860 v26.106 transitive bindings, 9 v26.106 outputs, and 3 exact implementation files |
 | v26.107 historical action interface | 382 Calculator Observations across 30 Jobs; 1 success; exact shape partition 188/158/22/12/1/1; 79 contradictory Tool-affordance Prompts across 12 Jobs |
 | v26.107 readiness correction | authoritative public Operation progress found 382/382 calls with a code-defined ready Calculator node and 0/382 without one; this does not alter the 1/382 exact-match result |
@@ -2419,7 +2540,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | all seven new v26.100/v26.102 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
-| Mypy | 414 source files checked; one source-bound v26.70 local-list annotation diagnostic retained; v26.107 adds zero diagnostics |
+| Mypy 2.3.0 migration audit | 419 source files checked; 6,936 diagnostics across 193 files under the currently installed unpinned version; focused v26.109 check passes; no rule was relaxed and source-bound evidence was not rewritten |
 | Pytest | 1,141 passed, 4 expected v26.78/v26.84 success-state tests skipped in 878.93 seconds against the v26.104 source; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
 | v26.101 exact 8K execution | 32/32 Jobs completed; 391 HTTP-success exact-model calls; 2,498,889 provider-reported tokens; zero GPU |
@@ -2858,7 +2979,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_two_stage_profiles_taskpackage_contract_manifest_and_runner_preflight_only
+two_stage_semantic_proposal_calibration_execution_only
 ```
 
 v26.105 has consumed the exact 32-Job 16K authorization. Do not rerun, recover, or reclassify any
@@ -2866,20 +2987,19 @@ of its Jobs. Its 14 Completion-unusable Jobs, 17 typed no-calls, two historical 
 terminals, and one reasoning-only length failure are jointly immutable. v26.106 independently
 reproduced the complete denominator and localized the Instrument and dynamic-budget roots.
 
-v26.107 has now consumed the v26.106 credential-free design authorization. It repairs prospective
-unavailable-tool Replay, freezes the public Stage 1 semantic Proposal and deterministic
-zero-generation Stage 2 Commit boundary, closes the model-visible Action Contract, bounds failed
-history, and repairs Final Rescue semantic sufficiency. Its Compiler and serialized-Prompt
-Reference fixtures remain static implementation evidence and contribute zero empirical rows.
+v26.107 consumed the v26.106 credential-free design authorization. v26.108 then persisted the
+fresh Stage 1 profile, zero-generation Stage 2 profile, 260,000-token resource Contract, 24
+TaskPackages, 48 Paths, one Contract, one Manifest, and 32 fresh Jobs. v26.109 implemented the
+exact Runner and passed client, request, dynamic-resource, model/Instrument classification,
+privacy, recovery, aggregation, Usage, and destructive preflight controls.
 
-The successor may only persist a fresh Stage 1 Thinking profile, explicit Completion and Usage
-bounds, explicit zero-generation Stage 2 semantics, a fresh dynamic resource Contract, fresh
-TaskPackage/Contract/Manifest/Job identities, and the exact Runner. It must preflight privacy,
-client/request binding, semantic authority, dynamic certification, recovery, aggregation, and
-destructive controls before any Provider call. It may not register a 32K single-stage candidate,
-rerun the 16K protocol, persist or transfer private reasoning, treat the v26.107 fixtures as model
-outcomes, or infer that the observed 733-14,912 next-call deficits are sufficient
-full-trajectory budgets.
+The only newly authorized online action is the exact v26.110 32-Job two-stage engineering
+calibration. It has not started. Immediately before credential lookup it must replay all 1,900
+v26.109 bound files, preserve the exact v26.108 Job denominator and seeds, start at 0/32 or
+recover only complete Raw Executions, use exact `deepseek-v4-flash` with
+`thinking.type=enabled` and `max_tokens=16384`, and keep Stage 2 Provider calls at zero. It may
+not register a 32K single-stage candidate, rerun v26.105, resample the two-stage denominator,
+persist or transfer private reasoning, or treat any v26.107-v26.109 fixture as a model outcome.
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
 reclassify any of its 32 Jobs. Its positive typed-no-call result and negative Completion result
@@ -2959,11 +3079,10 @@ protocol changes.
 
 The complete v26.105 denominator contains a reasoning-only exact-bound length failure, so the
 single-stage bound ladder has ended. Its non-length Completion failures do not authorize a
-parallel same-bound repair. v26.107 has completed the two-stage design preflight, but its
-successor remains profile, identity-chain, Runner implementation, and credential-free preflight
-only; empirical calibration is still unauthorized. Low Program closure, mechanism success, path
-adherence, or semantic validity remains descriptive and cannot rescue Completion, Budget, or
-Instrument Gates.
+parallel same-bound repair. v26.108-v26.109 close the fresh two-stage identity and Runner route,
+so only their exact engineering calibration is now authorized. Low Program closure, mechanism
+success, path adherence, or semantic validity remains descriptive and cannot rescue Completion,
+Budget, or Instrument Gates.
 
 Every future Provider call must continue to bind exact `thinking.type=enabled` before credential
 lookup and client construction. Privacy-redacted telemetry capture before content parsing remains
@@ -2984,8 +3103,10 @@ preflight, v26.101 is the completed negative 8K calibration, and v26.102 is its 
 post-run audit. v26.103 is the zero-generation 16K binding and Usage-semantics rematerialization,
 v26.104 is its zero-generation positive Runner preflight, v26.105 is the completed negative 16K
 calibration, v26.106 is its zero-generation independent post-run audit, and v26.107 is the
-zero-generation Action Constructibility and true two-stage static preflight. None freezes a
-Thinking role protocol. No online experiment is currently authorized. Task depth and capability
+zero-generation Action Constructibility and true two-stage static preflight. v26.108 is the
+zero-generation two-stage profile and identity rematerialization, and v26.109 is its
+zero-generation positive Runner preflight. None freezes a Thinking role protocol. Only the exact
+v26.110 two-stage engineering calibration is now authorized online. Task depth and capability
 informativeness remain unresolved independently of the Completion channel.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
@@ -2993,6 +3114,37 @@ Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_108_v26_109_two_stage_profile_manifest_and_runner_preflight.md`
+- `config/deepseek_v4_flash_agent_two_stage_stage1_thinking_16k_v1.json`
+- `src/trusted_synthesis/runtime/agent/prospective_two_stage_semantic_proposal.py`
+- `src/trusted_synthesis/runtime/agent/prospective_two_stage_stage1_client.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_two_stage_profile_and_manifest_preflight.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_two_stage_semantic_proposal_execution.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_two_stage_semantic_proposal_runner_preflight.py`
+- `tests/test_v26_two_stage_profile_and_runner_preflight.py`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/stage_one_thinking_profile.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/stage_two_commit_profile.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/two_stage_resource_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/two_stage_task_packages.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/two_stage_path_audits.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/two_stage_execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/two_stage_job_manifest.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/design_preservation_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/cross_artifact_binding_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_108_two_stage_profile_and_manifest_preflight_v1_20260822/destructive_preflight_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/outcome_interpretation_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/client_request_binding_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/runner_fixture_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/model_failure_classification_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/provider_usage_fixture_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/precall_recovery_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_109_two_stage_semantic_proposal_runner_preflight_v1_20260822/destructive_preflight_audit.json`
 
 - `docs/finance_v26_107_action_constructibility_and_two_stage_preflight.md`
 - `src/trusted_synthesis/runtime/agent/prospective_action_constructibility.py`
