@@ -42,6 +42,78 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## v26.100 Thinking 8K Completion Calibration Runner Preflight Decision
+
+Finance v26.100 completed the credential-free Runner transition authorized by v26.99. Before
+profile parsing or any possible client construction it replayed 770/770 files: all 755 v26.99
+transitive source bindings, all eleven v26.99 outputs, and the exact four v26.100 implementation
+files. Formal and independent builds reproduced all nine outputs byte for byte. The stage read no
+credential, constructed no real model client, made zero real Provider calls, used zero GPU jobs,
+and produced zero empirical rows.
+
+The dedicated exact-route client accepts only model configuration
+`agent_model_config:c07d13207cba89d1e1cc3790151e2b5a32b7bf06f0ee6974f8e761fce5562b2e`
+and Thinking binding
+`prospective_thinking_model_binding:9ed92eb9c7326eaf8b083633cda2e10cbfdb454322bcffffcd0d2f5e1329ac57`.
+Its ordinary uncertified entrypoint fails closed. Every permitted call shares one canonical
+request-body builder with a content-addressed certificate and verifies exact
+`deepseek-v4-flash`, `max_tokens=8192`, `thinking.type=enabled`, JSON response format, and zero
+fallback immediately before invocation. The exact route performs no model-discovery request.
+
+Every dynamic request now closes in the required order before Provider invocation: actual Prompt
+rendering, actual request-kind inference, bounded Rescue rendering when applicable, dynamic
+Prompt/resource certification, exact 8K request-body certification, Provider budget
+certification, and one single-use invocation authorization. Provider telemetry is persisted in a
+privacy-redacted Raw artifact before Completion projection. Private reasoning content and hashes,
+raw HTTP bodies, and raw request bodies remain forbidden.
+
+The Runner retains the 160,000-token rollout ceiling, 60,000-byte Primary ceiling, 8,192-token
+Completion bound, 6,144-byte absolute Rescue ceiling, one global Rescue, raw-only recovery, and
+orphan rejection. The historical off-Compiler root-cause state was directly exercised: its
+7,914-byte Primary rendered a 3,888-byte Rescue, with zero scripted calls before all certificates
+and exactly one afterward. The historical relative 10% Rescue Gate is absent.
+
+The zero-generation direct control executed all 32 exact v26.99 Jobs against preserved Compiler
+paths. It produced 224 logical requests, 224 scripted calls, 192 public Observations, 224 dynamic
+certificates, and 224 exact request certificates. All 32 Jobs passed Verifier v2 Replay,
+independent validity, and mechanism scoring across all twelve Mechanism x Path cells. The complete
+fixture aggregate contains 32 Raw Executions plus 224 Provider artifacts, all 256 canonical
+files. These are implementation fixtures and contribute zero empirical rows.
+
+All five frozen Completion failure types recovered with exactly one bounded Rescue. A second
+Completion failure ended `completion_unusable` without a second Rescue; malformed response
+telemetry ended `instrument_failure` with zero Rescue. Complete-Raw recovery was byte-identical
+with zero calls, while an orphan Provider artifact, oversized Prompt, insufficient remaining
+budget, wrong request kind, reused prepared request, and all 25 destructive mutations failed
+before an unauthorized call.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_exact_8k_runner_preflight_report:da74cbc040525571bb636986bbdf198a24948f5967f027cf42422537372968f0`;
+- execution Contract:
+  `finance_v26_exact_8k_execution_contract:bd01f5da28c20b33d693d5c7036bd7f77732a4995829e92773b1a205aced99ce`;
+- client-binding audit:
+  `finance_v26_exact_8k_client_binding_fixture:1110f24314f925f2a092a7661e5aa0518096bd87b79cdbc15f7d1dd68a1ffbe7`;
+- Runner fixture audit:
+  `finance_v26_exact_8k_runner_fixture:a4fd60ff0b378c96797300c782834a07d3c0559d76d4f9caf2f3e167b0fddce0`;
+- pre-call/recovery audit:
+  `finance_v26_exact_8k_precall_recovery_fixture:c19f049a861dad6e2d5d3e653c1e1d337f0a495bdf0e62eff6eb8a44f1d41f94`.
+
+The only permitted transition is:
+
+```text
+thinking_8k_completion_calibration_execution_only
+```
+
+This is a positive execution-Instrument preflight, not empirical 8K Completion usability or
+online dynamic-resource evidence. It authorizes only the exact v26.101 32-Job engineering
+calibration. The 16K fallback still has zero Jobs and cannot be selected automatically.
+Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
+Exact Target, GP-C, and production Contribution remain forbidden. Production Contribution
+remains zero. See
+`docs/finance_v26_100_thinking_8k_completion_calibration_runner_preflight.md`.
+
 ## v26.99 Thinking Exact-8K Binding Rematerialization Decision
 
 Finance v26.99 completed the only credential-free repair authorized by v26.98. It first replayed
@@ -1928,6 +2000,15 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | Mypy | 400 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
 | Pytest | 1125 passed, 4 expected v26.78/v26.84 success-state tests skipped in 863.73 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
+| v26.100 focused regression | 8 passed in 13.79 seconds in the isolated build; zero real API/GPU |
+| v26.100 dual build | all nine output files are byte-identical; zero real API/GPU |
+| v26.100 source replay | 770/770 files: 755 v26.99 transitive bindings, 11 v26.99 outputs, and 4 exact implementation files |
+| v26.100 exact client binding | exact `agent_model_config:c07d...62b2e`, Thinking binding `prospective_thinking_model_binding:9ed9...9ac57`, `max_tokens=8192`, and no discovery/fallback route |
+| v26.100 direct Runner controls | 32 Jobs, 224 logical requests/calls, 192 Observations, 224 dynamic and 224 exact-request certificates; 32/32 Replay, validity, and mechanism passes |
+| v26.100 off-Compiler control | 7,914-byte Primary to 3,888-byte Rescue; zero calls before all certificates and one after |
+| v26.100 rescue/recovery controls | 5/5 Completion failures recovered once; second failure exhausted Rescue; complete Raw recovered byte-identically with zero calls; orphan blocked |
+| v26.100 destructive controls | 25/25 mutations rejected before unauthorized Provider behavior |
+| v26.101 prepare-only | 770/770 replayed; 32 expected Jobs; no client construction or Provider call |
 | v26.99 focused regression | 8 passed in 2.35 seconds on integrated main; zero API/GPU |
 | v26.88-v26.99 adjacent thinking/budget regression | 104 passed in three commands (91.61 seconds plus 0.40 seconds plus 2.35 seconds) |
 | v26.99 dual build | all eleven output files are byte-identical; zero API/GPU |
@@ -2340,7 +2421,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-thinking_8k_completion_calibration_runner_and_preflight_only
+thinking_8k_completion_calibration_execution_only
 ```
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
@@ -2394,13 +2475,16 @@ Rescue renderer, 6,144-byte Rescue ceiling, telemetry envelope, resource bounds,
 tree, and zero-failure Gates. This completed repair contains no Runner and authorizes no Provider
 call.
 
-The next stage may only implement the exact Runner for the v26.99 Contract and Manifest and
-complete a credential-free preflight. Before credential lookup and client construction it must
-replay the complete v26.99 binding, require the persisted 8K model configuration and Thinking
-binding, and prove that every actual request uses the 8,192-token Completion bound. It must also
-exercise dynamic request-kind, Primary, Rescue, resource, raw-first persistence, raw-only
-recovery, orphan, exact-model, native-tool, Usage, privacy, and completed-aggregation controls.
-Execution remains forbidden until that preflight passes.
+v26.100 implemented that exact Runner and completed the credential-free preflight. It replayed
+770/770 files, bound every actual request to the exact persisted 8K profile and
+`max_tokens=8192`, and passed dynamic request-kind, Primary, Rescue, resource, raw-first
+persistence, raw-only recovery, orphan, exact-model, native-tool, Usage, privacy, and completed
+aggregation controls. It made zero real Provider calls and produced zero empirical rows.
+
+The next stage may execute only the exact v26.101 32-Job engineering calibration under the
+v26.100 execution Contract. The Runner must complete `--prepare-only` immediately before
+credential lookup, preserve every certificate and recovery rule, and may not select the 16K
+fallback automatically. No other Manifest or role experiment is authorized.
 
 The 24 sources are repeated engineering sources, not a fresh Population: 22 were model-exposed
 in v26.95 and two were unexposed. They, their Compiler fixtures, and any later 8K calibration rows
@@ -2427,16 +2511,32 @@ successes, all v26.90 Compiler fixtures, and all v26.94 Compiler projections rem
 for empirical support.
 
 The v26.95 execution has occurred and is permanently blocked. v26.97 is a zero-generation static
-design, v26.98 is a zero-generation negative execution preflight, and v26.99 is a zero-generation
-positive static binding rematerialization. None freezes a Thinking role protocol or authorizes
-Manifest execution. Task depth and capability informativeness remain unresolved independently of
-the Completion channel.
+design, v26.98 is a zero-generation negative execution preflight, v26.99 is a zero-generation
+positive static binding rematerialization, and v26.100 is a zero-generation positive Runner
+preflight. None freezes a Thinking role protocol. Only v26.100 authorizes the exact v26.101
+Manifest execution; no other execution is permitted. Task depth and capability informativeness
+remain unresolved independently of the Completion channel.
 
 Capability Development, State Reachability, Fresh Confirmation, No-C VTDO, Student training,
 Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains a separate
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_100_thinking_8k_completion_calibration_runner_preflight.md`
+- `src/trusted_synthesis/runtime/agent/prospective_thinking_8k_client.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_8k_completion_calibration_contracts.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_8k_completion_calibration_execution.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_8k_completion_calibration_execution_preflight.py`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/outcome_interpretation_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/provider_token_budget_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/execution_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/client_request_binding_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/runner_fixture_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/precall_recovery_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_100_thinking_8k_completion_calibration_runner_preflight_v1_20260822/destructive_preflight_audit.json`
 
 - `docs/finance_v26_99_thinking_8k_binding_rematerialization.md`
 - `config/deepseek_v4_flash_agent_thinking_8k_v1.json`
