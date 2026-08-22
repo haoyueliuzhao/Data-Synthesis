@@ -45,6 +45,97 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## v26.107 Action Constructibility And True Two-Stage Protocol Preflight Decision
+
+Finance v26.107 completed the credential-free design transition authorized by v26.106. Before
+diagnostics it replayed 1,872/1,872 files: all 1,860 v26.106 transitive bindings, all nine
+v26.106 outputs, and the exact three v26.107 implementation files. Formal and independent builds
+reproduced all ten outputs byte for byte. The stage looked up no credential, constructed no model
+client, made zero Provider calls, used zero GPU jobs, and produced zero empirical rows.
+
+The independent historical action-interface audit reparsed all 32 v26.105 Raw Executions and 572
+Provider artifacts. It found 382 Calculator Observations across 30 Jobs: one success and 381
+failures. Their exact argument-shape partition is 188 bare operands, 158 operand objects with
+wrong fields, 22 operand type/count errors, twelve frozen-parameter mismatches, one
+reference/order/operator mismatch, and one exact match. This supports
+`model_visible_action_contract_not_wire_complete` as the dominant prospective engineering root:
+the old static Witness read exact arguments, while the model-visible Prompt omitted the complete
+wire grammar and public symbol-to-Evidence/Operation bindings.
+
+The uploaded audit's claim that 93 Calculator calls had no ready Calculator node was not
+reproduced. Evaluating authoritative `public_operation_progress()` immediately before every
+immutable Calculator Observation found a code-defined ready Calculator node in 382/382 cases.
+This does not rescue model behavior: only one call matched exactly. The likely discrepancy is
+that the old model-visible compact progress omitted `tool_id`, making readiness by Tool
+unobservable from that projection.
+
+The 33 historical valid-JSON response-contract failures split prospectively into 22 Decision-stage
+answers or non-actions, seven public Prompt echoes, three unregistered action enums, and one
+Final-answer scalar. The previously reported 23/7/3 grouping combined the one Final scalar with
+the 22 Decision-stage failures. This new taxonomy is future-only; no v26.105 Completion count or
+Job terminal is changed.
+
+The prospective public action state exposes full currently relevant Tool input contracts,
+effective acquisition affordances, public symbol-to-Evidence and symbol-to-Operation bindings,
+ready-node operand slots and selectors, allowed Operators, and frozen public serialization
+parameters. It excludes Gold Evidence, Oracle state, hidden correct choices,
+`expected_arguments`, and private reasoning. Bounded failure history retains only the latest
+Tool/error category, a blocked public-call signature hash, and argument shape, never exact failed
+argument values.
+
+The true two-stage boundary keeps semantic authority with the model. Stage 1, under required
+`thinking.type=enabled`, selects the Decision kind, Tool, Node, Operator, ordered public operand
+sources, acquisition arguments, or verification Evidence. Only that public proposal crosses the
+boundary. Stage 2 makes no Provider call and may only deterministically serialize the proposal
+through the public binding table. Every compiled call must decompile to the exact same proposal;
+the compiler cannot repair or replace a model choice.
+
+All 48 Compiler paths and 276 public calls passed semantic Proposal-to-Commit round trips: 156
+acquisition, 72 Operation, and 48 verification calls across 147 unique public action states. The
+largest action Prompt was 6,345 bytes. A stricter Reference Policy received only the exact final
+serialized Prompt and made 138 decisions over 24 tasks: 114 compiled calls, six expected typed
+selector refinements, 24 Final Ready outcomes, and zero other failures. These are static
+implementation fixtures and contribute zero empirical rows.
+
+v26.107 freezes one exact availability Gate for Verifier v3 and the future Runner. Verifier v3
+replayed all 32 historical Raw Executions, reproduced both unavailable `open_document` calls as
+exact `unknown_or_unselectable_tool` typed failures, and passed 32/32 without inserting an action or
+reclassifying either historical Instrument terminal. Separately, all 48 Compiler Final Rescue
+Prompts retained the public terminal result. The historical completed row's repaired 2,323-byte
+Rescue retained `0.4107`, whereas the old Rescue dropped that source and emitted `0.1`; this
+is a zero-call semantic-sufficiency fixture, not a historical rescore.
+
+All 30 destructive mutations failed before Provider behavior. The final source passed 9/9 focused
+tests, 73/73 v26.97-v26.107 adjacent tests, focused Ruff format/check, and focused Mypy with zero
+new diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_action_constructibility_preflight_report:ff0eb5409a770fb72381f93a83fff3726fa8f547d994796f247682c9f0516e19`;
+- protocol:
+  `finance_v26_action_constructibility_protocol:4044cdfbb3aa6526c5a9f8cc608a745ec55f3151cbd5e79a8e5af575737851e0`;
+- action fixture:
+  `finance_v26_action_constructibility_fixture:9b522aea28428f77261c5443da0b835f104f66f30506a0ba9847a847f1a04481`;
+- Verifier v3 Contract:
+  `finance_v26_authority_verifier_contract_v3:478f7b6cd880f68865d94046bd66ff6e339f03814dec2b94f27d93d0a32bacfa`;
+- Verifier v3 Replay:
+  `finance_v26_verifier_v3_replay_audit:25d1ce7460889438e749c75e350a0be83253bdb4e0d7e99350fd3cec7595d547`.
+
+The only permitted transition is:
+
+```text
+fresh_two_stage_profiles_taskpackage_contract_manifest_and_runner_preflight_only
+```
+
+This is a positive static Action Constructibility and protocol-boundary preflight, not empirical
+two-stage Completion usability. No profile, Completion/Usage bound, dynamic rollout Contract,
+TaskPackage, Manifest, Job, or online Runner was materialized. The successor must freeze all of
+those fresh identities and pass an exact credential-free Runner preflight before any Provider
+call. A 32K single-stage candidate, v26.105 rerun, role experiment, State Mapping, release, and
+production Contribution remain forbidden. See
+`docs/finance_v26_107_action_constructibility_and_two_stage_preflight.md`.
+
 ## v26.105-v26.106 Thinking 16K Completion Calibration Execution And Audit Decision
 
 Finance v26.105 executed exactly the 32-Job engineering-calibration Manifest authorized by
@@ -131,17 +222,16 @@ The authoritative identities are:
 - prospective transition:
   `finance_v26_exact_16k_postrun_transition:3b521a4324e067c94fa19b219514a7b9666e4638b8f31b5d8472dd673564ee90`.
 
-The only permitted transition is:
+At the v26.106 audit freeze, the only permitted transition was:
 
 ```text
 authority_preserving_unknown_tool_replay_repair_and_true_two_stage_protocol_preflight_only
 ```
 
-This authorizes credential-free design and preflight only. The successor requires fresh protocol,
-per-stage Completion and Usage, dynamic resource, TaskPackage, Contract, Manifest, Job,
-execution, and report identities. Every future Provider call must remain Thinking-enabled, and
-private reasoning may not be persisted, hashed, or transferred between stages. No Provider call,
-role experiment, State Mapping, release, or production Contribution is authorized. See
+This authorized credential-free design and preflight only and has now been consumed by v26.107.
+It authorized no Provider call and remains the historical explanation for the v26.107 boundary.
+Every future Provider call must remain Thinking-enabled, and private reasoning may not be
+persisted, hashed, or transferred between stages. See
 `docs/finance_v26_105_v26_106_thinking_16k_completion_calibration_execution_and_audit.md`.
 
 ## v26.103-v26.104 Thinking 16K Binding And Runner Preflight Decision
@@ -2277,6 +2367,18 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
 | Check | Result |
 | --- | --- |
+| v26.107 source replay | 1,872/1,872 files: 1,860 v26.106 transitive bindings, 9 v26.106 outputs, and 3 exact implementation files |
+| v26.107 historical action interface | 382 Calculator Observations across 30 Jobs; 1 success; exact shape partition 188/158/22/12/1/1; 79 contradictory Tool-affordance Prompts across 12 Jobs |
+| v26.107 readiness correction | authoritative public Operation progress found 382/382 calls with a code-defined ready Calculator node and 0/382 without one; this does not alter the 1/382 exact-match result |
+| v26.107 prospective response taxonomy | 33 valid-JSON Contract failures split into 22 Decision-stage answers/non-actions, 7 Prompt echoes, 3 wrong action enums, and 1 Final scalar; no historical reclassification |
+| v26.107 Verifier v3 | 32/32 Raw Executions replayed; both unavailable Tool failures reproduced exactly; zero prospective Replay failures, inserted actions, or empirical rows |
+| v26.107 Action Constructibility | 48 paths, 276 reversible Compiler calls, 147 unique public states, and 6,345-byte maximum action Prompt; Proposal remains model-owned and Commit deterministic |
+| v26.107 serialized-Prompt Reference Policy | 24 tasks, 138 Prompt-only decisions, 114 calls, 6 expected typed refinements, 24 Final Ready outcomes, and 0 other failures |
+| v26.107 Final Rescue | 48/48 semantically sufficient; maximum 2,515 bytes; historical fixture retained public terminal value `0.4107` in a 2,323-byte repaired Rescue |
+| v26.107 dual build and destructive controls | all 10 outputs byte-identical; 30/30 mutations rejected; zero credential/client/API/GPU and zero empirical rows |
+| v26.107 focused validation | 9 passed in 13.46 seconds; focused Ruff format/check and Mypy passed |
+| v26.97-v26.107 adjacent Completion regression | 73 passed in 54.98 seconds against the canonical immutable artifact root |
+| v26.107 transition | fresh two-stage profile, Completion/Usage/resource, TaskPackage, Contract, Manifest, Job, Runner implementation, and credential-free preflight only; no Provider call or 32K authorized |
 | v26.105 exact 16K execution | 32/32 Jobs completed; 572 HTTP-success exact-model calls; 4,780,636 provider-reported tokens; USD 0.98291580800000008797 estimated cost telemetry; zero GPU |
 | v26.105 terminal denominator | 14 Completion-unusable, 15 typed-budget terminals, 2 Instrument failures, and 1 model-invalid trajectory; typed no-call observed in 17 Jobs |
 | v26.105 request and Provider Gates | exact 16K request binding, dynamic pre-call binding, response telemetry, actual-Usage charging, one-token margin, two-plus excess rejection, exact model, fallback absence, and privacy passed |
@@ -2317,7 +2419,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
 | Ruff format | all seven new v26.100/v26.102 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
-| Mypy | 411 source files checked; one source-bound v26.70 local-list annotation diagnostic retained; v26.106 v2 adds zero diagnostics |
+| Mypy | 414 source files checked; one source-bound v26.70 local-list annotation diagnostic retained; v26.107 adds zero diagnostics |
 | Pytest | 1,141 passed, 4 expected v26.78/v26.84 success-state tests skipped in 878.93 seconds against the v26.104 source; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
 | v26.101 exact 8K execution | 32/32 Jobs completed; 391 HTTP-success exact-model calls; 2,498,889 provider-reported tokens; zero GPU |
@@ -2756,7 +2858,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-authority_preserving_unknown_tool_replay_repair_and_true_two_stage_protocol_preflight_only
+fresh_two_stage_profiles_taskpackage_contract_manifest_and_runner_preflight_only
 ```
 
 v26.105 has consumed the exact 32-Job 16K authorization. Do not rerun, recover, or reclassify any
@@ -2764,13 +2866,20 @@ of its Jobs. Its 14 Completion-unusable Jobs, 17 typed no-calls, two historical 
 terminals, and one reasoning-only length failure are jointly immutable. v26.106 independently
 reproduced the complete denominator and localized the Instrument and dynamic-budget roots.
 
-The successor may only repair prospective Verifier Replay for the Runtime-defined unavailable-tool
-typed failure and design a true two-stage Thinking/Decision protocol under fresh identities. It
-must freeze separate per-stage Completion and Usage bounds, a fresh dynamic resource Contract,
-the public cross-stage boundary, privacy, client/request binding, recovery, aggregation, and
+v26.107 has now consumed the v26.106 credential-free design authorization. It repairs prospective
+unavailable-tool Replay, freezes the public Stage 1 semantic Proposal and deterministic
+zero-generation Stage 2 Commit boundary, closes the model-visible Action Contract, bounds failed
+history, and repairs Final Rescue semantic sufficiency. Its Compiler and serialized-Prompt
+Reference fixtures remain static implementation evidence and contribute zero empirical rows.
+
+The successor may only persist a fresh Stage 1 Thinking profile, explicit Completion and Usage
+bounds, explicit zero-generation Stage 2 semantics, a fresh dynamic resource Contract, fresh
+TaskPackage/Contract/Manifest/Job identities, and the exact Runner. It must preflight privacy,
+client/request binding, semantic authority, dynamic certification, recovery, aggregation, and
 destructive controls before any Provider call. It may not register a 32K single-stage candidate,
-rerun the 16K protocol, persist or transfer private reasoning, or infer that the observed
-733-14,912 next-call deficits are sufficient full-trajectory budgets.
+rerun the 16K protocol, persist or transfer private reasoning, treat the v26.107 fixtures as model
+outcomes, or infer that the observed 733-14,912 next-call deficits are sufficient
+full-trajectory budgets.
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
 reclassify any of its 32 Jobs. Its positive typed-no-call result and negative Completion result
@@ -2850,9 +2959,11 @@ protocol changes.
 
 The complete v26.105 denominator contains a reasoning-only exact-bound length failure, so the
 single-stage bound ladder has ended. Its non-length Completion failures do not authorize a
-parallel same-bound repair. The true two-stage transition is design and preflight only; it does
-not authorize empirical calibration. Low Program closure, mechanism success, path adherence, or
-semantic validity remains descriptive and cannot rescue Completion, Budget, or Instrument Gates.
+parallel same-bound repair. v26.107 has completed the two-stage design preflight, but its
+successor remains profile, identity-chain, Runner implementation, and credential-free preflight
+only; empirical calibration is still unauthorized. Low Program closure, mechanism success, path
+adherence, or semantic validity remains descriptive and cannot rescue Completion, Budget, or
+Instrument Gates.
 
 Every future Provider call must continue to bind exact `thinking.type=enabled` before credential
 lookup and client construction. Privacy-redacted telemetry capture before content parsing remains
@@ -2872,7 +2983,8 @@ positive static binding rematerialization, v26.100 is a zero-generation positive
 preflight, v26.101 is the completed negative 8K calibration, and v26.102 is its zero-generation
 post-run audit. v26.103 is the zero-generation 16K binding and Usage-semantics rematerialization,
 v26.104 is its zero-generation positive Runner preflight, v26.105 is the completed negative 16K
-calibration, and v26.106 is its zero-generation independent post-run audit. None freezes a
+calibration, v26.106 is its zero-generation independent post-run audit, and v26.107 is the
+zero-generation Action Constructibility and true two-stage static preflight. None freezes a
 Thinking role protocol. No online experiment is currently authorized. Task depth and capability
 informativeness remain unresolved independently of the Completion channel.
 
@@ -2881,6 +2993,22 @@ Exact Target, GP-C, and Contribution remain forbidden. Objective Support remains
 unresolved bottleneck.
 
 ## Authoritative References
+
+- `docs/finance_v26_107_action_constructibility_and_two_stage_preflight.md`
+- `src/trusted_synthesis/runtime/agent/prospective_action_constructibility.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_authority_preserving_verifier_replay_v3.py`
+- `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_action_constructibility_two_stage_preflight.py`
+- `tests/test_v26_action_constructibility_two_stage_preflight.py`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/report.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/source_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/historical_action_interface_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/failure_taxonomy_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/verifier_v3_contract.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/verifier_v3_replay_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/action_constructibility_protocol.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/action_constructibility_fixture_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/final_rescue_semantic_audit.json`
+- `artifacts/vtdo_experiment/finance_v26_107_action_constructibility_two_stage_preflight_v1_20260822/destructive_preflight_audit.json`
 
 - `docs/finance_v26_105_v26_106_thinking_16k_completion_calibration_execution_and_audit.md`
 - `src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_thinking_16k_completion_calibration_postrun_audit.py`
