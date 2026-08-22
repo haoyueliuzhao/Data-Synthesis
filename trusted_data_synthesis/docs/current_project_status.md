@@ -43,12 +43,99 @@ protocol; v26.109 preflights the exact Runner while keeping Stage 2 at zero Prov
 v26.110 has now executed that exact two-stage calibration. Its 64 Stage 1 calls retained the
 Thinking policy and Stage 2 remained at zero Provider calls, but no response crossed the exact
 semantic-proposal interface. v26.111 independently audits that negative result and authorizes
-only an exact response-grammar and fresh-identity credential-free preflight.
+only an exact response-grammar and fresh-identity credential-free preflight. v26.112 now compiles
+that Grammar from one strong v2 Schema and closes a fresh 24-TaskPackage, 48-Path, 32-Job identity
+chain. v26.113 credential-free preflights the exact future Runner and authorizes only its fresh
+32-Job engineering calibration; no new Provider call has occurred.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.112-v26.113 Exact Response Grammar And Runner Preflight Decision
+
+Finance v26.112 consumed only the credential-free transition authorized by v26.111. Before
+Grammar compilation it replayed 2,029/2,029 files: all 2,017 v26.111 transitive bindings, all ten
+v26.111 outputs, and two exact implementation files. It looked up no credential, constructed no
+client, made zero Provider calls, used zero GPU jobs, and produced zero empirical rows.
+
+The new strong `ExactStageOneSemanticProposalPayload` and the model-visible Grammar compiler share
+one registered ten-field Schema and one conditional-rule table. Every response must contain exact
+top-level fields `stage`, `state_id`, `decision_kind`, `tool_id`, `node_id`, `operator_id`,
+`operand_sources`, `direct_arguments`, `evidence_ids`, and `protocol`. All fields are always
+present; inapplicable values use the frozen `null`, `{}`, or `[]` form. Extra fields, wrappers,
+multiple Proposals, Aliases, stale state, wrong protocol, and Decision/field mismatch fail closed.
+The exact v2 response protocol is
+`prospective_two_stage_stage_one_exact_response.v2`; the content-addressed Grammar is
+`prospective_stage_one_response_grammar:641ea2e9b4391cc46026f7b0d187ba5f7a674fe28e271a4b58e37aeed87a6b52`.
+
+Primary and Rescue expose the same exact Grammar. Primary retains the unchanged complete
+`PublicActionState`. Rescue deterministically projects every currently selectable public semantic
+affordance, exact state binding, and typed response failure while dropping low-level wire details,
+the previous response, and private reasoning. It cannot choose a semantic field. A fixture that
+reads only the final serialized Prompt, never the parser Schema or an internal Proposal, passed
+324/324 Primary and 324/324 Rescue parses, 648/648 exact state bindings, and 324/324 identical
+Primary/Rescue semantic projections. Rescue was shorter in 324/324 states. Maximum Primary and
+Rescue sizes were 7,724 and 4,996 bytes.
+
+v26.112 rematerialized 24 TaskPackages, 48 Paths, one Contract, one Manifest, and 32 Jobs under
+fresh identities. Task, Path, and Job overlap with v26.108 is zero. Computed preservation checks
+pass 24/24 source projections, 48/48 Compiler paths, and 32/32 Job assignments and seeds; all 104
+Task/Path/Job rows retain the exact model, Thinking, Stage 2, and resource bindings. The unchanged
+260,000-token resource ceiling still contains all complete paths: bounds are 157,409-258,646 with
+minimum headroom 1,354. All sixteen Grammar and identity mutations failed closed.
+
+Finance v26.113 then replayed 2,041/2,041 files before profile parsing, credential lookup, or
+client construction: all 2,029 v26.112 transitive bindings, all ten v26.112 outputs, and two exact
+Runner files. The future Runner retains dynamic public-state, exact request-body, and cumulative
+resource certificates, one single-use authorization, Raw privacy-redacted telemetry before
+projection, raw-only recovery, orphan rejection, one global Rescue, and zero Stage 2 Provider
+calls.
+
+Its 32-Job direct control made 256 scripted Stage 1 calls, including 224 exact ten-field semantic
+payloads, 224 reversible Stage 2 Commits, and 192 public Observations. All 32 Jobs preserve the
+Compiler semantic projection and final answer and pass Verifier v3 Replay, independently computed
+validity, and mechanism scoring. A separate actual Runner control recovered from one invalid
+Primary serialization through one exact-Grammar Rescue. The Rescue used the same exact v2
+protocol.
+
+All 256 Raw Provider fixtures bind their dynamic, exact request, and resource certificates and
+pass privacy controls. Usage fixtures admit 16,384 and 16,385 Completion tokens, charge the latter
+without clipping, reject 16,386 as Instrument failure, and block Rescue afterward. Complete Raw
+recovery is byte-identical with zero calls; orphan artifacts, oversized Prompts, reused requests,
+and insufficient budget fail before unauthorized behavior. Ten actual object-revalidation Runner
+mutations failed with zero Provider and Stage 2 Provider calls.
+
+The authoritative identities are:
+
+- response Grammar:
+  `prospective_stage_one_response_grammar:641ea2e9b4391cc46026f7b0d187ba5f7a674fe28e271a4b58e37aeed87a6b52`;
+- v26.112 report:
+  `finance_v26_exact_grammar_rematerialization_report:88b4a2cac6d43e46d52a45a0af7956787b78805893daf86af2ac01abde5e2f8f`;
+- v26.112 Contract:
+  `finance_v26_two_stage_execution_contract:a162af1661dd51e253cf77dff5628a73df1c92e2d335cc6aeadc000dfc952329`;
+- v26.112 Manifest:
+  `finance_v26_two_stage_manifest:3b9377e0d41e9af761df93a2009402c6ac3f7efa84d41695f7b192dc85d67416`;
+- v26.113 report:
+  `finance_v26_exact_grammar_runner_preflight_report:da5f397ce5082137ef0f343e240db57ce88e6f89178ac4a2b486118cdc5d24cf`;
+- Runner Contract:
+  `finance_v26_two_stage_runner_contract:02340ee6c14e53831b6057e92c8d2e694572cfbfb9e7432835cb7e6f28053506`;
+- Runner fixture:
+  `finance_v26_exact_grammar_runner_fixture:469544b4415e7ce773836374ed4ec82fd66b318e457066acc437500b5c7ce750`.
+
+The only permitted transition is:
+
+```text
+exact_response_grammar_calibration_execution_only
+```
+
+This is positive response-constructibility and Runner-Instrument evidence, not empirical Flash
+semantic-Proposal usability. It authorizes only the exact fresh 32-Job engineering calibration.
+Model, Thinking, Completion, rollout, public-state, task, seed, and Stage 2 changes remain
+forbidden. No v26.110 rerun, role experiment, State Mapping, release, or production Contribution
+is authorized. See
+`docs/finance_v26_112_v26_113_exact_response_grammar_and_runner_preflight.md`.
 
 ## v26.110-v26.111 Two-Stage Semantic Proposal Execution And Audit Decision
 
@@ -128,18 +215,20 @@ The authoritative identities are:
 - transition Contract:
   `finance_v26_two_stage_postrun_transition:6ae62c72a6f9023a1da40267c4515d0d23c8e833e919a4eb1285e84a0ab0c4bb`.
 
-The only permitted transition is:
+At the v26.111 audit freeze, the only permitted transition was:
 
 ```text
 fresh_exact_response_grammar_taskpackage_contract_manifest_and_runner_preflight_only
 ```
 
-The successor must expose the exact response field names, state binding, conditional rules,
-null/empty defaults, protocol field, and one-proposal shape in both Primary and Rescue. It must
-use fresh response-protocol, Prompt, TaskPackage, Contract, Manifest, Job, Runner, execution, and
-report identities and complete an exact credential-free Runner preflight before any Provider
-call. Host alias normalization, Host semantic choice, v26.110 rerun, profile/model/Completion/
-rollout changes, and Stage 2 Provider calls remain forbidden. See
+That transition has now been consumed by v26.112-v26.113. The successor exposed the exact
+response field names, state binding, conditional rules, null/empty defaults, protocol field, and
+one-proposal shape in both Primary and Rescue. It used fresh response-protocol, Prompt,
+TaskPackage, Contract, Manifest, Job, Runner, execution, and report identities and completed the
+exact credential-free Runner preflight before any Provider call. Host alias normalization, Host
+semantic choice, v26.110 rerun, profile/model/Completion/
+rollout changes, and Stage 2 Provider calls remain forbidden under the current v26.113
+authorization. See
 `docs/finance_v26_110_v26_111_two_stage_semantic_proposal_calibration_execution_and_audit.md`.
 
 ## v26.108-v26.109 Two-Stage Profile, Manifest, And Runner Preflight Decision
@@ -2567,6 +2656,17 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
 | Check | Result |
 | --- | --- |
+| v26.112 source replay | 2,029/2,029 files: 2,017 v26.111 transitive bindings, 10 v26.111 outputs, and 2 exact implementation files; zero credential/client/API/GPU |
+| v26.112 exact response Grammar | one strong ten-field v2 Schema; exact field names, protocol/stage constants, state copy, types, defaults, four conditional rules, one-object/no-extra/no-wrapper rules all model-visible |
+| v26.112 Prompt-only constructibility | 324 Primary plus 324 Rescue parses; 648/648 state bindings; 324/324 semantic matches and shorter Rescues; maximum 7,724/4,996 bytes |
+| v26.112 fresh identity and resources | 24 TaskPackages, 48 Paths, 1 Contract, 1 Manifest, 32 Jobs; zero corresponding v26.108 identity overlap; 157,409-258,646-token bounds and 1,354 minimum headroom |
+| v26.112 dual build and destructive controls | all 10 outputs byte-identical; 16/16 exact Grammar/identity mutations rejected; zero credential/client/API/GPU and empirical rows |
+| v26.113 source replay | 2,041/2,041 files: 2,029 v26.112 transitive bindings, 10 v26.112 outputs, and 2 exact Runner implementation files |
+| v26.113 exact Runner control | 32 Jobs, 256 scripted Stage 1 calls/certificate triples, 224 exact semantic payloads and reversible Stage 2 Commits, 192 Observations; 32/32 Replay, validity, mechanism, final-answer, and path passes |
+| v26.113 Rescue, Usage, and recovery | one invalid Primary recovered by exact-v2 Rescue; 16,384/16,385 admitted and charged; 16,386 rejected with Rescue blocked; complete Raw recovery zero-call and byte-identical; orphan/oversize/reuse/budget denied |
+| v26.113 dual build and destructive controls | all 7 outputs byte-identical; 10/10 object-revalidation mutations rejected; zero credential/real client/API/GPU, Stage 2 Provider calls, and empirical rows |
+| v26.112-v26.113 focused validation | 5 passed in 15.92 seconds; focused Ruff format/check and Mypy for all 4 implementation modules passed |
+| v26.113 transition | exact fresh 32-Job response-Grammar calibration execution only; no v26.110 rerun, bound/profile change, role experiment, State Mapping, release, or production authorization |
 | v26.110 source replay | 1,911/1,911 files: 1,900 v26.109 transitive bindings, 10 v26.109 outputs, and 1 exact implementation file; zero credential/client/API/GPU |
 | v26.110 computed preexecution validity | 32 Jobs, 256 scripted Stage 1 calls, 224 reversible Stage 2 Commits; 32/32 Verifier v3, independent validity, and mechanism passes; zero real or Stage 2 Provider calls |
 | v26.110 online execution | 32/32 Jobs; 64 HTTP-success exact-model calls; 740,080 Provider tokens; USD 0.1928878056000000200 estimated cost; zero GPU |
@@ -3092,7 +3192,7 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-fresh_exact_response_grammar_taskpackage_contract_manifest_and_runner_preflight_only
+exact_response_grammar_calibration_execution_only
 ```
 
 v26.105 has consumed the exact 32-Job 16K authorization. Do not rerun, recover, or reclassify any
@@ -3113,12 +3213,19 @@ Gates. All 32 Jobs stopped before an accepted semantic proposal, so semantic beh
 unmeasured and cannot be inferred from the zero Program, mechanism, validity, or route counts.
 
 v26.111 independently reproduced the complete denominator and localized the model-visible
-response-grammar omission. The next stage is credential-free only. It must expose the exact
-ten-field response shape, state binding, conditional field requirements, null/empty defaults,
-protocol field, and one-proposal rule in both Primary and Rescue; rematerialize every affected
-identity; and preflight the exact Runner before any Provider call. The profile, model, 16K
-Completion request, 260K rollout ceiling, semantic authority boundary, and Stage 2 zero-Provider
-route may not change. Host alias normalization and Host semantic selection remain forbidden.
+response-grammar omission. v26.112 has now consumed that credential-free transition by exposing
+the exact ten-field response shape, state binding, conditional requirements, null/empty defaults,
+protocol, and one-proposal rule from one strong Schema in both Primary and Rescue. It
+rematerialized every affected identity while preserving the profile, 16K Completion request,
+260K rollout ceiling, semantic authority boundary, all task/path/seed projections, and Stage 2
+zero-Provider route.
+
+v26.113 has preflighted the exact future Runner with 32/32 scripted Jobs, 224/224 exact semantic
+payloads and reversible Commits, 32/32 Replay/validity/mechanism passes, complete certificate,
+Usage, privacy, Rescue, recovery, and destructive controls, and zero real Provider calls. The
+only current authorization is the exact fresh 32-Job engineering calibration. Host alias
+normalization, Host semantic selection, v26.110 rerun, model/Profile/Completion/rollout changes,
+Stage 2 Provider calls, role experiments, State Mapping, and release remain forbidden.
 
 The exact v26.91 Manifest has now been fully exposed by v26.92. Do not rerun, recover, or
 reclassify any of its 32 Jobs. Its positive typed-no-call result and negative Completion result
