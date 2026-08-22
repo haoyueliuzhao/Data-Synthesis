@@ -1996,11 +1996,12 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v25.19-v25.20 support-confirmation focus | 26 passed |
 | v25.21 public-benchmark audit focus | 5 passed |
 | Ruff check | passed |
-| Ruff format | both new v26.99 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
-| Mypy | 400 files checked; one source-bound v26.70 local-list annotation diagnostic retained |
-| Pytest | 1125 passed, 4 expected v26.78/v26.84 success-state tests skipped in 863.73 seconds; one existing destructive-test warning |
+| Ruff format | all five new v26.100 Python files passed; 118 historical baseline files remain unformatted under the current Ruff version |
+| Mypy | 404 source files checked; one source-bound v26.70 local-list annotation diagnostic retained |
+| Pytest | 1133 passed, 4 expected v26.78/v26.84 success-state tests skipped in 878.08 seconds; one existing destructive-test warning |
 | Prospective thinking-mode policy focus | 10 passed in 0.38 seconds; zero API/GPU |
-| v26.100 focused regression | 8 passed in 13.79 seconds in the isolated build; zero real API/GPU |
+| v26.100 focused regression | 8 passed in 13.61 seconds in the isolated build; zero real API/GPU |
+| v26.88-v26.100 adjacent thinking/budget regression | 112 passed in 103.81 seconds on integrated main |
 | v26.100 dual build | all nine output files are byte-identical; zero real API/GPU |
 | v26.100 source replay | 770/770 files: 755 v26.99 transitive bindings, 11 v26.99 outputs, and 4 exact implementation files |
 | v26.100 exact client binding | exact `agent_model_config:c07d...62b2e`, Thinking binding `prospective_thinking_model_binding:9ed9...9ac57`, `max_tokens=8192`, and no discovery/fallback route |

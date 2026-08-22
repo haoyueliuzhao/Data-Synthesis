@@ -329,10 +329,11 @@ formal/independent artifact comparison: 9/9 byte-identical
 v26.101 --prepare-only: 770/770 replayed, 32 expected Jobs, no client or Provider call
 ```
 
-Adjacent and repository-wide validation are rerun from integrated `main`, whose canonical package
-root contains the Git-ignored immutable historical artifacts required by legacy tests. Those
-results are recorded in `docs/current_project_status.md` and the final validation commit; they do
-not alter the nine source-bound scientific outputs.
+Integrated `main` then passed 112/112 adjacent Thinking/Budget tests and repository-wide Ruff.
+Package-wide Mypy checked 404 source files and retained only the documented source-bound v26.70
+local-list annotation diagnostic. Full Pytest completed with 1,133 passed, four expected
+v26.78/v26.84 success-state skips, and one retained destructive-test warning in 878.08 seconds.
+These post-freeze checks do not alter the nine source-bound scientific outputs.
 
 ## Interpretation
 
