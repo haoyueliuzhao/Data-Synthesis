@@ -382,7 +382,7 @@ The v26.128 identities are:
 
 ## Prospective Transition
 
-The only permitted transition is:
+At the v26.128 freeze, the only permitted transition was:
 
 ```text
 fresh_unexposed_capability_and_reachability_population_kernel_binding_and_runner_preflight_only
@@ -404,3 +404,19 @@ Capability or Reachability execution, historical Job rerun or reclassification, 
 engineering-source reuse, threshold relaxation, post-hoc task deletion, Action/Final Grammar or
 Candidate changes, model/Thinking/Completion/rollout/recovery changes, State Mapping, training,
 release, and production Contribution remain forbidden.
+
+## Successor Note
+
+Finance v26.129 consumed this credential-free transition. It preserved the exact Kernel and froze
+separate fresh Capability and Reachability source Populations before resource evaluation. The
+first fixed Context compatibility Gate found eight incompatible paths among twelve, so no role
+TaskPackage, Contract, Manifest, Job, or Runner was materialized and no Provider call occurred.
+The v26.128 evidence and Kernel remain immutable.
+
+The current transition is:
+
+```text
+frozen_role_population_kernel_scalability_design_only
+```
+
+See `docs/finance_v26_129_fresh_role_kernel_compatibility_preflight.md`.

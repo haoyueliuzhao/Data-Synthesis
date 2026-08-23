@@ -1,0 +1,83 @@
+{
+  "audit_id": "finance_v26_role_kernel_destructive:e493c0cddec63766acdd126af9bf911f5584a5d23a1af85e6002712070c99cd0",
+  "mutation_count": 12,
+  "mutations": [
+    {
+      "name": "capability_population_relabelled_as_reachability",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "cross_role_population_identity_merged",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "freshness_channel_deleted",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "hard_task_replaced_after_resource_audit",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "incompatible_path_deleted",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "kernel_resource_values_used_for_source_selection",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "prompt_ceiling_failure_relabelled_pass",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "provider_call_limit_relaxed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "role_manifest_authorized_after_failed_gate",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "role_provider_call_authorized_after_failed_gate",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "rollout_bound_failure_relabelled_pass",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    },
+    {
+      "name": "transport_failure_usage_imputed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "stage_two_provider_calls_before_rejection": 0
+    }
+  ],
+  "provider_calls": 0,
+  "rejection_count": 12,
+  "schema_version": "finance_v26_role_kernel_destructive.v1",
+  "stage_two_provider_calls": 0,
+  "status": "passed"
+}

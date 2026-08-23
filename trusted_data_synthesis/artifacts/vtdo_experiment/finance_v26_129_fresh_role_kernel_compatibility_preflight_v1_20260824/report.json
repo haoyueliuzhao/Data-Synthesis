@@ -1,0 +1,84 @@
+{
+  "capability_population_id": "finance_v26_fresh_role_source_population:1e22847979b0927e1f772ab8b945dc4e57c2e0dc3b95f0673b1d1543470975e3",
+  "credential_lookup_attempted": false,
+  "destructive_audit_id": "finance_v26_role_kernel_destructive:e493c0cddec63766acdd126af9bf911f5584a5d23a1af85e6002712070c99cd0",
+  "detail_files": [
+    {
+      "byte_count": 34231,
+      "relative_path": "capability_source_population.json",
+      "sha256": "66c2327ad7eb8bd453dacb1976ccb3455fc7575774e21575e925ee132c2d92e6"
+    },
+    {
+      "byte_count": 2599,
+      "relative_path": "destructive_audit.json",
+      "sha256": "45e99f01d1a4297499dcb9cdb1b2ee3a3a4359cb86aff1a070168e5eac7f85e3"
+    },
+    {
+      "byte_count": 5253109,
+      "relative_path": "fresh_source_sampling_frame.json",
+      "sha256": "db29579937f1c741e79ba5cd20bc61b48f9db67bc68533adaaf3d37a26833bb3"
+    },
+    {
+      "byte_count": 5237,
+      "relative_path": "historical_exposure_exclusion_audit.json",
+      "sha256": "5f5f4553722d5ad45b98bcc55be317a91d7d2cc4c5665ed84a9f3f13f5798a9a"
+    },
+    {
+      "byte_count": 53458,
+      "relative_path": "kernel_compatibility_audit.json",
+      "sha256": "7e424a21f51a308e438a6713310af943b5a362f10700459cc32eb8e33d7edeb0"
+    },
+    {
+      "byte_count": 1456,
+      "relative_path": "prospective_transition_contract.json",
+      "sha256": "f4a57cb83ec7c552c119a8491502a84aea65632510abafadb575560a7c90c808"
+    },
+    {
+      "byte_count": 34257,
+      "relative_path": "reachability_source_population.json",
+      "sha256": "7345d508a30d468ae9f544b878c28128f392fe7297e0a3d33c3526924702915a"
+    },
+    {
+      "byte_count": 6538,
+      "relative_path": "role_source_selection_audit.json",
+      "sha256": "030c61b3c718cb7a9479f15f5050c4eeb4213b64a6ebf6cba449a5c5da165332"
+    },
+    {
+      "byte_count": 1530527,
+      "relative_path": "source_replay_audit.json",
+      "sha256": "6e6d98fcfdeae95775ddf08254229b20bfc0ded6575b433b023600634d252288"
+    }
+  ],
+  "diagnostic_path_count": 12,
+  "empirical_rows_created": 0,
+  "fresh_role_source_task_count": 24,
+  "gpu_jobs": 0,
+  "historical_exclusion_audit_id": "finance_v26_historical_exposure_exclusion:05c9cf1a180f8ebc4046c1894442c5a90784909871931c300286b0555610dd9c",
+  "historical_rows_reclassified": 0,
+  "incompatible_path_count": 8,
+  "kernel_compatibility_audit_id": "finance_v26_kernel_compatibility_audit:df94020f8c68e83ef25aa2f24c76f8b807b0cd9f5d2e309e4db695c9ae0bfd92",
+  "model_client_constructed": false,
+  "next_permitted_stage": "frozen_role_population_kernel_scalability_design_only",
+  "predecessor_report_id": "finance_v26_transport_recovery_postrun_audit_report:e923f02843376424c783cb47a1e3f59f7704426f2b151f1432c65408e8c4731f",
+  "production_contribution": 0,
+  "prompt_ceiling_failure_count": 4,
+  "provider_calls": 0,
+  "reachability_population_id": "finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99",
+  "report_id": "finance_v26_role_kernel_compatibility_preflight_report:c7195e4ba2194a136b8d7a8c27b1148d909d1b8eb76e1214a366f696c4e66f00",
+  "request_limit_failure_count": 6,
+  "role_contract_count": 0,
+  "role_job_count": 0,
+  "role_manifest_count": 0,
+  "role_runner_count": 0,
+  "role_source_selection_audit_id": "finance_v26_role_source_selection_audit:c85191ff67118440ecf67d112406f44eee33e64b4e34d77bec88c22b72cfc9a9",
+  "role_task_package_count": 0,
+  "rollout_bound_failure_count": 8,
+  "run_id": "finance_v26_129_fresh_role_kernel_compatibility_preflight_v1_20260824",
+  "schema_version": "finance_v26_role_kernel_compatibility_preflight_report.v1",
+  "source_frame_population_id": "finance_capability_sensitive_frontier_population:24ff4419902520486d93836aa1be25be39f9b6fb208bb3d847824e967883cef1",
+  "source_frame_task_count": 70,
+  "source_replay_audit_id": "finance_v26_fresh_role_source_replay:d9c58baad57392834c01e727380d638e12b3112c4f35cc5f48aadc0254504e31",
+  "stage_two_provider_calls": 0,
+  "status": "role_population_kernel_incompatible",
+  "transition_contract_id": "finance_v26_role_kernel_transition:c889aaaaa31fb388ab54a2207baa2cb5e3bd0302b8510f5b8f119e09b118de55"
+}

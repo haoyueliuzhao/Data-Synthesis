@@ -1,0 +1,19 @@
+{
+  "capability_or_reachability_execution_authorized": false,
+  "contract_id": "finance_v26_role_kernel_transition:c889aaaaa31fb388ab54a2207baa2cb5e3bd0302b8510f5b8f119e09b118de55",
+  "engineering_kernel_freeze_id": "finance_v26_engineering_kernel_freeze:eab0c2d085b78e77a487077931df58009380d279f74f93fc5aebc627bb523e77",
+  "frozen_capability_and_reachability_populations_must_be_preserved": true,
+  "historical_rerun_recovery_or_reclassification_authorized": false,
+  "kernel_compatibility_audit_id": "finance_v26_kernel_compatibility_audit:df94020f8c68e83ef25aa2f24c76f8b807b0cd9f5d2e309e4db695c9ae0bfd92",
+  "next_permitted_stage": "frozen_role_population_kernel_scalability_design_only",
+  "posthoc_task_deletion_or_substitution_authorized": false,
+  "predecessor_transition_id": "finance_v26_transport_recovery_postrun_transition:adb995a0efd3a04313bd325f80cef2b612492b379f762aad9c88614cc394217a",
+  "provider_calls_authorized": false,
+  "redesign_may_use_model_outcomes_for_selection": false,
+  "role_source_selection_audit_id": "finance_v26_role_source_selection_audit:c85191ff67118440ecf67d112406f44eee33e64b4e34d77bec88c22b72cfc9a9",
+  "role_task_package_contract_manifest_job_or_runner_materialization_authorized": false,
+  "schema_version": "finance_v26_role_kernel_transition.v1",
+  "state_mapping_training_release_or_production_authorized": false,
+  "status": "role_population_kernel_incompatible",
+  "threshold_relaxation_authorized": false
+}

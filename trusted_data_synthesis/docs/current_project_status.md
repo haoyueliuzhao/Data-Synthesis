@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-23
+Audit date: 2026-08-24
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -86,14 +86,98 @@ model terminals: eight independently valid and two model-invalid. v26.128 indepe
 the complete lineage and closes the exact endpoint denominator as 22 frozen historical plus ten
 fresh successor model outcomes. All 32 close Program, verify terminal state, and commit Final;
 26 cross the exact Final ABI and 19 are independently valid. It freezes the exact engineering
-Kernel. The current transition authorizes only fresh model-unexposed Capability and Reachability
-Population construction, Kernel binding, and a credential-free role Runner preflight; it
-authorizes no role Provider call.
+Kernel. v26.129 has now frozen separate fresh model-unexposed Capability and Reachability source
+Populations before loading that Kernel. The first fixed compatibility Gate fails: eight of twelve
+Context paths exceed at least one exact Prompt, request-count, Provider-call, or 400,000-token
+bound. No role TaskPackage, Contract, Manifest, Job, or Runner was materialized and no Provider
+call occurred. The current transition authorizes only a scalability design for the exact frozen
+role Populations.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.129 Fresh Role Population And Kernel Compatibility Decision
+
+Finance v26.129 consumed only the credential-free fresh-role preflight transition authorized by
+v26.128. It replayed 3,154/3,154 files before source construction: all 3,134 v26.128 transitive
+bindings, all nine v26.128 outputs, nine additional historical role identity inputs, the exact
+source Evidence Snapshot, and its implementation. It looked up no credential, constructed no
+model client, made zero Provider or Stage 2 Provider calls, used zero GPU jobs, and created zero
+empirical rows.
+
+The historical census covers 29 selected task-record, task-package, and
+Development/Confirmation Population files. It finds 155 historical source tasks, maps 154 back
+to immutable broad source Populations, and retains the unmapped task's direct identities. The
+26,290 Evidence exclusions in the v26.29 receipt and 961 historically selected Evidence
+identities form a 27,173-item union. A freshly regenerated 70-task Sampling Frame uses 401
+Evidence identities and has zero overlap with that union.
+
+Before loading any Kernel or resource value, a role-neutral fixed-salt ranking froze separate
+12-task Capability and Reachability source Populations. Each role contains one Easy, one
+Frontier, and one Hard task for each of the four mechanisms. Historical and cross-role overlap is
+zero on task ID, source-task ID, Evidence ID, Evidence Version ID, core semantic signature, task
+signature, mechanism-instance signature, and source-record ID. Both roles contain 75 Evidence
+identities and share none.
+
+Only after those identities were persisted did the audit load the exact v26.128 Kernel and
+v26.123 privacy-first Runner Contract. The fixed first Gate covers six Context sources and twelve
+paths: three Capability `structured_direct` paths and nine Reachability paths across
+`structured_direct`, `search_then_structured`, and `search_then_open`. The Prompt-only
+control reaches 132 public states, independently matches complete Candidate authority, makes
+Stage 2 Commits with zero Provider calls, closes every diagnostic Program, and reaches Final
+Commit.
+
+Four Easy paths fit. Eight paths are incompatible: both Frontier direct paths already exceed
+400,000 tokens; both Frontier search paths also exceed the request and Provider-call bounds; and
+all four Hard paths exceed the rollout, request, and Provider-call bounds as well as the
+60,000-byte Prompt ceiling. The exact failure counts are 4 Prompt, 6 Primary-request, 6
+Provider-call, and 8 rollout-bound failures. The maximum Prompt is 86,161 bytes, maximum Primary
+request count is 20, maximum conservative path bound is 1,276,468 tokens, and minimum headroom is
+-876,468.
+
+The fixed first Gate therefore closes as `role_population_kernel_incompatible`.
+Semantic Reconciliation, Failure Recovery, and State-dependent Stopping remain unmeasured after
+fail-fast; they are not classified as passing or failing. The six Context operational packages
+are diagnostic fixtures only. Future role TaskPackage, Contract, Manifest, Job, and Runner counts
+are zero. Post-hoc source deletion, source substitution, tier change, threshold relaxation, and
+role Provider execution remain forbidden.
+
+All twelve destructive mutations failed with zero Provider calls. Formal and independent builds
+regenerated all ten outputs byte for byte. Focused Pytest passed 2/2 in 22.76 seconds; focused
+Ruff and Mypy passed. The selected v26.122-v26.129 adjacent regression passed 7/7 in 83.75
+seconds.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_role_kernel_compatibility_preflight_report:c7195e4ba2194a136b8d7a8c27b1148d909d1b8eb76e1214a366f696c4e66f00`;
+- source Sampling Frame:
+  `finance_capability_sensitive_frontier_population:24ff4419902520486d93836aa1be25be39f9b6fb208bb3d847824e967883cef1`;
+- Capability Population:
+  `finance_v26_fresh_role_source_population:1e22847979b0927e1f772ab8b945dc4e57c2e0dc3b95f0673b1d1543470975e3`;
+- Reachability Population:
+  `finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99`;
+- role selection:
+  `finance_v26_role_source_selection_audit:c85191ff67118440ecf67d112406f44eee33e64b4e34d77bec88c22b72cfc9a9`;
+- Kernel compatibility:
+  `finance_v26_kernel_compatibility_audit:df94020f8c68e83ef25aa2f24c76f8b807b0cd9f5d2e309e4db695c9ae0bfd92`;
+- transition:
+  `finance_v26_role_kernel_transition:c889aaaaa31fb388ab54a2207baa2cb5e3bd0302b8510f5b8f119e09b118de55`.
+
+The only permitted transition is:
+
+~~~text
+frozen_role_population_kernel_scalability_design_only
+~~~
+
+The successor must preserve the exact two source Populations and their eight-channel separation.
+It may design a fresh scalability protocol for Prompt projection, Candidate representation,
+interaction staging, request accounting, or resource qualification. Role TaskPackage, Contract,
+Manifest, Job, and Runner materialization; every Provider call; Capability or Reachability
+execution; State Mapping; training; release; and production Contribution remain forbidden. See
+`docs/finance_v26_129_fresh_role_kernel_compatibility_preflight.md`.
 
 ## v26.126-v26.128 Transport Recovery And Engineering Kernel Decision
 
@@ -199,7 +283,7 @@ The authoritative identities are:
 - transition:
   `finance_v26_transport_recovery_postrun_transition:adb995a0efd3a04313bd325f80cef2b612492b379f762aad9c88614cc394217a`.
 
-The only permitted transition is:
+At the v26.128 freeze, the only permitted transition was:
 
 ~~~text
 fresh_unexposed_capability_and_reachability_population_kernel_binding_and_runner_preflight_only
@@ -213,6 +297,10 @@ reclassification; repeated engineering-source role reuse; threshold relaxation; 
 deletion; Kernel changes; role execution; State Mapping; training; release; and production
 Contribution remain forbidden. See
 `docs/finance_v26_126_v26_128_transport_recovery_and_kernel_freeze.md`.
+
+That credential-free transition has now been consumed by v26.129. The v26.128 Kernel and endpoint
+results remain immutable. The current transition is the frozen role-Population Kernel
+scalability design recorded above.
 
 ## v26.124-v26.125 Exact Final Semantic Action Execution And Audit Decision
 

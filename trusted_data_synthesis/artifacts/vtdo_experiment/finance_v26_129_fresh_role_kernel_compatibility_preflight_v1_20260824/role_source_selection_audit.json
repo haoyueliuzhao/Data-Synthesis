@@ -1,0 +1,112 @@
+{
+  "audit_id": "finance_v26_role_source_selection_audit:c85191ff67118440ecf67d112406f44eee33e64b4e34d77bec88c22b72cfc9a9",
+  "capability_population_id": "finance_v26_fresh_role_source_population:1e22847979b0927e1f772ab8b945dc4e57c2e0dc3b95f0673b1d1543470975e3",
+  "capability_task_count": 12,
+  "freshness_channels": [
+    {
+      "capability_count": 12,
+      "capability_set_hash": "finance_v26_role_capability_task_id:b9b516bb47a3fc22279ae3dffbab73a19e9042f72d3b5cd867789d065119bea1",
+      "channel": "task_id",
+      "cross_role_overlap_count": 0,
+      "prior_count": 464,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_task_id:b9f4b0efb60ec44ab5353069d797829584aafaf4dbc3cbfcbda6a292a3ad3655",
+      "reachability_count": 12,
+      "reachability_set_hash": "finance_v26_role_reachability_task_id:ef0b87ad2938cb94c69ae148ae5bb903ae4a86f5a06a14096fe85f9d51766a77"
+    },
+    {
+      "capability_count": 12,
+      "capability_set_hash": "finance_v26_role_capability_source_task_id:b81d6fe212de584f546d4473a0f36175734e4296be4c507cff5a818f1175ccf7",
+      "channel": "source_task_id",
+      "cross_role_overlap_count": 0,
+      "prior_count": 155,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_source_task_id:6cdfdb806003404124dfc29e551df19fc27a3dcb5d8579ccc1b628767fe4388d",
+      "reachability_count": 12,
+      "reachability_set_hash": "finance_v26_role_reachability_source_task_id:ada98fde6a32a5a854e94c85dfd950193c1209c205ba068fcae255ff08de5363"
+    },
+    {
+      "capability_count": 75,
+      "capability_set_hash": "finance_v26_role_capability_evidence_id:a16f1d33bf9620b884c9706a218e37c78d7c8fb982c39d6c7cf27e2cbb0ebb36",
+      "channel": "evidence_id",
+      "cross_role_overlap_count": 0,
+      "prior_count": 27173,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_evidence_id:c4e644b16deff7d62d976b68d157e0ab61f1d0f0a5f436f8cc8f3aafdb863535",
+      "reachability_count": 75,
+      "reachability_set_hash": "finance_v26_role_reachability_evidence_id:471f426c21a26e4115a7c4f7163858f129538faa461aa8a0f6dcb9e6f725a042"
+    },
+    {
+      "capability_count": 75,
+      "capability_set_hash": "finance_v26_role_capability_evidence_version_id:ade78442296e26e1e722ce14d221278a2218dcd5b850292e83ccfe63e7c2ac25",
+      "channel": "evidence_version_id",
+      "cross_role_overlap_count": 0,
+      "prior_count": 961,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_evidence_version_id:b6ceb797d1cd9688ad2f2b60f2e8f9d1f21743e0a77a32fad469e1a2fa175b04",
+      "reachability_count": 75,
+      "reachability_set_hash": "finance_v26_role_reachability_evidence_version_id:4f722d5dcfa97f4bd203f8e478926f9a9a061bd54327544717671ea116e0bfac"
+    },
+    {
+      "capability_count": 12,
+      "capability_set_hash": "finance_v26_role_capability_core_semantic_signature:c753f81676f964a5bb5f82d60ecb135ffce3833fc69c1e0e4770f1d71418d0af",
+      "channel": "core_semantic_signature",
+      "cross_role_overlap_count": 0,
+      "prior_count": 154,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_core_semantic_signature:8a46811b492e11e4b2ffad3f94096c5f7d9ba2eeadfe5e7d564137a3aad32f0f",
+      "reachability_count": 12,
+      "reachability_set_hash": "finance_v26_role_reachability_core_semantic_signature:0f0f1f23923a79fb780102bf65f580f324f770d1a7d6ae4512855805e888af79"
+    },
+    {
+      "capability_count": 12,
+      "capability_set_hash": "finance_v26_role_capability_task_signature:7e212ddf12d67cb507eebffed09c9d22117ec885d9dfc7bd8b9c68974bef879c",
+      "channel": "task_signature",
+      "cross_role_overlap_count": 0,
+      "prior_count": 285,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_task_signature:2778b3a74389f6f84fc155b4d4b8f8f8c5aaa6229c806210e4d3dda1bba96b05",
+      "reachability_count": 12,
+      "reachability_set_hash": "finance_v26_role_reachability_task_signature:d879b10436a58dc657a91f47b4d1eacb3675634f909ec1a0bff787aa25759dcb"
+    },
+    {
+      "capability_count": 12,
+      "capability_set_hash": "finance_v26_role_capability_mechanism_instance_signature:ac1aed42e14fe3be94ee84c9f1f20f651ff43f5220feb7970f98086a55c37bd9",
+      "channel": "mechanism_instance_signature",
+      "cross_role_overlap_count": 0,
+      "prior_count": 154,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_mechanism_instance_signature:703b1f6fc088009a34c01bf5cc5a1ff4e165f8ef3f55b5060972c7607538b660",
+      "reachability_count": 12,
+      "reachability_set_hash": "finance_v26_role_reachability_mechanism_instance_signature:9830ac805c4f9f4a08180b67e8db1c4c2504aad15d560417d5daf6c627eb191f"
+    },
+    {
+      "capability_count": 75,
+      "capability_set_hash": "finance_v26_role_capability_source_record_id:6af81bcedb8984c605cdec9e1b9bfdb026f7028eb6c1ebb62977fd568aa09f74",
+      "channel": "source_record_id",
+      "cross_role_overlap_count": 0,
+      "prior_count": 961,
+      "prior_overlap_count": 0,
+      "prior_set_hash": "finance_v26_role_prior_source_record_id:a7cffc258b66cf9f4013b8ce1edb2792819c1dec335cdb0e07bfdc447457719f",
+      "reachability_count": 75,
+      "reachability_set_hash": "finance_v26_role_reachability_source_record_id:0cf8af77e5a76f547b89919e8fa04da2177d114af03cf26f2d1699080f15e801"
+    }
+  ],
+  "historical_exclusion_audit_id": "finance_v26_historical_exposure_exclusion:05c9cf1a180f8ebc4046c1894442c5a90784909871931c300286b0555610dd9c",
+  "kernel_resource_values_used_for_selection": false,
+  "model_outcomes_used_for_selection": false,
+  "posthoc_task_deletion_or_substitution_allowed": false,
+  "provider_calls": 0,
+  "provider_payloads_used_for_selection": false,
+  "reachability_population_id": "finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99",
+  "reachability_task_count": 12,
+  "role_assignments_frozen_before_kernel_load": true,
+  "schema_version": "finance_v26_role_source_selection_audit.v1",
+  "selected_task_count": 24,
+  "selection_salt": "finance-v26.129-fresh-role-selection-v1",
+  "source_frame_population_id": "finance_capability_sensitive_frontier_population:24ff4419902520486d93836aa1be25be39f9b6fb208bb3d847824e967883cef1",
+  "source_populations_separate": true,
+  "source_replay_audit_id": "finance_v26_fresh_role_source_replay:d9c58baad57392834c01e727380d638e12b3112c4f35cc5f48aadc0254504e31",
+  "status": "fresh_role_source_populations_frozen",
+  "task_depth_balanced_before_resource_audit": true
+}
