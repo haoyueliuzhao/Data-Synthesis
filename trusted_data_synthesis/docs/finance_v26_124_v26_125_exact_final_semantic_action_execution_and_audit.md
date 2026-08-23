@@ -24,9 +24,9 @@ split into three answer-projection failures and three target-mechanism failures.
 Evidence support, operation lineage, Replay, and terminal verification passed for all six.
 
 Finance v26.125 independently replayed the complete lineage with zero Provider calls. It freezes
-ten exact failed-call recovery Candidates and preserves the 22 model outcomes unchanged. The
-current transition authorizes only a fresh credential-free Recovery Contract, Manifest, Job, and
-Runner preflight. It does not authorize a Provider call or any historical Job rerun,
+ten exact failed-call recovery Candidates and preserves the 22 model outcomes unchanged. At the
+v26.125 audit freeze, the transition authorized only a fresh credential-free Recovery Contract,
+Manifest, Job, and Runner preflight. It did not authorize a Provider call or any historical Job rerun,
 continuation, or reclassification.
 
 ## Frozen Authorization And Preexecution
@@ -308,7 +308,7 @@ The v26.125 identities are:
 
 ## Prospective Transition
 
-The only permitted transition is:
+At the v26.125 audit freeze, the only permitted transition was:
 
 ```text
 fresh_exact_failed_call_transport_recovery_contract_and_runner_preflight_only
@@ -336,3 +336,11 @@ Mapping, training, release, and production Contribution remain forbidden.
 This transition addresses an Instrument recovery boundary only. It does not treat the five
 string-valued Final failures or the six independently invalid exact Final answers as retryable
 Instrument defects.
+
+v26.126-v26.128 have now consumed this credential-free preflight and exact Recovery execution
+sequence. The historical v26.124-v26.125 artifacts and terminals remain immutable. The current
+transition is:
+
+```text
+fresh_unexposed_capability_and_reachability_population_kernel_binding_and_runner_preflight_only
+```

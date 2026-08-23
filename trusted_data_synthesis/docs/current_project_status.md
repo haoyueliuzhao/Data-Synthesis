@@ -77,13 +77,142 @@ failure: eight HTTP-200 `IncompleteRead` rows and two connection-refused `URLErr
 model outcomes all closed Program, verified terminal state, and committed Final; 17 crossed the
 exact Final Grammar and eleven were independently valid. v26.125 independently audits the full
 lineage, preserves all historical terminals, and freezes ten exact failed-call recovery
-Candidates. The current transition authorizes only a fresh credential-free failed-call recovery
-Contract, Manifest, Job, and Runner preflight. It authorizes no Provider call.
+Candidates. v26.126 has now materialized and credential-free preflighted those ten fresh
+RecoveryJobs. All exact successful prefixes and failed requests reconstructed, the ten-Job
+scripted continuation passed, and the single-replacement, recovery-channel, Usage, privacy,
+Raw-recovery, orphan, and destructive controls closed. v26.127 then executed only that exact
+fresh denominator. All 65 successor calls returned HTTP success and all ten RecoveryJobs reached
+model terminals: eight independently valid and two model-invalid. v26.128 independently audits
+the complete lineage and closes the exact endpoint denominator as 22 frozen historical plus ten
+fresh successor model outcomes. All 32 close Program, verify terminal state, and commit Final;
+26 cross the exact Final ABI and 19 are independently valid. It freezes the exact engineering
+Kernel. The current transition authorizes only fresh model-unexposed Capability and Reachability
+Population construction, Kernel binding, and a credential-free role Runner preflight; it
+authorizes no role Provider call.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.126-v26.128 Transport Recovery And Engineering Kernel Decision
+
+Finance v26.126 consumed only the credential-free Recovery transition authorized by v26.125. It
+replayed 2,973/2,973 files before constructing ten fresh RecoveryJobs: all 2,965 v26.125
+transitive bindings, all seven v26.125 outputs, and its exact implementation. It looked up no
+credential, constructed no model client, made zero real Provider or Stage 2 Provider calls, used
+zero GPU jobs, and created zero empirical rows.
+
+The ten RecoveryJobs bind the exact failed Prompt, public state, dynamic certificate, request-body
+certificate, resource certificate, recovery counters, historical Raw identity, and successful
+prefix for each v26.125 Candidate. RecoveryJob identity overlap with v26.124 is zero. Six Jobs
+have zero successful prefix calls, two have one, and two have two. All six historical successful
+calls, their 42,961 reported tokens, Actions, Commits, and Observations reconstructed exactly with
+zero Provider calls. All ten failed requests then reproduced their exact three-certificate
+binding.
+
+The future Runner gives the first successor call one fresh single-use
+RecoveryInvocationCertificate while retaining the unchanged historical request route. The new
+privacy-first Envelope is parented to the RecoveryJob and precedes a separate public Projection.
+The original failed call's unknown Usage is never imputed. A replacement Transport failure stops
+after one call; it cannot request a second replacement. Later HTTP-success Completion/ABI and
+semantic failures retain the original one global ABI Rescue and separate one Semantic Recovery.
+Stage 2 remains zero-Provider.
+
+The ten-Job direct control made 74 local successor calls and passed 10/10 Program closure, exact
+Final ABI, Replay v3, independent validity, and mechanism checks. Replacement Transport failure,
+combined ABI-plus-semantic recovery, Completion Usage 16,384/16,385/16,386, Envelope-first
+persistence, Raw-only recovery, orphan blocking, and original-Usage non-imputation controls
+passed. All sixteen destructive mutations failed. Formal and independent builds reproduced all
+ten outputs byte for byte.
+
+Finance v26.127 replayed 2,984/2,984 files and all ten exact failed requests before credential
+lookup or client construction. It then executed only the fresh ten-RecoveryJob Manifest. All ten
+first replacements were HTTP successes within 65 total successor calls. Exact requested, selected,
+and response model, Thinking continuity, complete Usage, Provider-native-tool absence, fallback
+absence, model-discovery absence, privacy pairing, resource binding, and zero-Provider Stage 2
+passed throughout.
+
+Fresh Usage was 291,572 tokens: 206,081 Prompt, 85,491 Completion, and 77,657 Reasoning. Fresh
+estimated cost telemetry was USD `0.04867940560000000394`. Combining only persisted v26.124 and
+v26.127 telemetry gives a lower bound of 1,094,528 tokens and USD
+`0.19806934560000001800`. The eight original HTTP-200 incomplete-body calls retain unknown Usage;
+no value is inferred for them. Trajectory resource accounting separately starts at successful
+prefix Usage and charges fresh responses only.
+
+All ten RecoveryJobs reached model terminals: eight `model_valid_trajectory` and two
+`model_invalid_trajectory`. Transport, Instrument, Completion-unusable, typed no-call, privacy,
+and Stage 2 Provider terminals were zero. The combined trajectories contain six replayed prefix
+attempts and 65 fresh calls, 60 Choices, 60 reversible Commits, 50 Observations, 49 successful
+Observations, ten Final requests, one ABI Rescue, and zero Semantic Recoveries. All ten closed
+Program, completed the terminal node, succeeded at terminal verification, and committed Final.
+
+Nine successor Final payloads crossed the exact shared Grammar. One Action ABI failure consumed
+the single global Rescue and later returned scalar `answer="0.00"` at Final, so no second Rescue
+was available and the Job remained model-invalid. One exact-ABI answer passed projection,
+Citation, Evidence, Operation lineage, Replay, and terminal verification but failed the Failure
+Recovery mechanism because no typed failure, selector revision, or recovery-success event
+occurred. These are model outcomes and support no Grammar, Candidate, resource, model, or
+recovery-bound change.
+
+Finance v26.128 independently replayed 3,134/3,134 files: all 2,984 v26.127 transitive bindings,
+all 149 execution files, and its exact implementation. It reparsed ten checkpoint rows, ten
+results, ten Recovery Raw Executions, 65 Envelopes, 65 Projections, all six historical prefix
+calls, and every descriptor. All ten exact replacement bindings, Replay v3 results, progress
+vectors, Final outcomes, independent validity values, and terminals reproduced. Privacy payload,
+rejected-content/key persistence, unknown-Usage imputation, and Stage 2 Provider call counts were
+zero. Twelve destructive mutations failed; formal and independent builds produced all nine
+outputs byte for byte.
+
+The exact endpoint denominator is now:
+
+```text
+22 frozen v26.124 model outcomes + 10 fresh v26.127 outcomes = 32 model endpoints
+```
+
+All 32 closed Program, completed the terminal node, succeeded at terminal verification, and
+committed Final. Twenty-six crossed the exact Final ABI; nineteen are independently valid and
+thirteen are model-invalid. The exact endpoint-valid fraction is `19/32 = 0.59375`. These are
+repeated engineering sources and contribute zero Capability, Reachability, State Mapping,
+training, release, or production rows.
+
+The authoritative identities are:
+
+- v26.126 report:
+  `finance_v26_transport_recovery_preflight_report:3728c94bbdbf5d676269f1460c07d826ad8e444693b0178d20584e4a61010c62`;
+- Recovery Contract:
+  `finance_v26_exact_failed_call_recovery_contract:b41d20f95d1c4245efc1a0468bb2d4161dfec0d2054f6812e68c2a262011048d`;
+- Recovery Manifest:
+  `finance_v26_exact_failed_call_recovery_manifest:2e92bca0b3afc2081f6fa8e0ad5708ce3ae9b83a8ce451a108e17888301eb857`;
+- Recovery Runner Contract:
+  `finance_v26_exact_failed_call_recovery_runner_contract:8278ce674c4c097d59341bab28ccf9b8820b5d464739c16e6a2bae02dc7786a6`;
+- v26.127 report:
+  `finance_v26_transport_recovery_execution_report:df1540cbc8ef04a42b45ee3e683f502ee0956d83ed7344a35ad2c4254c4c1989`;
+- v26.127 Raw Lineage:
+  `finance_v26_transport_recovery_raw_lineage:c2f0001f130b61265770783e2f2a4c710c3140d2798bcde6bdef7b2817411f18`;
+- v26.128 report:
+  `finance_v26_transport_recovery_postrun_audit_report:e923f02843376424c783cb47a1e3f59f7704426f2b151f1432c65408e8c4731f`;
+- full endpoint outcome:
+  `finance_v26_full_model_endpoint_outcome_audit:3f56aca7916ab6300202c206229add0c6f75a13bb1349b6e7e6e25b62754c5f7`;
+- engineering Kernel Freeze:
+  `finance_v26_engineering_kernel_freeze:eab0c2d085b78e77a487077931df58009380d279f74f93fc5aebc627bb523e77`;
+- transition:
+  `finance_v26_transport_recovery_postrun_transition:adb995a0efd3a04313bd325f80cef2b612492b379f762aad9c88614cc394217a`.
+
+The only permitted transition is:
+
+~~~text
+fresh_unexposed_capability_and_reachability_population_kernel_binding_and_runner_preflight_only
+~~~
+
+The successor must select fresh model-unexposed role sources after all historical exclusions,
+keep Capability and Reachability Populations separate, bind fresh TaskPackage, Path, Contract,
+Manifest, Job, and Runner identities to the exact Kernel Freeze, and pass a complete
+credential-free role Runner preflight before any Provider call. Historical rerun, recovery, or
+reclassification; repeated engineering-source role reuse; threshold relaxation; post-hoc task
+deletion; Kernel changes; role execution; State Mapping; training; release; and production
+Contribution remain forbidden. See
+`docs/finance_v26_126_v26_128_transport_recovery_and_kernel_freeze.md`.
 
 ## v26.124-v26.125 Exact Final Semantic Action Execution And Audit Decision
 
@@ -167,7 +296,7 @@ The authoritative identities are:
 - transition:
   `finance_v26_exact_final_postrun_transition:2ee5689a7248012a676e993f37df6bfca0a432579e5787334ae6a990d2439524`.
 
-The only permitted transition is:
+At the v26.125 audit freeze, the only permitted transition was:
 
 ~~~text
 fresh_exact_failed_call_transport_recovery_contract_and_runner_preflight_only
@@ -183,6 +312,12 @@ Action/Final Grammar, Candidate, model, Thinking, Completion, rollout, or recove
 repair; role experiments; State Mapping; training; release; and production Contribution remain
 forbidden. See
 `docs/finance_v26_124_v26_125_exact_final_semantic_action_execution_and_audit.md`.
+
+That transition was consumed by the credential-free v26.126 preflight and exact v26.127 online
+Recovery denominator. v26.128 independently audits the completed successor and leaves all
+v26.124-v26.125 artifacts and terminals immutable. The current transition is the fresh
+model-unexposed Capability and Reachability Population, Kernel-binding, and role Runner preflight
+recorded above.
 
 ## v26.122-v26.123 Exact Final Grammar And Privacy-First Runner Decision
 

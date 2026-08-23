@@ -310,12 +310,19 @@ Production Contribution remains zero.
 
 v26.124 has now consumed the exact online authorization. It completed all 32 Raw Executions but
 ended with ten Instrument failures and 22 model outcomes. v26.125 independently audits that
-lineage and supersedes the current transition with:
+lineage and historically superseded the v26.123 transition with:
 
 ```text
 fresh_exact_failed_call_transport_recovery_contract_and_runner_preflight_only
 ```
 
-The v26.122-v26.123 evidence and identities remain immutable. No Provider call is currently
-authorized. See
+v26.126-v26.128 have now consumed that recovery preflight and execution sequence, completed the
+32-model-endpoint denominator, and frozen the engineering Kernel. The current transition is:
+
+```text
+fresh_unexposed_capability_and_reachability_population_kernel_binding_and_runner_preflight_only
+```
+
+It authorizes no Provider call. The v26.122-v26.123 evidence and identities remain immutable.
+See
 `docs/finance_v26_124_v26_125_exact_final_semantic_action_execution_and_audit.md`.
