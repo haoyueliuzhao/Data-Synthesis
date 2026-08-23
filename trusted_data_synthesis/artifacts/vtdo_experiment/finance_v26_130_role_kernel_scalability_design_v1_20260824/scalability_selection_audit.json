@@ -1,0 +1,26 @@
+{
+  "audit_id": "finance_v26_scalability_selection:4329d62464c254ca811aa17dd617e20705111abae3a8eb37e37f52463e4e9a4b",
+  "model_outcomes_loaded_for_selection": false,
+  "posthoc_candidate_added_count": 0,
+  "preregistered_rule_order": [
+    "all_frozen_role_paths_qualified",
+    "candidate_authority_and_reversible_commit_preserved",
+    "model_outcomes_not_used",
+    "resource_vector_pareto_dominance",
+    "structural_simplicity_tiebreak_only"
+  ],
+  "s0_all_paths_qualified": true,
+  "s0_candidate_id": "finance_v26_role_scalability_candidate:69a7cd3935286d189a9869591160a8b88cb424d07c548f56fef4c5c81db9975d",
+  "s1_all_paths_qualified": true,
+  "s1_candidate_id": "finance_v26_role_scalability_candidate:914a3b163ae93d7dc8577fed89c53a63071cc2aaab4173e204cd31dd5ad3541b",
+  "s1_prompt_ceiling_strictly_lower": true,
+  "s1_provider_call_count_no_worse": true,
+  "s1_request_count_no_worse": true,
+  "s1_rollout_bound_strictly_lower": true,
+  "s1_semantic_equivalence_passed": true,
+  "schema_version": "finance_v26_scalability_selection.v1",
+  "selected_candidate_id": "finance_v26_role_scalability_candidate:914a3b163ae93d7dc8577fed89c53a63071cc2aaab4173e204cd31dd5ad3541b",
+  "selected_label": "S1_lossless_compact",
+  "source_census_id": "finance_v26_role_support_complexity_census:d56c84e66db54f2bf44c2df82bdf3e8776b072da3c6882e59d7476b0827122d4",
+  "status": "S1_selected_by_static_pareto_rule"
+}

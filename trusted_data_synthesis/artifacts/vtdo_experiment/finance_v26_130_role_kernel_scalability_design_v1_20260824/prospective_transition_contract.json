@@ -1,0 +1,22 @@
+{
+  "additional_scalability_candidate_authorized": false,
+  "capability_or_reachability_execution_authorized": false,
+  "contract_id": "finance_v26_role_scalability_transition:feabd18ea7340f6340bc47003d1992a7719fd8daa356cca686946eadb82d8556",
+  "credential_free_runner_preflight_required_before_provider_call": true,
+  "exact_frozen_role_populations_must_be_preserved": true,
+  "fresh_role_scalable_kernel_identity_required": true,
+  "fresh_taskpackage_contract_manifest_job_and_runner_identities_required": true,
+  "historical_rerun_recovery_or_reclassification_authorized": false,
+  "kernel_and_role_identity_chain_preflight_authorized": true,
+  "model_outcome_based_selection_authorized": false,
+  "next_permitted_stage": "fresh_role_scalable_kernel_taskpackage_contract_manifest_and_runner_preflight_only",
+  "posthoc_task_deletion_substitution_or_tier_change_authorized": false,
+  "predecessor_transition_id": "finance_v26_role_kernel_transition:c889aaaaa31fb388ab54a2207baa2cb5e3bd0302b8510f5b8f119e09b118de55",
+  "provider_calls_authorized": false,
+  "role_support_scalability_contract_id": "finance_v26_role_support_scalability_contract:07679af22f286b51e522e00618c1907f936a3708f09aa816443001444d5350fa",
+  "scalability_selection_audit_id": "finance_v26_scalability_selection:4329d62464c254ca811aa17dd617e20705111abae3a8eb37e37f52463e4e9a4b",
+  "schema_version": "finance_v26_role_scalability_transition.v1",
+  "selected_scalability_candidate_id": "finance_v26_role_scalability_candidate:914a3b163ae93d7dc8577fed89c53a63071cc2aaab4173e204cd31dd5ad3541b",
+  "state_mapping_training_release_or_production_authorized": false,
+  "status": "role_scalability_design_closed"
+}

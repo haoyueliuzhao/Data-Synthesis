@@ -1,0 +1,86 @@
+{
+  "compact_projection_protocol_id": "finance_v26_compact_projection_protocol:954144af0838a31f9e164d3b83a470b7851c096de754096b78388fea98dfdf1e",
+  "complexity_census_id": "finance_v26_role_support_complexity_census:d56c84e66db54f2bf44c2df82bdf3e8776b072da3c6882e59d7476b0827122d4",
+  "credential_lookup_attempted": false,
+  "destructive_audit_id": "finance_v26_role_scalability_destructive:eae5fe9abaaff3e3e8422efe4c4563ce48b6218556344c59417f5620207c1e60",
+  "detail_files": [
+    {
+      "byte_count": 1220,
+      "relative_path": "compact_projection_protocol.json",
+      "sha256": "301a8a3eacfb99617603385ae7480b6b07f982ee1af62e8ea6b9a3f126ecd652"
+    },
+    {
+      "byte_count": 3627,
+      "relative_path": "destructive_audit.json",
+      "sha256": "4336c88ef033042f471d41260497b62d1d78997b79ffe689ba3f4d3e942cd089"
+    },
+    {
+      "byte_count": 1386,
+      "relative_path": "frozen_population_replay_audit.json",
+      "sha256": "28a7091725a91c17e491c3b94d77272c140130f901ef5a913ca3e43602629f27"
+    },
+    {
+      "byte_count": 1677,
+      "relative_path": "prospective_transition_contract.json",
+      "sha256": "c9118dea09cb97bbec7ae74dcd7e37abb5df433d1a9090285ac3f9f57ded3a7b"
+    },
+    {
+      "byte_count": 724611,
+      "relative_path": "role_support_complexity_census.json",
+      "sha256": "921bccc240d1213c125eddccb09c2246f14967ff32b5d5e8591a1766ec400afb"
+    },
+    {
+      "byte_count": 1335,
+      "relative_path": "role_support_scalability_contract.json",
+      "sha256": "2b5299ec9485c7284f69be7de343f5e054ee3df0c9cdc872965d385f446da6e6"
+    },
+    {
+      "byte_count": 1401,
+      "relative_path": "scalability_candidate_s0.json",
+      "sha256": "4b488337aa918d6852803337643c29064e2fe6139bb3eb94575745f70a9b8937"
+    },
+    {
+      "byte_count": 1505,
+      "relative_path": "scalability_candidate_s1.json",
+      "sha256": "5aa3b6921e0eb4e2b0da68551fbbae72693fefa47cee19642c7c2fb450a3ff24"
+    },
+    {
+      "byte_count": 1405,
+      "relative_path": "scalability_selection_audit.json",
+      "sha256": "944ec2a15915531e1059e32a2c3eadf6c6268e28968294b434e99a7a693c9ae3"
+    },
+    {
+      "byte_count": 1126692,
+      "relative_path": "source_replay_audit.json",
+      "sha256": "bffa55b7e8e6511c7e6314434fba4e1062f342a6d5c51dd854ee94c6c470b405"
+    }
+  ],
+  "empirical_rows_created": 0,
+  "frozen_population_replay_audit_id": "finance_v26_frozen_role_population_replay:55f1d0ab705c4d63c0707ec5368d353fd3c25e5b3364a1e1f336aac6b02ead76",
+  "frozen_role_source_task_count": 24,
+  "full_mechanism_path_count": 48,
+  "gpu_jobs": 0,
+  "historical_rows_reclassified": 0,
+  "model_client_constructed": false,
+  "next_permitted_stage": "fresh_role_scalable_kernel_taskpackage_contract_manifest_and_runner_preflight_only",
+  "predecessor_report_id": "finance_v26_role_kernel_compatibility_preflight_report:c7195e4ba2194a136b8d7a8c27b1148d909d1b8eb76e1214a366f696c4e66f00",
+  "production_contribution": 0,
+  "provider_calls": 0,
+  "report_id": "finance_v26_role_kernel_scalability_design_report:e0747bb67e14e4850a16447d0a3bcee7a81003352bfd59d9d5bfa3af2fd5949a",
+  "role_contract_count": 0,
+  "role_job_count": 0,
+  "role_manifest_count": 0,
+  "role_runner_count": 0,
+  "role_support_scalability_contract_id": "finance_v26_role_support_scalability_contract:07679af22f286b51e522e00618c1907f936a3708f09aa816443001444d5350fa",
+  "role_task_package_count": 0,
+  "run_id": "finance_v26_130_role_kernel_scalability_design_v1_20260824",
+  "s0_candidate_id": "finance_v26_role_scalability_candidate:69a7cd3935286d189a9869591160a8b88cb424d07c548f56fef4c5c81db9975d",
+  "s1_candidate_id": "finance_v26_role_scalability_candidate:914a3b163ae93d7dc8577fed89c53a63071cc2aaab4173e204cd31dd5ad3541b",
+  "scalability_selection_audit_id": "finance_v26_scalability_selection:4329d62464c254ca811aa17dd617e20705111abae3a8eb37e37f52463e4e9a4b",
+  "schema_version": "finance_v26_role_kernel_scalability_design_report.v1",
+  "selected_scalability_candidate": "S1_lossless_compact",
+  "source_replay_audit_id": "finance_v26_role_scalability_source_replay:e0e8aec712e51db79dec8f9f0892083e8245ee4da7bedaddea1c4104bd1cbf39",
+  "stage_two_provider_calls": 0,
+  "status": "role_scalability_design_passed",
+  "transition_contract_id": "finance_v26_role_scalability_transition:feabd18ea7340f6340bc47003d1992a7719fd8daa356cca686946eadb82d8556"
+}

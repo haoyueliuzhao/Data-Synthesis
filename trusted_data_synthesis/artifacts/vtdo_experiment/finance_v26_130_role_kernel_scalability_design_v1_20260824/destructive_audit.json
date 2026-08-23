@@ -1,0 +1,119 @@
+{
+  "audit_id": "finance_v26_role_scalability_destructive:eae5fe9abaaff3e3e8422efe4c4563ce48b6218556344c59417f5620207c1e60",
+  "mutation_count": 18,
+  "mutations": [
+    {
+      "name": "additional_scalability_candidate_inserted",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "candidate_authority_reconstruction_failed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "capability_population_changed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "census_path_deleted",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "compact_prompt_not_strictly_smaller",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "compact_protocol_candidate_deletion",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "context_reproduction_relabelled_failed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "model_outcome_based_selection",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "provider_call_authorized",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "reachability_population_changed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "role_support_path_count_reduced",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "s0_primary_request_bound_below_measurement",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "s0_prompt_ceiling_below_measurement",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "s0_provider_call_bound_below_measurement",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "s0_rollout_bound_below_headroom",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "s1_compact_protocol_removed",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "s1_selection_replaced_by_s0",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    },
+    {
+      "name": "stage_two_provider_route_inserted",
+      "provider_calls_before_rejection": 0,
+      "rejected": true,
+      "role_jobs_materialized_before_rejection": 0
+    }
+  ],
+  "provider_calls": 0,
+  "rejection_count": 18,
+  "role_jobs_materialized": 0,
+  "schema_version": "finance_v26_role_scalability_destructive.v1",
+  "status": "passed"
+}

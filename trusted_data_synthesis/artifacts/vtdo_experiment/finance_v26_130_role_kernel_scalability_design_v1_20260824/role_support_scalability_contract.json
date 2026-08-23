@@ -1,0 +1,22 @@
+{
+  "authority_preserved_path_count": 48,
+  "capability_or_reachability_measured": false,
+  "capability_population_id": "finance_v26_fresh_role_source_population:1e22847979b0927e1f772ab8b945dc4e57c2e0dc3b95f0673b1d1543470975e3",
+  "contract_id": "finance_v26_role_support_scalability_contract:07679af22f286b51e522e00618c1907f936a3708f09aa816443001444d5350fa",
+  "energy_reward_or_contribution_term_added": false,
+  "prompt_bound_passed_path_count": 48,
+  "provider_call_bound_passed_path_count": 48,
+  "provider_calls": 0,
+  "reachability_population_id": "finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99",
+  "request_bound_passed_path_count": 48,
+  "rollout_bound_passed_path_count": 48,
+  "schema_version": "finance_v26_role_support_scalability_contract.v1",
+  "selected_candidate_id": "finance_v26_role_scalability_candidate:914a3b163ae93d7dc8577fed89c53a63071cc2aaab4173e204cd31dd5ad3541b",
+  "semantics_preserved_path_count": 48,
+  "source_census_id": "finance_v26_role_support_complexity_census:d56c84e66db54f2bf44c2df82bdf3e8776b072da3c6882e59d7476b0827122d4",
+  "state_mapping_or_vtdo_update_performed": false,
+  "status": "role_support_scalability_statically_closed",
+  "support_admission_condition_only": true,
+  "support_path_count": 48,
+  "support_task_count": 24
+}

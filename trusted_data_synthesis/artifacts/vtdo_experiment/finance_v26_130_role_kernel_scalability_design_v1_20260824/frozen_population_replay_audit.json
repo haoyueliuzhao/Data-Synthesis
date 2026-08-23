@@ -1,0 +1,22 @@
+{
+  "audit_id": "finance_v26_frozen_role_population_replay:55f1d0ab705c4d63c0707ec5368d353fd3c25e5b3364a1e1f336aac6b02ead76",
+  "capability_population_id": "finance_v26_fresh_role_source_population:1e22847979b0927e1f772ab8b945dc4e57c2e0dc3b95f0673b1d1543470975e3",
+  "capability_task_count": 12,
+  "eight_channel_cross_role_overlap_count": 0,
+  "eight_channel_prior_overlap_count": 0,
+  "model_outcomes_loaded_for_selection": false,
+  "posthoc_task_deletion_count": 0,
+  "posthoc_task_substitution_count": 0,
+  "predecessor_context_compatibility_audit_id": "finance_v26_kernel_compatibility_audit:df94020f8c68e83ef25aa2f24c76f8b807b0cd9f5d2e309e4db695c9ae0bfd92",
+  "predecessor_role_source_selection_audit_id": "finance_v26_role_source_selection_audit:c85191ff67118440ecf67d112406f44eee33e64b4e34d77bec88c22b72cfc9a9",
+  "provider_calls": 0,
+  "reachability_population_id": "finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99",
+  "reachability_task_count": 12,
+  "schema_version": "finance_v26_frozen_role_population_replay.v1",
+  "source_population_regenerated": false,
+  "source_replay_audit_id": "finance_v26_role_scalability_source_replay:e0e8aec712e51db79dec8f9f0892083e8245ee4da7bedaddea1c4104bd1cbf39",
+  "status": "passed",
+  "tasks_per_role_mechanism_tier": 1,
+  "tier_change_count": 0,
+  "total_source_task_count": 24
+}

@@ -307,3 +307,11 @@ or inherit an old executable identity.
 Role TaskPackage, Contract, Manifest, Job, and Runner materialization; every Provider call;
 Capability or Reachability execution; State Mapping; training; release; and production
 Contribution remain forbidden.
+
+Finance v26.130 has now consumed this design-only transition. It preserves both exact source
+Populations, reproduces all twelve Context rows, completes the previously unevaluated 48-path
+four-mechanism census, and selects one lossless compact projection under fresh design identities.
+The v26.129 files, measurements, classifications, and transition remain immutable. The current
+authorization is the fresh Role-scalable Kernel and role identity-chain credential-free Runner
+preflight recorded in
+`docs/finance_v26_130_role_kernel_scalability_design.md`.
