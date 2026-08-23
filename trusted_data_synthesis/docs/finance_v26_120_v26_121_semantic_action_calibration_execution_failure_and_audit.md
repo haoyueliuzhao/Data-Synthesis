@@ -212,3 +212,16 @@ Historical v26.120 rerun, recovery, continuation, or reclassification; Host sema
 repair; action-language, Candidate, model, profile, Completion, resource, or recovery-limit
 changes; role experiments; State Mapping; training; release; and production Contribution remain
 forbidden. Production Contribution remains zero.
+
+## Successor Status
+
+The v26.121 credential-free transition has now been consumed by v26.122-v26.123. The historical
+failure lineage, all v26.120 terminals, the missing exact empirical denominator, and every v26.121
+diagnostic remain unchanged.
+
+v26.122 compiled one shared exact Final Grammar, rematerialized the affected identity chain, and
+preserved the Semantic Action protocol, Candidate authority, model, Thinking, Completion, rollout,
+recovery, assignment, and seed projections. v26.123 then passed the exact privacy-first Runner
+preflight with zero real Provider calls. The current transition authorizes only the exact fresh
+32-Job Final-Grammar Semantic Action engineering calibration. See
+`docs/finance_v26_122_v26_123_exact_final_grammar_and_privacy_first_runner_preflight.md`.
