@@ -290,13 +290,14 @@ At the v26.122 freeze, the only permitted transition was:
 privacy_first_exact_final_runner_preflight_only
 ```
 
-v26.123 has consumed that transition. The current and only permitted transition is:
+v26.123 consumed that transition. At the v26.123 preflight freeze, the only permitted transition
+was:
 
 ```text
 exact_final_semantic_action_calibration_execution_only
 ```
 
-This authorizes only the exact fresh 32-Job Manifest bound above. It does not authorize a
+This authorized only the exact fresh 32-Job Manifest bound above. It did not authorize a
 historical v26.120 rerun, recovery, continuation, or reclassification; another TaskPackage,
 Manifest, Job, Runner, or response protocol; a Semantic Action, Candidate, model, Thinking,
 Completion, rollout, or recovery change; Host semantic choice, answer insertion, or repair; role
@@ -306,3 +307,15 @@ The positive result is exact static Final constructibility and Runner-Instrument
 not an online Flash result, measured Final-answer success rate, privacy-fault prevalence estimate,
 capability result, role result, State-support result, release decision, or production evidence.
 Production Contribution remains zero.
+
+v26.124 has now consumed the exact online authorization. It completed all 32 Raw Executions but
+ended with ten Instrument failures and 22 model outcomes. v26.125 independently audits that
+lineage and supersedes the current transition with:
+
+```text
+fresh_exact_failed_call_transport_recovery_contract_and_runner_preflight_only
+```
+
+The v26.122-v26.123 evidence and identities remain immutable. No Provider call is currently
+authorized. See
+`docs/finance_v26_124_v26_125_exact_final_semantic_action_execution_and_audit.md`.

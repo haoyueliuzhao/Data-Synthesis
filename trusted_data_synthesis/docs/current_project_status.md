@@ -71,13 +71,118 @@ and Candidate presentations, qualified fresh 24-TaskPackage, 48-Path, and 32-Job
 retained the exact 16K/400K resource and recovery bounds. v26.123 then implemented and
 credential-free preflighted the privacy-first Runner. Its 32-Job control, Final Rescue, wrong-
 answer, privacy rejection, combined-recovery, Usage, Raw recovery, and destructive controls pass.
-The current transition authorizes only the exact fresh 32-Job Final-Grammar Semantic Action
-engineering calibration.
+v26.124 has now consumed that exact online authorization. It completed 32/32 Raw Executions and
+179 privacy-first Provider artifact pairs, but ten early Semantic Action calls ended Instrument
+failure: eight HTTP-200 `IncompleteRead` rows and two connection-refused `URLError` rows. The 22
+model outcomes all closed Program, verified terminal state, and committed Final; 17 crossed the
+exact Final Grammar and eleven were independently valid. v26.125 independently audits the full
+lineage, preserves all historical terminals, and freezes ten exact failed-call recovery
+Candidates. The current transition authorizes only a fresh credential-free failed-call recovery
+Contract, Manifest, Job, and Runner preflight. It authorizes no Provider call.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.124-v26.125 Exact Final Semantic Action Execution And Audit Decision
+
+Finance v26.124 consumed exactly the fresh 32-Job engineering-calibration authorization frozen by
+v26.123. Before credential lookup or client construction it replayed 2,562/2,562 files: all 2,549
+v26.123 transitive bindings, all twelve v26.123 outputs, and the exact v26.124 implementation. A
+separate scripted preexecution control made 256 local Stage 1 calls, crossed 224 exact Semantic
+Action and 32 exact Final payloads, produced 224 reversible Commits and 192 Observations, and
+passed 32/32 Replay, independent validity, and mechanism checks with zero real Provider calls.
+
+The online run started from 0/32 with eight workers and opened every fresh Job exactly once. It
+wrote 32/32 complete Raw Executions and Job results, 179 Provider Envelopes, and 179 matching
+Public Payload Projections. Envelope-only and Projection-only orphans, privacy rejections,
+typed no-calls, Completion-unusable terminals, and Stage 2 Provider calls were zero. A completed-
+run replay without a credential resumed at 32/32, constructed no client, made zero calls, and
+returned the unchanged report.
+
+The terminal partition is eleven `model_valid_trajectory`, eleven `model_invalid_trajectory`,
+and ten `instrument_failure`. The ten Instrument rows all failed on their last persisted early
+Semantic Action Primary. Eight HTTP-200 calls raised `IncompleteRead(0 bytes)` while reading the
+response body; two calls raised connection-refused `URLError` before an HTTP response. Each has a
+complete privacy-redacted Envelope, generic no-payload Projection, and Raw terminal. No missing
+response model, Thinking, Usage, or body field is inferred, and the observed exceptions are not
+claimed to uniquely identify a Provider, network, proxy, or local transport cause.
+
+Of 179 calls, 177 were HTTP success. There are 169 rows with complete exact-model, positive
+Thinking, Usage, and native-tool-absence telemetry; 168 validated public payloads; zero privacy
+rejections; and eleven no-payload Projections. One no-payload row is an invalid-JSON channel parse
+failure with complete telemetry and bounded ABI recovery. Artifact-backed Usage is 802,956
+tokens: 538,841 Prompt, 264,115 Completion, and 243,484 Reasoning. Estimated artifact-backed cost
+is USD `0.14938994000000001406`. These are lower bounds because the eight HTTP-200 incomplete-body
+calls retained no Usage.
+
+Across all 32 Raw prefixes, 141 public Semantic payloads produced 140 exact four-field Action
+payloads and 140 Choices. All 140 matched a visible action and Decision kind; 138 Primary choices
+were accepted; 139 reversible Commits produced 117 Observations, 114 successes, 102 public-
+progress choices, and 34 Program-node-progress choices. One ABI failure used ABI Rescue. One
+semantic rejection used the separate Semantic Recovery, committed the same public action, and
+made no immediate progress. Stage 2 remained at zero Provider calls.
+
+The exact model-outcome denominator is 22, not 32. Within it, 134 Choices produced 133 Commits,
+111 Observations, 108 successful Observations, 100 public-progress choices, and 34 node-progress
+choices. All 22 closed the Program, completed the terminal node, succeeded at terminal
+verification, and committed Final. This is strong descriptive online evidence for the Canonical
+Semantic Action chain in the reached model subset, not a result for the ten Instrument-censored
+Jobs.
+
+The 22 model outcomes made 22 Final Primary and five Final Rescue calls. All 27 public payloads
+used exactly the outer keys `answer` and `rationale_summary`. Seventeen had object-valued
+`answer`, crossed the exact shared Final Grammar, and emitted a completed answer. Ten attempts
+from five Jobs used string-valued `answer`; Primary and the one permitted Rescue both failed the
+same aligned Grammar, so those five Jobs are model-invalid rather than Instrument failures.
+
+Of the 17 exact Final answers, eleven passed independent validity. The six invalid answers split
+into three answer-projection-only and three target-mechanism-only failures. Citation, Evidence
+support, Operation lineage, Replay, terminal verification, and post-completion control passed for
+all six. The observed endpoint over 22 model outcomes is descriptive only; an exact 32-Job Final-
+ABI or validity rate is unavailable.
+
+Finance v26.125 replayed 2,965/2,965 files with zero credential lookup, client construction,
+Provider calls, Stage 2 Provider calls, GPU jobs, empirical rows, or historical
+reclassifications: 2,562 v26.124 transitive bindings, all 402 execution files, and its exact
+implementation. It reparsed 32 checkpoint rows, 32 Job results, 32 Raw Executions, 179 Envelopes,
+179 Projections, and every descriptor; independently rebuilt all 32 Replays and all 17 completed
+verification reports; and reproduced terminal, Usage, cost, privacy, Final-parser, and Verifier
+partitions. Ten destructive mutations failed closed. Formal and independent builds produced all
+seven outputs byte for byte.
+
+The authoritative identities are:
+
+- v26.124 report:
+  `finance_v26_exact_final_semantic_action_execution_report:39098697c35cd453f68ddc546cb1bd8cc0d0e9e3d2c8552fc9ff49cbf9794eb3`;
+- v26.124 Raw Lineage:
+  `finance_v26_exact_final_raw_lineage:b073a2121fc1a124dc5d59acbac6edee667ade25a59f6b3d15b183b52d993977`;
+- v26.125 report:
+  `finance_v26_exact_final_postrun_audit_report:76852aa99e92673608e44286d2545dee0062246a47d29c7254053dfb8e560c03`;
+- Provider failure audit:
+  `finance_v26_exact_final_provider_failure_audit:e0633b4f618be2967f5eb6b63c1e7dc8c00eac39b94d05c3804deb9613c2b20a`;
+- Final outcome audit:
+  `finance_v26_exact_final_outcome_audit:2b4be11014691894bf0a7f87a3575da2ff0adde9c1af770763b589dd7b9406c2`;
+- transition:
+  `finance_v26_exact_final_postrun_transition:2ee5689a7248012a676e993f37df6bfca0a432579e5787334ae6a990d2439524`.
+
+The only permitted transition is:
+
+~~~text
+fresh_exact_failed_call_transport_recovery_contract_and_runner_preflight_only
+~~~
+
+The successor may bind exactly ten fresh RecoveryJobs to the exact failed requests. It must
+zero-generation replay each successful prefix, preserve all dynamic/request/resource
+certificates and recovery counters, allow at most one replacement response per exact failed call,
+continue only under the original remaining resource and recovery bounds, keep privacy-first Raw
+capture and zero-Provider Stage 2, and pass a complete credential-free Runner preflight before any
+Provider call. The 22 model outcomes and all 32 historical v26.124 terminals remain immutable.
+Action/Final Grammar, Candidate, model, Thinking, Completion, rollout, or recovery change; Host
+repair; role experiments; State Mapping; training; release; and production Contribution remain
+forbidden. See
+`docs/finance_v26_124_v26_125_exact_final_semantic_action_execution_and_audit.md`.
 
 ## v26.122-v26.123 Exact Final Grammar And Privacy-First Runner Decision
 
@@ -173,19 +278,24 @@ The authoritative identities are:
 - transition:
   `finance_v26_privacy_first_runner_transition:60ff3fae5eba80f5a2ae7e27a20378e2ac5f1b950fa267a6cdb910df9c640c50`.
 
-The only permitted transition is:
+At the v26.123 preflight freeze, the only permitted transition was:
 
 ~~~text
 exact_final_semantic_action_calibration_execution_only
 ~~~
 
-This authorizes only the exact fresh 32-Job Manifest above. Historical v26.120 rerun, recovery,
+This authorized only the exact fresh 32-Job Manifest above. Historical v26.120 rerun, recovery,
 continuation, or reclassification; Semantic Action, Candidate, model, Thinking, Completion,
 rollout, or recovery change; Host semantic choice or answer repair; role experiments; State
 Mapping; training; release; and production Contribution remain forbidden. This is positive
 static Final constructibility and Runner-Instrument evidence, not an online Flash result or a
 measured Final-answer success rate. See
 `docs/finance_v26_122_v26_123_exact_final_grammar_and_privacy_first_runner_preflight.md`.
+
+v26.124 has consumed that authorization, and v26.125 independently audits its mixed Instrument
+and model-result denominator. The historical preflight remains immutable. The current transition
+permits only the fresh credential-free ten-Candidate failed-call recovery preflight recorded
+above.
 
 ## v26.120-v26.121 Semantic Action Calibration Failure And Audit Decision
 
@@ -286,8 +396,9 @@ State Mapping, training, release, and production Contribution remain forbidden. 
 `docs/finance_v26_120_v26_121_semantic_action_calibration_execution_failure_and_audit.md`.
 
 That credential-free transition has now been consumed by v26.122-v26.123. The v26.120 failure
-and v26.121 audit remain immutable. The current transition authorizes only the exact fresh 32-Job
-Final-Grammar Semantic Action engineering calibration recorded above.
+and v26.121 audit remain immutable. v26.124 then consumed the online authorization and v26.125
+audited its ten Instrument failures and 22 model outcomes. The current transition permits only
+the fresh credential-free exact failed-call recovery preflight recorded above.
 
 ## v26.118-v26.119 Candidate Authority, Rematerialization, And Runner Decision
 
@@ -396,8 +507,8 @@ semantic_action_calibration_execution_only
 
 v26.120 consumed that exact authorization and failed as recorded by v26.121 above. The historical
 v26.119 transition is no longer current. Its Contract and preflight evidence remain immutable;
-v26.122-v26.123 have consumed the credential-free repair and now authorize only their exact fresh
-32-Job Final-Grammar Semantic Action engineering calibration. Historical rerun,
+v26.122-v26.123 consumed the credential-free repair, v26.124 consumed their online authorization,
+and v26.125 now permits only a fresh credential-free failed-call recovery preflight. Historical rerun,
 protocol/Candidate/model/resource/recovery change, Host semantic repair, role experiment, State
 Mapping, training, release, and production Contribution remain forbidden. See
 docs/finance_v26_118_v26_119_semantic_action_rematerialization_and_runner_preflight.md.
@@ -485,7 +596,8 @@ fresh_semantic_action_protocol_taskpackage_contract_manifest_and_runner_prefligh
 That transition has now been consumed by v26.118-v26.119. The v26.117 evidence and identities
 remain immutable. v26.120 then consumed the online authorization and failed as audited by
 v26.121; v26.122-v26.123 then consumed the credential-free repair and preflight transition. The
-current transition authorizes only their exact fresh 32-Job Final-Grammar engineering calibration.
+v26.124 online attempt and v26.125 audit now supersede that authorization. The current transition
+permits only a fresh credential-free failed-call recovery preflight.
 
 This is positive static constructibility and authority evidence, not an online Flash result,
 empirical Semantic Action usability, resource qualification, or proof that the old protocol
@@ -495,7 +607,7 @@ response-protocol, Runner, execution, and report identities and pass an exact cr
 Runner preflight before any Provider call. Historical rerun/recovery/reclassification, Host
 semantic choice or repair, response-Grammar or fixed-stage optimization, model/profile/
 Completion/rollout changes, role experiments, State Mapping, training, release, and production
-Contribution remain forbidden under the current v26.123 transition. See
+Contribution remain forbidden under the current v26.125 transition. See
 docs/finance_v26_117_semantic_action_protocol_preflight.md.
 
 ## v26.116 Semantic Proposal Distribution And Action Selection Failure Decision
@@ -3256,6 +3368,15 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
 | Check | Result |
 | --- | --- |
+| v26.124 source replay and preexecution | 2,562/2,562 files before credential/client; exact 32 Jobs; scripted 256 Stage 1 calls, 224 Action payloads/Commits, 192 Observations, and 32 Final payloads; 32/32 Replay/validity/mechanism; zero real Provider/GPU |
+| v26.124 online denominator | 32/32 complete Raw and Job results; 179 Envelope/Projection pairs; terminals 11 valid, 11 model-invalid, and 10 Instrument; zero orphan, privacy rejection, typed no-call, Completion-unusable, and Stage 2 Provider calls |
+| v26.124 Provider and Usage | 177 HTTP success; 169 complete exact-model/Thinking/Usage/native-tool-absence rows; 168 validated payloads and 11 no-payload Projections; 802,956 artifact-backed tokens and USD 0.14938994000000001406 lower-bound cost |
+| v26.124 Instrument localization | 8 HTTP-200 `IncompleteRead(0 bytes)` and 2 connection-refused `URLError` terminal calls; all are last-call early Semantic Action Primary rows with complete Raw artifacts; exact causal network/Provider component not uniquely identified |
+| v26.124 Action funnel | 141 Semantic payloads, 140 exact four-field Choices and visible/Decision matches, 138 accepted Primary choices, 139 reversible Commits, 117 Observations, 102 public-progress and 34 node-progress choices; zero Stage 2 Provider calls |
+| v26.124 model-outcome and Final funnel | 22 model outcomes; 22/22 Program closure, terminal completion/verification, and Final Commit; 27 exact outer-field Final payloads; 17 object-valued exact Final parses, 5 Jobs with 10 string-valued failures; 11 independently valid |
+| v26.125 validity partition | 17 exact Final answers: 11 valid, 3 answer-projection-only failure, 3 target-mechanism-only failure; Citation, Evidence support, Operation lineage, Replay, verification, and post-completion control pass for all 6 invalid rows |
+| v26.125 independent audit | 2,965/2,965 files; 32 checkpoint/results/Raw, 179 Envelopes, 179 Projections, all descriptors, 32 Replays, and 17 verification reports reproduced; 10/10 mutations rejected; 7 outputs independently byte-identical; adjacent regression 5/5 in 108.10 seconds; Ruff/Mypy passed; zero Provider/Stage 2/GPU/reclassification |
+| v26.125 transition | exactly 10 fresh failed-call Recovery Candidates; credential-free Contract/Manifest/Job/Runner preflight only; zero-generation prefix replay, exact failed-request rebinding, one replacement maximum, old remaining bounds, no current Provider authorization |
 | v26.122 source replay | 2,534/2,534 files: 2,523 v26.121 transitive bindings, 9 v26.121 outputs, and 2 exact implementation files; zero credential/client/Provider/Stage 2/GPU |
 | v26.122 shared Exact Final Grammar | exactly `answer` and `rationale_summary`; Primary, Rescue, parser, and typed rejection compiled from one strong Schema; stage/protocol/terminal state/Commit Host-bound; JSON cue present in 48/48 Rescue Prompts |
 | v26.122 Final constructibility | 48/48 Prompt-only Primary and 48/48 Rescue parses; 48/48 semantic projection matches; 96/96 Compiler answer matches; wrong answers admitted by ABI but not semantic validity; Host answer/rationale insertion 0 |
@@ -3267,7 +3388,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.123 Final and recovery controls | malformed Final Primary recovered once under same Host Envelope and JSON cue; schema-valid wrong answer independently invalid; combined ABI plus semantic recovery retained first failure and completed through a different action |
 | v26.123 Usage, recovery, and destructive controls | 16,384/16,385 admitted and charged; 16,386 Instrument failure blocked later calls; complete Raw recovery byte-identical; oversize/reuse/budget denied; 20/20 Runner mutations and 20/20 static mutations rejected |
 | v26.122-v26.123 reproducibility and validation | 13 v26.122 and 12 v26.123 outputs independently byte-identical; focused Pytest 3/3 in 51.33 seconds; selected adjacent regression 11/11 in 186.66 seconds; focused Ruff and Mypy passed; zero Provider/Stage 2/GPU/empirical rows |
-| v26.123 transition | only the exact fresh 32-Job Final-Grammar Semantic Action engineering calibration; no historical recovery, protocol/Candidate/model/resource/recovery change, Host repair, role, State, training, release, or production authorization |
+| v26.123 historical transition | exact fresh 32-Job Final-Grammar Semantic Action engineering calibration consumed by v26.124; immutable preflight retained; current recovery-preflight transition comes only from v26.125 |
 | v26.120 final preexecution | 2,228/2,228 source replay; 32 scripted Jobs, 256 calls, 224 exact choices and reversible Commits, 192 Observations; 32/32 Replay/validity/mechanism; zero real Provider/GPU |
 | v26.120 failed exposure | 32/32 Jobs exposed; 5 checkpoint plus Raw, 26 Raw-only, 1 Provider-orphan, 0 unopened; 31 complete Raw Instrument terminals; no completed report or exact empirical denominator |
 | v26.120 persisted Provider lower bound | 256 artifacts: 225 HTTP success and 31 HTTP 400; 225 exact response models/Thinking/Usage, 31 missing response models; fallback/discovery/native tools 0; operator-observed invocation lower bound 257 |
@@ -3845,7 +3966,12 @@ The scientifically correct state is:
 - `contribution_authorized=false`;
 - v26.123 exact Final-Grammar Runner preflight status: `passed_exact_runner_preflight`;
 - v26.123 real Provider calls and empirical rows: `0` and `0`;
-- current engineering authorization: exact fresh v26.124 32-Job Manifest execution only;
+- v26.124 exact Job/Raw completion: `32/32` and `32/32`;
+- v26.124 Provider calls: `179`;
+- v26.124 terminal partition: `11 model-valid`, `11 model-invalid`, `10 Instrument`;
+- v26.125 post-run audit status: `instrument_failure_recovery_preflight_required`;
+- current engineering authorization: fresh ten-Candidate failed-call Recovery Contract,
+  Manifest, Job, and Runner preflight only, with zero Provider calls authorized;
 - v23 report next permitted stage: `protocol_repair_only` under a new frozen contract;
 - VTDO updates, Student training, and downstream claims remain unauthorized.
 
@@ -3865,19 +3991,21 @@ not enter any empirical denominator.
 The only permitted transition is:
 
 ```text
-exact_final_semantic_action_calibration_execution_only
+fresh_exact_failed_call_transport_recovery_contract_and_runner_preflight_only
 ```
 
-v26.122-v26.123 have consumed the v26.121 credential-free repair and preflight transition. The
-successor may execute only Manifest
-`finance_v26_final_grammar_manifest:fd4d78efa9374fc3de91ccca1a8242b7a6bee4bdcf4052ac8bbf6428bd95a5ee`
-through Runner Contract
-`finance_v26_privacy_first_runner_contract:a1d2c225906c57742340cf34c07e6d8643bbc4ef293bcf357cecd29b13221a66`
-and outcome Contract
-`finance_v26_exact_final_outcome_measurement:60d018f6f0e9701cc2e5860ddad2649882bacbc4b30b30405fa9a764b1e975e9`.
-It must start from 0/32 fresh Jobs, replay all 2,549 preflight-bound files before credential lookup
-or client construction, and preserve the exact action and Final Grammars, Host Envelopes,
-privacy-first capture order, model, Thinking, Completion, rollout, recovery, and Stage 2 bounds.
+v26.124 has consumed the v26.123 exact online authorization. Do not rerun, continue, recover, or
+reclassify any of its 32 historical Job identities. Preserve its 22 model outcomes and ten
+Instrument terminals exactly. The successor may materialize only ten fresh RecoveryJobs bound to
+the exact failed-call Candidates in
+`finance_v26_exact_final_provider_failure_audit:e0633b4f618be2967f5eb6b63c1e7dc8c00eac39b94d05c3804deb9613c2b20a`
+and transition
+`finance_v26_exact_final_postrun_transition:2ee5689a7248012a676e993f37df6bfca0a432579e5787334ae6a990d2439524`.
+It must zero-generation replay each exact successful prefix, rebind the exact failed Prompt and
+all pre-call certificates, preserve prior recovery counters and the original remaining resource
+bound, permit at most one replacement response for the failed call, retain privacy-first
+Envelope/Projection persistence and zero-Provider Stage 2, and pass a complete credential-free
+Runner preflight before any Provider invocation. No current Provider call is authorized.
 
 v26.105 has consumed the exact 32-Job 16K authorization. Do not rerun, recover, or reclassify any
 of its Jobs. Its 14 Completion-unusable Jobs, 17 typed no-calls, two historical Instrument
