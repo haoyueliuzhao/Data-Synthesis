@@ -272,3 +272,9 @@ Provider calls, S1 model-visible representation qualification, Capability or Rea
 execution, State Mapping, historical rerun or reclassification, task deletion or substitution,
 Tier change, compact projection change, model/profile/Grammar change, training, release, and
 production Contribution remain forbidden.
+
+That redesign-only transition has now been consumed by v26.132. The v26.131 source tasks,
+reference-path result, negative dynamic counterexample, and identities remain immutable. The
+current transition permits only a fresh credential-free S1 model-visible representation-
+qualification identity chain and Runner preflight under the exact v26.132 bounded dynamic
+Contract.

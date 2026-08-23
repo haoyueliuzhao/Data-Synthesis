@@ -105,14 +105,134 @@ calls. S1 is explicitly model-visible and statically lossless; model-behavior eq
 unmeasured. A legal repeated-success no-progress Action on one maximum-depth Hard Path then
 completes through ordinary replanning but requires 21 Primary requests, 23 Provider calls, 24
 transport-inclusive invocations, and 1,090,412 conservative tokens. The exact 20/22/23/1.06M
-Contract therefore fails dynamic interaction preflight. Role execution and S1 model-visible
-qualification remain unauthorized. The current transition permits only a credential-free
-dynamic interaction-capacity redesign.
+Contract therefore fails dynamic interaction preflight. v26.132 has now consumed that exact
+credential-free redesign. It checks all 2,567 non-reference Candidates across the 522 registered
+states, qualifies 180 successful no-progress rows that remain closed under ordinary replanning,
+and freezes one independent Ordinary Detour allowance. Their global maximum is 21 Primary
+requests, 23 Provider calls with recovery reserves, 24 transport-inclusive invocations, a
+54,768-byte Prompt, and 1,091,306 conservative tokens. The unchanged 20K quantum rule selects a
+1,120,000-token ceiling with 28,694 headroom. A second observed no-progress detour emits a typed
+terminal before any later Provider invocation. v26.132 rematerializes the complete fresh
+24-TaskPackage, 48-Path, two-Contract, two-Manifest, 456-Job, and Runner chain and passes its
+credential-free preflight. Role execution and S1 model-visible qualification execution remain
+unauthorized. The current transition permits only a fresh credential-free S1 representation-
+qualification identity chain and Runner preflight.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.132 Bounded Dynamic Interaction And Fresh Role-Chain Decision
+
+Finance v26.132 consumed only the credential-free dynamic interaction-capacity redesign frozen by
+v26.131. Before profile parsing or role rematerialization it replayed 3,192/3,192 files: all
+3,177 v26.131 transitive replay entries, all fourteen v26.131 outputs, and its exact
+implementation. It independently rebuilt the v26.131 frozen input, Kernel, 24-TaskPackage and
+48-Path catalogs, deep Reconciliation audit, resource Contract, two-Manifest/456-Job identity
+chain, Runner, reference fixture, and negative dynamic stress from source. Canonical model data
+matched every formal predecessor artifact. No credential was read, no model client was
+constructed, and Provider, Stage 2 Provider, GPU, empirical-row, and historical-reclassification
+counts are zero.
+
+The exact source Populations, 24 source tasks and Tiers, S1 projection, Candidate space and
+presentation, Action and Final Grammars, deep Reconciliation compiler, model and Thinking profile,
+16K Completion request bound, privacy-first capture, separate ABI/Semantic/Transport recovery
+channels, and zero-Provider Stage 2 remain unchanged. v26.132 freezes a fourth independent
+allowance: at most one Ordinary Detour, defined as an exact legal Action that Commits, produces a
+successful public Observation, and leaves the public semantic progress vector unchanged. The
+qualified class additionally requires ordinary deterministic replanning to close Program,
+terminal verification, and Final. The detour allowance is a measurement condition and contributes
+zero VTDO Energy, Contribution, or Novelty.
+
+The exhaustive audit covers all 522 registered S1 states and checks all 2,567 non-reference
+presented Candidates. Its partition is 180 eligible closed successful no-progress rows, 252
+successful no-progress rows whose ordinary reference replan does not close, 774 successful-
+progress rows, and 1,361 unsuccessful-Tool rows; successful-no-successor and non-public-call rows
+are zero. The 252 class-external rows remain diagnostic and are neither deleted nor classified as
+model failures. The 180 admitted rows span 39 Paths, all four mechanisms, all three Tiers, and all
+three path strategies.
+
+The global admitted maximum is a Reachability Context-conditioned Action Hard
+`search_then_structured` row, not the single `search_then_open` counterexample used by v26.131.
+It requires:
+
+~~~text
+Primary requests                            21
+Provider calls with both recovery reserves  23
+transport-inclusive invocations             24
+maximum Prompt                           54,768
+static complete-path bound            1,091,306
+~~~
+
+Under the unchanged 20,000-token quantum and one-complete-quantum minimum-headroom rule, the
+selected rollout ceiling is 1,120,000 tokens and leaves 28,694 tokens. Prompt remains 60,000
+bytes. All 48 registered reference Paths and all 180 admitted one-detour rows pass this exact
+21/23/24/1.12M Contract.
+
+A separate maximum-path control executes a second successful no-progress detour. Diagnostic
+continuation would require 22 Primary requests, 24 Provider calls with both recovery reserves, 25
+transport-inclusive invocations, a 54,967-byte maximum Prompt, and 1,145,727 conservative tokens.
+The bounded Runner emits `ordinary_detour_allowance_exhausted` after that second public
+Observation and before any later Provider invocation; later Provider calls are zero. It does not
+claim to identify a no-progress detour before the model Proposal and Tool result exist, because
+that would require prediction, Candidate modification, or an unobserved-result assumption.
+
+The resource change produces one fresh bounded Kernel, 24 fresh TaskPackages, 48 fresh Paths, two
+fresh execution Contracts, two fresh Manifests, 96 fresh Capability Jobs, 360 fresh Reachability
+Jobs, and one fresh Runner. Identity overlap with v26.131 is zero at every changed layer, while
+all 456 seeds are preserved exactly. All 48 reference fixtures again close with 522 Action
+Commits, 474 Observations, and 48 exact Final Commits. A computed allowance-state control
+confirms that Detour, ABI, Semantic, and Transport events consume only their own counters. All 12
+bounded Runner controls and all 24 destructive mutations pass with zero Provider calls. Formal
+and independent builds produce all
+sixteen outputs byte for byte; focused Pytest passes 2/2 in 476.68 seconds, the adjacent
+v26.130-v26.131 regression passes 4/4 in 111.96 seconds, and focused Ruff and Mypy pass.
+Package-wide Mypy checks 449 source files and retains only the three pre-existing v26.70/v26.129
+diagnostics, with zero v26.132 diagnostics.
+
+The authoritative identities are:
+
+- source replay:
+  `finance_v26_bounded_dynamic_source_replay:0e9dd524ad64b0e13262ea47ccd88491e39c381d5ae5c223ca74b302d231e295`;
+- report:
+  `finance_v26_bounded_dynamic_role_preflight_report:cb509fe5dfed2ef5c399dc9781852c873b08f028960abf0e086124db6b67cb06`;
+- Ordinary Detour policy:
+  `finance_v26_bounded_dynamic_interaction_policy:43126b403dd060baade1e5994306982159b02a0451865a9fda2c54da3fda2b0b`;
+- dynamic trajectory envelope:
+  `finance_v26_dynamic_trajectory_envelope_audit:610bdc36d7850f153b6bd694c5f454b03610b9fcaa3666faddc0293fd5120e56`;
+- bounded resource Contract:
+  `finance_v26_bounded_dynamic_resource_contract:addc8f6b01bc1111dc23ee176b440518cc1016087c0e20669d1ae9ee5be97820`;
+- bounded Role Kernel:
+  `finance_v26_bounded_dynamic_role_kernel:6b40395f55211b036f570a53f7c89f157844c819cc7c0533c721f78465e3186c`;
+- TaskPackage catalog:
+  `finance_v26_role_task_package_catalog:7b49db254ac45809e85ea0bb0252fd3f38254e7df3c951ed7c54ba63cab544f7`;
+- Path catalog:
+  `finance_v26_role_path_catalog:b38b5b04af181f291a12313b5f5007cf630ebd1c2f915c82eaae22c2963ef5f8`;
+- Role identity chain:
+  `finance_v26_role_identity_chain:16f63a56f33cc0ede19c8df5c4d8eda763847d86321399a6f28e0992f43ff6ab`;
+- bounded Runner Contract:
+  `finance_v26_bounded_dynamic_runner_contract:06a317c786050d812fc6ffafac9e0d7560c335f3b6742697d08ed413b798fd76`;
+- bounded Runner preflight:
+  `finance_v26_bounded_dynamic_runner_preflight_audit:27deea285281d362dd9f816f8c864910997b07533e86b10cfcf8ee527467a3f2`;
+- transition:
+  `finance_v26_bounded_dynamic_transition:819c102985dfb244e62bb05ceb46215b8c0a008dd8d4f69a12f821c8e4b1237a`.
+
+The only permitted transition is:
+
+~~~text
+fresh_s1_model_visible_representation_qualification_contract_manifest_runner_preflight_only
+~~~
+
+The successor may materialize only a fresh credential-free S1 representation-qualification
+Contract, Manifest, Jobs, Runner, execution identity, and report, and must pass a complete Runner
+preflight before any Provider call. It must preserve the exact role Populations, tasks, Tiers, S1,
+Candidate authority, model/Thinking/Completion profile, Grammars, bounded-detour and resource
+Contracts, recovery channels, privacy-first capture, and zero-Provider Stage 2. Provider calls,
+S1 qualification execution, Capability or Reachability execution, State Mapping, historical
+rerun or reclassification, task/Tier/S1/Candidate/model/Grammar/recovery change, training,
+release, and production Contribution remain forbidden. See
+`docs/finance_v26_132_bounded_dynamic_interaction_preflight.md`.
 
 ## v26.131 Role-Scalable Kernel And Dynamic Runner Preflight Decision
 
@@ -230,6 +350,11 @@ qualification, Capability or Reachability execution, State Mapping, historical r
 reclassification, task deletion or substitution, Tier or compact-projection change,
 model/profile/Grammar change, training, release, and production Contribution remain forbidden.
 See docs/finance_v26_131_role_scalable_kernel_runner_preflight.md.
+
+That redesign-only transition has now been consumed by v26.132. The v26.131 reference result,
+negative counterexample, and identities remain immutable. The current transition is the fresh
+credential-free S1 representation-qualification identity-chain and Runner preflight recorded
+above.
 
 ## v26.130 Full-Mechanism Role-Support Scalability Decision
 
