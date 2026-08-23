@@ -215,6 +215,23 @@ The registered selection order is:
 S1 has equal request and call limits and strictly lower Prompt and rollout ceilings, so it is
 selected by rule 4. No S2 or later optimization Candidate is authorized.
 
+## Interpretation And Dynamic-Depth Boundary
+
+S1 establishes a reversible representation identity on the 522 registered public states. That
+result does not establish model behavior equivalence between S1 and the historical full-object
+Prompt. Typed columnar tables, grouped Candidate fields, and changed local field adjacency are
+all model-visible. S1 must therefore enter every future generation identity as an explicit
+experimental condition. A future S1 result cannot be treated as a same-condition behavioral
+comparison with v26.128.
+
+S1 also reduces representation width without reducing interaction depth. The selected Primary
+and Provider-call limits equal the registered reference maxima of 20 and 22. Static qualification
+therefore establishes existence of one resource-feasible registered trajectory per Path; it does
+not establish zero resource censorship over all legal model trajectories. A successor Runner
+preflight must exercise legal non-reference and no-progress Actions, ordinary replanning, blocked
+states, both recovery channels, one Transport replacement, and the exact boundaries before any
+Provider call.
+
 ## Role-Support Scalability
 
 v26.130 adds Role-support scalability as an algorithm-instance support admission condition. For
@@ -284,3 +301,11 @@ Provider calls, Capability or Reachability execution, State Mapping, historical 
 reclassification, task deletion or substitution, Tier change, an additional Scalability
 Candidate, model-outcome-based design selection, training, release, and production Contribution
 remain forbidden.
+
+v26.131 has consumed this credential-free transition. It preserves S1 and the exact role
+Populations, materializes the fresh identity chain, and passes all 48 registered reference Paths.
+Its dynamic stress then finds one legal repeated-success no-progress Action whose ordinarily
+replanned complete Path requires 21 Primary requests, 23 Provider calls, 24 transport-inclusive
+invocations, and 1,090,412 conservative tokens. The v26.130 static result remains immutable, but
+the current transition is now role-scalable dynamic interaction-capacity redesign only; S1
+model-visible qualification and Role execution remain unauthorized.

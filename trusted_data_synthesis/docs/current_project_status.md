@@ -96,14 +96,140 @@ and Stage 2 Commit. It reduces the global maximum Prompt from 86,161 to 54,569 b
 conservative path bound from 1,276,468 to 1,037,084 tokens without changing the maximum 20
 Primary requests or 22 Stage 1 Provider calls. The pre-registered static rule selects this S1
 projection and freezes a 60,000-byte, 20-request, 22-call, 1,060,000-token candidate. No role
-TaskPackage, Contract, Manifest, Job, Runner, or Provider call occurred. The current transition
-authorizes only fresh Role-scalable Kernel and role identity materialization plus a complete
-credential-free Runner preflight.
+TaskPackage, Contract, Manifest, Job, Runner, or Provider call occurred in v26.130. v26.131 has
+now consumed that exact credential-free authorization. It materializes one fresh Role-scalable
+Kernel, 24 TaskPackages, 48 Paths, separate 96-Job Capability and 360-Job Reachability Manifests,
+and one privacy-first Runner. All 48 registered reference Paths pass through 522 exact Action
+payloads and Commits, 474 public Observations, and 48 exact Final payloads with zero Provider
+calls. S1 is explicitly model-visible and statically lossless; model-behavior equivalence remains
+unmeasured. A legal repeated-success no-progress Action on one maximum-depth Hard Path then
+completes through ordinary replanning but requires 21 Primary requests, 23 Provider calls, 24
+transport-inclusive invocations, and 1,090,412 conservative tokens. The exact 20/22/23/1.06M
+Contract therefore fails dynamic interaction preflight. Role execution and S1 model-visible
+qualification remain unauthorized. The current transition permits only a credential-free
+dynamic interaction-capacity redesign.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.131 Role-Scalable Kernel And Dynamic Runner Preflight Decision
+
+Finance v26.131 consumed only the credential-free identity-chain and Runner-preflight transition
+authorized by v26.130. Before profile parsing or role construction it replayed 3,177/3,177 files:
+all 3,165 v26.130 transitive bindings, all eleven v26.130 outputs, and its exact implementation.
+The exact 12-task Capability and 12-task Reachability source Populations, mechanisms, Tiers, S1
+projection, model and Thinking profile, Action and Final Grammars, privacy-first capture, recovery
+channels, Stage 2 zero-Provider boundary, and 60K/20/22/23/1.06M resource values remain
+unchanged. It loaded no model outcome and made zero Provider calls.
+
+S1 is now bound as an explicit model-visible generation condition. The Kernel records static
+semantic losslessness as established and model-behavior equivalence as unestablished. Full-object
+fallback and per-state full/compact selection remain forbidden. Any future model result must be
+interpreted as Flash under S1 rather than pooled with the v26.128 full-object engineering
+condition.
+
+The fresh identity chain contains one Kernel, 24 Role TaskPackages, 48 registered Paths, two
+separate execution Contracts, two Manifests, 96 Capability Jobs, 360 Reachability Jobs, and one
+Runner Contract. Capability uses eight unconditional replicas per task. Reachability uses 144
+natural unconditional Jobs and 216 conditioned Jobs, six for each of 36 registered Paths. All
+456 Job identities are distinct and model-unexposed. The Manifests are materialized but not
+authorized for execution.
+
+The six Reconciliation source tasks split into two Easy single-node tasks under the unchanged
+historical builder and four Frontier/Hard deep tasks under the formal Role-scalable compiler.
+Across the latter four sources and eight Paths, formal and v26.130 diagnostic Compilation match
+on Program nodes, dependency edges, Evidence and Operation operands, selectors, Verifier
+bindings, terminal nodes, Action-state and Prompt projections, and resource arithmetic.
+
+The scripted reference control crosses all 48 Paths with 522 Semantic Action Primary payloads,
+522 reversible Stage 2 Commits, 474 public Observations, 48 Final Primary payloads, 48 Program
+closures, and 48 terminal verifications. Total Primary requests are 570. Every registered Path
+fits the frozen resource values. These are local fixtures and create zero empirical rows.
+
+The required dynamic stress has twelve controls. Eleven pass, including the maximum 63-Candidate
+state, 54,569-byte registered Prompt, blocked-action state with two blocked objects, all eight
+deep Reconciliation Paths, typed Failure Recovery revision, Stopping verification, ABI Rescue,
+Semantic Recovery, Transport replacement, legal non-reference Commit, and ordinary replanning
+after a legal no-progress Action.
+
+The remaining control fails. On a Reachability Context-conditioned Action Hard
+search_then_open Path, the registered reference uses 20 Primary requests, 1,036,196 conservative
+tokens, and a 54,509-byte maximum Prompt. After its first successful search_archive, the same
+canonical Action remains legally visible. Repeating it succeeds without changing public semantic
+progress; ordinary replanning then closes Program, verifies the terminal, and reaches Final.
+The resulting path requires:
+
+~~~text
+Primary requests                          21
+Provider calls with both recovery reserves 23
+transport-inclusive invocations            24
+static complete-path bound           1,090,412
+maximum Prompt                         54,708
+~~~
+
+Prompt remains within 60,000 bytes. Primary, Provider-call, transport-invocation, and rollout
+capacity fail by one, one, one, and 30,412 tokens. The twentieth Primary is admitted; the
+twenty-first is denied before Provider behavior and makes zero calls. This is a negative
+credential-free Instrument preflight, not a model failure, role-task failure, or Capability or
+Reachability result. It proves only that the selected S1 Contract covers registered reference
+trajectories but censors one legal dynamic trajectory.
+
+All 24 destructive mutations fail before Provider behavior. Formal and independent final builds
+produce all fourteen files byte for byte. Focused Pytest passes 2/2 in 68.95 seconds; the selected
+v26.129-v26.131 adjacent regression passes 6/6 in 131.89 seconds. Focused Ruff check and format,
+and focused Mypy pass. Package-wide Mypy checks 448 source files and retains only three
+pre-existing diagnostics in v26.70 and v26.129, with zero v26.131 diagnostics.
+
+The authoritative identities are:
+
+- source replay:
+  finance_v26_role_scalable_source_replay:84a1ae3b76f1c3782f8f5676168bccaeaed35da4134a4b40562327e5cfb30820;
+- frozen Role input audit:
+  finance_v26_frozen_role_input_audit:29bd3473757b1f9f22669a2dea39fdbf72c9530b1661088fa8541a8af3f85702;
+- report:
+  finance_v26_role_scalable_kernel_runner_preflight_report:fd9d0fc0bec5e2edc6d4411839fd9439ff27f47346263d0dc241816e946618c5;
+- Role-scalable Kernel:
+  finance_v26_role_scalable_kernel:72cb39974d500de96e5b38244112f52b90924e91de6ef31aa9e379ae87f77f55;
+- TaskPackage catalog:
+  finance_v26_role_task_package_catalog:483afa240fe8c358ec51e287cb5a99945bb61692f6d70371983cdc0fac227a13;
+- Path catalog:
+  finance_v26_role_path_catalog:14efbb6be7167b4014330e2d2b5502299701f016e93125823ab4ea3f3b748cd8;
+- deep Reconciliation compiler audit:
+  finance_v26_deep_reconciliation_compiler_audit:874c3dbf6e1d764133d529ff35851da8475f6691fefd8a05d45cf32a5c5da7a9;
+- resource Contract:
+  finance_v26_role_scalable_resource_contract:169eaec0bfb1ed97f81bc16f222357e0dc37b30bc65174c205d1926c6c95e6de;
+- Role identity chain:
+  finance_v26_role_identity_chain:40afe76db2a82687fa11806ebea0f86380a2f89a21c55c77738eb46cff9f9cbb;
+- Runner Contract:
+  finance_v26_role_scalable_runner_contract:932168e07b49188ae524be5f328f2c396f25921d47c0d471151d6f43cfdf41a2;
+- reference fixture:
+  finance_v26_reference_runner_fixture:135aaf5575a4cd4e6a740f3d7be12a6c97309cff9851619bf27565bad683ea82;
+- dynamic interaction stress:
+  finance_v26_dynamic_interaction_stress:a601f93271ab6857a06c4e28d08c0bd9878e78fa1e920a40047932e59ea109fc;
+- destructive audit:
+  finance_v26_role_scalable_destructive:dcf5f7e652870577939802a8ae22de1fbd637f72c058412ee6087556ef75ad4f;
+- transition:
+  finance_v26_role_scalable_transition:e90d49cb63158229fb517837525aaa584efde5b183eaefeb0812dfa16b7cba77.
+
+The only permitted transition is:
+
+~~~text
+role_scalable_dynamic_interaction_capacity_redesign_only
+~~~
+
+The successor must preserve both exact source Populations, all 24 tasks and Tiers, S1, complete
+Candidate authority, model and Thinking profile, Action and Final Grammars, privacy-first
+capture, separate recovery channels, and zero-Provider Stage 2. It may redesign only
+request/call/invocation capacity and rollout qualification against both registered reference and
+legal no-progress detour controls. Any resource change requires a fully fresh Kernel,
+TaskPackage, Path, Contract, Manifest, Job, Runner, execution, and report identity chain plus
+another credential-free preflight. Provider calls, S1 model-visible representation
+qualification, Capability or Reachability execution, State Mapping, historical rerun or
+reclassification, task deletion or substitution, Tier or compact-projection change,
+model/profile/Grammar change, training, release, and production Contribution remain forbidden.
+See docs/finance_v26_131_role_scalable_kernel_runner_preflight.md.
 
 ## v26.130 Full-Mechanism Role-Support Scalability Decision
 
