@@ -53,11 +53,108 @@ only a fresh Host-bound fixed-`stage` metadata protocol preflight. v26.116 then 
 requested zero-generation Semantic Proposal Distribution audit. It reconstructs all 54 accepted
 Proposals against their exact certified public states, localizes all 24 uncommitted outcomes, and
 supersedes the current priority with credential-free Semantic Action Selection protocol design.
+v26.117 has now consumed that design-only transition. It freezes one canonical content-addressed
+public action language, separates dependency-ready from executable Operations, makes current
+public state sufficient for Proposal acceptance, and gives typed semantic rejection a bounded
+recovery channel separate from ABI Rescue. Its 48-path, 324-Prompt static control passes with zero
+Provider calls. The current transition now requires a fresh TaskPackage/Contract/Manifest/Job
+identity chain and an exact credential-free Runner preflight.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.117 Semantic Action Protocol Design And Static Preflight Decision
+
+Finance v26.117 consumed only the credential-free design transition authorized by v26.116. Before
+protocol construction it replayed 2,191/2,191 files: all 2,181 v26.116 transitive bindings, all
+eight immutable v26.116 outputs, and two exact v26.117 implementation files. It looked up no
+credential, constructed no model client, made zero Provider or Stage 2 Provider calls, used zero
+GPU jobs, and created zero empirical rows. It did not reparse a v26.114 public model payload,
+recover a historical Job, or reclassify a historical result.
+
+The prospective protocol replaces arbitrary acquisition direct_arguments with one
+content-addressed action_id. Each visible candidate binds a complete public semantic choice. The
+model-facing semantic Proposal contains only state_id, action_id, decision_kind, and protocol.
+Search, source-scoped structured query, fully qualified structured query, and public-document open
+actions compile under frozen public recipes. Both structured-query forms remain separately
+model-selectable; Stage 2 cannot silently refine one into the other.
+
+Every resolved source object has one canonical PublicSourceReference binding its public symbol to
+one Evidence identity or Operation reference. Operation and verification candidates select those
+canonical references instead of alternating between source symbols and Evidence IDs. The Compiler
+cannot choose or repair a Tool, Node, Operator, Operand, Evidence set, or semantic field.
+
+The Operation frontier is now partitioned into blocked_dependencies, dependency_ready,
+executable, and terminal_verifiable. Across 324 public states those partitions contained 60, 174,
+102, and 48 rows; 60, 156, 90, and 48 states contained each respective status. All 114
+model-selectable Operation candidates came from executable; zero came from the other three
+partitions.
+
+Proposal acceptance now depends only on the current public state, Proposal, and call index. All
+failed public-call signatures are visible in active_blocked_public_calls; a blocked action is
+removed from the visible candidate set but remains exposed as a typed blocked semantic object
+without exact failed argument values. All twelve typed refinement failures in the 48 frozen paths
+appeared in the next state as visible blocked actions. Visible candidate sets equaled validator
+acceptance sets in 324/324 states.
+
+The full-path control read only each final serialized Prompt. Across all 48 Compiler paths it
+parsed 324/324 Prompts, selected 324/324 canonical Proposals, reproduced 276/276 exact frozen tool
+calls, and reached 48/48 exact Final decisions. The selected partition was 156 acquisition, 72
+Operation, 48 verification, and 48 Final. Acquisition split into 48 search, 75 fully qualified
+structured query, twelve source-scoped structured query, and 21 document-open decisions. The
+maximum Prompt was 16,887 UTF-8 bytes.
+
+A separate continuity fixture selected a currently blocked action, emitted one typed,
+action-neutral semantic rejection with job_terminal=false, rebuilt the public state, parsed a new
+serialized Prompt, and committed the exact next frozen Compiler call. ABI Rescue remained 1
+before and after this rejection while semantic recovery changed from 0 to 1. Correct Tool, Node,
+Operator, Operand, Evidence, argument patch, and exact failed argument exposure counts were zero.
+The separate one-use limits are structural design constants, not thresholds fitted to the
+v26.116 10/7/4/3 failure counts.
+
+All 324 selected actions produced reversible Stage 2 Commits: 276 tool calls and 48 Final
+decisions. Stage 2 has no Provider profile, client route, or Provider call. All 20 object-level
+mutations failed closed, including Host semantic filling, dependency-ready candidate insertion,
+blocked-action reinsertion, hidden failure dependence, exact failed-argument exposure, immediate
+semantic terminalization, recovery-counter coupling, and a Stage 2 Provider route.
+
+Formal and independent builds produced all ten outputs byte for byte. Focused Pytest passed 2/2;
+focused Ruff and Mypy passed; the selected v26.97-v26.117 adjacent regression passed 97/97 in
+156.60 seconds.
+
+The authoritative identities are:
+
+- report:
+  finance_v26_semantic_action_preflight_report:876f4215157688cd420a1708ecd9f4f2d5527d40cd11db0e4828f920095ce362;
+- protocol:
+  finance_v26_semantic_action_protocol:3f178cb8af42b41809ea0d1c2324bfaf2ddfcdd732ad7cb570f2ccaec4ec8984;
+- canonical action language:
+  finance_v26_canonical_action_language:cb80acd326922900c9a305180de2923df47aef4458ea7f658bba6d7f59d5fdc7;
+- Operation frontier:
+  finance_v26_operation_frontier_audit:fa1ab640016337dbef6aa9e954e080c81a2ed5c0ed3029d1068fb9dc0e8c4a8e;
+- semantic recovery:
+  finance_v26_semantic_recovery_continuity:b92c069cf441c592cd4de6982505090bfaca6d6c9316359b119b96f7dec8ca8b;
+- transition:
+  finance_v26_semantic_action_transition:90567cb15885dadcd2340e394af572017118bae806d634f8cf0554841306290c.
+
+The only permitted transition is:
+
+~~~text
+fresh_semantic_action_protocol_taskpackage_contract_manifest_and_runner_preflight_only
+~~~
+
+This is positive static constructibility and authority evidence, not an online Flash result,
+empirical Semantic Action usability, resource qualification, or proof that the old protocol
+exclusively caused v26.114 behavior. The 16,887-byte Prompt maximum requires fresh resource
+qualification. A successor must use fresh resource, TaskPackage, Contract, Manifest, Job,
+response-protocol, Runner, execution, and report identities and pass an exact credential-free
+Runner preflight before any Provider call. Historical rerun/recovery/reclassification, Host
+semantic choice or repair, response-Grammar or fixed-stage optimization, model/profile/
+Completion/rollout changes, role experiments, State Mapping, training, release, and production
+Contribution remain forbidden. See
+docs/finance_v26_117_semantic_action_protocol_preflight.md.
 
 ## v26.116 Semantic Proposal Distribution And Action Selection Failure Decision
 
@@ -111,17 +208,19 @@ The authoritative identities are:
 - transition Contract:
   `finance_v26_semantic_action_selection_transition:82a944e8a123794a7add9a6615a4bdc44a985d363edb846f6ce20319fb3e7159`.
 
-The only permitted transition is:
+At the v26.116 audit freeze, the only permitted transition was:
 
 ```text
 semantic_action_selection_protocol_design_only
 ```
 
-This is a descriptive failure-distribution audit over repeated engineering sources, not a new
-model experiment or a causal-exclusivity claim. Response-Grammar optimization, prioritizing
-Host-bound stage metadata work, Completion/rollout changes, Host semantic choice or repair,
-historical rerun, every Provider call, role experiments, State Mapping, training, release, and
-production Contribution remain forbidden. See
+That transition has now been consumed by v26.117. The v26.116 evidence, terminal classifications,
+and transition Contract remain immutable; v26.117 does not reinterpret its 24-row distribution.
+v26.116 remains a descriptive failure-distribution audit over repeated engineering sources, not
+a new model experiment or a causal-exclusivity claim. Response-Grammar optimization,
+Completion/rollout changes, Host semantic choice or repair, historical rerun, role experiments,
+State Mapping, training, release, and production Contribution remain forbidden under the current
+v26.117 transition. See
 `docs/finance_v26_116_semantic_proposal_distribution_and_action_selection_failure_audit.md`.
 
 ## v26.114-v26.115 Exact Response Grammar Execution And Audit Decision
@@ -2815,6 +2914,15 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 
 | Check | Result |
 | --- | --- |
+| v26.117 source replay | 2,191/2,191 files: 2,181 v26.116 transitive bindings, 8 v26.116 outputs, and 2 exact implementation files; zero credential/client/Provider/GPU |
+| v26.117 canonical action language | 324 public decisions across 48 paths: 156 acquisition, 72 Operation, 48 verification, 48 Final; 279 unique states, 265 action IDs, 84 source references, and 48 document references |
+| v26.117 acquisition compilation | 48 search, 75 fully qualified structured query, 12 source-scoped query, and 21 document-open actions; 156/156 exact reversible acquisition calls; model-generated direct argument objects 0 |
+| v26.117 Operation frontier | 60 blocked-dependency, 174 dependency-ready, 102 executable, and 48 terminal-verifiable rows; all 114 Operation candidates executable and 0 from other partitions |
+| v26.117 public sufficiency | visible candidate set equaled validator acceptance set in 324/324 states; all 12 typed Runtime failures appeared as visible blocked calls; hidden failure lookup 0 |
+| v26.117 Prompt-only full paths | 324/324 final serialized Prompt parses and Proposals; 276/276 exact Compiler tool calls; 48/48 Final and complete paths; maximum 16,887 bytes |
+| v26.117 semantic recovery and Stage 2 | 1/1 typed neutral rejection continued to exact next Commit; ABI Rescue 1 to 1 and semantic recovery 0 to 1; 324 reversible Commits; Stage 2 semantic insertion and Provider calls 0 |
+| v26.117 dual build and destructive controls | all 10 outputs byte-identical; 20/20 object-level authority/frontier/history/recovery/provider mutations rejected with zero Provider and Stage 2 Provider calls |
+| v26.117 validation and transition | focused 2 passed in 17.83 seconds; Ruff and Mypy passed; selected adjacent regression 97 passed in 156.60 seconds; fresh semantic-action TaskPackage/Contract/Manifest/Job and credential-free Runner preflight only |
 | v26.116 source replay | 2,181/2,181 files: 2,172 v26.115 transitive bindings, 8 v26.115 outputs, and 1 exact implementation file; zero credential/client/Provider/GPU |
 | v26.116 Proposal reconstruction | 54/54 exact public-state rebuilds and dynamic-certificate bindings; 30/30 independent Compilations matched persisted Commits; direct argument values and private reasoning retained 0 |
 | v26.116 Decision distribution | 42 acquisition and 12 Operation accepted; 29/42 and 1/12 committed; 0 verification and final Proposals |
@@ -2823,7 +2931,7 @@ jobs. See `docs/finance_v25_21_public_benchmark_capability_audit.md`.
 | v26.116 dual build and destructive controls | all 8 outputs byte-identical; 21/21 computed Gate mutations rejected; zero Provider and Stage 2 Provider calls and zero empirical reclassification |
 | v26.116 focused validation | 2 passed in 5.96 seconds; focused Ruff format/check and Mypy passed |
 | v26.97-v26.116 adjacent regression | 103 passed in 152.42 seconds against the canonical complete immutable artifact root |
-| v26.116 transition | Semantic Action Selection protocol design only; no response-Grammar optimization, Host-stage priority, bound change, Host semantic repair, Provider call, role, State, training, release, or production authorization |
+| v26.116 historical transition | Semantic Action Selection protocol design only, consumed by v26.117 without changing the immutable v26.116 evidence or Contract |
 | v26.114 source replay | 2,049/2,049 files: 2,041 v26.113 transitive bindings, 7 v26.113 outputs, and 1 exact implementation file; final prepare-only before credential/client and zero calls |
 | v26.114 online execution | 32/32 model-invalid Jobs; 81 HTTP-success exact-model calls; 577,078 tokens; USD 0.1398790904000000131 estimated cost; zero transport/Completion/resource/Instrument/GPU |
 | v26.114 response Funnel | 81 public JSON and exact ten-field Key Sets; 81 protocol/state/Decision/conditional passes; 54 exact stage/Schema/Parser passes; 30 Commits and 30 Observations |
