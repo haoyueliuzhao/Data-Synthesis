@@ -114,14 +114,127 @@ requests, 23 Provider calls with recovery reserves, 24 transport-inclusive invoc
 1,120,000-token ceiling with 28,694 headroom. A second observed no-progress detour emits a typed
 terminal before any later Provider invocation. v26.132 rematerializes the complete fresh
 24-TaskPackage, 48-Path, two-Contract, two-Manifest, 456-Job, and Runner chain and passes its
-credential-free preflight. Role execution and S1 model-visible qualification execution remain
-unauthorized. The current transition permits only a fresh credential-free S1 representation-
-qualification identity chain and Runner preflight.
+credential-free preflight. v26.133 has now consumed the exact credential-free successor. It keeps
+all 24 role sources model-unexposed, binds 24 disjoint repeated engineering sources to 48 S1 Paths
+and 32 fresh qualification Jobs, reconstructs 324/324 S1 states under Primary and both recovery
+phases, and closes 32/32 scripted Jobs with 256 local calls. Its Progress Vector Contract makes
+Ordinary Detour explicitly relative to the frozen public ordinary-replan reference, while treating
+other public-state changes as diagnostic rather than useless. No real Provider call occurred. The
+current transition authorizes only the exact 32-Job engineering S1 representation-qualification
+execution; role execution remains unauthorized.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.133 S1 Representation Qualification Identity And Runner Preflight Decision
+
+Finance v26.133 consumed only the fresh credential-free S1 representation-qualification identity
+and Runner-preflight transition authorized by v26.132. It replayed 3,209/3,209 files before
+loading the engineering qualification inputs: all 3,192 v26.132 replay entries, all sixteen
+v26.132 outputs, and its exact type-complete implementation. It looked up no credential,
+constructed no model client, made zero real Provider or Stage 2 Provider calls, used zero GPU
+jobs, created zero empirical rows, and reclassified zero historical rows.
+
+The qualification denominator deliberately uses the 24 already model-exposed, permanently
+engineering-only v26.122 sources, their 48 Paths, and the exact 32 prior Job assignments and
+seeds. It does not expose a v26.132 role source. Engineering and frozen role sources have zero
+overlap on source-task artifact, public-task, Semantic Source, operational-record, operational-
+TaskPackage, Evidence, Evidence Version, and source-record identity. The 24 frozen role sources
+retain zero new model exposure and remain reserved for later Capability and Reachability
+execution.
+
+Across the 48 engineering Paths and 324 public states, frozen S1 Primary, ABI Rescue, and
+Semantic Recovery representations each reconstruct the exact state and Candidate set/order in
+324/324 cases. All 324 Prompt-only reference Proposals and reversible same-action Stage 2 Commits
+match. Full-object fallback and Stage 2 Provider calls are zero. The maximum Action Primary, ABI
+Rescue, Semantic Recovery, Final Primary, and Final Rescue Prompts are 13,951, 14,055, 14,051,
+5,152, and 5,286 bytes. The maximum registered engineering path bound is 339,504 tokens. These
+smaller engineering values do not replace the exact v26.132 60K/21/23/24/1.12M Contract.
+
+v26.133 freezes the public Progress Vector as unresolved symbols, ordered Operation-frontier
+node/status pairs, terminal Operation reference, terminal-verification completion, and Final-
+answer readiness, compared by canonical componentwise equality. A public state change outside
+those components remains diagnostic and unchanged-vector status is not interpreted as proof that
+an action is useless.
+
+The first complete Runner control found that registered reference paths can themselves contain
+successful acquisition calls that do not immediately change this vector. The final Contract
+therefore makes explicit the reference-relative definition already used by the v26.132 census:
+an Ordinary Detour must be successful, leave the vector unchanged, and differ from the frozen
+public ordinary-replan reference Action. The reference is a Host-side measurement classifier
+only; it never selects, inserts, removes, reorders, replaces, or repairs a model Action. This
+preserves all registered reference paths while counting only the additional non-reference
+no-progress behavior qualified by `T_dyn^(1)`.
+
+The fresh identity chain contains one representation-qualification Contract, 48 S1 Path audits,
+one 32-Job Manifest, one outcome Contract, one Runner, and fresh future execution and report
+identities. The pre-registered empirical Gate requires at least 24/32 Jobs to cross the first-
+action interface and at least one such Job in all twelve Mechanism x Path Strategy cells, with
+zero Instrument, privacy, model/Thinking, or Usage failures. First-action qualification requires
+the exact four-field ABI, current-state binding, visible Candidate and Decision binding, and a
+reversible same-action Commit. Program progress, closure, Final ABI, answer validity, mechanism
+validity, and independent trajectory validity remain separate.
+
+The 32-Job scripted preflight produces 224 exact S1 Action payloads, 224 reversible Commits, 192
+public Observations, 32 exact Final payloads, 256 privacy-first Envelope/Projection pairs, and
+32/32 complete Raw zero-call recoveries. All 32 Jobs close and all 32 first actions cross the
+interface. Thirteen controls pass for ABI Rescue, Semantic Recovery, Transport Replacement,
+privacy rejection, 16,384/16,385/16,386 Completion Usage, one Detour plus ordinary replanning,
+the second-Detour typed terminal, answer-validity separation, Raw recovery, orphan blocking,
+S1-only execution, role-external opportunity separation, and exact resource/counter binding.
+All 24 destructive mutations fail before unauthorized behavior.
+
+The exact 252 v26.132 role class-external state/action pairs remain bound. Engineering and those
+role state IDs have zero overlap, so the future 32-Job engineering execution has zero direct
+opportunity to estimate their selection frequency. This is a zero opportunity denominator, not
+a measured frequency of zero. Their frequency remains deferred to separately authorized role
+execution; v26.133 does not consume role-source freshness to estimate it early.
+
+Focused Pytest passes 2/2 in 55.99 seconds against the final source. The selected v26.129-v26.133
+adjacent regression passes 10/10 in 837.94 seconds. Focused Ruff and Mypy pass. Package-wide Mypy
+checks 450 source files and retains only three pre-existing diagnostics in v26.70 and v26.129,
+with zero v26.133 diagnostics.
+
+The authoritative identities are:
+
+- source replay:
+  `finance_v26_s1_qualification_source_replay:15235e713190c1619799b1be734565c42b387c103c4e617f6279a3c2aa46cdf1`;
+- report:
+  `finance_v26_s1_qualification_preflight_report:9d79af8e43b93f768d615be5aa1ca22ac2f733b5171fb191b87b4f0bf1785c4a`;
+- source separation:
+  `finance_v26_s1_qualification_source_separation:3caad15982367a4f65aff8a15c7e9b732d2b1e801b3d6867736669dd4ae1ec4d`;
+- public Progress Vector Contract:
+  `finance_v26_public_progress_vector_contract:c716f6844e51e70751fba628805611223fba6775e905cfe336b78298d7ded785`;
+- S1 Path Catalog:
+  `finance_v26_s1_qualification_path_catalog:48e21b62dc6be94a204980ccbfa186fad0f3087a8f92f37ee8b3c26856039026`;
+- resource Contract:
+  `finance_v26_s1_qualification_resource_contract:9ba3c63a1c7cfebe6a954eda18e0cd6e3414fcc2fc17a2ac0c95e6e7a199fba6`;
+- qualification Contract:
+  `finance_v26_s1_representation_qualification_contract:7ab0a66c595c13374380d3ec3464ebae33d7c150ee18ae87a4c3e1130e31fb82`;
+- Manifest:
+  `finance_v26_s1_qualification_manifest:75dd0c9a5e705225bf02063a8ab18cfaaefcc19df62a1c26b2b8c783a83e99eb`;
+- outcome Contract:
+  `finance_v26_s1_qualification_outcome_contract:0a276275c4878323227313658ad25642f95b40b7a60ff6f6f575e21f1cc09bdc`;
+- Runner Contract:
+  `finance_v26_s1_qualification_runner_contract:1aca524bc565c1157f876ad55d2f469c516dd1ff85308cf9719029f914cd750c`;
+- transition:
+  `finance_v26_s1_qualification_transition:a6f63cd2e7555ceb9d73c507c844a7e4d3d91cf1805e01e196d03532b68e98fa`.
+
+The only permitted transition is:
+
+~~~text
+s1_model_visible_representation_qualification_execution_only
+~~~
+
+The successor may execute only the exact fresh 32-Job engineering Manifest under the exact
+Runner and outcome Contracts after replaying the complete v26.133 chain. Provider calls are
+authorized only for that denominator. Role Provider calls, Capability or Reachability execution,
+State Mapping, historical rerun or reclassification, role-source exposure, task/Tier/S1/
+Candidate/model/Thinking/Grammar/resource/counter changes, full-object fallback, training,
+release, and production Contribution remain forbidden. See
+`docs/finance_v26_133_s1_representation_qualification_preflight.md`.
 
 ## v26.132 Bounded Dynamic Interaction And Fresh Role-Chain Decision
 
@@ -233,6 +346,11 @@ S1 qualification execution, Capability or Reachability execution, State Mapping,
 rerun or reclassification, task/Tier/S1/Candidate/model/Grammar/recovery change, training,
 release, and production Contribution remain forbidden. See
 `docs/finance_v26_132_bounded_dynamic_interaction_preflight.md`.
+
+That credential-free transition has now been consumed by v26.133. All v26.132 role sources,
+dynamic-envelope rows, resource values, identities, and non-exposure claims remain immutable. The
+current transition is the exact engineering S1 representation-qualification execution recorded
+above.
 
 ## v26.131 Role-Scalable Kernel And Dynamic Runner Preflight Decision
 
