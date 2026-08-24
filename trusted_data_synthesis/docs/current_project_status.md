@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-24
+Audit date: 2026-08-25
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -164,13 +164,135 @@ zero classifier-sensitive Keys. The unchanged 60K/21/23/24/1.12M Contract contai
 registered Primary maximum, 676,111-token registered Path maximum, and all nine Capability
 ordinary-Detour rows. A 96-Job, 984-local-call fixture, 25 Runner controls, and 39 destructive
 mutations pass with zero real Provider or Stage 2 Provider calls. This is a Runner preflight, not
-a Capability outcome. The current transition authorizes only the exact fresh 96-Job Capability
-execution; Reachability identity or execution and State Mapping remain unauthorized.
+a Capability outcome. v26.141 then consumed the exact 96-Job Capability execution under an
+operator-authorized replacement-rerun provenance. It persisted 93 complete Raw Executions and
+three first-call artifact orphans before a Host measurement-reference exception stopped report
+aggregation. v26.142 independently audited the 7,234-file lineage, localized all three exceptions
+to `dynamic_successor_reference_policy_unavailable_not_typed_as_measurement_support_exit`, and
+kept every historical terminal unassigned. v26.143 froze three fresh zero-call RecoveryJobs and
+preflighted exact typed support exits. v26.144 executed those Jobs with three fresh Raw rows and
+zero Provider calls. v26.145 independently rebuilt all 26 execution files and closes the lineage
+as 93 frozen model outcomes plus three measurement-support boundary exits. Seventeen of the 93
+model outcomes are independently valid and all four mechanisms appear, but this incomplete model
+denominator is descriptive only. The exact Capability Gate fails, no exact task-weighted
+Capability estimate exists, and Reachability remains unauthorized. The current transition permits
+only credential-free Capability measurement-support boundary redesign.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.141-v26.145 Capability Replacement Failure, Recovery, And Audit Decision
+
+Finance v26.141 consumed the exact 96-Job Capability Manifest authorized by v26.140 under an
+explicit operator-authorized replacement-rerun provenance. The unavailable first process lost
+its temporary worktree and contributes zero auditable or pooled rows; the replacement does not
+claim pristine first exposure. The committed Runner replayed the exact v26.140 chain and retained
+the frozen v2 S1, Candidate, Grammar, classifier, exact Flash Thinking profile, resource bounds,
+recovery channels, one Ordinary Detour allowance, privacy-first persistence, and zero-Provider
+Stage 2.
+
+The replacement drained all 96 Futures but failed before report aggregation. Ninety-three Jobs
+persisted complete Raw Executions and checkpoints. Three Failure Recovery Jobs persisted exactly
+one HTTP-success Envelope/Projection/Transport triple each but no Raw. All 858 calls were exact
+`deepseek-v4-flash` with complete Thinking and Usage. Artifact-backed Usage is 8,042,572 tokens:
+4,211,294 Prompt, 3,831,278 Completion, and 3,699,772 Reasoning tokens. The Projection partition
+is 851 validated public payloads, seven generic no-payload Provider-failure rows, and zero privacy
+rejections. Private reasoning content or hashes, invalid payload details, Raw HTTP bodies, and Raw
+request bodies remain absent.
+
+The 93 complete Raw rows contain seventeen `model_valid_trajectory` and 76
+`model_invalid_trajectory` outcomes. Ninety-two cross Action Entry and every mechanism has at
+least one independently valid trajectory. These values are descriptive over an incomplete subset,
+not an exact task-weighted Capability estimate.
+
+Finance v26.142 replayed 7,234/7,234 files, independently reconstructed all 93 Raw rows and all
+858 artifact triples, and reproduced the three orphan prefixes with zero calls. Every orphan
+payload is an exact privacy-compliant four-field Action selecting a visible Candidate. Each
+Action reversibly Commits `query_structured_fact`, produces a failed public Observation with
+`typed_selector_requires_refinement`, and reconstructs its exact successor State and v2 Prompt.
+All three then fail in the Host-only Ordinary Detour reference classifier with
+`Prompt-only acquisition policy cannot satisfy its public route`. The frozen root cause is
+`dynamic_successor_reference_policy_unavailable_not_typed_as_measurement_support_exit`.
+Historical Raw and terminal creation or reclassification remains zero.
+
+Finance v26.143 replayed 7,242/7,242 files, rebuilt all seven v26.142 outputs byte for byte, and
+froze three fresh RecoveryJobs under a zero-call Contract and Runner. All three exact public
+prefixes reconstruct twice and emit local fixture terminal
+`ordinary_replan_reference_unavailable` before later Provider preparation. The Outcome Contract
+keeps support exits separate from model and Instrument outcomes. Focused Pytest passes 2/2 in
+349.75 seconds.
+
+Finance v26.144 then replayed 7,256/7,256 files and rebuilt all thirteen v26.143 outputs before
+writing three fresh Recovery Raw Executions and three results. Historical prefix calls reissued,
+new Provider calls, later Provider calls, Stage 2 Provider calls, credential lookups, client
+constructions, historical Raw creations, and historical terminal assignments are zero. Focused
+Pytest passes 2/2 in 353.96 seconds.
+
+Finance v26.145 independently replays 7,283/7,283 files and rebuilds the complete 26-file v26.144
+directory in a fresh temporary directory. All files are byte-identical. It independently matches
+all Manifest Jobs, Raw rows, results, checkpoints, exact prefix parents, Actions, Commits,
+Observations, successor States and Prompts, typed terminals, Raw descriptors, and the unchanged
+2,680-file v26.141 historical directory. Fourteen destructive mutations fail closed. Focused
+Pytest passes 2/2 in 354.56 seconds; focused Ruff and Mypy pass.
+Package-wide Mypy checks 462 source files and retains only the three pre-existing v26.70/v26.129
+diagnostics, with zero v26.141-v26.145 diagnostics.
+
+The final endpoint partition is:
+
+```text
+exact auditable lineage endpoints              96
+frozen complete-Raw model outcomes             93
+frozen model-valid trajectories                17
+frozen model-invalid trajectories              76
+fresh measurement-support boundary exits        3
+Instrument failures                             0
+```
+
+The three support exits close artifact lineage but do not fill the exact model-outcome
+denominator. They are neither model-invalid trajectories nor Instrument failures. The exact
+Capability Gate therefore remains failed, no exact task-weighted Capability estimate or interval
+is authorized, and the 17/93 model subset remains descriptive only. Reachability and State
+Mapping remain unauthorized.
+
+The authoritative identities are:
+
+- v26.141 source replay:
+  `finance_v26_privacy_safe_capability_execution_source_replay:f01b157c1c22e901ab1eadbb4521afceca98142007754c65bdcfd97edd0e8ba8`;
+- v26.142 report:
+  `finance_v26_capability_failed_lineage_audit_report:93972cc33691eec1ab18a767ab2193a9eee490ed22c92e2c07c8eece858bdee2`;
+- v26.142 root cause:
+  `finance_v26_orphan_reference_root_cause:41194a48e2f79183b5e1970fcac38b1915e57c25d0d5fb1ade1fb734a79dd5e1`;
+- v26.143 report:
+  `finance_v26_orphan_support_exit_preflight_report:ee6af1ef4e1462316a953fb247347792b1a04e017a371f9ba756801ce90de0ac`;
+- v26.143 Recovery Manifest:
+  `finance_v26_orphan_support_exit_recovery_manifest:9ecaa1ab2e16c937fef67fa024be42f2f3d5a69338fc7be27812135a49583244`;
+- v26.144 report:
+  `finance_v26_orphan_support_exit_recovery_execution_report:41e274f0986e9064ab68d6b3fac286a70da7793d4b7c1d72b27cd8503e433e22`;
+- v26.144 endpoint outcome:
+  `finance_v26_orphan_support_exit_endpoint_outcome:00cdc80a7076d4d9a62506df5c06bfe33a25a4167e62d7a761551404413092cb`;
+- v26.145 report:
+  `finance_v26_orphan_recovery_postrun_audit_report:b89eb11ef32169e985b4f7fdb765c140440c4e1e2fdcf5b7d700736a64103602`;
+- Capability decision:
+  `finance_v26_capability_support_boundary_decision:f3e11529e5bb3b19c814488bc1f11571f47967e6f0c424a36ee6278f56b4d97c`;
+- transition:
+  `finance_v26_capability_support_boundary_transition:33a1d469b8d4493d205ef278b2671ccfa55bbc05656eebb2dfd4dc875669c2c1`.
+
+The only permitted transition is:
+
+```text
+capability_measurement_support_boundary_redesign_only
+```
+
+The successor may perform only credential-free design over reference-unavailable measurement-
+support classification. Historical outcome change, missing-model-outcome inference, exact
+Capability estimation, fresh Capability Population or Job materialization, Provider calls,
+Capability execution, Reachability identity or execution, State Mapping, training, release, and
+production Contribution remain forbidden. See
+`docs/finance_v26_141_v26_142_capability_execution_failure_and_audit.md`,
+`docs/finance_v26_143_orphan_support_exit_recovery_preflight.md`, and
+`docs/finance_v26_144_v26_145_orphan_support_exit_recovery_execution_and_audit.md`.
 
 ## v26.140 Privacy-Safe S1 Capability Identity And Runner Preflight Decision
 
@@ -258,7 +380,7 @@ v26.70/v26.129 diagnostics, with zero v26.140 diagnostics.
 - transition:
   `finance_v26_privacy_safe_capability_transition:66039fa2eb1b50a3966f259b33c1a6512edf871d3c23f6a53d774b66a20dea89`.
 
-The only permitted transition is:
+At the v26.140 freeze, the only permitted transition was:
 
 ```text
 privacy_safe_s1_capability_execution_only
@@ -271,6 +393,12 @@ execution, State Mapping, role Population/task/Tier/S1/Candidate/Prompt/Grammar/
 Thinking/resource/recovery/Detour change, historical rerun or pooling, Host repair, task deletion,
 threshold change, training, release, and production Contribution remain forbidden. See
 `docs/finance_v26_140_privacy_safe_s1_capability_runner_preflight.md`.
+
+That execution-only transition was consumed by v26.141. The v26.140 preflight and identities
+remain immutable, but its authorization is no longer current. v26.141-v26.145 record the failed
+replacement denominator, independent root-cause audit, fresh zero-call support-exit recovery, and
+final failed Capability decision. The current transition is the credential-free measurement-
+support boundary redesign recorded above.
 
 
 ## v26.138-v26.139 Privacy-Safe S1 Qualification Execution And Audit Decision
