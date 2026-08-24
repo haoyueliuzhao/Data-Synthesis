@@ -126,3 +126,53 @@ Capability continuation, historical Job rerun or reclassification, historical Ra
 creation, Host Action selection/replacement/repair, S1/Candidate/Prompt/Grammar/classifier/model/
 Thinking/resource change, Provider calls, Reachability identity or execution, State Mapping,
 training, release, and production Contribution remain forbidden.
+
+## Formal Execution Outcome
+
+The committed implementation at `d5c5a70` completed formal prepare-only with source replay
+`finance_v26_orphan_recovery_execution_source_replay:326f86258387c9fade6eb5a5711d83ee73fe389966dfce0449460288512259db`
+and preexecution binding
+`finance_v26_orphan_recovery_execution_binding:559ee4f29eaadabd3e0225f0ee7584f81d28c32ca1c44e0e3a08d3b85980c94d`.
+All 7,256 source entries and all thirteen v26.143 outputs passed. Prepare-only wrote fifteen files
+and zero Raw, result, checkpoint, lineage, endpoint, or report files.
+
+The exact three-Job execution then completed with three fresh Recovery Raw Executions, three fresh
+results, and one three-row checkpoint. The Raw identities are:
+
+- `finance_v26_orphan_support_exit_recovery_raw:b0eb2e14b3f90c5af95cb9ff078b3ae973ede33d61c290b32666b5c3268ee771`;
+- `finance_v26_orphan_support_exit_recovery_raw:af4b49e5c4f8828f47f0cf574f1c72fcc38808acc659f39158a71ad16667e2dd`;
+- `finance_v26_orphan_support_exit_recovery_raw:c8f74a153c8289eb95ea76deceed7bc5423b327bf10c5cdb468cf6e94f903456`.
+
+Each Raw retains the exact historical first-call parents, model Action, Commit, failed
+`typed_selector_requires_refinement` Observation, successor State, successor Prompt, and
+reference-policy failure. Each terminates `ordinary_replan_reference_unavailable`. Historical
+prefix calls reissued, new Provider calls, later Provider calls, Stage 2 Provider calls,
+credential lookups, client constructions, historical Raw creations, and historical terminal
+assignments are all zero.
+
+The complete endpoint partition is 93 frozen model outcomes plus three fresh measurement-support
+boundary exits, totaling 96 lineage endpoints. The frozen model outcomes remain seventeen valid
+and 76 invalid trajectories. The three support exits are neither model-invalid trajectories nor
+Instrument failures. The exact Capability Gate remains failed, no exact task-weighted Capability
+estimate is available, and Reachability remains unauthorized.
+
+The authoritative execution identities are:
+
+- report:
+  `finance_v26_orphan_support_exit_recovery_execution_report:41e274f0986e9064ab68d6b3fac286a70da7793d4b7c1d72b27cd8503e433e22`;
+- Raw Lineage:
+  `finance_v26_orphan_support_exit_raw_lineage:bd1adb9f644f30e8d142b971eb6c5525d18ba69c111eaf95e02f28c7cd1fe8c1`;
+- endpoint outcome:
+  `finance_v26_orphan_support_exit_endpoint_outcome:00cdc80a7076d4d9a62506df5c06bfe33a25a4167e62d7a761551404413092cb`;
+- postrun transition:
+  `finance_v26_orphan_support_exit_postrun_transition:68eb384bd0ce63142ceed87ff7ecbca2cc909ae3b89b22dc4052ba954a55514c`.
+
+The only permitted transition is now:
+
+```text
+orphan_support_exit_recovery_postrun_audit_only
+```
+
+The successor may only independently replay and audit the frozen v26.144 lineage with zero
+Provider calls. Capability continuation, historical reclassification, Reachability, State
+Mapping, training, release, and production Contribution remain forbidden.
