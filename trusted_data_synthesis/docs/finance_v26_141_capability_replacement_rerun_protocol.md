@@ -125,3 +125,62 @@ explicit replacement provenance, all 96 scripted Jobs, 984 local calls, 888 Acti
 public Observations, 63-Candidate diagnostics, and zero-client completed-run replay. Online
 results will be added only after the persistent execution directory closes and the independent
 audit completes.
+
+## Replacement Execution Outcome
+
+The committed source at Git commit `fb65a8d` completed its credential-free replay and started from
+`0/96` with zero Raw recovery and eight workers. The executor drained all 96 submitted Futures.
+Ninety-three Jobs produced complete immutable Raw Executions and checkpoint rows. Three Jobs
+raised a Host `ValueError` after their first persisted Provider artifact triple and before Raw
+persistence. The runner did not retry those Jobs and generated no completed report.
+
+The durable directory contains 858 Provider Envelopes, 858 public Projections, and 858 Transport
+certificates. All 858 calls were HTTP success and requested, selected, and returned exact
+`deepseek-v4-flash`. Artifact-backed Usage is 8,042,572 tokens: 4,211,294 Prompt, 3,831,278
+Completion, and 3,699,772 Reasoning tokens. Estimated cost telemetry is USD
+`1.28198986720000011600`. The Projection partition is 851 validated public payloads, seven
+generic Provider-failure no-payload rows, and zero privacy rejections. Maximum complete-Raw Prompt
+size is 49,504 bytes and maximum complete-Raw Job Usage is 223,783 tokens.
+
+The 93 complete Raw results contain seventeen `model_valid_trajectory` and 76
+`model_invalid_trajectory` terminals. Ninety-two cross the first Action interface. At least one
+independently valid complete trajectory occurs in each of the four mechanisms. The Ordinary
+Detour partition is 92 zero and one single-Detour Job. These are descriptive values over the
+complete-Raw subset, not a completed exact-denominator Capability estimate.
+
+The three orphan Jobs are Failure Recovery rows:
+
+- Easy, replicate 2, Job suffix `e3ac0be4a8a1`;
+- Easy, replicate 4, Job suffix `9b354e7884df`;
+- Hard, replicate 0, Job suffix `ef32ef59e0f7`.
+
+Each orphan contains only `call_000` Envelope, public Projection, and Transport certificate. Each
+call is exact-model HTTP success with complete Thinking and Usage telemetry and an exact
+privacy-compliant four-field Action payload. No Raw, checkpoint row, second invocation, invalid
+payload content, private reasoning content or hash, Raw HTTP body, or Raw request body exists for
+any orphan.
+
+A zero-call staged diagnostic independently reconstructs each initial State and exact public
+payload. All three parse, select a visible Candidate with matching Decision kind, compile a
+reversible `query_structured_fact` Commit, execute a public Observation, rebuild the successor
+State, construct the Commit and Choice records, compute Progress, render and decode the successor
+v2 Prompt, preserve exact State and Candidate order, and retain zero classifier-sensitive Keys.
+All three then fail at the same successor-only diagnostic call:
+
+```text
+prompt_only_reference_proposal
+ValueError: Prompt-only acquisition policy cannot satisfy its public route
+```
+
+The reference Proposal is a Host-side Ordinary Detour classifier. It neither selected nor repaired
+the model Action. Treating its unavailability as an uncaught exception after a persisted model
+result is an Instrument defect. The strongest current root-cause statement is
+`dynamic_successor_reference_policy_unavailable_not_typed_as_measurement_support_exit`. This is a
+reproduced prospective localization, not a reconstructed Raw terminal for any orphan.
+
+The exact 96-Job Capability Gate fails because complete Raw count is 93/96 and the three missing
+rows cannot be pooled, inferred, or relabeled. The only defensible next transition is a zero-call
+independent failed-lineage audit and, only if that audit closes, a fresh orphan-only recovery
+preflight that converts reference-policy unavailability into a typed measurement-support exit
+without changing the model Action, public Observation, S1, Candidate authority, model, Thinking,
+resource bounds, or historical bytes. Reachability and State Mapping remain unauthorized.
