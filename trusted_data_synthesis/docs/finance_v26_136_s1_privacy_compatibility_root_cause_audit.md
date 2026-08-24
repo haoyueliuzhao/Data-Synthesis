@@ -289,3 +289,15 @@ Capability, Reachability, State Mapping, historical rerun or reclassification, c
 Grammar relaxation, output repair, training, release, and production Contribution remain
 forbidden. See
 `docs/finance_v26_137_s1_privacy_safe_prompt_metadata_and_runner_preflight.md`.
+
+## v26.138-v26.139 Qualification Clarification
+
+The v26.137 execution authorization described above has now been consumed. v26.138 completes the
+fresh 32-Job v2 engineering denominator with zero privacy or integrity failures, 31/32 first-action
+Entries, and all twelve Mechanism x Path cells; v26.139 independently confirms the passing Gate
+and all 173 reached online Prompt-Key surfaces with zero sensitive Keys.
+
+The historical v26.134 rejection remains unexplained and its failed v1 Gate remains immutable. The
+current transition permits only fresh Capability-only identity rematerialization and credential-
+free Runner preflight; no Provider call or role execution is authorized. See
+`docs/finance_v26_138_v26_139_privacy_safe_s1_qualification_execution_and_audit.md`.

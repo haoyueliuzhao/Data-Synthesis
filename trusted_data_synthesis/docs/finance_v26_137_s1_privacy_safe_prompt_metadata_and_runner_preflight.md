@@ -322,3 +322,32 @@ Role Provider calls; Capability or Reachability execution; State Mapping; v26.13
 recovery; historical reclassification; rejected-content inference; classifier, Action/Final
 Grammar, Candidate, S1, model, Thinking, resource, recovery, or Detour changes; Alias handling;
 output repair; training; release; and production Contribution remain forbidden.
+
+## v26.138-v26.139 Successor Clarification
+
+The exact online transition above has now been consumed by v26.138 and independently audited by
+v26.139. All v26.137 Prompt, TaskPackage, Path, Contract, Manifest, Job, Runner, fixture, control,
+and transition identities remain immutable.
+
+The successor completes 32/32 Jobs in 191 exact-model HTTP-success calls. It has zero Privacy,
+Instrument, model, Thinking, or Usage failure, 31/32 first-action interface Entries, and 12/12
+Mechanism x Path coverage, so the pre-registered noncompensatory Gate passes. v26.139 confirms the
+complete Raw lineage and all 173 reached v2 Action Prompts with zero classifier-sensitive Keys.
+The one non-Entry Job is a privacy-compliant model ABI failure caused by two invalid Decision-kind
+values; it receives no Host repair.
+
+This does not prove that the removed v1 lexical hazard caused the historical v26.134 rejection,
+and it does not establish role-scale readability or Capability. The historical v1 Gate remains
+failed and its unique rejection cause remains unidentified.
+
+The current transition is:
+
+```text
+fresh_privacy_safe_s1_capability_taskpackage_contract_manifest_runner_preflight_only
+```
+
+Only fresh Capability identity rematerialization and a complete credential-free Runner preflight
+are authorized. Provider calls, Capability execution, Reachability, State Mapping, historical
+pooling or reclassification, Host repair, training, release, and production Contribution remain
+forbidden. See
+`docs/finance_v26_138_v26_139_privacy_safe_s1_qualification_execution_and_audit.md`.

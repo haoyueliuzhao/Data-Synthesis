@@ -143,14 +143,149 @@ sensitive-Key count is zero, full Prompt-payload echo has zero privacy rejection
 State, Candidate order, reference Proposal, Action Grammar, and Stage 2 Commit are preserved.
 The fresh 24-TaskPackage, 48-Path, 32-Job chain and privacy-first Runner pass a 256-local-call
 fixture, 17 controls, and 28 destructive mutations with zero real Provider or Stage 2 Provider
-calls. The historical failed Gate and unidentified rejection cause remain unchanged. The current
-transition authorizes only the exact fresh 32-Job privacy-safe S1 representation-qualification
-execution; role execution remains unauthorized.
+calls. The historical failed Gate and unidentified rejection cause remain unchanged. v26.138 has
+now consumed the exact online authorization. All 32 Jobs complete in 191 exact-model, Thinking-
+complete, Usage-complete HTTP-success calls with 191 privacy-first artifact pairs and zero Stage 2
+Provider calls. Thirty-one Jobs cross the exact first-action interface, all twelve Mechanism x
+Path cells are covered, and privacy, Instrument, model, Thinking, and Usage failure counts are
+zero. The pre-registered noncompensatory Qualification Gate therefore passes under the exact v2
+repeated-engineering condition. v26.139 independently replays 4,525 files, reconstructs all 32 Raw
+Executions, 605 bound Raw artifacts, 34 report aggregates, and all 173 reached online v2 Action
+Prompts with zero classifier-sensitive Keys. The one Entry failure contains two privacy-compliant
+public payloads with visible Actions but invalid Decision-kind values; it remains model-invalid,
+not Instrument-invalid. The exact v2 engineering S1 interface qualification is frozen, while role-
+scale readability and Capability remain unmeasured. The current transition permits only fresh
+Capability-only identity rematerialization and credential-free Runner preflight; every role
+Provider call remains unauthorized.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.138-v26.139 Privacy-Safe S1 Qualification Execution And Audit Decision
+
+Finance v26.138 consumed only the exact 32-Job privacy-safe S1 engineering execution authorized by
+v26.137. Before credential lookup or client construction it replayed 3,901/3,901 files: all 3,884
+v26.137 source bindings, all sixteen v26.137 outputs, and its exact committed implementation. It
+independently rebuilt all predecessor outputs byte for byte. The formal prepare-only directory
+contained thirteen frozen-input files and zero Raw, Provider, Transport, or checkpoint rows, so the
+online denominator started at 0/32 with zero recovery and zero orphan artifacts.
+
+All 32 Jobs completed in 191 Stage 1 Provider calls and 191 transport-inclusive invocations. Every
+call was HTTP success, requested/selected/returned exact `deepseek-v4-flash`, retained positive
+Thinking telemetry and complete Usage, and had no fallback, model discovery, Provider-native tool,
+Transport replacement, or Stage 2 Provider call. All 191 privacy-first Envelope/Projection pairs
+contain validated public payloads; Privacy rejection and Provider-failure no-payload counts are
+zero.
+
+Artifact-backed Usage is 1,455,568 tokens: 589,102 Prompt, 866,466 Completion, and 840,279
+Reasoning tokens. The Reasoning/Completion fraction is `0.969777233036`; estimated cost telemetry
+is USD `0.32318810720000002837`. The maximum actual Prompt is 14,027 bytes and the maximum Job
+Usage is 88,765 tokens, within the unchanged 60K and 1.12M per-Job bounds. These engineering
+observations do not replace the role resource Contract.
+
+The independently reconstructed Entry Funnel is:
+
+~~~text
+exact Jobs                                      32
+first exact four-field Action ABI               31
+first current-state binding                     31
+first visible Candidate binding                 31
+first Decision-kind binding                     31
+first reversible same-action Commit             31
+first-action interface-qualified                31
+qualified Mechanism x Path cells             12/12
+combined integrity failures                      0
+~~~
+
+The 31/32 Entry count exceeds the frozen 24-Job minimum, every one of the twelve cells has an
+empirical Entry, and the zero-tolerance Privacy/Instrument/model/Thinking/Usage conjunction has no
+failure. The exact v2 repeated-engineering S1 representation Qualification Gate therefore passes.
+No v26.134 Entry row is pooled into this denominator, and the historical v1 Gate remains failed.
+
+The one Entry failure is Failure Recovery `search_then_structured` Job
+`finance_v26_privacy_safe_s1_qualification_job:4bb4c50a51a1708f73445ba1f0c0ffb98b1b6825d40d81cbc8b597df2ea35975`.
+Its Primary and ABI Rescue are both exact-model HTTP successes with complete Thinking and Usage.
+Both public payloads pass privacy, have the exact four-field Key set, exact protocol, current State,
+and a visible Action. Their Decision kinds are `select` and `query_fully_qualified`, not the
+Decision kind bound by the selected Candidate. Both therefore fail the unchanged Action Grammar.
+The Job is model-invalid, not privacy- or Instrument-invalid, and receives no Host repair.
+
+Across all Jobs there are 164 Primary requests, 27 ABI Rescues, zero Semantic Recoveries, 132 exact
+Action payloads and Choices, 132 reversible Commits, and 115 Observations. The Observations contain
+108 successes and seven failures. Progress Vector change occurs 104 times, three successful no-
+immediate-progress actions match the reference baseline, and one nonreference action consumes the
+single Ordinary Detour. The Job Detour partition is 31/1/0; support-exit terminals are zero.
+
+The complete terminal partition is fifteen `model_valid_trajectory` and seventeen
+`model_invalid_trajectory`. Twenty-one Programs close and complete their terminal node, seventeen
+complete post-terminal verification, and fifteen cross the exact Final ABI and are independently
+valid. These repeated-engineering-source values remain descriptive and contribute zero Capability,
+Reachability, State Mapping, training, release, or production rows.
+
+Finance v26.139 independently replayed 4,525/4,525 files: all 3,901 v26.138 source bindings, all
+623 execution files, and its exact implementation. It reparsed 32 Results, 32 checkpoint rows, 32
+Raw Executions, 191 Envelopes, 191 Projections, 191 Transport certificates, and 132 Choice
+diagnostics. All 605 Raw descriptors, all 32 Verifier v3 Replays, and all 34 independently
+reconstructed report aggregates match.
+
+It also independently rebuilds every reached Action Prompt: 147 Primary and 26 ABI Rescue Prompts.
+All 173 match persisted request hashes and byte counts, use the v2 protocol, reconstruct exact
+State and Candidate set/order, and contain zero classifier-sensitive or predecessor-sensitive
+Keys. This confirms Prompt/output structured-Key noninterference on the reached online surface; it
+does not establish behavior equivalence to v1 or privacy of unconstrained free text.
+
+Private-reasoning payload, invalid-payload persistence, Raw HTTP body, Raw request body, role-source
+Job, role-class-external opportunity, and Stage 2 Provider-call counts are zero. Sixteen destructive
+mutations fail closed. The audit made zero Provider calls and used zero GPU jobs.
+
+The authoritative identities are:
+
+- v26.138 report:
+  `finance_v26_privacy_safe_s1_qualification_execution_report:f9b1df0929685b8245814ac190c88c822468015680770692b249c935d2838ff9`;
+- v26.138 source replay:
+  `finance_v26_privacy_safe_s1_execution_source_replay:95158b5c06a23946fb4f777c11618dd05f42ae88b19d7a9e9b09d5bdf536b267`;
+- v26.138 Raw Lineage:
+  `finance_v26_privacy_safe_s1_qualification_raw_lineage:9768e142debfe9586efa3c7feaa52f7c24005cf976f70b105cb157f025e734f3`;
+- v26.139 report:
+  `finance_v26_privacy_safe_s1_postrun_audit_report:4dca82657f009642423a416cd1da3553f2327fd1ecdf468bdc1b1b169eba497a`;
+- independent Raw reconstruction:
+  `finance_v26_privacy_safe_s1_independent_raw_reconstruction:98726cca664605b49824947a12d99755d2d2c148c746c8290172ed0d5933eeaa`;
+- online Prompt noninterference:
+  `finance_v26_online_prompt_noninterference_audit:2eb9cae6c88c375042bcdf0a65addc5f42282cfcfc3bc0c56790ed84df7886cd`;
+- Entry boundary:
+  `finance_v26_privacy_safe_s1_entry_boundary_audit:ae4d0cc4136a5544b54f27b0e0156f580e96f6c22ca5efa838e20204e1badc12`;
+- Qualification Gate:
+  `finance_v26_privacy_safe_s1_qualification_gate_audit:10206b746caef04c550b1b9ba389f0f3a14203f1f5594a9a26ca584ae82488cc`;
+- outcome interpretation:
+  `finance_v26_privacy_safe_s1_outcome_interpretation:68ece29b1996545706c44a12fd69cd334e7c19839ab0427e457304dfcf6fff11`;
+- transition:
+  `finance_v26_privacy_safe_s1_postrun_transition:97def7ae5bbfdb49edf6f8854cb41a86dbd997731be84dbe00462a14192d0cbf`.
+
+A credential-free completed-run replay resumes at 32/32, constructs no client, makes zero calls,
+and preserves both the 623-file denominator and report SHA-256.
+
+Focused v26.138 Pytest passes 3/3 in 179.31 seconds; focused v26.139 Pytest passes 2/2 in
+42.67 seconds. The adjacent v26.137-v26.139 regression passes 7/7 in 319.54 seconds. Focused Ruff
+and Mypy pass. Package-wide Mypy checks 456 source files and retains only the three pre-existing
+v26.70/v26.129 diagnostics, with zero v26.138 or v26.139 diagnostics.
+
+The only permitted transition is:
+
+~~~text
+fresh_privacy_safe_s1_capability_taskpackage_contract_manifest_runner_preflight_only
+~~~
+
+The successor may materialize only a fresh Capability-only TaskPackage, Path, Contract, Manifest,
+Job, Runner, execution, and report identity chain under the exact frozen role Population, tasks,
+Tiers, S1, Candidate authority, v2 Prompt metadata, Grammars, classifier, model/Thinking profile,
+resource and bounded-Detour Contracts, recovery channels, and zero-Provider Stage 2. It must pass a
+complete credential-free Runner preflight before any role call. Provider calls, Capability
+execution, Reachability materialization or execution, State Mapping, role-source exposure,
+historical rerun or pooling, protocol/Grammar/Candidate/model/resource changes, Host repair,
+training, release, and production Contribution remain forbidden. See
+`docs/finance_v26_138_v26_139_privacy_safe_s1_qualification_execution_and_audit.md`.
 
 ## v26.137 S1 Privacy-Safe Prompt Metadata And Runner Preflight Decision
 
@@ -271,6 +406,10 @@ Detour changes, Alias handling, output repair, training, release, and production
 remain forbidden. See
 `docs/finance_v26_137_s1_privacy_safe_prompt_metadata_and_runner_preflight.md`.
 
+That exact online transition has now been consumed by v26.138 and independently audited by
+v26.139. The v26.137 static evidence and identities remain immutable. The current transition is
+the fresh Capability-only identity-chain and credential-free Runner preflight recorded above.
+
 ## v26.136 S1 Privacy Compatibility Root-Cause Decision
 
 Finance v26.136 consumed only the credential-free S1 representation root-cause audit authorized
@@ -376,8 +515,9 @@ training, release, and production Contribution remain forbidden. See
 That transition has now been consumed by v26.137. The v26.136 hazard, historical-causality
 boundary, failed Gate, and all identities remain immutable. v26.137 removes the two sensitive
 model-visible Key names under fresh identities and passes its credential-free preflight; it does
-not reclassify the historical row or establish that the lexical hazard caused it. The current
-transition is the exact fresh privacy-safe S1 qualification execution recorded above.
+not reclassify the historical row or establish that the lexical hazard caused it. That exact online transition was then consumed by v26.138 and audited by v26.139. The current
+transition is the fresh Capability-only identity-chain and credential-free Runner preflight
+recorded above.
 
 ## v26.134-v26.135 S1 Representation Qualification Execution And Audit Decision
 
