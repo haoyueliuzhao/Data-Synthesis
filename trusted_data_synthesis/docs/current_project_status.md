@@ -154,14 +154,124 @@ Executions, 605 bound Raw artifacts, 34 report aggregates, and all 173 reached o
 Prompts with zero classifier-sensitive Keys. The one Entry failure contains two privacy-compliant
 public payloads with visible Actions but invalid Decision-kind values; it remains model-invalid,
 not Instrument-invalid. The exact v2 engineering S1 interface qualification is frozen, while role-
-scale readability and Capability remain unmeasured. The current transition permits only fresh
-Capability-only identity rematerialization and credential-free Runner preflight; every role
-Provider call remains unauthorized.
+scale readability and Capability remain unmeasured. v26.140 has now consumed the exact
+credential-free Capability-only authorization. It replays 4,535 files, independently rebuilds
+all nine v26.139 outputs, preserves the frozen twelve-task Mechanism x Tier Capability Population,
+and closes fresh 12-TaskPackage, 12-Path, 96-Job, Contract, Manifest, Runner, execution, and report
+identities while creating zero Reachability identity. Across 111 exact role states, all 333 v2
+Action Prompts preserve State, Candidate order, reference Proposal, and reversible Commit with
+zero classifier-sensitive Keys. The unchanged 60K/21/23/24/1.12M Contract contains the 49,504-byte
+registered Primary maximum, 676,111-token registered Path maximum, and all nine Capability
+ordinary-Detour rows. A 96-Job, 984-local-call fixture, 25 Runner controls, and 39 destructive
+mutations pass with zero real Provider or Stage 2 Provider calls. This is a Runner preflight, not
+a Capability outcome. The current transition authorizes only the exact fresh 96-Job Capability
+execution; Reachability identity or execution and State Mapping remain unauthorized.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.140 Privacy-Safe S1 Capability Identity And Runner Preflight Decision
+
+Finance v26.140 consumed only the fresh credential-free Capability-only identity-chain and Runner
+preflight authorized by v26.139. It replayed 4,535/4,535 files before loading the role chain: all
+4,525 v26.139 transitive entries, all nine v26.139 outputs, and its exact implementation. It
+independently rebuilt all nine predecessor files byte for byte. Credential lookup, real model
+client construction, Provider calls, Stage 2 Provider calls, GPU jobs, Capability execution,
+Reachability identity materialization, role-source exposure, and historical reclassification are
+zero.
+
+The frozen input remains the exact twelve-task Capability Population selected before Kernel
+loading in v26.129. It contains three tasks for each of Context-conditioned Action, Semantic
+Reconciliation, Failure Recovery, and State-dependent Stopping and four tasks for each of Easy,
+Frontier, and Hard, giving all twelve Mechanism x Tier cells. The sampling design remains eight
+unconditional replicas per task with 96 distinct preserved seeds. All twelve Reachability sources
+remain model-unexposed, and no fresh Reachability TaskPackage, Path, Contract, Manifest, Job,
+Runner, execution, or report identity exists.
+
+The fresh Capability chain contains twelve TaskPackages, twelve `structured_direct` Paths, one
+resource binding, one execution Contract, one 96-Job Manifest, one outcome Contract, one Runner,
+and fresh prospective execution and report identities. Every TaskPackage and Job embeds its exact
+typed predecessor. Role, task, mechanism, Tier, sampling mode, replica, seed, and absent
+Reachability conditions are validated after content identity recomputation. Candidate
+presentation uses the frozen role salt rather than the engineering qualification salt.
+
+Across 111 registered Capability states and Primary, ABI Rescue, and Semantic Recovery, v26.140
+compiles 333 v2 Action Prompts. All exact States, Candidate sets and order, reference Proposals,
+and reversible same-action Commits are preserved. The predecessor surface has 666 sensitive-Key
+occurrences; the successor has zero. Full v2 Prompt echo is privacy-accepted 333/333 and
+Action-Grammar-invalid 333/333. Every intended exact Action payload passes both the unchanged
+four-field Grammar and unchanged privacy classifier. The authorized v2 metadata projection adds
+exactly 84 UTF-8 bytes to every Action Prompt.
+
+The unchanged 60K/21/23/24/1.12M resource Contract contains all twelve registered Paths. The
+maximum Candidate count is 63; Action Primary, ABI Rescue, and Semantic Recovery Prompt maxima are
+49,504, 49,608, and 49,604 bytes; Final Primary and Rescue maxima are 9,206 and 9,340 bytes; and
+the maximum registered complete-Path bound is 676,111 tokens. No new resource candidate is
+selected.
+
+All nine eligible v26.132 Capability ordinary-Detour rows requalify under v2. Their maxima are
+14 Primary requests, 16 Provider calls with recoveries, 17 transport-inclusive invocations, a
+27,881-byte Prompt, and 624,222 conservative tokens. A local Runner completes after one exact
+nonreference no-progress Action. A second observed Detour retains the Proposal and Tool
+Observation, emits `ordinary_detour_allowance_exhausted`, and makes zero later calls. It remains a
+typed measurement-support exit, not a model-invalid or Instrument terminal.
+
+The 96-Job scripted fixture completes 96/96 first-action interfaces in 984 local calls: 888 exact
+privacy-safe Action payloads and reversible Commits, 792 public Observations, 96 exact Final
+payloads, 984 Envelope/Projection pairs, and 96 complete Raw zero-call recoveries. All twelve
+Mechanism x Tier cells are covered. Twenty-five controls pass for the two model recovery
+channels, Transport replacement, privacy rejection, Usage boundaries, one and two Detours, Final
+ABI separation, Raw recovery, orphan blocking, maximum Prompt/Candidate, deep Reconciliation,
+Failure Recovery, Stopping, all role Prompt Keys, exact resources, terminal separation, and
+zero-Provider Stage 2. All 39 recomputed destructive mutations fail closed.
+
+The prospective outcome Contract retains model-invalid trajectories as model outcomes and keeps
+privacy rejection, typed budget no-call, Provider transport failure, Instrument failure, and
+ordinary-Detour support exit separate. Its causal Funnel runs from Instrument eligibility and
+privacy compliance through Action Entry, Commit, public progress, Program closure, terminal
+verification, Final ABI, and independent validity. A future run requires all 96 Raw Executions,
+task-primary and rollout-secondary summaries, and an independent postrun audit.
+
+Focused Pytest passes 2/2 in 216.50 seconds with independent byte reproduction of all seventeen
+formal files. The adjacent v26.139-v26.140 regression passes 4/4 in 253.46 seconds. Focused Ruff
+and Mypy pass. Package-wide Mypy checks 457 source files and retains only the three pre-existing
+v26.70/v26.129 diagnostics, with zero v26.140 diagnostics.
+
+- report:
+  `finance_v26_privacy_safe_capability_preflight_report:9e74e45831e0c8db50dc5969f680f81732b1ad71d9edd771fcfd40c496bce1f4`;
+- source replay:
+  `finance_v26_privacy_safe_capability_source_replay:1c996f701cc0d2d47fe91df08379d0c36cf72810ac33d4a341b7d3bd823d417e`;
+- TaskPackage catalog:
+  `finance_v26_privacy_safe_capability_task_catalog:8ed09b94a9d5adbbc53481698def5fbc9cffc4d9969598c2409919ddd306cb82`;
+- Path catalog:
+  `finance_v26_privacy_safe_capability_path_catalog:eae754107fb5dda4b61e9236aeabd191b1a129a2c91df52023bce44745e6f0a7`;
+- execution Contract:
+  `finance_v26_privacy_safe_capability_execution_contract:e0d40a58cdf970c5842a65a8808147fee5494f46857d4f4f121f1b7b2d44cc10`;
+- Manifest:
+  `finance_v26_privacy_safe_capability_manifest:971a74faf28d07402aa90a31ec202644f617410e4a49ec7f25e5a265458b1301`;
+- outcome Contract:
+  `finance_v26_privacy_safe_capability_outcome_contract:a9cfe6d9fe21c26652fb01b75655aa119f50a992d40a93620db5832512d86162`;
+- Runner Contract:
+  `finance_v26_privacy_safe_capability_runner_contract:e080bd0622b653e73b67a834aefe8b10f54ecf06e95334d574038c21d88ca35d`;
+- transition:
+  `finance_v26_privacy_safe_capability_transition:66039fa2eb1b50a3966f259b33c1a6512edf871d3c23f6a53d774b66a20dea89`.
+
+The only permitted transition is:
+
+```text
+privacy_safe_s1_capability_execution_only
+```
+
+The successor may execute only the exact fresh 96-Job Capability Manifest under the exact v2
+Prompt, Runner, resource, execution, and outcome Contracts after replaying the complete v26.140
+chain. Provider calls are authorized only for that denominator. Reachability identity or
+execution, State Mapping, role Population/task/Tier/S1/Candidate/Prompt/Grammar/classifier/model/
+Thinking/resource/recovery/Detour change, historical rerun or pooling, Host repair, task deletion,
+threshold change, training, release, and production Contribution remain forbidden. See
+`docs/finance_v26_140_privacy_safe_s1_capability_runner_preflight.md`.
+
 
 ## v26.138-v26.139 Privacy-Safe S1 Qualification Execution And Audit Decision
 
@@ -287,6 +397,10 @@ historical rerun or pooling, protocol/Grammar/Candidate/model/resource changes, 
 training, release, and production Contribution remain forbidden. See
 `docs/finance_v26_138_v26_139_privacy_safe_s1_qualification_execution_and_audit.md`.
 
+That credential-free transition has now been consumed by v26.140. The v26.138-v26.139 online
+and audit evidence remains immutable. The current transition is the exact fresh 96-Job Capability
+execution recorded above.
+
 ## v26.137 S1 Privacy-Safe Prompt Metadata And Runner Preflight Decision
 
 Finance v26.137 consumed only the fresh privacy-safe Prompt-metadata rematerialization and
@@ -408,7 +522,7 @@ remain forbidden. See
 
 That exact online transition has now been consumed by v26.138 and independently audited by
 v26.139. The v26.137 static evidence and identities remain immutable. The current transition is
-the fresh Capability-only identity-chain and credential-free Runner preflight recorded above.
+the exact fresh 96-Job Capability execution recorded above.
 
 ## v26.136 S1 Privacy Compatibility Root-Cause Decision
 
