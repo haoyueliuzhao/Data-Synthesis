@@ -128,13 +128,123 @@ rejected. The pre-registered zero privacy-failure tolerance therefore fails the 
 Qualification Gate despite passing its 24-Job and 12-cell entry components. v26.135 independently
 replays 3,864 files, reconstructs all 32 Raw Executions and 197 artifact triples, and confirms the
 failed Gate with zero calls. The exact rejected payload and key were intentionally not persisted,
-so its unique semantic cause is unavailable. The current transition permits only a credential-free
-S1 representation root-cause audit; role execution remains unauthorized.
+so its unique semantic cause is unavailable. v26.136 has now consumed that exact root-cause
+authorization with zero calls. Its 24-case classifier type-system audit shows that the classifier
+scans casefolded Mapping keys for the `reasoning` substring
+but not scalar values. The exact four-field Action Grammar is compatible in 16/16 synthetic and
+141/141 historical exact payload controls. Across 972 regenerated S1 Prompts, however, two model-
+visible metadata keys overlap the classifier predicate in every phase. This is a deterministic
+lexical hazard, not a causal attribution for the omitted historical response. The unique rejection
+cause remains unidentified, the formal Gate remains failed, and role execution remains
+unauthorized. The current transition permits only fresh privacy-safe Prompt-metadata
+rematerialization and credential-free Runner preflight.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.136 S1 Privacy Compatibility Root-Cause Decision
+
+Finance v26.136 consumed only the credential-free S1 representation root-cause audit authorized
+by v26.135. Before classifier or Prompt analysis it replayed 3,873/3,873 files: all 3,864
+v26.135 transitive entries, all eight v26.135 outputs, and its exact implementation. It read no
+credential, constructed no model client, made zero Provider or Stage 2 Provider calls, used zero
+GPU jobs, exposed zero role sources, and created zero empirical, Capability, Reachability, or
+State Mapping rows.
+
+The formal v26.134-v26.135 decision is retained. Entry quantity passed at 31/32, all 12/12
+Mechanism x Path Strategy cells had a qualified entry, and all 197 calls retained exact-model,
+Thinking, Usage, transport, and Raw-lineage integrity. Privacy compliance remained 31/32 under
+the frozen zero-failure policy, so the overall noncompensatory Qualification Gate remains failed.
+The omitted row is not recovered, inferred, parsed, or reclassified; its content-identifiable
+Entry range remains `[31, 32]`.
+
+The classifier type-system audit exercises 24 synthetic cases with 24/24 expected outcomes. The
+frozen classifier recursively scans Mapping keys and Mapping/List/Tuple descendants, applies
+casefolded substring matching for `reasoning`, exempts exactly three telemetry keys, and does not
+scan scalar values. `analysis`, `thought`, `rationale`, `plan`, and `reason` keys do not by
+themselves trigger it.
+
+The exact Action Grammar and classifier are structurally compatible. All four Grammar fields are
+scalar strings whose names do not match the classifier predicate. Sixteen of sixteen synthetic
+legal payloads and all 141 immutable exact v26.134 Action payloads pass both Grammar and privacy.
+Across eight Grammar-neighborhood mutations, zero privacy-rejected payload is Grammar-valid. The
+reverse implication does not hold: four mutation classes are privacy-accepted but Grammar-invalid.
+This supports no Grammar, Candidate, S1, classifier, model, Thinking, resource, or counter change.
+
+The Prompt audit regenerates 324 states under Primary, ABI Rescue, and Semantic Recovery for 972
+exact S1 Prompts. All hashes, byte counts, state reconstructions, and intended four-field public
+responses match; all 972 intended responses pass privacy. The exact output prefixes and shape
+rules contain zero positive analysis/reasoning/rationale/thought/plan requests. However every
+Prompt contains two model-visible keys that the same classifier would reject if echoed:
+
+~~~text
+private_reasoning_reused
+response_grammar.private_reasoning_content
+~~~
+
+Their 1,944 occurrences make a full Prompt-payload echo privacy-rejected in 972/972 deterministic
+controls. Both values explicitly prohibit private reasoning, so this is a model-visible lexical
+hazard, not a positive request for reasoning. It does not establish that the historical rejected
+response echoed either key.
+
+The 31 accepted first-entry rows all retain the exact four-field key set, scalar-string values,
+Mapping depth one, and 326-byte canonical payload. Their first accepted phase partition is 26
+Primary and five ABI Rescue; Candidate counts are four for nine rows and six for 22. Eight
+neighbor mutations per row produce 248 controls: 93 privacy rejections, 155 privacy acceptances,
+31 Grammar acceptances, 217 Grammar rejections, zero privacy-rejected Grammar-valid rows, and 124
+privacy-accepted Grammar-invalid rows.
+
+The strongest supported root-cause result is therefore
+`prompt_classifier_lexical_hazard_found_without_historical_causal_identification`. It does not
+claim S1 general unreadability or role-scale readability, a historical classifier false positive,
+private-reasoning leakage, or Prompt echo. The unique historical rejection cause remains
+unidentified and the overall Gate remains failed.
+
+All sixteen destructive mutations fail closed. Formal and independent builds reproduce all ten
+files byte for byte. Focused Pytest passes 2/2 in 45.78 seconds; the adjacent v26.134-v26.136
+regression passes 6/6 in 198.91 seconds. Focused Ruff and Mypy pass. Package-wide Mypy checks 453
+source files and retains only the three pre-existing v26.70/v26.129 diagnostics, with zero
+v26.136 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_s1_privacy_root_cause_audit_report:5ac66c4c25b021406c49628c67aa06b6aa776c59550810d8cc7c9e06e1451b65`;
+- source replay:
+  `finance_v26_s1_root_cause_source_replay:73b74723dbe69790539112ad00f66db5574f3774ed0ca90c7146663a79386352`;
+- classifier type system:
+  `finance_v26_privacy_classifier_type_system_audit:32f846dc58a1675fd1aeaf309ff6c152c9ad974674d6f5d513e35b573043039b`;
+- Action Grammar/privacy compatibility:
+  `finance_v26_action_grammar_privacy_compatibility:3fb0a2947cd134fc1ae212a4136bbbfe6b83bf4143f5079f764aa80aefdcbe4a`;
+- Prompt/privacy compatibility:
+  `finance_v26_s1_prompt_privacy_compatibility:75867629bcee4ff4f86ed6072b1faac379759559e015a510bf467aa14d25f1af`;
+- accepted-entry boundary:
+  `finance_v26_s1_accepted_entry_boundary_audit:a158d3888081b2035f208d93acc26ab6569d006dee556d20f368f92c72ef4f33`;
+- Gate decomposition:
+  `finance_v26_s1_qualification_gate_decomposition:bd47399403171f962acd6fcbb09af4bdb8d3480aacf6f2cf7bb4564fee995ac3`;
+- root-cause decision:
+  `finance_v26_s1_privacy_root_cause_decision:60054e8f265c13fb3f056403e3f053299a7dfc75f77720b178301f70634a4792`;
+- transition:
+  `finance_v26_s1_privacy_root_cause_transition:a8ebfd89e76d2717c58577d6e08286b737ccd18b961832abad09ced217077b74`.
+
+The only permitted transition is:
+
+~~~text
+fresh_s1_privacy_safe_prompt_metadata_rematerialization_and_runner_preflight_only
+~~~
+
+The successor may remove or rename only the two classifier-sensitive model-visible Prompt
+metadata keys while preserving their privacy-prohibition semantics. It must preserve the exact
+S1 projection, Candidate authority/presentation, Action and Final Grammars, privacy classifier,
+model and Thinking profile, Completion and rollout bounds, recovery channels, Ordinary Detour
+allowance, and zero-Provider Stage 2. It requires fresh Prompt, TaskPackage, Path, Contract,
+Manifest, Job, Runner, execution, and report identities plus a complete credential-free Runner
+preflight before any Provider call. Provider calls, v26.134 rerun or recovery, historical
+reclassification, role execution, Capability, Reachability, State Mapping, classifier relaxation,
+training, release, and production Contribution remain forbidden. See
+`docs/finance_v26_136_s1_privacy_compatibility_root_cause_audit.md`.
 
 ## v26.134-v26.135 S1 Representation Qualification Execution And Audit Decision
 
@@ -254,6 +364,12 @@ recovery, role Provider calls, Capability or Reachability execution, State Mappi
 reclassification, S1/Candidate/Grammar/model/Thinking/resource/recovery/counter changes,
 training, release, and production Contribution remain forbidden. See
 `docs/finance_v26_134_v26_135_s1_representation_qualification_execution_and_audit.md`.
+
+That root-cause-only transition has now been consumed by v26.136. The v26.134-v26.135 execution,
+formal failed Gate, 31 accepted rows, and privacy-minimized rejected row remain immutable. v26.136
+identifies a deterministic Prompt/classifier lexical hazard without recovering the omitted content
+or assigning its historical cause. The current transition is the fresh privacy-safe Prompt-
+metadata rematerialization and credential-free Runner preflight recorded above.
 
 ## v26.133 S1 Representation Qualification Identity And Runner Preflight Decision
 

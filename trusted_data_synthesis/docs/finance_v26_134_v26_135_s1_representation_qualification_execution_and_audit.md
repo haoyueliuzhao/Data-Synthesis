@@ -326,3 +326,21 @@ rows. It may not recover or infer the omitted payload or rejected key. Provider 
 rerun or recovery, role Provider calls, Capability or Reachability execution, State Mapping,
 historical reclassification, S1/Candidate/Grammar/model/Thinking/resource/recovery/counter
 changes, training, release, and production Contribution remain forbidden.
+
+## v26.136 Successor Clarification
+
+The root-cause-only transition above has now been consumed by v26.136 without a credential,
+Provider call, historical rerun, recovery, or reclassification. The formal v26.134-v26.135 Gate
+remains failed. Entry quantity and all twelve cell-coverage components passed, Instrument integrity
+passed, and Privacy compliance failed under the frozen zero-failure requirement.
+
+The successor proves that every exact four-field Action payload is accepted by the frozen privacy
+classifier. It also regenerates all 972 S1 Action Prompts and finds two classifier-sensitive model-
+visible metadata keys in every phase: `private_reasoning_reused` and
+`response_grammar.private_reasoning_content`. This is a deterministic lexical hazard, but it does
+not identify the omitted historical payload/key or prove Prompt echo, classifier false positive,
+or private-reasoning leakage.
+
+The current transition permits only fresh privacy-safe Prompt-metadata rematerialization and a
+complete credential-free Runner preflight. See
+`docs/finance_v26_136_s1_privacy_compatibility_root_cause_audit.md`.
