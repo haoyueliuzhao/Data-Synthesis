@@ -136,13 +136,140 @@ but not scalar values. The exact four-field Action Grammar is compatible in 16/1
 visible metadata keys overlap the classifier predicate in every phase. This is a deterministic
 lexical hazard, not a causal attribution for the omitted historical response. The unique rejection
 cause remains unidentified, the formal Gate remains failed, and role execution remains
-unauthorized. The current transition permits only fresh privacy-safe Prompt-metadata
-rematerialization and credential-free Runner preflight.
+unauthorized. v26.137 has now consumed the exact credential-free repair. It replaces only the
+two classifier-sensitive model-visible metadata Keys under one strong v2 Prompt Schema while
+retaining the privacy prohibition as a scalar instruction. Across 972 fresh Action Prompts the
+sensitive-Key count is zero, full Prompt-payload echo has zero privacy rejection, and exact
+State, Candidate order, reference Proposal, Action Grammar, and Stage 2 Commit are preserved.
+The fresh 24-TaskPackage, 48-Path, 32-Job chain and privacy-first Runner pass a 256-local-call
+fixture, 17 controls, and 28 destructive mutations with zero real Provider or Stage 2 Provider
+calls. The historical failed Gate and unidentified rejection cause remain unchanged. The current
+transition authorizes only the exact fresh 32-Job privacy-safe S1 representation-qualification
+execution; role execution remains unauthorized.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.137 S1 Privacy-Safe Prompt Metadata And Runner Preflight Decision
+
+Finance v26.137 consumed only the fresh privacy-safe Prompt-metadata rematerialization and
+credential-free Runner-preflight transition authorized by v26.136. Before Prompt compilation or
+Runner construction it replayed 3,884/3,884 files: all 3,873 v26.136 transitive entries, all ten
+v26.136 outputs, and its exact implementation. It independently rebuilt all ten predecessor
+outputs byte for byte. Credential lookup, real model-client construction, Provider calls, Stage
+2 Provider calls, GPU jobs, empirical rows, role-source exposure, and historical reclassification
+are zero.
+
+The Host-internal privacy fields remain unchanged. Their model-visible projections move from:
+
+~~~text
+private_reasoning_reused
+response_grammar.private_reasoning_content
+~~~
+
+to:
+
+~~~text
+hidden_model_content_reused
+response_grammar.hidden_model_content
+~~~
+
+under `prospective_role_scalable_semantic_action_prompt.v2`. The privacy prohibition remains the
+scalar instruction `Do not include or reuse private chain-of-thought or hidden reasoning in the
+public JSON response.` The frozen classifier still scans Mapping Keys for the casefolded
+`reasoning` substring, does not scan scalar values, and retains all 24/24 v26.136 type-system
+controls. The exact four-field Action Grammar and classifier are unchanged.
+
+Across 324 registered S1 states and Primary, ABI Rescue, and Semantic Recovery, v26.137 jointly
+compiles 972 predecessor/successor Prompt pairs. The predecessor has 1,944 classifier-sensitive
+Key occurrences and 972/972 full Prompt-payload echo privacy rejections. The successor has zero
+sensitive-Key occurrences, zero Prompt-payload echo privacy rejections, and 972/972 Prompt-
+payload echo privacy acceptances. Echo remains Action-Grammar-invalid. All 972 intended exact
+Action payloads pass both Grammar and privacy.
+
+Exact state reconstruction, Candidate set and presentation order, reference Proposal, and
+reversible same-action Stage 2 Commit each pass 972/972. All 972 Prompt hashes are fresh and all
+differences are confined to the v2 protocol value and the two typed metadata projections. Full-
+object fallback remains zero.
+
+The fresh identity chain contains one Prompt metadata Contract, 24 engineering-only
+TaskPackages, 48 Paths, one Resource Contract, one Qualification Contract, one 32-Job Manifest,
+one Outcome Contract, one Runner, and fresh prospective execution and report identities. Direct
+predecessor overlap is zero for TaskPackages, Paths, and Jobs. All 32 assignments and seeds are
+preserved. Candidate presentation explicitly binds the predecessor qualification Job as its salt
+parent, and every Job separately binds its direct predecessor Path and underlying engineering
+Path. Frozen role-source Job count and new role exposure are zero.
+
+The unchanged 60K/21/23/24/1.12M resource bounds contain every new Path. The maximum Action
+Primary, ABI Rescue, and Semantic Recovery Prompts are 14,035, 14,139, and 14,135 bytes. Final
+maxima remain 5,152 and 5,286 bytes. The maximum registered complete-path bound is 340,428
+tokens. Completion remains 16,384 plus the one-token accounting margin, and the independent
+ABI/Semantic/Transport/Ordinary-Detour allowances remain 1/1/1/1.
+
+The 32-Job scripted Runner fixture closes 32/32 Jobs and first-action interfaces in 256 local
+calls: 224 exact privacy-safe Action payloads and reversible Commits, 192 public Observations,
+32 exact Final payloads, 256 Envelope/Projection pairs, and 32 complete Raw zero-call recoveries.
+All twelve Mechanism x Path cells are covered. Seventeen controls pass for both recovery channels,
+Transport replacement, privacy rejection, Usage boundaries, one and two Detours, answer-validity
+separation, Raw recovery, orphan blocking, S1-only execution, role-opportunity separation,
+exact resources, Prompt-Key noninterference, privacy-policy preservation, historical immutability,
+and Prompt-echo Grammar separation. All 28 destructive mutations fail closed.
+
+The prospective Outcome Contract retains at least 24/32 first-action entries, 12/12 cell coverage,
+and zero Instrument, Privacy, model, Thinking, or Usage failures as a noncompensatory Gate. A
+future Privacy rejection under the clean Key surface is preclassified as model privacy-
+noncompliance and fails closed; classifier relaxation, Alias handling, output-field stripping,
+Host repair, or repeated Prompt tuning until 32/32 are forbidden. Any Entry decrease is evidence
+under the new Prompt condition and cannot borrow the historical 31/32 result.
+
+Focused Pytest passes 2/2 in 101.12 seconds, including independent reconstruction and byte
+comparison of all sixteen formal files. The adjacent v26.136-v26.137 regression passes 4/4 in
+143.40 seconds. Focused Ruff and Mypy pass. Package-wide Mypy checks 454 source files and retains
+only the three pre-existing v26.70/v26.129 diagnostics, with zero v26.137 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_privacy_safe_s1_prompt_preflight_report:f3521184c8788b69eaffdba3d655ddeca236e6ce92dcee5fb0edfb5fc996ad3d`;
+- source replay:
+  `finance_v26_privacy_safe_s1_source_replay:f28ea80580092d958029f0f68881d62d7c23699917f703c69d09c7ebc9be350a`;
+- Prompt metadata Contract:
+  `finance_v26_privacy_safe_prompt_metadata_contract:13b048dc569ea491edbf4f6dbf636240634537e55f3f30a50e6cfb8410c4da72`;
+- TaskPackage catalog:
+  `finance_v26_privacy_safe_s1_task_package_catalog:a374b63b6d302639f5ea5dd9e04f8ade004e77ad8147348c445dea181d308ebe`;
+- Path catalog:
+  `finance_v26_privacy_safe_s1_path_catalog:6237687d3c3848ff95c0e0f6da0c1d54b4da3d167bc893fb147ded9992388492`;
+- Prompt/privacy noninterference:
+  `finance_v26_prompt_privacy_noninterference_audit:7d5e97c6185c2152fdbd2dd70e4309dbc134f912b735f9941f38b9082a34da52`;
+- Resource Contract:
+  `finance_v26_privacy_safe_s1_resource_contract:872b73c646ea0cee8b7175f89ac93b12c0eaa39a57824fe186c4c549319ef4fd`;
+- Qualification Contract:
+  `finance_v26_privacy_safe_s1_qualification_contract:8a30551b948f00c97dd977f5cbff681276dfc754198a89c1d6b30eb02724d8e1`;
+- Manifest:
+  `finance_v26_privacy_safe_s1_qualification_manifest:2dbf821ed38afcab1a11523b20908bf712a559f2eaa3e1c400932785c62c9bd0`;
+- Outcome Contract:
+  `finance_v26_privacy_safe_s1_outcome_contract:79e46804cab483f04ebaead93a4b11cd6b2055df604585c291262cd8dc9b1518`;
+- Runner Contract:
+  `finance_v26_privacy_safe_s1_runner_contract:0ddeec858f4c7d9d3453de485bf4d034fe78be6ec421010d03909615f9c38963`;
+- transition:
+  `finance_v26_privacy_safe_s1_transition:c28fd435b662b42b8d5f58e4f7157d1272e86c92fa3f3b280c7d2451f1f13636`.
+
+The only permitted transition is:
+
+~~~text
+privacy_safe_s1_representation_qualification_execution_only
+~~~
+
+The successor may execute only the exact fresh 32-Job engineering Manifest under the exact v2
+Prompt, Runner, Resource, Qualification, and Outcome Contracts after replaying the complete
+v26.137 chain. Provider calls are authorized only for that denominator. Role Provider calls,
+Capability, Reachability, State Mapping, v26.134 rerun or recovery, historical reclassification,
+rejected-content inference, classifier/Grammar/Candidate/S1/model/Thinking/resource/recovery/
+Detour changes, Alias handling, output repair, training, release, and production Contribution
+remain forbidden. See
+`docs/finance_v26_137_s1_privacy_safe_prompt_metadata_and_runner_preflight.md`.
 
 ## v26.136 S1 Privacy Compatibility Root-Cause Decision
 
@@ -245,6 +372,12 @@ preflight before any Provider call. Provider calls, v26.134 rerun or recovery, h
 reclassification, role execution, Capability, Reachability, State Mapping, classifier relaxation,
 training, release, and production Contribution remain forbidden. See
 `docs/finance_v26_136_s1_privacy_compatibility_root_cause_audit.md`.
+
+That transition has now been consumed by v26.137. The v26.136 hazard, historical-causality
+boundary, failed Gate, and all identities remain immutable. v26.137 removes the two sensitive
+model-visible Key names under fresh identities and passes its credential-free preflight; it does
+not reclassify the historical row or establish that the lexical hazard caused it. The current
+transition is the exact fresh privacy-safe S1 qualification execution recorded above.
 
 ## v26.134-v26.135 S1 Representation Qualification Execution And Audit Decision
 

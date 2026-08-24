@@ -344,3 +344,20 @@ or private-reasoning leakage.
 The current transition permits only fresh privacy-safe Prompt-metadata rematerialization and a
 complete credential-free Runner preflight. See
 `docs/finance_v26_136_s1_privacy_compatibility_root_cause_audit.md`.
+
+
+## v26.137 Successor Clarification
+
+The v26.136 privacy-safe Prompt-metadata preflight transition has now been consumed by v26.137.
+It removes the two classifier-sensitive model-visible Key names under a fresh strong Prompt
+Schema, preserves the privacy prohibition as a scalar instruction, and rematerializes a complete
+fresh 24-TaskPackage, 48-Path, 32-Job, Contract, Manifest, Runner, execution, and report chain.
+
+All 972 new Action Prompts contain zero classifier-sensitive Keys and retain exact State,
+Candidate order, reference Proposal, Action Grammar, and Stage 2 Commit. The 32-Job scripted
+fixture and all controls pass with zero real Provider calls. None of this changes the historical
+v26.134 privacy-rejected row, failed Gate, or unidentified historical cause.
+
+The current transition permits only the exact fresh 32-Job privacy-safe S1 representation-
+qualification execution. See
+`docs/finance_v26_137_s1_privacy_safe_prompt_metadata_and_runner_preflight.md`.

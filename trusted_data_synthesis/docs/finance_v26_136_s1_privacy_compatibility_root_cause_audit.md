@@ -258,3 +258,34 @@ separate while preserving the noncompensatory Privacy Gate.
 Provider calls, v26.134 rerun or recovery, historical reclassification, role Provider calls,
 Capability or Reachability execution, State Mapping, classifier relaxation, training, release,
 and production Contribution remain forbidden.
+
+
+## v26.137 Successor Clarification
+
+The credential-free transition above has now been consumed by v26.137. The v26.136 classifier,
+Grammar, Prompt-hazard, accepted-boundary, Gate, historical-causality, and transition artifacts
+remain immutable.
+
+v26.137 replaces only the two classifier-sensitive model-visible metadata Keys under one fresh
+strong Prompt Schema, retains the privacy prohibition as a scalar instruction, and rematerializes
+fresh Prompt, 24-TaskPackage, 48-Path, two-Contract, 32-Job, Manifest, Runner, execution, and
+report identities. Across 972 new Action Prompts the classifier-sensitive Key count is zero, full
+Prompt-payload echo has zero privacy rejections, and exact State, Candidate order, reference
+Proposal, Action Grammar, and Stage 2 Commit are preserved in 972/972 cases.
+
+Its 32-Job scripted Runner fixture completes in 256 local calls; all 17 controls and 28 destructive
+mutations pass with zero real Provider calls and zero Stage 2 Provider calls. This is a positive
+credential-free preflight, not evidence that the repaired Keys caused the historical rejection or
+that S1 has now passed empirical qualification.
+
+The current transition is:
+
+```text
+privacy_safe_s1_representation_qualification_execution_only
+```
+
+Only the exact fresh v26.137 32-Job engineering Manifest may be executed. Role Provider calls,
+Capability, Reachability, State Mapping, historical rerun or reclassification, classifier or
+Grammar relaxation, output repair, training, release, and production Contribution remain
+forbidden. See
+`docs/finance_v26_137_s1_privacy_safe_prompt_metadata_and_runner_preflight.md`.
