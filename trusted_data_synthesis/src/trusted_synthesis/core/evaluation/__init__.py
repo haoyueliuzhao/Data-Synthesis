@@ -38,8 +38,44 @@ if TYPE_CHECKING:
         TrainingUtilityResult,
         UtilityCohort,
     )
+    from trusted_synthesis.core.evaluation.valid_only_state_mapping import (
+        ValidOnlyMappingAuthorization,
+        ValidOnlyMappingResult,
+        ValidOnlyStateMapperContract,
+        authorize_independently_valid_trajectory_mapping,
+        make_valid_only_state_mapper_contract,
+        map_independently_valid_trajectory_to_state,
+    )
 
 _EXPORTS = {
+    "VALID_ONLY_STATE_MAPPING_VERSION": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "VALID_ONLY_STATE_MAPPING_VERSION",
+    ),
+    "ValidOnlyMappingAuthorization": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "ValidOnlyMappingAuthorization",
+    ),
+    "ValidOnlyMappingResult": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "ValidOnlyMappingResult",
+    ),
+    "ValidOnlyStateMapperContract": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "ValidOnlyStateMapperContract",
+    ),
+    "authorize_independently_valid_trajectory_mapping": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "authorize_independently_valid_trajectory_mapping",
+    ),
+    "make_valid_only_state_mapper_contract": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "make_valid_only_state_mapper_contract",
+    ),
+    "map_independently_valid_trajectory_to_state": (
+        "trusted_synthesis.core.evaluation.valid_only_state_mapping",
+        "map_independently_valid_trajectory_to_state",
+    ),
     "CandidateQualityEvaluator": (
         "trusted_synthesis.core.evaluation.evaluator",
         "CandidateQualityEvaluator",
