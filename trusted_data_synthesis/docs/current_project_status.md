@@ -212,10 +212,91 @@ reclassification. This is prospective schema and estimand evidence, not an empir
 or permission to create a new Population. The current transition permits only a credential-free
 joint Measurement Support plus Verifier vNext preflight.
 
+v26.149 has now consumed that credential-free joint-preflight authorization. It replays 7,332
+files, independently rebuilds all twelve v26.148 outputs, and binds the v26.146 Measurement
+Support Contract to the v26.148 Verifier vNext Contract in one exact state machine. Nineteen
+computed fixtures and twenty destructive mutations pass. Failed or progress Observations make
+zero Baseline calls, successful no-progress invokes Baseline exactly once, and typed support
+exit, missing endpoint, Instrument failure, and Privacy rejection branches all retain null
+validity with zero task-Verifier calls. Provider, Stage 2 Provider, GPU, historical
+reclassification, Capability/Reachability identity, and State Mapping counts are zero. The current
+transition permits only fresh Capability-only identity rematerialization and a complete
+credential-free Runner preflight.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.149 Joint Measurement Support And Verifier vNext Preflight Decision
+
+Finance v26.149 consumed only `measurement_support_verifier_vnext_joint_preflight_only`. Before
+loading the joint Runtime it replayed 7,332/7,332 files: all 7,318 v26.148 transitive bindings,
+all twelve v26.148 formal outputs, and two exact v26.149 implementation files. It independently
+rebuilt all twelve predecessor outputs byte for byte. Historical terminals and labels remain
+unchanged; credential, client, Provider, Stage 2 Provider, GPU, role-identity, and State Mapping
+counts are zero.
+
+The exact prospective state machine is Public State, model Action, Stage 2 Commit, public
+Observation, Measurement Support, model endpoint, validity eligibility, Base validity, Mechanism
+qualification, and Qualified validity. Only a row satisfying `M and O and R and P` invokes the
+task Verifier, and it does so exactly once. Measurement Support exits, missing endpoints,
+Instrument failures, and Privacy rejections retain null Base, Mechanism, and Qualified values,
+zero task-Verifier calls, and zero State Mapping eligibility. None becomes model-invalid.
+
+The joint Contract preserves the v26.146 public-state-only Baseline Action Set and the complete
+v26.148 Answer Semantics, Final Grammar, responsibility, noninterference, Base, Mechanism, and
+Qualified contracts. The Host cannot insert an Action, answer, Citation, or mechanism event;
+Stage 2 retains zero Provider calls.
+
+Nineteen local positive fixtures pass. Ten are model-qualified, five are model-unqualified, and
+four are null eligibility branches. Exact Decimal string/JSON-number equivalence passes while a
+true numeric difference fails Base validity. Base-valid/Mechanism-invalid and
+Base-invalid/Mechanism-valid remain separately observable. All four mechanisms are covered.
+Failed Observations and successful progress Observations skip Baseline with zero calls;
+successful no-progress invokes Baseline once; successor-unavailable failure yields a typed
+Measurement Support exit with no Baseline call.
+
+All twenty destructive mutations fail closed, including Host Citation or mechanism insertion,
+support-exit/model-invalid conversion, failed-Observation/Detour conversion, Oracle read,
+Candidate deletion, floating tolerance, hardcoded noninterference, task verification on null
+rows, historical reclassification, pre-Qualified State Mapping, Privacy answer inference,
+Instrument task verification, mixed parent identity, Stage 2 Provider routing, and Host action
+repair.
+
+Focused v26.149 Pytest passes 4/4 in 961.09 seconds with independent byte reproduction of all
+nine formal files. The v26.148-v26.149 adjacent non-rebuild regression passes 6/6 in 3.34 seconds.
+Focused Ruff and Mypy pass. Package-wide Mypy checks 473 source files and retains only the three
+pre-existing v26.70/v26.129 diagnostics, with zero v26.149 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_joint_support_verifier_preflight_report:6f86c51ee9e3229b088bf772d741ea10f0da4befd995bc97f74ba33d3e8e338e`;
+- source replay:
+  `finance_v26_joint_support_verifier_source_replay:64c0a60a070e8d35f47603b2648c23601d1754f86ce8bf3b26f5564af6847163`;
+- joint Contract:
+  `prospective_joint_support_validity_contract:40c88c6abb299b83ebae7644f3f5e3d964cdbf0a61bfe4cd3ae520a5593714b2`;
+- positive fixture:
+  `finance_v26_joint_positive_fixture:5ea6911039c4781b3ae410b895ed9dada2f9780f165f1dc0dc615e134ba127f5`;
+- destructive audit:
+  `finance_v26_joint_support_verifier_destructive:d20aebd656e5eff509fd78d9a3253a22756809ccaac85cf0341c77ad2ab29bd4`;
+- transition:
+  `finance_v26_joint_support_verifier_transition:f8065841b124eba0a4313e5a6b5a7569604153dab122cc27c7f5ac312696ddc3`.
+
+The only permitted transition is:
+
+```text
+fresh_capability_population_and_runner_rematerialization_preflight_only
+```
+
+The successor may create only a fresh Capability-only identity chain and complete a
+credential-free Runner preflight under every frozen source, task, mechanism, Tier, S1,
+Candidate, Prompt, Grammar, model/Thinking, resource, recovery, Detour, privacy, Support, and
+Verifier Contract. Provider calls, Capability execution, Reachability identity or execution,
+historical rerun or reclassification, State Mapping, Host repair, threshold changes, training,
+release, and production Contribution remain forbidden. See
+`docs/finance_v26_149_joint_measurement_support_verifier_preflight.md`.
 
 ## v26.148 Verifier vNext Contract Freeze Decision
 
