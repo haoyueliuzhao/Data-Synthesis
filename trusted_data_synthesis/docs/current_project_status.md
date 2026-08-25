@@ -221,12 +221,127 @@ exit, missing endpoint, Instrument failure, and Privacy rejection branches all r
 validity with zero task-Verifier calls. Provider, Stage 2 Provider, GPU, historical
 reclassification, Capability/Reachability identity, and State Mapping counts are zero. The current
 transition permits only fresh Capability-only identity rematerialization and a complete
-credential-free Runner preflight.
+credential-free Runner preflight. v26.150 has now consumed that exact transition under an
+authoritative type-complete v2 build. It freezes a new model-unexposed 12-task Capability
+Population before loading Support or Verifier, closes fresh 12-TaskPackage, 12-Path, 96-Job,
+Contract, Manifest, Runner, execution, and report identities, and creates zero Reachability
+identity. Across 111 states, a Runtime-prefix-replayed census gives 493/493 typed Candidate
+events, 16 one-Detour branches, and zero registered support exits. The 60K/21/23/24/1.12M
+Contract contains the 49,684-byte Prompt, 677,638-token reference Path, and 743,963-token
+one-Detour maxima. A 96-Job fixture closes exact Path sequences, nested model-owned Final,
+96 joint Verifier invocations, and 96 Raw recoveries in 984 local calls; 30 Runner controls and
+34 destructive checks pass with zero Provider or Stage 2 calls. The immutable v1 build is
+superseded only because package-wide Mypy found eleven local inference diagnostics; v1/v2
+source semantic, Path, Support, and fixture projections match. The current transition authorizes
+only the exact authoritative v2 96-Job fresh Capability execution.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.150 Fresh Capability Population And Runner Preflight Decision
+
+Finance v26.150 consumed only
+`fresh_capability_population_and_runner_rematerialization_preflight_only`. Before source
+construction it replayed 7,343/7,343 files: all 7,332 v26.149 transitive bindings, all nine
+v26.149 outputs, and the two exact v26.150 implementation files. It independently rebuilt all
+nine predecessor outputs byte for byte. Credential lookup, real client construction, Provider
+calls, Stage 2 Provider calls, GPU jobs, empirical rows, Reachability identities, State Mapping,
+historical rerun, and historical reclassification are zero.
+
+The stage persisted its Sampling Frame, fresh Capability Population, and source-selection audit
+before loading Measurement Support, Verifier vNext, or any resource value. The 70-task Frame uses
+401 Evidence identities. Selection excludes 27,323 Evidence identities: 27,173 historical plus
+the 150 used by the old Capability and Reachability Populations. It selects one model-unexposed
+task in each of the twelve Mechanism x Tier cells, with 75 Evidence identities and zero overlap on
+task, source-task, Evidence, Evidence Version, core semantic, task, mechanism-instance, or source-
+record identity. Historical validity, Verifier passability, model outcomes, and resources are not
+selection inputs.
+
+The complete fresh chain contains twelve TaskPackages, twelve `structured_direct` Paths, one
+resource Contract, one execution Contract, one 96-Job Manifest with 96 distinct Seeds, one outcome
+Contract, one Runner, and fresh prospective execution and report identities. Each task has eight
+unconditional replicas. Every Job directly binds the source-selection audit used by runtime
+Candidate presentation. Old TaskPackage, Path, Job, and Seed overlaps are zero. Reachability
+identity count is zero.
+
+Across 111 registered states, a credential-free Candidate census executes all 493 legal branches.
+Each branch first replays the exact registered Commit prefix into a fresh Runtime and requires the
+replayed Observation tuple to match before executing the candidate. All 493 branches return typed
+Measurement Support decisions, Host exceptions are zero, and registered support exits are zero.
+Eighteen failed Observations and all successful progress Observations make zero Baseline calls.
+All 28 successful no-progress classification points call Baseline once; sixteen are Ordinary
+Detours.
+
+The unchanged 60K/21/23/24/1.12M resource Contract contains the 49,684-byte maximum Prompt,
+677,638-token maximum reference Path, and 743,963-token conservative one-Detour bound. Qualified
+Final Primary and Rescue maxima are 9,995 and 10,114 bytes. Completion accounting remains 16,385,
+and ABI, Semantic, Transport, and Ordinary-Detour allowances remain independently one each.
+
+The 96-Job scripted fixture closes 96/96 exact registered Path State, Commit, Observation, and
+Support-decision sequences. It produces 888 exact Action payloads, 792 Observations, 888 Support
+decisions, 96 exact nested model-owned Final payloads, 96 one-time joint task-Verifier calls, 96
+Qualified-valid local fixtures, and 96 byte-stable Raw recoveries in 984 local calls. Sensitive
+Prompt Keys, real Provider calls, and Stage 2 Provider calls are zero.
+
+Thirty Runner controls pass for both model recovery channels, Transport replacement, Privacy,
+Usage 16,384/16,385/16,386, wrong answer, missing Citation, flat Final Alias, one and two
+Detours, zero registered support exits, nested Final responsibility, Raw recovery, Provider-
+artifact orphan blocking, exact resources, joint validity, zero State Mapping, and zero-Provider
+Stage 2. All 34 destructive checks fail closed.
+
+The initial v1 build remains immutable and is superseded because package-wide Mypy found eleven
+local dictionary-inference diagnostics after focused checks and its 4/4 rebuild test had passed.
+The type-complete v2 adds an explicit Support aggregate annotation and fresh run/source/Runner/
+execution/report identities while preserving the pre-outcome source and selection salts. A
+computed audit matches v1/v2 selected Evidence and Evidence Versions, Mechanism/Tier assignments,
+semantic signatures, Path metrics, Support metrics, and all fixture metrics. Neither build made
+a Provider call or produced an empirical row.
+
+Focused authoritative v2 Pytest passes 4/4 in 1,492.57 seconds with independent byte reproduction
+of all twenty files. The final v26.149-v26.150 non-rebuild regression passes 6/6 in 3.74 seconds.
+Focused Ruff and Mypy pass. Package-wide Mypy checks 475 source files and retains only the three
+pre-existing v26.70/v26.129 diagnostics, with zero v26.150 diagnostics.
+
+The authoritative v2 identities are:
+
+- report:
+  `finance_v26_fresh_capability_preflight_report:2bb15c140a21217cc411610d7c1d836fa108cdade5dc366de129696caa10605c`;
+- report SHA-256:
+  `2f8e82cf528944b7fc39c589804e499142f321576e0fc39b579e9048a7f0e128`;
+- Source Population:
+  `finance_v26_fresh_capability_population:c19cd6ed1b9a32b9e57949b522cbba4058fab5a0aa4a8b9ea455b22e4aaa44c4`;
+- TaskPackage catalog:
+  `finance_v26_fresh_capability_task_catalog:850a044102bca78f2b3df2865757e2862746dfd2628d28c14f5548b4b9cfbda5`;
+- Path catalog:
+  `finance_v26_fresh_capability_path_catalog:439067fc0d1634e58f4f4fec267020be3684469a46dd4a7076ee6d6c2302b128`;
+- Support Closure:
+  `finance_v26_fresh_capability_support_closure:865fdab330dc0ffb6d17d12267aeef8af486c54cfa8ad6dc541484c6fc428a4d`;
+- execution Contract:
+  `finance_v26_fresh_capability_execution_contract:3a002a6984104e667b903f7236090f38889685592486ba98ace718d4c7278bda`;
+- Manifest:
+  `finance_v26_fresh_capability_manifest:c6b4273ed98ac592582313ef5a1320eabd575b55f5df26ff2fb8649e65570bf0`;
+- outcome Contract:
+  `finance_v26_fresh_capability_outcome_contract:0e3d6f0421c8810490fe5018c8ebcc907d815d7344b29239ef8b5e0543b336a1`;
+- Runner Contract:
+  `finance_v26_fresh_capability_runner_contract:b28e4aff958b71084096babd08ead64db3387c1e5b745609933378104469bbfb`;
+- transition:
+  `finance_v26_fresh_capability_transition:fca32d1348996ee4234291536002f1c3dda170644e169aadf212588e9ba0aa0c`.
+
+The only permitted transition is:
+
+```text
+fresh_capability_execution_only
+```
+
+The successor may execute only the exact authoritative v2 96-Job Manifest after replaying its
+complete chain and confirming an unopened denominator with no Raw or Provider orphans. The
+Measurement Gate requires 96/96 complete Raw and model endpoints plus zero Support, Instrument,
+Privacy, exact-model/Thinking/Usage, budget-no-call, and unresolved Transport failures. Any
+failure blocks the Capability estimand and Reachability regardless of model success. Reachability
+identity or execution and State Mapping remain unauthorized until an independent postrun audit.
+See `docs/finance_v26_150_fresh_capability_population_and_runner_preflight.md`.
 
 ## v26.149 Joint Measurement Support And Verifier vNext Preflight Decision
 
