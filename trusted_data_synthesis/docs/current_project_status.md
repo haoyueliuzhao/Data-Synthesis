@@ -191,10 +191,108 @@ GPU, Verifier-change, Final-Grammar-change, new-Capability-identity, and histori
 counts are zero. The current transition permits only a read-only historical Capability Validity
 Decomposition Audit over the 93 frozen complete Raw model outcomes.
 
+v26.147 has now consumed that read-only authorization. It replays 7,304 files, independently
+rebuilds all nine v26.146 outputs, reprojects all 93 frozen complete Raw model outcomes, and keeps
+the three support exits null and outside every validity denominator. Historical labels remain
+seventeen valid and 76 invalid with zero reclassification. Across 54 observed Final endpoints,
+29 fail old exact answer projection and eleven of those are exact Decimal representation-only
+differences. All 54 old citation passes were derived from Runtime-selected Evidence, while zero
+historical model answers contain the prospective model-owned `answer.citations` language. Under
+the explicitly counterfactual candidate, diagnostic Base-valid and Qualified-valid counts are
+zero and the old mechanism evaluator succeeds on 75/93 rows. These are contract diagnostics, not
+a new Capability estimate or a model-ability claim. The current transition permits only a
+credential-free Verifier vNext Contract freeze.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.147 Historical Capability Validity Decomposition Decision
+
+Finance v26.147 consumed only the
+`historical_capability_validity_decomposition_audit_only` transition authorized by v26.146.
+Before loading a historical Raw row it replayed 7,304/7,304 files: all 7,294 v26.146 transitive
+bindings, all nine direct v26.146 outputs, and its exact implementation. It independently rebuilt
+the complete v26.146 formal directory in an empty temporary directory; all nine files were
+byte-identical. Credential lookup, model-client construction, Provider calls, Stage 2 Provider
+calls, GPU jobs, historical reclassification, new role identities, and State Mapping are zero.
+
+The audit independently reprojects all 93 frozen v26.141 complete Raw model outcomes against
+their exact Jobs and operational records. It keeps the three v26.144
+`ordinary_replan_reference_unavailable` endpoints in a separate typed partition with
+`measurement_support_available=false`, `model_endpoint_observed=false`, and every validity field
+null. They do not enter Base, Mechanism, or Qualified validity denominators and are not converted
+to model-invalid or Instrument failures.
+
+Every complete Raw row retains its historical terminal, historical independent-validity label,
+historical Verifier identity and version, plus a separate counterfactual diagnostic vector for
+Action ABI, Program closure, terminal verification, Final ABI, answer representation and
+identity, operation lineage, Evidence support, Runtime support, model Citation, verification
+support, target mechanism, postcompletion control, privacy, Instrument integrity, and an exact
+artifact-bound noninterference audit. Historical labels remain exactly seventeen valid and 76
+invalid; `historical_reclassified=false` and `state_mapping_eligible=false` on every row.
+
+Fifty-four model outcomes reach Final. Twenty-nine fail the historical exact answer projection;
+eleven of those become equal only after exact recursive `Decimal(str(value)).normalize()`
+canonicalization, with no floating tolerance. All 54 old citation passes are reconstructed as
+Runtime-selected support. The original model `answer` values are flat objects and zero contain
+the prospective nested `answer.result` and `answer.citations` language. Runtime support and model
+Citation are therefore reported separately: Runtime support is complete on 54/54 Final rows,
+model Citation on 0/54, and all seventeen historical-valid rows lack model-owned Citation under
+the counterfactual responsibility rule.
+
+Under that prospective diagnostic candidate, Base-valid and Qualified-valid counts are zero;
+the old mechanism evaluator independently succeeds on 75/93 rows. These values do not erase the
+seventeen historical valid labels and do not measure model ability under a new Contract. The 76
+historical-invalid first-failure partition is one Action ABI, 22 Program closure, ten terminal
+verification, six Final ABI, and 37 answer-schema rows. Every later diagnostic remains available;
+the partition is a Funnel localization, not an exclusive causal attribution.
+
+The task-first report contains twelve independent tasks with eight design endpoints each. It
+records 93 complete Raw outcomes and three null support exits, including Failure Recovery Easy at
+6+2 and Hard at 7+1. Historical, diagnostic Base, old-mechanism, and diagnostic Qualified
+numerators are reported as `x/8` for each task before Mechanism and Tier aggregation. Rollouts are
+secondary repeated measures and are never treated as 96 independent tasks. Neither 17/93 nor
+17/96 is an exact Capability estimate.
+
+Twenty destructive mutations fail closed, including historical relabeling, null-to-false
+conversion, Runtime Citation substitution, floating tolerance, hardcoded noninterference,
+endpoint imputation, rollout-as-task aggregation, Provider execution, new role identities, and
+early State Mapping. Focused v26.147 Pytest passes 3/3 in 937.88 seconds with independent exact
+byte reproduction of all ten formal files. The selected v26.146-v26.147 adjacent regression
+passes 5/5 in 583.18 seconds. Focused Ruff and Mypy pass. Package-wide Mypy checks 467 source
+files and retains only the three pre-existing v26.70/v26.129 diagnostics, with zero v26.147
+diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_validity_decomposition_report:fddc664b2d8e45788b0f7e55333041ed82e7dae62368e2b27d22ec8baa7a69a5`;
+- source replay:
+  `finance_v26_validity_decomposition_source_replay:7526462bc7b0240590b844f1dd00b26c7f9a06c245cbff9d60e40d195a0bc436`;
+- decomposition Catalog:
+  `finance_v26_validity_decomposition_catalog:36229a89e5f7ea5e3de8b4f6453a6e0a14a4f96a10f25c6cfc4c717c1287b2d2`;
+- task-level summary:
+  `finance_v26_task_level_validity_summary:8fe9b61322b09cfb3880e55417aa84fab67f00d2b4307a4499c2e28c46c70d2d`;
+- failure localization:
+  `finance_v26_historical_failure_localization:73fa1e8e9f7c187a240f1c084e010a5d2bde0734b045cc8e9d217221dc6fcb0c`;
+- transition:
+  `finance_v26_validity_decomposition_transition:e6ce3161658116772a3951f5823cada820e5bc7b911e9694dc6475d3ea43c9b2`.
+
+The only permitted transition is:
+
+```text
+verifier_vnext_contract_freeze_only
+```
+
+The successor may freeze only a prospective answer-semantics core, exact nested model Final
+language, artifact-bound noninterference, and separate Base, Mechanism, and Qualified Verifier
+reports. It must remain credential-free and cannot reclassify a historical row. Provider calls,
+new Capability Population or identity materialization, Capability or Reachability execution,
+Reachability identity materialization, State Mapping, training, release, and production
+Contribution remain forbidden. See
+`docs/finance_v26_147_capability_validity_decomposition_audit.md`.
 
 ## v26.146 Measurement-Support Boundary Redesign Decision
 
