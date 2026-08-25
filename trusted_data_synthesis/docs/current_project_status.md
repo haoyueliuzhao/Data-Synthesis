@@ -249,10 +249,116 @@ all four mechanisms have at least one independent Task with a Qualified trajecto
 estimation is authorized, but the current transition permits only an independent credential-free
 postrun audit. Reachability identity or execution and State Mapping remain unauthorized.
 
+v26.152 has now consumed that exact credential-free postrun authorization. It replays
+10,125/10,125 files before result loading, independently parses all 96 Raw Executions and 879
+Envelope/Projection/Transport triples, and rebuilds every reached Prompt, authority Runtime
+replay, fourteen-check Base report, Mechanism report, Qualified report, checkpoint projection,
+task summary, mechanism summary, and eighteen report aggregates. All 96 projections, joint-result
+identities, and Prompt audits match v26.151 exactly. The independent noncompensatory Gate passes;
+31 Base-valid, 74 Mechanism-qualified, and 31 Qualified-valid rows and all four mechanisms with
+independent-task Qualified support are confirmed. No v26.151 projection, Gate, or summary helper
+is used as an outcome oracle. Provider, Stage 2 Provider, GPU, Reachability identity, and State
+Mapping counts are zero. The current transition authorizes only a fresh Reachability identity
+chain and credential-free Runner preflight over the exact frozen model-unexposed Reachability
+Source Population; Reachability execution and State Mapping remain forbidden.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.152 Fresh Capability Independent Postrun Audit Decision
+
+Finance v26.152 consumed only `fresh_capability_postrun_audit_only`. Before loading a Capability
+result it replayed 10,125/10,125 files: all 7,364 v26.151 transitive source bindings, all 2,760
+v26.151 execution files, and its exact implementation. Credential lookup, real client
+construction, Provider calls, Stage 2 Provider calls, GPU jobs, Reachability identities, State
+Mapping rows, historical pooling, and historical reclassification are zero.
+
+The independent artifact audit parses all 96 Raw Executions, 96 checkpoint rows, 96 aggregate
+rows, 879 Provider Envelopes, 879 public Projections, and 879 Transport invocation certificates.
+All 879 privacy-first pairs validate, all Transport certificates bind their Raw Job, 2,733 Raw
+and Provider descriptors match exact bytes, and the checkpoint, aggregate, and Raw parent sets
+match 96/96.
+
+For every Job, the audit reconstructs the typed Measurement Support decision; exact-model,
+Thinking, Usage, request, resource, transport, privacy, and reversible-Commit integrity; every
+reached Action and Final Prompt; authority-preserving Runtime replay; Decimal-aware answer and
+reference semantics; all fourteen Base checks; all four Mechanism event languages; and the joint
+Base, Mechanism, Qualified, endpoint, and State-Mapping-eligibility result. It does not call the
+v26.151 projector, Measurement Gate, or summary helpers. Checkpoint projection, aggregate
+projection, joint-result identity, and Prompt-audit matches are each 96/96.
+
+The independent noncompensatory Measurement Gate exactly reproduces:
+
+~~~text
+complete Raw Executions                       96/96
+observed model endpoints                      96/96
+Measurement Support exits                         0
+Instrument failures                               0
+Privacy failures                                  0
+exact-model / Thinking / Usage failures           0
+typed budget no-calls                              0
+unresolved Transport failures                      0
+~~~
+
+All twelve task summaries, all four mechanism summaries, and eighteen report aggregates match.
+The terminal partition remains 58 completed model endpoints and 38 model-result failures; the
+latter remain 37 exact qualified-Final Grammar failures and one length truncation. Programs close
+73 times, terminal verification completes 61 times, and exact qualified Final payloads occur 58
+times. Base, Mechanism, and Qualified counts remain 31/74/31. Their Task-primary fractions remain
+`0.3229166666666666666666666667`, `0.7708333333333333333333333333`, and
+`0.3229166666666666666666666667`.
+
+The mechanism Qualified counts remain Context-conditioned Action 4/24, Failure Recovery 8/24,
+Semantic Reconciliation 8/24, and State-dependent Stopping 11/24. Each mechanism has at least one
+independent Task with a Qualified trajectory, so the minimum-support condition for a Reachability
+preflight passes. It establishes nonzero Development support, not a stable mechanism-population
+success rate or a Reachability outcome.
+
+Twenty-four destructive controls fail closed. The transition binds the exact already frozen,
+model-unexposed Reachability Source Population
+`finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99`.
+This prevents post-Capability Reachability source selection. Future State Mapping for the current
+role requires `V_qualified is True`, while static Compiler Paths remain target conditions rather
+than empirical states.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_fresh_capability_postrun_audit_report:933a824cf81fda37f2a965a8b61640b4bc772058f04b25cd9f6033a9bb965a17`;
+- source replay:
+  `finance_v26_fresh_capability_postrun_source_replay:18ee52cef4999139882ce6b252a41661a3fb01010c742bb446fe0b54edd4ca00`;
+- Provider artifact audit:
+  `finance_v26_fresh_capability_independent_provider_artifacts:6e83b0ecdac29228685244123826332cebfd7bf2880372b71c66989b26849f63`;
+- independent projection:
+  `finance_v26_fresh_capability_independent_projection:4f53840e68af4f9dfbbdc9e27d5199cb2aa1beeff3b155d86255835418e76b0b`;
+- independent Measurement Gate:
+  `finance_v26_fresh_capability_independent_measurement_gate:9bd9cb10a2f52121e55be41f3c044935643a3201c88eed189c501032df180ad3`;
+- independent Estimand:
+  `finance_v26_fresh_capability_independent_estimand:a8f269bb9b1d05ea7d4ff67a1a357046686c5bd6d8485033afa999a4c0c899ec`;
+- validity decomposition:
+  `finance_v26_fresh_capability_validity_decomposition:9d6a9b5a6d5f88f68527f766aa7009552bddee7f476b1d35049f1d6089ecbf9a`;
+- transition:
+  `finance_v26_fresh_capability_postrun_transition:303b783806e77e47c9ddd84aa5fb00c879abecd8b08e17c04e0e9b2981bb89d3`.
+
+Focused Pytest passes 4/4 in 130.37 seconds with 9/9 formal outputs reproduced byte for byte.
+The adjacent v26.151-v26.152 regression passes 7/7 in 130.68 seconds. Focused Ruff and Mypy
+pass. Package-wide Mypy checks 477 source files and retains only the three pre-existing
+v26.70/v26.129 diagnostics, with zero v26.152 diagnostics. The only permitted transition is:
+
+~~~text
+fresh_reachability_identity_chain_and_runner_preflight_only
+~~~
+
+The successor may bind only the exact frozen model-unexposed Reachability Population to fresh
+TaskPackage, Path, Contract, Manifest, Job, Runner, prospective execution, and report identities
+under all unchanged Support, S1, Candidate, Prompt, Grammar, privacy, model/Thinking, resource,
+recovery, Detour, Verifier, and qualified-validity contracts. It must pass a complete
+credential-free Runner preflight. Reachability Provider calls or execution, source reselection,
+Capability rerun or pooling, State Mapping identity or execution, Host repair, training, release,
+and production Contribution remain forbidden. See
+`docs/finance_v26_152_fresh_capability_independent_postrun_audit.md`.
 
 ## v26.151 Fresh Capability Execution And Raw-Only Aggregation Recovery Decision
 
@@ -347,6 +453,11 @@ State Mapping, task/threshold/protocol/model/resource changes, historical poolin
 reclassification, Host repair, training, release, and production Contribution remain forbidden.
 See
 `docs/finance_v26_151_fresh_capability_execution_and_raw_only_aggregation_recovery.md`.
+
+That exact postrun-only transition has now been consumed by v26.152. The v26.151 online results,
+failed aggregate directory, Raw-only recovery, Gate, estimands, and identities remain immutable.
+The current transition is the fresh Reachability identity-chain and credential-free Runner
+preflight authorization recorded above.
 
 ## v26.150 Fresh Capability Population And Runner Preflight Decision
 
