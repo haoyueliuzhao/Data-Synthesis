@@ -175,13 +175,148 @@ zero Provider calls. v26.145 independently rebuilt all 26 execution files and cl
 as 93 frozen model outcomes plus three measurement-support boundary exits. Seventeen of the 93
 model outcomes are independently valid and all four mechanisms appear, but this incomplete model
 denominator is descriptive only. The exact Capability Gate fails, no exact task-weighted
-Capability estimate exists, and Reachability remains unauthorized. The current transition permits
-only credential-free Capability measurement-support boundary redesign.
+Capability estimate exists, and Reachability remains unauthorized. v26.146 has now consumed that exact
+credential-free redesign authorization. It replays
+7,294 files, rebuilds all seven v26.145 outputs byte for byte, and freezes a prospective typed
+Measurement Support Contract plus a public-state-only Baseline Action Set. Across 48 registered
+Paths, 522 state instances, 3,306 unique typed states, and 3,089 locally executed Candidate
+events, Host exceptions and failed/progress Observation Baseline calls are zero. Of 1,667
+failed Observations, 1,587 have selectable successors and are future `not_required`; eighty have
+no selectable successor and end typed support-unavailable, split into 76 `calculator_contract`
+and four `normalize_metric_unit_period_contract` rows. All 510 successful no-progress events
+invoke Baseline exactly once and 378 are classified as Ordinary Detours. The three historical
+orphan shapes independently produce future-only `failed_observation`/`not_required` with zero
+Baseline calls, while every historical terminal remains unchanged. Provider, Stage 2 Provider,
+GPU, Verifier-change, Final-Grammar-change, new-Capability-identity, and historical-reclassification
+counts are zero. The current transition permits only a read-only historical Capability Validity
+Decomposition Audit over the 93 frozen complete Raw model outcomes.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.146 Measurement-Support Boundary Redesign Decision
+
+Finance v26.146 consumed only the credential-free
+`capability_measurement_support_boundary_redesign_only` transition authorized by v26.145. Before
+loading the new design it replayed 7,294/7,294 files: all 7,283 v26.145 transitive source and
+execution bindings, all seven direct v26.145 outputs, and four exact v26.146 implementation
+files. It independently rebuilt the complete v26.145 formal directory in an empty temporary
+directory; all seven files were byte-identical. The historical 96-endpoint partition, 93 model
+outcomes, seventeen valid and 76 invalid historical labels, and three support exits remain
+unchanged.
+
+The stage adds a generic immutable Measurement Support core and a prospective Runtime adapter.
+The historical `prompt_only_reference_proposal`, v26.140 Runner, v26.141 execution, and every
+historical artifact remain byte-immutable. The new adapter is not wired into an online Runner.
+It returns only `available`, `not_required`, or `unavailable`, and an unavailable result is
+neither model-invalid nor Instrument failure.
+
+Baseline classification is now lazy. Failed Observations with a selectable successor, successful
+Observations that change the frozen public Progress Vector, Terminal Verification, Final Commit,
+and non-public Commit are `not_required` and make zero Baseline calls. Only successful
+no-progress events invoke Baseline. A Baseline resolver exception becomes a privacy-minimized
+typed `baseline_classifier_exception`; Host exception text does not cross the public ABI.
+
+The old single reference Action is replaced by a content-addressed public Baseline Action Set.
+For unresolved inputs it retains visible Candidates for the first unresolved public symbol whose
+acquisition mode has not already succeeded for that symbol. For later states it retains the
+schema-compatible Candidates for the first executable Operation node, the terminal-verification
+Candidates with maximum visible Evidence coverage, or the visible Final Candidate. The policy
+reads no Path condition, role, Oracle, Gold, correct answer, future trajectory, target Evidence,
+expected arguments, or reference workflow. It is not model-visible and cannot modify Candidate
+order or select, replace, or repair a model Action.
+
+The exhaustive zero-call closure reconstructs all 48 already-frozen role Paths and 522 registered
+state instances. Those instances contain 477 unique registered state identities. Across Primary,
+ABI Rescue, Semantic Recovery, every visible Candidate, every local Commit and public Runtime
+Observation, blocked-action states, Terminal Verification, and one-Detour successors, it closes
+3,306 unique typed states and 3,089 Candidate event rows. All 3,306 states have an independently
+recomputed nonempty Baseline Set that is an exact subset of the visible Candidate set. There are
+501 unique Semantic Recovery states.
+
+The event partition is:
+
+```text
+failed public Observations                         1,667
+  selectable successor, future not_required        1,587
+  no selectable successor, typed unavailable          80
+successful Observations with Progress                864
+successful Observations without Progress             510
+Terminal or Final events                              48
+total                                               3,089
+```
+
+Failed and progress Observation Baseline-call counts are zero. All 510 successful no-progress
+events invoke Baseline exactly once; 132 select a Baseline Action and 378 select a non-Baseline
+Action classified as one Ordinary Detour. The decision partition is 510 `available`, 2,499
+`not_required`, and eighty `unavailable`. Baseline-unavailable events are zero.
+
+The all-Candidate audit newly localizes eighty failed public Operation events whose exact public
+successor has no selectable Action. They emit typed
+`public_replan_state_unavailable_after_failed_observation` before a later Provider call. Their
+public Runtime errors are 76 `calculator_contract` and four
+`normalize_metric_unit_period_contract`; twenty occur on the existing Capability static surface
+and sixty on the existing Reachability static surface. They are zero-generation counterfactual
+Candidate classifications, not online model selections, Capability or Reachability results, or
+permission to change Candidate authority. Typed closure therefore passes, but it is not a claim
+that every legal trajectory lies within support. A future Capability Measurement Gate still
+requires zero empirical support exits.
+
+The three exact v26.142 orphan shapes have real successor States. Under the future Contract all
+three are `not_required` with reason `failed_observation`, make zero Baseline calls, and permit a
+later model replan. This is future-only behavior. The v26.141 orphans and v26.144 support-exit
+terminals remain unchanged and are not reclassified.
+
+Sixteen destructive mutations fail closed for Baseline deletion or insertion, non-visible or
+duplicate Baseline Actions, failed/progress classifier invocation, failed Observation Detour
+classification, support-exit reclassification, a larger Detour allowance, historical rewrite,
+Verifier or Final Grammar change, new Capability identities, Provider or Stage 2 Provider calls,
+and State Mapping. Provider, Stage 2 Provider, credential, client, GPU, empirical-row, historical-
+reclassification, Verifier-change, Final-Grammar-change, and new role-identity counts are zero.
+
+Focused v26.146 Pytest passes 3/3 in 584.71 seconds with an independent rebuild and byte comparison
+of all nine formal files. On the final tree, focused v26.145 Pytest passes 2/2 in 353.30 seconds,
+so the selected adjacent set passes 5/5. Focused Ruff check and format, PyCompile, and Mypy pass.
+Package-wide Mypy checks 466 source files and retains only the three pre-existing v26.70/v26.129
+diagnostics, with zero v26.146 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_measurement_support_redesign_report:aa2d6a079ef8ebe97d7d10fa90a6fcfb844faa39310a26e2b4a1e8120bfa41c5`;
+- source replay:
+  `finance_v26_measurement_support_source_replay:11468347f9f2fa06ac8d1858e20a8413fe6fcbfca3ae4be99d0e1666b02bcf86`;
+- predecessor integrity:
+  `finance_v26_measurement_support_predecessor_integrity:b3cbb8726c78daa0f951821f4cc296b523f5df6f0d99c110c7b9e66cae7fff6b`;
+- Measurement Support Contract:
+  `prospective_measurement_support_contract:b49e6a5d66ee7d423ef9944739b30a516d5df84003e157055e99faefdb84398b`;
+- Baseline authority:
+  `finance_v26_public_baseline_authority_audit:ef276425a9786d7edd8301320ffc4218f4dd40f9cfc484eba06f43f56c2779c3`;
+- typed closure Census:
+  `finance_v26_measurement_support_closure_census:8ba3f71d4db54e0d66da5f2b84fbaa31a303a9ef5cfb941e85df7a1e594812b1`;
+- orphan future-only control:
+  `finance_v26_orphan_future_support_control:86c93302b864eedf2339bb15533d424dd50267b6094280f9fb2c2368562911ea`;
+- destructive audit:
+  `finance_v26_measurement_support_destructive:fa5212e0c3929028a1f80f60426a752e892284f97b738c447d4a22c04aafba33`;
+- transition:
+  `finance_v26_measurement_support_transition:b72ddd97cb2440fea1eddb3553cefea584abc7168762c06321ba2a864ea5e982`.
+
+The only permitted transition is:
+
+```text
+historical_capability_validity_decomposition_audit_only
+```
+
+The successor may read only the 93 frozen complete Raw model outcomes and the three frozen support
+exits. It must preserve every historical terminal and historical independent-validity label while
+emitting separate counterfactual diagnostic base-validity, mechanism-qualification, and
+qualified-validity fields. The three support exits remain validity-unevaluable and outside every
+validity denominator. Verifier and Final Grammar changes, new Capability Population or identity
+materialization, Provider calls, Capability execution, Reachability identity or execution, State
+Mapping, training, release, and production Contribution remain forbidden. See
+`docs/finance_v26_146_measurement_support_boundary_redesign.md`.
 
 ## v26.141-v26.145 Capability Replacement Failure, Recovery, And Audit Decision
 
@@ -293,6 +428,10 @@ production Contribution remain forbidden. See
 `docs/finance_v26_141_v26_142_capability_execution_failure_and_audit.md`,
 `docs/finance_v26_143_orphan_support_exit_recovery_preflight.md`, and
 `docs/finance_v26_144_v26_145_orphan_support_exit_recovery_execution_and_audit.md`.
+
+That design-only transition has now been consumed by v26.146. All v26.141-v26.145 artifacts,
+terminals, and descriptive model labels remain immutable. The current transition is the read-only
+historical Capability Validity Decomposition Audit recorded above.
 
 ## v26.140 Privacy-Safe S1 Capability Identity And Runner Preflight Decision
 
