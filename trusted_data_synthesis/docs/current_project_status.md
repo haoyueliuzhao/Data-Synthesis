@@ -203,10 +203,95 @@ zero and the old mechanism evaluator succeeds on 75/93 rows. These are contract 
 a new Capability estimate or a model-ability claim. The current transition permits only a
 credential-free Verifier vNext Contract freeze.
 
+v26.148 has now consumed that Contract-only authorization. It replays 7,318 files, independently
+rebuilds all ten v26.147 outputs, and freezes exact Decimal answer semantics, the nested
+model-owned Final language, artifact-bound noninterference, `M and O and R and P` eligibility,
+separate Base and Mechanism reports, and `V_qualified = V_base and Q_mech`. Seventeen local
+Contract fixtures and 24 destructive mutations pass with zero Provider calls and zero historical
+reclassification. This is prospective schema and estimand evidence, not an empirical Flash result
+or permission to create a new Population. The current transition permits only a credential-free
+joint Measurement Support plus Verifier vNext preflight.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.148 Verifier vNext Contract Freeze Decision
+
+Finance v26.148 consumed only `verifier_vnext_contract_freeze_only`. Before loading a new
+Contract it replayed 7,318/7,318 files: all 7,304 v26.147 transitive bindings, all ten v26.147
+formal outputs, and four exact v26.148 implementation files. It independently rebuilt all ten
+v26.147 outputs byte for byte. Historical terminals and labels remain unchanged; credential,
+client, Provider, Stage 2 Provider, GPU, role-identity, and State Mapping counts are zero.
+
+Validity is now evaluable only under `M and O and R and P`: Measurement Support, model endpoint
+observation, Instrument integrity, and privacy compliance must all pass. Support exits, missing
+endpoints, Instrument failures, and Privacy rejections retain null validity and cannot invoke the
+task Verifier or become model-invalid.
+
+Task-Schema-bound Decimal fields use exact `Decimal(str(value)).normalize()` semantics. Exact JSON
+and canonical semantic equality remain separate; non-Decimal reference identity is exact, and
+floating tolerance, fuzzy equality, aliases, missing paths, booleans, and non-finite values fail
+closed.
+
+The only model Final language is exact nested `answer.result`, nonempty unique
+`answer.citations[].evidence_id`, and `rationale_summary`. The model owns all three. Runtime
+selected support is separate and cannot satisfy model Citation. Host metadata is limited to
+stage, protocol, terminal state, and terminal commit; Host semantic insertion is forbidden.
+
+`BaseTrajectoryValidityReport` freezes fourteen task checks including Action ABI, Program and
+lineage closure, Runtime and required Evidence support, model Citation, terminal verification,
+Final ABI, answer schema and semantics, reference identity, verification support, postcompletion
+control, and an exact noninterference artifact binding. `MechanismQualificationReport` is
+separate: Context requires action change under a frozen Context difference; Reconciliation
+requires all target Evidence normalized and consumed; Recovery requires typed failure, changed
+action, and later success; Stopping requires verification, stopping, and no later violation.
+Extra legal Normalize is diagnostic rather than automatic failure, and a Recovery bypass may be
+Base-valid but Mechanism-invalid.
+
+`QualifiedTrajectoryValidityReport` binds the two exact parent reports and freezes
+`V_qualified = V_base and Q_mech`. For the current mechanism-conditioned role, State Mapping is
+eligible if and only if Qualified validity is true. The legacy
+`final_answer_semantically_valid` alias is forbidden.
+
+Seventeen local fixtures pass for Decimal behavior, Final grammar, all Base/Mechanism
+combinations, support-exit null handling, all four mechanism boundaries, artifact-bound
+noninterference, and metadata-only Host Envelope. All 24 destructive mutations fail closed.
+These are Contract-consistency fixtures, not online model behavior or a joint Runner preflight.
+
+Focused v26.148 Pytest passes 4/4 in 946.04 seconds with exact byte reproduction of all twelve
+formal files. The selected v26.147-v26.148 structural regression passes 5/5 in 3.26 seconds.
+Focused Ruff and Mypy pass. Package-wide Mypy checks 471 source files and retains only the three
+pre-existing v26.70/v26.129 diagnostics, with zero v26.148 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_verifier_vnext_freeze_report:3d75e805997c2511626db93cafc095a2a21bf988d6269cfdb6bd9e953788ff75`;
+- Answer Semantics Contract:
+  `finance_v26_answer_semantics_contract:0d2849e2edf093cdf405a5612a7135d9c9ed114a709a92977239bf153c2a901f`;
+- Eligibility Contract:
+  `finance_v26_validity_eligibility_contract:ae18cf12332c1b3c024cc452bc7bc46ed9f0beaa00b92f69146bef802bbb7f6e`;
+- Mechanism Contract:
+  `finance_v26_mechanism_qualification_contract:8af9bfd59843b799a0d70c30d9900077b4588b5096d67a0995100d6514c4821f`;
+- Final Grammar:
+  `prospective_qualified_final_response_grammar:2370b603f1243c500e19ef0b45e6bdfa32434a7b4242b0c884ee977dd169d3fc`;
+- Verifier vNext Contract:
+  `finance_v26_verifier_vnext_contract:7302fab2d9c0942cddc712c3724d45c138c9f5c806b620e98976ad21eb676790`;
+- transition:
+  `finance_v26_verifier_vnext_transition:eab4f37ae38bc033981ab72b2b38a4fc939a52d8e353349a540baca35b4172d9`.
+
+The only permitted transition is:
+
+```text
+measurement_support_verifier_vnext_joint_preflight_only
+```
+
+The successor may implement only the combined state-machine fixtures and destructive preflight
+with zero Provider calls. New Capability or Reachability identities, any online execution,
+historical reclassification, State Mapping, training, release, and production Contribution remain
+forbidden. See `docs/finance_v26_148_verifier_vnext_contract_freeze.md`.
 
 ## v26.147 Historical Capability Validity Decomposition Decision
 
