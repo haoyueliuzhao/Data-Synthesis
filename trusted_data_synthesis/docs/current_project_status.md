@@ -362,7 +362,7 @@ and production Contribution remain forbidden. See
 
 ## v26.151 Fresh Capability Execution And Raw-Only Aggregation Recovery Decision
 
-Finance v26.151 consumed only `privacy_safe_fresh_capability_execution_only`, the exact
+Finance v26.151 consumed only `fresh_capability_execution_only`, the exact
 96-Job Manifest authorized by v26.150. Before the original online run it replayed 7,364/7,364
 files and independently rebuilt all twenty v26.150 outputs byte for byte. The 96 Jobs preserve
 twelve first-exposure model-unexposed Tasks, all twelve Mechanism x Tier cells, eight unconditional
