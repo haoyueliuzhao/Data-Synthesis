@@ -4,10 +4,8 @@ import argparse
 import hashlib
 import json
 import tempfile
-import threading
 from collections import Counter, defaultdict
 from collections.abc import Callable, Mapping, Sequence
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -87,8 +85,11 @@ from trusted_synthesis.runtime.agent.schema import AgentModelConfig
 RUN_ID: Final = preflight.PROSPECTIVE_EXECUTION_RUN_ID
 REPORT_RUN_ID: Final = preflight.PROSPECTIVE_REPORT_RUN_ID
 PREFLIGHT_DIR: Final = preflight.OUTPUT_DIR
-OUTPUT_DIR: Final = (
+FAILED_EXECUTION_DIR: Final = (
     "artifacts/vtdo_experiment/finance_v26_151_fresh_capability_execution_v2_20260825"
+)
+OUTPUT_DIR: Final = (
+    "artifacts/vtdo_experiment/finance_v26_151_fresh_capability_raw_recovery_v3_20260826"
 )
 IMPLEMENTATION_PATH: Final = (
     "src/trusted_synthesis/experiments/vtdo_experiment/phase1_v26_fresh_capability_execution.py"
@@ -194,10 +195,25 @@ def _load(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _json_payload(value: Any) -> Any:
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="json")
+    if isinstance(value, Mapping):
+        return {str(key): _json_payload(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_payload(item) for item in value]
+    return value
+
+
 def _canonical_bytes(value: Any) -> bytes:
-    payload = value.model_dump(mode="json") if isinstance(value, BaseModel) else value
     return (
-        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+        json.dumps(
+            _json_payload(value),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        + "\n"
     ).encode("utf-8")
 
 
@@ -542,6 +558,50 @@ class MeasurementGateAudit(FrozenModel):
         return self
 
 
+class AggregationRecoveryAudit(FrozenModel):
+    audit_id: str = Field(min_length=1)
+    failed_execution_directory: str = FAILED_EXECUTION_DIR
+    recovered_execution_directory: str = OUTPUT_DIR
+    failed_source_sha256: Literal[
+        "66a27c0d22c3e4b6f01210f3ec4757a350137eb87a64ca3506f75a4a699f7409"
+    ] = "66a27c0d22c3e4b6f01210f3ec4757a350137eb87a64ca3506f75a4a699f7409"
+    failed_source_replay_id: Literal[
+        "finance_v26_fresh_capability_execution_source_replay:70b86aa5814b6e3a167c9f21005d7f83564c8e1e3adbb69ea2c67607ea6ca7b2"
+    ] = (
+        "finance_v26_fresh_capability_execution_source_replay:"
+        "70b86aa5814b6e3a167c9f21005d7f83564c8e1e3adbb69ea2c67607ea6ca7b2"
+    )
+    failed_checkpoint_sha256: Literal[
+        "fb50e711536016e4993408c3a4ed18a87c811f76e23d7cacc8cda8a7068601cb"
+    ] = "fb50e711536016e4993408c3a4ed18a87c811f76e23d7cacc8cda8a7068601cb"
+    recovered_checkpoint_sha256: str = Field(min_length=64, max_length=64)
+    compared_file_count: Literal[2734] = 2734
+    byte_identical_file_count: Literal[2734] = 2734
+    raw_execution_count: Literal[96] = 96
+    checkpoint_result_count: Literal[96] = 96
+    recomputed_result_count: Literal[96] = 96
+    provider_envelope_count: Literal[879] = 879
+    public_projection_count: Literal[879] = 879
+    transport_invocation_count: Literal[879] = 879
+    model_result_rerun_count: Literal[0] = 0
+    credential_lookup_attempted: Literal[False] = False
+    real_model_client_constructed: Literal[False] = False
+    provider_calls: Literal[0] = 0
+    stage_two_provider_calls: Literal[0] = 0
+    serializer_only_source_change: Literal[True] = True
+    status: Literal["complete_raw_aggregation_recovered"] = "complete_raw_aggregation_recovered"
+
+    @model_validator(mode="after")
+    def validate_audit(self) -> AggregationRecoveryAudit:
+        if self.recovered_checkpoint_sha256 != self.failed_checkpoint_sha256:
+            raise ValueError("v26.151 recovery checkpoint bytes changed")
+        if self.audit_id != _identity(
+            self, "audit_id", "finance_v26_fresh_capability_aggregation_recovery:"
+        ):
+            raise ValueError("v26.151 aggregation recovery identity changed")
+        return self
+
+
 class RawLineageAudit(FrozenModel):
     audit_id: str = Field(min_length=1)
     runner_contract_id: str = EXPECTED_RUNNER_CONTRACT_ID
@@ -594,6 +654,14 @@ class CapabilityExecutionReport(FrozenModel):
     joint_support_validity_contract_id: str = preflight.EXPECTED_JOINT_CONTRACT_ID
     raw_lineage_audit_id: str = Field(min_length=1)
     measurement_gate_audit_id: str = Field(min_length=1)
+    aggregation_recovery_audit_id: str = Field(min_length=1)
+    failed_execution_source_replay_id: str = (
+        "finance_v26_fresh_capability_execution_source_replay:"
+        "70b86aa5814b6e3a167c9f21005d7f83564c8e1e3adbb69ea2c67607ea6ca7b2"
+    )
+    raw_only_aggregation_recovery: Literal[True] = True
+    model_result_rerun_count: Literal[0] = 0
+    provider_calls_during_recovery: Literal[0] = 0
     exact_job_denominator: Literal[96] = 96
     distinct_task_count: Literal[12] = 12
     rollouts_per_task: Literal[8] = 8
@@ -800,7 +868,7 @@ def _rebuild_preflight(
     )
     if report.report_id != EXPECTED_PREFLIGHT_REPORT_ID:
         raise ValueError("v26.151 rebuilt predecessor report identity changed")
-    values = {
+    values: dict[str, Any] = {
         "exact_job_count": len(manifest.jobs),
         "distinct_task_count": len({item.task_package_id for item in manifest.jobs}),
         "mechanism_tier_cell_count": len(
@@ -1287,7 +1355,7 @@ def _online_noninterference(
 
     if matched != len(raw.attempts) or sensitive:
         raise ValueError("v26.151 online Prompt noninterference failed")
-    values = {
+    values: dict[str, Any] = {
         "qualified_final_grammar_id": prepared.grammar.grammar_id,
         "task_package_id": package.task_package_id,
         "job_id": raw.job_id,
@@ -1511,7 +1579,7 @@ def _mechanism_events(
 
 def _program_progress(record: Any, observations: Sequence[Any]) -> tuple[bool, bool]:
     _, _, program_closed, terminal_completed, verified = semantic_online._progress_diagnostic(  # noqa: SLF001
-        record, observations
+        record, cast(Any, tuple(observations))
     )
     return bool(program_closed and terminal_completed), bool(verified)
 
@@ -1526,7 +1594,7 @@ def _base_inputs(
     record = package.operational_record
     observations = raw.observations
     program_complete, _, runtime_to_node, operation_lineage = match_empirical_program(
-        record, observations
+        cast(Any, record), observations
     )
     expected = cast(dict[str, Any], record.projected_expected_output)
     observed_result: Mapping[str, Any] | None = None
@@ -1902,7 +1970,7 @@ def _task_summaries(
         base = sum(item.base_trajectory_validity is True for item in rows)
         mechanism = sum(item.mechanism_qualification is True for item in rows)
         qualified = sum(item.qualified_trajectory_validity is True for item in rows)
-        values = {
+        values: dict[str, Any] = {
             "task_package_id": task_package_id,
             "source_task_artifact_id": first.source_task_artifact_id,
             "mechanism_id": first.mechanism_id,
@@ -1955,7 +2023,7 @@ def _mechanism_summaries(
         rows = grouped[mechanism_id]
         if len(rows) != 3:
             raise ValueError("v26.151 Mechanism does not have three independent Tasks")
-        values = {
+        values: dict[str, Any] = {
             "mechanism_id": mechanism_id,
             "tasks_with_qualified_trajectory": sum(item.qualified_valid_count > 0 for item in rows),
             "base_valid_count": sum(item.base_valid_count for item in rows),
@@ -1984,6 +2052,54 @@ def _mechanism_summaries(
             )
         )
     return tuple(summaries)
+
+
+def _aggregation_recovery_audit(
+    *,
+    package_root: Path,
+    output_dir: Path,
+    recomputed_result_count: int,
+) -> AggregationRecoveryAudit:
+    failed = package_root / FAILED_EXECUTION_DIR
+    roots = (
+        "raw_execution",
+        "raw_provider_envelopes",
+        "public_payload_projections",
+        "transport_invocation_certificates",
+    )
+    relative_paths = [Path("fresh_capability_results.checkpoint.jsonl")]
+    for name in roots:
+        relative_paths.extend(
+            path.relative_to(failed)
+            for path in sorted((failed / name).glob("**/*.json"))
+            if path.is_file()
+        )
+    if len(relative_paths) != 2734:
+        raise ValueError("v26.151 recovery source file denominator changed")
+    for relative in relative_paths:
+        source = failed / relative
+        recovered = output_dir / relative
+        if not recovered.is_file() or source.read_bytes() != recovered.read_bytes():
+            raise ValueError(f"v26.151 recovery bytes changed: {relative}")
+    failed_source = failed / "failed_aggregation_implementation.py"
+    if _sha256(failed_source) != (
+        "66a27c0d22c3e4b6f01210f3ec4757a350137eb87a64ca3506f75a4a699f7409"
+    ):
+        raise ValueError("v26.151 failed implementation bytes changed")
+    checkpoint = output_dir / "fresh_capability_results.checkpoint.jsonl"
+    values: dict[str, Any] = {
+        "recovered_checkpoint_sha256": _sha256(checkpoint),
+        "recomputed_result_count": recomputed_result_count,
+    }
+    provisional = AggregationRecoveryAudit.model_construct(audit_id="pending", **values)
+    return AggregationRecoveryAudit(
+        audit_id=_identity(
+            provisional,
+            "audit_id",
+            "finance_v26_fresh_capability_aggregation_recovery:",
+        ),
+        **values,
+    )
 
 
 def _raw_lineage(
@@ -2016,7 +2132,7 @@ def _raw_lineage(
             raise ValueError("v26.151 Raw Lineage byte replay changed")
     provider_calls = sum(item.stage_one_provider_call_count for item in raws.values())
     transport = sum(item.transport_inclusive_invocation_count for item in raws.values())
-    values = {
+    values: dict[str, Any] = {
         "provider_call_count": provider_calls,
         "transport_invocation_count": transport,
         "provider_envelope_count": sum(
@@ -2047,6 +2163,7 @@ def _execution_report(
     results: Sequence[CapabilityMeasurementResult],
     lineage: RawLineageAudit,
     gate: MeasurementGateAudit,
+    recovery: AggregationRecoveryAudit,
 ) -> CapabilityExecutionReport:
     tasks = _task_summaries(results, authorized=gate.passed)
     mechanisms = _mechanism_summaries(tasks, authorized=gate.passed)
@@ -2058,11 +2175,12 @@ def _execution_report(
         (Decimal(item.estimated_cost_usd) for item in results),
         Decimal("0"),
     )
-    values = {
+    values: dict[str, Any] = {
         "source_replay_audit_id": prepared.source_replay.audit_id,
         "preexecution_binding_audit_id": prepared.preexecution_binding.audit_id,
         "raw_lineage_audit_id": lineage.audit_id,
         "measurement_gate_audit_id": gate.audit_id,
+        "aggregation_recovery_audit_id": recovery.audit_id,
         "terminal_counts": dict(
             sorted(Counter(item.raw_terminal_disposition for item in results).items())
         ),
@@ -2263,129 +2381,47 @@ def run_fresh_capability_execution(
             raise ValueError("v26.151 completed report crosses frozen bindings")
         return report
 
-    raw_recovery_jobs = [
-        item
-        for item in pending
-        if runner_vnext._raw_path(output_dir, item).exists()  # noqa: SLF001
-    ]
-    model_pending_jobs = [
-        item
-        for item in pending
-        if not runner_vnext._raw_path(output_dir, item).exists()  # noqa: SLF001
-    ]
-    for job in model_pending_jobs:
-        _assert_no_orphan_artifacts(output_dir, job)
+    if len(existing) != 96 or pending:
+        raise ValueError(
+            "v26.151 aggregation recovery requires the exact completed 96-Job checkpoint"
+        )
 
     print(
-        f"[v26.151] resuming {len(completed)}/96; "
-        f"raw-only recovery {len(raw_recovery_jobs)}; "
-        f"executing {len(model_pending_jobs)} Jobs with {workers} workers",
+        "[v26.151] resuming 96/96; recomputing 96 measurements from complete Raw; "
+        "executing 0 Jobs; constructing 0 model clients",
         flush=True,
     )
     raw_by_job: dict[str, runner_vnext.FreshCapabilityRawExecution] = {}
-    for job in jobs:
+    recomputed_by_job: dict[str, CapabilityMeasurementResult] = {}
+    for index, job in enumerate(jobs, start=1):
         raw_path = runner_vnext._raw_path(output_dir, job)  # noqa: SLF001
-        if raw_path.exists() and job.job_id in completed:
-            raw_by_job[job.job_id] = runner_vnext.FreshCapabilityRawExecution.model_validate(
-                _load(raw_path)
-            )
-
-    lock = threading.Lock()
-
-    def record_completion(
-        *,
-        job: preflight.FreshCapabilityJob,
-        result: CapabilityMeasurementResult,
-        raw: runner_vnext.FreshCapabilityRawExecution,
-        recovered: bool = False,
-    ) -> None:
-        with lock:
-            completed[job.job_id] = result
-            raw_by_job[job.job_id] = raw
-            ordered = tuple(completed[item.job_id] for item in jobs if item.job_id in completed)
-            _write_checkpoint(checkpoint_path, ordered)
-            label = " recovered" if recovered else ""
-            print(
-                f"[v26.151]{label} completed {len(completed)}/96 "
-                f"{job.job_id.rsplit(':', 1)[-1][:12]} "
-                f"mechanism={job.mechanism_id} tier={job.tier} "
-                f"terminal={raw.terminal_disposition} "
-                f"M={result.measurement_support_available} "
-                f"O={result.model_endpoint_observed} "
-                f"R={result.instrument_integrity} "
-                f"P={result.privacy_compliant} "
-                f"base={result.base_trajectory_validity} "
-                f"mechanism_q={result.mechanism_qualification} "
-                f"qualified={result.qualified_trajectory_validity} "
-                f"calls={result.provider_call_count}",
-                flush=True,
-            )
-
-    worker_failures: list[tuple[preflight.FreshCapabilityJob, str]] = []
-    with ThreadPoolExecutor(max_workers=max(1, min(workers, len(pending) or 1))) as executor:
-        futures = {
-            executor.submit(
-                _run_one_job,
-                job=job,
-                prepared=prepared,
-                client_factory=(None if job in raw_recovery_jobs else client_factory),
-                output_dir=output_dir,
-            ): job
-            for job in pending
-        }
-        for future in as_completed(futures):
-            job = futures[future]
-            try:
-                result, raw = future.result()
-            except Exception as error:
-                worker_failures.append((job, type(error).__name__))
-                print(
-                    "[v26.151] worker exception retained for Raw-only recovery: "
-                    f"job={job.job_id} type={type(error).__name__} "
-                    f"raw_persisted={runner_vnext._raw_path(output_dir, job).is_file()}",  # noqa: SLF001
-                    flush=True,
-                )
-                continue
-            record_completion(job=job, result=result, raw=raw)
-
-    unresolved: list[tuple[preflight.FreshCapabilityJob, str]] = []
-    for job, failure_type in worker_failures:
-        if not runner_vnext._raw_path(output_dir, job).is_file():  # noqa: SLF001
-            unresolved.append((job, failure_type))
-            continue
-        try:
-            result, raw = _run_one_job(
-                job=job,
-                prepared=prepared,
-                client_factory=None,
-                output_dir=output_dir,
-            )
-        except Exception as error:
-            unresolved.append((job, type(error).__name__))
-            print(
-                "[v26.151] Raw-only recovery failed closed: "
-                f"job={job.job_id} type={type(error).__name__}",
-                flush=True,
-            )
-            continue
-        record_completion(job=job, result=result, raw=raw, recovered=True)
-
-    if unresolved:
-        raise RuntimeError(
-            "v26.151 unresolved worker failures after every future drained: "
-            f"count={len(unresolved)} "
-            f"types={dict(sorted(Counter(kind for _, kind in unresolved).items()))}"
+        if not raw_path.is_file():
+            raise ValueError(f"v26.151 recovery Raw is missing: {job.job_id}")
+        raw = runner_vnext.FreshCapabilityRawExecution.model_validate(_load(raw_path))
+        result = project_measurement_result(
+            raw=raw,
+            job=job,
+            package=_package_for_job(prepared, job),
+            prepared=prepared,
+            output_dir=output_dir,
         )
-
-    results = tuple(completed[item.job_id] for item in jobs)
-    if len(results) != 96:
-        raise ValueError("v26.151 execution denominator is incomplete")
-    for job in jobs:
-        if job.job_id not in raw_by_job:
-            raw_by_job[job.job_id] = runner_vnext.FreshCapabilityRawExecution.model_validate(
-                _load(runner_vnext._raw_path(output_dir, job))  # noqa: SLF001
+        checkpoint_result = completed[job.job_id]
+        if _canonical_bytes(result) != _canonical_bytes(checkpoint_result):
+            raise ValueError(f"v26.151 recomputed measurement changed: {job.job_id}")
+        raw_by_job[job.job_id] = raw
+        recomputed_by_job[job.job_id] = result
+        if index % 12 == 0:
+            print(
+                f"[v26.151] Raw-only measurement replay {index}/96 exact",
+                flush=True,
             )
 
+    results = tuple(recomputed_by_job[item.job_id] for item in jobs)
+    recovery = _aggregation_recovery_audit(
+        package_root=package_root,
+        output_dir=output_dir,
+        recomputed_result_count=len(results),
+    )
     lineage = _raw_lineage(
         prepared=prepared,
         results=results,
@@ -2398,6 +2434,7 @@ def run_fresh_capability_execution(
         results=results,
         lineage=lineage,
         gate=gate,
+        recovery=recovery,
     )
     noninterference_rows = tuple(
         item.online_noninterference_audit
@@ -2411,6 +2448,7 @@ def run_fresh_capability_execution(
     )
     _write_json_atomic(output_dir / "raw_lineage_audit.json", lineage)
     _write_json_atomic(output_dir / "measurement_gate_audit.json", gate)
+    _write_json_atomic(output_dir / "aggregation_recovery_audit.json", recovery)
     _write_json_atomic(output_dir / "task_estimand_summaries.json", report.task_summaries)
     _write_json_atomic(
         output_dir / "mechanism_estimand_summaries.json",

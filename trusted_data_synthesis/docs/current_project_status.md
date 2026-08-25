@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-25
+Audit date: 2026-08-26
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -235,10 +235,118 @@ superseded only because package-wide Mypy found eleven local inference diagnosti
 source semantic, Path, Support, and fixture projections match. The current transition authorizes
 only the exact authoritative v2 96-Job fresh Capability execution.
 
+v26.151 has now consumed the exact authoritative v26.150 Capability execution. The online
+process completed all 96 fresh Jobs in 879 exact-model, Thinking-complete, Usage-complete Stage 1
+calls with 96 Raw Executions and zero Stage 2 Provider calls, then failed only when its aggregate
+serializer encountered Pydantic models nested in a tuple after the complete checkpoint was
+persisted. The failed directory and terminals remain immutable. A fresh credential-free Raw-only
+recovery replays 7,364 files, rebuilds all twenty v26.150 outputs, checks 2,734 failed/recovered
+files byte for byte, and independently reprojects all 96 Raw rows with exact checkpoint equality
+and zero model-result reruns or Provider calls. The noncompensatory Measurement Gate passes at
+96/96 Raw, 96/96 model endpoints, and zero support, Instrument, Privacy, model/Thinking/Usage,
+budget, or unresolved Transport failures. Base, Mechanism, and Qualified counts are 31/74/31;
+all four mechanisms have at least one independent Task with a Qualified trajectory. Capability
+estimation is authorized, but the current transition permits only an independent credential-free
+postrun audit. Reachability identity or execution and State Mapping remain unauthorized.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.151 Fresh Capability Execution And Raw-Only Aggregation Recovery Decision
+
+Finance v26.151 consumed only `privacy_safe_fresh_capability_execution_only`, the exact
+96-Job Manifest authorized by v26.150. Before the original online run it replayed 7,364/7,364
+files and independently rebuilt all twenty v26.150 outputs byte for byte. The 96 Jobs preserve
+twelve first-exposure model-unexposed Tasks, all twelve Mechanism x Tier cells, eight unconditional
+replicas per Task, 96 distinct seeds, exact S1/Prompt/Candidate/Grammar/model/Thinking/resource/
+recovery/Detour bindings, privacy-first persistence, Verifier vNext, and zero-Provider Stage 2.
+Historical Job and seed overlap are zero.
+
+All 96 Jobs completed in 879 Stage 1 Provider calls and 879 transport-inclusive invocations.
+Every checkpoint row has Measurement Support, model endpoint, Instrument integrity, and Privacy
+compliance true. Exact-model/Thinking/Usage, dynamic request, resource, Envelope/Projection, and
+transport integrity failures are zero. The terminal partition is 58 `completed_model_endpoint`
+and 38 `model_result_failure`, split into 37 exact qualified-Final Grammar failures and one
+length-truncated result. All 96 Raw Executions, 879 Envelopes, 879 Projections, 879 invocation
+certificates, and the 96-row checkpoint were persisted before aggregation.
+
+The original process then failed because its generic JSON helper projected a top-level BaseModel
+but not BaseModels nested inside a tuple. No aggregate report was written. The failed v2 directory,
+source, checkpoint, Raw rows, Provider artifacts, and terminals are immutable. No Job is rerun,
+recovered, repaired, deleted, or reclassified.
+
+The fresh v3 recovery recursively projects BaseModel, Mapping, list, and tuple containers. It
+removes the credential from the process environment, requires the complete 96-row checkpoint at
+entry, constructs no real client, and executes zero Jobs. It independently recomputes every
+measurement from Raw and obtains 96/96 canonical-byte matches with the checkpoint. The failed and
+recovered checkpoint plus all Raw/Envelope/Projection/invocation files match 2,734/2,734; both
+checkpoint SHA-256 values are
+`fb50e711536016e4993408c3a4ed18a87c811f76e23d7cacc8cda8a7068601cb`.
+Recovery Provider and Stage 2 Provider calls are zero.
+
+The unchanged noncompensatory Measurement Gate is:
+
+~~~text
+complete Raw Executions                       96/96
+observed model endpoints                      96/96
+Measurement Support exits                         0
+Instrument failures                               0
+Privacy failures                                  0
+exact-model / Thinking / Usage failures           0
+typed budget no-calls                              0
+unresolved Transport failures                      0
+~~~
+
+The Gate passes and authorizes the frozen Capability estimand. Across the exact denominator,
+73 Programs close, 61 complete terminal verification, 58 return the exact qualified Final
+payload, 31 are Base-valid, 74 are Mechanism-qualified, and 31 are Qualified-valid. The
+Task-primary Base, Mechanism, and Qualified fractions are respectively
+`0.3229166666666666666666666667`, `0.7708333333333333333333333333`, and
+`0.3229166666666666666666666667`. Equal eight-replica Task sizes make these numerically equal to
+31/96, 74/96, and 31/96 without changing the Task-primary estimand.
+
+The mechanism Qualified partition is Context-conditioned Action 4/24, Failure Recovery 8/24,
+Semantic Reconciliation 8/24, and State-dependent Stopping 11/24. One, three, three, and three
+independent Tasks respectively have at least one Qualified trajectory. All four mechanisms
+therefore pass the frozen minimum-support condition for a later Reachability preflight. This is
+not a Reachability result or execution authorization.
+
+Artifact-backed Usage is 8,014,398 tokens: 4,306,207 Prompt, 3,708,191 Completion, and 3,570,653
+Reasoning tokens. Estimated cost is USD `1.37431394800000011533`. Private reasoning content or
+hashes, invalid public-payload persistence, Raw HTTP bodies, Raw request bodies, Host answer or
+Citation insertion, Reachability identities, State Mapping rows, and Stage 2 Provider calls are
+zero.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_fresh_capability_execution_report:a50a33b3bbb9393930e0135e6fa208a5cecaeed2828ee64aaa4957cefdbdb821`;
+- source replay:
+  `finance_v26_fresh_capability_execution_source_replay:b60516aee8e226e45dacab6c54220d8b2f35618792a63ce547f19103d27b4e6d`;
+- preexecution binding:
+  `finance_v26_fresh_capability_preexecution_binding:03e77d878a38a6997081e3cdd623e73d17c0b616ad6c90f1c69dc1c809c0040e`;
+- Raw Lineage:
+  `finance_v26_fresh_capability_raw_lineage:9fb1a136839fb9e8894f94199b4f9f6e08771f7e932abaa6c1af1de35b9934a2`;
+- Measurement Gate:
+  `finance_v26_fresh_capability_measurement_gate:e7935ebf5078062553a961d55217e44c3194537ea155674c8beb121da7906e12`;
+- Raw-only aggregation recovery:
+  `finance_v26_fresh_capability_aggregation_recovery:8aaa7e21b51d2faf5b86e4309649fcab5ade3c11d9afc9693592d7934360433d`.
+
+Focused Pytest passes 3/3. Focused Ruff and Mypy pass. The only permitted transition is:
+
+~~~text
+fresh_capability_postrun_audit_only
+~~~
+
+The successor must independently replay every v26.151 Raw and Provider artifact, rebuild all 96
+measurement rows and task/mechanism summaries, and reproduce both the Measurement Gate and the
+four-mechanism minimum-support result with zero Provider calls. Reachability identity or execution,
+State Mapping, task/threshold/protocol/model/resource changes, historical pooling or
+reclassification, Host repair, training, release, and production Contribution remain forbidden.
+See
+`docs/finance_v26_151_fresh_capability_execution_and_raw_only_aggregation_recovery.md`.
 
 ## v26.150 Fresh Capability Population And Runner Preflight Decision
 
