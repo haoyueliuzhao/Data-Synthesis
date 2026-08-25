@@ -262,10 +262,150 @@ Mapping counts are zero. The current transition authorizes only a fresh Reachabi
 chain and credential-free Runner preflight over the exact frozen model-unexposed Reachability
 Source Population; Reachability execution and State Mapping remain forbidden.
 
+v26.153 has now consumed that exact credential-free Reachability preflight authorization. It
+replays 10,136/10,136 files, independently rebuilds all nine v26.152 outputs, preserves the
+frozen model-unexposed twelve-task Reachability Population without reselection, and closes fresh
+12-TaskPackage, 36-Path, 360-Job, Contract, Manifest, Runner, execution, and report identities.
+The exact Job split is 144 unconditional and 216 route-conditioned, with all 360 v26.132 seeds
+preserved under fresh identities. Across 411 registered states, 2,593 current Candidate events
+produce 90 failed Observations, 482 successful no-progress events, 362 ordinary Detours, and zero
+Support exits. A current-semantic Detour replay qualifies 159 ordinary-replan-closed rows across
+all 36 Paths and retains 203 nonclosed rows as class-external diagnostics. Their maximum is
+21/23/24 requests/calls/invocations, a 53,622-byte Prompt, and 1,092,469 conservative tokens,
+leaving 27,531 tokens under the unchanged 1.12M ceiling. A 360-Job, 4,158-local-call fixture,
+33 Runner controls, and 34 destructive mutations pass with zero Provider, Stage 2 Provider, GPU,
+or State Mapping rows. This is a Runner preflight, not a Reachability result. The current
+transition authorizes only the exact fresh 360-Job Reachability execution; State Mapping Contract
+or execution remains forbidden.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.153 Fresh Reachability Identity And Runner Preflight Decision
+
+Finance v26.153 consumed only
+`fresh_reachability_identity_chain_and_runner_preflight_only`. Before loading the frozen
+Reachability Population or current Support/Verifier contracts, it replayed 10,136/10,136 files:
+all 10,125 v26.152 transitive bindings, all nine v26.152 outputs, and its exact two implementation
+files. It independently rebuilt all nine predecessor files byte for byte and reproduced all
+96 Capability Raw projections. Credential lookup, real client construction, Provider calls,
+Stage 2 Provider calls, GPU jobs, historical rerun or pooling, and State Mapping rows are zero.
+
+The frozen source remains
+`finance_v26_fresh_role_source_population:cf4ff4407c4ca727c9b9c140e87261d3358c4974d92ea8605ce66bae2d316d99`.
+Its twelve source tasks cover all Mechanism x Tier cells and retain zero prior model exposure.
+They were selected before Kernel loading and Capability execution. Source reselection is zero,
+and Capability outcomes, Verifier passability, and resource values contribute zero to selection.
+The exact Reachability bytes are preserved and all eight source-separation channels remain
+disjoint from the fresh Capability Population.
+
+The fresh chain contains twelve Reachability TaskPackages, 36 registered conditioned Paths, one
+resource Contract, one execution Contract, one 360-Job Manifest, one outcome Contract, one Runner,
+and fresh prospective execution and report identities. Each task has `structured_direct`,
+`search_then_structured`, and `search_then_open` Paths. Every Path binds `path_strategy_id` to
+the same public route condition.
+
+The Manifest has 144 unconditional Jobs, twelve per task, and 216 conditioned Jobs, six per
+registered Path. Unconditional Jobs have no requested Path or public condition. Conditioned Jobs
+bind the exact Path, strategy, condition identity, and public condition. All 360 v26.132 seeds and
+assignments are preserved under fresh Job identities; historical Job overlap is zero.
+
+Across 411 registered public states the credential-free Support Closure reconstructs 2,593
+Candidate events and typed decisions. There are 90 failed Observations, zero failed- or
+progress-Observation Baseline calls, 482 successful no-progress Observations with exactly 482
+Baseline calls, 362 ordinary Detours, zero typed Support exits, and zero Host exceptions.
+
+The old v26.132 Reachability Detour classification is retained only as lineage because Support
+semantics changed in v26.146. v26.153 instead replays all 362 current Detour candidates under the
+current public state, Prompt, Support Contract, qualified Final Grammar, and deterministic Stage
+2. The exact partition is 159 ordinary-replan-closed and 203 ordinary-replan-not-closed. The 203
+class-external rows remain diagnostic and are neither deleted nor classified as model failures.
+The 159 qualified rows cover 36/36 Paths and have maxima of 21 Primary requests, 23 Provider calls
+with recoveries, 24 transport-inclusive invocations, a 53,622-byte Prompt, and 1,092,469
+conservative tokens. The unchanged 1,120,000-token ceiling retains 27,531 tokens, above the frozen
+20,000-token minimum.
+
+The reference Path maxima are 63 Candidates, a 53,423-byte Prompt, and 1,038,163 tokens. The
+60K/21/23/24/1.12M Contract and independent one-use ABI, Semantic, Transport, and Ordinary-Detour
+allowances remain unchanged. No observed average Usage discount or synthetic cross-Path maximum
+is used.
+
+A preliminary local build failed closed because the `path_strategy_changed` destructive control
+selected the already-current strategy and was not a mutation. It wrote no successful formal
+report and made zero Provider calls. The final source dynamically selects a different strategy,
+and the Path strategy/condition validator rejects it. This fixture correction changes content
+identities but changes no denominator, threshold, or scientific result.
+
+The 360-Job scripted fixture closes in 4,158 local calls with 3,798 exact Actions and Support
+decisions, 3,798 reversible Commits, 3,438 public Observations, 360 qualified Final payloads,
+360 joint Verifier invocations, 360 qualified-valid fixture outcomes, and 360 Raw-only recovery
+passes. All twelve Mechanism x Tier cells and all 36 conditioned Paths are covered. Thirty-three
+Runner controls and all 34 recomputed destructive mutations pass. Sensitive Prompt Key, real
+Provider, Stage 2 Provider, and State Mapping row counts are zero.
+
+This preflight does not map a static Path or fixture trajectory. Future Mapping remains
+valid-only:
+
+~~~text
+Raw model trajectory
+  -> independent Qualified-validity report
+  -> empirical structural state
+  -> route-condition projection
+~~~
+
+Only independently reconstructed `V_qualified is True` may establish eligibility, and eligibility
+is not a mapped-state count. Static Compiler Paths remain target conditions, not empirical states.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_fresh_reachability_preflight_report:4a055bf214893ee068db0cfb499e8d1beff7961a2cd8c98118196ae520adb666`;
+- report SHA-256:
+  `bbc8908613072cdf25a67b65632746f42ab8759577106bc8d071a8ec30b6629e`;
+- source replay:
+  `finance_v26_fresh_reachability_source_replay:be5c0f7b17a0989c5b03884a675f7362bd9f26dfaa036434092d9f0f790bbf40`;
+- frozen input:
+  `finance_v26_frozen_reachability_input_audit:de404a62e42860cc3383e2d24b12e4402b11102ba4f1e6a7e00bb07816d63521`;
+- TaskPackage catalog:
+  `finance_v26_fresh_reachability_task_catalog:3c2cd7acba456bd4147a2a5bee269171bddf0ec9c835f27af18d8113f657599f`;
+- Path catalog:
+  `finance_v26_fresh_reachability_path_catalog:71c0b44c157d63f2a77541ff231292eee09d91a8a70449c7fa99150f7e33c496`;
+- Support Closure:
+  `finance_v26_fresh_reachability_support_closure:be779c26f12b03e58002b717d5cc43e816b12265f0bd3a335c0721e627dba51d`;
+- Detour qualification:
+  `finance_v26_fresh_reachability_detour_audit:8d459c7124e92478269ffe5f53335a828bc2ee6279c3f4f930dda804e1327cd5`;
+- Resource Contract:
+  `finance_v26_fresh_reachability_resource_contract:5f16af263fdd7395a6b6a0abe9aefe333072a4a53c4433927cdb7e396d57a621`;
+- execution Contract:
+  `finance_v26_fresh_reachability_execution_contract:292fc9a3e54a6128091bf52c6fb91e9f9ab5fbf37643fa752ce55908db4e33b5`;
+- Manifest:
+  `finance_v26_fresh_reachability_manifest:65e2e92ed30915fd615bf0dba6c72a7b764ab2c927dc355339bac303fb9830c0`;
+- outcome Contract:
+  `finance_v26_fresh_reachability_outcome_contract:92b5aa2dd501538181b52613604f505d120a3d468ab3b70fd5cd539f63aa1663`;
+- Runner Contract:
+  `finance_v26_fresh_reachability_runner_contract:1c98edf4575b941b63dd81ea9e2bdf231a797ec6e979588bc80de550bc171206`;
+- transition:
+  `finance_v26_fresh_reachability_transition:aab44ab4bd316015f6ea97049fb1aa73ddfcec7c2c5ccffd673bdcc1357c4471`.
+
+Focused Pytest passes 4/4 in 1,031.15 seconds with all nineteen formal files independently
+reproduced byte for byte. Focused Ruff and Mypy pass. Package-wide Mypy checks 479 source files
+and retains only the three pre-existing v26.70/v26.129 diagnostics, with zero v26.153
+diagnostics. The only permitted transition is:
+
+~~~text
+fresh_reachability_execution_only
+~~~
+
+The successor may execute only the exact fresh 360-Job Manifest under every frozen v26.153
+identity and Contract after a complete credential-free prepare-only replay. Source reselection;
+task, Tier, Path, condition, Prompt, Candidate, Grammar, classifier, model/Thinking, Completion,
+resource, Support, Verifier, recovery, or Detour changes; Capability rerun or pooling; State
+Mapping Contract or execution; historical rerun or reclassification; Host repair; training;
+release; and production Contribution remain forbidden. See
+`docs/finance_v26_153_fresh_reachability_runner_preflight.md`.
+
 
 ## v26.152 Fresh Capability Independent Postrun Audit Decision
 
@@ -359,6 +499,10 @@ credential-free Runner preflight. Reachability Provider calls or execution, sour
 Capability rerun or pooling, State Mapping identity or execution, Host repair, training, release,
 and production Contribution remain forbidden. See
 `docs/finance_v26_152_fresh_capability_independent_postrun_audit.md`.
+
+That exact preflight-only transition has now been consumed by v26.153. The v26.152 Capability
+audit remains immutable; the current transition is the exact fresh 360-Job Reachability execution
+recorded above.
 
 ## v26.151 Fresh Capability Execution And Raw-Only Aggregation Recovery Decision
 
