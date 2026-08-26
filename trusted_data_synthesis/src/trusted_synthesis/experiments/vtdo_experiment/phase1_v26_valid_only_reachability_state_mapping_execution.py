@@ -44,10 +44,10 @@ NEXT_STAGE: Final = "valid_only_state_mapping_independent_raw_remap_audit_only"
 # Replaced after v26.156 is immutable.
 EXPECTED_PREFLIGHT_REPORT_ID: Final = (
     "finance_v26_valid_only_mapping_preflight_report:"
-    "da65e792443248ccc7afcf773d2b4f6b32a6ed0256ecac8c07590f56ac6c85fe"
+    "ac21b3b79c2906540da1bd2b2501e962026d7794ca451d5802981fc2390dc975"
 )
 EXPECTED_PREFLIGHT_REPORT_SHA256: Final = (
-    "cda044237ddacb18fb78b02b0bc7115144ef3815956b001f09b8cd7b28a960c3"
+    "64264e761653b11db245f8fe13bffc5ae6aaa80b48e0f7021a20b0f91136b978"
 )
 EXPECTED_RUNNER_CONTRACT_ID: Final = (
     "finance_v26_valid_only_mapping_runner_contract:"
