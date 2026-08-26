@@ -301,10 +301,152 @@ eight required parent bindings match. Reachability frequency, state probability,
 release, and production claims remain unauthorized. The valid-only evidence is frozen, and the
 current decision authorizes no further experiment without a new audit decision.
 
+v26.159 has now consumed a new external code-audit decision with zero generation. It freezes all
+100 Mapper-v1 Assignments, 41 Mapper-v1 State IDs, and 44 Mapper-v1 Route IDs without rewriting or
+reclassifying them, then introduces strict recursive canonical JSON, content-bound valid-only
+Authorization v2, schema-aware Mapper v2, a separate Reference Mapper, pure Experimental
+Condition IDs, post-treatment Route Signatures, typed lineage and Tool-reference Schemas, explicit
+Temporal Quotient policy, State Contrast, and mutually decomposed Support/Instrument/endpoint
+projections. The Result-only diagnostic exactly reproduces 45 Raw/Canonical representation
+differences, fourteen v1 States in merge groups, forty affected Assignments, and 34 minimal
+classes. The full v2 diagnostic has 41 States because twelve v1 State IDs participate in v2 merges
+while five v1 State IDs split under stricter reference or temporal semantics. Production and
+Reference Mapper match 100/100, five Gold pairs pass, and all 820 State pairs have a difference
+witness. The denominator contains 29 pure Condition IDs, 37 Task x Condition cells, and 44
+empirical Route Signatures; the frozen source Population has twelve tasks but only ten have a
+Qualified row. All frequency fields remain null. A future-only 360-row classification removes the
+four Support/Instrument double counts and separately recognizes the one typed semantic rejection
+as a model terminal; no historical label changes. The current transition permits only a fresh
+Mapper-v2 Reachability-frequency experiment preflight with no Provider execution.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.159 State Semantics And Condition Index Audit Decision
+
+Finance v26.159 consumed only the newly supplied
+`valid_only_state_semantics_and_condition_index_audit_only` decision. It made zero Provider,
+Stage 2 Provider, or GPU calls and created zero formal State Assignments. The 100 v26.157
+Mapper-v1 Assignments, 41 State IDs, and 44 mixed Route Projection IDs remain immutable and are
+not rescored, rewritten, or promoted to semantic-quotient or frequency evidence.
+
+The prospective implementation adds a strict recursive canonical JSON layer that handles nested
+Pydantic models, Mappings, sequences, finite Decimal and float values, Enum, and date/time values,
+while failing closed on unknown objects, non-string Mapping keys, NaN, and infinity. Legacy
+`canonical_hash()` remains unchanged for historical replay. Trajectory identity is split into
+semantic-content and bound-artifact hashes. Raw Final and Qualified-Verifier Canonical Result have
+separate hashes; only the latter may enter Mapper-v2 State identity.
+
+Valid-only Authorization v2 now receives the exact trajectory object in Core and binds its two
+content hashes, Raw execution artifact hash, Qualified Verifier input hash, Qualified report,
+Verifier Contract, Omega Context, and Raw Observation prefix before callback invocation. A
+same-ID trajectory with changed content fails before the callback. The Mapper v2 Contract also
+binds Answer Semantic, Reference Projection, Decimal, set-like/ordered sequence, typed Reference,
+Temporal Quotient, typed lineage, and strict JSON policies.
+
+The Result-only diagnostic exactly reproduces the external audit:
+
+~~~text
+Assignments                                            100
+Mapper-v1 State IDs                                     41
+Raw/Verifier-Canonical Result differences               45
+v1 State IDs participating in Result-only merges        14
+Assignments in those merge groups                       40
+minimal Result-only equivalence classes                 34
+~~~
+
+This `41 -> 34` result changes only the confirmed erroneous Result field and is not the full
+Mapper-v2 answer. Under full v2 semantics, twelve v1 State IDs participate in merges and five v1
+State IDs split under typed-reference or temporal policy, yielding 41 diagnostic v2 States. The
+equal net count is coincidental and does not validate Mapper v1. Every diagnostic row retains both
+IDs and an explicit reason while freezing `historical_reclassified=false`,
+`frequency_authorized=false`, and `vtdo_authorized=false`.
+
+Mapper v2 uses six exact Tool reference Schemas rather than parent-key or string-prefix
+heuristics. Citation, Evidence, and Provenance occupy typed namespaces. Only independent
+successful acquisitions commute; Failure, Verification, Final/stopping, and emitted
+noncommutative pairwise temporal relations enter State identity. Two merge and three split Gold
+pairs pass. An independently implemented Reference Mapper re-extracts typed references from Raw
+Tool fields, rebuilds all semantic components, and matches production State exactly for 100/100
+Raw trajectories. The 41 States produce 820/820 pairwise State Contrast rows with at least one
+typed difference witness each.
+
+Pre-treatment and post-treatment identity are now separate:
+
+~~~text
+pure Experimental Condition IDs                         29
+Task x Experimental Condition cells                     37
+Mapper-v1 mixed Route Projection IDs                    44
+Mapper-v2 post-treatment Route Signatures               44
+fixed cells split by Mapper-v1 Route behavior             9
+Unconditional Task-condition cells                       9
+Unconditional cells split by Mapper-v1 Route behavior    3
+~~~
+
+The source Population has twelve tasks, but only ten have one or more Qualified rows in this
+100-trajectory denominator. No state is imputed for the other two. The number of Qualified-covered
+tasks with multiple IDs under pooled / any fixed-condition / Unconditional views is `10/8/4` for
+Mapper v1, `9/8/3` for the Result-only diagnostic, and `9/8/4` for full Mapper v2. These remain
+descriptive occurrence counts, not frequency or non-degeneracy estimates.
+
+A future-only 360-Raw Measurement classification separates Raw Instrument integrity, Measurement
+Support, resource accounting, Detour allowance, Provider response, public payload, model action,
+model terminal, and completed endpoint. All four historical second-Detour Support Exits have
+Raw-native Instrument integrity; the old formal projection counted all four again as Instrument
+failures, while v2 Support/Instrument overlap is zero. The one historical typed semantic rejection
+is a future-v2 evaluable model terminal. Both results are prospective classifier diagnostics and
+change no historical label. The v2 Support classifier propagates undeclared exceptions and treats
+binding mismatch as a Contract defect rather than converting either into Support unavailability.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_state_semantics_audit_report:1af922c296dba8df78cec0082178e0e913d8ad228bb3b95dfe7371b06b73fd08`;
+- Mapper-v1 freeze:
+  `finance_v26_historical_mapper_v1_freeze:f27401fe9b6cf6dee32e41f3d0e759aadecbff377c13065575b4859ae028d163`;
+- Result Semantics diagnostic:
+  `finance_v26_result_semantics_diagnostic:619bedd401f7adec71044cfc5f7f9996aee1cf4798c8cd4b42010c89eb9e614f`;
+- Condition/Route decomposition:
+  `finance_v26_condition_route_decomposition:5395083b213c99855ad66fe1a6ff139d9f0df2e5f8871659f7684da6bc4d85ac`;
+- Mapper-v2 semantic policy:
+  `empirical_state_semantic_policy:588bf09238a4a16c830ad9216d40d311229b537204cdb383ebb117be2cededca`;
+- Mapper-v2 Contract:
+  `valid_only_state_mapper_contract_v2:a2acb7b475dd7ce4558310f4ad207a09f9ffa270ad785051bf9b41d1d9b0281a`;
+- Mapper-v2 diagnostic Catalog:
+  `finance_v26_mapper_v2_diagnostic_catalog:a69bb4bb74b2db97b22f0e772f53abc811c3e51e56cea94657cd2eb9f425eb53`;
+- State Contrast Catalog:
+  `finance_v26_state_contrast_catalog:a77677a30e905e47727a313bb8c9167fe8e5124205acddd273ecc026a2c9ca95`;
+- Gold pair audit:
+  `finance_v26_mapper_v2_gold_fixture_audit:f8681ea7285d60fe4eaa4b3dc3a1bddd941f21843eae22adef585264cb876d49`;
+- independent Reference Mapper:
+  `finance_v26_independent_reference_mapper_audit:d9a4d4600ef130369dc95a98241c74e17a0260f98d169f983d0d24ea22398d46`;
+- Measurement classification decomposition:
+  `finance_v26_measurement_classification_decomposition:7e458d3882fd009edae9a1d33f72feaa55b8ecc202e6c005fc76793e922e74cd`;
+- transition:
+  `finance_v26_state_semantics_transition:17fe66c33e8c2d0f284b0d06bb85a881f61f7d52ff685a74e5f6c26cade44f31`.
+
+The new tests pass 24/24 and include three complete zero-call builds. Historical Core v1 tests
+pass 11/11. Focused and package-wide Ruff pass; focused Mypy passes, while package-wide Mypy
+checks 495 source files and retains only the four pre-existing v26.70/v26.129/v26.154 diagnostics.
+Formal and independent v26.159 builds reproduce all fifteen files byte for byte. Twelve
+destructive mutations fail closed. The v26.158 full-transitive rebuild retains one setup error
+because the checkout lacks its bound v25.44 stopping snapshot; the other three historical artifact
+constraint tests pass.
+
+The only permitted transition is:
+
+~~~text
+fresh_mapper_v2_reachability_frequency_experiment_preflight_only
+~~~
+
+It authorizes only a credential-free preflight under a fresh model-unexposed Population, complete
+Measurement Support denominator, pure Condition index, separate Unconditional and conditioned
+strata, task-primary and rollout-secondary statistics, and independent postrun audit. Provider
+execution, historical rerun or reclassification, current-denominator frequency, VTDO, training,
+release, and production Contribution remain forbidden. See
+`docs/finance_v26_159_state_semantics_and_condition_index_audit.md`.
 
 ## v26.156-v26.158 Valid-Only Reachability State Mapping Decision
 
@@ -425,6 +567,10 @@ no_further_experiment_authorized_without_new_audit_decision
 ~~~
 
 See `docs/finance_v26_156_v26_158_valid_only_reachability_state_mapping.md`.
+
+That no-further-experiment boundary has now been consumed by the credential-free v26.159 audit.
+All v26.156-v26.158 artifacts and historical labels remain immutable; the current transition is
+the fresh Mapper-v2 Reachability-frequency preflight recorded above.
 
 ## v26.154-v26.155 Fresh Reachability Execution And Independent Audit Decision
 
