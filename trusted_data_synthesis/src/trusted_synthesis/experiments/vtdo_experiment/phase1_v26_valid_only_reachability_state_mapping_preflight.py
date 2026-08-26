@@ -680,13 +680,13 @@ def _omega_catalog(inputs: Inputs) -> OmegaTaskContextCatalog:
             )
         )
     ordered = tuple(sorted(contexts, key=lambda item: item.context_id))
-    values = {
+    catalog_values: dict[str, Any] = {
         "source_task_package_catalog_id": inputs.task_catalog.catalog_id,
         "contexts": ordered,
     }
     provisional = OmegaTaskContextCatalog.model_construct(
         catalog_id="pending",
-        **values,
+        **catalog_values,
     )
     return OmegaTaskContextCatalog(
         catalog_id=_identity(
@@ -694,7 +694,7 @@ def _omega_catalog(inputs: Inputs) -> OmegaTaskContextCatalog:
             "catalog_id",
             "finance_v26_valid_only_omega_task_context_catalog:",
         ),
-        **values,
+        **catalog_values,
     )
 
 
@@ -878,7 +878,7 @@ def _candidate_manifest(
     ordered = tuple(sorted(candidates, key=lambda item: item.candidate_id))
     if len(ordered) != inputs.postrun_report.qualified_valid_count:
         raise ValueError("v26.156 Qualified Mapping Candidate count changed")
-    values = {
+    manifest_values: dict[str, Any] = {
         "mapper_protocol_id": protocol.protocol_id,
         "valid_only_mapper_contract_id": mapper_contract.contract_id,
         "omega_task_context_catalog_id": omega.catalog_id,
@@ -889,7 +889,7 @@ def _candidate_manifest(
     }
     provisional = ValidOnlyMappingCandidateManifest.model_construct(
         manifest_id="pending",
-        **values,
+        **manifest_values,
     )
     return ValidOnlyMappingCandidateManifest(
         manifest_id=_identity(
@@ -897,7 +897,7 @@ def _candidate_manifest(
             "manifest_id",
             "finance_v26_valid_only_mapping_candidate_manifest:",
         ),
-        **values,
+        **manifest_values,
     )
 
 
