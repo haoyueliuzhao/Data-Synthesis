@@ -2300,7 +2300,7 @@ def _estimand_audit(
         "reachability_estimands_authorized": gate.passed,
     }
     formal_values = report.model_dump(mode="python", include=set(values))
-    if formal_values != values:
+    if _canonical_bytes(formal_values) != _canonical_bytes(values):
         raise ValueError("v26.155 independently reconstructed estimands changed")
     provisional = IndependentEstimandAudit.model_construct(audit_id="pending", **values)
     return IndependentEstimandAudit(
