@@ -278,10 +278,229 @@ or State Mapping rows. This is a Runner preflight, not a Reachability result. Th
 transition authorizes only the exact fresh 360-Job Reachability execution; State Mapping Contract
 or execution remains forbidden.
 
+v26.154 has now consumed the exact v26.153 online authorization. It completes all 360 fresh
+Reachability Jobs and Raw Executions in 3,043 exact-model, Thinking-complete, Usage-complete
+Stage 1 calls with zero Stage 2 Provider calls. The terminal partition is 160 completed model
+endpoints, 195 model-result failures, four frozen second-Ordinary-Detour measurement-support
+exits, and one typed semantic rejection. The noncompensatory Measurement Gate fails: model
+endpoints are 356/360, support exits are four, and the formal Instrument count is five. The four
+support exits retain Raw-native Instrument integrity and overlap the formal projection count;
+there is no call, invocation, or token overrun. Base, Mechanism, and Qualified counts are
+100/231/100, but every Reachability frequency estimand remains null. v26.155 independently
+replays 19,672 files, reconstructs all 360 Raw projections and 3,043 artifact triples, confirms
+the failed Gate and validity partition, and authorizes only a fresh valid-only State Mapping
+preflight over the 100 independently Qualified rows.
+
+v26.156 consumes that credential-free transition and freezes one valid-only Mapper Contract,
+twelve Omega Task Contexts, and a 100-Candidate Manifest split 36 unconditional and 64
+conditioned, with zero empirical Assignments. v26.157 then maps every Candidate exactly once from
+Raw into 100 Assignments, 41 structural States, and 44 separate route projections; ten tasks have
+multiple observed Qualified States. v26.158 independently rebuilds the complete chain and remaps
+all 100 rows from Raw without trusting saved Assignment fields. All 100 Assignment bytes and all
+eight required parent bindings match. Reachability frequency, state probability, VTDO, training,
+release, and production claims remain unauthorized. The valid-only evidence is frozen, and the
+current decision authorizes no further experiment without a new audit decision.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.156-v26.158 Valid-Only Reachability State Mapping Decision
+
+Finance v26.156 consumed only
+`fresh_valid_only_observed_reachability_state_mapping_contract_mapper_runner_preflight_only`.
+Before loading a mapping Candidate it rebuilt all ten v26.155 formal outputs byte for byte. It
+froze one valid-only Mapper Contract, one empirical Mapper protocol, twelve Omega Task Contexts,
+one 100-Candidate Manifest, one Runner, and fresh execution and report identities with zero
+Provider, Stage 2 Provider, or GPU calls.
+
+The Mapper API requires an independent Qualified report whose `valid is True` before the mapping
+callback can run. It rejects `False`, `None`, support exits, Instrument failures, Privacy
+rejections, Base-invalid rows, and Mechanism-unqualified rows. Every future Assignment must bind:
+
+~~~text
+trajectory content hash
+independent Qualified validity report
+Omega Task Context
+Mapper Contract
+structural State
+route condition
+static Path catalog
+Raw observation-prefix hash
+~~~
+
+The 360-row v26.154 denominator yields exactly 100 Candidates and 260 exclusions. Candidate
+sampling is 36 unconditional and 64 conditioned. Unconditional rows carry explicit null public
+condition, requested Path, and requested strategy fields while retaining a content-addressed
+route projection. All 100 Qualified, Omega, route, Raw, Runtime-alias, and required-input bindings
+match. Preflight Assignment and structural-State counts are zero. A synthetic constructibility
+fixture and twenty destructive mutations pass with zero empirical rows.
+
+Finance v26.157 first rebuilds all eleven v26.156 files. It reconstructs every Candidate from its
+exact bound Raw, revalidates Qualified validity and all parent bindings, and invokes the Mapper
+exactly once per Candidate. The result is:
+
+~~~text
+valid-only Assignments                       100
+unique structural States                      41
+unique route projections                      44
+unconditional Assignments                     36
+conditioned Assignments                       64
+tasks with Qualified Assignments               10
+tasks with multiple observed Qualified States  10
+invalid-category mapping attempts               0
+Host-inserted States                            0
+Provider or Stage 2 Provider calls              0
+~~~
+
+Structural State uses canonical public Action, Evidence/Operation reference, dependency-edge,
+result-semantics, Evidence-lineage, and typed-failure classes with multiplicity. Runtime Operation
+aliases normalize to Program nodes. Static Compiler Paths remain target conditions and lineage
+parents; they are not structural States. Route projections remain separate from State identity.
+All task-level frequency and probability fields are null.
+
+Finance v26.158 independently rebuilds all eight v26.157 files before loading saved Assignments.
+Its independent Raw adapter reconstructs trajectory and Runtime alias inputs without calling the
+v26.156 projection helpers or v26.157 Assignment helper and without trusting saved Assignment
+fields. It remaps 100/100 rows and matches 100/100 complete Assignment bytes, State IDs, route
+IDs, trajectory hashes, Qualified-report IDs, Omega Context IDs, static Path catalog IDs, and Raw
+observation-prefix hashes. It confirms zero support-exit, Instrument, Privacy, Base-invalid,
+Mechanism-unqualified, or static-Path-as-State Assignments. Sixteen destructive mutations fail
+closed.
+
+A preliminary v26.156 build rejected unconditional null route conditions before writing formal
+output; the final schema makes their absence typed and mandatory. A preliminary v26.158 build
+rejected a tuple of Pydantic summaries before writing formal output; the final canonical
+serializer recursively handles models, Mappings, and sequences. Both failures made zero calls and
+changed no empirical row or claim.
+
+Package-wide type checking then exposed two over-narrow local dictionary inferences in v26.156.
+The authoritative source adds explicit heterogeneous-dictionary annotations and rematerializes the
+complete v26.156-v26.158 report chain. Mapper, protocol, Omega, Candidate, Runner, Assignment,
+State, route, integrity, support, and scientific-count identities remain exact; only source-replay
+and report-parent identities change. No Provider call or empirical choice changes.
+
+The authoritative identities are:
+
+- v26.156 report:
+  `finance_v26_valid_only_mapping_preflight_report:ac21b3b79c2906540da1bd2b2501e962026d7794ca451d5802981fc2390dc975`;
+- Mapper Contract:
+  `valid_only_state_mapper_contract:36c1f1b9521e5eb0a9cb208b68fd35bfabd3ce658d328c04aa6340e0dead1f2a`;
+- Mapper protocol:
+  `finance_v26_empirical_state_mapper_protocol:7037f1b479d419918adcfbd074067da32df2baf2d84f33e6355e9ed317711de6`;
+- Omega Context catalog:
+  `finance_v26_valid_only_omega_task_context_catalog:a549aa65632952d0de05870cd79a797a81cd7dafd85931fd94ebb3b95fc8d51b`;
+- Candidate Manifest:
+  `finance_v26_valid_only_mapping_candidate_manifest:15ba332a17ab5c43b3095e655a74faf6839260e2d0adffe55acb855714136a10`;
+- v26.156 Runner:
+  `finance_v26_valid_only_mapping_runner_contract:362a8474cfd31fb63153a9616f6145bdb360f4f0905ba8fc9bb552be6354b2c4`;
+- v26.157 report:
+  `finance_v26_valid_only_mapping_execution_report:ea5e59df17b02b2a78423d0bd6187ae7a50514b94fd3b3233e5125c882824405`;
+- Assignment Catalog:
+  `finance_v26_valid_only_state_assignment_catalog:24118eb0223869ccd484b73af8595b0407fbc8da6ce3f11d3cfb2a849895156a`;
+- structural State Catalog:
+  `finance_v26_valid_only_structural_state_catalog:4fb6dede053d7f5f88e6addabd4308b8afed2be0b47b8a4cc04af6b5081edb6a`;
+- route projection Catalog:
+  `finance_v26_valid_only_route_projection_catalog:60fb8b540be216ee1843b36e801ae01b9893d0c3b3e5e683cb1d2f8b1bb6afb3`;
+- v26.158 report:
+  `finance_v26_valid_only_mapping_postrun_audit_report:cbb21c961f277786490746c5f31956a53e6fee4ee49badf6076b413285ce370f`;
+- independent Raw remapping:
+  `finance_v26_valid_only_independent_raw_remapping:ec45624d3127bdba6e00c9b3a8b60a0834680dbaa4cfa07b1ede9a2572daabbf`;
+- independent Assignment binding:
+  `finance_v26_valid_only_assignment_binding_audit:7ee07e5583f8c6c5b53a1d81d5bdf26767ae5e7d161867701f0a57132ff3ebe2`;
+- final decision:
+  `finance_v26_valid_only_mapping_final_decision:bbf482f9de42af83af3443ae1b36cbd5a276e2d0f937e1c5ff9183d2b9dc0e8f`.
+
+The valid-only gate and Mapper tests pass 11/11 in 0.12 seconds. The final v26.156-v26.158
+end-to-end tests pass 4/4 in 188.37 seconds and reproduce all eight v26.158 files. Focused Ruff
+and Mypy pass. Package-wide Mypy checks 486 source files and retains the three historical
+v26.70/v26.129 diagnostics plus one diagnostic in the byte-frozen exact-online v26.154 source;
+final v26.155-v26.158 sources contribute zero. Reachability frequency, state probability,
+route-frequency, VTDO, training, release, and production evidence remain unauthorized. The final
+decision is:
+
+~~~text
+no_further_experiment_authorized_without_new_audit_decision
+~~~
+
+See `docs/finance_v26_156_v26_158_valid_only_reachability_state_mapping.md`.
+
+## v26.154-v26.155 Fresh Reachability Execution And Independent Audit Decision
+
+Finance v26.154 consumed only `fresh_reachability_execution_only`. It replayed the complete
+v26.153 chain before client construction and executed all 360 exact fresh Reachability Jobs: 144
+unconditional and 216 route-conditioned. All 360 Results and Raw Executions complete in 3,043
+exact-model, Thinking-complete, Usage-complete Stage 1 calls and 3,043 transport-inclusive
+invocations. Stage 2 Provider calls, fallback, discovery, Provider-native tools, Privacy failures,
+model/Thinking/Usage gaps, and historical pooling are zero.
+
+The exact terminal partition is 160 `completed_model_endpoint`, 195 `model_result_failure`, four
+`measurement_support_exit`, and one `typed_semantic_rejection`. All four support exits are frozen
+`ordinary_detour_allowance_exhausted` terminals after a second legal successful nonbaseline
+no-progress Action. They retain Raw-native Instrument integrity, make zero later calls, and have
+zero call, invocation, or token overrun. They overlap the formal v26.154 Instrument projection,
+which counts five rows when the typed semantic terminal is included; this is not five independent
+Instrument causes.
+
+The noncompensatory Measurement Gate fails exactly:
+
+~~~text
+complete Raw                              360/360
+model endpoints                           356/360
+measurement-support exits                     4
+formal Instrument rows                        5
+Gate passed                                false
+~~~
+
+Its failure IDs are `instrument_failure_zero`, `measurement_support_exit_zero`, and
+`model_endpoint_360_of_360`. No task, Path, mechanism, route, state-eligibility, or aggregate
+Reachability frequency is reported. Every corresponding estimand remains null. No Job may be
+rerun, recovered, deleted, pooled, or reclassified to repair the Gate.
+
+Artifact-backed Usage is 16,227,664 Prompt, 13,636,516 Completion, 13,147,682 Reasoning, and
+29,864,180 total tokens, with estimated cost USD `5.11901120640000044678`. A completed-run replay
+resumes at 360/360, constructs no client, and makes zero calls.
+
+Finance v26.155 replays 19,672/19,672 files: 10,156 v26.154 transitive bindings, 9,515 execution
+files, and its exact implementation. It independently reparses all 360 Raw rows and every one of
+the 3,043 Envelope/Projection/Transport triples. It rebuilds every reached Prompt, route binding,
+Runtime replay, Base report, Mechanism report, Qualified report, Gate, task/Path/mechanism summary,
+and report aggregate without using v26.154 projection, Gate, or summary helpers as outcome
+oracles.
+
+The independent audit confirms 100 Base-valid, 231 Mechanism-qualified, and 100 Qualified-valid
+trajectories. Validity is null on every support or integrity-ineligible row. The 100 Qualified
+rows split 36 unconditional and 64 conditioned and are the only valid-only mapping candidates.
+They remain descriptive endpoint facts and do not rescue the failed Reachability frequency Gate.
+Thirty destructive mutations fail closed with zero calls.
+
+The authoritative identities are:
+
+- v26.154 report:
+  `finance_v26_fresh_reachability_execution_report:fc943b68e5fcd7063425eba3b9f189d86785820598cd8784154ef37e15e4b8aa`;
+- v26.154 Raw Lineage:
+  `finance_v26_fresh_reachability_raw_lineage:5ab68739abc8178b68278cb9baf2e677aa63d3968995bf9b5c003bcbcc6ef9db`;
+- v26.154 Measurement Gate:
+  `finance_v26_fresh_reachability_measurement_gate:80db69f55808caa428767cfbb14e4d29fe5ad37ff13ceb9eac2df651053a0c27`;
+- v26.155 report:
+  `finance_v26_fresh_reachability_postrun_audit_report:8e80ef33293cc7ddc445e04da7327f57dae9e55f898813d2897d1a01087b1dc3`;
+- independent Raw projection:
+  `finance_v26_fresh_reachability_independent_projection:f4fadf73f5c674656e8d8a3c95b0192d4178458b731f462081f0a57ef64e06cb`;
+- independent Measurement Gate:
+  `finance_v26_fresh_reachability_independent_measurement_gate:0d4b5cb78ae06b71f8b60d31b6b171b4f9333b51d21ba2b0be9270482bed8db0`;
+- validity decomposition:
+  `finance_v26_fresh_reachability_validity_decomposition:d514f1c24cd8c8437b4921d5f997cb1ed7f044a50c6c42d04b0fcbd0c4e07922`;
+- Support Boundary:
+  `finance_v26_fresh_reachability_support_boundary:2042938f7889c353f64a93d690b7ea95587be0686ff151495724574012615c68`;
+- transition:
+  `finance_v26_fresh_reachability_postrun_transition:7df8dc34a3af7cd046942eebdb619298090aefdc5fafcdb9ba7c15ee47740222`.
+
+v26.154 focused Pytest passes 2/2 in 1,383.98 seconds; v26.155 focused Pytest passes 4/4 in
+184.00 seconds with all ten audit files independently reproduced. Focused Ruff and Mypy pass. The
+v26.155 transition authorized only a fresh credential-free valid-only Mapper preflight and was
+consumed by v26.156. See
+`docs/finance_v26_154_v26_155_fresh_reachability_execution_and_audit.md`.
 
 ## v26.153 Fresh Reachability Identity And Runner Preflight Decision
 
@@ -405,6 +624,10 @@ resource, Support, Verifier, recovery, or Detour changes; Capability rerun or po
 Mapping Contract or execution; historical rerun or reclassification; Host repair; training;
 release; and production Contribution remain forbidden. See
 `docs/finance_v26_153_fresh_reachability_runner_preflight.md`.
+
+That exact online transition was consumed by v26.154 and independently audited by v26.155. The
+v26.153 static preflight identities and zero-call evidence remain immutable. The current decision
+is the completed valid-only State Mapping freeze recorded above.
 
 
 ## v26.152 Fresh Capability Independent Postrun Audit Decision
