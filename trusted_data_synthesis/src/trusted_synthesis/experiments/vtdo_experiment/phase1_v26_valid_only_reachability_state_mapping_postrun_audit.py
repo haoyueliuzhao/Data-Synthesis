@@ -49,10 +49,10 @@ NEXT_STAGE: Final = "no_further_experiment_authorized_without_new_audit_decision
 # Replaced after v26.157 is immutable.
 EXPECTED_EXECUTION_REPORT_ID: Final = (
     "finance_v26_valid_only_mapping_execution_report:"
-    "8cefac79a20405452c3dc2d70b693b795a58e7053519d028cda94eca0f173016"
+    "ea5e59df17b02b2a78423d0bd6187ae7a50514b94fd3b3233e5125c882824405"
 )
 EXPECTED_EXECUTION_REPORT_SHA256: Final = (
-    "cdb5e63e5dba2f9944315d8dde17db9101bc819d3d43a9a59d9b4be8eac5012b"
+    "c475849a468c099ca076e0de5439782b5279b010049326b058bc54002359f12f"
 )
 EXPECTED_EXECUTION_TRANSITION_ID: Final = (
     "finance_v26_valid_only_mapping_execution_transition:"
