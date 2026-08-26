@@ -5,6 +5,7 @@ import hashlib
 import json
 import tempfile
 from collections import defaultdict
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Final, Literal, cast
 
@@ -71,11 +72,24 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _canonical_bytes(value: Any) -> bytes:
+def _json_payload(value: Any) -> Any:
     if isinstance(value, BaseModel):
-        value = value.model_dump(mode="json")
+        return value.model_dump(mode="json")
+    if isinstance(value, Mapping):
+        return {str(key): _json_payload(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_payload(item) for item in value]
+    return value
+
+
+def _canonical_bytes(value: Any) -> bytes:
     return (
-        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        json.dumps(
+            _json_payload(value),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
         + b"\n"
     )
 
