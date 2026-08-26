@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-26
+Audit date: 2026-08-27
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -319,10 +319,163 @@ four Support/Instrument double counts and separately recognizes the one typed se
 as a model terminal; no historical label changes. The current transition permits only a fresh
 Mapper-v2 Reachability-frequency experiment preflight with no Provider execution.
 
+v26.160 has now consumed that exact credential-free preflight authorization. It independently
+rebuilds all fifteen v26.159 direct outputs, preserves the known missing v25.44 transitive-snapshot
+limitation without a false pass, and freezes a fresh model-unexposed twelve-task Population before
+Path, resource, Mapper, compatibility, or outcome loading. The resulting chain contains twelve
+TaskPackages, 36 conditioned Paths, 48 strong Task-condition cells, and 360 fresh Jobs split 144
+Unconditional and 216 Path-conditioned. Its statistics key is TaskPackage, pure Experimental
+Condition, and bounded generation policy; empirical Route remains post-treatment. Across 411
+registered states, 2,590 Candidate events and 362 Detour candidates, all 36 Paths close under the
+60K/21/23/24/1.12M resource Contract with 26,582 tokens of minimum one-Detour headroom. Six Tool
+Schemas close the complete reachable Tool set, five temporal Gold pairs pass, all six within-cell
+State pairs have witnesses, and Production and independent Reference Mapper match 48/48 local
+fixtures. The 360-Job Runner closes 4,158 local calls and 360 Raw recoveries with zero Provider,
+Stage 2 Provider, GPU, formal Assignment, or frequency-report rows. The exact Measurement Gate
+makes every estimand null on any Support, Instrument, Privacy, model/Thinking/Usage, budget, or
+unresolved Transport failure; a passing Gate with no Qualified row in a cell still yields a null
+cell, never an imputed zero State. The type-complete authoritative chain reproduces 33/33 files
+byte for byte. The current transition authorizes only execution of the exact fresh 360-Job
+Manifest; no frequency result, State probability, VTDO, training, release, or production claim is
+yet authorized.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.160 Mapper v2 Reachability Frequency Preflight Decision
+
+Finance v26.160 consumed only
+`fresh_mapper_v2_reachability_frequency_experiment_preflight_only`. It independently rebuilt all
+fifteen direct v26.159 outputs before loading a fresh source or Mapper. The checkout still lacks
+the bound v25.44 stopping snapshot, so v26.160 explicitly preserves
+`v26_158_full_transitive_rebuild_claimed=false`; it does not convert the known historical setup
+gap into a transitive-replay pass. All 35 inputs required by the current stage are available and
+content-bound.
+
+Source selection starts from the frozen clean 70-task frame and excludes all 36 tasks selected by
+the v26.129 Capability and Reachability Populations and the v26.150 fresh Capability Population
+across task, source-task, Evidence, Evidence Version, core-semantic, task-semantic,
+mechanism-instance, and source-record identity. Fifty-eight model-unexposed candidates remain.
+A fixed salt selects exactly one source in every Mechanism x Tier cell, producing twelve fresh
+sources with zero overlap, model exposure, or empirical rows. Selection is persisted before Path,
+resource, Mapper, compatibility, or outcome loading.
+
+The fresh identity chain contains twelve TaskPackages, 36 conditioned Paths, one bounded
+generation policy, twelve Omega Contexts, one Mapper-v2 Contract, one Assignment Contract, one
+strong Task-condition Cell Catalog, one estimand Contract, one execution Contract, one 360-Job
+Manifest, one outcome Contract, one Runner, and fresh prospective execution and report
+identities. The Manifest is exactly 144 Unconditional and 216 conditioned Jobs over 48 strong
+cells and 360 distinct Seeds. Historical Job and Seed overlap is zero.
+
+The statistics key is:
+
+~~~text
+(task_package_id, experimental_condition_id, generation_policy_id)
+~~~
+
+There are twelve Unconditional cells and 36 separately conditioned Path cells. Empirical Route
+Signature is post-treatment and enters no statistics key. Unconditional and conditioned
+denominators remain separate, conditioned Paths cannot pool, tasks are primary statistical units,
+and rollouts are secondary repeated measures. The bounded generation policy permits one Ordinary
+Detour and explicitly makes no unrestricted natural-agent distribution claim.
+
+Across 411 registered states, the maximum Candidate count is 63, maximum reference Prompt is
+53,413 bytes, and maximum reference Path bound is 1,039,122 tokens. The complete prospective
+Support census reaches 756 unique states and 2,590 Candidate events: ninety failed Observations,
+482 successful no-progress events, 362 Ordinary Detour candidates, and zero typed Support exits.
+The Detours split into 159 ordinary-replan-closed rows covering all 36 Paths and 203 nonclosed
+class-external diagnostics. Their maxima are 21 Primary requests, 23 Stage 1 Provider calls with
+recoveries, 24 transport-inclusive invocations, a 53,612-byte Prompt, and 1,093,418 conservative
+tokens. The unchanged 1,120,000-token ceiling retains 26,582 tokens of headroom.
+
+The exact six Tool Schemas equal the environment, reachable Candidate, and reference Commit Tool
+sets. The five temporal Gold pairs pass as two merges and three splits, with ten independent
+Reference Mapper State matches. Four within-cell States produce all six unordered State pairs,
+each with a difference witness; action-only, result-only, and failure-or-temporal differences are
+all represented. Production and independently implemented Reference Mapper match State exactly
+for one valid-only local fixture in each of the 48 strong cells. The Reference Mapper calls the
+Production Mapper zero times, and an intentional mismatch is rejected.
+
+The future complete Measurement Gate requires 360/360 Raw, model endpoints, and
+validity-evaluable rows plus zero Measurement Support, Instrument, Privacy,
+exact-model/Thinking/Usage, typed-budget-no-call, and unresolved Transport failures. Any failure
+keeps every exact frequency estimand null and cannot be repaired by row deletion. If the Gate
+passes but one strong cell has no Qualified row, that cell remains null with
+`no_qualified_rows`; zero-vector or synthetic-State imputation is forbidden. The direct API
+fixture confirms 48/48 failed-Gate null reports, one missing-cell null report, strong-key,
+conditioned-to-Unconditional, and Route-as-condition rejection, and zero imputed vectors.
+
+The 360-Job scripted Runner closes in 4,158 local calls with 3,798 exact Action payloads and
+Support decisions, 3,438 public Observations, 360 qualified nested Final payloads, 360 joint task
+Verifier invocations, 360 Qualified-valid fixture outcomes, and 360 Raw recovery passes.
+Sensitive Prompt Keys, real Provider calls, Stage 2 Provider calls, and State Mapping rows are
+zero. Twenty-five destructive mutations fail closed.
+
+A preliminary uncommitted candidate was not admitted after package-wide Mypy found four local
+v26.160 diagnostics. The type-complete implementation replaces dynamic replay placeholders with
+an exact typed replay-binding constructor, explicitly narrows the frozen mechanism language, and
+annotates heterogeneous catalog payloads. It then rematerializes the complete formal chain from
+an empty directory. The authoritative tests pass 4/4; the complete independent build reproduces
+33/33 files byte for byte in 847.65 seconds. The selected v26.159-v26.160 regression passes 4/4
+in 10.28 seconds. Focused Ruff and Mypy pass. Package-wide Ruff check passes. Focused Ruff format
+passes while package-wide format retains 122 pre-existing differences outside v26.160.
+Package-wide Mypy checks 502 source files and retains only the four pre-existing
+v26.70/v26.129/v26.154 diagnostics, with zero v26.160 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_frequency_preflight_report:014007ba585d6315ee68dc001a13381b7c742e1468ba4b66a58ef3b938fb5b69`;
+- report SHA-256:
+  `4fb13daa6244af4c9257f58e508a8dde45392ce0574a809eccdb0d74350b5153`;
+- reproducibility root:
+  `finance_v26_frequency_reproducibility_root:b5987b716c0019a0a8cc706ecb39d232fdfb1ce400b3c07cdc34d39a35c4a069`;
+- fresh Source Population:
+  `finance_v26_frequency_source_population:fe954fe355847ef429aa50603fea12f4bba53af59e4d875e8051e76c94dcc301`;
+- TaskPackage catalog:
+  `finance_v26_fresh_reachability_task_catalog:30665de916f724e7c7ec9c8e989c7eff93575b953625b500f2942d4975879506`;
+- Path catalog:
+  `finance_v26_fresh_reachability_path_catalog:d5652fff79ac39922efb59aaeed5f0e643578a42ca99253b11b584b5d754824e`;
+- bounded generation policy:
+  `bounded_reachability_generation_policy:ba06af1fbfc013688ecb6c253401fe5c0d12be1d211bf727a3dd64db5cd15aaa`;
+- Mapper-v2 Contract:
+  `valid_only_state_mapper_contract_v2:af984e1acc450f34fed741dd88790322e84db3098f0aad4c8329fb70a1311982`;
+- Task-condition Cell Catalog:
+  `mapper_v2_task_condition_cell_catalog:4a734a3ace027c43a711d00b646a4155e7ba6b04d6f6ab5a18cb8b9931875740`;
+- Assignment Contract:
+  `finance_v26_frequency_assignment_contract:5156e9e92addda1482f53e4f8fdedcb3c9857f6dd1796354b70a0e4b40d8ceb7`;
+- Mapper-v2 frequency protocol:
+  `finance_v26_mapper_v2_frequency_protocol:fbfb314cfea3e693a34be778b62f7c3a510f4393a1638ae91c18794c328e5007`;
+- estimand Contract:
+  `finance_v26_frequency_estimand_contract:d434124bba9775355f2f16f61c2b432fdae051d751a21437809e7065ffc559c5`;
+- execution Contract:
+  `finance_v26_frequency_execution_contract:69e958c2118dc91891796a82a90e1c03b90a75c1d186609a3acb3d5dbfcd3149`;
+- Manifest:
+  `finance_v26_frequency_manifest:9cdd5be51f2e9dfd815d43f691987790b60ce5f435227409058bdbe00a69c3e4`;
+- outcome Contract:
+  `finance_v26_frequency_outcome_contract:d02dfa25cdc1002f5c6a05e62be771cffa090082fb1d96a53b981122f1d4d1bd`;
+- Runner Contract:
+  `finance_v26_frequency_runner_contract:41f2eb1a60a78631df97e2ff2836712571e72a9bb42c9da76eec42fd54ecd64c`;
+- Runner preflight:
+  `finance_v26_frequency_runner_preflight:e9919c902655a919e56a5ba6581f174885aa75770bc7418ad8c6ab2beba91bd4`;
+- transition:
+  `finance_v26_frequency_transition:b71a815575a0ddd247098e300037709451fe3aa2a72abe492b2230e5855c81b2`.
+
+The only permitted transition is:
+
+~~~text
+fresh_mapper_v2_reachability_frequency_execution_only
+~~~
+
+The successor may execute only the exact fresh 360-Job Manifest under every frozen v26.160
+source, TaskPackage, Path, strong condition, bounded generation, Tool, Support, resource, Mapper,
+Assignment, estimand, Verifier, outcome, and Runner identity. Source reselection; condition,
+Tool, Mapper, model/Thinking, resource, Support, recovery, Detour, Grammar, or Verifier change;
+historical rerun or reclassification; current-denominator frequency; State probability; VTDO;
+training; release; and production Contribution remain forbidden. See
+`docs/finance_v26_160_mapper_v2_reachability_frequency_preflight.md`.
 
 ## v26.159 State Semantics And Condition Index Audit Decision
 
@@ -447,6 +600,11 @@ strata, task-primary and rollout-secondary statistics, and independent postrun a
 execution, historical rerun or reclassification, current-denominator frequency, VTDO, training,
 release, and production Contribution remain forbidden. See
 `docs/finance_v26_159_state_semantics_and_condition_index_audit.md`.
+
+That preflight-only transition has now been consumed by v26.160. All v26.159 diagnostics,
+historical Assignments, State IDs, Route IDs, labels, and no-frequency conclusions remain
+immutable. The current transition is the exact fresh 360-Job execution-only authorization
+recorded above.
 
 ## v26.156-v26.158 Valid-Only Reachability State Mapping Decision
 
