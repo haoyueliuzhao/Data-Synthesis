@@ -88,9 +88,15 @@ def _prepared() -> execution.PreparedExecution:
     )
 
 
-def test_v26_154_prepare_only_is_exact_and_has_zero_online_artifacts() -> None:
+def test_v26_154_completed_run_is_exact_and_recovers_without_client() -> None:
     prepared = _prepared()
     files = tuple(path for path in FORMAL_DIR.iterdir() if path.is_file())
+    checkpoint = FORMAL_DIR / "fresh_reachability_results.checkpoint.jsonl"
+    report = execution.ReachabilityExecutionReport.model_validate(_load(FORMAL_DIR / "report.json"))
+    lineage = execution.RawLineageAudit.model_validate(_load(FORMAL_DIR / "raw_lineage_audit.json"))
+    gate = execution.MeasurementGateAudit.model_validate(
+        _load(FORMAL_DIR / "measurement_gate_audit.json")
+    )
 
     assert prepared.source_replay.replayed_file_count == 10_156
     assert prepared.source_replay.replay_pass_count == 10_156
@@ -98,12 +104,42 @@ def test_v26_154_prepare_only_is_exact_and_has_zero_online_artifacts() -> None:
     assert prepared.preexecution_binding.unconditional_job_count == 144
     assert prepared.preexecution_binding.conditioned_job_count == 216
     assert prepared.preexecution_binding.registered_path_count == 36
-    assert len(files) == 17
-    assert not (FORMAL_DIR / "fresh_reachability_results.checkpoint.jsonl").exists()
-    assert not tuple(FORMAL_DIR.glob("raw_execution/**/*.json"))
-    assert not tuple(FORMAL_DIR.glob("raw_provider_envelopes/**/*.json"))
-    assert not tuple(FORMAL_DIR.glob("public_payload_projections/**/*.json"))
-    assert not tuple(FORMAL_DIR.glob("transport_invocation_certificates/**/*.json"))
+    assert len(files) == 26
+    assert len(checkpoint.read_text(encoding="utf-8").splitlines()) == 360
+    assert len(_load(FORMAL_DIR / "fresh_reachability_measurement_results.json")) == 360
+    assert len(tuple(FORMAL_DIR.glob("raw_execution/**/*.json"))) == 360
+    assert len(tuple(FORMAL_DIR.glob("raw_provider_envelopes/**/*.json"))) == 3_043
+    assert len(tuple(FORMAL_DIR.glob("public_payload_projections/**/*.json"))) == 3_043
+    assert len(tuple(FORMAL_DIR.glob("transport_invocation_certificates/**/*.json"))) == 3_043
+    assert lineage.raw_execution_count == 360
+    assert lineage.provider_call_count == 3_043
+    assert lineage.transport_invocation_count == 3_043
+    assert report.complete_result_count == report.complete_raw_count == 360
+    assert report.qualified_valid_count == report.state_mapping_eligible_count == 100
+    assert report.reachability_estimands_authorized is False
+    assert gate.passed is False
+    assert gate.failure_ids == (
+        "instrument_failure_zero",
+        "measurement_support_exit_zero",
+        "model_endpoint_360_of_360",
+    )
+
+    client_constructions: list[str] = []
+
+    def forbidden_client_factory(*_args: Any, **_kwargs: Any) -> Any:
+        client_constructions.append("forbidden")
+        raise AssertionError("completed v26.154 replay constructed a client")
+
+    recovered = execution.run_fresh_reachability_execution(
+        preflight_dir=PACKAGE_ROOT / execution.PREFLIGHT_DIR,
+        output_dir=FORMAL_DIR,
+        package_root=PACKAGE_ROOT,
+        implementation_root=PACKAGE_ROOT,
+        workers=8,
+        client_factory=forbidden_client_factory,
+    )
+    assert recovered == report
+    assert client_constructions == []
 
 
 def test_v26_154_unconditional_and_conditioned_scripted_jobs_are_route_bound() -> None:
