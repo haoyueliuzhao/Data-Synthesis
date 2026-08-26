@@ -222,3 +222,55 @@ def test_static_path_condition_is_separate_from_structural_state() -> None:
 
     assert first.route_condition_id != second.route_condition_id
     assert first.structural_state_id == second.structural_state_id
+
+
+def test_rejection_content_addresses_do_not_split_structural_state() -> None:
+    common = {
+        "error_category": "unknown_or_unselectable_action",
+        "failed_decision_kind": "acquire_public_input",
+        "violated_public_constraint": "action_id_must_be_in_visible_candidate_set",
+        "semantic_recovery_available": True,
+        "job_terminal": False,
+        "unresolved_public_symbols": ["symbol-b", "symbol-a"],
+    }
+    trajectories = tuple(
+        make_public_trajectory_projection(
+            trajectory_id="trajectory-1",
+            terminal_disposition="completed_model_endpoint",
+            actions=_actions("runtime-operation:a"),
+            semantic_rejections=(
+                {
+                    **common,
+                    "proposal_id": f"proposal:{suffix}",
+                    "rejection_id": f"rejection:{suffix}",
+                    "state_id": f"state:{suffix}",
+                    "selected_action_id": f"action:{suffix}",
+                },
+            ),
+            final_result={"value": "1.0"},
+        )
+        for suffix in ("left", "right")
+    )
+    assignments = []
+    for trajectory in trajectories:
+        route = make_empirical_route_projection(
+            sampling_mode="reachability_unconditional",
+            public_condition_id="unconditional",
+            requested_path_id=None,
+            requested_path_strategy=None,
+            static_path_catalog_id="path-catalog",
+            trajectory=trajectory,
+        )
+        assignments.append(
+            map_independently_valid_public_trajectory_to_state(
+                trajectory=trajectory,
+                qualified_validity_report=_qualified_report(),
+                mapper_contract=_contract(),
+                omega_task_context_id="omega-context",
+                route_projection=route,
+                runtime_operation_aliases={"runtime-operation:a": "program-node:operation-1"},
+            )
+        )
+
+    assert trajectories[0].trajectory_content_hash != trajectories[1].trajectory_content_hash
+    assert assignments[0].structural_state_id == assignments[1].structural_state_id

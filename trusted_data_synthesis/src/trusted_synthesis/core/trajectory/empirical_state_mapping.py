@@ -317,6 +317,38 @@ def _normalize(value: Any, aliases: Mapping[str, str]) -> Any:
     return value
 
 
+_REJECTION_SEMANTIC_KEYS = (
+    "blocked_public_call_signature",
+    "correct_evidence_exposed",
+    "correct_node_exposed",
+    "correct_operand_exposed",
+    "correct_operator_exposed",
+    "correct_tool_exposed",
+    "error_category",
+    "exact_argument_values_retained",
+    "failed_decision_kind",
+    "job_terminal",
+    "selected_tool_id",
+    "semantic_recovery_available",
+    "unresolved_public_symbols",
+    "violated_public_constraint",
+)
+
+
+def _semantic_rejection_projection(
+    value: Mapping[str, Any],
+    aliases: Mapping[str, str],
+) -> dict[str, Any]:
+    projected = {key: value[key] for key in _REJECTION_SEMANTIC_KEYS if key in value}
+    unresolved = projected.get("unresolved_public_symbols")
+    if isinstance(unresolved, (list, tuple)):
+        projected["unresolved_public_symbols"] = sorted(str(item) for item in unresolved)
+    normalized = _normalize(projected, aliases)
+    if not isinstance(normalized, dict):
+        raise TypeError("semantic rejection projection is not a Mapping")
+    return normalized
+
+
 def _references(value: Any) -> tuple[tuple[ReferenceKind, str], ...]:
     found: set[tuple[ReferenceKind, str]] = set()
 
@@ -482,7 +514,10 @@ def _build_structural_state(
                 "public_failures": tuple(sorted(failure_rows, key=repr)),
                 "semantic_rejections": tuple(
                     sorted(
-                        (_normalize(item, aliases) for item in trajectory.semantic_rejections),
+                        (
+                            _semantic_rejection_projection(item, aliases)
+                            for item in trajectory.semantic_rejections
+                        ),
                         key=repr,
                     )
                 ),
