@@ -117,7 +117,7 @@ def _map(*, runtime_ref: str, reverse_acquisition: bool = False):
     )
     route = make_empirical_route_projection(
         sampling_mode="reachability_unconditional",
-        public_condition_id="unconditional",
+        public_condition_id=None,
         requested_path_id=None,
         requested_path_strategy=None,
         static_path_catalog_id="path-catalog",
@@ -183,7 +183,7 @@ def test_empirical_mapper_rejects_nonqualified_trajectory(valid: bool | None) ->
     )
     route = make_empirical_route_projection(
         sampling_mode="reachability_unconditional",
-        public_condition_id="unconditional",
+        public_condition_id=None,
         requested_path_id=None,
         requested_path_strategy=None,
         static_path_catalog_id="path-catalog",
@@ -255,7 +255,7 @@ def test_rejection_content_addresses_do_not_split_structural_state() -> None:
     for trajectory in trajectories:
         route = make_empirical_route_projection(
             sampling_mode="reachability_unconditional",
-            public_condition_id="unconditional",
+            public_condition_id=None,
             requested_path_id=None,
             requested_path_strategy=None,
             static_path_catalog_id="path-catalog",

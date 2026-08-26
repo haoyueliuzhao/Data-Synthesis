@@ -146,7 +146,7 @@ class EmpiricalStructuralState(FrozenModel):
 class EmpiricalRouteProjection(FrozenModel):
     projection_id: str = Field(min_length=1)
     sampling_mode: Literal["reachability_unconditional", "reachability_conditioned"]
-    public_condition_id: str = Field(min_length=1)
+    public_condition_id: str | None = None
     requested_path_id: str | None = None
     requested_path_strategy: str | None = None
     static_path_catalog_id: str = Field(min_length=1)
@@ -159,6 +159,8 @@ class EmpiricalRouteProjection(FrozenModel):
     @model_validator(mode="after")
     def validate_projection(self) -> EmpiricalRouteProjection:
         conditioned = self.sampling_mode == "reachability_conditioned"
+        if conditioned != (self.public_condition_id is not None):
+            raise ValueError("empirical route projection changed its public condition binding")
         if conditioned != (self.requested_path_id is not None):
             raise ValueError("empirical route projection changed its Path conditioning")
         if conditioned != (self.requested_path_strategy is not None):
@@ -279,7 +281,7 @@ def make_public_trajectory_projection(
 def make_empirical_route_projection(
     *,
     sampling_mode: Literal["reachability_unconditional", "reachability_conditioned"],
-    public_condition_id: str,
+    public_condition_id: str | None,
     requested_path_id: str | None,
     requested_path_strategy: str | None,
     static_path_catalog_id: str,

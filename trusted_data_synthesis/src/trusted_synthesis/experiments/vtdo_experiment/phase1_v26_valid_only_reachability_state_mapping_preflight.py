@@ -246,7 +246,7 @@ class ValidOnlyMappingCandidate(FrozenModel):
     raw_execution_sha256: str = Field(min_length=64, max_length=64)
     runtime_operation_alias_binding_hash: str = Field(min_length=1)
     sampling_mode: Literal["reachability_unconditional", "reachability_conditioned"]
-    public_condition_id: str = Field(min_length=1)
+    public_condition_id: str | None = None
     requested_path_id: str | None = None
     requested_path_strategy: str | None = None
     qualified_validity: Literal[True] = True
@@ -259,7 +259,8 @@ class ValidOnlyMappingCandidate(FrozenModel):
     def validate_candidate(self) -> ValidOnlyMappingCandidate:
         conditioned = self.sampling_mode == "reachability_conditioned"
         if (
-            conditioned != (self.requested_path_id is not None)
+            conditioned != (self.public_condition_id is not None)
+            or conditioned != (self.requested_path_id is not None)
             or conditioned != (self.requested_path_strategy is not None)
             or self.candidate_id
             != _identity(
@@ -1018,7 +1019,7 @@ def _constructibility(
     for trajectory, alias in zip(projections, aliases, strict=True):
         route = make_empirical_route_projection(
             sampling_mode="reachability_unconditional",
-            public_condition_id="synthetic-unconditional",
+            public_condition_id=None,
             requested_path_id=None,
             requested_path_strategy=None,
             static_path_catalog_id=static_path_catalog_id,
@@ -1074,7 +1075,7 @@ def _destructive(
     trajectory = _synthetic_projection("runtime-operation:a")
     route = make_empirical_route_projection(
         sampling_mode="reachability_unconditional",
-        public_condition_id="synthetic-unconditional",
+        public_condition_id=None,
         requested_path_id=None,
         requested_path_strategy=None,
         static_path_catalog_id=static_path_catalog_id,
