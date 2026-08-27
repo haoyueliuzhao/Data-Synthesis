@@ -357,10 +357,239 @@ resource overrun. The current transition permits only an independent credential-
 audit over all 360 Raw rows and 3,134 Provider artifact triples. Frequency, State probability,
 VTDO, training, release, and production Contribution remain unauthorized.
 
+v26.162 has now consumed that exact zero-call audit authorization. It byte-replays all 9,797
+v26.161 execution files, reparses all 360 Raw rows and 3,134 Envelope/Projection/Transport
+triples, and independently reconstructs every public trajectory, joint-validity result, strong
+Cell, and null report without using the v26.161 projector, Gate, Mapper, or summary helpers as
+outcome oracles. The failed Gate is reproduced at 359/360 model endpoints and evaluable rows with
+one Measurement Support exit. Raw-native Instrument and Resource failure counts are both zero,
+confirming that the historical formal Instrument and rollout-budget failures are an inherited
+projection overlap on the same second-Detour Job rather than a second cause or resource overrun.
+The descriptive 139 Base-valid, 270 Mechanism-qualified, and 139 Qualified-valid counts, eight
+zero-Qualified Cells, 48 null reports, and zero Mapper/Assignment/State/Route rows all match.
+Historical labels remain unchanged. The operator-selected Route B decision then authorizes only
+a fresh bounded-policy endpoint frequency preflight.
+
+v26.163 has now consumed that exact Route B preflight authorization with zero real Provider or
+Stage 2 Provider calls. It preserves the missing migrated-checkout v25.44 snapshot limitation and
+does not claim a v26.158 full-transitive pass, while independently locating the exact original
+604,998,387-byte snapshot at its historical `/data1` path and matching SHA-256
+`c6ac2b985607a0f964cb919010bd9a7c9eee9ac57534983e4ab09a7b10c3f17e`
+for current-stage source construction. A fixed-salt selection excludes 27,473 Evidence
+identities and all 48 prior role sources, then freezes twelve fresh model-unexposed tasks with
+zero overlap on all eight identity channels before loading Policy, Path, resource, Mapper,
+compatibility, or outcome values. The fresh chain contains twelve TaskPackages, 36 conditioned
+Paths, 48 strong Cells, and 360 Jobs split 144 Unconditional and 216 conditioned.
+
+The new Route B policy makes each frozen Horizon a complete
+`policy_horizon_exhausted` endpoint under its own generation-policy identity. A Horizon is
+task-incomplete, Base-invalid, Qualified-invalid, and mapping-ineligible, but it is neither a
+Measurement Support exit nor a model semantic error. Raw Instrument, Support, Resource, Provider
+identity, Thinking/Usage, Privacy, Transport, policy endpoint, validity, and mapping fields are
+orthogonal. The exact second-Detour fixture retains Instrument, Support, and Resource integrity,
+emits the Horizon before any later call, and invokes neither task Verifier nor Mapper. The
+statistics Contract separately freezes bounded-policy success support
+`q_c=N_c^+/N_c` and success-conditional State frequency
+`pi_c(z)=N_{c,z}/N_c^+`, with 95% Wilson intervals, explicit zero-Qualified and incomplete-Cell
+null rules, and no stable-population or unrestricted natural-agent claim.
+
+Across 36 Paths the credential-free closure reaches 756 typed States, 2,581 Candidate events,
+362 Detour candidates, and zero Support exits. All 159 ordinary-replan-closed Detours cover all
+36 Paths within 21/23/24 requests/calls/invocations, a 53,015-byte Prompt, and 1,074,977
+conservative tokens, leaving 45,023 tokens under the frozen 1.12M ceiling. The 360-Job fixture
+closes 4,158 local calls and 360 Raw recoveries; 26 destructive mutations fail closed. A full
+independent build reproduces all 34 outputs byte for byte. This is a preflight, not a frequency
+result. The current transition authorizes only execution of the exact fresh v26.163 360-Job
+Manifest; State probability, VTDO, training, release, and production Contribution remain
+unauthorized.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.163 Route B Bounded-Policy Endpoint Frequency Preflight Decision
+
+Finance v26.163 consumed only `fresh_bounded_policy_endpoint_frequency_preflight_only`. It first
+independently rebuilt all nine direct v26.162 outputs and bound 27 current-stage inputs with zero
+credential lookup or Provider calls. The migrated checkout still lacks the bound v25.44 stopping
+snapshot, so `historical_snapshot_limitation_preserved=true` and
+`v26_158_full_transitive_rebuild_claimed=false` remain frozen.
+
+Three preliminary source candidates failed closed before formal output. The old v26.150 frame
+had no eligible Context-conditioned Action Hard task after all four prior role Populations were
+excluded; the union of the v26.129 and v26.150 frames had no model-unexposed Context Hard task;
+and the migrated checkout could not regenerate a fresh frame because its bound snapshot was
+absent. Each attempt stopped before Policy, Path, Mapper, Manifest, Job, or Provider behavior.
+The exact original snapshot was then found at:
+
+```text
+/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/
+vtdo_experiment/finance_v25_44_hardened_stopping_evidence_snapshot_v3_20260816/
+finance_stopping_evidence_snapshot.jsonl
+```
+
+Its 604,998,387 bytes match SHA-256
+`c6ac2b985607a0f964cb919010bd9a7c9eee9ac57534983e4ab09a7b10c3f17e`.
+v26.163 uses that exact recovered content only for the current stage and independently reproduces
+the v26.129 exclusion registry from the original artifact root. This does not retroactively make
+the migrated checkout or v26.158/v26.160 transitive replay complete.
+
+Source construction uses a fresh fixed salt and excludes 27,173 historical plus 300 prior-role
+Evidence identities. The regenerated 70-task Frame has zero exclusion overlap. Selection occurs
+before Policy, Path, resource, Mapper, compatibility, Verifier, or outcome loading and chooses
+one task in each of the twelve Mechanism x Tier cells. The twelve tasks and their 75 Evidence
+identities have zero overlap with all 48 prior role sources on task ID, source-task ID, Evidence
+ID, Evidence Version ID, core semantic signature, task signature, mechanism-instance signature,
+and source-record ID. Model outcomes and compatibility measurements are not selection inputs.
+
+The fresh chain contains twelve TaskPackages, 36 conditioned Paths, 48 strong Task-condition
+Cells, one bounded-policy generation identity, one resource Contract, one Mapper-v2 Contract,
+one Assignment Contract, one estimand Contract, one execution Contract, one 360-Job Manifest,
+one Outcome Contract, one Runner, and fresh prospective execution and report identities. The
+Manifest is exactly 144 Unconditional and 216 Path-conditioned Jobs with distinct fresh Jobs and
+Seeds. Empirical Route remains post-treatment and enters no statistics key.
+
+The generation Policy retains the exact 21 Primary-request, 23 Provider-call, 24
+transport-invocation, 1,120,000-token, and one-Ordinary-Detour bounds. Reaching any declared
+Horizon produces a complete `policy_horizon_exhausted` endpoint. It is task-incomplete,
+Base-invalid, Qualified-invalid, and mapping-ineligible, but is neither a Support exit nor model
+semantic error. An exact second-Detour fixture verifies Instrument, Support, Resource, Privacy,
+and endpoint integrity, zero later Provider calls, zero task-Verifier calls, and zero mapping
+rows. A one-Detour control still closes as Qualified-valid.
+
+The global integrity Gate requires 360/360 Raw and bounded-policy endpoints plus zero Raw
+Instrument, Resource, Privacy, Provider identity/Thinking/Usage, unresolved Transport, and
+unsupported Measurement Support failures. Each Unconditional Cell separately requires twelve
+endpoints and each conditioned Cell six. For complete Cells the frozen estimands are:
+
+```text
+q_hat_c     = N_qualified_c / N_total_c
+pi_hat_c(z) = N_c,z / N_qualified_c, when N_qualified_c > 0
+```
+
+`q` receives a 95% Wilson interval and each `pi(z)` a marginal 95% Wilson interval; no
+simultaneous multinomial coverage is claimed. A complete zero-Qualified Cell emits `q=0` with
+an interval and `pi=null`; an incomplete Cell emits both null; a failed global Gate makes all
+Cells null. One Qualified row may instantiate empirical `pi` but cannot support a stable
+population claim. Empirical non-degeneracy requires at least two Qualified rows and at least two
+States. State or zero-vector imputation is forbidden.
+
+The complete prospective Support census reaches 756 unique states and 2,581 Candidate events:
+90 failed Observations, 482 successful no-progress events and Baseline calls, 362 Ordinary
+Detours, zero typed Support exits, and zero Host exceptions. The 362 Detours split 159
+ordinary-replan-closed and 203 class-external diagnostics. The closed set covers all 36 Paths and
+has maxima of 21 Primary requests, 23 Provider calls with recovery reserves, 24 invocations, a
+53,015-byte Prompt, and 1,074,977 conservative tokens. The 60K/21/23/24/1.12M Contract leaves
+45,023 tokens of minimum one-Detour headroom.
+
+The 360-Job scripted Runner closes in 4,158 local calls with 3,798 exact Actions and Support
+decisions, 3,438 public Observations, 360 qualified nested Final payloads, 360 joint task-Verifier
+calls, 360 Qualified-valid fixtures, and 360 Raw recoveries. Production and independent Reference
+Mapper match one valid-only fixture in each strong Cell. Formal Assignment and frequency-report
+counts remain zero. All 26 destructive mutations fail closed.
+
+The new focused tests pass 4/4 across the fast and full-rebuild invocations. The complete
+34-file independent rebuild passes 1/1 in 1,205.12 seconds. The fast v26.160-v26.163 adjacent
+regression passes 10/10 in 4.56 seconds. Focused and package-wide Ruff pass. Focused Mypy passes;
+package-wide Mypy checks 509 source files and retains only the four pre-existing
+v26.70/v26.129/v26.154 diagnostics, with zero v26.162 or v26.163 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_bounded_policy_preflight_report:93af17282d46c1114f3d568978b92ae63b017680d952b1b19890e2fe83e9ec06`;
+- report SHA-256:
+  `78e91be467f17388c64a2bc6ed573a98fe13eecc328611db2392beacb0607f7d`;
+- predecessor replay:
+  `finance_v26_bounded_policy_predecessor_replay:3b2e254ed316eaae157d75bd8521aa9ae14e98aec8837692591e9c4c99112e35`;
+- Source Population:
+  `finance_v26_frequency_source_population:3443b578cf293dda451ff822a681abc6dbb502c24fcafac00b9cdab77ff49bc4`;
+- TaskPackage catalog:
+  `finance_v26_fresh_reachability_task_catalog:468343551326133e89f1576ede569d58b5835247dab084dbe1c8ca8316d42509`;
+- Path catalog:
+  `finance_v26_fresh_reachability_path_catalog:d47d6115019ee9184947825391114f25692926d409fd61d114caf6a6ed4d92f0`;
+- bounded generation policy:
+  `bounded_policy_endpoint_generation_policy:481664d9ed21cb7f610754ff290021b7fb6ce5451ff57600b572224bff60bbe2`;
+- resource Contract:
+  `finance_v26_fresh_reachability_resource_contract:64507d067b2842c93da2d622b18d7b27973bf23396968994dda6e50fe06ef0e5`;
+- strong Cell Catalog:
+  `mapper_v2_task_condition_cell_catalog:d0d306a6c550cc6cf37ab4f670e7f05adb3c4091f6015164f16a9856cf8fb8da`;
+- estimand Contract:
+  `finance_v26_bounded_policy_estimand_contract:ad923ed5024db84733618f50218baeae39705b12ccffc002478cd623172bb221`;
+- Manifest:
+  `finance_v26_frequency_manifest:5d4d25a257b1e5cb4de613f79bc97f8c2c346642a93883e47b98b49e9941933d`;
+- Outcome Contract:
+  `finance_v26_bounded_policy_outcome_contract:8b4f38bfe2a2af4060f076afb4b06eea81431c3fdff7f55532c64fe509bcaf57`;
+- Runner Contract:
+  `finance_v26_bounded_policy_runner_contract:f79d0d54670b5c13024a353f5ddf38d69f554988e6c50f8139c4d3717cb5d8e7`;
+- transition:
+  `finance_v26_bounded_policy_transition:bb2fd59f49bbbf2ff5aa8e89b5499fe07cc8011823b9f7317b7d7868d10c155c`.
+
+The only permitted transition is:
+
+```text
+fresh_bounded_policy_endpoint_frequency_execution_only
+```
+
+The successor may execute only the exact fresh 360-Job Manifest under all frozen v26.163
+identities and Contracts. Source, Policy, Condition, Tool, Support, resource, Mapper,
+model/Thinking, recovery, Detour, Grammar, or Verifier changes; historical rerun or
+reclassification; Job deletion; outcome-dependent Cell selection; current-denominator frequency;
+State probability; VTDO; training; release; and production Contribution remain forbidden. See
+`docs/finance_v26_163_bounded_policy_endpoint_frequency_preflight.md`.
+
+## v26.162 Mapper v2 Frequency Independent Postrun Audit Decision
+
+Finance v26.162 consumed only
+`fresh_mapper_v2_reachability_frequency_postrun_audit_only`. It byte-replays all 9,797 files
+from v26.161, independently parses 360 Raw Executions and all 3,134
+Envelope/Projection/Transport triples, and reconstructs every public trajectory, joint-validity
+result, Cell diagnostic, and null report without using the v26.161 projector, Gate, Mapper, or
+summary helper as an outcome oracle. Credential lookup and Provider calls are zero.
+
+The independent Gate exactly reproduces 360/360 Raw, 359/360 model endpoints, 359/360
+validity-evaluable rows, one Measurement Support exit, and a failed decision. Exact-model,
+Thinking, Usage, Privacy, typed-budget-no-call, unresolved Transport, Raw-native Instrument, and
+Resource-accounting failure counts are zero. The historical online Formal Instrument and
+rollout-budget failures remain immutable but are localized to a projection overlap on the same
+Support-exit Job.
+
+That Job remains State-dependent Stopping Hard, conditioned `search_then_open`, with two
+Ordinary Detours, three calls and invocations, 40,041 tokens, zero later Provider calls, zero
+task-Verifier calls, and zero State Mapping rows. Its independent decomposition is Instrument
+integrity true, Support unavailable, Resource integrity true, no model endpoint, and null
+validity. It is not reclassified.
+
+The audit independently reproduces 139 Base-valid, 270 Mechanism-qualified, and 139
+Qualified-valid descriptive rows. Across the 48 strong Cells, eight have zero Qualified rows:
+one Unconditional and seven conditioned. All 48 reports remain
+`measurement_gate_failed`; Production and Reference Mapper invocations, formal Assignments,
+structural States, empirical Route Signatures, and imputed State vectors remain zero.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_mapper_v2_frequency_postrun_audit_report:a536a3a85e2011587d880ac527b4e6a6ca1bec494bbfbe28b7421be8113fdc5e`;
+- report SHA-256:
+  `0603bb3c0cf84bab38cec287cba59de47f60d0f6bf8cbe787adec1697bbb9b62`;
+- source replay:
+  `finance_v26_mapper_v2_frequency_postrun_source_replay:f5c59e6de40635c37346fc200c9abc6ddba1a7f1a371e53c4e141a85f1f1793e`;
+- Provider audit:
+  `finance_v26_mapper_v2_frequency_independent_provider_artifacts:85dd5abc4fc0357ee288115165fcedf95706ed2c4decf1901a31587487bd7ffd`;
+- independent projection:
+  `finance_v26_mapper_v2_frequency_independent_projection_catalog:74b3e138be0ca5695aba194a2705a3250da7965eae0eebbe0a0b28f140919e11`;
+- independent Gate:
+  `finance_v26_mapper_v2_frequency_independent_gate:dc9900949b626ae40abf7945082571b344a716ab627f3b9934e10d38dc000d91`;
+- Support boundary:
+  `finance_v26_mapper_v2_frequency_support_boundary:a6e2ff5029a8114edbfab126424033b7d4571958e16d118e2fd8d4f0dedcba63`;
+- Route B decision:
+  `finance_v26_route_b_bounded_policy_decision:6a7fb04af06ee74c95de0bce29e6d3bd8506c180ac4a5c928e6e37e6ca775704`.
+
+The v26.162 transition authorized only a fresh credential-free Route B bounded-policy endpoint
+frequency preflight. That transition has been consumed by v26.163. Historical v26.161 rows,
+labels, failed Gate, and null frequency conclusion remain immutable. See
+`docs/finance_v26_162_mapper_v2_frequency_postrun_audit.md`.
 
 ## v26.161 Mapper v2 Reachability Frequency Execution Decision
 
