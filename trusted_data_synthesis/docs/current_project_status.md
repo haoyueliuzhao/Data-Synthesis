@@ -339,10 +339,159 @@ byte for byte. The current transition authorizes only execution of the exact fre
 Manifest; no frequency result, State probability, VTDO, training, release, or production claim is
 yet authorized.
 
+v26.161 has now consumed that exact execution-only authorization. Its authoritative preparation
+matches 35/35 current-stage inputs, all 33 frozen v26.160 outputs, and an independent 33-file
+rebuild before recording an unopened 360-Job denominator. The online run completes 360/360
+Results and Raw Executions in 3,134 exact-model, Thinking-complete, Usage-complete Stage 1 calls
+with 3,134 privacy-first artifact triples and zero Stage 2 Provider calls. The terminal partition
+is 197 completed model endpoints, 162 model-result failures, and one typed Measurement Support
+exit after a second Ordinary Detour on a conditioned State-dependent Stopping Hard
+`search_then_open` Job. The complete Gate therefore fails at 359/360 model endpoints and
+validity-evaluable rows with one Support exit. Every exact frequency estimand remains null; all
+48 strong-cell reports are null, and Production Mapper, Reference Mapper, formal Assignment,
+structural State, and empirical Route Signature counts are zero. The online projection also
+counts one Instrument failure on the same exit row, while its immutable Raw records
+`instrument_integrity=true`, three calls, 40,041 tokens, and zero later calls. This is one
+Support boundary exit plus an inherited projection overlap, not two independent failures or a
+resource overrun. The current transition permits only an independent credential-free postrun
+audit over all 360 Raw rows and 3,134 Provider artifact triples. Frequency, State probability,
+VTDO, training, release, and production Contribution remain unauthorized.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.161 Mapper v2 Reachability Frequency Execution Decision
+
+Finance v26.161 consumed only `fresh_mapper_v2_reachability_frequency_execution_only`. It did not
+reselect a source or change a TaskPackage, Path, strong Task-condition Cell, bounded generation
+policy, Tool schema, Support, resource, Mapper, Assignment, estimand, Verifier, outcome,
+model/Thinking, recovery, Detour, Grammar, or Runner Contract.
+
+The preliminary v1 directory contains only frozen and credential-free preparation files and no
+Raw, Provider, checkpoint, online Result, formal Assignment, or frequency row. It was superseded
+because it self-bound only one implementation file and its isolated worktree did not expose one
+ignored current-stage dependency. A first authoritative-v2 preparation then rejected a prefixed
+implementation identity in a raw 64-character SHA-256 field after local rebuild and before any
+credential or call. Both preliminary attempts contribute zero Jobs, calls, endpoints, or
+scientific rows.
+
+The final authoritative source replay binds both implementation files under bundle SHA-256
+`25952d22d718cf44f40ee9cd82e0930221a01490204360defa55432cd68920e3`.
+It matches 35/35 current-stage inputs, 33/33 frozen v26.160 direct outputs, and 33/33 outputs from
+an independent rebuild. It preserves the missing v25.44 snapshot limitation and retains
+`v26_158_full_transitive_rebuild_claimed=false`. The preexecution audit observes zero Raw,
+Provider artifact, checkpoint, report, or Assignment rows before credential lookup and binds the
+exact 360 Jobs, twelve tasks, 48 Cells, 36 Paths, 144 Unconditional Jobs, and 216 conditioned
+Jobs.
+
+The online denominator completes with:
+
+```text
+complete Results / Raw Executions                 360 / 360
+completed model endpoints                               197
+model-result failures                                   162
+Measurement Support exits                                 1
+Stage 1 Provider calls                                 3,134
+transport-inclusive invocations                       3,134
+complete Envelope / Projection / Transport triples    3,134
+Stage 2 Provider calls                                     0
+```
+
+Exact-model, Thinking, Usage, Privacy, fallback, Provider-native Tool, typed budget no-call, and
+unresolved Transport failure counts are zero. Artifact-backed Usage is 16,455,506 Prompt,
+14,314,802 Completion, 13,830,042 Reasoning, and 30,770,308 total tokens. Estimated cost is USD
+`5.45044867360000047422`. Private reasoning payload, invalid public payload, Raw HTTP body, and
+Raw request body persistence counts are zero.
+
+The sole Support exit is Job
+`finance_v26_frequency_job:53e29a176c06a64c701928ec7d2e958de595de83261e9abe95a45d63def57857`.
+It is a State-dependent Stopping Hard conditioned `search_then_open` Job. Its second successful
+Ordinary Detour crosses `T_dyn^(1)` and emits
+`ordinary_detour_allowance_exhausted` before any later Provider invocation. The Raw records
+Instrument integrity true, Privacy compliance, three calls and invocations, 40,041 tokens, zero
+Stage 2 calls, zero later calls, zero task-Verifier calls, and zero State Mapping rows.
+
+The inherited online result projector marks that same row Instrument-invalid and
+`rollout_budget_passed=false`, even though the Raw-native Instrument field is true and its calls,
+invocations, and tokens remain within the frozen bounds. The formal Gate therefore reports one
+Support exit and one Instrument failure on one Job. This overlap does not change the failed Gate,
+but it is not evidence for two independent causes or a budget overrun. v26.161 preserves both
+records unchanged and requires the successor to independently decompose Support, Raw-native
+Instrument, endpoint, and resource fields without using the online projector as an oracle.
+
+The exact noncompensatory Gate is:
+
+```text
+complete Raw                                      360 / 360
+model endpoints                                   359 / 360
+validity-evaluable rows                           359 / 360
+Measurement Support exits                                 1
+formal Instrument rows                                    1
+Privacy failures                                          0
+exact-model / Thinking / Usage failures                   0
+typed budget no-calls                                      0
+unresolved Transport failures                              0
+Gate passed                                            false
+```
+
+The 359 evaluable model endpoints contain 139 Base-valid, 270 Mechanism-qualified, and 139
+Qualified-valid rows. These are descriptive only. Unconditional rows contribute 64/144
+Qualified-valid and conditioned rows 75/216, with one conditioned row unevaluable. Across the 48
+strong Cells, eight have zero descriptive Qualified rows and the per-Cell range is zero through
+ten. The top-level `no_qualified_cell_count=0` means no Cell reached the separate
+`no_qualified_rows` branch after a passing Gate; it does not mean every Cell has a Qualified row.
+
+Because the complete Gate fails, Production and Reference Mapper invocations, formal
+Assignments, structural States, and empirical Route Signatures are all zero. All 48 strong-cell
+frequency reports have `distribution=null` and `null_reason=measurement_gate_failed`; no zero
+vector or 359-row approximation is emitted. The Raw lineage binds 360 Raw descriptors, 9,402
+Provider artifact descriptors, and 9,762 exact byte-replay passes.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_mapper_v2_frequency_execution_report:152679635b6d16da3ae3723bcbf827c322a859cbcd782025022de8dfc0eafd06`;
+- report SHA-256:
+  `53f24149e5f981c67ad438060cf1826b2efaf74430633f5973b20b527c24165e`;
+- source replay:
+  `finance_v26_mapper_v2_frequency_execution_source_replay:396cc608e103fd2e552e3c1273c1b6445c9fa4fd54d46d7aed10489b62e1cccc`;
+- preexecution binding:
+  `finance_v26_mapper_v2_frequency_preexecution_binding:7ccbe158aef4213380f7df3ad8e76b9590912440a329f1a441f6a056fac85f65`;
+- Measurement Gate:
+  `mapper_v2_frequency_measurement_gate:93a07ac068af312b20254589aabd509f661cd34a2d50c3e43111a0f91c335551`;
+- Raw Lineage:
+  `finance_v26_mapper_v2_frequency_raw_lineage:48e34e4dbaa0818376bee5723ad7760938f7e1e54de65024c0c5bbe7e86a368d`;
+- Mapper execution audit:
+  `finance_v26_mapper_v2_frequency_mapper_execution:6807c2f5ebda098061b83797d03acba35ac36281c5e25d07c37ce81ca67914dc`;
+- Assignment Catalog:
+  `finance_v26_mapper_v2_frequency_assignment_catalog:28e3a485de152edaeefaafb29115e38133265bac67170aaca1917618916c4dd2`;
+- frequency summary:
+  `mapper_v2_reachability_frequency_summary:0cdca6e5a5e1f8de518d59f8910a55a5b5dc989e10affff30a4f55a35890c1b4`;
+- postrun transition:
+  `finance_v26_mapper_v2_frequency_execution_transition:5184ef787f6579dccfc92f20bc19ddb4f9a63042bb897b27ccf566f65b1aeb93`.
+
+Focused v26.161 tests pass 4/4 in 4.18 seconds. The selected v26.159-v26.161 adjacent regression
+passes 9/9 in 24.52 seconds. A completed-run replay explicitly removes the credential,
+independently rebuilds all 33 v26.160 outputs, and returns the identical 360/360 report with zero
+new calls. PyCompile, focused Ruff check and format, focused Mypy, and package-wide Ruff pass.
+Package-wide Mypy checks 504 source files and retains only four pre-existing diagnostics in
+v26.70, v26.129, and the byte-frozen v26.154 source, with zero v26.161 diagnostics.
+
+The only permitted transition is:
+
+```text
+fresh_mapper_v2_reachability_frequency_postrun_audit_only
+```
+
+The successor must independently parse all 360 Raw rows and 3,134 Provider artifact triples,
+rebuild public trajectories and joint validity, separate the Support and Instrument overlap, and
+reproduce the failed Gate and all-null frequency decision with zero Provider calls. Row deletion,
+denominator repair, endpoint inference, Contract or threshold change, formal Assignment or State
+creation, frequency or State probability, VTDO, training, release, and production Contribution
+remain forbidden. See
+`docs/finance_v26_161_mapper_v2_reachability_frequency_execution.md`.
 
 ## v26.160 Mapper v2 Reachability Frequency Preflight Decision
 
