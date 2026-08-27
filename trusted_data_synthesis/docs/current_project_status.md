@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-27
+Audit date: 2026-08-28
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -403,10 +403,168 @@ result. The current transition authorizes only execution of the exact fresh v26.
 Manifest; State probability, VTDO, training, release, and production Contribution remain
 unauthorized.
 
+v26.164 has now consumed that exact execution authorization. It independently rebuilds all 34
+v26.163 outputs and confirms an unopened denominator before credential lookup, then completes
+360/360 immutable Raw Executions in 2,919 exact-model, Thinking-complete, Usage-complete Stage 1
+calls with 2,919 privacy-first artifact triples and zero Stage 2 Provider calls. The online Host
+persists every Raw but writes only 358 checkpoint rows before two typed semantic-rejection
+terminals expose a Route B projection-type defect during aggregation. The failed 9,143-file,
+64,601,865-byte directory remains immutable. A fresh credential-free Raw-only recovery matches
+all 358 checkpoints byte for byte, confirms the two legacy null-validity rejection shapes, and
+applies only the already frozen Route B explicit-false terminal rule with zero Provider calls,
+row deletions, or historical reclassifications. The Global Integrity Gate passes at 360/360 Raw
+and 360/360 bounded-policy endpoints with zero Instrument, Resource, Privacy, Provider
+identity/Thinking/Usage, unresolved Transport, or unsupported Support failures. The endpoint
+partition is 150 completed, 207 model-result failure, two model typed rejection, and one
+ordinary-Detour policy Horizon. Base, Mechanism, and Qualified counts are 106/226/106. Mapper v2
+creates 106 Assignments, 53 structural States, and 57 empirical Route Signatures. All 48 Cells
+instantiate bounded-policy success support `q`; 38 instantiate success-conditional `pi`, ten
+have no Qualified row, and 27 satisfy the finite-sample empirical non-degeneracy rule. Total
+Usage is 28,539,733 tokens and estimated cost is USD
+`4.94647675200000042684`. These are bounded-policy finite-sample frequencies only.
+
+v26.165 has now consumed the exact credential-free independent postrun authorization. It
+recomputes the failed-directory content root, reparses all 360 Raw rows and all 2,919
+Envelope/Projection/Transport triples, independently rebuilds all Route B endpoints and the
+Global Integrity Gate, reruns Production and Reference Mapper for all 106 Qualified rows, and
+recalculates all 48 Cell reports. Endpoint matches are 360/360, Mapper State and recovered
+Assignment canonical-byte matches are 106/106, and Cell report matches are 48/48. The one
+ordinary-Detour Horizon retains zero later calls; both typed semantic rejections independently
+reproduce legacy null validity before the separate frozen Route B false projection. The audit
+makes zero Provider calls and changes no predecessor artifact. It confirms the v26.164
+bounded-policy finite-sample reports while leaving unrestricted natural-agent distribution,
+cross-task State probability, Path causal effect, simultaneous multinomial coverage, VTDO,
+training, release, and production unauthorized. The current decision is
+`no_further_experiment_authorized_without_new_audit_decision`.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.164-v26.165 Route B Execution, Recovery, And Independent Audit Decision
+
+Finance v26.164 consumed only
+`fresh_bounded_policy_endpoint_frequency_execution_only`. Before credential lookup it
+independently rebuilt all 34 v26.163 files, validated the exact 360-Job Manifest and every
+frozen identity, and confirmed zero Raw, Provider, Transport, checkpoint, Assignment, or
+frequency artifacts. The online process then drained all 360 Jobs in 2,919 exact-model,
+Thinking-complete, Usage-complete Stage 1 calls and 2,919 transport-inclusive invocations. All
+360 Raw Executions and 8,757 Provider artifact files were persisted; Stage 2 Provider calls,
+Privacy failures, Instrument failures, resource overruns, and unresolved Transport failures
+were zero.
+
+The immutable Raw terminal partition is 150 `completed_model_endpoint`, 207
+`model_result_failure`, two `typed_semantic_rejection`, and one
+`measurement_support_exit/ordinary_detour_allowance_exhausted`. The original Host writes 358
+checkpoint rows and then fails aggregate construction because the two typed semantic-rejection
+model terminals retain legacy null validity while the prospective Route B endpoint requires
+explicit failure values. Every Raw was already complete. The failed directory is frozen at 9,143
+files, 64,601,865 bytes, and content root
+`finance_v26_bounded_policy_failed_execution_content_root:060ae57a88d85a209029331701181e6e48aa846116c8463bcb32317093773446`.
+
+A fresh Raw-only recovery removes the credential, constructs no client, and makes zero Provider
+calls. It reprojects all 360 Raw rows, matches 358/358 persisted checkpoints exactly, and for the
+two typed rejections first confirms legacy Base/Mechanism/Qualified nulls and zero task-Verifier
+calls before applying only the already frozen Route B explicit-false endpoint rule. Row deletion,
+terminal rewrite, historical reclassification, and State Mapping of those rows are zero. The one
+historical second-Detour Raw shape becomes the prospectively declared
+`policy_horizon_exhausted/ordinary_detour_limit` endpoint, with Instrument, Support, Resource,
+Privacy, and Transport integrity and zero later calls.
+
+The recovered Global Integrity Gate passes at 360/360 complete Raw and bounded-policy endpoints
+with all seven failure counts zero. Its Route B terminal partition is 150 completed, 207
+model-result failures, two model typed rejections, and one policy Horizon. Base-valid,
+Mechanism-qualified, and Qualified-valid counts are 106, 226, and 106. Mapper v2 runs only after
+the Gate and creates 106 Assignments with 53 structural States and 57 empirical Route Signatures;
+Production and Reference Mapper match 106/106.
+
+All 48 exact strong Cells contain their fixed endpoint denominator. The formal result contains:
+
+```text
+q instantiated Cells                         48
+pi instantiated Cells                        38
+zero-Qualified Cells                         10
+empirically non-degenerate Cells             27
+formal Assignments                          106
+structural States                            53
+empirical Route Signatures                   57
+```
+
+The statistics remain conditioned on the exact v26.163 bounded generation Policy. The 144
+Unconditional and 216 conditioned Jobs are not pooled, empirical Route is not a statistics key,
+and no zero State is imputed. The report makes no unrestricted natural-agent, cross-task State
+probability, Path causal, simultaneous multinomial, or VTDO claim. Artifact-backed Usage is
+15,302,382 Prompt, 13,237,351 Completion, 12,793,715 Reasoning, and 28,539,733 total tokens.
+Estimated cost is USD `4.94647675200000042684`.
+
+Finance v26.165 then consumes only
+`fresh_bounded_policy_endpoint_frequency_postrun_audit_only`. With the credential removed it
+recomputes the failed-directory root, binds all thirteen recovery files and six implementation
+files, reparses 360 Raw rows and 2,919 complete Provider triples, and independently reconstructs
+every endpoint without using the v26.164 endpoint projector as an outcome oracle. The two typed
+rejections reproduce the legacy null-validity boundary before Route B normalization. Independent
+endpoint equality is 360/360 and the complete Gate object matches exactly.
+
+Only after the independent Gate passes, v26.165 independently reruns Production and Reference
+Mapper on the 106 Qualified rows. State matches and recovered Assignment canonical-byte matches
+are both 106/106. It separately recomputes all 48 `q`, Wilson, `pi`, marginal Wilson,
+zero-Qualified, and non-degeneracy reports; canonical report matches are 48/48. The audit makes
+zero Provider calls, changes zero predecessor files, and independently confirms the entire
+bounded-policy finite-sample result.
+
+The authoritative v26.164-v26.165 focused suite passes 15/15 in 77.53 seconds, including an
+empty-directory 8/8 byte rebuild of v26.165. The v26.162-v26.163 fast adjacent regression passes
+3/3 in 3.77 seconds. Focused Ruff format/check, focused Mypy, and PyCompile pass. Package-wide
+Ruff check passes. Package-wide Mypy checks 515 source files and retains only the four
+pre-existing v26.70/v26.129/v26.154 diagnostics, with zero v26.164-v26.165 diagnostics.
+
+The authoritative identities are:
+
+- v26.164 Raw-only recovery report:
+  `finance_v26_bounded_policy_raw_only_recovery_report:250799e356dc8abebe2f9bae1a4dadc0a318a9db598df9f4fc204a07e25c53d7`;
+- v26.164 execution report:
+  `finance_v26_bounded_policy_frequency_execution_report:624fd8e910ad154cefd084ce6dac9dd9b53e8b7454f8428e24edc6843808e4df`;
+- failed execution freeze:
+  `finance_v26_bounded_policy_failed_execution_freeze:6d6639585b141f46217f300895c4636b52ab72c5e2f1ac77adb529ac85a18874`;
+- Global Integrity Gate:
+  `bounded_policy_global_integrity_gate:66d7e4a0790fbef9429669e2c0a8b5d890876b64f2af427f68a40c1fd06a4e8f`;
+- Assignment Catalog:
+  `finance_v26_bounded_policy_frequency_assignment_catalog:5b4752cdc2190c2c19d8b892fe15f0a9229c9a636670b7b20ace18fae987d9e8`;
+- Cell frequency Catalog:
+  `finance_v26_bounded_policy_cell_frequency_catalog:1a0e2482362af5d30d009f70d17c4737ae82b6236b76c6504011b0c73f439000`;
+- v26.165 report:
+  `finance_v26_bounded_policy_postrun_audit_report:b3386f7af43fcabc874ab77de8676529b9dd8cbbed381ccee4433fc6eaeab1fa`;
+- independent endpoint Catalog:
+  `finance_v26_bounded_policy_independent_endpoint_catalog:62b5c5ddea08edcca7ac47d6718319f27d902d44bda0d43324233f77e0d40788`;
+- independent Provider audit:
+  `finance_v26_bounded_policy_independent_provider_artifacts:3f39f9d03eb7b340965a6a8ee8c6903f160831c8a0f7ffab2a4bd6058a5849fb`;
+- independent Gate audit:
+  `finance_v26_bounded_policy_independent_gate_audit:52ad6e08d0051679980be077e66431f055fc93e8c799adc3e532de993b382e7f`;
+- independent Mapper audit:
+  `finance_v26_bounded_policy_independent_mapper_audit:17b803386c13eacd09348765ba206751891c24a71c1f4157766d0c13a4b560db`;
+- independent Cell audit:
+  `finance_v26_bounded_policy_independent_cell_frequency_audit:99ab80662395bd9154863ad2c59a03f47f06df6daf224f8f0240c97dfc2c517b`.
+
+A successful preliminary v2 recovery and v1 audit remain immutable. Focused Ruff format later
+found one local formatting difference in the recovery source. A fresh zero-call v3 recovery and
+v2 audit were rematerialized after formatting; all endpoint, Gate, Horizon, Raw Lineage,
+normalization, Mapper, Assignment, Cell, execution-report, and transition identities remain
+exact. Only implementation-bound Freeze and top-level report/source-replay identities changed.
+The v3/v2 chain is authoritative.
+
+The final decision is:
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+All v26.163-v26.165 Population, Policy, Raw, Provider, recovery, endpoint, Gate, Mapper,
+Assignment, and frequency artifacts are frozen. Provider execution, new Population or Policy
+materialization, denominator repair, row deletion, Cell reselection, State probability, VTDO,
+training, release, and production Contribution require a new explicit audit decision. See
+`docs/finance_v26_164_bounded_policy_endpoint_frequency_execution.md` and
+`docs/finance_v26_165_bounded_policy_endpoint_frequency_postrun_audit.md`.
 
 ## v26.163 Route B Bounded-Policy Endpoint Frequency Preflight Decision
 
@@ -538,6 +696,10 @@ model/Thinking, recovery, Detour, Grammar, or Verifier changes; historical rerun
 reclassification; Job deletion; outcome-dependent Cell selection; current-denominator frequency;
 State probability; VTDO; training; release; and production Contribution remain forbidden. See
 `docs/finance_v26_163_bounded_policy_endpoint_frequency_preflight.md`.
+
+That execution-only transition has now been consumed by v26.164 and independently audited by
+v26.165. The v26.163 preflight remains immutable. The current decision is
+`no_further_experiment_authorized_without_new_audit_decision`.
 
 ## v26.162 Mapper v2 Frequency Independent Postrun Audit Decision
 
