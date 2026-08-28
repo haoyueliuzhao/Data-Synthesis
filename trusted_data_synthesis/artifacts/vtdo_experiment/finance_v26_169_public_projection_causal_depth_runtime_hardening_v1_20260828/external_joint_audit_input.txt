@@ -1,0 +1,1151 @@
+# v26.168 修订报告与项目代码联合审计
+
+## 一、最终判定
+
+这轮修订**确实解决了 v26.167 的一大部分问题**：任务核心被降到低干扰水平，D0–D3 不再只是四套元数据标签，64 个变体已经拥有不同的状态图、候选集、转移、深度 Runtime Witness 和由图计算出的目标负担。v26.167 的 48/64 真实 Public Witness、16 条 Reconciliation 缺失消费引用的问题也被诚实复现，没有改写历史工件。
+
+但是，直接审计最新版代码后，我发现两个新的 **P0**：
+
+$$
+\boxed{
+\text{模型可见 Prompt 直接暴露了参考路径与正确候选}
+}
+$$
+
+以及：
+
+$$
+\boxed{
+\text{当前深度图仍是与金融任务弱耦合的线性事件微协议，}
+}
+$$
+
+$$
+\boxed{
+\text{而不是具有真实分支、前置条件和任务后果的能力任务。}
+}
+$$
+
+因此总体结论是：
+
+| 审计对象                              | 判定                        |
+| --------------------------------- | ------------------------- |
+| v26.167 缺陷复现                      | **通过**                    |
+| 低 nuisance Finance Core           | **通过**                    |
+| 64 个不同 Graph／Depth Witness        | **通过**                    |
+| Reconciliation 引用生成与消费            | **参考路径上通过**               |
+| 目标负担从 Runtime Graph 计算            | **通过**                    |
+| Boundary Algorithm 总定义            | **通过**                    |
+| Confirmation 工件接口隔离               | **通过**                    |
+| 模型可见 Prompt 非干扰                   | **不通过，存在直接 Oracle 泄漏**    |
+| Context／Recovery／Stopping 的真实状态依赖 | **不通过**                   |
+| 深度机制与金融任务的因果耦合                    | **不通过**                   |
+| Target-matched Necessity 的任务级解释   | **仅支持事件合同必要性，不支持任务求解必要性** |
+| 内容寻址对象的交叉父绑定                      | **不完整**                   |
+| 当前是否可进入 192-Job Runner 预检         | **不建议，必须先再修一轮**           |
+
+当前授权的：
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+不应直接消费。它要求后继保持现有 Graph、Candidate 和 Prompt Binding 不变，而当前 P0 恰恰需要修改这些对象。报告对该后继的约束见 。
+
+---
+
+# 二、审计范围与复现结果
+
+本次直接审计了：
+
+* v26.168 正式修订报告；
+* 最新 Current Project Status；
+* [最新项目源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-090426%29.zip)。
+
+源码 ZIP SHA-256：
+
+```text
+6bb8580de46dd2814b9f8c9b6575de482355b017c11366f344e839680cd4a8ff
+```
+
+项目状态声明其证据只来自当前 Git 树、不可变实验工件、凭据脱敏记录和迁移服务器复核，这一证据边界是合理的。
+
+我实际执行了：
+
+```text
+pytest:
+tests/test_v26_capability_executable_depth_rematerialization.py
+tests/test_v26_capability_breadth_depth_task_synthesis.py
+
+结果：10 passed in 21.40s
+```
+
+并对四个 v26.168 核心实现模块执行了 Python 编译检查，均通过。
+
+当前审计环境没有安装 `ruff` 和 `mypy` 模块，因此报告中的全量 Ruff／Mypy 通过结果**没有被我独立复跑**。我也没有执行仓库全部测试，只执行了与 v26.167–v26.168 直接相关的十项测试。
+
+独立代码审计结果已整理为：
+
+[下载 v26.168 代码审计证据](sandbox:/mnt/data/v26_168_code_audit_evidence.md)
+
+---
+
+# 三、已经真正修复的部分
+
+## 1. v26.167 被准确降级为 metadata-ladder prototype
+
+v26.168 没有掩盖上一轮缺陷，而是重新调用生产：
+
+```python
+compile_operational_witness(..., strategy="structured_direct")
+```
+
+复现出：
+
+```text
+v26.167 variants                    64
+full-valid production Witness       48
+failed Reconciliation variants      16
+```
+
+并确认旧 D0–D3 在同一 matched group 内共享相同 Program、Tool set 和 Witness sequence。报告据此将 v26.167 的最强解释收窄为“元数据梯子原型”。
+
+这一处理是正确的。
+
+---
+
+## 2. Development 的 Finance Core 已明显降噪
+
+当前 Development 只选旧 Easy source，Confirmation 使用旧 Frontier source；每个 source 都被重新物化为：
+
+```text
+Evidence items      2
+Program nodes       1
+Program edges       0
+```
+
+并经过：
+
+```text
+TaskProgramExecutor
+TaskProgramOracleVerifier
+现有 Role Compiler
+生产 Operational Witness Compiler
+```
+
+报告没有继续把旧 Hard 任务贴上 D0 标签，也没有让旧多节点 Program 负担污染 Development floor。
+
+这真正修复了上一轮的：
+
+> D0 仍然继承旧 Hard 任务的多 Evidence、多节点 Program 负担。
+
+---
+
+## 3. D0–D3 的图结构已经不同
+
+当前 64 个 package 中：
+
+```text
+unique executable Graph IDs       64
+unique Depth Witness IDs           64
+```
+
+四项能力的图规模、候选数和参考调用数也确实随深度变化。报告列出的构造负担是：
+
+```text
+Context       2 / 4 / 8 / 14
+Reconciliation 6 / 10 / 16 / 30
+Recovery       5 / 6 / 12 / 21
+Stopping       5 / 7 / 11 / 16
+```
+
+这些数不再来自 v26.167 手写的 `primary_load`，而是从当前 Graph 与 Depth Runtime Witness 中重新计算。
+
+这一层已经不再只是换标签。
+
+---
+
+## 4. Reconciliation 的参考路径消费缺口已关闭
+
+当前每个 Reconciliation 变体的 reference path 都真实产生并消费 normalized reference：
+
+```text
+D0  consumption = 1
+D1  consumption = 2
+D2  consumption = 3
+D3  consumption = 6
+```
+
+并且每个 package 都分别保存：
+
+* 生产 Operational Witness；
+* TaskProgram Verification；
+* Depth Runtime Witness；
+* Mechanism Verifier Result。
+
+报告明确表示这些是每个变体的实际返回对象，而不是继承的固定布尔量。
+
+---
+
+## 5. Boundary Algorithm 和 Confirmation 隔离明显增强
+
+Boundary 分类规则已经冻结为总函数：
+
+* unsupported → supported 反转：`nonmonotonic_or_confounded`；
+* 两组 D0 均不支持：`below_observation_floor`；
+* 两组 D3 均支持：`above_observation_ceiling`；
+* 组间不一致：`nonmonotonic_or_confounded`；
+* 唯一共同 supported → unsupported 相邻对：`boundary_bracketed`。
+
+所有 512 个两组 × 四深度 × 两套阈值模式均被唯一分类。
+
+Confirmation Catalog 也被写入独立 Root，Development Root 中只留下内容根和 receipt，没有 payload 或 payload path。报告对此做了准确限制：这是工件接口隔离，不是对仓库管理员的物理不可见性证明。
+
+---
+
+# 四、P0：模型可见 Prompt 暴露了完整参考路径
+
+这是当前最严重的问题。
+
+## 1. 代码实际序列化了完整 Host Graph
+
+在：
+
+```text
+phase1_v26_capability_executable_depth_rematerialization.py
+1289–1305
+```
+
+`_render_prompt_binding()` 直接构造：
+
+```python
+semantic = {
+    "fixed_generation_condition": condition.model_dump(mode="json"),
+    "runtime_graph": graph.model_dump(mode="json"),
+}
+```
+
+然后将该完整对象作为：
+
+```text
+rendered_prompt_hash
+semantic_payload_hash
+```
+
+的来源。
+
+但 `graph.model_dump()` 包含：
+
+### State 中的 Oracle 字段
+
+```text
+reference_candidate_id
+success_terminal_state_id
+```
+
+### Candidate 中的 Oracle 字段
+
+```text
+reference_action
+target_capability_action
+action_kind
+semantic_role
+```
+
+### Graph 中的目标合同
+
+```text
+required_event_multiplicities
+```
+
+### Public State 中的实验标签
+
+```text
+capability_family
+depth
+```
+
+换句话说，模型不需要理解任务，只要读取：
+
+```text
+reference_candidate_id
+```
+
+或者寻找：
+
+```text
+reference_action = true
+```
+
+就能选择正确候选。
+
+---
+
+## 2. 候选名称进一步直接泄漏答案
+
+候选语义名包括：
+
+```text
+select_context_action_01
+select_context_bypass_01_01
+
+normalize_slot_01
+raw_bypass_slot_01
+
+revise_slot_01
+invalid_retry_slot_01_01
+
+checkpoint_reference_slot_03
+tempting_continuation_slot_03_01
+```
+
+即使删掉 `reference_action`，模型也可以从：
+
+```text
+bypass
+invalid_retry
+avoid_failure
+tempting_continuation
+```
+
+这些名称中直接识别哪一个是错误候选。
+
+---
+
+## 3. 独立扫描得到的泄漏数量
+
+在全部 64 个正式 package 中，当前模型绑定的 Graph 包含：
+
+```text
+non-null reference_candidate_id fields       284
+reference_action=true fields                 284
+target_capability_action=true fields         488
+target_bypass candidates                     216
+tempting_continuation candidates              68
+public capability_family fields              348
+public depth fields                          348
+required-event keys                          184
+带 oracle 含义的 semantic_role               312
+```
+
+例如 Context D0 的 prompt 语义中直接出现：
+
+```json
+{
+  "reference_candidate_id":
+    "executable_capability_depth_candidate:eaf7...",
+
+  "candidates": [
+    {
+      "semantic_role": "select_context_bypass_01_01",
+      "reference_action": false,
+      "action_kind": "target_bypass"
+    },
+    {
+      "semantic_role": "select_context_action_01",
+      "reference_action": true,
+      "action_kind": "context_select"
+    }
+  ]
+}
+```
+
+这不是轻微信息泄漏，而是把参考答案作为结构化字段交给模型。
+
+---
+
+## 4. 当前 Noninterference Audit 没有检查上述内容
+
+在：
+
+```text
+phase1_v26_capability_executable_depth_rematerialization.py
+1613–1647
+```
+
+`_noninterference()` 只验证：
+
+```text
+Candidate set hash 与 Graph Candidate 相同
+Transition hash 与 Graph Transition 相同
+```
+
+它没有扫描：
+
+* reference 字段；
+* target 字段；
+* capability／depth 标签；
+* expected events；
+* 候选语义名称；
+* 未来状态与转移；
+* 正确动作是否可被直接恢复。
+
+而：
+
+```text
+capability_cue_injection_count = 0
+static_reference_path_exposure_count = 0
+```
+
+是模型 Schema 中的固定 Literal 默认值，并非计算结果。
+
+这与报告所说的：
+
+> 静态 Prompt binding 具有零 condition cue injection 和零 static reference-path exposure
+
+不一致。报告相应主张见 。
+
+### P0 判定
+
+$$
+\boxed{
+\text{Fixed-condition static noninterference Gate 当前不成立。}
+}
+$$
+
+---
+
+# 五、P0：当前 Runtime 是线性事件清单，而非真正的能力状态机
+
+## 1. 所有候选都进入同一个后继状态
+
+在 Graph 构造中：
+
+```text
+phase1_v26_capability_executable_depth_rematerialization.py
+1103–1151
+```
+
+一个 State 下的所有 Candidate 都被赋予相同的：
+
+```python
+to_state_id = state_base[index + 1]["state_id"]
+```
+
+我对全部 64 个 Graph 进行了检查：
+
+```text
+nonterminal states                       284
+所有 Candidate 指向同一后继的 State     284/284
+```
+
+也就是说：
+
+* 选对候选：进入下一状态；
+* 选 `bypass`：仍进入下一状态；
+* 选 `invalid_retry`：仍进入下一状态；
+* 选 `tempting_continuation`：仍进入下一状态。
+
+唯一不同只是：
+
+```text
+status
+emitted_event_types
+```
+
+---
+
+## 2. `REJECTED` 也会继续推进状态
+
+在：
+
+```text
+core/task/executable_capability_depth.py
+578–629
+```
+
+`CapabilityDepthRuntime.execute()` 无论 Transition 是：
+
+```text
+succeeded
+typed_failure
+rejected
+```
+
+最后都会执行：
+
+```python
+self.state_id = transition.to_state_id
+```
+
+它没有依据 status 决定：
+
+* 留在原状态；
+* 进入 rejection/recovery 状态；
+* 阻止依赖消费；
+* 产生真正不同的后续 Candidate；
+* 终止失败路径。
+
+---
+
+## 3. 产生了语义上不可能的轨迹
+
+我直接在正式 Graph 上执行一次旁路，再沿 reference path 继续，得到：
+
+### Semantic Reconciliation
+
+```text
+terminal reached                         true
+normalization_reference_emitted             0
+normalization_reference_consumed            1
+```
+
+即没有生成 normalization ref，却仍然成功消费了它。
+
+### Failure Recovery
+
+```text
+terminal reached                         true
+typed_failure_observed                      0
+recovery_succeeded                          1
+selector_revised                            1
+```
+
+即没有发生失败，却仍进入“恢复成功”。
+
+### State-dependent Stopping
+
+```text
+terminal reached                         true
+completion_verified                         0
+stopped_after_completion                    1
+```
+
+即没有完成验证，却仍能执行“完成后停止”。
+
+### Context-conditioned Action
+
+```text
+terminal reached                         true
+context_action_selected                     0
+```
+
+即没有进行目标 Context Action，仍然一路到达 answer-ready terminal。
+
+Mechanism Verifier 最后会因为事件向量缺失而将其判为不合格，但 Runtime 本身允许这些不可能状态存在。
+
+---
+
+## 4. “dependent decisions”目前只是声明
+
+Context D2／D3 的 Public State 中存在：
+
+```text
+depends_on_slot
+```
+
+但第二个 State 的 Candidate set 并不根据第一次选择或 Observation 改变。
+
+因此所谓：
+
+```text
+2 dependent decisions
+3 dependent decisions
+```
+
+实际上是：
+
+```text
+连续出现 2/3 个同类选择题
+```
+
+而不是：
+
+```text
+后续可选动作由先前模型行为和公共结果决定。
+```
+
+Recovery 的 `recovery_dependency_depth` 同样主要由 active slot 数决定；Stopping 的 delayed readiness 也只是预写事件，不是由实际 Program／Verification 状态计算。
+
+### P0 判定
+
+$$
+\boxed{
+\text{当前 Graph 的“可执行性”是类型层面的，}
+}
+$$
+
+但：
+
+$$
+\boxed{
+\text{尚未达到能力机制层面的可执行性。}
+}
+$$
+
+---
+
+# 六、P0：能力图与 Finance Core 没有因果耦合
+
+## 1. Graph 只依赖能力族和深度
+
+四类 Plan 构造器：
+
+```text
+_context_plans(depth)
+_reconciliation_plans(depth)
+_recovery_plans(depth)
+_stopping_plans(depth)
+```
+
+不读取：
+
+* Finance Evidence；
+* TaskProgram；
+* Operation operands；
+* Expected answer；
+* Verifier node；
+* 金融上下文；
+* Tool Observation。
+
+`_graph()` 虽然将：
+
+```text
+finance_core_id
+base_operational_task_package_id
+```
+
+写入 Graph identity，但 State、Candidate、Transition 的实际语义只由：
+
+```text
+capability_family
+depth
+```
+
+生成。
+
+---
+
+## 2. 四个不同 Finance group 使用完全相同的状态和候选
+
+在全部 64 个 package 中：
+
+```text
+Graph IDs                         64
+State rows                       348
+unique State IDs                  87
+Candidate rows                   568
+unique Candidate IDs             142
+```
+
+对每一个：
+
+```text
+capability × depth
+```
+
+四个不同 Finance group 的：
+
+```text
+State set       完全相同
+Candidate set   完全相同
+```
+
+Graph ID 不同，只是因为绑定了不同 package/core parent。
+
+---
+
+## 3. 机制行为不影响金融答案
+
+当前实际结构相当于：
+
+```text
+独立完成一个两 Evidence、一 Operation 的 Finance Core
++
+独立通过一个合成的 capability event graph
+```
+
+两部分最后做逻辑合取。
+
+例如：
+
+* Reconciliation 生成的 `normalized_ref_slot_01` 没有成为实际 TaskProgram operand；
+* Context 选择不会改变金融 Operation 或答案；
+* Recovery 的 failure/revision 不改变真实 Tool selector；
+* Stopping checkpoint 不来自实际 Program closure／verification state。
+
+因此当前反事实最多证明：
+
+> 不执行预注册事件，就不能满足这个机制事件合同。
+
+它没有证明：
+
+> 不执行该机制，就不能正确解决这道金融任务。
+
+这与任务级 Mechanism Necessity 是两个不同命题。
+
+### 最准确的当前定位
+
+$$
+\boxed{
+\text{v26.168 构造了“Finance Core + 合成能力微协议”的联合任务，}
+}
+$$
+
+而不是：
+
+$$
+\boxed{
+\text{机制负担内生于 Finance Core 的能力任务。}
+}
+$$
+
+---
+
+# 七、P1：Target-matched Necessity 仍偏向构造性自证
+
+报告称每个 Graph 有两个 Counterfactual：删除第一个目标动作，以及执行 visible bypass，并称 128/128 都失败 full validity。
+
+代码中的实际证据较弱。
+
+## 1. Delete Counterfactual
+
+删除 reference Candidate 后，代码保留原：
+
+```text
+reference_candidate_id
+event requirement
+```
+
+Graph Validator 因为引用了不存在的 reference Candidate 而拒绝对象。
+
+这证明的是：
+
+```text
+一个结构损坏的 Graph 不合法
+```
+
+而不是：
+
+```text
+一个仍然完整可执行、但不包含目标机制的任务无法被正确解决。
+```
+
+---
+
+## 2. Bypass Counterfactual
+
+所有 bypass Candidate 都是预先构造为：
+
+```text
+status = rejected
+emitted events = empty
+```
+
+然后代码只检查：
+
+```python
+counterfactual_events != required_event_multiplicities
+```
+
+`MechanismCounterfactualReplay` 中：
+
+```text
+full_validity_passed = false
+target_mechanism_necessary = true
+```
+
+还是固定 Literal 字段，并没有保存独立联合 Verifier 的计算结果。
+
+### 当前能支持的结论
+
+$$
+\boxed{
+\text{目标事件向量是 Qualified Mechanism Contract 的必要条件。}
+}
+$$
+
+### 当前不能支持的结论
+
+$$
+\boxed{
+\text{目标机制是完成 Finance task 或获得 Base Validity 的必要条件。}
+}
+$$
+
+这两者必须在报告中分开。
+
+---
+
+# 八、P1：内容寻址对象的交叉父绑定仍不完整
+
+`ExecutableDepthPackage.validate_package()` 只检查了部分父子关系。
+
+我构造了内容哈希全部重新计算的对象，而不是保留 stale hash。当前 Package Validator 接受了：
+
+```text
+1. witness contract 被改成错误 capability/depth，
+   verifier contract 随之重算；
+
+2. target load 被改成错误 capability/depth；
+
+3. nuisance measurement 绑定到另一个 operational TaskPackage；
+
+4. prompt binding 绑定到另一个 generation-condition ID；
+
+5. signature 中的 witness/load/nuisance/prompt parent IDs
+   被替换成无关对象。
+```
+
+上述五种对象均通过：
+
+```python
+ExecutableDepthPackage.model_validate(...)
+```
+
+我进一步重新计算 Group 与 Catalog identity，包含错误 Prompt Condition 的完整 Development Catalog 也能够通过验证。
+
+原因是：
+
+```text
+phase1_v26_capability_executable_depth_rematerialization_models.py
+325–367
+```
+
+没有完整检查：
+
+* `witness_contract.capability_family/depth`；
+* `depth_witness.witness_contract_id/verifier_contract_id`；
+* `target_load.capability_family/depth`；
+* `nuisance.base_operational_task_package_id`；
+* `prompt_binding.fixed_generation_condition_id`；
+* Signature 的全部 parent IDs 与实际子对象。
+
+当前 30 个 destructive controls 会检测未重算哈希的原地修改，但没有覆盖“重新内容寻址后的 crossed parent”。
+
+这不证明正式 v26.168 Catalog 本身已经错绑；正式工件当前是自洽的。但它说明未来 Runner 若依赖这些 Schema 做独立重建，仍有接受交叉绑定对象的风险。
+
+---
+
+# 九、P1：64/64 Operational Witness 应准确解释
+
+报告记录：
+
+```text
+variant-local operational Witness 64/64
+```
+
+代码确实调用了 64 次 `_compile_variant_task_verification()`，测试也统计到 64 次。
+
+但实际身份为：
+
+```text
+package count                         64
+unique Finance Core                   16
+unique Operational Witness ID         16
+unique Depth Witness ID               64
+```
+
+同一个 matched group 中，D0–D3 的 Operational Witness 完全相同，因为：
+
+```python
+_compile_variant_task_verification(core, condition)
+```
+
+没有接收 Graph 或 Depth。
+
+所以更准确的报告方式应是：
+
+```text
+16 unique Finance-core Operational Witnesses
+replayed once per 64 packages
+
+64 unique executable-depth Runtime Witnesses
+```
+
+这不是伪造调用数，但 64/64 不能被读成 64 个独立 Finance-task Witness surface。
+
+---
+
+# 十、当前修订应如何继续
+
+## 1. 将 Host Graph 与 Public Prompt 彻底分开
+
+新增：
+
+```text
+HostExecutableDepthGraph
+PublicExecutableDepthState
+PublicExecutableDepthCandidate
+DepthPromptProjectionContract
+```
+
+Host-only 字段必须包括：
+
+```text
+reference_candidate_id
+reference_action
+target_capability_action
+required_event_multiplicities
+expected Transition status
+future State graph
+success reference path
+```
+
+模型每次只能看到：
+
+```text
+当前 public State
+当前 visible Candidate set
+中性候选描述
+opaque action_id
+已经发生的公共 Observation
+```
+
+不能看到完整未来 Graph。
+
+---
+
+## 2. 候选描述必须中性化
+
+禁止模型可见名称出现：
+
+```text
+reference
+bypass
+invalid
+correct
+retry_invalid
+tempting_continuation
+avoid_failure
+skip_normalized
+```
+
+每个 Candidate 应以等长、同结构、无答案暗示的公共语义描述呈现。
+
+同时进行：
+
+* 随机 Candidate 排序；
+* same-length opaque ID；
+* ID-free semantic selection；
+* correct-action position balance；
+* Prompt recursive leakage audit。
+
+---
+
+## 3. Runtime 必须具有真实分支和前置条件
+
+至少需要：
+
+### Context
+
+先前 Action／Observation 必须实际改变后续 Candidate set 或正确选择规则：
+
+$$
+S_{t+1}=f(S_t,a_t,o_t).
+$$
+
+不能只写一个 `depends_on_slot` 字段。
+
+### Reconciliation
+
+只有已经产生的 normalization ref 才能被消费。Raw bypass 后必须：
+
+* 无法执行目标 Operation；
+* 或在 Verifier 中因原始语义不兼容失败。
+
+### Failure Recovery
+
+`revise_after_failure` 只能在匹配 typed failure 已经发生后出现。Avoid-failure 路径不能自动进入 Recovery state。
+
+### Stopping
+
+Tempting continuation 必须真正改变公共状态、消耗调用或形成 postcompletion violation。`stop_after_completion` 只能在真实 verification 完成后可见。
+
+---
+
+## 4. 将能力机制接入真实 Finance Program
+
+四项能力应当改变真实任务对象：
+
+```text
+Context action
+→ 决定实际 Operator／Evidence path
+
+Reconciliation
+→ 产生实际 TaskProgram operand reference
+
+Recovery
+→ 修正真实 Tool selector／blocked action
+
+Stopping
+→ 读取真实 Program closure 与 terminal verification
+```
+
+不能继续只把：
+
+```text
+finance_core_id
+```
+
+写进 Graph identity，而不让 Graph 的行为影响 Finance Task。
+
+---
+
+## 5. 重做 Mechanism Necessity
+
+Counterfactual 必须保持 Graph 完整可执行：
+
+```text
+Baseline：
+Task Base-valid + Mechanism-qualified
+
+Counterfactual：
+保留相同 Task、Evidence、资源和接口，
+删除／绕过目标机制，
+重新执行 Runtime + Task Verifier + Mechanism Verifier
+```
+
+并分别保存：
+
+```text
+counterfactual_base_valid
+counterfactual_mechanism_qualified
+counterfactual_qualified_valid
+```
+
+不能只保存固定：
+
+```text
+full_validity_passed=false
+target_mechanism_necessary=true
+```
+
+---
+
+## 6. 补齐所有交叉父绑定
+
+`ExecutableDepthPackage` 至少应强制：
+
+```text
+graph / witness contract / verifier contract
+capability / depth / package / core 完全一致
+
+depth witness
+绑定精确 witness contract 与 verifier contract
+
+target load
+绑定精确 graph、witness、capability、depth
+
+nuisance
+绑定精确 core 与 base operational package
+
+prompt binding
+绑定精确 graph 与 fixed condition
+
+signature
+每个 parent ID/hash 与实际对象完全一致
+```
+
+新增的破坏性测试必须：
+
+* 修改真实 child；
+* 重新计算 child identity；
+* 重新计算 package/group/catalog identity；
+* 仍然要求在语义父绑定处 fail-closed。
+
+---
+
+# 十一、建议的新授权
+
+v26.168 本身应保持不可变，并保留以下正向证据：
+
+```text
+低 nuisance Finance Core
+64 个不同深度图
+64 个 Depth Witness
+Reconciliation reference consumption
+Boundary total性
+Confirmation Root 分离
+```
+
+但其后继不应直接进入 Runner 预检。
+
+建议新的唯一授权改为：
+
+```text
+capability_observation_public_projection_
+and_causal_depth_runtime_hardening_only
+```
+
+该阶段继续要求：
+
+```text
+Provider calls         0
+Development Jobs       0
+Confirmation access    0
+Mapper / VTDO          0
+GPU jobs               0
+```
+
+它只修复：
+
+1. Host／Public Graph 分层；
+2. Oracle／reference leakage；
+3. 真实分支和前置条件；
+4. Finance Program 耦合；
+5. 任务级 Counterfactual；
+6. 跨对象父绑定；
+7. 新 Prompt／Graph／Package 身份；
+8. 完整静态重审计。
+
+通过后，才进入：
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+---
+
+# 十二、最终结论
+
+v26.168 不是一次无效修订。它已经把 v26.167 的：
+
+```text
+同一任务
++ 不同深度标签
++ 自报负担
+```
+
+推进到了：
+
+```text
+低 nuisance Finance Core
++ 不同的 typed Graph
++ 不同 Candidate 和 Transition
++ 不同 Depth Witness
++ 从图计算的目标负担
+```
+
+这是实质进展。
+
+但目前仍有一道关键鸿沟：
+
+$$
+\boxed{
+\text{“不同的 typed Graph”}
+\neq
+\text{“可信的模型能力任务”。}
+}
+$$
+
+当前 Prompt 把参考候选和未来路径直接泄漏给模型；当前 Runtime 中所有选择都进入同一后继；能力事件没有真正作用于金融 Program；Counterfactual 主要证明事件合同的自洽性，而非目标机制对任务求解的必要性。
+
+所以本轮最准确的结论是：
+
+> **v26.168 已完成 executable-depth 数据结构和局部 Runtime 原型，但模型可见投影与任务级因果语义尚未通过。**
+
+当前第一个根本阻塞点不再是：
+
+```text
+Depth 只有元数据
+```
+
+而是：
+
+```text
+Depth Graph 尚未成为无 Oracle 泄漏、
+有真实行为后果、并与 Finance Task 因果耦合的模型执行环境。
+```
+
+在这一层闭合前，运行 192 个模型 Job 得到的将主要是模型识别结构化参考标记和执行线性微协议的结果，不能可靠解释为四项金融 Agent 能力的广度—深度边界。

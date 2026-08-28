@@ -488,10 +488,139 @@ Job, model-behavior, Mapper, State, Contribution, VTDO, training, release, and p
 remain zero. The current transition permits only a credential-free executable-depth Development
 Runner preflight over the exact future 192-Job design.
 
+v26.169 has now consumed a later external public-projection and causal-Runtime hardening decision
+with zero Provider calls. It preserves every v26.168 byte and reproduces the exact 142/142
+same-successor nonterminal surface plus all Host answer-path fields before blocking the stale
+preflight. A fresh Development-only chain binds the same eight Finance Cores to 32 causal depth
+Packages. Across 210 current-State Prompt projections and 630 equal-length opaque Candidates,
+recursive Host-Key, answer-cue, family, depth, reference-path, and future-graph exposures are zero.
+Every nonterminal State has three distinct successor identities. All 32 reference traces pass
+independent TaskProgram and mechanism validity; unproduced normalization consumption,
+selector recovery without its matching typed failure, and stop before verification reject in
+8/8 family Packages, while all eight Stopping Packages retain a typed postcompletion-violation
+terminal. Sixty-four registered alternative-branch counterfactuals keep their Graph valid, invoke
+both Verifiers, and are Base-invalid, Mechanism-unqualified, and Qualified-invalid. All 320
+content-rehashed crossed-parent mutations reject. The operational evidence is explicitly eight
+unique Finance Witnesses replayed across 32 Development Packages, not 32 independent Finance
+surfaces. A 298-file source closure, 22/22 Gates, 17-file formal Root, focused 5/5 Pytest, focused
+Ruff/Mypy/PyCompile, and two byte-identical full CLI builds pass. Confirmation payload access,
+Development Job, model behavior, Runner preflight, Mapper, State, Contribution, VTDO, training,
+release, and production remain zero. The current transition again permits only the exact
+credential-free executable-depth Development Runner preflight, now over the v26.169 causal
+Development Catalog.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.169 Public Projection And Causal Depth Runtime Hardening Decision
+
+Finance v26.169 consumed only
+`capability_observation_public_projection_and_causal_depth_runtime_hardening_only`. The external
+review is bound at 27,021 bytes and SHA-256
+`6105461d1c58f507ee5227f3b8f6867e020dedec828b7687befe1eddb108bb4e`. Credential lookup,
+Provider client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, Mapper, VTDO, and GPU counts are zero.
+
+All nineteen files in the authoritative v26.168 v3 main Root are rebound with zero mutation. The
+sealed Confirmation Root is never read. An independent reproduction confirms 142 v26.168
+nonterminal States and 142 same-successor Candidate sets, 142 non-null reference Candidate fields,
+142 `reference_action=true`, 244 target-action Candidates, 108 bypasses, 34 tempting
+continuations, 174 public family fields, 174 public depth fields, and 92 required-event Keys. The
+v26.168 low-nuisance Cores and static evidence remain immutable; its model-facing graph is blocked
+from Runner preflight.
+
+The fresh Host/Public split keeps family, depth, reference Candidate, target ownership, required
+events, exact Transition status, full future graph, and success path Host-only. The model-visible
+payload has exactly one sanitized Finance task and one current public State. Across 32 Packages it
+creates 210 Prompt projections and 630 Candidates. Recursive Host-Key, answer-cue, family-label,
+depth-label, reference-path, and future-State exposure counts are zero. Public action IDs are
+24-character pre-outcome hexadecimal tokens; all three Candidate encodings in each State have
+equal canonical bytes, reference positions are balanced within every registered presentation
+cell, and semantic-choice hashes do not depend on public action IDs.
+
+Each of the eight exact Finance Cores receives one content-addressed binding to its TaskProgram,
+independent Program verification, two Evidence identities, public operation nodes, normalization
+outputs, input/projection/selector/readiness bindings, exact expected operator, and expected result.
+The Runtime rejects unbound effects, unproduced reference consumption, selector revision before
+its own matching typed failure, early Program closure, preclosure terminal verification, early
+stop, and preverification postcompletion calls.
+
+All 210 nonterminal States expose three Candidates with three distinct successor identities.
+Every reference path closes exact Finance operation lineage, expected result, Program, terminal
+verification, and mechanism event multiplicity. Baseline Base, Mechanism, and Qualified counts
+are 32/32 each. The family precondition controls pass 8/8 for Context current-State choice,
+Reconciliation production-before-consumption, Recovery matching-failure-before-revision, and
+Stopping verification-before-stop. All eight Stopping Package graphs contain a separate typed
+postcompletion-violation terminal. Impossible trace acceptance is zero.
+
+The v26.169 causal-Runtime load ladders, computed without reusing a declared predecessor load, are:
+
+```text
+Context-conditioned Action       29 / 37 / 45 / 53
+Semantic Reconciliation          50 / 57 / 65 / 73
+Failure Recovery                 37 / 45 / 53 / 69
+State-dependent Stopping         36 / 43 / 50 / 57
+```
+
+Two registered alternative branches run for every Package. All 64 retain a structurally valid
+Graph, reach a typed terminal, invoke both task and mechanism Verifiers, and are Base-invalid,
+Mechanism-unqualified, and Qualified-invalid. Malformed-graph rejection is not used as task-level
+necessity evidence. Ten parent-crossing mutation kinds run for every Package; changed child,
+Signature, Package, Group, and Catalog identities are recomputed, and all 320 reject.
+
+The exact operational-witness interpretation is eight unique Finance Cores, eight unique
+operational Finance Witnesses, 32 Package replays, and 32 unique causal depth Runtime Witnesses.
+The stage claims eight independent Finance surfaces and 32 independent depth surfaces, not 32
+independent Finance questions.
+
+The transitive source Root closes 298 local files with zero unresolved import. The formal Root has
+17 files and 4,087,733 bytes. Focused Pytest passes 5/5 in 4.41 seconds. Focused PyCompile, Ruff,
+and Mypy pass. Two complete credential-free CLI builds independently execute all 32 baselines,
+64 counterfactuals, and 320 mutations and compare byte for byte. This is static and local Runtime
+evidence only; model behavior, empirical boundary, frequency, Contribution, State Mapping, VTDO,
+Student visibility, training, release, and production remain unmeasured or unauthorized.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_causal_depth_hardening_report:4a3f477016dcb8b208846ab9ca4325abf81eff1a423e057efd4f2534f1662e41`;
+- source replay:
+  `finance_v26_causal_depth_source_replay:94537fb24e07f2b26c3b865e3f6bd67a164d4a8e25fd54bdea99090d5e2b40a1`;
+- Prompt Projection Contract:
+  `depth_prompt_projection_contract:480dfd521f1510383a465199b84861737483b8cb8f3d9f48c6b1c146af9b7172`;
+- Candidate Presentation Policy:
+  `causal_depth_candidate_presentation_policy:41795838fc30214e5834698db13360efdb269880f2b1c17e7f57b57fd03a07aa`;
+- Development Catalog:
+  `finance_v26_causal_development_catalog:8717c1654cd3f135d1886cebd30ac26e68ca95e5f653965d9f3e84389bac2bf4`;
+- leakage audit:
+  `finance_v26_public_projection_leakage_audit:7c0133ded51d217f510f8947d3ba10fdac0f92d0c28feb25db4fb47432a9250e`;
+- Runtime audit:
+  `finance_v26_causal_runtime_audit:3e1bb9bac279bcc8b79c5f8c3adb941887cec8c9f354317321f5dba404d62f6a`;
+- counterfactual Catalog:
+  `finance_v26_causal_depth_counterfactual_catalog:7e3800f4f037f1a774730f41ec3e47a3d33399298253e18dcb8bf570c9467844`;
+- Parent Binding Audit:
+  `finance_v26_causal_depth_parent_binding_audit:fe9adb9ad5819e34b4d51db90afa1930dbf72f52a96766791cc87e7ac6842548`;
+- static audit:
+  `finance_v26_causal_depth_static_audit:723785a8da33eb43cce2feb47aceb481edc4c4765479cf707ecd515717970458`;
+- transition:
+  `finance_v26_causal_depth_transition:bef08ac87c122f400c86f18c8d6352b875993502b930585186edfab0e4481844`.
+
+The only permitted transition is:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+The successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free Runner preflight over every exact v26.169 source, Finance binding, Host graph,
+current-State Prompt projection, Candidate presentation, Verifier, nuisance, condition,
+model/Thinking, Grammar, Policy, resource, threshold, terminal, and sealed-receipt parent.
+Provider execution, Confirmation payload loading, source or graph change, historical rewrite,
+Mapper, State, frequency, Contribution, VTDO, Student visibility, training, release, and
+production remain forbidden. See
+`docs/finance_v26_169_public_projection_and_causal_depth_runtime_hardening.md`.
 
 ## v26.168 Executable Capability Depth Rematerialization And Static Reaudit Decision
 
@@ -622,6 +751,18 @@ Confirmation payload loading or execution, source or graph change, threshold tun
 rewrite or reclassification, Mapper, State, frequency, Contribution, VTDO, Student visibility,
 training, release, and production remain forbidden. See
 `docs/finance_v26_168_executable_capability_depth_rematerialization_and_static_reaudit.md`.
+
+That transition was superseded without execution by the external v26.169 public-projection and
+causal-Runtime hardening decision. Every v26.168 artifact and static result remains immutable, but
+its prompt and same-successor Runtime are not authorized for a Runner preflight. v26.169 replaces
+only the prospective Development Package chain, proves current-State-only noninterference, real
+branch consequences, Finance-bound task validity, registered task-level counterfactual failure,
+and recomputed cross-parent rejection. The current transition returns to the same stage name over
+the fresh v26.169 causal Development Catalog:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
 
 ## v26.167 Capability Breadth-Depth Task Synthesis And Static Audit Decision
 

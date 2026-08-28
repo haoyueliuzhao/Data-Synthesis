@@ -334,3 +334,18 @@ Provider execution, Confirmation payload loading or execution, source reselectio
 tuning, depth or graph repair, v26.167 rewrite, current-27-Cell selection, historical
 reclassification, Mapper, State Assignment, frequency, Contribution, VTDO, Student visibility,
 training, release, and production remain forbidden.
+
+## Successor Status
+
+The transition above has been superseded without execution by Finance v26.169. The v26.168 Roots,
+identities, low-nuisance Finance Cores, operational Witnesses, static Gates, and negative v26.167
+reaudit remain immutable. The successor reproduces the v26.168 model-visible Host fields and
+142/142 same-successor nonterminal States, so the v26.168 prompt and Runtime are no longer
+authorized inputs to a Runner preflight.
+
+v26.169 rematerializes only the Development prospective chain under a current-State-only public
+projection, opaque balanced Candidate presentation, branch-divergent causal Finance Runtime,
+task-level counterfactual verification, and complete cross-parent binding. Its passed decision
+restores `capability_observation_executable_depth_development_runner_preflight_only` over the new
+causal Development Catalog. See
+`docs/finance_v26_169_public_projection_and_causal_depth_runtime_hardening.md`.
