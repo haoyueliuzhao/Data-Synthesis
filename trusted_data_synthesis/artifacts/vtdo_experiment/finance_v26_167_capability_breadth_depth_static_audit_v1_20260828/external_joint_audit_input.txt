@@ -1,0 +1,1638 @@
+# 本轮理论修订、项目代码与任务合成方案联合审计
+
+## 一、审计结论
+
+本轮“**能力广度 × 能力深度**”修订是必要的，而且定位到了当前实验最上游的真实缺口：
+
+$$
+\boxed{
+\text{能力是否可观测，首先取决于任务集合是否覆盖了能力边界。}
+}
+$$
+
+但是，当前 v26.166 的历史审计与其 prospective 后继必须分开判断：
+
+| 审计对象                                     | 结论                  |
+| ---------------------------------------- | ------------------- |
+| v26.166 对现有 48 个 Cell 的结果分层              | **通过**              |
+| 10/8/3/27 的支持分类及不越级解释                    | **通过**              |
+| 当前 27 个多状态 Cell 不直接升级为 VTDO Arm          | **通过**              |
+| 将无支持与弱支持记录为 Coverage Gap                 | **基本通过**            |
+| 现有 Fresh Confirmation Protocol           | **不通过，不足以承载能力观测修订** |
+| 旧 Easy／Frontier／Hard 作为能力深度              | **不成立**             |
+| 当前任务集合用于判断能力强弱                           | **证据不足**            |
+| 当前直接进入 fresh VTDO admission confirmation | **不建议执行**           |
+
+v26.166 正确冻结了：
+
+```text
+valid_support_absent                 10
+single_valid_observation              8
+observed_single_state_support         3
+observed_multistate_support          27
+```
+
+并且只允许 27 个 Cell 获得 `state-support existence`，当前 VTDO-admitted Cell 仍为零。
+
+但其后继确认协议仍然只按：
+
+```text
+mechanism
+tier
+generation_condition
+```
+
+分层，没有匹配任务组、能力深度、D0 观测锚、深度变换合同和每层独立任务数。
+
+因此，最准确的决策是：
+
+$$
+\boxed{
+\text{保留 v26.166 全部历史工件，}
+}
+$$
+
+但：
+
+$$
+\boxed{
+\text{不要直接消费当前 }
+fresh\_vtdo\_admission\_confirmation\_preflight\_only.
+}
+$$
+
+应通过新的外部审计决策，将 prospective 后继收敛为：
+
+```text
+capability_breadth_depth_task_synthesis_and_static_audit_only
+```
+
+该阶段必须零 Provider 调用，只构造和审计新的任务观测体系。
+
+---
+
+# 二、直接代码审计范围
+
+本次直接解压并检查了用户上传的[项目源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-020626%29.zip)。
+
+源码快照 SHA-256：
+
+```text
+26a1068b30e081a7a265cc3867723793996346a2ec7b2f0e8c4ce97aa3e82cfe
+```
+
+快照规模：
+
+```text
+Python 文件                     728
+tests/ 下 Python 文件           208
+test_*.py 文件                 206
+```
+
+聚焦执行了：
+
+* v26.166 capability censoring / VTDO admission；
+* matched capability ladder；
+* multitier confirmation；
+
+相关测试合计：
+
+```text
+19 passed
+```
+
+相关五个核心模块：
+
+```text
+PyCompile 5/5 passed
+```
+
+当前容器没有可用的 `ruff` 和 `mypy` 命令，因此没有独立重跑报告中的全量 Ruff/Mypy；也没有执行全部 206 个测试文件。以下代码结论来自源码调用链、正式 JSON 工件和聚焦测试，而不是只根据报告摘要推断。
+
+---
+
+# 三、直接代码审计发现
+
+## P0-1：当前 `FreshConfirmationProtocol` 基本是空壳
+
+代码位置：
+
+```text
+src/trusted_synthesis/experiments/vtdo_experiment/
+phase1_v26_bounded_policy_capability_censoring_vtdo_admission_audit_models.py
+约 732–750 行
+```
+
+当前协议主要只有：
+
+```python
+selection_strata = (
+    "mechanism",
+    "tier",
+    "generation_condition",
+)
+
+admission_rules_frozen_before_outcome_loading = True
+fresh_model_unexposed_tasks_required = True
+independent_confirmation_denominator_required = True
+```
+
+其构造位于：
+
+```text
+phase1_v26_bounded_policy_capability_censoring_vtdo_admission_audit.py
+约 682–695 行
+```
+
+核心扩展字段仍然是空的：
+
+```python
+values: dict[str, Any] = {}
+```
+
+它没有冻结：
+
+* `capability_family_id`；
+* 匹配任务组；
+* 新的能力深度；
+* D0 最低观测锚；
+* 相邻深度变换；
+* 每个深度的独立任务数；
+* Development／Confirmation 组划分；
+* 主能力负担；
+* 非目标能力稳定性；
+* 组级新鲜性；
+* 编译前后深度保持；
+* 组级 Exposure Block；
+* 深度梯度是否混杂的判定规则。
+
+### 审计判定
+
+$$
+\boxed{
+\text{当前 Confirmation Protocol 能防止结果后选样，}
+}
+$$
+
+但不能证明：
+
+$$
+\boxed{
+\text{确认任务真正测量了能力深度。}
+}
+$$
+
+这是阻止直接进入现有 fresh confirmation 的首个 P0 问题。
+
+---
+
+## P0-2：旧 Easy／Frontier／Hard 是全局复杂度包，不是单能力深度
+
+源码位置：
+
+```text
+phase1_capability_sensitive_frontier.py
+约 60–123 行
+```
+
+底层生成器定义了七类能力或任务族：
+
+```text
+retrieval
+planning
+calculation
+reconciliation
+verification
+recovery
+stopping
+```
+
+并让大量结构维度随 Tier 同时增加：
+
+```text
+evidence_hop_count
+public_source_count
+operation_dag_depth
+query_decomposition_rounds
+reconciliation_count
+required_verification_count
+required_recovery_count
+distractor_branch_count
+tool_type_count
+minimum_evidence_selection_calls
+minimal_tool_calls
+stopping_condition_count
+```
+
+例如当前主链所使用的几个家族大致呈现：
+
+| 任务族                          | Easy | Frontier | Hard |
+| ---------------------------- | ---: | -------: | ---: |
+| Context：Gold Evidence        |    2 |        4 |    6 |
+| Context：Program nodes        |    1 |        3 |    5 |
+| Context：query rounds         |    1 |        2 |    3 |
+| Context：distractors          |    0 |        3 |    6 |
+| Context：minimal calls        |    6 |       12 |   18 |
+| Reconciliation：Program nodes |    1 |        3 |    5 |
+| Reconciliation：semantic axes |    2 |        3 |    4 |
+| Reconciliation：minimal calls |    7 |       12 |   17 |
+| Recovery：required recovery   |    0 |        2 |    3 |
+| Recovery：Program nodes       |    1 |        3 |    5 |
+| Recovery：minimal calls       |    6 |       11 |   17 |
+| Stopping：conditions          |    2 |        3 |    4 |
+| Stopping：Program nodes       |    1 |        3 |    5 |
+| Stopping：minimal calls       |    6 |       11 |   16 |
+
+也就是说，从 Easy 到 Hard 时同时增加了：
+
+$$
+\text{检索}
++
+\text{规划}
++
+\text{Program 深度}
++
+\text{验证}
++
+\text{恢复}
++
+\text{干扰项}
++
+\text{调用数}.
+$$
+
+### 审计判定
+
+历史 `DifficultyTier` 只能解释为：
+
+```text
+global complexity tier
+```
+
+不能再被解释为：
+
+```text
+capability depth
+```
+
+或：
+
+```text
+ability strength level
+```
+
+因此当前 Context Hard、Reconciliation Hard 的零支持，不能归因于 Context 或 Reconciliation 本身。报告也明确限制：这些只是四个具体 Hard 任务及其固定 Cell 的结果，并不建立一般机制无能力。
+
+---
+
+## P0-3：跨 Tier 任务不是同一核心任务的深度变体
+
+任务源生成顺序大致是：
+
+```python
+for tier in HARD, FRONTIER, EASY:
+    for family in families:
+        build_family_tier(...)
+```
+
+源码位置：
+
+```text
+phase1_capability_sensitive_frontier.py
+约 642–700 行
+```
+
+各 Tier 独立选择 Evidence。
+
+v26.163 的正式选样又是在每个：
+
+```text
+Mechanism × Tier
+```
+
+内部按固定哈希排序取一个任务：
+
+```text
+phase1_v26_bounded_policy_endpoint_frequency_preflight.py
+约 346–355、469–481 行
+```
+
+直接检查所选 12 个任务后，四种机制的 Easy、Frontier、Hard 均具有不同的：
+
+```text
+core_semantic_signature
+task_signature
+mechanism_instance_signature
+Evidence identity
+金融实体／时期／来源组合
+```
+
+所以当前比较的是：
+
+$$
+x_{k,\mathrm{Easy},1},
+\quad
+x_{k,\mathrm{Frontier},2},
+\quad
+x_{k,\mathrm{Hard},3},
+$$
+
+而不是：
+
+$$
+x_{k,g,D_1},
+\quad
+x_{k,g,D_2},
+\quad
+x_{k,g,D_3}.
+$$
+
+### 审计判定
+
+$$
+\boxed{
+\text{Tier 差异与任务实例、Evidence、实体和时期效应完全混合。}
+}
+$$
+
+即使观察到：
+
+$$
+q_{\mathrm{Easy}}>q_{\mathrm{Frontier}}>q_{\mathrm{Hard}},
+$$
+
+也不能将下降唯一归因于目标能力负担增加。
+
+---
+
+## P0-4：每个 Mechanism × Tier 只有一个一级任务
+
+当前角色总体是：
+
+```text
+4 mechanisms
+× 3 tiers
+× 1 primary task
+= 12 tasks
+```
+
+每个任务上的多个 rollout 只能测量同一任务内的随机波动。任务才是一级统计单位；rollout 是二级重复。当前 v26.164–v26.165 也明确不建立 task-population probability。
+
+源 Frame 内虽然每个家族有多个任务，但正式角色链最终只选取一个。
+
+因此无法区分：
+
+$$
+\text{能力深度效应}
+$$
+
+与：
+
+$$
+\text{单个任务实例效应}.
+$$
+
+增加同一任务 Seed 数不能解决这一问题。
+
+---
+
+## 正向发现：角色编译并没有把任务深度压平
+
+真实调用链为：
+
+```text
+bounded-policy preflight
+→ mapper-v2 static make_task_catalog
+→ role-kernel-scalability _role_draft
+→ executable-task-rematerialization _base_draft
+```
+
+其中：
+
+```text
+phase1_v26_executable_task_rematerialization.py
+约 776–863 行
+```
+
+的 `_base_draft()` 保留了：
+
+```python
+evidence_bundle
+public_corpus
+proof_graph
+task_program
+projected_expected_output
+```
+
+深层 Reconciliation 又使用专门的 deep compiler：
+
+```text
+phase1_v26_role_kernel_scalability_design.py
+约 1030–1087、1424–1429 行
+```
+
+正式 TaskPackage 中仍保留：
+
+```text
+Easy       1-node Program
+Frontier   3-node Program
+Hard       5-node Program
+```
+
+### 结论
+
+问题不是：
+
+```text
+Joint Compilation 把所有任务编译成了简单任务
+```
+
+而是：
+
+```text
+它忠实保留了一个多维度一起增加的 global-complexity bundle
+```
+
+因此需要修复 source-task 设计，而不是重写当前 Joint Compiler。
+
+---
+
+## P1-1：能力广度存在两套口径
+
+底层任务源有七个 family，但当前主线只为四个目标能力建立了完整端到端合同：
+
+```text
+Context-conditioned Action
+Semantic Reconciliation
+Failure Recovery
+State-dependent Stopping
+```
+
+映射源码位于：
+
+```text
+phase1_v26_fresh_role_kernel_compatibility_preflight.py
+约 221–229 行
+```
+
+检索、计算和验证虽然存在于任务中，但目前没有独立的：
+
+```text
+Mechanism Contract
+Mechanism Verifier
+valid-only State identity
+VTDO role identity
+```
+
+### 收敛建议
+
+本轮“广度”只保留上述四个已经合同化的目标能力。
+
+检索、计算、验证继续作为：
+
+```text
+nuisance / supporting dimensions
+```
+
+被固定和审计，不要在本轮扩展为七轴完整能力体系。
+
+---
+
+## P1-2：Capability Survival Profile 是执行漏斗，不是能力尺度
+
+当前 `GATE_DAG` 位于：
+
+```text
+...capability_censoring_vtdo_admission_audit_models.py
+约 80–92 行
+```
+
+顺序包括：
+
+```text
+Action Entry
+Program Closure
+Operation Lineage
+Evidence Support
+Terminal Verification
+Final ABI
+Answer Semantics
+Reference Identity
+Citation
+Mechanism Qualification
+Policy Horizon
+```
+
+它能确定首个可观察失败层，但不能估计某一能力的“强度”。
+
+尤其 `Program Closure` 位于多个更细粒度条件之前，会吸收大量后续原因。
+
+因此：
+
+$$
+\boxed{
+\text{Survival Profile 是故障定位工具，}
+}
+$$
+
+不是：
+
+$$
+\boxed{
+\text{任务深度或能力刻度的替代品。}
+}
+$$
+
+---
+
+## P2：Coverage Gap 自动标记 Compiler-assisted 候选略有扩大化
+
+当前：
+
+```python
+class CoverageGapRow:
+    compiler_assisted_capability_coverage_research_candidate:
+        Literal[True] = True
+```
+
+约位于：
+
+```text
+...audit_models.py
+642–656 行
+```
+
+这会让所有 absent／weak Cell 自动成为“Compiler-assisted 研究候选”。
+
+虽然当前没有实际 Compiler intervention，历史结果也不受影响，但按照最新的严格收敛边界，建议未来改为：
+
+```text
+coverage_followup_status = unassigned
+```
+
+只有新的独立审计决策才能升级为：
+
+```text
+compiler_assisted_candidate
+```
+
+低支持本身不应自动展开另一个研究课题。
+
+---
+
+# 四、对本轮理论修订的最终审计
+
+“广度 × 深度”是正确修订，但其角色必须被严格限制为：
+
+$$
+\boxed{
+\text{任务观测设计}
+}
+$$
+
+而不是：
+
+* 完整 Agent 能力分类学；
+* 模型潜在能力向量；
+* 通用 IRT；
+* 自动课程学习；
+* 动态难度优化；
+* 全任务覆盖理论。
+
+它只需要解决一个有限问题：
+
+> 对四个现有目标能力，任务集合是否包含最低可观测锚、过渡区和压力层，并且深度变化主要来自目标能力负担，而不是其他能力和任务实例同时变化？
+
+这项上游修订应当优先于现有 fresh VTDO confirmation。
+
+---
+
+# 五、详细任务合成方案
+
+## 1. 三种概念必须分开
+
+建议正式冻结：
+
+| 对象                        | 含义                |
+| ------------------------- | ----------------- |
+| `DifficultyTier`          | 历史全局复杂度标签，仅用于历史重放 |
+| `ObservationDepth`        | 新的、单能力受控深度        |
+| `EmpiricalBoundaryStatus` | 模型在当前深度梯度上的经验观测结论 |
+
+新增：
+
+```python
+class ObservationDepth(str, Enum):
+    D0_OBSERVABILITY_ANCHOR = "d0_observability_anchor"
+    D1_BASIC = "d1_basic"
+    D2_COMPOSITIONAL = "d2_compositional"
+    D3_STRESS = "d3_stress"
+```
+
+禁止将旧：
+
+```text
+easy_control
+frontier
+hard_control
+```
+
+重命名后直接作为新深度。
+
+---
+
+## 2. 使用“匹配核心 + 深度覆盖层”
+
+对能力 \(k\) 和匹配任务组 \(g\)，先构造共享金融任务核心：
+
+$$
+b_{k,g}.
+$$
+
+再构造四个深度变体：
+
+$$
+x_{k,g,d}
+=
+\operatorname{ApplyOverlay}
+\left(
+b_{k,g},
+\Delta_{k,d}
+\right),
+\qquad
+d\in\{D_0,D_1,D_2,D_3\}.
+$$
+
+同一组的四个任务必须共享：
+
+```text
+capability_family_id
+核心金融问题
+Evidence IDs 与 Evidence Versions
+canonical expected result
+Answer Schema
+Oracle Program skeleton
+Verifier Contract
+Tool environment
+Prompt / Action / Final Grammar
+model / Thinking profile
+bounded generation policy
+resource ceiling
+```
+
+只有 `DepthDeltaContract` 注册的目标能力字段允许变化。
+
+---
+
+## 3. 推荐使用固定最大骨架，而不是让总任务长度一起增长
+
+为了真正隔离目标能力，建议先构造能够承载 D3 的最大公共骨架：
+
+```text
+MatchedTaskSkeleton
+```
+
+D0–D3 使用相同：
+
+```text
+Evidence 数量
+Program node 数量
+Tool set
+操作总槽位
+Verification 结构
+Final Answer
+Candidate 数量上限
+资源合同
+```
+
+不同深度只改变：
+
+```text
+哪些槽位需要目标能力
+目标能力槽位的依赖与歧义程度
+```
+
+例如 D0 中未启用的槽位不是被删除，而是变成：
+
+* 唯一合法动作；
+* identity normalization；
+* 不触发的 recovery slot；
+* 明确非终止状态。
+
+这样可以避免：
+
+```text
+D3 更难
+```
+
+只是因为：
+
+```text
+D3 有更多 Evidence、更多 Tool、更多 Program node。
+```
+
+形式化为：
+
+$$
+L_k(x_{d+1})>L_k(x_d),
+$$
+
+而对非目标负担：
+
+$$
+N_{-k}(x_{d+1})=N_{-k}(x_d),
+$$
+
+或仅允许预注册的极小容差。
+
+注意：要求的是**构造负担单调**，不是强迫经验成功率严格单调。
+
+---
+
+# 六、四项能力的深度设计
+
+## 1. Context-conditioned Action
+
+### 目标负担
+
+```text
+context-sensitive decision-slot count
+candidate semantic ambiguity
+context dependency depth
+delayed public-context update
+irreversible choice count
+```
+
+建议使用固定三槽决策骨架：
+
+| 深度 | 激活方式                                |
+| -- | ----------------------------------- |
+| D0 | 1 个真实上下文决策槽；两个公开合法候选；其余槽唯一可选        |
+| D1 | 1 个决策槽，但有 3–4 个近似合法候选；需组合两个公开字段     |
+| D2 | 2 个上下文决策槽；第二个依赖第一次 Tool Observation |
+| D3 | 3 个决策槽或两个不可逆槽；含延迟上下文更新与候选语义接近       |
+
+必须固定：
+
+```text
+Evidence
+最终答案
+Tool set
+Program 总槽位
+Verification
+Recovery
+Stopping
+```
+
+D0 不能退化为单 Candidate，否则没有测量目标能力。
+
+---
+
+## 2. Semantic Reconciliation
+
+### 目标负担
+
+```text
+non-identity normalization axes
+target-record count
+normalization-reference consumption
+downstream fan-out
+raw-evidence bypass constraints
+```
+
+建议使用固定记录数和固定 normalization operation 数：
+
+| 深度 | 激活方式                                          |
+| -- | --------------------------------------------- |
+| D0 | 所有记录都通过 normalization；仅 1 个语义轴需要非 identity 变换 |
+| D1 | 2 个非平凡语义轴，例如单位和期间基准                           |
+| D2 | 多个目标记录；normalization refs 被两个下游节点消费           |
+| D3 | 定义、单位、期间等多轴同时变化；多节点持续消费；raw bypass 无法通过       |
+
+其余记录在低深度执行 identity normalization，从而保持：
+
+```text
+记录数
+Operation 数
+Program 长度
+Tool set
+最终答案
+```
+
+一致。
+
+不得通过增加检索难度或 distractor 数量来冒充 Reconciliation 深度。
+
+---
+
+## 3. Failure Recovery
+
+### 目标负担
+
+```text
+typed failure count
+recovery branching factor
+recovery dependency depth
+failure-type diversity
+downstream consequence
+```
+
+固定一个最多容纳三次 Recovery 的骨架：
+
+| 深度 | 激活方式                                                |
+| -- | --------------------------------------------------- |
+| D0 | 1 次真实 typed failure；只有 1 个明显合法修正                    |
+| D1 | 1 次 typed failure；2 个表面合理恢复候选，只有一个满足 Retry Contract |
+| D2 | 两阶段恢复；第二次动作依赖第一次修正后的公共状态                            |
+| D3 | 两种 typed failure；多个恢复候选；恢复路径影响后续 Program 与验证        |
+
+必须固定：
+
+```text
+Evidence
+Oracle Program core
+最终答案
+检索条件
+Verification
+资源上限
+```
+
+当前 legacy Recovery Easy 的 source-level `required_recovery_count=0`，因此不能直接充当新 D0。新 D0 必须具有真实且模型拥有的：
+
+```text
+typed failure → revision → success
+```
+
+链。
+
+---
+
+## 4. State-dependent Stopping
+
+### 目标负担
+
+```text
+near-terminal state count
+completion-predicate count
+verification/completion separation
+tempting-continuation count
+delayed final-readiness depth
+```
+
+固定一套具有多个公共检查点的骨架：
+
+| 深度 | 激活方式                                                 |
+| -- | ---------------------------------------------------- |
+| D0 | 一个明确完成状态；完成后仍有一个可见但不应执行的合法动作                         |
+| D1 | 一个 near-terminal 与一个 terminal；必须等待 Verification      |
+| D2 | Verification 与 Completion 分离；存在两个表面合理的 near-terminal |
+| D3 | 多个近似完成检查点；多个合法 continuation；全部条件满足后才可 Final          |
+
+必须固定：
+
+```text
+Evidence
+最终答案
+主 Program
+Tool set
+Recovery
+检索条件
+```
+
+不能再用“Program 从 1 节点增加到 5 节点”作为 Stopping 深度的主要来源。
+
+---
+
+# 七、建议新增的核心 Schema
+
+## 1. `CapabilityObservationGroup`
+
+```text
+group_id
+capability_id
+shared_core_semantic_signature
+shared_evidence_ids
+shared_evidence_version_ids
+shared_program_skeleton_id
+shared_answer_contract_id
+shared_verifier_contract_id
+shared_tool_environment_id
+shared_generation_policy_id
+exposure_block_id
+depth_variant_ids[D0..D3]
+development_or_confirmation
+```
+
+## 2. `CapabilityObservationVariant`
+
+```text
+variant_id
+group_id
+observation_depth
+depth_overlay_id
+primary_capability_load
+nuisance_load_signature
+source_task_id
+role_task_package_id
+role_depth_signature_id
+mechanism_necessity_artifact_id
+```
+
+## 3. `DepthDeltaContract`
+
+```text
+target_capability_id
+parent_depth
+child_depth
+
+allowed_changed_paths
+required_monotone_fields
+fixed_field_hashes
+bounded_nuisance_fields
+before_primary_load
+after_primary_load
+before_nuisance_signature
+after_nuisance_signature
+prohibited_changes
+static_delta_proof_id
+```
+
+任何未注册字段变化都 fail-closed。
+
+## 4. `RoleExecutableDepthSignature`
+
+必须从最终 Role TaskPackage 重新计算：
+
+```text
+Program node count
+Evidence count
+decision slots
+candidate count and ambiguity class
+typed failure events
+normalization obligations
+near-terminal states
+Tool set
+Prompt protocol
+Verifier bindings
+resource contract
+```
+
+并要求：
+
+$$
+\text{source-depth signature}
+=
+\text{executable-role-depth signature}.
+$$
+
+这能防止未来 Joint Compilation 无意中将 D2/D3 压回 D0。
+
+## 5. 其他必要工件
+
+```text
+CapabilityObservationProtocol
+CapabilityBreadthCatalog
+MatchedTaskSkeleton
+CapabilityDepthOverlay
+TaskLadderStaticAudit
+PairedFreshnessAudit
+ExposureBlockContract
+ObservabilityFloorContract
+BoundarySelectionContract
+```
+
+---
+
+# 八、任务组规模与划分
+
+## 推荐方案：64 个静态任务
+
+$$
+4\text{ capabilities}
+\times
+4\text{ matched groups}
+\times
+4\text{ depths}
+=
+64\text{ tasks}.
+$$
+
+每项能力：
+
+```text
+Development groups      2
+Reserved Confirmation   2
+```
+
+即：
+
+```text
+Development tasks       32
+Confirmation tasks      32
+```
+
+但 Confirmation 最终只执行由预注册规则选中的两个相邻深度。
+
+## 最小降级方案：48 个任务
+
+若静态 Evidence Capacity 不足：
+
+$$
+4\times3\times4=48.
+$$
+
+每项能力：
+
+```text
+Development groups      2
+Confirmation group      1
+```
+
+这个方案可以作为 pilot，但确认的任务级独立性更弱。
+
+选择 64 还是 48，只能由模型调用前的静态 Evidence Capacity Audit 决定。
+
+---
+
+# 九、组级新鲜性与暴露规则
+
+匹配任务故意在组内共享 Evidence，因此不能沿用“所有任务间零重叠”的旧新鲜性规则。
+
+## 组间与历史
+
+必须在以下通道零重叠：
+
+```text
+core semantic signature
+Evidence identity
+Evidence Version
+mechanism instance
+source record
+group semantic identity
+```
+
+## 组内
+
+允许并要求共享：
+
+```text
+core semantic signature
+Evidence set
+canonical answer
+Verifier
+Program skeleton
+Tool environment
+```
+
+但要求：
+
+```text
+variant task ID 不同
+depth ID 不同
+overlay ID 不同
+DepthDelta ID 不同
+```
+
+统计单位为：
+
+$$
+\boxed{
+\text{matched group 是一级独立单位}
+}
+$$
+
+D0–D3 是组内配对变体，rollout 是二级重复。
+
+## Exposure Block
+
+同组 D0–D3 必须：
+
+* 在任何 Provider 调用前共同冻结；
+* 使用预提交的调用顺序或随机化计划；
+* 不根据浅层结果修改深层任务；
+* 任一变体曝光后，整组标记为 exposed；
+* Development 代码不能访问 Confirmation Payload；
+* Confirmation 组在 Development 结束前保持 sealed。
+
+---
+
+# 十、两阶段在线观测协议
+
+## 阶段 A：牺牲性广度—深度扫描
+
+使用两个 Development group。
+
+每项能力冻结一个**能力中性的观测条件**，D0–D3 和两个 group 完全相同。
+
+不要同时运行：
+
+```text
+Unconditional
+structured_direct
+search_then_structured
+search_then_open
+```
+
+否则深度又会与 Path 条件混合。
+
+观测条件必须通过：
+
+```text
+target_authority_preservation
+target_mechanism_noninterference
+```
+
+Context-conditioned Action 可能需要 neutral-unconditional 条件；其他能力可以使用经审计的 `structured_direct`。不能为了统一形式而消除目标决策。
+
+推荐分母：
+
+$$
+4\times4\times2\times6
+=
+192\text{ Jobs}.
+$$
+
+本阶段只测量：
+
+* D0 是否存在非零且可重复的有效支持；
+* D3 是否仍全部过易；
+* 支持大致在哪两个相邻深度下降；
+* 梯度是否非单调或组间冲突。
+
+禁止：
+
+* State Distribution 选择；
+* VTDO；
+* Contribution；
+* Student；
+* Compiler intervention；
+* 根据当前 27 个 Cell 选任务。
+
+---
+
+## 阶段 B：预注册边界确认
+
+在 Development 执行前冻结 `BoundarySelectionContract`。
+
+推荐定义组级支持：
+
+```text
+supported(group, depth):
+    N_qualified >= m_dev
+```
+
+例如 pilot 可预注册：
+
+```text
+m_dev = 2 / 6
+m_confirmation = 3 / 8
+```
+
+这只是建议的设计默认值；最终必须在任何模型调用前固定，不能由 Development 结果调整。
+
+每项能力只允许四种结论。
+
+### 1. `below_observation_floor`
+
+两个 Development group 的 D0 均未达到支持要求。
+
+允许结论：
+
+> 当前最低任务深度仍未建立该能力的可观察支持。
+
+禁止结论：
+
+> 模型完全没有该能力。
+
+### 2. `above_observation_ceiling`
+
+两个 group 在 D3 仍达到支持要求。
+
+允许结论：
+
+> 当前深度上限不足以定位能力边界。
+
+当前 VTDO 主线不必继续无限构造更难任务。
+
+### 3. `boundary_bracketed`
+
+存在相邻深度：
+
+$$
+D_d,\ D_{d+1},
+$$
+
+且两个 Development group 均表现为：
+
+```text
+lower depth supported
+upper depth unsupported / weak
+```
+
+并且没有更深层重新出现稳定支持。
+
+只执行 Reserved Confirmation 组中的这两个深度。
+
+推荐确认分母：
+
+$$
+4
+\times2\text{ depths}
+\times2\text{ confirmation groups}
+\times8
+=
+128\text{ Jobs}.
+$$
+
+### 4. `nonmonotonic_or_confounded`
+
+如果：
+
+* D0 失败但 D1/D2 成功；
+* 两个 matched group 呈相反趋势；
+* 深层重新恢复且跨组可复现；
+* Nuisance Signature 不一致；
+
+则停止。
+
+不能把它解释为模型“非常随机”，也不能重新排列深度或调支持阈值。
+
+---
+
+# 十一、确认之后仍不能直接做 VTDO
+
+即使能力边界确认通过，也只说明：
+
+```text
+在固定能力 × 深度上，
+有效支持可被稳定观测。
+```
+
+不应复用同一 Confirmation 数据完成：
+
+```text
+状态选择
+→ 状态重加权
+→ VTDO 效果主张
+```
+
+正确顺序是：
+
+```text
+Breadth–Depth Development
+→ Boundary Confirmation
+→ 冻结能力 × 深度准入规则
+→ 全新 State-Support Population
+→ valid-only Mapper
+→ 最小锚定状态重加权
+→ Equal-token Student
+```
+
+能力边界任务和 VTDO State-Support 任务应是不同的新鲜总体。
+
+---
+
+# 十二、静态准入 Gate
+
+任何 Provider 调用前必须通过：
+
+| Gate                    | 要求                                       |
+| ----------------------- | ---------------------------------------- |
+| Breadth Gate            | 四个现有目标能力全部具备任务族                          |
+| Group Core Match        | 同组 D0–D3 共享金融核心、Evidence、Answer、Verifier |
+| D0 Nontriviality        | D0 至少包含一个模型拥有的目标能力决策                     |
+| D0 Necessity            | 删除目标机制后完整 Validity 失败                    |
+| Depth Delta             | 相邻深度只改变注册的目标负担                           |
+| Nuisance Stability      | 非目标负担相同或在冻结容差内                           |
+| Max Skeleton Closure    | D3 最大骨架静态可执行                             |
+| Public Witness          | 全部变体公开可解                                 |
+| Tool Closure            | Tool 与参数空间闭合                             |
+| Runtime Replay          | 所有变体可重放                                  |
+| Mechanism Necessity     | 目标匹配反事实 fail-closed                      |
+| Resource Equality       | 同组四个深度使用同一资源政策                           |
+| Role Depth Preservation | 编译后的 TaskPackage 保留深度签名                  |
+| Paired Freshness        | 组间零重叠，组内共享符合合同                           |
+| Exposure Block          | 全组冻结后才能调用                                |
+| Terminal Matrix         | 所有终局的 null/false 语义闭合                    |
+| Confirmation Seal       | Development 无法读取 Confirmation 内容         |
+
+这些 Gate 不可补偿。D3 更难不能补救 Public Witness 或 Verifier 失败。
+
+---
+
+# 十三、代码实施方案
+
+## 新增 Core 模块
+
+```text
+src/trusted_synthesis/core/task/
+    capability_observation.py
+```
+
+建议实现：
+
+```python
+ObservationDepth
+CapabilityLoadVector
+NuisanceLoadVector
+MatchedTaskSkeleton
+CapabilityDepthOverlay
+DepthDeltaContract
+CapabilityObservationVariant
+CapabilityObservationGroup
+RoleExecutableDepthSignature
+PairedFreshnessAudit
+ExposureBlockContract
+```
+
+## 新增实验模块
+
+```text
+src/trusted_synthesis/experiments/vtdo_experiment/
+    phase1_v26_capability_breadth_depth_task_synthesis_models.py
+    phase1_v26_capability_breadth_depth_task_synthesis.py
+    phase1_v26_capability_observation_static_audit.py
+    phase1_v26_capability_observation_runner_preflight.py
+```
+
+后续再独立实现：
+
+```text
+phase1_v26_capability_observation_development_execution.py
+phase1_v26_capability_observation_postrun_audit.py
+phase1_v26_capability_boundary_confirmation_preflight.py
+```
+
+## 可复用代码
+
+### `phase1_capability_sensitive_frontier.py`
+
+可以复用：
+
+* `_EvidencePool`；
+* Evidence eligibility；
+* Program／Verifier 基础执行；
+* 结构向量计算。
+
+不能复用：
+
+```text
+旧 Tier → 新 ObservationDepth
+```
+
+的映射。
+
+### `phase1_matched_capability_ladder.py`
+
+可以复用：
+
+* matched group identity；
+* core semantic signature；
+* Evidence／Program／Answer 不变量；
+* group-level freshness；
+* destructive invariant checks。
+
+仓库中该模块已经证明匹配组框架可实现。
+
+但其旧 ladder 仍让多个结构维度一起递增，因此只能复用**匹配框架**，不能复用其旧深度定义。
+
+### 当前 Role builder
+
+继续复用：
+
+* `_base_draft()`；
+* deep Reconciliation compiler；
+* Verifier binding；
+* Tool environment；
+* compact Prompt；
+* Route B Endpoint；
+* Mapper v2。
+
+新增版本化：
+
+```text
+CapabilityDepthOverlay
+```
+
+不要修改历史 `_role_draft()` 或任何已冻结工件。
+
+---
+
+# 十四、必须新增的测试
+
+## 正向测试
+
+1. 精确生成 `4 capabilities × 4 depths × N groups`；
+2. 同组四个深度共享 core semantic signature；
+3. 同组 Evidence、Answer、Verifier、Tool environment 相同；
+4. D0 仍真实要求目标机制；
+5. 相邻深度的主能力负担严格增加；
+6. 非目标能力签名保持稳定；
+7. D3 最大骨架 Public Witness／Runtime／Verifier 通过；
+8. 最终 Role TaskPackage 保留 source depth signature；
+9. 四个深度使用同一模型、Prompt Grammar、资源和 Policy；
+10. Paired Freshness 满足“组内共享、组间隔离”；
+11. Exposure Block 在第一次调用前冻结；
+12. Development 代码不能访问 Confirmation Payload；
+13. Development bracket rule 在加载结果前内容寻址；
+14. Confirmation 深度只能由冻结规则选择；
+15. matched group 被统计为一级单位；
+16. coarse scan 中 Mapper／VTDO／Training 调用数均为零。
+
+## 破坏性测试
+
+| 变异                                        | 必须结果        |
+| ----------------------------------------- | ----------- |
+| 修改某一深度的 Evidence Version                  | fail-closed |
+| 修改某一深度的 canonical answer                  | fail-closed |
+| 修改 Verifier 或 Citation Contract           | fail-closed |
+| 额外增加非目标 distractor                        | fail-closed |
+| 额外增加 Tool type                            | fail-closed |
+| 改变非目标 Program node 数                      | fail-closed |
+| 主能力负担不递增                                  | fail-closed |
+| D0 不含目标机制                                 | fail-closed |
+| 将旧 `DifficultyTier` 当作 `ObservationDepth` | fail-closed |
+| Role Compiler 抹掉 D2/D3 负担                 | fail-closed |
+| source／role depth signature 不同            | fail-closed |
+| 把同组四个深度视为四个独立任务                           | fail-closed |
+| Development 与 Confirmation group 重叠       | fail-closed |
+| 部分曝光后重新生成同组其他深度                           | fail-closed |
+| 根据 Development 结果改任务文本                    | fail-closed |
+| 根据结果重新分配 rollout                          | fail-closed |
+| 同时运行四种 Path 条件并池化                         | fail-closed |
+| 根据当前 27 个多状态 Cell 定义新抽样框                  | fail-closed |
+| 在 scan 阶段启用 Compiler intervention         | fail-closed |
+| 在 scan 阶段调用 Mapper／Contribution／VTDO      | fail-closed |
+| 调整支持阈值以获得单调曲线                             | fail-closed |
+| 使用失效内容哈希绕过不变量                             | fail-closed |
+
+---
+
+# 十五、建议的新阶段序列
+
+## 阶段 1：新的外部审计决策
+
+```text
+capability_breadth_depth_task_synthesis_and_static_audit_only
+```
+
+工作：
+
+* 冻结 Schema；
+* 运行 Evidence Capacity；
+* 决定 48 还是 64 个静态任务；
+* 生成 matched groups；
+* 完成全部静态 Gate。
+
+Provider 调用：
+
+```text
+0
+```
+
+## 阶段 2：Development Runner 预检
+
+```text
+capability_observation_development_runner_preflight_only
+```
+
+只物化 192-Job Development Manifest，完成零调用 Runner 控制。
+
+## 阶段 3：Development 扫描
+
+```text
+capability_observation_development_execution_only
+```
+
+只回答 observability floor／ceiling／bracket／confounding。
+
+## 阶段 4：独立审计与边界冻结
+
+零调用独立重建结果，应用预注册 bracket rule。
+
+## 阶段 5：Reserved Confirmation
+
+只执行冻结相邻深度和预先封存的 Confirmation groups。
+
+## 阶段 6：新的 State-Support Population
+
+能力边界确认后，再从全新任务池构造用于最小 VTDO 实验的状态支持任务。
+
+---
+
+# 十六、最终审计决策
+
+## 本轮理论修订
+
+$$
+\boxed{\text{通过}}
+$$
+
+能力观测确实必须回到任务集合的初始构造。
+
+## v26.166 历史工件
+
+$$
+\boxed{\text{通过并保持不可变}}
+$$
+
+其 10/8/3/27 分类、Survival Profile、Typed Rejection 边界和 VTDO 零准入结论都仍然有效。
+
+## v26.166 当前 prospective confirmation
+
+$$
+\boxed{\text{不足，不应直接执行}}
+$$
+
+因为它仍建立在：
+
+```text
+Mechanism × legacy Tier × generation condition
+```
+
+之上，没有能力深度梯度。
+
+## 当前代码是否具备改造基础
+
+$$
+\boxed{\text{具备}}
+$$
+
+仓库已有：
+
+* matched group；
+* multitier population；
+* confirmation；
+* Joint Compilation；
+* Route B Endpoint；
+* Verifier；
+* Mapper v2；
+
+等可复用组件。
+
+但必须新增：
+
+```text
+ObservationDepth
+single-capability Depth Overlay
+Nuisance Invariance
+Role Depth Preservation
+Group-level Freshness
+Exposure Block
+```
+
+才能形成可信的能力观测任务体系。
+
+---
+
+# 最终结论
+
+当前不足不是“任务数量不够”这么简单，而是：
+
+$$
+\boxed{
+\text{现有任务集合缺少匹配、单轴、含低难度锚的能力深度梯度。}
+}
+$$
+
+旧 Easy／Frontier／Hard 同时放大了多种任务负担，跨 Tier 又使用不同金融实例，因此无法判断零有效支持究竟来自：
+
+* 目标能力不足；
+* 当前任务下限过高；
+* 非目标能力负担；
+* 单一任务实例；
+* 多能力共同越界。
+
+下一步不应继续围绕当前 27 个多状态 Cell 做确认，也不应新增更多泛化理论。
+
+应先构造：
+
+$$
+\boxed{
+4\text{ 个现有能力}
+\times
+4\text{ 个受控深度}
+\times
+\text{多个匹配任务组}
+}
+$$
+
+并通过 Joint Compilation 证明：
+
+$$
+\boxed{
+\text{深度变化确实只来自目标能力负担，}
+}
+$$
+
+然后用 Development 扫描和 Reserved Confirmation 定位有限的经验能力边界。
+
+只有在新鲜任务上确认某个固定能力—深度区域同时具有：
+
+```text
+有效支持
+任务级复现
+状态多样性
+```
+
+后，才允许进入最小的有效状态重加权实验。

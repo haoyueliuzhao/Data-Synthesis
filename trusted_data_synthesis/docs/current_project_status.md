@@ -453,10 +453,138 @@ existence; frequency, Contribution, materialization, Student visibility, VTDO, C
 intervention, training, release, and production remain unauthorized. The current transition
 permits only a credential-free fresh independent VTDO-admission confirmation preflight.
 
+v26.167 has now consumed a later external joint theory, code, and task-synthesis decision with
+zero Provider calls. It retains every v26.166 historical artifact and result but does not consume
+the old prospective confirmation transition, whose protocol lacked capability families, matched
+groups, independent Observation Depth, D0 anchors, DepthDelta, nuisance invariance, Role depth
+preservation, and group-wide exposure. A pre-outcome Evidence Capacity audit finds seven
+unexposed source tasks per target capability and selects sixteen disjoint matched groups, split
+eight Development and eight sealed Confirmation. Their 64 D0-D3 static variants preserve exact
+group core, compile to 64 distinct Role task-package identities, pass 17/17 noncompensatory Gates,
+and reject 22/22 destructive mutations. The 21 historical Coverage Gap rows remain immutable,
+while a separate prospective disposition assigns all future follow-up `unassigned` and authorizes
+zero Compiler candidates. Provider, Confirmation, Mapper, State, Contribution, VTDO, training,
+release, and production counts remain zero. The current transition permits only a credential-free
+Development Runner preflight over the exact future 192-Job design.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.167 Capability Breadth-Depth Task Synthesis And Static Audit Decision
+
+Finance v26.167 consumed only the externally authorized
+`capability_breadth_depth_task_synthesis_and_static_audit_only` decision. The joint theory, code,
+and task-synthesis review input is bound at exact byte count 37,622 and SHA-256
+`5fac66582cb594bd5299c3d11f4d7fe274ba72fb258791f74513ea183a120608`. The stage reads no
+credential, constructs no Provider client, makes zero Stage 1 or Stage 2 Provider calls, and uses
+zero GPU jobs.
+
+Every v26.166 historical artifact and result remains immutable, including the exact 48-Cell
+`10/8/3/27` support partition, 360-row Capability Survival Profile, eight-case Terminal x Endpoint
+matrix, typed-rejection boundary, and zero current VTDO admissions. The external audit does not
+consume the historical `fresh_vtdo_admission_confirmation_preflight_only` transition. It finds
+that the prospective Fresh Confirmation protocol lacked a capability-family index, matched groups,
+independent depth, D0 observability anchor, DepthDelta, nuisance invariance, Development and
+Confirmation group counts, Role depth preservation, and group-wide exposure semantics. A fresh
+replacement is therefore required before any Runner or Provider execution.
+
+The new capability breadth is exactly Context-conditioned Action, Semantic Reconciliation,
+Failure Recovery, and State-dependent Stopping. Retrieval, calculation, and verification remain
+supporting nuisance dimensions rather than new capability axes. Historical `DifficultyTier` stays
+a global-complexity provenance label and is not renamed or mapped to ability depth. The new
+`ObservationDepth` values are D0 observability anchor, D1 basic, D2 compositional, and D3 stress.
+Empirical boundary status remains a separate post-execution object.
+
+The pre-outcome Evidence Capacity audit reads the frozen 70-task v26.163 frame and excludes all
+twelve exact v26.164-exposed sources before loading a v26.166 outcome-bearing file. Seven eligible
+source tasks remain in each target capability. A fixed salt selects four per capability: two
+Development groups and two reserved Confirmation groups. The selected sixteen groups use 99
+distinct public Evidence identities, with zero cross-group Evidence, Evidence Version, source
+record, source task, core semantic, task, or mechanism-instance overlap. The recommended 64-task
+design passes and the 48-task fallback is not activated.
+
+Each matched group binds one Finance question and four paired D0-D3 variants. Exact Evidence and
+Versions, canonical result, Answer schema and projection, Oracle Program, Verifier structure, Tool
+environment contract, Prompt and Grammar identities, exact model and Thinking binding, bounded
+generation Policy, and resource Contract remain fixed. Every depth uses one D3-sized three-slot
+maximum skeleton. Lower depths retain unique-action, identity-normalization, non-trigger-recovery,
+or explicit-nonterminal placeholders instead of deleting slots. Only the registered target
+capability load changes, all nuisance deltas are zero, and each adjacent DepthDelta is
+componentwise nonnegative with a strictly positive total. No empirical success monotonicity is
+assumed.
+
+Every D0 is a real mechanism observation. Context has one context-dependent choice with at least
+two legal Actions; Reconciliation has one nonidentity normalization whose reference is consumed;
+Recovery has a typed failure followed by revision and success; Stopping has a completed state and
+a visible legal continuation that must not execute. The historical zero-recovery Easy shape and
+source Program node count are not accepted as Recovery or Stopping D0.
+
+All 64 variants pass through the existing credential-free Role compiler. Source Evidence, Program,
+result, and operation-DAG bindings remain exact; public depth metadata is independently read back;
+and 64/64 Role depth signatures match under 64 distinct Role task-package identities. Each group freezes its exact baseline Role Tool set, and every D0-D3 Role environment equals that
+set. Tool closure, Runtime replay, public witness, and Mechanism Necessity pass 64/64. Compiler
+intervention and depth erasure counts are zero. Runner overlay consumption is not preflighted and
+model behavior is not measured.
+
+The seventeen noncompensatory static Gates all pass: Breadth, Group Core Match, D0
+Nontriviality, D0 Necessity, Depth Delta, Nuisance Stability, Maximum Skeleton Closure, Public
+Witness, Tool Closure, Runtime Replay, Mechanism Necessity, Resource Equality, Role Depth
+Preservation, Paired Freshness, Exposure Block, Terminal Matrix, and Confirmation Seal. All 22
+destructive mutations fail closed. Development and sealed Confirmation Catalogs have disjoint
+group identities; any variant exposure marks the complete group exposed; partial regeneration is
+forbidden; and the Development reader rejects a Confirmation payload.
+
+The 21 historical v26.166 Coverage Gap rows retain their immutable Compiler-candidate field, but a
+separate prospective disposition assigns all 21 future follow-ups `unassigned`, authorizes zero
+Compiler candidates, and requires an independent upgrade audit. The observed current 27
+multistate Cells are not used as the source selection frame.
+
+The future Development design is frozen at 32 variants, one capability-neutral condition, and six
+rollouts per variant, or 192 Jobs. It may only locate below-floor, above-ceiling, adjacent-bracket,
+or nonmonotonic/confounded status under the precommitted 2/6 support rule. A later audit may open
+only two adjacent depths across the two already sealed Confirmation groups at eight rollouts and
+3/8 support, at most 128 Jobs. The same Confirmation data cannot support VTDO; later State support
+requires another fresh Population. None of these online Jobs exists in v26.167.
+
+The formal directory contains 21 files and 682,735 bytes. Final adjacent Pytest passes 8/8 in
+6.58 seconds, comprising 4/4 v26.167 and 4/4 frozen v26.166 tests and a complete empty-directory
+byte-identical rebuild. Focused PyCompile, Ruff check, Ruff format, and Mypy pass. Package-wide
+Ruff passes. Package-wide Mypy checks 521 source files and retains only four pre-existing
+diagnostics, with zero v26.167 diagnostics. Historical artifact mutation, empirical Assignment,
+State, Mapper, VTDO, Contribution, Provider, Stage 2 Provider, and GPU counts are zero.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_capability_breadth_depth_static_audit_report:5be198112aa4a2183d935ffa057c078bf2767aa2156c682cf910de1051fe7448`;
+- source replay:
+  `finance_v26_capability_breadth_depth_source_replay:5b50c57603495b66b15b6d7918bbde2660edf90bc08836c209f3b92c106b3b86`;
+- protocol:
+  `capability_observation_protocol:6208c9e6bd2852e0956d3b345fb1a1c691f8a2b59dd53b405de9f74f2f30f96f`;
+- Evidence Capacity audit:
+  `finance_v26_capability_observation_evidence_capacity_audit:fec19c269123d962c89de4f0aad8bba6cb6a6e9ec8a87458383faa075252d0c2`;
+- Role Depth Preservation audit:
+  `finance_v26_role_depth_preservation_audit:0ee8d8683401bba6931aae505a3e9c111286678b395d057fab78da574d5ad396`;
+- static audit:
+  `finance_v26_capability_observation_static_audit:05796abac16adf36af510309d0632d8ad5f356573b02012d024fc15aff4ff774`;
+- transition:
+  `finance_v26_capability_observation_transition:1d4a22b0ae19a0e3dadad6d94583ee22b409526fd94e7e7573f27d98908ebd96`.
+
+The only permitted transition is:
+
+```text
+capability_observation_development_runner_preflight_only
+```
+
+The successor may perform only a credential-free preflight and materialize only the exact future
+192-Job Development Manifest under every frozen v26.167 source, group, depth, condition, exposure,
+model/Thinking, Grammar, Policy, resource, threshold, and terminal contract. Confirmation payload
+loading, Provider execution, current-Cell selection, source or depth change, threshold tuning,
+Compiler intervention, historical reclassification, Mapper, State Assignment, frequency,
+Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
+`docs/finance_v26_167_capability_breadth_depth_task_synthesis_and_static_audit.md`.
 
 ## v26.166 Capability Censoring And VTDO Admission Audit Decision
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Literal
+from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -21,7 +21,9 @@ from trusted_synthesis.core.task.capability_observation import (
 from trusted_synthesis.hashing import canonical_hash
 
 RUN_VERSION = "finance_v26_capability_breadth_depth_static_audit.v1"
-NEXT_STAGE = "capability_observation_development_runner_preflight_only"
+NEXT_STAGE: Final[Literal["capability_observation_development_runner_preflight_only"]] = (
+    "capability_observation_development_runner_preflight_only"
+)
 
 
 class FrozenModel(BaseModel):
@@ -125,8 +127,11 @@ class HistoricalTierBoundaryContract(FrozenModel):
     historical_role: Literal["global_complexity_bundle_for_replay_only"] = (
         "global_complexity_bundle_for_replay_only"
     )
-    observation_depth_values: tuple[str, str, str, str] = tuple(
-        item.value for item in OBSERVATION_DEPTH_ORDER
+    observation_depth_values: tuple[str, str, str, str] = (
+        "d0_observability_anchor",
+        "d1_basic",
+        "d2_compositional",
+        "d3_stress",
     )
     tier_to_depth_mapping_authorized: Literal[False] = False
     survival_profile_used_as_depth_scale: Literal[False] = False
@@ -617,8 +622,8 @@ class TransitionContract(FrozenModel):
     next_stage: Literal["capability_observation_development_runner_preflight_only"] = NEXT_STAGE
     allowed_operations: tuple[str, ...] = (
         "credential_free_development_runner_preflight",
-        "exact_192_job_development_manifest_materialization",
         "development_catalog_only_loading",
+        "exact_192_job_development_manifest_materialization",
         "terminal_endpoint_matrix_preflight",
     )
     forbidden_operations: tuple[str, ...] = (
@@ -690,6 +695,9 @@ class CapabilityBreadthDepthStaticAuditReport(FrozenModel):
     destructive_mutation_count: Literal[22] = 22
     historical_artifact_mutation_count: Literal[0] = 0
     empirical_assignment_count: Literal[0] = 0
+    development_runner_preflighted: Literal[False] = False
+    confirmation_runner_preflighted: Literal[False] = False
+    observation_depth_model_behavior_measured: Literal[False] = False
     state_count: Literal[0] = 0
     mapper_calls: Literal[0] = 0
     vtdo_rows: Literal[0] = 0

@@ -1868,3 +1868,63 @@ The hardening requires fresh dependent identities and must pass, without a model
 Only a passing static result may authorize another small instrument requalification. Capability
 Development, State Reachability execution, Confirmation, No-C VTDO, Student training, Exact
 Target, GP-C, and Contribution remain closed.
+
+### v26.167 capability breadth-depth observation protocol
+
+The current prospective capability protocol no longer treats historical global-complexity Tier as
+capability depth. It freezes this ontology before task selection:
+
+```text
+CapabilityFamily = {
+  context_conditioned_action,
+  semantic_reconciliation,
+  failure_recovery,
+  state_dependent_stopping
+}
+
+ObservationDepth = {
+  d0_observability_anchor,
+  d1_basic,
+  d2_compositional,
+  d3_stress
+}
+```
+
+Each capability has four matched groups: two Development and two reserved Confirmation. Every
+group owns four paired depth variants under a fixed maximum skeleton. Core Finance question,
+Evidence and Versions, canonical result, Answer schema, Oracle Program, Verifier, Tool
+environment, Grammars, model/Thinking, bounded generation Policy, and resource Contract remain
+fixed. Only the target capability overlay may change. Adjacent `DepthDelta` values must be
+componentwise nonnegative with a strictly positive total, while nuisance deltas remain zero.
+
+D0 is the minimum real mechanism observation. Context D0 has two legal context actions;
+Reconciliation D0 has one nonidentity normalization and consumed reference; Recovery D0 has a
+typed failure, revision, and success; Stopping D0 has a completed state plus a visible legal
+continuation that must not execute. A missing mechanism, single-candidate Context D0, zero-event
+Recovery D0, or Program-size stopping proxy fails before execution.
+
+The exact static design is:
+
+```text
+4 capabilities x 4 groups x 4 depths = 64 tasks
+Development:  4 x 2 x 4 = 32 tasks
+Confirmation: 4 x 2 x 4 = 32 sealed tasks
+```
+
+The matched group is the primary independent unit; rollouts are secondary repeated measures.
+Any exposure marks the complete group exposed. Partial regeneration, outcome-driven task edits,
+current-Cell selection, and Development access to Confirmation payloads are forbidden.
+
+A future Development scan may use only one capability-neutral condition per capability and six
+rollouts per variant, giving exactly 192 Jobs. Its allowed results are
+`below_observation_floor`, `above_observation_ceiling`, `boundary_bracketed`, or
+`nonmonotonic_or_confounded`. The support threshold is frozen at 2/6. Mapper, State Assignment,
+Contribution, and VTDO are absent.
+
+Only a separately audited adjacent bracket may later open the two reserved Confirmation groups.
+That denominator is two adjacent depths by two groups by eight rollouts for each of four
+capabilities, at most 128 Jobs, with support threshold 3/8. Confirmation cannot support a
+same-data VTDO claim; any State-support or VTDO stage requires a later fresh Population.
+
+v26.167 materializes and statically audits the 64 tasks with zero Provider calls. Its current
+transition is only:

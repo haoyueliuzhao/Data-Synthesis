@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Literal
+from typing import Any, Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.hashing import canonical_hash
 
 CAPABILITY_OBSERVATION_CONTRACT_VERSION = "capability_observation_contract.v1"
-MAXIMUM_OBSERVATION_SLOT_COUNT = 3
+MAXIMUM_OBSERVATION_SLOT_COUNT: Final[Literal[3]] = 3
 
 
 class FrozenModel(BaseModel):
@@ -266,6 +266,12 @@ class RoleExecutableDepthSignature(FrozenModel):
     model_visible: Literal[True] = True
     compiler_intervention_applied: Literal[False] = False
     compiler_erased_depth: Literal[False] = False
+    public_witness_passed: Literal[True] = True
+    tool_closure_passed: Literal[True] = True
+    runtime_replay_passed: Literal[True] = True
+    mechanism_necessity_passed: Literal[True] = True
+    runner_consumption_preflighted: Literal[False] = False
+    model_behavior_measured: Literal[False] = False
     depth_preserved: Literal[True] = True
 
     @model_validator(mode="after")

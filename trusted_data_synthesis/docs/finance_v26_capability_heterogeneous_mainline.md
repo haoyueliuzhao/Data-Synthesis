@@ -185,3 +185,43 @@ closed until State-support freeze. The v26.10 preflight binds Stage Router v4, t
 compiler, and atomic-audit implementation manifests. Its zero-call ledger has completed
 `fresh_task_population` and now stops at `joint_compilation`. Earlier preflight artifacts remain
 historical and cannot be reused.
+
+## 2026-08-28 Capability Breadth-Depth Observability Revision
+
+The current mainline separates three concepts that earlier protocol text conflated:
+
+```text
+DifficultyTier          = historical global-complexity bundle
+ObservationDepth        = prospective target-capability observability load
+EmpiricalBoundaryStatus = post-execution floor, ceiling, bracket, or confounding result
+```
+
+`easy_control`, `frontier`, and `hard_control` remain valid historical labels but are not an
+ability scale and cannot be renamed as D0-D3. A Capability Survival stage is an execution-failure
+localizer, not a depth coordinate. Retrieval, calculation, and verification are supporting or
+nuisance dimensions; the current breadth is restricted to Context-conditioned Action, Semantic
+Reconciliation, Failure Recovery, and State-dependent Stopping.
+
+The primary design unit is a fresh matched core `b_(k,g)`. Its four variants share one Finance
+question, exact Evidence and Versions, result, Answer schema, Oracle Program, Verifier, Tool and
+resource contracts, model/Thinking profile, and generation Policy. A single-capability overlay
+`Delta_(k,d)` may change only the registered target load. D0 is a real minimum mechanism
+observation; it is not a zero-load or single-candidate control. D1-D3 are constructively ordered,
+while empirical success monotonicity remains an outcome to test.
+
+Every group uses a D3-sized maximum skeleton at all depths. A shallower variant retains unused
+slots as unique-action, identity-normalization, non-trigger-recovery, or explicit-nonterminal
+placeholders. Deleting slots, changing nuisance load, or using source Program size as stopping
+depth is forbidden. The matched group is the independent statistical unit; depth variants and
+rollouts are paired repeated measures.
+
+Development and reserved Confirmation groups are frozen together before any Provider call.
+Exposure is group-wide, partial regeneration is forbidden, and Development code cannot load a
+Confirmation payload. Development may only locate an observation floor, ceiling, adjacent
+bracket, or nonmonotonic/confounded result. Confirmation tests a precommitted adjacent bracket;
+it cannot establish a same-data VTDO effect. State support and VTDO require another fresh
+Population after boundary confirmation.
+
+v26.167 implements this theory as sixteen matched groups and 64 static D0-D3 tasks, passes all
+seventeen static Gates and 22 destructive controls with zero Provider calls, and authorizes only
+`capability_observation_development_runner_preflight_only`. See

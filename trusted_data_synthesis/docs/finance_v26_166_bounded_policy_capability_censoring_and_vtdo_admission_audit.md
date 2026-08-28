@@ -318,3 +318,19 @@ all v26.163-v26.166 artifacts and may not use the observed current 27 Cells as a
 sampling frame. Provider calls, current-denominator reuse, Compiler intervention, historical
 reclassification, State probability, Contribution, VTDO execution, Student visibility, training,
 release, and production remain forbidden.
+
+## v26.167 Prospective Supersession
+
+A later external joint theory, code, and task-synthesis audit retains every v26.166 historical
+artifact and result but finds the prospective `FreshConfirmationProtocol` insufficient for
+execution. In particular, it lacks a capability-family index, matched groups, independent
+`ObservationDepth`, D0 observability anchors, constructive DepthDelta, nuisance invariance,
+Development/Confirmation group counts, Role depth preservation, and group-wide exposure rules.
+The v26.166 transition above is therefore historical and was not consumed.
+
+v26.167 consumes the external replacement decision
+`capability_breadth_depth_task_synthesis_and_static_audit_only`. It freezes sixteen fresh matched
+groups and 64 D0-D3 static tasks with zero Provider calls, while keeping all current 27
+multistate Cells outside the selection frame. It also retains the 21 historical Coverage Gap
+rows but assigns every future follow-up `unassigned`; no Compiler candidate or intervention is
+authorized.
