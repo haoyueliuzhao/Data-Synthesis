@@ -1,0 +1,981 @@
+# v26.169 修订报告与项目源码联合审计
+
+## 一、最终判定
+
+v26.169 **真实修复了 v26.168 的结构性缺陷**。Host／Public 分离、当前状态投影、候选中性化、错误分支后果、Runtime 前置条件、任务级反事实以及重新内容寻址后的跨父对象验证，都已经进入新的生产对象，而不只是写进报告字段。
+
+但是，当前仍然没有形成一个可用于能力边界观测的可信在线任务。新的第一个阻塞点是：
+
+$$
+\boxed{
+\text{模型可见公共信息不足以稳定决定正确动作，}
+}
+$$
+
+并且：
+
+$$
+\boxed{
+\text{Finance 任务执行仍主要由 Host 预编译结果和失败分支驱动，}
+}
+$$
+
+而不是由模型基于公开金融语义完成真实计算与决策。
+
+因此，本次分层结论是：
+
+| 审计对象                            | 判定                        |
+| ------------------------------- | ------------------------- |
+| v26.168 缺陷复现与历史冻结               | **通过**                    |
+| Host Graph／Public Projection 分离 | **通过**                    |
+| 直接 Reference／Oracle 字段泄漏        | **通过修复**                  |
+| 候选 ID、长度、位置、参数形状控制              | **静态通过**                  |
+| 分支后继、Runtime 前置条件               | **通过**                    |
+| Reconciliation 先生产后消费           | **通过**                    |
+| Recovery 失败后才能修正                | **通过**                    |
+| Stopping 验证后才能停止                | **通过**                    |
+| 注册分支上的任务级反事实                    | **通过，但仅限局部构造**            |
+| 重新计算身份后的跨父对象拒绝                  | **大部分通过，Prompt 任务语义仍有缺口** |
+| 公共 Prompt 的语义充分性                | **不通过**                   |
+| 从公开任务语义恢复正确动作                   | **未证明，部分状态明显欠定或过度提示**     |
+| 真实金融 Program 执行                 | **不通过，当前仍是符号化 Host 效果**   |
+| 深度仅由目标能力决定                      | **仍受非目标致命微决策干扰**          |
+| 当前进入 192-Job Runner 预检          | **不建议**                   |
+
+v26.169 报告本身保持了良好的证据边界：它明确声明零 Provider、零 Development Job、零 Mapper／VTDO，并只恢复无凭据 Runner 预检的未来授权，没有将本轮静态结果冒充模型能力结果。 项目状态也明确只以当前 Git 树、不可变工件、脱敏恢复记录与迁移服务器复核为证据，不把缺失聊天记录作为实验事实。
+
+---
+
+# 二、审计范围与复现结果
+
+本次直接审计了：
+
+* v26.169 正式修订报告；
+* 最新 `Current Project Status`；
+* [最新项目源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-135757%29.zip)。
+
+源码快照 SHA-256：
+
+```text
+1f4ba98ab6c1bafd8c686d494f58ab840527b67d4233a5f7550e7aac60527ffd
+```
+
+重点源码包括：
+
+```text
+src/trusted_synthesis/core/task/
+    causal_capability_depth.py
+
+src/trusted_synthesis/experiments/vtdo_experiment/
+    phase1_v26_capability_public_projection_causal_runtime_models.py
+    phase1_v26_capability_public_projection_causal_runtime_static_audit.py
+    phase1_v26_capability_public_projection_causal_runtime_hardening.py
+```
+
+实际复核结果：
+
+```text
+聚焦 Pytest：
+15 passed in 22.97s
+
+PyCompile：
+v26.169 四个核心模块全部通过
+
+正式工件：
+17 files
+4,087,766 bytes
+```
+
+当前审计容器没有安装 `ruff` 和 `mypy`，因此报告中的 Ruff／Mypy 结果没有被我独立重跑；这里只确认了源码编译、十五项相关测试、正式工件结构和独立源码诊断。
+
+---
+
+# 三、上一轮问题中已经真实闭合的部分
+
+## 1. Host 与模型可见对象已经真正拆开
+
+v26.169 不再把完整 Host Graph 直接序列化给模型。
+
+Host 侧继续保留：
+
+```text
+capability family
+Observation depth
+reference Candidate
+required event multiplicities
+完整未来 State Graph
+预期 Transition 状态
+Finance effects 与 snapshots
+```
+
+而模型可见对象只包含：
+
+```text
+task
+state
+```
+
+其中 `state` 只包含当前状态、当前公共事实、公共历史和当前候选；未来状态不再序列化。报告对这一分层的描述与源码基本一致。
+
+我对正式 32 个 Development Package 的扫描也确认：
+
+```text
+current-State projections             210
+future-State projections                0
+reference_candidate_id leaks            0
+reference_action leaks                  0
+capability label leaks                  0
+depth label leaks                       0
+required-event leaks                    0
+full future graph leaks                 0
+```
+
+因此，v26.168 中“模型直接读取 `reference_action=true`”的问题已经关闭。
+
+---
+
+## 2. 候选呈现控制得到实质加强
+
+当前每个非终止状态固定呈现三个候选：
+
+* 使用同一 Tool；
+* 使用相同参数位置；
+* 每个参数槽遵守同一种词法形状；
+* 使用 24 字符十六进制公开 Action ID；
+* 三个候选的规范 JSON 编码填充至同一字节长度；
+* Reference 位置在预注册分层中近似均衡。
+
+报告还诚实限定：这些静态控制不能证明模型对位置顺序行为不敏感，顺序影响仍是未来 Runner 的经验问题。
+
+这一点比 v26.168 使用：
+
+```text
+reference
+bypass
+invalid_retry
+tempting_continuation
+```
+
+等直接暴露选项含义的设计可靠得多。
+
+---
+
+## 3. Runtime 已经不再是“所有选择进入同一后继”
+
+在正式 210 个非终止状态中：
+
+```text
+每个状态候选数                    3
+每个状态不同后继数                3
+all-candidates-same-successor       0
+```
+
+正确候选进入下一因果状态；两个替代候选进入不同的 typed task terminal。Stopping 的错误分支进入单独的 postcompletion-violation terminal。
+
+源码还真实强制了：
+
+* normalization reference 必须先生产再消费；
+* selector 只能在匹配 typed failure 后修改；
+* Program 所有节点完成后才能闭合；
+* Program 闭合并获得正确结果后才能验证；
+* 验证后才能停止；
+* 验证后继续调用会成为 postcompletion violation。
+
+报告所列 210/210 branch-divergent State、32/32 Base-valid baseline 和四类前置条件控制，与源码行为相符。
+
+所以 v26.168 中以下不可能轨迹已经不能通过：
+
+```text
+未产生 normalization ref 却消费它
+未观察 failure 却执行 recovery
+未 verification 却 stop
+选择错误 Context action 后仍走 reference successor
+```
+
+---
+
+## 4. Counterfactual 不再依赖损坏 Graph
+
+v26.168 的删除反事实主要证明“一个指向缺失 Candidate 的 Graph 会被 Validator 拒绝”。
+
+v26.169 改为执行两个实际注册的公共替代分支：
+
+```text
+合法公共 Action
+→ 合法 Transition
+→ typed terminal
+→ task Verifier
+→ mechanism Verifier
+```
+
+64 条反事实均得到：
+
+```text
+Base-invalid
+Mechanism-unqualified
+Qualified-invalid
+```
+
+并且没有使用 malformed-graph rejection 作为必要性证据。
+
+这足以支持：
+
+> 在当前注册的局部有限状态机中，两个指定替代行为会导致任务和机制合同失败。
+
+但它仍不是模型行为证据，也不是对任意替代策略的全局必要性证明。
+
+---
+
+## 5. 跨父对象验证比上一版强得多
+
+当前破坏性审计会：
+
+1. 替换真实 child 或 grandchild；
+2. 重算 child identity；
+3. 重算 Signature；
+4. 重算 Package；
+5. 重算 Group；
+6. 重算 Catalog；
+7. 最后仍要求语义父绑定 fail-closed。
+
+报告记录 10 类 × 32 Package，共 320 个交叉父对象变异全部拒绝。
+
+这比 v26.168 只依赖 stale hash 的测试明显更可信。
+
+---
+
+# 四、P0：Public Projection 没有保留足以解题的公开金融语义
+
+这是当前第一个根本阻塞点。
+
+## 1. 报告与源码存在一项直接不一致
+
+报告称模型可见 `task` 保留：
+
+> public instruction、allowed Tools、answer fields、Evidence count、visible operation sequence 等。
+
+但源码中的 `_public_task_projection()` 并没有保留原始 Public Instruction，而是把所有任务替换成统一句子：
+
+```text
+Complete the currently visible finance operations
+and return the exact public result only after verification.
+```
+
+原始公开任务中的以下信息被删除：
+
+```text
+主体实体
+时间区间
+指标与来源约束
+公开 alias
+period values
+resolution rules
+公开 operand 语义
+答案引用允许值
+```
+
+对八个独立 Finance Core 的诊断结果是：
+
+```text
+原始 public instruction 完整保留        0 / 8
+注册 alias value 保留                   0 / 23
+注册 period value 保留                  0 / 14
+resolution-rule semantic value 保留     0 / 101
+```
+
+32 个 Package 最终只产生五种唯一 Public Task Projection Hash，尽管它们来自八个不同 Finance Core。
+
+这意味着，为消除 Oracle 泄漏，当前实现把大量合法的、模型完成任务所必需的公开语义也一起删掉了。
+
+---
+
+## 2. 当前“零泄漏”只证明黑名单字段不存在
+
+`scan_public_leakage()` 主要检查：
+
+* 一组 Host-only Key；
+* 一组已知答案线索字符串；
+* capability／depth／reference 等注册片段。
+
+这可以证明：
+
+> 已知 Host 标记没有直接出现在 Prompt。
+
+但不能证明：
+
+> 当前 Prompt 足以让一个只看公共信息的策略求出正确动作。
+
+两者是不同命题：
+
+$$
+\text{No Oracle Leakage}
+\not\Rightarrow
+\text{Public Semantic Sufficiency}.
+$$
+
+报告目前没有独立的：
+
+```text
+public-only constructibility
+public-state sufficiency
+prompt-only semantic selector
+```
+
+Gate。
+
+---
+
+## 3. 210 个状态中的候选公共锚定非常薄弱
+
+我做了一个保守的“候选参数是否在候选列表之外得到公共精确绑定”诊断：
+
+```text
+模型可见 Action State                           210
+Reference 参数在候选外获得精确公共绑定             8
+没有任何候选参数在候选外获得精确公共绑定           202
+```
+
+这个精确字符串诊断**不能单独证明** 202 个状态一定不可解，因为模型可能通过更高层语义推导；但它足以证明：当前审计没有建立公共可解性，而且多类状态确实存在明显欠定或捷径。
+
+### Context D0：过度提示
+
+公共状态直接写道：
+
+```text
+The visible finance task requires operator compare.
+```
+
+三个候选是：
+
+```text
+compare
+lookup
+aggregate
+```
+
+这测量的是读取显式答案词，而不是根据金融上下文选择 Operator。
+
+### Context 深层状态：欠定
+
+Input／Projection 候选使用内容哈希或 opaque identifier，但公共 Task Projection 不提供这些标识与真实 Finance operand 的映射。
+
+### Reconciliation：数字索引捷径
+
+Reference 使用：
+
+```text
+normalized_reference_01
+normalized_reference_02
+```
+
+替代候选使用：
+
+```text
+03 / 04 / 05 / 06
+```
+
+在全部 68 个 indexed-token 状态中：
+
+```text
+Reference index 是最小值     68 / 68
+```
+
+模型可以学习“选最小编号”，而无需理解规范化依赖。
+
+### Failure Recovery：失败对象不可识别
+
+候选是三个 opaque：
+
+```text
+causal_finance_selector:<hex>
+```
+
+公共历史只描述发生了某种 typed selector failure，却没有公开失败 selector 与三个哈希的对应关系。
+
+因此模型无法从当前公共状态确定应修改哪一个 selector。
+
+### Stopping：中间 readiness 欠定、最终停止过于显眼
+
+Readiness 候选使用 opaque readiness hash；最终 stop 命令则与继续动作在语义上容易直接区分。
+
+---
+
+## 4. 这会使能力边界估计失去意义
+
+模型成功或失败可能分别来自：
+
+```text
+读取直接答案提示
+利用数字位置模式
+对 opaque ID 随机猜测
+Candidate 顺序偏好
+```
+
+而不是目标能力。
+
+于是未来观测到的：
+
+$$
+q_{k,d}
+$$
+
+不能稳定解释为：
+
+> 模型在能力 \(k\)、深度 \(d\) 上的有效支持。
+
+它更可能是：
+
+> 当前 Prompt 线索、欠定程度和模型选择偏好的混合结果。
+
+---
+
+# 五、P0：Finance 任务执行仍是 Host 预置结果，而非模型驱动计算
+
+v26.169 的 Runtime 已具有真实分支，但 Finance 结果本身仍主要由预编译效果生成。
+
+## 1. Reference 分支直接写入 expected result
+
+在 reference execute step 中，Runtime 会：
+
+```text
+标记所有绑定 Program nodes 完成
+SET_EXPECTED_RESULT(expected_result_hash)
+```
+
+而不是根据模型选择的公共 operands 调用真实：
+
+```text
+TaskProgramExecutor
+calculator
+registered operation
+```
+
+重新计算结果。
+
+全部 32 个正式 Package 都恰好执行一次：
+
+```text
+SET_EXPECTED_RESULT
+```
+
+---
+
+## 2. 大多数错误分支直接被 Host 判成 task-invalid
+
+正式图中：
+
+```text
+非 Reference 替代分支                         420
+task-invalid status                          420 / 420
+TERMINATE_INVALID                            404 / 420
+直接 SET_ALTERNATE_RESULT                    404 / 420
+```
+
+也就是说，候选不是三种真实的金融操作路径，而更接近：
+
+```text
+正确预编译分支
+错误预编译分支 A
+错误预编译分支 B
+```
+
+Host 已经知道每个分支是成功还是失败，并直接设置对应结果状态。
+
+---
+
+## 3. 当前支持的是“有限状态选择任务”，不是端到端 Finance Agent 执行
+
+当前最强支持结论是：
+
+> 模型在当前公共微协议中选择一个候选，Host Runtime 按冻结因果规则更新 Finance Snapshot，错误分支产生 typed failure。
+
+当前不能支持：
+
+> 模型依据公开金融数据选择真实 Tool／Operand／Operator，并通过实际金融 Program 计算得到结果。
+
+如果研究目标只是“受控有限状态决策微基准”，当前结构可以成立；但若目标是观测金融 Agent 的 Context、Reconciliation、Recovery 和 Stopping 能力，Finance Program 必须由模型所选公共操作真实驱动，而不能通过 `SET_EXPECTED_RESULT` 完成。
+
+---
+
+# 六、P0：目标深度仍被非目标致命微决策污染
+
+即使 D0，每条参考轨迹仍包含多项非目标选择：
+
+```text
+Context D0
+  1 个 target state
+  3 个 non-target states
+
+Reconciliation D0
+  3 个 target states
+  3 个 non-target states
+
+Recovery D0
+  2 个 target states
+  3 个 non-target states
+
+Stopping D0
+  1 个 target state
+  4 个 non-target states
+```
+
+每一个 non-target State 也有三个候选，其中两个立即进入 task-invalid terminal。
+
+所以一条轨迹可能因为以下通用微决策失败：
+
+```text
+finance input binding
+finance program execution
+finance program closure
+terminal verification
+readiness check
+```
+
+而不是目标能力失败。
+
+这会导致：
+
+$$
+P(V_{\mathrm{qualified}}=1\mid k,d)
+$$
+
+同时包含：
+
+* 目标能力选择；
+* 通用微协议选择；
+* opaque 参数猜测；
+* Final／执行链稳定性。
+
+对于“能力深度观测”，这是不可接受的混杂。
+
+### Stopping 尤其明显
+
+Stopping D0–D3 中，真正标记为 target 的 stop decision 数量基本不变；深度增加主要来自更多 `readiness_check` 非目标 Action。
+
+因此报告中的：
+
+```text
+36 / 43 / 50 / 57
+```
+
+更准确地说是“整个 causal Runtime 工程负担”，不能解释为“State-dependent Stopping 能力负担”。
+
+报告已经说明这些数只是 v26.169 工程负担，不能与 v26.168 数值当作同一量比较。
+还应进一步限制：它们也不能自动当作纯目标能力深度。
+
+---
+
+# 七、P1：任务级反事实尚未证明增量深度必要性
+
+当前每个 Package 运行两个替代分支，但通常只针对第一个 target State：
+
+```text
+Context        operator_selection
+Reconciliation normalization_emission_01
+Recovery       selector_attempt_01 或 recovery_input_binding
+Stopping       verified_stop_decision
+```
+
+因此当前证明的是：
+
+> 至少一个注册目标事件被替代时，完整 Qualified Validity 会失败。
+
+尚未证明：
+
+> D2 相比 D1 新增的每一个 target slot 都是任务级必要的；
+> D3 相比 D2 新增的每一个依赖都真实增加了能力要求。
+
+要建立深度梯度，至少需要对每个相邻深度新增的目标组件形成：
+
+```text
+DepthIncrementNecessityArtifact
+```
+
+并分别验证：
+
+$$
+\Delta_{d\rightarrow d+1}
+$$
+
+中的新增决策、依赖或状态不能被绕过而仍保持相同任务有效性。
+
+---
+
+# 八、P1：公共任务语义的父绑定仍可被重新内容寻址后绕过
+
+报告声称 Package Validator 绑定所有 child／grandchild，并且 320 个重新计算身份后的交叉父对象变异全部拒绝。
+
+这一主张对已覆盖的十类父对象基本成立，但没有完整覆盖 Public Task Projection 的语义父绑定。
+
+我进行了以下真实变异：
+
+1. 修改一个 current-state Projection 中的公开任务 instruction；
+2. 重算：
+
+   * semantic payload hash；
+   * rendered hash／bytes；
+   * projection ID；
+   * prompt binding ID；
+   * signature；
+   * package；
+   * group；
+   * catalog；
+3. 故意保留旧 `public_task_projection_hash`；
+4. 重新执行 `CausalDevelopmentCatalog.model_validate(...)`。
+
+结果：
+
+```text
+Catalog 被接受
+```
+
+说明当前 Schema 没有强制：
+
+```text
+每个 projection["task"] 完全相同
+public_task_projection_hash 与实际 task payload 一致
+task projection 从绑定 Finance Core 可重建
+```
+
+正式 v26.169 工件本身目前是自洽的；问题在于 Validator 仍允许一个重新内容寻址后的 crossed public-task semantic object。
+
+---
+
+# 九、P1：候选顺序在未来六个 Replica 内可能固定
+
+当前 Reference 位置在全局静态表中平衡：
+
+```text
+position 0    70
+position 1    71
+position 2    69
+```
+
+但位置是由：
+
+```text
+group
+depth
+state ordinal
+```
+
+在 Package 构建时确定的。
+
+未来同一 Variant 的六个 rollout 尚未存在，因此如果 Runner 直接复用 Package Presentation，同一任务—深度的六个 Seed 都会看到完全相同的候选顺序。
+
+这样：
+
+```text
+模型位置偏好
+```
+
+会被混入：
+
+```text
+该深度的支持率。
+```
+
+两种合法处理方式必须在 Runner 预检前二选一：
+
+1. 预注册 Job-level 平衡 permutation，并证明只改变 presentation、不改变 Candidate semantics；
+2. 明确将固定顺序写入实验条件与 estimand，不再声称结果与位置无关。
+
+---
+
+# 十、报告主张应如何收窄
+
+## 当前可以支持
+
+v26.169 已经建立：
+
+* 不含直接 Reference／Oracle 标记的当前状态投影；
+* 三候选、三后继的 branch-divergent Host Runtime；
+* 生产—消费、失败—修正、验证—停止前置关系；
+* 注册 Reference 分支下的局部 Base／Mechanism／Qualified 完整性；
+* 两个注册替代分支的局部任务失败；
+* 大部分重新内容寻址后的父对象一致性；
+* 可重复、内容寻址的静态有限状态任务原型。
+
+## 当前不能支持
+
+* 公共 Prompt 对模型而言语义充分；
+* 模型能够从公开任务语义恢复 Reference Action；
+* D0 是低于模型能力边界的观测锚；
+* D0–D3 测量的是单一目标能力深度；
+* Finance result 是模型操作真实计算出来的；
+* 未来支持率反映金融 Agent 能力而非 Prompt／ID／位置模式；
+* 当前已经有资格运行 192 个能力边界观测 Job。
+
+v26.169 报告已经明确声明它只是静态和局部 Runtime 证据，没有模型行为、经验边界、频率、State Mapping 或 VTDO 结论。
+所以当前需要阻塞的是**未来 Runner 授权**，而不是否定或改写 v26.169 历史工件。
+
+---
+
+# 十一、建议的下一轮修订
+
+建议不要消费当前：
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+虽然报告授权的后继正是这一阶段。
+
+应先新增一个零调用阶段：
+
+```text
+capability_observation_public_semantic_sufficiency_
+and_task_execution_hardening_only
+```
+
+## 1. Public Semantic Projection
+
+重新投影原始公开任务，保留完成任务所需但不包含 Oracle 的信息：
+
+```text
+公开主体与时期
+metric / source constraints
+public aliases
+public resolution rules
+operation input/output semantics
+公开 Evidence 描述
+允许的 reference value surface
+```
+
+继续排除：
+
+```text
+Gold Evidence identity
+reference Candidate
+correct action
+future State
+required event vector
+expected result
+capability / depth label
+```
+
+---
+
+## 2. Public-Only Constructibility Gate
+
+必须实现一个独立策略，只接收：
+
+```text
+PublicPromptProjection
+```
+
+不得读取：
+
+```text
+Host Graph
+reference_candidate_id
+semantic-choice hash
+expected result
+Candidate ordinal
+source Oracle
+```
+
+该策略至少应证明：
+
+```text
+reference choice 可由当前公开任务与状态唯一或规则性推出
+所有候选都拥有公开语义
+不存在需要猜测 opaque hash 的状态
+```
+
+这不是要求 Host 把答案告诉模型，而是要求任务具有足够公开定义。
+
+---
+
+## 3. Candidate Grounding
+
+所有候选参数必须满足：
+
+$$
+a\in
+\operatorname{Derivable}
+(
+\text{public task},
+\text{current public state},
+\text{registered public transform}
+).
+$$
+
+禁止：
+
+* 通过 `01/02/03` 位置构造正确／错误候选；
+* 随机生成无公共含义的 peer hash；
+* 只有 Host 知道哪个 selector 与 failure 匹配；
+* 直接在 Public Fact 中写出正确 Operator。
+
+---
+
+## 4. 真实 Finance Program 执行
+
+删除或降级：
+
+```text
+SET_EXPECTED_RESULT
+SET_ALTERNATE_RESULT
+```
+
+模型选择必须实际决定：
+
+```text
+Tool
+public operand reference
+Operator
+selector
+normalization reference
+verification target
+```
+
+并通过：
+
+```text
+TaskProgramExecutor
+calculator / operation runtime
+TaskProgramOracleVerifier
+```
+
+重新计算结果。
+
+Host 可以验证结果，不能直接赋予结果。
+
+---
+
+## 5. 隔离目标能力负担
+
+非目标步骤应当：
+
+* 确定性执行；
+* 或只有一个合法候选；
+* 或在单独的 prerequisite Gate 中先被资格化。
+
+不能让每个通用执行／闭合／验证状态再引入两个致命干扰项。
+
+D0 应尽可能接近：
+
+```text
+固定低 nuisance Finance core
++
+一个真实目标能力决策
++
+确定性后续闭合
+```
+
+---
+
+## 6. 增量深度必要性
+
+对每个：
+
+$$
+D_d\rightarrow D_{d+1}
+$$
+
+新增的目标组件逐项执行反事实，证明：
+
+```text
+新增 target state / dependency / obligation
+确实改变任务级有效性
+```
+
+而不是只反事实第一个目标状态。
+
+---
+
+## 7. 补齐 Prompt 父绑定
+
+Validator 必须强制：
+
+```text
+每个 projection.task 规范字节一致
+public_task_projection_hash 与实际 task payload 一致
+task projection 可从 exact Finance Core 和 Projection Contract 重建
+任何重算身份后的语义替换仍 fail-closed
+```
+
+---
+
+## 8. Replica-level Presentation Policy
+
+在结果出现前冻结：
+
+```text
+variant × replica × state
+```
+
+级别的候选顺序平衡，或者将固定候选顺序正式纳入 estimand。
+
+---
+
+# 十二、最终审计决策
+
+## 对 v26.169 历史结果
+
+$$
+\boxed{\text{保留并冻结}}
+$$
+
+它确实完成了：
+
+```text
+Host/Public 分层
+直接泄漏清除
+分支 Runtime
+前置条件
+注册任务反事实
+父绑定加固
+```
+
+## 对报告的总体可信度
+
+$$
+\boxed{\text{大部分结构性主张可信}}
+$$
+
+但以下表述应收窄：
+
+```text
+“retains the public instruction”
+“Finance-program-coupled”
+“binds every child and grandchild”
+“能力深度任务”
+```
+
+更准确的当前定位是：
+
+> **无直接 Host 标记泄漏、具有真实分支后果、与 Finance 工件绑定的局部因果状态机原型。**
+
+## 对当前未来授权
+
+$$
+\boxed{\text{暂不通过}}
+$$
+
+首个根本阻塞点已经从 v26.168 的：
+
+```text
+Oracle 泄漏与同后继 Runtime
+```
+
+转移为：
+
+```text
+Public Semantic Sufficiency
++
+真实 Finance Program Execution
++
+目标能力负担隔离
+```
+
+只有这三层通过，未来 192 个 Development Job 的支持曲线才有资格解释为能力广度—深度观测，而不是模型对线索、opaque ID、固定顺序和预编译分支的响应。
+
+---
+
+## 审计附件
+
+* [本次源码审计证据](sandbox:/mnt/data/v26_169_code_audit_evidence.md)
+* [完整诊断统计 JSON](sandbox:/mnt/data/v26_169_diagnostic.json)
+* [本次审计源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-135757%29.zip)

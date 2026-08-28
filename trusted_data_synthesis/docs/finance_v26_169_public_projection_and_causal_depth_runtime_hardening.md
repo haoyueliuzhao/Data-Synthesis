@@ -355,3 +355,15 @@ Provider execution, Development outcomes, Confirmation payload loading or execut
 Finance Core, Graph, public projection, Candidate presentation, condition, threshold, or Verifier
 change, historical rewrite or reclassification, Mapper, State, frequency, Contribution, VTDO,
 Student visibility, training, release, and production remain forbidden.
+
+That transition was superseded without execution by the external v26.170 public-semantic
+sufficiency and task-execution hardening decision. Every v26.169 artifact and static result remains
+immutable. Its model-facing Prompt and Host-precompiled result path are not authorized for a
+Runner preflight. The current transition is:
+
+```text
+capability_observation_public_semantic_execution_development_runner_preflight_only
+```
+
+It binds the exact authoritative v26.170 v3 public-semantic Development Catalog. See
+`docs/finance_v26_170_public_semantic_sufficiency_and_task_execution_hardening.md`.

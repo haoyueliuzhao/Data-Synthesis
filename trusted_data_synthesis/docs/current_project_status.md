@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-28
+Audit date: 2026-08-29
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -514,10 +514,160 @@ release, and production remain zero. The current transition again permits only t
 credential-free executable-depth Development Runner preflight, now over the v26.169 causal
 Development Catalog.
 
+v26.170 has now consumed the external public-semantic-sufficiency and task-execution hardening
+decision with zero Provider calls. It preserves every v26.169 byte and independently reproduces
+the exact missing-semantic, ungrounded-Candidate, Host-precompiled-result, mixed target/non-target
+burden, incomplete increment-necessity, parent-rehash, and fixed-order blockers before replacing
+the stale Runner preflight. Eight exact Finance Cores now reconstruct eight unique public semantic
+Tasks retaining 8/8 instructions, 23/23 aliases, 14/14 periods, and 101/101 non-null per-Core
+resolution values while exposing no Gold Evidence identity, source Program operator, expected
+result, reference Choice, capability, depth, or future State. Production and independent
+public-only selectors uniquely close all 80 target States and all 480 six-replica presentations;
+240/240 Candidates are publicly grounded. Thirty-two baseline Programs run through the production
+TaskProgramExecutor and Oracle Verifier with 32 exact v26.168 output matches and zero Host result
+assignment. D0-D3 now contain exactly 1/2/3/4 target decisions, zero non-target choice States, and
+48/48 newly added-component alternatives fail task and mechanism validity under real local
+execution. Thirty-two exact single-Package semantic-rehash controls recompute every child and
+aggregate identity and reject against exact-Core reconstruction. A preliminary v1 Root remains
+immutable but is superseded because each of its designated parent trials reconstructed four peer
+Packages; preliminary v2 makes the reported 32 controls exactly one Package each. A final strict
+review then removes the Oracle-derived `program_input_record_handles` tuple from every public Task;
+the authoritative v3 derives required records only from public Rules and Operation lineage, with
+source-Oracle exposure false and dependency count zero. No scientific count changes. Its 302-file
+source closure, 18/18 static Gates, 18-file formal
+Root, and focused 5/5 byte-rebuild Pytest pass. Provider, Development Job, Confirmation payload,
+model-behavior, Mapper, State, Contribution, VTDO, training, release, and production counts remain
+zero. The current transition permits only a credential-free 192-Job Development Runner preflight
+over the exact v26.170 v3 public-semantic execution Catalog.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.170 Public Semantic Sufficiency And Task Execution Hardening Decision
+
+Finance v26.170 consumed only
+`capability_observation_public_semantic_sufficiency_and_task_execution_hardening_only`. The
+external review is bound at 25,632 bytes and SHA-256
+`1dd7e35803ce73bfd7d9be3517399c6e416d6aa4f7504276fdad38ceb6131d85`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, Mapper, VTDO, and GPU counts are zero.
+
+All seventeen authoritative v26.169 v2 files are rebound with zero mutation. The audit reproduces
+0/8 original instructions, 0/23 aliases, 0/14 periods, 0/101 resolution values, five unique public
+Task hashes, 210 Action States with only eight externally grounded references and 202 wholly
+ungrounded Candidate sets, 68 indexed-token/minimum-reference States, 32 `SET_EXPECTED_RESULT`
+effects, 420 task-invalid alternatives, 404 `TERMINATE_INVALID` alternatives, 404
+`SET_ALTERNATE_RESULT` effects, one accepted content-rehashed crossed public Task, and fixed
+future six-replica ordering. Historical labels and artifacts remain unchanged.
+
+The replacement public Task retains exact instruction, Tool, answer, alias, period, source,
+public-record, metric, payload, resolution-Rule, operation input/output, completion, and stopping
+semantics. Public records and all Rule/Operation/output handles are content-derived and accompanied
+by their full semantic objects. Gold Evidence and Version IDs, source-record and Program IDs, the
+source Program operator, expected result, reference Candidate, correct action, future State,
+required-event vector, capability, and depth remain excluded. In particular, the model-visible
+Task contains neither `program_operator_id` nor `program_input_record_handles`; the operator is
+derived from public allowed-operator and answer-output contracts, while required records are
+derived from public query Rules and recursive Operation input/output lineage.
+
+Across the exact eight Core denominator, retention is 8/8 instructions, 23/23 aliases, 14/14
+periods, 101/101 per-Core unique non-null resolution values, and eight unique public Task hashes.
+The production selector and a separately implemented selector each receive only one public Prompt
+and uniquely select all 80 target States. The independent selector returns only displayed action
+IDs and does not read semantic-choice hashes, Host Graph, reference ID, expected result, ordinal,
+source Oracle, capability, or depth. It also matches all 480 replica Prompts. Action-ID/ordinal
+dependency, opaque-hash guessing, and model-visible Host leakage counts are zero.
+
+The 80 States expose exactly 240 semantic Candidates. Production and independent grounding checks
+find 240/240 publicly derivable, with zero indexed shortcuts and zero random peer hashes. D0
+contains exactly one target decision and zero non-target choice States in every capability. Each
+adjacent depth adds one target component, so Package loads are exactly `1/2/3/4` and the State
+partition is `8/16/24/32` across D0-D3.
+
+Each Package compiles the selected operator and records into a real one-node TaskProgram. The
+production TaskProgramExecutor and TaskProgramOracleVerifier run exactly once per baseline.
+Program-valid, Base-valid, Mechanism-qualified, Qualified-valid, and v26.168 independent-output
+match counts are each 32/32. Host result assignment, `SET_EXPECTED_RESULT`,
+`SET_ALTERNATE_RESULT`, and Host-preclassified alternative counts are zero. For all 24 adjacent
+increments, both nonreference Choices of the newly added component execute through the exact
+target-depth Runtime. All 48 are Base-invalid, Mechanism-unqualified, and Qualified-invalid with
+no Host result assignment.
+
+The fixed pre-outcome presentation salt binds `variant x replica x state`. Across 480
+presentations and 1,440 displayed Candidates, every semantic Choice appears in every position
+exactly twice per State. Position imbalance, semantic-payload mismatch, and action-ID collision
+counts are zero.
+
+The Catalog reconstructs each public Task from its exact Finance Core and compares canonical
+bytes. Thirty-two destructive controls each mutate one Package public instruction, recompute its
+Prompt and replica hashes, parent binding, target load, Package artifact, Group, and Catalog
+identity, and then invoke the same exact-Core reconstruction validator. All 32 reject and zero
+crossed Tasks are accepted.
+
+A preliminary v1 Root remains immutable. It passed the same scientific Gates, but each designated
+parent trial rematerialized four peer Packages to satisfy Group equality, so its reported 32
+Package-recomputation count was not literal. Preliminary v2 makes each trial exactly one Package,
+but still projects an ordered record tuple derived from the source Oracle Program. The
+authoritative v3 removes that field and source-Program argument from Task projection and freezes
+source Oracle exposure and dependency at zero. Core, Package denominator, State, Candidate,
+execution, increment, replica, Gate, and transition counts remain unchanged.
+
+The authoritative v3 transitive source Root closes 302 files with zero unresolved import. Its
+formal Root contains 18 files and 8,033,777 bytes; report SHA-256 is
+`404c3291547ad62267c5c148f70056980c9dd937f968ea13681b931d8db66f9c`. Focused Pytest passes
+5/5 in 24.74 seconds and includes a complete empty-directory byte-identical rebuild. The adjacent
+v26.169-v26.170 regression passes 10/10 in 26.79 seconds. Focused PyCompile, Ruff, and no-cache
+Mypy pass. Package-wide Ruff passes; package-wide Mypy checks 533 source files, retains only the
+four pre-existing v26.70, v26.129, and byte-frozen v26.154 diagnostics, and has zero v26.170
+diagnostics. This is static and local execution evidence only; model readability,
+model success, empirical boundary, frequency, State Mapping, Contribution, VTDO, Student
+visibility, training, release, and production remain unmeasured or unauthorized.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_public_semantic_hardening_report:5b8fb064cdf65211db3a1b35aecf7927ec92a72d80f428ac9f878b7ce0cfc3e1`;
+- transitive source Root:
+  `finance_v26_public_semantic_transitive_source_root:7500b642d64aa1599d580c28653f67b5e28c2e1011bc8841fdf4fa84b188043d`;
+- v26.169 defect audit:
+  `finance_v26_v169_public_semantic_execution_defect_audit:1d9388f61e67241fef400d05351d22cbb0235c303d13d265766dd1e964cbfb5c`;
+- Projection Contract:
+  `public_semantic_projection_contract:a1dbc27c5a79518fcade87b859398eca08e034daef8a10585699b638f3ee02d9`;
+- Presentation Policy:
+  `public_semantic_replica_presentation_policy:c7751129fad16f76250f7ba574dc949d3364b89b240e8c46488a57c60e866952`;
+- Development Catalog:
+  `finance_v26_public_semantic_development_catalog:bc6b9cb9adfbe2026f77df8c24d181176ff09bf3cf06226a1336bc43ecc67cdb`;
+- sufficiency audit:
+  `finance_v26_public_semantic_sufficiency_audit:754c11cda9055905f9f0a1bf9a6f3f7e73040419979e8d67531278274b97ae5e`;
+- Grounding Audit:
+  `finance_v26_public_candidate_grounding_audit:b3809feaa1a409ad8b4834d4fec4f6f4388fec1e37fcafacd24a4957f6ea59dd`;
+- execution audit:
+  `finance_v26_real_program_execution_audit:790f34c771825403540c2968e7dd0a81911276c6c08c412154d4e69006d54618`;
+- Depth Increment Necessity Catalog:
+  `depth_increment_necessity_catalog:5f71490a0846fd51f243b7f8a70acb065927a2227f8110bc8250933b76881c2a`;
+- Parent Binding Audit:
+  `finance_v26_public_task_parent_binding_audit:37c5b56b07bc0fdaca599dc78d8dd188c09d9355a0f40932f578b7e8f533bc78`;
+- static audit:
+  `finance_v26_public_semantic_static_audit:c6aad7162e697f65696a79e748a358a4a9c0a90f6e10f711717c4d926f8818c7`;
+- transition:
+  `finance_v26_public_semantic_transition:02fa435f910d1926bd2b6d14ac0dd03d6261de4cf0ff0abaea31e27db0709caf`.
+
+The only permitted transition is:
+
+```text
+capability_observation_public_semantic_execution_development_runner_preflight_only
+```
+
+The successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free Runner preflight over every exact authoritative v3 public-semantic Task,
+Candidate, isolated depth, six-replica presentation, real TaskProgram execution, Finance Core,
+Verifier, nuisance, fixed condition, model/Thinking, Grammar, Policy, resource, threshold,
+terminal, and sealed-receipt binding. Provider execution, Confirmation payload loading, source or
+public semantic change, threshold tuning, historical rewrite, Mapper, State, frequency,
+Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
+`docs/finance_v26_170_public_semantic_sufficiency_and_task_execution_hardening.md`.
 
 ## v26.169 Public Projection And Causal Depth Runtime Hardening Decision
 
@@ -638,6 +788,17 @@ Provider execution, Confirmation payload loading, source or graph change, histor
 Mapper, State, frequency, Contribution, VTDO, Student visibility, training, release, and
 production remain forbidden. See
 `docs/finance_v26_169_public_projection_and_causal_depth_runtime_hardening.md`.
+
+That transition was superseded without execution by the external v26.170 public-semantic and
+task-execution hardening decision. Every v26.169 artifact and static result remains immutable, but
+its missing-semantic Prompt, Host-precompiled result path, mixed target burden, incomplete
+increment controls, crossed-task parent acceptance, and fixed six-replica order are not authorized
+for a Runner preflight. The current transition is the credential-free preflight over the exact
+authoritative v26.170 v3 Catalog:
+
+```text
+capability_observation_public_semantic_execution_development_runner_preflight_only
+```
 
 ## v26.168 Executable Capability Depth Rematerialization And Static Reaudit Decision
 
