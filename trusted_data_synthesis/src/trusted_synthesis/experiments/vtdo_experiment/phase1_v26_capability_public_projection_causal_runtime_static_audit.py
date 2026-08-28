@@ -31,6 +31,7 @@ from trusted_synthesis.core.task.causal_capability_depth import (
     apply_effects,
     event_multiplicities,
     initial_snapshot,
+    public_argument_shape,
     scan_public_leakage,
 )
 from trusted_synthesis.experiments.vtdo_experiment import (
@@ -456,6 +457,36 @@ def build_leakage_audit(
         for state in package.graph.states
         if state.terminal_kind == CausalTerminalKind.NONE
     )
+    nonisomorphic_schema = sum(
+        len(
+            {
+                (
+                    item.tool,
+                    tuple(argument.name for argument in item.arguments),
+                )
+                for item in state.public_state.options
+            }
+        )
+        > 1
+        for package in packages
+        for state in package.graph.states
+        if state.terminal_kind == CausalTerminalKind.NONE
+    )
+    argument_shape_mismatch = sum(
+        len(
+            {
+                tuple(public_argument_shape(argument.value) for argument in item.arguments)
+                for item in state.public_state.options
+            }
+        )
+        > 1
+        for package in packages
+        for state in package.graph.states
+        if state.terminal_kind == CausalTerminalKind.NONE
+    )
+    synthetic_cues = sum(
+        bool(scan_public_leakage(item.model_dump(mode="json"))) for item in candidates
+    )
     position_cells: dict[tuple[str, str, str, int], Counter[int]] = defaultdict(Counter)
     id_free_failures = 0
     for package in packages:
@@ -498,6 +529,9 @@ def build_leakage_audit(
         "recursive_answer_cue_count": sum("forbidden_scalar" in item for item in findings),
         "nonopaque_action_id_count": nonopaque,
         "unequal_candidate_encoding_state_count": unequal,
+        "nonisomorphic_candidate_schema_state_count": nonisomorphic_schema,
+        "candidate_argument_shape_mismatch_state_count": argument_shape_mismatch,
+        "synthetic_alternative_cue_count": synthetic_cues,
         "unbalanced_reference_position_cell_count": unbalanced,
         "id_free_semantic_choice_failure_count": id_free_failures,
     }
@@ -508,6 +542,9 @@ def build_leakage_audit(
             "recursive_answer_cue_count",
             "nonopaque_action_id_count",
             "unequal_candidate_encoding_state_count",
+            "nonisomorphic_candidate_schema_state_count",
+            "candidate_argument_shape_mismatch_state_count",
+            "synthetic_alternative_cue_count",
             "unbalanced_reference_position_cell_count",
             "id_free_semantic_choice_failure_count",
         )

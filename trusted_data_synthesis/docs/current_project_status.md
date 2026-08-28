@@ -494,6 +494,11 @@ same-successor nonterminal surface plus all Host answer-path fields before block
 preflight. A fresh Development-only chain binds the same eight Finance Cores to 32 causal depth
 Packages. Across 210 current-State Prompt projections and 630 equal-length opaque Candidates,
 recursive Host-Key, answer-cue, family, depth, reference-path, and future-graph exposures are zero.
+The authoritative v2 additionally requires same-Tool and same-argument-slot Candidate schemas,
+registered per-slot lexical shapes, and zero old route/probe/partial/unbound alternative cues;
+all three new mismatch counts are zero. A preliminary v1 static Root remains immutable but is
+superseded because its invalid alternatives retained those presentation cues and one
+Reconciliation D0 State mixed two- and one-argument choices. No empirical result is reclassified.
 Every nonterminal State has three distinct successor identities. All 32 reference traces pass
 independent TaskProgram and mechanism validity; unproduced normalization consumption,
 selector recovery without its matching typed failure, and stop before verification reject in
@@ -537,8 +542,17 @@ payload has exactly one sanitized Finance task and one current public State. Acr
 creates 210 Prompt projections and 630 Candidates. Recursive Host-Key, answer-cue, family-label,
 depth-label, reference-path, and future-State exposure counts are zero. Public action IDs are
 24-character pre-outcome hexadecimal tokens; all three Candidate encodings in each State have
-equal canonical bytes, reference positions are balanced within every registered presentation
-cell, and semantic-choice hashes do not depend on public action IDs.
+equal canonical bytes, the same Tool, the same argument slots, and one registered lexical shape
+per slot. Candidate-schema mismatch, argument-shape mismatch, and old synthetic-alternative cue
+counts are zero. Reference positions are balanced within every registered presentation cell, and
+semantic-choice hashes do not depend on public action IDs.
+
+The preliminary v1 Root passed the original controls, but a separate lexical-neighborhood review
+found visibly different invalid-option vocabularies and one Reconciliation D0 argument-arity
+mismatch. The authoritative v2 rematerializes implementation-bound identities only; source Core,
+Package denominator, graph topology, Runtime effects, load values, validity results, 64
+counterfactuals, and 320 crossed-parent controls are unchanged. Both roots made zero Provider
+calls and the v1 historical bytes remain immutable.
 
 Each of the eight exact Finance Cores receives one content-addressed binding to its TaskProgram,
 independent Program verification, two Evidence identities, public operation nodes, normalization
@@ -575,37 +589,40 @@ operational Finance Witnesses, 32 Package replays, and 32 unique causal depth Ru
 The stage claims eight independent Finance surfaces and 32 independent depth surfaces, not 32
 independent Finance questions.
 
-The transitive source Root closes 298 local files with zero unresolved import. The formal Root has
-17 files and 4,087,733 bytes. Focused Pytest passes 5/5 in 4.41 seconds. Focused PyCompile, Ruff,
-and Mypy pass. Two complete credential-free CLI builds independently execute all 32 baselines,
-64 counterfactuals, and 320 mutations and compare byte for byte. This is static and local Runtime
+The transitive source Root closes 298 local files with zero unresolved import. The authoritative
+v2 formal Root has 17 files and 4,087,766 bytes. Focused Pytest passes 5/5 in 4.99 seconds; the
+adjacent v26.168-v26.169 regression passes 11/11 in 12.98 seconds. Focused PyCompile, Ruff, and
+Mypy pass. Two complete credential-free CLI builds independently execute all 32 baselines, 64
+counterfactuals, and 320 mutations and compare byte for byte. Package-wide Ruff passes. Package-
+wide Mypy checks 529 source files and retains only four pre-existing v26.70, v26.129, and byte-
+frozen v26.154 diagnostics, with zero v26.169 diagnostics. This is static and local Runtime
 evidence only; model behavior, empirical boundary, frequency, Contribution, State Mapping, VTDO,
 Student visibility, training, release, and production remain unmeasured or unauthorized.
 
 The authoritative identities are:
 
 - report:
-  `finance_v26_causal_depth_hardening_report:4a3f477016dcb8b208846ab9ca4325abf81eff1a423e057efd4f2534f1662e41`;
+  `finance_v26_causal_depth_hardening_report:234772d4046e3b18f614e54e0d53d26c97fc98f041528e1092e5c2157496d622`;
 - source replay:
-  `finance_v26_causal_depth_source_replay:94537fb24e07f2b26c3b865e3f6bd67a164d4a8e25fd54bdea99090d5e2b40a1`;
+  `finance_v26_causal_depth_source_replay:93665867d4301c6743f6307ce641d88e12e348a8ba2701dbb8fb4d330701d3d0`;
 - Prompt Projection Contract:
-  `depth_prompt_projection_contract:480dfd521f1510383a465199b84861737483b8cb8f3d9f48c6b1c146af9b7172`;
+  `depth_prompt_projection_contract:ef019d8af7724df4c40c083d618e637c9f2871d1a298c9146e1be57d52bc4f7a`;
 - Candidate Presentation Policy:
-  `causal_depth_candidate_presentation_policy:41795838fc30214e5834698db13360efdb269880f2b1c17e7f57b57fd03a07aa`;
+  `causal_depth_candidate_presentation_policy:abe7c2de9b2af2af43b8b2a4cdde42d383ea3365ead447c0c73d253cfdc9550b`;
 - Development Catalog:
-  `finance_v26_causal_development_catalog:8717c1654cd3f135d1886cebd30ac26e68ca95e5f653965d9f3e84389bac2bf4`;
+  `finance_v26_causal_development_catalog:8b3bfa223589d52c5cd95d181f194172fd86d8d7c16d45488b218b15b843c6c0`;
 - leakage audit:
-  `finance_v26_public_projection_leakage_audit:7c0133ded51d217f510f8947d3ba10fdac0f92d0c28feb25db4fb47432a9250e`;
+  `finance_v26_public_projection_leakage_audit:c455b2f25458dac3463529927ed93a1f2645546548479335282e6a612eee415f`;
 - Runtime audit:
-  `finance_v26_causal_runtime_audit:3e1bb9bac279bcc8b79c5f8c3adb941887cec8c9f354317321f5dba404d62f6a`;
+  `finance_v26_causal_runtime_audit:bb75787e018a71e4ff2dbe67a3f71745277bb2f486a55ca3abf31f85ec3668c1`;
 - counterfactual Catalog:
-  `finance_v26_causal_depth_counterfactual_catalog:7e3800f4f037f1a774730f41ec3e47a3d33399298253e18dcb8bf570c9467844`;
+  `finance_v26_causal_depth_counterfactual_catalog:840d9c30b80083c6b33b679ba290ab7d2ea1d8799aad1e77e7a92cdc52939a13`;
 - Parent Binding Audit:
-  `finance_v26_causal_depth_parent_binding_audit:fe9adb9ad5819e34b4d51db90afa1930dbf72f52a96766791cc87e7ac6842548`;
+  `finance_v26_causal_depth_parent_binding_audit:4d62838879ccb4c048dff2ccdcaecb9705e12f441fd2ac33227600b3512be1b3`;
 - static audit:
-  `finance_v26_causal_depth_static_audit:723785a8da33eb43cce2feb47aceb481edc4c4765479cf707ecd515717970458`;
+  `finance_v26_causal_depth_static_audit:23da60d3cddab4ec755b886939c0768b9ed45ad46281789f66d1baa4bdbc58b1`;
 - transition:
-  `finance_v26_causal_depth_transition:bef08ac87c122f400c86f18c8d6352b875993502b930585186edfab0e4481844`.
+  `finance_v26_causal_depth_transition:37d62fb3400161f433989597fdde416ecfd45e549a2324c831a6f9f38ace7368`.
 
 The only permitted transition is:
 

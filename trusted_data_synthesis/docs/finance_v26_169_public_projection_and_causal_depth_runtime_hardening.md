@@ -25,6 +25,15 @@ The v26.169 chain passes all twenty-two static Gates. It restores only the crede
 Development Runner-preflight transition. It is not a Runner preflight, online outcome, capability
 boundary, frequency estimate, State Mapping result, Contribution result, or VTDO admission.
 
+A preliminary v1 build passed the original audit controls and remains immutable. A separate
+post-materialization Candidate-neighborhood review then found that several invalid alternatives
+used visibly different placeholder vocabularies such as `alternate_operation`, `partial`, and
+`unbound`, while one Reconciliation D0 choice mixed two-argument and one-argument payloads. No
+Provider call, Development Job, or empirical row occurred. The authoritative v2 keeps the same
+source Cores, 32-Package denominator, causal graph topology, Runtime effects, load values,
+counterfactual results, and parent-mutation counts, but rematerializes every implementation-bound
+identity under a stricter public Candidate schema.
+
 ## Frozen v26.168 Evidence And Reproduced Defects
 
 The stage binds all nineteen files in the authoritative v26.168 v3 main Root, including its
@@ -94,6 +103,9 @@ future-State projections                                    0
 public Candidates                                         630
 recursive Host-Key leaks                                    0
 recursive answer-cue leaks                                  0
+nonisomorphic Candidate-schema States                       0
+Candidate argument-shape mismatch States                    0
+synthetic alternative-cue Candidates                        0
 capability-label exposures                                  0
 depth-label exposures                                       0
 reference-path exposures                                    0
@@ -107,11 +119,20 @@ fixed salt, Package identity, State ordinal, and semantic-choice ordinal. Host s
 hashes do not depend on those action IDs.
 
 Every nonterminal State exposes exactly three Candidates. Candidate descriptions are neutral and
-fixed. Candidate canonical JSON encodings are padded to equal byte length within the State. The
-reference position rotates deterministically by Development group, depth, and State ordinal. The
-audit groups positions by family, depth, Host phase, and option count; all cells differ by at most
-one observation across positions. Nonopaque IDs, unequal encodings, unbalanced cells, and
-ID-dependent semantic-choice failures are zero.
+fixed. All three options use the same Tool and canonical argument positions. Each argument slot
+also uses one registered lexical shape: qualified identifiers retain the same namespace and
+hexadecimal width, indexed tokens retain the same stem and numeric width, and semantic command
+tokens retain the same word-sequence arity. Reconciliation D0 therefore presents two arguments in
+all three options rather than only in the reference option. The old placeholder families
+`alternate_operation`, `normalization_route`, `operand_route`, `partial`, `unbound`, and their
+related route/probe templates are absent.
+
+Candidate canonical JSON encodings are padded to equal byte length within the State. The reference
+position rotates deterministically by Development group, depth, and State ordinal. The audit
+groups positions by family, depth, Host phase, and option count; all cells differ by at most one
+observation across positions. Nonopaque IDs, unequal encodings, schema mismatches, argument-shape
+mismatches, synthetic alternative cues, unbalanced cells, and ID-dependent semantic-choice
+failures are zero.
 
 This removes direct identifier cues. It does not claim that future model behavior is invariant to
 presentation order; that remains an empirical Runner question.
@@ -272,48 +293,51 @@ boundary status is produced.
 ## Reproducibility And Checks
 
 The transitive source Root starts from all four v26.169 implementation modules and resolves 298
-local `trusted_synthesis` files with zero unresolved import. The formal Root contains 17 files and
-4,087,733 bytes.
+local `trusted_synthesis` files with zero unresolved import. The authoritative v2 formal Root
+contains 17 files and 4,087,766 bytes.
 
-Focused Pytest passes 5/5 in 4.41 seconds. Focused PyCompile, Ruff, and Mypy pass. Two independent
-credential-free CLI builds each execute the complete 32-Package baseline, 64-Counterfactual, and
-320-mutation audit and compare byte for byte with `diff -qr` returning zero differences. The
-Pytest suite separately checks every report-bound formal file SHA-256 and byte count.
+Focused Pytest passes 5/5 in 4.99 seconds. The adjacent v26.168-v26.169 regression passes 11/11 in
+12.98 seconds. Focused PyCompile, Ruff, and Mypy pass. Two independent credential-free CLI builds
+each execute the complete 32-Package baseline, 64-Counterfactual, and 320-mutation audit and
+compare byte for byte with `diff -qr` returning zero differences. The Pytest suite separately
+checks every report-bound formal file SHA-256 and byte count. Package-wide Ruff passes. Package-
+wide Mypy checks 529 source files and retains only the four pre-existing v26.70, v26.129, and
+byte-frozen v26.154 diagnostics, with zero v26.169 diagnostics.
 
 ## Authoritative Identities
 
 - report:
-  `finance_v26_causal_depth_hardening_report:4a3f477016dcb8b208846ab9ca4325abf81eff1a423e057efd4f2534f1662e41`;
+  `finance_v26_causal_depth_hardening_report:234772d4046e3b18f614e54e0d53d26c97fc98f041528e1092e5c2157496d622`;
 - external authorization:
-  `finance_v26_causal_depth_external_audit_authorization:0fb147063f8d8ffedbec6d49425a98b909496d36bf480783769a97445a59f3c8`;
+  `finance_v26_causal_depth_external_audit_authorization:ceb1e9842b48bcde3b2bcde0501054b45679acddda3117eb9f34f2bcec7d9c69`;
 - source replay:
-  `finance_v26_causal_depth_source_replay:94537fb24e07f2b26c3b865e3f6bd67a164d4a8e25fd54bdea99090d5e2b40a1`;
+  `finance_v26_causal_depth_source_replay:93665867d4301c6743f6307ce641d88e12e348a8ba2701dbb8fb4d330701d3d0`;
 - transitive source Root:
-  `finance_v26_causal_depth_transitive_source_root:e6344786d91bfb8afedcfd80c650698b3b8da4b20da0914159428fbf68264946`;
+  `finance_v26_causal_depth_transitive_source_root:706fa2d242f4884e5d3052abc58c7197df0d13d51dabbbfe78903e7057a22847`;
 - v26.168 predecessor integrity:
-  `finance_v26_causal_depth_predecessor_integrity:ed15cdf4cc1f5d6d9696cef2091c133a67d2964f341713becad9ff8bbe1e31bf`;
+  `finance_v26_causal_depth_predecessor_integrity:fd6d82cf8fabaecfceec483cd36df58c3c9de39bec1b70336795465c331956bd`;
 - v26.168 defect reproduction:
-  `finance_v26_v168_public_projection_runtime_defect_audit:13fbff278f14e8294eb36e44ae271e38fe40e21e3c4fa8cdc98b467a7ff35814`;
+  `finance_v26_v168_public_projection_runtime_defect_audit:538561b4b93c3d11a2734b14209d45dccbc0b5f0e7d22e491d44fc9b8dc86334`;
 - Prompt Projection Contract:
-  `depth_prompt_projection_contract:480dfd521f1510383a465199b84861737483b8cb8f3d9f48c6b1c146af9b7172`;
+  `depth_prompt_projection_contract:ef019d8af7724df4c40c083d618e637c9f2871d1a298c9146e1be57d52bc4f7a`;
 - Candidate Presentation Policy:
-  `causal_depth_candidate_presentation_policy:41795838fc30214e5834698db13360efdb269880f2b1c17e7f57b57fd03a07aa`;
+  `causal_depth_candidate_presentation_policy:abe7c2de9b2af2af43b8b2a4cdde42d383ea3365ead447c0c73d253cfdc9550b`;
 - Development Catalog:
-  `finance_v26_causal_development_catalog:8717c1654cd3f135d1886cebd30ac26e68ca95e5f653965d9f3e84389bac2bf4`;
+  `finance_v26_causal_development_catalog:8b3bfa223589d52c5cd95d181f194172fd86d8d7c16d45488b218b15b843c6c0`;
 - Public Projection Leakage Audit:
-  `finance_v26_public_projection_leakage_audit:7c0133ded51d217f510f8947d3ba10fdac0f92d0c28feb25db4fb47432a9250e`;
+  `finance_v26_public_projection_leakage_audit:c455b2f25458dac3463529927ed93a1f2645546548479335282e6a612eee415f`;
 - causal Runtime Audit:
-  `finance_v26_causal_runtime_audit:3e1bb9bac279bcc8b79c5f8c3adb941887cec8c9f354317321f5dba404d62f6a`;
+  `finance_v26_causal_runtime_audit:bb75787e018a71e4ff2dbe67a3f71745277bb2f486a55ca3abf31f85ec3668c1`;
 - task-level Counterfactual Catalog:
-  `finance_v26_causal_depth_counterfactual_catalog:7e3800f4f037f1a774730f41ec3e47a3d33399298253e18dcb8bf570c9467844`;
+  `finance_v26_causal_depth_counterfactual_catalog:840d9c30b80083c6b33b679ba290ab7d2ea1d8799aad1e77e7a92cdc52939a13`;
 - Parent Binding Audit:
-  `finance_v26_causal_depth_parent_binding_audit:fe9adb9ad5819e34b4d51db90afa1930dbf72f52a96766791cc87e7ac6842548`;
+  `finance_v26_causal_depth_parent_binding_audit:4d62838879ccb4c048dff2ccdcaecb9705e12f441fd2ac33227600b3512be1b3`;
 - Operational Witness Interpretation:
-  `finance_v26_operational_witness_interpretation:b16916cae80c02aed9fa943846a9ee2c1a1577721e8e06d25a7853e64d886cea`;
+  `finance_v26_operational_witness_interpretation:c50e69b9edf4d53416bdb308fc3a37b1c09f6eb5686fdc49ccb4417f4e50f35f`;
 - static audit:
-  `finance_v26_causal_depth_static_audit:723785a8da33eb43cce2feb47aceb481edc4c4765479cf707ecd515717970458`;
+  `finance_v26_causal_depth_static_audit:23da60d3cddab4ec755b886939c0768b9ed45ad46281789f66d1baa4bdbc58b1`;
 - transition:
-  `finance_v26_causal_depth_transition:bef08ac87c122f400c86f18c8d6352b875993502b930585186edfab0e4481844`.
+  `finance_v26_causal_depth_transition:37d62fb3400161f433989597fdde416ecfd45e549a2324c831a6f9f38ace7368`.
 
 ## Only Permitted Transition
 

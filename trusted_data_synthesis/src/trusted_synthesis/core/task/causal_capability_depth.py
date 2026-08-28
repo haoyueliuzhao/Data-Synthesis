@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from enum import Enum
 from typing import Any, Final, Literal
@@ -10,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from trusted_synthesis.core.task.capability_observation import CapabilityFamily, ObservationDepth
 from trusted_synthesis.hashing import canonical_hash
 
-CAUSAL_CAPABILITY_DEPTH_VERSION = "causal_capability_depth.v1"
+CAUSAL_CAPABILITY_DEPTH_VERSION = "causal_capability_depth.v2"
 PUBLIC_ACTION_ID_LENGTH: Final = 24
 PUBLIC_STATE_TOKEN_LENGTH: Final = 24
 PUBLIC_CANDIDATE_DESCRIPTION: Final = "Apply the displayed operation payload."
@@ -28,6 +29,7 @@ HOST_ONLY_PUBLIC_KEYS: Final = (
     "target_capability_action",
 )
 FORBIDDEN_PUBLIC_SCALAR_FRAGMENTS: Final = (
+    "alternate_operation",
     "avoid_failure",
     "bypass",
     "correct_action",
@@ -37,12 +39,23 @@ FORBIDDEN_PUBLIC_SCALAR_FRAGMENTS: Final = (
     "d3_stress",
     "failure_recovery",
     "invalid_retry",
+    "normalization_route_",
+    "operand_route_",
+    "postverification_operation_",
+    "public_operand_",
+    "public_projection_",
+    "query_input_",
+    "readiness_probe_",
+    "recheck_partial",
     "reference_action",
     "semantic_reconciliation",
+    "selector_route_",
     "skip_normalized",
     "state_dependent_stopping",
     "target_capability",
     "tempting_continuation",
+    "verify_partial",
+    "verify_unbound",
 )
 
 
@@ -118,6 +131,26 @@ def canonical_bytes(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+def public_argument_shape(value: str) -> tuple[str, ...]:
+    namespace, separator, suffix = value.rpartition(":")
+    if (
+        separator
+        and re.fullmatch(r"[a-z][a-z0-9_]*", namespace)
+        and re.fullmatch(r"[0-9a-f]{16,64}", suffix)
+    ):
+        return ("qualified_hex", namespace, str(len(suffix)))
+    indexed = re.fullmatch(r"(?P<stem>[a-z][a-z0-9_]*_)(?P<index>[0-9]+)", value)
+    if indexed is not None:
+        return (
+            "indexed_token",
+            indexed.group("stem")[:-1],
+            str(len(indexed.group("index"))),
+        )
+    if re.fullmatch(r"[a-z][a-z0-9]*(?:_[a-z][a-z0-9]*)*", value):
+        return ("word_sequence", str(len(value.split("_"))))
+    raise ValueError("public Candidate argument has no registered lexical shape")
+
+
 def scan_public_leakage(value: Any, path: str = "$") -> tuple[str, ...]:
     findings: list[str] = []
     if isinstance(value, dict):
@@ -161,6 +194,8 @@ class PublicExecutableDepthCandidate(FrozenModel):
             f"arg_{index:02d}" for index in range(1, len(self.arguments) + 1)
         ):
             raise ValueError("public Candidate argument positions are not canonical")
+        for argument in self.arguments:
+            public_argument_shape(argument.value)
         if scan_public_leakage(self.model_dump(mode="json")):
             raise ValueError("public Candidate contains a Host or answer cue")
         return self
@@ -201,6 +236,18 @@ class PublicExecutableDepthState(FrozenModel):
             raise ValueError("public Candidate presentation order is not contiguous")
         if len({item.action_id for item in self.options}) != len(self.options):
             raise ValueError("public State repeats an opaque action ID")
+        schemas = {
+            (item.tool, tuple(argument.name for argument in item.arguments))
+            for item in self.options
+        }
+        if len(schemas) > 1:
+            raise ValueError("public Candidate schemas are not isomorphic")
+        argument_shapes = {
+            tuple(public_argument_shape(argument.value) for argument in item.arguments)
+            for item in self.options
+        }
+        if len(argument_shapes) > 1:
+            raise ValueError("public Candidate argument lexical shapes are not isomorphic")
         lengths = {len(canonical_bytes(item.model_dump(mode="json"))) for item in self.options}
         if len(lengths) > 1:
             raise ValueError("public Candidate encodings are not equal length")

@@ -4,6 +4,7 @@ import argparse
 import ast
 import hashlib
 import json
+import re
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -59,17 +60,17 @@ from trusted_synthesis.experiments.vtdo_experiment import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-RUN_ID: Final = "finance_v26_169_public_projection_causal_depth_runtime_hardening_v1_20260828"
+RUN_ID: Final = "finance_v26_169_public_projection_causal_depth_runtime_hardening_v2_20260828"
 OUTPUT_DIR: Final = (
     "artifacts/vtdo_experiment/"
-    "finance_v26_169_public_projection_causal_depth_runtime_hardening_v1_20260828"
+    "finance_v26_169_public_projection_causal_depth_runtime_hardening_v2_20260828"
 )
 EXPECTED_REVIEW_SHA256: Final = "6105461d1c58f507ee5227f3b8f6867e020dedec828b7687befe1eddb108bb4e"
 EXPECTED_REVIEW_BYTE_COUNT: Final = 27_021
 AUTHORIZED_STAGE: Final = (
     "capability_observation_public_projection_and_causal_depth_runtime_hardening_only"
 )
-CANDIDATE_PRESENTATION_SALT: Final = "finance-v26.169-public-candidate-preoutcome-permutation-v1"
+CANDIDATE_PRESENTATION_SALT: Final = "finance-v26.169-public-candidate-preoutcome-permutation-v2"
 V168_DIR: Final = v168.OUTPUT_DIR
 ENTRY_SOURCE_PATHS: Final = (
     "src/trusted_synthesis/core/task/causal_capability_depth.py",
@@ -700,6 +701,39 @@ def _effect(kind: FinanceEffectKind, value: str | None = None) -> FinanceEffect:
     return FinanceEffect(kind=kind, value=value)
 
 
+def _peer_identifier(reference: str, *, phase: str, offset: int) -> str:
+    namespace, separator, suffix = reference.rpartition(":")
+    if separator and re.fullmatch(r"[0-9a-f]{16,64}", suffix):
+        peer_suffix = hashlib.sha256(f"{phase}|{reference}|{offset}".encode()).hexdigest()[
+            : len(suffix)
+        ]
+        peer = f"{namespace}:{peer_suffix}"
+    else:
+        indexed = re.fullmatch(r"(?P<stem>.+_)(?P<index>[0-9]+)", reference)
+        if indexed is None:
+            raise ValueError(f"cannot derive a lexical peer for {reference!r}")
+        width = len(indexed.group("index"))
+        peer_index = int(indexed.group("index")) + offset
+        peer = f"{indexed.group('stem')}{peer_index:0{width}d}"
+    if peer == reference:
+        raise ValueError("lexical peer unexpectedly equals its reference")
+    return peer
+
+
+def _peer_argument_sets(
+    reference: tuple[str, ...],
+    *,
+    phase: str,
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    return cast(
+        tuple[tuple[str, ...], tuple[str, ...]],
+        tuple(
+            tuple(_peer_identifier(value, phase=phase, offset=offset) for value in reference)
+            for offset in (2, 4)
+        ),
+    )
+
+
 def _invalid_alternatives(
     *,
     phase: str,
@@ -789,7 +823,10 @@ def _execute_and_close_steps(binding: CausalFinanceBinding) -> tuple[_StepPlan, 
         arguments=(binding.terminal_operation_node_id,),
         effects=execute_effects,
         events=("finance_program_executed",),
-        alternatives=(("alternate_operation_01",), ("alternate_operation_02",)),
+        alternatives=_peer_argument_sets(
+            (binding.terminal_operation_node_id,),
+            phase="finance_program_execution",
+        ),
         target=False,
     )
     close = _step(
@@ -803,7 +840,7 @@ def _execute_and_close_steps(binding: CausalFinanceBinding) -> tuple[_StepPlan, 
             _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
         ),
         events=("finance_program_closed",),
-        alternatives=(("recheck_partial_01",), ("recheck_partial_02",)),
+        alternatives=(("close_terminal_record",), ("close_evidence_record",)),
         target=False,
     )
     return execute, close
@@ -821,7 +858,7 @@ def _verify_step(*, target: bool = False) -> _StepPlan:
             _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
         ),
         events=("terminal_verified",),
-        alternatives=(("verify_partial_result",), ("verify_unbound_result",)),
+        alternatives=(("verify_visible_inputs",), ("verify_visible_program",)),
         target=target,
     )
 
@@ -832,6 +869,14 @@ def _context_steps(
 ) -> tuple[_StepPlan, ...]:
     index = OBSERVATION_DEPTH_ORDER.index(depth)
     expected = cast(str, binding.expected_operator_id)
+    operator_alternatives = cast(
+        tuple[tuple[str, ...], tuple[str, ...]],
+        tuple(
+            (item,)
+            for item in ("compare", "lookup", "aggregate", "ratio", "sum")
+            if item != expected
+        )[:2],
+    )
     rows = [
         _step(
             phase="operator_selection",
@@ -844,7 +889,7 @@ def _context_steps(
                 _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
             ),
             events=("context_action_selected",),
-            alternatives=(("lookup",), ("aggregate",)),
+            alternatives=operator_alternatives,
             target=True,
         )
     ]
@@ -864,7 +909,10 @@ def _context_steps(
                     _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
                 ),
                 events=("context_input_bound",),
-                alternatives=(("public_operand_03",), ("public_operand_04",)),
+                alternatives=_peer_argument_sets(
+                    (binding.input_binding_ids[0],),
+                    phase="primary_input_binding",
+                ),
                 target=True,
             )
         )
@@ -881,7 +929,10 @@ def _context_steps(
                     _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
                 ),
                 events=("context_projection_selected",),
-                alternatives=(("public_projection_03",), ("public_projection_04",)),
+                alternatives=_peer_argument_sets(
+                    (binding.projection_ids[0],),
+                    phase="output_projection_selection",
+                ),
                 target=True,
             )
         )
@@ -901,7 +952,10 @@ def _context_steps(
                     _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
                 ),
                 events=("context_secondary_input_bound",),
-                alternatives=(("public_operand_05",), ("public_operand_06",)),
+                alternatives=_peer_argument_sets(
+                    (binding.input_binding_ids[1],),
+                    phase="secondary_input_binding",
+                ),
                 target=True,
             )
         )
@@ -939,9 +993,9 @@ def _reconciliation_steps(
                 ),
                 events=("normalization_reference_emitted",),
                 emitted_references=(reference,),
-                alternatives=(
-                    (f"normalization_route_{index + 2:02d}",),
-                    (f"normalization_route_{index + 4:02d}",),
+                alternatives=_peer_argument_sets(
+                    (reference,),
+                    phase=f"normalization_emission_{index:02d}",
                 ),
                 target=True,
             )
@@ -963,7 +1017,10 @@ def _reconciliation_steps(
                 + (_effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),),
                 events=("normalization_reference_consumed",),
                 consumed_references=consume,
-                alternatives=(("operand_route_03",), ("operand_route_04",)),
+                alternatives=_peer_argument_sets(
+                    consume,
+                    phase=f"normalized_operand_consumption_{index + 1:02d}",
+                ),
                 target=True,
             )
         )
@@ -996,7 +1053,10 @@ def _recovery_steps(
                     _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
                 ),
                 events=("recovery_input_bound",),
-                alternatives=(("query_input_03",), ("query_input_04",)),
+                alternatives=_peer_argument_sets(
+                    (binding.input_binding_ids[0],),
+                    phase="recovery_input_binding",
+                ),
                 target=True,
             )
         )
@@ -1017,7 +1077,10 @@ def _recovery_steps(
                 public_observation="The public tool returned a typed selector fault.",
                 failure_code=code,
                 events=("typed_failure_observed",),
-                alternatives=(("selector_route_05",), ("selector_route_06",)),
+                alternatives=_peer_argument_sets(
+                    (selector,),
+                    phase=f"selector_attempt_{index:02d}",
+                ),
                 target=True,
             )
         )
@@ -1034,7 +1097,10 @@ def _recovery_steps(
                     _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
                 ),
                 events=("recovery_succeeded",),
-                alternatives=(("selector_route_07",), ("selector_route_08",)),
+                alternatives=_peer_argument_sets(
+                    (selector,),
+                    phase=f"selector_revision_{index:02d}",
+                ),
                 target=True,
             )
         )
@@ -1062,7 +1128,10 @@ def _stopping_steps(
                     _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
                 ),
                 events=("readiness_condition_checked",),
-                alternatives=(("readiness_probe_05",), ("readiness_probe_06",)),
+                alternatives=_peer_argument_sets(
+                    (check_id,),
+                    phase=f"readiness_check_{index:02d}",
+                ),
                 target=False,
             )
         )
@@ -1070,7 +1139,7 @@ def _stopping_steps(
     stop_reference = _ChoicePlan(
         action_kind=CausalActionKind.STOP,
         tool="cross_check_evidence",
-        arguments=("stop_after_visible_verification",),
+        arguments=("finalize_after_visible_verification",),
         effects=(
             _effect(FinanceEffectKind.STOP),
             _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),
@@ -1083,8 +1152,8 @@ def _stopping_steps(
     continuations = tuple(
         _ChoicePlan(
             action_kind=CausalActionKind.CONTINUE,
-            tool="calculator",
-            arguments=(f"postverification_operation_{index:02d}",),
+            tool="cross_check_evidence",
+            arguments=(f"{('repeat', 'recompute')[index - 1]}_after_visible_verification",),
             effects=(
                 _effect(FinanceEffectKind.RECORD_POSTCOMPLETION_CALL),
                 _effect(FinanceEffectKind.INCREMENT_INVOCATION, "1"),

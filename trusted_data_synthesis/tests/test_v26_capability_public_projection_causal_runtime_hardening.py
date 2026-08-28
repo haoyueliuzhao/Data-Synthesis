@@ -20,9 +20,11 @@ from trusted_synthesis.core.task.causal_capability_depth import (
     CausalTerminalKind,
     FinanceEffect,
     FinanceEffectKind,
+    PublicExecutableDepthState,
     apply_effects,
     canonical_bytes,
     initial_snapshot,
+    public_argument_shape,
     scan_public_leakage,
 )
 from trusted_synthesis.experiments.vtdo_experiment import (
@@ -89,6 +91,9 @@ def test_formal_causal_depth_hardening_chain_closes_every_authorized_gate() -> N
     assert defect.v26_168_artifacts_rewritten is False
     assert leakage.prompt_projection_count == runtime.nonterminal_state_count == 210
     assert leakage.public_candidate_count == 630
+    assert leakage.nonisomorphic_candidate_schema_state_count == 0
+    assert leakage.candidate_argument_shape_mismatch_state_count == 0
+    assert leakage.synthetic_alternative_cue_count == 0
     assert runtime.branch_divergent_state_count == 210
     assert runtime.all_candidates_same_successor_count == 0
     assert runtime.baseline_task_valid_count == 32
@@ -150,6 +155,34 @@ def test_public_projection_is_current_state_only_opaque_and_recursively_leak_fre
                 for item in state.public_state.options
             }
             assert len(lengths) == 1
+            schemas = {
+                (
+                    item.tool,
+                    tuple(argument.name for argument in item.arguments),
+                )
+                for item in state.public_state.options
+            }
+            assert len(schemas) == 1
+            argument_shapes = {
+                tuple(public_argument_shape(argument.value) for argument in item.arguments)
+                for item in state.public_state.options
+            }
+            assert len(argument_shapes) == 1
+            cue_fragments = (
+                "alternate_operation",
+                "normalization_route_",
+                "operand_route_",
+                "postverification_operation_",
+                "public_operand_",
+                "public_projection_",
+                "query_input_",
+                "readiness_probe_",
+                "recheck_partial",
+                "selector_route_",
+                "verify_partial",
+                "verify_unbound",
+            )
+            assert not any(fragment in encoded for fragment in cue_fragments)
             assert all(
                 len(item.action_id) == PUBLIC_ACTION_ID_LENGTH
                 for item in state.public_state.options
@@ -176,6 +209,30 @@ def test_public_projection_is_current_state_only_opaque_and_recursively_leak_fre
         <= 1
         for counter in position_cells.values()
     )
+
+    sample_state = next(
+        state.public_state
+        for package in _packages()
+        for state in package.graph.states
+        if state.terminal_kind == CausalTerminalKind.NONE
+        and all(
+            public_argument_shape(argument.value)[0] == "word_sequence"
+            for option in state.public_state.options
+            for argument in option.arguments
+        )
+    )
+    mismatched_tool = sample_state.model_dump(mode="json")
+    first_tool = mismatched_tool["options"][0]["tool"]
+    mismatched_tool["options"][1]["tool"] = (
+        "calculator" if first_tool != "calculator" else "cross_check_evidence"
+    )
+    with pytest.raises(ValueError, match="schemas are not isomorphic"):
+        PublicExecutableDepthState.model_validate(mismatched_tool)
+
+    mismatched_shape = sample_state.model_dump(mode="json")
+    mismatched_shape["options"][1]["arguments"][0]["value"] = "operation_stage_01"
+    with pytest.raises(ValueError, match="lexical shapes are not isomorphic"):
+        PublicExecutableDepthState.model_validate(mismatched_shape)
 
 
 def test_runtime_has_real_branch_consequences_and_enforces_family_preconditions() -> None:

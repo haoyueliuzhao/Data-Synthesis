@@ -26,7 +26,7 @@ from trusted_synthesis.core.task.causal_capability_depth import (
 from trusted_synthesis.hashing import canonical_hash
 
 V26_CAUSAL_DEPTH_HARDENING_VERSION = (
-    "finance_v26_public_projection_causal_depth_runtime_hardening.v1"
+    "finance_v26_public_projection_causal_depth_runtime_hardening.v2"
 )
 
 
@@ -610,6 +610,9 @@ class PublicProjectionLeakageAudit(FrozenModel):
     depth_label_exposure_count: Literal[0] = 0
     nonopaque_action_id_count: Literal[0] = 0
     unequal_candidate_encoding_state_count: Literal[0] = 0
+    nonisomorphic_candidate_schema_state_count: Literal[0] = 0
+    candidate_argument_shape_mismatch_state_count: Literal[0] = 0
+    synthetic_alternative_cue_count: Literal[0] = 0
     unbalanced_reference_position_cell_count: Literal[0] = 0
     id_free_semantic_choice_failure_count: Literal[0] = 0
     schema_version: str = V26_CAUSAL_DEPTH_HARDENING_VERSION

@@ -345,7 +345,9 @@ authorized inputs to a Runner preflight.
 
 v26.169 rematerializes only the Development prospective chain under a current-State-only public
 projection, opaque balanced Candidate presentation, branch-divergent causal Finance Runtime,
-task-level counterfactual verification, and complete cross-parent binding. Its passed decision
-restores `capability_observation_executable_depth_development_runner_preflight_only` over the new
-causal Development Catalog. See
+task-level counterfactual verification, and complete cross-parent binding. Its authoritative v2
+also requires same-Tool and same-argument-slot option schemas, registered argument lexical shapes,
+and zero synthetic alternative cues. Its passed decision restores
+`capability_observation_executable_depth_development_runner_preflight_only` over the new causal
+Development Catalog. See
 `docs/finance_v26_169_public_projection_and_causal_depth_runtime_hardening.md`.
