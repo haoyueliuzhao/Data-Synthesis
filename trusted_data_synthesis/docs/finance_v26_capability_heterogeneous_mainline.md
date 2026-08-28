@@ -261,6 +261,11 @@ The boundary algorithm uniquely classifies all 256 two-group-by-four-depth suppo
 both Development 2/6 and Confirmation 3/8. A 294-file transitive source closure, 22 Gates, and
 thirty real production-object mutations pass with zero Provider calls or Jobs.
 
+The preliminary v1 and v2 sources remain immutable. v1 retains one local package-wide Mypy
+diagnostic; v2 separates the two local mapping variable names. The authoritative v3 additionally
+wraps one Ruff E501 expression. All scientific object bytes and the sealed Catalog remain
+unchanged; v3 is authoritative.
+
 The current mainline transition is only:
 
 ```text

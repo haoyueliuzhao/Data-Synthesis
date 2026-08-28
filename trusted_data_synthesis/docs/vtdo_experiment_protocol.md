@@ -1994,6 +1994,11 @@ v26.168 passes 64/64 operational Witness, TaskProgram Verifier, depth Runtime, a
 Verifier rows; 16/16 Reconciliation consumption rows; 64/64 paired necessity rows; 22/22 Gates;
 and 30/30 production-object mutations. It creates no Job and makes zero Provider calls.
 
+The preliminary v1 and v2 implementations remain immutable. v1 retains one local package-wide
+Mypy inference diagnostic; v2 changes only local variable names and implementation-bound
+identities. The authoritative v3 additionally wraps one Ruff E501 expression and changes only
+implementation-bound identities; it is the authoritative chain.
+
 The only current transition is:
 
 ```text

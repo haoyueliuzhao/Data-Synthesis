@@ -252,20 +252,36 @@ Typed Runtime terminal policy                  64/64
 
 The Development Root contains 19 files and 1,912,392 bytes. The separate sealed Confirmation Root
 contains one file and 1,629,452 bytes. The formal and independently rebuilt roots match every
-filename and every byte. Focused Pytest passes 6/6 in 10.59 seconds. Focused PyCompile, Ruff, and
-Mypy pass. Provider, Stage 2 Provider, GPU, empirical Assignment, State, Mapper, Contribution,
-VTDO, Development Job, and historical mutation counts are zero.
+filename and every byte. Focused Pytest passes 6/6 in 10.81 seconds; the adjacent
+v26.167-v26.168 suite passes 10/10 in 12.96 seconds. Focused PyCompile, Ruff, and Mypy pass.
+Provider, Stage 2 Provider, GPU, empirical Assignment, State, Mapper, Contribution, VTDO,
+Development Job, and historical mutation counts are zero.
+
+The preliminary v1 and v2 Roots remain immutable. Package-wide Mypy found one v26.168 local
+variable inference in v1 from reusing `channels` for set-valued and tuple-valued mappings. The
+type-complete v2 source gives those values separate names and changes only implementation-bound
+run/output identities; source selection and every scientific value remain unchanged.
+
+Package-wide `trusted_data_synthesis` Ruff then found one local E501 line after the v2
+source-bound Root was materialized. The authoritative v3 wraps only that expression and changes
+run/output identities. Source selection, cores, Packages, Graphs, Witnesses, Verifiers, loads,
+nuisance, counterfactuals, Gates, and thresholds do not change. Fourteen of nineteen main files
+are byte-identical across v2/v3, and the sealed Catalog is byte-identical. Only the transitive
+source root, source replay, source-bound static audit, run-bound transition, and top-level report
+change. Package-wide Mypy checks 525 source files and retains only four pre-existing diagnostics,
+with zero v26.168 diagnostics. Package-wide `trusted_data_synthesis` Ruff passes. The v3 chain
+below is authoritative.
 
 The authoritative identities are:
 
 - report:
-  `finance_v26_executable_depth_rematerialization_report:f30169aaea55bcd6fc97a49dc923b7d3cb85a09183f77f434d1d2e6f0383745f`;
+  `finance_v26_executable_depth_rematerialization_report:fec334481435422529ccd90ce2b9df6f4de758448e25b2c0bf8f8123e4457171`;
 - external authorization:
   `finance_v26_executable_depth_external_audit_authorization:25efb6f80989a283905b86301a1c8e1f13ba0fb5fa8bd2a94481a402d4b96032`;
 - transitive source root:
-  `finance_v26_executable_depth_transitive_source_root:d7b86f8b53a1f605e56e83742e5bdbca5571f7bfc0ee1db95fb6a511307b1108`;
+  `finance_v26_executable_depth_transitive_source_root:39fec7ae44243f37025636ce7241b0da2ed2cd048703f3dff3b87e9faa30f01b`;
 - source replay:
-  `finance_v26_executable_depth_source_replay:0b9dec5025db6c4ac4d34636c08e13567e4bdc9878fc5c62b42f2d7a271fe610`;
+  `finance_v26_executable_depth_source_replay:2de5aebb9cfe4a6727165ae517fbdb4fc68e94973a2ddf63cb8f42365e762cf2`;
 - v26.167 defect audit:
   `finance_v26_v167_executable_depth_defect_audit:1cf3eb3feba2e56faaa566ec7befd8827c0cb1b95b2748322a4be64312260ead`;
 - source capacity audit:
@@ -291,11 +307,11 @@ The authoritative identities are:
 - nuisance recomputation audit:
   `finance_v26_executable_depth_nuisance_recomputation_audit:8acec520f4f012fb1e3d177d1446d757874dfa39500ad717dc36abe11094e9ab`;
 - static audit:
-  `finance_v26_executable_depth_static_audit:eb89764a2385409896f756af4839a97d47ab89a6424616e98cea320008b22990`;
+  `finance_v26_executable_depth_static_audit:5f1cb8b2b7448b85db7f68ee91968425a3e7def7b825a6443faf702fc94301f3`;
 - production destructive audit:
   `finance_v26_executable_depth_production_destructive_audit:eb6384c983af1749a7cb289ade8791faca2d71933c2e6f90497c6ac75aadf30e`;
 - transition:
-  `finance_v26_executable_depth_transition:09dea4bf465358c760130e0df107dda901a8ba57e7f999f2a3a07e67b9940180`.
+  `finance_v26_executable_depth_transition:ff485fd462f7e0c93f695b6949e55aa48bae4726d343d7ee19b21336bb815686`.
 
 ## Transition
 

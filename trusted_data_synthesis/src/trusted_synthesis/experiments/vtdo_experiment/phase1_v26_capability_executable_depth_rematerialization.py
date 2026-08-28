@@ -83,12 +83,12 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_public_operation_w
 )
 from trusted_synthesis.hashing import canonical_hash
 
-RUN_ID: Final = "finance_v26_168_executable_depth_rematerialization_v2_20260828"
+RUN_ID: Final = "finance_v26_168_executable_depth_rematerialization_v3_20260828"
 OUTPUT_DIR: Final = (
-    "artifacts/vtdo_experiment/finance_v26_168_executable_depth_rematerialization_v2_20260828"
+    "artifacts/vtdo_experiment/finance_v26_168_executable_depth_rematerialization_v3_20260828"
 )
 SEALED_OUTPUT_DIR: Final = (
-    "artifacts/vtdo_experiment/finance_v26_168_sealed_confirmation_executable_depth_v2_20260828"
+    "artifacts/vtdo_experiment/finance_v26_168_sealed_confirmation_executable_depth_v3_20260828"
 )
 EXPECTED_REVIEW_SHA256: Final = "89ed58d566df56edc1dc54087cb722dc5a485ee48068a543aa15d79850a10dbb"
 EXPECTED_REVIEW_BYTE_COUNT: Final = 25_940
@@ -457,7 +457,9 @@ def _select_sources(
                 "selected_core_source_record_ids": tuple(
                     sorted({item.provenance.source_record_id for item in evidence})
                 ),
-                "source_core_semantic_signature": next(iter(task_channels["core_semantic_signature"])),
+                "source_core_semantic_signature": next(
+                    iter(task_channels["core_semantic_signature"])
+                ),
                 "source_mechanism_instance_signature": next(
                     iter(task_channels["mechanism_instance_signature"])
                 ),

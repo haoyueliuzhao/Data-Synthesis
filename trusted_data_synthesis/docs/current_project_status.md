@@ -565,16 +565,30 @@ Witness, depth Witness, Runtime Observation and trace, Candidate/State/Transitio
 nuisance, Boundary Contract, sealed receipt, and source root.
 
 The main formal Root contains 19 files and 1,912,392 bytes. The sealed Root contains one file and
-1,629,452 bytes. Focused Pytest passes 6/6 in 10.59 seconds and performs an empty-directory
+1,629,452 bytes. Focused Pytest passes 6/6 in 10.81 seconds and performs an empty-directory
 byte-identical rebuild of both Roots while observing exactly 64 variant-local verification
-invocations. Focused PyCompile, Ruff, and Mypy pass.
+invocations. The adjacent v26.167-v26.168 suite passes 10/10 in 12.96 seconds. Focused PyCompile,
+Ruff, and Mypy pass.
+
+The preliminary v1 and v2 Roots remain immutable. Package-wide Mypy found one local v26.168
+heterogeneous-mapping inference in v1; v2 changes only the two local variable names and
+implementation-bound run/output identities. Package-wide `trusted_data_synthesis` Ruff then found
+one local E501 line after the v2 source-bound Root was materialized. The authoritative v3 wraps
+only that expression and changes run/output identities. Fourteen of nineteen main files and the
+complete sealed Catalog are byte-identical across v2/v3; only the transitive source root, source
+replay, source-bound static audit, run-bound transition, and top-level report change. Package-wide
+Mypy checks 525 source files and retains the four pre-existing diagnostics in the v26.70, v26.129,
+and byte-frozen v26.154 lineages, with zero v26.168 diagnostics. Package-wide
+`trusted_data_synthesis` Ruff passes. Scientific object, source selection, Path, Graph, Witness,
+Verifier, load, nuisance, Gate, and threshold results are unchanged. The v3 identities below are
+authoritative.
 
 The authoritative identities are:
 
 - report:
-  `finance_v26_executable_depth_rematerialization_report:f30169aaea55bcd6fc97a49dc923b7d3cb85a09183f77f434d1d2e6f0383745f`;
+  `finance_v26_executable_depth_rematerialization_report:fec334481435422529ccd90ce2b9df6f4de758448e25b2c0bf8f8123e4457171`;
 - transitive source root:
-  `finance_v26_executable_depth_transitive_source_root:d7b86f8b53a1f605e56e83742e5bdbca5571f7bfc0ee1db95fb6a511307b1108`;
+  `finance_v26_executable_depth_transitive_source_root:39fec7ae44243f37025636ce7241b0da2ed2cd048703f3dff3b87e9faa30f01b`;
 - v26.167 defect audit:
   `finance_v26_v167_executable_depth_defect_audit:1cf3eb3feba2e56faaa566ec7befd8827c0cb1b95b2748322a4be64312260ead`;
 - Development Catalog:
@@ -588,11 +602,11 @@ The authoritative identities are:
 - Mechanism Necessity Catalog:
   `finance_v26_executable_depth_mechanism_necessity_catalog:bf8f11b3125a12bdea499fa1a6edb133a5720312d78fa8fcbfc562b12f1024c1`;
 - static audit:
-  `finance_v26_executable_depth_static_audit:eb89764a2385409896f756af4839a97d47ab89a6424616e98cea320008b22990`;
+  `finance_v26_executable_depth_static_audit:5f1cb8b2b7448b85db7f68ee91968425a3e7def7b825a6443faf702fc94301f3`;
 - destructive audit:
   `finance_v26_executable_depth_production_destructive_audit:eb6384c983af1749a7cb289ade8791faca2d71933c2e6f90497c6ac75aadf30e`;
 - transition:
-  `finance_v26_executable_depth_transition:09dea4bf465358c760130e0df107dda901a8ba57e7f999f2a3a07e67b9940180`.
+  `finance_v26_executable_depth_transition:ff485fd462f7e0c93f695b6949e55aa48bae4726d343d7ee19b21336bb815686`.
 
 The only permitted transition is:
 
