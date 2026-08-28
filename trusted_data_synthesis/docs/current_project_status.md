@@ -540,10 +540,165 @@ model-behavior, Mapper, State, Contribution, VTDO, training, release, and produc
 zero. The current transition permits only a credential-free 192-Job Development Runner preflight
 over the exact v26.170 v3 public-semantic execution Catalog.
 
+v26.171 has now consumed a later external validity-separation, presentation-deleak, and causal-
+component reaudit decision with zero Provider calls. It preserves and rebinds all eighteen v26.170
+v3 files, reproduces the old Base/reference coupling and padding side channel, and blocks the
+v26.170 Runner preflight without execution. The frozen old surface contains 100/160 Program-valid
+nonreference Choices, 76/160 that also preserve answer and postcompletion semantics, 28/48
+Program-valid and 24/48 task-semantic-valid adjacent counterfactuals, 34/80 States with unique
+reference padding length, and 1,440 visible padding fields. A fresh 32-Package Catalog separates
+Base, Mechanism, and Qualified validity. Its 32 baselines pass all three; across 146 legal
+nonreference counterfactuals, 26 are Base-valid but Mechanism-unqualified and 120 fail both, while
+all Qualified values equal their conjunction. A complete public answer projection removes raw
+internal references in all 24 affected compare Packages under exact Decimal semantics. All eighty
+target components have real family-specific causal effects: 32 TaskProgram execution and
+verification baselines, 16 normalization emissions and consumptions, twenty typed-failure-plus-
+recovery pairs, eight dynamic readiness receipts, 24 wrong-readiness terminal changes, and
+sixteen postcompletion controls. The fresh Candidate surface is 226/226 grounded and Runtime-
+legal with zero illegal operators. Across 480 presentations and 1,356 displayed rows, visible
+padding and all registered byte-, argument-, and field-count selectors are zero. Forty-four
+adjacent-depth causal artifacts are all Mechanism- and Qualified-necessary; only 38 are task-level
+necessary and six are correctly retained as mechanism-only. All 44 five-parent bindings, six
+whole-graph rehash controls, fifteen static Gates, and seventeen production-object mutations close.
+The 307-file source closure and 23-file formal Root complete with zero Development Job, model-
+behavior, Confirmation payload, Mapper, State, Contribution, VTDO, training, release, or
+production row. The current transition permits only a credential-free Development Runner
+preflight over the exact future 192-Job v26.171 design.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.171 Validity Separation, Presentation Deleak, And Causal Component Reaudit Decision
+
+Finance v26.171 consumed only
+`capability_observation_validity_separation_presentation_deleak_and_causal_component_reaudit_only`.
+The external review is bound at 26,048 bytes and SHA-256
+`0a9e048bf1d83540185af60c64bb138a503a880689e8aeecf32efb5bec40f5b8`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, GPU jobs, Mapper calls, State Assignment, Contribution, and VTDO
+are zero.
+
+All eighteen authoritative v26.170 v3 files are rebound with zero mutation. The audit independently
+reproduces 80 target States, 160 old nonreference Choices, 100 Program-valid nonreferences, 76
+Program-plus-answer-plus-postcompletion-valid nonreferences, 48 old adjacent-depth
+counterfactuals with 28 Program-valid and 24 task-semantic-valid rows, six compare Cores that
+expose internal `higher_ref`, 34 States and 204 presentations with a unique reference padding
+length, and 1,440 model-visible padding fields. Historical v26.170 bytes and labels remain
+unchanged. Its stale Runner-preflight transition is blocked without execution.
+
+The fresh Validity Separation Contract creates independent content-addressed Base, Mechanism, and
+Qualified reports. Base is exactly local Program contract, operation lineage, answer projection,
+answer schema, public answer semantics, reference identity, Citation, terminal verification, and
+postcompletion control. It receives no reference-choice metadata. Mechanism receives only the
+family-specific causal trace, and Qualified is exactly `Base and Mechanism`. All 32 reference
+baselines pass each report. Across the complete 146-row legal nonreference surface, the joint
+matrix is 26 Base-true/Mechanism-false and 120 Base-false/Mechanism-false, with both Mechanism-
+true counterfactual cells zero. All 146 Qualified conjunctions match and Base/Mechanism report-ID
+overlap is zero.
+
+The public answer Contract projects internal Evidence references through content-bound public
+record handles to public labels and applies finite exact Decimal normalization to numeric fields.
+All 32 Packages pass exact answer schema, semantic equality, Citation, and Base validity; all 24
+compare Packages with raw internal references complete the public projection.
+
+Every one of the eighty target components has a family-specific legal decision, dynamic
+dependency, real Runtime event, and registered causal effect. Context choices drive actual
+Evidence queries and TaskProgram inputs/operators. Reconciliation executes sixteen real
+normalization calls and consumes all sixteen emitted operation references in the terminal
+calculator; `select_operator` is absent from its target language. Recovery produces twenty real
+`typed_selector_requires_refinement` Observations and twenty changed-selector successes. Stopping
+binds eight dynamic receipts to actual Program/Verifier results, records 24 wrong-readiness
+terminal changes, and executes sixteen postcompletion controls. Baseline TaskProgramExecutor and
+TaskProgramOracleVerifier counts are 32 each; synthetic set-result effects are zero. All eighty
+family validators pass with zero dependency-order failure or non-target model Choice.
+
+The fresh legal surface has 226 semantic Candidates, including 146 distractors. Grounding,
+Runtime legality, and declared legal-action matches are 226/226; illegal operators and ungrounded
+Candidates are zero. Candidate semantics live in a public State legend. The displayed Prompt
+contains only fixed-width action ID, presentation index, command, and choice handle. Across six
+replicas per State, 480 presentations, and 1,356 displayed rows, visible padding, byte-length,
+semantic-argument-count, field-count, position-imbalance, semantic-set-mismatch, and action-ID-
+collision counts are all zero. Source-Oracle dependency, opaque-hash guessing, and Host-
+preclassified-alternative counts are also zero.
+
+The 24 adjacent group-depth increments produce 44 legal nonreference causal artifacts for their
+new components. All 44 are Mechanism-necessary and Qualified-necessary. Thirty-eight are also
+task-level necessary; the remaining six stay Base-valid and are explicitly classified
+mechanism-only. Every artifact binds source Package, target Package, new component, baseline
+Result, and complete counterfactual Result, and 44/44 five-parent bindings reconstruct.
+
+Package reconstruction also matches 80/80 reference Choices and 32/32 source Program
+Verification, source public Task, source Evidence semantic, and projected public Task parents.
+Six fully rehashed crossed-parent controls reject, and all seventeen destructive mutations of real
+production objects fail closed, including separate padding-only, candidate-byte-length,
+argument-count-only, and field-count-only selectors. All fifteen noncompensatory Gates pass. The
+transitive source Root closes 307 files with zero unresolved import. The formal Root contains 23
+files and 9,566,182 bytes; report SHA-256 is
+`8ba4e549905b89df93fad7cceafb76437de4ee19593d0c5dd8aa54c76433852c`.
+Focused Pytest passes 6/6 in 23.61 seconds with an empty-directory byte-identical rebuild. The
+adjacent v26.170-v26.171 regression passes 11/11 in 45.56 seconds. Focused PyCompile, Ruff
+check/format, and Mypy pass. Package-wide Ruff passes; package-wide Mypy checks 538 source files,
+retains only the four pre-existing v26.70, v26.129, and byte-frozen v26.154 diagnostics, and has
+zero v26.171 diagnostics. This remains static and local execution evidence only. Model readability,
+model success, Development outcome, empirical boundary, success monotonicity, Confirmation,
+frequency, State,
+Contribution, VTDO, Student visibility, training, release, and production remain unmeasured or
+unauthorized.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_validity_causal_reaudit_report:f4c302eec26cba0ff3dfa6e6d2d435e1f935dccb75947533510c5f166652c026`;
+- transitive source Root:
+  `finance_v26_validity_causal_transitive_source_root:aef48551328622b6182c983b28100e9ebbf5cc09e733c08cb32d80960331ea01`;
+- v26.170 defect audit:
+  `finance_v26_v170_validity_padding_defect_reproduction:46db1c91226446573ee8480d8a52580f2b4ddcca897773474e2b9997af051b59`;
+- Validity Separation Contract:
+  `validity_separation_contract:de59485ae062dd594db7cd6b8e7aa00bc080eae450ab3e5d56f891ccea3bc98e`;
+- Causal Component Contract:
+  `causal_component_contract:6e7066af8fb9d61cad7f59ff5e72cbbd6e6ea5790d0b885de6da1b350a10f976`;
+- Presentation Policy:
+  `deleaked_public_candidate_presentation_policy:de2ced9243e25eaa64cf2a1fbfa0324fe2f991556d42a18d87e36452574c15c9`;
+- Semantic Parent Binding Contract:
+  `semantic_parent_binding_contract:873dcd9b6868e01a1c8f5cb2542259effe400affe27790d1dca7bf13a395fc87`;
+- Development Catalog:
+  `finance_v26_validity_separated_development_catalog:b6ff7c04909c8ed042ed72656ef7b877ef06d0505f4f6ac4df266b0fb72c744b`;
+- public answer projection:
+  `finance_v26_public_answer_projection_audit:21a33783607547c4f585577c65dd0b1e25b4db7a3234e6610dba8abe1854a76a`;
+- validity separation:
+  `finance_v26_validity_separation_audit:4d08d0f6c323b886a97f83a7e717db4a2bf6c90331122670f8d15a42801f75b5`;
+- causal component execution:
+  `finance_v26_causal_component_execution_audit:3ff61defbaddf1e28f097a9aaf13968a2cca95f1fed73bc860968476b015ab89`;
+- Candidate legality:
+  `finance_v26_candidate_legality_audit:f4726436c5fab0677fe340fd4ef0e340f5cd6d53d3ecc0cbc1ebd18386162fb3`;
+- presentation deleak:
+  `finance_v26_presentation_deleak_audit:561cf77caff08d77681a40db8ac6548640ccf7bc895b657fd1501ef13f054b26`;
+- Depth Increment Causal Catalog:
+  `depth_increment_causal_catalog:4de56365562deb0802e71d2893a4fd51e60399e01565acdc84b0b34180edda81`;
+- parent reconstruction:
+  `finance_v26_semantic_parent_binding_audit:da07b4737645227b0a981f0e6d422cd42ca77385649cd50a37be6dbab41ec3a4`;
+- static audit:
+  `finance_v26_validity_causal_static_audit:d8f5120bce298ea3fba65a24483dc400e0c5bfbd4e71f6d93fcf016679cbd252`;
+- transition:
+  `finance_v26_validity_causal_transition:d1621bff89558111106f08c235690390b967d54c1518050decab03a59f431ec1`.
+
+The only permitted transition is:
+
+```text
+capability_observation_validity_separated_causal_deleaked_development_runner_preflight_only
+```
+
+The successor may materialize only the exact future 192-Job Development Manifest and complete a
+credential-free Runner preflight over the exact v26.171 Catalog, separated validity reports,
+complete public answer projection, causal component Runtime, legal Candidate surface, padding-
+free six-replica presentation, semantic parents, fixed condition, model/Thinking, Grammar,
+Policy, resource, threshold, terminal, and sealed receipt. Provider execution, Confirmation
+payload loading, task/component/Candidate/presentation change, threshold or validity tuning,
+historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training,
+release, and production remain forbidden. See
+`docs/finance_v26_171_validity_separation_presentation_deleak_and_causal_component_reaudit.md`.
 
 ## v26.170 Public Semantic Sufficiency And Task Execution Hardening Decision
 
@@ -668,6 +823,11 @@ terminal, and sealed-receipt binding. Provider execution, Confirmation payload l
 public semantic change, threshold tuning, historical rewrite, Mapper, State, frequency,
 Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
 `docs/finance_v26_170_public_semantic_sufficiency_and_task_execution_hardening.md`.
+
+That transition has now been superseded without Runner execution by the external v26.171
+validity-separation, presentation-deleak, and causal-component reaudit. Every v26.170 byte and
+static result remains immutable. The current authorization is the credential-free Development
+Runner preflight over the fresh v26.171 validity-separated Catalog recorded above.
 
 ## v26.169 Public Projection And Causal Depth Runtime Hardening Decision
 

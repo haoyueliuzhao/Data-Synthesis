@@ -368,3 +368,9 @@ Provider execution, Development outcomes, Confirmation payload loading or execut
 public semantic change, target-component change, Candidate change, presentation-salt change,
 threshold tuning, historical rewrite or reclassification, Mapper, State, frequency, Contribution,
 VTDO, Student visibility, training, release, and production remain forbidden.
+
+That transition has now been superseded without Runner execution by the external v26.171
+validity-separation, presentation-deleak, and causal-component reaudit. Every v26.170 artifact,
+identity, and static result remains immutable. The current authorization is the credential-free
+Development Runner preflight over the fresh v26.171 validity-separated Catalog. See
+`docs/finance_v26_171_validity_separation_presentation_deleak_and_causal_component_reaudit.md`.

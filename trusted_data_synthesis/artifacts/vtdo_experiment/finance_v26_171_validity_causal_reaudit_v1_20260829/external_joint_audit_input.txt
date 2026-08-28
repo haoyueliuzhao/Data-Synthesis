@@ -1,0 +1,1106 @@
+# v26.170 修订报告与项目源码联合审计
+
+## 一、最终判定
+
+v26.170 **确实修复了 v26.169 的主要公开语义缺口**：原始公开指令、别名、期间、Resolution Rule、公开记录与 Operation 语义重新进入模型可见对象；生产与独立 public-only selector 均能在 80 个目标状态和 480 个 Replica 呈现上恢复同一个选择；32 个基线 Package 也确实调用了真实 `TaskProgramExecutor` 与 `TaskProgramOracleVerifier`。 
+
+但直接审计源码和正式工件后，当前最关键的三个科学 Gate 仍未闭合：
+
+$$
+\boxed{
+\text{Base Validity 与 Mechanism Qualification 没有真正分离}
+}
+$$
+
+$$
+\boxed{
+\text{“深度增量的任务级必要性”主要由 reference 相等检查直接定义}
+}
+$$
+
+$$
+\boxed{
+\text{模型可见 padding 形成了新的 reference 选择捷径}
+}
+$$
+
+因此总体结论是：
+
+| 审计对象                                 | 判定                                 |
+| ------------------------------------ | ---------------------------------- |
+| 历史 v26.169 不可变性与缺陷复现                 | **通过**                             |
+| 公开金融语义恢复                             | **通过**                             |
+| Public-only 构造性                      | **通过，限于冻结规则程序**                    |
+| 基线真实 `TaskProgram` 执行                | **通过，限于 Raw Program 输出**           |
+| 公开答案投影与完整 Base Validity              | **不通过**                            |
+| Base／Mechanism 独立分解                  | **不通过**                            |
+| 48 条深度增量的任务级必要性                      | **不通过；只证明 reference-contract 必要性** |
+| 目标能力负担隔离                             | **未充分建立**                          |
+| 六 Replica 候选位置平衡                     | **通过**                             |
+| 六 Replica 呈现中性                       | **不通过，存在 padding 线索**              |
+| Public Task 父绑定                      | **部分通过**                           |
+| Reference、Source Verification 等语义父绑定 | **不完整**                            |
+| 当前进入 192-Job Runner 预检               | **阻塞**                             |
+
+v26.170 报告自身明确承认，本阶段没有测量模型可读性、模型成功率、经验能力边界或 VTDO；这部分边界是诚实的。 问题不在于它冒充了在线结果，而在于它把当前静态证据判成足以授权下一次 Runner 预检，而源码尚不支持这一授权。
+
+---
+
+# 二、审计范围与独立复核
+
+本次直接审计了：
+
+* v26.170 修订报告；
+* v26.170 v3 正式工件；
+* [项目源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-161424%29.zip)。
+
+源码 ZIP SHA-256：
+
+```text
+7dbe395ceaacbf0c18b2d53604c3f0416ef992153deb2918c992daf0a1e1d193
+```
+
+独立执行结果：
+
+```text
+v26.170 聚焦 Pytest       5 passed in 30.76s
+相邻 v26.169 回归 Pytest  5 passed in 4.80s
+v26.170 核心模块 PyCompile 4 / 4 passed
+
+正式 Root 文件             18
+正式 Root 字节数            8,033,777
+报告绑定详情文件            17
+SHA-256 / byte mismatch     0
+```
+
+当前审计环境没有安装 `ruff` 和 `mypy` 命令，因此报告中的 Ruff／Mypy 结果没有被我独立重跑；不能把报告自述等同于本次复核结果。
+
+---
+
+# 三、已经可信修复的部分
+
+## 1. Public Semantic Projection 已经恢复任务所需公开信息
+
+`project_public_semantic_task()` 现在真实保留：
+
+* 原始公开 instruction；
+* aliases 与 periods；
+* 两条公开 Finance record 及其语义字段；
+* resolution rules；
+* Operation 输入、依赖、输出与允许 Operator；
+* completion 与 stop-readiness 规则。
+
+报告中的：
+
+```text
+exact instructions              8/8
+aliases                         23/23
+periods                         14/14
+resolution-rule values        101/101
+unique Public Task hashes       8/8
+```
+
+与正式工件和源码实现一致。
+
+同时，当前公开 Task 不再直接暴露：
+
+```text
+Gold Evidence ID
+Evidence Version ID
+source Program ID
+program_operator_id
+expected result
+reference Candidate
+capability family
+depth
+future State
+```
+
+这一层比 v26.169 有明显进展。
+
+---
+
+## 2. Public-only selector 的调用边界基本成立
+
+生产 selector：
+
+```python
+public_only_select_action(prompt)
+```
+
+只接收：
+
+```text
+PublicSemanticPrompt
+= PublicSemanticTask
++ current PublicDecisionState
++ displayed Candidates
+```
+
+独立 selector 另写了一套 Resolution Rule、Record、Output、Readiness 与 Operator 解析逻辑，没有调用生产 selector。
+
+当前正式结果：
+
+```text
+production unique choices       80/80
+independent unique choices      80/80
+six-replica matches            480/480
+action-ID / ordinal dependence     0
+```
+
+这一结果能够支持：
+
+> 在当前冻结公开规则下，存在一个不读取 Host reference 的确定性选择程序。
+
+但它只证明**构造可解性**，不证明该任务对模型的难度适当。
+
+---
+
+## 3. 基线确实执行了真实 Program，而非直接写入结果
+
+v26.169 的：
+
+```text
+SET_EXPECTED_RESULT
+SET_ALTERNATE_RESULT
+```
+
+已经移除。
+
+当前基线会根据选择的：
+
+```text
+operator_id
+record_handles
+```
+
+重新构建一节点 `TaskProgram`，再调用：
+
+```text
+TaskProgramExecutor
+TaskProgramOracleVerifier
+```
+
+32 个 Package 的基线均通过 Raw Program 验证。报告对此的窄主张成立。
+
+---
+
+## 4. Replica 位置平衡本身正确
+
+当前每个目标状态具有六个呈现，每个语义选择在三个位置中各出现两次：
+
+```text
+target states            80
+presentations           480
+displayed candidates  1,440
+position imbalance        0
+action-ID collision       0
+```
+
+报告对位置平衡的计数与源码一致。
+
+但“位置平衡”不等于完整的“呈现中性”，后面会说明新的 padding 泄漏。
+
+---
+
+# 四、P0：Base Validity 与 Mechanism Qualification 实际使用同一 reference 判定
+
+这是当前最根本的问题。
+
+源码位置：
+
+```text
+src/trusted_synthesis/core/task/
+public_semantic_capability_depth.py
+```
+
+关键逻辑位于约 783–874 行：
+
+```python
+checks[component.component_key] = (
+    semantic_key == component.reference_semantic_key
+)
+
+base_valid = program_valid and all(checks.values())
+
+mechanism_qualified = all(
+    selected_key == component.reference_semantic_key
+    for component in components
+)
+```
+
+因此，每个目标组件的：
+
+```text
+selected == reference
+```
+
+同时进入：
+
+* Base Validity；
+* Mechanism Qualification。
+
+这意味着：
+
+$$
+V_{\mathrm{base}}
+$$
+
+和：
+
+$$
+Q_{\mathrm{mech}}
+$$
+
+在目标选择层没有独立性。
+
+任意非 reference Choice 都会被直接设为：
+
+```text
+Base-invalid
+Mechanism-unqualified
+Qualified-invalid
+```
+
+无论真实 Program 是否仍然正确。
+
+这违反了当前理论已经冻结的基本分解：
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{base}}
+\land
+Q_{\mathrm{mech}},
+$$
+
+其中 Base 应表示任务正确性，Mechanism 才表示目标机制是否出现。
+
+---
+
+## 1. 48 条正式增量反事实中，28 条真实 Program 仍然有效
+
+报告声称：
+
+> 每个相邻深度新增组件的两个非 reference Choice 均产生 Base-invalid、Mechanism-unqualified 和 Qualified-invalid，因此证明新增组件具有任务级必要性。
+
+对正式 `depth_increment_necessity_catalog.json` 重新统计后：
+
+```text
+正式增量反事实                          48
+TaskProgramOracleVerifier 仍通过         28
+TaskProgramOracleVerifier 不通过         20
+```
+
+进一步删除“是否等于 reference”这一循环条件，仅保留：
+
+```text
+Program verification
+answer-projection selection
+postcompletion control
+```
+
+后，仍有：
+
+```text
+24 / 48
+```
+
+条增量反事实满足这些任务语义条件。
+
+典型情况包括：
+
+```text
+context.projection            Program-valid
+reconciliation.consume        Program-valid
+stopping.readiness.*          Program-valid
+部分 recovery.revision.*      Program-valid
+```
+
+所以当前的：
+
+```text
+48 / 48 Base-invalid
+```
+
+不是来自 48 条真实任务执行全部失败，而是很大程度来自：
+
+```text
+非 reference
+→ component check = false
+→ Base = false
+```
+
+这一预定义规则。
+
+---
+
+## 2. 在全部 160 个非 reference Choice 中，100 个仍 Program-valid
+
+我进一步执行了全部：
+
+```text
+80 target states
+× 2 nonreference choices
+= 160 alternatives
+```
+
+结果为：
+
+```text
+Program-valid alternatives                  100 / 160
+Program-invalid alternatives                 60 / 160
+
+Program + answer projection +
+postcompletion 均通过                         76 / 160
+```
+
+也就是说，接近一半的替代 Choice 在真实 Program 和基础公共输出控制上仍然没有失败，只因为其 Semantic Key 不是冻结 reference 而被判定 Base-invalid。
+
+### 科学结论
+
+当前最多支持：
+
+$$
+\boxed{
+\text{新增 reference-choice contract 是 Qualified Contract 的必要条件}
+}
+$$
+
+不能支持：
+
+$$
+\boxed{
+\text{新增组件是 Finance task Base Validity 的任务级必要条件}
+}
+$$
+
+报告中的 `task-level necessity` 需要收窄。
+
+---
+
+# 五、P0：“Real Task Execution”尚未覆盖完整公开任务有效性
+
+## 1. 当前 Base 只验证 Raw Program 输出，没有执行 Public Answer Projection
+
+六个使用 `compare` 的 Finance Core 中，真实 Executor 输出均为：
+
+```json
+{
+  "difference": "...",
+  "higher_ref": "evidence:finance:..."
+}
+```
+
+但公开任务明确要求：
+
+```text
+higher_ref 必须是 Italy / Sweden / 某个公开日期标签
+```
+
+源 `TypedAnswerProjectionContract` 已经保存了：
+
+```text
+内部 Evidence ID → 公开标签
+```
+
+映射，但 v26.170 的 `SemanticExecutionResult.base_valid` 没有应用该投影，也没有检查：
+
+* 公开答案字段值；
+* Final Grammar；
+* Citation；
+* Reference Identity；
+* Answer Semantics。
+
+结果是：
+
+```text
+compare Finance Cores                         6
+Raw higher_ref 仍为内部 evidence ID           6
+应用公开 Answer Projection                    0
+```
+
+所以报告中的：
+
+```text
+Base-valid baselines 32/32
+```
+
+不是项目既有 Verifier vNext 意义下的完整 Base Validity，而只是：
+
+```text
+local raw-program-and-reference-contract valid
+```
+
+报告自己也限定这些执行只建立本地构造性，不是模型行为。
+但字段命名仍然会造成证据层级越级。
+
+建议改名为：
+
+```text
+local_program_contract_valid
+```
+
+在完整 Answer Projection、Final、Citation 和公共语义检查接入前，不要使用正式 `Base-valid` 名称。
+
+---
+
+## 2. 多个目标组件没有实际进入 Program 执行
+
+`execute_semantic_runtime()` 实际处理：
+
+```text
+select_operator
+select_records / select_scope
+select_projection
+reconcile_record
+revise_selector
+stop_or_continue
+```
+
+但没有执行分支处理：
+
+```text
+consume_outputs
+assess_readiness
+```
+
+因此：
+
+### Reconciliation `consume_outputs`
+
+模型选择的：
+
+```text
+output_handles
+```
+
+没有进入所构造的 `TaskProgram`。
+
+`build_selected_program()` 始终创建：
+
+```text
+一节点 Program
++ 两个 Evidence InputRef
+```
+
+并没有执行公开 Task 中的 normalization nodes，也没有让 terminal Operation 消费 normalized output references。
+
+这解释了为什么：
+
+```text
+reconciliation.consume 的 4/4 增量反事实
+仍然 Program-valid。
+```
+
+### Stopping `assess_readiness`
+
+Readiness Choice 不改变 Program、Verification 或 terminal 状态；它只通过 exact-reference component check 决定 Base 值。
+
+所有：
+
+```text
+24 个 assess_readiness 非 reference alternatives
+```
+
+均仍然 Program-valid。
+
+### Failure Recovery
+
+`deterministic_failure_observed=true` 是预填 Public State Fact；Runtime 没有先真实执行失败查询再生成 Observation。Recovery 选择会修改 record selection，但 failure 本身不是本轮 Program 执行的结果。
+
+### 结论
+
+当前是：
+
+> 真实执行一个一节点 Finance Program，并在其外部附加若干选择合同。
+
+还不是：
+
+> 每个目标能力组件都通过真实 Runtime 因果地改变 Finance Program 与任务结果。
+
+---
+
+# 六、P0：可见 `padding` 产生了新的 reference 捷径
+
+报告写道，每个 Candidate 的规范 JSON 编码被填充为等长，并认为 Replica 之间只改变 action ID、顺序、位置和等长 padding。
+
+但当前：
+
+```python
+PresentedPublicCandidate.padding
+```
+
+本身被序列化进模型可见 JSON。
+
+因此，虽然三条 Candidate 的**总字节数相同**，模型仍然可以直接看到：
+
+```text
+padding 字符串有多长
+```
+
+这恰好反向暴露了原始语义 Payload 的长度。
+
+独立统计结果：
+
+```text
+target States                                  80
+有唯一 reference-padding 长度的 States         34
+replica presentations                         480
+暴露唯一 reference-padding 长度的 presentations 204
+```
+
+更严重的是，存在稳定的 decision-kind 捷径：
+
+```text
+assess_readiness：
+  选择 padding 最长项 → 12/12 State 正确
+
+stop_or_continue：
+  选择 padding 最长项 → 8/8 State 正确
+
+select_projection：
+  选择 padding 最短项 → 4/4 State 正确
+
+select_operator：
+  选择 padding 中位项 → 8/10 State 正确
+```
+
+一个只读取：
+
+```text
+decision_kind + padding 长度
+```
+
+而不理解金融语义的策略，就能在至少：
+
+```text
+32 / 80
+```
+
+个目标状态上确定 reference。
+
+### 判定
+
+$$
+\boxed{
+\text{Position balance 通过}
+\not\Rightarrow
+\text{Presentation neutrality 通过}
+}
+$$
+
+当前 Replica Presentation Audit 没有检查：
+
+* padding-only selector；
+* raw semantic length；
+* padding rank 与 reference 的关联；
+* tokenized padding cue。
+
+这是进入模型 Runner 前必须修复的 P0。
+
+---
+
+# 七、P1：目标能力隔离仍主要由声明字段完成
+
+当前：
+
+```python
+TargetComponent.target_capability_component: Literal[True]
+```
+
+而：
+
+```python
+IsolatedTargetLoad.non_target_choice_state_count: Literal[0]
+```
+
+`TargetIsolationAudit` 随后只是统计：
+
+```text
+组件数量
+Literal[True]
+Literal[0]
+```
+
+它没有独立判断某个组件的 Decision Kind 是否真的属于目标能力。
+
+一个直接反例是：
+
+```text
+Semantic Reconciliation D3
+新增组件：
+  reconciliation.operator
+  decision_kind = select_operator
+```
+
+`select_operator` 本质上更接近 Context／Operator Selection，而不是新增的 Reconciliation 负担。
+
+当前四类梯度实际上是：
+
+```text
+Context：
+operator → records → projection → scope
+
+Reconciliation：
+mapping 1 → mapping 2 → consume → operator
+
+Recovery：
+revision 1 → revision 2 → revision 3 → revision 4
+
+Stopping：
+readiness 1 → readiness 2 → readiness 3 → stop
+```
+
+所以当前 `1 / 2 / 3 / 4` 更准确地表示：
+
+```text
+注册的 target-labeled microdecision 数
+```
+
+而不是已经验证的单能力深度。
+
+此外，所有组件 Prompt 都是独立预构造的；没有组件依赖字段或由上一个模型选择产生的动态 Public State。因此 `D2_COMPOSITIONAL` 并没有真正证明 compositional dependency。
+
+---
+
+# 八、P1：Reference 与 Source 父绑定仍可被完整重哈希后绕过
+
+v26.170 的 Public Task 重建比 v26.169 明显增强：Catalog 会从 exact Finance Core 重建 `PublicSemanticTask` 并比较规范字节。报告中的 32 个 instruction mutation 全部拒绝是成立的。
+
+但当前破坏性审计只覆盖了 Public Task mutation，没有覆盖以下父对象。
+
+我构造了重新计算所有受影响身份的变异对象，当前 Validator 接受：
+
+### 1. 错误 Reference Choice
+
+将一个 Stopping readiness 组件的 reference 改为错误 verdict，随后重算：
+
+```text
+Component ID
+Replica Presentation IDs
+Baseline Result
+Package Artifact ID
+Group ID
+Catalog ID
+```
+
+最终结果：
+
+```text
+Catalog accepted                      true
+public-only selector agrees           false
+baseline program_valid                true
+baseline base_valid                   true
+baseline mechanism_qualified          true
+```
+
+也就是说，Package Validator 没有从 Public Prompt 重新计算 reference。
+
+### 2. 交叉 `source_program_verification_hash`
+
+将一个 Package 的：
+
+```text
+source_program_verification_hash
+```
+
+替换为另一个 Package 的值并完整重哈希，Catalog 仍被接受。
+
+### 3. 伪造 Source Public Hash
+
+修改：
+
+```text
+source_public_task_hash
+source_public_evidence_semantic_hash
+```
+
+重算 Parent Binding、Package、Group 和 Catalog 后，仍被接受。
+
+### 判定
+
+正式 v3 Catalog 当前是内部一致的；这里不是声称正式工件已遭污染。
+
+问题是：
+
+$$
+\boxed{
+\text{Schema 尚不能独立保证所有语义父绑定}
+}
+$$
+
+下一阶段若依赖这些强类型对象做重建，仍存在 crossed-parent 被接受的风险。
+
+---
+
+# 九、P1：部分审计计数是固定默认值，而不是计算结果
+
+以下字段在 Schema 中是 `Literal` 默认值，Build 没有实际计算：
+
+```text
+source_oracle_dependency_count = 0
+opaque_hash_guess_state_count = 0
+host_preclassified_alternative_count = 0
+```
+
+其中最值得注意的是：
+
+```text
+host_preclassified_alternative_count = 0
+```
+
+因为代码实际上显式执行：
+
+```python
+selected == reference
+```
+
+并将该结果加入 Base Validity。
+
+所以这一计数不仅缺少审计实现，其语义还与 Runtime 事实冲突。
+
+类似字段应由真实扫描或执行统计产生，不能由 Pydantic 默认值承担科学证据。
+
+---
+
+# 十、P2：Candidate Grounding 不是 Candidate Legality
+
+当前 Candidate Grounding 检查的是：
+
+> 参数中的每个 scalar 是否曾出现在 Public Task、Current State 或 Operator Catalog。
+
+这只能证明**词汇来源公开**，不能证明参数组合是该 Operation 下的合法动作。
+
+直接统计发现：
+
+```text
+12 个 select_operator Candidate
+不属于对应 operation.allowed_operator_ids
+```
+
+例如某些 Operation 只允许：
+
+```text
+compare, difference
+```
+
+但 Candidate 中仍加入：
+
+```text
+growth
+```
+
+若这些本来就是故意的错误选项，可以保留；但应明确称为：
+
+```text
+publicly grounded distractors
+```
+
+而不是：
+
+```text
+public legal-action candidates
+```
+
+否则会把“排除明显非法选项”的能力混入目标能力深度。
+
+---
+
+# 十一、当前结果应该如何解释
+
+## 可以支持
+
+v26.170 已经可信建立：
+
+1. 一个内容寻址的 Public Finance Task Projection；
+2. 一个不直接读取 Host reference 的确定性 public-only selector；
+3. 80 个具有三个公开语义选项的目标状态；
+4. 一个真实执行一节点 Finance Program 的基线；
+5. 六 Replica 的候选位置平衡；
+6. Public Task 与 Finance Core 的规范重建；
+7. 零 Provider、零模型行为的静态构造证据。
+
+## 不能支持
+
+当前还不能支持：
+
+1. 完整 Finance Base Validity；
+2. Base 与 Mechanism 的独立判定；
+3. 48 个新增组件的任务级因果必要性；
+4. 纯单能力 D0–D3 深度梯度；
+5. 无呈现捷径的模型可见任务；
+6. Semantic Reconciliation 的真实 normalization-output consumption；
+7. State-dependent Stopping 对真实执行状态的判断；
+8. 192 个 Job 的成功率能够解释为能力边界。
+
+如果现在执行模型，观察到的深度曲线将至少同时受到：
+
+$$
+\text{每步 reference 选择准确率}
+$$
+
+$$
+\text{组件数量的乘法效应}
+$$
+
+$$
+\text{padding 捷径}
+$$
+
+$$
+\text{异质微决策类型}
+$$
+
+共同影响。
+
+即使每个微决策的真实能力恒定为 \(p\)，Package 级成功率也会近似：
+
+$$
+q_d \approx p^{d+1},
+$$
+
+从而机械地产生随深度下降的曲线。这不能自动解释为潜在能力边界下降。
+
+---
+
+# 十二、建议的修订顺序
+
+当前报告授权的唯一后继是：
+
+```text
+capability_observation_public_semantic_execution_
+development_runner_preflight_only
+```
+
+并禁止后继修改 Public Semantic、Target Component、Candidate 和 Presentation Salt。
+
+由于本次发现恰恰要求修改这些对象，因此**不应消费当前后继授权**。
+
+建议新的零调用阶段：
+
+```text
+capability_observation_validity_separation_
+presentation_deleak_and_causal_component_reaudit_only
+```
+
+## 1. 重新分离 Base 与 Mechanism
+
+正式定义：
+
+```python
+base_valid = (
+    task_program_verified
+    and answer_projection_complete
+    and terminal_verification_complete
+    and public_answer_semantically_valid
+    and postcompletion_control_passed
+)
+
+mechanism_qualified = target_mechanism_verifier(trace)
+
+qualified_valid = base_valid and mechanism_qualified
+```
+
+禁止把：
+
+```text
+selected == reference
+```
+
+直接加入 Base。
+
+对于反事实，应允许出现：
+
+```text
+Base=true, Mechanism=false
+```
+
+这正是验证两者真正独立的必要测试。
+
+---
+
+## 2. 让每个组件通过真实后果影响任务
+
+### Context
+
+Operator、Record、Projection、Scope 必须分别影响：
+
+```text
+实际 Program
+实际 Evidence operands
+实际 Answer Projection
+实际公开查询范围
+```
+
+### Reconciliation
+
+必须真实执行：
+
+```text
+normalization nodes
+→ 产生 normalized operation refs
+→ terminal operation 消费这些 refs
+```
+
+`consume_outputs` 不能只作为 reference equality check。
+
+### Recovery
+
+必须先真实产生：
+
+```text
+typed failed Observation
+```
+
+再根据模型选择修改实际 selector；不能只在 State Facts 中声明 failure 已发生。
+
+### Stopping
+
+Readiness Receipt 必须由已执行 Program 和 Verification 动态生成。Wrong verdict 必须改变可停止性或终局，而不是只触发 exact-reference check。
+
+---
+
+## 3. 移除模型可见可变长度 padding
+
+至少增加以下破坏性控制：
+
+```text
+padding-only selector
+candidate-byte-length selector
+argument-count-only selector
+field-count-only selector
+```
+
+最稳妥的方案是：
+
+* 不在模型可见 Candidate 中序列化 `padding`；
+* 或完全固定公共 Candidate Schema 与值宽度；
+* 不把字节等长本身误当作中性。
+
+---
+
+## 4. 增加能力族专用组件 Validator
+
+例如：
+
+```text
+Context:
+  select_operator / select_records / select_projection / select_scope
+
+Reconciliation:
+  reconcile_record / consume_normalized_outputs
+
+Recovery:
+  observe_failure / revise_selector / retry
+
+Stopping:
+  assess_dynamic_readiness / stop_or_continue
+```
+
+`reconciliation.operator` 不得作为 Reconciliation 深度增量，除非被显式标记为 nuisance 且确定性执行。
+
+---
+
+## 5. 补齐父绑定
+
+Package／Catalog Validator 必须重新计算：
+
+```text
+reference_semantic_key
+  = public_only_select_action(exact public prompt)
+
+source_program_verification_hash
+  = exact bound Finance Core verification
+
+source_public_task_hash
+source_public_evidence_semantic_hash
+  = exact bound source objects
+```
+
+Depth Increment Artifact 还应绑定：
+
+```text
+source_package_id
+target_package_id
+new_component_id
+baseline_result_id
+counterfactual_result_id
+```
+
+---
+
+## 6. 接入完整 Public Answer Projection
+
+静态基线至少必须：
+
+```text
+Raw Program output
+→ Typed Answer Projection
+→ Public reference labels
+→ Answer Schema
+→ Canonical semantic comparison
+```
+
+对六个 `compare` Core，`higher_ref` 应从内部 Evidence ID 投影为公开标签后再判 Base。
+
+---
+
+# 十三、最终审计决策
+
+## 对 v26.170 历史工件
+
+$$
+\boxed{\text{保留并冻结}}
+$$
+
+它是一次真实进展，成功修复了：
+
+```text
+公开任务语义缺失
+opaque handle 猜测
+固定候选顺序
+Host 直接结果赋值
+```
+
+## 对报告的最强科学解释
+
+建议收窄为：
+
+> **v26.170 建立了一个公开语义可构造、真实执行 Raw Finance Program、并具有六 Replica 位置平衡的目标选择静态原型。**
+
+不能写成：
+
+> 已经建立独立 Base／Mechanism 判定、任务级深度必要性和呈现中性的能力深度任务。
+
+## 对当前 Runner 预检授权
+
+$$
+\boxed{\text{暂不通过}}
+$$
+
+当前第一个根本阻塞点是：
+
+$$
+\boxed{
+\text{Validity separation 与 causal component semantics}
+}
+$$
+
+并列的工程阻塞点是：
+
+$$
+\boxed{
+\text{visible padding leakage}
+}
+$$
+
+这两层修复后，才有必要构造 192-Job Runner。否则未来的支持曲线会主要测量“是否连续选中冻结 reference”和“是否利用呈现捷径”，而不是四项能力在受控深度上的经验边界。
+
+---
+
+## 审计附件
+
+* [v26.170 源码审计证据](sandbox:/mnt/data/v26_170_code_audit_evidence.md)
+* [v26.170 完整诊断 JSON](sandbox:/mnt/data/v26_170_diagnostic.json)
+* [本次审计源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-161424%29.zip)
