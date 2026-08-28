@@ -283,3 +283,33 @@ Provider execution, Confirmation execution, current-27-Cell selection, threshold
 or depth changes, Compiler intervention, historical reclassification, Mapper or State
 Assignment, frequency, Contribution, VTDO, Student visibility, training, release, and production
 remain forbidden.
+
+## Subsequent Executable-Depth Reaudit
+
+A later externally authorized v26.168 audit preserves every v26.167 byte and independently
+replays its production Role Witness surface. That audit reproduces 48/64 full-valid operational
+Witness variants, with all sixteen Semantic Reconciliation variants failing the consumed
+normalization-reference boundary. It also confirms that each v26.167 group retains one Program,
+one Tool set, and one operational Witness sequence across D0-D3.
+
+The strongest retained interpretation of v26.167 is therefore:
+
+```text
+metadata-ladder static prototype
+```
+
+Its grouping, freshness, breadth, identity, and contractual exposure evidence remains valid and
+immutable. Its 64/64 Public Witness, D0, declared primary-load, nuisance-stability, and Mechanism
+Necessity summaries do not establish distinct executable Runtime depths. The old
+`capability_observation_development_runner_preflight_only` transition is superseded without being
+consumed.
+
+v26.168 rematerializes fresh low-nuisance cores and executable graph identities, obtains 64/64
+variant-local operational Witness, TaskProgram Verifier, depth Runtime, and mechanism-event
+passes, and freezes a narrower replacement transition:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+See `docs/finance_v26_168_executable_capability_depth_rematerialization_and_static_reaudit.md`.

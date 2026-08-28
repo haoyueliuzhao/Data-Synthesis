@@ -225,3 +225,49 @@ Population after boundary confirmation.
 v26.167 implements this theory as sixteen matched groups and 64 static D0-D3 tasks, passes all
 seventeen static Gates and 22 destructive controls with zero Provider calls, and authorizes only
 `capability_observation_development_runner_preflight_only`. See
+`docs/finance_v26_167_capability_breadth_depth_task_synthesis_and_static_audit.md`.
+
+## 2026-08-28 Executable Depth Reaudit
+
+A later independent audit preserves v26.167 as a metadata-ladder static prototype. Production
+replay closes only 48/64 old operational Witness variants; all sixteen Reconciliation variants
+lack consumed normalization references, and every old group retains one Program, Tool set, and
+Witness sequence across D0-D3. The old Development Runner preflight is therefore superseded
+without execution.
+
+v26.168 rematerializes the scientific object rather than relabeling it. It selects two old Easy
+Development and two old Frontier Confirmation sources per capability before outcomes, reduces
+each to a real two-Evidence, one-Program-node Finance core, and binds 64 fresh packages to typed
+executable State, Candidate, Transition, event, Witness, and Verifier objects. Every variant
+separately executes the production operational Witness compiler, independent TaskProgram
+Verifier, depth Runtime, and mechanism event Verifier.
+
+The resulting computed ladders are:
+
+```text
+Context-conditioned Action       2 /  4 /  8 / 14
+Semantic Reconciliation          6 / 10 / 16 / 30
+Failure Recovery                 5 /  6 / 12 / 21
+State-dependent Stopping         5 /  7 / 11 / 16
+```
+
+All 64 variant-local verification surfaces pass, all sixteen Reconciliation variants consume
+their exact references, and 128 target-delete/bypass counterfactuals fail full validity. All 32
+Development variants remain within the frozen low-nuisance envelope. The separate sealed
+Confirmation Root exposes only a payload-free receipt to Development. This is static executable
+construct evidence, not model behavior or empirical boundary evidence.
+
+The boundary algorithm uniquely classifies all 256 two-group-by-four-depth support patterns under
+both Development 2/6 and Confirmation 3/8. A 294-file transitive source closure, 22 Gates, and
+thirty real production-object mutations pass with zero Provider calls or Jobs.
+
+The current mainline transition is only:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+That successor remains credential-free. Provider execution, Confirmation loading, graph or
+threshold changes, Mapper, State, Contribution, VTDO, training, release, and production remain
+closed. See
+`docs/finance_v26_168_executable_capability_depth_rematerialization_and_static_reaudit.md`.

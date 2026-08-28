@@ -1928,3 +1928,81 @@ same-data VTDO claim; any State-support or VTDO stage requires a later fresh Pop
 
 v26.167 materializes and statically audits the 64 tasks with zero Provider calls. Its current
 transition is only:
+
+```text
+capability_observation_development_runner_preflight_only
+```
+
+A later v26.168 audit blocks this historical transition without consuming it. v26.167 remains
+immutable metadata-ladder static evidence; it is not executable-depth evidence.
+
+### v26.168 executable capability-depth protocol
+
+The replacement protocol retains the same four capability families and D0-D3 ontology but
+requires the depth difference to exist in production executable objects. Every variant must bind:
+
+```text
+one low-nuisance Finance core
+one typed public State graph
+one exact visible Candidate set per State
+one Transition per Candidate
+one reference Candidate per nonterminal State
+one required mechanism-event multiplicity vector
+one answer-ready terminal
+one variant-local operational Witness
+one variant-local independent TaskProgram verification
+one depth Runtime Witness and mechanism verification
+```
+
+The actual capability loads are computed from the final graph and Runtime trace. Context counts
+model-owned decisions, ambiguity, dependency, delayed updates, and irreversible choices.
+Reconciliation counts nonidentity axes, normalization States, reference-consumption edges,
+consumption events, and raw bypass Candidates. Recovery counts typed failures, revisions,
+branching, dependency depth, and failure-type diversity. Stopping counts completion predicates,
+readiness delay, near-terminal checkpoints, tempting continuations, and verification/stop
+separation. Declared overlay totals and old `DifficultyTier` values are not measurement inputs.
+
+D0 is admitted only under the frozen nuisance envelope. Development sources are old Easy
+provenance rows rematerialized into exactly two Evidence items, one Program node, and zero Program
+edges. The executable core, Tool set, non-target Candidate burden, verification obligations,
+Prompt bytes, reference calls, and resource ceiling are recomputed from bound objects. D0-D3
+within a group must share one exact nuisance identity and prompt-byte count.
+
+Every variant separately runs production `compile_operational_witness`, TaskProgram execution and
+independent `TaskProgramOracleVerifier`, depth Runtime replay, and mechanism event verification.
+All emitted normalized references must be consumed. Necessity requires both deletion of a target
+action through the production Graph validator and execution of a visible target bypass through
+the unchanged Runtime. Metadata-key deletion is not a necessity test.
+
+The future condition is named `fixed_development_generation_condition`. The implementation path
+is currently `structured_direct`, but the protocol does not call it capability-neutral until a
+Runner preflight reconstructs exact prompts and proves condition noninterference. v26.168 measures
+no model behavior.
+
+The exact boundary classifier accepts only Development `(2, 6)` or Confirmation `(3, 8)` as
+threshold/denominator pairs. It rejects invalid counts. Within-group reversal, group disagreement,
+multiple brackets, and every residual pattern are `nonmonotonic_or_confounded`. Shared D0 failure,
+shared D3 support, and one unique adjacent shared supported-to-unsupported transition produce the
+other three statuses. The complete Boolean domain is 256 patterns per threshold and 512 total.
+
+Development receives a 32-package Catalog and a receipt for a separate sealed 32-package
+Confirmation Root. Its product model has no Confirmation payload or path. Opening that payload
+requires a later post-Development audit. Static Host and repository-administrator visibility is
+not confused with Development Runner input visibility.
+
+v26.168 passes 64/64 operational Witness, TaskProgram Verifier, depth Runtime, and mechanism
+Verifier rows; 16/16 Reconciliation consumption rows; 64/64 paired necessity rows; 22/22 Gates;
+and 30/30 production-object mutations. It creates no Job and makes zero Provider calls.
+
+The only current transition is:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+The successor may materialize only the exact 192-Job Development Manifest and must complete a
+credential-free Runner preflight. It cannot load Confirmation, change a source, graph, Candidate,
+event, nuisance value, fixed condition, threshold, terminal, model/Thinking profile, Grammar,
+Policy, resource Contract, or Compiler output. Provider execution, State Mapping, frequency,
+Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
+`docs/finance_v26_168_executable_capability_depth_rematerialization_and_static_reaudit.md`.

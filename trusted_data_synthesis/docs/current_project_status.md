@@ -467,10 +467,147 @@ zero Compiler candidates. Provider, Confirmation, Mapper, State, Contribution, V
 release, and production counts remain zero. The current transition permits only a credential-free
 Development Runner preflight over the exact future 192-Job design.
 
+v26.168 has now consumed a later external executable-depth reaudit decision with zero Provider
+calls. It keeps every v26.167 byte immutable and independently reproduces the old production
+Witness surface as 48/64 full-valid variants, with all sixteen Semantic Reconciliation variants
+missing consumed normalization references. The old 64-task ladder is frozen as a metadata-ladder
+static prototype and its stale Development preflight is blocked. A pre-outcome fixed-salt audit
+then selects two old Easy Development and two old Frontier Confirmation sources per capability
+from the same seven eligible sources, rematerializes each into an exact two-Evidence, one-Program-
+node, zero-edge Finance core, and creates sixteen fresh executable groups and 64 fresh D0-D3
+packages. Every package separately runs the production operational Witness compiler, independent
+TaskProgram Verifier, typed depth Runtime replay, and mechanism-event Verifier. All 64 pass; all
+sixteen Reconciliation variants now consume every emitted normalized reference. Actual target
+loads computed from the Runtime graphs are Context `2/4/8/14`, Reconciliation `6/10/16/30`,
+Recovery `5/6/12/21`, and Stopping `5/7/11/16`. The 32 Development variants pass the frozen D0
+nuisance envelope; 128 target-delete/bypass counterfactuals fail full validity. The Development
+Root receives only a receipt for the separate 32-package Confirmation Root. A 294-file transitive
+source closure, 512/512 Development-plus-Confirmation boundary patterns, 22/22 noncompensatory
+Gates, and 30/30 production-object mutations pass. Provider, Stage 2 Provider, GPU, Development
+Job, model-behavior, Mapper, State, Contribution, VTDO, training, release, and production counts
+remain zero. The current transition permits only a credential-free executable-depth Development
+Runner preflight over the exact future 192-Job design.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.168 Executable Capability Depth Rematerialization And Static Reaudit Decision
+
+Finance v26.168 consumed only
+`capability_observation_executable_depth_rematerialization_and_static_reaudit_only`. The external
+review is bound at 25,940 bytes and SHA-256
+`89ed58d566df56edc1dc54087cb722dc5a485ee48068a543aa15d79850a10dbb`. Credential lookup,
+Provider client construction, Stage 1 and Stage 2 Provider calls, GPU jobs, Development Jobs,
+Confirmation execution, Mapper, State Assignment, Contribution, and VTDO are zero.
+
+The stage independently replays v26.167 before selecting a new source. It confirms 48/64 actual
+full-valid v26.167 operational Witness variants and sixteen Reconciliation failures, while every
+old group retains one Program, Tool set, and operational Witness sequence across D0-D3. No old
+artifact or label changes. The strongest v26.167 interpretation is retained as
+`metadata_ladder_static_prototype`; its old Development Runner transition is superseded without
+execution.
+
+Before any outcome load, a fixed salt selects sixteen fresh source bindings from the frozen
+70-task frame: eight old Easy Development groups and eight old Frontier sealed Confirmation
+groups. Every selected core uses exactly two Evidence items, one real Evidence-only Program node,
+zero Program edges, and zero overlap on all registered source-freshness channels. The source
+capacity remains seven eligible tasks per capability.
+
+All 64 packages contain content-addressed typed States, model-owned visible Candidates, exact
+Transitions, required event multiplicities, and an answer-ready terminal. Every package embeds
+the actual return from one variant-local production operational Witness invocation and one
+independent TaskProgram Verifier invocation, plus its exact depth Runtime and mechanism Verifier
+result. The exact static pass counts are:
+
+```text
+variant-local operational Witness          64/64
+variant-local TaskProgram Verifier          64/64
+depth Runtime Witness                       64/64
+mechanism event Verifier                    64/64
+Reconciliation reference consumption       16/16
+paired target-delete/bypass necessity       64/64
+counterfactual full-valid failures         128/128
+```
+
+The computed within-capability target-load ladders are:
+
+```text
+Context-conditioned Action       2 /  4 /  8 / 14
+Semantic Reconciliation          6 / 10 / 16 / 30
+Failure Recovery                 5 /  6 / 12 / 21
+State-dependent Stopping         5 /  7 / 11 / 16
+```
+
+No declared old primary load or Tier is used. All four packages in a group share one exact
+computed nuisance identity and prompt byte count. Across all groups, Evidence is exactly two,
+Program nodes one, Program edges zero, Tools three through four, non-target Candidates zero
+through one, verification obligations two through four, Prompt bytes 24,736 through 42,525,
+base calls four through six, and the resource ceiling exactly 1.12M tokens. All 32 Development
+packages pass the pre-outcome D0 envelope and no Hard source enters Development.
+
+The future generation condition is deliberately named `fixed_development_generation_condition`.
+Its current implementation path is `structured_direct`, but capability neutrality and Runner
+prompt noninterference remain unmeasured. Development and Confirmation share the frozen boundary
+algorithm but use 2/6 and 3/8 support respectively. Every one of the 256 two-group-by-four-depth
+Boolean patterns is uniquely classified under both thresholds, for 512/512 protocol cases.
+
+The sealed Confirmation Catalog is written to a separate Root. Development products contain only
+its Catalog identity, content-root hash, byte count, and receipt identity; they contain no payload
+or path. This is artifact-interface isolation, not a claim that the static Host or repository
+administrator cannot inspect the sealed Root.
+
+The complete static import closure binds 294 local source files with zero unresolved
+`trusted_synthesis` imports. All 22 noncompensatory Gates and thirty mutations of real production
+objects pass. The latter cover TaskProgram, Role TaskPackage, task Verifier binding, operational
+Witness, depth Witness, Runtime Observation and trace, Candidate/State/Transition Graph, prompt,
+nuisance, Boundary Contract, sealed receipt, and source root.
+
+The main formal Root contains 19 files and 1,912,392 bytes. The sealed Root contains one file and
+1,629,452 bytes. Focused Pytest passes 6/6 in 10.59 seconds and performs an empty-directory
+byte-identical rebuild of both Roots while observing exactly 64 variant-local verification
+invocations. Focused PyCompile, Ruff, and Mypy pass.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_executable_depth_rematerialization_report:f30169aaea55bcd6fc97a49dc923b7d3cb85a09183f77f434d1d2e6f0383745f`;
+- transitive source root:
+  `finance_v26_executable_depth_transitive_source_root:d7b86f8b53a1f605e56e83742e5bdbca5571f7bfc0ee1db95fb6a511307b1108`;
+- v26.167 defect audit:
+  `finance_v26_v167_executable_depth_defect_audit:1cf3eb3feba2e56faaa566ec7befd8827c0cb1b95b2748322a4be64312260ead`;
+- Development Catalog:
+  `finance_v26_development_executable_depth_catalog:c8405b5509c74bc51509114349d28e04da5194e2f256ef9355723db3f95a93aa`;
+- sealed Confirmation Catalog:
+  `finance_v26_confirmation_executable_depth_catalog:c3a5930b7a4ddd788b8977240ae8f1b20d229aeaf5e0f7b2e2acc2799a74789f`;
+- sealed receipt:
+  `finance_v26_sealed_confirmation_executable_depth_receipt:641c1472f4a2565106f4029407d337aac5440fff7f4eacbefee64eac18c1682b`;
+- Boundary Algorithm Contract:
+  `capability_boundary_selection_algorithm_contract:46e7ba7796fe4e3d058a232df8139bd8eaeb0b0917db6f515d9ce8e0301cbd7a`;
+- Mechanism Necessity Catalog:
+  `finance_v26_executable_depth_mechanism_necessity_catalog:bf8f11b3125a12bdea499fa1a6edb133a5720312d78fa8fcbfc562b12f1024c1`;
+- static audit:
+  `finance_v26_executable_depth_static_audit:eb89764a2385409896f756af4839a97d47ab89a6424616e98cea320008b22990`;
+- destructive audit:
+  `finance_v26_executable_depth_production_destructive_audit:eb6384c983af1749a7cb289ade8791faca2d71933c2e6f90497c6ac75aadf30e`;
+- transition:
+  `finance_v26_executable_depth_transition:09dea4bf465358c760130e0df107dda901a8ba57e7f999f2a3a07e67b9940180`.
+
+The only permitted transition is:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
+
+The successor may materialize only the exact future 192-Job Development Manifest and complete a
+credential-free Runner preflight under every frozen v26.168 source, Finance core, executable
+Graph, Candidate, event, variant-local Verifier, nuisance, fixed condition, threshold, terminal,
+model/Thinking, Grammar, Policy, resource, and sealed-receipt binding. Provider execution,
+Confirmation payload loading or execution, source or graph change, threshold tuning, historical
+rewrite or reclassification, Mapper, State, frequency, Contribution, VTDO, Student visibility,
+training, release, and production remain forbidden. See
+`docs/finance_v26_168_executable_capability_depth_rematerialization_and_static_reaudit.md`.
 
 ## v26.167 Capability Breadth-Depth Task Synthesis And Static Audit Decision
 
@@ -585,6 +722,17 @@ loading, Provider execution, current-Cell selection, source or depth change, thr
 Compiler intervention, historical reclassification, Mapper, State Assignment, frequency,
 Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
 `docs/finance_v26_167_capability_breadth_depth_task_synthesis_and_static_audit.md`.
+
+That historical preflight transition has now been superseded without execution by the independent
+v26.168 executable-depth reaudit. Every v26.167 artifact, identity, Gate, and declared static
+result remains immutable, but its executable interpretation is restricted to a metadata-ladder
+prototype after production replay found 48/64 full-valid operational Witness variants. The
+current authorization is no longer the v26.167 192-Job preflight. It is the credential-free
+preflight over the fresh v26.168 executable Development Catalog:
+
+```text
+capability_observation_executable_depth_development_runner_preflight_only
+```
 
 ## v26.166 Capability Censoring And VTDO Admission Audit Decision
 
