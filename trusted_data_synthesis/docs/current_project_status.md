@@ -434,13 +434,170 @@ reproduce legacy null validity before the separate frozen Route B false projecti
 makes zero Provider calls and changes no predecessor artifact. It confirms the v26.164
 bounded-policy finite-sample reports while leaving unrestricted natural-agent distribution,
 cross-task State probability, Path causal effect, simultaneous multinomial coverage, VTDO,
-training, release, and production unauthorized. The current decision is
-`no_further_experiment_authorized_without_new_audit_decision`.
+training, release, and production unauthorized.
+
+v26.166 has now consumed a new external zero-call audit decision. It binds 25 direct
+v26.163-v26.165 artifacts and the exact 17,949-byte review input, then deterministically splits
+all 48 Cells into ten `valid_support_absent`, eight `single_valid_observation`, three
+`observed_single_state_support`, and 27 `observed_multistate_support` rows. All ten absent Cells
+are Hard-tier; the exact three single-State Cells match the external review. A 360-row Capability
+Survival Profile localizes the first authorized blocker as 22 Action Entry, 124 Program Closure,
+54 Operation Lineage, 37 Evidence Support, thirteen Final ABI, one Answer Semantics, two Citation,
+one Policy Horizon, and 106 Qualified survivors; the other registered DAG stages have zero first
+blockers. No invalid or censored row is mapped to a VTDO State. An eight-case Terminal x Endpoint
+matrix closes the future Runner null policy. The two typed semantic rejections separately retain
+`mechanism_endpoint_qualification=false`, `mechanism_event_evaluable=false`, and
+`task_verifier_invoked=false`, so the frozen 226 Mechanism-qualified count is not promoted to an
+unconditional mechanism occurrence rate. The 27 multistate Cells pass only state-support
+existence; frequency, Contribution, materialization, Student visibility, VTDO, Compiler
+intervention, training, release, and production remain unauthorized. The current transition
+permits only a credential-free fresh independent VTDO-admission confirmation preflight.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.166 Capability Censoring And VTDO Admission Audit Decision
+
+Finance v26.166 consumed only the externally authorized
+`bounded_policy_capability_censoring_and_vtdo_admission_audit_only` decision. The review input is
+bound by SHA-256 `00363f92c449225c0f19cb34a510baf4c97b1857dd77f81ba240d7e53481fb0b`
+and exact byte count 17,949. The audit binds four scoped v26.163 preflight files, all thirteen
+authoritative v26.164 v3 recovery outputs, all eight authoritative v26.165 v2 independent-audit
+outputs, and its two implementation files. Credential lookup, client construction, Provider,
+Stage 2 Provider, historical write, reclassification, new Population, new Job, new Assignment,
+and new State counts are zero.
+
+The exact 48-Cell support partition is:
+
+```text
+valid_support_absent                 10
+single_valid_observation              8
+observed_single_state_support         3
+observed_multistate_support          27
+```
+
+A zero-Qualified Cell contains zero State and receives no imputation. A one-Qualified Cell binds
+its one observed State but its empirical `pi=1` is not interpreted as population degeneracy. The
+three Cells with at least two Qualified rows but only one observed State are Context Frontier
+`structured_direct` at 3/6, Stopping Easy `structured_direct` at 3/6, and Stopping Easy
+Unconditional at 6/12.
+
+All ten support-absent Cells are Hard-tier. Context Hard and Semantic Reconciliation Hard are
+absent under Unconditional, `structured_direct`, `search_then_structured`, and `search_then_open`;
+Failure Recovery Hard and State-dependent Stopping Hard are absent under `structured_direct`.
+These are exact finite-sample results for four specific Hard tasks and the Route B Policy. Each
+Mechanism x Tier source Cell has one primary task, so the result is not a general zero-capability
+claim for a Mechanism or Tier.
+
+The audit reconstructs one Capability Survival row for each of the 360 complete bounded-policy
+endpoints. It orders Action Entry, Program Closure, Operation Lineage, Evidence Support, Terminal
+Verification, Final ABI, Answer Semantics, Reference Identity, Citation, Mechanism Qualification,
+and Policy Horizon, while retaining every original Base failure and Mechanism missing-event field.
+The first-authorized-blocker partition is:
+
+```text
+Action Entry                         22
+Program Closure                     124
+Operation Lineage                    54
+Evidence Support                     37
+Terminal Verification                 0
+Final ABI                            13
+Answer Semantics                      1
+Reference Identity                    0
+Citation                              2
+Mechanism Qualification               0
+Policy Horizon                        1
+no blocker, Qualified survivor       106
+```
+
+The one ordinary-Detour Horizon is localized at Policy Horizon after a passing Action Entry; it
+is not converted into Program failure. This profile is diagnostic localization, not an exclusive
+causal attribution. Invalid-trajectory VTDO Mapping and historical reclassification counts are
+zero.
+
+Future Runner hardening is frozen as an eight-case credential-free Terminal x Endpoint matrix:
+completed endpoint, model-result failure, typed semantic rejection, policy Horizon, Measurement
+Support exit, Instrument, Privacy, and Transport. Every case validates task-completion, Base,
+Mechanism endpoint, Qualified, Mapping, and task-Verifier null/false policy before any future
+Provider execution. Historical Runner and Raw namespaces remain unchanged.
+
+Both typed semantic rejections remain complete Route B failure endpoints, but their endpoint
+`Mechanism=false` is not a task-/Mechanism-Verifier result. Each receives separate exact fields
+`mechanism_endpoint_qualification=false`, `mechanism_event_evaluable=false`,
+`task_verifier_invoked=false`, and legacy Mechanism success null. The audit therefore forbids an
+unconditional mechanism occurrence-rate interpretation of the frozen 226 Mechanism-qualified
+endpoints.
+
+The five prospective VTDO admission tiers are state-support existence, frequency estimability,
+Contribution estimability, materialization feasibility, and Student visibility. Only the 27
+observed-multistate Cells pass the first tier. They were found in the current Development
+denominator and cannot be outcome-selected into a same-data VTDO claim. All later tier counts and
+current VTDO-admitted Cell count are zero.
+
+The Coverage Gap Registry contains the ten absent plus eleven weak Cells. It creates no Compiler
+intervention or imputed State/frequency. Compiler-Assisted Capability Coverage remains a separate
+research route; any future joint Student design requires a shared fixed Coverage Anchor or a
+separately authorized factorial protocol.
+
+The exact cross-Cell engineering quotient is
+`28539733/106 = 269242.76415094339622641509433962264150943396226415` Provider tokens per
+Qualified trajectory. It is heterogeneous bookkeeping, not a preregistered estimand or Cell
+budget-allocation rule. `rho_c(z)=N_c,z/N_c` remains unmaterialized and unauthorized.
+
+The fresh confirmation protocol freezes Mechanism, Tier, and generation condition as prospective
+strata before outcome loading. It requires fresh model-unexposed tasks or an independent
+confirmation denominator and forbids using the observed current 27 Cells as its selection frame.
+v26.166 materializes no fresh Population, TaskPackage, Manifest, Job, or Runner.
+
+Final focused Pytest passes 4/4 in 4.34 seconds, including an empty-directory 12/12 byte rebuild
+and destructive controls. The adjacent v26.164-v26.166 regression passes 19/19 in 77.62 seconds.
+Focused PyCompile, Ruff check/format, and Mypy and package-wide Ruff pass. Package-wide Mypy first
+found one local heterogeneous-dictionary inference in v26.166. The authoritative type-complete
+source adds only an explicit annotation and rematerializes the directory; all scientific-object
+identities remain exact, while implementation-bound source replay, transition, and report
+identities change. The final package-wide run checks 517 source files, retains only four
+pre-existing v26.70/v26.129/v26.154 diagnostics, and contains zero v26.166 diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_bounded_policy_capability_censoring_audit_report:a1659a2e63fc264a34d18c5039e89f592f46900595ab0609aef4cbca6bff5297`;
+- report SHA-256:
+  `d6ef05e26a5dbaf418842b57be6a4dfd4e5cd56f4af59bb2a4dd9d16c39317c5`;
+- source replay:
+  `finance_v26_bounded_policy_censoring_source_replay:876cade14c6e4535357eca4275b8e06a64078cb296775d26d35a5e05e03b914f`;
+- Cell support strata:
+  `finance_v26_bounded_policy_cell_support_stratum_catalog:2358ddfa65070b30a8da4b9c1278d49ec639f288c2f7f4e45e10c0bff6b8c1c8`;
+- Capability Survival Profile:
+  `finance_v26_bounded_policy_capability_survival_profile:84215be0d688eccc6c64e090e19fbcdd97418306c7271979fe1685a962fb7e6f`;
+- Terminal x Endpoint schema audit:
+  `finance_v26_terminal_endpoint_schema_audit:20f68f84242ab88d33d9360a6c794e96130f77f83baadda1f8eaefc0f892197f`;
+- typed rejection boundary:
+  `finance_v26_typed_semantic_rejection_boundary_audit:5f81801d9fb45600f97ec003e5ac3de2bba05ae63e63a3369999191b4734c434`;
+- VTDO admission Catalog:
+  `finance_v26_vtdo_admission_catalog:82c33f687d24dbbaeb53d6fbf020478b8b30c8139f20cc837f3513b594ee4e12`;
+- Coverage Gap Registry:
+  `finance_v26_coverage_gap_registry:a1e956867760938b0d96a69ae08a3d69d3dcdc5eb62da517cb143757d590a0cb`;
+- fresh confirmation protocol:
+  `finance_v26_fresh_vtdo_admission_confirmation_protocol:907cd028562a48f04927565b0c9c32e9944332a817698d1f5baa97512c972be2`;
+- transition:
+  `finance_v26_bounded_policy_censoring_transition:ea7582fa05f236f1cc106f18b00406d28e2e93cec6375773549a2ba2a4ba454b`.
+
+The only permitted transition is:
+
+```text
+fresh_vtdo_admission_confirmation_preflight_only
+```
+
+The successor may perform only a credential-free, pre-outcome preflight for a fresh independent
+confirmation Population stratified by Mechanism, Tier, and generation condition. It must preserve
+all v26.163-v26.166 artifacts and may not use the observed current 27 Cells as an outcome-selected
+sampling frame. Provider calls, current-denominator reuse, Compiler intervention, historical
+reclassification, State probability, Contribution, VTDO execution, Student visibility, training,
+release, and production remain forbidden. See
+`docs/finance_v26_166_bounded_policy_capability_censoring_and_vtdo_admission_audit.md`.
 
 ## v26.164-v26.165 Route B Execution, Recovery, And Independent Audit Decision
 
@@ -565,6 +722,11 @@ materialization, denominator repair, row deletion, Cell reselection, State proba
 training, release, and production Contribution require a new explicit audit decision. See
 `docs/finance_v26_164_bounded_policy_endpoint_frequency_execution.md` and
 `docs/finance_v26_165_bounded_policy_endpoint_frequency_postrun_audit.md`.
+
+That no-further-experiment boundary has now been consumed by the external credential-free
+v26.166 audit decision. All v26.163-v26.165 artifacts and finite-sample results remain immutable;
+the current transition is the fresh independent VTDO-admission confirmation preflight recorded
+above.
 
 ## v26.163 Route B Bounded-Policy Endpoint Frequency Preflight Decision
 
