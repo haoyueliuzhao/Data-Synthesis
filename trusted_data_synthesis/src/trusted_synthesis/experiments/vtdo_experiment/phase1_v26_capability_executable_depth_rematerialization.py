@@ -83,12 +83,12 @@ from trusted_synthesis.experiments.vtdo_experiment.phase1_v26_public_operation_w
 )
 from trusted_synthesis.hashing import canonical_hash
 
-RUN_ID: Final = "finance_v26_168_executable_depth_rematerialization_v1_20260828"
+RUN_ID: Final = "finance_v26_168_executable_depth_rematerialization_v2_20260828"
 OUTPUT_DIR: Final = (
-    "artifacts/vtdo_experiment/finance_v26_168_executable_depth_rematerialization_v1_20260828"
+    "artifacts/vtdo_experiment/finance_v26_168_executable_depth_rematerialization_v2_20260828"
 )
 SEALED_OUTPUT_DIR: Final = (
-    "artifacts/vtdo_experiment/finance_v26_168_sealed_confirmation_executable_depth_v1_20260828"
+    "artifacts/vtdo_experiment/finance_v26_168_sealed_confirmation_executable_depth_v2_20260828"
 )
 EXPECTED_REVIEW_SHA256: Final = "89ed58d566df56edc1dc54087cb722dc5a485ee48068a543aa15d79850a10dbb"
 EXPECTED_REVIEW_BYTE_COUNT: Final = 25_940
@@ -400,9 +400,9 @@ def _select_sources(
         for task in frame.tasks:
             if task.family != v167.FAMILY_SOURCE_MAP[family] or task.artifact_id in prior_ids:
                 continue
-            channels = source_base._source_task_channels((task,))  # noqa: SLF001
+            candidate_channels = source_base._source_task_channels((task,))  # noqa: SLF001
             if any(
-                channels[channel] & prior_channels[channel]
+                candidate_channels[channel] & prior_channels[channel]
                 for channel in source_base.FRESHNESS_CHANNELS
             ):
                 continue
@@ -428,14 +428,14 @@ def _select_sources(
                 raise ValueError("v26.168 selected core does not use exactly two Evidence rows")
             evidence_by_id = {item.evidence_id: item for item in task.evidence_bundle.evidence}
             evidence = tuple(evidence_by_id[item] for item in evidence_ids)
-            channels = _source_channels(task)
+            task_channels = _source_channels(task)
             for channel in source_base.FRESHNESS_CHANNELS:
-                overlap = set(channels[channel]) & selected_channels[channel]
+                overlap = set(task_channels[channel]) & selected_channels[channel]
                 if overlap:
                     raise ValueError(
                         f"v26.168 selected groups overlap on {channel}:{sorted(overlap)}"
                     )
-                selected_channels[channel].update(channels[channel])
+                selected_channels[channel].update(task_channels[channel])
             partition = (
                 ObservationPartition.DEVELOPMENT
                 if index <= 2
@@ -457,9 +457,9 @@ def _select_sources(
                 "selected_core_source_record_ids": tuple(
                     sorted({item.provenance.source_record_id for item in evidence})
                 ),
-                "source_core_semantic_signature": next(iter(channels["core_semantic_signature"])),
+                "source_core_semantic_signature": next(iter(task_channels["core_semantic_signature"])),
                 "source_mechanism_instance_signature": next(
-                    iter(channels["mechanism_instance_signature"])
+                    iter(task_channels["mechanism_instance_signature"])
                 ),
                 "selection_rank": _source_rank(family, task),
             }
