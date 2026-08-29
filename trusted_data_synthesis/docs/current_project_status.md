@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-29
+Audit date: 2026-08-30
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -694,10 +694,194 @@ remain zero. The current transition permits only a credential-free 192-Job Runne
 the frozen v26.176 parents plus the new v26.177 public-Feedback, complete-rejection, correction-
 bound, and separate-Outcome Contracts.
 
+v26.178 has now consumed the later source-level evidence-identity audit with zero Provider calls.
+It freezes and independently rebuilds all fifteen v26.177 files, preserves every narrow Public-
+Feedback, correction-bound, exact Recovery matrix, nonreference-summary, and Transition-parent
+result, and blocks the still-unconsumed 192-Job preflight before Manifest or Runner construction.
+The source audit reproduces that v26.177 assigned one public-preimage boolean to three evidence
+fields, rebuilt content identity for zero of its 312 registered controls, and materialized zero of
+its five declared Outcome fixture rows. Those evidence names are downgraded without historical
+reclassification. A complete independent scan of 32 exact Packages, 80 Components, 480 current
+State x Replica rows, and 1,356 displayed Candidates derives 1,236 accepted and 120 rejected
+reports. Only `revise_selector / typed_current_state_target_mismatch` is reached; the other four
+registered branches have exact zero counts under the unchanged valid public object model.
+
+All 312 old diagnostic controls are then replaced by canonical valid objects. The 192 controls
+that change Component content rebuild Operation, Choice handle, Public State, Component ID, all
+source-Package Replica Presentations, Prompt Binding, reference baseline, Package artifact, and
+State-local Schedules before production `step()` execution. Across the full 72-object, 432-row
+surface, validation bypass, Runtime exception, rejection-only Retry/Tool/advance, and later Prompt
+after repeated-invalid terminal counts are zero; all 432 reference corrections commit once.
+Every row separately executes six single-factor plus one joint Host-parent intervention. All
+3,024 interventions change Host Binding bytes and identity while preserving Public Observation,
+Feedback, and recovery Prompt bytes and hash. Public-preimage boolean reuse is zero.
+
+Five real `CapabilityOutcomeRow` fixtures now round-trip through Pydantic and canonical JSON and
+produce separate local `q_first=0/5` and `q_bounded=2/5` diagnostics. These are not empirical
+estimates. The prospective empirical denominator is fixed before outcomes as all 32 frozen
+Packages x six Replicas, or 192/192 eligible future Jobs with no typed exclusions and no
+post-outcome exclusion. Six required fully rehashed evidence attacks reject after changed parent,
+diagnostic Transition, and Report identities are recomputed. The authoritative v3 Root contains
+14 files and 4,204,331 bytes, closes a 336-file source Root, and reproduces 14/14 files under a
+warning-as-error empty-directory build. Provider, Development Job, Manifest, Runner, empirical
+Outcome, Mapper, State, frequency, Contribution, VTDO, Student, training, release, and production
+counts remain zero. Because the external decision authorized only this closure, the current
+decision is `no_further_experiment_authorized_without_new_audit_decision`.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.178 Executed Counterfactual, Valid Control, And Outcome Row Closure Decision
+
+Finance v26.178 consumed only
+`capability_observation_executed_counterfactual_valid_control_and_outcome_row_contract_closure_only`.
+The external source-level audit is bound at 19,573 bytes and SHA-256
+`738e4ecc0554b285ae3bdcc5f7814cd6e1da7db8617ef67beb2cde6b6973f8c8`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, Manifest,
+Runner, empirical Prompt denominator, sealed Confirmation payload access, GPU, Mapper, State
+Assignment, frequency, Contribution, VTDO, Student visibility, training, release, and production
+counts are zero.
+
+All fifteen authoritative v26.177 files independently rebuild byte for byte, and its 192-Job
+Runner-preflight transition is blocked before Manifest or Runner construction. v26.178 directly
+reproduces the three source-level evidence-generation defects:
+
+```text
+old declared / executed Host counterfactual rows          432 / 0
+public-preimage fields sharing one boolean                       3
+old registered controls / content-ID rebuilds              312 / 0
+old declared / materialized Outcome fixture rows              5 / 0
+identified empirical eligibility denominator                      false
+fully rehashed old Outcome erosion attacks                          0
+historical reclassifications                                        0
+```
+
+The strict v26.177 Public Feedback schema, Host/Public object separation, public-only identity
+preimages, attempt-count correction bound, exact Recovery correction matrix, valid-nonreference
+summary equivalence, and v3 Transition parent binding remain frozen as real mechanism progress.
+Only the unsupported evidence names are downgraded.
+
+A complete scan of the unchanged exact Catalog produces:
+
+```text
+Packages / Components / Replicas                         32 / 80 / 6
+current State x Replica rows                                   480
+displayed Candidate reports                                  1,356
+accepted / typed-rejected reports                    1,236 / 120
+registry declarations used as outcomes                            0
+source-Catalog mutations                                           0
+```
+
+The exact reached branch is the 120-row
+`revise_selector / typed_current_state_target_mismatch` surface. Failure-Receipt mismatch,
+Reconciliation precondition mismatch, normalized-output consumption mismatch, and dynamic-
+readiness mismatch each have zero exact rows and are independently classified
+`registered_but_unreachable_under_valid_public_object_model`.
+
+The separate valid-control surface contains 72 row-expanded objects and 432 six-Replica
+executions. The 312 diagnostic rows remain outside every frozen Catalog, Package, Runner,
+Manifest, Job, and empirical denominator. For the 192 non-Recovery diagnostic executions,
+Operation, Choice handle, Public State, Component ID, complete source Package presentations,
+Prompt Binding, reference baseline, Package artifact, and Schedules are freshly rematerialized
+and model-round-tripped. The exact result is:
+
+```text
+control objects / executions                              72 / 432
+exact-Catalog / canonical diagnostic executions          120 / 312
+changed-Component full-Package rematerializations              192
+valid public-object executions                                 432
+validation bypasses / Runtime exceptions                       0 / 0
+reference corrections accepted once                         432 / 432
+repeated-invalid typed terminals                            432 / 432
+later Prompt after terminal                                      0
+```
+
+Each control row then receives six single-factor and one joint Host intervention over Package,
+Component, source Choice, selected Operation hash, Acceptance report, Runtime events, and all
+parents jointly. Across 3,024 executed interventions, Host Binding bytes and IDs change 3,024
+times while Public Observation, Public Feedback, and recovery Prompt bytes and hashes remain
+unchanged 3,024 times. The v26.177 public-preimage boolean is reused zero times as a Host-
+counterfactual result.
+
+The replacement Capability Outcome Contract requires all eligibility, first-response, correction,
+terminal, and final fields. It fixes the future empirical denominator as all 32 exact frozen
+v26.176 Packages x six Replicas:
+
+```text
+future / eligible Jobs                                    192 / 192
+typed exclusion reasons                                           0
+post-outcome exclusion allowed                                false
+q_first denominator                                             192
+q_bounded_correction denominator                                192
+Manifest / empirical Outcome rows / empirical estimates      0 / 0 / 0
+```
+
+Five actual Outcome rows cover reference-valid, nonreference-valid, same-invalid, different-
+invalid, and stale/foreign terminal shapes. All five model- and serialization-round-trip. Their
+fixture-only calculations are `q_first=0/5` and `q_bounded=2/5`; these values are Contract
+diagnostics and are not empirical Capability estimates.
+
+Six fully rehashed alternatives delete a required Outcome field, replace eligibility, pool the
+estimands, alias Host-counterfactual evidence, bypass a control identity, or relabel exact
+reachability. Each recomputes changed parent, diagnostic Transition, and Report identities, and
+all six reject under semantic validation. All 32 noncompensatory static Gates pass.
+
+The authoritative v3 formal Root has 14 files and 4,204,331 bytes; report SHA-256 is
+`f832c4b06514464af1c0195e68ee957c6d1c99b8c9e07db0aa89bfee82fc1368`. The transitive source Root
+contains 336 files and zero unresolved imports. Fast focused tests pass 8/8 in 3.40 seconds; the
+authoritative warning-as-error empty rebuild passes 1/1 in 577.82 seconds and matches 14/14 files.
+The adjacent v26.177-v26.178 non-rebuild regression passes 14/14 in 3.53 seconds. Focused
+PyCompile, Ruff, format, and no-import-follow Mypy pass. Package-wide Ruff passes. Package-wide
+Mypy checks 565 source files, retains six historical diagnostics in four frozen files, and has
+zero v26.178 diagnostics.
+
+Preliminary v1 and v2 Roots remain immutable. v1 completed but emitted one Pydantic instance-
+`model_fields` deprecation warning. v2 uses class-level access and passes warning-as-error plus a
+14/14 byte rebuild. Package-wide typing then exposed three local dynamic-dictionary inference
+diagnostics; authoritative v3 replaces only that fixture-evaluation constructor with explicit
+typed fields. Eleven of fourteen files are byte-identical across every Root. Only source Root,
+Transition, and Report change; every mechanism, control, Outcome, attack, and Gate identity is
+exact.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_executed_counterfactual_outcome_closure_report:8aad0ba707ed839574c963854fde03ce27bfe24f71b5d236b288fd7f561c7937`;
+- transitive source Root:
+  `finance_v26_executed_counterfactual_outcome_transitive_source_root:f3b627da54fd8d0e0d9b677fa30a082d1ed33a7bacf460d1fa7b2c57e7d65d5e`;
+- v26.177 predecessor Freeze:
+  `finance_v26_v177_predecessor_freeze_audit:7c965680fe600b40cdfec8c0b02746ee3809d772daaabc5e7ceb7fca2d7da876`;
+- Evidence-identity defect reproduction:
+  `finance_v26_v177_evidence_identity_defect_reproduction:8be05a869d4a7ab0539d74fb35bb710e227e2a7bb3c2c4f2e6f4bdd09246002e`;
+- exact-Catalog reachability Audit:
+  `finance_v26_exact_catalog_rejection_reachability_audit:ade0e7819acbbdb02446c8fbc96f779f830151df34c1d7a259fc392cda3cee0e`;
+- canonical valid control Audit:
+  `finance_v26_canonical_valid_rejection_control_execution_audit:f81123c874b4b4ebff4df9c834262caccadd32e231f24583effe6a43435e3437`;
+- executed Host counterfactual Audit:
+  `finance_v26_executed_host_counterfactual_invariance_audit:8512d797c4c2810e8e113e78565e37cc5e939621935b6ef1142d7c2cdea542c1`;
+- Capability Outcome Contract:
+  `capability_executed_first_bounded_outcome_contract:6a3faaf6d00df210077754ef862c1ab7c46507d7d4982d3cc5b8aa776f5bbb17`;
+- Outcome row fixture Audit:
+  `finance_v26_executed_outcome_row_fixture_audit:c77f9a45a0e94382f3ab5ce79bb28608055eb4290397e7e3260aff29d1bb1254`;
+- fully rehashed destructive Audit:
+  `finance_v26_fully_rehashed_evidence_destructive_audit:8fa3d07271fadbb46f56dcc6f270da67343bc704478395d3963c103d2940c12e`;
+- static Audit:
+  `finance_v26_executed_counterfactual_outcome_static_audit:cd38b7783a09cc1e54a951a5b03bbdcd335708a2d4b1f3da8de0f193d3c4be3c`;
+- transition:
+  `finance_v26_executed_counterfactual_outcome_transition:9a049308c08eb051c14c5057b0369ccbc48eeda173f33c750928f7941f628c10`.
+
+The final decision is:
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+Provider execution, Runner preflight, Manifest, Development outcome, source or Contract change,
+historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training,
+release, and production require a new explicit audit decision. See
+`docs/finance_v26_178_executed_counterfactual_valid_control_and_outcome_row_contract_closure.md`.
 
 ## v26.177 All-Typed-Rejection Public Feedback And Correction-Bound Closure Decision
 
@@ -847,6 +1031,14 @@ model/Thinking, Grammar, Policy, resource, or terminal change, historical rewrit
 frequency, Contribution, VTDO, Student visibility, training, release, and production remain
 forbidden. See
 `docs/finance_v26_177_all_typed_rejection_public_feedback_and_correction_bound_closure.md`.
+
+That preflight transition has now been superseded without execution by the external v26.178
+source-level evidence-identity audit. Every v26.177 byte and narrow mechanism result remains
+immutable. Its Host-counterfactual pass count, 312 unvalidated controls, declarative Outcome
+fixture count, open eligibility denominator, and stale-ID Outcome erosion control are not
+authorized as Runner-preflight evidence. v26.178 closes those evidence objects locally but does
+not self-authorize the Runner. The current decision is
+`no_further_experiment_authorized_without_new_audit_decision`.
 
 ## v26.176 Authoritative Package/Runner Parent And Typed-Rejection History Decision
 

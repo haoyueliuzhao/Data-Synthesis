@@ -1,0 +1,707 @@
+# v26.177 源码级联合审计结论
+
+## 一、最终判定
+
+$$
+\boxed{
+\text{保留并冻结 v26.177 已真实关闭的机制对象，但暂不消费其 192-Job Runner-preflight transition}
+}
+$$
+
+这次不再只是“报告层审阅”。GitHub `main` 已更新到提交：
+
+```text
+585085c15fb3069ab2929e66011bb720d999c673
+Implement v26.177 public rejection feedback closure
+```
+
+因此我直接核对了新增的 Public Feedback core、Step Runtime、审计构造器、Pydantic evidence models 和 focused tests。
+
+v26.177 **确实实质关闭了上一轮的大部分阻塞点**：
+
+* `PublicTypedRejectionFeedback` 已与 Host Binding 分离；
+* public Observation 和 Feedback identity 只使用公开字段；
+* correction bound 已按尝试次数触发，而不是只检测是否重复同一个 Action；
+* exact Catalog 的 valid nonreference correction 得到本地执行；
+* v3 Transition 已绑定全部主要证据父对象。
+
+但是，当前第一个根本阻塞点已经转移为：
+
+```text
+Evidence-generation identity failure：
+
+报告登记的若干 estimand，
+并不是由其名称所对应的干预或可执行对象实际产生的。
+```
+
+主要涉及三项：
+
+```text
+1. Host-counterfactual invariance 实际复用了 public-preimage check；
+2. 312 个 registered-control 是绕过内容身份验证的 synthetic branch probes；
+3. “五个 Outcome fixtures”实际只是默认 Literal 计数组成的汇总对象。
+```
+
+---
+
+## 二、已经可信关闭的对象
+
+### 1. Strict Public Feedback schema：源码级通过
+
+报告给出的新公开 Feedback 只有九个字段，并明确把完整 `ActionAcceptanceReport`、source Operation、Package、Component 和 Runtime events 放入 `model_visible=false` 的 `HostTypedRejectionBinding`。
+
+源码与报告一致：
+
+* `PublicTypedRejectionFeedback` 执行 exact schema check；
+  -递归拒绝 `package_id`、`component_key`、`source_choice_handle`、`selected_operation_hash`、Acceptance report identity 等字段；
+* Observation receipt 和 Feedback ID 都从公开 preimage 重建；
+* Prompt 注入函数只接收 Public Feedback；
+* Host Binding 是另一个强类型对象，且 `model_visible` 固定为 `False`。
+
+因此，上一轮的直接问题：
+
+```text
+完整 Host Acceptance 信息或其 identity 进入模型 Prompt
+```
+
+已经在源码结构上关闭。
+
+需要精确区分的是：
+
+```text
+strict public schema / public-only preimage       已证明
+432 次真实 Host counterfactual                    尚未证明
+```
+
+后者不影响前者已经取得的机制进展。
+
+---
+
+### 2. 第二次 typed-invalid 按尝试次数终止：通过
+
+Runtime 中第二次 rejection 的触发依据是：
+
+```text
+correction_attempt_index = len(existing_feedback) + 1
+```
+
+当它大于 1 时就生成 terminal。第二个 Action 是否与第一个相同，只影响：
+
+```text
+same_current_invalid
+different_current_invalid
+```
+
+这一分类标签，不影响是否终止。对 stale、foreign/unbound 和 malformed reference，也存在单独的 terminal 路径，并且 terminal 后禁止后续 Prompt。
+
+所以，上一轮担心的：
+
+```text
+只有重复同一个错误 Action 才会 terminalize
+```
+
+已经从源码上消除。
+
+报告中的 exact correction matrix 也确实区分了 840 个登记行、672 个执行行和 168 个显式 unavailable 行。
+
+---
+
+### 3. Valid nonreference correction：在报告列出的语义层级上通过
+
+源码确实为 120 个 exact Recovery State × Replica 实例执行：
+
+```text
+wrong
+→ public feedback
+→ valid nonreference correction
+```
+
+并将其与不先发生 rejection、直接执行同一 source Choice 的结果比较。
+
+实际比较对象是：
+
+```text
+Action accepted boolean
+public effects
+Base validity
+Mechanism qualification
+Qualified validity
+```
+
+因此当前可以支持：
+
+$$
+\boxed{
+\text{valid nonreference correction 保持了这些本地公开语义摘要}
+}
+$$
+
+不能越级支持：
+
+```text
+完整 event trace 相同
+Result identity 相同
+模型会以相同概率选择 nonreference correction
+```
+
+报告自身也将结论限定为 deterministic local Runtime equivalence，而没有声称模型行为等价。
+
+---
+
+### 4. v3 Transition parent closure：通过
+
+v26.177 在 preliminary v1/v2 中先后发现：
+
+* Projection aggregate partition 缺失；
+* Transition identity 没有绑定全部证据父对象。
+
+最终 v3 Transition 已绑定：
+
+```text
+Authorization
+source Root
+v26.176 Freeze
+Defect reproduction
+Public Feedback Contract
+production rejection Surface
+Projection Audit
+Correction Matrix
+Capability Outcome Contract
+Outcome fixture
+Destructive Audit
+Static Audit
+```
+
+这意味着其中任一父对象变化，Transition identity 都会变化。
+
+这一修复是有效的，当前无需再回退到 v26.176 Parent Closure。
+
+---
+
+# 三、P0：`host_counterfactual_invariant` 没有执行 Host 反事实
+
+报告登记：
+
+```text
+Host-counterfactual invariant rows    432 / 432
+```
+
+
+
+但审计构造器的实际逻辑是：
+
+```python
+independent = _independent_public_projection_matches(...)
+
+"independent_projection_match": independent,
+"host_counterfactual_invariant": independent,
+"identity_preimage_public_only": independent,
+```
+
+也就是说，同一个 `independent` boolean 被同时写入三个不同的证据字段。
+
+`_independent_public_projection_matches` 实际做的是：
+
+1. 从 public Observation fields 重算 Observation receipt；
+2. 从 public Feedback fields 重算 Feedback ID；
+3. 比较 public preimage bytes。
+
+它没有执行：
+
+```text
+改变 package_id
+改变 component_key
+改变 source_choice_handle
+改变 selected_operation_hash
+改变 ActionAcceptanceReport
+改变 Runtime event identities
+重算 Host Binding
+在保持 public inputs 不变时重新生成 Feedback 和 recovery Prompt
+```
+
+因此，当前证据应重新解释为：
+
+| 登记字段                                | 实际证据                   |
+| ----------------------------------- | ---------------------- |
+| `independent_projection_match=432`  | 真实 public-preimage 重建  |
+| `identity_preimage_public_only=432` | 同一 public-preimage 检查  |
+| `host_counterfactual_invariant=432` | **未执行；复用了前一个 boolean** |
+
+这不是发现了真实 Host 泄漏。相反，从 constructor 参数、强 schema 和 identity preimage 看，Public/Host 分离机制是可信的。
+
+失败的是：
+
+$$
+\boxed{
+\text{测量名称与真实计算对象不一致}
+}
+$$
+
+正确状态应记为：
+
+```text
+host_counterfactual_invariant:
+  failed_as_measurement
+  property_not_falsified
+```
+
+而不能继续登记为 432/432 passed。
+
+---
+
+# 四、P0：312 个 registered controls 只能解释为 branch probes
+
+## 1. 控制对象没有重新建立内容身份
+
+对 `reconcile_record`、`consume_normalized_output` 和 `assess_dynamic_readiness`，源码通过连续的：
+
+```python
+operation.model_copy(update=...)
+legend_entry.model_copy(update=...)
+public_state.model_copy(update=...)
+component.model_copy(update=...)
+```
+
+改变 Operation、Choice legend 和 Component state。
+
+但修改后没有：
+
+```text
+重算 Choice handle
+重算 Component ID
+执行 model_dump → model_validate round trip
+重建完整 source Package parent
+```
+
+冻结 predecessor schema 明确要求：
+
+```text
+PublicChoiceLegendEntry.choice_handle == hash(operation)
+CausalTargetComponent.component_id == hash(component fields)
+```
+
+因此，这些 control object 改变了被哈希内容，却仍保留旧内容身份。它们可以在 Python 内存中继续传给 classifier，但不能被视为：
+
+```text
+canonical
+content-addressed
+independently reconstructible
+schema-valid
+```
+
+的 Runtime Component。
+
+## 2. 这些控制仍有价值，但证据层级必须降级
+
+构造器随后确实：
+
+* 重建 diagnostic Schedule；
+* 调用 production `classify_action_acceptance`；
+  -执行 public rejection；
+  -执行 reference correction；
+  -执行 repeated-invalid terminal。
+
+所以不能说它们“什么都没测到”。
+
+最准确的名称是：
+
+```text
+unvalidated synthetic production-classifier branch probes
+```
+
+它们可以支持：
+
+```text
+五个注册 classifier branches 都能够被诊断性调用
+```
+
+但不能支持：
+
+```text
+所有 rejection kinds 都在有效、可重建的 production Runtime State 上闭合
+```
+
+这正是当前理论审计需要坚持的层级区别：
+
+$$
+\text{函数分支被执行}
+\;\not\Rightarrow\;
+\text{理论 Runtime 对象被有效实例化}
+$$
+
+报告已经说明这些 controls 不进入 Package、Runner、Manifest、Job 或经验分母，这是正确的边界意识；但将其进一步解释为 all-typed-rejection Runtime closure 仍然过宽。
+
+---
+
+## 3. 四个 exact-unreachable status 不是由完整 Catalog 扫描生成的
+
+源码中的 `PRODUCTION_REJECTION_REGISTRY` 预先写入：
+
+```text
+exact_catalog = True / False
+```
+
+Surface 构造时又直接使用：
+
+```python
+exact_count = fixture_count if registration["exact_catalog"] else 0
+```
+
+因此：
+
+* 120 个 Recovery exact descriptors 的确被真实扫描和执行；
+  -另外四个 `registered_but_unreachable` status 在这个证据对象中主要来自 registry declaration；
+  -构造器没有先遍历未修改 Catalog 的全部 Candidate，再根据 production classifier 输出推导完整 reachability matrix。
+
+所以当前可以说：
+
+```text
+4 个 unreachable kinds 没有被静默删除
+```
+
+但暂时不能说：
+
+```text
+本阶段独立扫描证明了它们在 exact Catalog 中不可达
+```
+
+---
+
+# 五、P0：五个 Outcome fixtures 实际没有被构造
+
+报告称：
+
+```text
+Five local contract fixtures cover reference-valid, nonreference-valid,
+same-invalid, different-invalid, and stale/foreign terminal shapes.
+```
+
+
+
+但源码中的 `_outcome_contract_fixture_audit()` 实际只构造：
+
+```python
+_make_model(
+    OutcomeContractFixtureAudit,
+    {},
+    field="audit_id",
+    ...
+)
+```
+
+`OutcomeContractFixtureAudit` 只有固定的 aggregate Literal 字段：
+
+```text
+fixture_count = 5
+reference_correction_fixture_count = 1
+nonreference_correction_fixture_count = 1
+...
+missing_required_field_count = 0
+```
+
+它没有：
+
+```text
+fixture rows
+CapabilityOutcomeRow
+输入输出 payload
+serialization / deserialization
+字段间条件约束
+q_first 计算结果
+q_bounded_correction 计算结果
+```
+
+其 validator 也只检查自身 identity。
+
+所以正式证据实际上是：
+
+```text
+一个 prospective field-list Contract 被创建
++
+一个声明“五个 fixture 已通过”的 aggregate object 被创建
+```
+
+而不是：
+
+```text
+五个 Outcome records 被实际构造、验证和重放
+```
+
+这是典型的：
+
+$$
+\boxed{
+\text{声明性计数替代了经验对象}
+}
+$$
+
+按当前审计逻辑，这一层必须失败，而不能由 Correction Matrix 的成功补偿。
+
+---
+
+## 六、Outcome estimand 的分母尚未识别
+
+Contract 分别注册：
+
+$$
+q_{\text{first}}
+=
+\frac{\sum \text{first\_attempt\_qualified\_valid}}
+{\text{eligible\_job\_count}}
+$$
+
+$$
+q_{\text{bounded}}
+=
+\frac{\sum \text{final\_qualified\_valid}}
+{\text{eligible\_job\_count}}
+$$
+
+字段 numerator 的确已经分离，且 corrected outcome 不能覆盖 first-attempt 字段。
+
+但当前 Contract 没有冻结：
+
+```text
+eligible_job_count 的值
+job_eligible 字段
+eligibility rule
+允许排除 Job 的 typed reasons
+192 个 Job 是否全部固定进入分母
+```
+
+因此，两条 estimand 虽然形式上分开，但 denominator 仍未被识别。
+
+未来只要改变“eligible”的解释，就可以改变两条估计，而不违反当前 field-list Contract。
+
+在进入经验 Runner 之前，这应当关闭为二选一：
+
+```text
+eligible_job_count = 192
+```
+
+或者：
+
+```text
+预先冻结逐 Job eligibility bit、规则和 typed exclusion reason
+```
+
+任何 outcome 后才决定的排除都必须禁止。
+
+---
+
+# 七、P1：Outcome erosion control 不是 fully rehashed attack
+
+`CapabilityOutcomeContract.validate_contract()` 当前只检查：
+
+```text
+outcome_fields 不重复
+contract_id 与对象当前内容匹配
+```
+
+它没有要求：
+
+```text
+outcome_fields == exact required field tuple
+```
+
+现有 destructive control 删除一个 required field 时保留旧 `contract_id`，所以当然会因 identity mismatch 被拒绝。
+
+但这只证明：
+
+```text
+stale-ID mutation rejected
+```
+
+没有证明：
+
+```text
+删除 required field
+→ 重算 Contract ID
+→ 重算 Transition ID
+→ 重算 Report ID
+→ 新 Validator 仍拒绝
+```
+
+因此报告中的 “Outcome Contract erosion fails closed” 暂时不能按完整重哈希攻击解释。报告所称 26 个 destructive controls 和 30 个 static Gates，可以保留为已记录测试结果，但其攻击强度必须按源码真实构造解释。
+
+---
+
+# 八、正式 Gate 结论
+
+| Gate                                       | 判定                        |
+| ------------------------------------------ | ------------------------- |
+| v26.176 predecessor freeze                 | 通过                        |
+| 旧 Feedback Host-parent defect reproduction | 通过                        |
+| Strict Public Feedback schema              | **源码级通过**                 |
+| Public identity-preimage reconstruction    | **源码级通过**                 |
+| Host/Public typed object separation        | **源码级通过**                 |
+| 432 Host counterfactuals                   | **测量失败；未真实执行**            |
+| 五个 rejection kinds 注册                      | 通过                        |
+| 120 exact Recovery states                  | 通过                        |
+| 312 registered controls                    | **仅 branch-probe 授权**     |
+| 四个 exact-unreachable statuses 的独立推导        | **unknown / declarative** |
+| reference correction                       | 通过                        |
+| same-invalid correction terminal           | 通过                        |
+| nonreference correction preservation       | 通过，限于已比较摘要                |
+| different-current-invalid exact execution  | unavailable，且正确登记         |
+| first/final field-list separation          | 结构通过                      |
+| 五个 Outcome fixtures                        | **失败：没有 fixture rows**    |
+| `eligible_job_count` closure               | **失败**                    |
+| fully rehashed Outcome erosion control     | **未执行**                   |
+| v3 Transition parent binding               | 通过                        |
+| 192-Job Runner preflight                   | **暂不授权**                  |
+
+---
+
+# 九、当前允许与禁止的结论
+
+## 允许
+
+```text
+Public Feedback 的强 schema 已排除已登记的 Host 字段。
+Public Observation 与 Feedback identity 可从公开 preimage 重建。
+Host Binding 与模型可见 Feedback 已成为不同强类型对象。
+Runtime 使用 attempt-count correction bound。
+当前 exact Catalog 的 120 个 Recovery instances 已完成所报告的纠错矩阵。
+valid nonreference correction 保持已登记的本地语义摘要。
+五个 production classifier branches 均被 synthetic diagnostic controls 调用。
+v3 Transition 已绑定所列证据父对象。
+```
+
+## 仍禁止
+
+```text
+432 个 Host counterfactual interventions 已通过。
+五种 rejection 均在 canonical valid Runtime State 上闭合。
+四个 unreachable status 已由完整 exact-Catalog scan 独立推导。
+五个 Capability Outcome fixtures 已被执行。
+q_first 与 q_bounded 已具有冻结经验分母。
+Outcome Contract erosion 在完整下游重哈希后仍会拒绝。
+当前 192-Job Runner preflight 的所有前置 Gate 已通过。
+任何模型可读性、经验 Capability Depth、frequency、State、Contribution、
+VTDO、Student、训练、发布或生产结论。
+```
+
+---
+
+# 十、唯一合理的下一实验
+
+建议下一零调用 stage：
+
+```text
+capability_observation_executed_counterfactual_valid_control_
+and_outcome_row_contract_closure_only
+```
+
+它不应创建 Manifest 或 Runner，只修复当前首个证据层阻塞点。
+
+需要同时完成四件事：
+
+### 1. 真正执行 Host counterfactual
+
+对每行分别改变：
+
+```text
+package_id
+component_key
+source_choice_handle
+selected_operation_hash
+Acceptance report
+Runtime event identities
+Host Binding identity
+```
+
+固定公开输入后，重新构造 public Observation、Feedback 和 recovery Prompt，要求：
+
+```text
+Host Binding bytes changed
+Public Observation bytes unchanged
+Public Feedback bytes unchanged
+Recovery Prompt bytes/hash unchanged
+```
+
+### 2. 将 registered controls 重建为 canonical valid objects
+
+每个 synthetic control 必须：
+
+```text
+重建 Operation
+重算 Choice handle
+重建 Public State
+重算 Component ID
+执行 model_dump → model_validate
+重建 diagnostic Schedule
+然后再调用 production classifier
+```
+
+无法在有效对象模型内构造的 branch，应登记为：
+
+```text
+registered_but_unreachable_under_valid_public_object_model
+```
+
+而不是以绕过 validator 的对象记作 Runtime pass。
+
+### 3. 建立可执行 `CapabilityOutcomeRow`
+
+实际构造并 round-trip 五类 outcome rows，而不是只保存汇总计数；同时冻结：
+
+```text
+job eligibility
+first-response fields
+correction invocation conditions
+terminal conditions
+final fields
+共同 denominator
+```
+
+### 4. 执行 fully rehashed destructive alternatives
+
+至少覆盖：
+
+```text
+required Outcome field deletion
+eligibility-rule replacement
+first/final estimand pooling
+Host-counterfactual boolean alias
+registered-control identity bypass
+exact reachability status relabeling
+```
+
+攻击必须重算所有受影响下游 identity，而不是只保留旧 hash。
+
+---
+
+## 最终授权语句
+
+```text
+v26.177 应作为以下真实进展被永久保留：
+
+- Strict Public Feedback schema
+- Host/Public object separation
+- public-only identity preimage
+- attempt-count correction bound
+- exact-Catalog Recovery correction matrix
+- nonreference summary-equivalence
+- v3 Transition parent binding
+
+但以下证据必须降级：
+
+- 432 Host-counterfactual rows → duplicated public-preimage checks
+- 312 registered controls       → unvalidated synthetic branch probes
+- 5 Outcome fixtures            → declarative aggregate counts
+```
+
+因此暂不消费报告提出的：
+
+```text
+capability_observation_public_feedback_closed_all_typed_rejection_
+correction_bound_state_bound_step_runtime_development_runner_preflight_only
+```
+
+报告提出的下一 transition 原文及其严格禁止范围见：
+
+完整审计工件：
+
+* [v26.177 源码级理论—证据联合审计](sandbox:/mnt/data/v26_177_source_level_theory_evidence_audit.md)
+* [v26.177 结构化诊断 JSON](sandbox:/mnt/data/v26_177_source_level_diagnostic.json)
