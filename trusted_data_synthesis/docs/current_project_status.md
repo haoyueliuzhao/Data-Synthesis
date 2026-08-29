@@ -565,10 +565,128 @@ behavior, Confirmation payload, Mapper, State, Contribution, VTDO, training, rel
 production row. The current transition permits only a credential-free Development Runner
 preflight over the exact future 192-Job v26.171 design.
 
+v26.172 has now consumed a later external Legend-deleak, mechanism-semantics, and dynamic-depth
+hardening decision with zero Provider calls. It preserves and independently rebuilds all 23
+v26.171 files, reproduces the 80/80 Legend-first reference leak, 480/480 Legend-first recovery,
+32 unique reference semantic lengths, twelve reverse-topological Stopping links, 26 Base-valid
+canonical-path failures, twenty wrong-current-Rule Recovery distractors, and one fully rehashed
+baseline-trace acceptance before blocking the stale v26.171 Runner preflight. A shared semantic
+value table plus fixed-width Choice-index rows now jointly balances Legend position, Candidate
+position, and display-handle rank across all 480 presentations; each of six registered shortcuts
+has at most 174/480 success and none fully recovers the reference. The exact 178-execution surface
+separates `reference_path_match` from semantic mechanism qualification: all 26 old Base-true
+canonical-false rows are semantic-true, split six Context and twenty Recovery, while eight
+Base-false semantic-true rows remain task- and Qualified-invalid. Candidate legality now reports
+226 grounded/executable, 206 current-State-valid/mechanism-relevant, and 106 task-valid rows; the
+twenty wrong-Rule Recovery choices remain executable distractors but are not State-valid. Thirty-
+two topological graphs produce 192 local reference Traces, 480 reached Prompts and Observations,
+288 predecessor-conditioned Prompts, 480 exact receipt links, and zero reverse-topological links.
+A separate 32-Package Runner Input Catalog contains zero Prompt, Observation, or reference-Trace
+payload. Thirty-two exact baseline replays and two fully rehashed trace mutations close, all
+fourteen destructive controls reject, twelve static Gates pass, and focused 6/6 byte-rebuild plus
+10/10 adjacent tests pass. This is local static evidence only; D0-D3 are explicitly bounded
+sequential decision depth, not a latent ability boundary. The current transition permits only a
+credential-free dynamic-depth Development Runner preflight over the zero-Prompt Runner Input
+Catalog.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.172 Legend Deleak, Mechanism Semantics, And Dynamic Depth Hardening Decision
+
+Finance v26.172 consumed only
+`capability_observation_legend_deleak_mechanism_semantics_and_dynamic_depth_hardening_only`.
+The external review is bound at 24,338 bytes and SHA-256
+`6ea8f1589fd3e6c56007f8d13385b0459a7a07b4a3c065bdf2f1d89a716ec517`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, GPU jobs, Mapper calls, State Assignment, Contribution, VTDO,
+Student visibility, training, release, and production counts are zero.
+
+All 23 v26.171 files are rebound without mutation and independently rebuilt byte for byte. The
+audit reproduces 80 references fixed at `choice_legend[0]`, 480 Legend-first recoveries, 32 unique
+reference semantic lengths, eighty dependency links with zero predecessor-conditioned old
+Prompts, twelve reverse-topological Stopping links, 26 Base-true old-canonical-Mechanism-false
+executions, twenty wrong-current-Rule Recovery Candidates accepted as Runtime-legal, and one
+accepted fully rehashed forged baseline trace. The stale v26.171 Runner transition is blocked
+without execution.
+
+The replacement Legend uses State-shared semantic value Catalogs and fixed-width two-digit index
+rows. Six Replicas separately balance reference Legend position, Candidate position, and display-
+handle lexical rank. Across 480 presentations and 1,356 Candidate rows, unequal Legend row widths,
+position or handle-rank imbalances, visible padding, and full-recovery registered selectors are
+zero. Legend-first, Legend-last, best fixed index, and display-handle-order selectors each succeed
+174/480; encoded semantic-length and lexical-shape selectors succeed 0/480. This is an exact six-
+selector control, not a universal model-visible noninterference proof.
+
+Mechanism reporting now separates `reference_path_match` from
+`mechanism_semantically_qualified`. Across 32 baselines and 146 legal single-Choice nonreference
+executions, exact path matches are 32 and semantic qualifications are 66. The Base x Semantic
+matrix is 58 true/true, zero true/false, eight false/true, and 112 false/false. All 26 old Base-
+true canonical-false rows are semantic-true: six Context record-order alternatives and twenty
+noncanonical successful Recovery paths. The eight Base-false semantic-true rows remain task- and
+Qualified-invalid mechanism-occurrence diagnostics.
+
+Candidate Legality is separately projected as publicly grounded, publicly executable, current-
+State-precondition-valid, mechanism-relevant, and task-semantically-valid, with counts
+226/226/206/206/106. All twenty wrong-current-Rule Recovery choices remain executable distractors
+but receive State-precondition false and mechanism-relevant false.
+
+Every Package has a dependency-derived topological Component order. Across 32 Packages and six
+Replicas, the one-current-action local fixture records 192 reference Traces, 480 reached Prompts,
+480 reached Observations, 288 predecessor-conditioned Prompts, 480 bound receipt links, and zero
+reverse-topological links. Precommitted-vector and future-Prompt controls each reject. A separate
+32-Package Runner Input Catalog contains zero materialized Prompt, zero Observation, and no
+reference-Trace payload field; the complete reference Traces remain audit evidence only.
+
+All 32 frozen baseline Results independently replay with exact canonical bytes, selected handles,
+event IDs and order, and Base, old-Mechanism, and Qualified report identities. Two whole-graph
+controls alter selected handles or event order, recompute every affected identity, and reject
+against a fresh predecessor Runtime replay. All fourteen production mutations reject and all
+twelve static Gates pass.
+
+The formal directory contains 22 files and 7,990,956 bytes; report SHA-256 is
+`176d0bec49d1d2816b992954b10f3aefb030107e356b09b14cb0a2b8f43500f8`.
+Its transitive source Root contains 310 files with zero unresolved imports. Focused Pytest passes
+6/6 in 28.92 seconds with an empty-directory byte-identical rebuild; the adjacent non-rebuild
+regression passes 10/10 in 16.08 seconds. Focused PyCompile and package-wide Ruff pass. Focused
+no-import-follow Mypy passes the three new modules. The current Python 3.14/Pydantic 2.13
+toolchain reports 5,692 historical recursive-import Mypy diagnostics across 158 files, so no
+package-wide Mypy pass is claimed.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_dynamic_depth_hardening_report:4a909817dea422643854a5452b2f932111147b8257974371aedadbe228d2c8d2`;
+- transitive source Root:
+  `finance_v26_dynamic_depth_transitive_source_root:371f46d0315fc081bb675c1bc905b74b76440dae29b67024b227f5749388daa7`;
+- Dynamic Development Catalog:
+  `finance_v26_dynamic_depth_development_catalog:38d6f3d60384356e5a455ce0aac54931f20f31ace92bab1919940b110bb1eb97`;
+- zero-Prompt Runner Input Catalog:
+  `finance_v26_dynamic_depth_runner_input_catalog:370662e3268cf6943e4ed7ea6db50ce3802ecccdee2b880a3dad1b823741a8d5`;
+- Mechanism Semantics audit:
+  `finance_v26_mechanism_semantics_audit:e227dec520dec70f9a6d197369d8ca84ed1c64b38aa9e9cda04f663b83c15e80`;
+- Dynamic Interaction audit:
+  `finance_v26_dynamic_depth_interaction_audit:358c6332b8779dbe00379edb8445a9f142365b3987e3d47acb62e5d76770dc1a`;
+- static audit:
+  `finance_v26_dynamic_depth_static_audit:30dc2810a9385e6c80cbe48ebf542d9872e0045dbc2faefda64a32e9ab081cdc`;
+- transition:
+  `finance_v26_dynamic_depth_transition:4a8c5ce21861c38324df055a31c7cb42574dc6c372e2a6497ad0429b54d1f3bc`.
+
+The only permitted transition is:
+
+```text
+capability_observation_dynamic_depth_development_runner_preflight_only
+```
+
+The successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free one-current-Prompt-at-a-time Runner preflight from the zero-Prompt Runner Input
+Catalog under every frozen v26.172 parent. Provider execution, reference-Trace loading as Runner
+input, precommitted Choice vectors, future-Prompt materialization, Confirmation loading, source
+or task changes, threshold tuning, historical rewrite, Mapper, State, frequency, Contribution,
+VTDO, Student visibility, training, release, and production remain forbidden. See
+`docs/finance_v26_172_legend_deleak_mechanism_semantics_and_dynamic_depth_hardening.md`.
 
 ## v26.171 Validity Separation, Presentation Deleak, And Causal Component Reaudit Decision
 
@@ -699,6 +817,13 @@ payload loading, task/component/Candidate/presentation change, threshold or vali
 historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training,
 release, and production remain forbidden. See
 `docs/finance_v26_171_validity_separation_presentation_deleak_and_causal_component_reaudit.md`.
+
+That transition has now been superseded without Runner execution by the external v26.172 audit.
+Every v26.171 byte and local Runtime result remains immutable, but its ordered Legend, canonical-
+path Mechanism Gate, precomputed Prompt tuple, unlayered Candidate-legality claim, and incomplete
+baseline-trace parent schema are not authorized for a Runner preflight. The current transition is
+the credential-free dynamic-depth Runner preflight over the exact v26.172 zero-Prompt Runner Input
+Catalog recorded above.
 
 ## v26.170 Public Semantic Sufficiency And Task Execution Hardening Decision
 

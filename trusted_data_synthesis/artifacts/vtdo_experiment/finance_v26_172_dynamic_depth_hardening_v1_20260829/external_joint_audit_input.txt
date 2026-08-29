@@ -1,0 +1,1004 @@
+# v26.171 修订报告与项目源码联合审计
+
+## 一、最终判定
+
+v26.171 **真实修复了 v26.170 的多个核心缺陷**：
+
+* Base、Mechanism、Qualified 已拆成独立内容寻址对象；
+* 完整 Public Answer Projection 已接入 Base；
+* Reconciliation、Recovery、Stopping 等组件具有真实本地 Runtime 后果；
+* 模型可见 `padding` 已删除；
+* 相邻深度反事实不再把所有行都夸大为 task-level necessary；
+* 语义父对象重建明显加强。
+
+报告也严格限定自身只是零调用静态与本地 Runtime 结果，没有将其冒充模型行为或经验能力边界。
+
+但直接审计最新源码、正式 Catalog 和本地执行结果后，仍发现三个会影响能力观测解释的核心问题：
+
+$$
+\boxed{
+\text{reference path 通过有序 choice\_legend 再次泄漏}
+}
+$$
+
+$$
+\boxed{
+Q_{\mathrm{mechanism}}
+\text{ 仍主要衡量精确注册路径，而非广义机制是否发生}
+}
+$$
+
+$$
+\boxed{
+D0\!-\!D3
+\text{ 尚未形成模型逐步交互的动态组合深度}
+}
+$$
+
+因此本轮分层结论为：
+
+| 审计对象                           | 判定                             |
+| ------------------------------ | ------------------------------ |
+| 历史 v26.170 不可变性                | **通过**                         |
+| Base／Mechanism／Qualified 形式分离  | **通过**                         |
+| 完整公开答案投影                       | **通过**                         |
+| 本地 Finance Program 与组件 Runtime | **通过，有限范围内**                   |
+| Candidate envelope 去 padding   | **通过**                         |
+| 整体模型可见呈现去泄漏                    | **不通过：`choice_legend` 顺序泄漏**   |
+| Base 与“精确注册机制合同”分离             | **通过**                         |
+| Base 与“广义目标机制是否发生”分离           | **尚未证明**                       |
+| 相邻深度反事实的诚实分类                   | **通过**                         |
+| D0–D3 动态组合深度                   | **未建立**                        |
+| Candidate legality             | **部分通过，Recovery 语义仍过宽**        |
+| 语义父绑定                          | **大幅加强，但仍有 baseline trace 缺口** |
+| 当前 192-Job Runner 预检授权         | **建议阻塞并替换**                    |
+
+v26.171 当前正式状态可以保留，但不建议直接消费：
+
+```text
+capability_observation_validity_separated_causal_deleaked_
+development_runner_preflight_only
+```
+
+---
+
+# 二、审计范围与独立复核
+
+本次直接审计：
+
+* v26.171 正式修订报告；
+* 最新 `Current Project Status`；
+* v26.171 正式实验目录；
+* [最新项目源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-181829%29.zip)。
+
+源码 ZIP SHA-256：
+
+```text
+2761a432a426a74b30ac08eacbb0b2d15313032ad2a21f0aa64e659ee03abc57
+```
+
+当前项目状态明确规定，科学证据只来自当前 Git 树、不可变工件、凭据脱敏记录和迁移服务器复核，缺失聊天内容不作为实验事实。
+
+独立复核结果：
+
+```text
+正式 Root 文件                         23
+正式 Root 字节数                9,566,182
+
+v26.171 聚焦 Pytest               6 passed
+v26.171 核心模块 PyCompile          5 / 5 passed
+```
+
+当前审计环境未安装 Ruff 和 Mypy，因此报告中的 Ruff／Mypy 结果没有被我独立重跑。报告自身记录了正式 Root、聚焦测试、相邻回归和静态边界，但这些不应与本次独立复核混为一组证据。
+
+---
+
+# 三、已经真实完成的修订
+
+## 1. Validity 的对象与公式已经正确分开
+
+当前代码实际生成三个不同对象：
+
+```text
+StaticTaskValidityReport
+StaticMechanismQualificationReport
+StaticQualifiedValidityReport
+```
+
+Base 只由九项任务合同合取：
+
+```text
+local_program_contract_valid
+operation_lineage_complete
+answer_projection_complete
+answer_schema_valid
+public_answer_semantically_valid
+reference_identity_valid
+citation_complete
+terminal_verification_complete
+postcompletion_control_passed
+```
+
+并且：
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{base}}
+\land
+Q_{\mathrm{mechanism}}.
+$$
+
+Reference choice、能力标签和 Mechanism trace 不再直接进入 Base。报告中的非参考联合矩阵也确实可重建：
+
+```text
+Base=true,  Mechanism=true       0
+Base=true,  Mechanism=false     26
+Base=false, Mechanism=true       0
+Base=false, Mechanism=false    120
+```
+
+
+
+因此，从**软件对象和合取公式层面**看，v26.170 的 Base／Mechanism alias 已经被修复。
+
+---
+
+## 2. Public Answer Projection 已真正接入 Base
+
+六个 `compare` Finance Core 的 Raw Program 输出原本在 `higher_ref` 中携带内部 Evidence ID。v26.171 现在会：
+
+1. 选择精确的公开答案字段；
+2. 将内部 Evidence ID 映射到公开 record label；
+3. 对数值使用有限 Decimal 规范化；
+4. 拒绝缺字段、多字段、非有限值和类型异常；
+5. 执行公开答案语义比较与 Citation 检查。
+
+正式基线结果为：
+
+```text
+32/32 exact answer-schema pass
+32/32 canonical public-semantic match
+32/32 complete Citation
+32/32 Base-valid baseline
+```
+
+
+
+这关闭了上一轮“Raw Program 验证通过，但公开答案仍携带内部引用”的缺口。
+
+---
+
+## 3. 四类能力组件已具有真实局部 Runtime 后果
+
+本轮不再依靠：
+
+```text
+SET_EXPECTED_RESULT
+SET_ALTERNATE_RESULT
+```
+
+来赋予结果。
+
+目前真实执行包括：
+
+* Context 选择实际影响查询、Program operands、operator、projection 或 scope；
+* Reconciliation 实际查询、调用 normalization，并让 calculator 消费 `operation_ref`；
+* Recovery 实际产生 `typed_selector_requires_refinement`，再修改 selector 并重试；
+* Stopping 的 readiness 来源于 Program Execution 与 Oracle Verification，继续动作会产生真实 postcompletion invocation。
+
+报告记录：
+
+```text
+32 TaskProgramExecutor baseline calls
+32 TaskProgramOracleVerifier baseline calls
+16 normalization calls
+16 emitted normalized refs
+16 consumed normalized refs
+20 typed failures
+20 successful recoveries
+8 dynamic readiness receipts
+24 wrong-readiness terminal changes
+16 postcompletion controls
+```
+
+
+
+这些是真实本地执行结果，而不是固定布尔字段。
+
+---
+
+## 4. 相邻深度反事实的解释更诚实
+
+v26.171 不再声称所有新增组件都使 Base 失败，而是明确分为：
+
+```text
+44 counterfactual artifacts
+38 task-level necessary
+44 mechanism necessary
+44 Qualified necessary
+6  Base=true / Mechanism=false
+```
+
+也就是说，六条反事实只被称为：
+
+```text
+mechanism-only necessary
+```
+
+而不是 task-level necessary。
+
+这比 v26.170 的 48/48 task-level necessity 主张严格得多。
+
+---
+
+## 5. 原来的可见 padding 泄漏已经被删除
+
+Candidate envelope 现在固定为：
+
+```text
+action_id
+presentation_index
+command
+choice_handle
+```
+
+模型可见 Candidate 中不再包含 `padding`。六个 Replica 的 Candidate 位置也实现逐状态平衡。报告给出的：
+
+```text
+visible padding fields                    0
+padding-only selectors                    0
+candidate-byte-length selectors           0
+argument-count selectors                  0
+field-count selectors                     0
+position imbalance                        0
+```
+
+对 Candidate envelope 本身是成立的。
+
+但如下所述，语义 legend 又形成了一个新的、审计尚未覆盖的顺序通道。
+
+---
+
+# 四、P0：reference 通过有序 `choice_legend` 直接泄漏
+
+这是当前最明确、单独就足以阻塞 Runner 预检的问题。
+
+## 1. `choice_legend` 是模型可见对象
+
+源码中：
+
+```python
+class CausalPublicDecisionState:
+    choice_legend: tuple[PublicChoiceLegendEntry, ...]
+```
+
+它被直接放入：
+
+```text
+CausalPublicPrompt.state
+```
+
+因此模型可以看到：
+
+```text
+choice_handle
+→ 完整 public operation semantics
+```
+
+Candidate envelope 虽然被轮换，但 `choice_legend` 本身没有按 Replica 轮换。
+
+---
+
+## 2. 构造逻辑始终先放 reference operation
+
+`build_component()` 的主要顺序是：
+
+```python
+legend = tuple(choice_entry(item) for item in spec.operations)
+
+reference_choice_handle = legend[0].choice_handle
+```
+
+随后 public-only selector 会再次验证 reference，但当前 80 个正式状态中，选择结果始终仍是第一个 legend entry。
+
+独立扫描结果：
+
+```text
+目标状态                                             80
+reference 是 choice_legend[0]                       80/80
+
+六 Replica 呈现                                     480
+“读取 legend[0] 并映射回 Candidate”命中 reference   480/480
+```
+
+也就是说，一个完全不理解金融任务的策略只需执行：
+
+```python
+reference_handle = prompt.state.choice_legend[0].choice_handle
+return candidate whose choice_handle == reference_handle
+```
+
+就能得到 100% 的 reference Action。
+
+Candidate 的屏幕位置虽然平衡了，但 reference path 已经通过另一条模型可见序列泄漏。
+
+---
+
+## 3. Legend 语义长度还存在第二条捷径
+
+除了固定首位，还有：
+
+```text
+reference operation 的序列化语义长度在 32/80 个状态中唯一
+```
+
+其中：
+
+```text
+assess_dynamic_readiness   12/12：reference 最短
+select_operator             8/8：reference 最短
+select_projection           4/4：reference 最长
+stop_or_continue            8/8：reference 最短
+```
+
+所以即使单纯随机化 legend 顺序，一个：
+
+```text
+decision_kind + operation payload length
+```
+
+策略仍能在相当一部分状态中识别 reference。
+
+---
+
+## 4. 为什么现有 Presentation Audit 没有发现
+
+当前审计覆盖的是：
+
+* Candidate envelope 字节数；
+* Candidate 字段数；
+* Candidate argument count；
+* Candidate position；
+* Candidate action ID。
+
+它没有审计：
+
+* `choice_legend` 中 reference 的序号；
+* legend 顺序与 Candidate 顺序之间的对应；
+* legend operation 的语义长度；
+* legend-first／legend-shortest／legend-longest 策略。
+
+所以报告中的“padding-free six-replica presentation”对 envelope 成立，但“presentation deleak”作为整体科学 Gate 尚不成立。
+
+### 修订要求
+
+未来必须至少加入：
+
+```text
+legend-first selector
+legend-last selector
+legend-index-only selector
+semantic-payload-length selector
+lexical-shape selector
+choice-handle-order selector
+```
+
+并要求全部不能稳定恢复 reference。
+
+更稳妥的设计是让 `choice_legend` 与 Candidate 在：
+
+```text
+variant × replica × state
+```
+
+级别共同进行预注册平衡，或者改成不具有 reference-correlated 顺序的无序语义映射。
+
+---
+
+# 五、P0：Mechanism Qualification 仍然过度等同于精确参考路径
+
+当前 Base 和 Mechanism 在代码对象层已经分开，但 Mechanism 的**构念语义**仍然过窄。
+
+## 1. 当前 Component Check 要求精确注册值
+
+例如：
+
+### Context
+
+要求精确：
+
+```text
+operator
+ordered record tuple
+projection fields
+scope tuple
+```
+
+### Failure Recovery
+
+要求精确：
+
+```text
+target rule_handle
+exact selector
+exact returned handle
+failure-before-retry order
+```
+
+因此只要模型使用了一个不同但仍然任务正确的有效方案，就可能：
+
+```text
+Base=true
+Mechanism=false
+```
+
+---
+
+## 2. 26 条分离见证中，20 条实际上发生了 Failure Recovery
+
+独立重算 26 条：
+
+```text
+Base=true / Mechanism=false
+```
+
+结果为：
+
+```text
+Context-conditioned Action      6
+Failure Recovery               20
+```
+
+尤其是 20 条 Failure Recovery 行，均实际包含：
+
+```text
+typed_failure_observed
+recovery_succeeded
+```
+
+即模型行为确实：
+
+1. 遇到 typed failure；
+2. 修改 selector；
+3. 成功重试；
+4. 得到任务正确结果。
+
+它们之所以 `Q_mechanism=false`，不是因为没有 Failure Recovery，而是因为没有使用**精确冻结的目标 selector／record path**。
+
+类似地，六条 Context 行主要是使用不同 record order，但任务仍然正确。
+
+---
+
+## 3. 因此报告中的结论需要收窄
+
+报告称 26 条行为证明：
+
+> task correctness and target-mechanism occurrence are not aliases. 
+
+更准确的表述应是：
+
+> task correctness 与**注册的规范机制路径合同**不是同一个对象。
+
+当前尚未证明：
+
+> task correctness 与广义的 Failure Recovery、Context-conditioned Action 等机制是否发生不是同一个对象。
+
+这很重要，因为后续能力观测会使用：
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{base}}
+\land
+Q_{\mathrm{mechanism}}.
+$$
+
+若 Q 只接受一条 canonical reference path，就会把：
+
+```text
+任务正确
++ 目标能力真实发生
++ 但采用另一条合法实现
+```
+
+的轨迹误排除出 Qualified 集合，系统性低估模型能力支持。
+
+### 建议拆成两个对象
+
+```text
+reference_path_match
+mechanism_semantically_qualified
+```
+
+例如 Failure Recovery 的 Mechanism Gate 应关注：
+
+```text
+typed failure 是否真实发生
+selector 是否实际改变
+retry 是否成功
+任务是否闭合
+```
+
+而不是要求唯一冻结 selector。
+
+精确 reference path 可以继续作为 Witness 或 path-adherence 诊断，但不应自动等同于能力机制本身。
+
+---
+
+# 六、P0/P1：D2／D3 尚未形成模型交互意义上的动态组合深度
+
+报告称组件具有 dynamic dependencies，代码也记录了：
+
+```text
+dependency_component_keys
+```
+
+但当前本地 Runtime 的执行方式仍然是：
+
+```python
+execute_runtime(
+    selected_by_component={
+        component_1: choice_1,
+        component_2: choice_2,
+        ...
+    }
+)
+```
+
+也就是说，所有组件选择先一次性给定，然后 Runtime 执行和检查顺序。
+
+## 1. Prompt 并未由前序模型选择动态生成
+
+当前 Package 保存的是：
+
+```text
+baseline_prompts
+```
+
+每个 Component 的 Prompt 都提前独立构造。
+
+独立统计：
+
+```text
+声明的 dependency links                         80
+具有 dependency 的 components                  48
+显式 predecessor-conditioned prompt variants    0
+```
+
+并没有形成：
+
+```text
+模型选择 a_t
+→ Runtime Observation o_t
+→ 公共 State S_{t+1}
+→ 再生成下一 Prompt
+```
+
+这样的真实 Agent 交互链。
+
+---
+
+## 2. Stopping 的存储顺序甚至不是拓扑序
+
+`_stopping_specs()` 返回：
+
+```python
+(final_decision, *readiness_components)
+```
+
+但 `final_decision` 又声明依赖所有 readiness components。
+
+正式 32 个 Package 中存在：
+
+```text
+12 条 dependency link
+其 dependency 在 Package 顺序中位于 dependent component 之后
+```
+
+本地 Runtime 为 Stopping 单独先计算 readiness，再处理 final，因此静态执行仍能通过；但未来 Runner 若按 Catalog 顺序调用模型，就会先询问 stop，再询问 readiness。
+
+---
+
+## 3. 当前更像“累计微决策数量”
+
+D0–D3 当前大致是：
+
+```text
+D0：1 个目标微决策
+D1：2 个目标微决策
+D2：3 个目标微决策
+D3：4 个目标微决策
+```
+
+即使模型每一步能力完全不随深度变化，单步正确率恒为 \(p\)，完整成功率也会机械地变成：
+
+$$
+q_d \approx p^{d+1}.
+$$
+
+因此未来观察到成功率随深度下降，不能自动解释成：
+
+> 模型的潜在能力边界位于 D1 与 D2 之间。
+
+它可能只是在测量连续多次选择均正确的乘法负担。
+
+### 下一阶段必须冻结
+
+* 组件拓扑顺序；
+* 每一步实际 reached current state；
+* 前序选择与 Observation 的公开 receipt；
+* 后续 Prompt 从该 receipt 重新生成；
+* 每个深度新增组件的真实条件依赖；
+* 不允许一次性预提交整条 choice vector。
+
+在这之前，`D2_COMPOSITIONAL` 的名称仍然偏强。
+
+---
+
+# 七、P1：Candidate Legality 的含义仍需细分
+
+当前 `candidate_legality_findings()` 对 Recovery 候选只要求：
+
+```text
+rule_handle 属于任务中的某个注册 Rule
+selector 非空且类型合法
+```
+
+但不要求：
+
+```text
+candidate.rule_handle
+==
+当前公共 State 中刚刚失败的 rule_handle
+```
+
+正式表面中有：
+
+```text
+20 个 Recovery Candidate
+引用了与当前 failure receipt 不同的 Rule
+但仍被判为 Runtime-legal
+```
+
+它们可以被称为：
+
+```text
+公开可执行的 distractor
+```
+
+但不宜称为：
+
+```text
+符合当前 Recovery 前置条件的合法修正动作
+```
+
+建议拆分：
+
+```text
+publicly_executable
+state_precondition_valid
+mechanism_relevant
+task_semantically_valid
+```
+
+否则“226/226 Runtime-legal”容易被理解得过强。报告当前将 legality 与 current State、visible dependencies 绑定在一起，措辞需要收紧。
+
+---
+
+# 八、P1：语义父绑定仍未覆盖完整 baseline trace
+
+v26.171 的父绑定已经能够重建：
+
+```text
+source Finance Core
+Program Verification
+source public Task
+source Evidence semantics
+projected public Task
+reference choice
+depth-increment parents
+```
+
+正式报告中的六类完整重哈希 mutation 也都被拒绝。
+
+但 Package Validator 仍主要检查：
+
+```text
+baseline_execution.package_id
+baseline Qualified=true
+```
+
+没有从 Component surface 重新计算：
+
+```text
+baseline chosen_choice_handles
+baseline Runtime events
+dependency-order trace
+```
+
+我构造了一个完全重哈希的 Catalog：
+
+* 将 baseline 的 `chosen_choice_handles` 替换为伪造 handle；
+* 重算 execution、Package、Group、Catalog 身份；
+
+当前 `ValiditySeparatedDevelopmentCatalog` 仍会接受。
+
+类似地，修改 Component dependency 后重建 Package，也可以保留旧 baseline 的：
+
+```text
+dependency_order_passed=true
+```
+
+### 判断
+
+这不表示正式 v26.171 Catalog 已经损坏；正式工件当前是自洽的。
+
+但它说明 Schema 还不能独立证明：
+
+> 保存的 baseline trace 确实由保存的精确组件与 dependency graph 产生。
+
+未来应在 Package Validator 或独立 Parent Reconstruction 中重新执行 baseline，比较：
+
+```text
+selected handles
+event IDs
+event order
+task report
+mechanism report
+qualified report
+```
+
+的规范字节。
+
+---
+
+# 九、P1：Computed Evidence Audit 的覆盖面比报告措辞更窄
+
+当前 computed-evidence 实现主要做：
+
+1. 扫描几个固定字符串，如 `source_program_id`、`expected_result`；
+2. 运行 `public_only_select_action()`，能选出唯一动作就认为无 opaque guessing；
+3. 在 Base report JSON 中搜索 `reference_choice`；
+4. 部分零计数字段仍是 `Literal[0]` 默认值。
+
+它没有测试：
+
+* legend ordinal shortcut；
+* legend semantic length；
+* legend lexical shape；
+* 选择语义与 reference path 的统计相关性。
+
+因此报告中的：
+
+> independent computed-evidence audit finds zero source-Oracle dependencies and zero opaque hash-guess states. 
+
+应解释为：
+
+> 在当前注册扫描规则和 public-only selector 下未发现对应缺陷。
+
+不能扩张为完整的模型可见非干扰证明。
+
+---
+
+# 十、修订报告应如何重新定级
+
+## 当前可以支持的最强结论
+
+v26.171 已经建立：
+
+$$
+\boxed{
+\text{Base、Mechanism、Qualified 的软件对象和合取公式分离}
+}
+$$
+
+$$
+\boxed{
+\text{完整 Public Answer Projection}
+}
+$$
+
+$$
+\boxed{
+\text{四能力家族的真实本地 Runtime 后果}
+}
+$$
+
+$$
+\boxed{
+\text{Candidate envelope 无 visible padding}
+}
+$$
+
+$$
+\boxed{
+\text{相邻增量反事实的 task/mechanism 分类更诚实}
+}
+$$
+
+$$
+\boxed{
+\text{更强的 source semantic parent reconstruction}
+}
+$$
+
+## 当前不能支持
+
+* 完整模型可见呈现已去泄漏；
+* 26 条 Base/Mechanism 分离行证明目标能力没有发生；
+* Q_mechanism 已覆盖所有合法机制实现；
+* D2／D3 已经是模型交互意义上的 compositional depth；
+* 下一轮支持曲线能够直接解释为能力边界；
+* 当前 Parent Schema 能独立重建完整 baseline trace。
+
+因此，报告中的：
+
+```text
+validity_separation_presentation_deleak_and_
+causal_component_static_gate_passed
+```
+
+建议收窄为：
+
+```text
+validity_separation_public_answer_and_
+local_causal_runtime_static_prototype_passed
+```
+
+其中：
+
+```text
+model-facing semantic presentation
+mechanism construct validity
+dynamic depth execution
+```
+
+仍保持 blocked。
+
+---
+
+# 十一、建议的下一轮修订
+
+不应消费当前后继，因为报告已明确禁止后继修改 Component、Candidate、Presentation 和 Validity，而本次问题恰恰需要修改这些对象。
+
+建议新的零调用阶段：
+
+```text
+capability_observation_legend_deleak_
+mechanism_semantics_and_dynamic_depth_hardening_only
+```
+
+该阶段只做以下工作。
+
+## 1. Legend 去泄漏
+
+* reference 不得固定在 legend 首位；
+* legend 与 Candidate 在六 Replica 内共同平衡；
+* 删除 semantic-length 可预测性，或对完整语义投影做结构等价控制；
+* 新增 legend-index、length、lexical-shape、handle-order shortcut audit。
+
+## 2. Mechanism 语义重构
+
+正式拆分：
+
+```text
+reference_path_match
+mechanism_semantically_qualified
+```
+
+Mechanism Gate 只要求能力家族的因果性质，不要求唯一 canonical path。
+
+## 3. Dynamic Depth Runner Contract
+
+冻结：
+
+```text
+topological component order
+actual predecessor trace
+current public state reconstruction
+observation-to-next-prompt projection
+per-step model ownership
+```
+
+后续 Prompt 必须由真实前序模型行为生成，而不是预计算完整 baseline prompt tuple。
+
+## 4. Candidate Legality 分层
+
+分别报告：
+
+```text
+publicly grounded
+publicly executable
+state-precondition valid
+mechanism relevant
+task-semantic valid
+```
+
+## 5. Baseline Trace 父绑定
+
+通过重新执行 exact package，绑定：
+
+```text
+chosen handles
+Runtime events
+dependency order
+Base report
+Mechanism report
+Qualified report
+```
+
+并增加完整重哈希后的 trace mutation。
+
+---
+
+# 十二、最终审计决策
+
+## 对 v26.171 历史工件
+
+$$
+\boxed{\text{保留并冻结}}
+$$
+
+本轮不是无效修订；它在 Validity、Answer Projection 和局部 Runtime 上取得了实质进展。
+
+## 对当前报告
+
+$$
+\boxed{\text{主要实现主张部分通过，最强科学解释需收窄}}
+$$
+
+尤其：
+
+* Base／Mechanism 的**形式分离**成立；
+* Base 与广义机制 occurrence 的**构念分离**尚未成立；
+* Candidate envelope 去泄漏成立；
+* 完整模型可见呈现去泄漏不成立。
+
+## 对当前 Runner 预检授权
+
+$$
+\boxed{\text{暂不通过}}
+$$
+
+当前第一个直接工程阻塞是：
+
+$$
+\boxed{
+\text{choice\_legend 的 reference 顺序泄漏}
+}
+$$
+
+更深层的科学阻塞是：
+
+$$
+\boxed{
+Q_{\mathrm{mechanism}}
+\text{ 仍是 canonical-path gate}
+}
+$$
+
+以及：
+
+$$
+\boxed{
+D0\!-\!D3
+\text{ 仍未成为逐步交互的动态能力深度}
+}
+$$
+
+如果现在运行 192 个模型 Job，结果会同时受到：
+
+* legend 首位捷径；
+* legend 语义长度；
+* 精确参考路径约束；
+* 微决策数量的乘法效应；
+* 尚未实例化的动态依赖；
+
+共同影响，无法可靠解释为四项能力的经验边界。
+
+## 审计附件
+
+* [v26.171 源码审计证据](sandbox:/mnt/data/v26_171_code_audit_evidence.md)
+* [v26.171 完整诊断 JSON](sandbox:/mnt/data/v26_171_diagnostic.json)
+* [本次审计源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260828-181829%29.zip)
