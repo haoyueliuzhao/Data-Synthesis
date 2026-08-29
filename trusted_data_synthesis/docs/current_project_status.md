@@ -669,10 +669,184 @@ Prompt. Hidden Schedule/source/reference parent exposure, Provider, Development 
 State, and frequency counts are zero. The current transition permits only a credential-free
 192-Job Runner preflight over the exact v26.176 authoritative-parent-closed zero-Prompt Catalog.
 
+v26.177 has now consumed the external all-typed-rejection, public-feedback, and correction-bound
+closure decision with zero Provider calls. It freezes and independently rebuilds all sixteen
+authoritative v26.176 files before blocking that stage's still-unconsumed 192-Job preflight. The
+source-level audit confirms that old model-visible Feedback directly contained `component_key`,
+`selected_operation_hash`, and `action_acceptance_report_id`, and that its formal correction
+denominator covered only 120 Failure-Recovery State x Replica instances. A strict replacement
+projects only nine public fields and keeps complete Acceptance, source Operation, Runtime event,
+Package, and Component bindings in a separate Host-only object. Across five registered production
+Decision-kind x rejection-code rows, 432/432 controls reject, project independently, accept one
+reference correction, and terminalize a repeated invalid response before a third Prompt. Only one
+kind is reachable on the exact unchanged Catalog; all four others remain explicit
+`registered_but_unreachable` rows and their diagnostic controls enter no Package or empirical
+denominator. The exact 120-State, seven-disposition correction matrix contains 840 rows: 672
+executed and 168 explicit unreachables. Reference and valid nonreference corrections accept
+120/120 each; 432 executed invalid second responses terminalize with no third correction Prompt;
+and all 120 nonreference corrections match direct execution on Action acceptance, public effects,
+Base, Mechanism, and Qualified validity. Separate `q_first` and `q_bounded_correction` Outcome
+Contracts contain zero empirical rows. All 26 destructive controls and 30 static Gates pass. The
+authoritative v3 Root reproduces 15/15 files byte for byte after preliminary v1 aggregate-count and
+v2 Transition-parent defects were preserved and superseded. Provider, Development Job, Manifest,
+Mapper, State, frequency, Contribution, VTDO, Student, training, release, and production counts
+remain zero. The current transition permits only a credential-free 192-Job Runner preflight under
+the frozen v26.176 parents plus the new v26.177 public-Feedback, complete-rejection, correction-
+bound, and separate-Outcome Contracts.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.177 All-Typed-Rejection Public Feedback And Correction-Bound Closure Decision
+
+Finance v26.177 consumed only
+`capability_observation_all_typed_rejection_kinds_public_feedback_and_correction_bound_closure_only`.
+The external review is bound at 17,882 bytes and SHA-256
+`44f482f292a1925e2b5942ea0ca5345565f6c4089f833c690ca8e9991be28ce0`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, Manifest,
+Runner, Prompt denominator, sealed Confirmation payload access, GPU, Mapper, State Assignment,
+frequency, Contribution, VTDO, Student visibility, training, release, and production counts are
+zero.
+
+All sixteen authoritative v26.176 files independently rebuild byte for byte. The old 192-Job
+Runner-preflight transition is blocked before Manifest or Runner construction. Source inspection
+and computed controls reproduce three directly model-visible Host fields in the old Feedback,
+Host-derived Feedback/Observation identities, one reached production rejection kind, four omitted
+exact-Catalog kinds, one successful correction disposition, and zero valid-nonreference correction
+evidence. Historical v26.176 bytes and narrow results remain unchanged.
+
+The replacement public object contains only:
+
+```text
+feedback_id
+public_rejected_action_id
+public_displayed_choice_handle
+public_rejection_code
+public_observation_receipt_id
+correction_attempt_index
+correction_attempt_bound
+predecessor_public_feedback_id
+schema_version
+```
+
+Its Observation and Feedback identities have strict public-only preimages. Full Acceptance,
+Package, Component, source Choice, selected source-Operation hash, and Runtime-event lineage remain
+in a separate Host Binding with `model_visible=false`. Across 432 projections, exact-schema,
+independent reconstruction, Host-counterfactual invariance, and public-only identity-preimage
+matches are each 432/432. The partition is exactly 120 exact-Catalog plus 312 registered-control
+rows. Prohibited Keys, newly exposed direct Host scalars, derived Host identities, Acceptance
+objects, and Acceptance identities are zero.
+
+The complete production registry is:
+
+```text
+Decision kind               rejection code                          Components  Controls  exact Catalog
+revise_selector             typed_current_state_target_mismatch             20       120  reachable:120
+revise_selector             typed_failure_receipt_mismatch                   20       120  registered_but_unreachable
+reconcile_record            typed_current_state_target_mismatch             14        84  registered_but_unreachable
+consume_normalized_output   typed_current_state_target_mismatch              6        36  registered_but_unreachable
+assess_dynamic_readiness    typed_current_state_target_mismatch             12        72  registered_but_unreachable
+```
+
+The four control-only rows use a valid binding-mismatched Receipt or publicly grounded and
+executable Component-local precondition controls with independent diagnostic Schedules. They are
+explicitly not source-Catalog Candidates, Package changes, empirical trajectories, or model
+outcomes. All 432 controls produce exact public Feedback, preserve the current Component with zero
+rejection-only Retry or Tool calls, accept one reference correction, and terminalize a repeated
+invalid response with zero later Prompt.
+
+The unchanged exact Catalog then yields:
+
+```text
+initial rejected State x Replica instances                 120
+registered second-response dispositions                      7
+Matrix rows / executed / explicit unreachable        840 / 672 / 168
+reference-valid / nonreference-valid accepted        120 / 120
+same-current-invalid terminals                              120
+different-current-invalid explicit unreachables             120
+stale terminals / first-Component unreachables            72 / 48
+foreign / ABI-valid-unbound terminals                    120 / 120
+all executed invalid second-response terminals              432
+later correction Prompts                                      0
+valid-nonreference direct equivalence                    120 / 120
+final-or-terminal complete lineage bindings                  672
+```
+
+Every exact current Prompt has only one typed-invalid Candidate, so
+`different_current_invalid` remains explicit and unavailable rather than being fabricated. The
+Runtime correction bound is attempt-count based and contains no same-Action identity condition.
+The 120 valid nonreference corrections match direct no-rejection execution on Action acceptance,
+public effects, Base validity, Mechanism qualification, and Qualified validity. This is local
+deterministic Runtime evidence, not model-behavior equivalence.
+
+The prospective Outcome Contract separately freezes `q_first` over
+`first_attempt_qualified_valid` and `q_bounded_correction` over `final_qualified_valid`. First-
+attempt overwrite and estimand pooling are forbidden. Five local contract fixtures pass with zero
+empirical rows or estimates.
+
+All 26 destructive mutations and all 30 noncompensatory static Gates pass. The formal Root has 15
+files and 1,893,458 bytes; report SHA-256 is
+`e0c4665858d32436c53662b634e40f7814b0771e0b3a7cf385dadffaf30285f3`. The transitive source Root
+contains 332 files and zero unresolved imports. Focused PyCompile, Ruff, format, and Mypy pass.
+Focused Pytest passes 7/7 in 522.41 seconds, including an empty-directory warning-as-error 15/15
+byte rebuild. The adjacent v26.176-v26.177 non-rebuild regression passes 12/12 in 5.92 seconds.
+Package-wide Ruff passes. Package-wide Mypy checks 561 source files and retains the same six
+historical diagnostics in four files, with zero v26.177 diagnostics.
+
+Successful preliminary v1 and v2 Roots remain immutable. The v1 432 rows were complete, but its top-level
+registered-control count incorrectly said 192 rather than 312 and lacked the exact
+`120 + 312 = 432` partition invariant. A formal test caught the defect. Preliminary v2 fixes that
+aggregate, but a final parent audit found that its Transition omitted Authorization, source Root,
+Freeze, Defect, Projection, Outcome-fixture, destructive, and static parents; v1 and v2 therefore
+shared a Transition identity despite the v1 defect. Authoritative v3 binds all twelve required
+parents. No row, Runtime result, Candidate, or scientific count changes.
+Twelve of fifteen v2/v3 files are byte-identical; only the transitive source Root, prospective
+Transition, and top-level Report change.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_all_typed_rejection_public_feedback_closure_report:6ffc0987f5c90f8a513c118cad1d46a9ec74f85e772bfcc9f18adadd7900ece0`;
+- transitive source Root:
+  `finance_v26_all_typed_rejection_transitive_source_root:50ef54df6af3a9091b602ec0ef352aa41e8a724ae29107616111a2058a618ad9`;
+- v26.176 Freeze:
+  `finance_v26_v176_predecessor_freeze_audit:a3e336c03d37e17f4c0d20029359bbba87dc1a2411ace3d47da61681a7605eda`;
+- defect reproduction:
+  `finance_v26_v176_typed_rejection_defect_reproduction:ca5fafb2985e491cab785ae39a3addc8e36fdd5bddc12a497748f616ca10a141`;
+- Public Feedback Contract:
+  `public_typed_rejection_feedback_contract:73c2cafa61653563cef38e0358d9ed183aa0ad92f210919b6c5ad55851c39bee`;
+- production rejection Surface:
+  `finance_v26_production_typed_rejection_surface_catalog:cc4c9bc32df73b3f344caeaecf2798dfb000b313fb7bc23a0b822f0d0239170f`;
+- public projection:
+  `finance_v26_public_typed_rejection_feedback_projection_audit:c128510648978bbce60feff2cd113b4e402b8e1567962e83bc739a57000d8d03`;
+- Correction Matrix:
+  `finance_v26_bounded_correction_matrix_audit:1176648bc7d5aa25b9d4c44a44b0d3a66e52b211c08c5e8e537f6ba85745e412`;
+- Capability Outcome Contract:
+  `capability_first_and_bounded_correction_outcome_contract:f4ed31d331ee6eb724d3a515120987625c98a90d1600a5299874f594f0d81a1a`;
+- destructive Audit:
+  `finance_v26_all_typed_rejection_production_destructive_audit:22e0138ba38c99bcf4987c02479b72e6c68e22eef2cc2d0f7e3f9d76d8b0430e`;
+- transition:
+  `finance_v26_all_typed_rejection_public_feedback_transition:6dfc6431ee0e4a6a78dc40b05eb7aafd33c1c48969880482a7df435cde370e0a`.
+
+The only permitted transition is:
+
+```text
+capability_observation_public_feedback_closed_all_typed_rejection_
+correction_bound_state_bound_step_runtime_development_runner_preflight_only
+```
+
+A successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free one-current-Prompt-at-a-time Runner preflight under every frozen v26.176 parent
+plus the v26.177 Public Feedback, all-typed-rejection, correction-bound, and separate-Outcome
+Contracts. Provider execution, Development outcomes, reference-Trace input, precommitted vectors,
+future Prompt materialization, complete baseline loading, Confirmation payload loading, source,
+Task, Component, Candidate, Schedule, presentation, validity, correction-bound, threshold,
+model/Thinking, Grammar, Policy, resource, or terminal change, historical rewrite, Mapper, State,
+frequency, Contribution, VTDO, Student visibility, training, release, and production remain
+forbidden. See
+`docs/finance_v26_177_all_typed_rejection_public_feedback_and_correction_bound_closure.md`.
 
 ## v26.176 Authoritative Package/Runner Parent And Typed-Rejection History Decision
 

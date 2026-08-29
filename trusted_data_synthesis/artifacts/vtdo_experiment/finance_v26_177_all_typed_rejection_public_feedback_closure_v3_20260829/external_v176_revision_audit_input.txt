@@ -1,0 +1,593 @@
+# v26.176 修订报告联合审计结论
+
+## 一、最终判定
+
+$$
+\boxed{\text{保留并冻结 v26.176，但暂不消费当前 192-Job Runner-preflight transition}}
+$$
+
+v26.176 对上一轮发现的缺陷做出了**直接、对症且证据化的修复**。特别是，它没有只修改 Validator 后宣布通过，而是先让冻结的 v26.175 Validator 实际接受此前遗漏的 10 个完整重哈希替代图，再建立新的权威父对象重建、192 次 fresh replay、44 个破坏性攻击、全六 Replica 组合审计和模型可见 rejection history。 
+
+因此，上一轮的核心 P0：
+
+```text
+Development / Runner authoritative parent reconstruction 不完整
+```
+
+在**报告所记录的证据层面**已经被实质关闭。
+
+但新的第一个根本阻塞点是：
+
+```text
+typed-rejection history 只在 Failure Recovery 分母上闭合，
+尚未覆盖 production classifier 的全部 typed state-precondition rejection kinds；
+同时，新加入模型可见 Prompt 的 feedback 是否为严格 public-only projection，
+在缺少 v26.176 源码的情况下仍为 unknown。
+```
+
+整体判定如下：
+
+| 理论对象                                 | 判定                      |
+| ------------------------------------ | ----------------------- |
+| v26.175 历史工件冻结与重建                    | 报告通过                    |
+| 10 个旧 Validator 绕过的实际复现              | 报告通过                    |
+| Development / Runner 权威父对象重建         | **报告层通过，源码层未独立验证**      |
+| 192 个六 Replica baseline fresh replay | **报告层通过，源码层未独立验证**      |
+| 44 个完整重哈希攻击                          | 报告通过                    |
+| 772 组合 × 6 Replica                   | 报告通过                    |
+| Failure Recovery rejection history   | 报告通过                    |
+| 所有 production typed-rejection kinds  | **证据分母不完整**             |
+| 模型可见 feedback 的 public-only 性质       | **unknown，fail-closed** |
+| one-correction 完整分支矩阵                | **不完整**                 |
+| 当前 192-Job credential-free preflight | **暂不授权**                |
+
+---
+
+## 二、v26.175 Parent Closure 缺口已经得到实质修复
+
+### 1. 旧 Validator 缺陷被真正执行复现
+
+v26.176 报告记录，冻结的 v26.175 Validator 实际接受了：
+
+```text
+Runner inherited-Contract replacements               4
+Development public_task_id cascade                    1
+all-Package inherited-Contract replacements           4
+saved Replica Result replacement                      1
+-------------------------------------------------------
+accepted old fully rehashed alternatives             10
+```
+
+攻击不仅修改字段，还重新计算了相应的 Runner row、Package artifact、Group、Development Catalog、Runner Catalog 和 source set。报告同时正确区分：
+
+```text
+v26.175 正式工件含有错误字段                未声称
+v26.175 Validator 无法排除自洽替代图         已实际复现
+```
+
+
+
+这符合当前实验审计原则：**不重写历史结果，只定位旧证据合同无法排除的替代解释。**
+
+### 2. 新 Parent Contract 覆盖了上一轮遗漏对象
+
+新合同注册：
+
+```text
+23 Development metadata fields
+24 Runner metadata fields
+```
+
+并从独立 v26.174 Contract 文件加载四个继承合同，再检查 v26.174 Catalog 是否绑定同一对象，最后逐 Package、逐 Runner row 比较。报告计数为：
+
+```text
+Development metadata matches                 736 / 736
+Development inherited Contracts              128 / 128
+Runner metadata matches                      768 / 768
+Runner inherited Contracts                   128 / 128
+Runner missing / duplicate / extra             0 / 0 / 0
+```
+
+
+
+这正面覆盖了上一轮指出的：
+
+* `public_task_id` 未重新锚定；
+  -四个继承 Development Contract 仅内部自洽；
+  -四个继承 Runner Contract 未比较；
+* Runner denominator 可能重复或替换。
+
+### 3. 六 Replica saved Result 得到 fresh replay
+
+报告明确表示，fresh replay 不接收：
+
+```text
+saved Result
+complete baseline
+reference Trace
+precommitted Choice vector
+future Prompt
+saved event list
+```
+
+而只从 exact v26.171 Task、Components、Finance Core、v26.175 execution Package ID、State-local Schedules、Replica index 和 production incremental Runtime 重建。结果为：
+
+```text
+fresh Replica executions                   192
+fresh / saved canonical-byte matches   192 / 192
+```
+
+
+
+若源码与报告一致，这已经恢复了 v26.174 级别的 Result 权威重建能力，而不是只比较保存对象之间的一致性。
+
+### 4. 44 个完整重哈希攻击覆盖关键面
+
+新的 mutation denominator 为：
+
+```text
+13  single Development metadata attacks
+ 8  all-Package Development Contract attacks
+ 4  top-level source-Catalog attacks
+ 1  saved Result attack
+ 9  single Runner metadata attacks
+ 8  all-Runner Contract attacks
+ 1  duplicate Runner source attack
+---------------------------------------------
+44  total, 44 rejected
+```
+
+
+
+从理论 estimand 看，v26.175 的 Parent Closure P0 已经不再是当前第一阻塞点。
+
+---
+
+## 三、全六 Replica Choice-combination 限制已经关闭
+
+v26.175 只在 Replica 0 执行了 772 个 source-Choice vectors；v26.176 将其扩展到：
+
+$$
+772 \times 6 = 4632
+$$
+
+次本地 Runtime 执行。报告结果为：
+
+```text
+reference / single / multi-nonreference    192 / 876 / 3,564
+fully accepted / typed rejected            3,552 / 1,080
+Base / Mechanism / Qualified               432 / 528 / 432
+semantic-outcome Replica mismatches                      0
+dependency or exact-Receipt failures                     0
+display/source round-trip failures                       0
+Qualified-conjunction mismatches                         0
+Runtime exceptions                                       0
+```
+
+
+
+这一结果支持：
+
+$$
+\boxed{
+\text{在注册的六 Replica presentation 下，source-Choice local Runtime outcome 等价}
+}
+$$
+
+但仍不能升级为：
+
+```text
+模型行为等价
+任意文本特征非干扰
+universal Prompt noninterference
+```
+
+报告对此边界处理是正确的。
+
+---
+
+# 四、新 P0：typed-rejection 控制没有覆盖完整 production rejection surface
+
+## 1. 报告中的一般命题比实际分母更宽
+
+v26.176 对 Runtime 的描述使用：
+
+```text
+On a typed State-precondition rejection ...
+```
+
+并声称 rejection 会：
+
+1.执行 production classifier；
+2.产生 public Observation；
+3.持久化 Acceptance 和 feedback；
+4.保持同一 target Component；
+5.让下一 Prompt 绑定 rejection history；
+6.在第二次错误后阻止第三 Prompt。
+
+但实际 corrected 与 repeated-wrong 控制的分母明确是：
+
+```text
+20 Failure Recovery Components × 6 Replicas
+```
+
+其错误 Action 固定为：
+
+```text
+wrong current-Rule Action
+```
+
+
+
+冻结的 production acceptance classifier 不只对 `revise_selector` 定义状态前置条件，还包含：
+
+```text
+reconcile_record
+consume_normalized_output
+assess_dynamic_readiness
+```
+
+即 Semantic Reconciliation 和 State-dependent Stopping 也存在独立的 state-precondition 判定分支。
+
+因此，当前证据链实际达到的是：
+
+$$
+\boxed{
+\text{Failure-Recovery wrong-current-rule rejection-history closure}
+}
+$$
+
+而不是：
+
+$$
+\boxed{
+\text{complete production typed-rejection-history closure}
+}
+$$
+
+这不是在断言其他分支的实现一定失败，而是说明：**其他生产分支尚未进入正式验证分母。** 按 fail-closed 原则，通用代码路径不能由单一 Decision-family 的测试替代。
+
+---
+
+## 2. 下一 Gate 必须按 rejection kind 分层
+
+至少应冻结：
+
+```text
+(
+  capability_family,
+  decision_kind,
+  rejection_code,
+  choice_count,
+  Replica,
+  correction_disposition
+)
+```
+
+并对每个 production classifier 可达的 typed rejection kind 验证：
+
+```text
+initial rejection is public and content-addressed
+same target Component remains current
+next Prompt binds the exact public feedback
+accepted correction commits exactly once
+second invalid response terminalizes before a third Prompt
+Retry / Tool / Component advancement remain zero where required
+final or terminal artifact binds the complete rejection lineage
+```
+
+若某个生产分支在当前 32-Package Catalog 中不可达，也必须形成显式的：
+
+```text
+registered_but_unreachable
+```
+
+证据，而不能从分母中静默消失。
+
+---
+
+# 五、P0-unknown：模型可见 Feedback 是否严格 public-only 尚未证明
+
+报告称 feedback 绑定：
+
+```text
+rejected Action ID
+displayed Choice
+selected Operation hash
+rejection code
+Observation Receipt
+Acceptance report
+predecessor feedback
+correction attempt index
+correction bound
+```
+
+
+
+但冻结的 v26.175 `ActionAcceptanceReport` 包含：
+
+```text
+package_id
+component_key
+source_choice_handle
+selected_operation_hash
+failure_receipt_id
+publicly_grounded
+publicly_executable
+state_precondition_valid
+mechanism_relevant
+...
+```
+
+因此，必须区分以下三种实现：
+
+```text
+A. Prompt 中包含完整 ActionAcceptanceReport
+B. Prompt 中只包含 acceptance_report_id
+C. Host report 经独立强类型 PublicTypedRejectionFeedback 投影后进入 Prompt
+```
+
+其中：
+
+* A 可能直接暴露 Host-side source parent；
+* B 仍可能形成隐藏父对象的内容寻址伪名；
+* C 才是可以直接审计的 public/Host separation。
+
+当前报告没有给出足够具体的模型可见 schema 来判定采用了哪一种。
+
+报告的 hidden-parent scan 检查的是 Schedule ID、seed、nonce、source Package artifact、reference handle/path 和 Replica metadata 的 exact key/value 暴露。
+
+这不能自动排除：
+
+```text
+hash(hidden_parent)
+content-addressed report ID whose preimage contains Host-only fields
+stable pseudonym derived from source_choice_handle
+```
+
+这是一个**未决风险而非已证实泄漏**。但在新对象直接进入模型 Prompt 的情况下，`unknown` 必须 fail-closed。
+
+建议将模型可见对象收缩为：
+
+```text
+PublicTypedRejectionFeedback
+  public_rejected_action_id
+  public_displayed_choice_handle
+  public_rejection_code
+  public_observation_receipt_id
+  correction_attempt_index
+  correction_attempt_bound
+  predecessor_public_feedback_id | null
+```
+
+并明确禁止：
+
+```text
+package_id
+component_key
+source_choice_handle
+source Operation hash
+reference handle/path
+Schedule identity/seed/nonce
+ActionAcceptanceReport object
+ActionAcceptanceReport identity
+任何 preimage 含 Host-only 字段的内容地址
+```
+
+完整 Acceptance report 可以保留为 Host 审计父对象，但必须通过独立、可重建的 public projection 才能进入下一 Prompt。
+
+---
+
+# 六、one-correction bound 的分支矩阵仍不完整
+
+当前报告证明了：
+
+```text
+wrong A -> reference-valid correction -> Qualified
+wrong A -> same wrong A -> typed terminal -> no third Prompt
+```
+
+
+
+尚未得到证据支持的是：
+
+```text
+wrong A -> valid nonreference B
+wrong A -> different invalid B
+wrong A -> stale action ID
+wrong A -> foreign current-State action ID
+wrong A -> malformed but ABI-valid action reference
+```
+
+这里最关键的是：
+
+```text
+wrong A -> different invalid B
+```
+
+报告的 terminal 条件被描述为“repeats a typed-rejected Action”。如果实现仅检测“重复同一个 Action”，而不是检测“第二次 correction attempt 仍然 typed-invalid”，那么不同的错误 B 可能生成第二个 feedback，并出现第三 Prompt。
+
+下一控制矩阵应固定为：
+
+| 第二响应               | 必须得到的结果                                             |
+| ------------------ | --------------------------------------------------- |
+| reference-valid    | commit exactly once，继续 ordinary suffix              |
+| nonreference-valid | 按同一 public semantics 接受，不得因非 reference 被拒绝          |
+| same-invalid       | typed terminal，no third Prompt                      |
+| different-invalid  | typed terminal，no third Prompt                      |
+| stale/foreign      | 明确 typed 或 ABI terminal，不得进入 Runtime exception loop |
+
+---
+
+# 七、正向 correction 只使用 reference Action
+
+120 条成功恢复路径全部采用：
+
+```text
+public-only corrected reference Action
+```
+
+
+
+这证明 reference correction 可恢复，但不能证明 feedback-parented Prompt 保持了合法 nonreference 行为。
+
+只要 reached State 中存在 Base-valid 或 Qualified-valid 的 nonreference Choice，就应执行：
+
+```text
+wrong
+-> visible feedback
+-> valid nonreference correction
+```
+
+并将其与“没有先发生 rejection、直接选择同一 source Choice”的结果比较：
+
+```text
+Action acceptance
+public effects
+Base validity
+Mechanism qualification
+Qualified validity
+```
+
+否则 correction channel 可能在工程上退化为 reference-imitation channel，而当前测试无法发现。
+
+---
+
+# 八、下一 Runner preflight 必须分离首次能力与纠错后能力
+
+引入一次模型可见 correction 后，实验条件已经发生实质变化。后继 192-Job outcome Contract 至少应分别保存：
+
+```text
+first_response_abi_valid
+first_action_state_precondition_valid
+first_action_accepted
+first_attempt_base_valid
+first_attempt_mechanism_qualified
+first_attempt_qualified_valid
+
+correction_invoked
+correction_feedback_id
+corrected_action_accepted
+correction_terminal_reason
+
+final_base_valid
+final_mechanism_qualified
+final_qualified_valid
+```
+
+并分别报告：
+
+$$
+\hat q_{\text{first}}
+$$
+
+与
+
+$$
+\hat q_{\text{bounded-correction}}.
+$$
+
+“最终经一次纠错 Qualified”不能覆盖“第一次无法选择合法 Action”。否则将把：
+
+```text
+current-State 首次可读性
+错误识别后的恢复能力
+```
+
+折叠成一个最终成功率，进而破坏 Capability Depth 的解释。
+
+---
+
+# 九、源码与复现边界
+
+`Current Project Status` 说明当前状态来自迁移服务器上的 Git tree、不可变工件和重跑检查，canonical repository 是服务器本地路径。
+
+但本轮没有上传 v26.176 源码归档；当前已连接 GitHub 的 `main` 仍停留在：
+
+```text
+f7126fecd98f85e4a4c9a632fa5d913d437bb615
+Implement v26.175 state-local presentation hardening
+```
+
+因此，报告记录的以下结果没有在本轮独立重跑：
+
+```text
+28/28 static Gates
+44/44 destructive controls
+7/7 focused Pytest
+16/16 empty-directory byte-identical rebuild
+328-file source Root
+```
+
+这些结果应准确称为**报告所记录的验证结果**，而不是本轮外部源码复核结果。报告自身给出的复现计数和测试范围见：
+
+这不否定 v26.176 的修复价值，但意味着模型可见 Feedback schema 等源码敏感结论暂时不能从 `unknown` 提升为 `passed`。
+
+---
+
+# 十、科学证据边界
+
+## 当前可以支持
+
+```text
+v26.175 的 10 个旧 Validator 绕过被报告为实际执行复现
+Authoritative Package / Runner Parent Closure 在报告层面闭合
+192 个 baseline Results 获得六 Replica fresh replay
+772 个 source-Choice vectors 在六 Replica 下完成 4,632 次本地 Runtime 审计
+Failure Recovery wrong-current-rule rejection 获得模型可见反馈与一次 correction 控制
+same-wrong 第二响应在 Recovery 分母上阻止第三 Prompt
+```
+
+## 当前仍禁止
+
+```text
+所有 production typed-rejection kinds 已闭合
+模型可见 feedback 已证明为严格 public-only 且无派生 Host 伪名
+任意第二个无效 Action 都会在第二响应后 terminalize
+valid nonreference correction 已保持
+模型行为、经验 Capability boundary 或深度结论
+frequency、State Mapping、Contribution、VTDO、Student 或训练授权
+```
+
+---
+
+# 十一、唯一合理的下一实验
+
+当前 transition 是：
+
+```text
+capability_observation_authoritative_parent_closed_rejection_history_
+state_bound_step_runtime_development_runner_preflight_only
+```
+
+它允许后继创建 exact future 192-Job Manifest 并进行 credential-free Runner preflight。
+
+本次判定：
+
+$$
+\boxed{\text{暂不消费}}
+$$
+
+建议先执行唯一零调用后继：
+
+```text
+capability_observation_all_typed_rejection_kinds_
+public_feedback_and_correction_bound_closure_only
+```
+
+该后继只需完成：
+
+1. 冻结 `PublicTypedRejectionFeedback` 强 schema 和 Host-to-public projection；
+2. 枚举 production classifier 的全部 typed rejection kinds；
+3. 执行 reference-valid、nonreference-valid、same-invalid、different-invalid、stale/foreign 五类第二响应；
+4. 对所有第二次无效响应强制 no-third-Prompt terminal；
+5. 证明 feedback 中不存在直接或派生的 Host-only identity；
+6. 将 first-attempt 与 bounded-correction 结果注册为独立 estimand；
+7. 保持 Provider calls、Development Jobs、Confirmation、Mapper、State、frequency、Contribution、VTDO 和训练全部为零。
+
+完成这一层后，当前 192-Job Runner preflight 才具备完整的理论对象和非补偿授权基础。
+
+## 审计附件
+
+* [v26.176 修订报告与理论—证据联合审计](sandbox:/mnt/data/v26_176_report_and_theory_audit.md)
+* [v26.176 结构化诊断 JSON](sandbox:/mnt/data/v26_176_diagnostic.json)
