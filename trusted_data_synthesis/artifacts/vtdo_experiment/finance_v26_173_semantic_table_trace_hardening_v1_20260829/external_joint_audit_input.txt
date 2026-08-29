@@ -1,0 +1,962 @@
+# v26.172 修订报告与项目源码联合审计
+
+## 一、最终判定
+
+v26.172 是一次**有实质进展但尚未达到 Runner 预检资格**的修订。
+
+它真实完成了三项重要修复：
+
+1. 不再把 reference 固定在 `choice_legend[0]`；
+2. 将 canonical reference path 与语义机制资格分开；
+3. 将组件重排为拓扑顺序，并在后续 Prompt 中绑定前序 Observation receipt。
+
+报告也明确把当前结果限定为 credential-free 静态与本地 Runtime 证据，而不是模型行为、经验能力边界或 VTDO 结果。
+
+但直接审计源码与正式工件后，仍有两个足以阻塞后继的 **P0**：
+
+$$
+\boxed{
+\text{新的共享语义表和稳定索引仍可确定性恢复 reference}
+}
+$$
+
+$$
+\boxed{
+\text{Recovery Candidate 的状态前置条件与机制资格判定相互矛盾}
+}
+$$
+
+另有三个 **P1**：
+
+* 当前动态证据是对完整 baseline trace 的逐步投影，还不是生产级单步 Runtime；
+* 若干语义父绑定在完整重哈希后仍可被交叉替换；
+* `action_id` 排名未平衡，Shortcut Gate 只拒绝全局 480/480 恢复，判定标准过弱。
+
+因此，本轮结论如下。
+
+| 审计对象                                   | 判定                  |
+| -------------------------------------- | ------------------- |
+| v26.171 历史冻结与缺陷复现                      | **通过**              |
+| Legend 固定首位泄漏修复                        | **通过**              |
+| Legend／Candidate 位置联合平衡                | **通过**              |
+| 完整模型可见呈现去泄漏                            | **不通过**             |
+| canonical path 与 semantic mechanism 分离 | **通过**              |
+| Recovery 机制语义与状态前置条件一致性                | **不通过**             |
+| 拓扑组件顺序                                 | **通过**              |
+| 前序 receipt 进入后续 Prompt                 | **通过**              |
+| 生产级逐步 Runtime                          | **尚未建立**            |
+| Candidate legality 分层                  | **通过设计，但未进入机制准入约束** |
+| Baseline trace 重放                      | **通过有限字段**          |
+| 完整父对象重建                                | **不完整**             |
+| D0–D3 作为 sequential decision depth     | **成立**              |
+| D0–D3 作为潜在能力强度边界                       | **不成立，报告已主动收窄**     |
+| 当前进入 192-Job Runner 预检                 | **阻塞**              |
+
+---
+
+# 二、审计范围与独立复核
+
+本次直接审计了：
+
+* v26.172 正式报告；
+* 最新 `Current Project Status`；
+* 正式 v26.172 Artifact Root；
+* [项目源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260829-012158%29.zip)。
+
+源码 ZIP SHA-256：
+
+```text
+800d0360ed86f95431c3a469bd7cd0a4c9cdbc0e7f0b5fd5681622d08c430d6e
+```
+
+项目状态规定，科学证据只来自当前 Git 树、不可变实验工件、凭据脱敏记录和迁移服务器上的重新检查，缺失聊天内容不作为实验事实。
+
+独立复核结果：
+
+```text
+正式 Root 文件                          22
+正式 Root 字节数                 7,990,956
+报告绑定的详情文件                     21
+SHA-256 / 字节数不匹配                  0
+
+v26.172 聚焦 Pytest               6 passed
+相邻 v26.171 Pytest               6 passed
+v26.172 新模块 PyCompile           3 / 3 passed
+```
+
+报告自身记录了空目录逐字节重建、聚焦测试、Ruff 和有限范围 Mypy，同时明确没有声称当前 Python 3.14／Pydantic 2.13 环境下的 package-wide Mypy 通过。
+
+本次独立环境没有安装 `ruff` 和 `mypy` 可执行程序，因此这两项没有被我再次运行。
+
+---
+
+# 三、已经真实修复的部分
+
+## 1. `choice_legend[0]` 固定 reference 泄漏已经关闭
+
+v26.171 的 80 个目标状态全部把 reference 放在 `choice_legend[0]`，一个只读取第一项的策略可以在六 Replica 上达到 480/480。v26.172 正确复现了这一历史缺陷，并重新构造了 Legend 与 Candidate 呈现。
+
+新设计分别平衡：
+
+```text
+reference Legend position
+reference Candidate position
+reference display-handle lexical rank
+```
+
+报告中的已注册捷径结果为：
+
+```text
+legend_first             174 / 480
+legend_last              174 / 480
+legend_index             174 / 480
+choice_handle_order      174 / 480
+semantic_payload_length    0 / 480
+lexical_shape              0 / 480
+```
+
+报告还诚实说明：这些只是六种注册捷径的控制，不是对所有模型可见统计关联的普遍证明。
+
+因此，“reference 固定在 Legend 首项”的旧缺陷确实已经修复。
+
+---
+
+## 2. canonical path 与机制语义已经拆开
+
+现在分别保存：
+
+```text
+reference_path_match
+mechanism_semantically_qualified
+```
+
+其中 `reference_path_match` 只是规范路径诊断，不进入机制 Gate。
+
+报告定义的机制语义包括：
+
+* Context：真实应用当前状态决策并闭合任务；
+* Reconciliation：真实产生并按序消费 normalized reference；
+* Recovery：真实 typed failure、selector 改变、成功 retry、事件顺序与任务闭合；
+* Stopping：Runtime readiness、verified stop、无后续 postcompletion call。
+
+在 32 个 baseline 与 146 个合法非 reference 执行上，报告得到：
+
+```text
+exact reference-path match          32
+semantic-mechanism-qualified        66
+
+Base=true,  semantic=true           58
+Base=true,  semantic=false           0
+Base=false, semantic=true            8
+Base=false, semantic=false         112
+```
+
+原来的 26 个 `Base=true / canonical-path=false` 行全部变成 semantic mechanism true，说明它们只是偏离了 canonical path，而不是没有发生目标机制。
+
+这项修订方向正确，也修复了 v26.171 对非规范 Recovery 路径的系统性误排除。
+
+---
+
+## 3. 组件拓扑与前序 Observation receipt 已进入 Prompt
+
+当前每个 Package 使用依赖图生成拓扑 Component 顺序，Stopping readiness 位于最终停止决策之前。报告记录：
+
+```text
+Packages                              32
+six-Replica reference Traces         192
+reached Prompts                       480
+reached Observations                  480
+dependency links                      80
+predecessor-conditioned Prompts       288
+bound predecessor-receipt links       480
+reverse-topological links               0
+```
+
+未来 Runner Input Catalog 不包含预物化 Prompt、Observation 或 reference trace，只包含生成在线当前 Prompt 所需的静态父对象。
+
+这比 v26.171 的预构造 Prompt tuple 明显更接近真正的逐步交互协议。
+
+---
+
+## 4. Candidate legality 已经分成五层
+
+每条 Candidate 现在分别报告：
+
+```text
+publicly_grounded
+publicly_executable
+state_precondition_valid
+mechanism_relevant
+task_semantically_valid
+```
+
+正式计数为：
+
+```text
+publicly grounded                 226
+publicly executable               226
+state-precondition valid          206
+mechanism relevant                206
+task semantically valid           106
+```
+
+20 条指向错误当前 Rule 的 Recovery Candidate 不再被笼统称为 Runtime-legal，而是明确标记为：
+
+```text
+publicly executable            = true
+state_precondition_valid       = false
+mechanism_relevant             = false
+```
+
+
+
+这个分类体系本身是正确的。问题在于这些字段尚未与机制资格和 Qualified 准入闭合，见下文。
+
+---
+
+# 四、P0：共享语义值表与稳定索引形成新的 reference 捷径
+
+这是本轮最直接的 presentation blocker。
+
+## 1. 源码中的编码方式
+
+源码：
+
+```text
+src/trusted_synthesis/core/task/
+dynamic_capability_depth.py
+```
+
+关键路径：
+
+```text
+_value_catalog()       376–400
+make_dynamic_prompt()  444–527
+```
+
+`_value_catalog()` 对每个参数字段执行：
+
+```python
+catalogs[field] = tuple(
+    unique[key] for key in sorted(unique)
+)
+```
+
+也就是说，参数语义值按 canonical bytes 确定性排序。
+
+随后每个 Candidate 的参数被编码为稳定的两位索引：
+
+```python
+indices.append(f"{index:02d}")
+```
+
+六个 Replica 虽然会改变：
+
+* Legend row 顺序；
+* Candidate row 顺序；
+* display handle；
+* Candidate action ID；
+
+但不会改变：
+
+* 参数值 Catalog 的排序；
+* 每个语义操作对应的 `value_indices`。
+
+所以 reference 的“参数索引指纹”在所有 Replica 和同类任务之间保持稳定。
+
+---
+
+## 2. 一个完全不理解金融语义的索引规则可恢复全部 Context 和 Stopping reference
+
+我对正式 80 个目标状态、480 个呈现进行重建，得到以下固定规则：
+
+| Decision kind              | reference 的固定 `value_indices` |  命中状态 |  命中呈现 |
+| -------------------------- | ----------------------------- | ----: | ----: |
+| `select_operator`          | `("00","00")`                 |   8/8 | 48/48 |
+| `select_records`           | `("01",)`                     |   6/6 | 36/36 |
+| `select_projection`        | `("00",)`                     |   4/4 | 24/24 |
+| `select_scope`             | `("01",)`                     |   2/2 | 12/12 |
+| `assess_dynamic_readiness` | `("00","01")`                 | 12/12 | 72/72 |
+| `stop_or_continue`         | `("02",)`                     |   8/8 | 48/48 |
+
+总计：
+
+```text
+适用目标状态          40
+确定恢复 reference     40 / 40
+
+适用 Replica 呈现     240
+确定恢复 reference    240 / 240
+```
+
+这些 40 个状态正好覆盖：
+
+```text
+全部 Context-conditioned Action 状态
+全部 State-dependent Stopping 状态
+```
+
+该规则只读取：
+
+```text
+decision_kind
+value_indices
+```
+
+不读取：
+
+* Finance Task；
+* 公共记录内容；
+* Resolution Rule；
+* Operation 语义；
+* Candidate 位置；
+* display handle；
+* action ID。
+
+因此这是一个真实的、跨 group、跨 depth、跨 Replica 的非语义 reference 恢复规则。
+
+---
+
+## 3. 报告中的 `semantic_payload_length = 0` 测量了错误对象
+
+源码中的 shortcut audit 位于：
+
+```text
+phase1_v26_capability_dynamic_depth_hardening.py
+902–999
+```
+
+它对“semantic payload length”的计算实际是：
+
+```python
+len(canonical_bytes(DynamicLegendEntry))
+```
+
+而 `DynamicLegendEntry` 只是：
+
+```text
+choice_handle
+value_indices
+```
+
+由于 row 已被固定宽度化，得到 0/480 并不意外。
+
+但是模型同时看到：
+
+```text
+argument_value_catalogs
+argument_fields
+value_indices
+```
+
+它可以通过这些公开字段完整恢复 `PublicOperationPayload`。对恢复后的真实 Operation 重新计算长度，结果为：
+
+```text
+reference operation 长度在状态内唯一         32 / 80
+仅凭该长度恢复 reference                    192 / 480
+```
+
+具体表现为：
+
+* 全部 Stopping 状态：reference operation 唯一最短；
+* 全部 Context `select_operator` 状态：reference 唯一最短；
+* 全部 Context `select_projection` 状态：reference 唯一最长。
+
+因此，报告中的：
+
+```text
+semantic_payload_length = 0 / 480
+```
+
+不能支持“语义长度不再泄漏”。
+
+它只支持：
+
+> 固定宽度 Legend index row 的长度不再泄漏。
+
+---
+
+## 4. 当前 Shortcut Gate 的拒绝阈值过弱
+
+`LegendShortcutAudit.validate_audit()` 只在某一注册规则达到：
+
+```python
+value >= presentation_count  # 480
+```
+
+时 fail-closed。
+
+也就是说，只有一个捷径在**全局 480 个呈现上全部命中**才会被拒绝。
+
+但当前索引捷径可以：
+
+```text
+Context              120 / 120
+Stopping             120 / 120
+全局                 240 / 480
+```
+
+它完美恢复两个完整科学能力族，却仍会通过当前 Validator。
+
+### 所需修订
+
+Shortcut Gate 应改为分层判定：
+
+```text
+capability
+× depth
+× decision_kind
+× choice_count
+```
+
+并相对于该层的结构基线进行检查。
+
+不能再使用：
+
+```text
+只要不是全局 480/480 就通过
+```
+
+这一条件。
+
+---
+
+# 五、P0：Recovery 状态前置条件与语义机制资格互相矛盾
+
+## 1. Candidate legality 已知道某些动作不属于当前状态
+
+源码：
+
+```text
+dynamic_capability_depth.py
+661–705
+```
+
+对 `revise_selector` 明确要求：
+
+```python
+arguments["rule_handle"] == facts["rule_handle"]
+and selector != failed_selector
+```
+
+否则：
+
+```text
+state_precondition_valid = false
+mechanism_relevant       = false
+```
+
+这一逻辑是合理的。
+
+---
+
+## 2. 机制资格却不检查 Rule 或 receipt 身份
+
+源码：
+
+```text
+dynamic_capability_depth.py
+708–775
+```
+
+Failure Recovery 的 semantic Gate 只检查：
+
+```text
+存在 typed_selector_requires_refinement
+存在 selector_changed=true 的 recovery_succeeded
+```
+
+它不检查：
+
+* 被修改的 Rule 是否就是当前失败 Rule；
+* typed failure、revision 与 retry 是否绑定同一个 receipt；
+* selected operation 的 `rule_handle` 是否真正被 Runtime 消费。
+
+结果是，当前 Runtime 仍可能：
+
+1. 对当前状态的 Rule A 产生 failure；
+2. 模型选择一个声称修改 Rule B 的 Candidate；
+3. Runtime 忽略 Candidate 中的 Rule B，只使用其 selector；
+4. selector 恰好使任务成功；
+5. semantic Recovery Gate 判定为 true。
+
+---
+
+## 3. 对 20 条错误当前 Rule Candidate 的精确结果
+
+```text
+错误当前 Rule 的 Recovery Candidate          20
+
+state_precondition_valid=false               20
+mechanism_relevant=false                     20
+
+Base=false, semantic=false                   14
+Base=true,  semantic=true                     6
+```
+
+也就是说，有六条轨迹同时满足：
+
+```text
+Candidate legality：
+    当前状态前置条件不成立
+    与当前机制无关
+
+Mechanism report：
+    semantic mechanism qualified
+
+Task report：
+    Base valid
+```
+
+如果未来仍使用：
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{base}}
+\land
+Q_{\mathrm{semantic\ mechanism}},
+$$
+
+这六条轨迹会被判为 Qualified，尽管 Candidate Legality Contract 已经明确声明其对当前状态 mechanism-irrelevant。
+
+这不是单纯字段命名问题，而是不同合同对同一轨迹给出了相互冲突的准入结论。
+
+### 所需修订
+
+至少需要：
+
+1. 将 `state_precondition_valid` 作为 Action acceptance 或 semantic mechanism qualification 的硬前置条件；
+2. 让 Runtime 真正使用 selected Candidate 的 `rule_handle`；
+3. 使 failure、revision、retry 绑定同一个：
+
+   * `rule_handle`；
+   * failure receipt；
+   * failed selector；
+4. wrong-current-rule Candidate 应产生：
+
+   * typed target mismatch；
+   * 或 mechanism false；
+   * 不能产生 semantic mechanism true；
+5. 在正式行级结果中交叉绑定：
+
+   * Candidate legality report；
+   * mechanism report；
+   * Qualified report。
+
+---
+
+# 六、P1：当前动态交互证据仍是“完整 baseline trace 的逐步投影”
+
+报告对这一层的措辞其实比较谨慎：它称其为 local reference fixture，并明确说不是模型选择或在线 Transport 行为。
+
+源码中的 `_reference_trace()` 位于：
+
+```text
+phase1_v26_capability_dynamic_depth_hardening.py
+454–520
+```
+
+其过程是：
+
+1. 先调用 v26.171 Runtime，一次性得到完整 baseline result；
+2. 对每个 Component 构造当前 Prompt；
+3. 用本地 public-only selector 选择 reference；
+4. 从已经完成的 baseline result 中筛出该 Component 的 event；
+5. 将这些已有 event 包装成当前 Observation receipt；
+6. 再生成下一 Prompt。
+
+这能证明：
+
+* 拓扑顺序可构造；
+* 当前 Prompt 能绑定前序 receipt；
+* reference trace 可以按步骤重新呈现。
+
+但它尚未证明：
+
+```text
+当前 Action Commit
+→ 实时改变 Runtime
+→ 当前 Tool / Program 执行
+→ 生成真实 Observation
+→ 从实际 reached state 生成下一 Prompt
+```
+
+尤其没有覆盖非 reference Action 后的真实动态分支。
+
+### 结论
+
+这一点不要求否定 v26.172 历史静态结果，但未来 Runner 不能：
+
+* 读取完整 baseline；
+* 读取静态 reference Trace；
+* 通过过滤 baseline events 生成 Observation。
+
+Runner 预检必须实现真正的：
+
+```python
+step(runtime_state, selected_action)
+    -> observation
+    -> next_runtime_state
+    -> next_prompt
+```
+
+---
+
+# 七、P1：完整重哈希后仍存在父绑定缺口
+
+v26.172 已经加强 baseline trace replay。报告称 32 个 baseline 的 selected handles、event IDs/order 和 validity reports 均可重建，并增加两个全图变异控制。
+
+但直接构造完整重哈希变异后，以下对象仍可通过现有 Validator。
+
+## 1. 改写 `reference_path_hash`
+
+修改 reference-path hash，并重新计算：
+
+```text
+Package identity
+Group identity
+Catalog identity
+```
+
+当前 source reconstruction 仍接受。
+
+## 2. 伪造 semantic mechanism report 的 execution parent
+
+修改：
+
+```text
+baseline_semantic_mechanism.execution_result_id
+```
+
+并完整重算父对象后，仍可被接受。
+
+## 3. 将显示 reference handle 映射到另一条 Operation
+
+我将一个 D0 Prompt 中的 reference display handle 从：
+
+```text
+compare
+```
+
+重新映射为：
+
+```text
+difference
+```
+
+然后重新计算：
+
+* State token；
+* Prompt hash；
+* Observation receipt；
+* Step；
+* Trace；
+* Package；
+* Group；
+* Catalog。
+
+当前 `_validate_catalog_against_source()` 只检查：
+
+```text
+source_choice_handle == source component reference
+observation event IDs == baseline replay event IDs
+```
+
+没有验证：
+
+```text
+resolve_dynamic_operation(prompt, displayed_handle)
+==
+source reference operation
+```
+
+所以该变异仍被接受。
+
+## 4. Runner Input 拓扑可被逆序
+
+将多步 `DynamicRunnerInputPackage.topological_component_keys` 逆序并重算 Runner Input Catalog 身份，Schema 仍接受。
+
+### 所需修订
+
+必须从 exact source objects 重建：
+
+```text
+每个 Replica 的 Prompt
+每个 display/source handle 映射
+reference operation
+Observation public effects
+receipt parent
+semantic mechanism report
+reference path hash
+Runner Input topology
+```
+
+不能只比较保存的 hash 或 event ID。
+
+---
+
+# 八、P1：`action_id` 排名尚未平衡
+
+报告平衡了：
+
+```text
+Candidate position
+Legend position
+display choice-handle lexical rank
+```
+
+但模型同时看得到：
+
+```text
+action_id
+```
+
+直接统计结果：
+
+```text
+目标状态                                               80
+六 Replica 中 reference action-ID rank 不平衡的状态     56
+
+选择 lexicographically minimum action_id：
+    命中                                              197 / 480
+
+当前结构基线                                           174 / 480
+```
+
+这不是显式 Oracle，也未达到全局确定恢复，但它是可以避免的 presentation bias。
+
+后续 Replica policy 应同时平衡：
+
+```text
+Legend position
+Candidate position
+display-handle rank
+action-ID rank
+```
+
+---
+
+# 九、理论解释：当前修订主动收窄是正确的
+
+v26.172 已经明确将 D0–D3 定义为：
+
+```text
+bounded sequential target-decision depth
+```
+
+而不是：
+
+```text
+latent ability boundary
+```
+
+并承认随着目标决策数量从一增加到四，即使单步能力不变，完整 Package 成功率也可能因重复决策的乘法负担而下降。
+
+形式上，若每个目标决策的条件正确率都为 \(p\)，而深度 \(d\) 包含 \(d+1\) 个决策，则：
+
+$$
+P(\text{complete success}\mid d)
+\approx
+p^{d+1}.
+$$
+
+所以未来即使观察到：
+
+$$
+q_{D0}>q_{D1}>q_{D2}>q_{D3},
+$$
+
+也不能直接解释成：
+
+> 模型潜在能力边界位于某两个深度之间。
+
+当前设计最多测量：
+
+> 在固定 Finance Core 上，模型承受连续一至四次目标微决策的 bounded sequential completion ability。
+
+后续报告至少必须同时保留：
+
+* 每一步条件成功率；
+* 首个失败 Component；
+* Component-specific hazard；
+* 完整 Package 成功率；
+* 任务级 Base 与机制资格。
+
+不能只看最终 `Qualified / 6` 后套用旧 boundary bracket 算法。
+
+---
+
+# 十、下一轮应如何修订
+
+当前不应消费报告授权的：
+
+```text
+capability_observation_dynamic_depth_development_runner_preflight_only
+```
+
+因为该 transition 禁止修改语义 Candidate、任务和相关父对象，而当前 P0 恰恰需要修改语义表编码及 Recovery Runtime。报告对该 transition 的限制见 。
+
+建议新的唯一零调用阶段为：
+
+```text
+capability_observation_semantic_table_deleak_
+state_precondition_and_trace_parent_hardening_only
+```
+
+## 1. 修复语义表泄漏
+
+* 每个 `Package × Component × Replica × field` 使用独立预注册 Catalog permutation；
+* Legend index 必须跟随 Replica-local Catalog 重新编码；
+* 或改成固定宽度、Replica-local opaque value handle；
+* 对 value handle 的 lexical rank 同样做平衡；
+* 不允许稳定的 `00/01/02` index vector 跨任务指向 reference；
+* Shortcut Audit 必须检查 reconstruct 后的完整 Operation，而不是 Legend row。
+
+## 2. 加固 Shortcut Gate
+
+预注册并分别审计：
+
+```text
+capability
+depth
+decision kind
+choice count
+group
+```
+
+内的：
+
+* fixed index vector；
+* min/max index；
+* semantic payload length；
+* catalog lexical order；
+* choice-handle order；
+* action-ID order；
+* argument-field order；
+* tokenized length。
+
+判定标准应是“相对于冻结基线不存在系统性恢复”，而不是“没有达到全局 480/480”。
+
+## 3. 关闭 Recovery 合同矛盾
+
+强制：
+
+```text
+selected Rule
+==
+current failed Rule
+==
+failure receipt Rule
+==
+retry Rule
+```
+
+任何 `state_precondition_valid=false` 的 Candidate 均不得：
+
+* 进入 semantic mechanism qualified；
+* 进入 Qualified；
+* 被解释为有效 Recovery。
+
+## 4. 实现真正的 step Runtime
+
+下一版静态 fixture 应调用与未来 Runner 相同的：
+
+```python
+initialize(package)
+step(state, action)
+render_next_prompt(state)
+finalize(state)
+```
+
+reference fixture 只能提供选择，不得提供已有的完整 Runtime events。
+
+## 5. 补齐父对象重建
+
+Package 与 Runner Input Validator 必须独立重算：
+
+```text
+reference operation
+display/source handle mapping
+Prompt state token
+Observation effects
+receipt links
+mechanism report
+reference path
+topological order
+```
+
+并增加完整重哈希后的交叉父对象测试。
+
+---
+
+# 十一、最终审计决策
+
+## 对 v26.172 历史工件
+
+$$
+\boxed{\text{保留并冻结}}
+$$
+
+它可信证明了：
+
+* 固定 Legend 首位泄漏已被移除；
+* canonical path 与 semantic mechanism 已分离；
+* 组件拓扑顺序与 receipt 条件化已经进入静态协议；
+* Candidate legality 获得分层表达；
+* baseline trace 的若干关键字段可重放；
+* zero-Prompt Runner Input 边界已建立。
+
+## 对报告最强结论
+
+建议收窄为：
+
+> **v26.172 建立了 Legend／Candidate 位置平衡、语义机制分离和 receipt-conditioned reference trace 的静态原型。**
+
+还不能写成：
+
+> 已完成模型可见语义表去泄漏、Recovery 机制准入闭合和生产级动态交互。
+
+## 对当前 Runner 预检授权
+
+$$
+\boxed{\text{暂不通过}}
+$$
+
+最先失效的理论前提是：
+
+$$
+\boxed{
+\text{呈现变化不得让非语义结构稳定指示 reference}
+}
+$$
+
+当前 `value_indices` 已经对 Context 和 Stopping 形成 240/240 的确定性指示。
+
+第二个独立阻塞是：
+
+$$
+\boxed{
+\text{机制资格必须尊重当前状态的动作前置条件}
+}
+$$
+
+当前有六条 state-precondition-invalid、mechanism-irrelevant 的 Recovery Choice 同时得到 Base=true 与 semantic mechanism=true。
+
+如果现在进入 192-Job Runner 预检，后续模型结果仍会混入：
+
+* 稳定索引指纹；
+* 完整语义长度；
+* action-ID rank；
+* Recovery 前置条件遗漏；
+* 参考 trace 投影与生产 Runtime 的差异。
+
+因此尚不能可靠解释为 bounded sequential capability depth。
+
+---
+
+## 审计附件
+
+* [v26.172 源码审计证据](sandbox:/mnt/data/v26_172_code_audit_evidence.md)
+* [v26.172 完整诊断 JSON](sandbox:/mnt/data/v26_172_diagnostic.json)
+* [本次审计源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260829-012158%29.zip)

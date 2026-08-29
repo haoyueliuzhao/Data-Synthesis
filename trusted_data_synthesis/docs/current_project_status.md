@@ -589,10 +589,203 @@ sequential decision depth, not a latent ability boundary. The current transition
 credential-free dynamic-depth Development Runner preflight over the zero-Prompt Runner Input
 Catalog.
 
+v26.173 has now consumed a later external semantic-table, State-precondition, step-Runtime, and
+trace-parent hardening decision with zero Provider calls. It preserves all 22 v26.172 files and
+blocks the stale Runner preflight after reproducing 40 States with one stable value-index rule,
+240 corresponding reference recoveries, 32 unique decoded-operation-length States, 192 length
+recoveries, 197 minimum-action-ID recoveries, twenty wrong-current-Rule Recovery Candidates, six
+old Base-true semantic-Mechanism conflicts, and four accepted fully rehashed parent attacks. The
+external report states 56 action-ID-rank-imbalanced States, while direct exact-Catalog
+recomputation finds 64; both values are retained separately rather than silently reconciled. A
+fresh Replica-local opaque semantic table removes stable cross-Replica value vectors and balances
+action-ID, value-handle, display-handle, Legend, and Candidate rank across all 480 presentations.
+Ten registered shortcuts are checked inside all eighty exact six-Replica strata; none exceeds the
+local `6 / Choice count` structural baseline. `ActionAcceptanceReport` is now a hard Mechanism and
+Qualified parent, so all twenty wrong-current-Rule actions type-reject before retry and none is
+Base-, Mechanism-, or Qualified-valid, while all twenty references preserve exact Rule/receipt
+lineage. A true `initialize -> render_next_prompt -> step -> finalize` Runtime performs 192 local
+reference executions, 480 current Prompt steps, 480 Observations, and 1,104 actual events with
+zero complete-baseline loads or static Trace inputs. Exact-source reconstruction matches all 32
+Packages, 480 Prompt/mapping/operation/Observation/receipt rows, 192 Mechanism reports, 32 paths,
+and 32 Runner topologies; four newly fully rehashed attacks reject. All fifteen static Gates and
+nineteen production destructive controls pass. This remains credential-free static and local
+Runtime evidence, not a Runner preflight or model result. The current transition permits only a
+credential-free state-bound step-Runtime Development Runner preflight over the exact v26.173
+zero-Prompt Runner Input Catalog.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.173 Semantic Table, State Precondition, And Trace Parent Hardening Decision
+
+Finance v26.173 consumed only
+`capability_observation_semantic_table_deleak_state_precondition_and_trace_parent_hardening_only`.
+The external review is bound at 25,187 bytes and SHA-256
+`b5a67c76303687e81ccaf3b6fc966b4a579ca25011df6ee5887e9e785c5949e7`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, GPU jobs, Mapper calls, State Assignment, frequency, Contribution,
+VTDO, Student visibility, training, release, and production counts are zero.
+
+All 22 authoritative v26.172 files remain immutable. The audit blocks the stale v26.172 Runner
+transition before execution and independently reproduces:
+
+```text
+target States                                                   80
+six-Replica presentations                                      480
+States with one stable decoded value-index rule                 40
+stable-index reference recoveries                              240
+States with unique decoded operation length                     32
+decoded-length reference recoveries                            192
+minimum-action-ID reference recoveries                         197
+wrong-current-Rule Recovery Candidates                          20
+old Base-true plus semantic-Mechanism-true Recovery conflicts    6
+v26.172 baseline event projections                             192
+accepted fully rehashed parent mutations                         4
+```
+
+The external review reports 56 action-ID-rank-imbalanced States. Direct recomputation from the
+exact bound v26.172 Catalog reports 64. The formal defect audit retains the two numbers under
+separate fields, makes no false equality claim, and uses neither as a replacement threshold. Both
+support the same qualitative defect conclusion.
+
+The replacement semantic table is local to exact
+`Package x Component x Replica x field`. It uses opaque fixed-width value handles that vary across
+Replicas, independently phased field assignments, a deterministic pre-outcome field order, and
+equal canonical operation lengths within each State. The complete current operation remains
+publicly decodable, but stable cross-Replica value vectors, visible padding, and operation-derived
+public identifiers are absent.
+
+Across 80 States, 480 presentations, and 1,356 displayed Candidate rows, reference action-ID,
+value-handle, display-handle, Legend-position, and Candidate-position imbalance counts are zero;
+stable cross-Replica value-vector and visible-padding counts are also zero. The exact shortcut
+Gate uses eighty six-Replica strata keyed by capability, depth, decision kind, Choice count,
+source group, and Component. Every registered selector must remain at or below `6 / Choice count`
+inside every stratum. Excess strata are zero. The global diagnostic totals are:
+
+```text
+action-ID lexical order                 174 / 480
+Candidate position                     174 / 480
+display Choice-handle order             174 / 480
+Legend position                        174 / 480
+semantic-catalog lexical order          146 / 480
+minimum value-handle vector             146 / 480
+maximum value-handle vector             146 / 480
+argument-field order                      0 / 480
+encoded operation length                  0 / 480
+fixed value-handle vector                 0 / 480
+```
+
+These are registered stratified structural controls, not a universal model-visible
+noninterference result.
+
+`ActionAcceptanceReport` is now an exact parent of Mechanism and Qualified validity. A Recovery
+revision must bind the same current failed Rule, failure-receipt Rule, selected Rule, and retry
+Rule. All twenty wrong-current-Rule Candidates are State-precondition-invalid and emit typed
+`target_rule_mismatch` before retry. Accepted, retry, Mechanism-qualified, Base-valid, and
+Qualified-valid counts are zero on that surface. All twenty exact references separately pass
+Rule/receipt/retry lineage and Qualified validity, for forty row-level parent bindings.
+
+The new production Runtime exposes only `initialize`, `render_next_prompt`, `step`, and
+`finalize`. It loads no complete v26.171/v26.172 baseline Result, filters no saved baseline event,
+accepts no static reference Trace, and receives no future Prompt or precommitted Choice vector.
+Each step validates one displayed action, executes its exact source operation against retained
+Runtime state, persists actual events and a public Observation, and derives the next State from
+predecessor receipts. Reconciliation retains one live Finance Runtime from normalization emission
+through consumption and final calculation; fixed D0-D2 support operations execute from the public
+source graph rather than a future trace.
+
+The local reference surface contains 32 Packages, 192 Replica executions, 480 current Prompt
+renders, 480 steps and Observations, 1,104 actual Runtime events, 288 predecessor-conditioned
+Prompts, 480 receipt links, and 192 finalizations. All 192 reference executions are Qualified.
+Complete-baseline loads, baseline-event filtering, static Trace inputs, Provider calls, and
+Development Jobs are zero. The separate 32-Package Runner Input Catalog contains zero materialized
+Prompt, Observation, or reference-Trace payload.
+
+Parent validation reconstructs semantic objects from exact source inputs rather than trusting
+self-consistent saved hashes. Package matches are 32/32; Prompt, display/source mapping, operation,
+Observation/effect, and receipt-parent matches are each 480/480; Mechanism-report matches are
+192/192; reference-path and Runner-topology matches are each 32/32. Four attacks independently
+change and fully rehash a reference path, Mechanism parent, rank-preserving display/value mapping,
+or Runner topology. All four reject against source reconstruction and accepted attacks are zero.
+All nineteen production destructive controls reject.
+
+The prospective sequential estimand schema separately registers per-step conditional success,
+first failed target Component, target-Component hazard, complete Package success, and task Base
+plus Mechanism qualification. Empirical rows and estimates are zero. D0-D3 remain bounded
+sequential target-decision depth and no latent ability boundary is claimed.
+
+The formal directory contains 21 files and 10,783,941 bytes; report SHA-256 is
+`df22bd406dea069101f5f921b9ead6e8b9f905b110d886d5371e1bc6ae475283`. Its transitive source Root
+contains 314 files with zero unresolved imports. Focused Pytest passes 6/6 in 61.05 seconds with a
+complete empty-directory byte-identical rebuild. The complete adjacent v26.172 regression passes
+6/6 in 28.88 seconds. Focused PyCompile, Ruff check and format check, and no-import-follow Mypy
+pass the four new modules; package-wide Ruff passes. No package-wide Mypy pass is claimed because
+the unchanged Python 3.14/Pydantic 2.13 environment retains the v26.172-documented historical
+recursive-import diagnostics.
+
+The authoritative identities are:
+
+- report:
+  `finance_v26_semantic_table_trace_hardening_report:a3abb3c22ffe6b1933bc519a087073d17a15aa3ce990af6b73ba9a9e4af8a3fc`;
+- transitive source Root:
+  `finance_v26_semantic_table_trace_transitive_source_root:c53d1f8364dd5db8625f592327530ef553c471c103682b3588ea8b3b6beccbdc`;
+- external authorization:
+  `finance_v26_semantic_table_trace_external_authorization:a190a824c504da6e296159439aa5a735f2742687c9ed62ff944e3c6803625307`;
+- v26.172 predecessor freeze:
+  `finance_v26_v172_predecessor_freeze_audit:8ff5dadf9d8673e726d80cd17cdf403af6a8079f76ca07dc05b95416c0e00971`;
+- v26.172 defect reproduction:
+  `finance_v26_v172_semantic_trace_defect_reproduction:dd8142d46471bb61a9e5f5572af25d9209db1bf32ecf97192bf7936a0e8649fd`;
+- Semantic Table Presentation Contract:
+  `semantic_table_presentation_contract:e92c6c4aa42d1b701df7313bfafe141ecdc7eabf6f606492db3057eedf396ea6`;
+- State Precondition Mechanism Contract:
+  `state_precondition_mechanism_contract:eed1a675f1a66de0661cabb4a1ee1493e29f7a5b518d4a080fa56086fc94ab47`;
+- Production Step Runtime Contract:
+  `production_step_runtime_contract:acd669ad81c61205c79c3e887790504a4967dc9f04a53b909bf796f5d7a1226d`;
+- Semantic Parent Reconstruction Contract:
+  `semantic_parent_reconstruction_contract:ee7194442a8bdf7864742d1aa1c9d162e57bd0ac6b03b4bed796a241992cc75e`;
+- Sequential Estimand Contract:
+  `sequential_depth_estimand_contract:9fee09c5b3f4e750ce7ffaf58b7656d32d1d60513346abefc59ab19039dab4ae`;
+- Development Catalog:
+  `finance_v26_semantic_table_trace_development_catalog:fd88c80b47d3d773f4e4eee7fe09223815503be408dd5be229e68abf5943a264`;
+- zero-Prompt Runner Input Catalog:
+  `finance_v26_semantic_table_trace_runner_input_catalog:8e60961a0aeb67be24c8332fadfe22f5d65db5d5a4ba1fa6880729bcbf7049a6`;
+- stratified shortcut audit:
+  `finance_v26_stratified_semantic_table_shortcut_audit:22e17bac831f3809cbb13caa82a50b073a8a701634e3831d516e9993d1bcca23`;
+- Recovery State audit:
+  `finance_v26_recovery_state_consistency_audit:1a7035c06c97b5c011eeeba57af34e12a8b91174b632a02cae3dc4779cc172be`;
+- true Step Runtime audit:
+  `finance_v26_true_step_runtime_audit:99a427db836f53d55a27847384858c946559b500998723ebbe7ff96ee3045dea`;
+- semantic parent reconstruction audit:
+  `finance_v26_semantic_parent_reconstruction_audit:e5a319198e17c8e052404f3fa78b885b567b038718d178e36c8dc3668d462960`;
+- sequential estimand registration audit:
+  `finance_v26_sequential_estimand_registration_audit:1b47e917108b461514ad0ec8c927cab88bcf684facd8df3f318e2fb68d29c7fd`;
+- destructive audit:
+  `finance_v26_semantic_table_trace_destructive_audit:3445ae0859d793435d5cfceee99de32ea413ab0b1161c4c59e584da9b2e81559`;
+- static audit:
+  `finance_v26_semantic_table_trace_static_audit:796c729fd60ce62029ef1804d890561f78ffb3b22441e5ac908caa485e540398`;
+- transition:
+  `finance_v26_semantic_table_trace_transition:64fe397080aa6b8fe06388354248d44b851ffb08d3a78c0eda67cc268f06bc3c`.
+
+The only permitted transition is:
+
+```text
+capability_observation_state_bound_step_runtime_development_runner_preflight_only
+```
+
+The successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free one-current-Prompt-at-a-time Runner preflight from the exact v26.173 zero-Prompt
+Runner Input Catalog under every frozen source, Replica-local semantic table, stratified
+presentation, current-State Action Acceptance, incremental Runtime, Observation,
+Base/Mechanism/Qualified, reconstructed parent, sequential-estimand, fixed condition,
+model/Thinking, Grammar, Policy, resource, threshold, terminal, and sealed-receipt binding.
+Provider execution, Development outcomes, reference-Trace input, precommitted vectors, future
+Prompt materialization, complete baseline loading, Confirmation payload loading, source/task/
+Component/Candidate change, presentation or validity tuning, threshold change, historical
+rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training, release, and
+production remain forbidden. See
+`docs/finance_v26_173_semantic_table_state_precondition_and_trace_parent_hardening.md`.
 
 ## v26.172 Legend Deleak, Mechanism Semantics, And Dynamic Depth Hardening Decision
 
@@ -687,6 +880,17 @@ input, precommitted Choice vectors, future-Prompt materialization, Confirmation 
 or task changes, threshold tuning, historical rewrite, Mapper, State, frequency, Contribution,
 VTDO, Student visibility, training, release, and production remain forbidden. See
 `docs/finance_v26_172_legend_deleak_mechanism_semantics_and_dynamic_depth_hardening.md`.
+
+That transition has now been superseded without Runner execution by the external v26.173 audit.
+Every v26.172 byte and local result remains immutable, but its State-shared value indices,
+action-ID/value-rank imbalance, State-invalid Recovery acceptance path, baseline-derived event
+projection, and incomplete exact-source parent validation are not authorized for a Runner
+preflight. The current transition is the credential-free state-bound step-Runtime preflight over
+the exact v26.173 zero-Prompt Runner Input Catalog:
+
+```text
+capability_observation_state_bound_step_runtime_development_runner_preflight_only
+```
 
 ## v26.171 Validity Separation, Presentation Deleak, And Causal Component Reaudit Decision
 
