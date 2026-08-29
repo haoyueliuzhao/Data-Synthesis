@@ -1,0 +1,1007 @@
+# v26.173 修订报告与项目源码联合审计
+
+## 一、最终判定
+
+v26.173 **完成了数项真实修复**：
+
+* 稳定的跨 Replica 语义索引已改成 Replica-local opaque handle；
+* 错误当前 Rule 的 Recovery Action 会在 Retry 前 typed reject；
+* `initialize → render_next_prompt → step → finalize` 已成为真实增量 API；
+* 本地 Reference Fixture 不再加载完整 Baseline Result 或筛选历史事件；
+* 报告主动将 D0–D3 收窄为 **bounded sequential target-decision depth**，不再声称潜在能力边界。
+
+但直接审计最新源码和正式 Catalog 后，发现三个新的关键问题：
+
+$$
+\boxed{
+\text{单项呈现特征虽然分别平衡，但其联合相位可确定性泄漏 reference}
+}
+$$
+
+$$
+\boxed{
+\text{Mechanism Qualification 又退化为精确参考路径匹配}
+}
+$$
+
+$$
+\boxed{
+\text{Recovery 的模型可见 failure receipt 并未真正成为 Runtime 的硬父对象}
+}
+$$
+
+此外，Catalog 与 Runner Input 的合同身份及完整分母校验仍存在可被“完整重哈希”绕过的缺口。
+
+因此：
+
+| 审计对象                             | 判定              |
+| -------------------------------- | --------------- |
+| v26.172 历史工件不可变                  | **通过**          |
+| Replica-local 语义值表               | **通过**          |
+| 各单项 reference rank 平衡            | **通过**          |
+| 已注册十种单变量 Shortcut Gate           | **通过其限定口径**     |
+| 完整联合呈现中性                         | **不通过**         |
+| 错误当前 Rule 在 Retry 前拒绝            | **通过**          |
+| Recovery 广义机制语义                  | **不通过，出现回退**    |
+| 模型可见 Failure Receipt 精确绑定        | **不通过**         |
+| 真实增量 Step Runtime                | **通过，本地范围内**    |
+| Exact-source Reference Result 重建 | **通过已覆盖对象**     |
+| 全部合同与 Runner 分母闭合                | **不完整**         |
+| D0–D3 作为顺序决策深度                   | **成立**          |
+| D0–D3 作为潜在能力强弱刻度                 | **不成立，报告已正确收窄** |
+| 当前 192-Job Runner 预检             | **应阻塞**         |
+
+v26.173 本身明确限定为零凭据的静态和本地 Runtime 加固结果，而非 Runner 预检、模型行为、经验深度边界或一般非干扰证明，这一证据边界是正确的。
+
+---
+
+# 二、审计范围与独立复核
+
+本次直接审计了：
+
+* v26.173 修订报告；
+* 最新 `Current Project Status`；
+* 正式 v26.173 Artifact Root；
+* 最新项目源码快照。
+
+项目状态明确规定，只以当前 Git 树、不可变实验工件、凭据脱敏记录和迁移服务器复核为证据，缺失聊天内容不作为实验事实。
+
+## 源码与工件身份
+
+```text
+源码 ZIP:
+Data-Synthesis-main(20260829-045330).zip
+
+SHA-256:
+d6b959a6427d6de2e5dcd2296726199222d787804f0431d27c845ee61f1cb417
+```
+
+正式工件复核：
+
+```text
+正式 Root 文件                         21
+正式 Root 字节数                10,783,941
+报告绑定详情文件                     20
+Hash / byte mismatch                  0
+报告 SHA-256:
+df22bd406dea069101f5f921b9ead6e8b9f905b110d886d5371e1bc6ae475283
+```
+
+独立测试：
+
+```text
+v26.173 非全量重建测试          5 passed, 1 deselected
+相邻 v26.172 非重建测试         5 passed, 1 deselected
+v26.173 新模块 PyCompile        4 / 4 passed
+```
+
+报告记录其项目服务器上聚焦 Pytest 6/6，包括空目录逐字节重建，并记录 Ruff、format 和有限范围 Mypy 通过。
+
+本审计容器中，单独的空目录完整重建运行超过 700 秒，未在可用时间内结束。这里应记为：
+
+```text
+independent full-rebuild verification = 未完成
+```
+
+而不是测试断言失败。当前容器也没有可用的 Ruff／Mypy 命令，因此这两项没有被独立重跑。
+
+---
+
+# 三、已经真实完成的修复
+
+## 1. 稳定语义索引缺陷被正确识别和替换
+
+v26.173 先独立复现了 v26.172 的：
+
+```text
+40 个稳定 value-index 状态
+240 次稳定索引 reference 恢复
+32 个唯一 decoded-operation-length 状态
+192 次长度恢复
+197 次 minimum-action-ID 恢复
+```
+
+并且没有静默调和外部审计报告的 56 个 action-ID rank 不平衡状态与直接重算得到的 64 个，而是分别保留。
+
+新设计将语义值表局部化到：
+
+```text
+Package × Component × Replica × field
+```
+
+每个 Replica 使用新的 opaque value handle，并分别平衡：
+
+* action-ID rank；
+* value-handle rank；
+* display-handle rank；
+* Legend position；
+* Candidate position。
+
+正式报告中的单项计数均为零不平衡。
+
+这确实关闭了 v26.172 那种跨 Replica 固定的 `00/01/02` 语义索引指纹。
+
+---
+
+## 2. 错误当前 Rule 的 Recovery 分支已真正 fail-closed
+
+v26.173 新增 `ActionAcceptanceReport`，并要求 Recovery 选择的 Rule 与当前失败 Rule 一致。错误 Rule Action 在 Retry 前产生 typed target mismatch，不会调用 Retry，也不会进入 Mechanism 或 Qualified。正式结果为：
+
+```text
+wrong-current-Rule Candidates             20
+State-precondition invalid                20
+typed target mismatch                     20
+accepted actions                           0
+retry invocations                          0
+Mechanism-qualified                        0
+Base-valid                                 0
+Qualified-valid                            0
+```
+
+
+
+这修复了 v26.172 中六条“State-precondition invalid，却仍 Base=true／Mechanism=true”的直接矛盾。
+
+---
+
+## 3. 增量 Runtime API 已经真实存在
+
+当前 API 为：
+
+```text
+initialize
+render_next_prompt
+step
+finalize
+```
+
+源码模块：
+
+```text
+src/trusted_synthesis/experiments/vtdo_experiment/
+phase1_v26_capability_semantic_table_trace_hardening_runtime.py
+```
+
+本地 Reference Fixture 实际执行：
+
+```text
+Replica executions                 192
+initialize calls                   192
+current Prompt renders             480
+step calls                         480
+public Observations                480
+actual Runtime events            1,104
+predecessor-conditioned Prompts    288
+finalize calls                     192
+Qualified executions               192
+
+complete baseline Result loads       0
+baseline-event filtering             0
+static reference-Trace inputs        0
+```
+
+
+
+所以 v26.172 中“先完成整条 Baseline，再把历史 Event 切成逐步 Observation”的缺陷已经实质修复。
+
+---
+
+## 4. 已注册的四类父对象攻击已被关闭
+
+正式实现能从 exact source objects 重建：
+
+```text
+Package                         32/32
+Prompt                         480/480
+display/source mapping         480/480
+reference operation            480/480
+Observation/effect             480/480
+receipt parent                 480/480
+Mechanism report               192/192
+reference path                  32/32
+Runner topology                 32/32
+```
+
+报告注册的四类完整重哈希攻击——Reference Path、Mechanism Parent、display/value mapping 和 Runner topology——均被拒绝。
+
+不过，后文会说明，尚未纳入攻击集的合同元数据与 Runner 分母仍有缺口。
+
+---
+
+# 四、P0：单项 rank 平衡后仍存在 396/396 的联合呈现捷径
+
+这是当前第一个直接阻塞点。
+
+## 1. 源码中的相位关系
+
+关键代码位于：
+
+```text
+src/trusted_synthesis/core/task/
+semantic_table_trace_hardening.py
+```
+
+三个候选状态中：
+
+```python
+candidate_position_shift = (2 * replica_index) % 3
+action_id_rank_shift     = (2 * replica_index) % 3
+
+display_handle_shift     = replica_index % 3
+legend_position_shift    = replica_index % 3
+```
+
+具体对应：
+
+```text
+_candidate_position_shift()       506–509
+display_by_source                 596–598
+action_shift                      599–602
+ordered_entries                   613
+```
+
+这些通道各自看都被均衡了，但它们使用了相同或线性相关的 Replica 相位。
+
+---
+
+## 2. 两个简单联合规则可恢复所有三候选 State 的 reference
+
+对正式 80 个目标 State、480 个 Presentation 重新扫描：
+
+```text
+目标 States                         80
+三候选 States                       66
+二候选 States                       14
+三候选 Presentations               396
+```
+
+只使用模型可见的结构字段，定义：
+
+### 规则 A
+
+```text
+选择满足：
+(action_id 的词法排名 + Candidate position) mod 3 == 0
+```
+
+结果：
+
+```text
+396 / 396 唯一恢复 reference
+```
+
+### 规则 B
+
+```text
+选择满足：
+(display_choice_handle 词法排名 + Legend position) mod 3 == 0
+```
+
+结果同样是：
+
+```text
+396 / 396 唯一恢复 reference
+```
+
+这覆盖：
+
+* 四个能力族；
+* 所有三候选深度；
+* 每个对应六 Replica exact stratum。
+
+模型完全不需要读取金融任务、Operation 语义或前序 Observation。
+
+---
+
+## 3. 为什么当前 Shortcut Gate 没有发现
+
+当前报告注册了十种 Shortcut，且已经从全局阈值改为 80 个 exact stratum，每个 stratum 的允许上限是：
+
+$$
+\frac{6}{|\mathcal A|}
+$$
+
+这比 v26.172 的全局 `x/480` Gate 明显合理。
+
+但十种规则仍然全部是**单变量规则**：
+
+```text
+action-ID lexical order
+Candidate position
+display-handle order
+Legend position
+semantic-catalog order
+min/max value-handle vector
+field order
+encoded length
+fixed vector
+```
+
+没有检查：
+
+```text
+action-ID rank × Candidate position
+display-handle rank × Legend position
+```
+
+因此：
+
+$$
+\boxed{
+\text{边际平衡}
+\not\Rightarrow
+\text{联合独立}
+}
+$$
+
+### 必须修订
+
+Replica policy 应独立相位化：
+
+```text
+Candidate position
+action-ID rank
+Legend position
+display-handle rank
+value-handle rank
+```
+
+并新增 exact-stratum 联合攻击：
+
+* 两两 rank 组合；
+* rank 与 position；
+* min/max/median 组合；
+* 低阶线性组合；
+* 模 Choice-count 的 affine／modular rule；
+* action-ID、display-handle、Legend、Candidate 的交叉排序。
+
+只有单变量和低阶联合规则均不超过结构基线，才能授权模型调用。
+
+---
+
+# 五、P0：Mechanism Qualification 回退为精确参考路径 Gate
+
+这是比呈现泄漏更深的构念问题。
+
+## 1. v26.172 已经明确建立广义机制语义
+
+v26.172 明确区分：
+
+```text
+reference_path_match
+mechanism_semantically_qualified
+```
+
+并规定 Failure Recovery 只要求：
+
+* 真实 typed failure；
+* selector 改变；
+* Retry 成功；
+* 事件顺序正确；
+* 任务闭合；
+
+而**不要求唯一 selector 或唯一 record path**。
+
+v26.172 还确认：
+
+```text
+6 条 Context record-order alternatives
+20 条 Failure Recovery noncanonical successful paths
+```
+
+均应为 semantic-mechanism true，只是不匹配 canonical path。
+
+---
+
+## 2. v26.173 Runtime 再次使用 `exact_selector`
+
+Recovery Step 中：
+
+```python
+exact_selector = selector == current_rule.equals
+
+component_checks[key] = (
+    lineage
+    and exact_selector
+    and returned == expected_handle
+)
+```
+
+源码位置：
+
+```text
+phase1_v26_capability_semantic_table_trace_hardening_runtime.py
+435–448
+```
+
+最终 Mechanism Qualification 又要求所有 `component_checks` 为真。
+
+因此，虽然 Schema 中仍保存：
+
+```text
+reference_path_match
+mechanism_semantically_qualified
+```
+
+但后者实际上又依赖精确注册值。
+
+---
+
+## 3. 全部 146 条合法单 Choice 非 reference 执行结果
+
+独立重放得到：
+
+```text
+Action acceptance=false
+Base=false
+Mechanism=false
+Qualified=false                         20
+
+Action acceptance=true
+Base=false
+Mechanism=false
+Qualified=false                        102
+
+Action acceptance=true
+Base=true
+Mechanism=false
+Qualified=false                         24
+```
+
+最关键的是：
+
+```text
+nonreference semantic-Mechanism-qualified = 0
+```
+
+24 条 Base-valid／Mechanism-false 分布：
+
+| 能力                         | 数量 |
+| -------------------------- | -: |
+| Context-conditioned Action |  6 |
+| Semantic Reconciliation    |  4 |
+| Failure Recovery           | 14 |
+| State-dependent Stopping   |  0 |
+
+---
+
+## 4. same-Rule 非规范 Recovery 的直接反例
+
+对 20 条：
+
+```text
+selected Rule == current failed Rule
+但 selector / record path 非 canonical
+```
+
+的 Recovery Action：
+
+```text
+Action accepted              20/20
+Retry succeeded              14/20
+Base-valid                   14/20
+Mechanism-qualified           0/20
+Qualified-valid               0/20
+```
+
+这些轨迹：
+
+* 对正确当前 Rule 执行修正；
+* selector 确实改变；
+* 真实 Retry 成功；
+* 任务结果正确；
+* failure/retry 顺序成立；
+
+却因为不是 `current_rule.equals` 而被 Mechanism Gate 拒绝。
+
+所以 v26.173 修复了：
+
+```text
+wrong Rule 不能冒充 Recovery
+```
+
+但同时重新引入了：
+
+```text
+只有唯一 canonical selector 才算 Recovery
+```
+
+### 科学影响
+
+这会系统性低估：
+
+$$
+P(Q_{\mathrm{mech}}=1)
+$$
+
+并把合法的有效轨迹从 Qualified 集合中删除。未来所谓“能力深度下降”可能只是：
+
+> 深层任务要求连续命中更多唯一 reference choice。
+
+而不是：
+
+> 模型没有执行目标机制。
+
+### 必须修订
+
+Mechanism Gate 应再次回到 family-specific causal predicates：
+
+```text
+Context：
+真实应用当前状态决策并完成任务；
+不把无关紧要的 Record 顺序等同于机制失败。
+
+Reconciliation：
+真实产生和消费 normalized references，并完成任务。
+
+Recovery：
+同 Rule、同 Failure Receipt；
+selector 发生改变；
+Retry 成功；
+任务闭合；
+不要求唯一 canonical selector。
+
+Stopping：
+Runtime-derived readiness；
+verified stop；
+没有 postcompletion call。
+```
+
+`reference_path_match` 继续保留，但只能作为独立诊断字段。
+
+---
+
+# 六、P0/P1：模型可见 Failure Receipt 没有成为真实 Runtime 父对象
+
+报告声称 Recovery revision 必须绑定：
+
+```text
+current failed Rule
+failure-receipt Rule
+retry Rule
+```
+
+
+
+但源码实现只部分满足该主张。
+
+## 1. 当前 Prompt Receipt 与 Runtime Receipt 并非同一个对象
+
+正式 120 个 Recovery Prompt 均包含：
+
+```text
+actual_failure_receipt
+```
+
+但重算结果为：
+
+```text
+Prompt receipt 含 rule_handle                     0/120
+Prompt receipt hash == Runtime failure_receipt_id 0/120
+Runtime failure/retry 内部 receipt lineage       120/120
+```
+
+也就是说，Runtime 内部新生成的 failure 与 retry 共享同一新 receipt，这部分是正确的；但它并不是模型作出 Recovery 选择时看到的那个 receipt。
+
+---
+
+## 2. `rule_handle` 缺失时默认通过
+
+Action Acceptance 中存在：
+
+```python
+receipt.get("rule_handle", current_rule) == current_rule
+```
+
+源码位置：
+
+```text
+semantic_table_trace_hardening.py
+798–811
+```
+
+如果 Receipt 没有 `rule_handle`，系统直接回退到当前 Rule，因此缺失字段不会 fail-closed。
+
+对 20 个 Reference Recovery Component 做变异：
+
+```text
+原始 reference accepted                     20/20
+删除 actual_failure_receipt                  20/20 accepted
+修改 receipt hash                            20/20 accepted
+修改 receipt error                           20/20 accepted
+显式插入 wrong rule_handle                    0/20 accepted
+```
+
+这证明当前接受条件只对“显式错误 Rule”敏感，并未绑定：
+
+* exact receipt identity；
+* exact failure error；
+* exact failed selector；
+* exact public receipt hash。
+
+---
+
+## 3. Runtime 在模型选择后重新制造 Failure
+
+当前 `_execute_recovery_step()` 的顺序是：
+
+```text
+模型选择 revision
+→ Runtime 重新执行 coarse query
+→ 新生成 typed failure
+→ 新生成 failure receipt
+→ 再执行 selected selector
+```
+
+这不是严格的：
+
+```text
+模型先看到真实已发生 Failure
+→ 基于该 Failure receipt 选择 Recovery
+```
+
+因此，当前最准确的说法是：
+
+> Recovery Step 内部维护了 failure/retry lineage。
+
+还不能说：
+
+> 模型选择被精确绑定到此前可见的当前 Failure receipt。
+
+### 必须修订
+
+更干净的实现是：
+
+```text
+initialize
+→ 真实执行 coarse query
+→ 产生 typed failure
+→ 持久化 exact public receipt
+→ render Recovery Prompt
+→ model selects revision
+→ step validates against exact receipt
+→ retry
+```
+
+并要求 Receipt 至少绑定：
+
+```text
+receipt_id
+rule_handle
+failed_selector hash
+error_code
+source Tool
+```
+
+缺少任何字段都必须拒绝，不能使用默认值补齐。
+
+---
+
+# 七、P1：合同身份与 Runner 分母仍可被完整重哈希绕过
+
+正式 v26.173 Catalog 本身当前是内部一致的；下面是 Validator 边界攻击，并不是说正式工件已被篡改。
+
+## 1. Development Package 元数据替换
+
+完整重算所有受影响 identity 后，当前 Validator仍接受修改后的：
+
+```text
+semantic_table_contract_id
+state_precondition_contract_id
+step_runtime_contract_id
+parent_reconstruction_contract_id
+sequential_estimand_contract_id
+public_task_id
+```
+
+原因是 `_validate_catalog_against_source()` 主要检查：
+
+* source package artifact；
+* v26.172 parent；
+* topology；
+* reference path；
+* six-replica Result replay；
+
+却没有从 authoritative Contracts 重新计算 `_hardened_package_id()` 并逐字段核对全部 Package 元数据。
+
+---
+
+## 2. Runner Input 元数据替换
+
+完整重哈希后，Runner Input Validator 仍接受：
+
+```text
+全部五个 Contract ID 被替换
+source_package_id 被替换
+source_development_catalog_id 被替换
+```
+
+当前 `_validate_runner_input_against_source()` 只强制：
+
+```text
+source_package_artifact_id 存在
+topology 匹配
+public_task_id 匹配
+```
+
+没有核验其余强父对象。
+
+---
+
+## 3. Runner 分母可丢一条、复制一条
+
+构造一个仍包含 32 行的 Runner Input：
+
+```text
+从正式 32 个 Package 删除一个
+复制另一个 Package
+重新计算所有 identity
+```
+
+结果：
+
+```text
+Runner rows                         32
+unique Package IDs                 31
+unique source Package artifacts    31
+当前 Validator                    accepted
+```
+
+因此“行数等于 32”尚未等价于“完整、唯一、无替换的 32-Package 分母”。
+
+### 必须修订
+
+Runner Input 必须满足：
+
+$$
+\operatorname{set}
+(\text{Runner source package IDs})
+=
+\operatorname{set}
+(\text{Development source package IDs})
+$$
+
+并强制：
+
+```text
+row count             = 32
+unique package count  = 32
+unique source count   = 32
+missing               = 0
+duplicate             = 0
+extra                 = 0
+```
+
+所有 Package-level Contract ID 还必须等于顶层 authoritative Contract，而不仅是自洽内容哈希。
+
+---
+
+# 八、当前测试没有覆盖的新缺陷
+
+现有测试和正式破坏性审计主要覆盖：
+
+* 十个单变量 Shortcut；
+* wrong-current-Rule；
+* Reference Recovery；
+* 四类已注册父攻击；
+* baseline／future Prompt 禁止；
+* empirical estimand／Confirmation／Provider 禁止。
+
+尚未覆盖：
+
+1. `action-ID rank × Candidate position`；
+2. `display-handle rank × Legend position`；
+3. same-Rule noncanonical successful Recovery；
+4. Prompt receipt 删除或替换；
+5. Prompt receipt 与 Runtime receipt identity；
+6. Contract ID 完整重哈希替换；
+7. Runner 分母 duplicate／drop；
+8. Package `public_task_id` 交叉替换。
+
+这些必须进入下一轮生产 destructive audit，而不能只写在附加诊断中。
+
+---
+
+# 九、理论解释边界
+
+v26.173 新增了未来字段：
+
+```text
+per-step conditional success
+first failed target Component
+target-Component hazard
+complete Package success
+task Base validity
+Mechanism qualification
+```
+
+并明确：
+
+```text
+D0-D3 = bounded sequential target-decision depth
+```
+
+不从静态构造推断潜在能力边界。
+
+这一收敛是正确的。
+
+即使所有工程缺陷都修复，若 D0–D3 分别需要一至四次目标决策，而单步条件成功率恒为 \(p\)，Package 成功率仍可能自然表现为：
+
+$$
+P(\text{package success at depth }d)
+\approx p^{d+1}.
+$$
+
+所以未来不能只用最终：
+
+```text
+Qualified / 6
+```
+
+构造“能力边界”。
+
+必须同时报告：
+
+* 每步条件成功率；
+* 每个 Component 的到达分母；
+* 首个失败位置；
+* Component-specific hazard；
+* Package-level Base；
+* Package-level Mechanism；
+* Package-level Qualified。
+
+当前 Step Runtime 为这些估计提供了工程基础，但新发现的呈现联合泄漏、Mechanism 语义回退和 Receipt 身份缺口必须先关闭。
+
+---
+
+# 十、建议的下一轮修订
+
+v26.173 当前授权的唯一后继是：
+
+```text
+capability_observation_state_bound_step_runtime_
+development_runner_preflight_only
+```
+
+后继被禁止修改 Component、Candidate、Presentation 和 Validity。
+
+而本次 P0 恰恰要求修改：
+
+* Presentation phase；
+* Mechanism Gate；
+* Recovery receipt lifecycle；
+* Contract／Runner parent schema。
+
+因此不应消费当前后继。
+
+建议新的零调用后继：
+
+```text
+capability_observation_joint_presentation_
+mechanism_semantics_receipt_and_runner_parent_hardening_only
+```
+
+该阶段只完成四项工作：
+
+### 1. Joint Presentation Hardening
+
+独立相位化所有可见 rank，并新增低阶联合 Shortcut Gate。
+
+### 2. Mechanism Semantics Restoration
+
+恢复 v26.172 的广义 family-specific Mechanism 定义，保留 canonical path 仅作诊断。
+
+### 3. Exact Failure Receipt Lifecycle
+
+在 Prompt 前产生并冻结真实 Failure Receipt，Retry 必须消费同一 receipt。
+
+### 4. Contract And Denominator Parent Closure
+
+重新构造全部 Package Contract 父对象，并要求 Runner Input 与 32-Package Development Catalog 精确一一对应。
+
+全阶段继续要求：
+
+```text
+Provider calls          0
+Development Jobs        0
+Confirmation access     0
+Mapper / State          0
+frequency               0
+Contribution / VTDO     0
+training                0
+GPU                     0
+```
+
+---
+
+# 十一、最终审计决策
+
+## 对 v26.173 历史工件
+
+$$
+\boxed{\text{保留并冻结}}
+$$
+
+它可信支持：
+
+* Replica-local 语义表；
+* 各单项 rank 平衡；
+* wrong-current-Rule typed rejection；
+* 真正的本地增量 Step Runtime；
+* 已注册四类 Parent Attack 的关闭；
+* 顺序决策 estimand schema。
+
+## 对报告最强主张
+
+建议收窄为：
+
+> **v26.173 建立了 Replica-local 语义表、错误 Rule 拒绝和本地增量 Step Runtime 的静态原型。**
+
+目前还不能称为：
+
+> 完整联合呈现去泄漏、广义 Mechanism Semantics 闭合、精确 State-bound Failure Receipt 和完整 Runner 分母父绑定均已通过。
+
+## 对当前 Runner 预检
+
+$$
+\boxed{\text{不授权}}
+$$
+
+第一个根本阻塞点是：
+
+$$
+\boxed{
+\text{联合 presentation features 可在 396/396 三候选呈现中恢复 reference}
+}
+$$
+
+第二个理论阻塞点是：
+
+$$
+\boxed{
+\text{Mechanism Gate 再次将非规范但真实成功的机制路径排除}
+}
+$$
+
+第三个状态语义阻塞点是：
+
+$$
+\boxed{
+\text{模型可见 Failure Receipt 未被真实 Runtime 精确消费}
+}
+$$
+
+若现在进入 192-Job Runner 预检，即使所有脚本控制通过，后续模型结果仍可能主要反映：
+
+* 联合 rank 捷径；
+* 唯一 reference selector adherence；
+* Receipt 与实际 Runtime 状态的错位；
+* Runner 分母父对象不完整；
+
+而不能可靠解释为 bounded sequential capability depth。
+
+## 审计附件
+
+* [v26.173 源码审计证据](sandbox:/mnt/data/v26_173_code_audit_evidence.md)
+* [v26.173 完整诊断 JSON](sandbox:/mnt/data/v26_173_diagnostic.json)
+* [本次审计源码快照](sandbox:/mnt/data/Data-Synthesis-main%2820260829-045330%29.zip)

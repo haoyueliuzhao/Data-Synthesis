@@ -613,10 +613,139 @@ Runtime evidence, not a Runner preflight or model result. The current transition
 credential-free state-bound step-Runtime Development Runner preflight over the exact v26.173
 zero-Prompt Runner Input Catalog.
 
+v26.174 has now consumed the external joint-presentation, Mechanism-semantics, exact-Receipt,
+and Runner-parent hardening decision with zero Provider calls. It freezes and independently
+rebuilds all 21 v26.173 files before reproducing both 396/396 three-Choice joint presentation
+shortcuts, all 146 old nonreference executions, the 120-Prompt Receipt mismatch, six accepted
+Development parent replacements, seven accepted Runner parent replacements, and the accepted
+32-row/31-unique duplicate-drop denominator. The replacement presentation gives every exact
+Choice its own Replica-local field alias and evaluates 23,918 registered univariate and pairwise
+low-order rules across eighty exact six-Replica strata; no rule exceeds `6 / Choice count`, and
+both old perfect joint rules fall to zero recovery. Family-specific semantics now qualify 32
+nonreference mechanism occurrences, including all 24 Base-valid noncanonical trajectories and
+fourteen same-Rule noncanonical Recovery successes, while all twenty wrong-Rule rows still reject
+before Retry. All 120 Recovery Prompts bind the exact real pre-Prompt failure event and the same
+Rule, failed-selector hash, error, Tool, Receipt identity, and Retry. The exact 32-Package Runner
+source sets are complete and unique; 16/16 fully rehashed parent attacks, 31/31 production
+mutations, and 18/18 static Gates reject or pass as required. The 320-file source closure and
+23-file formal Root complete with zero empirical or model behavior. The current transition
+permits only a credential-free 192-Job Runner preflight over the exact v26.174 zero-Prompt Catalog.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.174 Joint Presentation, Mechanism Semantics, Receipt, And Runner Parent Hardening Decision
+
+Finance v26.174 consumed only
+`capability_observation_joint_presentation_mechanism_semantics_receipt_and_runner_parent_hardening_only`.
+The external review is bound at 24,817 bytes and SHA-256
+`2126448be1e81aacb52a02f3c31515cb7f5c6547d92a656b99a16e9da8e6aa56`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, Confirmation
+payload access, GPU jobs, Mapper calls, State Assignment, frequency, Contribution, VTDO, Student
+visibility, training, release, and production counts are zero.
+
+All 21 v26.173 files remain immutable and independently rebuild byte for byte. Before replacement
+construction, the audit reproduces:
+
+```text
+target States / presentations                              80 / 480
+three-Choice States / presentations                        66 / 396
+action-rank plus Candidate-position recovery             396 / 396
+display-rank plus Legend-position recovery               396 / 396
+legal nonreference executions                                   146
+old nonreference Mechanism-qualified                              0
+old same-Rule Recovery Retry / Base-valid                  14 / 14
+old same-Rule Mechanism-qualified                                 0
+old Recovery Prompts                                             120
+old Prompt/Runtime Receipt identity matches                       0
+old Runtime-internal Receipt lineage                            120
+accepted Development / Runner parent replacements             6 / 7
+accepted duplicate-drop Runner denominator                     true
+```
+
+The replacement public table uses one Replica-local opaque alias for every exact
+`Choice x field`, including honest distinct aliases for repeated semantic values. Fixed
+pre-outcome schedules separately phase Candidate position, action-ID rank, Legend position,
+display-handle rank, and every visible value rank. Across eighty exact six-Replica strata, the
+Gate evaluates 1,452 univariate, 21,986 pairwise affine/modular/order, and 480 value-vector
+min/max/median rules, or 23,918 total. Excess strata are zero; both predecessor 396/396 joint
+rules recover zero current references. This remains a registered low-order control, not universal
+Prompt noninterference.
+
+Mechanism qualification again uses family-specific causal semantics and keeps
+`reference_path_match` diagnostic-only. Across all 146 new nonreference executions, 126 actions
+are accepted, 24 are Base-valid, 32 are Mechanism-qualified, and 24 are Qualified-valid. The
+32 Mechanism rows are the 24 Base-valid trajectories plus eight task-invalid mechanism-occurrence
+diagnostics. All six Context, four Reconciliation, and fourteen Recovery Base-valid noncanonical
+rows are Mechanism-qualified. Fourteen of twenty same-Rule noncanonical Recovery rows Retry,
+complete Base, and pass Mechanism and Qualified. All twenty wrong-current-Rule rows still reject
+before Retry. Base-valid/Mechanism-false count is zero.
+
+Recovery now executes the real coarse selector before rendering its current Prompt. The exact
+model-visible Receipt binds Receipt ID, Rule, failed-selector hash, error, source Tool, and failure
+event. The retained Runtime consumes that same Receipt on Retry. Across 120 Recovery Prompts, all
+six bindings and Prompt/Runtime/failure/Retry identity checks match 120/120. Missing Receipt or
+changed identity, error, selector hash, Tool, or Rule each reject 20/20 with zero later Retry.
+
+The incremental Runtime remains `initialize -> render_next_prompt -> step -> finalize`. It
+performs 192 reference executions, 480 current Prompt steps and Observations, 1,104 actual events,
+288 predecessor-conditioned Prompts, 480 predecessor receipt links, 120 pre-Prompt failures, and
+120 exact-Receipt Retries. Complete baseline loads, event filtering, static Trace input,
+precommitted vectors, future Prompt access, Provider calls, and Development Jobs remain zero.
+
+Every Development Package now binds six authoritative prospective Contracts plus its exact
+v26.171 source Package/public Task, exact v26.173 parent, Finance Core, group, capability, depth,
+topology, and reference-path diagnostic. The independent validator recomputes all 32 Package IDs
+and replays all 192 Results. Runner Input has 32 rows, 32 unique Runner Package IDs, 32 unique
+source artifacts, and 32 unique source Package IDs; missing, duplicate, and extra counts are zero,
+and its exact source sets equal the Development sets. Sixteen fully rehashed parent attacks and
+all 31 production mutations reject.
+
+The formal Root contains 23 files and 12,543,211 bytes. Report SHA-256 is
+`1d25c9744239507283ad37c99f2f554eb6de8360f64e2da3c97789524279b882`.
+The transitive source Root contains 320 files with zero unresolved imports. Focused Pytest passes
+7/7 in 141.17 seconds, including a complete empty-directory 23/23 byte rebuild. The adjacent
+v26.173 non-rebuild regression passes five tests with one rebuild test deselected. Focused
+PyCompile, Ruff, format, and no-import-follow Mypy pass; package-wide Ruff passes. Package-wide
+Mypy checks 549 files and retains six diagnostics in four historical files, with zero v26.174
+diagnostics.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_joint_presentation_receipt_hardening_report:5ccb857fb6b1f7f0a90b0137162b1dd0e66f1c40970da9a5005c405d7f9ea4ae`;
+- transitive source Root:
+  `finance_v26_joint_presentation_receipt_transitive_source_root:26d1400d2d16c5978e3205d040455b3e7cd0b2bb1889bcb228ae9f71bcbf7c08`;
+- Joint Presentation Contract:
+  `joint_presentation_contract:714a7975a85703db3313df8afe5b2c2631c89c0bc49b6decba5844c8db215be9`;
+- Mechanism Semantics Contract:
+  `family_specific_mechanism_semantics_contract:3e8696eba72885964206408800ec9548036392a341364a9ab17d6a4f5e4eddcf`;
+- Exact Failure Receipt Contract:
+  `exact_failure_receipt_lifecycle_contract:a3dc7a12081a4eec699afc131c9809b603b5dad2846e1dde47501724a6be3263`;
+- Parent Closure Contract:
+  `contract_denominator_parent_closure_contract:8469e13b0f5283ac949b8ab4cf62749a86922c80da420a6094c4d04d5d55cd43`;
+- Development Catalog:
+  `finance_v26_joint_presentation_receipt_development_catalog:111c84e073354ac50ea3dab8bdbf66b3737caa3290565cf2bbadc91c22b58918`;
+- zero-Prompt Runner Input Catalog:
+  `finance_v26_joint_presentation_receipt_runner_input_catalog:cf80c22f28066b61693231ab1e4c613430d8439b0cdb168354759524f09b40a3`;
+- transition:
+  `finance_v26_joint_presentation_receipt_transition:de73144ef969ec641322947369e185a083875947172ffd5dfcc2a3ef58ac0592`.
+
+The only permitted transition is:
+
+```text
+capability_observation_joint_neutral_state_bound_step_runtime_development_runner_preflight_only
+```
+
+A successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free one-current-Prompt-at-a-time Runner preflight from the exact v26.174 zero-Prompt
+Runner Input Catalog. Provider execution, Development outcomes, Confirmation loading,
+source/task/Component/Candidate change, presentation or validity tuning, threshold change,
+historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training,
+release, and production remain forbidden. See
+`docs/finance_v26_174_joint_presentation_mechanism_receipt_and_runner_parent_hardening.md`.
 
 ## v26.173 Semantic Table, State Precondition, And Trace Parent Hardening Decision
 
@@ -786,6 +915,12 @@ Component/Candidate change, presentation or validity tuning, threshold change, h
 rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training, release, and
 production remain forbidden. See
 `docs/finance_v26_173_semantic_table_state_precondition_and_trace_parent_hardening.md`.
+
+That v26.173 Runner-preflight transition has now been superseded without Runner execution by the
+external v26.174 audit. Every v26.173 byte and local result remains immutable, but its joint-rank
+phase coupling, canonical-selector Mechanism regression, Prompt/Runtime Receipt mismatch, and
+incomplete Contract/denominator parent schema are not authorized for preflight. The current
+transition is the exact v26.174 credential-free preflight recorded above.
 
 ## v26.172 Legend Deleak, Mechanism Semantics, And Dynamic Depth Hardening Decision
 
